@@ -1,19 +1,24 @@
 import React, { Component } from 'react'
-import WebMap from './components/WebMap'
-import logo from './logo.svg'
+import { WebMap, Tiles } from './components/WebMap'
 import './App.css'
 
 class App extends Component {
   render () {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          <WebMap />
-        </p>
+        <WebMap
+          center={[ 48, 35 ]}
+          zoom={7}
+        >
+          <Tiles
+            source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={20}
+          />
+          <Tiles
+            source="http://buyalo-w8:6080/arcgis/rest/services/ATO/MapServer/tile/{z}/{y}/{x}"
+            maxZoom={17}
+          />
+        </WebMap>
       </div>
     )
   }

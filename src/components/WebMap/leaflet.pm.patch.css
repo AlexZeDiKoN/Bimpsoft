@@ -1,0 +1,8 @@
+.marker-icon, .marker-icon:focus {
+  border: 2px solid #0a0;
+}
+
+.marker-icon-middle, .marker-icon-middle:focus {
+  opacity: .8;
+  border: 1px solid #0a0;
+}
