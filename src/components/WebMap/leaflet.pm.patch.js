@@ -3,6 +3,7 @@
 // ------------------------ Константи ----------------------------------------------------------------------------------
 const mouseupTimer = 333
 const activelayerColor = '#0a0' // Колір активного тактичного знака
+const activeBackColor = '#252' // Колір фону активного тактичного знака
 // const pointSignSize = 100 // Піксельний розмір тактичного знаку точкового типу
 export const entityKindClass = { // ID в базі даних відповідних типів тактичних знаків
   POINT: 1,
@@ -286,9 +287,7 @@ function createPoint ([ point ], js, color, anchor) {
     // iconSize: [ pointSignSize, pointSignSize ],
     iconSize: [ js.svg.$.width, js.svg.$.height ],
   })
-  if (js.svg.path) {
-    js.svg.path.map((path) => (path.$.stroke = activelayerColor))
-  }
+  setActiveColors(js.svg, activelayerColor, activeBackColor)
   svg = jsToSvg(js)
   src = `data:image/svg+xml;base64,${btoa(svg)}`
   const iconActive = L.icon({
@@ -302,6 +301,23 @@ function createPoint ([ point ], js, color, anchor) {
   marker.options.iconActive = iconActive
   marker.options.tsType = entityKindClass.POINT
   return marker
+}
+
+function setActiveColors (svg, stroke, fill) {
+  for (const key of Object.keys(svg)) {
+    if (key === '$') {
+      if (svg.$.stroke && svg.$.stroke !== 'none') {
+        svg.$.stroke = stroke
+      }
+      if (svg.$.fill && svg.$.fill !== 'none') {
+        svg.$.fill = fill
+      }
+    } else if (Array.isArray(svg[key])) {
+      svg[key].forEach((item) => setActiveColors(item, stroke, fill))
+    } else {
+      setActiveColors(svg[key], stroke, fill)
+    }
+  }
 }
 
 function createSegment (segment, js, color) {
