@@ -48,19 +48,15 @@ function hookSplice (arr) {
 }
 
 L.PM.Edit.Line.prototype._getMarkersArray = function () {
-  if (this.isPolygon()) {
-    return this._markers[0]
-  } else {
-    return this._markers
-  }
+  return this.isPolygon()
+    ? this._markers[0]
+    : this._markers
 }
 
 L.PM.Edit.Line.prototype._getMarkersCount = function () {
-  if (this.isPolygon()) {
-    return this._markers[0].length
-  } else {
-    return this._markers.length
-  }
+  return this.isPolygon()
+    ? this._markers[0].length
+    : this._markers.length
 }
 
 L.PM.Edit.Line.prototype._saved__initMarkers = L.PM.Edit.Line.prototype._initMarkers
@@ -382,27 +378,19 @@ export function parseGeometry (type, point, geometry) {
   ptArray = ptArray.map((line) => line.split('\t').map((value) => +value))
   switch (type) {
     case entityKindClass.POINT: // для точкових знаків
-      if (ptArray.length >= 1) {
-        return ptArray.slice(0, 1)
-      } else {
-        return [ point ]
-      }
+      return ptArray.length >= 1
+        ? ptArray.slice(0, 1)
+        : [ point ]
     case entityKindClass.SEGMENT: // для відрізкових знаків
-      if (ptArray.length >= 2) {
-        return ptArray.slice(0, 2)
-      } else {
-        return [ [ point[0], point[1] - 0.02 ], [ point[0], point[1] + 0.02 ] ]
-      }
+      return ptArray.length >= 2
+        ? ptArray.slice(0, 2)
+        : [ [ point[0], point[1] - 0.02 ], [ point[0], point[1] + 0.02 ] ]
     case entityKindClass.AREA: // для площинних знаків
-      if (ptArray.length >= 3) {
-        return ptArray
-      } else {
-        return [
-          [ point[0] - 0.01, point[1] - 0.02 ],
+      return ptArray.length >= 3
+        ? ptArray
+        : [ [ point[0] - 0.01, point[1] - 0.02 ],
           [ point[0] - 0.01, point[1] + 0.02 ],
-          [ point[0] + 0.01, point[1] ],
-        ]
-      }
+          [ point[0] + 0.01, point[1] ] ]
     default:
       return [ point ]
   }
@@ -609,11 +597,9 @@ function makeSVGPathCommandsAbsolute (a) {
       }
     }
     cmd[0] = cmd[0].toUpperCase()
-    if (lowerCaseCommand === 'z') {
-      prevCmd = subpathStart.slice(0, 2)
-    } else {
-      prevCmd = cmd.slice(cmd.length - 2)
-    }
+    prevCmd = lowerCaseCommand === 'z'
+      ? subpathStart.slice(0, 2)
+      : cmd.slice(cmd.length - 2)
   })
 }
 
@@ -678,14 +664,14 @@ function documentToJS (document) {
   function elementToJS (node, element) {
     node.$ = {}
     if (element.attributes) {
-      for (let i = 0; i < element.attributes.length; i++) {
-        node.$[element.attributes[i].nodeName] = element.attributes[i].value
+      for (const attr of element.attributes) {
+        node.$[attr.nodeName] = attr.value
       }
     }
-    for (let i = 0; i < element.children.length; i++) {
-      const tag = element.children[i].tagName
+    for (const item of element.children) {
+      const tag = item.tagName
       const child = {}
-      elementToJS(child, element.children[i])
+      elementToJS(child, item)
       if (!node[tag]) {
         node[tag] = child
       } else if (Array.isArray(node[tag])) {
@@ -708,24 +694,16 @@ function jsToSvg (js) {
       }
     } else {
       result += `<${tagName}`
-      for (const a in tag.$) {
-        if (tag.$.hasOwnProperty(a)) {
-          result += ` ${a}="${tag.$[a]}"`
-        }
+      for (const a of Object.keys(tag.$)) {
+        result += ` ${a}="${tag.$[a]}"`
       }
       let inner = ''
-      for (const child in tag) {
-        if (tag.hasOwnProperty(child)) {
-          if (child !== '$') {
-            inner += tagToText(child, tag[child])
-          }
+      for (const child of Object.keys(tag)) {
+        if (child !== '$') {
+          inner += tagToText(child, tag[child])
         }
       }
-      if (inner === '') {
-        result += ' />'
-      } else {
-        result += `>${inner}</${tagName}>`
-      }
+      result += inner === '' ? ' />' : `>${inner}</${tagName}>`
     }
     return result
   }
@@ -790,18 +768,30 @@ function calcControlPoint (pp, pc, pn) {
   const len = (p) => Math.hypot(p[0], p[1])
   const norm = (p, f) => len(p) === 0 ? [ 0, 0 ] : mul([ p[1], -p[0] ], f / len(p))
 
-  if (eq(pp, pc) && eq(pn, pc)) { return [ pc, pc ] }
-  if (eq(pp, pc)) { return [ pc, add(pc, mul(sub(pc, pn), 1 / 3)) ] }
-  if (eq(pn, pc)) { return [ add(pc, mul(sub(pc, pp), 1 / 3)), pc ] }
+  if (eq(pp, pc) && eq(pn, pc)) {
+    return [ pc, pc ]
+  }
+  if (eq(pp, pc)) {
+    return [ pc, add(pc, mul(sub(pc, pn), 1 / 3)) ]
+  }
+  if (eq(pn, pc)) {
+    return [ add(pc, mul(sub(pc, pp), 1 / 3)), pc ]
+  }
   let dpp = sub(pc, pp)
   let dpn = sub(pc, pn)
   const lp = len(dpp)
   const ln = len(dpn)
-  if (eq(dpn, dpp)) { return [ norm(sub(pp, pc), lp / 3), norm(dpn, ln / 3) ] }
+  if (eq(dpn, dpp)) {
+    return [ norm(sub(pp, pc), lp / 3), norm(dpn, ln / 3) ]
+  }
   if (lp > ln) {
-    if (ln !== 0) { dpn = mul(dpn, lp / ln) }
+    if (ln !== 0) {
+      dpn = mul(dpn, lp / ln)
+    }
   } else {
-    if (lp !== 0) { dpp = mul(dpp, ln / lp) }
+    if (lp !== 0) {
+      dpp = mul(dpp, ln / lp)
+    }
   }
   const dir = sub(dpn, dpp)
   const ld = len(dir)
