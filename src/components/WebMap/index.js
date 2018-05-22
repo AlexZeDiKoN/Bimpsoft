@@ -8,26 +8,22 @@ import { Symbol } from 'milsymbol'
 import 'leaflet.pm'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
-const tmp = `<svg
-  width="480" height="480"
-  line-point-1="24,240"
-  line-point-2="456,240">
-  <path
-    fill="none"
-    stroke="red" stroke-width="3" stroke-linecap="square"
-    d="M8,240
-       a16,16 0 0,1 16,-16
-       h80
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h106
-       v-65 l-4,6 4,-15 4,15 -4,-6 v35
-       l-20,0 40,0 -20,0 v15
-       l-20,0 40,0 -20,0 v15
-       h106
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h80
-       a16,16 0 0,1 16,16" />
-</svg>`
+function isTileLayersEqual (a, b) {
+  for (const key of Object.keys(a)) {
+    if (b[key] !== a[key]) {
+      return false
+    }
+  }
+  for (const key of Object.keys(b)) {
+    if (a[key] !== b[key]) {
+      return false
+    }
+  }
+  return true
+}
+
+// TODO: не найелегантніший воркераунд, оптиммізувати у випадку проблем з продуктивністю
+const isTacticalSignsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
 
 export class Tiles {
   static propTypes = {
@@ -41,39 +37,56 @@ export class WebMap extends Component {
   static propTypes = {
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
+    objects: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      kind: PropTypes.oneOf(Object.values(entityKindClass)).isRequired,
+      code: PropTypes.string,
+      options: PropTypes.object,
+      point: PropTypes.arrayOf(PropTypes.number),
+      points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+      template: PropTypes.string,
+      color: PropTypes.string,
+    })),
     children: PropTypes.arrayOf(PropTypes.shape({
       type: PropTypes.oneOf([ Tiles ]),
+      props: PropTypes.object,
     })),
   }
 
+  static getDerivedStateFromProps (nextProps, prevState) {
+    return {
+      objects: nextProps.objects,
+      center: nextProps.center || prevState.center,
+      zoom: nextProps.zoom || prevState.zoom,
+    }
+  }
+
+  state = {
+    objects: [],
+    center: [ 48, 35 ],
+    zoom: 7,
+  }
+
   componentDidMount () {
-    this.map = new Map(this.container)
     this.setMapView()
-    React.Children.forEach(this.props.children, (child) => {
-      if (child.type === Tiles) {
-        const { source, ...rest } = child.props
-        new TileLayer(source, rest).addTo(this.map)
+    this.initObjects()
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    let equals = nextProps.children.length === this.props.children.length
+    if (equals) {
+      for (let i = 0; i < this.props.children.length; i++) {
+        equals = equals && isTileLayersEqual(this.props.children[i].props, nextProps.children[i].props)
+        if (!equals) {
+          break
+        }
       }
-    })
-    initMapEvents(this.map)
-
-    let test = new Symbol('sfgpewrh--mt', { size: 48, direction: 45 })
-    createTacticalSign(null, entityKindClass.POINT, [ [ 48.5, 35 ] ], test.asSVG(), 'black',
-      this.map, test.getAnchor())
-
-    test = new Symbol('10011500521200000800', { size: 48 })
-    createTacticalSign(null, entityKindClass.POINT, [ [ 48.5, 35.5 ] ], test.asSVG(), 'black',
-      this.map, test.getAnchor())
-
-    test = new Symbol('SHGPUCDT--AI', { size: 48 })
-    createTacticalSign(null, entityKindClass.POINT, [ [ 48.5, 36 ] ], test.asSVG(), 'black',
-      this.map, test.getAnchor())
-
-    createTacticalSign(null, entityKindClass.AREA, [ [ 47.8, 34.8 ], [ 48.2, 35.2 ], [ 47.8, 35 ] ], '', '#38f',
-      this.map)
-
-    createTacticalSign(null, entityKindClass.SEGMENT, [ [ 47.5, 34.5 ], [ 47.55, 34.75 ] ], tmp, 'red',
-      this.map)
+    }
+    if (this.state.center !== nextState.center || this.state.zoom !== nextState.zoom) {
+      this.map.setView(this.props.center, this.props.zoom)
+    }
+    this.processObjects(this.state.objects, nextState.objects)
+    return !equals
   }
 
   componentDidUpdate () {
@@ -85,7 +98,57 @@ export class WebMap extends Component {
   }
 
   setMapView () {
+    if (!this.container) {
+      return
+    }
+    this.map = new Map(this.container)
     this.map.setView(this.props.center, this.props.zoom)
+    React.Children.forEach(this.props.children, (child) => {
+      if (child.type === Tiles) {
+        const { source, ...rest } = child.props
+        new TileLayer(source, rest).addTo(this.map)
+      }
+    }, this)
+    initMapEvents(this.map)
+  }
+
+  initObjects () {
+    this.state.objects.map((object) => this.addObject(object))
+  }
+
+  processObjects (oldObjects, newObjects) {
+    for (const object of oldObjects) {
+      if (!newObjects.find((item) => item.id === object.id)) {
+        this.deleteObject(object.id)
+      }
+    }
+    for (const object of newObjects) {
+      if (!oldObjects.find((item) => item.id === object.id)) {
+        this.addObject(object)
+      }
+    }
+    for (const object of oldObjects) {
+      const newObject = newObjects.find((item) => item.id === object.id)
+      if (!isTacticalSignsEqual(object, newObject)) {
+        this.deleteObject(object.id)
+        this.addObject(newObject)
+      }
+    }
+  }
+
+  deleteObject (id) {
+    // todo
+  }
+
+  addObject ({ id, kind, code = '', options = {}, point, points, template = '', color = 'black' }) {
+    let anchor
+    if (kind === entityKindClass.POINT) {
+      const symbol = new Symbol(code, { size: 48, ...options })
+      template = symbol.asSVG()
+      points = [ point ]
+      anchor = symbol.getAnchor()
+    }
+    createTacticalSign(id, kind, points, template, color, this.map, anchor)
   }
 
   render () {
