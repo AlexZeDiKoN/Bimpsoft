@@ -61,6 +61,12 @@ export class WebMap extends Component {
     }
   }
 
+  constructor (props) {
+    super(props)
+    this.addObject = this.addObject.bind(this)
+    this.container = React.createRef()
+  }
+
   state = {
     objects: [],
     center: [ 48, 35 ],
@@ -98,10 +104,7 @@ export class WebMap extends Component {
   }
 
   setMapView () {
-    if (!this.container) {
-      return
-    }
-    this.map = new Map(this.container)
+    this.map = new Map(this.container.current)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
@@ -113,7 +116,7 @@ export class WebMap extends Component {
   }
 
   initObjects () {
-    this.state.objects.map((object) => this.addObject(object))
+    this.state.objects.map(this.addObject)
   }
 
   processObjects (oldObjects, newObjects) {
@@ -152,6 +155,6 @@ export class WebMap extends Component {
   }
 
   render () {
-    return <div ref={(container) => (this.container = container)} style={{ height: '100%' }} />
+    return <div ref={this.container} style={{ height: '100%' }} />
   }
 }
