@@ -1,0 +1,14 @@
+/* ================================= ANTD START ================================= */
+#app .ant-layout-header,
+#app .ant-layout-sider {
+  background-color: #eee;
+}
+
+#app .ant-layout-header {
+  box-shadow: inset 0 -1px 0 0 #aaa, inset 0 1px 0 0 #aaa;
+}
+
+#app .ant-layout-sider {
+  box-shadow: inset 1px 0 0 0 #aaa;
+}
+/* ================================= ANTD END ================================= */

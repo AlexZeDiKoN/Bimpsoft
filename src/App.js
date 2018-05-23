@@ -1,78 +1,62 @@
-import React, { Component } from 'react'
-import { WebMap, Tiles } from './components/WebMap'
+import React from 'react'
+import { Layout } from 'antd'
+import { ApplicationContent, MenuPanel } from './layouts'
 import './App.css'
-import { entityKindClass } from './components/WebMap/leaflet.pm.patch'
 
-const tmp = `<svg
-  width="480" height="480"
-  line-point-1="24,240"
-  line-point-2="456,240">
-  <path
-    fill="none"
-    stroke="red" stroke-width="3" stroke-linecap="square"
-    d="M8,240
-       a16,16 0 0,1 16,-16
-       h80
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h106
-       v-65 l-4,6 4,-15 4,15 -4,-6 v35
-       l-20,0 40,0 -20,0 v15
-       l-20,0 40,0 -20,0 v15
-       h106
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h80
-       a16,16 0 0,1 16,16" />
-</svg>`
+class App extends React.Component {
+  state = {
+    isSidebarCollapsed: true,
+    sidebarWidth: 300,
+  }
 
-const objects = [
-  {
-    id: 1,
-    kind: entityKindClass.POINT,
-    code: 'sfgpewrh--mt',
-    options: { direction: 45 },
-    point: [ 48.5, 35 ],
-  }, {
-    id: 2,
-    kind: entityKindClass.POINT,
-    code: '10011500521200000800',
-    point: [ 48.5, 35.5 ],
-  }, {
-    id: 3,
-    kind: entityKindClass.POINT,
-    code: 'SHGPUCDT--AI',
-    point: [ 48.5, 36 ],
-  }, {
-    id: 4,
-    kind: entityKindClass.AREA,
-    points: [ [ 47.8, 34.8 ], [ 48.2, 35.2 ], [ 47.8, 35 ] ],
-    color: '#38f',
-  }, {
-    id: 5,
-    kind: entityKindClass.SEGMENT,
-    points: [ [ 47.5, 34.5 ], [ 47.55, 34.75 ] ],
-    template: tmp,
-    color: 'red',
-  },
-]
+  componentDidMount () {
+    this.toggleSidebar()
+  }
 
-class App extends Component {
+  componentWillUnmount () {
+    window.removeEventListener('mousemove', this.sidebarResize)
+  }
+
+  toggleSidebar = () => this.setState({ isSidebarCollapsed: !this.state.isSidebarCollapsed })
+
+  setSidebarWidth = (sidebarWidth) => this.setState({ sidebarWidth })
+
+  sidebarResizeStart = (event) => {
+    this._sidebarResizeStartPoint = event.pageX
+    // this._prevSidebarWidth = event.pageX
+    window.addEventListener('mousemove', this.sidebarResize)
+    window.addEventListener('mouseup', () => window.removeEventListener('mousemove', this.sidebarResize))
+  }
+
+  sidebarResize = (event) => {
+    if (process.env.NODE_ENV === 'development') {
+      window.console.log('resize', event, this._sidebarResizeStartPoint - event.pageX)
+    }
+  }
+
   render () {
     return (
-      <div className="App">
-        <WebMap
-          center={[ 48, 35 ]}
-          zoom={7}
-          objects={objects}
-        >
-          <Tiles
-            source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maxZoom={20}
-          />
-          <Tiles
-            source="http://buyalo-w8:6080/arcgis/rest/services/ATO/MapServer/tile/{z}/{y}/{x}"
-            maxZoom={17}
-          />
-        </WebMap>
+      <div id="app" className="app">
+        <Layout className="app-layout">
+          <Layout.Header className="app-header_wrapper">
+            <MenuPanel toggleSidebar={this.toggleSidebar}/>
+          </Layout.Header>
+          <Layout className="app-layout_inner" hasSider={true}>
+            <Layout.Content className="app-content_wrapper">
+              <ApplicationContent />
+            </Layout.Content>
+            <Layout.Sider
+              className="app-sidebar_wrapper"
+              trigger={null}
+              width={this.state.sidebarWidth}
+              collapsedWidth={0}
+              collapsible
+              collapsed={this.state.isSidebarCollapsed}>
+              qwe
+              <div className="app-sidebar_resizer" onMouseDown={this.sidebarResizeStart}/>
+            </Layout.Sider>
+          </Layout>
+        </Layout>
       </div>
     )
   }
