@@ -1,33 +1,4 @@
-@import '~antd/dist/antd.css';
-
-
 .app {
   text-align: center;
   height: 100vh;
-}
-
-.app-content_wrapper {
-  min-height: calc(100vh - 64px);
-}
-
-.app-sidebar_wrapper {
-  position: relative;
-  user-select: none;
-}
-
-.app-sidebar_resizer {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 100%;
-  height: 100%;
-  width: 2px;
-  background-color: #aaa;
-  z-index: 401;
-  transition: all 300ms ease-in-out;
-  cursor: col-resize;
-}
-.ant-layout-sider-zero-width .app-sidebar_resizer {
-  visibility: hidden;
 }
