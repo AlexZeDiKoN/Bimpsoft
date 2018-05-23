@@ -12,9 +12,9 @@ class MenuPanel extends React.PureComponent {
     return (
       <div className="menu_panel">
         <Button.Group className="menu_panel-button_group">
-          <Button type="primary">qwe</Button>
-          <Button type="primary">qwe2</Button>
-          <Button type="primary">qwe3</Button>
+          <Button type="primary"><i className="icon icon-qwe1"/></Button>
+          <Button type="primary"><i className="icon icon-qwe2"/></Button>
+          <Button type="primary"><i className="icon icon-qwe3"/></Button>
           <Button type="primary">qwe4</Button>
           <Button type="primary">qwe5</Button>
           <Button type="primary">qwe6</Button>
