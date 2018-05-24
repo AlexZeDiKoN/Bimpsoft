@@ -1,7 +1,14 @@
 import React from 'react'
-import { connect } from 'react-redux'
+// import PropTypes from 'prop-types'
+import {
+  // Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom'
 import { Layout } from 'antd'
-import { ApplicationContent, MenuPanel } from '../../layouts'
+import { MenuPanel } from '../../containers'
+import { ApplicationContent } from '../../layouts'
+import { warn } from '../../utils/devLoggers'
 import './Main.css'
 
 class App extends React.Component {
@@ -18,6 +25,17 @@ class App extends React.Component {
     window.removeEventListener('mousemove', this.sidebarResize)
   }
 
+  routes = [
+    {
+      link: '/',
+      Component: (routerProps) => <ApplicationContent {...this.props} {...routerProps}/>,
+    },
+  ]
+
+  // Use of iteration index as value for react's 'key' prop isn't a good idea,
+  // but in case with static array it's not so bad
+  renderRoute = ({ link, Component }, index) => <Route exact path={link} render={Component} key={index}/>
+
   toggleSidebar = () => this.setState({ isSidebarCollapsed: !this.state.isSidebarCollapsed })
 
   setSidebarWidth = (sidebarWidth) => this.setState({ sidebarWidth })
@@ -31,24 +49,21 @@ class App extends React.Component {
   }
 
   sidebarResize = (event) => {
-    if (process.env.NODE_ENV === 'development') {
-      // window.console.log('resize', event, this._sidebarResizeStartPoint - event.pageX)
-    }
+    warn('resize', event, this._sidebarResizeStartPoint - event.pageX)
   }
 
   render () {
-    if (process.env.NODE_ENV === 'development') {
-      // console.log('Main props: ', this.props)
-    }
     return (
       <div id="app" className="app">
         <Layout className="app-layout">
           <Layout.Header className="app-header_wrapper">
-            <MenuPanel toggleSidebar={this.toggleSidebar}/>
+            <MenuPanel isSidebarCollapsed={this.state.isSidebarCollapsed} toggleSidebar={this.toggleSidebar}/>
           </Layout.Header>
           <Layout className="app-layout_inner" hasSider={true}>
             <Layout.Content className="app-content_wrapper">
-              <ApplicationContent />
+              <Switch>
+                {this.routes.map(this.renderRoute)}
+              </Switch>
             </Layout.Content>
             <Layout.Sider
               className="app-sidebar_wrapper"
@@ -67,18 +82,7 @@ class App extends React.Component {
   }
 }
 
-const mapStateToProps = (store) => {
-  const { applicationState } = store
-  return {
-    applicationState,
-  }
-}
-
-const mapDispatchToProps = (dispatch) => ({
-
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default App
 export {
   App,
 }

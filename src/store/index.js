@@ -1,11 +1,35 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+import { routerMiddleware } from 'react-router-redux'
+import isPlainObject from 'lodash/isPlainObject'
+import { error } from '../utils/devLoggers'
 import rootReducer from './reducers'
 
-const middlewares = [
-  // Here will be some middlewares
-]
+let store = null
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
+export default function initStore (options = {}) {
+  if (store) {
+    return store
+  }
 
-export default store
+  if (!isPlainObject(options)) {
+    error(`Failed to set options of 'initStore' function. First argument expected to be a plain object, but got ${typeof options}`)
+  }
+
+  const {
+    history,
+  } = options
+
+  const middlewares = [
+    // Here will be some middlewares
+  ]
+
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+  if (history) {
+    middlewares.push(routerMiddleware(history))
+  }
+
+  store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
+
+  return store
+}
