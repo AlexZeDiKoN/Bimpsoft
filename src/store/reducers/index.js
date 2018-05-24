@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
-// import { routerReducer as routing } from 'react-router-redux'
-import applicationState from './applicationState'
+import { routerReducer as routing } from 'react-router-redux'
+import webMap from './webMap'
 
 export default combineReducers({
-  applicationState,
-  // routing,
+  webMap,
+
+  routing,
 })
