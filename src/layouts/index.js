@@ -1,7 +1,7 @@
 import ApplicationContent from './ApplicationContent'
-import MenuPanel from './MenuPanel'
+import Main from './Main'
 
 export {
   ApplicationContent,
-  MenuPanel,
+  Main,
 }

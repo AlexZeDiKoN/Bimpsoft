@@ -1,5 +1,5 @@
-import Main from './Main'
+import MenuPanel from './MenuPanel'
 
 export {
-  Main,
+  MenuPanel,
 }
