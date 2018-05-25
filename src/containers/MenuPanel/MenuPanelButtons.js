@@ -1,39 +1,49 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { compose } from 'recompose'
-import { AutoComplete, Button, Input, Tooltip } from 'antd' // TODO <---------------------------------------------------
+import { Button, Tooltip } from 'antd'
 import { withAntdControls } from '../../hocs'
 import './MenuPanelButtons.css'
 
 class MenuPanelButtons extends React.PureComponent {
   static propTypes = {
     isMapEditMode: PropTypes.bool.isRequired,
-    isPointMarkMode: PropTypes.bool.isRequired,
+    isPointMarkEditMode: PropTypes.bool.isRequired,
     isSidebarCollapsed: PropTypes.bool.isRequired,
+    isTextMarkEditMode: PropTypes.bool.isRequired,
+    isTimelineEditMode: PropTypes.bool.isRequired,
+    renderAutocompleteInput: PropTypes.func.isRequired,
     renderButton: PropTypes.func.isRequired,
     renderDropdownButton: PropTypes.func.isRequired,
     renderSwitcherButton: PropTypes.func.isRequired,
-    toggleEditMode: PropTypes.func.isRequired,
+    toggleMapEditMode: PropTypes.func.isRequired,
     togglePointMarkEditMode: PropTypes.func.isRequired,
     toggleSidebar: PropTypes.func.isRequired,
+    toggleTextMarkEditMode: PropTypes.func.isRequired,
+    toggleTimelineEditMode: PropTypes.func.isRequired,
   }
 
   render () {
     const {
       isMapEditMode,
-      isPointMarkMode,
+      isPointMarkEditMode,
       isSidebarCollapsed,
+      isTextMarkEditMode,
+      isTimelineEditMode,
+      renderAutocompleteInput,
       renderButton,
       renderDropdownButton,
       renderSwitcherButton,
-      toggleEditMode,
+      toggleMapEditMode,
       togglePointMarkEditMode,
       toggleSidebar,
+      toggleTextMarkEditMode,
+      toggleTimelineEditMode,
     } = this.props
 
     const mapEditButtonParams = {
       isActive: isMapEditMode,
-      onClick: toggleEditMode,
+      onClick: toggleMapEditMode,
       title: 'Режим роботи',
       buttonClassName: 'menu_panel-button',
       activeButtonClassName: 'menu_panel-button menu_panel-button--active ant-btn--active',
@@ -42,7 +52,7 @@ class MenuPanelButtons extends React.PureComponent {
       tooltipPlacement: 'topLeft',
     }
     const pointMarkButtonParams = {
-      isActive: isPointMarkMode,
+      isActive: isPointMarkEditMode,
       onClick: togglePointMarkEditMode,
       title: 'Точковий знак',
       buttonClassName: 'menu_panel-button',
@@ -69,26 +79,32 @@ class MenuPanelButtons extends React.PureComponent {
         { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe42' },
       ],
     }
-    const textButtonParams = {
+    const textEditButtonParams = {
+      isActive: isTextMarkEditMode,
+      onClick: toggleTextMarkEditMode,
       title: 'Надпис',
       buttonClassName: 'menu_panel-button',
+      activeButtonClassName: 'menu_panel-button menu_panel-button--active ant-btn--active',
       iconClassName: 'menu_panel-button_icon icon icon-qwe1',
-      onClick: (e) => {},
       tooltipPlacement: 'topLeft',
     }
     const cartographyInfoButtonParams = {
       title: 'Джерело картографічної інформації',
-      buttonClassName: 'menu_panel-button',
       iconClassName: 'menu_panel-button_icon icon icon-qwe1',
-      onClick: (e) => {},
-      tooltipPlacement: 'topLeft',
+      options: [
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe' },
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe2' },
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe42' },
+      ],
     }
     const situationDetailingButtonParams = {
       title: 'Деталізація обстановки',
-      buttonClassName: 'menu_panel-button',
       iconClassName: 'menu_panel-button_icon icon icon-qwe1',
-      onClick: (e) => {},
-      tooltipPlacement: 'topLeft',
+      options: [
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe' },
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe2' },
+        { iconClassName: 'menu_panel-button_icon icon icon-qwe1', title: 'qweqwqwe42' },
+      ],
     }
     const printButtonParams = {
       title: 'Друк',
@@ -97,20 +113,27 @@ class MenuPanelButtons extends React.PureComponent {
       onClick: (e) => {},
       tooltipPlacement: 'topLeft',
     }
-    // TODO <-----------------------------------------------------------------------------------------------------------
-    // const searchInputParams = {
-    //   button: (
-    //     <Tooltip placement="topRight" title="Пошук">
-    //       <Button className="menu_panel-button">
-    //         <i className="menu_panel-button_icon icon icon-qwe1"/>
-    //       </Button>
-    //     </Tooltip>
-    //   ),
-    //   //  ...
-    // }
+    const searchInputParams = {
+      // TODO Finish autocomplete <-------------------------------------------------------------------------------------
+      autocomplete: {
+        className: 'menu_panel-autocomplete_wrapper',
+        placeholder: 'Пошук',
+      },
+      input: {
+        spellCheck: 'false',
+        suffix: (
+          <Tooltip placement="topRight" title="Пошук">
+            <Button className="menu_panel-button">
+              <i className="menu_panel-button_icon icon icon-qwe1"/>
+            </Button>
+          </Tooltip>
+        ),
+      },
+      wrapper: { className: 'menu_panel-search_input_wrapper' },
+    }
     const timelineButtonParams = {
-      isActive: false,
-      onClick: () => {},
+      isActive: isTimelineEditMode,
+      onClick: toggleTimelineEditMode,
       title: 'Відобразити/сховати шкалу часу',
       buttonClassName: 'menu_panel-button',
       activeButtonClassName: 'menu_panel-button menu_panel-button--active ant-btn--active',
@@ -140,31 +163,19 @@ class MenuPanelButtons extends React.PureComponent {
                 {renderSwitcherButton(pointMarkButtonParams)}
                 {renderDropdownButton(segmentMarkButtonParams)}
                 {renderDropdownButton(polygonMarkButtonParams)}
-                {renderButton(textButtonParams)}
+                {renderSwitcherButton(textEditButtonParams)}
               </Fragment>
             )
           }
 
-          {renderButton(cartographyInfoButtonParams)}
-          {renderButton(situationDetailingButtonParams)}
+          {renderDropdownButton(cartographyInfoButtonParams)}
+          {renderDropdownButton(situationDetailingButtonParams)}
           {renderButton(printButtonParams)}
         </Button.Group>
 
-        {/* TODO <-------------------------------------------------------------------------------------------------> */}
-        <div className="menu_panel-search_input_wrapper">
-          <AutoComplete
-            className="menu_panel-autocomplete_wrapper"
-            placeholder="Пошук"
-          >
-            <Input spellCheck="false" suffix={(
-              <Tooltip placement="topRight" title="Пошук">
-                <Button className="menu_panel-button">
-                  <i className="menu_panel-button_icon icon icon-qwe1"/>
-                </Button>
-              </Tooltip>
-            )}/>
-          </AutoComplete>
-        </div>
+        <Button.Group>
+          {renderAutocompleteInput(searchInputParams)}
+        </Button.Group>
 
         <Button.Group className="menu_panel-button_group">
           {renderSwitcherButton(timelineButtonParams)}
