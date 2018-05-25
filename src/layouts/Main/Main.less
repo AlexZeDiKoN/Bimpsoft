@@ -1,16 +1,15 @@
-.hidden {
-  visibility: hidden;
-}
-.flex {
-  display: flex;
-}
+@import "../../assets/styles/_variables.less";
+@import "../../assets/styles/_mixins.less";
+
 .app-content_wrapper {
-  min-height: calc(100vh - 64px);
+  min-height: calc(~"100vh - @{webmap-header-height}");
 }
+
 .app-sidebar_wrapper {
   position: relative;
   user-select: none;
 }
+
 .app-sidebar_resizer {
   content: '';
   display: block;
@@ -19,11 +18,12 @@
   right: 100%;
   height: 100%;
   width: 2px;
-  background-color: #aaa;
+  background-color: @webmap-sidebar-background;
   z-index: 401;
   transition: all 300ms ease-in-out;
   cursor: col-resize;
-}
-.app-sidebar_resizer .ant-layout-sider-zero-width {
-  visibility: hidden;
+
+  .ant-layout-sider-zero-width {
+    .hidden;
+  }
 }
