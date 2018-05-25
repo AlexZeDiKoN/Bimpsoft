@@ -8,20 +8,23 @@ import {
 import { Layout } from 'antd'
 import { MenuPanel } from '../../containers'
 import { ApplicationContent } from '../../layouts'
-import { warn } from '../../utils/devLoggers'
 import './Main.css'
+
+const SIDEBAR_SIZE_DEFAULT = 300
 
 class App extends React.Component {
   state = {
     isSidebarCollapsed: true,
-    sidebarWidth: 300,
+    sidebarWidth: SIDEBAR_SIZE_DEFAULT,
   }
 
   componentDidMount () {
     this.toggleSidebar()
+    window.addEventListener('resize', this.resetSidebarWidth)
   }
 
   componentWillUnmount () {
+    window.removeEventListener('resize', this.resetSidebarWidth)
     window.removeEventListener('mousemove', this.sidebarResize)
   }
 
@@ -40,16 +43,27 @@ class App extends React.Component {
 
   setSidebarWidth = (sidebarWidth) => this.setState({ sidebarWidth })
 
+  resetSidebarWidth = (sidebarWidth) => this.setState({ sidebarWidth: SIDEBAR_SIZE_DEFAULT })
+
   sidebarResizeStart = (event) => {
     // Stores the values directly in the component instance (not in state) to prevent unnecessary component update
     this._sidebarResizeStartPoint = event.pageX
-    // this._prevSidebarWidth = event.pageX
+    this._prevSidebarWidth = this.state.sidebarWidth
     window.addEventListener('mousemove', this.sidebarResize)
     window.addEventListener('mouseup', () => window.removeEventListener('mousemove', this.sidebarResize))
   }
 
   sidebarResize = (event) => {
-    warn('resize', event, this._sidebarResizeStartPoint - event.pageX)
+    const SIDEBAR_SIZE_MIN = 300
+    const SIDEBAR_SIZE_MAX = window.innerWidth - SIDEBAR_SIZE_MIN
+    const calculatedSidebarWidth = this._prevSidebarWidth + this._sidebarResizeStartPoint - event.pageX
+    if (calculatedSidebarWidth < SIDEBAR_SIZE_MIN) {
+      this.setSidebarWidth(SIDEBAR_SIZE_MIN)
+    } else if (calculatedSidebarWidth > SIDEBAR_SIZE_MAX) {
+      this.setSidebarWidth(SIDEBAR_SIZE_MAX)
+    } else {
+      this.setSidebarWidth(calculatedSidebarWidth)
+    }
   }
 
   render () {
@@ -72,7 +86,9 @@ class App extends React.Component {
               collapsedWidth={0}
               collapsible
               collapsed={this.state.isSidebarCollapsed}>
-              qwe
+
+                TODO Sidebar
+
               <div className="app-sidebar_resizer" onMouseDown={this.sidebarResizeStart}/>
             </Layout.Sider>
           </Layout>
@@ -83,6 +99,3 @@ class App extends React.Component {
 }
 
 export default App
-export {
-  App,
-}

@@ -8,6 +8,10 @@
 .app-sidebar_wrapper {
   position: relative;
   user-select: none;
+
+  &.ant-layout-sider-collapsed .ant-layout-sider-children {
+    display: none;
+  }
 }
 
 .app-sidebar_resizer {
@@ -17,13 +21,18 @@
   top: 0;
   right: 100%;
   height: 100%;
-  width: 2px;
+  width: 5px;
   background-color: @webmap-sidebar-background;
   z-index: 401;
   transition: all 300ms ease-in-out;
   cursor: col-resize;
+  opacity: .35;
 
-  .ant-layout-sider-zero-width {
+  &:hover {
+    opacity: 1;
+  }
+
+  .ant-layout-sider-zero-width & {
     .hidden;
   }
 }
