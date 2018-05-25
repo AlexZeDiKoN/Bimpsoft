@@ -208,8 +208,12 @@ export function initMapEvents (mymap) {
 function clearActiveLayer (map, skipFire = false) {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
-    if (map.pm.activeLayer._path) {
-      map.pm.activeLayer._path.setAttribute('stroke', map.pm.activeLayer.options.color)
+    const p = map.pm.activeLayer._path
+    if (p) {
+      p.setAttribute('stroke', map.pm.activeLayer.options.color)
+      if (p.getAttribute('fill') === activelayerColor) {
+        p.setAttribute('fill', map.pm.activeLayer.options.color)
+      }
     } else if (map.pm.activeLayer.options.iconNormal) {
       map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
     }
@@ -222,8 +226,12 @@ function clearActiveLayer (map, skipFire = false) {
 
 function setActiveLayer (map, layer, skipFire = false) {
   map.pm.activeLayer = layer
-  if (map.pm.activeLayer._path) {
-    map.pm.activeLayer._path.setAttribute('stroke', activelayerColor)
+  const p = map.pm.activeLayer._path
+  if (p) {
+    p.setAttribute('stroke', activelayerColor)
+    if (p.getAttribute('fill') === map.pm.activeLayer.options.color) {
+      p.setAttribute('fill', activelayerColor)
+    }
   } else if (map.pm.activeLayer.options.iconActive) {
     map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
   }

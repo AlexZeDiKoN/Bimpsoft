@@ -1,0 +1,36 @@
+@import "../../assets/styles/_variables.less";
+
+@font-size: 28px;
+@search-width: 275px;
+
+.menu_panel-button_group {
+  &:first-child {
+    margin-right: auto;
+  }
+}
+
+.menu_panel-button_icon {
+  font-size: @font-size;
+  vertical-align: middle;
+}
+
+.menu_panel-search_input_wrapper {
+  width: @search-width;
+}
+
+.menu_panel-autocomplete_wrapper {
+  width: 100%;
+}
+
+.menu_panel .ant-input-affix-wrapper {
+  .ant-input-suffix {
+    right: 0;
+  }
+  .ant-input:not(:last-child) {
+    padding-right: 70px;
+  }
+  .ant-input-prefix .menu_panel-button_icon,
+  .ant-input-suffix .menu_panel-button_icon {
+    line-height: 1;
+  }
+}
