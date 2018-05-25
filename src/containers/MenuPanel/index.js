@@ -16,18 +16,24 @@ const mapStateToProps = (store) => {
   const {
     webMap: {
       isMapEditMode,
-      isPointMarkMode,
+      isPointMarkEditMode,
+      isTextMarkEditMode,
+      isTimelineEditMode,
     },
   } = store
 
   return {
     isMapEditMode,
-    isPointMarkMode,
+    isPointMarkEditMode,
+    isTextMarkEditMode,
+    isTimelineEditMode,
   }
 }
 const mapDispatchToProps = (dispatch) => ({
-  toggleEditMode: () => dispatch(webMapActions.toggleMapEditMode()),
+  toggleMapEditMode: () => dispatch(webMapActions.toggleMapEditMode()),
   togglePointMarkEditMode: () => dispatch(webMapActions.togglePointMarkEditMode()),
+  toggleTextMarkEditMode: () => dispatch(webMapActions.toggleTextMarkEditMode()),
+  toggleTimelineEditMode: () => dispatch(webMapActions.toggleTimelineEditMode()),
 })
 const withStoreConnection = connect(mapStateToProps, mapDispatchToProps)
 

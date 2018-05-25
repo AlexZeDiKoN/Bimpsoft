@@ -1,9 +1,10 @@
 import React from 'react'
-import { Button, Dropdown, Menu, Tooltip } from 'antd'
+import { AutoComplete, Button, Dropdown, Input, Menu, Tooltip } from 'antd'
 
 export const withAntdControls = (options) => (WrappedComponent) => {
   class AntdControls extends React.Component {
     renderButton = (params = {}) => {
+      //  See:  http://ant.design/components/button/#components-button-demo-basic
       const {
         title,
         buttonClassName,
@@ -22,6 +23,7 @@ export const withAntdControls = (options) => (WrappedComponent) => {
     }
 
     renderSwitcherButton = (params = {}) => {
+      //  See:  http://ant.design/components/button/#components-button-demo-basic
       const {
         isActive = false,
         buttonClassName,
@@ -46,6 +48,7 @@ export const withAntdControls = (options) => (WrappedComponent) => {
     }
 
     renderDropdownButton = (params = {}) => {
+      //  See:  http://ant.design/components/button/#components-button-demo-multiple
       const {
         title,
         buttonClassName,
@@ -85,10 +88,32 @@ export const withAntdControls = (options) => (WrappedComponent) => {
       )
     }
 
+    renderAutocompleteInput = (options) => {
+      //  See:  http://ant.design/components/auto-complete/#components-auto-complete-demo-uncertain-category
+      const {
+        autocomplete: {
+          ...restAutocompleteProps
+        },
+        input: inputProps,
+        wrapper: wrapperProps,
+      } = options
+
+      // TODO Finish autocomplete <-------------------------------------------------------------------------------------
+
+      return (
+        <div {...wrapperProps}>
+          <AutoComplete{...restAutocompleteProps}>
+            <Input {...inputProps}/>
+          </AutoComplete>
+        </div>
+      )
+    }
+
     render () {
       return (
         <WrappedComponent
           {...this.props}
+          renderAutocompleteInput={this.renderAutocompleteInput}
           renderButton={this.renderButton}
           renderSwitcherButton={this.renderSwitcherButton}
           renderDropdownButton={this.renderDropdownButton}
