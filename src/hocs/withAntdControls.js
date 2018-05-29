@@ -88,25 +88,46 @@ export const withAntdControls = (options) => (WrappedComponent) => {
       )
     }
 
-    renderAutocompleteInput = (options) => {
+    renderAutocompleteInput = (options) => { // TODO Finish autocomplete (data filtering, etc.)
       //  See:  http://ant.design/components/auto-complete/#components-auto-complete-demo-uncertain-category
       const {
         autocomplete: {
+          dataSource = [],
+          renderOptions = this.renderAutocompleteOptions,
+          optionLabelProp = 'text',
           ...restAutocompleteProps
         },
         input: inputProps,
         wrapper: wrapperProps,
       } = options
 
-      // TODO Finish autocomplete <-------------------------------------------------------------------------------------
+      const renderOptionParams = {
+        dataSource,
+      }
 
       return (
         <div {...wrapperProps}>
-          <AutoComplete{...restAutocompleteProps}>
+          <AutoComplete
+            {...restAutocompleteProps}
+            dataSource={renderOptions(renderOptionParams)}
+            optionLabelProp={optionLabelProp}
+          >
             <Input {...inputProps}/>
           </AutoComplete>
         </div>
       )
+    }
+
+    renderAutocompleteOptions = (params) => {
+      const {
+        dataSource,
+      } = params
+
+      return dataSource.map((option) => (
+        <AutoComplete.Option key={option.id} text={option.title}>
+          {option.title}
+        </AutoComplete.Option>
+      ))
     }
 
     render () {
