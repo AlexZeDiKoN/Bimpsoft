@@ -1,6 +1,25 @@
 @import "../../assets/styles/_variables.less";
 @import "../../assets/styles/_mixins.less";
 
+
+.header{
+  .flex;
+  flex-direction: row;
+  background: @toolbar-background;
+  color: @toolbar-color;
+  box-shadow: inset 0 -1px 0 0 @toolbar-border;
+  padding-bottom: 2px;
+}
+.header-left{
+  .flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.header-right{
+  .flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
 .app-content_wrapper {
   min-height: calc(~"100vh - @{webmap-header-height}");
 }
@@ -22,7 +41,7 @@
   right: 100%;
   height: 100%;
   width: 5px;
-  background-color: @webmap-sidebar-background;
+  background-color: @toolbar-background;
   z-index: 401;
   transition: all 300ms ease-in-out;
   cursor: col-resize;

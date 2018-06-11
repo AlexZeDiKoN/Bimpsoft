@@ -5,10 +5,12 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { Layout } from 'antd'
-import { MenuPanel } from '../../containers'
+import { Layout, Input } from 'antd'
+import { MainMenuLeftContainer, MainMenuRightContainer } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 
 const SIDEBAR_SIZE_DEFAULT = 300
 
@@ -70,27 +72,35 @@ class App extends React.Component {
     return (
       <div id="app" className="app">
         <Layout className="app-layout">
-          <Layout.Header className="app-header_wrapper">
-            <MenuPanel isSidebarCollapsed={this.state.isSidebarCollapsed} toggleSidebar={this.toggleSidebar}/>
-          </Layout.Header>
+          <Layout className="header">
+            <Layout className="header-left">
+              <MainMenuLeftContainer/>
+            </Layout>
+            <Layout className="header-right">
+              <Input.Search placeholder="Пошук" style={{ width: 200 }}/>
+              <MainMenuRightContainer/>
+            </Layout>
+          </Layout>
           <Layout className="app-layout_inner" hasSider={true}>
             <Layout.Content className="app-content_wrapper">
               <Switch>
                 {this.routes.map(this.renderRoute)}
               </Switch>
             </Layout.Content>
-            <Layout.Sider
-              className="app-sidebar_wrapper"
-              trigger={null}
-              width={this.state.sidebarWidth}
-              collapsedWidth={0}
-              collapsible
-              collapsed={this.state.isSidebarCollapsed}>
+            {this.props.viewModes.rightPanel && (
+              <Layout.Sider
+                className="app-sidebar_wrapper"
+                trigger={null}
+                width={this.state.sidebarWidth}
+                collapsedWidth={0}
+                collapsible
+                collapsed={this.state.isSidebarCollapsed}>
 
-                TODO Sidebar
+                  TODO Sidebar
 
-              <div className="app-sidebar_resizer" onMouseDown={this.sidebarResizeStart}/>
-            </Layout.Sider>
+                <div className="app-sidebar_resizer" onMouseDown={this.sidebarResizeStart}/>
+              </Layout.Sider>
+            )}
           </Layout>
         </Layout>
       </div>
@@ -98,4 +108,13 @@ class App extends React.Component {
   }
 }
 
-export default App
+App.propTypes = {
+  viewModes: PropTypes.array.isRequired,
+}
+
+const mapStateToProps = (state) => {
+  const { viewModes } = state
+  return { viewModes }
+}
+const withStoreConnection = connect(mapStateToProps)
+export default withStoreConnection(App)

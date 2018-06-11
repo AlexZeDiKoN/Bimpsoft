@@ -1,0 +1,32 @@
+/* Header */
+.ant-menu.main-menu {
+  background: #eee;
+  color: #222 !important;
+  box-shadow: inset 0 -1px 0 0 #aaa, inset 0 1px 0 0 #aaa;
+}
+.ant-menu.main-menu .ant-menu-item,
+.ant-menu.main-menu .ant-menu-submenu {
+  line-height: 32px;
+  height: 32px;
+  color: #222 !important;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-submenu-title {
+  color: #222 !important;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-item {
+  line-height: 28px;
+  height: 28px;
+  color: #222 !important;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-item .anticon {
+  visibility: hidden;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-item:hover {
+  background: none;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-item.ant-menu-item-selected {
+  background: none;
+}
+.ant-menu-submenu.main-menu-submenu .ant-menu-item.ant-menu-item-selected .anticon {
+  visibility: visible;
+}
