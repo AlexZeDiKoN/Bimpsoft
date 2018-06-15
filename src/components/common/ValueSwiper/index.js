@@ -26,6 +26,6 @@ export default class ValueSwiper extends React.Component {
 }
 
 ValueSwiper.propTypes = {
-  value: PropTypes.func,
+  value: PropTypes.number,
   onChange: PropTypes.func,
 }

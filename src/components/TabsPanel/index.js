@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 
@@ -17,7 +17,9 @@ export default class TabsPanel extends React.Component {
         <div className="tabs-panel-content">
           {this.props.tabs.map((tab) => {
             const { component } = this.props.panels[tab]
-            return component
+            return (
+              <Fragment key={tab}>{component}</Fragment>
+            )
           })}
         </div>
       </div>
@@ -26,6 +28,6 @@ export default class TabsPanel extends React.Component {
 }
 
 TabsPanel.propTypes = {
-  panels: PropTypes.array,
+  panels: PropTypes.object,
   tabs: PropTypes.array,
 }
