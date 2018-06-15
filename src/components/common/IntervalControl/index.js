@@ -2,12 +2,9 @@ import React from 'react'
 import { DatePicker } from 'antd'
 import PropTypes from 'prop-types'
 import './style.css'
-
-const DATE_FORMAT = 'YYYY-MM-DD HH:mm'
-const TIME_FORMAT = 'HH:mm'
+import { TIME_FORMAT, DATE_TIME_FORMAT } from '../../../constants/formats'
 
 export default class IntervalControl extends React.Component {
-
   render () {
     return (
       <div className="interval-control">
@@ -15,14 +12,14 @@ export default class IntervalControl extends React.Component {
         <DatePicker
           value={this.props.from}
           showTime={{ format: TIME_FORMAT }}
-          format={DATE_FORMAT}
+          format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeFrom}
         />
         <span className="interval-control-label">до</span>
         <DatePicker
           value={this.props.to}
           showTime={{ format: TIME_FORMAT }}
-          format={DATE_FORMAT}
+          format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeTo}
         />
       </div>

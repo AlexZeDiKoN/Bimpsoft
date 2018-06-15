@@ -5,8 +5,7 @@ import { Icon } from 'antd'
 import moment from 'moment'
 import VisibilityButton from '../../common/VisibilityButton'
 import ColorPicker from '../../common/ColorPicker'
-
-const TIME_FORMAT = 'DD.MM.YYYY HH:mm'
+import { DATE_TIME_FORMAT } from '../../../constants/formats'
 
 export default class LayerItemComponent extends React.Component {
   render () {
@@ -17,7 +16,7 @@ export default class LayerItemComponent extends React.Component {
     } = this.props
     const lockedIcon = locked ? 'lock' : 'unlock'
     const sharedIcon = shared ? 'team' : 'user-delete'
-    const dateString = moment(date).format(TIME_FORMAT)
+    const dateString = moment(date).format(DATE_TIME_FORMAT)
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
