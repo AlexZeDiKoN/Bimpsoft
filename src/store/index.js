@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import isPlainObject from 'lodash/isPlainObject'
 import { error } from '../utils/devLoggers'
+import api from '../middleware/api'
 import rootReducer from './reducers'
 
 let store = null
@@ -20,7 +21,7 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
-    // Here will be some middlewares
+    api,
   ]
 
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

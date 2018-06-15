@@ -1,0 +1,43 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.layer-item-сomponent {
+  .flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 5px 5px 20px;
+  &:not(:last-child) {
+    border-bottom: 1px solid @toolbar-border;
+  }
+}
+.layer-item-сomponent-selected {
+  padding: 5px 5px 5px 10px;
+  border-left: 10px solid @toolbar-border;
+}
+
+.layer-item-сomponent-title{
+  margin: auto 5px;
+  flex: 1 1 auto;
+  overflow: hidden;
+  .layer-name{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+  .layer-date{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+}
+.layer-item-сomponent-selected {
+  .layer-name{
+    font-weight: bold;
+  }
+}
+.layer-item-сomponent-control{
+  margin: auto 5px;
+  flex: 0 0 auto;
+}

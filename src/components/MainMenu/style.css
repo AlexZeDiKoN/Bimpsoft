@@ -1,32 +1,51 @@
-/* Header */
-.ant-menu.main-menu {
-  background: #eee;
-  color: #222 !important;
-  box-shadow: inset 0 -1px 0 0 #aaa, inset 0 1px 0 0 #aaa;
-}
-.ant-menu.main-menu .ant-menu-item,
-.ant-menu.main-menu .ant-menu-submenu {
-  line-height: 32px;
-  height: 32px;
-  color: #222 !important;
-}
-.ant-menu-submenu.main-menu-submenu .ant-menu-submenu-title {
-  color: #222 !important;
-}
-.ant-menu-submenu.main-menu-submenu .ant-menu-item {
-  line-height: 28px;
-  height: 28px;
-  color: #222 !important;
-}
-.ant-menu-submenu.main-menu-submenu .ant-menu-item .anticon {
+.hidden {
   visibility: hidden;
 }
-.ant-menu-submenu.main-menu-submenu .ant-menu-item:hover {
-  background: none;
+.flex {
+  display: flex;
 }
-.ant-menu-submenu.main-menu-submenu .ant-menu-item.ant-menu-item-selected {
-  background: none;
+.menu-toolbar {
+  display: flex;
 }
-.ant-menu-submenu.main-menu-submenu .ant-menu-item.ant-menu-item-selected .anticon {
-  visibility: visible;
+.menu-button-icon {
+  font-size: 24px;
+  line-height: 32px;
+  height: 32px;
+  width: 32px;
+}
+.menu-button {
+  width: 34px;
+  height: 34px;
+  margin: 3px 5px;
+}
+.menu-button button {
+  border-radius: 3px;
+  background-color: #eee;
+  border: 1px solid #a7a6a6;
+  color: #a7a6a6;
+  width: 34px;
+  height: 34px;
+  padding: 0px;
+  transition: box-shadow 200ms;
+}
+.menu-button.menu-button-selected button,
+.menu-button:hover button {
+  border-color: #71b222;
+  box-shadow: inset 0px 0px 0px 0.5px #71b222, 0px 0px 0px 0.5px #71b222;
+}
+.menu-button-icon {
+  font-size: 24px;
+  line-height: 32px;
+  height: 32px;
+  width: 32px;
+}
+.submenu {
+  display: flex;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 1000;
+  margin-top: 10px;
 }

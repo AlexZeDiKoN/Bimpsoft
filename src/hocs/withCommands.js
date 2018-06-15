@@ -25,6 +25,8 @@ export const withCommands = (commands, getItems) => (WrappedComponent) => {
       }
     },
   })
-  const withStoreConnection = connect(mapStateToProps, mapDispatchToProps)
-  return withStoreConnection(WrappedComponent)
+  return connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(WrappedComponent)
 }

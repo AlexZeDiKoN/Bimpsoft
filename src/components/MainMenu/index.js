@@ -2,7 +2,6 @@ import React from 'react'
 import { Icon, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import './style.css'
-import Toolbar from '../Toolbar'
 
 export default class MainMenu extends React.Component {
   constructor () {
@@ -36,39 +35,39 @@ export default class MainMenu extends React.Component {
       const isSelected = this.state.openedKeys[level] === itemData.key
       const className = 'menu-button' + (isSelected ? ' menu-button-selected' : '')
       return (
-        <button
-          onClick={() => this.toggleMenu(itemData.key, level)}
-          key={itemData.key}
-          className={className}
-          disabled={itemData.disabled}
-        >
-          {title}
+        <div className={className} key={itemData.key}>
+          <button
+            onClick={() => this.toggleMenu(itemData.key, level)}
+            disabled={itemData.disabled}
+          >
+            {title}
+          </button>
           {subMenu}
-        </button>
+        </div>
       )
     } else {
       const isSelected = this.props.selectedKeys.indexOf(itemData.name) !== -1
       const className = 'menu-button' + (isSelected ? ' menu-button-selected' : '')
       return (
-        <button
-          onClick={() => {
-            this.props.onAction(itemData.key)
-            this.toggleMenu(null, level)
-          }}
-          className={className}
-          key={itemData.key}
-          disabled={itemData.disabled}
-        >
-          {itemData.checkable && (<Icon className="main-menu-check-icon" type="check"/>)}
-          {title}
-        </button>
+        <div className={className} key={itemData.key}>
+          <button
+            onClick={() => {
+              this.props.onAction(itemData.key)
+              this.toggleMenu(null, level)
+            }}
+            disabled={itemData.disabled}
+          >
+            {itemData.checkable && (<Icon className="main-menu-check-icon" type="check"/>)}
+            {title}
+          </button>
+        </div>
       )
     }
   }
 
   render () {
     return (
-      <div {...this.props} className="buttons-toolbar">
+      <div className="menu-toolbar">
         {this.props.items.map((item) => this.renderItem(item, 0))}
       </div>
     )
@@ -76,7 +75,6 @@ export default class MainMenu extends React.Component {
 }
 
 MainMenu.propTypes = {
-  ...Toolbar.propTypes,
   selectedKeys: PropTypes.array.isRequired,
   items: PropTypes.array.isRequired,
   onAction: PropTypes.func.isRequired,

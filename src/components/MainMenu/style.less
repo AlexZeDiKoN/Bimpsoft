@@ -1,79 +1,10 @@
 @import "../../assets/styles/_variables.less";
+@import "../../assets/styles/_mixins.less";
 
-/* Header */
-.ant-menu.main-menu {
-  background: transparent;
-  .ant-menu-item, .ant-menu-submenu{
-    line-height: 32px;
-    height:32px;
-    color: @toolbar-color;
-    &:hover{
-      border-bottom-color: @toolbar-border-selected;
-    }
-  }
-  .main-menu-check-icon{
-    visibility: hidden;
-  }
-}
-.main-menu .ant-menu-submenu-selected{
-
-  border-bottom-color: transparent;
+.menu-toolbar{
+  .flex;
 
 }
-.main-menu .ant-menu-item-selected {
-  //border-bottom: none;
-  .main-menu-check-icon{
-    visibility: visible;
-  }
-}
-.ant-menu-submenu.main-menu-submenu {
-  .ant-menu-sub{
-    min-width: 50px !important;
-  }
-
-  .ant-menu-submenu-title{
-    color: @toolbar-color;
-  }
-  .ant-menu-item{
-    line-height: 28px;
-    height:28px;
-    color: @toolbar-color;
-
-
-    .main-menu-check-icon{
-      visibility: hidden;
-    }
-
-    &:hover{
-      background: none;
-    }
-    &.ant-menu-item-selected {
-      background: none;
-      .main-menu-check-icon{
-        visibility: visible;
-      }
-    }
-  }
-}
-
-.menu-button {
-  border-radius: 3px;
-  background-color: @toolbar-background;
-  border: 1px solid @toolbar-border;
-  color: 1px solid @toolbar-border;
-  margin: 3px 5px;
-  width: 34px;
-  height: 34px;
-  padding: 0px;
-  transition: box-shadow 200ms;
-  &.toolbar-button-selected, &:hover{
-    border-color: @toolbar-border-selected;
-    box-shadow: inset 0px 0px 0px 0.5px @toolbar-border-selected,
-    0px 0px 0px 0.5px @toolbar-border-selected;
-  }
-}
-
-
 .menu-button-icon{
   font-size: 24px;
   line-height: 32px;
@@ -81,22 +12,27 @@
   width: 32px;
 }
 .menu-button {
-  border-radius: 3px;
-  background-color: @toolbar-background;
-  border: 1px solid @toolbar-border;
-  color: 1px solid @toolbar-border;
-  margin: 3px 5px;
   width: 34px;
   height: 34px;
-  padding: 0px;
-  transition: box-shadow 200ms;
-  &.menu-button-selected, &:hover{
+  margin: 3px 5px;
+  button {
+    border-radius: 3px;
+    background-color: @toolbar-background;
+    border: 1px solid @toolbar-border;
+    color: @toolbar-border;
+
+    width: 34px;
+    height: 34px;
+    padding: 0px;
+    transition: box-shadow 200ms;
+
+  }
+  &.menu-button-selected button, &:hover button{
     border-color: @toolbar-border-selected;
     box-shadow: inset 0px 0px 0px 0.5px @toolbar-border-selected,
     0px 0px 0px 0.5px @toolbar-border-selected;
   }
 }
-
 
 .menu-button-icon{
   font-size: 24px;
@@ -107,7 +43,7 @@
 
 
 .submenu{
-  display: block;
+  .flex;
   position: absolute;
   background-color: #f9f9f9;
   min-width: 160px;
@@ -116,8 +52,4 @@
   z-index: 1000;
   margin-top: 10px;
 }
-//.menu-button.menu-button-selected{
-//  .submenu{
-//    display: block;
-//  }
-//}
+
