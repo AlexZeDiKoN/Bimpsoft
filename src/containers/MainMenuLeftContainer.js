@@ -19,10 +19,10 @@ const menuItemsEdit = [
     key: 'pointSign',
     title: 'Точковий знак',
     items: [
-      { icon: 'paper-clip' },
-      { icon: 'paper-clip' },
-      { icon: 'paper-clip' },
-      { icon: 'paper-clip' },
+      { key: 'pointSign1', icon: 'paper-clip' },
+      { key: 'pointSign2', icon: 'paper-clip' },
+      { key: 'pointSign3', icon: 'paper-clip' },
+      { key: 'pointSign4', icon: 'paper-clip' },
     ],
   },
   {
@@ -30,10 +30,10 @@ const menuItemsEdit = [
     key: 'lineSign',
     title: 'Відрізковий знак',
     items: [
-      { icon: 'smile' },
-      { icon: 'smile' },
-      { icon: 'paper-clip' },
-      { icon: 'paper-clip' },
+      { key: 'lineSign1', icon: 'smile' },
+      { key: 'lineSign2', icon: 'smile' },
+      { key: 'lineSign3', icon: 'paper-clip' },
+      { key: 'lineSign4', icon: 'paper-clip' },
     ],
   },
   {
@@ -41,19 +41,17 @@ const menuItemsEdit = [
     key: 'polySign',
     title: 'Полілінійний/полігональний знак',
     items: [
-      { icon: 'smile' },
-      { icon: 'smile' },
-      { icon: 'smile' },
-      { icon: 'smile' },
+      { key: 'polySign1', icon: 'smile' },
+      { key: 'polySign2', icon: 'smile' },
+      { key: 'polySign3', icon: 'smile' },
+      { key: 'polySign4', icon: 'smile' },
     ],
   },
   commandToItemData('toggleTextMode'),
   commandToItemData('togglePrintMode'),
 ]
 
-const getItems = (store) => {
-  return store.viewModes.edit ? menuItemsEdit : menuItems
-}
+const getItems = (store) => store.viewModes.edit ? menuItemsEdit : menuItems
 
 const withCommandsConnection = withCommands(commands, getItems)
 export default withCommandsConnection(MainMenu)
