@@ -15,10 +15,16 @@ export const updateLayer = (layerData) => ({
   type: UPDATE_LAYER,
   layerData,
 })
-export const selectLayer = (layerId) => ({
-  type: SELECT_LAYER,
-  layerId,
-})
+
+export const selectLayer = (layerId) => async (dispatch, getState, { api }) => {
+  const content = await api.getAllUnits()
+  console.log(content)
+  dispatch({
+    type: SELECT_LAYER,
+    layerId,
+  })
+}
+
 export const setTimelineFrom = (date) => ({
   type: SET_TIMELINE_FROM,
   date,

@@ -22,6 +22,7 @@ const ServerApi = {
   openOperation,
   getDocuments,
   getFolderContent,
+  getAllUnits,
   addLayersFolder,
   addLayer,
   addFolder,
@@ -208,6 +209,9 @@ async function getFolderContent ({ operationId, folderID } = {}, store) {
   return content
 }
 
+async function getAllUnits () {
+  return post('GetAllUnits')
+}
 /**
  *
  * @param {server.Document[]} content

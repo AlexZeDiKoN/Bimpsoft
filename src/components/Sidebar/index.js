@@ -9,7 +9,7 @@ const SIDEBAR_PANEL_SIZE_MIN = 100
 const panels = {
   history: {
     title: 'Журнал',
-    component: (<LayersContainer/>),
+    component: (<div>zxcvdfg sdfgsd fgsdfg sdfg sdfgsdfgsdfgdfsgfg </div>),
   },
   structure: {
     title: 'Організаційна структура',
