@@ -1,4 +1,4 @@
-import { openMapFolder } from '../middleware/api'
+import { maps } from '../store/actions'
 
 const ACTION_READY = 'ready'
 const ACTION_INIT = 'init'
@@ -36,7 +36,7 @@ export default class ExplorerBridge {
       }
       case ACTION_OPEN: {
         const { operationId, folderId } = data
-        this.store.dispatch(openMapFolder(operationId, folderId))
+        this.store.dispatch(maps.openMapFolder(operationId, folderId))
         break
       }
     }

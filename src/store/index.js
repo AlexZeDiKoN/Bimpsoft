@@ -1,8 +1,9 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import isPlainObject from 'lodash/isPlainObject'
+import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
-import api from '../middleware/api'
+import ServerApi from '../server/api.server'
 import rootReducer from './reducers'
 
 let store = null
@@ -21,7 +22,7 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
-    api,
+    thunk.withExtraArgument({ api: ServerApi }),
   ]
 
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

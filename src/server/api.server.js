@@ -12,6 +12,7 @@ import {
 } from './implementation/utils.rest'
 
 const ServerApi = {
+  checkServerResponse,
   getAppInfo,
   getVersion,
   getUnreadTotals,
@@ -22,6 +23,7 @@ const ServerApi = {
   openOperation,
   getDocuments,
   getFolderContent,
+  getAllUnits,
   addLayersFolder,
   addLayer,
   addFolder,
@@ -41,6 +43,12 @@ const ServerApi = {
 }
 
 export default ServerApi
+
+function checkServerResponse (response) {
+  if (response.errors && response.errors.length) {
+    throw new Error(response.errors.join(', '))
+  }
+}
 
 /**
  * Візуальна інформація щодо поточного користувача і організації
@@ -208,6 +216,10 @@ async function getFolderContent ({ operationId, folderID } = {}, store) {
   return content
 }
 
+async function getAllUnits () {
+  const content = await post('GetAllUnits')
+  return content
+}
 /**
  *
  * @param {server.Document[]} content

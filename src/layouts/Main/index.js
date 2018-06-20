@@ -10,7 +10,7 @@ import { MainMenuLeftContainer, MainMenuRightContainer } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import ValueSwiper from '../../components/common/ValueSwiper'
-import Sidebar from '../../components/Sidebar'
+import Sidebar from '../Sidebar'
 
 const SIDEBAR_SIZE_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 250
@@ -32,6 +32,7 @@ class App extends React.Component {
   renderRoute = ({ link, Component }, index) => <Route exact path={link} render={Component} key={index}/>
 
   render () {
+    const sidebarDisplay = this.props.viewModes.rightPanel ? '' : 'none'
     return (
       <div id="app" className="app">
         <div className="header">
@@ -50,12 +51,14 @@ class App extends React.Component {
             </Switch>
           </div>
           <ValueSwiper
+            style={{ display: sidebarDisplay }}
             value={this.state.sidebarWidth}
             onChange={(startValue, pos) => {
-              this.setState({ sidebarWidth: Math.max(SIDEBAR_SIZE_MIN, startValue - pos.x) })
+              const sidebarWidth = Math.max(SIDEBAR_SIZE_MIN, startValue - pos.x)
+              this.setState({ sidebarWidth })
             }}
           />
-          <div className="app-sidebar" style={{ width: this.state.sidebarWidth }}>
+          <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
             <Sidebar />
           </div>
         </div>

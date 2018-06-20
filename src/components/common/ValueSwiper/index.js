@@ -13,8 +13,10 @@ export default class ValueSwiper extends React.Component {
   }
 
   render () {
+    const { value, onChange, ...props } = this.props
     return (
       <Swipe
+        {...props}
         className="value-swiper"
         allowMouseEvents={true}
         onSwipeStart={this.onStart}
