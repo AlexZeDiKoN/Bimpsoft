@@ -1,8 +1,8 @@
 import React from 'react'
 import './style.css'
-import LayersContainer from '../../containers/LayersContainer'
-import TabsPanel from '../TabsPanel'
-import ValueSwiper from '../common/ValueSwiper'
+import { LayersContainer, OrgStructuresContainer } from '../../containers'
+import TabsPanel from '../../components/TabsPanel'
+import ValueSwiper from '../../components/common/ValueSwiper'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
 
@@ -13,7 +13,7 @@ const panels = {
   },
   structure: {
     title: 'Організаційна структура',
-    component: (<LayersContainer/>),
+    component: (<OrgStructuresContainer/>),
   },
   layers: {
     title: 'Шари',

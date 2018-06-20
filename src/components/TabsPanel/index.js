@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 
@@ -34,8 +34,12 @@ export default class TabsPanel extends React.Component {
           {this.props.tabs.map((tab) => {
             const { component } = this.props.panels[tab]
             const isSelected = selectedTab === tab
-            return isSelected && (
-              <Fragment key={tab}>{component}</Fragment>
+            return (
+              <div
+                className="tabs-panel-container"
+                key={tab}
+                style={{ display: isSelected ? '' : 'none' }}
+              >{component}</div>
             )
           })}
         </div>

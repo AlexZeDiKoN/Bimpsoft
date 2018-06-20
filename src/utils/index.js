@@ -1,9 +1,9 @@
 import * as classNameTransformers from './classNameTransformers'
 import * as devLoggers from './devLoggers'
-import * as color from './color'
+import createNotificator from './createNotificator'
 
 export {
   classNameTransformers,
   devLoggers,
-  color,
+  createNotificator,
 }

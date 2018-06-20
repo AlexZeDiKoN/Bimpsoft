@@ -1,3 +1,5 @@
+import { asyncAction, orgStructures } from './index'
+
 export const UPDATE_LAYERS = 'UPDATE_LAYERS'
 export const UPDATE_LAYER = 'UPDATE_LAYER'
 export const SELECT_LAYER = 'SELECT_LAYER'
@@ -16,14 +18,15 @@ export const updateLayer = (layerData) => ({
   layerData,
 })
 
-export const selectLayer = (layerId) => async (dispatch, getState, { api }) => {
+export const selectLayer = (layerId) => asyncAction.withNotification(async (dispatch, getState, { api }) => {
   const content = await api.getAllUnits()
-  console.log(content)
+  api.checkServerResponse(content)
+  dispatch(orgStructures.set(content))
   dispatch({
     type: SELECT_LAYER,
     layerId,
   })
-}
+})
 
 export const setTimelineFrom = (date) => ({
   type: SET_TIMELINE_FROM,
