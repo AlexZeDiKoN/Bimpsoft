@@ -3,20 +3,21 @@ import './style.css'
 import { LayersContainer, OrgStructuresContainer } from '../../containers'
 import TabsPanel from '../../components/TabsPanel'
 import ValueSwiper from '../../components/common/ValueSwiper'
+import i18n from '../../i18n'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
 
 const panels = {
   history: {
-    title: 'Журнал',
+    title: i18n.HISTORY,
     component: (<div>zxcvdfg sdfgsd fgsdfg sdfg sdfgsdfgsdfgdfsgfg </div>),
   },
   structure: {
-    title: 'Організаційна структура',
+    title: i18n.ORG_STRUCTURE,
     component: (<OrgStructuresContainer/>),
   },
   layers: {
-    title: 'Шари',
+    title: i18n.LAYERS,
     component: (<LayersContainer/>),
   },
 }

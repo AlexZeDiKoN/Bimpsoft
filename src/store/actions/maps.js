@@ -37,6 +37,7 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
         dispatch(layers.selectLayer(selectedLayer))
         break
       }
+      default:
     }
   }
 )

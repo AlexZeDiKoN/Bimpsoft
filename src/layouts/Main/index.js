@@ -11,6 +11,7 @@ import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import ValueSwiper from '../../components/common/ValueSwiper'
 import Sidebar from '../Sidebar'
+import i18n from '../../i18n'
 
 const SIDEBAR_SIZE_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 250
@@ -40,7 +41,7 @@ class App extends React.Component {
             <MainMenuLeftContainer/>
           </div>
           <div className="header-right">
-            <Input.Search placeholder="Пошук" style={{ width: 200 }}/>
+            <Input.Search placeholder={ i18n.SEARCH } style={{ width: 200 }}/>
             <MainMenuRightContainer/>
           </div>
         </div>

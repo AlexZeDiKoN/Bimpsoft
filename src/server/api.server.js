@@ -1,7 +1,8 @@
 // import { arrToMap, decodingEntities } from '../utils/helpers'
 
+import { ApiError } from '../constants/errors'
 import {
-  get,
+//  get,
   getDirect,
   getDownloadURL,
   getFileBlob,
@@ -46,7 +47,7 @@ export default ServerApi
 
 function checkServerResponse (response) {
   if (response.errors && response.errors.length) {
-    throw new Error(response.errors.join(', '))
+    throw new ApiError(response.errors.join(', '))
   }
 }
 

@@ -1,5 +1,6 @@
 import { asyncAction, notifications } from '../actions'
 import { ApiError } from '../../constants/errors'
+import i18n from '../../i18n'
 
 const initState = {}
 let counter = 1
@@ -14,7 +15,7 @@ export default function reducer (state = initState, action) {
       if (error instanceof ApiError) {
         return { ...state, [id]: { id, type, message: error.name, description: error.message } }
       } else {
-        return { ...state, [id]: { id, type, message: 'Помилка', description: 'Невідома помилка' } }
+        return { ...state, [id]: { id, type, message: i18n.ERROR, description: i18n.UNKNOWN_ERROR } }
       }
     }
     case notifications.POP_NOTIFICATION: {

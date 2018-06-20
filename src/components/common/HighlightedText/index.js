@@ -2,8 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 
+const specials = '-[]/{}()*+?.\\^$|'
+const regexSpecials = RegExp('[' + specials.split('').join('\\') + ']', 'g')
+
 function getRegExpFromStr (str) {
-  str = str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+  str = str.replace(regexSpecials, '\\$&')
   return new RegExp(`(${str})`, 'gi')
 }
 
