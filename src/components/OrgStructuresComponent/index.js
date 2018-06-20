@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
 import TreeComponent from '../common/TreeComponent'
+import i18n from '../../i18n'
 import Item from './Item'
 
 export default class OrgStructuresComponent extends React.Component {
@@ -38,7 +39,7 @@ export default class OrgStructuresComponent extends React.Component {
     return (
       <div className="org-structures">
         <Input.Search
-          placeholder="Фільтрувати"
+          placeholder={ i18n.FILTER }
           onChange={(e) => this.setState({ filterText: e.target.value.trim() })}
         />
         <TreeComponent

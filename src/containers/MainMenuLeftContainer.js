@@ -1,6 +1,7 @@
 import MainMenu from '../components/MainMenu/index'
 import commands from '../constants/commands'
 import { withCommands } from '../hocs/withCommands'
+import i18n from '../i18n'
 
 const commandToItemData = (name) => {
   const { title, icon } = commands[name]
@@ -17,7 +18,7 @@ const menuItemsEdit = [
   {
     icon: 'flag',
     key: 'pointSign',
-    title: 'Точковий знак',
+    title: i18n.POINT_SIGN,
     items: [
       { key: 'pointSign1', icon: 'paper-clip' },
       { key: 'pointSign2', icon: 'paper-clip' },
@@ -28,7 +29,7 @@ const menuItemsEdit = [
   {
     icon: 'share-alt',
     key: 'lineSign',
-    title: 'Відрізковий знак',
+    title: i18n.LINE_SIGN,
     items: [
       { key: 'lineSign1', icon: 'smile' },
       { key: 'lineSign2', icon: 'smile' },
@@ -39,7 +40,7 @@ const menuItemsEdit = [
   {
     icon: 'star-o',
     key: 'polySign',
-    title: 'Полілінійний/полігональний знак',
+    title: i18n.POLY_SIGN,
     items: [
       { key: 'polySign1', icon: 'smile' },
       { key: 'polySign2', icon: 'smile' },

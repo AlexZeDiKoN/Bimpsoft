@@ -39,6 +39,7 @@ export default class ExplorerBridge {
         this.store.dispatch(maps.openMapFolder(operationId, folderId))
         break
       }
+      default:
     }
   }
 }
