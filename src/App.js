@@ -10,11 +10,18 @@ import { Main } from './layouts'
 import initStore from './store'
 import 'moment/locale/uk'
 import './App.css'
+import ExplorerBridge from './server/ExplorerBridge'
+import { createNotificator } from './utils'
 
 moment.locale('uk')
 // Init store and create a history of your choosing (we're using a browser history in this case)
 // for react-redux-router middleware
 const store = initStore({ history: createHistory() })
+const explorerBridge = new ExplorerBridge(store)
+explorerBridge.init()
+
+createNotificator(store)
+
 class App extends React.Component {
   render () {
     return (

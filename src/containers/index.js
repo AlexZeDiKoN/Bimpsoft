@@ -1,5 +1,11 @@
-import MenuPanel from './MenuPanel'
+import MainMenuLeftContainer from './MainMenuLeftContainer.js'
+import MainMenuRightContainer from './MainMenuRightContainer.js'
+import LayersContainer from './LayersContainer.js'
+import OrgStructuresContainer from './OrgStructuresContainer.js'
 
 export {
-  MenuPanel,
+  MainMenuLeftContainer,
+  MainMenuRightContainer,
+  LayersContainer,
+  OrgStructuresContainer,
 }
