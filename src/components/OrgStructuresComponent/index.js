@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
-import TreeComponent from '../common/TreeComponent'
+import { TreeComponent, TextFilter } from '../common'
 import i18n from '../../i18n'
 import Item from './Item'
 
@@ -11,30 +11,13 @@ export default class OrgStructuresComponent extends React.Component {
     filterText: '',
   }
 
-  getFilteredIds () {
-    let { filterText } = this.state
-    const { byIds } = this.props
-
-    if (!filterText.length) {
-      return null
-    }
-    filterText = filterText.toLowerCase()
-    const filteredIds = {}
-    const items = Object.values(byIds)
-    for (let itemData of items) {
-      if (itemData.Name.toLowerCase().includes(filterText)) {
-        do {
-          filteredIds[itemData.ID] = true
-          itemData = byIds[itemData.ParentID]
-        } while (itemData && !filteredIds.hasOwnProperty(itemData.ID))
-      }
-    }
-    return filteredIds
-  }
+  getFilteredIds = TextFilter.getFilteredIdsFunc('Name', 'ID', 'ParentID')
 
   render () {
     const { filterText } = this.state
-    const filteredIds = this.getFilteredIds()
+    const { byIds, roots } = this.props
+    const textFilter = TextFilter.create(filterText)
+    const filteredIds = this.getFilteredIds(textFilter, byIds)
 
     return (
       <div className="org-structures">
@@ -43,11 +26,11 @@ export default class OrgStructuresComponent extends React.Component {
           onChange={(e) => this.setState({ filterText: e.target.value.trim() })}
         />
         <TreeComponent
-          highlightText={filterText}
           filteredIds={filteredIds}
-          byIds={this.props.byIds}
-          roots={this.props.roots}
+          byIds={byIds}
+          roots={roots}
           itemTemplate={Item}
+          commonData={{ textFilter }}
         />
       </div>
     )

@@ -1,0 +1,37 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.symbol-generator {
+  display: grid;
+  grid-template-columns: 0.4fr 0.6fr;
+  height: auto;
+}
+
+.symbol-generator-container{
+
+  .flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  height: 18em;
+}
+.symbol-generator-options{
+  .flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+}
+.symbol-generator-code{
+  input {
+    border: 1px solid @toolbar-border;
+    border-radius: 0.3em;
+    width: 12em;
+    height: 2em;
+    box-sizing: border-box;
+    padding: 0.1em 0.3em;
+  }
+}
+.symbol-generator-flags{
+  .flex;
+}

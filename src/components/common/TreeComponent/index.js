@@ -1,9 +1,19 @@
 import React from 'react'
-
 import './style.css'
 import PropTypes from 'prop-types'
 
 export default class TreeComponent extends React.Component {
+  static getDerivedStateFromProps (props) {
+    if (props.expandedKeys) {
+      const expandedKeys = {}
+      for (const key of props.expandedKeys) {
+        expandedKeys[key] = true
+      }
+      return { expandedKeys }
+    }
+    return null
+  }
+
   state = {
     expandedKeys: {},
   }
@@ -29,14 +39,15 @@ export default class TreeComponent extends React.Component {
           }
           const itemData = this.props.byIds[id]
           const { expandedKeys } = this.state
+
           const expanded = expandedKeys.hasOwnProperty(id)
-          const canExpand = Boolean(itemData.children.length)
+          const canExpand = Array.isArray(itemData.children) && Boolean(itemData.children.length)
 
           return (
             <div className="tree-component-li" key={id}>
               <Item
-                highlightText={this.props.highlightText}
                 data={itemData}
+                commonData={this.props.commonData}
                 canExpand={canExpand}
                 expanded={expanded}
                 onExpand={() => this.onExpand(id)}
@@ -60,9 +71,22 @@ export default class TreeComponent extends React.Component {
 }
 
 TreeComponent.propTypes = {
-  highlightText: PropTypes.string,
   filteredIds: PropTypes.object,
   roots: PropTypes.array,
   byIds: PropTypes.object,
   itemTemplate: PropTypes.any,
+  commonData: PropTypes.object,
+  expandedKeys: PropTypes.array,
 }
+
+class TreeComponentItem extends React.Component {
+}
+TreeComponentItem.PropTypes = {
+  expanded: PropTypes.bool,
+  canExpand: PropTypes.bool,
+  onExpand: PropTypes.func,
+  data: PropTypes.object,
+  commonData: PropTypes.object,
+}
+
+TreeComponent.Item = TreeComponentItem
