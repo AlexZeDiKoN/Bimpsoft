@@ -6,10 +6,10 @@ import {
 import { Input } from 'antd'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import { MainMenuLeftContainer, MainMenuRightContainer } from '../../containers'
+import { MainMenuLeftContainer, MainMenuRightContainer, panels } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
-import ValueSwiper from '../../components/common/ValueSwiper'
+import { ValueSwiper, MovablePanel } from '../../components/common'
 import Sidebar from '../Sidebar'
 import i18n from '../../i18n'
 
@@ -34,6 +34,9 @@ class App extends React.Component {
 
   render () {
     const sidebarDisplay = this.props.viewModes.rightPanel ? '' : 'none'
+    const milSymbolForm = this.props.viewModes.edit ? (
+      <MovablePanel title={panels.milTemplate.title} component={panels.milTemplate.component}/>
+    ) : null
     return (
       <div id="app" className="app">
         <div className="header">
@@ -46,6 +49,7 @@ class App extends React.Component {
           </div>
         </div>
         <div className="app-body">
+          {milSymbolForm}
           <div className="app-content">
             <Switch>
               {this.routes.map(this.renderRoute)}

@@ -1,29 +1,21 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import './style.css'
 import { Icon } from 'antd'
-import HighlightedText from '../../common/HighlightedText'
+import { TreeComponent, HighlightedText } from '../../common'
 
-export default class Item extends React.Component {
+export default class Item extends TreeComponent.Item {
   render () {
-    const { data, highlightText } = this.props
+    const { commonData, data } = this.props
     const { Name: name } = data
+    const { textFilter } = commonData
     const icon = this.props.canExpand &&
       (<Icon type={this.props.expanded ? 'minus' : 'plus'} onClick={this.props.onExpand} />)
 
     return (
       <div className="org-structure-item">
         {icon}
-        <HighlightedText text={name} highlight={highlightText}/>
+        <HighlightedText text={name} textFilter={textFilter}/>
       </div>
     )
   }
-}
-
-Item.propTypes = {
-  onExpand: PropTypes.func,
-  canExpand: PropTypes.bool.isRequired,
-  expanded: PropTypes.bool.isRequired,
-  highlightText: PropTypes.string,
-  data: PropTypes.object.isRequired,
 }
