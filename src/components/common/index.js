@@ -3,6 +3,7 @@ import HighlightedText from './HighlightedText'
 import IntervalControl from './IntervalControl'
 import OpacityControl from './OpacityControl'
 import TreeComponent from './TreeComponent'
+import FilterTreeSelect from './FilterTreeSelect'
 import ValueSwiper from './ValueSwiper'
 import VisibilityButton from './VisibilityButton'
 import TextFilter from './TextFilter'
@@ -15,6 +16,7 @@ export {
   IntervalControl,
   OpacityControl,
   TreeComponent,
+  FilterTreeSelect,
   ValueSwiper,
   VisibilityButton,
   TextFilter,

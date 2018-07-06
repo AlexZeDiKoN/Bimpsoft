@@ -1,28 +1,29 @@
 @import "../../../../assets/styles/_variables.less";
 @import "../../../../assets/styles/_mixins.less";
 
-.symbol-option{
+.filter-tree-select{
   .flex;
   padding: 0.2em;
   height: 2em;
   label{
-    width: 40%;
+    flex: 0 0 auto;
+    width: 13em;
     text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
   input{
     width: 100%;
     border: 1px solid @toolbar-border;
     border-radius: 0.3em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
   }
 }
-
-.symbol-option-right{
-  width: 60%;
+.filter-tree-select-right{
+  flex: 1 1 auto;
 }
-.symbol-option-values-placeholder{
+.filter-tree-select-values-container{
   height: 0px;
   width: 0px;
   padding-left: 100%;
@@ -45,7 +46,7 @@
     position: relative;
   }
 }
-.symbol-option-values{
+.filter-tree-select-values{
   height: auto;
   max-height: calc(~"100% - 1.9em");
   width: 20em;

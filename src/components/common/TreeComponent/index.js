@@ -30,14 +30,22 @@ export default class TreeComponent extends React.Component {
   }
 
   renderItems (ids, level) {
-    const Item = this.props.itemTemplate
-    return (
+    const {
+      roots,
+      expandedKeys,
+      filteredIds,
+      byIds,
+      itemTemplate: Item,
+      commonData,
+      ...otherProps
+    } = this.props
+    return (ids === null || ids === undefined) ? null : (
       <div className={`tree-component-ul tree-component-level-${level}`}>
         {ids.map((id) => {
-          if (this.props.filteredIds !== null && !this.props.filteredIds.hasOwnProperty(id)) {
+          if (filteredIds !== null && !filteredIds.hasOwnProperty(id)) {
             return null
           }
-          const itemData = this.props.byIds[id]
+          const itemData = byIds[id]
           const { expandedKeys } = this.state
 
           const expanded = expandedKeys.hasOwnProperty(id)
@@ -47,10 +55,12 @@ export default class TreeComponent extends React.Component {
             <div className="tree-component-li" key={id}>
               <Item
                 data={itemData}
-                commonData={this.props.commonData}
-                canExpand={canExpand}
-                expanded={expanded}
-                onExpand={() => this.onExpand(id)}
+                tree={{
+                  canExpand,
+                  expanded,
+                  onExpand: () => this.onExpand(id),
+                }}
+                { ...commonData }
               />
               {expanded && this.renderItems(itemData.children, level + 1)}
             </div>
@@ -62,8 +72,17 @@ export default class TreeComponent extends React.Component {
   }
 
   render () {
+    const {
+      roots,
+      expandedKeys,
+      filteredIds,
+      byIds,
+      itemTemplate,
+      commonData,
+      ...otherProps
+    } = this.props
     return (
-      <div className="tree-component" >
+      <div className="tree-component" {...otherProps} >
         {this.renderItems(this.props.roots, 0)}
       </div>
     )
@@ -75,18 +94,14 @@ TreeComponent.propTypes = {
   roots: PropTypes.array,
   byIds: PropTypes.object,
   itemTemplate: PropTypes.any,
-  commonData: PropTypes.object,
   expandedKeys: PropTypes.array,
-}
-
-class TreeComponentItem extends React.Component {
-}
-TreeComponentItem.PropTypes = {
-  expanded: PropTypes.bool,
-  canExpand: PropTypes.bool,
-  onExpand: PropTypes.func,
-  data: PropTypes.object,
   commonData: PropTypes.object,
 }
 
-TreeComponent.Item = TreeComponentItem
+TreeComponent.itemPropTypes = {
+  tree: PropTypes.shape({
+    expanded: PropTypes.bool,
+    canExpand: PropTypes.bool,
+    onExpand: PropTypes.func,
+  }),
+}

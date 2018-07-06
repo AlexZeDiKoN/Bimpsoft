@@ -35,7 +35,7 @@ export default class SymbolFlag extends React.Component {
 
 SymbolFlag.propTypes = {
   label: PropTypes.string,
-  checked: PropTypes.string,
+  checked: PropTypes.bool,
   onChange: PropTypes.func,
   onPreviewStart: PropTypes.func,
   onPreviewEnd: PropTypes.func,
