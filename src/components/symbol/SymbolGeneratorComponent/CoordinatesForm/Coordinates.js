@@ -4,5 +4,5 @@ const USK_2000 = 'USK_2000'
 const MGRS = 'MGRS'
 
 export default {
-  types: { WGS_84, USK_2000, MGRS },
+  types: { WGS_84, USK_2000, MGRS, UNDEFINED },
 }

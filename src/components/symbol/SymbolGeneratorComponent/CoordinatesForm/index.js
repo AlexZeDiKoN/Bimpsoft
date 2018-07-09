@@ -20,7 +20,7 @@ export default class CoordinatesForm extends React.Component {
 
   render () {
     const { coordinates = {} } = this.props
-    const { type = null, x, y, z } = coordinates
+    const { type = Coordinates.types.UNDEFINED, x, y, z } = coordinates
     return (
       <div className="coordinate-form" >
         <div className="coordinate-form-title">{i18n.POSITION}</div>
@@ -35,7 +35,7 @@ export default class CoordinatesForm extends React.Component {
             onChange = { this.changeTypeHandler }
             value={type}
           >
-            {type === null && (<option>------</option>)}
+            {type === Coordinates.types.UNDEFINED && (<option value={Coordinates.types.UNDEFINED}>------</option>)}
             <option value={Coordinates.types.WGS_84}>{i18n.WGS_84}</option>
             <option value={Coordinates.types.USK_2000}>{i18n.USK_2000}</option>
             <option value={Coordinates.types.MGRS}>{i18n.MGRS}</option>
