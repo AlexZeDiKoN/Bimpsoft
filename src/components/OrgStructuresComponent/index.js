@@ -2,52 +2,44 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
-import TreeComponent from '../common/TreeComponent'
+import { TreeComponent, TextFilter } from '../common'
 import i18n from '../../i18n'
 import Item from './Item'
+
+const getFilteredIds = TextFilter.getFilteredIdsFunc((item) => item.Name, (item) => item.ID, (item) => item.ParentID)
 
 export default class OrgStructuresComponent extends React.Component {
   state = {
     filterText: '',
   }
 
-  getFilteredIds () {
-    let { filterText } = this.state
-    const { byIds } = this.props
+  inputRef = React.createRef()
 
-    if (!filterText.length) {
-      return null
-    }
-    filterText = filterText.toLowerCase()
-    const filteredIds = {}
-    const items = Object.values(byIds)
-    for (let itemData of items) {
-      if (itemData.Name.toLowerCase().includes(filterText)) {
-        do {
-          filteredIds[itemData.ID] = true
-          itemData = byIds[itemData.ParentID]
-        } while (itemData && !filteredIds.hasOwnProperty(itemData.ID))
-      }
-    }
-    return filteredIds
+  mouseDownHandler = (e) => {
+    e.preventDefault()
+    this.inputRef.current.focus()
   }
 
   render () {
     const { filterText } = this.state
-    const filteredIds = this.getFilteredIds()
+    const { byIds, roots } = this.props.orgStructures
+    const textFilter = TextFilter.create(filterText)
+    const filteredIds = getFilteredIds(textFilter, byIds)
 
     return (
       <div className="org-structures">
         <Input.Search
+          ref={this.inputRef}
           placeholder={ i18n.FILTER }
           onChange={(e) => this.setState({ filterText: e.target.value.trim() })}
         />
         <TreeComponent
-          highlightText={filterText}
           filteredIds={filteredIds}
-          byIds={this.props.byIds}
-          roots={this.props.roots}
+          byIds={byIds}
+          roots={roots}
           itemTemplate={Item}
+          commonData={{ textFilter }}
+          onMouseDown={this.mouseDownHandler}
         />
       </div>
     )
@@ -55,6 +47,8 @@ export default class OrgStructuresComponent extends React.Component {
 }
 
 OrgStructuresComponent.propTypes = {
-  roots: PropTypes.array.isRequired,
-  byIds: PropTypes.object.isRequired,
+  orgStructures: PropTypes.shape({
+    roots: PropTypes.array.isRequired,
+    byIds: PropTypes.object.isRequired,
+  }),
 }

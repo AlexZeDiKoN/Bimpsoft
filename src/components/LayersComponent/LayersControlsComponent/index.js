@@ -2,8 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Icon } from 'antd'
-import VisibilityButton from '../../common/VisibilityButton'
-import OpacityControl from '../../common/OpacityControl'
+import { VisibilityButton, OpacityControl } from '../../common'
 
 export default class LayersControlsComponent extends React.Component {
   render () {

@@ -1,5 +1,5 @@
-@import "../../assets/styles/_variables.less";
-@import "../../assets/styles/_mixins.less";
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
 
 .tabs-panel {
   .flex;
@@ -9,13 +9,13 @@
 .tabs-panel-headers{
   .flex;
   height: 40px;
-  background-color: #5b626a;
+  background-color: @toolbar-header-background;
   flex: 0 0 auto;
 }
 .tabs-panel-header {
-  color: #ebeaef;
+  color: @toolbar-header-text;
   font-size: 16px;
-  border-bottom: 3px solid #5b626a;
+  border-bottom: 3px solid @toolbar-header-background;
   margin: 10px 5px 0px 5px;
   padding: 0px 5px;
   width: auto;

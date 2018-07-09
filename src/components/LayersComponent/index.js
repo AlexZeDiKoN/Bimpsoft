@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import IntervalControl from '../common/IntervalControl'
+import { IntervalControl } from '../common'
 import LayersControlsComponent from './LayersControlsComponent'
 import LayersListComponent from './LayersListComponent'
 

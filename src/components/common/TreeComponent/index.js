@@ -1,9 +1,19 @@
 import React from 'react'
-
 import './style.css'
 import PropTypes from 'prop-types'
 
 export default class TreeComponent extends React.Component {
+  static getDerivedStateFromProps (props) {
+    if (props.expandedKeys) {
+      const expandedKeys = {}
+      for (const key of props.expandedKeys) {
+        expandedKeys[key] = true
+      }
+      return { expandedKeys }
+    }
+    return null
+  }
+
   state = {
     expandedKeys: {},
   }
@@ -20,26 +30,35 @@ export default class TreeComponent extends React.Component {
   }
 
   renderItems (ids, level) {
-    const Item = this.props.itemTemplate
-    return (
+    const {
+      roots,
+      filteredIds,
+      byIds,
+      itemTemplate: Item,
+      commonData,
+    } = this.props
+    return (ids === null || ids === undefined) ? null : (
       <div className={`tree-component-ul tree-component-level-${level}`}>
         {ids.map((id) => {
-          if (this.props.filteredIds !== null && !this.props.filteredIds.hasOwnProperty(id)) {
+          if (filteredIds !== null && !filteredIds.hasOwnProperty(id)) {
             return null
           }
-          const itemData = this.props.byIds[id]
+          const itemData = byIds[id]
           const { expandedKeys } = this.state
+
           const expanded = expandedKeys.hasOwnProperty(id)
-          const canExpand = Boolean(itemData.children.length)
+          const canExpand = Array.isArray(itemData.children) && Boolean(itemData.children.length)
 
           return (
             <div className="tree-component-li" key={id}>
               <Item
-                highlightText={this.props.highlightText}
                 data={itemData}
-                canExpand={canExpand}
-                expanded={expanded}
-                onExpand={() => this.onExpand(id)}
+                tree={{
+                  canExpand,
+                  expanded,
+                  onExpand: () => this.onExpand(id),
+                }}
+                { ...commonData }
               />
               {expanded && this.renderItems(itemData.children, level + 1)}
             </div>
@@ -51,18 +70,36 @@ export default class TreeComponent extends React.Component {
   }
 
   render () {
+    const {
+      roots,
+      expandedKeys,
+      filteredIds,
+      byIds,
+      itemTemplate,
+      commonData,
+      ...otherProps
+    } = this.props
     return (
-      <div className="tree-component" >
-        {this.renderItems(this.props.roots, 0)}
+      <div className="tree-component" {...otherProps} >
+        {this.renderItems(roots, 0)}
       </div>
     )
   }
 }
 
 TreeComponent.propTypes = {
-  highlightText: PropTypes.string,
   filteredIds: PropTypes.object,
   roots: PropTypes.array,
   byIds: PropTypes.object,
   itemTemplate: PropTypes.any,
+  expandedKeys: PropTypes.array,
+  commonData: PropTypes.object,
+}
+
+TreeComponent.itemPropTypes = {
+  tree: PropTypes.shape({
+    expanded: PropTypes.bool,
+    canExpand: PropTypes.bool,
+    onExpand: PropTypes.func,
+  }),
 }

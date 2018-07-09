@@ -3,8 +3,7 @@ import PropTypes from 'prop-types'
 import './style.css'
 import { Icon } from 'antd'
 import moment from 'moment'
-import VisibilityButton from '../../common/VisibilityButton'
-import ColorPicker from '../../common/ColorPicker'
+import { VisibilityButton, ColorPicker } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 
 export default class LayerItemComponent extends React.Component {

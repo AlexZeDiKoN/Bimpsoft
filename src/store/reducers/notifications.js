@@ -24,6 +24,11 @@ export default function reducer (state = initState, action) {
       delete state[id]
       return state
     }
+    case notifications.PUSH_NOTIFICATION: {
+      const id = counter++
+      const { data } = action
+      return { ...state, [id]: { ...data, id } }
+    }
     default:
       return state
   }
