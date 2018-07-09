@@ -8,6 +8,7 @@ import OrgStructureSelect from './OrgStructureSelect'
 import AmplifiersForm from './AmplifiersForm'
 import ModifiersForm from './ModifiersForm'
 import FlagsForm from './FlagsForm'
+import i18n from "../i18n";
 
 export default class SymbolGeneratorComponent extends React.Component {
   static getDerivedStateFromProps (props) {
@@ -105,8 +106,8 @@ export default class SymbolGeneratorComponent extends React.Component {
         <CoordinatesForm coordinates={coordinates} onChange={this.coordinatesChangeHandler}/>
         <AmplifiersForm amplifiers={amplifiers} onChange={this.amplifiersChangeHandler}/>
         <div className="symbol-generator-buttons">
-          <button onClick={this.onOkHandler}>Гаразд</button>
-          <button onClick={this.onCancelHandler}>Скасувати</button>
+          <button onClick={this.onOkHandler}>{i18n.OK}</button>
+          <button onClick={this.onCancelHandler}>{i18n.CANCEL}</button>
         </div>
       </div>
     )

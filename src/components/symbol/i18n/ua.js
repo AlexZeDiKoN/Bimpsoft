@@ -99,4 +99,12 @@ export const AMPLIFIER_IFF_SIF = 'Розпізновання "свій-чужи�
 
 export const AMPLIFIER_ALTITUDE_DEPTH = 'Висота (глибина)'
 export const AMPLIFIER_LOCATION = 'Координати'
+export const POSITION = 'Розташування'
+export const LATITUDE_SHORT = 'Ш'
+export const LONGITUDE_SHORT = 'Д'
 
+export const WGS_84 = 'WGS-84'
+export const USK_2000 = 'УСК-2000'
+export const MGRS = 'MGRS'
+export const OK = 'Гаразд'
+export const CANCEL = 'Скасувати'

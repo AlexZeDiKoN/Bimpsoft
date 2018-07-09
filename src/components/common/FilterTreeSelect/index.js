@@ -17,12 +17,11 @@ export default class FilterTreeSelect extends React.PureComponent {
     this.getFilteredIds = TextFilter.getFilteredIdsFunc(titleSelector, idSelector, parentIdSelector)
     this.getExpandedKeys = getPathFunc(idSelector, idSelector, parentIdSelector)
     this.getTitlesPath = getPathFunc(titleSelector, idSelector, parentIdSelector)
+  }
 
-    this.state = {
-      filterValue: null,
-      opened: false,
-    }
-    this.scrollRef = React.createRef()
+  state = {
+    filterValue: null,
+    opened: false,
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -32,15 +31,19 @@ export default class FilterTreeSelect extends React.PureComponent {
     }
   }
 
+  scrollRef = React.createRef()
+
+  inputRef = React.createRef()
+
   open () {
     this.setState({ opened: true })
-    this.input.select()
+    this.inputRef.current.select()
   }
 
   close () {
     this.setState({ opened: false, filterValue: null })
     this.onPreviewEnd()
-    this.input.blur()
+    this.inputRef.current.blur()
   }
 
   onChangeItem = (id) => {
@@ -62,6 +65,10 @@ export default class FilterTreeSelect extends React.PureComponent {
 
   mouseDownHandler = (e) => e.preventDefault()
 
+  inputFocusHandler = () => this.open()
+
+  inputBlurHandler = () => this.close()
+
   render () {
     const {
       label,
@@ -80,7 +87,6 @@ export default class FilterTreeSelect extends React.PureComponent {
     const list = roots.length && opened ? (
       <div className="filter-tree-select-values-container">
         <div
-          ref={this.itemsRef}
           className="filter-tree-select-values"
           onMouseDown={this.mouseDownHandler}
         >
@@ -112,13 +118,11 @@ export default class FilterTreeSelect extends React.PureComponent {
         <label>{this.props.label}</label>
         <div className="filter-tree-select-right">
           <input
-            ref={(el) => {
-              this.input = el
-            }}
+            ref={ this.inputRef }
             value={filterValue !== null ? filterValue : title}
             onChange={this.handleChangeTitle}
-            onBlur={ () => this.close() }
-            onFocus={() => this.open()}
+            onBlur={ this.inputBlurHandler }
+            onFocus={this.inputFocusHandler }
           />
           {list}
         </div>
@@ -132,7 +136,7 @@ FilterTreeSelect.propTypes = {
   byIds: PropTypes.object,
   roots: PropTypes.array,
   expandedKeys: PropTypes.array,
-  id: PropTypes.string,
+  id: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
   onChange: PropTypes.func,
   onPreviewStart: PropTypes.func,
   onPreviewEnd: PropTypes.func,

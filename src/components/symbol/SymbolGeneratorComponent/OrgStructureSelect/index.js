@@ -39,7 +39,7 @@ export default class OrgStructureSelect extends React.PureComponent {
 OrgStructureSelect.propTypes = {
   label: PropTypes.string,
   values: PropTypes.object,
-  id: PropTypes.string,
+  id: PropTypes.number,
   onChange: PropTypes.func,
   onPreviewStart: PropTypes.func,
   onPreviewEnd: PropTypes.func,

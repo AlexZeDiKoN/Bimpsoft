@@ -32,12 +32,10 @@ export default class TreeComponent extends React.Component {
   renderItems (ids, level) {
     const {
       roots,
-      expandedKeys,
       filteredIds,
       byIds,
       itemTemplate: Item,
       commonData,
-      ...otherProps
     } = this.props
     return (ids === null || ids === undefined) ? null : (
       <div className={`tree-component-ul tree-component-level-${level}`}>
@@ -83,7 +81,7 @@ export default class TreeComponent extends React.Component {
     } = this.props
     return (
       <div className="tree-component" {...otherProps} >
-        {this.renderItems(this.props.roots, 0)}
+        {this.renderItems(roots, 0)}
       </div>
     )
   }
