@@ -4,25 +4,26 @@ import './style.css'
 import { FilterTreeSelect } from '../../../common'
 import Item from './Item'
 
-const idSelector = (item) => item.codePart
-const titleSelector = (item) => item.title
-const parentIdSelector = (item) => item.parentId
+const idSelector = (item) => item.ID
+const titleSelector = (item) => item.Name
+const parentIdSelector = (item) => item.ParentID
 
-export default class SymbolOption extends React.PureComponent {
+export default class OrgStructureSelect extends React.PureComponent {
   render () {
-    const { values = {}, codePart } = this.props
+    const { values = {}, id } = this.props
     const { byIds = {}, roots = [], codeByPart = {} } = values
     return (
       <FilterTreeSelect
         label={this.props.label}
         byIds={byIds}
         roots={roots}
-        id={codePart}
+        id={id}
         onChange={this.props.onChange}
         idSelector={idSelector}
         titleSelector={titleSelector}
         parentIdSelector={parentIdSelector}
         itemTemplate={Item}
+        expandedKeys={roots}
         commonData={{
           symbol: {
             codeByPart,
@@ -35,10 +36,10 @@ export default class SymbolOption extends React.PureComponent {
   }
 }
 
-SymbolOption.propTypes = {
+OrgStructureSelect.propTypes = {
   label: PropTypes.string,
   values: PropTypes.object,
-  codePart: PropTypes.string,
+  id: PropTypes.number,
   onChange: PropTypes.func,
   onPreviewStart: PropTypes.func,
   onPreviewEnd: PropTypes.func,

@@ -3,20 +3,19 @@ import PropTypes from 'prop-types'
 import { Symbol } from 'milsymbol'
 import './style.css'
 
-export default class MilSymbol extends React.Component {
+export default class MilSymbol extends React.PureComponent {
   componentDidMount () {
     this.redraw()
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.code !== this.props.code) {
-      this.redraw()
-    }
+    this.redraw()
   }
 
   redraw () {
-    const { code, size = 48 } = this.props
-    const symbol = new Symbol(code, { size })
+    const { code, size = 48, amplifiers = {} } = this.props
+
+    const symbol = new Symbol(code, { ...amplifiers, size })
     const template = symbol.asSVG()
     this.el.innerHTML = template
   }
@@ -33,5 +32,6 @@ export default class MilSymbol extends React.Component {
 
 MilSymbol.propTypes = {
   code: PropTypes.string,
+  amplifiers: PropTypes.object,
   size: PropTypes.number,
 }

@@ -1,15 +1,11 @@
 const specials = '-[]/{}()*+?.\\^$|'
 const regexSpecials = RegExp('[' + specials.split('').join('\\') + ']', 'g')
 
-function getRegExp (str) {
-  return new RegExp(`(${str})`, 'gi')
-}
-
 export default class TextFilter {
   constructor (filters) {
     filters = filters.map((str) => str.replace(regexSpecials, '\\$&'))
-    this.regExpParts = getRegExp(filters.join('|'))
-    this.regExpTest = getRegExp(filters.join('(.+?)'))
+    this.regExpParts = new RegExp(`(${filters.join('|')})`, 'gi')
+    this.regExpTest = new RegExp(filters.join('(.+?)'), 'i')
   }
 
   parts (text) {
@@ -34,18 +30,18 @@ export default class TextFilter {
     return new TextFilter(texts)
   }
 
-  static getFilteredIdsFunc = (textKey, idKey, parentIdKey) => (textFilter, byIds) => {
+  static getFilteredIdsFunc = (valueSelector, idSelector, parentIdSelector) => (textFilter, byIds) => {
     if (!(textFilter instanceof TextFilter)) {
       return null
     }
     const filteredIds = {}
     const items = Object.values(byIds)
     for (let itemData of items) {
-      if (textFilter.test(itemData[textKey])) {
+      if (textFilter.test(valueSelector(itemData))) {
         do {
-          filteredIds[itemData[idKey]] = true
-          itemData = byIds[itemData[parentIdKey]]
-        } while (itemData && !filteredIds.hasOwnProperty(itemData[idKey]))
+          filteredIds[idSelector(itemData)] = true
+          itemData = byIds[parentIdSelector(itemData)]
+        } while (itemData && !filteredIds.hasOwnProperty(idSelector(itemData)))
       }
     }
     return filteredIds

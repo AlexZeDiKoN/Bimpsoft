@@ -2,9 +2,9 @@ import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 
 const mapStateToProps = (store) => {
-  const { orgStructures: { byIds, roots } } = store
+  const { orgStructures } = store
 
-  return { byIds, roots }
+  return { orgStructures }
 }
 const mapDispatchToProps = (dispatch) => ({
 

@@ -6,22 +6,30 @@ import { TreeComponent, TextFilter } from '../common'
 import i18n from '../../i18n'
 import Item from './Item'
 
+const getFilteredIds = TextFilter.getFilteredIdsFunc((item) => item.Name, (item) => item.ID, (item) => item.ParentID)
+
 export default class OrgStructuresComponent extends React.Component {
   state = {
     filterText: '',
   }
 
-  getFilteredIds = TextFilter.getFilteredIdsFunc('Name', 'ID', 'ParentID')
+  inputRef = React.createRef()
+
+  mouseDownHandler = (e) => {
+    e.preventDefault()
+    this.inputRef.current.focus()
+  }
 
   render () {
     const { filterText } = this.state
-    const { byIds, roots } = this.props
+    const { byIds, roots } = this.props.orgStructures
     const textFilter = TextFilter.create(filterText)
-    const filteredIds = this.getFilteredIds(textFilter, byIds)
+    const filteredIds = getFilteredIds(textFilter, byIds)
 
     return (
       <div className="org-structures">
         <Input.Search
+          ref={this.inputRef}
           placeholder={ i18n.FILTER }
           onChange={(e) => this.setState({ filterText: e.target.value.trim() })}
         />
@@ -31,6 +39,7 @@ export default class OrgStructuresComponent extends React.Component {
           roots={roots}
           itemTemplate={Item}
           commonData={{ textFilter }}
+          onMouseDown={this.mouseDownHandler}
         />
       </div>
     )
@@ -38,6 +47,8 @@ export default class OrgStructuresComponent extends React.Component {
 }
 
 OrgStructuresComponent.propTypes = {
-  roots: PropTypes.array.isRequired,
-  byIds: PropTypes.object.isRequired,
+  orgStructures: PropTypes.shape({
+    roots: PropTypes.array.isRequired,
+    byIds: PropTypes.object.isRequired,
+  }),
 }

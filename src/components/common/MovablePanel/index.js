@@ -14,8 +14,10 @@ export default class MovablePanel extends React.Component {
       >
         <Resizable
           className="movable-panel"
-          defaultSize={{ width: 600, height: 400 }}
+          minWidth={600}
+          defaultSize={{ width: 700, height: 800 }}
           style={{ zIndex: 10001, position: 'absolute' }}
+
         >
           <div className="movable-panel-header">{this.props.title}</div>
           {this.props.component}
