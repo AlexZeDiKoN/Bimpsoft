@@ -78,7 +78,7 @@ export default class SymbolGeneratorComponent extends React.Component {
     return (
       <div className="symbol-generator">
         <div className="symbol-generator-container">
-          <MilSymbol code={previewCode || code} size={72} amplifiers={amplifiers} />
+          <MilSymbol code={previewCode || code} size={72} amplifiers={amplifiers} coordinates={coordinates} />
         </div>
         <ModifiersForm
           code={ code }

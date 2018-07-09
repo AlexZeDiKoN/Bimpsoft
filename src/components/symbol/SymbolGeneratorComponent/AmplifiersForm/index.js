@@ -2,125 +2,110 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import i18n from '../../i18n'
+import * as symbolOptions from '../../model/symbolOptions'
 
 export default class AmplifiersForm extends React.Component {
-  changeAmplifier = (o) => {
-    const { amplifiers = {} } = this.props
-    this.props.onChange({ ...amplifiers, ...o })
+  changeAmplifier = (e) => {
+    const { target: { value, name } } = e
+    const { amplifiers } = this.props
+    this.props.onChange({ ...amplifiers, [name]: value })
   }
 
   render () {
     const { amplifiers = { engagementType: 'TARGET' } } = this.props
+
+    const getInputProps = (name) => ({ name, value: amplifiers[name] || '', onChange: this.changeAmplifier })
+
     return (
       <div className="amplifiers-form" >
         <InputControl
           label={i18n.AMPLIFIER_SPECIAL_HEADQUARTERS}
-          onChange={ (value) => this.changeAmplifier({ specialHeadquarters: value }) }
-          value={ amplifiers.specialHeadquarters}
+          { ...getInputProps(symbolOptions.specialHeadquarters)}
         />
         <InputControl
           label={i18n.AMPLIFIER_HEADQUARTERS_ELEMENT}
-          onChange={ (value) => this.changeAmplifier({ headquartersElement: value }) }
-          value={ amplifiers.headquartersElement}
+          { ...getInputProps(symbolOptions.headquartersElement)}
         />
         <InputControl
           label={i18n.AMPLIFIER_ENGAGEMENT_BAR}
-          onChange={ (value) => this.changeAmplifier({ engagementBar: value }) }
-          value={ amplifiers.engagementBar}
+          { ...getInputProps(symbolOptions.engagementBar)}
         />
         <InputControl
           label={i18n.AMPLIFIER_QUANTITY}
-          onChange={ (value) => this.changeAmplifier({ quantity: value }) }
-          value={ amplifiers.quantity}
+          { ...getInputProps(symbolOptions.quantity)}
         />
         <div className="amplifiers-form-control-group">
           <InputControl
-            label={i18n.AMPLIFIER_SPECIAL_POINTER}
-            onChange={ (value) => this.changeAmplifier({ specialPointer: value }) }
-            value={ amplifiers.specialPointer}
+            label={i18n.AMPLIFIER_SPECIAL_DESIGNATOR}
+            { ...getInputProps(symbolOptions.specialDesignator)}
           />
           <InputControl
             label={i18n.AMPLIFIER_DTG}
-            onChange={ (value) => this.changeAmplifier({ dtg: value }) }
-            value={ amplifiers.dtg}
+            { ...getInputProps(symbolOptions.dtg)}
           />
         </div>
         <InputControl
           label={i18n.AMPLIFIER_REINFORCED_REDUCED}
-          onChange={ (value) => this.changeAmplifier({ reinforcedReduced: value }) }
-          value={ amplifiers.reinforcedReduced}
+          { ...getInputProps(symbolOptions.reinforcedReduced)}
         />
         <div className="amplifiers-form-control-group">
           <InputControl
             label={i18n.AMPLIFIER_WEAPONS_TYPE}
-            onChange={ (value) => this.changeAmplifier({ weaponsType: value }) }
-            value={ amplifiers.weaponsType}
+            { ...getInputProps(symbolOptions.type)}
           />
           <InputControl
             label={i18n.AMPLIFIER_PLATFORM_TYPE}
-            onChange={ (value) => this.changeAmplifier({ platformType: value }) }
-            value={ amplifiers.platformType}
+            { ...getInputProps(symbolOptions.platformType)}
           />
           <InputControl
             label={i18n.AMPLIFIER_TIME_OF_DISMANTLING}
-            onChange={ (value) => this.changeAmplifier({ timeOfDismantling: value }) }
-            value={ amplifiers.timeOfDismantling}
+            { ...getInputProps(symbolOptions.equipmentTeardownTime)}
           />
         </div>
         <InputControl
           label={i18n.AMPLIFIER_STAFF_COMMENTS}
-          onChange={ (value) => this.changeAmplifier({ staffComments: value }) }
-          value={ amplifiers.staffComments}
+          { ...getInputProps(symbolOptions.staffComments)}
         />
         <InputControl
           label={i18n.AMPLIFIER_UNIQUE_DESIGNATION}
-          onChange={ (value) => this.changeAmplifier({ uniqueDesignation: value }) }
-          value={ amplifiers.uniqueDesignation}
+          { ...getInputProps(symbolOptions.uniqueDesignation)}
         />
         <div className="amplifiers-form-control-group">
           <InputControl
             label={i18n.AMPLIFIER_ADDITIONAL_INFORMATION}
-            onChange={ (value) => this.changeAmplifier({ additionalInformation: value }) }
-            value={ amplifiers.additionalInformation}
+            { ...getInputProps(symbolOptions.additionalInformation)}
           />
           <InputControl
             label={i18n.AMPLIFIER_GENERAL_IDENTIFIER}
-            onChange={ (value) => this.changeAmplifier({ generalIdentifier: value }) }
-            value={ amplifiers.generalIdentifier}
+            { ...getInputProps(symbolOptions.commonIdentifier)}
           />
         </div>
         <div className="amplifiers-form-control-group">
           <InputControl
             label={i18n.AMPLIFIER_DIRECTION}
-            onChange={ (value) => this.changeAmplifier({ direction: value }) }
-            value={ amplifiers.direction}
+            { ...getInputProps(symbolOptions.direction)}
           />
           <InputControl
             label={i18n.AMPLIFIER_SPEED}
-            onChange={ (value) => this.changeAmplifier({ speed: value }) }
-            value={ amplifiers.speed}
+            { ...getInputProps(symbolOptions.speed)}
           />
         </div>
         <InputControl
           label={i18n.AMPLIFIER_HIGHER_FORMATION}
-          onChange={ (value) => this.changeAmplifier({ higherFormation: value }) }
-          value={ amplifiers.higherFormation}
+          { ...getInputProps(symbolOptions.higherFormation)}
         />
         <div className="amplifiers-form-control-row">
           <InputControl
             label={i18n.AMPLIFIER_EVALUATION_RATING}
-            onChange={ (value) => this.changeAmplifier({ evaluationRating: value }) }
-            value={ amplifiers.evaluationRating}
+            { ...getInputProps(symbolOptions.evaluationRating)}
           />
           <InputControl
             label={i18n.AMPLIFIER_COMBAT_EFFECTIVENESS}
-            onChange={ (value) => this.changeAmplifier({ combatEffectiveness: value }) }
-            value={ amplifiers.combatEffectiveness}
+            { ...getInputProps(symbolOptions.combatEffectiveness)}
           />
           <InputControl
             label={i18n.AMPLIFIER_IFF_SIF}
-            onChange={ (value) => this.changeAmplifier({ iffSif: value }) }
-            value={ amplifiers.iffSif}
+            { ...getInputProps(symbolOptions.iffSif)}
           />
         </div>
       </div>
@@ -133,25 +118,19 @@ AmplifiersForm.propTypes = {
   onChange: PropTypes.func,
 }
 
-class InputControl extends React.Component {
-  changeHandler = (e) => this.props.onChange(e.target.value)
-
-  render () {
-    const { label, value = null } = this.props
-    return (
-      <div className="amplifiers-form-textfiled">
-        <label>{label}</label>
-        <input
-          onChange={this.changeHandler}
-          value={value}
-        />
-      </div>
-    )
-  }
+const InputControl = (props) => {
+  const { label, name, value, onChange } = props
+  return (
+    <div className="amplifiers-form-textfiled">
+      <label>{label}</label>
+      <input name={name} value={value} onChange={onChange} />
+    </div>
+  )
 }
 
 InputControl.propTypes = {
   label: PropTypes.string,
+  name: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
 }
