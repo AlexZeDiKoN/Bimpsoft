@@ -5,8 +5,7 @@ import i18n from '../../i18n'
 import Coordinates from './Coordinates'
 
 export default class CoordinatesForm extends React.Component {
-  changeCoordinate = (e) => {
-    const { target: { value, name } } = e
+  changeCoordinate = ({ target: { value, name } }) => {
     const { coordinates = {} } = this.props
     this.props.onChange({ ...coordinates, [name]: value })
   }

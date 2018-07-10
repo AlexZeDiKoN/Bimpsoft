@@ -6,7 +6,7 @@ import * as symbolOptions from '../../model/symbolOptions'
 
 const VALUE_REINFORCED = '+'
 const VALUE_REDUCED = '-'
-const VALUE_REINFORCED_AND_REDUCED = '+-'
+const VALUE_REINFORCED_AND_REDUCED = '±'
 
 export default class AmplifiersForm extends React.Component {
   changeAmplifier = (e) => {
