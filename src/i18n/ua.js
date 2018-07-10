@@ -18,3 +18,5 @@ export const SEARCH = 'Пошук'
 export const MIL_TEMPLATE = 'Шаблон умовного знаку'
 export const HIDE_MINIMAP = 'Приховати міні-карту'
 export const SHOW_MINIMAP = 'Показати міні-карту'
+
+export const UNDEFINED = 'Не вказано'
