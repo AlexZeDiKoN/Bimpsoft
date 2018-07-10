@@ -14,6 +14,7 @@ export default class SymbolOption extends React.PureComponent {
     const { byIds = {}, roots = [], codeByPart = {} } = values
     return (
       <FilterTreeSelect
+        className="filter-tree-select-default"
         label={this.props.label}
         byIds={byIds}
         roots={roots}

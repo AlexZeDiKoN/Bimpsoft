@@ -20,7 +20,9 @@ export default class MovablePanel extends React.Component {
 
         >
           <div className="movable-panel-header">{this.props.title}</div>
-          {this.props.component}
+          <div className="movable-panel-content">
+            {this.props.component}
+          </div>
         </Resizable>
       </Draggable>
     )

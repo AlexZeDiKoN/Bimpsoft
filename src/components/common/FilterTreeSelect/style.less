@@ -1,3 +1,74 @@
 @import "../../../assets/styles/_variables.less";
 @import "../../../assets/styles/_mixins.less";
 
+.filter-tree-select-default {
+  &.filter-tree-select {
+    .flex;
+    padding: 0.2em;
+    height: 2em;
+    label {
+      flex: 0 0 auto;
+      width: 13em;
+      text-align: left;
+    }
+    input {
+      width: 100%;
+      border: 1px solid @toolbar-border;
+      border-radius: 0.3em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+    }
+  }
+  .filter-tree-select-right {
+    flex: 1 1 auto;
+  }
+  .filter-tree-select-values-container {
+    height: 0px;
+    width: 0px;
+    padding-left: 100%;
+
+    &:before, &:after {
+      content: ' ';
+      border: 1em solid transparent;
+      height: 2em;
+      width: 0px;
+      box-sizing: border-box;
+      display: block;
+      border-right: 1.3em solid @toolbar-border;
+      margin-left: -1.1em;
+      margin-top: -2em;
+      position: absolute;
+    }
+    &:after {
+      border-right: 1.3em solid @toolbar-background;
+      margin-left: -1em;
+      margin-top: -2em;
+    }
+  }
+  .filter-tree-select-values {
+    height: auto;
+    max-height: calc(~"100% - 1.9em");
+    width: 20em;
+    text-align: left;
+    background-color: #eee;
+    border: 1px solid #a7a6a6;
+    margin-left: 1.2em;
+    position: absolute;
+    top: 1.9em;
+    overflow: auto;
+
+    .tree-component-level-1 {
+      box-shadow: inset 0px 0px 0.6em 0px;
+      border-right: 1px solid @toolbar-border;
+      background: darken(@toolbar-background, 3%);
+
+    }
+    .tree-component-level-2 {
+      box-shadow: inset 0px 0px 0.5em 0px;
+      border-right: 1px solid @toolbar-border;
+      background: lighten(@toolbar-background, 6%);
+    }
+  }
+}

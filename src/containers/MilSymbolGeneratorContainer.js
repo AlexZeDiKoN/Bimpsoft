@@ -22,6 +22,14 @@ const mapDispatchToProps = (dispatch) => ({
     }))
     dispatch(viewModes.viewModeDisable(edit))
   },
+  onAddToTemplates: (data) => {
+    const { code, coordinates, orgStructureId } = data
+    dispatch(notifications.push({
+      message: 'Добавить в шаблон',
+      description: `код: ${code}, orgStructureId: ${orgStructureId}, координати: ${JSON.stringify(coordinates)}, `,
+    }))
+    dispatch(viewModes.viewModeDisable(edit))
+  },
   onClose: (code) => {
     dispatch(notifications.push({ message: 'Форма закрыта', description: '' }))
     dispatch(viewModes.viewModeDisable(edit))
