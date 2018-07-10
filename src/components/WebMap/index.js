@@ -3,10 +3,23 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
-import { Map, TileLayer } from 'leaflet'
+import { Map, TileLayer, Control } from 'leaflet'
 import { Symbol } from 'milsymbol'
+import i18n from '../../i18n'
 import 'leaflet.pm'
+import 'leaflet-minimap'
+import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+
+const miniMapOptions = {
+  width: 200,
+  toggleDisplay: true,
+  minimized: true,
+  strings: {
+    hideText: i18n.HIDE_MINIMAP,
+    showText: i18n.SHOW_MINIMAP,
+  },
+}
 
 function isTileLayersEqual (a, b) {
   for (const key of Object.keys(a)) {
@@ -53,18 +66,18 @@ export class WebMap extends Component {
     })),
   }
 
+  state = {
+    objects: [],
+    center: [ 48, 35 ],
+    zoom: 7,
+  }
+
   static getDerivedStateFromProps (nextProps, prevState) {
     return {
       objects: nextProps.objects,
       center: nextProps.center || prevState.center,
       zoom: nextProps.zoom || prevState.zoom,
     }
-  }
-
-  state = {
-    objects: [],
-    center: [ 48, 35 ],
-    zoom: 7,
   }
 
   componentDidMount () {
@@ -101,12 +114,17 @@ export class WebMap extends Component {
     if (!this.container) {
       return
     }
+    this.mini = undefined
     this.map = new Map(this.container)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
         const { source, ...rest } = child.props
         new TileLayer(source, rest).addTo(this.map)
+        if (!this.mini) {
+          const tileLayer = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
+          this.mini = new Control.MiniMap(tileLayer, miniMapOptions).addTo(this.map)
+        }
       }
     }, this)
     initMapEvents(this.map)
