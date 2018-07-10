@@ -26,7 +26,7 @@ export default class CoordinatesForm extends React.Component {
           <input { ...getInputProps(Coordinates.options.KEY_Z)} />
           <label>{i18n.AMPLIFIER_LOCATION}</label>
           <select { ...getInputProps(Coordinates.options.KEY_TYPE)} >
-            {isTypeDefined && (<option value="">------</option>)}
+            {isTypeDefined && (<option value="">{i18n.UNDEFINED}</option>)}
             <option value={Coordinates.types.WGS_84}>{i18n.WGS_84}</option>
             <option value={Coordinates.types.USK_2000}>{i18n.USK_2000}</option>
             <option value={Coordinates.types.MGRS}>{i18n.MGRS}</option>

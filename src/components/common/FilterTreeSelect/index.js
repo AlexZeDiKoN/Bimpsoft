@@ -4,6 +4,7 @@ import './style.css'
 import TreeComponent from '../TreeComponent'
 import TextFilter from '../TextFilter'
 import { getPathFunc } from '../../../utils/collection'
+import i18n from '../../../i18n'
 
 export default class FilterTreeSelect extends React.PureComponent {
   constructor (props) {
@@ -76,12 +77,13 @@ export default class FilterTreeSelect extends React.PureComponent {
       roots = [],
       id,
       itemTemplate,
+      className = '',
       commonData,
     } = this.props
     const { opened, filterValue } = this.state
     const expandedKeys = [ ...(this.props.expandedKeys || []), ...this.getExpandedKeys(byIds, id) ]
     const path = this.getTitlesPath(byIds, id)
-    const title = (path.length > 0) ? path.join('/') : '---------'
+    const title = (path.length > 0) ? path.join('/') : i18n.UNDEFINED
     const textFilter = TextFilter.create(filterValue)
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const list = roots.length && opened ? (
@@ -114,7 +116,7 @@ export default class FilterTreeSelect extends React.PureComponent {
     ) : null
 
     return (
-      <div className="filter-tree-select" >
+      <div className={`filter-tree-select ${className}`} >
         <label>{this.props.label}</label>
         <div className="filter-tree-select-right">
           <input
@@ -145,6 +147,7 @@ FilterTreeSelect.propTypes = {
   titleSelector: PropTypes.func,
   parentIdSelector: PropTypes.func,
   commonData: PropTypes.object,
+  className: PropTypes.string,
 }
 
 FilterTreeSelect.itemPropTypes = {

@@ -16,3 +16,5 @@ export const LAYERS = 'Шари'
 export const FILTER = 'Фільтрувати'
 export const SEARCH = 'Пошук'
 export const MIL_TEMPLATE = 'Шаблон умовного знаку'
+
+export const UNDEFINED = 'Не вказано'

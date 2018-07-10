@@ -2,13 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import * as app6 from '../model/APP6Code'
+import i18n from '../i18n'
+import * as symbolOptions from '../model/symbolOptions'
 import CoordinatesForm from './CoordinatesForm'
 import MilSymbol from './MilSymbol'
 import OrgStructureSelect from './OrgStructureSelect'
 import AmplifiersForm from './AmplifiersForm'
 import ModifiersForm from './ModifiersForm'
 import FlagsForm from './FlagsForm'
-import i18n from "../i18n";
+import CredibilityForm from './CredibilityForm'
 
 export default class SymbolGeneratorComponent extends React.Component {
   static getDerivedStateFromProps (props) {
@@ -52,13 +54,18 @@ export default class SymbolGeneratorComponent extends React.Component {
     this.setCode(e.target.value)
   }
 
-  onOkHandler = () => {
+  okHandler = () => {
     const { code, orgStructureId, coordinates, amplifiers } = this.state
     this.props.onChange({ code, orgStructureId, coordinates, amplifiers })
   }
 
-  onCancelHandler = () => {
+  cancelHandler = () => {
     this.props.onClose()
+  }
+
+  addToTemplatesHandler = () => {
+    const { code, orgStructureId, coordinates, amplifiers } = this.state
+    this.props.onAddToTemplates({ code, orgStructureId, coordinates, amplifiers })
   }
 
   orgStructureChangeHandler = (orgStructureId) => {
@@ -71,6 +78,14 @@ export default class SymbolGeneratorComponent extends React.Component {
 
   amplifiersChangeHandler = (amplifiers) => {
     this.setState({ amplifiers })
+  }
+
+  credibilityChangeHandler = (credibility) => {
+    let { amplifiers = {} } = this.state
+    const { source, information } = credibility
+    const evaluationRating = `${source}${information}`
+    amplifiers = { ...amplifiers, [symbolOptions.evaluationRating]: evaluationRating }
+    this.setState({ amplifiers, credibility })
   }
 
   render () {
@@ -105,9 +120,11 @@ export default class SymbolGeneratorComponent extends React.Component {
         </div>
         <CoordinatesForm coordinates={coordinates} onChange={this.coordinatesChangeHandler}/>
         <AmplifiersForm amplifiers={amplifiers} onChange={this.amplifiersChangeHandler}/>
+        <CredibilityForm onChange={this.credibilityChangeHandler}/>
         <div className="symbol-generator-buttons">
-          <button onClick={this.onOkHandler}>{i18n.OK}</button>
-          <button onClick={this.onCancelHandler}>{i18n.CANCEL}</button>
+          <a onClick={this.addToTemplatesHandler}>{i18n.ADD_TO_TEMPLATES}</a>
+          <button onClick={this.okHandler}>{i18n.OK}</button>
+          <button onClick={this.cancelHandler}>{i18n.CANCEL}</button>
         </div>
       </div>
     )
@@ -123,5 +140,6 @@ SymbolGeneratorComponent.propTypes = {
   }),
   coordinates: PropTypes.object,
   onChange: PropTypes.func,
+  onAddToTemplates: PropTypes.func,
   onClose: PropTypes.func,
 }

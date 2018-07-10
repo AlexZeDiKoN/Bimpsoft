@@ -4,6 +4,10 @@ import './style.css'
 import i18n from '../../i18n'
 import * as symbolOptions from '../../model/symbolOptions'
 
+const VALUE_REINFORCED = '+'
+const VALUE_REDUCED = '-'
+const VALUE_REINFORCED_AND_REDUCED = '+-'
+
 export default class AmplifiersForm extends React.Component {
   changeAmplifier = (e) => {
     const { target: { value, name } } = e
@@ -44,10 +48,15 @@ export default class AmplifiersForm extends React.Component {
             { ...getInputProps(symbolOptions.dtg)}
           />
         </div>
-        <InputControl
+        <SelectControl
           label={i18n.AMPLIFIER_REINFORCED_REDUCED}
           { ...getInputProps(symbolOptions.reinforcedReduced)}
-        />
+        >
+          <option value="">{i18n.UNDEFINED}</option>
+          <option value={VALUE_REINFORCED} >{i18n.REINFORCED}</option>
+          <option value={VALUE_REDUCED} >{i18n.REDUCED}</option>
+          <option value={VALUE_REINFORCED_AND_REDUCED} >{i18n.REINFORCED_AND_REDUCED}</option>
+        </SelectControl>
         <div className="amplifiers-form-control-group">
           <InputControl
             label={i18n.AMPLIFIER_WEAPONS_TYPE}
@@ -127,10 +136,25 @@ const InputControl = (props) => {
     </div>
   )
 }
-
 InputControl.propTypes = {
   label: PropTypes.string,
   name: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+}
+
+const SelectControl = (props) => {
+  const { label, name, value, onChange, children } = props
+  return (
+    <div className="amplifiers-form-textfiled">
+      <label>{label}</label>
+      <select name={name} value={value} onChange={onChange} >
+        {children}
+      </select>
+    </div>
+  )
+}
+SelectControl.propTypes = {
+  ...InputControl.propTypes,
+  children: PropTypes.element,
 }
