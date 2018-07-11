@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
-import { Map, TileLayer, Control, control } from 'leaflet'
+import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from 'milsymbol'
+import { forward } from 'mgrs'
 import i18n from '../../i18n'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -16,6 +17,12 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+
+const indicateModes = {
+  count: 2,
+  WGS: 0,
+  MGRS: 1,
+}
 
 const miniMapOptions = {
   width: 200,
@@ -116,6 +123,12 @@ export class WebMap extends Component {
     this.map.remove()
   }
 
+  indicateMode = indicateModes.WGS
+
+  toggleIndicateMode = () => {
+    this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
   setMapView () {
     if (!this.container) {
       return
@@ -141,12 +154,23 @@ export class WebMap extends Component {
       }
     }
     this.scale.addTo(this.map)
-    control.coordinates({
+    this.coordinates = control.coordinates({
       position: 'topright',
       enableUserInput: false,
-      customLabelFcn: ({ lng, lat }) =>
-        ` ${i18n.LONGITUDE}: ${lng.toFixed(4)}   ${i18n.LATITUDE}: ${lat.toFixed(4)}`, // eslint-disable-line no-irregular-whitespace
-    }).addTo(this.map)
+      customLabelFcn: ({ lng, lat }) => {
+        switch (this.indicateMode) {
+          case indicateModes.MGRS:
+            return `MGRS: ${forward([ lng, lat ])}`
+          default:
+            return ` ${i18n.LONGITUDE}: ${lng.toFixed(4)}   ${i18n.LATITUDE}: ${lat.toFixed(4)}` // eslint-disable-line no-irregular-whitespace
+        }
+      },
+    })
+    this.coordinates.addTo(this.map)
+    DomEvent.addListener(this.coordinates._container, 'click', () => {
+      this.toggleIndicateMode()
+      this.coordinates._update({ latlng: this.coordinates._currentPos })
+    }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
