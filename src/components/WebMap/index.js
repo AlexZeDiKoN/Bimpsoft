@@ -3,12 +3,14 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
-import { Map, TileLayer, Control } from 'leaflet'
+import { Map, TileLayer, Control, control } from 'leaflet'
 import { Symbol } from 'milsymbol'
 import i18n from '../../i18n'
 import 'leaflet.pm'
-import 'leaflet-minimap'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
+import 'leaflet-minimap'
+import 'leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
+import 'leaflet-measure-custom/leaflet.measure/leaflet.measure'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const miniMapOptions = {
@@ -115,7 +117,14 @@ export class WebMap extends Component {
       return
     }
     this.mini = undefined
-    this.map = new Map(this.container)
+    this.map = new Map(this.container, {
+      zoomControl: false,
+      measureControl: true,
+    })
+    control.zoom({
+      zoomInTitle: 'Збільшити',
+      zoomOutTitle: 'Зменшити',
+    }).addTo(this.map)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
