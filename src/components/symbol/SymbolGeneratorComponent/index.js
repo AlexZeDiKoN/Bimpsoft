@@ -13,17 +13,14 @@ import FlagsForm from './FlagsForm'
 import CredibilityForm from './CredibilityForm'
 
 export default class SymbolGeneratorComponent extends React.Component {
-  static getDerivedStateFromProps (props) {
-    const { code, orgStructureId, coordinates, amplifiers } = props
-    return { code, orgStructureId, coordinates, amplifiers }
-  }
-
   constructor (props) {
     super(props)
-
+    const { code, orgStructureId, coordinates, amplifiers } = props
     this.state = {
-      // code: '10011500521200000800',
-      code: '10000000000000000000',
+      code,
+      orgStructureId,
+      coordinates,
+      amplifiers,
       previewCode: null,
     }
   }
@@ -133,6 +130,7 @@ export default class SymbolGeneratorComponent extends React.Component {
 
 SymbolGeneratorComponent.propTypes = {
   code: PropTypes.string,
+  amplifiers: PropTypes.object,
   orgStructureId: PropTypes.number,
   orgStructures: PropTypes.shape({
     roots: PropTypes.array.isRequired,

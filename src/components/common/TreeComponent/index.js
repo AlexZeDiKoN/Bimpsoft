@@ -3,19 +3,15 @@ import './style.css'
 import PropTypes from 'prop-types'
 
 export default class TreeComponent extends React.Component {
-  static getDerivedStateFromProps (props) {
+  constructor (props) {
+    super(props)
+    const expandedKeys = {}
     if (props.expandedKeys) {
-      const expandedKeys = {}
       for (const key of props.expandedKeys) {
         expandedKeys[key] = true
       }
-      return { expandedKeys }
     }
-    return null
-  }
-
-  state = {
-    expandedKeys: {},
+    this.state = { expandedKeys }
   }
 
   onExpand (key) {
@@ -31,7 +27,6 @@ export default class TreeComponent extends React.Component {
 
   renderItems (ids, level) {
     const {
-      roots,
       filteredIds,
       byIds,
       itemTemplate: Item,
