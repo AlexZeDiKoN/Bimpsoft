@@ -11,6 +11,8 @@ import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import 'leaflet-minimap'
 import 'leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
 import 'leaflet-measure-custom/leaflet.measure/leaflet.measure'
+import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
+import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const miniMapOptions = {
@@ -122,9 +124,21 @@ export class WebMap extends Component {
       measureControl: true,
     })
     control.zoom({
-      zoomInTitle: 'Збільшити',
-      zoomOutTitle: 'Зменшити',
+      zoomInTitle: i18n.ZOOM_IN,
+      zoomOutTitle: i18n.ZOOM_OUT,
     }).addTo(this.map)
+    this.scale = control.graphicScale({
+      fill: 'hollow',
+    })
+    this.scale._getDisplayUnit = (meters) => {
+      const m = meters < 1000
+      const displayUnit = ` ${i18n[m ? 'ABBR_METERS' : 'ABBR_KILOMETERS']}`
+      return {
+        unit: displayUnit,
+        amount: m ? meters : meters / 1000,
+      }
+    }
+    this.scale.addTo(this.map)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
