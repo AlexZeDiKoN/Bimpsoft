@@ -13,6 +13,8 @@ import 'leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
 import 'leaflet-measure-custom/leaflet.measure/leaflet.measure'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
+import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
+import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const miniMapOptions = {
@@ -139,6 +141,12 @@ export class WebMap extends Component {
       }
     }
     this.scale.addTo(this.map)
+    control.coordinates({
+      position: 'topright',
+      enableUserInput: false,
+      customLabelFcn: ({ lng, lat }) =>
+        ` ${i18n.LONGITUDE}: ${lng.toFixed(4)}   ${i18n.LATITUDE}: ${lat.toFixed(4)}`, // eslint-disable-line no-irregular-whitespace
+    }).addTo(this.map)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {

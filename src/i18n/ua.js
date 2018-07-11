@@ -22,5 +22,7 @@ export const ZOOM_IN = 'Збільшити'
 export const ZOOM_OUT = 'Зменшити'
 export const ABBR_METERS = 'м'
 export const ABBR_KILOMETERS = 'км'
+export const LONGITUDE = 'Довгота'
+export const LATITUDE = 'Широта'
 
 export const UNDEFINED = 'Не вказано'
