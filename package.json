@@ -11,6 +11,7 @@
     "leaflet-graphicscale": "0.0.2",
     "leaflet-measure-custom": "github:tumick/leaflet.measure",
     "leaflet-minimap": "^3.6.1",
+    "leaflet.coordinates": "^0.1.5",
     "leaflet.pm": "^0.24.0",
     "lodash": "^4.17.10",
     "memoize-one": "^3.1.1",
