@@ -19,9 +19,11 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const indicateModes = {
-  count: 2,
+  count: 4,
   WGS: 0,
-  MGRS: 1,
+  WGSI: 1,
+  MGRS: 2,
+  ALL: 3,
 }
 
 const miniMapOptions = {
@@ -33,6 +35,20 @@ const miniMapOptions = {
     showText: i18n.SHOW_MINIMAP,
   },
 }
+
+const z = (v) => `0${v}`.slice(-2)
+const toGMS = (value, pos, neg) => {
+  const sign = value > 0 ? pos : neg
+  value = Math.abs(value)
+  const g = Math.trunc(value)
+  value = (value - g) * 60
+  const m = Math.trunc(value)
+  const s = Math.round((value - m) * 60)
+  return `${sign} ${g}°${z(m)}'${z(s)}"` // eslint-disable-line no-irregular-whitespace
+}
+const Wgs84 = (lat, lng) => ` ${i18n.LATITUDE}: ${lat.toFixed(4)}   ${i18n.LONGITUDE}: ${lng.toFixed(4)}` // eslint-disable-line no-irregular-whitespace
+const Wgs84I = (lat, lng) => ` ${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}` // eslint-disable-line no-irregular-whitespace
+const Mgrs = (lat, lng) => ` MGRS: ${forward([ lng, lat ])}` // eslint-disable-line no-irregular-whitespace
 
 function isTileLayersEqual (a, b) {
   for (const key of Object.keys(a)) {
@@ -159,10 +175,14 @@ export class WebMap extends Component {
       enableUserInput: false,
       customLabelFcn: ({ lng, lat }) => {
         switch (this.indicateMode) {
+          case indicateModes.WGSI:
+            return Wgs84I(lat, lng)
           case indicateModes.MGRS:
-            return `MGRS: ${forward([ lng, lat ])}`
-          default:
-            return ` ${i18n.LONGITUDE}: ${lng.toFixed(4)}   ${i18n.LATITUDE}: ${lat.toFixed(4)}` // eslint-disable-line no-irregular-whitespace
+            return Mgrs(lat, lng)
+          case indicateModes.ALL:
+            return `${Wgs84(lat, lng)}<br/>${Wgs84I(lat, lng)}<br/>${Mgrs(lat, lng)}`
+          default: // WGS-84
+            return Wgs84(lat, lng)
         }
       },
     })
