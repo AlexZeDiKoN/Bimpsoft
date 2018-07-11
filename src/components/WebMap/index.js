@@ -3,12 +3,16 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
-import { Map, TileLayer, Control } from 'leaflet'
+import { Map, TileLayer, Control, control } from 'leaflet'
 import { Symbol } from 'milsymbol'
 import i18n from '../../i18n'
 import 'leaflet.pm'
-import 'leaflet-minimap'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
+import 'leaflet-minimap'
+import 'leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
+import 'leaflet-measure-custom/leaflet.measure/leaflet.measure'
+import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
+import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const miniMapOptions = {
@@ -115,7 +119,26 @@ export class WebMap extends Component {
       return
     }
     this.mini = undefined
-    this.map = new Map(this.container)
+    this.map = new Map(this.container, {
+      zoomControl: false,
+      measureControl: true,
+    })
+    control.zoom({
+      zoomInTitle: i18n.ZOOM_IN,
+      zoomOutTitle: i18n.ZOOM_OUT,
+    }).addTo(this.map)
+    this.scale = control.graphicScale({
+      fill: 'hollow',
+    })
+    this.scale._getDisplayUnit = (meters) => {
+      const m = meters < 1000
+      const displayUnit = ` ${i18n[m ? 'ABBR_METERS' : 'ABBR_KILOMETERS']}`
+      return {
+        unit: displayUnit,
+        amount: m ? meters : meters / 1000,
+      }
+    }
+    this.scale.addTo(this.map)
     this.map.setView(this.props.center, this.props.zoom)
     React.Children.forEach(this.props.children, (child) => {
       if (child.type === Tiles) {
