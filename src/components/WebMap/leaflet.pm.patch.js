@@ -1,6 +1,7 @@
 /* global L, btoa, DOMParser */
 
 // ------------------------ Константи ----------------------------------------------------------------------------------
+const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
 const mouseupTimer = 333
 const activelayerColor = '#0a0' // Колір активного тактичного знака
 const activeBackColor = '#252' // Колір фону активного тактичного знака
@@ -464,7 +465,7 @@ function wrapSvgPath (a) {
 function strechH (decodedPath, dist, templateDist) {
   const arrH = decodedPath.filter((cmd) => cmd[0] === 'h')
   const sumH = arrH.reduce((accum, cmd) => accum + cmd[1], 0)
-  if (sumH !== 0) {
+  if (sumH > epsilon) { // !== 0
     const factor = (dist - (templateDist - sumH)) / sumH
     arrH.map((cmd) => (cmd[1] = cmd[1] * factor))
   }
@@ -785,14 +786,14 @@ function prepareCurve (points, ring, locked) {
 }
 
 function calcControlPoint (pp, pc, pn) {
-  const eq = (a, b) => a[0] === b[0] && a[1] === b[1]
+  const eq = (a, b) => Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon // a[0] === b[0] && a[1] === b[1]
   const sub = (a, b) => [ b[0] - a[0], b[1] - a[1] ]
   const mul = (p, f) => [ p[0] * f, p[1] * f ]
   const add = (a, b) => [ a[0] + b[0], a[1] + b[1] ]
   const len = (p) => Math.hypot(p[0], p[1])
-  const norm = (p, f) => len(p) === 0 ? [ 0, 0 ] : mul([ p[1], -p[0] ], f / len(p))
+  const norm = (p, f) => len(p) < epsilon ? [ 0, 0 ] : mul([ p[1], -p[0] ], f / len(p)) // === 0
 
-  if (eq(pp, pc) && eq(pn, pc)) {
+  if (eq(pp, pn)) { // (eq(pp, pc) && eq(pn, pc)) ||
     return [ pc, pc ]
   }
   if (eq(pp, pc)) {
@@ -809,17 +810,17 @@ function calcControlPoint (pp, pc, pn) {
     return [ norm(sub(pp, pc), lp / 3), norm(dpn, ln / 3) ]
   }
   if (lp > ln) {
-    if (ln !== 0) {
+    if (ln > epsilon) { // !== 0
       dpn = mul(dpn, lp / ln)
     }
   } else {
-    if (lp !== 0) {
+    if (lp > epsilon) { // !== 0
       dpp = mul(dpp, ln / lp)
     }
   }
   const dir = sub(dpn, dpp)
   const ld = len(dir)
-  const [ cpp, cpn ] = ld === 0 ? [ [ 0, 0 ], [ 0, 0 ] ] : [ mul(dir, lp / 3 / ld), mul(dir, -ln / 3 / ld) ]
+  const [ cpp, cpn ] = ld < epsilon ? [ [ 0, 0 ], [ 0, 0 ] ] : [ mul(dir, lp / 3 / ld), mul(dir, -ln / 3 / ld) ] // === 0
   return [ add(cpp, pc), add(cpn, pc) ]
 }
 

@@ -20,7 +20,8 @@ const tmp = `<svg
        h106
        l15,-23 15,23 -15,23 -15,-23
        m30,0 h80
-       a16,16 0 0,1 16,16" />
+       a16,16 0 0,1 16,16" 
+  />
 </svg>`
 
 const objects = [
@@ -54,6 +55,15 @@ const objects = [
   },
 ]
 
+for (let i = 0; i < 1000; i++) {
+  objects.push({
+    id: i + 6,
+    kind: entityKindClass.AREA,
+    points: randomPoints(48, 35, 3, 3, 4),
+    color: randomColor(),
+  })
+}
+
 class ApplicationContent extends React.PureComponent {
   render () {
     return (
@@ -76,3 +86,31 @@ class ApplicationContent extends React.PureComponent {
 }
 
 export default ApplicationContent
+
+function randomPoints (baseLat, baseLon, delta, minCnt, maxCnt) {
+  const c = minCnt + randomInt(maxCnt - minCnt)
+  const r = []
+  const startLat = baseLat + delta * Math.random()
+  const startLon = baseLon + delta * Math.random()
+  for (let i = 0; i < c; i++) {
+    r.push([
+      startLat + delta * Math.random() / 25,
+      startLon + delta * Math.random() / 25,
+    ])
+  }
+  return r
+}
+
+function randomColor () {
+  return `#${randomD()}${randomD()}${randomD()}`
+}
+
+function randomD () {
+  const d = '0123456789abcdef'
+  const p = randomInt(16)
+  return d.slice(p, p + 1)
+}
+
+function randomInt (max) {
+  return Math.floor(Math.random() * max)
+}
