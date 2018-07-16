@@ -6,6 +6,7 @@ import './leaflet.pm.patch.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from 'milsymbol'
 import { forward } from 'mgrs'
+import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -19,11 +20,12 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
 
 const indicateModes = {
-  count: 4,
+  count: 5,
   WGS: 0,
   WGSI: 1,
   MGRS: 2,
-  ALL: 3,
+  UTM: 3,
+  ALL: 4,
 }
 
 const miniMapOptions = {
@@ -46,9 +48,11 @@ const toGMS = (value, pos, neg) => {
   const s = Math.round((value - m) * 60)
   return `${sign} ${g}°${z(m)}'${z(s)}"` // eslint-disable-line no-irregular-whitespace
 }
+const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} x${u.easting.toFixed(0)} y${u.northing.toFixed(0)}`
 const Wgs84 = (lat, lng) => ` ${i18n.LATITUDE}: ${lat.toFixed(4)}   ${i18n.LONGITUDE}: ${lng.toFixed(4)}` // eslint-disable-line no-irregular-whitespace
 const Wgs84I = (lat, lng) => ` ${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}` // eslint-disable-line no-irregular-whitespace
 const Mgrs = (lat, lng) => ` MGRS: ${forward([ lng, lat ])}` // eslint-disable-line no-irregular-whitespace
+const Utm = (lat, lng) => `UTM: ${utmLabel(fromLatLon(lat, lng))}` // eslint-disable-line no-irregular-whitespace
 
 function isTileLayersEqual (a, b) {
   for (const key of Object.keys(a)) {
@@ -179,8 +183,10 @@ export class WebMap extends Component {
             return Wgs84I(lat, lng)
           case indicateModes.MGRS:
             return Mgrs(lat, lng)
+          case indicateModes.UTM:
+            return Utm(lat, lng)
           case indicateModes.ALL:
-            return `${Wgs84(lat, lng)}<br/>${Wgs84I(lat, lng)}<br/>${Mgrs(lat, lng)}`
+            return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng) ].join('<br/>')
           default: // WGS-84
             return Wgs84(lat, lng)
         }
