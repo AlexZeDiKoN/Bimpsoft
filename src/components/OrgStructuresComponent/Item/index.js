@@ -2,8 +2,10 @@ import React from 'react'
 import './style.css'
 import { Icon } from 'antd'
 import PropTypes from 'prop-types'
-import { TreeComponent, HighlightedText } from '../../common'
-import TextFilter from '../../common/TextFilter'
+import { data, components } from '@DZVIN/CommonComponents'
+
+const { common: { TreeComponent, HighlightedText } } = components
+const { TextFilter } = data
 
 export default class Item extends React.Component {
   render () {

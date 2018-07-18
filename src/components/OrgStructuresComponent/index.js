@@ -2,9 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
-import { TreeComponent, TextFilter } from '../common'
+import { data, components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import Item from './Item'
+
+const { TextFilter } = data
+const { common: { TreeComponent } } = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc((item) => item.Name, (item) => item.ID, (item) => item.ParentID)
 

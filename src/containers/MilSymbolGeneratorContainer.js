@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import SymbolGeneratorComponent from '../components/symbol/SymbolGeneratorComponent'
+import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 import { notifications, viewModes } from '../store/actions'
 import { edit } from '../constants/viewModesKeys'
 
@@ -38,6 +38,6 @@ const mapDispatchToProps = (dispatch) => ({
 const MilSymbolGeneratorContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(SymbolGeneratorComponent)
+)(SymbolEditorComponent)
 
 export default MilSymbolGeneratorContainer
