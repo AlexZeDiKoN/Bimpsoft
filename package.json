@@ -58,9 +58,7 @@
     "test-js": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "build-css": "node-less-chokidar src",
-    "watch-css": "node-less-chokidar src --watch",
-    "postinstall": "cd node_modules/milsymbol && npm install",
-    "build-milsymbol": "cd node_modules/milsymbol && npm run bundle && npm run minify"
+    "watch-css": "node-less-chokidar src --watch"
   },
   "homepage": "/map"
 }
