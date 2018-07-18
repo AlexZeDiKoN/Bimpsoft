@@ -6,12 +6,14 @@ import {
 import { Input } from 'antd'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import { components } from '@DZVIN/CommonComponents'
 import { MainMenuLeftContainer, MainMenuRightContainer, panels } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
-import { ValueSwiper, MovablePanel } from '../../components/common'
 import Sidebar from '../Sidebar'
 import i18n from '../../i18n'
+
+const { common: { MovablePanel, ValueSwiper } } = components
 
 const SIDEBAR_SIZE_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 250

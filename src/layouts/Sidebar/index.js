@@ -1,9 +1,12 @@
 import React from 'react'
 import './style.css'
+import { components } from '@DZVIN/CommonComponents'
 import { panels } from '../../containers'
-import { ValueSwiper, TabsPanel } from '../../components/common'
+import { TabsPanel } from '../../components/common'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
+
+const { common: { ValueSwiper } } = components
 
 export default class Sidebar extends React.Component {
   state = {
