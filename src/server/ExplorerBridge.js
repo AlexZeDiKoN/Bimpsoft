@@ -1,4 +1,5 @@
 import { maps } from '../store/actions'
+import { getExplorerOrigin } from '../utils/services'
 
 const ACTION_READY = 'ready'
 const ACTION_INIT = 'init'
@@ -9,7 +10,7 @@ export default class ExplorerBridge {
     this.store = store
   }
 
-  init () {
+  init = () => {
     window.addEventListener('message', (e) => this.onMessage(e))
     const isExplorerOpened = window.opener && !window.opener.closed
     if (isExplorerOpened) {
@@ -17,25 +18,27 @@ export default class ExplorerBridge {
     }
   }
 
-  send (obj) {
+  send = (obj) => {
     const msg = JSON.stringify(obj)
     this.postMessage(msg)
   }
 
-  postMessage (msg) {
-    window.opener.postMessage(msg, '*')
+  postMessage = (msg) => {
+    window.opener.postMessage(msg, getExplorerOrigin())
+    console.info(`Message sent`, msg)
   }
 
-  onMessage (e) {
-    console.log(e)
+  onMessage = (e) => {
     const data = (typeof e.data === 'object') ? e.data : JSON.parse(e.data)
     const { action } = data
     switch (action) {
       case ACTION_INIT: {
+        console.info('action', ACTION_INIT)
         this.send({ action: ACTION_READY })
         break
       }
       case ACTION_OPEN: {
+        console.info('action', ACTION_OPEN)
         const { operationId, folderId } = data
         this.store.dispatch(maps.openMapFolder(operationId, folderId))
         break
