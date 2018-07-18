@@ -59,5 +59,6 @@
     "watch-css": "node-less-chokidar src --watch",
     "postinstall": "cd node_modules/milsymbol && npm install",
     "build-milsymbol": "cd node_modules/milsymbol && npm run bundle && npm run minify"
-  }
+  },
+  "homepage": "/map"
 }
