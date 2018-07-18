@@ -27,6 +27,7 @@ export default class ExplorerBridge {
   }
 
   onMessage (e) {
+    console.log(e)
     const data = (typeof e.data === 'object') ? e.data : JSON.parse(e.data)
     const { action } = data
     switch (action) {
