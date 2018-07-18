@@ -22,3 +22,6 @@ export const getAdminApi = () =>
   process.env.REACT_APP_ADMIN_API
 
 export const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+export const getExplorerOrigin = () =>
+  process.env.REACT_APP_EXPLORER_ORIGIN
