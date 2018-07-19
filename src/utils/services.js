@@ -15,6 +15,9 @@ export const getExplorerApi = () =>
 export const getMapApi = () =>
   process.env.REACT_APP_MAP_API
 
+export const getWebmapApi = () =>
+  process.env.REACT_APP_WEBMAP_API
+
 export const getBGStateUrl = () =>
   `${getServerUrl()}/BGState`
 
