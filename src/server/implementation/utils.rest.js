@@ -1,5 +1,5 @@
 /* global Headers fetch */
-import { getAdminApi, getExplorerApi, getMapApi, getServerUrl } from '../../utils/services'
+import { getAdminApi, getExplorerApi, getMapApi, getWebmapApi, getServerUrl } from '../../utils/services'
 
 const absoluteUri = new RegExp('^(http|https)://')
 
@@ -8,6 +8,7 @@ const explorerApi = serverRootUrl + getExplorerApi()
 export const serverUrl = `${explorerApi}/do`
 const mapApi = serverRootUrl + getMapApi()
 const adminApi = serverRootUrl + getAdminApi()
+const webmapApi = getWebmapApi()
 
 /**
  *
@@ -28,6 +29,10 @@ export function getLayerURL (id) {
 
 export function getMapURL (id) {
   return `${mapApi}/exportMap/${id}`
+}
+
+export function getWebmapURL () {
+  return webmapApi
 }
 
 export async function get (url, entityID) {
@@ -71,7 +76,7 @@ export function getFileBlob (url, id) {
 }
 
 function _getOptions (method) {
-  const myHeaders = _getDefaultHeaders()
+  const myHeaders = _getDefaultHeaders(method === 'POST')
   return {
     mode: 'cors',
     credentials: 'include',
@@ -80,9 +85,11 @@ function _getOptions (method) {
   }
 }
 
-function _getDefaultHeaders () {
+function _getDefaultHeaders (addContentType = true) {
   const myHeaders = new Headers()
-  myHeaders.append('Content-Type', 'application/json;charset=UTF-8')
+  if (addContentType) {
+    myHeaders.append('Content-Type', 'application/json;charset=UTF-8')
+  }
   return myHeaders
 }
 
