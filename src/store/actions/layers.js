@@ -8,6 +8,7 @@ export const SET_TIMELINE_TO = 'SET_TIMELINE_TO'
 export const SET_VISIBLE = 'SET_VISIBLE'
 export const SET_BACK_OPACITY = 'SET_BACK_OPACITY'
 export const SET_HIDDEN_OPACITY = 'SET_HIDDEN_OPACITY'
+export const OBJECT_LIST = Symbol('OBJECT_LIST')
 
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,
@@ -18,7 +19,16 @@ export const updateLayer = (layerData) => ({
   layerData,
 })
 
-export const selectLayer = (layerId) => asyncAction.withNotification(async (dispatch, getState, { api }) => {
+export const selectLayer = (layerId) => asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  const objects = await webmapApi.objGetList(layerId)
+  api.checkServerResponse(objects)
+  dispatch({
+    type: OBJECT_LIST,
+    payload: {
+      layerId,
+      objects,
+    },
+  })
   const content = await api.getAllUnits()
   api.checkServerResponse(content)
   dispatch(orgStructures.set(content))

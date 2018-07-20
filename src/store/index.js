@@ -4,6 +4,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
 import ServerApi from '../server/api.server'
+import WebmapApi from '../server/api.webmap'
 import rootReducer from './reducers'
 
 let store = null
@@ -22,7 +23,7 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
-    thunk.withExtraArgument({ api: ServerApi }),
+    thunk.withExtraArgument({ api: ServerApi, webmapApi: WebmapApi }),
   ]
 
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
