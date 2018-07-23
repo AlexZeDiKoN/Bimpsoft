@@ -71,7 +71,6 @@ class ApplicationContent extends React.PureComponent {
       <WebMap
         center={[ 48, 35 ]}
         zoom={7}
-        objects={objects}
       >
         <Tiles
           source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

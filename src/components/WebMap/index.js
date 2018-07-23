@@ -70,8 +70,8 @@ function isTileLayersEqual (a, b) {
   return true
 }
 
-// TODO: не найелегантніший воркераунд, оптиммізувати у випадку проблем з продуктивністю
-const isTacticalSignsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+/* // TODO: не найелегантніший воркераунд, оптиммізувати у випадку проблем з продуктивністю
+const isTacticalSignsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b) */
 
 const TileChild = PropTypes.shape({
   type: PropTypes.oneOf([ Tiles ]),
@@ -82,7 +82,8 @@ class WebMapInner extends Component {
   static propTypes = {
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
-    objects: PropTypes.arrayOf(PropTypes.shape({
+    objects: PropTypes.object,
+    /* objects: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.number.isRequired,
       kind: PropTypes.oneOf(Object.values(entityKindClass)).isRequired,
       code: PropTypes.string,
@@ -91,7 +92,7 @@ class WebMapInner extends Component {
       points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
       template: PropTypes.string,
       color: PropTypes.string,
-    })),
+    })), */
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(TileChild),
       TileChild,
@@ -99,14 +100,12 @@ class WebMapInner extends Component {
   }
 
   state = {
-    objects: [],
     center: [ 48, 35 ],
     zoom: 7,
   }
 
   static getDerivedStateFromProps (nextProps, prevState) {
     return {
-      objects: nextProps.objects,
       center: nextProps.center || prevState.center,
       zoom: nextProps.zoom || prevState.zoom,
     }
@@ -130,7 +129,7 @@ class WebMapInner extends Component {
     if (this.state.center !== nextState.center || this.state.zoom !== nextState.zoom) {
       this.map.setView(this.props.center, this.props.zoom)
     }
-    this.processObjects(this.state.objects, nextState.objects)
+    // this.processObjects(this.state.objects, nextState.objects)
     return !equals
   }
 
@@ -211,10 +210,11 @@ class WebMapInner extends Component {
   }
 
   initObjects () {
-    this.state.objects.map((object) => this.addObject(object))
+    const { objects } = this.props
+    objects.valueSeq().map((object) => this.addObject(object))
   }
 
-  processObjects (oldObjects, newObjects) {
+  /* processObjects (oldObjects, newObjects) {
     for (const object of oldObjects) {
       if (!newObjects.find((item) => item.id === object.id)) {
         this.deleteObject(object.id)
@@ -232,10 +232,10 @@ class WebMapInner extends Component {
         this.addObject(newObject)
       }
     }
-  }
+  } */
 
   deleteObject (id) {
-    // todo
+    // TODO
   }
 
   addObject ({ id, kind, code = '', options = {}, point, points, template = '', color = 'black' }) {
@@ -256,7 +256,7 @@ class WebMapInner extends Component {
 
 const WebMap = connect(
   (state) => ({
-
+    objects: state.webMap.objects,
   }),
   (dispatch) => ({
 

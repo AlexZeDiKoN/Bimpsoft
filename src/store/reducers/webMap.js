@@ -8,7 +8,7 @@ const WebMapPoint = Record({
   lng: null,
 })
 
-const WebMapAttributes = Record()
+const WebMapAttributes = Record({})
 
 const WebMapObject = Record({
   id: null,

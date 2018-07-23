@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import { routerReducer as routing } from 'react-router-redux'
 import viewModes from './viewModes'
+import webMap from './webMap'
 import maps from './maps'
 import layers from './layers'
 import notifications from './notifications'
@@ -13,4 +14,5 @@ export default combineReducers({
   routing,
   notifications,
   orgStructures,
+  webMap,
 })
