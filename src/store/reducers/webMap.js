@@ -1,16 +1,14 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
 import { actionNames } from '../actions/webMap'
-import { OBJECT_LIST } from '../actions/layers'
+import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
 
 const WebMapPoint = Record({
   lat: null,
   lng: null,
 })
 
-const WebMapAttributes = Record({
-
-})
+const WebMapAttributes = Record()
 
 const WebMapObject = Record({
   id: null,
@@ -92,6 +90,18 @@ export default function webMapReducer (state = WebMapState(), action) {
       })
       return newState
         .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
+    }
+    case ADD_OBJECT: {
+      // TODO
+      return state
+    }
+    case DEL_OBJECT: {
+      // TODO
+      return state
+    }
+    case UPD_OBJECT: {
+      // TODO
+      return state
     }
     default:
       return state
