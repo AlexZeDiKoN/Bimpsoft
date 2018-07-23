@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Shortcuts } from 'react-shortcuts'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
@@ -249,8 +250,37 @@ class WebMapInner extends Component {
     createTacticalSign(id, kind, points, template, color, this.map, anchor)
   }
 
+  handleShortcuts = (action, event) => {
+    switch (action) {
+      case 'ADD_POLYLINE':
+        console.log('ADD_POLYLINE')
+        break
+      case 'ADD_POLYGON':
+        console.log('ADD_POLYGON')
+        break
+      case 'ADD_CURVED_POLYLINE':
+        console.log('ADD_CURVED_POLYLINE')
+        break
+      case 'ADD_CURVED_POLYGON':
+        console.log('ADD_CURVED_POLYGON')
+        break
+      case 'ADD_POINT_SIGN':
+        console.log('ADD_POINT_SIGN')
+        break
+      default:
+        console.error(`Unknown action: ${action}`)
+    }
+  }
+
   render () {
-    return <div ref={(container) => (this.container = container)} style={{ height: '100%' }} />
+    return (
+      <Shortcuts
+        name='WebMap'
+        handler={this.handleShortcuts}
+      >
+        <div ref={(container) => (this.container = container)} style={{ height: '100%' }} />
+      </Shortcuts>
+    )
   }
 }
 

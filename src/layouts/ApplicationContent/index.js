@@ -1,7 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import { ShortcutManager } from 'react-shortcuts'
 import Tiles from '../../components/WebMap/Tiles'
 import WebMap from '../../components/WebMap'
 import { entityKindClass } from '../../components/WebMap/leaflet.pm.patch'
+import keymap from './keymap'
+
+const shortcutManager = new ShortcutManager(keymap)
 
 const tmp = `<svg
   width="480" height="480"
@@ -66,6 +71,10 @@ for (let i = 0; i < 1000; i++) {
 }
 
 class ApplicationContent extends React.PureComponent {
+  getChildContext () {
+    return { shortcuts: shortcutManager }
+  }
+
   render () {
     return (
       <WebMap
@@ -79,6 +88,10 @@ class ApplicationContent extends React.PureComponent {
       </WebMap>
     )
   }
+}
+
+ApplicationContent.childContextTypes = {
+  shortcuts: PropTypes.object.isRequired,
 }
 
 /* <Tiles
