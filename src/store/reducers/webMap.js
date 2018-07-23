@@ -1,17 +1,40 @@
 import PropTypes from 'prop-types'
-import { Record as ImmutableRecord, Map as ImmutableMap } from 'immutable'
+import { Record, List, Map } from 'immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST } from '../actions/layers'
 
-const WebMapState = ImmutableRecord({
+const WebMapPoint = Record({
+  lat: null,
+  lng: null,
+})
+
+const WebMapAttributes = Record({
+
+})
+
+const WebMapObject = Record({
+  id: null,
+  type: null,
+  code: null,
+  point: WebMapPoint(),
+  geometry: List(),
+  unit: null,
+  level: null,
+  affiliation: null,
+  layer: null,
+  parent: null,
+  attributes: WebMapAttributes(),
+})
+
+const WebMapState = Record({
   isMapEditMode: false,
   isPointMarkEditMode: false,
   isTextMarkEditMode: false,
   isTimelineEditMode: false,
-  objectsByLayer: ImmutableMap(),
+  objects: Map(),
 })
 
-export default function webMapReducer (state = new WebMapState(), action) {
+export default function webMapReducer (state = WebMapState(), action) {
   let { type, payload } = action
   switch (type) {
     case actionNames.TOGGLE_MAP_EDIT_MODE: {
@@ -55,7 +78,20 @@ export default function webMapReducer (state = new WebMapState(), action) {
         return state
       }
       const { layerId, objects } = payload
-      return state.setIn([ 'objectsByLayer', layerId ], objects)
+      let newState = state
+      objects.forEach(({ id, type, code, point, geometry, unit, level, affiliation, layer, parent, attributes }) => {
+        newState = newState.update(id, WebMapObject(), (object) => object
+          .merge({ type, code, unit, level, affiliation, layer, parent })
+          .mergeIn('point', point)
+          .mergeIn('attributes', attributes)
+          .update('geometry', (list) => list
+            .setSize(geometry.length)
+            .merge(List(geometry.map((point) => WebMapPoint(point))))
+          )
+        )
+      })
+      return newState
+        .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
     }
     default:
       return state
@@ -67,4 +103,5 @@ export const propTypes = PropTypes.shape({
   isPointMarkEditMode: PropTypes.bool.isRequired,
   isTextMarkEditMode: PropTypes.bool.isRequired,
   isTimelineEditMode: PropTypes.bool.isRequired,
+  objects: PropTypes.object.isRequired,
 })
