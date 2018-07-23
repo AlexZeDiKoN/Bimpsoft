@@ -79,9 +79,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       let newState = state
       objects.forEach(({ id, type, code, point, geometry, unit, level, affiliation, layer, parent, attributes }) => {
         newState = newState.update(id, WebMapObject(), (object) => object
-          .merge({ type, code, unit, level, affiliation, layer, parent })
-          .mergeIn('point', point)
-          .mergeIn('attributes', attributes)
+          .mergeDeep({ type, code, unit, level, affiliation, layer, parent, point, attributes })
           .update('geometry', (list) => list
             .setSize(geometry.length)
             .merge(List(geometry.map((point) => WebMapPoint(point))))
@@ -91,17 +89,26 @@ export default function webMapReducer (state = WebMapState(), action) {
       return newState
         .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
     }
-    case ADD_OBJECT: {
-      // TODO
+    case ADD_OBJECT:
+    case UPD_OBJECT: {
+      if (!payload) {
+        return state
+      }
+      const { id, type, code, point, geometry, unit, level, affiliation, layer, parent, attributes } = payload
       return state
+        .update(id, WebMapObject(), (object) => object
+          .mergeDeep({ type, code, unit, level, affiliation, layer, parent, point, attributes })
+          .update('geometry', (list) => list
+            .setSize(geometry.length)
+            .merge(List(geometry.map((point) => WebMapPoint(point))))
+          )
+        )
     }
     case DEL_OBJECT: {
-      // TODO
-      return state
-    }
-    case UPD_OBJECT: {
-      // TODO
-      return state
+      if (!payload) {
+        return state
+      }
+      return state.delete(payload)
     }
     default:
       return state
