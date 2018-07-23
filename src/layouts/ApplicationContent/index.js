@@ -1,5 +1,6 @@
 import React from 'react'
-import { WebMap, Tiles } from '../../components/WebMap'
+import Tiles from '../../components/WebMap/Tiles'
+import WebMap from '../../components/WebMap'
 import { entityKindClass } from '../../components/WebMap/leaflet.pm.patch'
 
 const tmp = `<svg

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
@@ -8,6 +9,7 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
+import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import 'leaflet-minimap'
@@ -71,15 +73,12 @@ function isTileLayersEqual (a, b) {
 // TODO: не найелегантніший воркераунд, оптиммізувати у випадку проблем з продуктивністю
 const isTacticalSignsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b)
 
-export class Tiles {
-  static propTypes = {
-    source: PropTypes.string.isRequired,
-    minZoom: PropTypes.number,
-    maxZoom: PropTypes.number,
-  }
-}
+const TileChild = PropTypes.shape({
+  type: PropTypes.oneOf([ Tiles ]),
+  props: PropTypes.object,
+})
 
-export class WebMap extends Component {
+class WebMapInner extends Component {
   static propTypes = {
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
@@ -93,10 +92,10 @@ export class WebMap extends Component {
       template: PropTypes.string,
       color: PropTypes.string,
     })),
-    children: PropTypes.arrayOf(PropTypes.shape({
-      type: PropTypes.oneOf([ Tiles ]),
-      props: PropTypes.object,
-    })),
+    children: PropTypes.oneOfType([
+      PropTypes.arrayOf(TileChild),
+      TileChild,
+    ]),
   }
 
   state = {
@@ -254,3 +253,15 @@ export class WebMap extends Component {
     return <div ref={(container) => (this.container = container)} style={{ height: '100%' }} />
   }
 }
+
+const WebMap = connect(
+  (state) => ({
+
+  }),
+  (dispatch) => ({
+
+  }),
+)(WebMapInner)
+WebMap.displayName = 'WebMap'
+
+export default WebMap
