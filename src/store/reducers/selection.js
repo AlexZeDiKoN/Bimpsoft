@@ -10,7 +10,7 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case actions.SET_SELECTION: {
       const { data } = action
-      return { ...state, data }
+      return { ...state, data, showForm: false }
     }
     case actions.SHOW_FORM: {
       return { ...state, showForm: true }

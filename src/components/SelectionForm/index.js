@@ -1,34 +1,45 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import * as SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
+import SymbolForm from './SymbolForm'
+import ShapeForm from './ShapeForm'
 
 const { common: { MovablePanel } } = components
 
-class SymbolForm extends React.Component {
-  render () {
-    return (
-      <SymbolEditorComponent
-        elementsConfigs={ {
-          NAME: { hidden: true },
-        }}
-        {...this.props}
-      />
-    )
-  }
-}
-
 const forms = {
   [SelectionTypes.POINT_SIGN]: {
-    title: i18n.MIL_TEMPLATE,
+    title: i18n.MIL_SYMBOL,
     component: SymbolForm,
+  },
+  [SelectionTypes.SHAPE_LINE]: {
+    title: i18n.SHAPE_LINE,
+    component: ShapeForm,
+  },
+  [SelectionTypes.SHAPE_PATH]: {
+    title: i18n.SHAPE_PATH,
+    component: ShapeForm,
+  },
+  [SelectionTypes.SHAPE_POLYHEDRON]: {
+    title: i18n.SHAPE_POLYHEDRON,
+    component: ShapeForm,
+  },
+  [SelectionTypes.SHAPE_POLYGON]: {
+    title: i18n.SHAPE_POLYGON,
+    component: ShapeForm,
+  },
+  [SelectionTypes.SHAPE_RECTANGLE]: {
+    title: i18n.SHAPE_RECTANGLE,
+    component: ShapeForm,
+  },
+  [SelectionTypes.SHAPE_CIRCLE]: {
+    title: i18n.SHAPE_CIRCLE,
+    component: ShapeForm,
   },
 }
 
 export default class SelectionForm extends React.Component {
-
   changeHandler = (data) => {
     const { selectionData } = this.props
     switch (selectionData.type) {

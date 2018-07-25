@@ -34,10 +34,12 @@ const getItems = memoizeOne((isEdit, templatesById) => {
         key: 'lineSign',
         title: i18n.LINE_SIGN,
         items: [
-          { key: 'lineSign1', icon: 'smile' },
-          { key: 'lineSign2', icon: 'smile' },
-          { key: 'lineSign3', icon: 'paper-clip' },
-          { key: 'lineSign4', icon: 'paper-clip' },
+          commandToItemData('addShapeLine'),
+          commandToItemData('addShapePath'),
+          commandToItemData('addShapePolyhedron'),
+          commandToItemData('addShapePolygon'),
+          commandToItemData('addShapeRectangle'),
+          commandToItemData('addShapeCircle'),
         ],
       },
       {
@@ -71,10 +73,7 @@ const getCommands = memoizeOne((byIds) => {
     data.type = SelectionTypes.POINT_SIGN
     symbolCommands[id] = {
       key: id,
-      action: (dispatch) => {
-        dispatch(selection.hideForm())
-        dispatch(selection.setSelection(data))
-      },
+      action: selection.setSelection(data),
       checkedSelector: (state) => state.selection && state.selection.data === data,
     }
   })

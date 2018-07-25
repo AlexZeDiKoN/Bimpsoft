@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import TemplateFormComponent from '../components/TemplateFormComponent'
+import TemplateForm from '../components/TemplateForm'
 import * as templatesActions from '../store/actions/templates'
 import * as notifications from '../store/actions/notifications'
 import i18n from '../i18n'
@@ -25,6 +25,6 @@ const mapDispatchToProps = (dispatch) => ({
 const SelectionFormContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(TemplateFormComponent)
+)(TemplateForm)
 
 export default SelectionFormContainer

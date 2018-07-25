@@ -6,7 +6,7 @@ import i18n from '../i18n'
 
 const { common: { MovablePanel } } = components
 
-export default class TemplateFormComponent extends React.Component {
+export default class TemplateForm extends React.Component {
   changeHandler = (data) => {
     this.props.onChange(data)
   }
@@ -41,7 +41,7 @@ export default class TemplateFormComponent extends React.Component {
     )
   }
 }
-TemplateFormComponent.propTypes = {
+TemplateForm.propTypes = {
   selectedTemplate: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
