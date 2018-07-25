@@ -10,6 +10,12 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
+import { layers } from '../../store/actions'
+import {
+  ADD_POLYLINE, ADD_POLYGON, ADD_CURVED_POLYLINE, ADD_CURVED_POLYGON, ADD_POINT_SIGN,
+  // TODO: пибрати це після тестування
+  LOAD_TEST_OBJECTS,
+} from '../../constants/shortcuts'
 import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -81,23 +87,22 @@ const TileChild = PropTypes.shape({
 
 class WebMapInner extends Component {
   static propTypes = {
+    // props
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
-    objects: PropTypes.object,
-    /* objects: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      kind: PropTypes.oneOf(Object.values(entityKindClass)).isRequired,
-      code: PropTypes.string,
-      options: PropTypes.object,
-      point: PropTypes.arrayOf(PropTypes.number),
-      points: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-      template: PropTypes.string,
-      color: PropTypes.string,
-    })), */
+    // children
     children: PropTypes.oneOfType([
       PropTypes.arrayOf(TileChild),
       TileChild,
     ]),
+    // from Redux store
+    objects: PropTypes.object,
+    // Redux actions
+    addObject: PropTypes.func,
+    deleteObject: PropTypes.func,
+    updateObject: PropTypes.func,
+    // TODO: пибрати це після тестування
+    loadTestObject: PropTypes.func,
   }
 
   state = {
@@ -215,8 +220,9 @@ class WebMapInner extends Component {
     objects.valueSeq().map((object) => this.addObject(object))
   }
 
-  /* processObjects (oldObjects, newObjects) {
-    for (const object of oldObjects) {
+  updateObjects () {
+    this.props.objects.valueSeq().map((object) => console.info(object.toJS()))
+    /* for (const object of oldObjects) {
       if (!newObjects.find((item) => item.id === object.id)) {
         this.deleteObject(object.id)
       }
@@ -232,8 +238,8 @@ class WebMapInner extends Component {
         this.deleteObject(object.id)
         this.addObject(newObject)
       }
-    }
-  } */
+    } */
+  }
 
   deleteObject (id) {
     // TODO
@@ -250,23 +256,46 @@ class WebMapInner extends Component {
     createTacticalSign(id, kind, points, template, color, this.map, anchor)
   }
 
-  handleShortcuts = (action, event) => {
+  handleShortcuts = async (action) => {
+    const { addObject } = this.props
     switch (action) {
-      case 'ADD_POLYLINE':
-        console.log('ADD_POLYLINE')
+      case ADD_POLYLINE:
+        console.info('ADD_POLYLINE')
         break
-      case 'ADD_POLYGON':
-        console.log('ADD_POLYGON')
+      case ADD_POLYGON:
+        console.info('ADD_POLYGON')
         break
-      case 'ADD_CURVED_POLYLINE':
-        console.log('ADD_CURVED_POLYLINE')
+      case ADD_CURVED_POLYLINE:
+        console.info('ADD_CURVED_POLYLINE')
         break
-      case 'ADD_CURVED_POLYGON':
-        console.log('ADD_CURVED_POLYGON')
+      case ADD_CURVED_POLYGON: {
+        console.info('ADD_CURVED_POLYGON')
+        if (this.map) {
+          const bounds = this.map.getBounds()
+          const center = bounds.getCenter()
+          const width = bounds.getEast() - bounds.getWest()
+          const height = bounds.getNorth() - bounds.getSouth()
+          await addObject({
+            type: entityKindClass.AREA,
+            geometry: [
+              { lat: center.lat - height / 10, lng: center.lng },
+              { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+              { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+            ],
+          })
+          this.updateObjects()
+        }
         break
-      case 'ADD_POINT_SIGN':
-        console.log('ADD_POINT_SIGN')
+      }
+      case ADD_POINT_SIGN:
+        console.info('ADD_POINT_SIGN')
         break
+      // TODO: пибрати це після тестування
+      case LOAD_TEST_OBJECTS: {
+        console.info('LOAD_TEST_OBJECTS')
+        this.props.loadTestObject()
+        break
+      }
       default:
         console.error(`Unknown action: ${action}`)
     }
@@ -289,7 +318,11 @@ const WebMap = connect(
     objects: state.webMap.objects,
   }),
   (dispatch) => ({
-
+    addObject: (object) => dispatch(layers.addObject(object)),
+    deleteObject: (id) => dispatch(layers.deleteObject(id)),
+    updateObject: (object) => dispatch(layers.updateObject(object)),
+    // TODO: пибрати це після тестування
+    loadTestObject: () => dispatch(layers.selectLayer(null)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

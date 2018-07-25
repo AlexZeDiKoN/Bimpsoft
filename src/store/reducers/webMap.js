@@ -15,7 +15,7 @@ const WebMapObject = Record({
   type: null,
   code: null,
   point: WebMapPoint(),
-  geometry: List(),
+  geometry: List([]),
   unit: null,
   level: null,
   affiliation: null,
@@ -31,6 +31,25 @@ const WebMapState = Record({
   isTimelineEditMode: false,
   objects: Map(),
 })
+
+const updateObject = (map, { id, geometry, point, attributes, ...rest }) => {
+  console.log(map.toJS())
+  console.log({ id, geometry, point, attributes, ...rest })
+  const newMap = map.set(id, WebMapObject({ id, ...rest }), (object) => object
+    .mergeDeep({ point, attributes })
+    .set('geometry', List([]), (list) => list
+      .setSize(geometry.length)
+      .merge(List(geometry.map(WebMapPoint)))
+    )
+  )
+  console.log(newMap.toJS())
+  return newMap
+  /* .mergeDeep({ point, attributes })
+  .update('geometry', (list) => list
+    .setSize(geometry.length)
+    .merge(List(geometry.map(WebMapPoint)))
+  ) */
+}
 
 export default function webMapReducer (state = WebMapState(), action) {
   let { type, payload } = action
@@ -76,40 +95,33 @@ export default function webMapReducer (state = WebMapState(), action) {
         return state
       }
       const { layerId, objects } = payload
-      let newState = state
-      objects.forEach(({ id, type, code, point, geometry, unit, level, affiliation, layer, parent, attributes }) => {
-        newState = newState.update(id, WebMapObject(), (object) => object
-          .mergeDeep({ type, code, unit, level, affiliation, layer, parent, point, attributes })
-          .update('geometry', (list) => list
-            .setSize(geometry.length)
-            .merge(List(geometry.map((point) => WebMapPoint(point))))
-          )
-        )
-      })
-      return newState
+
+      console.log(0, objects)
+      let map = state.get('objects')
+      console.log(1, map.toJS())
+      map = objects.reduce(updateObject, map)
+      console.log(2, map.toJS())
+      map = map.filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
+      console.log(3, map.toJS())
+      return state.set('objects', map)
+
+      /* console.log(objects)
+      let newState = objects
+        .reduce(updateObject, state)
+      console.log(newState.toJS())
+      newState = newState
         .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
+      console.log(newState.toJS()) */
+
+      /* return objects
+        .reduce(updateObject, state)
+        .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id)) */
     }
     case ADD_OBJECT:
-    case UPD_OBJECT: {
-      if (!payload) {
-        return state
-      }
-      const { id, type, code, point, geometry, unit, level, affiliation, layer, parent, attributes } = payload
-      return state
-        .update(id, WebMapObject(), (object) => object
-          .mergeDeep({ type, code, unit, level, affiliation, layer, parent, point, attributes })
-          .update('geometry', (list) => list
-            .setSize(geometry.length)
-            .merge(List(geometry.map((point) => WebMapPoint(point))))
-          )
-        )
-    }
-    case DEL_OBJECT: {
-      if (!payload) {
-        return state
-      }
-      return state.delete(payload)
-    }
+    case UPD_OBJECT:
+      return payload ? updateObject(state, payload) : state
+    case DEL_OBJECT:
+      return payload ? state.delete(payload) : state
     default:
       return state
   }
