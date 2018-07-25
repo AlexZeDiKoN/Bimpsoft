@@ -321,6 +321,8 @@ const WebMap = connect(
     addObject: (object) => dispatch(layers.addObject(object)),
     deleteObject: (id) => dispatch(layers.deleteObject(id)),
     updateObject: (object) => dispatch(layers.updateObject(object)),
+    onClick: (lat, lng) => dispatch(webMap.clickOnMap(lat, lng)),
+    onSelection: (selected) => dispatch(webMap.selectionChanged(selected)),
     // TODO: пибрати це після тестування
     loadTestObject: () => dispatch(layers.selectLayer(null)),
   }),
