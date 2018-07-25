@@ -7,7 +7,12 @@ import { Input } from 'antd'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import { MainMenuLeftContainer, MainMenuRightContainer, panels } from '../../containers'
+import {
+  MainMenuLeftContainer,
+  MainMenuRightContainer,
+  SelectionFormContainer,
+  TemplateFormContainer,
+} from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import Sidebar from '../Sidebar'
@@ -36,9 +41,6 @@ class App extends React.Component {
 
   render () {
     const sidebarDisplay = this.props.viewModes.rightPanel ? '' : 'none'
-    const milSymbolForm = this.props.viewModes.edit ? (
-      <MovablePanel title={panels.milTemplate.title} component={panels.milTemplate.component}/>
-    ) : null
     return (
       <div id="app" className="app">
         <div className="header">
@@ -51,7 +53,8 @@ class App extends React.Component {
           </div>
         </div>
         <div className="app-body">
-          {milSymbolForm}
+          <SelectionFormContainer wrapper={ MovablePanel }/>
+          <TemplateFormContainer wrapper={ MovablePanel }/>
           <div className="app-content">
             <Switch>
               {this.routes.map(this.renderRoute)}

@@ -2,6 +2,7 @@ import React from 'react'
 import { Icon, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import './style.css'
+import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
 export default class MainMenu extends React.Component {
   constructor () {
@@ -22,7 +23,13 @@ export default class MainMenu extends React.Component {
   renderItem (itemData, level) {
     const title = itemData.icon ? (
       <Tooltip placement="bottom" title={itemData.title}>
-        <Icon className="toolbar-button-icon" type={itemData.icon} />
+        <Icon className="menu-button-icon" type={itemData.icon} />
+      </Tooltip>
+    ) : itemData.milsymbol ? (
+      <Tooltip placement="bottom" title={itemData.title}>
+        <div className="menu-button-icon">
+          <MilSymbol code={itemData.milsymbol.code} amplifiers={itemData.milsymbol.amplifiers} />
+        </div>
       </Tooltip>
     ) : itemData.title
 
@@ -46,7 +53,7 @@ export default class MainMenu extends React.Component {
         </div>
       )
     } else {
-      const isSelected = this.props.selectedKeys.indexOf(itemData.name) !== -1
+      const isSelected = this.props.selectedKeys.indexOf(itemData.key) !== -1
       const className = 'menu-button' + (isSelected ? ' menu-button-selected' : '')
       return (
         <div className={className} key={itemData.key}>

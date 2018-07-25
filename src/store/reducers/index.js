@@ -6,6 +6,8 @@ import maps from './maps'
 import layers from './layers'
 import notifications from './notifications'
 import orgStructures from './orgStructures'
+import templates from './templates'
+import selection from './selection'
 
 export default combineReducers({
   viewModes,
@@ -15,4 +17,6 @@ export default combineReducers({
   notifications,
   orgStructures,
   webMap,
+  templates,
+  selection,
 })

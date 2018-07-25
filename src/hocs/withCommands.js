@@ -1,8 +1,10 @@
 import { connect } from 'react-redux'
 
-export const withCommands = (commands, getItems) => (WrappedComponent) => {
+export const withCommands = (getCommands, getItems) => (WrappedComponent) => {
+  let commands
   const mapStateToProps = (store) => {
     const selectedKeys = []
+    commands = getCommands(store)
     for (const key in commands) {
       const command = commands[key]
       const checked = command.checkedSelector && command.checkedSelector(store)
