@@ -11,5 +11,5 @@ const items = [
   commandToItemData('toggleRightPanel'),
   commandToItemData('toggleSettings'),
 ]
-const withCommandsConnection = withCommands(commands, () => items)
+const withCommandsConnection = withCommands(() => commands, () => items)
 export default withCommandsConnection(MainMenu)

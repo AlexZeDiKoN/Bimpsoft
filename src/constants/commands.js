@@ -1,4 +1,6 @@
 import * as viewModesActions from '../store/actions/viewModes'
+import * as templatesActions from '../store/actions/templates'
+import * as selectionActions from '../store/actions/selection'
 import i18n from '../i18n'
 import * as viewModesKeys from './viewModesKeys'
 
@@ -32,5 +34,15 @@ export default {
     icon: 'setting',
     checkedSelector: (state) => state.viewModes.settings,
     action: viewModesActions.viewModeToggle(viewModesKeys.settings),
+  },
+  addPointSignTemplate: {
+    title: i18n.ADD_POINT_SIGN_TEMPLATE,
+    icon: 'plus',
+    action: templatesActions.setSelectedTemplate({}),
+  },
+  tempCommandShowForm: {
+    title: 'Emulate click to the map',
+    icon: 'environment',
+    action: selectionActions.showForm(),
   },
 }

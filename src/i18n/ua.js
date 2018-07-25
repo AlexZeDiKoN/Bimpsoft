@@ -24,5 +24,7 @@ export const ABBR_METERS = 'м'
 export const ABBR_KILOMETERS = 'км'
 export const LONGITUDE = 'Довгота'
 export const LATITUDE = 'Широта'
-
+export const ADD_POINT_SIGN_TEMPLATE = 'Додати шаблон умовного знаку'
+export const MSG_TITLE_SIGN_TEMPLATE_CREATED = 'Шаблону умовного знаку створено'
+export const MSG_TEXT_SIGN_TEMPLATE_CREATED = (data) => `Назва:${data.name}\r\n Код: ${data.code}`
 export const UNDEFINED = 'Не вказано'
