@@ -1,0 +1,7 @@
+export const POINT_SIGN = 'POINT_SIGN'
+export const SHAPE_LINE = 'SHAPE_LINE'
+export const SHAPE_PATH = 'SHAPE_PATH'
+export const SHAPE_POLYHEDRON = 'SHAPE_POLYHEDRON'
+export const SHAPE_POLYGON = 'SHAPE_POLYGON'
+export const SHAPE_RECTANGLE = 'SHAPE_RECTANGLE'
+export const SHAPE_CIRCLE = 'SHAPE_CIRCLE'

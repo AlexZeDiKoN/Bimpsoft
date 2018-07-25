@@ -5,6 +5,8 @@ import MainMenuRightContainer from './MainMenuRightContainer.js'
 import LayersContainer from './LayersContainer.js'
 import OrgStructuresContainer from './OrgStructuresContainer.js'
 import MilSymbolGeneratorContainer from './MilSymbolGeneratorContainer.js'
+import SelectionFormContainer from './SelectionFormContainer.js'
+import TemplateFormContainer from './TemplateFormContainer.js'
 
 const panels = {
   history: {
@@ -29,5 +31,7 @@ export {
   MainMenuLeftContainer,
   MainMenuRightContainer,
   LayersContainer,
+  SelectionFormContainer,
+  TemplateFormContainer,
   panels,
 }
