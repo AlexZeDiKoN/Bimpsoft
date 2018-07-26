@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
+import { update, comparator, filter } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
 
@@ -15,7 +16,7 @@ const WebMapObject = Record({
   type: null,
   code: null,
   point: WebMapPoint(),
-  geometry: List([]),
+  geometry: List(),
   unit: null,
   level: null,
   affiliation: null,
@@ -32,24 +33,14 @@ const WebMapState = Record({
   objects: Map(),
 })
 
-const updateObject = (map, { id, geometry, point, attributes, ...rest }) => {
-  console.log(map.toJS())
-  console.log({ id, geometry, point, attributes, ...rest })
-  const newMap = map.set(id, WebMapObject({ id, ...rest }), (object) => object
-    .mergeDeep({ point, attributes })
-    .set('geometry', List([]), (list) => list
-      .setSize(geometry.length)
-      .merge(List(geometry.map(WebMapPoint)))
-    )
-  )
-  console.log(newMap.toJS())
-  return newMap
-  /* .mergeDeep({ point, attributes })
-  .update('geometry', (list) => list
-    .setSize(geometry.length)
-    .merge(List(geometry.map(WebMapPoint)))
-  ) */
-}
+const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
+  update(map, id, (object) => {
+    let obj = object || WebMapObject({ id, ...rest })
+    obj = update(obj, 'point', comparator, WebMapPoint(point))
+    obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
+    obj = update(obj, 'geometry', comparator, List(geometry.map(WebMapPoint)))
+    return obj
+  })
 
 export default function webMapReducer (state = WebMapState(), action) {
   let { type, payload } = action
@@ -95,31 +86,15 @@ export default function webMapReducer (state = WebMapState(), action) {
         return state
       }
       const { layerId, objects } = payload
-
-      console.log(0, objects)
-      let map = state.get('objects')
-      console.log(1, map.toJS())
-      map = objects.reduce(updateObject, map)
-      console.log(2, map.toJS())
-      map = map.filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
-      console.log(3, map.toJS())
-      return state.set('objects', map)
-
-      /* console.log(objects)
-      let newState = objects
-        .reduce(updateObject, state)
-      console.log(newState.toJS())
-      newState = newState
-        .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
-      console.log(newState.toJS()) */
-
-      /* return objects
-        .reduce(updateObject, state)
-        .filter(({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id)) */
+      return update(state, 'objects', (map) => {
+        map = objects.reduce(updateObject, map)
+        map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
+        return map
+      })
     }
     case ADD_OBJECT:
     case UPD_OBJECT:
-      return payload ? updateObject(state, payload) : state
+      return update(state, 'objects', (map) => updateObject(map, payload))
     case DEL_OBJECT:
       return payload ? state.delete(payload) : state
     default:

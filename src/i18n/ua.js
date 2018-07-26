@@ -29,11 +29,13 @@ export const ADD_POINT_SIGN_TEMPLATE = 'Додати шаблон умовног
 export const MSG_TITLE_SIGN_TEMPLATE_CREATED = 'Шаблону умовного знаку створено'
 export const MSG_TEXT_SIGN_TEMPLATE_CREATED = (data) => `Назва:${data.name}\r\n Код: ${data.code}`
 
-export const SHAPE_LINE = 'Ломана лінія'
-export const SHAPE_PATH = 'Крива'
-export const SHAPE_POLYHEDRON = 'Багатокутник'
-export const SHAPE_POLYGON = 'Полігон'
+export const SHAPE_POLYLINE = 'Ломана лінія'
+export const SHAPE_CURVE = 'Крива'
+export const SHAPE_POLYGON = 'Багатокутник'
+export const SHAPE_AREA = 'Область'
 export const SHAPE_RECTANGLE = 'Прямокутник'
 export const SHAPE_CIRCLE = 'Коло'
+export const SHAPE_SQUARE = 'Квадрат'
+export const SHAPE_TEXT = 'Текстова мітка'
 
 export const UNDEFINED = 'Не вказано'

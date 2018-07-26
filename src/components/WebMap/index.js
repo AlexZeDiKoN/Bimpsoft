@@ -10,7 +10,7 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
-import { layers } from '../../store/actions'
+import { layers, selection } from '../../store/actions'
 import {
   ADD_POLYLINE, ADD_POLYGON, ADD_CURVED_POLYLINE, ADD_CURVED_POLYGON, ADD_POINT_SIGN,
   // TODO: пибрати це після тестування
@@ -26,7 +26,15 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
-import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+import { entityKind, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+
+const colorOf = (affiliation) => {
+  switch (affiliation) {
+    // TODO
+    default:
+      return 'black'
+  }
+}
 
 const indicateModes = {
   count: 5,
@@ -63,23 +71,6 @@ const Wgs84I = (lat, lng) => ` ${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', '
 const Mgrs = (lat, lng) => ` MGRS: ${forward([ lng, lat ])}` // eslint-disable-line no-irregular-whitespace
 const Utm = (lat, lng) => `UTM: ${utmLabel(fromLatLon(lat, lng))}` // eslint-disable-line no-irregular-whitespace
 
-function isTileLayersEqual (a, b) {
-  for (const key of Object.keys(a)) {
-    if (b[key] !== a[key]) {
-      return false
-    }
-  }
-  for (const key of Object.keys(b)) {
-    if (a[key] !== b[key]) {
-      return false
-    }
-  }
-  return true
-}
-
-/* // TODO: не найелегантніший воркераунд, оптиммізувати у випадку проблем з продуктивністю
-const isTacticalSignsEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b) */
-
 const TileChild = PropTypes.shape({
   type: PropTypes.oneOf([ Tiles ]),
   props: PropTypes.object,
@@ -102,7 +93,7 @@ class WebMapInner extends Component {
     deleteObject: PropTypes.func,
     updateObject: PropTypes.func,
     // TODO: пибрати це після тестування
-    loadTestObject: PropTypes.func,
+    loadTestObjects: PropTypes.func,
   }
 
   state = {
@@ -123,24 +114,10 @@ class WebMapInner extends Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    let equals = nextProps.children.length === this.props.children.length
-    if (equals) {
-      for (let i = 0; i < this.props.children.length; i++) {
-        equals = equals && isTileLayersEqual(this.props.children[i].props, nextProps.children[i].props)
-        if (!equals) {
-          break
-        }
-      }
+    if (nextProps.objects !== this.props.objects) {
+      this.updateObjects(nextProps.objects)
     }
-    if (this.state.center !== nextState.center || this.state.zoom !== nextState.zoom) {
-      this.map.setView(this.props.center, this.props.zoom)
-    }
-    // this.processObjects(this.state.objects, nextState.objects)
-    return !equals
-  }
-
-  componentDidUpdate () {
-    this.setMapView()
+    return false
   }
 
   componentWillUnmount () {
@@ -216,44 +193,51 @@ class WebMapInner extends Component {
   }
 
   initObjects () {
-    const { objects } = this.props
-    objects.valueSeq().map((object) => this.addObject(object))
+    this.updateObjects(this.props.objects)
   }
 
-  updateObjects () {
-    this.props.objects.valueSeq().map((object) => console.info(object.toJS()))
-    /* for (const object of oldObjects) {
-      if (!newObjects.find((item) => item.id === object.id)) {
-        this.deleteObject(object.id)
-      }
+  updateObjects (objects) {
+    if (this.map) {
+      const ids = []
+      this.map.eachLayer((layer) => {
+        if (layer.id) {
+          const object = objects.get(layer.id)
+          if (!object || layer.object !== object) {
+            if (object && object.equals(layer.object)) {
+              console.log(`Leave unchanged object #${layer.id}`)
+              layer.object = object
+            } else {
+              console.log(`Remove object #${layer.id}`)
+              layer.remove()
+            }
+          } else {
+            ids.push(layer.id)
+          }
+        }
+      })
+      objects.forEach((object, key) => {
+        // console.info(key, object.toJS())
+        if (!ids.includes(key)) {
+          console.log(`Create object #${key}`)
+          this.addObject(object)
+        }
+      })
     }
-    for (const object of newObjects) {
-      if (!oldObjects.find((item) => item.id === object.id)) {
-        this.addObject(object)
-      }
-    }
-    for (const object of oldObjects) {
-      const newObject = newObjects.find((item) => item.id === object.id)
-      if (!isTacticalSignsEqual(object, newObject)) {
-        this.deleteObject(object.id)
-        this.addObject(newObject)
-      }
-    } */
   }
 
-  deleteObject (id) {
-    // TODO
-  }
-
-  addObject ({ id, kind, code = '', options = {}, point, points, template = '', color = 'black' }) {
+  addObject (object) {
+    console.log('addObject', object.toJS())
+    const { id, type, code = '', point, geometry } = object
     let anchor
-    if (kind === entityKindClass.POINT) {
-      const symbol = new Symbol(code, { size: 48, ...options })
+    let template
+    let points = geometry.toJS()
+    if (+type === entityKind.POINT) {
+      const symbol = new Symbol(code, { size: 48, ...object.attributes.toJS() })
       template = symbol.asSVG()
       points = [ point ]
       anchor = symbol.getAnchor()
     }
-    createTacticalSign(id, kind, points, template, color, this.map, anchor)
+    createTacticalSign(id, object, +type, points, template, colorOf(object.affiliation), this.map, anchor)
   }
 
   handleShortcuts = async (action) => {
@@ -276,14 +260,13 @@ class WebMapInner extends Component {
           const width = bounds.getEast() - bounds.getWest()
           const height = bounds.getNorth() - bounds.getSouth()
           await addObject({
-            type: entityKindClass.AREA,
+            type: entityKind.AREA,
             geometry: [
               { lat: center.lat - height / 10, lng: center.lng },
               { lat: center.lat + height / 10, lng: center.lng - width / 10 },
               { lat: center.lat + height / 10, lng: center.lng + width / 10 },
             ],
           })
-          this.updateObjects()
         }
         break
       }
@@ -293,7 +276,7 @@ class WebMapInner extends Component {
       // TODO: пибрати це після тестування
       case LOAD_TEST_OBJECTS: {
         console.info('LOAD_TEST_OBJECTS')
-        this.props.loadTestObject()
+        this.props.loadTestObjects()
         break
       }
       default:
@@ -321,10 +304,9 @@ const WebMap = connect(
     addObject: (object) => dispatch(layers.addObject(object)),
     deleteObject: (id) => dispatch(layers.deleteObject(id)),
     updateObject: (object) => dispatch(layers.updateObject(object)),
-    onClick: (lat, lng) => dispatch(webMap.clickOnMap(lat, lng)),
-    onSelection: (selected) => dispatch(webMap.selectionChanged(selected)),
+    onSelection: (selected) => dispatch(selected ? selection.setSelection(selected) : selection.clearSelection()),
     // TODO: пибрати це після тестування
-    loadTestObject: () => dispatch(layers.selectLayer(null)),
+    loadTestObjects: () => dispatch(layers.selectLayer(null)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

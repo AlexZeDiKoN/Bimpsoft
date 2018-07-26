@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { ShortcutManager } from 'react-shortcuts'
 import Tiles from '../../components/WebMap/Tiles'
 import WebMap from '../../components/WebMap'
-import { entityKindClass } from '../../components/WebMap/leaflet.pm.patch'
+import { entityKind } from '../../components/WebMap/leaflet.pm.patch'
 import keymap from './keymap'
 
 const shortcutManager = new ShortcutManager(keymap)
@@ -33,28 +33,28 @@ const tmp = `<svg
 const objects = [
   {
     id: 1,
-    kind: entityKindClass.POINT,
+    kind: entityKind.POINT,
     code: 'sfgpewrh--mt',
     options: { direction: 45 },
     point: [ 48.5, 35 ],
   }, {
     id: 2,
-    kind: entityKindClass.POINT,
+    kind: entityKind.POINT,
     code: '10011500521200000800',
     point: [ 48.5, 35.5 ],
   }, {
     id: 3,
-    kind: entityKindClass.POINT,
+    kind: entityKind.POINT,
     code: 'SHGPUCDT--AI',
     point: [ 48.5, 36 ],
   }, {
     id: 4,
-    kind: entityKindClass.AREA,
+    kind: entityKind.AREA,
     points: [ [ 47.8, 34.8 ], [ 48.2, 35.2 ], [ 47.8, 35 ] ],
     color: '#38f',
   }, {
     id: 5,
-    kind: entityKindClass.SEGMENT,
+    kind: entityKind.SEGMENT,
     points: [ [ 47.5, 34.5 ], [ 47.55, 34.75 ] ],
     template: tmp,
     color: 'red',
@@ -64,7 +64,7 @@ const objects = [
 for (let i = 0; i < 1000; i++) {
   objects.push({
     id: i + 6,
-    kind: entityKindClass.AREA,
+    kind: entityKind.AREA,
     points: randomPoints(48, 35, 3, 3, 4),
     color: randomColor(),
   })
@@ -78,11 +78,16 @@ class ApplicationContent extends React.PureComponent {
   render () {
     return (
       <WebMap
-        center={[ 48, 35 ]}
-        zoom={7}
+        center={[ 48.5, 38 ]}
+        zoom={14}
       >
         <Tiles
           source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={20}
+        />
+        <Tiles
+          source="http://10.8.26.84/api/BaseMapLayer/ato/{z}/{y}/{x}"
+          tms={true}
           maxZoom={20}
         />
       </WebMap>
@@ -93,11 +98,6 @@ class ApplicationContent extends React.PureComponent {
 ApplicationContent.childContextTypes = {
   shortcuts: PropTypes.object.isRequired,
 }
-
-/* <Tiles
-  source="http://buyalo-w8:6080/arcgis/rest/services/ATO/MapServer/tile/{z}/{y}/{x}"
-  maxZoom={17}
-/> */
 
 export default ApplicationContent
 
