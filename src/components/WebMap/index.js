@@ -18,6 +18,7 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import { entityKindClass, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+import initGrid from './coordinateGrid'
 
 const indicateModes = {
   count: 5,
@@ -209,6 +210,7 @@ export class WebMap extends Component {
       }
     }, this)
     initMapEvents(this.map)
+    initGrid(this.map)
   }
 
   initObjects () {
