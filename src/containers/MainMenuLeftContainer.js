@@ -1,7 +1,7 @@
 import memoizeOne from 'memoize-one'
 import MainMenu from '../components/MainMenu/index'
 import commands from '../constants/commands'
-import * as SelectionTypes from '../constants/SelectionTypes'
+import SelectionTypes from '../constants/SelectionTypes'
 import { withCommands } from '../hocs/withCommands'
 import i18n from '../i18n'
 import { selection } from '../store/actions'
@@ -34,12 +34,14 @@ const getItems = memoizeOne((isEdit, templatesById) => {
         key: 'lineSign',
         title: i18n.LINE_SIGN,
         items: [
-          commandToItemData('addShapeLine'),
-          commandToItemData('addShapePath'),
-          commandToItemData('addShapePolyhedron'),
+          commandToItemData('addShapePolyline'),
+          commandToItemData('addShapeCurve'),
           commandToItemData('addShapePolygon'),
+          commandToItemData('addShapeArea'),
           commandToItemData('addShapeRectangle'),
           commandToItemData('addShapeCircle'),
+          commandToItemData('addShapeSquare'),
+          commandToItemData('addShapeText'),
         ],
       },
       {
@@ -70,7 +72,7 @@ const getCommands = memoizeOne((byIds) => {
   Object.keys(byIds).forEach((id) => {
     const data = { ...byIds[id] }
     delete data.id
-    data.type = SelectionTypes.POINT_SIGN
+    data.type = SelectionTypes.POINT
     symbolCommands[id] = {
       key: id,
       action: selection.setSelection(data),

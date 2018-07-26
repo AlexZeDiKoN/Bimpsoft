@@ -6,23 +6,31 @@ const mouseupTimer = 333
 const activelayerColor = '#0a0' // Колір активного тактичного знака
 const activeBackColor = '#252' // Колір фону активного тактичного знака
 // const pointSignSize = 100 // Піксельний розмір тактичного знаку точкового типу
-export const entityKindClass = { // ID в базі даних відповідних типів тактичних знаків
-  POINT: 1,
-  SEGMENT: 2,
-  AREA: 3,
+export const entityKind = { // ID в базі даних відповідних типів тактичних знаків
+  POINT: 1, // точковий знак (MilSymbol)
+  SEGMENT: 2, // знак відрізкового типу
+  AREA: 3, // замкнута крива лінія
+  CURVE: 4, // незамкнута крива лінія
+  POLYGON: 5, // замкнута ламана лінія (багатокутник)
+  POLYLINE: 6, // незамкнута ламана лінія
+  CIRCLE: 7, // коло
+  RECTANGLE: 8, // прямокутник
+  SQUARE: 9, // квадрат
+  TEXT: 10, // текстова мітка
+  GROUP: 99, // група
 }
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 L.SVG.prototype._updatePoly = function (layer, closed) {
   let result = L.SVG.pointsToPath(layer._rings, closed)
-  if (layer.options && layer.options.tsType === entityKindClass.SEGMENT &&
+  if (layer.options && layer.options.tsType === entityKind.SEGMENT &&
     layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length === 2
   ) {
     const js = layer.options.tsTemplate
     if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
       result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
     }
-  } else if (layer.options && layer.options.tsType === entityKindClass.AREA &&
+  } else if (layer.options && layer.options.tsType === entityKind.AREA &&
     layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length >= 3
   ) {
     result = prepareBezierAreaPath(layer._rings[0])
@@ -85,7 +93,7 @@ L.PM.Edit.Line.prototype._createMarker = function (latlng, index) {
 L.PM.Edit.Line.prototype._saved_createMiddleMarker = L.PM.Edit.Line.prototype._createMiddleMarker
 L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
   let marker
-  if (this._layer.options.tsType !== entityKindClass.SEGMENT) {
+  if (this._layer.options.tsType !== entityKind.SEGMENT) {
     // для відрізкових знаків забороняємо створення додаткових вершин
     marker = this._saved_createMiddleMarker(leftM, rightM)
   }
@@ -96,7 +104,7 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
         marker._map.pm.draggingMarker = false
       }
     }, mouseupTimer))
-    if (this._layer.options.tsType === entityKindClass.AREA) {
+    if (this._layer.options.tsType === entityKind.AREA) {
       setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
     }
   }
@@ -106,10 +114,10 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
 L.PM.Edit.Line.prototype._saved_removeMarker = L.PM.Edit.Line.prototype._removeMarker
 L.PM.Edit.Line.prototype._removeMarker = function (e) {
   switch (this._layer.options.tsType) {
-    case entityKindClass.POINT: // для точкових знаків
-    case entityKindClass.SEGMENT: // і для відрізкових знаків
+    case entityKind.POINT: // для точкових знаків
+    case entityKind.SEGMENT: // і для відрізкових знаків
       break // заброняємо видалення вершин
-    case entityKindClass.AREA: // для площинних знаків
+    case entityKind.AREA: // для площинних знаків
       if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
         this._saved_removeMarker(e)
         let idx = e.target._index
@@ -128,7 +136,7 @@ L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarke
 L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   this._saved_onMarkerDrag(e)
   const marker = e.target
-  if (this._layer.options.tsType === entityKindClass.AREA && marker._index >= 0) {
+  if (this._layer.options.tsType === entityKind.AREA && marker._index >= 0) {
     const len = this._getMarkersCount()
     const markerArray = this._getMarkersArray()
     const nextMarkerIndex = (marker._index + 1) % len
@@ -238,7 +246,7 @@ function setActiveLayer (map, layer, skipFire = false) {
   }
   layer.pm.enable({
     snappable: false,
-    draggable: layer.options.tsType !== entityKindClass.POINT,
+    draggable: layer.options.tsType !== entityKind.POINT,
   })
   if (!skipFire) {
     map.fire('activelayer', { old: null, new: map.pm.activeLayer })
@@ -256,23 +264,24 @@ function clickOnLayer (event) {
 }
 
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
-export function createTacticalSign (object, type, points, svg, color, map, anchor) {
+export function createTacticalSign (id, object, type, points, svg, color, map, anchor) {
   let layer
   const js = svgToJS(svg)
   switch (type) {
-    case entityKindClass.POINT:
+    case entityKind.POINT:
       layer = createPoint(points, js, color, anchor)
       break
-    case entityKindClass.SEGMENT:
+    case entityKind.SEGMENT:
       layer = createSegment(points, js, color)
       break
-    case entityKindClass.AREA:
+    case entityKind.AREA:
       layer = createArea(points, js, color)
       break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
   }
   if (layer) {
+    layer.id = id
     layer.object = object
     layer.on('click', clickOnLayer)
     layer.addTo(map)
@@ -308,7 +317,7 @@ function createPoint ([ point ], js, color, anchor) {
   const marker = L.marker(point, { icon, draggable: false })
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
-  marker.options.tsType = entityKindClass.POINT
+  marker.options.tsType = entityKind.POINT
   return marker
 }
 
@@ -330,12 +339,12 @@ function setActiveColors (svg, stroke, fill) {
 }
 
 function createSegment (segment, js, color) {
-  const options = prepareOptions(entityKindClass.SEGMENT, color, js)
+  const options = prepareOptions(entityKind.SEGMENT, color, js)
   return L.polyline(segment, options)
 }
 
 function createArea (area, js, color) {
-  const options = prepareOptions(entityKindClass.AREA, color, js)
+  const options = prepareOptions(entityKind.AREA, color, js)
   return L.polygon(area, options)
 }
 
@@ -365,11 +374,11 @@ function prepareOptions (signType, color, js) {
 
 export function getGeometry (layer) {
   switch (layer.options.tsType) {
-    case entityKindClass.POINT:
+    case entityKind.POINT:
       return formGeometry([ layer.getLatLng() ])
-    case entityKindClass.SEGMENT:
+    case entityKind.SEGMENT:
       return formGeometry(layer.getLatLngs())
-    case entityKindClass.AREA:
+    case entityKind.AREA:
       return formGeometry(layer.getLatLngs()[0])
     default:
       return null
@@ -402,15 +411,15 @@ export function parseGeometry (type, point, geometry) {
   let ptArray = geometry ? geometry.split('\r\n') : []
   ptArray = ptArray.map((line) => line.split('\t').map((value) => +value))
   switch (type) {
-    case entityKindClass.POINT: // для точкових знаків
+    case entityKind.POINT: // для точкових знаків
       return ptArray.length >= 1
         ? ptArray.slice(0, 1)
         : [ point ]
-    case entityKindClass.SEGMENT: // для відрізкових знаків
+    case entityKind.SEGMENT: // для відрізкових знаків
       return ptArray.length >= 2
         ? ptArray.slice(0, 2)
         : [ [ point[0], point[1] - 0.02 ], [ point[0], point[1] + 0.02 ] ]
-    case entityKindClass.AREA: // для площинних знаків
+    case entityKind.AREA: // для площинних знаків
       return ptArray.length >= 3
         ? ptArray
         : [ [ point[0] - 0.01, point[1] - 0.02 ],

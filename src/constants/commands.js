@@ -1,7 +1,7 @@
 import * as viewModesActions from '../store/actions/viewModes'
 import * as templatesActions from '../store/actions/templates'
 import * as selectionActions from '../store/actions/selection'
-import * as SelectionTypes from '../constants/SelectionTypes'
+import SelectionTypes from '../constants/SelectionTypes'
 import i18n from '../i18n'
 import * as viewModesKeys from './viewModesKeys'
 
@@ -36,41 +36,53 @@ export default {
     checkedSelector: (state) => state.viewModes.settings,
     action: viewModesActions.viewModeToggle(viewModesKeys.settings),
   },
-  addShapeLine: {
-    title: i18n.SHAPE_LINE,
+  addShapePolyline: {
+    title: i18n.SHAPE_POLYLINE,
     icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_LINE,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_LINE }),
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.POLYLINE,
+    action: selectionActions.setSelection({ type: SelectionTypes.POLYLINE }),
   },
-  addShapePath: {
-    title: i18n.SHAPE_PATH,
+  addShapeCurve: {
+    title: i18n.SHAPE_CURVE,
     icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_PATH,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_PATH }),
-  },
-  addShapePolyhedron: {
-    title: i18n.SHAPE_POLYHEDRON,
-    icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_POLYHEDRON,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_POLYHEDRON }),
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.CURVE,
+    action: selectionActions.setSelection({ type: SelectionTypes.CURVE }),
   },
   addShapePolygon: {
     title: i18n.SHAPE_POLYGON,
     icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_POLYGON,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_POLYGON }),
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.POLYGON,
+    action: selectionActions.setSelection({ type: SelectionTypes.POLYGON }),
+  },
+  addShapeArea: {
+    title: i18n.SHAPE_AREA,
+    icon: 'share-alt',
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.AREA,
+    action: selectionActions.setSelection({ type: SelectionTypes.AREA }),
   },
   addShapeRectangle: {
     title: i18n.SHAPE_RECTANGLE,
     icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_RECTANGLE,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_RECTANGLE }),
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.RECTANGLE,
+    action: selectionActions.setSelection({ type: SelectionTypes.RECTANGLE }),
   },
   addShapeCircle: {
     title: i18n.SHAPE_CIRCLE,
     icon: 'share-alt',
-    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SHAPE_CIRCLE,
-    action: selectionActions.setSelection({ type: SelectionTypes.SHAPE_CIRCLE }),
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.CIRCLE,
+    action: selectionActions.setSelection({ type: SelectionTypes.CIRCLE }),
+  },
+  addShapeSquare: {
+    title: i18n.SHAPE_SQUARE,
+    icon: 'share-alt',
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.SQUARE,
+    action: selectionActions.setSelection({ type: SelectionTypes.SQUARE }),
+  },
+  addShapeText: {
+    title: i18n.SHAPE_TEXT,
+    icon: 'share-alt',
+    checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.TEXT,
+    action: selectionActions.setSelection({ type: SelectionTypes.TEXT }),
   },
   addPointSignTemplate: {
     title: i18n.ADD_POINT_SIGN_TEMPLATE,
