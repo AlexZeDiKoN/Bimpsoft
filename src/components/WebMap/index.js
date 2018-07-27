@@ -26,7 +26,7 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
-import { entityKind, initMapEvents, createTacticalSign } from './leaflet.pm.patch'
+import { entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint } from './leaflet.pm.patch'
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
@@ -71,6 +71,33 @@ const Wgs84I = (lat, lng) => ` ${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', '
 const Mgrs = (lat, lng) => ` MGRS: ${forward([ lng, lat ])}` // eslint-disable-line no-irregular-whitespace
 const Utm = (lat, lng) => `UTM: ${utmLabel(fromLatLon(lat, lng))}` // eslint-disable-line no-irregular-whitespace
 
+function geomPointEquals (point, data) {
+  const lng = point.get('lng')
+  const lat = point.get('lat')
+  return lng !== null && lat !== null &&
+    +lat.toFixed(6) === data.lat.toFixed(6) && +lng.toFixed(6) === data.lng.toFixed(6)
+}
+
+function geomPointListEquals (list, data) {
+  if (list.size !== data.length) {
+    return false
+  }
+  for (let i = 0; i < data.length; i++) {
+    if (!geomPointEquals(list.get(i), data[i])) {
+      return false
+    }
+  }
+  return true
+}
+
+function tacticalSignEquals (object, data) {
+  return +object.get('id') === +data.id &&
+    +object.get('type') === +data.type &&
+    geomPointEquals(object.get('point'), data.point) &&
+    geomPointListEquals(object.get('geometry'), data.geometry)
+  // TODO інші властивості
+}
+
 const TileChild = PropTypes.shape({
   type: PropTypes.oneOf([ Tiles ]),
   props: PropTypes.object,
@@ -92,6 +119,7 @@ class WebMapInner extends Component {
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
     updateObject: PropTypes.func,
+    onSelection: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
   }
@@ -130,7 +158,7 @@ class WebMapInner extends Component {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
 
-  setMapView () {
+  setMapView = () => {
     if (!this.container) {
       return
     }
@@ -190,13 +218,15 @@ class WebMapInner extends Component {
       }
     }, this)
     initMapEvents(this.map)
+    this.map.on('deletelayer', this.deleteObject)
+    this.map.on('activelayer', this.updateObject)
   }
 
-  initObjects () {
+  initObjects = () => {
     this.updateObjects(this.props.objects)
   }
 
-  updateObjects (objects) {
+  updateObjects = (objects) => {
     if (this.map) {
       const ids = []
       this.map.eachLayer((layer) => {
@@ -225,7 +255,7 @@ class WebMapInner extends Component {
     }
   }
 
-  addObject (object) {
+  addObject = (object) => {
     console.log('addObject', object.toJS())
     const { id, type, code = '', point, geometry } = object
     let anchor
@@ -238,6 +268,26 @@ class WebMapInner extends Component {
       anchor = symbol.getAnchor()
     }
     createTacticalSign(id, object, +type, points, template, colorOf(object.affiliation), this.map, anchor)
+  }
+
+  deleteObject = (layer) => {
+    this.props.deleteObject(layer.id)
+  }
+
+  updateObject = async ({ oldLayer, newLayer }) => {
+    this.props.onSelection(newLayer ? +newLayer.id : null)
+    if (oldLayer) {
+      const data = this.getLayerData(oldLayer)
+      const object = oldLayer.object
+      if (!tacticalSignEquals(object, data)) {
+        this.props.updateObject(data)
+      }
+    }
+  }
+
+  getLayerData = (layer) => {
+    const { id, options: { tsType: type } } = layer
+    return { id, type, ...getGeometry(layer) }
   }
 
   handleShortcuts = async (action) => {
@@ -259,13 +309,15 @@ class WebMapInner extends Component {
           const center = bounds.getCenter()
           const width = bounds.getEast() - bounds.getWest()
           const height = bounds.getNorth() - bounds.getSouth()
+          const geometry = [
+            { lat: center.lat - height / 10, lng: center.lng },
+            { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+            { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+          ]
           await addObject({
             type: entityKind.AREA,
-            geometry: [
-              { lat: center.lat - height / 10, lng: center.lng },
-              { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-              { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-            ],
+            point: calcMiddlePoint(geometry),
+            geometry,
           })
         }
         break
