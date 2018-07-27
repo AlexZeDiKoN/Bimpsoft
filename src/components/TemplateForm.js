@@ -21,23 +21,20 @@ export default class TemplateForm extends React.Component {
       return null
     }
     return (
-      <Wrapper
-        title={i18n.MIL_TEMPLATE}
-        component={(
-          <SymbolEditorComponent
-            elementsConfigs={ {
-              ORG_STRUCTURE: { hidden: true },
-              LOCATION: { hidden: true },
-              AMPLIFIERS: { hidden: true },
-              CREDIBILITY: { hidden: true },
-              ADD_TO_TEMPLATE: { hidden: true },
-            }}
-            {...selectedTemplate}
-            onClose={this.cancelHandler}
-            onChange={this.changeHandler}
-          />
-        )}
-      />
+      <Wrapper title={i18n.MIL_TEMPLATE} onClose={this.cancelHandler} >
+        <SymbolEditorComponent
+          elementsConfigs={ {
+            ORG_STRUCTURE: { hidden: true },
+            LOCATION: { hidden: true },
+            AMPLIFIERS: { hidden: true },
+            CREDIBILITY: { hidden: true },
+            ADD_TO_TEMPLATE: { hidden: true },
+          }}
+          {...selectedTemplate}
+          onClose={this.cancelHandler}
+          onChange={this.changeHandler}
+        />
+      </Wrapper>
     )
   }
 }
