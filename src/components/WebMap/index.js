@@ -12,7 +12,8 @@ import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
 import { layers, selection } from '../../store/actions'
 import {
-  ADD_POLYLINE, ADD_POLYGON, ADD_CURVED_POLYLINE, ADD_CURVED_POLYGON, ADD_POINT_SIGN,
+  ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
+  ADD_TEXT,
   // TODO: пибрати це після тестування
   LOAD_TEST_OBJECTS,
 } from '../../constants/shortcuts'
@@ -26,7 +27,9 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
-import { entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint } from './leaflet.pm.patch'
+import {
+  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
+} from './leaflet.pm.patch'
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
@@ -292,38 +295,62 @@ class WebMapInner extends Component {
 
   handleShortcuts = async (action) => {
     const { addObject } = this.props
+    const bounds = this.map.getBounds()
+    const center = bounds.getCenter()
+    const width = bounds.getEast() - bounds.getWest()
+    const height = bounds.getNorth() - bounds.getSouth()
+    let created
     switch (action) {
-      case ADD_POLYLINE:
-        console.info('ADD_POLYLINE')
+      case ADD_POINT:
+        console.info('ADD_POINT')
         break
+      case ADD_SEGMENT:
+        console.info('ADD_SEGMENT')
+        break
+      case ADD_AREA: {
+        console.info('ADD_AREA')
+        const geometry = [
+          { lat: center.lat - height / 10, lng: center.lng },
+          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.AREA,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
+        break
+      }
+      case ADD_CURVE: {
+        console.info('ADD_CURVE')
+        const geometry = [
+          { lat: center.lat, lng: center.lng - width / 10 },
+          { lat: center.lat, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.CURVE,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
+        break
+      }
       case ADD_POLYGON:
         console.info('ADD_POLYGON')
         break
-      case ADD_CURVED_POLYLINE:
-        console.info('ADD_CURVED_POLYLINE')
+      case ADD_POLYLINE:
+        console.info('ADD_POLYLINE')
         break
-      case ADD_CURVED_POLYGON: {
-        console.info('ADD_CURVED_POLYGON')
-        if (this.map) {
-          const bounds = this.map.getBounds()
-          const center = bounds.getCenter()
-          const width = bounds.getEast() - bounds.getWest()
-          const height = bounds.getNorth() - bounds.getSouth()
-          const geometry = [
-            { lat: center.lat - height / 10, lng: center.lng },
-            { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-            { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-          ]
-          await addObject({
-            type: entityKind.AREA,
-            point: calcMiddlePoint(geometry),
-            geometry,
-          })
-        }
+      case ADD_CIRCLE:
+        console.info('ADD_CIRCLE')
         break
-      }
-      case ADD_POINT_SIGN:
-        console.info('ADD_POINT_SIGN')
+      case ADD_RECTANGLE:
+        console.info('ADD_RECTANGLE')
+        break
+      case ADD_SQUARE:
+        console.info('ADD_SQUARE')
+        break
+      case ADD_TEXT:
+        console.info('ADD_TEXT')
         break
       // TODO: пибрати це після тестування
       case LOAD_TEST_OBJECTS: {
@@ -333,6 +360,13 @@ class WebMapInner extends Component {
       }
       default:
         console.error(`Unknown action: ${action}`)
+    }
+    if (created) {
+      this.map.eachLayer((layer) => {
+        if (layer.id === created) {
+          activateLayer(layer)
+        }
+      })
     }
   }
 

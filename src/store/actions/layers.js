@@ -50,6 +50,7 @@ export const addObject = (object) =>
       type: ADD_OBJECT,
       payload,
     })
+    return payload.id
   })
 
 export const deleteObject = (id) =>

@@ -23,17 +23,17 @@ export const entityKind = { // ID в базі даних відповідних 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 L.SVG.prototype._updatePoly = function (layer, closed) {
   let result = L.SVG.pointsToPath(layer._rings, closed)
-  if (layer.options && layer.options.tsType === entityKind.SEGMENT &&
-    layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length === 2
-  ) {
+  const kind = layer.options && layer.options.tsType
+  const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+  if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
     const js = layer.options.tsTemplate
     if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
       result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
     }
-  } else if (layer.options && layer.options.tsType === entityKind.AREA &&
-    layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length >= 3
-  ) {
-    result = prepareBezierAreaPath(layer._rings[0])
+  } else if (kind === entityKind.AREA && length >= 3) {
+    result = prepareBezierPath(layer._rings[0], true)
+  } else if (kind === entityKind.CURVE && length >= 2) {
+    result = prepareBezierPath(layer._rings[0], false)
   }
   this._setPath(layer, result)
 }
@@ -104,7 +104,8 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
         marker._map.pm.draggingMarker = false
       }
     }, mouseupTimer))
-    if (this._layer.options.tsType === entityKind.AREA) {
+    const kind = this._layer.options.tsType
+    if (kind === entityKind.AREA || kind === entityKind.CURVE) {
       setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
     }
   }
@@ -127,6 +128,16 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
         this._onMarkerDrag({ target: this._getMarkersArray()[idx] })
       }
       break
+    case entityKind.CURVE: // для знаків типу "крива"
+      if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше двох
+        this._saved_removeMarker(e)
+        let idx = e.target._index // TODO: переконатися, що тут усе гаразд!
+        if (idx >= this._getMarkersCount()) {
+          idx = 0
+        }
+        this._onMarkerDrag({ target: this._getMarkersArray()[ idx ] })
+      }
+      break
     default:
       this._saved_removeMarker(e)
   }
@@ -136,7 +147,8 @@ L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarke
 L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   this._saved_onMarkerDrag(e)
   const marker = e.target
-  if (this._layer.options.tsType === entityKind.AREA && marker._index >= 0) {
+  const kind = this._layer.options.tsType
+  if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {
     const len = this._getMarkersCount()
     const markerArray = this._getMarkersArray()
     const nextMarkerIndex = (marker._index + 1) % len
@@ -202,7 +214,7 @@ export function initMapEvents (mymap) {
     }
   })
   L.DomEvent.on(mymap._container, 'keyup', (event) => {
-    if (event.code === 'Delete' && mymap.pm.activeLayer /* && confirm('Вилучити тактичний знак?') */) {
+    if (event.code === 'Delete' && mymap.pm.activeLayer) { // && confirm('Вилучити тактичний знак?')
       const layer = mymap.pm.activeLayer
       if (layer._map.listens('deletelayer')) {
         layer._map.fire('deletelayer', layer)
@@ -257,13 +269,18 @@ function setActiveLayer (map, layer, skipFire = false) {
 }
 
 function clickOnLayer (event) {
-  if (event.target !== event.target._map.pm.activeLayer) {
-    const oldLayer = event.target._map.pm.activeLayer
-    clearActiveLayer(event.target._map, true)
-    setActiveLayer(event.target._map, event.target, true)
-    event.target._map.fire('activelayer', { oldLayer, newLayer: event.target })
-  }
+  activateLayer(event.target)
   L.DomEvent.stopPropagation(event)
+}
+
+export function activateLayer (newLayer) {
+  const map = newLayer._map
+  const oldLayer = map.pm.activeLayer
+  if (newLayer !== oldLayer) {
+    clearActiveLayer(map, true)
+    setActiveLayer(map, newLayer, true)
+    map.fire('activelayer', { oldLayer, newLayer })
+  }
 }
 
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
@@ -279,6 +296,9 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
       break
     case entityKind.AREA:
       layer = createArea(points, js, color)
+      break
+    case entityKind.CURVE:
+      layer = createCurve(points, js, color)
       break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
@@ -351,6 +371,11 @@ function createArea (area, js, color) {
   return L.polygon(area, options)
 }
 
+function createCurve (curve, js, color) {
+  const options = prepareOptions(entityKind.CURVE, color, js)
+  return L.polyline(curve, options)
+}
+
 function prepareOptions (signType, color, js) {
   const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
@@ -380,6 +405,7 @@ export function getGeometry (layer) {
     case entityKind.POINT:
       return formGeometry([ layer.getLatLng() ])
     case entityKind.SEGMENT:
+    case entityKind.CURVE:
       return formGeometry(layer.getLatLngs())
     case entityKind.AREA:
       return formGeometry(layer.getLatLngs()[0])
@@ -391,14 +417,9 @@ export function getGeometry (layer) {
 function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
-    // geometry: coords.map((point) => packPoint(point)).join('\r\n'),
     geometry: coords,
   }
 }
-
-/* function packPoint (latLng) {
-  return `${latLng.lat.toFixed(8)}\t${latLng.lng.toFixed(8)}`
-} */
 
 export function calcMiddlePoint (coords) {
   const zero = { lat: 0, lng: 0 }
@@ -410,29 +431,6 @@ export function calcMiddlePoint (coords) {
   }, zero)
   return { lat: sum.lat / coords.length, lng: sum.lng / coords.length }
 }
-
-/* export function parseGeometry (type, point, geometry) {
-  let ptArray = geometry ? geometry.split('\r\n') : []
-  ptArray = ptArray.map((line) => line.split('\t').map((value) => +value))
-  switch (type) {
-    case entityKind.POINT: // для точкових знаків
-      return ptArray.length >= 1
-        ? ptArray.slice(0, 1)
-        : [ point ]
-    case entityKind.SEGMENT: // для відрізкових знаків
-      return ptArray.length >= 2
-        ? ptArray.slice(0, 2)
-        : [ [ point[0], point[1] - 0.02 ], [ point[0], point[1] + 0.02 ] ]
-    case entityKind.AREA: // для площинних знаків
-      return ptArray.length >= 3
-        ? ptArray
-        : [ [ point[0] - 0.01, point[1] - 0.02 ],
-          [ point[0] - 0.01, point[1] + 0.02 ],
-          [ point[0] + 0.01, point[1] ] ]
-    default:
-      return [ point ]
-  }
-} */
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
 function parseSvgPath (svg) {
@@ -749,9 +747,9 @@ function jsToSvg (js) {
 }
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
-function prepareBezierAreaPath (ring) {
+function prepareBezierPath (ring, locked) {
   let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, true)) {
+  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked)) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }
   return str || 'M0 0'
