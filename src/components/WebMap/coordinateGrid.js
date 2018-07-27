@@ -1,91 +1,57 @@
-import { throttle, concat } from 'lodash'
+import { debounce, concat } from 'lodash'
 import { rectangle, layerGroup } from 'leaflet'
 
 // GRID CONSTANTS
 const CELL_SIZES_BY_Z = {
-  1: {
-    lng: 4,
-    lat: 6,
+  1000000: {
+    lat: 4,
+    lng: 6,
   },
-  2: {
-    lng: 4,
-    lat: 6,
+  500000: {
+    lat: 2,
+    lng: 3,
   },
-  3: {
-    lng: 4,
-    lat: 6,
+  200000: {
+    lat: 0.667,
+    lng: 1,
   },
-  4: {
-    lng: 4,
-    lat: 6,
+  100000: {
+    lat: 0.332,
+    lng: 0.5,
   },
-  5: {
-    lng: 4,
-    lat: 6,
+  50000: {
+    lat: 0.167,
+    lng: 0.25,
   },
-  6: {
-    lng: 4,
-    lat: 6,
+  25000: {
+    lat: 0.083,
+    lng: 0.125,
   },
-  7: {
-    lng: 4,
-    lat: 6,
+  10000: {
+    lat: 0.042,
+    lng: 0.063,
   },
-  8: {
-    lng: 4,
-    lat: 6,
+  5000: {
+    lat: 0.021,
+    lng: 0.031,
   },
-  9: {
-    lng: 4,
-    lat: 6,
+  2000: {
+    lat: 0.007,
+    lng: 0.01,
   },
-  10: {
-    lng: 4,
-    lat: 6,
-  },
-  11: {
-    lng: 2,
-    lat: 3,
-  },
-  12: {
-    lng: 0.667,
-    lat: 1,
-  },
-  13: {
-    lng: 0.332,
-    lat: 0.5,
-  },
-  14: {
-    lng: 0.167,
-    lat: 0.25,
-  },
-  15: {
-    lng: 0.167,
-    lat: 0.25,
-  },
-  16: {
-    lng: 0.083,
-    lat: 0.125,
-  },
-  17: {
-    lng: 0.042,
-    lat: 0.063,
-  },
-  18: {
-    lng: 0.021,
-    lat: 0.031,
-  },
-  19: {
-    lng: 0.007,
-    lat: 0.01,
-  },
-  20: {
-    lng: 0.007,
-    lat: 0.01,
-  },
+}
+const INIT_GRID_OPTIONS = {
+  color: 'black',
+  fillOpacity: 0,
+  weight: 1,
+}
+const SELECTED_CELL_OPTIONS = {
+  color: 'blue',
+  fillOpacity: 0.3,
 }
 const lat = 0
 const lng = 1
+
 // GRID INITIAL DATA
 const INITIAL_COORDINATES = {
   TLC: [ 0, 0 ],
@@ -93,13 +59,14 @@ const INITIAL_COORDINATES = {
   BLC: [ 0, 0 ],
   BRC: [ 0, 0 ],
 }
-const GRID_CELLS_AMOUNT = {
+const GRID_CELLS_STRUCTURE = {
   row_length: 0,
   column_length: 0,
 }
-let ZOOM = 10
+const ZOOM = 50000
+let currentGrid
 
-// SETTING OUR GRID INITIAL DATA
+// SETTING OUR GRID INITIAL DATA (mutations)
 const setInitCoordinates = (screenBounds) => {
   const { _northEast, _southWest } = screenBounds
 
@@ -120,62 +87,85 @@ const getColumnLength = (initCoordinate, cellSizes, Z) => {
 }
 
 const setGridCellsAmount = () => {
-  GRID_CELLS_AMOUNT.row_length = getRowLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
-  GRID_CELLS_AMOUNT.column_length = getColumnLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
+  GRID_CELLS_STRUCTURE.row_length = getRowLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
+  GRID_CELLS_STRUCTURE.column_length = getColumnLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
 }
 
-// dfsdfsd
-const getCellBLC = (initTlc, cellNum, lngDiff, lat) => ([
-  lat, initTlc[lng] - (cellNum - 1) * lngDiff,
+// GRID calculation
+const getCellBLC = (initTlc, cellNum, steps) => ([
+  initTlc[lat] - steps.lat, initTlc[lng] + cellNum * steps.lng,
 ])
-const getCellTRC = (initTlc, cellNum, lngDiff, lat) => ([
-  lat, initTlc[lng] - (cellNum * lngDiff),
+const getCellTRC = (initTlc, cellNum, steps) => ([
+  initTlc[lat], initTlc[lng] + cellNum * steps.lng,
 ])
+
+const getStartPoint = (initTLC, z) => {
+  const initLat = (z.lat - Math.abs((initTLC[0] / z.lat) % 1 * z.lat)) + Math.abs(initTLC[0])
+  const initLng = Math.abs(initTLC[1]) - Math.abs(((initTLC[1] / z.lng) % 1 * z.lng))
+  const startLat = (initTLC[0] > 0 ? 1 : -1) * initLat
+  const startLng = (initTLC[1] > 0 ? 1 : -1) * initLng
+  return [ startLat, startLng ]
+}
 
 const createRow = (initTlc, z, amount) => {
   const row = []
-  const y = initTlc[lat] + z.lat
-  for (let i = 2; i <= amount + 1; i++) {
+  for (let i = 1; i <= amount + 1; i++) {
     row.push(
       [
-        getCellBLC(initTlc, i, z.lng, y),
-        getCellTRC(initTlc, i, z.lng, initTlc[lat]),
+        getCellBLC(initTlc, i - 1, z),
+        getCellTRC(initTlc, i, z),
       ]
     )
   }
   return row
 }
 
-const generateGrid = (initTLC, z, GRID_CELLS_AMOUNT) => {
+const generateGrid = (startTLC, z, GRID_CELLS_STRUCTURE) => {
   const grid = []
-  const tlc = [ ...initTLC ]
-  const columsAmount = GRID_CELLS_AMOUNT.column_length
-  const rowsAmount = GRID_CELLS_AMOUNT.row_length
-  for (let i = 1; i <= columsAmount; i++) {
-    tlc[0] = tlc[0] - z.lat
+  const tlc = getStartPoint(startTLC, z)
+  const rowsAmount = GRID_CELLS_STRUCTURE.column_length
+  const cellsInRowAmount = GRID_CELLS_STRUCTURE.row_length
+  for (let i = 0; i <= rowsAmount; i++) {
+    tlc[0] = i ? tlc[0] - z.lat : tlc[0]
     grid.push(
-      createRow(tlc, z, rowsAmount)
+      createRow(tlc, z, cellsInRowAmount)
     )
   }
   return grid
 }
 
-const initGridRecalculation = (map) => {
-  setInitCoordinates(map.getBounds())
-  setGridCellsAmount()
-  console.log(map)
-  console.log(INITIAL_COORDINATES)
-  console.log(GRID_CELLS_AMOUNT)
-  console.log(ZOOM)
-  const grid = generateGrid(INITIAL_COORDINATES.TLC, CELL_SIZES_BY_Z[ZOOM], GRID_CELLS_AMOUNT)
-  console.log(grid)
-  const rectangles = concat(...grid).map((item) => rectangle(item))
-  layerGroup(rectangles)
-    .addTo(map)
+// helpers
+
+const addClickEvent = (layer) => {
+  layer.on('click', (e) => {
+    console.log(e)
+    console.log(currentGrid)
+    const layerId = e.target._leaflet_id
+    currentGrid._layers[layerId].setStyle(SELECTED_CELL_OPTIONS)
+  })
 }
 
-const gridRecalculation = (map) => () => initGridRecalculation(map)
+const createRectanglesGroup = (grid) => {
+  const rectangles = concat(...grid).map((item) => {
+    const rectanglePoligon = rectangle(item, INIT_GRID_OPTIONS)
+    addClickEvent(rectanglePoligon)
+    return rectanglePoligon
+  })
+  return layerGroup(rectangles)
+}
 
-export default function initGrid (mymap) {
-  mymap.on('move', throttle(() => initGridRecalculation(mymap), 1000))
+// initial method
+const initGridRecalculation = (e) => {
+  const map = e.target
+  setInitCoordinates(map.getBounds())
+  setGridCellsAmount()
+  const coordinatesMatrix = generateGrid(INITIAL_COORDINATES.TLC, CELL_SIZES_BY_Z[ZOOM], GRID_CELLS_STRUCTURE)
+  if (currentGrid) { currentGrid.removeFrom(map) }
+  const Grid = createRectanglesGroup(coordinatesMatrix)
+  Grid.addTo(map)
+  currentGrid = Grid
+}
+
+export default function initGrid (map) {
+  map.on('move', debounce(initGridRecalculation, 500))
 }
