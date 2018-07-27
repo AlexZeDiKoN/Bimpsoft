@@ -96,7 +96,7 @@ export default function webMapReducer (state = WebMapState(), action) {
     case UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))
     case DEL_OBJECT:
-      return payload ? state.delete(payload) : state
+      return payload ? state.deleteIn([ 'objects', payload ]) : state
     default:
       return state
   }

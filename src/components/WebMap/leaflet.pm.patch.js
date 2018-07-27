@@ -204,9 +204,12 @@ export function initMapEvents (mymap) {
   L.DomEvent.on(mymap._container, 'keyup', (event) => {
     if (event.code === 'Delete' && mymap.pm.activeLayer /* && confirm('Вилучити тактичний знак?') */) {
       const layer = mymap.pm.activeLayer
-      clearActiveLayer(mymap)
-      layer._map.fire('deletelayer', layer)
-      layer._map.removeLayer(layer)
+      if (layer._map.listens('deletelayer')) {
+        layer._map.fire('deletelayer', layer)
+      } else {
+        clearActiveLayer(mymap)
+        layer._map.removeLayer(layer)
+      }
     } else if (event.code === 'Space' && mymap.pm.activeLayer) {
       clearActiveLayer(mymap)
     }
@@ -227,7 +230,7 @@ function clearActiveLayer (map, skipFire = false) {
       map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
     }
     if (!skipFire) {
-      map.fire('activelayer', { old: map.pm.activeLayer, new: null })
+      map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
     }
   }
   delete map.pm.activeLayer
@@ -249,16 +252,16 @@ function setActiveLayer (map, layer, skipFire = false) {
     draggable: layer.options.tsType !== entityKind.POINT,
   })
   if (!skipFire) {
-    map.fire('activelayer', { old: null, new: map.pm.activeLayer })
+    map.fire('activelayer', { oldLayer: null, newLayer: map.pm.activeLayer })
   }
 }
 
 function clickOnLayer (event) {
   if (event.target !== event.target._map.pm.activeLayer) {
-    const old = event.target._map.pm.activeLayer
+    const oldLayer = event.target._map.pm.activeLayer
     clearActiveLayer(event.target._map, true)
     setActiveLayer(event.target._map, event.target, true)
-    event.target._map.fire('activelayer', { old, new: event.target })
+    event.target._map.fire('activelayer', { oldLayer, newLayer: event.target })
   }
   L.DomEvent.stopPropagation(event)
 }
@@ -388,15 +391,16 @@ export function getGeometry (layer) {
 function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
-    geometry: coords.map((point) => packPoint(point)).join('\r\n'),
+    // geometry: coords.map((point) => packPoint(point)).join('\r\n'),
+    geometry: coords,
   }
 }
 
-function packPoint (latLng) {
+/* function packPoint (latLng) {
   return `${latLng.lat.toFixed(8)}\t${latLng.lng.toFixed(8)}`
-}
+} */
 
-function calcMiddlePoint (coords) {
+export function calcMiddlePoint (coords) {
   const zero = { lat: 0, lng: 0 }
   if (!coords.length) { return zero }
   const sum = coords.reduce((a, p) => {
@@ -407,7 +411,7 @@ function calcMiddlePoint (coords) {
   return { lat: sum.lat / coords.length, lng: sum.lng / coords.length }
 }
 
-export function parseGeometry (type, point, geometry) {
+/* export function parseGeometry (type, point, geometry) {
   let ptArray = geometry ? geometry.split('\r\n') : []
   ptArray = ptArray.map((line) => line.split('\t').map((value) => +value))
   switch (type) {
@@ -428,7 +432,7 @@ export function parseGeometry (type, point, geometry) {
     default:
       return [ point ]
   }
-}
+} */
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
 function parseSvgPath (svg) {
