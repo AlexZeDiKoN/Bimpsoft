@@ -75,14 +75,14 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (
-      <Wrapper title={title} component={ (
+      <Wrapper title={title} onClose={this.cancelHandler}>
         <Component
           {...selectionData}
           onChange={this.changeHandler}
           onClose={this.cancelHandler}
           onAddToTemplates={this.addToTemplateHandler}
         />
-      ) } />
+      </Wrapper>
     )
   }
 }
