@@ -334,15 +334,46 @@ class WebMapInner extends Component {
         })
         break
       }
-      case ADD_POLYGON:
+      case ADD_POLYGON: {
         console.info('ADD_POLYGON')
+        const geometry = [
+          { lat: center.lat - height / 10, lng: center.lng },
+          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.POLYGON,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
         break
-      case ADD_POLYLINE:
+      }
+      case ADD_POLYLINE: {
         console.info('ADD_POLYLINE')
+        const geometry = [
+          { lat: center.lat, lng: center.lng - width / 10 },
+          { lat: center.lat, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.POLYLINE,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
         break
-      case ADD_CIRCLE:
+      }
+      case ADD_CIRCLE: {
         console.info('ADD_CIRCLE')
+        const geometry = [
+          { lat: center.lat, lng: center.lng },
+          { lat: center.lat, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.CIRCLE,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
         break
+      }
       case ADD_RECTANGLE:
         console.info('ADD_RECTANGLE')
         break
