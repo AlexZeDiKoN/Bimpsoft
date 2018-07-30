@@ -92,9 +92,10 @@ L.PM.Edit.Line.prototype._createMarker = function (latlng, index) {
 
 L.PM.Edit.Line.prototype._saved_createMiddleMarker = L.PM.Edit.Line.prototype._createMiddleMarker
 L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
+  const kind = this._layer.options.tsType
   let marker
-  if (this._layer.options.tsType !== entityKind.SEGMENT) {
-    // для відрізкових знаків забороняємо створення додаткових вершин
+  // для певних типів знаків забороняємо створення додаткових вершин
+  if (kind !== entityKind.SEGMENT && kind !== entityKind.RECTANGLE && kind !== entityKind.SQUARE) {
     marker = this._saved_createMiddleMarker(leftM, rightM)
   }
   if (marker) {
@@ -104,7 +105,6 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
         marker._map.pm.draggingMarker = false
       }
     }, mouseupTimer))
-    const kind = this._layer.options.tsType
     if (kind === entityKind.AREA || kind === entityKind.CURVE) {
       setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
     }
@@ -115,10 +115,12 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
 L.PM.Edit.Line.prototype._saved_removeMarker = L.PM.Edit.Line.prototype._removeMarker
 L.PM.Edit.Line.prototype._removeMarker = function (e) {
   switch (this._layer.options.tsType) {
-    case entityKind.POINT: // для точкових знаків
-    case entityKind.SEGMENT: // для відрізкових знаків
-    case entityKind.CIRCLE: // і для кіл
-      break // заброняємо видалення вершин
+    case entityKind.POINT:
+    case entityKind.SEGMENT:
+    case entityKind.CIRCLE:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      break // для певних типів знаків заброняємо видалення вершин
     case entityKind.AREA: // для площинних знаків
       if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
         this._saved_removeMarker(e)
@@ -159,6 +161,7 @@ L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   this._saved_onMarkerDrag(e)
   const marker = e.target
   const kind = this._layer.options.tsType
+  console.log('kind = ', kind)
   if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {
     const len = this._getMarkersCount()
     const markerArray = this._getMarkersArray()
@@ -180,6 +183,39 @@ L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
           markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
       }
     }
+  } else if (kind === entityKind.SQUARE) {
+    console.log(marker._oppositeCornerLatLng)
+    /* const latLng = marker.getLatLng()
+    const len = this._getMarkersCount()
+    const markerArray = this._getMarkersArray()
+    const nextMarkerIndex = (marker._index + 1) % len
+    const prevMarkerIndex = ((marker._index + len) - 1) % len
+    const oppositeMarkerIndex = (marker._index + 2) % len
+    const sizeNext = latLng.distanceTo(markerArray[nextMarkerIndex].getLatLng())
+    const sizePrev = latLng.distanceTo(markerArray[prevMarkerIndex].getLatLng())
+    const size = (sizeNext + sizePrev) / 2
+    const center = markerArray[oppositeMarkerIndex].getLatLng()
+    const bounds = center.toBounds(size * 2)
+    let point = bounds.getNorthWest()
+    let dist = point.distanceTo(latLng)
+    let testPoint = bounds.getNorthEast()
+    let testDist = testPoint.distanceTo(latLng)
+    if (testDist < dist) {
+      point = testPoint
+      dist = testDist
+    }
+    testPoint = bounds.getSouthEast()
+    testDist = testPoint.distanceTo(latLng)
+    if (testDist < dist) {
+      point = testPoint
+      dist = testDist
+    }
+    testPoint = bounds.getSouthWest()
+    testDist = testPoint.distanceTo(latLng)
+    if (testDist < dist) {
+      point = testPoint
+    }
+    marker.setLatLng(point) */
   }
 }
 
@@ -206,7 +242,9 @@ L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
   marker.on('move', this._onMarkerDrag, this)
   marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
   marker.on('mouseup', () => setTimeout(() => {
-    if (marker._map) { marker._map.pm.draggingMarker = false }
+    if (marker._map) {
+      marker._map.pm.draggingMarker = false
+    }
   }, mouseupTimer))
   return marker
 }
@@ -320,6 +358,12 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
     case entityKind.CIRCLE:
       layer = createCircle(points, js, color, map)
       break
+    case entityKind.RECTANGLE:
+      layer = createRectangle(points, js, color)
+      break
+    case entityKind.SQUARE:
+      layer = createSquare(points, js, color, map)
+      break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
   }
@@ -412,6 +456,24 @@ function createCircle ([ point1, point2 ], js, color, map) {
   return L.circle(point1, options)
 }
 
+function createRectangle (points, js, color) {
+  const options = prepareOptions(entityKind.RECTANGLE, color, js)
+  return L.rectangle(points, options)
+}
+
+function createSquare ([ point1, point2 ], js, color, map) {
+  const bounds = L.latLngBounds(point1, point2)
+  point1 = bounds.getNorthWest()
+  point2 = bounds.getSouthEast()
+  const options = prepareOptions(entityKind.SQUARE, color, js)
+  const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
+  const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
+  console.log({ width, height })
+  const size = Math.max(width, height)
+  point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
+  return L.rectangle([ point1, point2 ], options)
+}
+
 function prepareOptions (signType, color, js) {
   const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
@@ -446,6 +508,8 @@ export function getGeometry (layer) {
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
       return formGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())

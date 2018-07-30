@@ -144,7 +144,7 @@ class WebMapInner extends Component {
     this.initObjects()
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate (nextProps) {
     if (nextProps.objects !== this.props.objects) {
       this.updateObjects(nextProps.objects)
     }
@@ -374,12 +374,32 @@ class WebMapInner extends Component {
         })
         break
       }
-      case ADD_RECTANGLE:
+      case ADD_RECTANGLE: {
         console.info('ADD_RECTANGLE')
+        const geometry = [
+          { lat: center.lat - width / 15, lng: center.lng - width / 10 },
+          { lat: center.lat + width / 15, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.RECTANGLE,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
         break
-      case ADD_SQUARE:
+      }
+      case ADD_SQUARE: {
         console.info('ADD_SQUARE')
+        const geometry = [
+          { lat: center.lat - width / 10, lng: center.lng - width / 10 },
+          { lat: center.lat + width / 10, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.SQUARE,
+          point: calcMiddlePoint(geometry),
+          geometry,
+        })
         break
+      }
       case ADD_TEXT:
         console.info('ADD_TEXT')
         break
