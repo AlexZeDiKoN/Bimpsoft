@@ -156,12 +156,42 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
   }
 }
 
+L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
+L.PM.Edit.Rectangle.prototype._onMarkerDrag = function (e) {
+  this._saved_onMarkerDrag(e) // TODO: тут б'є помилку при переміщенні лівої нижньої вершини квадрата, перевірити!
+  const marker = e.target
+  const kind = this._layer.options.tsType
+  if (kind === entityKind.SQUARE) {
+    let point = marker.getLatLng()
+    const opposite = marker._oppositeCornerLatLng
+    let bounds = L.latLngBounds(point, opposite)
+    const nw = bounds.getNorthWest()
+    const ne = bounds.getNorthEast()
+    const sw = bounds.getSouthWest()
+    const se = bounds.getSouthEast()
+    const width = (marker._map.distance(nw, ne) + marker._map.distance(sw, se)) / 2
+    const height = (marker._map.distance(nw, sw) + marker._map.distance(ne, se)) / 2
+    const size = (width + height) / 2
+    bounds = opposite.toBounds(size * 2)
+    if (point.lat > opposite.lat && point.lng > opposite.lng) {
+      point = bounds.getNorthEast()
+    } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
+      point = bounds.getSouthEast()
+    } else if (point.lng < opposite.lng && point.let < opposite.lat) {
+      point = bounds.getSouthWest()
+    } else {
+      point = bounds.getNorthWest()
+    }
+    this._layer.setBounds(L.latLngBounds(point, opposite))
+    this._adjustAllMarkers(this._layer.getLatLngs()[0])
+  }
+}
+
 L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarkerDrag
 L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   this._saved_onMarkerDrag(e)
   const marker = e.target
   const kind = this._layer.options.tsType
-  console.log('kind = ', kind)
   if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {
     const len = this._getMarkersCount()
     const markerArray = this._getMarkersArray()
@@ -183,39 +213,6 @@ L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
           markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
       }
     }
-  } else if (kind === entityKind.SQUARE) {
-    console.log(marker._oppositeCornerLatLng)
-    /* const latLng = marker.getLatLng()
-    const len = this._getMarkersCount()
-    const markerArray = this._getMarkersArray()
-    const nextMarkerIndex = (marker._index + 1) % len
-    const prevMarkerIndex = ((marker._index + len) - 1) % len
-    const oppositeMarkerIndex = (marker._index + 2) % len
-    const sizeNext = latLng.distanceTo(markerArray[nextMarkerIndex].getLatLng())
-    const sizePrev = latLng.distanceTo(markerArray[prevMarkerIndex].getLatLng())
-    const size = (sizeNext + sizePrev) / 2
-    const center = markerArray[oppositeMarkerIndex].getLatLng()
-    const bounds = center.toBounds(size * 2)
-    let point = bounds.getNorthWest()
-    let dist = point.distanceTo(latLng)
-    let testPoint = bounds.getNorthEast()
-    let testDist = testPoint.distanceTo(latLng)
-    if (testDist < dist) {
-      point = testPoint
-      dist = testDist
-    }
-    testPoint = bounds.getSouthEast()
-    testDist = testPoint.distanceTo(latLng)
-    if (testDist < dist) {
-      point = testPoint
-      dist = testDist
-    }
-    testPoint = bounds.getSouthWest()
-    testDist = testPoint.distanceTo(latLng)
-    if (testDist < dist) {
-      point = testPoint
-    }
-    marker.setLatLng(point) */
   }
 }
 
@@ -468,7 +465,6 @@ function createSquare ([ point1, point2 ], js, color, map) {
   const options = prepareOptions(entityKind.SQUARE, color, js)
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
   const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
-  console.log({ width, height })
   const size = Math.max(width, height)
   point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
   return L.rectangle([ point1, point2 ], options)
@@ -508,9 +504,10 @@ export function getGeometry (layer) {
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA:
+      return formGeometry(layer.getLatLngs()[0])
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
-      return formGeometry(layer.getLatLngs()[0])
+      return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     default:
@@ -522,6 +519,14 @@ function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
     geometry: coords,
+  }
+}
+
+function formRectGeometry (coords) {
+  const bounds = L.latLngBounds(coords)
+  return {
+    point: calcMiddlePoint(coords),
+    geometry: [ bounds.getNorthWest(), bounds.getSouthEast() ],
   }
 }
 
