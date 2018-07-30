@@ -116,7 +116,8 @@ L.PM.Edit.Line.prototype._saved_removeMarker = L.PM.Edit.Line.prototype._removeM
 L.PM.Edit.Line.prototype._removeMarker = function (e) {
   switch (this._layer.options.tsType) {
     case entityKind.POINT: // для точкових знаків
-    case entityKind.SEGMENT: // і для відрізкових знаків
+    case entityKind.SEGMENT: // для відрізкових знаків
+    case entityKind.CIRCLE: // і для кіл
       break // заброняємо видалення вершин
     case entityKind.AREA: // для площинних знаків
       if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
@@ -135,7 +136,17 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
         if (idx >= this._getMarkersCount()) {
           idx = 0
         }
-        this._onMarkerDrag({ target: this._getMarkersArray()[ idx ] })
+        this._onMarkerDrag({ target: this._getMarkersArray()[idx] })
+      }
+      break
+    case entityKind.POLYGON: // для полігонів
+      if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
+        this._saved_removeMarker(e)
+      }
+      break
+    case entityKind.POLYLINE: // для поліліній
+      if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
+        this._saved_removeMarker(e)
       }
       break
     default:
@@ -300,6 +311,15 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
     case entityKind.CURVE:
       layer = createCurve(points, js, color)
       break
+    case entityKind.POLYGON:
+      layer = createPolygon(points, js, color)
+      break
+    case entityKind.POLYLINE:
+      layer = createPolyline(points, js, color)
+      break
+    case entityKind.CIRCLE:
+      layer = createCircle(points, js, color, map)
+      break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
   }
@@ -376,6 +396,22 @@ function createCurve (curve, js, color) {
   return L.polyline(curve, options)
 }
 
+function createPolygon (polygon, js, color) {
+  const options = prepareOptions(entityKind.POLYGON, color, js)
+  return L.polygon(polygon, options)
+}
+
+function createPolyline (polyline, js, color) {
+  const options = prepareOptions(entityKind.POLYLINE, color, js)
+  return L.polyline(polyline, options)
+}
+
+function createCircle ([ point1, point2 ], js, color, map) {
+  const options = prepareOptions(entityKind.CIRCLE, color, js)
+  options.radius = map.distance(point1, point2)
+  return L.circle(point1, options)
+}
+
 function prepareOptions (signType, color, js) {
   const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
@@ -405,10 +441,14 @@ export function getGeometry (layer) {
     case entityKind.POINT:
       return formGeometry([ layer.getLatLng() ])
     case entityKind.SEGMENT:
+    case entityKind.POLYLINE:
     case entityKind.CURVE:
       return formGeometry(layer.getLatLngs())
+    case entityKind.POLYGON:
     case entityKind.AREA:
       return formGeometry(layer.getLatLngs()[0])
+    case entityKind.CIRCLE:
+      return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     default:
       return null
   }
@@ -418,6 +458,14 @@ function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
     geometry: coords,
+  }
+}
+
+function formCircleGeometry (point, radius) {
+  const lng = point.toBounds(radius * 2).getEast()
+  return {
+    point,
+    geometry: [ point, { lat: point.lat, lng } ],
   }
 }
 
