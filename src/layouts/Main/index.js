@@ -31,7 +31,7 @@ class App extends React.Component {
   routes = [
     {
       link: '/',
-      Component: (routerProps) => <ApplicationContent {...this.props} {...routerProps}/>,
+      Component: (routerProps) => <ApplicationContent {...this.props} {...routerProps} />,
     },
   ]
 

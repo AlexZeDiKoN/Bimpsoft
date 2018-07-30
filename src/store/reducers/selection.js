@@ -28,7 +28,7 @@ export default function reducer (state = initState, action) {
       return { ...state, data: mergedData }
     }
     case actions.CLEAR_SELECTION: {
-      return null
+      return { data: null }
     }
     default:
       return state

@@ -11,14 +11,15 @@ const mapStateToProps = (store) => {
     code,
     orgStructures,
     orgStructureId: 1190000,
+    amplifiers: {},
   }
 }
 const mapDispatchToProps = (dispatch) => ({
   onChange: (data) => {
-    const { code, coordinates, orgStructureId } = data
+    const { code, coordinates, orgStructureId, amplifiers } = data
     dispatch(notifications.push({
       message: 'Шаблон выполнен',
-      description: `код: ${code}, orgStructureId: ${orgStructureId}, координати: ${JSON.stringify(coordinates)}, `,
+      description: `код: ${code}, orgStructureId: ${orgStructureId}, координати: ${JSON.stringify(coordinates)}, ${JSON.stringify(amplifiers)}`,
     }))
     dispatch(viewModes.viewModeDisable(edit))
   },

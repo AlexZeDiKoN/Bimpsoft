@@ -1,9 +1,9 @@
 {
   "name": "web-map",
-  "version": "0.2.2",
+  "version": "0.2.5",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^0.4.14",
+    "@DZVIN/CommonComponents": "^0.4.21",
     "@DZVIN/MilSymbolEditor": "^0.2.7",
     "@DZVIN/milsymbol": "^0.0.1",
     "antd": "^3.5.3",
@@ -30,6 +30,7 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^4.0.8",
     "react-scripts": "1.1.4",
+    "react-shortcuts": "^1.6.2",
     "recompose": "^0.27.1",
     "redux": "^4.0.0",
     "redux-thunk": "^2.3.0",
