@@ -102,8 +102,8 @@ const getCellTRC = (initTlc, cellNum, steps) => ([
 const getStartPoint = (initTLC, z) => {
   const initLat = (z.lat - Math.abs((initTLC[0] / z.lat) % 1 * z.lat)) + Math.abs(initTLC[0])
   const initLng = Math.abs(initTLC[1]) - Math.abs(((initTLC[1] / z.lng) % 1 * z.lng))
-  const startLat = (initTLC[0] > 0 ? 1 : -1) * initLat
-  const startLng = (initTLC[1] > 0 ? 1 : -1) * initLng
+  const startLat = (initTLC[0] >= 0 ? 1 : -1) * initLat
+  const startLng = (initTLC[1] >= 0 ? 1 : -1) * initLng
   return [ startLat, startLng ]
 }
 
@@ -134,38 +134,108 @@ const generateGrid = (startTLC, z, GRID_CELLS_STRUCTURE) => {
   return grid
 }
 
-// helpers
+// event handlers and event helpers
+
+const selectLayer = (layerId) => {
+  currentGrid._layers[layerId].setStyle(SELECTED_CELL_OPTIONS)
+}
+const deselectLayer = (layerId) => {
+  currentGrid._layers[layerId].setStyle(INIT_GRID_OPTIONS)
+}
 
 const addClickEvent = (layer) => {
   layer.on('click', (e) => {
     console.log(e)
     console.log(currentGrid)
     const layerId = e.target._leaflet_id
-    currentGrid._layers[layerId].setStyle(SELECTED_CELL_OPTIONS)
+    e.originalEvent.ctrlKey
+      ? deselectLayer(layerId)
+      : selectLayer(layerId)
   })
+}
+
+// helpers
+
+const createGridRectangle = (coordinates) => {
+  const rectanglePoligon = rectangle(coordinates, INIT_GRID_OPTIONS)
+  addClickEvent(rectanglePoligon)
+  return rectanglePoligon
 }
 
 const createRectanglesGroup = (grid) => {
-  const rectangles = concat(...grid).map((item) => {
-    const rectanglePoligon = rectangle(item, INIT_GRID_OPTIONS)
-    addClickEvent(rectanglePoligon)
-    return rectanglePoligon
-  })
+  const rectangles = concat(...grid).map((coordinates) => createGridRectangle(coordinates))
   return layerGroup(rectangles)
 }
 
+const isAreaOnScreen = (_northEast) => {
+  const z = CELL_SIZES_BY_Z[ZOOM]
+  const leftBorder = INITIAL_COORDINATES.TLC[lng]
+  const topBorder = INITIAL_COORDINATES.TLC[lat] + z.lat
+  const rightBorder = INITIAL_COORDINATES.BRC[lng] + z.lng
+  const bottomBorder = INITIAL_COORDINATES.BRC[lat]
+
+  return _northEast.lat >= bottomBorder &&
+    _northEast.lat <= topBorder &&
+    _northEast.lng >= leftBorder &&
+  _northEast.lng <= rightBorder
+}
+
+const deleteOutsideLayers = (layerGroup) => {
+  layerGroup
+    .getLayers()
+    .filter((layer) => {
+      const { _northEast } = layer.getBounds()
+      return !isAreaOnScreen(_northEast)
+    })
+    .forEach((layer) => layer.removeFrom(layerGroup))
+}
+
+const isLayerExist = (layer, northEast, layers) => {
+
+}
+
+const addNewLayers = (layerGroup, coordinatesList) => {
+  console.log(layerGroup)
+  console.log(layerGroup
+    .getLayers()
+    .forEach((layer, index, layers) => {
+      const { _northEast } = layer.getBounds()
+      console.log(_northEast)
+    }))
+  console.log(coordinatesList)
+}
 // initial method
-const initGridRecalculation = (e) => {
-  const map = e.target
+const createGride = (map) => {
   setInitCoordinates(map.getBounds())
   setGridCellsAmount()
   const coordinatesMatrix = generateGrid(INITIAL_COORDINATES.TLC, CELL_SIZES_BY_Z[ZOOM], GRID_CELLS_STRUCTURE)
-  if (currentGrid) { currentGrid.removeFrom(map) }
-  const Grid = createRectanglesGroup(coordinatesMatrix)
-  Grid.addTo(map)
-  currentGrid = Grid
+  if (!currentGrid) {
+    const Grid = createRectanglesGroup(coordinatesMatrix)
+    Grid.addTo(map)
+    currentGrid = Grid
+    return
+  }
+  deleteOutsideLayers(currentGrid)
+  addNewLayers(currentGrid, coordinatesMatrix)
 }
 
-export default function initGrid (map) {
-  map.on('move', debounce(initGridRecalculation, 500))
+const initGridRecalculation = (e) => {
+  const map = e.target
+  createGride(map)
 }
+
+const deboucedGridRecalculation = debounce(initGridRecalculation, 500)
+
+const initCoordinateMapGrid = (map) => {
+  createGride(map)
+  map.on('move', deboucedGridRecalculation)
+}
+
+const removeCoordinateMapGrid = (map) => {
+  map.off('move', deboucedGridRecalculation)
+  currentGrid.removeFrom(map)
+}
+
+export const toggleMapGrid = (map, isActive) => isActive
+  ? initCoordinateMapGrid(map)
+  : removeCoordinateMapGrid(map)

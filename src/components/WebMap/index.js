@@ -27,10 +27,11 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
+
 import {
-  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
+entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
 } from './leaflet.pm.patch'
-import initGrid from './coordinateGrid'
+import { toggleMapGrid } from './coordinateGrid'
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
@@ -126,6 +127,7 @@ class WebMapInner extends Component {
     onSelection: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
+    isGridActive: PropTypes.bool.isRequired,
   }
 
   state = {
@@ -148,6 +150,9 @@ class WebMapInner extends Component {
   shouldComponentUpdate (nextProps, nextState) {
     if (nextProps.objects !== this.props.objects) {
       this.updateObjects(nextProps.objects)
+    }
+    if (nextProps.isGridActive !== this.props.isGridActive) {
+      toggleMapGrid(this.map, nextProps.isGridActive)
     }
     return false
   }
@@ -222,7 +227,6 @@ class WebMapInner extends Component {
       }
     }, this)
     initMapEvents(this.map)
-    initGrid(this.map)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
   }
@@ -418,6 +422,7 @@ class WebMapInner extends Component {
 const WebMap = connect(
   (state) => ({
     objects: state.webMap.objects,
+    isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(layers.addObject(object)),
