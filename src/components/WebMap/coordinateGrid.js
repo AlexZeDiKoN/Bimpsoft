@@ -1,4 +1,4 @@
-import { debounce, concat } from 'lodash'
+import { throttle, concat } from 'lodash'
 import { rectangle, layerGroup } from 'leaflet'
 
 // GRID CONSTANTS
@@ -43,7 +43,7 @@ const CELL_SIZES_BY_Z = {
 const INIT_GRID_OPTIONS = {
   color: 'black',
   fillOpacity: 0,
-  weight: 1,
+  weight: 0.5,
 }
 const SELECTED_CELL_OPTIONS = {
   color: 'blue',
@@ -145,8 +145,6 @@ const deselectLayer = (layerId) => {
 
 const addClickEvent = (layer) => {
   layer.on('click', (e) => {
-    console.log(e)
-    console.log(currentGrid)
     const layerId = e.target._leaflet_id
     e.originalEvent.ctrlKey
       ? deselectLayer(layerId)
@@ -190,20 +188,24 @@ const deleteOutsideLayers = (layerGroup) => {
     .forEach((layer) => layer.removeFrom(layerGroup))
 }
 
-const isLayerExist = (layer, northEast, layers) => {
-
-}
+const isLayerExist = (coordinate, layers) =>
+  layers.some((layer) => {
+    const { _northEast: { lat, lng } } = layer.getBounds()
+    const isLatExist = lat.toFixed(6) === coordinate[1][0].toFixed(6)
+    const isLngExist = lng.toFixed(6) === coordinate[1][1].toFixed(6)
+    return isLatExist && isLngExist
+  })
 
 const addNewLayers = (layerGroup, coordinatesList) => {
-  console.log(layerGroup)
-  console.log(layerGroup
-    .getLayers()
-    .forEach((layer, index, layers) => {
-      const { _northEast } = layer.getBounds()
-      console.log(_northEast)
-    }))
-  console.log(coordinatesList)
+  const layers = layerGroup.getLayers()
+  const filteredCoordinates = concat(...coordinatesList)
+    .filter((coordinate) => !isLayerExist(coordinate, layers))
+  for (const coordinate of filteredCoordinates) {
+    const newLayer = createGridRectangle(coordinate)
+    layerGroup.addLayer(newLayer)
+  }
 }
+
 // initial method
 const createGride = (map) => {
   setInitCoordinates(map.getBounds())
@@ -224,16 +226,17 @@ const initGridRecalculation = (e) => {
   createGride(map)
 }
 
-const deboucedGridRecalculation = debounce(initGridRecalculation, 500)
+const throttledGridRecalculation = throttle(initGridRecalculation, 200)
 
 const initCoordinateMapGrid = (map) => {
   createGride(map)
-  map.on('move', deboucedGridRecalculation)
+  map.on('move', throttledGridRecalculation)
 }
 
 const removeCoordinateMapGrid = (map) => {
-  map.off('move', deboucedGridRecalculation)
+  map.off('move', throttledGridRecalculation)
   currentGrid.removeFrom(map)
+  currentGrid = null
 }
 
 export const toggleMapGrid = (map, isActive) => isActive
