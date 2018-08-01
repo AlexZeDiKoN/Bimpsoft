@@ -1,0 +1,29 @@
+@import "../../assets/styles/_variables.less";
+@import "../../assets/styles/_mixins.less";
+
+.templates-list{
+  .flex;
+
+  .icon{
+    margin: 2px;
+    width: 42px;
+    height: 42px;
+  }
+
+
+
+}
+.template-item{
+  width: 42px;
+  height: 42px;
+  margin: 2px;
+  border-radius: 5px;
+  padding: 3px;
+  border: 2px solid @toolbar-background;
+  box-sizing: content-box;
+  background-color: #fff;
+}
+.template-item-selected, .template-item:hover{
+  border-color: @toolbar-background-selected;
+
+}

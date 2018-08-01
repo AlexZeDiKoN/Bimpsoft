@@ -1,5 +1,7 @@
 export const rightPanel = 'rightPanel'
 export const edit = 'edit'
+export const pointSignsList = 'pointSignsList'
+export const lineSignsList = 'lineSignsList'
 export const text = 'text'
 export const print = 'print'
 export const settings = 'settings'

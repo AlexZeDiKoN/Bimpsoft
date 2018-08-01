@@ -3,20 +3,18 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { Input } from 'antd'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import {
-  MainMenuLeftContainer,
-  MainMenuRightContainer,
+  LeftMenuContainer,
   SelectionFormContainer,
   TemplateFormContainer,
+  TemplatesListContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import Sidebar from '../Sidebar'
-import i18n from '../../i18n'
 
 const { common: { MovablePanel, ValueSwiper } } = components
 
@@ -44,12 +42,17 @@ class App extends React.Component {
     return (
       <div id="app" className="app">
         <div className="header">
-          <div className="header-left">
-            <MainMenuLeftContainer/>
+          <div className="header-top">
+            <div className="header-left">
+              <LeftMenuContainer/>
+            </div>
+            {/*<div className="header-right">*/}
+              {/*<Input.Search placeholder={ i18n.SEARCH } style={{ width: 200 }}/>*/}
+              {/*<MainMenuRightContainer/>*/}
+            {/*</div>*/}
           </div>
-          <div className="header-right">
-            <Input.Search placeholder={ i18n.SEARCH } style={{ width: 200 }}/>
-            <MainMenuRightContainer/>
+          <div className="header-bottom">
+            <TemplatesListContainer/>
           </div>
         </div>
         <div className="app-body">

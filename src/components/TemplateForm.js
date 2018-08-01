@@ -8,7 +8,8 @@ const { common: { MovablePanel } } = components
 
 export default class TemplateForm extends React.Component {
   changeHandler = (data) => {
-    this.props.onChange(data)
+    const { templateForm = null } = this.props
+    this.props.onChange({ ...data, id: templateForm ? templateForm.id : null })
   }
 
   cancelHandler = () => {
@@ -16,8 +17,8 @@ export default class TemplateForm extends React.Component {
   }
 
   render () {
-    const { wrapper: Wrapper, selectedTemplate = null } = this.props
-    if (selectedTemplate === null) {
+    const { wrapper: Wrapper, templateForm = null } = this.props
+    if (templateForm === null) {
       return null
     }
     return (
@@ -30,7 +31,7 @@ export default class TemplateForm extends React.Component {
             CREDIBILITY: { hidden: true },
             ADD_TO_TEMPLATE: { hidden: true },
           }}
-          {...selectedTemplate}
+          {...templateForm}
           onClose={this.cancelHandler}
           onChange={this.changeHandler}
         />
@@ -39,7 +40,7 @@ export default class TemplateForm extends React.Component {
   }
 }
 TemplateForm.propTypes = {
-  selectedTemplate: PropTypes.object,
+  templateForm: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
   wrapper: PropTypes.instanceOf(MovablePanel),

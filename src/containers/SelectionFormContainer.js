@@ -11,7 +11,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(selectionActions.updateSelection(data))
   },
   onAddToTemplates: (data) => {
-    dispatch(templatesActions.setSelectedTemplate(data))
+    dispatch(templatesActions.setForm(data))
   },
   onCancel: () => {
     dispatch(selectionActions.hideForm())

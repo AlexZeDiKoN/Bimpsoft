@@ -1,12 +1,12 @@
 import React from 'react'
 import i18n from '../i18n'
-import MainMenuLeftContainer from './MainMenuLeftContainer.js'
-import MainMenuRightContainer from './MainMenuRightContainer.js'
+import LeftMenuContainer from './LeftMenuContainer'
 import LayersContainer from './LayersContainer.js'
 import OrgStructuresContainer from './OrgStructuresContainer.js'
 import MilSymbolGeneratorContainer from './MilSymbolGeneratorContainer.js'
 import SelectionFormContainer from './SelectionFormContainer.js'
 import TemplateFormContainer from './TemplateFormContainer.js'
+import TemplatesListContainer from './TemplatesListContainer.js'
 
 const panels = {
   history: {
@@ -28,10 +28,10 @@ const panels = {
 }
 
 export {
-  MainMenuLeftContainer,
-  MainMenuRightContainer,
+  LeftMenuContainer,
   LayersContainer,
   SelectionFormContainer,
   TemplateFormContainer,
+  TemplatesListContainer,
   panels,
 }
