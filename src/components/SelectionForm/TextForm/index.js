@@ -1,10 +1,10 @@
 import React from 'react'
 
-export default class ShapeForm extends React.Component {
+export default class TextForm extends React.Component {
   render () {
     return (
       <div>
-        shape form in developing...
+        text form in developing...
       </div>
     )
   }

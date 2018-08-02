@@ -3,7 +3,20 @@ import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
 
-const mapStateToProps = (store) => ({ selectionData: (store.selection.showForm ? store.selection.data : null) })
+const mapStateToProps = (store) => {
+  const { selection } = store
+  const { showForm } = selection
+  let data = null
+  if (showForm === null) {
+    data = null
+  } else if (showForm === 'create') {
+    const { newShape: { type, template } } = selection
+    data = { type }
+  } else if (showForm === 'edit') {
+    data = selection.data
+  }
+  return { data }
+}
 
 const mapDispatchToProps = (dispatch) => ({
   onChange: (data) => {

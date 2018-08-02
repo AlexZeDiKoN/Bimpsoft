@@ -1,4 +1,4 @@
-export const rightPanel = 'rightPanel'
+export const sidebar = 'sidebar'
 export const edit = 'edit'
 export const pointSignsList = 'pointSignsList'
 export const lineSignsList = 'lineSignsList'

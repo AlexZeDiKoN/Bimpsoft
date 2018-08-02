@@ -1,46 +1,74 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
-import './style.css'
-import Item from './Item'
+import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import SelectionTypes from '../../constants/SelectionTypes'
 
-const { IconHovered, names } = components.icons
+const { names: icons } = components.icons
 
-export default class TemplatesList extends React.Component {
+export default class LinesList extends React.Component {
   static propTypes = {
-    lines: PropTypes.object,
-    onAddTemplate: PropTypes.func,
-    onSelectTemplate: PropTypes.func,
-    onEditTemplate: PropTypes.func,
-    onRemoveTemplate: PropTypes.func,
-    visible: PropTypes.bool,
+    onSelect: PropTypes.func,
+    shapeType: PropTypes.func,
   }
 
+  clickHandler = (shapeType) => {
+    this.props.onSelect(shapeType)
+  }
+
+  getItemProps = (type) => ({
+    value: type,
+    checked: this.props.shapeType === type,
+    onClick: this.clickHandler,
+  })
+
   render () {
-    const { lines, visible } = this.props
-    const { byIds, selectedId } = lines
-    return visible ? (
-      <div className="lines-list">
-        { Object.values(byIds).map((template) => (
-          <Item
-            key={template.id}
-            template={template}
-            selected={selectedId === template.id}
-            onSelectTemplate={this.props.onSelectTemplate}
-            onRemoveTemplate={this.props.onRemoveTemplate}
-            onEditTemplate={this.props.onEditTemplate}
-          />
-        ))}
-        <Tooltip title={i18n.ADD_POINT_SIGN_TEMPLATE} >
-          <IconHovered
-            icon={names.ADD_TABLE_DEFAULT}
-            hoverIcon={names.ADD_TABLE_HOVER}
-            onClick={this.props.onAddTemplate}
-          />
-        </Tooltip>
-      </div>
-    ) : null
+    return (
+      <ContextMenu>
+        <ContextMenuItem
+          text={i18n.SHAPE_POLYLINE}
+          icon={icons.BROKEN_LINE_ACTIVE}
+          hoverIcon={icons.BROKEN_LINE_HOVER}
+          {...this.getItemProps(SelectionTypes.SEGMENT)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_CURVE}
+          icon={icons.CURVE_ACTIVE}
+          hoverIcon={icons.CURVE_HOVER}
+          {...this.getItemProps(SelectionTypes.CURVE)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_POLYGON}
+          icon={icons.POLYGON_ACTIVE}
+          hoverIcon={icons.POLYGON_HOVER}
+          {...this.getItemProps(SelectionTypes.POLYGON)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_AREA}
+          icon={icons.RANGE_ACTIVE}
+          hoverIcon={icons.RANGE_HOVER}
+          {...this.getItemProps(SelectionTypes.AREA)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_RECTANGLE}
+          icon={icons.SQUARE_ACTIVE}
+          hoverIcon={icons.SQUARE_HOVER}
+          {...this.getItemProps(SelectionTypes.RECTANGLE)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_SQUARE}
+          icon={icons.SQUARE_ACTIVE}
+          hoverIcon={icons.SQUARE_HOVER}
+          {...this.getItemProps(SelectionTypes.SQUARE)}
+        />
+        <ContextMenuItem
+          text={i18n.SHAPE_CIRCLE}
+          icon={icons.OVAL_ACTIVE}
+          hoverIcon={icons.OVAL_HOVER}
+          {...this.getItemProps(SelectionTypes.CIRCLE)}
+        />
+      </ContextMenu>
+    )
   }
 }

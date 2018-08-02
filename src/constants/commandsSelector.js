@@ -48,9 +48,9 @@ const commandsSelector = createSelector(
     },
     toggleRightPanel: {
       title: i18n.TOGGLE_SIDEBAR,
-      icon: viewModes.rightPanel ? iconNames.LEFT_MENU_ACTIVE : iconNames.LEFT_MENU_DEFAULT,
+      icon: viewModes.sidebar ? iconNames.LEFT_MENU_ACTIVE : iconNames.LEFT_MENU_DEFAULT,
       hoverIcon: iconNames.LEFT_MENU_HOVER,
-      action: viewModesActions.viewModeToggle(viewModesKeys.rightPanel),
+      action: viewModesActions.viewModeToggle(viewModesKeys.sidebar),
     },
     toggleSettings: {
       title: i18n.SETTINGS,
@@ -105,11 +105,6 @@ const commandsSelector = createSelector(
       icon: 'share-alt',
       checkedSelector: (state) => state.selection.data && state.selection.data.type === SelectionTypes.TEXT,
       action: selectionActions.setSelection({ type: SelectionTypes.TEXT }),
-    },
-    tempCommandShowForm: {
-      title: 'Emulate click to the map',
-      icon: 'environment',
-      action: selectionActions.showForm(),
     },
   })
 )

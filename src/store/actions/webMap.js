@@ -3,6 +3,10 @@ export const actionNames = {
   TOGGLE_POINT_MARK_EDIT_MODE: Symbol('TOGGLE_POINT_MARK_EDIT_MODE'),
   TOGGLE_TEXT_MARK_EDIT_MODE: Symbol('TOGGLE_TEXT_MARK_EDIT_MODE'),
   TOGGLE_TIMELINE_EDIT_MODE: Symbol('TOGGLE_TIMELINE_EDIT_MODE'),
+  SET_COORDINATES_TYPE: Symbol('SET_COORDINATES_TYPE'),
+  SET_MINIMAP: Symbol('SET_MINIMAP'),
+  SET_AMPLIFIERS: Symbol('SET_AMPLIFIERS'),
+  SET_GENERALIZATION: Symbol('SET_GENERALIZATION'),
 }
 
 export const toggleMapEditMode = (value) => ({
@@ -20,7 +24,19 @@ export const toggleTextMarkEditMode = (value) => ({
   payload: value,
 })
 
-export const toggleTimelineEditMode = (value) => ({
-  type: actionNames.TOGGLE_TIMELINE_EDIT_MODE,
+export const setCoordinatesType = (value) => ({
+  type: actionNames.SET_COORDINATES_TYPE,
+  payload: value,
+})
+export const setMiniMap = (value) => ({
+  type: actionNames.SET_MINIMAP,
+  payload: value,
+})
+export const setAmplifiers = (value) => ({
+  type: actionNames.SET_AMPLIFIERS,
+  payload: value,
+})
+export const setGeneralization = (value) => ({
+  type: actionNames.SET_GENERALIZATION,
   payload: value,
 })

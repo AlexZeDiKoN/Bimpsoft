@@ -5,7 +5,7 @@ const initialState = {
   edit: false,
   text: false,
   print: false,
-  rightPanel: true,
+  sidebar: true,
 }
 
 const groups = [
@@ -15,15 +15,17 @@ const groups = [
 const relations = makeRelatedModes(groups)
 
 export default function reducer (state = initialState, action) {
-  const { type, payload: name } = action
+  const { type } = action
   switch (type) {
     case actions.VIEW_MODE_TOGGLE: {
+      const { payload: name } = action
       const mode = state[name]
       const relatedModes = relations[name] || {}
       const newState = { ...state, ...relatedModes, [name]: !mode }
       return newState
     }
     case actions.VIEW_MODE_DISABLE: {
+      const { payload: name } = action
       return { ...state, [name]: false }
     }
     default:

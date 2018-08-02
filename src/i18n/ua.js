@@ -39,3 +39,12 @@ export const SHAPE_SQUARE = 'Квадрат'
 export const SHAPE_TEXT = 'Текстова мітка'
 
 export const UNDEFINED = 'Не вказано'
+
+export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (за замовчуванням)'
+export const MINIMAP = 'Мінікарта'
+export const AMPLIFIERS = 'Ампліфікатори'
+export const GENERALIZATION = 'Генералізація'
+
+export const WGS_84 = 'WGS-84'
+export const USK_2000 = 'УСК-2000'
+export const MGRS = 'MGRS'

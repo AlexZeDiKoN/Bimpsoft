@@ -1,7 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
+import { components } from '@DZVIN/CommonComponents'
 import { Dropdown, Tooltip } from 'antd'
+import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+
+const { names } = components.icons
 
 export default class Item extends React.Component {
   static propTypes = {
@@ -15,26 +19,36 @@ export default class Item extends React.Component {
   }
 
   selectHandler = () => {
-    const { template: { id }, onSelectTemplate } = this.props
-    onSelectTemplate(id)
+    const { template, onSelectTemplate } = this.props
+    onSelectTemplate(template)
   }
 
-  removeHendler = () => {
+  removeHandler = () => {
     const { template: { id }, onRemoveTemplate } = this.props
     onRemoveTemplate(id)
   }
 
-  editHendler = () => {
+  editHandler = () => {
     const { template: { id }, onEditTemplate } = this.props
     onEditTemplate(id)
   }
 
-  menu = (
-    <div className="context-menu">
-      <div className="context-menu-item" onClick={this.editHendler}>Редагувати</div>
-      <div className="context-menu-item" onClick={this.removeHendler}>Видалити</div>
-    </div>
-  )
+  contextMenuHandler = (f) => f()
+
+  menu = (<ContextMenu>
+    <ContextMenuItem
+      text={'Редагувати'}
+      icon={names.BAR_2_EDIT_DEFAULT}
+      hoverIcon={names.BAR_2_EDIT_HOVER}
+      onClick={this.editHandler}
+    />
+    <ContextMenuItem
+      text={'Видалити'}
+      icon={names.BAR_2_DELETE_DEFAULT}
+      hoverIcon={names.BAR_2_DELETE_HOVER}
+      onClick={this.removeHandler}
+    />
+  </ContextMenu>)
 
   render () {
     const { template: { name, code, amplifiers }, selected } = this.props

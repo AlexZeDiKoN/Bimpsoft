@@ -3,29 +3,22 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import {
   LeftMenuContainer,
+  RightMenuContainer,
   SelectionFormContainer,
   TemplateFormContainer,
   TemplatesListContainer,
+  SettingsFormContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
-import Sidebar from '../Sidebar'
+import SidebarContainer from '../../containers/SidebarContainer'
 
-const { common: { MovablePanel, ValueSwiper } } = components
+const { common: { MovablePanel } } = components
 
-const SIDEBAR_SIZE_DEFAULT = 300
-const SIDEBAR_SIZE_MIN = 250
-
-class App extends React.Component {
-  state = {
-    sidebarWidth: SIDEBAR_SIZE_DEFAULT,
-  }
-
+export default class Main extends React.Component {
   routes = [
     {
       link: '/',
@@ -38,7 +31,6 @@ class App extends React.Component {
   renderRoute = ({ link, Component }, index) => <Route exact path={link} render={Component} key={index}/>
 
   render () {
-    const sidebarDisplay = this.props.viewModes.rightPanel ? '' : 'none'
     return (
       <div id="app" className="app">
         <div className="header">
@@ -46,10 +38,9 @@ class App extends React.Component {
             <div className="header-left">
               <LeftMenuContainer/>
             </div>
-            {/*<div className="header-right">*/}
-              {/*<Input.Search placeholder={ i18n.SEARCH } style={{ width: 200 }}/>*/}
-              {/*<MainMenuRightContainer/>*/}
-            {/*</div>*/}
+            <div className="header-right">
+              <RightMenuContainer/>
+            </div>
           </div>
           <div className="header-bottom">
             <TemplatesListContainer/>
@@ -58,35 +49,15 @@ class App extends React.Component {
         <div className="app-body">
           <SelectionFormContainer wrapper={ MovablePanel }/>
           <TemplateFormContainer wrapper={ MovablePanel }/>
+          <SettingsFormContainer wrapper={ MovablePanel }/>
           <div className="app-content">
             <Switch>
               {this.routes.map(this.renderRoute)}
             </Switch>
           </div>
-          <ValueSwiper
-            style={{ display: sidebarDisplay }}
-            value={this.state.sidebarWidth}
-            onChange={(startValue, pos) => {
-              const sidebarWidth = Math.max(SIDEBAR_SIZE_MIN, startValue - pos.x)
-              this.setState({ sidebarWidth })
-            }}
-          />
-          <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
-            <Sidebar />
-          </div>
+          <SidebarContainer />
         </div>
       </div>
     )
   }
 }
-
-App.propTypes = {
-  viewModes: PropTypes.object.isRequired,
-}
-
-const mapStateToProps = (state) => {
-  const { viewModes } = state
-  return { viewModes }
-}
-
-export default connect(mapStateToProps)(App)

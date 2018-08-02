@@ -4,6 +4,7 @@ import { Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import './style.css'
+import SelectionTypes from '../../constants/SelectionTypes'
 import Item from './Item'
 
 const { IconHovered, names } = components.icons
@@ -11,6 +12,7 @@ const { IconHovered, names } = components.icons
 export default class TemplatesList extends React.Component {
   static propTypes = {
     templates: PropTypes.object,
+    selectedTemplateId: PropTypes.string,
     onAddTemplate: PropTypes.func,
     onSelectTemplate: PropTypes.func,
     onEditTemplate: PropTypes.func,
@@ -19,15 +21,15 @@ export default class TemplatesList extends React.Component {
   }
 
   render () {
-    const { templates, visible } = this.props
-    const { byIds, selectedId } = templates
+    const { templates, visible, selectedTemplateId } = this.props
+    const { byIds } = templates
     return visible ? (
       <div className="templates-list">
         { Object.values(byIds).map((template) => (
           <Item
             key={template.id}
             template={template}
-            selected={selectedId === template.id}
+            selected={selectedTemplateId === template.id}
             onSelectTemplate={this.props.onSelectTemplate}
             onRemoveTemplate={this.props.onRemoveTemplate}
             onEditTemplate={this.props.onEditTemplate}

@@ -5,6 +5,7 @@ import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import SymbolForm from './SymbolForm'
 import ShapeForm from './ShapeForm'
+import TextForm from './TextForm'
 
 const { common: { MovablePanel } } = components
 
@@ -43,19 +44,13 @@ const forms = {
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
-    component: ShapeForm,
+    component: TextForm,
   },
 }
 
 export default class SelectionForm extends React.Component {
   changeHandler = (data) => {
-    const { selectionData } = this.props
-    switch (selectionData.type) {
-      case SelectionTypes.POINT:
-        this.props.onChange(data)
-        break
-      default:
-    }
+    this.props.onChange(data)
   }
 
   cancelHandler = () => {
@@ -67,17 +62,17 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { selectionData } = this.props
-    if (selectionData === null || !forms.hasOwnProperty(selectionData.type)) {
+    const { data } = this.props
+    if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
-    const { title, component: Component } = forms[selectionData.type]
+    const { title, component: Component } = forms[data.type]
 
     const { wrapper: Wrapper } = this.props
     return (
       <Wrapper title={title} onClose={this.cancelHandler}>
         <Component
-          {...selectionData}
+          {...data}
           onChange={this.changeHandler}
           onClose={this.cancelHandler}
           onAddToTemplates={this.addToTemplateHandler}
@@ -88,7 +83,7 @@ export default class SelectionForm extends React.Component {
 }
 
 SelectionForm.propTypes = {
-  selectionData: PropTypes.object,
+  data: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
   onAddToTemplates: PropTypes.func,
