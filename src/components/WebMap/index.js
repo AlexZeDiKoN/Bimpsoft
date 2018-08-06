@@ -17,6 +17,7 @@ import {
   // TODO: пибрати це після тестування
   LOAD_TEST_OBJECTS,
 } from '../../constants/shortcuts'
+import { toggleMapGrid } from '../../services/coordinateGrid'
 import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -29,9 +30,8 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 
 import {
-entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
+  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
 } from './leaflet.pm.patch'
-import { toggleMapGrid } from './coordinateGrid'
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
