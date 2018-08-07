@@ -87,5 +87,5 @@ SelectionForm.propTypes = {
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
   onAddToTemplates: PropTypes.func,
-  wrapper: PropTypes.instanceOf(MovablePanel),
+  wrapper: PropTypes.oneOf([ MovablePanel ]),
 }

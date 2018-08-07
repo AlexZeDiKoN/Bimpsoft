@@ -4,7 +4,6 @@ import { Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import './style.css'
-import SelectionTypes from '../../constants/SelectionTypes'
 import Item from './Item'
 
 const { IconHovered, names } = components.icons

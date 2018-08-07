@@ -12,7 +12,7 @@ const Option = Select.Option
 export default class SettingsForm extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
-    wrapper: PropTypes.instanceOf(MovablePanel),
+    wrapper: PropTypes.oneOf([ MovablePanel ]),
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
     showAmplifiers: PropTypes.bool,

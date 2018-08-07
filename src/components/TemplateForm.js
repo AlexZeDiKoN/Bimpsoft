@@ -43,5 +43,5 @@ TemplateForm.propTypes = {
   templateForm: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
-  wrapper: PropTypes.instanceOf(MovablePanel),
+  wrapper: PropTypes.oneOf([ MovablePanel ]),
 }

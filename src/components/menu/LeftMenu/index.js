@@ -11,8 +11,8 @@ const iconNames = components.icons.names
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
-    isEditMode: PropTypes.object,
-    isShowPoints: PropTypes.object,
+    isEditMode: PropTypes.bool,
+    isShowPoints: PropTypes.bool,
     newShape: PropTypes.object,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
