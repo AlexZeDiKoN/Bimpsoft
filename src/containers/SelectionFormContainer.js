@@ -10,8 +10,7 @@ const mapStateToProps = (store) => {
   if (showForm === null) {
     data = null
   } else if (showForm === 'create') {
-    const { newShape: { type, template } } = selection
-    data = { type }
+    data = selection.newShape
   } else if (showForm === 'edit') {
     data = selection.data
   }

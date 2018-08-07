@@ -10,8 +10,8 @@ const iconNames = components.icons.names
 
 export default class RightMenu extends React.Component {
   static propTypes = {
-    isSettingsShow: PropTypes.object,
-    isSidebarShow: PropTypes.object,
+    isSettingsShow: PropTypes.bool,
+    isSidebarShow: PropTypes.bool,
     onClickSettings: PropTypes.func,
     onClickSidebar: PropTypes.func,
   }

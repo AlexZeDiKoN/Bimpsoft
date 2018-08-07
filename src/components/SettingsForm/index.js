@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import { Form, Select, Switch } from 'antd'
+import { Select, Switch } from 'antd'
 import i18n from '../../i18n'
 import { CoordinatesTypes } from '../../constants'
+import { default as Form, FormRow } from '../form'
 import './style.css'
 const { common: { MovablePanel } } = components
-const FormItem = Form.Item
 const Option = Select.Option
 
 export default class SettingsForm extends React.Component {
@@ -41,30 +41,25 @@ export default class SettingsForm extends React.Component {
       onChangeGeneralization,
     } = this.props
 
-    const formItemLayout = {
-      labelCol: { span: 10 },
-      wrapperCol: { span: 14 },
-    }
-
     return (
       <Wrapper title={i18n.SETTINGS} onClose={onClose}>
-        <Form layout="horizontal">
-          <FormItem label={i18n.DEFAULT_COORDINATES_SYSTEM} {...formItemLayout}>
+        <Form className="settings-form-group">
+          <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}>
             <Select value={coordinatesType} onChange={onChangeCoordinatesType} >
               <Option value={CoordinatesTypes.WGS_84}>{i18n.WGS_84}</Option>
               <Option value={CoordinatesTypes.USK_2000}>{i18n.USK_2000}</Option>
               <Option value={CoordinatesTypes.MGRS}>{i18n.MGRS}</Option>
             </Select>
-          </FormItem>
-          <FormItem label={i18n.MINIMAP} {...formItemLayout}>
+          </FormRow>
+          <FormRow label={i18n.MINIMAP}>
             <Switch checked={showMiniMap} onChange={onChangeShowMiniMap}/>
-          </FormItem>
-          <FormItem label={i18n.AMPLIFIERS} {...formItemLayout}>
+          </FormRow>
+          <FormRow label={i18n.AMPLIFIERS}>
             <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
-          </FormItem>
-          <FormItem label={i18n.GENERALIZATION} {...formItemLayout}>
+          </FormRow>
+          <FormRow label={i18n.GENERALIZATION}>
             <Switch checked={generalization} onChange={onChangeGeneralization}/>
-          </FormItem>
+          </FormRow>
         </Form>
       </Wrapper>
     )

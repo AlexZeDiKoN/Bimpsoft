@@ -32,7 +32,7 @@ const WebMapState = Record({
   isTextMarkEditMode: false,
   isTimelineEditMode: false,
   coordinatesType: CoordinatesTypes.WGS_84,
-  showMiniMap: false,
+  showMiniMap: true,
   showAmplifiers: false,
   generalization: false,
   objects: Map(),
