@@ -18,10 +18,16 @@ import SidebarContainer from '../../containers/SidebarContainer'
 
 const { common: { MovablePanel } } = components
 
+const ModalContainer = (props) => (
+  <div className="modal-container">
+    <MovablePanel {...props} />
+  </div>
+)
+
 export default class Main extends React.Component {
   render () {
     return (
-      <div id="app" className="app">
+      <div id="main" className="main">
         <div className="header">
           <div className="header-top">
             <div className="header-left">
@@ -36,9 +42,6 @@ export default class Main extends React.Component {
           </div>
         </div>
         <div className="app-body">
-          <SelectionFormContainer wrapper={ MovablePanel }/>
-          <TemplateFormContainer wrapper={ MovablePanel }/>
-          <SettingsFormContainer wrapper={ MovablePanel }/>
           <div className="app-content">
             <Switch>
               <Route exact path='/' component={ApplicationContent}/>
@@ -46,6 +49,9 @@ export default class Main extends React.Component {
           </div>
           <SidebarContainer />
         </div>
+        <SelectionFormContainer wrapper={ ModalContainer }/>
+        <TemplateFormContainer wrapper={ ModalContainer }/>
+        <SettingsFormContainer wrapper={ ModalContainer }/>
       </div>
     )
   }
