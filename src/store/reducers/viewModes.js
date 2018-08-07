@@ -33,7 +33,7 @@ export default function reducer (state = initialState, action) {
   }
 }
 
-function makeRelatedModes(groups) {
+function makeRelatedModes (groups) {
   const relations = {}
   groups.forEach((group) => group.forEach((key) => {
     const relation = {}

@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react'
+import React, { Fragment } from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
+import PropTypes from 'prop-types'
 import { panels } from '../../containers'
 import { TabsPanel } from '../../components/common'
-import PropTypes from "prop-types";
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
 
@@ -12,7 +12,6 @@ const SIDEBAR_SIZE_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 250
 
 export default class Sidebar extends React.Component {
-
   static propTypes = {
     visible: PropTypes.bool,
   }
@@ -56,8 +55,4 @@ export default class Sidebar extends React.Component {
       </Fragment>
     )
   }
-}
-
-Sidebar.propTypes = {
-
 }
