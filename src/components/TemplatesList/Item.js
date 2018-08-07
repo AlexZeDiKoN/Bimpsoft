@@ -4,6 +4,7 @@ import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import { Dropdown, Tooltip } from 'antd'
 import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import i18n from '../../i18n'
 
 const { names } = components.icons
 
@@ -37,13 +38,13 @@ export default class Item extends React.Component {
 
   menu = (<ContextMenu>
     <ContextMenuItem
-      text={'Редагувати'}
+      text={i18n.EDIT}
       icon={names.BAR_2_EDIT_DEFAULT}
       hoverIcon={names.BAR_2_EDIT_HOVER}
       onClick={this.editHandler}
     />
     <ContextMenuItem
-      text={'Видалити'}
+      text={i18n.REMOVE}
       icon={names.BAR_2_DELETE_DEFAULT}
       hoverIcon={names.BAR_2_DELETE_HOVER}
       onClick={this.removeHandler}

@@ -94,3 +94,6 @@ export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
 export const NODAL_POINTS = 'Вузлові точки'
+
+export const EDIT = 'Редагувати'
+export const REMOVE = 'Видалити'

@@ -19,17 +19,6 @@ import SidebarContainer from '../../containers/SidebarContainer'
 const { common: { MovablePanel } } = components
 
 export default class Main extends React.Component {
-  routes = [
-    {
-      link: '/',
-      Component: (routerProps) => <ApplicationContent {...this.props} {...routerProps} />,
-    },
-  ]
-
-  // Use of iteration index as value for react's 'key' prop isn't a good idea,
-  // but in case with static array it's not so bad
-  renderRoute = ({ link, Component }, index) => <Route exact path={link} render={Component} key={index}/>
-
   render () {
     return (
       <div id="app" className="app">
@@ -52,7 +41,7 @@ export default class Main extends React.Component {
           <SettingsFormContainer wrapper={ MovablePanel }/>
           <div className="app-content">
             <Switch>
-              {this.routes.map(this.renderRoute)}
+              <Route exact path='/' component={ApplicationContent}/>
             </Switch>
           </div>
           <SidebarContainer />
