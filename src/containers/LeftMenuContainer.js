@@ -11,6 +11,8 @@ const mapStateToProps = (store) => {
       [viewModesKeys.edit]: isEditMode,
       [viewModesKeys.pointSignsList]: isShowPoints,
       [viewModesKeys.mapSourcesList]: isShowSources,
+      [viewModesKeys.lineSignsList]: isShowLines,
+      [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
     selection: { newShape },
     webMap: { subordinationLevel },
@@ -19,6 +21,8 @@ const mapStateToProps = (store) => {
     isEditMode,
     isShowPoints,
     isShowSources,
+    isShowLines,
+    isShowSubordinationLevel,
     newShape,
     subordinationLevel,
   }
@@ -33,11 +37,18 @@ const mapDispatchToProps = (dispatch) => ({
   onClickMapSource: () => {
     dispatch(viewModesActions.viewModeToggle(viewModesKeys.mapSourcesList))
   },
+  onClickLineSign: () => {
+    dispatch(viewModesActions.viewModeToggle(viewModesKeys.lineSignsList))
+  },
+  onClickSubordinationLevel: () => {
+    dispatch(viewModesActions.viewModeToggle(viewModesKeys.subordinationLevel))
+  },
   onNewShapeChange: (newShape) => {
     dispatch(selectionActions.setNewShape(newShape))
   },
   onSubordinationLevelChange: (subordinationLevel) => {
     dispatch(webMapActions.setSubordinationLevel(subordinationLevel))
+    dispatch(viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel))
   },
   tempClickOnMap: () => {
     dispatch(selectionActions.setNewShapeCoordinates({ x: 'x1111', y: 'y2222' }))
