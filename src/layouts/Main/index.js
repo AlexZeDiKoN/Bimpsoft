@@ -3,87 +3,50 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { Input } from 'antd'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
 import {
-  MainMenuLeftContainer,
-  MainMenuRightContainer,
+  LeftMenuContainer,
+  RightMenuContainer,
   SelectionFormContainer,
   TemplateFormContainer,
+  TemplatesListContainer,
+  SettingsFormContainer,
+  MapsSourcesContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
-import Sidebar from '../Sidebar'
-import i18n from '../../i18n'
+import SidebarContainer from '../../containers/SidebarContainer'
+import ModalContainer from '../../components/common/ModalContainer'
 
-const { common: { MovablePanel, ValueSwiper } } = components
-
-const SIDEBAR_SIZE_DEFAULT = 300
-const SIDEBAR_SIZE_MIN = 250
-
-class App extends React.Component {
-  state = {
-    sidebarWidth: SIDEBAR_SIZE_DEFAULT,
-  }
-
-  routes = [
-    {
-      link: '/',
-      Component: (routerProps) => <ApplicationContent {...this.props} {...routerProps} />,
-    },
-  ]
-
-  // Use of iteration index as value for react's 'key' prop isn't a good idea,
-  // but in case with static array it's not so bad
-  renderRoute = ({ link, Component }, index) => <Route exact path={link} render={Component} key={index}/>
-
+export default class Main extends React.Component {
   render () {
-    const sidebarDisplay = this.props.viewModes.rightPanel ? '' : 'none'
+    const mapSources = (<MapsSourcesContainer/>)
     return (
-      <div id="app" className="app">
+      <div id="main" className="main">
         <div className="header">
-          <div className="header-left">
-            <MainMenuLeftContainer/>
+          <div className="header-top">
+            <div className="header-left">
+              <LeftMenuContainer mapSources={mapSources}/>
+            </div>
+            <div className="header-right">
+              <RightMenuContainer/>
+            </div>
           </div>
-          <div className="header-right">
-            <Input.Search placeholder={ i18n.SEARCH } style={{ width: 200 }}/>
-            <MainMenuRightContainer/>
+          <div className="header-bottom">
+            <TemplatesListContainer/>
           </div>
         </div>
         <div className="app-body">
-          <SelectionFormContainer wrapper={ MovablePanel }/>
-          <TemplateFormContainer wrapper={ MovablePanel }/>
           <div className="app-content">
             <Switch>
-              {this.routes.map(this.renderRoute)}
+              <Route exact path='/' component={ApplicationContent}/>
             </Switch>
           </div>
-          <ValueSwiper
-            style={{ display: sidebarDisplay }}
-            value={this.state.sidebarWidth}
-            onChange={(startValue, pos) => {
-              const sidebarWidth = Math.max(SIDEBAR_SIZE_MIN, startValue - pos.x)
-              this.setState({ sidebarWidth })
-            }}
-          />
-          <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
-            <Sidebar />
-          </div>
+          <SidebarContainer />
         </div>
+        <SelectionFormContainer wrapper={ ModalContainer }/>
+        <TemplateFormContainer wrapper={ ModalContainer }/>
+        <SettingsFormContainer wrapper={ ModalContainer }/>
       </div>
     )
   }
 }
-
-App.propTypes = {
-  viewModes: PropTypes.object.isRequired,
-}
-
-const mapStateToProps = (state) => {
-  const { viewModes } = state
-  return { viewModes }
-}
-
-export default connect(mapStateToProps)(App)

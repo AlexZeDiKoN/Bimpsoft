@@ -39,3 +39,64 @@ export const SHAPE_SQUARE = 'Квадрат'
 export const SHAPE_TEXT = 'Текстова мітка'
 
 export const UNDEFINED = 'Не вказано'
+
+export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (за замовчуванням)'
+export const MINIMAP = 'Мінікарта'
+export const AMPLIFIERS = 'Ампліфікатори'
+export const GENERALIZATION = 'Генералізація'
+
+export const WGS_84 = 'WGS-84'
+export const USK_2000 = 'УСК-2000'
+export const MGRS = 'MGRS'
+
+export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
+export const TEXT = 'Надпис'
+export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'
+export const DISPLAY_ANCHOR_LINE = 'Відображати лінію прив\'язки'
+export const ANCHOR_LINE_WITH_ARROW = 'Лінія прив\'язки зі стрілкою'
+export const MAGNIFICATION = 'Збільшення'
+
+export const TEAM_CREW = 'Розрахунок/екіпаж'
+export const SQUAD = 'Відділення'
+export const SECTION = 'Секція'
+export const PLATOON_DETACHMENT = 'Взвод'
+export const COMPANY_BATTERY_TROOP = 'Рота/батарея'
+export const BATTALION_SQUADRON = 'Батальйон/дивізіон'
+export const REGIMENT_GROUP = 'Полк'
+export const BRIGADE = 'Бригада'
+export const DIVISION = 'Дивізія'
+export const CORPS_MEF = 'Корпус'
+export const ARMY = 'Армія'
+export const ARMY_GROUP_FRONT = 'Група армій'
+export const REGION_THEATER = 'Театр'
+export const COMMAND = 'Командування'
+
+export const OK = 'Гаразд'
+export const CANCEL = 'Скасувати'
+
+export const COLOR = 'Колір'
+export const BLUE = 'Синій'
+export const RED = 'Червоний'
+export const BLACK = 'Чорний'
+export const GREEN = 'Зелений'
+export const YELLOW = 'Жовтий'
+
+export const LINE_SEGMENT = 'Відрізок лінії'
+export const SEGMENT_DIRECT = 'Пряма лінія'
+export const SEGMENT_ARC = 'Дуга'
+
+export const LINE_TYPE = 'Тип лінії'
+export const SOLID = 'Суцільна'
+export const DASHED = 'Пунктирна'
+
+export const LINE_STYLE = 'Стиль лінії'
+export const LINE_STYLE_WAVE = 'Хвиляста'
+
+export const COORDINATES = 'Координати'
+export const NODAL_POINTS = 'Вузлові точки'
+
+export const EDIT = 'Редагувати'
+export const REMOVE = 'Видалити'
+
+export const MAP_SOURCE = 'Джерело картографічної інформації'
+export const SITUATION_DETAILS = 'Деталізація обстановки'
