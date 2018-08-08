@@ -6,7 +6,7 @@ export default class MapsSourcesList extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
     sources: PropTypes.array,
-    source: PropTypes.string,
+    source: PropTypes.object,
     onSelect: PropTypes.func,
   }
 
@@ -33,7 +33,7 @@ export default class MapsSourcesList extends React.Component {
             <ContextMenuItem
               key={ source }
               text={ title }
-              checked={source === currentSource}
+              checked={sourceObj === currentSource}
               value={ sourceObj }
               onClick={this.clickHandler}
             />

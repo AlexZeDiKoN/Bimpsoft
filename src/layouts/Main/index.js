@@ -3,7 +3,6 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { components } from '@DZVIN/CommonComponents'
 import {
   LeftMenuContainer,
   RightMenuContainer,
@@ -16,17 +15,9 @@ import {
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
-
-const { common: { MovablePanel } } = components
-
-const ModalContainer = (props) => (
-  <div className="modal-container">
-    <MovablePanel {...props} />
-  </div>
-)
+import ModalContainer from '../../components/common/ModalContainer'
 
 export default class Main extends React.Component {
-
   render () {
     const mapSources = (<MapsSourcesContainer/>)
     return (

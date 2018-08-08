@@ -82,29 +82,19 @@ export default function webMapReducer (state = WebMapState(), action) {
       })
     }
     case actionNames.SET_COORDINATES_TYPE: {
-      return state.merge({
-        coordinatesType: payload,
-      })
+      return state.set('coordinatesType', payload)
     }
     case actionNames.SET_MINIMAP: {
-      return state.merge({
-        showMiniMap: payload,
-      })
+      return state.set('showMiniMap', payload)
     }
     case actionNames.SET_AMPLIFIERS: {
-      return state.merge({
-        showAmplifiers: payload,
-      })
+      return state.set('showAmplifiers', payload)
     }
     case actionNames.SET_GENERALIZATION: {
-      return state.merge({
-        generalization: payload,
-      })
+      return state.set('generalization', payload)
     }
     case actionNames.SET_SOURCE: {
-      return state.merge({
-        source: payload,
-      })
+      return state.set('source', payload)
     }
     case actionNames.TOGGLE_TIMELINE_EDIT_MODE: {
       if (!payload) {

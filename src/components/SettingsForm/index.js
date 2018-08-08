@@ -1,18 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
 import { Select, Switch } from 'antd'
 import i18n from '../../i18n'
 import { CoordinatesTypes } from '../../constants'
 import { default as Form, FormRow } from '../form'
 import './style.css'
-const { common: { MovablePanel } } = components
+import ModalContainer from '../common/ModalContainer'
 const Option = Select.Option
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
-    wrapper: PropTypes.oneOf([ MovablePanel ]),
+    wrapper: PropTypes.oneOf([ ModalContainer ]),
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
     showAmplifiers: PropTypes.bool,

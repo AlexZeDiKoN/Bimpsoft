@@ -1,13 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
+import ModalContainer from '../common/ModalContainer'
 import SymbolForm from './SymbolForm'
 import ShapeForm from './ShapeForm'
 import TextForm from './TextForm'
-
-const { common: { MovablePanel } } = components
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -87,5 +85,5 @@ SelectionForm.propTypes = {
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
   onAddToTemplates: PropTypes.func,
-  wrapper: PropTypes.oneOf([ MovablePanel ]),
+  wrapper: PropTypes.oneOf([ ModalContainer ]),
 }
