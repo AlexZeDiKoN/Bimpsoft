@@ -9,12 +9,14 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.edit]: isEditMode,
       [viewModesKeys.pointSignsList]: isShowPoints,
+      [viewModesKeys.mapSourcesList]: isShowSources,
     },
     selection: { newShape },
   } = store
   return {
     isEditMode,
     isShowPoints,
+    isShowSources,
     newShape,
   }
 }

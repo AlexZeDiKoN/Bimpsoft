@@ -14,6 +14,7 @@ export default class LeftMenu extends React.Component {
     isEditMode: PropTypes.bool,
     isShowPoints: PropTypes.bool,
     newShape: PropTypes.object,
+    isShowSources: PropTypes.bool,
     mapSources: PropTypes.element,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
@@ -56,9 +57,9 @@ export default class LeftMenu extends React.Component {
       onClickPointSign,
       onClickMapSource,
       mapSources,
+      isShowSources,
     } = this.props
     const { showLines } = this.state
-
     return (
       <div className='left-menu'>
         <IconButton
@@ -106,7 +107,7 @@ export default class LeftMenu extends React.Component {
             />
             <IconButton
               text={i18n.MAP_SOURCE}
-              icon={mapSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
+              icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
               hoverIcon={iconNames.MAP_HOVER}
               onClick={onClickMapSource}
             >
