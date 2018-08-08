@@ -17,6 +17,7 @@ import {
   // TODO: пибрати це після тестування
   LOAD_TEST_OBJECTS,
 } from '../../constants/shortcuts'
+import { toggleMapGrid } from '../../services/coordinateGrid'
 import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -27,6 +28,7 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
+
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
 } from './leaflet.pm.patch'
@@ -125,6 +127,7 @@ class WebMapInner extends Component {
     onSelection: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
+    isGridActive: PropTypes.bool.isRequired,
   }
 
   state = {
@@ -150,6 +153,9 @@ class WebMapInner extends Component {
     }
     if (nextProps.showMiniMap !== this.props.showMiniMap) {
       this.updateMinimap(nextProps.showMiniMap)
+    }
+    if (nextProps.isGridActive !== this.props.isGridActive) {
+      toggleMapGrid(this.map, nextProps.isGridActive)
     }
     return false
   }
@@ -429,6 +435,7 @@ const WebMap = connect(
   (state) => ({
     objects: state.webMap.objects,
     showMiniMap: state.webMap.showMiniMap,
+    isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(layers.addObject(object)),
