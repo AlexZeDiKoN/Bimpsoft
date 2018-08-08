@@ -1,8 +1,9 @@
 import * as actions from '../actions/selection'
 
 const initState = {
-  showForm: false,
+  showForm: null,
   data: null,
+  newShape: {},
 }
 
 export default function reducer (state = initState, action) {
@@ -10,13 +11,16 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case actions.SET_SELECTION: {
       const { data } = action
-      return { ...state, data, showForm: false }
+      return { ...state, data, showForm: null }
     }
-    case actions.SHOW_FORM: {
-      return { ...state, showForm: true }
+    case actions.SHOW_CREATE_FORM: {
+      return { ...state, showForm: 'create' }
+    }
+    case actions.SHOW_EDIT_FORM: {
+      return { ...state, showForm: 'edit' }
     }
     case actions.HIDE_FORM: {
-      return { ...state, showForm: false }
+      return { ...state, showForm: null }
     }
     case actions.UPDATE_SELECTION: {
       const { data } = state
@@ -28,7 +32,16 @@ export default function reducer (state = initState, action) {
       return { ...state, data: mergedData }
     }
     case actions.CLEAR_SELECTION: {
-      return { data: null }
+      return { ...state, data: null }
+    }
+    case actions.SET_NEW_SHAPE: {
+      const { newShape } = action
+      return { ...state, newShape, showForm: null }
+    }
+    case actions.SET_NEW_SHAPE_COORDINATES: {
+      const { coordinates } = action
+      const { coordinatesArray = [] } = state.newShape
+      return { ...state, newShape: { ...state.newShape, coordinatesArray: [ ...coordinatesArray, coordinates ] } }
     }
     default:
       return state

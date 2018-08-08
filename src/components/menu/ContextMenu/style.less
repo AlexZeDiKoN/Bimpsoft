@@ -1,0 +1,47 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.context-menu{
+  background: @toolbar-background;
+  border: 1px solid @toolbar-border;
+  padding: 3px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 5px -2px;
+}
+.context-menu-item {
+  border-radius: 3px;
+  margin: 3px;
+  padding: 3px 10px 3px 10px;
+  .flex;
+  align-items: center;
+  cursor: pointer;
+  &.context-menu-item-checked, &:hover {
+    background-color: @toolbar-background-selected;
+    color: @toolbar-color-selected;
+    .icon-hovered{
+      .icon-hovered-on{
+        display: initial;
+      }
+      .icon-hovered-off{
+        display: none;
+      }
+    }
+  }
+  .context-menu-item-text{
+    line-height: 32px;
+    height: 32px;
+  }
+  .icon-hovered{
+    width: 32px;
+    height: 32px;
+    margin-right: 0.5em;
+    .icon-hovered-on{
+      display: none;
+    }
+    .icon-hovered-off{
+      display: initial;
+    }
+  }
+
+
+}

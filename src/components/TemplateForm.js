@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
-import { components } from '@DZVIN/CommonComponents'
 import i18n from '../i18n'
-
-const { common: { MovablePanel } } = components
+import ModalContainer from './common/ModalContainer'
 
 export default class TemplateForm extends React.Component {
   changeHandler = (data) => {
-    this.props.onChange(data)
+    const { templateForm = null } = this.props
+    this.props.onChange({ ...data, id: templateForm ? templateForm.id : null })
   }
 
   cancelHandler = () => {
@@ -16,8 +15,8 @@ export default class TemplateForm extends React.Component {
   }
 
   render () {
-    const { wrapper: Wrapper, selectedTemplate = null } = this.props
-    if (selectedTemplate === null) {
+    const { wrapper: Wrapper, templateForm = null } = this.props
+    if (templateForm === null) {
       return null
     }
     return (
@@ -30,7 +29,7 @@ export default class TemplateForm extends React.Component {
             CREDIBILITY: { hidden: true },
             ADD_TO_TEMPLATE: { hidden: true },
           }}
-          {...selectedTemplate}
+          {...templateForm}
           onClose={this.cancelHandler}
           onChange={this.changeHandler}
         />
@@ -39,8 +38,8 @@ export default class TemplateForm extends React.Component {
   }
 }
 TemplateForm.propTypes = {
-  selectedTemplate: PropTypes.object,
+  templateForm: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
-  wrapper: PropTypes.instanceOf(MovablePanel),
+  wrapper: PropTypes.oneOf([ ModalContainer ]),
 }

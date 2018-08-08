@@ -51,7 +51,6 @@ const indicateModes = {
 const miniMapOptions = {
   width: 200,
   toggleDisplay: true,
-  minimized: true,
   strings: {
     hideText: i18n.HIDE_MINIMAP,
     showText: i18n.SHOW_MINIMAP,
@@ -118,6 +117,7 @@ class WebMapInner extends Component {
     ]),
     // from Redux store
     objects: PropTypes.object,
+    showMiniMap: PropTypes.bool,
     // Redux actions
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
@@ -148,11 +148,22 @@ class WebMapInner extends Component {
     if (nextProps.objects !== this.props.objects) {
       this.updateObjects(nextProps.objects)
     }
+    if (nextProps.showMiniMap !== this.props.showMiniMap) {
+      this.updateMinimap(nextProps.showMiniMap)
+    }
     return false
   }
 
   componentWillUnmount () {
     this.map.remove()
+  }
+
+  updateMinimap (showMiniMap) {
+    if (showMiniMap) {
+      this.mini.addTo(this.map)
+    } else {
+      this.mini.remove()
+    }
   }
 
   indicateMode = indicateModes.WGS
@@ -216,7 +227,8 @@ class WebMapInner extends Component {
         new TileLayer(source, rest).addTo(this.map)
         if (!this.mini) {
           const tileLayer = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
-          this.mini = new Control.MiniMap(tileLayer, miniMapOptions).addTo(this.map)
+          this.mini = new Control.MiniMap(tileLayer, miniMapOptions)
+          this.updateMinimap(this.props.showMiniMap)
         }
       }
     }, this)
@@ -416,6 +428,7 @@ class WebMapInner extends Component {
 const WebMap = connect(
   (state) => ({
     objects: state.webMap.objects,
+    showMiniMap: state.webMap.showMiniMap,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(layers.addObject(object)),
