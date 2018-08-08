@@ -1,5 +1,5 @@
 // GRID CONSTANTS
-const CELL_SIZES_BY_Z = {
+export const CELL_SIZES = {
   1000000: {
     lat: 4,
     lng: 6,
@@ -37,36 +37,25 @@ const CELL_SIZES_BY_Z = {
     lng: 0.01,
   },
 }
-const INIT_GRID_OPTIONS = {
+export const INIT_GRID_OPTIONS = {
   color: 'black',
   fillOpacity: 0,
   weight: 0.5,
 }
-const SELECTED_CELL_OPTIONS = {
+export const SELECTED_CELL_OPTIONS = {
   color: 'blue',
   fillOpacity: 0.3,
 }
-const INITIAL_COORDINATES = {
+export const SCREEN_COORDINATES = {
   TLC: [ 0, 0 ],
   TRC: [ 0, 0 ],
   BLC: [ 0, 0 ],
   BRC: [ 0, 0 ],
 }
-const GRID_CELLS_STRUCTURE = {
+export const GRID_CELLS_STRUCTURE = {
   row_length: 0,
   column_length: 0,
 }
-const ZOOM = 50000
-const lat = 0
-const lng = 1
-
-export default {
-  CELL_SIZES_BY_Z,
-  INIT_GRID_OPTIONS,
-  SELECTED_CELL_OPTIONS,
-  INITIAL_COORDINATES,
-  GRID_CELLS_STRUCTURE,
-  ZOOM,
-  lat,
-  lng,
-}
+export const ZOOM = 50000
+export const LAT = 0
+export const LNG = 1

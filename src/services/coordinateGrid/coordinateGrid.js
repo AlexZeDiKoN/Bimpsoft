@@ -2,82 +2,83 @@ import { throttle, concat } from 'lodash'
 import { rectangle, layerGroup } from 'leaflet'
 
 import {
-  CELL_SIZES_BY_Z,
+  CELL_SIZES,
   INIT_GRID_OPTIONS,
   SELECTED_CELL_OPTIONS,
-  INITIAL_COORDINATES,
+  SCREEN_COORDINATES,
   GRID_CELLS_STRUCTURE,
   ZOOM,
-  lat,
-  lng,
+  LAT,
+  LNG,
 } from './constants'
 
 // temporary grid data
 let currentGrid
+let selectedLayers
 
-// SETTING OUR GRID INITIAL DATA (mutations)
-const setInitCoordinates = (screenBounds) => {
-  const { _northEast, _southWest } = screenBounds
-
-  INITIAL_COORDINATES.TLC = [ _northEast.lat, _southWest.lng ]
-  INITIAL_COORDINATES.TRC = [ _northEast.lat, _northEast.lng ]
-  INITIAL_COORDINATES.BLC = [ _southWest.lat, _southWest.lng ]
-  INITIAL_COORDINATES.BRC = [ _southWest.lat, _northEast.lng ]
-}
-
+// SETTING OUR GRID INITIAL DATA (mutations our constants)
 const getRowLength = (initCoordinate, cellSizes, Z) => {
-  const distance = Math.abs(initCoordinate.TLC[lng] - initCoordinate.TRC[lng])
+  const distance = Math.abs(initCoordinate.TLC[LNG] - initCoordinate.TRC[LNG])
   return Math.ceil(distance / cellSizes[Z].lng)
 }
 
 const getColumnLength = (initCoordinate, cellSizes, Z) => {
-  const distance = Math.abs(initCoordinate.TLC[lat] - initCoordinate.BLC[lat])
+  const distance = Math.abs(initCoordinate.TLC[LAT] - initCoordinate.BLC[LAT])
   return Math.ceil(distance / cellSizes[Z].lat)
 }
 
 const setGridCellsAmount = () => {
-  GRID_CELLS_STRUCTURE.row_length = getRowLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
-  GRID_CELLS_STRUCTURE.column_length = getColumnLength(INITIAL_COORDINATES, CELL_SIZES_BY_Z, ZOOM)
+  GRID_CELLS_STRUCTURE.row_length = getRowLength(SCREEN_COORDINATES, CELL_SIZES, ZOOM)
+  GRID_CELLS_STRUCTURE.column_length = getColumnLength(SCREEN_COORDINATES, CELL_SIZES, ZOOM)
+}
+
+const setInitCoordinates = (screenBounds) => {
+  const { _northEast, _southWest } = screenBounds
+
+  SCREEN_COORDINATES.TLC = [ _northEast.lat, _southWest.lng ]
+  SCREEN_COORDINATES.TRC = [ _northEast.lat, _northEast.lng ]
+  SCREEN_COORDINATES.BLC = [ _southWest.lat, _southWest.lng ]
+  SCREEN_COORDINATES.BRC = [ _southWest.lat, _northEast.lng ]
 }
 
 // GRID calculation
 const getCellBLC = (initTlc, cellNum, steps) => ([
-  initTlc[lat] - steps.lat, initTlc[lng] + cellNum * steps.lng,
+  initTlc[LAT] - steps.lat, initTlc[LNG] + cellNum * steps.lng,
 ])
 const getCellTRC = (initTlc, cellNum, steps) => ([
-  initTlc[lat], initTlc[lng] + cellNum * steps.lng,
+  initTlc[LAT], initTlc[LNG] + cellNum * steps.lng,
 ])
 
-const getStartPoint = (initTLC, z) => {
-  const initLat = (z.lat - Math.abs((initTLC[0] / z.lat) % 1 * z.lat)) + Math.abs(initTLC[0])
-  const initLng = Math.abs(initTLC[1]) - Math.abs(((initTLC[1] / z.lng) % 1 * z.lng))
-  const startLat = (initTLC[0] >= 0 ? 1 : -1) * initLat
-  const startLng = (initTLC[1] >= 0 ? 1 : -1) * initLng
+const getStartPoint = (initTLC, Z) => {
+  const initLat = (Z.lat - Math.abs((initTLC[LAT] / Z.lat) % 1 * Z.lat)) + Math.abs(initTLC[LAT])
+  const initLng = Math.abs(initTLC[LNG]) - Math.abs(((initTLC[LNG] / Z.lng) % 1 * Z.lng))
+  const startLat = (initTLC[LAT] >= 0 ? 1 : -1) * initLat
+  const startLng = (initTLC[LNG] >= 0 ? 1 : -1) * initLng
   return [ startLat, startLng ]
 }
 
-const createRow = (initTlc, z, amount) => {
+const createRow = (initTlc, Z, amount) => {
   const row = []
   for (let i = 1; i <= amount + 1; i++) {
     row.push(
       [
-        getCellBLC(initTlc, i - 1, z),
-        getCellTRC(initTlc, i, z),
+        getCellBLC(initTlc, i - 1, Z),
+        getCellTRC(initTlc, i, Z),
       ]
     )
   }
   return row
 }
 
-const generateGrid = (startTLC, z, GRID_CELLS_STRUCTURE) => {
+const generateGrid = (startTLC, Z, GRID_CELLS_STRUCTURE) => {
   const grid = []
-  const tlc = getStartPoint(startTLC, z)
+  const tlc = getStartPoint(startTLC, Z)
   const rowsAmount = GRID_CELLS_STRUCTURE.column_length
   const cellsInRowAmount = GRID_CELLS_STRUCTURE.row_length
   for (let i = 0; i <= rowsAmount; i++) {
-    tlc[0] = i ? tlc[0] - z.lat : tlc[0]
+    tlc[LAT] = i ? tlc[LAT] - Z.lat : tlc[LAT]
     grid.push(
-      createRow(tlc, z, cellsInRowAmount)
+      createRow(tlc, Z, cellsInRowAmount)
     )
   }
   return grid
@@ -85,28 +86,23 @@ const generateGrid = (startTLC, z, GRID_CELLS_STRUCTURE) => {
 
 // event handlers and event helpers
 
-const selectLayer = (layerId) => {
-  currentGrid._layers[layerId].setStyle(SELECTED_CELL_OPTIONS)
-}
-const deselectLayer = (layerId) => {
-  currentGrid._layers[layerId].setStyle(INIT_GRID_OPTIONS)
-}
+const selectLayer = (layer) => layer.setStyle(SELECTED_CELL_OPTIONS)
+
+const deselectLayer = (layer) => layer.setStyle(INIT_GRID_OPTIONS)
 
 const addClickEvent = (layer) => {
-  layer.on('click', (e) => {
-    const layerId = e.target._leaflet_id
+  layer.on('click', (e) =>
     e.originalEvent.ctrlKey
-      ? deselectLayer(layerId)
-      : selectLayer(layerId)
-  })
+      ? deselectLayer(e.target)
+      : selectLayer(e.target)
+  )
 }
 
 // helpers
-
 const createGridRectangle = (coordinates) => {
-  const rectanglePoligon = rectangle(coordinates, INIT_GRID_OPTIONS)
-  addClickEvent(rectanglePoligon)
-  return rectanglePoligon
+  const rectanglePolygon = rectangle(coordinates, INIT_GRID_OPTIONS)
+  addClickEvent(rectanglePolygon)
+  return rectanglePolygon
 }
 
 const createRectanglesGroup = (grid) => {
@@ -114,52 +110,54 @@ const createRectanglesGroup = (grid) => {
   return layerGroup(rectangles)
 }
 
+// calculation per move event
 const isAreaOnScreen = (_northEast) => {
-  const z = CELL_SIZES_BY_Z[ZOOM]
-  const leftBorder = INITIAL_COORDINATES.TLC[lng]
-  const topBorder = INITIAL_COORDINATES.TLC[lat] + z.lat
-  const rightBorder = INITIAL_COORDINATES.BRC[lng] + z.lng
-  const bottomBorder = INITIAL_COORDINATES.BRC[lat]
+  const Z = CELL_SIZES[ZOOM]
+  const leftBorder = SCREEN_COORDINATES.TLC[LNG]
+  const topBorder = SCREEN_COORDINATES.TLC[LAT] + Z.lat
+  const rightBorder = SCREEN_COORDINATES.BRC[LNG] + Z.lng
+  const bottomBorder = SCREEN_COORDINATES.BRC[LAT]
 
   return _northEast.lat >= bottomBorder &&
     _northEast.lat <= topBorder &&
     _northEast.lng >= leftBorder &&
-  _northEast.lng <= rightBorder
+    _northEast.lng <= rightBorder
 }
 
 const deleteOutsideLayers = (layerGroup) => {
   layerGroup
     .getLayers()
-    .filter((layer) => {
+    .forEach((layer) => {
       const { _northEast } = layer.getBounds()
-      return !isAreaOnScreen(_northEast)
+      !isAreaOnScreen(_northEast) &&
+        layer.removeFrom(layerGroup)
     })
-    .forEach((layer) => layer.removeFrom(layerGroup))
 }
 
 const isLayerExist = (coordinate, layers) =>
   layers.some((layer) => {
     const { _northEast: { lat, lng } } = layer.getBounds()
-    const isLatExist = lat.toFixed(6) === coordinate[1][0].toFixed(6)
-    const isLngExist = lng.toFixed(6) === coordinate[1][1].toFixed(6)
+    const isLatExist = lat.toFixed(6) === coordinate[1][LAT].toFixed(6)
+    const isLngExist = lng.toFixed(6) === coordinate[1][LNG].toFixed(6)
     return isLatExist && isLngExist
   })
 
 const addNewLayers = (layerGroup, coordinatesList) => {
   const layers = layerGroup.getLayers()
-  const filteredCoordinates = concat(...coordinatesList)
-    .filter((coordinate) => !isLayerExist(coordinate, layers))
-  for (const coordinate of filteredCoordinates) {
-    const newLayer = createGridRectangle(coordinate)
-    layerGroup.addLayer(newLayer)
-  }
+  concat(...coordinatesList)
+    .forEach((coordinate) => {
+      if (!isLayerExist(coordinate, layers)) {
+        const newLayer = createGridRectangle(coordinate)
+        layerGroup.addLayer(newLayer)
+      }
+    })
 }
 
-// initial method
-const createGride = (map) => {
+// main Grid function
+const createGrid = (map) => {
   setInitCoordinates(map.getBounds())
   setGridCellsAmount()
-  const coordinatesMatrix = generateGrid(INITIAL_COORDINATES.TLC, CELL_SIZES_BY_Z[ZOOM], GRID_CELLS_STRUCTURE)
+  const coordinatesMatrix = generateGrid(SCREEN_COORDINATES.TLC, CELL_SIZES[ZOOM], GRID_CELLS_STRUCTURE)
   if (!currentGrid) {
     const Grid = createRectanglesGroup(coordinatesMatrix)
     Grid.addTo(map)
@@ -170,15 +168,16 @@ const createGride = (map) => {
   addNewLayers(currentGrid, coordinatesMatrix)
 }
 
+// initial methods
 const initGridRecalculation = (e) => {
   const map = e.target
-  createGride(map)
+  createGrid(map)
 }
 
 const throttledGridRecalculation = throttle(initGridRecalculation, 200)
 
 const initCoordinateMapGrid = (map) => {
-  createGride(map)
+  createGrid(map)
   map.on('move', throttledGridRecalculation)
 }
 

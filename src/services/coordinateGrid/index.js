@@ -1,5 +1,5 @@
 import { toggleMapGrid } from './coordinateGrid'
 
-export default {
+export {
   toggleMapGrid,
 }
