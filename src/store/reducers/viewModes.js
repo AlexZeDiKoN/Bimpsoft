@@ -2,10 +2,11 @@ import * as actions from '../actions/viewModes'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const initialState = {
-  edit: false,
-  text: false,
-  print: false,
-  sidebar: true,
+  [viewModesKeys.edit]: false,
+  [viewModesKeys.text]: false,
+  [viewModesKeys.print]: false,
+  [viewModesKeys.sidebar]: true,
+  [viewModesKeys.mapSourcesList]: false,
 }
 
 const groups = [

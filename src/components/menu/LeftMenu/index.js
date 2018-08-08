@@ -14,8 +14,10 @@ export default class LeftMenu extends React.Component {
     isEditMode: PropTypes.bool,
     isShowPoints: PropTypes.bool,
     newShape: PropTypes.object,
+    mapSources: PropTypes.element,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
+    onClickMapSource: PropTypes.func,
     onNewShapeChange: PropTypes.func,
     tempClickOnMap: PropTypes.func,
     tempFinishClickOnMap: PropTypes.func,
@@ -27,7 +29,7 @@ export default class LeftMenu extends React.Component {
 
   clickPointSignHandler = () => {
     const { newShape = {} } = this.props
-    this.setState({ showLines: false })
+    this.setState({ showLines: false, showMapSources: false })
     this.props.onNewShapeChange(newShape.type === SelectionTypes.POINT ? {} : { type: SelectionTypes.POINT })
   }
 
@@ -46,8 +48,17 @@ export default class LeftMenu extends React.Component {
   }
 
   render () {
-    const { isEditMode, isShowPoints, newShape = {}, onClickEditMode, onClickPointSign } = this.props
+    const {
+      isEditMode,
+      isShowPoints,
+      newShape = {},
+      onClickEditMode,
+      onClickPointSign,
+      onClickMapSource,
+      mapSources,
+    } = this.props
     const { showLines } = this.state
+
     return (
       <div className='left-menu'>
         <IconButton
@@ -93,6 +104,14 @@ export default class LeftMenu extends React.Component {
               hoverIcon={iconNames.TEXT_SIGN_HOVER}
               onClick={this.clickTextHandler}
             />
+            <IconButton
+              text={i18n.MAP_SOURCE}
+              icon={mapSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
+              hoverIcon={iconNames.MAP_HOVER}
+              onClick={onClickMapSource}
+            >
+              {mapSources}
+            </IconButton>
           </Fragment>
         )}
         <button

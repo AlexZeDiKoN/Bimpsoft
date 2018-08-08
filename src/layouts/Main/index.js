@@ -11,6 +11,7 @@ import {
   TemplateFormContainer,
   TemplatesListContainer,
   SettingsFormContainer,
+  MapsSourcesContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -25,13 +26,15 @@ const ModalContainer = (props) => (
 )
 
 export default class Main extends React.Component {
+
   render () {
+    const mapSources = (<MapsSourcesContainer/>)
     return (
       <div id="main" className="main">
         <div className="header">
           <div className="header-top">
             <div className="header-left">
-              <LeftMenuContainer/>
+              <LeftMenuContainer mapSources={mapSources}/>
             </div>
             <div className="header-right">
               <RightMenuContainer/>

@@ -20,22 +20,20 @@ export default class IconButton extends React.Component {
   render () {
     const { icon, hoverIcon, text, children } = this.props
     return (
-      <Tooltip
-        className="icon-button"
-        placement="bottomLeft"
-        title={text}
-      >
-        <IconHovered
-          icon={icon}
-          hoverIcon={hoverIcon}
-          onClick={this.clickHandler}
-        />
+      <div className="icon-button">
+        <Tooltip placement="bottomLeft" title={text}>
+          <IconHovered
+            icon={icon}
+            hoverIcon={hoverIcon}
+            onClick={this.clickHandler}
+          />
+        </Tooltip>
         {children && (
           <div className="icon-button-sub-panel">
             {children}
           </div>
         )}
-      </Tooltip>
+      </div>
     )
   }
 }

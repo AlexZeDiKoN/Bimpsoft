@@ -97,3 +97,6 @@ export const NODAL_POINTS = 'Вузлові точки'
 
 export const EDIT = 'Редагувати'
 export const REMOVE = 'Видалити'
+
+export const MAP_SOURCE = 'Джерело картографічної інформації'
+export const SITUATION_DETAILS = 'Деталізація обстановки'

@@ -9,6 +9,7 @@ import SelectionFormContainer from './SelectionFormContainer.js'
 import TemplateFormContainer from './TemplateFormContainer.js'
 import TemplatesListContainer from './TemplatesListContainer.js'
 import SettingsFormContainer from './SettingsFormContainer.js'
+import MapsSourcesContainer from './MapsSourcesContainer.js'
 
 const panels = {
   history: {
@@ -37,5 +38,6 @@ export {
   SelectionFormContainer,
   TemplateFormContainer,
   TemplatesListContainer,
+  MapsSourcesContainer,
   panels,
 }

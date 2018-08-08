@@ -23,7 +23,7 @@ export default class ContextMenuItem extends React.Component {
     }
     return (
       <div className={className} onClick={this.clickHandler}>
-        <IconHovered icon={icon} hoverIcon={hoverIcon} />
+        {icon && (<IconHovered icon={icon} hoverIcon={hoverIcon} />)}
         <div className="context-menu-item-text">{text}</div>
       </div>
     )

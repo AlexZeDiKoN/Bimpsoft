@@ -3,7 +3,7 @@ import { Record, List, Map } from 'immutable'
 import { update, comparator, filter } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
-import { CoordinatesTypes } from '../../constants'
+import { CoordinatesTypes, MapSources } from '../../constants'
 
 const WebMapPoint = Record({
   lat: null,
@@ -35,6 +35,7 @@ const WebMapState = Record({
   showMiniMap: true,
   showAmplifiers: false,
   generalization: false,
+  source: MapSources[0],
   objects: Map(),
 })
 
@@ -98,6 +99,11 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_GENERALIZATION: {
       return state.merge({
         generalization: payload,
+      })
+    }
+    case actionNames.SET_SOURCE: {
+      return state.merge({
+        source: payload,
       })
     }
     case actionNames.TOGGLE_TIMELINE_EDIT_MODE: {

@@ -7,6 +7,7 @@ export const actionNames = {
   SET_MINIMAP: Symbol('SET_MINIMAP'),
   SET_AMPLIFIERS: Symbol('SET_AMPLIFIERS'),
   SET_GENERALIZATION: Symbol('SET_GENERALIZATION'),
+  SET_SOURCE: 'SET_SOURCE',
 }
 
 export const toggleMapEditMode = (value) => ({
@@ -38,5 +39,9 @@ export const setAmplifiers = (value) => ({
 })
 export const setGeneralization = (value) => ({
   type: actionNames.SET_GENERALIZATION,
+  payload: value,
+})
+export const setSource = (value) => ({
+  type: actionNames.SET_SOURCE,
   payload: value,
 })

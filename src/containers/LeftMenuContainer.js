@@ -25,6 +25,9 @@ const mapDispatchToProps = (dispatch) => ({
   onClickPointSign: () => {
     dispatch(viewModesActions.viewModeToggle(viewModesKeys.pointSignsList))
   },
+  onClickMapSource: () => {
+    dispatch(viewModesActions.viewModeToggle(viewModesKeys.mapSourcesList))
+  },
   onNewShapeChange: (newShape) => {
     dispatch(selectionActions.setNewShape(newShape))
   },
