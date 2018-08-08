@@ -6,6 +6,9 @@ import './style.css'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import LinesList from '../../LinesList'
+import SubordinationLevel from '../../../constants/SubordinationLevel'
+import ContextMenu from '../ContextMenu'
+import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 
 const iconNames = components.icons.names
 
@@ -16,35 +19,47 @@ export default class LeftMenu extends React.Component {
     newShape: PropTypes.object,
     isShowSources: PropTypes.bool,
     mapSources: PropTypes.element,
+    subordinationLevel: PropTypes.string,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
     onClickMapSource: PropTypes.func,
     onNewShapeChange: PropTypes.func,
+    onSubordinationLevelChange: PropTypes.func,
     tempClickOnMap: PropTypes.func,
     tempFinishClickOnMap: PropTypes.func,
   }
 
   state = {
     showLines: false,
+    showSubordinationLevel: false,
   }
 
   clickPointSignHandler = () => {
     const { newShape = {} } = this.props
-    this.setState({ showLines: false, showMapSources: false })
+    this.setState({ showLines: false, showSubordinationLevel: false })
     this.props.onNewShapeChange(newShape.type === SelectionTypes.POINT ? {} : { type: SelectionTypes.POINT })
   }
 
   clickLineSignHandler = () => {
-    this.setState({ showLines: !this.state.showLines })
+    this.setState({ showLines: !this.state.showLines, showSubordinationLevel: false })
+  }
+
+  subordinationLevelClickHandler = () => {
+    this.setState({ showLines: false, showSubordinationLevel: !this.state.showSubordinationLevel })
+  }
+
+  subordinationLevelChangeHandler = (value) => {
+    this.setState({ showLines: false, showSubordinationLevel: false })
+    this.props.onSubordinationLevelChange(value)
   }
 
   selectLineHandler = (type) => {
-    this.setState({ showLines: false })
+    this.setState({ showLines: false, showSubordinationLevel: false })
     this.props.onNewShapeChange({ type })
   }
 
   clickTextHandler = () => {
-    this.setState({ showLines: false })
+    this.setState({ showLines: false, showSubordinationLevel: false })
     this.props.onNewShapeChange({ type: SelectionTypes.TEXT })
   }
 
@@ -53,13 +68,17 @@ export default class LeftMenu extends React.Component {
       isEditMode,
       isShowPoints,
       newShape = {},
+      subordinationLevel = SubordinationLevel.TEAM_CREW,
       onClickEditMode,
       onClickPointSign,
       onClickMapSource,
       mapSources,
       isShowSources,
     } = this.props
-    const { showLines } = this.state
+    const { showLines, showSubordinationLevel } = this.state
+
+    const subordinationLevelViewData = SubordinationLevel.list.find((item) => item.value === subordinationLevel)
+
     return (
       <div className='left-menu'>
         <IconButton
@@ -112,6 +131,33 @@ export default class LeftMenu extends React.Component {
               onClick={onClickMapSource}
             >
               {mapSources}
+            </IconButton>
+            <IconButton
+              text={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
+              icon={
+                showSubordinationLevel
+                  ? subordinationLevelViewData.iconActive
+                  : subordinationLevelViewData.icon
+              }
+              hoverIcon={subordinationLevelViewData.iconActive}
+              checked={showSubordinationLevel}
+              onClick={this.subordinationLevelClickHandler}
+            >
+              {showSubordinationLevel && (
+                <ContextMenu>
+                  {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
+                    <ContextMenuItem
+                      key={value}
+                      value={value}
+                      icon={icon}
+                      text={title}
+                      checked={value === subordinationLevel}
+                      hoverIcon={iconActive}
+                      onClick={this.subordinationLevelChangeHandler}
+                    />
+                  ))}
+                </ContextMenu>
+              )}
             </IconButton>
           </Fragment>
         )}
