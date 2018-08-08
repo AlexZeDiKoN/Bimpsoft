@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Select } from 'antd'
-import i18n from '../../i18n'
 import { SubordinationLevel } from '../../constants'
 
 const Option = Select.Option

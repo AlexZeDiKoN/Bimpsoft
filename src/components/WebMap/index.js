@@ -15,8 +15,9 @@ import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
   ADD_TEXT,
   // TODO: пибрати це після тестування
-  LOAD_TEST_OBJECTS,
+  LOAD_TEST_OBJECTS, SELECT_PRINT_AREA,
 } from '../../constants/shortcuts'
+import { toggleMapGrid } from '../../services/coordinateGrid'
 import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -27,9 +28,13 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
+
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
 } from './leaflet.pm.patch'
+
+// TODO: прибрати це після тестування
+let tempPrintFlag = false
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
@@ -125,6 +130,7 @@ class WebMapInner extends Component {
     onSelection: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
+    isGridActive: PropTypes.bool.isRequired,
   }
 
   state = {
@@ -150,6 +156,9 @@ class WebMapInner extends Component {
     }
     if (nextProps.showMiniMap !== this.props.showMiniMap) {
       this.updateMinimap(nextProps.showMiniMap)
+    }
+    if (nextProps.isGridActive !== this.props.isGridActive) {
+      toggleMapGrid(this.map, nextProps.isGridActive)
     }
     return false
   }
@@ -416,6 +425,10 @@ class WebMapInner extends Component {
         console.info('ADD_TEXT')
         break
       // TODO: пибрати це після тестування
+      case SELECT_PRINT_AREA:
+        tempPrintFlag = !tempPrintFlag
+        toggleMapGrid(this.map, tempPrintFlag)
+        break
       case LOAD_TEST_OBJECTS: {
         console.info('LOAD_TEST_OBJECTS')
         this.props.loadTestObjects()
@@ -449,6 +462,7 @@ const WebMap = connect(
   (state) => ({
     objects: state.webMap.objects,
     showMiniMap: state.webMap.showMiniMap,
+    isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(layers.addObject(object)),
