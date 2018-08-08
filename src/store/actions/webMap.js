@@ -8,6 +8,7 @@ export const actionNames = {
   SET_AMPLIFIERS: Symbol('SET_AMPLIFIERS'),
   SET_GENERALIZATION: Symbol('SET_GENERALIZATION'),
   SET_SOURCE: Symbol('SET_SOURCE'),
+  SUBORDINATION_LEVEL: Symbol('SUBORDINATION_LEVEL'),
 }
 
 export const toggleMapEditMode = (value) => ({
@@ -43,5 +44,9 @@ export const setGeneralization = (value) => ({
 })
 export const setSource = (value) => ({
   type: actionNames.SET_SOURCE,
+  payload: value,
+})
+export const setSubordinationLevel = (value) => ({
+  type: actionNames.SUBORDINATION_LEVEL,
   payload: value,
 })

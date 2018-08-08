@@ -11,6 +11,7 @@ export default class IconButton extends React.Component {
     hoverIcon: PropTypes.string,
     text: PropTypes.string,
     value: PropTypes.any,
+    checked: PropTypes.bool,
     onClick: PropTypes.func,
     children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ]),
   }
@@ -18,9 +19,13 @@ export default class IconButton extends React.Component {
   clickHandler = () => this.props.onClick(this.props.value)
 
   render () {
-    const { icon, hoverIcon, text, children } = this.props
+    const { icon, hoverIcon, text, checked = false, children } = this.props
+    let className = 'icon-button'
+    if (checked) {
+      className += ' icon-button-checked'
+    }
     return (
-      <div className="icon-button">
+      <div className={className}>
         <Tooltip placement="bottomLeft" title={text}>
           <IconHovered
             icon={icon}

@@ -10,7 +10,7 @@ const initialState = {
 }
 
 const groups = [
-  [ viewModesKeys.pointSignsList, viewModesKeys.lineSignsList, viewModesKeys.text ],
+  [ viewModesKeys.subordinationLevel, viewModesKeys.lineSignsList, viewModesKeys.mapSourcesList ],
 ]
 
 const relations = makeRelatedModes(groups)
