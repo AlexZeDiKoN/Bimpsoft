@@ -14,7 +14,7 @@ import {
 
 // temporary grid data
 let currentGrid
-let selectedLayers
+// let selectedLayers
 
 // SETTING OUR GRID INITIAL DATA (mutations our constants)
 const getRowLength = (initCoordinate, cellSizes, Z) => {
