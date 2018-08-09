@@ -108,11 +108,13 @@ export default class WebMap extends Component {
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
     // from Redux store
-    source: PropTypes.shape({
-      source: PropTypes.string,
-      maxZoom: PropTypes.number,
-      tms: PropTypes.bool,
-    }),
+    sources: PropTypes.arrayOf(
+      PropTypes.shape({
+        source: PropTypes.string,
+        maxZoom: PropTypes.number,
+        tms: PropTypes.bool,
+      })
+    ),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     // Redux actions
@@ -139,7 +141,7 @@ export default class WebMap extends Component {
 
   componentDidMount () {
     this.setMapView()
-    this.setMapSource(this.props.source)
+    this.setMapSource(this.props.sources)
     this.initObjects()
   }
 
@@ -153,8 +155,8 @@ export default class WebMap extends Component {
     if (nextProps.isGridActive !== this.props.isGridActive) {
       toggleMapGrid(this.map, nextProps.isGridActive)
     }
-    if (nextProps.source !== this.props.source) {
-      this.setMapSource(nextProps.source)
+    if (nextProps.sources !== this.props.sources) {
+      this.setMapSource(nextProps.sources)
     }
     return false
   }
@@ -172,6 +174,8 @@ export default class WebMap extends Component {
   }
 
   indicateMode = indicateModes.WGS
+
+  sources = []
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
@@ -231,19 +235,26 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.updateObject)
   }
 
-  setMapSource = (newSource) => {
+  setMapSource = (newSources) => {
     if (this.map) {
-      if (this.source) {
-        this.source.removeFrom(this.map)
+      this.sources.forEach((source) => source.removeFrom(this.map))
+      this.sources = []
+      if (this.mini) {
         this.miniSource.remove()
         this.mini.remove()
+        this.mini = null
       }
-      const { source, ...rest } = newSource
-      this.source = new TileLayer(source, rest)
-      this.source.addTo(this.map)
-      this.miniSource = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
-      this.mini = new Control.MiniMap(this.miniSource, miniMapOptions)
-      this.updateMinimap(this.props.showMiniMap)
+      newSources.forEach((newSource) => {
+        const { source, ...rest } = newSource
+        const sourceLayer = new TileLayer(source, rest)
+        sourceLayer.addTo(this.map)
+        this.sources.push(sourceLayer)
+        if (!this.mini) {
+          this.miniSource = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
+          this.mini = new Control.MiniMap(this.miniSource, miniMapOptions)
+          this.updateMinimap(this.props.showMiniMap)
+        }
+      })
     }
   }
 
