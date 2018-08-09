@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ShortcutManager } from 'react-shortcuts'
-import Tiles from '../../components/WebMap/Tiles'
-import WebMap from '../../components/WebMap'
+import WebMap from '../../containers/WebMap'
 import { entityKind } from '../../components/WebMap/leaflet.pm.patch'
 import keymap from './keymap'
 
@@ -80,17 +79,7 @@ class ApplicationContent extends React.PureComponent {
       <WebMap
         center={[ 48.5, 38 ]}
         zoom={14}
-      >
-        <Tiles
-          source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={20}
-        />
-        <Tiles
-          source="http://10.8.26.84/api/BaseMapLayer/ato/{z}/{y}/{x}"
-          tms={true}
-          maxZoom={20}
-        />
-      </WebMap>
+      />
     )
   }
 }

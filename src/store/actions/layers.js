@@ -33,13 +33,15 @@ export const selectLayer = (layerId) =>
         objects,
       },
     })
-    const content = await api.getAllUnits()
-    api.checkServerResponse(content)
-    dispatch(orgStructures.set(content))
-    dispatch({
-      type: SELECT_LAYER,
-      layerId,
-    })
+    if (layerId) {
+      const content = await api.getAllUnits()
+      api.checkServerResponse(content)
+      dispatch(orgStructures.set(content))
+      dispatch({
+        type: SELECT_LAYER,
+        layerId,
+      })
+    }
   })
 
 export const addObject = (object) =>

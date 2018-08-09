@@ -1,5 +1,6 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import './style.css'
 
 const { common: { MovablePanel } } = components
 

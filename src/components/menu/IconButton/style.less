@@ -1,10 +1,31 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
 .icon-button {
   display: block;
   margin: 3px;
   line-height: 0px;
-  .icon{
+  border-radius: 5px;
+  > .icon-hovered{
     width: 32px;
     height: 32px;
+    .icon-hovered-on{
+      display: none;
+    }
+    .icon-hovered-off{
+      display: initial;
+    }
+  }
+  &.icon-button-checked, &:hover {
+    background-color: @toolbar-background-selected;
+    > .icon-hovered{
+      .icon-hovered-on{
+        display: initial;
+      }
+      .icon-hovered-off{
+        display: none;
+      }
+    }
   }
 }
 .icon-button-sub-panel{

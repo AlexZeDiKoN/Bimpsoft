@@ -4,6 +4,7 @@ import { update, comparator, filter } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
 import { CoordinatesTypes, MapSources } from '../../constants'
+import SubordinationLevel from '../../constants/SubordinationLevel'
 
 const WebMapPoint = Record({
   lat: null,
@@ -36,6 +37,7 @@ const WebMapState = Record({
   showAmplifiers: false,
   generalization: false,
   source: MapSources[0],
+  subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
 })
 
@@ -96,6 +98,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_SOURCE: {
       return state.set('source', payload)
     }
+    case actionNames.SUBORDINATION_LEVEL: {
+      return state.set('subordinationLevel', payload)
+    }
     case actionNames.TOGGLE_TIMELINE_EDIT_MODE: {
       if (!payload) {
         payload = !state.get('isTimelineEditMode')
@@ -129,4 +134,5 @@ export const propTypes = PropTypes.shape({
   isTextMarkEditMode: PropTypes.bool.isRequired,
   isTimelineEditMode: PropTypes.bool.isRequired,
   objects: PropTypes.object.isRequired,
+  source: PropTypes.object.isRequired,
 })

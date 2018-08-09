@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
 import { Shortcuts } from 'react-shortcuts'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
@@ -10,7 +9,6 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import i18n from '../../i18n'
-import { layers, selection } from '../../store/actions'
 import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
   ADD_TEXT,
@@ -18,7 +16,6 @@ import {
   LOAD_TEST_OBJECTS, SELECT_PRINT_AREA,
 } from '../../constants/shortcuts'
 import { toggleMapGrid } from '../../services/coordinateGrid'
-import Tiles from './Tiles'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import 'leaflet-minimap'
@@ -105,22 +102,17 @@ function tacticalSignEquals (object, data) {
   // TODO інші властивості
 }
 
-const TileChild = PropTypes.shape({
-  type: PropTypes.oneOf([ Tiles ]),
-  props: PropTypes.object,
-})
-
-class WebMapInner extends Component {
+export default class WebMap extends Component {
   static propTypes = {
     // props
     center: PropTypes.arrayOf(PropTypes.number).isRequired,
     zoom: PropTypes.number.isRequired,
-    // children
-    children: PropTypes.oneOfType([
-      PropTypes.arrayOf(TileChild),
-      TileChild,
-    ]),
     // from Redux store
+    source: PropTypes.shape({
+      source: PropTypes.string,
+      maxZoom: PropTypes.number,
+      tms: PropTypes.bool,
+    }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     // Redux actions
@@ -147,6 +139,7 @@ class WebMapInner extends Component {
 
   componentDidMount () {
     this.setMapView()
+    this.setMapSource(this.props.source)
     this.initObjects()
   }
 
@@ -159,6 +152,9 @@ class WebMapInner extends Component {
     }
     if (nextProps.isGridActive !== this.props.isGridActive) {
       toggleMapGrid(this.map, nextProps.isGridActive)
+    }
+    if (nextProps.source !== this.props.source) {
+      this.setMapSource(nextProps.source)
     }
     return false
   }
@@ -230,20 +226,25 @@ class WebMapInner extends Component {
       this.coordinates._update({ latlng: this.coordinates._currentPos })
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
-    React.Children.forEach(this.props.children, (child) => {
-      if (child.type === Tiles) {
-        const { source, ...rest } = child.props
-        new TileLayer(source, rest).addTo(this.map)
-        if (!this.mini) {
-          const tileLayer = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
-          this.mini = new Control.MiniMap(tileLayer, miniMapOptions)
-          this.updateMinimap(this.props.showMiniMap)
-        }
-      }
-    }, this)
     initMapEvents(this.map)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
+  }
+
+  setMapSource = (newSource) => {
+    if (this.map) {
+      if (this.source) {
+        this.source.removeFrom(this.map)
+        this.miniSource.remove()
+        this.mini.remove()
+      }
+      const { source, ...rest } = newSource
+      this.source = new TileLayer(source, rest)
+      this.source.addTo(this.map)
+      this.miniSource = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
+      this.mini = new Control.MiniMap(this.miniSource, miniMapOptions)
+      this.updateMinimap(this.props.showMiniMap)
+    }
   }
 
   initObjects = () => {
@@ -452,27 +453,11 @@ class WebMapInner extends Component {
         name='WebMap'
         handler={this.handleShortcuts}
       >
-        <div ref={(container) => (this.container = container)} style={{ height: '100%' }} />
+        <div
+          ref={(container) => (this.container = container)}
+          style={{ height: '100%' }}
+        />
       </Shortcuts>
     )
   }
 }
-
-const WebMap = connect(
-  (state) => ({
-    objects: state.webMap.objects,
-    showMiniMap: state.webMap.showMiniMap,
-    isGridActive: state.viewModes.print,
-  }),
-  (dispatch) => ({
-    addObject: (object) => dispatch(layers.addObject(object)),
-    deleteObject: (id) => dispatch(layers.deleteObject(id)),
-    updateObject: (object) => dispatch(layers.updateObject(object)),
-    onSelection: (selected) => dispatch(selected ? selection.setSelection(selected) : selection.clearSelection()),
-    // TODO: пибрати це після тестування
-    loadTestObjects: () => dispatch(layers.selectLayer(null)),
-  }),
-)(WebMapInner)
-WebMap.displayName = 'WebMap'
-
-export default WebMap

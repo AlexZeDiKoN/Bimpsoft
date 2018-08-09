@@ -31,40 +31,19 @@ const mapStateToProps = (store) => {
 
   return { maps, selectedLayerId, timelineFrom, timelineTo, visible, backOpacity, hiddenOpacity }
 }
+
 const mapDispatchToProps = (dispatch) => ({
-  onChangeMapVisibility: (mapId, visible) => {
-    dispatch(maps.updateMap({ mapId, visible }))
-  },
-  onCloseMap: (mapId) => {
-    dispatch(maps.deleteMap(mapId))
-  },
-  onChangeLayerVisibility: (layerId, visible) => {
-    dispatch(layers.updateLayer({ layerId, visible }))
-  },
-  onChangeLayerColor: (layerId, color) => {
-    dispatch(layers.updateLayer({ layerId, color }))
-  },
-  onSelectLayer: (layerId) => {
-    dispatch(layers.selectLayer(layerId))
-  },
-  onChangeTimeLineFrom: (date) => {
-    dispatch(layers.setTimelineFrom(date))
-  },
-  onChangeTimeLineTo: (date) => {
-    dispatch(layers.setTimelineTo(date))
-  },
-  onChangeVisibility: (visible) => {
-    dispatch(layers.setVisible(visible))
-  },
-  onChangeBackOpacity: (opacity) => {
-    dispatch(layers.setBackOpacity(opacity))
-  },
-  onChangeHiddenOpacity: (opacity) => {
-    dispatch(layers.setHiddenOpacity(opacity))
-  },
-  onCloseAllMaps: () => {
-    dispatch(maps.deleteAllMaps())
-  },
+  onChangeMapVisibility: (mapId, visible) => dispatch(maps.updateMap({ mapId, visible })),
+  onCloseMap: (mapId) => dispatch(maps.deleteMap(mapId)),
+  onChangeLayerVisibility: (layerId, visible) => dispatch(layers.updateLayer({ layerId, visible })),
+  onChangeLayerColor: (layerId, color) => dispatch(layers.updateLayer({ layerId, color })),
+  onSelectLayer: (layerId) => dispatch(layers.selectLayer(layerId)),
+  onChangeTimeLineFrom: (date) => dispatch(layers.setTimelineFrom(date)),
+  onChangeTimeLineTo: (date) => dispatch(layers.setTimelineTo(date)),
+  onChangeVisibility: (visible) => dispatch(layers.setVisible(visible)),
+  onChangeBackOpacity: (opacity) => dispatch(layers.setBackOpacity(opacity)),
+  onChangeHiddenOpacity: (opacity) => dispatch(layers.setHiddenOpacity(opacity)),
+  onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
 })
 
 export default connect(
