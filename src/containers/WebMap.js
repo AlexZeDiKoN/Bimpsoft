@@ -5,7 +5,7 @@ import * as selection from '../store/actions/selection'
 
 const WebMap = connect(
   (state) => ({
-    source: state.webMap.source,
+    source: state.webMap.source.sources[state.webMap.source.sources.length - 1],
     objects: state.webMap.objects,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,

@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import { getClickOutsideRef } from '../../utils/clickOutside'
 
 export default class MapsSourcesList extends React.Component {
   static propTypes = {
@@ -8,17 +9,14 @@ export default class MapsSourcesList extends React.Component {
     sources: PropTypes.array,
     source: PropTypes.object,
     onSelect: PropTypes.func,
+    onClose: PropTypes.func,
   }
+
+  clickOutsideRef = getClickOutsideRef(() => this.props.onClose())
 
   clickHandler = (value) => {
     this.props.onSelect(value)
   }
-
-  getItemProps = (value) => ({
-    value,
-    checked: this.props.source === value,
-    onClick: this.clickHandler,
-  })
 
   render () {
     const { visible, sources, source: currentSource } = this.props
@@ -26,12 +24,12 @@ export default class MapsSourcesList extends React.Component {
       return null
     }
     return (
-      <ContextMenu>
-        {sources.map((sourceObj) => {
-          const { source, title } = sourceObj
+      <ContextMenu ref={this.clickOutsideRef} >
+        {sources.map((sourceObj, index) => {
+          const { title } = sourceObj
           return (
             <ContextMenuItem
-              key={ source }
+              key={ index }
               text={ title }
               checked={sourceObj === currentSource}
               value={ sourceObj }
