@@ -10,7 +10,7 @@ const { names: icons } = components.icons
 export default class LinesList extends React.Component {
   static propTypes = {
     onSelect: PropTypes.func,
-    shapeType: PropTypes.string,
+    shapeType: PropTypes.number,
   }
 
   clickHandler = (shapeType) => {

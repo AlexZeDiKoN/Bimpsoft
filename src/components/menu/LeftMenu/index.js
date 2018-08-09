@@ -9,6 +9,7 @@ import LinesList from '../../LinesList'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
+import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const iconNames = components.icons.names
 
@@ -29,17 +30,24 @@ export default class LeftMenu extends React.Component {
     onClickSubordinationLevel: PropTypes.func,
     onNewShapeChange: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
+    onSubordinationLevelClose: PropTypes.func,
+    onLinesListClose: PropTypes.func,
     tempClickOnMap: PropTypes.func,
     tempFinishClickOnMap: PropTypes.func,
   }
 
   selectLineHandler = (type) => {
     this.props.onNewShapeChange({ type })
+    this.props.onLinesListClose()
   }
 
   clickTextHandler = () => {
     this.props.onNewShapeChange({ type: SelectionTypes.TEXT })
   }
+
+  clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
+
+  clickOutsideLinesListRef = getClickOutsideRef(() => this.props.onLinesListClose())
 
   render () {
     const {
@@ -94,6 +102,7 @@ export default class LeftMenu extends React.Component {
               {isShowLines && (<LinesList
                 onSelect={this.selectLineHandler}
                 shapeType={ newShape.type }
+                ref={this.clickOutsideLinesListRef}
               />)}
             </IconButton>
             <IconButton
@@ -106,52 +115,56 @@ export default class LeftMenu extends React.Component {
               hoverIcon={iconNames.TEXT_SIGN_HOVER}
               onClick={this.clickTextHandler}
             />
-            <IconButton
-              text={i18n.MAP_SOURCE}
-              icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
-              hoverIcon={iconNames.MAP_HOVER}
-              onClick={onClickMapSource}
-            >
-              {mapSources}
-            </IconButton>
-            <IconButton
-              text={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
-              icon={
-                isShowSubordinationLevel
-                  ? subordinationLevelViewData.iconActive
-                  : subordinationLevelViewData.icon
-              }
-              hoverIcon={subordinationLevelViewData.iconActive}
-              checked={isShowSubordinationLevel}
-              onClick={onClickSubordinationLevel}
-            >
-              {isShowSubordinationLevel && (
-                <ContextMenu>
-                  {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
-                    <ContextMenuItem
-                      key={value}
-                      value={value}
-                      icon={icon}
-                      text={title}
-                      checked={value === subordinationLevel}
-                      hoverIcon={iconActive}
-                      onClick={onSubordinationLevelChange}
-                    />
-                  ))}
-                </ContextMenu>
-              )}
-            </IconButton>
           </Fragment>
         )}
-        <button
-          onClick={this.props.tempClickOnMap}
-          title={`Користувач вказує на карті початкову точку лінії за допомогою лівої кнопки миші.
+        <IconButton
+          text={i18n.MAP_SOURCE}
+          icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
+          hoverIcon={iconNames.MAP_HOVER}
+          onClick={onClickMapSource}
+        >
+          {mapSources}
+        </IconButton>
+        <IconButton
+          text={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
+          icon={
+            isShowSubordinationLevel
+              ? subordinationLevelViewData.iconActive
+              : subordinationLevelViewData.icon
+          }
+          hoverIcon={subordinationLevelViewData.iconActive}
+          checked={isShowSubordinationLevel}
+          onClick={onClickSubordinationLevel}
+        >
+          {isShowSubordinationLevel && (
+            <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
+              {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
+                <ContextMenuItem
+                  key={value}
+                  value={value}
+                  icon={icon}
+                  text={title}
+                  checked={value === subordinationLevel}
+                  hoverIcon={iconActive}
+                  onClick={onSubordinationLevelChange}
+                />
+              ))}
+            </ContextMenu>
+          )}
+        </IconButton>
+        {newShape.type && (
+          <Fragment>
+            <button
+              onClick={this.props.tempClickOnMap}
+              title={`Користувач вказує на карті початкову точку лінії за допомогою лівої кнопки миші.
           Користувач вказує на карті наступні вузлові точки лінії за допомогою лівої кнопки миші`}
-        >Click</button>
-        <button
-          onClick={this.props.tempFinishClickOnMap}
-          title="Користувач натискає ліву кнопку миші на останній встановленій вузловій точці"
-        >Finish Click</button>
+            >Click</button>
+            <button
+              onClick={this.props.tempFinishClickOnMap}
+              title="Користувач натискає ліву кнопку миші на останній встановленій вузловій точці"
+            >Finish Click</button>
+          </Fragment>
+        )}
       </div>
     )
   }

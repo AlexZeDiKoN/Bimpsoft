@@ -10,12 +10,13 @@ const mapStateToProps = (store) => ({
   source: store.webMap.source,
   sources: MapSources,
 })
-const mapDispatchToProps = (dispatch) => ({
-  onSelect: (source) => {
+const mapDispatchToProps = {
+  onSelect: (source) => (dispatch) => {
     dispatch(webMapActions.setSource(source))
     dispatch(viewModesActions.viewModeDisable(viewModesKeys.mapSourcesList))
   },
-})
+  onClose: (source) => viewModesActions.viewModeDisable(viewModesKeys.mapSourcesList),
+}
 
 export default connect(
   mapStateToProps,
