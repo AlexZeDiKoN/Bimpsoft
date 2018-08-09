@@ -7,6 +7,8 @@ const WebMap = connect(
   (state) => ({
     sources: state.webMap.source.sources,
     objects: state.webMap.objects,
+    edit: state.viewModes.edit,
+    newShape: state.selection.newShape,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,
   }),

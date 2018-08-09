@@ -251,8 +251,11 @@ L.PM.Edit.Marker.prototype._onMarkerDrag = function (e) {
 }
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
-export function initMapEvents (mymap) {
+export function initMapEvents (mymap, clickInterhandler) {
   mymap.on('click', (event) => {
+    if (clickInterhandler && clickInterhandler(event)) {
+      return
+    }
     if (event.target.pm.draggingMarker) {
       event.target.pm.draggingMarker = false
     } else {

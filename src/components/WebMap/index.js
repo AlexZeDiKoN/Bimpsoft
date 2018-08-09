@@ -116,7 +116,12 @@ export default class WebMap extends Component {
       })
     ),
     objects: PropTypes.object,
+    newShape: PropTypes.shape({
+      type: PropTypes.number,
+    }),
     showMiniMap: PropTypes.bool,
+    print: PropTypes.bool,
+    edit: PropTypes.bool,
     // Redux actions
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
@@ -230,7 +235,7 @@ export default class WebMap extends Component {
       this.coordinates._update({ latlng: this.coordinates._currentPos })
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
-    initMapEvents(this.map)
+    initMapEvents(this.map, this.clickInterhandler)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
   }
@@ -324,6 +329,21 @@ export default class WebMap extends Component {
   getLayerData = (layer) => {
     const { id, options: { tsType: type } } = layer
     return { id, type, ...getGeometry(layer) }
+  }
+
+  clickInterhandler = (event) => {
+    console.log('clickInterhandler', event)
+    /* const { latlng } = event
+    const { edit, newShape: { type } } = this.props
+    if (edit) {
+      switch (type) {
+        case ADD_POINT:
+
+          break
+        default:
+          break
+      }
+    } */
   }
 
   handleShortcuts = async (action) => {
