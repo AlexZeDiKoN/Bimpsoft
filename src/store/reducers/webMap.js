@@ -134,4 +134,5 @@ export const propTypes = PropTypes.shape({
   isTextMarkEditMode: PropTypes.bool.isRequired,
   isTimelineEditMode: PropTypes.bool.isRequired,
   objects: PropTypes.object.isRequired,
+  source: PropTypes.object.isRequired,
 })
