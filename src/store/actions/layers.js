@@ -1,17 +1,18 @@
+import { action } from '../../utils/services'
 import { asyncAction, orgStructures } from './index'
 
-export const UPDATE_LAYERS = 'UPDATE_LAYERS'
-export const UPDATE_LAYER = 'UPDATE_LAYER'
-export const SELECT_LAYER = 'SELECT_LAYER'
-export const SET_TIMELINE_FROM = 'SET_TIMELINE_FROM'
-export const SET_TIMELINE_TO = 'SET_TIMELINE_TO'
-export const SET_VISIBLE = 'SET_VISIBLE'
-export const SET_BACK_OPACITY = 'SET_BACK_OPACITY'
-export const SET_HIDDEN_OPACITY = 'SET_HIDDEN_OPACITY'
-export const OBJECT_LIST = Symbol('OBJECT_LIST')
-export const ADD_OBJECT = Symbol('ADD_OBJECT')
-export const DEL_OBJECT = Symbol('DEL_OBJECT')
-export const UPD_OBJECT = Symbol('UPD_OBJECT')
+export const UPDATE_LAYERS = action('UPDATE_LAYERS')
+export const UPDATE_LAYER = action('UPDATE_LAYER')
+export const SELECT_LAYER = action('SELECT_LAYER')
+export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
+export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
+export const SET_VISIBLE = action('SET_VISIBLE')
+export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
+export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
+export const OBJECT_LIST = action('OBJECT_LIST')
+export const ADD_OBJECT = action('ADD_OBJECT')
+export const DEL_OBJECT = action('DEL_OBJECT')
+export const UPD_OBJECT = action('UPD_OBJECT')
 
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,

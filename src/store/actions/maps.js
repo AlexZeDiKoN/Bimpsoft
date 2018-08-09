@@ -1,19 +1,23 @@
+import { action } from '../../utils/services'
 import { asyncAction, maps, layers } from './index'
-export const UPDATE_MAP = 'UPDATE_MAP'
-export const DELETE_MAP = 'DELETE_MAP'
-export const DELETE_ALL_MAPS = 'DELETE_ALL_MAPS'
+
+export const UPDATE_MAP = action('UPDATE_MAP')
+export const DELETE_MAP = action('DELETE_MAP')
+export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
 
 export const updateMap = (mapData) => ({
   type: UPDATE_MAP,
   mapData,
 })
+
 export const deleteMap = (mapId) => ({
   type: DELETE_MAP,
   mapId,
 })
-export const deleteAllMaps = () => ({
+
+export const deleteAllMaps = {
   type: DELETE_ALL_MAPS,
-})
+}
 
 export const openMapFolder = (operationId, folderID, selectedItem = null) => asyncAction.withNotification(
   async (dispatch, getState, { api }) => {

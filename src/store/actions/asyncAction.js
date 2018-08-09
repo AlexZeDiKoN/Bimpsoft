@@ -1,6 +1,8 @@
-export const ASYNC_ACTION_START = 'ASYNC_ACTION_START'
-export const ASYNC_ACTION_SUCCESS = 'ASYNC_ACTION_SUCCESS'
-export const ASYNC_ACTION_ERROR = 'ASYNC_ACTION_ERROR'
+import { action } from '../../utils/services'
+
+export const ASYNC_ACTION_START = action('ASYNC_ACTION_START')
+export const ASYNC_ACTION_SUCCESS = action('ASYNC_ACTION_SUCCESS')
+export const ASYNC_ACTION_ERROR = action('ASYNC_ACTION_ERROR')
 
 export const withNotification = (asyncFunc, payload) => async (dispatch, getState, options) => {
   dispatch({ type: ASYNC_ACTION_START, payload })
