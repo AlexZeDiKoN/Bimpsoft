@@ -19,14 +19,14 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = (dispatch) => ({
   onChange: (data) => {
-    dispatch(selectionActions.hideForm())
+    dispatch(selectionActions.hideForm)
     dispatch(selectionActions.updateSelection(data))
   },
   onAddToTemplates: (data) => {
     dispatch(templatesActions.setForm(data))
   },
   onCancel: () => {
-    dispatch(selectionActions.hideForm())
+    dispatch(selectionActions.hideForm)
   },
 })
 const SelectionFormContainer = connect(

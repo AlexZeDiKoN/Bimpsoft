@@ -59,7 +59,7 @@ const mapDispatchToProps = {
     dispatch(viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel))
   },
   tempClickOnMap: () => selectionActions.setNewShapeCoordinates({ x: 'x1111', y: 'y2222' }),
-  tempFinishClickOnMap: () => selectionActions.showCreateForm(),
+  tempFinishClickOnMap: () => selectionActions.showCreateForm,
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
