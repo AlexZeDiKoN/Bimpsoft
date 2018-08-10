@@ -483,6 +483,7 @@ export default class WebMap extends Component {
       <Shortcuts
         name='WebMap'
         handler={this.handleShortcuts}
+        stopPropagation={false}
       >
         <div
           ref={(container) => (this.container = container)}

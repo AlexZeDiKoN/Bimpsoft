@@ -16,7 +16,7 @@ const WebMap = connect(
     addObject: (object) => dispatch(layers.addObject(object)),
     deleteObject: (id) => dispatch(layers.deleteObject(id)),
     updateObject: (object) => dispatch(layers.updateObject(object)),
-    onSelection: (selected) => dispatch(selected ? selection.setSelection(selected) : selection.clearSelection()),
+    onSelection: (selected) => dispatch(selected ? selection.setSelection(selected) : selection.clearSelection),
     // TODO: пибрати це після тестування
     loadTestObjects: () => dispatch(layers.selectLayer(null)),
   }),
