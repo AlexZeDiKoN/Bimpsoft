@@ -127,6 +127,8 @@ export default class WebMap extends Component {
     deleteObject: PropTypes.func,
     updateObject: PropTypes.func,
     onSelection: PropTypes.func,
+    setNewShapeCoordinates: PropTypes.func,
+    showCreateForm: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
@@ -162,6 +164,9 @@ export default class WebMap extends Component {
     }
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
+    }
+    if (nextProps.edit !== this.props.edit || nextProps.newShape.type !== this.props.newShape.type) {
+      this.setMapCursor(nextProps.edit, nextProps.newShape.type)
     }
     return false
   }
@@ -238,6 +243,12 @@ export default class WebMap extends Component {
     initMapEvents(this.map, this.clickInterhandler)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
+  }
+
+  setMapCursor = (edit, type) => {
+    if (this.map) {
+      this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+    }
   }
 
   setMapSource = (newSources) => {
@@ -332,18 +343,18 @@ export default class WebMap extends Component {
   }
 
   clickInterhandler = (event) => {
-    console.log('clickInterhandler', event)
-    /* const { latlng } = event
-    const { edit, newShape: { type } } = this.props
+    const { latlng } = event
+    const { edit, newShape: { type }, setNewShapeCoordinates, showCreateForm } = this.props
     if (edit) {
       switch (type) {
-        case ADD_POINT:
-
+        case entityKind.POINT:
+          setNewShapeCoordinates(latlng)
+          showCreateForm()
           break
         default:
           break
       }
-    } */
+    }
   }
 
   handleShortcuts = async (action) => {

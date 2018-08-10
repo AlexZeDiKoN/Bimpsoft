@@ -17,6 +17,8 @@ const WebMap = connect(
     deleteObject: (id) => dispatch(layers.deleteObject(id)),
     updateObject: (object) => dispatch(layers.updateObject(object)),
     onSelection: (selected) => dispatch(selected ? selection.setSelection(selected) : selection.clearSelection),
+    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selection.setNewShapeCoordinates({ x: lng, y: lat })),
+    showCreateForm: () => dispatch(selection.showCreateForm),
     // TODO: пибрати це після тестування
     loadTestObjects: () => dispatch(layers.selectLayer(null)),
   }),
