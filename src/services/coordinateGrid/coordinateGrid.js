@@ -199,7 +199,9 @@ const initCoordinateMapGrid = (map) => {
 const removeCoordinateMapGrid = (map) => {
   map.off('move', throttledGridRecalculation)
   currentGrid.removeFrom(map)
+  selectedLayers.removeFrom(map)
   currentGrid = null
+  selectedLayers.eachLayer(removeLayerFromSelectedLayers)
 }
 
 export const toggleMapGrid = (map, isActive) => isActive
