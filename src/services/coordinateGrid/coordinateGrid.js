@@ -14,7 +14,7 @@ import {
 
 // temporary grid data
 let currentGrid
-// let selectedLayers
+const selectedLayers = layerGroup()
 
 // SETTING OUR GRID INITIAL DATA (mutations our constants)
 const getRowLength = (initCoordinate, cellSizes, Z) => {
@@ -86,9 +86,17 @@ const generateGrid = (startTLC, Z, GRID_CELLS_STRUCTURE) => {
 
 // event handlers and event helpers
 
-const selectLayer = (layer) => layer.setStyle(SELECTED_CELL_OPTIONS)
+const selectLayer = (layer) => {
+  layer.setStyle(SELECTED_CELL_OPTIONS)
+  removeLayerFromCurrentGrid(layer)
+  addLayerToSelectedLayers(layer)
+}
 
-const deselectLayer = (layer) => layer.setStyle(INIT_GRID_OPTIONS)
+const deselectLayer = (layer) => {
+  layer.setStyle(INIT_GRID_OPTIONS)
+  removeLayerFromSelectedLayers(layer)
+  addLayerToCurrentGrid(layer)
+}
 
 const addClickEvent = (layer) => {
   layer.on('click', (e) =>
@@ -99,6 +107,12 @@ const addClickEvent = (layer) => {
 }
 
 // helpers
+const removeLayerFromCurrentGrid = (layer) => currentGrid.removeLayer(layer)
+const addLayerToCurrentGrid = (layer) => currentGrid.addLayer(layer)
+
+const addLayerToSelectedLayers = (layer) => selectedLayers.addLayer(layer)
+const removeLayerFromSelectedLayers = (layer) => selectedLayers.removeLayer(layer)
+
 const createGridRectangle = (coordinates) => {
   const rectanglePolygon = rectangle(coordinates, INIT_GRID_OPTIONS)
   addClickEvent(rectanglePolygon)
@@ -143,7 +157,7 @@ const isLayerExist = (coordinate, layers) =>
   })
 
 const addNewLayers = (layerGroup, coordinatesList) => {
-  const layers = layerGroup.getLayers()
+  const layers = [ ...layerGroup.getLayers(), ...selectedLayers.getLayers() ]
   concat(...coordinatesList)
     .forEach((coordinate) => {
       if (!isLayerExist(coordinate, layers)) {
@@ -161,6 +175,7 @@ const createGrid = (map) => {
   if (!currentGrid) {
     const Grid = createRectanglesGroup(coordinatesMatrix)
     Grid.addTo(map)
+    selectedLayers.addTo(map)
     currentGrid = Grid
     return
   }
