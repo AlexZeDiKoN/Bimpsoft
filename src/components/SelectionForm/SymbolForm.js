@@ -9,6 +9,8 @@ export default class SymbolForm extends React.Component {
 
   render () {
     const { coordinatesArray: [ coordinates ], ...rest } = this.props
+    // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
+    rest.elementsConfigs = { ADD_TO_TEMPLATE: { hidden: true } }
     return (
       <SymbolEditorComponent
         elementsConfigs={ {
