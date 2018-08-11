@@ -20,16 +20,17 @@ export default function reducer (state = initState, action) {
       return { ...state, showForm: 'edit' }
     }
     case actions.HIDE_FORM: {
-      return { ...state, showForm: null }
+      return { ...state, showForm: null, newShape: {} }
     }
     case actions.UPDATE_SELECTION: {
       const { data } = state
-      if (data === null) {
-        return state
-      }
       const { data: newData } = action
-      const mergedData = Array.isArray(data) ? data.map((item) => ({ ...item, ...newData })) : { ...data, ...newData }
-      return { ...state, data: mergedData }
+      const mergedData = data === null || newData === null
+        ? newData
+        : Array.isArray(data)
+          ? data.map((item) => ({ ...item, ...newData }))
+          : { ...data, ...newData }
+      return { ...state, data: mergedData, showForm: null }
     }
     case actions.CLEAR_SELECTION: {
       return { ...state, data: null }
@@ -37,6 +38,10 @@ export default function reducer (state = initState, action) {
     case actions.SET_NEW_SHAPE: {
       const { newShape } = action
       return { ...state, newShape, showForm: null }
+    }
+    case actions.UPDATE_NEW_SHAPE: {
+      const { newShape } = action
+      return { ...state, newShape: { ...state.newShape, ...newShape }, showForm: null }
     }
     case actions.SET_NEW_SHAPE_COORDINATES: {
       const { coordinates } = action

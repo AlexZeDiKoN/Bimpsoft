@@ -116,12 +116,15 @@ export default class WebMap extends Component {
       })
     ),
     objects: PropTypes.object,
-    newShape: PropTypes.shape({
-      type: PropTypes.number,
-    }),
     showMiniMap: PropTypes.bool,
     print: PropTypes.bool,
     edit: PropTypes.bool,
+    selection: PropTypes.shape({
+      showForm: PropTypes.string,
+      newShape: PropTypes.shape({
+        type: PropTypes.number,
+      }),
+    }),
     // Redux actions
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
@@ -165,8 +168,15 @@ export default class WebMap extends Component {
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
     }
-    if (nextProps.edit !== this.props.edit || nextProps.newShape.type !== this.props.newShape.type) {
-      this.setMapCursor(nextProps.edit, nextProps.newShape.type)
+    if (nextProps.edit !== this.props.edit ||
+      nextProps.selection.newShape.type !== this.props.selection.newShape.type
+    ) {
+      this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
+    }
+    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create' &&
+      nextProps.selection.newShape.type === entityKind.POINT
+    ) {
+      this.createPointSign(nextProps.selection.newShape)
     }
     return false
   }
@@ -346,7 +356,7 @@ export default class WebMap extends Component {
 
   clickInterhandler = (event) => {
     const { latlng } = event
-    const { edit, newShape: { type }, setNewShapeCoordinates, showCreateForm } = this.props
+    const { edit, selection: { newShape: { type } }, setNewShapeCoordinates, showCreateForm } = this.props
     if (edit) {
       switch (type) {
         case entityKind.POINT:
@@ -357,6 +367,22 @@ export default class WebMap extends Component {
           break
       }
     }
+  }
+
+  createPointSign = async (data) => {
+    console.log('createPointSign', data)
+    const { addObject } = this.props
+    const { code, amplifiers, coordinates: p } = data
+    const point = { lat: p.y, lng: p.x }
+    const created = await addObject({
+      type: entityKind.POINT,
+      code,
+      amplifiers,
+      point,
+      geometry: [ point ],
+    })
+    this.activateCreated(created)
+    // TODO: скинути дані в сторі
   }
 
   handleShortcuts = async (action) => {
@@ -482,10 +508,15 @@ export default class WebMap extends Component {
       default:
         console.error(`Unknown action: ${action}`)
     }
+    this.activateCreated(created)
+  }
+
+  activateCreated = (created) => {
     if (created) {
       this.map.eachLayer((layer) => {
         if (layer.id === created) {
           activateLayer(layer)
+          // TODO: центрувати карту по елементу
         }
       })
     }

@@ -1,3 +1,4 @@
+import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
@@ -17,18 +18,22 @@ const mapStateToProps = (store) => {
   return { data }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  onChange: (data) => {
-    dispatch(selectionActions.hideForm)
-    dispatch(selectionActions.updateSelection(data))
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  onChange: (data) => (_, getState) => {
+    const { selection: { showForm } } = getState()
+    switch (showForm) {
+      case 'edit':
+        return dispatch(selectionActions.updateSelection(data))
+      case 'create':
+        return dispatch(selectionActions.updateNewShape(data))
+      default:
+        break
+    }
   },
-  onAddToTemplates: (data) => {
-    dispatch(templatesActions.setForm(data))
-  },
-  onCancel: () => {
-    dispatch(selectionActions.hideForm)
-  },
-})
+  onAddToTemplates: templatesActions.setForm,
+  onCancel: () => selectionActions.hideForm,
+}, dispatch)
+
 const SelectionFormContainer = connect(
   mapStateToProps,
   mapDispatchToProps

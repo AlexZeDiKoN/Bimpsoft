@@ -8,7 +8,7 @@ const WebMap = connect(
     sources: state.webMap.source.sources,
     objects: state.webMap.objects,
     edit: state.viewModes.edit,
-    newShape: state.selection.newShape,
+    selection: state.selection,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,
   }),
@@ -26,17 +26,3 @@ const WebMap = connect(
 WebMap.displayName = 'WebMap'
 
 export default WebMap
-
-/*
-
-        <Tiles
-          source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={20}
-        />
-        <Tiles
-          source="http://10.8.26.84/api/BaseMapLayer/ato/{z}/{y}/{x}"
-          tms={true}
-          maxZoom={20}
-        />
-
-*/

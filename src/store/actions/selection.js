@@ -8,6 +8,7 @@ export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
 export const HIDE_FORM = action('HIDE_FORM')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
+export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 
 export const setSelection = (data) => ({
   type: SET_SELECTION,
@@ -37,6 +38,11 @@ export const clearSelection = {
 
 export const setNewShape = (newShape) => ({
   type: SET_NEW_SHAPE,
+  newShape,
+})
+
+export const updateNewShape = (newShape) => ({
+  type: UPDATE_NEW_SHAPE,
   newShape,
 })
 
