@@ -219,20 +219,7 @@ export default class WebMap extends Component {
     this.coordinates = control.coordinates({
       position: 'topright',
       enableUserInput: false,
-      customLabelFcn: ({ lng, lat }) => {
-        switch (this.indicateMode) {
-          case indicateModes.WGSI:
-            return Wgs84I(lat, lng)
-          case indicateModes.MGRS:
-            return Mgrs(lat, lng)
-          case indicateModes.UTM:
-            return Utm(lat, lng)
-          case indicateModes.ALL:
-            return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng) ].join('<br/>')
-          default: // WGS-84
-            return Wgs84(lat, lng)
-        }
-      },
+      customLabelFcn: this.showCoordinates,
     })
     this.coordinates.addTo(this.map)
     DomEvent.addListener(this.coordinates._container, 'click', () => {
@@ -243,6 +230,21 @@ export default class WebMap extends Component {
     initMapEvents(this.map, this.clickInterhandler)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
+  }
+
+  showCoordinates = ({ lng, lat }) => {
+    switch (this.indicateMode) {
+      case indicateModes.WGSI:
+        return Wgs84I(lat, lng)
+      case indicateModes.MGRS:
+        return Mgrs(lat, lng)
+      case indicateModes.UTM:
+        return Utm(lat, lng)
+      case indicateModes.ALL:
+        return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng) ].join('<br/>')
+      default: // WGS-84
+        return Wgs84(lat, lng)
+    }
   }
 
   setMapCursor = (edit, type) => {

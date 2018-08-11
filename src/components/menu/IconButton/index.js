@@ -26,7 +26,7 @@ export default class IconButton extends React.Component {
     }
     return (
       <div className={className}>
-        <Tooltip placement="bottomLeft" title={text}>
+        <Tooltip placement="bottomLeft" title={text} mouseEnterDelay={0.5}>
           <IconHovered
             icon={icon}
             hoverIcon={hoverIcon}

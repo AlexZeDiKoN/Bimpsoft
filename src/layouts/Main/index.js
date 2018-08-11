@@ -8,7 +8,8 @@ import {
   RightMenuContainer,
   SelectionFormContainer,
   TemplateFormContainer,
-  TemplatesListContainer,
+  // TODO: поки що приховуємо панель шаблонів (повернемося до неї після 25 серпня)
+  // TemplatesListContainer,
   SettingsFormContainer,
   MapsSourcesContainer,
 } from '../../containers'
@@ -32,7 +33,7 @@ export default class Main extends React.Component {
             </div>
           </div>
           <div className="header-bottom">
-            <TemplatesListContainer/>
+            {/* <TemplatesListContainer/> */}
           </div>
         </div>
         <div className="app-body">
