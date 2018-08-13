@@ -76,6 +76,16 @@ export const updateObject = ({ id, ...object }) =>
     })
   })
 
+export const updateObjectGeometry = ({ id, ...object }) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+    const payload = await webmapApi.objUpdateGeometry(id, object)
+    api.checkServerResponse(payload)
+    dispatch({
+      type: UPD_OBJECT,
+      payload,
+    })
+  })
+
 export const setTimelineFrom = (date) => ({
   type: SET_TIMELINE_FROM,
   date,

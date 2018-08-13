@@ -129,6 +129,7 @@ export default class WebMap extends Component {
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
     updateObject: PropTypes.func,
+    updateObjectGeometry: PropTypes.func,
     onSelection: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
@@ -335,6 +336,8 @@ export default class WebMap extends Component {
   }
 
   deleteObject = (layer) => {
+    layer.pm.disable()
+    delete layer._map.pm.activeLayer
     this.props.deleteObject(layer.id)
   }
 
@@ -344,7 +347,7 @@ export default class WebMap extends Component {
       const data = this.getLayerData(oldLayer)
       const object = oldLayer.object
       if (!tacticalSignEquals(object, data)) {
-        this.props.updateObject(data)
+        this.props.updateObjectGeometry(data)
       }
     }
   }

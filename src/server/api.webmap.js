@@ -5,6 +5,7 @@ const webmapUrl = getWebmapURL()
 const WebmapApi = {
   objGetList,
   objUpdate,
+  objUpdateGeometry,
   objInsert,
   objDelete,
 }
@@ -17,6 +18,10 @@ function objGetList (layer = null) {
 
 function objUpdate (id, data) {
   return getDirect(`${webmapUrl}/set`, { id, ...data })
+}
+
+function objUpdateGeometry (id, data) {
+  return getDirect(`${webmapUrl}/geom`, { id, ...data })
 }
 
 function objInsert (data) {
