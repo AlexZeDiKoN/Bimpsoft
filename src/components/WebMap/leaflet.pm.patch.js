@@ -322,6 +322,13 @@ function clickOnLayer (event) {
   L.DomEvent.stopPropagation(event)
 }
 
+function dblClickOnLayer (event) {
+  if (event.target._map.pm.activeLayer === event.target) {
+    event.target._map.fire('editlayer', event.target)
+  }
+  L.DomEvent.stopPropagation(event)
+}
+
 export function activateLayer (newLayer) {
   const map = newLayer._map
   const oldLayer = map.pm.activeLayer
@@ -371,6 +378,7 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
     layer.id = id
     layer.object = object
     layer.on('click', clickOnLayer)
+    layer.on('dblclick', dblClickOnLayer)
     layer.addTo(map)
   }
   return layer

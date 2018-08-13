@@ -4,7 +4,7 @@ import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 
 export default class SymbolForm extends React.Component {
   static propTypes = {
-    coordinatesArray: PropTypes.arrayOf(PropTypes.object),
+    coordinatesArray: PropTypes.any,
   }
 
   render () {

@@ -4,8 +4,7 @@ import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
 
-const mapStateToProps = (store) => {
-  const { selection } = store
+const mapStateToProps = ({ selection }) => {
   const { showForm } = selection
   let data = null
   if (showForm === null) {
@@ -15,7 +14,7 @@ const mapStateToProps = (store) => {
   } else if (showForm === 'edit') {
     data = selection.data
   }
-  return { data }
+  return { showForm, data }
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

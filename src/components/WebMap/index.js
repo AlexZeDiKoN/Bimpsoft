@@ -122,12 +122,16 @@ export default class WebMap extends Component {
     selection: PropTypes.shape({
       showForm: PropTypes.string,
       newShape: PropTypes.shape({
-        type: PropTypes.number,
+        type: PropTypes.any,
+      }),
+      data: PropTypes.shape({
+        type: PropTypes.any,
       }),
     }),
     // Redux actions
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
+    editObject: PropTypes.func,
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onSelection: PropTypes.func,
@@ -178,6 +182,11 @@ export default class WebMap extends Component {
       nextProps.selection.newShape.type === entityKind.POINT
     ) {
       this.createPointSign(nextProps.selection.newShape)
+    }
+    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit' &&
+      nextProps.selection.data.type === entityKind.POINT
+    ) {
+      this.updatePointSign(nextProps.selection.data)
     }
     return false
   }
@@ -241,6 +250,7 @@ export default class WebMap extends Component {
     initMapEvents(this.map, this.clickInterhandler)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
+    this.map.on('editlayer', this.editObject)
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -342,7 +352,7 @@ export default class WebMap extends Component {
   }
 
   updateObject = async ({ oldLayer, newLayer }) => {
-    this.props.onSelection(newLayer ? +newLayer.id : null)
+    this.props.onSelection(newLayer || null)
     if (oldLayer) {
       const data = this.getLayerData(oldLayer)
       const object = oldLayer.object
@@ -350,6 +360,12 @@ export default class WebMap extends Component {
         this.props.updateObjectGeometry(data)
       }
     }
+  }
+
+  editObject = (layer) => {
+    console.log('edit object', layer)
+    this.props.onSelection(layer)
+    this.props.editObject()
   }
 
   getLayerData = (layer) => {
@@ -385,6 +401,35 @@ export default class WebMap extends Component {
       geometry: [ point ],
     })
     this.activateCreated(created)
+    // TODO: скинути дані в сторі
+  }
+
+  findLayerById = (id) => {
+    this.map.eachLayer((layer) => {
+      if (+layer.id === +id) {
+        console.log('findLayerById', { id, layer })
+        return layer
+      }
+    })
+  }
+
+  updatePointSign = async (data) => {
+    const { id, coordinates, coordinatesArray, ...rest } = data
+    const point = { lng: +coordinates.x, lat: +coordinates.y }
+    console.log('updatePointSign', data)
+    const layer = this.findLayerById(id)
+    console.log('updatePointSign find layer:', { id, layer })
+    if (layer) {
+      layer.pm.disable()
+      delete layer._map.pm.activeLayer
+    }
+    await this.props.updateObject({
+      id,
+      point,
+      geometry: [ point ],
+      ...rest,
+    })
+    this.activateCreated(id)
     // TODO: скинути дані в сторі
   }
 
@@ -516,12 +561,11 @@ export default class WebMap extends Component {
 
   activateCreated = (created) => {
     if (created) {
-      this.map.eachLayer((layer) => {
-        if (layer.id === created) {
-          activateLayer(layer)
-          // TODO: центрувати карту по елементу
-        }
-      })
+      const layer = this.findLayerById(created)
+      if (layer) {
+        activateLayer(layer)
+        // TODO: центрувати карту по елементу
+      }
     }
   }
 
