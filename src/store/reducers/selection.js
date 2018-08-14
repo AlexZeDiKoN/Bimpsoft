@@ -20,7 +20,7 @@ export default function reducer (state = initState, action) {
       return { ...state, showForm: 'edit' }
     }
     case actions.HIDE_FORM: {
-      return { ...state, showForm: null, newShape: {} }
+      return { ...state, showForm: null, newShape: {}, data: {} }
     }
     case actions.UPDATE_SELECTION: {
       const { data } = state
