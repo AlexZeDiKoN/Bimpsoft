@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
+import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
 import { update, comparator, filter } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
@@ -11,7 +12,11 @@ const WebMapPoint = Record({
   lng: null,
 })
 
-const WebMapAttributes = Record({})
+for (const key of Object.keys(amplifiers)) {
+  amplifiers[key] = ''
+}
+
+const WebMapAttributes = Record(amplifiers)
 
 const WebMapObject = Record({
   id: null,

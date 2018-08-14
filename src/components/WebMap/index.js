@@ -102,6 +102,16 @@ function tacticalSignEquals (object, data) {
   // TODO інші властивості
 }
 
+const filterSet = (data) => {
+  const result = {}
+  data.forEach((k, v) => {
+    if (k !== '') {
+      result[v] = k
+    }
+  })
+  return result
+}
+
 export default class WebMap extends Component {
   static propTypes = {
     // props
@@ -337,7 +347,10 @@ export default class WebMap extends Component {
     let template
     let points = geometry.toJS()
     if (+type === entityKind.POINT) {
-      const symbol = new Symbol(code, { size: 48, ...object.attributes.toJS() })
+      const amplificators = filterSet(object.attributes)
+      const options = { size: 48, ...amplificators }
+      console.log({ options })
+      const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
       anchor = symbol.getAnchor()
@@ -405,27 +418,27 @@ export default class WebMap extends Component {
   }
 
   findLayerById = (id) => {
-    this.map.eachLayer((layer) => {
+    for (const lkey of Object.keys(this.map._layers)) {
+      const layer = this.map._layers[lkey]
       if (+layer.id === +id) {
-        console.log('findLayerById', { id, layer })
         return layer
       }
-    })
+    }
   }
 
   updatePointSign = async (data) => {
-    const { id, coordinates, coordinatesArray, ...rest } = data
+    const { id, coordinates, coordinatesArray, amplifiers, ...rest } = data
     const point = { lng: +coordinates.x, lat: +coordinates.y }
-    console.log('updatePointSign', data)
     const layer = this.findLayerById(id)
-    console.log('updatePointSign find layer:', { id, layer })
     if (layer) {
       layer.pm.disable()
       delete layer._map.pm.activeLayer
     }
+    console.log('updatePointSign', rest)
     await this.props.updateObject({
       id,
       point,
+      attributes: amplifiers,
       geometry: [ point ],
       ...rest,
     })
