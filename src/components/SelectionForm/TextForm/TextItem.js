@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import { FormItem } from './../../form'
 
 const { IconHovered, names: IconNames } = components.icons
 
@@ -33,7 +34,7 @@ export default class TextItem extends React.Component {
   render () {
     const { text, underline, canRemove } = this.props
     return (
-      <div>
+      <FormItem>
         <Input value={text} onChange={this.textChangeHandler}/>
         <IconHovered
           icon={underline ? IconNames.U_ACTIVE : IconNames.U_DEFAULT}
@@ -45,7 +46,7 @@ export default class TextItem extends React.Component {
           hoverIcon={canRemove ? IconNames.EMPTY_HOVER : IconNames.EMPTY_DISABLE}
           onClick={this.removeClickHandler}
         />
-      </div>
+      </FormItem>
     )
   }
 }
