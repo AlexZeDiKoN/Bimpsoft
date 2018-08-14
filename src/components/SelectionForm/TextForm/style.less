@@ -1,0 +1,28 @@
+@import "../../../assets/styles/_mixins.less";
+
+.text-form{
+  .text-form-preview {
+    width: 324px;
+    height: 104px;
+    overflow: hidden;
+    background: #f1dacd;
+    .flex;
+    align-items: center;
+    justify-content: center;
+
+    .textsymbol{
+      flex: 0 0 auto;
+    }
+  }
+
+}
+.text-form-scrollable{
+  .flex;
+  flex-direction: column;
+  max-height: 12em;
+  overflow: auto;
+  > div {
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+}

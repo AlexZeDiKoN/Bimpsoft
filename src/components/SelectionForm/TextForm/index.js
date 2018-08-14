@@ -6,8 +6,19 @@ import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
 import { SubordinationLevel } from '../../../constants'
-import { default as Form, FormRow, FormColumn } from './../../form'
+import TextSymbol from '../../common/TextSymbol'
+import {
+  default as Form,
+  FormItem,
+  FormRow,
+  FormColumn,
+  FormDivider,
+  FormDarkPart,
+  FormButtonOk,
+  FormButtonCancel,
+} from './../../form'
 import TextItem from './TextItem'
+import './style.css'
 
 const { IconHovered, names: IconNames } = components.icons
 
@@ -101,10 +112,13 @@ export default class TextForm extends React.Component {
       texts,
     } = this.state
     return (
-      <Form>
+      <Form className="text-form">
         <FormColumn label={i18n.SUBORDINATION_LEVEL}>
           <SubordinationLevelSelect value={ subordinationLevel } onChange={this.changeSubordinationLevel} />
         </FormColumn>
+        <FormItem className="text-form-preview">
+          <TextSymbol texts={texts}/>
+        </FormItem>
         <FormRow label={i18n.TEXT}>
           <IconHovered
             icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
@@ -112,7 +126,8 @@ export default class TextForm extends React.Component {
             onClick={this.addTextHandler}
           />
         </FormRow>
-        <FormRow>
+        <FormDivider />
+        <div className="text-form-scrollable">
           {texts.map((item, index) => (
             <TextItem
               key={index}
@@ -123,23 +138,25 @@ export default class TextForm extends React.Component {
               onRemove={this.removeTextItemHandler}
             />
           ))}
-        </FormRow>
-        <FormRow label={i18n.TRANSPARENT_BACKGROUND}>
-          <Checkbox checked={transparentBackground} onChange={this.changeTransparentBackground}/>
-        </FormRow>
-        <FormRow label={i18n.DISPLAY_ANCHOR_LINE}>
-          <Checkbox checked={displayAnchorLine} onChange={this.changeDisplayAnchorLine}/>
-        </FormRow>
-        <FormRow label={i18n.ANCHOR_LINE_WITH_ARROW}>
-          <Checkbox checked={anchorLineWithArrow} onChange={this.changeAnchorLineWithArrow}/>
-        </FormRow>
-        <FormRow label={i18n.MAGNIFICATION}>
-          <InputNumber value={magnification} onChange={this.changeMagnification}/>
-        </FormRow>
-        <FormRow>
-          <button onClick={this.cancelHandler}>{i18n.CANCEL}</button>
-          <button onClick={this.okHandler}>{i18n.OK}</button>
-        </FormRow>
+        </div>
+        <FormDarkPart>
+          <FormRow label={i18n.TRANSPARENT_BACKGROUND}>
+            <Checkbox checked={transparentBackground} onChange={this.changeTransparentBackground}/>
+          </FormRow>
+          <FormRow label={i18n.DISPLAY_ANCHOR_LINE}>
+            <Checkbox checked={displayAnchorLine} onChange={this.changeDisplayAnchorLine}/>
+          </FormRow>
+          <FormRow label={i18n.ANCHOR_LINE_WITH_ARROW}>
+            <Checkbox checked={anchorLineWithArrow} onChange={this.changeAnchorLineWithArrow}/>
+          </FormRow>
+          <FormRow label={i18n.MAGNIFICATION}>
+            <InputNumber value={magnification} onChange={this.changeMagnification} />
+          </FormRow>
+        </FormDarkPart>
+        <FormItem>
+          <FormButtonCancel onClick={this.cancelHandler}/>
+          <FormButtonOk onClick={this.okHandler}/>
+        </FormItem>
       </Form>
     )
   }
