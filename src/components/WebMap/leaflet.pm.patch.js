@@ -342,7 +342,7 @@ export function activateLayer (newLayer) {
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
 export function createTacticalSign (id, object, type, points, svg, color, map, anchor) {
   let layer
-  const js = svgToJS(svg)
+  const js = /* svgToJS(*/ svg /*) */
   switch (type) {
     case entityKind.POINT:
       layer = createPoint(points, js, color, anchor)
@@ -388,26 +388,29 @@ function createPoint ([ point ], js, color, anchor) {
   if (!anchor) {
     anchor = getCentralPoint(js)
   }
-  if (color && js.svg.path) {
+  /* if (color && js.svg.path) {
     js.svg.path.map((path) => (path.$.stroke = color))
   }
-  js.svg.$.xmlns = 'http://www.w3.org/2000/svg'
-  let svg = jsToSvg(js)
-  let src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const icon = L.icon({
-    iconUrl: src,
+  js.svg.$.xmlns = 'http://www.w3.org/2000/svg' */
+  let svg = /* jsToSvg( */ js /* ) */
+  // console.log({ svg })
+  // let src = `data:image/svg+xml;base64,${btoa(svg)}`
+  const icon = L.divIcon({
+    // iconUrl: src,
+    html: svg,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
-    iconSize: [ js.svg.$.width, js.svg.$.height ],
+    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
-  setActiveColors(js.svg, activelayerColor, activeBackColor)
-  svg = jsToSvg(js)
-  src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const iconActive = L.icon({
-    iconUrl: src,
+  // setActiveColors(js.svg, activelayerColor, activeBackColor)
+  // svg = jsToSvg(js)
+  // src = `data:image/svg+xml;base64,${btoa(svg)}`
+  const iconActive = L.divIcon({
+    // iconUrl: src,
+    html: svg,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
-    iconSize: [ js.svg.$.width, js.svg.$.height ],
+    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
   const marker = L.marker(point, { icon, draggable: false })
   marker.options.iconNormal = icon
