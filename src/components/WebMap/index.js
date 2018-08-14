@@ -112,6 +112,15 @@ const filterSet = (data) => {
   return result
 }
 
+const filterObj = (data) => {
+  for (const key of Object.keys(data)) {
+    if (data[key] === '') {
+      delete data[key]
+    }
+  }
+  return Object.keys(data).length ? data : null
+}
+
 export default class WebMap extends Component {
   static propTypes = {
     // props
@@ -349,7 +358,6 @@ export default class WebMap extends Component {
     if (+type === entityKind.POINT) {
       const amplificators = filterSet(object.attributes)
       const options = { size: 48, ...amplificators }
-      console.log({ options })
       const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
@@ -435,10 +443,11 @@ export default class WebMap extends Component {
       delete layer._map.pm.activeLayer
     }
     console.log('updatePointSign', rest)
+    const attributes = filterObj(amplifiers)
     await this.props.updateObject({
       id,
       point,
-      attributes: amplifiers,
+      attributes,
       geometry: [ point ],
       ...rest,
     })
