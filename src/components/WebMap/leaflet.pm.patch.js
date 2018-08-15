@@ -307,6 +307,12 @@ export function initMapEvents (mymap, clickInterhandler) {
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
+function checkPointSignIconTransparent (layer) {
+  if (layer.options.tsType === entityKind.POINT) {
+    setTimeout(() => transparentSvg(layer))
+  }
+}
+
 function clearActiveLayer (map, skipFire = false) {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
@@ -318,6 +324,7 @@ function clearActiveLayer (map, skipFire = false) {
       }
     } else if (map.pm.activeLayer.options.iconNormal) {
       map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
+      checkPointSignIconTransparent(map.pm.activeLayer)
     }
     if (!skipFire) {
       map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
@@ -336,6 +343,7 @@ function setActiveLayer (map, layer, skipFire = false) {
     }
   } else if (map.pm.activeLayer.options.iconActive) {
     map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
+    checkPointSignIconTransparent(map.pm.activeLayer)
   }
   layer.pm.enable({
     snappable: false,
@@ -462,10 +470,23 @@ function createPoint ([ point ], js, anchor) {
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
   const marker = L.marker(point, { icon, draggable: false })
+  setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
   marker.options.tsType = entityKind.POINT
   return marker
+}
+
+function transparentSvg (marker) {
+  if (!marker || !marker._icon) {
+    return
+  }
+  L.DomUtil.removeClass(marker._icon, 'leaflet-interactive')
+  marker.removeInteractiveTarget(marker._icon)
+  Array.from(marker._icon.children).forEach((child) => {
+    L.DomUtil.addClass(child, 'leaflet-interactive')
+    marker.addInteractiveTarget(child)
+  })
 }
 
 /* function setActiveColors (svg, stroke, fill) {
