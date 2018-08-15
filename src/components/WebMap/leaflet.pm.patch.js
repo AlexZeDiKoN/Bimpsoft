@@ -185,9 +185,9 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
   }
 }
 
-L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
+// L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
 L.PM.Edit.Rectangle.prototype._onMarkerDrag = function (e) {
-  this._saved_onMarkerDrag(e) // TODO: тут б'є помилку при переміщенні лівої нижньої вершини квадрата, перевірити!
+  // this._saved_onMarkerDrag(e) // Здається, цей виклик не потрібен, без нього працює так само
   const marker = e.target
   const kind = this._layer.options.tsType
   if (kind === entityKind.SQUARE) {
@@ -206,12 +206,13 @@ L.PM.Edit.Rectangle.prototype._onMarkerDrag = function (e) {
       point = bounds.getNorthEast()
     } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
       point = bounds.getSouthEast()
-    } else if (point.lng < opposite.lng && point.let < opposite.lat) {
+    } else if (point.lng < opposite.lng && point.lat < opposite.lat) {
       point = bounds.getSouthWest()
     } else {
       point = bounds.getNorthWest()
     }
-    this._layer.setBounds(L.latLngBounds(point, opposite))
+    bounds = L.latLngBounds(point, opposite)
+    this._layer.setBounds(bounds)
     this._adjustAllMarkers(this._layer.getLatLngs()[0])
   }
 }
