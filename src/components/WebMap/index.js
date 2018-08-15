@@ -156,6 +156,7 @@ export default class WebMap extends Component {
     onSelection: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
+    hideForm: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
@@ -196,6 +197,7 @@ export default class WebMap extends Component {
       nextProps.selection.newShape.type !== this.props.selection.newShape.type
     ) {
       this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
+      this.startCreatePoly(nextProps.edit, nextProps.selection.newShape.type)
     }
     if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create' &&
       nextProps.selection.newShape.type === entityKind.POINT
@@ -270,6 +272,8 @@ export default class WebMap extends Component {
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
     this.map.on('editlayer', this.editObject)
+    this.map.on('pm:drawend', this.props.hideForm)
+    this.map.on('pm:create', this.createNewShape)
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -290,6 +294,27 @@ export default class WebMap extends Component {
   setMapCursor = (edit, type) => {
     if (this.map) {
       this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+    }
+  }
+
+  startCreatePoly = (edit, type) => {
+    if (this.map && edit) {
+      switch (type) {
+        case entityKind.POLYLINE:
+          this.map.pm.enableDraw('Line', { finishOn: 'dblclick' })
+          break
+        case entityKind.POLYGON:
+          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick' })
+          break
+        case entityKind.RECTANGLE:
+          this.map.pm.enableDraw('Rectangle')
+          break
+        case entityKind.CIRCLE:
+          this.map.pm.enableDraw('Circle')
+          break
+        default:
+          break
+      }
     }
   }
 
@@ -579,6 +604,33 @@ export default class WebMap extends Component {
         console.error(`Unknown action: ${action}`)
     }
     this.activateCreated(created)
+  }
+
+  createNewShape = async (e) => {
+    const { addObject } = this.props
+    switch (e.shape) {
+      case 'Rectangle':
+        e.layer.options.tsType = entityKind.RECTANGLE
+        break
+      case 'Circle':
+        e.layer.options.tsType = entityKind.CIRCLE
+        break
+      case 'Poly':
+        e.layer.options.tsType = entityKind.POLYGON
+        break
+      case 'Line':
+        e.layer.options.tsType = entityKind.POLYLINE
+        break
+      default:
+        break
+    }
+    e.layer.removeFrom(this.map)
+    if (e.layer.options.tsType) {
+      this.activateCreated(await addObject({
+        type: e.layer.options.tsType,
+        ...getGeometry(e.layer),
+      }))
+    }
   }
 
   activateCreated = (created) => {
