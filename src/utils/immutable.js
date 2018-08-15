@@ -11,3 +11,10 @@ export const filter = (map, condition) => {
   const filtered = map.filter(condition)
   return map.equals(filtered) ? map : filtered
 }
+
+export const merge = (record, payload) =>
+  Object.keys(payload).reduce((record, key) => {
+    const oldValue = record.get(key)
+    const newValue = payload[key]
+    return oldValue === newValue ? record : record.set(key, newValue)
+  }, record)
