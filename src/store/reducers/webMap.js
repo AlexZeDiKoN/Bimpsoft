@@ -16,7 +16,11 @@ for (const key of Object.keys(amplifiers)) {
   amplifiers[key] = ''
 }
 
-const WebMapAttributes = Record(amplifiers)
+const WebMapAttributes = Record({
+  ...amplifiers,
+  template: '',
+  color: '',
+})
 
 const WebMapObject = Record({
   id: null,
