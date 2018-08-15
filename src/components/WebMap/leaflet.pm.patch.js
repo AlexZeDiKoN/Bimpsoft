@@ -434,7 +434,7 @@ function createPoint ([ point ], js, anchor) {
     if (node.hasAttribute('fill')) {
       const value = node.getAttribute('fill')
       if (value && value !== 'none') {
-        node.setAttribute('fill', node.tagName === 'text' ? activelayerColor : activeBackColor)
+        node.setAttribute('fill', node.tagName === 'text' || value === 'black' ? activelayerColor : activeBackColor)
       }
     }
     for (const child of node.childNodes) {

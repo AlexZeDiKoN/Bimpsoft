@@ -2,10 +2,11 @@ import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as layers from '../store/actions/layers'
 import * as selection from '../store/actions/selection'
+import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
 
 const objProps = (obj) => {
-  console.log('objProps', obj.object)
-  const { id, type, code, attributes, affiliation, unit, level, geometry } = obj.object
+  const { id, type, code, attributes, affiliation, unit, level } = obj.object
+  const coordinatesArray = getGeometry(obj).geometry.map(({ lat, lng }) => ({ x: lng, y: lat }))
   return {
     id: +id,
     type: +type,
@@ -14,7 +15,7 @@ const objProps = (obj) => {
     affiliation,
     unit,
     level: +level,
-    coordinatesArray: geometry.map(({ lat, lng }) => ({ x: lng, y: lat })).toJS(),
+    coordinatesArray, // geometry.map(({ lat, lng }) => ({ x: lng, y: lat })).toJS(),
   }
 }
 
