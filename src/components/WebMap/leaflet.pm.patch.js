@@ -1,4 +1,4 @@
-/* global L, btoa, DOMParser */
+/* global L, DOMParser */
 
 // ------------------------ Константи ----------------------------------------------------------------------------------
 const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
@@ -19,6 +19,35 @@ export const entityKind = { // ID в базі даних відповідних 
   TEXT: 10, // текстова мітка
   GROUP: 99, // група
 }
+
+const parser = new DOMParser()
+
+const SvgIcon = L.Icon.extend({
+  options: {
+    svg: null,
+    postProcess: null,
+  },
+
+  createIcon: function (oldIcon) {
+    if (oldIcon && oldIcon.tagName === 'SVG') {
+      return oldIcon
+    }
+    const svg = parser.parseFromString(this.options.svg, 'image/svg+xml').rootElement
+    if (this.options.postProcess) {
+      this.options.postProcess(svg)
+    }
+    const anchor = this.options.iconAnchor
+    if (anchor) {
+      svg.style.marginLeft = (-anchor[0]) + 'px'
+      svg.style.marginTop = (-anchor[1]) + 'px'
+    }
+    return svg
+  },
+
+  createShadow: function () {
+    return null
+  },
+})
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 L.SVG.prototype._updatePoly = function (layer, closed) {
@@ -278,6 +307,12 @@ export function initMapEvents (mymap, clickInterhandler) {
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
+function checkPointSignIconTransparent (layer) {
+  if (layer.options.tsType === entityKind.POINT) {
+    setTimeout(() => transparentSvg(layer))
+  }
+}
+
 function clearActiveLayer (map, skipFire = false) {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
@@ -289,6 +324,7 @@ function clearActiveLayer (map, skipFire = false) {
       }
     } else if (map.pm.activeLayer.options.iconNormal) {
       map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
+      checkPointSignIconTransparent(map.pm.activeLayer)
     }
     if (!skipFire) {
       map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
@@ -307,6 +343,7 @@ function setActiveLayer (map, layer, skipFire = false) {
     }
   } else if (map.pm.activeLayer.options.iconActive) {
     map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
+    checkPointSignIconTransparent(map.pm.activeLayer)
   }
   layer.pm.enable({
     snappable: false,
@@ -342,34 +379,33 @@ export function activateLayer (newLayer) {
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
 export function createTacticalSign (id, object, type, points, svg, color, map, anchor) {
   let layer
-  const js = /* svgToJS(*/ svg /*) */
   switch (type) {
     case entityKind.POINT:
-      layer = createPoint(points, js, color, anchor)
+      layer = createPoint(points, svg, anchor)
       break
     case entityKind.SEGMENT:
-      layer = createSegment(points, js, color)
+      layer = createSegment(points, svgToJS(svg), color)
       break
     case entityKind.AREA:
-      layer = createArea(points, js, color)
+      layer = createArea(points)
       break
     case entityKind.CURVE:
-      layer = createCurve(points, js, color)
+      layer = createCurve(points)
       break
     case entityKind.POLYGON:
-      layer = createPolygon(points, js, color)
+      layer = createPolygon(points)
       break
     case entityKind.POLYLINE:
-      layer = createPolyline(points, js, color)
+      layer = createPolyline(points)
       break
     case entityKind.CIRCLE:
-      layer = createCircle(points, js, color, map)
+      layer = createCircle(points, map)
       break
     case entityKind.RECTANGLE:
-      layer = createRectangle(points, js, color)
+      layer = createRectangle(points)
       break
     case entityKind.SQUARE:
-      layer = createSquare(points, js, color, map)
+      layer = createSquare(points, map)
       break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
@@ -384,20 +420,40 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
   return layer
 }
 
-function createPoint ([ point ], js, color, anchor) {
-  if (!anchor) {
-    anchor = getCentralPoint(js)
+function createPoint ([ point ], js, anchor) {
+  const updateNode = (node) => {
+    if (!node.hasAttribute) {
+      return
+    }
+    if (node.hasAttribute('stroke')) {
+      const value = node.getAttribute('stroke')
+      if (value && value !== 'none') {
+        node.setAttribute('stroke', activelayerColor)
+      }
+    }
+    if (node.hasAttribute('fill')) {
+      const value = node.getAttribute('fill')
+      if (value && value !== 'none') {
+        node.setAttribute('fill', node.tagName === 'text' ? activelayerColor : activeBackColor)
+      }
+    }
+    for (const child of node.childNodes) {
+      updateNode(child)
+    }
   }
+
+  /* if (!anchor) {
+    anchor = getCentralPoint(js)
+  } */
   /* if (color && js.svg.path) {
     js.svg.path.map((path) => (path.$.stroke = color))
   }
   js.svg.$.xmlns = 'http://www.w3.org/2000/svg' */
-  let svg = /* jsToSvg( */ js /* ) */
-  // console.log({ svg })
+  // const svg = /* jsToSvg( */ js /* ) */
   // let src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const icon = L.divIcon({
+  const icon = new SvgIcon({
     // iconUrl: src,
-    html: svg,
+    svg: js,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
@@ -405,21 +461,35 @@ function createPoint ([ point ], js, color, anchor) {
   // setActiveColors(js.svg, activelayerColor, activeBackColor)
   // svg = jsToSvg(js)
   // src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const iconActive = L.divIcon({
+  const iconActive = new SvgIcon({
     // iconUrl: src,
-    html: svg,
+    svg: js,
+    postProcess: updateNode,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
   const marker = L.marker(point, { icon, draggable: false })
+  setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
   marker.options.tsType = entityKind.POINT
   return marker
 }
 
-function setActiveColors (svg, stroke, fill) {
+function transparentSvg (marker) {
+  if (!marker || !marker._icon) {
+    return
+  }
+  L.DomUtil.removeClass(marker._icon, 'leaflet-interactive')
+  marker.removeInteractiveTarget(marker._icon)
+  Array.from(marker._icon.children).forEach((child) => {
+    L.DomUtil.addClass(child, 'leaflet-interactive')
+    marker.addInteractiveTarget(child)
+  })
+}
+
+/* function setActiveColors (svg, stroke, fill) {
   for (const key of Object.keys(svg)) {
     if (key === '$') {
       if (svg.$.stroke && svg.$.stroke !== 'none') {
@@ -434,49 +504,49 @@ function setActiveColors (svg, stroke, fill) {
       setActiveColors(svg[key], stroke, fill)
     }
   }
-}
+} */
 
 function createSegment (segment, js, color) {
   const options = prepareOptions(entityKind.SEGMENT, color, js)
   return L.polyline(segment, options)
 }
 
-function createArea (area, js, color) {
-  const options = prepareOptions(entityKind.AREA, color, js)
+function createArea (area) {
+  const options = prepareOptions(entityKind.AREA)
   return L.polygon(area, options)
 }
 
-function createCurve (curve, js, color) {
-  const options = prepareOptions(entityKind.CURVE, color, js)
+function createCurve (curve) {
+  const options = prepareOptions(entityKind.CURVE)
   return L.polyline(curve, options)
 }
 
-function createPolygon (polygon, js, color) {
-  const options = prepareOptions(entityKind.POLYGON, color, js)
+function createPolygon (polygon) {
+  const options = prepareOptions(entityKind.POLYGON)
   return L.polygon(polygon, options)
 }
 
-function createPolyline (polyline, js, color) {
-  const options = prepareOptions(entityKind.POLYLINE, color, js)
+function createPolyline (polyline) {
+  const options = prepareOptions(entityKind.POLYLINE)
   return L.polyline(polyline, options)
 }
 
-function createCircle ([ point1, point2 ], js, color, map) {
-  const options = prepareOptions(entityKind.CIRCLE, color, js)
+function createCircle ([ point1, point2 ], map) {
+  const options = prepareOptions(entityKind.CIRCLE)
   options.radius = map.distance(point1, point2)
   return L.circle(point1, options)
 }
 
-function createRectangle (points, js, color) {
-  const options = prepareOptions(entityKind.RECTANGLE, color, js)
+function createRectangle (points) {
+  const options = prepareOptions(entityKind.RECTANGLE)
   return L.rectangle(points, options)
 }
 
-function createSquare ([ point1, point2 ], js, color, map) {
+function createSquare ([ point1, point2 ], map) {
   const bounds = L.latLngBounds(point1, point2)
   point1 = bounds.getNorthWest()
   point2 = bounds.getSouthEast()
-  const options = prepareOptions(entityKind.SQUARE, color, js)
+  const options = prepareOptions(entityKind.SQUARE)
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
   const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
   const size = Math.max(width, height)
@@ -799,7 +869,7 @@ function prepareLinePath (js, d, rings) {
   return wrapSvgPath(decodedPath)
 }
 
-function getCentralPoint (js) {
+/* function getCentralPoint (js) {
   const result = { x: 0, y: 0 }
   if (js.svg.$.width && js.svg.$.height) {
     if (js.svg.$['central-point']) {
@@ -810,11 +880,11 @@ function getCentralPoint (js) {
       result.x = js.svg.$.width / 2
       result.y = js.svg.$.height / 2
     }
-    result.x = Math.round(result.x / js.svg.$.width/* * pointSignSize */)
-    result.y = Math.round(result.y / js.svg.$.height/* * pointSignSize */)
+    result.x = Math.round(result.x / js.svg.$.width) //  * pointSignSize inside brackets
+    result.y = Math.round(result.y / js.svg.$.height) //  * pointSignSize inside brackets
   }
   return result
-}
+} */
 
 function svgToJS (svg) {
   const parser = new DOMParser()
@@ -852,7 +922,7 @@ function documentToJS (document) {
   return root
 }
 
-function jsToSvg (js) {
+/* function jsToSvg (js) {
   function tagToText (tagName, tag) {
     let result = ''
     if (Array.isArray(tag)) {
@@ -875,7 +945,7 @@ function jsToSvg (js) {
     return result
   }
   return tagToText('svg', js.svg)
-}
+} */
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
 function prepareBezierPath (ring, locked) {
