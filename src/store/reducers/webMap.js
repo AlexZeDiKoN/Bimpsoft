@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
 import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
-import { update, comparator, filter } from '../../utils/immutable'
+import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
 import { CoordinatesTypes, MapSources } from '../../constants'
@@ -51,8 +51,8 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
-    obj = update(obj, 'geometry', comparator, List(geometry.map(WebMapPoint)))
-    return obj
+    obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
+    return merge(obj, rest)
   })
 
 export default function webMapReducer (state = WebMapState(), action) {
