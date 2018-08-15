@@ -32,6 +32,28 @@ import {
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
+const tmp = `<svg
+  width="480" height="480"
+  line-point-1="24,240"
+  line-point-2="456,240">
+  <path
+    fill="none"
+    stroke="red" stroke-width="3" stroke-linecap="square"
+    d="M8,240
+       a16,16 0 0,1 16,-16
+       h80
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h106
+       v-65 l-4,6 4,-15 4,15 -4,-6 v35
+       l-20,0 40,0 -20,0 v15
+       l-20,0 40,0 -20,0 v15
+       h106
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h80
+       a16,16 0 0,1 16,16" 
+  />
+</svg>`
+// TODO: end
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
@@ -377,19 +399,23 @@ export default class WebMap extends Component {
 
   addObject = (object) => {
     console.log('addObject', object.toJS())
-    const { id, type, code = '', point, geometry } = object
+    const { id, type, code = '', point, geometry, affiliation, attributes } = object
     let anchor
     let template
     let points = geometry.toJS()
+    let color = colorOf(affiliation)
     if (+type === entityKind.POINT) {
-      const amplificators = filterSet(object.attributes)
+      const amplificators = filterSet(attributes)
       const options = { size: 48, ...amplificators }
       const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
       anchor = symbol.getAnchor()
+    } else if (+type === entityKind.SEGMENT) {
+      template = attributes.template
+      color = attributes.color
     }
-    createTacticalSign(id, object, +type, points, template, colorOf(object.affiliation), this.map, anchor)
+    createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
   }
 
   deleteObject = (layer) => {
@@ -492,9 +518,23 @@ export default class WebMap extends Component {
       case ADD_POINT:
         console.info('ADD_POINT')
         break
-      case ADD_SEGMENT:
+      case ADD_SEGMENT: {
         console.info('ADD_SEGMENT')
+        const geometry = [
+          { lat: center.lat, lng: center.lng - width / 10 },
+          { lat: center.lat, lng: center.lng + width / 10 },
+        ]
+        created = await addObject({
+          type: entityKind.SEGMENT,
+          point: calcMiddlePoint(geometry),
+          geometry,
+          attributes: {
+            template: tmp,
+            color: 'red',
+          },
+        })
         break
+      }
       case ADD_AREA: {
         console.info('ADD_AREA')
         const geometry = [
