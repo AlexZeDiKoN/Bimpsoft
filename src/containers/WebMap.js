@@ -39,6 +39,7 @@ const WebMap = connect(
       : selection.clearSelection),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selection.setNewShapeCoordinates({ x: lng, y: lat })),
     showCreateForm: () => dispatch(selection.showCreateForm),
+    hideForm: () => dispatch(selection.hideForm),
     // TODO: пибрати це після тестування
     loadTestObjects: () => dispatch(layers.selectLayer(null)),
   }),
