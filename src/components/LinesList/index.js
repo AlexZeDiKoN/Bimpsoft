@@ -30,7 +30,7 @@ export default class LinesList extends React.Component {
           text={i18n.SHAPE_POLYLINE}
           icon={icons.BROKEN_LINE_ACTIVE}
           hoverIcon={icons.BROKEN_LINE_HOVER}
-          {...this.getItemProps(SelectionTypes.SEGMENT)}
+          {...this.getItemProps(SelectionTypes.POLYLINE)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_CURVE}

@@ -274,6 +274,7 @@ export default class WebMap extends Component {
     this.map.on('editlayer', this.editObject)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
+    // console.log(this.map.pm.Draw.getShapes())
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -301,7 +302,7 @@ export default class WebMap extends Component {
     if (this.map && edit) {
       switch (type) {
         case entityKind.POLYLINE:
-          this.map.pm.enableDraw('Line', { finishOn: 'dblclick' })
+          this.map.pm.enableDraw('Line')
           break
         case entityKind.POLYGON:
           this.map.pm.enableDraw('Poly', { finishOn: 'dblclick' })
