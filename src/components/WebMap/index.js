@@ -30,6 +30,8 @@ import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
 } from './leaflet.pm.patch'
 
+const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
+
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
 const tmp = `<svg
@@ -156,6 +158,7 @@ export default class WebMap extends Component {
         tms: PropTypes.bool,
       })
     ),
+    layer: PropTypes.any,
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     print: PropTypes.bool,
@@ -451,6 +454,7 @@ export default class WebMap extends Component {
       code,
       amplifiers,
       point,
+      layer: this.props.layer,
       geometry: [ point ],
     })
     this.activateCreated(created)
@@ -480,6 +484,7 @@ export default class WebMap extends Component {
       id,
       point,
       attributes,
+      layer: layer.object.layer,
       geometry: [ point ],
       ...rest,
     })
@@ -633,12 +638,12 @@ export default class WebMap extends Component {
         case entityKind.POLYLINE:
         case entityKind.CURVE:
           this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Line')
+          this.map.pm.enableDraw('Line', { hintlineStyle })
           break
         case entityKind.POLYGON:
         case entityKind.AREA:
           this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick' })
+          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
           break
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
@@ -667,6 +672,7 @@ export default class WebMap extends Component {
     e.layer.removeFrom(this.map)
     this.activateCreated(await addObject({
       type: this.createPolyType,
+      layer: this.props.layer,
       ...getGeometry(e.layer),
     }))
   }

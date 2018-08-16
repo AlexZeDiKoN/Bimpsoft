@@ -18,6 +18,7 @@ export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,
   layersData,
 })
+
 export const updateLayer = (layerData) => ({
   type: UPDATE_LAYER,
   layerData,
@@ -90,18 +91,22 @@ export const setTimelineFrom = (date) => ({
   type: SET_TIMELINE_FROM,
   date,
 })
+
 export const setTimelineTo = (date) => ({
   type: SET_TIMELINE_TO,
   date,
 })
+
 export const setVisible = (visible) => ({
   type: SET_VISIBLE,
   visible,
 })
+
 export const setBackOpacity = (opacity) => ({
   type: SET_BACK_OPACITY,
   opacity,
 })
+
 export const setHiddenOpacity = (opacity) => ({
   type: SET_HIDDEN_OPACITY,
   opacity,
