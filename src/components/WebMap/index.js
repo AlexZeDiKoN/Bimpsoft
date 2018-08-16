@@ -296,6 +296,7 @@ export default class WebMap extends Component {
     this.map.on('editlayer', this.editObject)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
+    this.map.on('pm:drawstart', this.startDrawShape)
     // console.log(this.map.pm.Draw.getShapes())
   }
 
@@ -317,27 +318,6 @@ export default class WebMap extends Component {
   setMapCursor = (edit, type) => {
     if (this.map) {
       this.map._container.style.cursor = edit && type ? 'crosshair' : ''
-    }
-  }
-
-  startCreatePoly = (edit, type) => {
-    if (this.map && edit) {
-      switch (type) {
-        case entityKind.POLYLINE:
-          this.map.pm.enableDraw('Line')
-          break
-        case entityKind.POLYGON:
-          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick' })
-          break
-        case entityKind.RECTANGLE:
-          this.map.pm.enableDraw('Rectangle')
-          break
-        case entityKind.CIRCLE:
-          this.map.pm.enableDraw('Circle')
-          break
-        default:
-          break
-      }
     }
   }
 
@@ -647,31 +627,48 @@ export default class WebMap extends Component {
     this.activateCreated(created)
   }
 
+  startCreatePoly = (edit, type) => {
+    if (this.map && edit) {
+      switch (type) {
+        case entityKind.POLYLINE:
+        case entityKind.CURVE:
+          this.createPolyType = type // Не виносити за межі switch!
+          this.map.pm.enableDraw('Line')
+          break
+        case entityKind.POLYGON:
+        case entityKind.AREA:
+          this.createPolyType = type // Не виносити за межі switch!
+          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick' })
+          break
+        case entityKind.RECTANGLE:
+        case entityKind.SQUARE:
+          this.createPolyType = type // Не виносити за межі switch!
+          this.map.pm.enableDraw('Rectangle')
+          break
+        case entityKind.CIRCLE:
+          this.createPolyType = type // Не виносити за межі switch!
+          this.map.pm.enableDraw('Circle')
+          break
+        default:
+          break
+      }
+    }
+  }
+
+  startDrawShape = (e) => {
+    e.workingLayer.options.tsType = this.createPolyType
+    console.log('startDrawShape', e.workingLayer.options)
+  }
+
   createNewShape = async (e) => {
     const { addObject } = this.props
-    switch (e.shape) {
-      case 'Rectangle':
-        e.layer.options.tsType = entityKind.RECTANGLE
-        break
-      case 'Circle':
-        e.layer.options.tsType = entityKind.CIRCLE
-        break
-      case 'Poly':
-        e.layer.options.tsType = entityKind.POLYGON
-        break
-      case 'Line':
-        e.layer.options.tsType = entityKind.POLYLINE
-        break
-      default:
-        break
-    }
+    e.layer.options.tsType = this.createPolyType
+    console.log('createNewShape', e.layer.options)
     e.layer.removeFrom(this.map)
-    if (e.layer.options.tsType) {
-      this.activateCreated(await addObject({
-        type: e.layer.options.tsType,
-        ...getGeometry(e.layer),
-      }))
-    }
+    this.activateCreated(await addObject({
+      type: this.createPolyType,
+      ...getGeometry(e.layer),
+    }))
   }
 
   activateCreated = (created) => {

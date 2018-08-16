@@ -185,36 +185,51 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
   }
 }
 
-// L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
+function adjustSquareCorner (map, point, opposite) {
+  let bounds = L.latLngBounds(point, opposite)
+  const nw = bounds.getNorthWest()
+  const ne = bounds.getNorthEast()
+  const sw = bounds.getSouthWest()
+  const se = bounds.getSouthEast()
+  const width = (map.distance(nw, ne) + map.distance(sw, se)) / 2
+  const height = (map.distance(nw, sw) + map.distance(ne, se)) / 2
+  const size = (width + height) / 2
+  bounds = opposite.toBounds(size * 2)
+  if (point.lat > opposite.lat && point.lng > opposite.lng) {
+    point = bounds.getNorthEast()
+  } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
+    point = bounds.getSouthEast()
+  } else if (point.lng < opposite.lng && point.lat < opposite.lat) {
+    point = bounds.getSouthWest()
+  } else {
+    point = bounds.getNorthWest()
+  }
+  return point
+}
+
+L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
 L.PM.Edit.Rectangle.prototype._onMarkerDrag = function (e) {
-  // this._saved_onMarkerDrag(e) // Здається, цей виклик не потрібен, без нього працює так само
+  this._saved_onMarkerDrag(e) // Здається, цей виклик не потрібен, без нього працює так само
   const marker = e.target
   const kind = this._layer.options.tsType
   if (kind === entityKind.SQUARE) {
     let point = marker.getLatLng()
     const opposite = marker._oppositeCornerLatLng
-    let bounds = L.latLngBounds(point, opposite)
-    const nw = bounds.getNorthWest()
-    const ne = bounds.getNorthEast()
-    const sw = bounds.getSouthWest()
-    const se = bounds.getSouthEast()
-    const width = (marker._map.distance(nw, ne) + marker._map.distance(sw, se)) / 2
-    const height = (marker._map.distance(nw, sw) + marker._map.distance(ne, se)) / 2
-    const size = (width + height) / 2
-    bounds = opposite.toBounds(size * 2)
-    if (point.lat > opposite.lat && point.lng > opposite.lng) {
-      point = bounds.getNorthEast()
-    } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
-      point = bounds.getSouthEast()
-    } else if (point.lng < opposite.lng && point.lat < opposite.lat) {
-      point = bounds.getSouthWest()
-    } else {
-      point = bounds.getNorthWest()
-    }
-    bounds = L.latLngBounds(point, opposite)
-    this._layer.setBounds(bounds)
+    point = adjustSquareCorner(marker._map, point, opposite)
+    this._layer.setBounds(L.latLngBounds(point, opposite))
     this._adjustAllMarkers(this._layer.getLatLngs()[0])
   }
+}
+
+L.PM.Draw.Rectangle.prototype._saved_syncRectangleSize = L.PM.Draw.Rectangle.prototype._syncRectangleSize
+L.PM.Draw.Rectangle.prototype._syncRectangleSize = function () {
+  if (this._layer.options.tsType === entityKind.SQUARE) {
+    this._hintMarker.off('move', this._syncRectangleSize, this)
+    this._hintMarker.setLatLng(adjustSquareCorner(this._hintMarker._map,
+      this._hintMarker.getLatLng(), this._startMarker.getLatLng()))
+    this._hintMarker.on('move', this._syncRectangleSize, this)
+  }
+  this._saved_syncRectangleSize()
 }
 
 L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarkerDrag
