@@ -1,5 +1,5 @@
 import React from 'react'
-import { Select, Input } from 'antd'
+import { Select } from 'antd'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import { List } from 'immutable'

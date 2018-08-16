@@ -52,6 +52,7 @@ const SvgIcon = L.Icon.extend({
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 L.SVG.prototype._updatePoly = function (layer, closed) {
   let result = L.SVG.pointsToPath(layer._rings, closed)
+  const skipStart = layer.options && layer.options.skipStart
   const kind = layer.options && layer.options.tsType
   const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
   if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
@@ -62,7 +63,7 @@ L.SVG.prototype._updatePoly = function (layer, closed) {
   } else if (kind === entityKind.AREA && length >= 3) {
     result = prepareBezierPath(layer._rings[0], true)
   } else if (kind === entityKind.CURVE && length >= 2) {
-    result = prepareBezierPath(layer._rings[0], false)
+    result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3)
   }
   this._setPath(layer, result)
 }
@@ -230,6 +231,27 @@ L.PM.Draw.Rectangle.prototype._syncRectangleSize = function () {
     this._hintMarker.on('move', this._syncRectangleSize, this)
   }
   this._saved_syncRectangleSize()
+}
+
+L.PM.Draw.Line.prototype._saved_syncHintLine = L.PM.Draw.Line.prototype._syncHintLine
+L.PM.Draw.Line.prototype._syncHintLine = function () {
+  this._saved_syncHintLine()
+  if (this._layer.options.tsType === entityKind.CURVE) {
+    this._hintline.options.tsType = entityKind.CURVE
+    this._hintline.options.skipStart = false
+    const polyPoints = this._layer.getLatLngs()
+    if (polyPoints.length > 2) {
+      const threPolygonPoint = polyPoints[polyPoints.length - 3]
+      const prevPolygonPoint = polyPoints[polyPoints.length - 2]
+      const lastPolygonPoint = polyPoints[polyPoints.length - 1]
+      this._hintline.options.skipStart = true
+      this._hintline.setLatLngs([ threPolygonPoint, prevPolygonPoint, lastPolygonPoint, this._hintMarker.getLatLng() ])
+    } else if (polyPoints.length > 1) {
+      const prevPolygonPoint = polyPoints[polyPoints.length - 2]
+      const lastPolygonPoint = polyPoints[polyPoints.length - 1]
+      this._hintline.setLatLngs([ prevPolygonPoint, lastPolygonPoint, this._hintMarker.getLatLng() ])
+    }
+  }
 }
 
 L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarkerDrag
@@ -964,15 +986,15 @@ function documentToJS (document) {
 } */
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
-function prepareBezierPath (ring, locked) {
+function prepareBezierPath (ring, locked, skipStart) {
   let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked)) {
+  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart)) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }
   return str || 'M0 0'
 }
 
-function prepareCurve (points, ring, locked) {
+function prepareCurve (points, ring, locked, skipStart) {
   const prevIdx = (idx) => idx > 0 ? idx - 1 : points.length - 1
   const nextIdx = (idx) => idx < points.length - 1 ? idx + 1 : 0
   const pt = (pa) => ({ x: pa[0], y: pa[1] })
@@ -998,12 +1020,19 @@ function prepareCurve (points, ring, locked) {
     ring[0].cp1 = pt(points[0])
     ring[0].cp2 = pt(points[0])
     mem = points[0]
-    result = [ 'M', points[0] ]
+    result = []
+    if (!skipStart) {
+      result = result.concat([ 'M', points[0] ])
+    }
     for (let i = 1; i < points.length - 1; i++) {
       [ cp1, cp2 ] = calcControlPoint(points[i - 1], points[i], points[i + 1])
       ring[i].cp1 = pt(cp1)
       ring[i].cp2 = pt(cp2)
-      result = result.concat([ 'C', mem, cp1, points[i] ])
+      if (skipStart && i === 1) {
+        result = result.concat([ 'M', points[i] ])
+      } else {
+        result = result.concat([ 'C', mem, cp1, points[i] ])
+      }
       mem = cp2
     }
     ring[points.length - 1].cp1 = pt(points[points.length - 1])

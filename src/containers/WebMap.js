@@ -25,6 +25,7 @@ const WebMap = connect(
     objects: state.webMap.objects,
     edit: state.viewModes.edit,
     selection: state.selection,
+    layer: state.layers.selectedId,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,
   }),
