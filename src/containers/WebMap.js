@@ -3,6 +3,7 @@ import WebMapInner from '../components/WebMap'
 import * as layers from '../store/actions/layers'
 import * as selection from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
+import SubordinationLevel from '../constants/SubordinationLevel'
 
 const objProps = (obj) => {
   const { id, type, code, attributes, affiliation, unit, level } = obj.object
@@ -26,6 +27,7 @@ const WebMap = connect(
     edit: state.viewModes.edit,
     selection: state.selection,
     layer: state.layers.selectedId,
+    level: SubordinationLevel.list.find(({ value }) => value === state.webMap.subordinationLevel).number,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,
   }),
