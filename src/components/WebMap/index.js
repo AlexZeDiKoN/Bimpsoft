@@ -27,14 +27,21 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 
 import {
-  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer,
+  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, updateLayerIcons,
 } from './leaflet.pm.patch'
 
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
 
-/* const pointSizes = {
+const pointSizes = {
+  zoom0: 8,
+  zoom20: 80,
+}
 
-} */
+const calcPointSize = (zoom) => zoom <= 0
+  ? pointSizes.zoom0
+  : zoom >= 20
+    ? pointSizes.zoom20
+    : Math.round((zoom / 20) * (pointSizes.zoom20 - pointSizes.zoom0) + pointSizes.zoom0)
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
@@ -309,10 +316,20 @@ export default class WebMap extends Component {
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
     this.map.on('editlayer', this.editObject)
+    this.map.on('zoomend', this.updatePointSizes)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
-    // console.log(this.map.pm.Draw.getShapes())
+  }
+
+  updatePointSizes = () => {
+    this.map.eachLayer((layer) => {
+      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
+        const { code, attributes } = layer.object
+        const symbol = new Symbol(code, { size: calcPointSize(this.map.getZoom()), ...filterSet(attributes) })
+        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
+      }
+    })
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -400,7 +417,7 @@ export default class WebMap extends Component {
     let points = geometry.toJS()
     let color = colorOf(affiliation)
     if (+type === entityKind.POINT) {
-      const options = { size: 48, ...filterSet(attributes) }
+      const options = { size: calcPointSize(this.map.getZoom()), ...filterSet(attributes) }
       const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
