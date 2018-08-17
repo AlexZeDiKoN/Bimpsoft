@@ -22,8 +22,7 @@ export default function reducer (state = initialState, action) {
       const { payload: name } = action
       const mode = state[name]
       const relatedModes = relations[name] || {}
-      const newState = { ...state, ...relatedModes, [name]: !mode }
-      return newState
+      return { ...state, ...relatedModes, [name]: !mode }
     }
     case actions.VIEW_MODE_DISABLE: {
       const { payload: name } = action
