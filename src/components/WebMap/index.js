@@ -32,6 +32,10 @@ import {
 
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
 
+/* const pointSizes = {
+
+} */
+
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
 const tmp = `<svg
@@ -237,9 +241,9 @@ export default class WebMap extends Component {
           break
         case entityKind.CIRCLE:
           this.updateCircle(data)
-      }
-      if (nextProps.selection.data.type === entityKind.POINT) {
-        this.updatePointSign(nextProps.selection.data)
+          break
+        default:
+          break
       }
     }
     return false
@@ -396,8 +400,7 @@ export default class WebMap extends Component {
     let points = geometry.toJS()
     let color = colorOf(affiliation)
     if (+type === entityKind.POINT) {
-      const amplificators = filterSet(attributes)
-      const options = { size: 48, ...amplificators }
+      const options = { size: 48, ...filterSet(attributes) }
       const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
@@ -486,12 +489,10 @@ export default class WebMap extends Component {
       layer.pm.disable()
       delete layer._map.pm.activeLayer
     }
-    console.log('updatePointSign', rest)
-    const attributes = filterObj(amplifiers)
     await this.props.updateObject({
       id,
       point,
-      attributes,
+      attributes: filterObj(amplifiers),
       layer: layer.object.layer,
       geometry: [ point ],
       ...rest,
@@ -501,24 +502,20 @@ export default class WebMap extends Component {
   }
 
   updateCircle = async (data) => {
-    const { id, coordinates, coordinatesArray, amplifiers, ...rest } = data
+    const { id, coordinates, coordinatesArray, ...rest } = data
     const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
     const layer = this.findLayerById(id)
     if (layer) {
       layer.pm.disable()
       delete layer._map.pm.activeLayer
     }
-    const attributes = filterObj(amplifiers)
-    const obj = {
+    await this.props.updateObject({
       id,
       point: points[0],
-      attributes,
       layer: layer.object.layer,
       geometry: points,
       ...rest,
-    }
-    console.log('updateCircle', obj)
-    await this.props.updateObject(obj)
+    })
     this.activateCreated(id)
     // TODO: скинути дані в сторі
   }
