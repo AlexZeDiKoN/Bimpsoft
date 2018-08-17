@@ -6,7 +6,7 @@ import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
 
 const objProps = (obj) => {
   const { id, type, code, attributes, affiliation, unit, level } = obj.object
-  const coordinatesArray = getGeometry(obj).geometry.map(({ lat, lng }) => ({ x: lng, y: lat }))
+  const coordinatesArray = getGeometry(obj).geometry.map(({ lat, lng }) => ({ lng, lat }))
   return {
     id: +id,
     type: +type,
@@ -38,7 +38,7 @@ const WebMap = connect(
     onSelection: (selected) => dispatch(selected
       ? selection.setSelection(objProps(selected))
       : selection.clearSelection),
-    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selection.setNewShapeCoordinates({ x: lng, y: lat })),
+    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selection.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selection.showCreateForm),
     hideForm: () => dispatch(selection.hideForm),
     // TODO: пибрати це після тестування

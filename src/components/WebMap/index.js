@@ -229,10 +229,18 @@ export default class WebMap extends Component {
     ) {
       this.createPointSign(nextProps.selection.newShape)
     }
-    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit' &&
-      nextProps.selection.data.type === entityKind.POINT
-    ) {
-      this.updatePointSign(nextProps.selection.data)
+    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit') {
+      const { data } = nextProps.selection
+      switch (data.type) {
+        case entityKind.POINT:
+          this.updatePointSign(data)
+          break
+        case entityKind.CIRCLE:
+          this.updateCircle(data)
+      }
+      if (nextProps.selection.data.type === entityKind.POINT) {
+        this.updatePointSign(nextProps.selection.data)
+      }
     }
     return false
   }
@@ -448,7 +456,7 @@ export default class WebMap extends Component {
     console.log('createPointSign', data)
     const { addObject } = this.props
     const { code, amplifiers, coordinates: p } = data
-    const point = { lat: p.y, lng: p.x }
+    const point = { lat: p.lat, lng: p.lng }
     const created = await addObject({
       type: entityKind.POINT,
       code,
@@ -472,7 +480,7 @@ export default class WebMap extends Component {
 
   updatePointSign = async (data) => {
     const { id, coordinates, coordinatesArray, amplifiers, ...rest } = data
-    const point = { lng: +coordinates.x, lat: +coordinates.y }
+    const point = { lng: +coordinates.lng, lat: +coordinates.lat }
     const layer = this.findLayerById(id)
     if (layer) {
       layer.pm.disable()
@@ -488,6 +496,29 @@ export default class WebMap extends Component {
       geometry: [ point ],
       ...rest,
     })
+    this.activateCreated(id)
+    // TODO: скинути дані в сторі
+  }
+
+  updateCircle = async (data) => {
+    const { id, coordinates, coordinatesArray, amplifiers, ...rest } = data
+    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
+    const layer = this.findLayerById(id)
+    if (layer) {
+      layer.pm.disable()
+      delete layer._map.pm.activeLayer
+    }
+    const attributes = filterObj(amplifiers)
+    const obj = {
+      id,
+      point: points[0],
+      attributes,
+      layer: layer.object.layer,
+      geometry: points,
+      ...rest,
+    }
+    console.log('updateCircle', obj)
+    await this.props.updateObject(obj)
     this.activateCreated(id)
     // TODO: скинути дані в сторі
   }
