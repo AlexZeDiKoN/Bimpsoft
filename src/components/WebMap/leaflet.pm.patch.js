@@ -74,6 +74,7 @@ const SvgIcon = L.Icon.extend({
 L.SVG.prototype._updatePoly = function (layer, closed) {
   let result = L.SVG.pointsToPath(layer._rings, closed)
   const skipStart = layer.options && layer.options.skipStart
+  const skipEnd = layer.options && layer.options.skipEnd
   const kind = layer.options && layer.options.tsType
   const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
   if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
@@ -84,7 +85,7 @@ L.SVG.prototype._updatePoly = function (layer, closed) {
   } else if (kind === entityKind.AREA && length >= 3) {
     result = prepareBezierPath(layer._rings[0], true)
   } else if (kind === entityKind.CURVE && length >= 2) {
-    result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3)
+    result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
   }
   this._setPath(layer, result)
 }
@@ -259,18 +260,47 @@ L.PM.Draw.Line.prototype._syncHintLine = function () {
   this._saved_syncHintLine()
   if (this._layer.options.tsType === entityKind.CURVE) {
     this._hintline.options.tsType = entityKind.CURVE
-    this._hintline.options.skipStart = false
+    this._hintline.options.skipStart = true
     const polyPoints = this._layer.getLatLngs()
     if (polyPoints.length > 2) {
-      const threPolygonPoint = polyPoints[polyPoints.length - 3]
-      const prevPolygonPoint = polyPoints[polyPoints.length - 2]
-      const lastPolygonPoint = polyPoints[polyPoints.length - 1]
-      this._hintline.options.skipStart = true
-      this._hintline.setLatLngs([ threPolygonPoint, prevPolygonPoint, lastPolygonPoint, this._hintMarker.getLatLng() ])
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 3],
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+      ])
     } else if (polyPoints.length > 1) {
-      const prevPolygonPoint = polyPoints[polyPoints.length - 2]
-      const lastPolygonPoint = polyPoints[polyPoints.length - 1]
-      this._hintline.setLatLngs([ prevPolygonPoint, lastPolygonPoint, this._hintMarker.getLatLng() ])
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+      ])
+    }
+  } else if (this._layer.options.tsType === entityKind.AREA) {
+    this._hintline.options.tsType = entityKind.CURVE
+    this._hintline.options.skipStart = true
+    this._hintline.options.skipEnd = true
+    const polyPoints = this._layer.getLatLngs()
+    if (polyPoints.length > 2) {
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 3],
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+        polyPoints[0],
+        polyPoints[1],
+        polyPoints[2],
+      ])
+    } else if (polyPoints.length > 1) {
+      this._hintline.setLatLngs([
+        this._hintMarker.getLatLng(),
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+        polyPoints[0],
+        polyPoints[1],
+        // this._hintMarker.getLatLng(),
+      ])
     }
   }
 }
@@ -1000,15 +1030,15 @@ function documentToJS (document) {
 } */
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
-function prepareBezierPath (ring, locked, skipStart) {
+function prepareBezierPath (ring, locked, skipStart, skipEnd) {
   let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart)) {
+  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart, skipEnd)) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }
   return str || 'M0 0'
 }
 
-function prepareCurve (points, ring, locked, skipStart) {
+function prepareCurve (points, ring, locked, skipStart, skipEnd) {
   const prevIdx = (idx) => idx > 0 ? idx - 1 : points.length - 1
   const nextIdx = (idx) => idx < points.length - 1 ? idx + 1 : 0
   const pt = (pa) => ({ x: pa[0], y: pa[1] })
@@ -1051,7 +1081,9 @@ function prepareCurve (points, ring, locked, skipStart) {
     }
     ring[points.length - 1].cp1 = pt(points[points.length - 1])
     ring[points.length - 1].cp2 = pt(points[points.length - 1])
-    result = result.concat([ 'C', mem, points[points.length - 1], points[points.length - 1] ])
+    if (!skipEnd) {
+      result = result.concat([ 'C', mem, points[ points.length - 1 ], points[ points.length - 1 ] ])
+    }
   }
   return result
 }

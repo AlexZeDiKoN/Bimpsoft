@@ -33,8 +33,8 @@ import {
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
 
 const pointSizes = {
-  zoom0: 8,
-  zoom20: 80,
+  zoom0: 4,
+  zoom20: 96,
 }
 
 const calcPointSize = (zoom) => zoom <= 0
@@ -48,7 +48,8 @@ let tempPrintFlag = false
 const tmp = `<svg
   width="480" height="480"
   line-point-1="24,240"
-  line-point-2="456,240">
+  line-point-2="456,240"
+>
   <path
     fill="none"
     stroke="red" stroke-width="3" stroke-linecap="square"
