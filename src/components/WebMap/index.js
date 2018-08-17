@@ -8,6 +8,7 @@ import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
+import SubordinationLevel from '../../constants/SubordinationLevel'
 import i18n from '../../i18n'
 import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
@@ -33,8 +34,8 @@ import {
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
 
 const pointSizes = {
-  zoom0: 4,
-  zoom20: 96,
+  zoom0: 2,
+  zoom20: 64,
 }
 
 const calcPointSize = (zoom) => zoom <= 0
@@ -170,6 +171,7 @@ export default class WebMap extends Component {
         tms: PropTypes.bool,
       })
     ),
+    level: PropTypes.any,
     layer: PropTypes.any,
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
@@ -229,6 +231,9 @@ export default class WebMap extends Component {
     }
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
+    }
+    if (nextProps.level !== this.props.level) {
+      this.updateShowLayers(nextProps.level)
     }
     if (nextProps.edit !== this.props.edit ||
       nextProps.selection.newShape.type !== this.props.selection.newShape.type
@@ -323,6 +328,17 @@ export default class WebMap extends Component {
     this.map.on('pm:drawstart', this.startDrawShape)
   }
 
+  updateShowLayers = (level) => {
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        if (layer.id && layer.object) {
+          const layerLevel = Math.max(layer.object.level, SubordinationLevel.list[0].number)
+          layer.getElement().style.display = layerLevel < level ? 'none' : ''
+        }
+      })
+    }
+  }
+
   updatePointSizes = () => {
     this.map.eachLayer((layer) => {
       if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
@@ -389,10 +405,10 @@ export default class WebMap extends Component {
           const object = objects.get(layer.id)
           if (!object || layer.object !== object) {
             if (object && object.equals(layer.object)) {
-              console.log(`Leave unchanged object #${layer.id}`)
+              // console.log(`Leave unchanged object #${layer.id}`)
               layer.object = object
             } else {
-              console.log(`Remove object #${layer.id}`)
+              // console.log(`Remove object #${layer.id}`)
               layer.remove()
             }
           } else {
@@ -403,7 +419,7 @@ export default class WebMap extends Component {
       objects.forEach((object, key) => {
         // console.info(key, object.toJS())
         if (!ids.includes(key)) {
-          console.log(`Create object #${key}`)
+          // console.log(`Create object #${key}`)
           this.addObject(object)
         }
       })
@@ -411,7 +427,7 @@ export default class WebMap extends Component {
   }
 
   addObject = (object) => {
-    console.log('addObject', object.toJS())
+    // console.log('addObject', object.toJS())
     const { id, type, code = '', point, geometry, affiliation, attributes } = object
     let anchor
     let template
@@ -448,7 +464,7 @@ export default class WebMap extends Component {
   }
 
   editObject = (layer) => {
-    console.log('edit object', layer)
+    // console.log('edit object', layer)
     this.props.onSelection(layer)
     this.props.editObject()
   }
@@ -474,7 +490,7 @@ export default class WebMap extends Component {
   }
 
   createPointSign = async (data) => {
-    console.log('createPointSign', data)
+    // console.log('createPointSign', data)
     const { addObject } = this.props
     const { code, amplifiers, coordinates: p } = data
     const point = { lat: p.lat, lng: p.lng }
@@ -483,6 +499,7 @@ export default class WebMap extends Component {
       code,
       amplifiers,
       point,
+      level: +code.slice(8, 10) || 0,
       layer: this.props.layer,
       geometry: [ point ],
     })
@@ -500,7 +517,7 @@ export default class WebMap extends Component {
   }
 
   updatePointSign = async (data) => {
-    const { id, coordinates, coordinatesArray, amplifiers, ...rest } = data
+    const { id, code, coordinates, coordinatesArray, amplifiers, ...rest } = data
     const point = { lng: +coordinates.lng, lat: +coordinates.lat }
     const layer = this.findLayerById(id)
     if (layer) {
@@ -509,11 +526,13 @@ export default class WebMap extends Component {
     }
     await this.props.updateObject({
       id,
+      code,
       point,
       attributes: filterObj(amplifiers),
       layer: layer.object.layer,
       geometry: [ point ],
       ...rest,
+      level: +code.slice(8, 10) || 0,
     })
     this.activateCreated(id)
     // TODO: скинути дані в сторі
@@ -708,13 +727,13 @@ export default class WebMap extends Component {
 
   startDrawShape = (e) => {
     e.workingLayer.options.tsType = this.createPolyType
-    console.log('startDrawShape', e.workingLayer.options)
+    // console.log('startDrawShape', e.workingLayer.options)
   }
 
   createNewShape = async (e) => {
     const { addObject } = this.props
     e.layer.options.tsType = this.createPolyType
-    console.log('createNewShape', e.layer.options)
+    // console.log('createNewShape', e.layer.options)
     e.layer.removeFrom(this.map)
     this.activateCreated(await addObject({
       type: this.createPolyType,
