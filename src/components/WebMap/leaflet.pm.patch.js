@@ -20,6 +20,27 @@ export const entityKind = { // ID в базі даних відповідних 
   GROUP: 99, // група
 }
 
+const setActivePointSignColors = (node) => {
+  if (!node.hasAttribute) {
+    return
+  }
+  if (node.hasAttribute('stroke')) {
+    const value = node.getAttribute('stroke')
+    if (value && value !== 'none') {
+      node.setAttribute('stroke', activelayerColor)
+    }
+  }
+  if (node.hasAttribute('fill')) {
+    const value = node.getAttribute('fill')
+    if (value && value !== 'none') {
+      node.setAttribute('fill', node.tagName === 'text' || value === 'black' ? activelayerColor : activeBackColor)
+    }
+  }
+  for (const child of node.childNodes) {
+    setActivePointSignColors(child)
+  }
+}
+
 const parser = new DOMParser()
 
 const SvgIcon = L.Icon.extend({
@@ -459,27 +480,6 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
 }
 
 function createPoint ([ point ], js, anchor) {
-  const updateNode = (node) => {
-    if (!node.hasAttribute) {
-      return
-    }
-    if (node.hasAttribute('stroke')) {
-      const value = node.getAttribute('stroke')
-      if (value && value !== 'none') {
-        node.setAttribute('stroke', activelayerColor)
-      }
-    }
-    if (node.hasAttribute('fill')) {
-      const value = node.getAttribute('fill')
-      if (value && value !== 'none') {
-        node.setAttribute('fill', node.tagName === 'text' || value === 'black' ? activelayerColor : activeBackColor)
-      }
-    }
-    for (const child of node.childNodes) {
-      updateNode(child)
-    }
-  }
-
   /* if (!anchor) {
     anchor = getCentralPoint(js)
   } */
@@ -502,7 +502,7 @@ function createPoint ([ point ], js, anchor) {
   const iconActive = new SvgIcon({
     // iconUrl: src,
     svg: js,
-    postProcess: updateNode,
+    postProcess: setActivePointSignColors,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
@@ -513,6 +513,20 @@ function createPoint ([ point ], js, anchor) {
   marker.options.iconActive = iconActive
   marker.options.tsType = entityKind.POINT
   return marker
+}
+
+export function updateLayerIcons (layer, svg, anchor) {
+  layer.options.iconNormal = new SvgIcon({
+    svg,
+    iconAnchor: [ anchor.x, anchor.y ],
+  })
+  layer.options.iconActive = new SvgIcon({
+    svg,
+    iconAnchor: [ anchor.x, anchor.y ],
+    postProcess: setActivePointSignColors,
+  })
+  layer.setIcon(layer._map.pm.activeLayer === layer ? layer.options.iconActive : layer.options.iconNormal)
+  setTimeout(() => transparentSvg(layer))
 }
 
 function transparentSvg (marker) {
