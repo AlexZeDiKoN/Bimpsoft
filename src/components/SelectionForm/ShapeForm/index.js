@@ -5,6 +5,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { List } from 'immutable'
 import i18n from '../../../i18n'
 import { colors } from '../../../constants'
+import coordinates from '../../../utils/coordinates'
 import {
   default as Form,
   FormItem,
@@ -70,7 +71,7 @@ export default class ShapeForm extends React.Component {
       color = colors.BLUE,
       segment = SEGMENT_DIRECT,
       lineType = TYPE_SOLID,
-      coordinatesArray = [ {} ],
+      coordinatesArray = [ ],
     } = props
     this.state = {
       color,
@@ -122,7 +123,7 @@ export default class ShapeForm extends React.Component {
   }
 
   coordinateAddHandler = () => {
-    this.setState({ coordinatesArray: this.state.coordinatesArray.push({ x: '', y: '' }) })
+    this.setState({ coordinatesArray: this.state.coordinatesArray.push(coordinates.parse('')) })
   }
 
   render () {
