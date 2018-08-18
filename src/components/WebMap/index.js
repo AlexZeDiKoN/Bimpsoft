@@ -26,9 +26,10 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
-
+import './bouncemarker'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, updateLayerIcons,
+  createSearchMarker,
 } from './leaflet.pm.patch'
 
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
@@ -173,6 +174,13 @@ export default class WebMap extends Component {
     ),
     level: PropTypes.any,
     layer: PropTypes.any,
+    searchResult: PropTypes.shape({
+      text: PropTypes.string,
+      point: PropTypes.shape({
+        lat: PropTypes.number,
+        lng: PropTypes.number,
+      }),
+    }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     print: PropTypes.bool,
@@ -258,6 +266,18 @@ export default class WebMap extends Component {
         default:
           break
       }
+    }
+    if (this.map && nextProps.searchResult && nextProps.searchResult !== this.props.searchResult) {
+      if (this.searchMarker) {
+        this.searchMarker.removeFrom(this.map)
+      }
+      const { point, text } = nextProps.searchResult
+      this.map.panTo(point, { animate: false })
+      setTimeout(() => {
+        this.searchMarker = createSearchMarker(point, text)
+        this.searchMarker.addTo(this.map)
+        setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
+      }, 500)
     }
     return false
   }

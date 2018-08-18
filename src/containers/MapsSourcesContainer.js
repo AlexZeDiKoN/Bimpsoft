@@ -10,6 +10,7 @@ const mapStateToProps = (store) => ({
   source: store.webMap.source,
   sources: MapSources,
 })
+
 const mapDispatchToProps = {
   onSelect: (source) => (dispatch) => {
     dispatch(webMapActions.setSource(source))

@@ -25,6 +25,7 @@ const WebMap = connect(
     sources: state.webMap.source.sources,
     objects: state.webMap.objects,
     edit: state.viewModes.edit,
+    searchResult: state.viewModes.searchResult,
     selection: state.selection,
     layer: state.layers.selectedId,
     level: SubordinationLevel.list.find(({ value }) => value === state.webMap.subordinationLevel).number,
