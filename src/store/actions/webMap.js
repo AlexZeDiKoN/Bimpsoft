@@ -11,6 +11,7 @@ export const actionNames = {
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
+  SET_MAP_CENTER: action('SET_MAP_CENTER'),
 }
 
 export const toggleMapEditMode = (value) => ({
@@ -56,4 +57,9 @@ export const setSource = (value) => ({
 export const setSubordinationLevel = (value) => ({
   type: actionNames.SUBORDINATION_LEVEL,
   payload: value,
+})
+
+export const setCenter = (center) => ({
+  type: actionNames.SET_MAP_CENTER,
+  payload: center,
 })

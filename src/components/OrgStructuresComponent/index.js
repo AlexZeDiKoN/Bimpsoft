@@ -9,7 +9,11 @@ import Item from './Item'
 const { TextFilter } = data
 const { common: { TreeComponent } } = components
 
-const getFilteredIds = TextFilter.getFilteredIdsFunc((item) => item.Name, (item) => item.ID, (item) => item.ParentID)
+const getFilteredIds = TextFilter.getFilteredIdsFunc(
+  (item) => item.shortName + ' ' + item.fullName,
+  (item) => item.id,
+  (item) => item.parentUnitID
+)
 
 export default class OrgStructuresComponent extends React.Component {
   state = {
@@ -25,7 +29,7 @@ export default class OrgStructuresComponent extends React.Component {
 
   render () {
     const { filterText } = this.state
-    const { byIds, roots } = this.props.orgStructures
+    const { byIds, roots, onClick } = this.props
     const textFilter = TextFilter.create(filterText)
     const filteredIds = getFilteredIds(textFilter, byIds)
 
@@ -41,7 +45,7 @@ export default class OrgStructuresComponent extends React.Component {
           byIds={byIds}
           roots={roots}
           itemTemplate={Item}
-          commonData={{ textFilter }}
+          commonData={{ textFilter, onClick }}
           onMouseDown={this.mouseDownHandler}
         />
       </div>
@@ -50,8 +54,7 @@ export default class OrgStructuresComponent extends React.Component {
 }
 
 OrgStructuresComponent.propTypes = {
-  orgStructures: PropTypes.shape({
-    roots: PropTypes.array.isRequired,
-    byIds: PropTypes.object.isRequired,
-  }),
+  roots: PropTypes.array.isRequired,
+  byIds: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
 }

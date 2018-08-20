@@ -41,6 +41,8 @@ const WebMapState = Record({
   isPointMarkEditMode: false,
   isTextMarkEditMode: false,
   isTimelineEditMode: false,
+  center: { lat: 48, lng: 35 },
+  zoom: 7,
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
   showAmplifiers: false,
@@ -132,6 +134,9 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'objects', (map) => updateObject(map, payload))
     case DEL_OBJECT:
       return payload ? state.deleteIn([ 'objects', payload ]) : state
+    case actionNames.SET_MAP_CENTER: {
+      return state.set('center', payload)
+    }
     default:
       return state
   }

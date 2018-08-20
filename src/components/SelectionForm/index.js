@@ -60,7 +60,7 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { data } = this.props
+    const { data, orgStructures } = this.props
     if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
@@ -71,6 +71,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper title={title} onClose={this.cancelHandler}>
         <Component
           {...data}
+          orgStructures={orgStructures}
           onChange={this.changeHandler}
           onClose={this.cancelHandler}
           onAddToTemplates={this.addToTemplateHandler}
@@ -86,4 +87,5 @@ SelectionForm.propTypes = {
   onCancel: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   wrapper: PropTypes.oneOf([ ModalContainer ]),
+  orgStructures: PropTypes.object,
 }

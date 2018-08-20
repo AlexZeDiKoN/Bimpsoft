@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
-import { coordinates } from '../../../utils'
+import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { FormItem } from './../../form'
 
 const { IconHovered, names: IconNames } = components.icons
+const { InputWithSuffix } = components.form
+const { Сoordinates } = utils
 
 export default class CoordinateItem extends React.Component {
   static propTypes = {
@@ -16,9 +17,9 @@ export default class CoordinateItem extends React.Component {
     onRemove: PropTypes.func,
   }
 
-  changeHandler = ({ target: { value } }) => {
+  changeHandler = (value) => {
     const { onChange, index } = this.props
-    onChange(index, coordinates.parse(value))
+    onChange(index, Сoordinates.parse(value))
   }
 
   removeClickHandler = () => {
@@ -28,20 +29,16 @@ export default class CoordinateItem extends React.Component {
 
   render () {
     const { coordinate = {}, canRemove } = this.props
-    const isWrong = coordinates.isWrong(coordinate)
-    const suffix = isWrong ? i18n.ERROR : coordinates.getName(coordinate)
+    const isWrong = Сoordinates.isWrong(coordinate)
+    const suffix = isWrong ? i18n.ERROR : Сoordinates.getName(coordinate)
     return (
-      <FormItem className={isWrong ? ' wrong-coordinate' : ''}>
-        <div className="input-block">
-          <input
-            className="input-control"
-            value={coordinates.stringify(coordinate)}
-            onChange={this.changeHandler}
-          />
-          {suffix && (<div className='input-suffix'>
-            {suffix}
-          </div>)}
-        </div>
+      <FormItem>
+        <InputWithSuffix
+          value={Сoordinates.stringify(coordinate)}
+          onChange={this.changeHandler}
+          isWrong={isWrong}
+          suffix={suffix}
+        />
         <IconHovered
           icon={canRemove ? IconNames.EMPTY_DEFAULT : IconNames.EMPTY_DISABLE}
           hoverIcon={canRemove ? IconNames.EMPTY_HOVER : IconNames.EMPTY_DISABLE}

@@ -2,9 +2,10 @@ import { connect } from 'react-redux'
 import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 import { notifications, viewModes } from '../store/actions'
 import { edit } from '../constants/viewModesKeys'
+import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
 
 const mapStateToProps = (store) => {
-  const { orgStructures } = store
+  const orgStructures = orgStructuresTreeSelector(store)
   const code = '10011500521200000800'
   // const code = '10000000000000000000'
   return {
