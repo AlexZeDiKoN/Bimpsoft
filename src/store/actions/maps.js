@@ -32,7 +32,10 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
       }
       case 'layersFolder': {
         dispatch(maps.updateMap({ operationId, mapId: id, name }))
-        const layersData = entities.map(({ id: layerId, name, dateFor }) => ({ mapId: id, layerId, name, dateFor }))
+        const layersData = entities.map(({ id: layerId, name, dateFor, formationId }) =>
+          ({ mapId: id, layerId, name, dateFor, formationId })
+        )
+        console.log('zzzzzzzzzz', entities, layersData)
         dispatch(layers.updateLayers(layersData))
         let selectedLayer = selectedItem
         if (selectedLayer === null && entities.length > 0) {

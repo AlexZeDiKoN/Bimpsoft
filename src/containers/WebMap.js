@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as layers from '../store/actions/layers'
+import * as webMapActions from '../store/actions/webMap'
 import * as selection from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
 import SubordinationLevel from '../constants/SubordinationLevel'
@@ -24,6 +25,8 @@ const WebMap = connect(
   (state) => ({
     sources: state.webMap.source.sources,
     objects: state.webMap.objects,
+    center: state.webMap.center,
+    zoom: state.webMap.zoom,
     edit: state.viewModes.edit,
     selection: state.selection,
     layer: state.layers.selectedId,
@@ -45,6 +48,7 @@ const WebMap = connect(
     hideForm: () => dispatch(selection.hideForm),
     // TODO: пибрати це після тестування
     loadTestObjects: () => dispatch(layers.selectLayer(null)),
+    onMove: (center) => dispatch(webMapActions.setCenter(center)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

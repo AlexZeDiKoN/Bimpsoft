@@ -5,7 +5,6 @@ import {
 //  get,
   getDirect,
   getDownloadURL,
-  getFileBlob,
   getLayerURL,
   getMapURL,
   getVersionUrl,
@@ -29,7 +28,6 @@ const ServerApi = {
   addLayer,
   addFolder,
   removeItem,
-  downloadFile,
   getContacts,
   getAllContacts,
   startApprovalProcess,
@@ -290,17 +288,17 @@ function removeItem (id = []) {
  * @param {number} id
  * @deprecated
  */
-function downloadFile (id) {
-  getFileBlob('file', id)
-    .then((outputBlob) => {
-      const fileURL = window.URL.createObjectURL(outputBlob)
-      const link = document.createElement('a')
-      link.href = fileURL
-      link.download = 'file'
-      // eslint-disable-next-line no-undef
-      link.dispatchEvent(new MouseEvent('click'))
-    })
-}
+// function downloadFile (id) {
+//   getFileBlob('file', id)
+//     .then((outputBlob) => {
+//       const fileURL = window.URL.createObjectURL(outputBlob)
+//       const link = document.createElement('a')
+//       link.href = fileURL
+//       link.download = 'file'
+//       // eslint-disable-next-line no-undef
+//       link.dispatchEvent(new MouseEvent('click'))
+//     })
+// }
 
 /**
  * Список контактов

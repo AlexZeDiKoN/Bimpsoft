@@ -160,10 +160,12 @@ const filterObj = (data) => {
 
 export default class WebMap extends Component {
   static propTypes = {
-    // props
-    center: PropTypes.arrayOf(PropTypes.number).isRequired,
-    zoom: PropTypes.number.isRequired,
     // from Redux store
+    center: PropTypes.shape({
+      lat: PropTypes.number,
+      lng: PropTypes.number,
+    }).isRequired,
+    zoom: PropTypes.number.isRequired,
     sources: PropTypes.arrayOf(
       PropTypes.shape({
         source: PropTypes.string,
@@ -196,21 +198,10 @@ export default class WebMap extends Component {
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
     hideForm: PropTypes.func,
+    onMove: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
-  }
-
-  state = {
-    center: [ 48, 35 ],
-    zoom: 7,
-  }
-
-  static getDerivedStateFromProps (nextProps, prevState) {
-    return {
-      center: nextProps.center || prevState.center,
-      zoom: nextProps.zoom || prevState.zoom,
-    }
   }
 
   componentDidMount () {
@@ -323,9 +314,15 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.updateObject)
     this.map.on('editlayer', this.editObject)
     this.map.on('zoomend', this.updatePointSizes)
+    this.map.on('moveend', this.moveHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
+  }
+
+  moveHandler = () => {
+    const { lat, lng } = this.map.getCenter()
+    this.props.onMove({lat, lng})
   }
 
   updateShowLayers = (level) => {

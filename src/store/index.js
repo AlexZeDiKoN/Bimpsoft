@@ -5,6 +5,7 @@ import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
 import ServerApi from '../server/api.server'
 import WebmapApi from '../server/api.webmap'
+import ServerApiMilOrg from '../server/api.server.org'
 import rootReducer from './reducers'
 
 let store = null
@@ -23,7 +24,11 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
-    thunk.withExtraArgument({ api: ServerApi, webmapApi: WebmapApi }),
+    thunk.withExtraArgument({
+      api: ServerApi,
+      webmapApi: WebmapApi,
+      milOrg: ServerApiMilOrg,
+    }),
   ]
 
   const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose

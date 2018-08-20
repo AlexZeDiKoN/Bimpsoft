@@ -25,20 +25,33 @@ export const updateLayer = (layerData) => ({
 })
 
 export const selectLayer = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    const objects = await webmapApi.objGetList(layerId)
-    api.checkServerResponse(objects)
-    dispatch({
-      type: OBJECT_LIST,
-      payload: {
-        layerId,
-        objects,
-      },
-    })
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+    // const objects = await webmapApi.objGetList(layerId)
+    // api.checkServerResponse(objects)
+    // dispatch({
+    //   type: OBJECT_LIST,
+    //   payload: {
+    //     layerId,
+    //     objects,
+    //   },
+    // })
     if (layerId) {
-      const content = await api.getAllUnits()
-      api.checkServerResponse(content)
-      dispatch(orgStructures.set(content))
+      const state = getState()
+      const layer = state.layers.byId[layerId]
+      const { formationId = null } = layer
+      if (formationId === null) {
+        throw Error('org structure id is undefined')
+      }
+      const units = await milOrg.militaryUnit.list()
+      const unitsById = {}
+      units.forEach((item) => {
+        unitsById[item.id] = item
+      })
+      dispatch(orgStructures.setOrgStructureUnits(unitsById))
+
+      const realations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
+      dispatch(orgStructures.setOrgStructureRelations(realations))
+
       dispatch({
         type: SELECT_LAYER,
         layerId,

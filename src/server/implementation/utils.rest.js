@@ -3,15 +3,15 @@ import { getAdminApi, getExplorerApi, getMapApi, getWebmapApi, getServerUrl } fr
 
 const absoluteUri = new RegExp('^(http|https)://')
 
+// export const serverUrl = `${explorerApi}/do`
 const serverRootUrl = getServerUrl()
 const explorerApi = serverRootUrl + getExplorerApi()
-export const serverUrl = `${explorerApi}/do`
 const mapApi = serverRootUrl + getMapApi()
 const adminApi = serverRootUrl + getAdminApi()
 const webmapApi = getWebmapApi()
 
 /**
- *
+ * getDownloadURL
  * @param {number} id - documentID
  */
 export function getDownloadURL (id) {
@@ -37,9 +37,16 @@ export function getWebmapURL () {
 
 export async function get (url, entityID) {
   const options = _getOptions('GET')
-
   const fullUrl = entityID ? url + '/' + entityID : url
   return _createGetRequest(fullUrl, options)
+}
+
+export async function put (url, data) {
+  const options = _getOptions('PUT')
+  if (data) {
+    options.body = JSON.stringify(data)
+  }
+  return _createGetRequest(url, options)
 }
 
 export function getVersionUrl () {
@@ -48,11 +55,12 @@ export function getVersionUrl () {
 
 /**
  *
- * @param url
- * @param data
+ * @param {string} url
+ * @param {Object} data
+ * @param {string} route
  * @returns {Promise<any>}
  */
-export async function post (url, data, route = '/do') {
+export async function post (url, data = {}, route = '/do', namespace) {
   const options = _getOptions('POST')
   /** @type{server.ServerRequest} */
   const request = {
@@ -60,10 +68,10 @@ export async function post (url, data, route = '/do') {
     payload: !data ? null : JSON.stringify(data),
   }
   options.body = JSON.stringify(request)
-  return _createRequest(route, options)
+  return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
-export async function getDirect (url, data) {
+export async function getDirect (url, data = {}) {
   const options = _getOptions(data ? 'POST' : 'GET')
   if (data) {
     options.body = JSON.stringify(data)
@@ -71,17 +79,17 @@ export async function getDirect (url, data) {
   return _createRequest(url, options)
 }
 
-export function getFileBlob (url, id) {
+/* export function getFileBlob (url, id) {
   return _getBlob(url, id)
-}
+} */
 
 function _getOptions (method) {
   const myHeaders = _getDefaultHeaders(method === 'POST')
   return {
     mode: 'cors',
     credentials: 'include',
-    method: method,
-    headers: myHeaders,
+    method,
+    headers: _getDefaultHeaders(),
   }
 }
 
@@ -96,7 +104,7 @@ function _getDefaultHeaders (addContentType = true) {
 /**
  * @param {string} url
  * @param option
- * @returns {PromiseLike<any>}
+ * @returns {Promise<any>}
  * @private
  */
 function _createGetRequest (url, option) {
@@ -132,108 +140,51 @@ function _createGetRequest (url, option) {
  * @returns {Promise<*>}
  * @private
  */
-async function _createRequest (url, option) {
-  const serviceUrl = absoluteUri.test(url) ? url : explorerApi + url
-  try {
-    const request = fetch(serviceUrl, option)
-    const responce = await request
-
-    switch (responce.status) {
-      case 200:
-        if (responce.headers.get('content-type').slice(0, 16) === 'application/json') {
-          /** @type{server.ServerResponse} */
-          const jsonPayload = await responce.json()
-          if (jsonPayload.payload) {
-            const parsed = JSON.parse(jsonPayload.payload)
-            return parsed
-          } else {
-            return jsonPayload
-          }
+async function _createRequest (url, option, namespace = explorerApi) {
+  const serviceUrl = absoluteUri.test(url) ? url : namespace + url
+  const response = await fetch(serviceUrl, option)
+  switch (response.status) {
+    case 200: {
+      if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
+        /** @type{server.ServerResponse} */
+        const jsonPayload = await response.json()
+        if (jsonPayload.payload) {
+          return JSON.parse(jsonPayload.payload)
+        } else {
+          return jsonPayload
         }
-        const textPayload = await responce.text()
-        return textPayload
-
-      case 204:
-        // success code of DELETE request
-        return null
-
-      case 401:
-        throw new Error('Доступ заборонено')
-
-      default:
-        throw new Error(`Сервер не доступний (${responce.status}) (URL: ${serviceUrl})`)
+      }
+      return response.text()
     }
-  } catch (e) {
-    throw e
+    case 204: // success code of DELETE request
+      return null
+    case 401:
+      throw new Error('Доступ заборонено')
+    default:
+      throw new Error(`Сервер недоступний (${response.status}) (URL: ${serviceUrl})`)
   }
 }
 
-function _getBlob (url, entityID) {
+/* function _getBlob (url, entityID) {
   return new Promise((resolve, reject) => {
-    const myHeaders = new Headers()
-    myHeaders.append('Content-Type', 'application/json;charset=UTF-8')
-    const options = {
+    const headers = new Headers()
+    headers.append('Content-Type', 'application/json;charset=UTF-8')
+    fetch(`${serverRootUrl}/${url}/?id=${entityID}`, {
       credentials: 'include',
       method: 'GET',
-      headers: myHeaders,
-    }
-
-    const serviceUrl = `${serverRootUrl}/${url}/?id=${entityID}`
-
-    fetch(serviceUrl, options)
-      .then((resp) => {
-        if (resp.status === 200) {
-          return resp.blob()
-        } else if (resp.status === 401) {
-          reject(new Error('Доступ заборонено'))
-        } else {
-          reject(new Error('Сервер не доступен'))
-        }
-      })
-      .then(/** @type{Blob} */ (data) => {
-        resolve(data)
-      })
-      .catch((error) => {
-        reject(error.message)
-      })
+      headers,
+    }).then((resp) => {
+      if (resp.status === 200) {
+        return resp.blob()
+      } else if (resp.status === 401) {
+        reject(new Error('Доступ заборонено'))
+      } else {
+        reject(new Error('Сервер недоступнний'))
+      }
+    }).then((data) => {
+      resolve(data)
+    }).catch((error) => {
+      reject(error.message)
+    })
   })
-}
-
-export function startLongPolling (url, processRecord) {
-  const headers = new Headers()
-  headers.append('Connection', 'Keep-Alive')
-  const options = {
-    mode: 'cors',
-    credentials: 'include',
-    method: 'GET',
-    headers,
-  }
-
-  const poll = () => {
-    fetch(url, options)
-      .then(async (response) => {
-        const reader = response.body.getReader()
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) {
-            break
-          }
-          try {
-            const records = JSON.parse(String.fromCharCode.apply(null, value))
-            for (const record of records) {
-              processRecord(record)
-            }
-          } catch (err) {
-            console.error(err)
-          }
-        }
-        poll()
-      })
-      .catch((err) => {
-        console.error(err)
-        poll()
-      })
-  }
-
-  poll()
-}
+} */

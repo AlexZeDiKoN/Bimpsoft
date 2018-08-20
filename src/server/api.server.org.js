@@ -1,41 +1,115 @@
 import { post } from './implementation/utils.rest'
+import { requiredParam } from './requiredParam'
+
+const namespace = '/org/v1'
+const gfUrl = '/generalformation'
+const generalFormation = {
+  list: doList(gfUrl),
+  create: doCreate(gfUrl),
+  update: doUpdate(gfUrl),
+  delete: doDelete(gfUrl),
+}
+
+const muUrl = '/militaryunit'
+const militaryUnit = {
+  list: doList(muUrl),
+  create: doCreate(muUrl),
+  update: doUpdate(muUrl),
+  delete: doDelete(muUrl),
+}
+
+const cpUrl = '/militarycommandpost'
+const militaryCommandPost = {
+  list: doList(cpUrl),
+  create: doCreate(cpUrl),
+  update: doUpdate(cpUrl),
+  delete: doDelete(cpUrl),
+}
+
+const urUrl = '/militaryunitrelation'
+const militaryUnitRelation = {
+  list: doList(urUrl),
+  create: doCreate(urUrl),
+  update: doUpdate(urUrl),
+  delete: doDelete(urUrl),
+  updateMany: doUpdateMany(urUrl),
+}
+
+const cpdUrl = '/militarycpdept'
+const militaryCommandPostDepartment = {
+  list: doList(cpdUrl),
+  create: doCreate(cpdUrl),
+  update: doUpdate(cpdUrl),
+  delete: doDelete(cpdUrl),
+}
+
+const cppUrl = '/militarycpposition'
+const MilitaryCommandPostPosition = {
+  list: doList(cppUrl),
+  create: doCreate(cppUrl),
+  update: doUpdate(cppUrl),
+  delete: doDelete(cppUrl),
+}
+
+const dcUrl = '/dc'
+// const dc = {
+//   affiliationTypes: getDc('AffiliationTypes'),
+//   countries: getDc('Countries'),
+//   generalMilitaryFormationStates: getDc('GeneralMilitaryFormationStates'),
+//   subordinativenessTypes: getDc('SubordinativenessTypes'),
+//   natoUnitLevels: getDc('NatoUnitLevels'),
+//   militaryForceKinds: getDc('MilitaryForceKinds'),
+//   militaryFormTypes: getDc('MilitaryFormTypes'),
+// }
 
 const ServerApiOrg = {
-  getCalculatedValues,
-  getBaseParams,
-  saveBaseParams,
+  generalFormation,
+  militaryUnit,
+  militaryCommandPost,
+  militaryUnitRelation,
+  militaryCommandPostDepartment,
+  MilitaryCommandPostPosition,
+  allDc,
 }
 
 export default ServerApiOrg
 
-/**
- * Список расчитаных парамтров по "Станом НА"
- * @param {Date} dateFor Станом На
- * @return {PromiseLike<server.CalculatedParam[]>}
- */
-function getCalculatedValues ({ dateFor } = {}) {
-  return post('ListCalculated', { dateFor }, '/org')
+function doList (url) {
+  return function (filter) {
+    return post('List', filter, undefined, namespace + url)
+  }
 }
 
-/**
- * Список базовых параметров по юниту, по подгруппе параметров, Станом На
- * Всегда вернет полный список, в случае отсутствия данных заполненый 0-ми
- * @param {Date} dateFor Станом На
- * @param {number} unitID Идентификатор юнита
- * @param {string} groupCode Подгруппа параметров
- * @return {PromiseLike<server.BaseParam[]>}
- */
-function getBaseParams ({ dateFor, unitID, groupCode } = {}) {
-  return post('ListBaseParams', { dateFor, unitID, groupCode }, '/org')
+function doCreate (url) {
+  return function (item) {
+    return post('Create', item, undefined, namespace + url)
+  }
 }
 
-/**
- * Сохранение результатов редактирования параметров
- * @param {number} unitID Идентификатор юнита
- * @param {Date?} dateFor Станом На
- * @param {server.BaseParam[]} params список параметров (формат как из метода getBaseParams)
- * @returns {Promise<boolean>}
- */
-function saveBaseParams ({ unitID, dateFor, params }) {
-  return post('SaveBaseParams', { dateFor, unitID, params }, '/org')
+function doUpdate (url) {
+  return function (item) {
+    return post('Update', item, undefined, namespace + url)
+  }
+}
+
+function doDelete (url) {
+  return function (id = requiredParam('id')) {
+    return post('Delete', id, undefined, namespace + url)
+  }
+}
+
+function doUpdateMany (url) {
+  return function (item) {
+    return post('UpdateMany', item, undefined, namespace + url)
+  }
+}
+
+// function getDc (code) {
+//   return function () {
+//     return post('List', { code }, undefined, namespace + dcUrl)
+//   }
+// }
+
+function allDc () {
+  return post('All', {}, undefined, namespace + dcUrl)
 }
