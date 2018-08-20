@@ -765,7 +765,7 @@ export default class WebMap extends Component {
       const layer = this.findLayerById(created)
       if (layer) {
         activateLayer(layer)
-        // TODO: центрувати карту по елементу
+        this.map.panTo(getGeometry(layer).point)
       }
     }
   }
