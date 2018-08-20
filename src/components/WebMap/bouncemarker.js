@@ -153,7 +153,9 @@
     },
 
     onRemove: function (map) {
-      this.stopBounce()
+      if (this.options.bounceOnAdd) {
+        this.stopBounce()
+      }
       originalOnRemove.call(this, map)
     },
   })

@@ -26,15 +26,15 @@ export const updateLayer = (layerData) => ({
 
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
-    // const objects = await webmapApi.objGetList(layerId)
-    // api.checkServerResponse(objects)
-    // dispatch({
-    //   type: OBJECT_LIST,
-    //   payload: {
-    //     layerId,
-    //     objects,
-    //   },
-    // })
+    const objects = await webmapApi.objGetList(layerId)
+    api.checkServerResponse(objects)
+    dispatch({
+      type: OBJECT_LIST,
+      payload: {
+        layerId,
+        objects,
+      },
+    })
     if (layerId) {
       const state = getState()
       const layer = state.layers.byId[layerId]
@@ -49,8 +49,8 @@ export const selectLayer = (layerId) =>
       })
       dispatch(orgStructures.setOrgStructureUnits(unitsById))
 
-      const realations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
-      dispatch(orgStructures.setOrgStructureRelations(realations))
+      const relations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
+      dispatch(orgStructures.setOrgStructureRelations(relations))
 
       dispatch({
         type: SELECT_LAYER,
