@@ -84,7 +84,7 @@ export async function getDirect (url, data = {}) {
 } */
 
 function _getOptions (method) {
-  const myHeaders = _getDefaultHeaders(method === 'POST')
+  // const myHeaders = _getDefaultHeaders(method === 'POST')
   return {
     mode: 'cors',
     credentials: 'include',
