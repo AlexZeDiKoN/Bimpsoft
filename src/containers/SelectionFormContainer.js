@@ -25,8 +25,10 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
     const { selection: { showForm } } = getState()
     switch (showForm) {
       case 'edit':
+        console.log('Update shape: ', data)
         return dispatch(selectionActions.updateSelection(data))
       case 'create':
+        console.log('Create shape: ', data)
         return dispatch(selectionActions.updateNewShape(data))
       default:
         break
