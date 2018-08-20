@@ -14,7 +14,7 @@ const WebmapApi = {
 export default WebmapApi
 
 function objGetList (layer = null) {
-  return getDirect(`${webmapUrl}/obj/${layer}/get`)
+  return getDirect(`${webmapUrl}/obj/${layer}/get`, false)
 }
 
 function objUpdate (id, data) {
@@ -30,9 +30,9 @@ function objInsert (data) {
 }
 
 function objDelete (id = 0) {
-  return getDirect(`${webmapUrl}/obj/${id}/del`)
+  return getDirect(`${webmapUrl}/obj/${id}/del`, false)
 }
 
 function placeSearch (sample) {
-  return getDirect(`${webmapUrl}/place?q=${sample}`)
+  return getDirect(`${webmapUrl}/place?q=${sample}`, false)
 }
