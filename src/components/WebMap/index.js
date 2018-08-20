@@ -32,12 +32,15 @@ import {
   createSearchMarker,
 } from './leaflet.pm.patch'
 
-const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
 const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
 const wgsAccuracy = 5 // Точність задання координат у системі WGS-84, десяткових знаків
-const pointSizes = {
+const pointSizes = { // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
   zoom0: 2,
   zoom20: 64,
+}
+const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
+  color: 'red',
+  dashArray: [ 5, 5 ],
 }
 
 const calcPointSize = (zoom) => zoom <= 0
@@ -343,7 +346,7 @@ export default class WebMap extends Component {
 
   moveHandler = () => {
     const { lat, lng } = this.map.getCenter()
-    this.props.onMove({lat, lng})
+    this.props.onMove({ lat, lng })
   }
 
   updateShowLayers = (level) => {
