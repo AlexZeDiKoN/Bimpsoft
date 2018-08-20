@@ -4,6 +4,7 @@ import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import IconButton from '../IconButton'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
+import coordinates from '../../../utils/coordinates'
 import './style.css'
 import i18n from '../../../i18n'
 
@@ -17,14 +18,21 @@ export default class RightMenu extends React.Component {
     onClickSettings: PropTypes.func,
     onClickSidebar: PropTypes.func,
     onSearch: PropTypes.func,
+    onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
   }
 
   search = (sample) => {
-    const query = sample.trim()
+    const { onSearch, onCoordinates } = this.props
+    const query = sample.toUpperCase().trim()
     if (query.length) {
-      this.props.onSearch(query.toUpperCase())
+      const parsed = coordinates.parse(query)
+      if (parsed && parsed.lng !== undefined && parsed.lat !== undefined) {
+        onCoordinates(query, parsed)
+      } else {
+        onSearch(query)
+      }
     }
   }
 

@@ -27,6 +27,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   onClickSettings: () => dispatch(viewModesActions.viewModeToggle(viewModesKeys.settings)),
   onSearch: (sample) => dispatch(viewModesActions.search(sample)),
+  onCoordinates: (text, point) => dispatch(viewModesActions.coordinates({ text, point })),
   onSelectSearchOption: (index) => dispatch(viewModesActions.searchSelectOption(index)),
   onClearSearchError: () => dispatch(viewModesActions.searchClearError()),
 })

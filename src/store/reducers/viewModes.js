@@ -51,9 +51,12 @@ export default function reducer (state = initialState, action) {
         searchOptions: null,
       }
     }
-    case actions.SEARCH_CLEAR_ERROR: {
-      return { ...state, searchEmpty: false }
+    case actions.SEARCH_COORDINATES: {
+      const { payload } = action
+      return { ...state, searchEmpty: false, searchResult: payload, searchOptions: null }
     }
+    case actions.SEARCH_CLEAR_ERROR:
+      return { ...state, searchEmpty: false }
     default:
       return state
   }
