@@ -26,13 +26,15 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
-
+import './bouncemarker'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, updateLayerIcons,
+  createSearchMarker,
 } from './leaflet.pm.patch'
 
 const hintlineStyle = { color: 'red', dashArray: [ 5, 5 ] }
-
+const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
+const wgsAccuracy = 5 // Точність задання координат у системі WGS-84, десяткових знаків
 const pointSizes = {
   zoom0: 2,
   zoom20: 64,
@@ -106,11 +108,11 @@ const toGMS = (value, pos, neg) => {
   const s = Math.round((value - m) * 60)
   return `${sign} ${g}°${z(m)}'${z(s)}"` // eslint-disable-line no-irregular-whitespace
 }
-const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} x${u.easting.toFixed(0)} y${u.northing.toFixed(0)}`
-const Wgs84 = (lat, lng) => ` ${i18n.LATITUDE}: ${lat.toFixed(4)}   ${i18n.LONGITUDE}: ${lng.toFixed(4)}` // eslint-disable-line no-irregular-whitespace
-const Wgs84I = (lat, lng) => ` ${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}` // eslint-disable-line no-irregular-whitespace
-const Mgrs = (lat, lng) => ` MGRS: ${forward([ lng, lat ])}` // eslint-disable-line no-irregular-whitespace
-const Utm = (lat, lng) => `UTM: ${utmLabel(fromLatLon(lat, lng))}` // eslint-disable-line no-irregular-whitespace
+const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} ${u.easting.toFixed(0)} ${u.northing.toFixed(0)}`
+const Wgs84 = (lat, lng) => `\xA0${i18n.LATITUDE}: ${lat.toFixed(wgsAccuracy)}\xA0\xA0\xA0${i18n.LONGITUDE}: ${lng.toFixed(wgsAccuracy)}`
+const Wgs84I = (lat, lng) => `\xA0${toGMS(lat, 'N', 'S')}\xA0\xA0\xA0${toGMS(lng, 'E', 'W')}`
+const Mgrs = (lat, lng) => `\xA0MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
+const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 
 function geomPointEquals (point, data) {
   const lng = point.get('lng')
@@ -175,6 +177,13 @@ export default class WebMap extends Component {
     ),
     level: PropTypes.any,
     layer: PropTypes.any,
+    searchResult: PropTypes.shape({
+      text: PropTypes.string,
+      point: PropTypes.shape({
+        lat: PropTypes.number,
+        lng: PropTypes.number,
+      }),
+    }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     print: PropTypes.bool,
@@ -249,6 +258,18 @@ export default class WebMap extends Component {
         default:
           break
       }
+    }
+    if (this.map && nextProps.searchResult && nextProps.searchResult !== this.props.searchResult) {
+      if (this.searchMarker) {
+        this.searchMarker.removeFrom(this.map)
+      }
+      const { point, text } = nextProps.searchResult
+      this.map.panTo(point, { animate: false })
+      setTimeout(() => {
+        this.searchMarker = createSearchMarker(point, text)
+        this.searchMarker.addTo(this.map)
+        setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
+      }, 500)
     }
     return false
   }

@@ -9,25 +9,32 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.sidebar]: isSidebarShow,
       [viewModesKeys.settings]: isSettingsShow,
+      [viewModesKeys.searchEmpty]: searchFailed,
     },
   } = store
   return {
     isSettingsShow,
     isSidebarShow,
+    searchFailed,
   }
 }
+
 const mapDispatchToProps = (dispatch) => ({
   onClickSidebar: () => {
-    dispatch(viewModesActions.viewModeToggle(viewModesKeys.sidebar))
+    const result = dispatch(viewModesActions.viewModeToggle(viewModesKeys.sidebar))
     window.dispatchEvent(new Event('resize'))
+    return result
   },
-  onClickSettings: () => {
-    dispatch(viewModesActions.viewModeToggle(viewModesKeys.settings))
-  },
+  onClickSettings: () => dispatch(viewModesActions.viewModeToggle(viewModesKeys.settings)),
+  onSearch: (sample) => dispatch(viewModesActions.search(sample)),
+  onCoordinates: (text, point) => dispatch(viewModesActions.coordinates({ text, point })),
+  onSelectSearchOption: (index) => dispatch(viewModesActions.searchSelectOption(index)),
+  onClearSearchError: () => dispatch(viewModesActions.searchClearError()),
 })
-const LeftMenuContainer = connect(
+
+const RightMenuContainer = connect(
   mapStateToProps,
   mapDispatchToProps
 )(RightMenu)
 
-export default LeftMenuContainer
+export default RightMenuContainer

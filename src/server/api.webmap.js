@@ -8,26 +8,31 @@ const WebmapApi = {
   objUpdateGeometry,
   objInsert,
   objDelete,
+  placeSearch,
 }
 
 export default WebmapApi
 
 function objGetList (layer = null) {
-  return getDirect(`${webmapUrl}/${layer}/get`)
+  return getDirect(`${webmapUrl}/obj/${layer}/get`)
 }
 
 function objUpdate (id, data) {
-  return getDirect(`${webmapUrl}/set`, { id, ...data })
+  return getDirect(`${webmapUrl}/obj/set`, { id, ...data })
 }
 
 function objUpdateGeometry (id, data) {
-  return getDirect(`${webmapUrl}/geom`, { id, ...data })
+  return getDirect(`${webmapUrl}/obj/geom`, { id, ...data })
 }
 
 function objInsert (data) {
-  return getDirect(`${webmapUrl}/add`, data)
+  return getDirect(`${webmapUrl}/obj/add`, data)
 }
 
 function objDelete (id = 0) {
-  return getDirect(`${webmapUrl}/${id}/del`)
+  return getDirect(`${webmapUrl}/obj/${id}/del`)
+}
+
+function placeSearch (sample) {
+  return getDirect(`${webmapUrl}/place?q=${sample}`)
 }

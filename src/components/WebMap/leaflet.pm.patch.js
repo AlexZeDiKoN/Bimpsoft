@@ -509,6 +509,11 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
   return layer
 }
 
+export function createSearchMarker (point, text) {
+  const icon = new L.Icon.Default({ imagePath: '/images/' })
+  return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
+}
+
 function createPoint ([ point ], js, anchor) {
   /* if (!anchor) {
     anchor = getCentralPoint(js)
