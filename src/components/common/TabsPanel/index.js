@@ -1,54 +1,84 @@
 import React from 'react'
+import * as ReactDom from 'react-dom'
 import PropTypes from 'prop-types'
 import './style.css'
 
+const TabPortalHOC = (containersRef, titlesRef, id, selectedId, onSelect) => {
+  class TabsPortal extends React.Component {
+    static propTypes = {
+      children: PropTypes.any,
+      title: PropTypes.any,
+    }
+
+    componentDidMount () {
+      const selected = id === selectedId
+
+      this.containerEl.className = 'tabs-panel-container'
+      this.containerEl.style.display = selected ? '' : 'none'
+      containersRef.current && containersRef.current.appendChild(this.containerEl)
+
+      this.titleEl.className = 'tabs-panel-header ' + (selected ? 'tabs-panel-header-selected' : '')
+      this.titleEl.addEventListener('click', this.titleClickHandler)
+      titlesRef.current && titlesRef.current.appendChild(this.titleEl)
+    }
+
+    componentWillUnmount () {
+      containersRef.current && containersRef.current.removeChild(this.containerEl)
+      titlesRef.current && titlesRef.current.removeChild(this.titleEl)
+      this.titleEl.removeEventListener('click', this.titleClickHandler)
+    }
+
+    titleClickHandler = () => onSelect(id)
+
+    containerEl = document.createElement('div')
+
+    titleEl = document.createElement('div')
+
+    render () {
+      const { children, title } = this.props
+      return [
+        ReactDom.createPortal(children, this.containerEl),
+        ReactDom.createPortal(title, this.titleEl),
+      ]
+    }
+  }
+  return TabsPortal
+}
+
 export default class TabsPanel extends React.Component {
   state = {
-    selectedTab: null,
+    selectedId: 0,
   }
 
+  containersRef = React.createRef()
+
+  titlesRef = React.createRef()
+
+  selectHandler = (selectedId) => this.setState({ selectedId })
+
   render () {
-    let { selectedTab } = this.state
-    if (this.props.tabs.length > 0 && this.props.tabs.indexOf(this.state.selectedTab) === -1) {
-      selectedTab = this.props.tabs[0]
-    }
+    const { tabs } = this.props
+    const { selectedId } = this.state
 
     return (
       <div className="tabs-panel">
-        <div className="tabs-panel-headers">
-          {this.props.tabs.map((tab) => {
-            const { title } = this.props.panels[tab]
-            const isSelected = selectedTab === tab
-            return (
-              <div
-                key={tab}
-                className={'tabs-panel-header ' + (isSelected ? 'tabs-panel-header-selected' : '')}
-                onClick={() => this.setState({ selectedTab: tab })}
-              >
-                {title}
-              </div>
-            )
-          })}
-        </div>
-        <div className="tabs-panel-content">
-          {this.props.tabs.map((tab) => {
-            const { component } = this.props.panels[tab]
-            const isSelected = selectedTab === tab
-            return (
-              <div
-                className="tabs-panel-container"
-                key={tab}
-                style={{ display: isSelected ? '' : 'none' }}
-              >{component}</div>
-            )
-          })}
-        </div>
+        <div className="tabs-panel-headers" ref={this.titlesRef}/>
+        <div className="tabs-panel-content" ref={this.containersRef}/>
+        {tabs.map((Panel, index) => {
+          const TabPortal = TabPortalHOC(
+            this.containersRef,
+            this.titlesRef,
+            index,
+            selectedId,
+            this.selectHandler
+          )
+          return (<Panel key={index} wrapper={TabPortal}/>)
+        })}
       </div>
     )
   }
 }
 
 TabsPanel.propTypes = {
-  panels: PropTypes.object,
   tabs: PropTypes.array,
 }

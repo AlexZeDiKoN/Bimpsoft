@@ -42,6 +42,11 @@ export const selectLayer = (layerId) =>
       if (formationId === null) {
         throw Error('org structure id is undefined')
       }
+
+      const formations = await milOrg.generalFormation.list()
+      const formation = formations.find((formation) => formation.id === formationId)
+      dispatch(orgStructures.setOrgStructureFormation(formation))
+
       const units = await milOrg.militaryUnit.list()
       const unitsById = {}
       units.forEach((item) => {
