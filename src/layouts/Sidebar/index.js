@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
-import { panels } from '../../containers'
+import { LayersContainer, OrgStructuresContainer } from '../../containers'
 import { TabsPanel } from '../../components/common'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
@@ -39,7 +39,7 @@ export default class Sidebar extends React.Component {
         <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
           <div className="sidebar">
             <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight }}>
-              <TabsPanel tabs={[ 'structure', 'history' ]} panels={panels} />
+              <TabsPanel tabs={[ OrgStructuresContainer ]} />
             </div>
             <ValueSwiper
               value={this.state.topPanelHeight}
@@ -48,7 +48,7 @@ export default class Sidebar extends React.Component {
               }}
             />
             <div className="sidebar-panel2">
-              <TabsPanel tabs={[ 'layers' ]} panels={panels} />
+              <TabsPanel tabs={[ LayersContainer ]} />
             </div>
           </div>
         </div>
