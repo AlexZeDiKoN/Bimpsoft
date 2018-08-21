@@ -10,7 +10,7 @@ export const getExplorerApi = () => process.env.REACT_APP_EXPLORER_API
 
 export const getMapApi = () => process.env.REACT_APP_MAP_API
 
-export const getWebmapApi = () => process.env.REACT_APP_WEBMAP_API
+export const getWebmapApi = () => `${production ? window.origin : ''}${process.env.REACT_APP_WEBMAP_API}`
 
 export const getBGStateUrl = () => `${getServerUrl()}/BGState`
 
