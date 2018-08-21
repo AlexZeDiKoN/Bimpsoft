@@ -4,7 +4,6 @@ import * as layers from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
 import * as selection from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
-import SubordinationLevel from '../constants/SubordinationLevel'
 
 const objProps = (obj) => {
   const { id, type, code, attributes, affiliation, unit, level } = obj.object
@@ -16,7 +15,7 @@ const objProps = (obj) => {
     amplifiers: attributes ? attributes.toJS() : attributes,
     affiliation,
     unit,
-    level: +level,
+    subordinationLevel: +level,
     coordinatesArray, // geometry.map(({ lat, lng }) => ({ x: lng, y: lat })).toJS(),
   }
 }
@@ -31,7 +30,7 @@ const WebMap = connect(
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
     layer: state.layers.selectedId,
-    level: SubordinationLevel.list.find(({ value }) => value === state.webMap.subordinationLevel).number,
+    level: state.webMap.subordinationLevel,
     showMiniMap: state.webMap.showMiniMap,
     isGridActive: state.viewModes.print,
   }),
