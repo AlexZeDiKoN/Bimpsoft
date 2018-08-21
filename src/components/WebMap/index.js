@@ -17,6 +17,7 @@ import {
   LOAD_TEST_OBJECTS, SELECT_PRINT_AREA,
 } from '../../constants/shortcuts'
 import { toggleMapGrid } from '../../services/coordinateGrid'
+import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import 'leaflet-minimap'
@@ -334,6 +335,7 @@ export default class WebMap extends Component {
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     initMapEvents(this.map, this.clickInterhandler)
+    this.map.attributionControl.setPrefix(`v${version}`)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
     this.map.on('editlayer', this.editObject)
