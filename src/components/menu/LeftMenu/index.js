@@ -32,8 +32,6 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
     onLinesListClose: PropTypes.func,
-    tempClickOnMap: PropTypes.func,
-    tempFinishClickOnMap: PropTypes.func,
   }
 
   selectLineHandler = (type) => {
@@ -152,19 +150,6 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
-        {newShape.type && (
-          <Fragment>
-            <button
-              onClick={this.props.tempClickOnMap}
-              title={`Користувач вказує на карті початкову точку лінії за допомогою лівої кнопки миші.
-          Користувач вказує на карті наступні вузлові точки лінії за допомогою лівої кнопки миші`}
-            >Click</button>
-            <button
-              onClick={this.props.tempFinishClickOnMap}
-              title="Користувач натискає ліву кнопку миші на останній встановленій вузловій точці"
-            >Finish Click</button>
-          </Fragment>
-        )}
       </div>
     )
   }

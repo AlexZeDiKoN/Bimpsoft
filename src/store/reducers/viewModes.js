@@ -1,4 +1,5 @@
 import * as actions from '../actions/viewModes'
+import * as selectionActions from '../actions/selection'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const initialState = {
@@ -30,6 +31,9 @@ export default function reducer (state = initialState, action) {
     case actions.VIEW_MODE_DISABLE: {
       const { payload: name } = action
       return { ...state, [name]: false }
+    }
+    case selectionActions.SET_SELECTION: {
+      return { ...state, [viewModesKeys.pointSignsList]: false }
     }
     case actions.SEARCH_PLACE: {
       const { payload } = action

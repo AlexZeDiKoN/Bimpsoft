@@ -770,6 +770,9 @@ export default class WebMap extends Component {
         activateLayer(layer)
         this.map.panTo(getGeometry(layer).point)
       }
+      this.props.onSelection(layer || null)
+    } else {
+      this.props.onSelection(null)
     }
   }
 
