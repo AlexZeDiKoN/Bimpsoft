@@ -518,7 +518,7 @@ export default class WebMap extends Component {
     const created = await addObject({
       type: entityKind.POINT,
       code,
-      amplifiers,
+      attributes: filterObj(amplifiers),
       point,
       level: +subordinationLevel,
       layer: this.props.layer,
