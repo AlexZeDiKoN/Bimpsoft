@@ -532,7 +532,7 @@ export default class WebMap extends Component {
   }
 
   createPointSign = async (data) => {
-    // console.log('createPointSign', data)
+    console.log('createPointSign', data)
     const { addObject } = this.props
     const { code, amplifiers, subordinationLevel = 0, coordinates: p } = data
     const point = { lat: p.lat, lng: p.lng }
@@ -559,6 +559,7 @@ export default class WebMap extends Component {
   }
 
   updatePointSign = async (data) => {
+    console.log('updatePointSign', data)
     const { id, code, coordinates, coordinatesArray, amplifiers, subordinationLevel = 0, ...rest } = data
     const point = { lng: +coordinates.lng, lat: +coordinates.lat }
     const layer = this.findLayerById(id)
