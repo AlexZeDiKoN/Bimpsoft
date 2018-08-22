@@ -45,7 +45,7 @@ const WebMapState = Record({
   zoom: 7,
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
-  showAmplifiers: false,
+  showAmplifiers: true,
   generalization: false,
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
