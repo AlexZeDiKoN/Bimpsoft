@@ -1,6 +1,5 @@
 import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
-import SelectionTypes from '../constants/SelectionTypes'
 import * as selectionActions from '../store/actions/selection'
 import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
 
