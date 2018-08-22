@@ -14,11 +14,11 @@ export default class LayerItemComponent extends React.Component {
     const {
       onChangeVisibility,
       isSelected,
-      data: { visible, name, locked, color, shared, date },
+      data: { visible, name, locked, color, shared, dateFor = null },
     } = this.props
     const lockedIcon = locked ? 'lock' : 'unlock'
     const sharedIcon = shared ? 'team' : 'user-delete'
-    const dateString = moment(date).format(DATE_TIME_FORMAT)
+    const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
