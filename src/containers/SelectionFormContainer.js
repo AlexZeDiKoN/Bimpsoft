@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
-import orgStructuresTreeSelector from "../store/orgStructuresTreeSelector";
+import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
 
 const mapStateToProps = (store) => {
   const { selection } = store
