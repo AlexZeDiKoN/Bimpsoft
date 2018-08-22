@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as layers from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
-import * as selection from '../store/actions/selection'
+import * as selectionActions from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
 
 const objProps = (obj) => {
@@ -38,18 +38,19 @@ const WebMap = connect(
   (dispatch) => ({
     addObject: (object) => dispatch(layers.addObject(object)),
     deleteObject: (id) => dispatch(layers.deleteObject(id)),
-    editObject: () => dispatch(selection.showEditForm),
+    editObject: () => dispatch(selectionActions.showEditForm),
     updateObject: (object) => dispatch(layers.updateObject(object)),
     updateObjectGeometry: (object) => dispatch(layers.updateObjectGeometry(object)),
     onSelection: (selected) => dispatch(selected
-      ? selection.setSelection(objProps(selected))
-      : selection.clearSelection),
-    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selection.setNewShapeCoordinates({ lng, lat })),
-    showCreateForm: () => dispatch(selection.showCreateForm),
-    hideForm: () => dispatch(selection.hideForm),
+      ? selectionActions.setSelection(objProps(selected))
+      : selectionActions.clearSelection),
+    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
+    showCreateForm: () => dispatch(selectionActions.showCreateForm),
+    hideForm: () => dispatch(selectionActions.hideForm),
     // TODO: пибрати це після тестування
     loadTestObjects: () => dispatch(layers.selectLayer(null)),
     onMove: (center) => dispatch(webMapActions.setCenter(center)),
+    onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'
