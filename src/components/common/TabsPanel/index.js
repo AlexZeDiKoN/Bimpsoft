@@ -2,6 +2,7 @@ import React from 'react'
 import * as ReactDom from 'react-dom'
 import PropTypes from 'prop-types'
 import './style.css'
+import memoizeOne from 'memoize-one'
 
 const TabPortalHOC = (containersRef, titlesRef, id, selectedId, onSelect) => {
   class TabsPortal extends React.Component {
@@ -56,6 +57,8 @@ export default class TabsPanel extends React.Component {
 
   selectHandler = (selectedId) => this.setState({ selectedId })
 
+  TabPortalHOC = memoizeOne(TabPortalHOC)
+
   render () {
     const { tabs } = this.props
     const { selectedId } = this.state
@@ -65,7 +68,7 @@ export default class TabsPanel extends React.Component {
         <div className="tabs-panel-headers" ref={this.titlesRef}/>
         <div className="tabs-panel-content" ref={this.containersRef}/>
         {tabs.map((Panel, index) => {
-          const TabPortal = TabPortalHOC(
+          const TabPortal = this.TabPortalHOC(
             this.containersRef,
             this.titlesRef,
             index,

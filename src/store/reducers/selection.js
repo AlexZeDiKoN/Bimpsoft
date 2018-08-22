@@ -11,7 +11,7 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case actions.SET_SELECTION: {
       const { data } = action
-      return { ...state, data, showForm: null }
+      return { ...state, data, showForm: null, newShape: {} }
     }
     case actions.SHOW_CREATE_FORM: {
       return { ...state, showForm: 'create' }
@@ -30,10 +30,10 @@ export default function reducer (state = initState, action) {
         : Array.isArray(data)
           ? data.map((item) => ({ ...item, ...newData }))
           : { ...data, ...newData }
-      return { ...state, data: mergedData, showForm: null }
+      return { ...state, data: mergedData, showForm: null, newShape: {} }
     }
     case actions.CLEAR_SELECTION: {
-      return { ...state, data: null }
+      return { ...state, data: null, newShape: {} }
     }
     case actions.SET_NEW_SHAPE: {
       const { newShape } = action

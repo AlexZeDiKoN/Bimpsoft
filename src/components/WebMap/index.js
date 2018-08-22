@@ -355,7 +355,7 @@ export default class WebMap extends Component {
     if (this.map) {
       this.map.eachLayer((layer) => {
         if (layer.id && layer.object) {
-          const layerLevel = Math.max(layer.object.level, SubordinationLevel.list[0].number)
+          const layerLevel = Math.max(layer.object.level, SubordinationLevel.TEAM_CREW)
           layer.getElement().style.display = layerLevel < level ? 'none' : ''
         }
       })
@@ -515,14 +515,14 @@ export default class WebMap extends Component {
   createPointSign = async (data) => {
     // console.log('createPointSign', data)
     const { addObject } = this.props
-    const { code, amplifiers, coordinates: p } = data
+    const { code, amplifiers, subordinationLevel = 0, coordinates: p } = data
     const point = { lat: p.lat, lng: p.lng }
     const created = await addObject({
       type: entityKind.POINT,
       code,
-      amplifiers,
+      attributes: filterObj(amplifiers),
       point,
-      level: +code.slice(8, 10) || 0,
+      level: +subordinationLevel,
       layer: this.props.layer,
       geometry: [ point ],
     })
@@ -540,7 +540,7 @@ export default class WebMap extends Component {
   }
 
   updatePointSign = async (data) => {
-    const { id, code, coordinates, coordinatesArray, amplifiers, ...rest } = data
+    const { id, code, coordinates, coordinatesArray, amplifiers, subordinationLevel = 0, ...rest } = data
     const point = { lng: +coordinates.lng, lat: +coordinates.lat }
     const layer = this.findLayerById(id)
     if (layer) {
@@ -555,7 +555,7 @@ export default class WebMap extends Component {
       layer: layer.object.layer,
       geometry: [ point ],
       ...rest,
-      level: +code.slice(8, 10) || 0,
+      level: +subordinationLevel,
     })
     this.activateCreated(id)
     // TODO: скинути дані в сторі
@@ -772,6 +772,9 @@ export default class WebMap extends Component {
         activateLayer(layer)
         this.map.panTo(getGeometry(layer).point)
       }
+      this.props.onSelection(layer || null)
+    } else {
+      this.props.onSelection(null)
     }
   }
 
