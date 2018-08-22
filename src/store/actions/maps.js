@@ -20,14 +20,24 @@ export const deleteAllMaps = {
 }
 
 export const openMapFolder = (operationId, folderID, selectedItem = null) => asyncAction.withNotification(
-  async (dispatch, getState, { api }) => {
+  async (dispatch, _, { api }) => {
+    // console.log({ operationId, folderID, selectedItem })
     const content = await api.getFolderContent({ operationId, folderID })
     api.checkServerResponse(content)
-    const { entities, params: { currentContainer: { type, id, name, parentId } } } = content
+    // console.log(content)
+    const { entities, params: { currentContainer: { type, id, name, parentId, dateFor, formationId } } } = content
 
     switch (type) {
       case 'layer': {
-        dispatch(openMapFolder(operationId, parentId, id))
+        if (parentId === null) {
+          dispatch(maps.updateMap({ operationId, mapId: id, name }))
+          const layersData = [ { mapId: null, layerId: id, name, dateFor, formationId } ]
+          dispatch(layers.updateLayers(layersData))
+          const selectedLayer = +folderID
+          dispatch(layers.selectLayer(selectedLayer))
+        } else {
+          dispatch(openMapFolder(operationId, parentId, id))
+        }
         break
       }
       case 'layersFolder': {
