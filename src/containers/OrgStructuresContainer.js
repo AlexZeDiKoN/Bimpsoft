@@ -8,17 +8,11 @@ const mapStateToProps = (store) => orgStructuresTreeSelector(store)
 
 const mapDispatchToProps = {
 
-  onClick: (app6Code, unitID) => (dispatch, getState) => {
+  onClick: (unitID) => (dispatch, getState) => {
     const {
       webMap: { center },
     } = getState()
-    dispatch(selectionActions.setNewShape({
-      type: SelectionTypes.POINT,
-      code: app6Code,
-      orgStructureId: unitID,
-      coordinatesArray: [ center ],
-    }))
-    dispatch(selectionActions.showCreateForm)
+    dispatch(selectionActions.newShapeFromUnit(unitID, center))
   },
 }
 

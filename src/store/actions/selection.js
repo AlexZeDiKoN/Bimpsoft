@@ -1,4 +1,6 @@
 import { action } from '../../utils/services'
+import SelectionTypes from '../../constants/SelectionTypes'
+import { withNotification } from './asyncAction'
 
 export const SET_SELECTION = action('SET_SELECTION')
 export const UPDATE_SELECTION = action('UPDATE_SELECTION')
@@ -49,4 +51,18 @@ export const updateNewShape = (newShape) => ({
 export const setNewShapeCoordinates = (coordinates) => ({
   type: SET_NEW_SHAPE_COORDINATES,
   coordinates,
+})
+
+export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {
+  const {
+    orgStructures: { unitsById: { [unitID]: unit = {} } },
+  } = getState()
+  const { app6Code: code, id: orgStructureId } = unit
+  dispatch(setNewShape({
+    type: SelectionTypes.POINT,
+    code,
+    orgStructureId,
+    coordinatesArray: [ point ],
+  }))
+  dispatch(showCreateForm)
 })
