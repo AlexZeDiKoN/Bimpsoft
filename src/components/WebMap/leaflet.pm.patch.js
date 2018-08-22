@@ -446,6 +446,7 @@ function setActiveLayer (map, layer, skipFire = false) {
 function clickOnLayer (event) {
   activateLayer(event.target)
   L.DomEvent.stopPropagation(event)
+  event.target._map._container.focus()
 }
 
 function dblClickOnLayer (event) {

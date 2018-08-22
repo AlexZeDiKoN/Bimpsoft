@@ -534,14 +534,15 @@ export default class WebMap extends Component {
   createPointSign = async (data) => {
     console.log('createPointSign', data)
     const { addObject } = this.props
-    const { code, amplifiers, subordinationLevel = 0, coordinates: p } = data
+    const { code, amplifiers, orgStructureId, subordinationLevel, coordinates: p } = data
     const point = { lat: p.lat, lng: p.lng }
     const created = await addObject({
       type: entityKind.POINT,
       code,
       attributes: filterObj(amplifiers),
       point,
-      level: +subordinationLevel,
+      level: subordinationLevel || 0,
+      unit: orgStructureId || null,
       layer: this.props.layer,
       geometry: [ point ],
     })
@@ -560,7 +561,7 @@ export default class WebMap extends Component {
 
   updatePointSign = async (data) => {
     console.log('updatePointSign', data)
-    const { id, code, coordinates, coordinatesArray, amplifiers, subordinationLevel = 0, ...rest } = data
+    const { id, code, coordinates, orgStructureId, amplifiers, subordinationLevel, ...rest } = data
     const point = { lng: +coordinates.lng, lat: +coordinates.lat }
     const layer = this.findLayerById(id)
     if (layer) {
@@ -575,7 +576,8 @@ export default class WebMap extends Component {
       layer: layer.object.layer,
       geometry: [ point ],
       ...rest,
-      level: +subordinationLevel,
+      level: subordinationLevel || 0,
+      unit: orgStructureId || null,
     })
     this.activateCreated(id)
     // TODO: скинути дані в сторі
