@@ -190,6 +190,7 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
+    showAmplifiers: PropTypes.bool,
     print: PropTypes.bool,
     edit: PropTypes.bool,
     selection: PropTypes.shape({
@@ -274,6 +275,9 @@ export default class WebMap extends Component {
         this.searchMarker.addTo(this.map)
         setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
       }, 500)
+    }
+    if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
+      this.updateShowAmplifiers(nextProps.showAmplifiers)
     }
     return false
   }
@@ -366,7 +370,19 @@ export default class WebMap extends Component {
     this.map.eachLayer((layer) => {
       if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
         const { code, attributes } = layer.object
-        const symbol = new Symbol(code, { size: calcPointSize(this.map.getZoom()), ...filterSet(attributes) })
+        const symbol = new Symbol(code,
+          { size: calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
+        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
+      }
+    })
+  }
+
+  updateShowAmplifiers = (showAmplifiers) => {
+    this.map.eachLayer((layer) => {
+      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
+        const { code, attributes } = layer.object
+        const symbol = new Symbol(code,
+          { size: calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
         updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
       }
     })
@@ -457,7 +473,10 @@ export default class WebMap extends Component {
     let points = geometry.toJS()
     let color = colorOf(affiliation)
     if (+type === entityKind.POINT) {
-      const options = { size: calcPointSize(this.map.getZoom()), ...filterSet(attributes) }
+      const options = {
+        size: calcPointSize(this.map.getZoom()),
+        ...(this.props.showAmplifiers ? filterSet(attributes) : {}),
+      }
       const symbol = new Symbol(code, options)
       template = symbol.asSVG()
       points = [ point ]
