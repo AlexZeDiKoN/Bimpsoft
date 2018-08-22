@@ -213,6 +213,7 @@ export default class WebMap extends Component {
     showCreateForm: PropTypes.func,
     hideForm: PropTypes.func,
     onMove: PropTypes.func,
+    onDropUnit: PropTypes.func,
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
@@ -802,6 +803,25 @@ export default class WebMap extends Component {
     }
   }
 
+  dragOverHandler = (e) => {
+    e.preventDefault()
+  }
+
+  dropHandler = (e) => {
+    e.preventDefault()
+    let data
+    try {
+      data = JSON.parse(e.dataTransfer.getData('text'))
+    } catch (e) {
+      return
+    }
+    if (data.type === 'unit') {
+      const point = this.map.mouseEventToLatLng(e)
+      const { lat, lng } = point
+      this.props.onDropUnit(data.id, { lat, lng })
+    }
+  }
+
   render () {
     return (
       <Shortcuts
@@ -810,6 +830,8 @@ export default class WebMap extends Component {
         stopPropagation={false}
       >
         <div
+          onDragOver={this.dragOverHandler}
+          onDrop={this.dropHandler}
           ref={(container) => (this.container = container)}
           style={{ height: '100%' }}
         />

@@ -1,6 +1,6 @@
 import React from 'react'
 import './style.css'
-import {Icon, Tooltip} from 'antd'
+import { Icon, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
@@ -11,8 +11,12 @@ export default class Item extends React.Component {
 
   doubleClickHandler = () => {
     const { onClick, data } = this.props
-    const { app6Code, id } = data
-    onClick(app6Code, id)
+    onClick(data.id)
+  }
+
+  dragStartHandler = (e) => {
+    const { data } = this.props
+    e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
   }
 
   render () {
@@ -28,8 +32,15 @@ export default class Item extends React.Component {
       >
         <div className="org-structure-item">
           {icon}
-          {(app6Code !== null) && (<MilSymbol code={app6Code} onDoubleClick={this.doubleClickHandler} />)}
-          <HighlightedText text={shortName} textFilter={textFilter} onDoubleClick={this.doubleClickHandler} />
+          <div
+            className="org-structure-item-content"
+            onDoubleClick={this.doubleClickHandler}
+            onDragStart={this.dragStartHandler}
+            draggable={true}
+          >
+            {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
+            <HighlightedText text={shortName} textFilter={textFilter} />
+          </div>
         </div>
       </Tooltip>
     )

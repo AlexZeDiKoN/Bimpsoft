@@ -6,7 +6,7 @@ import { FormItem } from './../../form'
 
 const { IconHovered, names: IconNames } = components.icons
 const { InputWithSuffix } = components.form
-const { Сoordinates } = utils
+const { Coordinates } = utils
 
 export default class CoordinateItem extends React.Component {
   static propTypes = {
@@ -19,7 +19,7 @@ export default class CoordinateItem extends React.Component {
 
   changeHandler = (value) => {
     const { onChange, index } = this.props
-    onChange(index, Сoordinates.parse(value))
+    onChange(index, Coordinates.parse(value))
   }
 
   removeClickHandler = () => {
@@ -29,12 +29,12 @@ export default class CoordinateItem extends React.Component {
 
   render () {
     const { coordinate = {}, canRemove } = this.props
-    const isWrong = Сoordinates.isWrong(coordinate)
-    const suffix = isWrong ? i18n.ERROR : Сoordinates.getName(coordinate)
+    const isWrong = Coordinates.isWrong(coordinate)
+    const suffix = isWrong ? i18n.ERROR : Coordinates.getName(coordinate)
     return (
       <FormItem>
         <InputWithSuffix
-          value={Сoordinates.stringify(coordinate)}
+          value={Coordinates.stringify(coordinate)}
           onChange={this.changeHandler}
           isWrong={isWrong}
           suffix={suffix}

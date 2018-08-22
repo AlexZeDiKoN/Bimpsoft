@@ -22,7 +22,7 @@ export default class OrgStructuresComponent extends React.Component {
 
   inputRef = React.createRef()
 
-  mouseDownHandler = (e) => {
+  mouseUpHandler = (e) => {
     e.preventDefault()
     this.inputRef.current.focus()
   }
@@ -57,7 +57,7 @@ export default class OrgStructuresComponent extends React.Component {
             roots={roots}
             itemTemplate={Item}
             commonData={{ textFilter, onClick }}
-            onMouseDown={this.mouseDownHandler}
+            onMouseUp={this.mouseUpHandler}
           />
         </div>
       </Wrapper>

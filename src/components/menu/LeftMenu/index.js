@@ -22,7 +22,7 @@ export default class LeftMenu extends React.Component {
     newShape: PropTypes.object,
     isShowSources: PropTypes.bool,
     mapSources: PropTypes.element,
-    subordinationLevel: PropTypes.string,
+    subordinationLevel: PropTypes.number,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
     onClickLineSign: PropTypes.func,
