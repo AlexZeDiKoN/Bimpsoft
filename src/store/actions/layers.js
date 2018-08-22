@@ -35,6 +35,10 @@ export const selectLayer = (layerId) =>
         objects,
       },
     })
+    dispatch({
+      type: SELECT_LAYER,
+      layerId,
+    })
     if (layerId) {
       const state = getState()
       const layer = state.layers.byId[layerId]
@@ -56,11 +60,6 @@ export const selectLayer = (layerId) =>
 
       const relations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
       dispatch(orgStructures.setOrgStructureRelations(relations))
-
-      dispatch({
-        type: SELECT_LAYER,
-        layerId,
-      })
     }
   })
 
