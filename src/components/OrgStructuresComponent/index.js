@@ -27,23 +27,31 @@ export default class OrgStructuresComponent extends React.Component {
     this.inputRef.current.focus()
   }
 
+  filterTextChangeHandler = ({ target: { value } }) => {
+    this.setState({ filterText: value.trim() })
+  }
+
   render () {
     const { filterText } = this.state
     const { byIds, roots, formation = null, onClick, wrapper: Wrapper = Fragment } = this.props
     if (formation === null) {
       return null
     }
+
     const textFilter = TextFilter.create(filterText)
     const filteredIds = getFilteredIds(textFilter, byIds)
+    const expandedKeys = textFilter ? Object.keys(filteredIds) : null
+
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
         <div className="org-structures">
           <Input.Search
             ref={this.inputRef}
             placeholder={ i18n.FILTER }
-            onChange={(e) => this.setState({ filterText: e.target.value.trim() })}
+            onChange={this.filterTextChangeHandler}
           />
           <TreeComponent
+            expandedKeys={expandedKeys}
             filteredIds={filteredIds}
             byIds={byIds}
             roots={roots}
