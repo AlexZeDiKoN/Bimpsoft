@@ -35,9 +35,9 @@ export default function reducer (state = initState, action) {
       const { layersData } = action
       byId = { ...byId }
       layersData.forEach((layerData) => {
-        const { operationId, layerId, mapId, name, formationId } = layerData
+        const { operationId, layerId, mapId, name, dateFor, formationId } = layerData
         let item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
-        item = { ...item, operationId, mapId, layerId, name, formationId }
+        item = { ...item, operationId, mapId, layerId, name, dateFor, formationId }
         byId[layerId] = item
       })
       return { ...state, byId }
