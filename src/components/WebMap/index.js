@@ -518,7 +518,7 @@ export default class WebMap extends Component {
     const created = await addObject({
       type: entityKind.POINT,
       code,
-      amplifiers,
+      attributes: filterObj(amplifiers),
       point,
       level: +subordinationLevel,
       layer: this.props.layer,
@@ -770,6 +770,9 @@ export default class WebMap extends Component {
         activateLayer(layer)
         this.map.panTo(getGeometry(layer).point)
       }
+      this.props.onSelection(layer || null)
+    } else {
+      this.props.onSelection(null)
     }
   }
 
