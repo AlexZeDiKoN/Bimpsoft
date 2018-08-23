@@ -5,21 +5,7 @@ import * as layers from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
-
-const objProps = (obj) => {
-  const { id, type, code, attributes, affiliation, unit, level } = obj.object
-  const coordinatesArray = getGeometry(obj).geometry.map(({ lat, lng }) => ({ lng, lat }))
-  return {
-    id: +id,
-    type: +type,
-    code,
-    amplifiers: attributes ? attributes.toJS() : attributes,
-    affiliation,
-    unit,
-    subordinationLevel: +level,
-    coordinatesArray, // geometry.map(({ lat, lng }) => ({ x: lng, y: lat })).toJS(),
-  }
-}
+import { mapObjConvertor } from '../utils'
 
 const mapProps = [ 'mapId', 'visible' ]
 const layerProps = [ 'layerId', 'mapId', 'visible' ]
@@ -65,7 +51,7 @@ const WebMap = connect(
     updateObject: (object) => dispatch(layers.updateObject(object)),
     updateObjectGeometry: (object) => dispatch(layers.updateObjectGeometry(object)),
     onSelection: (selected) => dispatch(selected
-      ? selectionActions.setSelection(objProps(selected))
+      ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
