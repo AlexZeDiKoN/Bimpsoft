@@ -402,7 +402,7 @@ function checkPointSignIconTransparent (layer) {
   }
 }
 
-function clearActiveLayer (map, skipFire = false) {
+export const clearActiveLayer = (map, skipFire = false) => {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
     const p = map.pm.activeLayer._path

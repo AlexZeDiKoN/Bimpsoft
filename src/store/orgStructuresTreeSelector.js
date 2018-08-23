@@ -1,10 +1,10 @@
 import { createSelector } from 'reselect'
 
 const orgStructuresTreeSelector = createSelector(
-  (state) => state.orgStructures.unitsById,
-  (state) => state.orgStructures.relations,
-  (state) => state.orgStructures.formation,
-  (unitsById, relations, formation) => {
+  (state) => state.orgStructures,
+  (state) => state.selection.data,
+  (orgStructures, selectionData) => {
+    const { unitsById, relations, formation } = orgStructures
     const byIds = {}
     const roots = []
     relations.forEach(({ unitID, parentUnitID }) => {

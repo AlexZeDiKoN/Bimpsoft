@@ -2,6 +2,7 @@ import * as classNameTransformers from './classNameTransformers'
 import * as devLoggers from './devLoggers'
 import createNotificator from './createNotificator'
 import coordinates from './coordinates'
+import * as mapObjConvertor from './mapObjConvertor'
 export * from './svg'
 
 export {
@@ -9,4 +10,5 @@ export {
   devLoggers,
   createNotificator,
   coordinates,
+  mapObjConvertor,
 }
