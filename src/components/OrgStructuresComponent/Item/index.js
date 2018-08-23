@@ -10,6 +10,11 @@ const { TextFilter } = data
 export default class Item extends React.Component {
 
   doubleClickHandler = () => {
+    const { onDoubleClick, data } = this.props
+    onDoubleClick(data.id)
+  }
+
+  clickHandler = () => {
     const { onClick, data } = this.props
     onClick(data.id)
   }
@@ -20,21 +25,23 @@ export default class Item extends React.Component {
   }
 
   render () {
-    const { tree, textFilter, data } = this.props
-    const { shortName, app6Code = null, fullName } = data
+    const { tree, textFilter, data, scrollRef, selectedOrgStructureId } = this.props
+    const { shortName, app6Code = null, fullName, id } = data
     const icon = tree.canExpand &&
       (<Icon type={tree.expanded ? 'minus' : 'plus'} onClick={tree.onExpand} />)
-
+    const isSelected = id === selectedOrgStructureId
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
         placement="topLeft"
       >
-        <div className="org-structure-item">
+        <div className={'org-structure-item' + (isSelected ? ' org-structure-item-selected' : '')}>
           {icon}
           <div
+            ref={isSelected ? scrollRef : null}
             className="org-structure-item-content"
             onDoubleClick={this.doubleClickHandler}
+            onClick={this.clickHandler}
             onDragStart={this.dragStartHandler}
             draggable={true}
           >
@@ -54,4 +61,6 @@ Item.propTypes = {
   }),
   textFilter: PropTypes.instanceOf(TextFilter),
   onClick: PropTypes.func,
+  onDoubleClick: PropTypes.func,
+  scrollRef: PropTypes.any,
 }

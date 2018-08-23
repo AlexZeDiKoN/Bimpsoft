@@ -4,13 +4,13 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import SelectionTypes from '../constants/SelectionTypes'
+// import SelectionTypes from '../constants/SelectionTypes'
 
 const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.edit]: isEditMode,
-      [viewModesKeys.pointSignsList]: isShowPoints,
+      // [viewModesKeys.pointSignsList]: isShowPoints,
       [viewModesKeys.mapSourcesList]: isShowSources,
       [viewModesKeys.lineSignsList]: isShowLines,
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
@@ -20,7 +20,7 @@ const mapStateToProps = (store) => {
   } = store
   return {
     isEditMode,
-    isShowPoints,
+    // isShowPoints,
     isShowSources,
     isShowLines,
     isShowSubordinationLevel,
@@ -30,24 +30,24 @@ const mapStateToProps = (store) => {
 }
 const mapDispatchToProps = {
   onClickEditMode: () => viewModesActions.viewModeToggle(viewModesKeys.edit),
-  onClickPointSign: () => (dispatch, getState) => {
-    const {
-      viewModes: { [viewModesKeys.pointSignsList]: isShowPoints },
-      selection: { newShape },
-    } = getState()
-
-    if (isShowPoints) {
-      if (newShape && newShape.type !== SelectionTypes.POINT) {
-        dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
-      } else {
-        dispatch(viewModesActions.viewModeDisable(viewModesKeys.pointSignsList))
-        dispatch(selectionActions.setNewShape({}))
-      }
-    } else {
-      dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
-      dispatch(viewModesActions.viewModeToggle(viewModesKeys.pointSignsList))
-    }
-  },
+  // onClickPointSign: () => (dispatch, getState) => {
+  //   const {
+  //     viewModes: { [viewModesKeys.pointSignsList]: isShowPoints },
+  //     selection: { newShape },
+  //   } = getState()
+  //
+  //   if (isShowPoints) {
+  //     if (newShape && newShape.type !== SelectionTypes.POINT) {
+  //       dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
+  //     } else {
+  //       dispatch(viewModesActions.viewModeDisable(viewModesKeys.pointSignsList))
+  //       dispatch(selectionActions.setNewShape({}))
+  //     }
+  //   } else {
+  //     dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
+  //     dispatch(viewModesActions.viewModeToggle(viewModesKeys.pointSignsList))
+  //   }
+  // },
   onClickMapSource: () => viewModesActions.viewModeToggle(viewModesKeys.mapSourcesList),
   onClickLineSign: () => viewModesActions.viewModeToggle(viewModesKeys.lineSignsList),
   onLinesListClose: () => viewModesActions.viewModeDisable(viewModesKeys.lineSignsList),

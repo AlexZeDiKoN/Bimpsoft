@@ -40,7 +40,11 @@ export default class LeftMenu extends React.Component {
   }
 
   clickTextHandler = () => {
-    this.props.onNewShapeChange({ type: SelectionTypes.TEXT })
+    this.props.onNewShapeChange(this.props.newShape.type !== SelectionTypes.TEXT ? { type: SelectionTypes.TEXT } : {})
+  }
+
+  clickPointHandler = () => {
+    this.props.onNewShapeChange(this.props.newShape.type !== SelectionTypes.POINT ? { type: SelectionTypes.POINT } : {})
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -50,13 +54,11 @@ export default class LeftMenu extends React.Component {
   render () {
     const {
       isEditMode,
-      isShowPoints,
       isShowLines,
       isShowSubordinationLevel,
       newShape = {},
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       onClickEditMode,
-      onClickPointSign,
       onClickLineSign,
       onClickMapSource,
       onClickSubordinationLevel,
@@ -80,12 +82,12 @@ export default class LeftMenu extends React.Component {
             <IconButton
               text={i18n.POINT_SIGN}
               icon={
-                isShowPoints
+                newShape.type === SelectionTypes.POINT
                   ? iconNames.CONVENTIONAL_SIGN_ACTIVE
                   : iconNames.CONVENTIONAL_SIGN_DEFAULT
               }
               hoverIcon={iconNames.CONVENTIONAL_SIGN_HOVER}
-              onClick={onClickPointSign}
+              onClick={this.clickPointHandler}
             />
             <IconButton
               text={i18n.LINE_SIGN}

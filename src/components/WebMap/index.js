@@ -29,8 +29,8 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import './bouncemarker'
 import {
-  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, updateLayerIcons,
-  createSearchMarker,
+  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
+  updateLayerIcons, createSearchMarker,
 } from './leaflet.pm.patch'
 
 const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
@@ -201,6 +201,7 @@ export default class WebMap extends Component {
       }),
       data: PropTypes.shape({
         type: PropTypes.any,
+        orgStructureId: PropTypes.string,
       }),
     }),
     // Redux actions
@@ -280,6 +281,20 @@ export default class WebMap extends Component {
     }
     if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
       this.updateShowAmplifiers(nextProps.showAmplifiers)
+    }
+    if (nextProps.selection.data !== this.props.selection.data) {
+      if (nextProps.selection.data === null) {
+        clearActiveLayer(this.map, true)
+      } else {
+        const unitId = nextProps.selection.data.orgStructureId
+        if (unitId) {
+          const layer = this.findLayerByUnitId(unitId)
+          if (layer) {
+            activateLayer(layer)
+            this.map.panTo(getGeometry(layer).point)
+          }
+        }
+      }
     }
     return false
   }
@@ -548,6 +563,9 @@ export default class WebMap extends Component {
     // console.log('createPointSign', data)
     const { addObject } = this.props
     const { code, amplifiers, orgStructureId, subordinationLevel, coordinates: p } = data
+    if (!p) {
+      return
+    }
     const point = { lat: p.lat, lng: p.lng }
     const created = await addObject({
       type: entityKind.POINT,
@@ -568,6 +586,15 @@ export default class WebMap extends Component {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
       if (+layer.id === +id) {
+        return layer
+      }
+    }
+  }
+
+  findLayerByUnitId = (id) => {
+    for (const lkey of Object.keys(this.map._layers)) {
+      const layer = this.map._layers[lkey]
+      if (layer.object && layer.object.unit === id) {
         return layer
       }
     }

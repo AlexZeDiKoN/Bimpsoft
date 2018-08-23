@@ -37,7 +37,7 @@ export default function reducer (state = initState, action) {
     }
     case actions.SET_NEW_SHAPE: {
       const { newShape } = action
-      return { ...state, newShape, showForm: null }
+      return { ...state, newShape, data: null, showForm: null }
     }
     case actions.UPDATE_NEW_SHAPE: {
       const { newShape } = action
