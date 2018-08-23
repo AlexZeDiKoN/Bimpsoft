@@ -40,6 +40,7 @@ const WebMap = connect(
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
     visibleLayers: visibleLayers(state),
+    coordinatesType: state.webMap.coordinatesType,
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isGridActive: state.viewModes.print,

@@ -8,6 +8,7 @@ import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
+import proj4 from 'proj4'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import i18n from '../../i18n'
 import {
@@ -78,19 +79,9 @@ const tmp = `<svg
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
-    // TODO
     default:
       return 'black'
   }
-}
-
-const indicateModes = {
-  count: 5,
-  WGS: 0,
-  WGSI: 1,
-  MGRS: 2,
-  UTM: 3,
-  ALL: 4,
 }
 
 const miniMapOptions = {
@@ -101,6 +92,44 @@ const miniMapOptions = {
     showText: i18n.SHOW_MINIMAP,
   },
 }
+
+const indicateModes = {
+  count: 7,
+  WGS: 0,
+  WGSI: 1,
+  MGRS: 2,
+  UTM: 3,
+  SC42: 4,
+  USC2000: 5,
+  ALL: 6,
+}
+
+const type2mode = (type) => {
+  switch (type) {
+    case 'USK-2000':
+      return indicateModes.USC2000
+    case 'MGRS':
+      return indicateModes.MGRS
+    default:
+      return indicateModes.WGS
+  }
+}
+
+proj4.defs([
+  [ 'EPSG:28407', `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
+  [ 'EPSG:28406', `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
+  [ 'EPSG:28405', `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
+  [ 'EPSG:28404', `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
+  [ 'EPSG:5558', `+proj=qsc +ellps=krass +units=m +no_defs` ], // с +proj=geocent работать не хочет, похоже баг или неподдерживамая проекция в proj4, заменил на +proj=qsc, работает, но я не знаю насколько правильные координаты она теперь выдаёт :(
+])
+const sc42 = (lng, lat) => lng < 27
+  ? proj4('EPSG:28404', [ lng, lat ])
+  : lng < 33
+    ? proj4('EPSG:28405', [ lng, lat ])
+    : lng < 39
+      ? proj4('EPSG:28406', [ lng, lat ])
+      : proj4('EPSG:28407', [ lng, lat ])
+const usc2000 = (lng, lat) => proj4('EPSG:5558', [ lng, lat ])
 
 const z = (v) => `0${v}`.slice(-2)
 const toGMS = (value, pos, neg) => {
@@ -113,10 +142,13 @@ const toGMS = (value, pos, neg) => {
   return `${sign} ${g}°${z(m)}'${z(s)}"` // eslint-disable-line no-irregular-whitespace
 }
 const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} ${u.easting.toFixed(0)} ${u.northing.toFixed(0)}`
+const scLabel = ([ x, y ]) => `${x.toFixed(0)}\xA0${y.toFixed(0)}`
 const Wgs84 = (lat, lng) => `\xA0${i18n.LATITUDE}: ${lat.toFixed(wgsAccuracy)}\xA0\xA0\xA0${i18n.LONGITUDE}: ${lng.toFixed(wgsAccuracy)}`
 const Wgs84I = (lat, lng) => `\xA0${toGMS(lat, 'N', 'S')}\xA0\xA0\xA0${toGMS(lng, 'E', 'W')}`
 const Mgrs = (lat, lng) => `\xA0MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
 const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
+const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
+const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
 function geomPointEquals (point, data) {
   const lng = point.get('lng')
@@ -191,6 +223,7 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
+    coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     print: PropTypes.bool,
     edit: PropTypes.bool,
@@ -295,6 +328,9 @@ export default class WebMap extends Component {
           }
         }
       }
+    }
+    if (nextProps.coordinatesType !== this.props.coordinatesType) {
+      this.indicateMode = type2mode(nextProps.coordinatesType)
     }
     return false
   }
@@ -424,8 +460,13 @@ export default class WebMap extends Component {
         return Mgrs(lat, lng)
       case indicateModes.UTM:
         return Utm(lat, lng)
+      case indicateModes.SC42:
+        return Sc42(lat, lng)
+      case indicateModes.USC2000:
+        return Usc2000(lat, lng)
       case indicateModes.ALL:
-        return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng) ].join('<br/>')
+        return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng), Sc42(lat, lng), Usc2000(lat, lng) ]
+          .join('<br/>')
       default: // WGS-84
         return Wgs84(lat, lng)
     }

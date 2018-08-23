@@ -1,5 +1,6 @@
 import { toPoint } from 'mgrs'
 import { toLatLon } from 'utm'
+// import proj4 from 'proj4'
 import { CoordinatesTypes } from '../constants'
 import i18n from '../i18n'
 
