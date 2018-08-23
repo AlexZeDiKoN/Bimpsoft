@@ -79,6 +79,7 @@ const tmp = `<svg
 
 const colorOf = (affiliation) => {
   switch (affiliation) {
+    // TODO
     default:
       return 'black'
   }
