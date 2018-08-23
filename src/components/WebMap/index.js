@@ -350,6 +350,14 @@ export default class WebMap extends Component {
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
+    this.map.on('escape', this.onEscape)
+  }
+
+  onEscape = () => {
+    if (this.searchMarker) {
+      this.searchMarker.removeFrom(this.map)
+      delete this.searchMarker
+    }
   }
 
   moveHandler = () => {

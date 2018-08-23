@@ -391,6 +391,8 @@ export function initMapEvents (mymap, clickInterhandler) {
       }
     } else if (event.code === 'Space' && mymap.pm.activeLayer) {
       clearActiveLayer(mymap)
+    } else if (event.code === 'Escape') {
+      mymap.fire('escape')
     }
   })
 }
