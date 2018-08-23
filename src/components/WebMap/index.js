@@ -230,6 +230,8 @@ export default class WebMap extends Component {
     showMiniMap: PropTypes.bool,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
+    backOpacity: PropTypes.number,
+    hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
     edit: PropTypes.bool,
     selection: PropTypes.shape({
@@ -347,6 +349,14 @@ export default class WebMap extends Component {
     }
     if (nextProps.coordinatesType !== this.props.coordinatesType) {
       this.indicateMode = type2mode(nextProps.coordinatesType)
+    }
+    if (nextProps.backOpacity !== this.props.backOpacity && this.map && this.map._container) {
+      // TODO
+      // this.map._container.style.opacity = nextProps.backOpacity / 100
+      // так не працює - значки гаснуть разом з картою...
+    }
+    if (nextProps.hiddenOpacity !== this.props.hiddenOpacity) {
+      // TODO
     }
     return false
   }
