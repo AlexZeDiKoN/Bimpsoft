@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, InputNumber } from 'antd'
+// import { Checkbox, InputNumber } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { List } from 'immutable'
 import PropTypes from 'prop-types'
@@ -13,7 +13,7 @@ import {
   FormRow,
   FormColumn,
   FormDivider,
-  FormDarkPart,
+  // FormDarkPart,
   FormButtonOk,
   FormButtonCancel,
 } from './../../form'
@@ -24,7 +24,8 @@ const { IconHovered, names: IconNames } = components.icons
 
 export default class TextForm extends React.Component {
   static propTypes = {
-    subordinationLevel: PropTypes.string,
+    coordinatesArray: PropTypes.any,
+    subordinationLevel: PropTypes.number,
     transparentBackground: PropTypes.bool,
     displayAnchorLine: PropTypes.bool,
     anchorLineWithArrow: PropTypes.bool,
@@ -37,14 +38,19 @@ export default class TextForm extends React.Component {
   constructor (props) {
     super(props)
     const {
+      coordinatesArray,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
-      transparentBackground = false,
-      displayAnchorLine = false,
-      anchorLineWithArrow = false,
-      magnification = 1,
-      texts = [ { text: '' } ],
+      amplifiers: {
+        transparentBackground = false,
+        displayAnchorLine = false,
+        anchorLineWithArrow = false,
+        magnification = 1,
+        texts = [ { text: '' } ],
+      } = {},
     } = props
+    console.log('TextForm',coordinatesArray)
     this.state = {
+      coordinatesArray,
       subordinationLevel,
       transparentBackground,
       displayAnchorLine,
@@ -81,6 +87,7 @@ export default class TextForm extends React.Component {
 
   okHandler = () => {
     const {
+      coordinatesArray,
       subordinationLevel,
       transparentBackground,
       displayAnchorLine,
@@ -88,13 +95,17 @@ export default class TextForm extends React.Component {
       magnification,
       texts,
     } = this.state
+    console.log('okHandler',coordinatesArray)
     this.props.onChange({
+      coordinatesArray,
       subordinationLevel,
-      transparentBackground,
-      displayAnchorLine,
-      anchorLineWithArrow,
-      magnification,
-      texts: texts.toJS(),
+      amplifiers: {
+        transparentBackground,
+        displayAnchorLine,
+        anchorLineWithArrow,
+        magnification,
+        texts: texts.toJS(),
+      },
     })
   }
 
@@ -105,10 +116,10 @@ export default class TextForm extends React.Component {
   render () {
     const {
       subordinationLevel,
-      transparentBackground,
-      displayAnchorLine,
-      anchorLineWithArrow,
-      magnification,
+      // transparentBackground,
+      // displayAnchorLine,
+      // anchorLineWithArrow,
+      // magnification,
       texts,
     } = this.state
     return (
@@ -117,7 +128,7 @@ export default class TextForm extends React.Component {
           <SubordinationLevelSelect value={ subordinationLevel } onChange={this.changeSubordinationLevel} />
         </FormColumn>
         <FormItem className="text-form-preview">
-          <TextSymbol texts={texts}/>
+          <TextSymbol texts={texts.toJS()}/>
         </FormItem>
         <FormRow label={i18n.TEXT}>
           <IconHovered
@@ -139,20 +150,20 @@ export default class TextForm extends React.Component {
             />
           ))}
         </div>
-        <FormDarkPart>
-          <FormRow label={i18n.TRANSPARENT_BACKGROUND}>
-            <Checkbox checked={transparentBackground} onChange={this.changeTransparentBackground}/>
-          </FormRow>
-          <FormRow label={i18n.DISPLAY_ANCHOR_LINE}>
-            <Checkbox checked={displayAnchorLine} onChange={this.changeDisplayAnchorLine}/>
-          </FormRow>
-          <FormRow label={i18n.ANCHOR_LINE_WITH_ARROW}>
-            <Checkbox checked={anchorLineWithArrow} onChange={this.changeAnchorLineWithArrow}/>
-          </FormRow>
-          <FormRow label={i18n.MAGNIFICATION}>
-            <InputNumber value={magnification} onChange={this.changeMagnification} />
-          </FormRow>
-        </FormDarkPart>
+        {/* <FormDarkPart> */}
+        {/* <FormRow label={i18n.TRANSPARENT_BACKGROUND}> */}
+        {/* <Checkbox checked={transparentBackground} onChange={this.changeTransparentBackground}/> */}
+        {/* </FormRow> */}
+        {/* <FormRow label={i18n.DISPLAY_ANCHOR_LINE}> */}
+        {/* <Checkbox checked={displayAnchorLine} onChange={this.changeDisplayAnchorLine}/> */}
+        {/* </FormRow> */}
+        {/* <FormRow label={i18n.ANCHOR_LINE_WITH_ARROW}> */}
+        {/* <Checkbox checked={anchorLineWithArrow} onChange={this.changeAnchorLineWithArrow}/> */}
+        {/* </FormRow> */}
+        {/* <FormRow label={i18n.MAGNIFICATION}> */}
+        {/* <InputNumber value={magnification} onChange={this.changeMagnification} /> */}
+        {/* </FormRow> */}
+        {/* </FormDarkPart> */}
         <FormItem>
           <FormButtonCancel onClick={this.cancelHandler}/>
           <FormButtonOk onClick={this.okHandler}/>
