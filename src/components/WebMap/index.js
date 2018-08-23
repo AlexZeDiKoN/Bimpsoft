@@ -179,6 +179,7 @@ export default class WebMap extends Component {
         tms: PropTypes.bool,
       })
     ),
+    visibleLayers: PropTypes.string,
     level: PropTypes.any,
     layer: PropTypes.any,
     searchResult: PropTypes.shape({
@@ -238,8 +239,8 @@ export default class WebMap extends Component {
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
     }
-    if (nextProps.level !== this.props.level) {
-      this.updateShowLayers(nextProps.level)
+    if (nextProps.level !== this.props.level || nextProps.visibleLayers !== this.props.visibleLayers) {
+      this.updateShowLayers(nextProps.level, nextProps.visibleLayers)
     }
     if (nextProps.edit !== this.props.edit ||
       nextProps.selection.newShape.type !== this.props.selection.newShape.type
@@ -356,12 +357,15 @@ export default class WebMap extends Component {
     this.props.onMove({ lat, lng })
   }
 
-  updateShowLayers = (level) => {
+  updateShowLayers = (levelEdge, visibleLayers) => {
     if (this.map) {
-      this.map.eachLayer((layer) => {
-        if (layer.id && layer.object) {
-          const layerLevel = Math.max(layer.object.level, SubordinationLevel.TEAM_CREW)
-          layer.getElement().style.display = layerLevel < level ? 'none' : ''
+      const layers = visibleLayers.split(',')
+      this.map.eachLayer((item) => {
+        if (item.id && item.object) {
+          const { layer, level } = item.object
+          const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
+          const invisible = itemLevel < levelEdge || !layer || !layers.includes(layer)
+          item.getElement().style.display = invisible ? 'none' : ''
         }
       })
     }
