@@ -557,9 +557,7 @@ function createPoint ([ point ], js, anchor) {
 }
 
 function createText ([ point ], js, anchor) {
-
   const icon = new SvgIcon({
-
     svg: js,
     iconAnchor: [ anchor.x, anchor.y ],
   })
@@ -572,7 +570,7 @@ function createText ([ point ], js, anchor) {
   setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
-  marker.options.tsType = entityKind.POINT
+  marker.options.tsType = entityKind.TEXT
   return marker
 }
 
