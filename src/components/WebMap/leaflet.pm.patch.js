@@ -473,6 +473,9 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
     case entityKind.POINT:
       layer = createPoint(points, svg, anchor)
       break
+    case entityKind.TEXT:
+      layer = createText(points, svg, anchor)
+      break
     case entityKind.SEGMENT:
       layer = createSegment(points, svgToJS(svg), color)
       break
@@ -542,6 +545,26 @@ function createPoint ([ point ], js, anchor) {
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
+  })
+  const marker = L.marker(point, { icon, draggable: false })
+  setTimeout(() => transparentSvg(marker))
+  marker.options.iconNormal = icon
+  marker.options.iconActive = iconActive
+  marker.options.tsType = entityKind.POINT
+  return marker
+}
+
+function createText ([ point ], js, anchor) {
+
+  const icon = new SvgIcon({
+
+    svg: js,
+    iconAnchor: [ anchor.x, anchor.y ],
+  })
+  const iconActive = new SvgIcon({
+    svg: js,
+    postProcess: setActivePointSignColors,
+    iconAnchor: [ anchor.x, anchor.y ],
   })
   const marker = L.marker(point, { icon, draggable: false })
   setTimeout(() => transparentSvg(marker))

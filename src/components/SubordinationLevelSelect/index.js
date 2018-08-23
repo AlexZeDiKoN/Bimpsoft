@@ -7,7 +7,7 @@ const Option = Select.Option
 
 export default class SubordinationLevelSelect extends React.Component {
   static propTypes = {
-    value: PropTypes.string,
+    value: PropTypes.number,
     onChange: PropTypes.func,
   }
 

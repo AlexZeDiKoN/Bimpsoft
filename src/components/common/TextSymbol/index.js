@@ -52,8 +52,8 @@ TextSymbol.propTypes = {
   displayAnchorLine: PropTypes.bool,
   anchorLineWithArrow: PropTypes.bool,
   magnification: PropTypes.number,
-  texts: PropTypes.arrayOf({
+  texts: PropTypes.arrayOf(PropTypes.shape({
     text: PropTypes.string,
     underline: PropTypes.bool,
-  }),
+  })),
 }

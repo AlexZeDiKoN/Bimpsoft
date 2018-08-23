@@ -28,6 +28,7 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import './bouncemarker'
+import { generateTextSymbolSvg } from '../../utils'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
   updateLayerIcons, createSearchMarker,
@@ -249,16 +250,27 @@ export default class WebMap extends Component {
       this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
       this.startCreatePoly(nextProps.edit, nextProps.selection.newShape.type)
     }
-    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create' &&
-      nextProps.selection.newShape.type === entityKind.POINT
-    ) {
-      this.createPointSign(nextProps.selection.newShape)
+    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create') {
+      const { newShape } = nextProps.selection
+      switch (newShape.type) {
+        case entityKind.POINT:
+          this.createPointSign(newShape)
+          break
+        case entityKind.TEXT:
+          this.createTextSign(newShape)
+          break
+        default:
+          break
+      }
     }
     if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit') {
       const { data } = nextProps.selection
       switch (data.type) {
         case entityKind.POINT:
           this.updatePointSign(data)
+          break
+        case entityKind.TEXT:
+          this.updateText(data)
           break
         case entityKind.CIRCLE:
           this.updateCircle(data)
@@ -501,6 +513,11 @@ export default class WebMap extends Component {
       template = symbol.asSVG()
       points = [ point ]
       anchor = symbol.getAnchor()
+    } else if (+type === entityKind.TEXT) {
+      console.log(attributes)
+      template = generateTextSymbolSvg(attributes)
+      points = [ point ]
+      anchor = { x: 0, y: 0 }
     } else if (+type === entityKind.SEGMENT) {
       template = attributes.template
       color = attributes.color
@@ -541,6 +558,7 @@ export default class WebMap extends Component {
     const { edit, selection: { newShape: { type } }, setNewShapeCoordinates, showCreateForm } = this.props
     if (edit) {
       switch (type) {
+        case entityKind.TEXT:
         case entityKind.POINT:
           setNewShapeCoordinates(latlng)
           showCreateForm()
@@ -572,6 +590,28 @@ export default class WebMap extends Component {
     })
     this.activateCreated(created)
     // TODO: скинути дані в сторі
+  }
+
+  createTextSign = async (data) => {
+    console.log('createTextSign', data)
+    const { addObject } = this.props
+    const { amplifiers, subordinationLevel, coordinatesArray = [] } = data
+    const p = coordinatesArray[0]
+    if (!p) {
+      return
+    }
+    const point = { lat: p.lat, lng: p.lng }
+    const created = await addObject({
+      type: entityKind.TEXT,
+      attributes: filterObj(amplifiers),
+      point,
+      level: subordinationLevel || 0,
+      unit: null,
+      layer: this.props.layer,
+      affiliation: 0,
+      geometry: [ point ],
+    })
+    this.activateCreated(created)
   }
 
   findLayerById = (id) => {
@@ -630,6 +670,28 @@ export default class WebMap extends Component {
       point: points[0],
       layer: layer.object.layer,
       geometry: points,
+      ...rest,
+    })
+    this.activateCreated(id)
+    // TODO: скинути дані в сторі
+  }
+
+  updateText = async (data) => {
+    console.log('updateText',data)
+    const { id, amplifiers, subordinationLevel, coordinatesArray, ...rest } = data
+    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) })).toJS()
+    const layer = this.findLayerById(id)
+    if (layer) {
+      layer.pm.disable()
+      delete layer._map.pm.activeLayer
+    }
+    await this.props.updateObject({
+      id,
+      point: points[0],
+      level: subordinationLevel || 0,
+      layer: layer.object.layer,
+      geometry: points,
+      attributes: filterObj(amplifiers),
       ...rest,
     })
     this.activateCreated(id)

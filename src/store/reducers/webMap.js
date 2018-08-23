@@ -20,6 +20,7 @@ const WebMapAttributes = Record({
   ...amplifiers,
   template: '',
   color: '',
+  texts: [],
 })
 
 const WebMapObject = Record({
