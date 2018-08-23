@@ -57,12 +57,13 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
   const {
     orgStructures: { unitsById: { [unitID]: unit = {} } },
   } = getState()
-  const { app6Code: code, id: orgStructureId } = unit
+  const { app6Code: code, id: orgStructureId, symbolData } = unit
   dispatch(setNewShape({
     type: SelectionTypes.POINT,
     code,
     orgStructureId,
     coordinatesArray: [ point ],
+    amplifiers: JSON.parse(symbolData || '{}'),
   }))
   dispatch(showCreateForm)
 })
