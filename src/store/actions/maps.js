@@ -21,10 +21,8 @@ export const deleteAllMaps = {
 
 export const openMapFolder = (operationId, folderID, selectedItem = null) => asyncAction.withNotification(
   async (dispatch, _, { api }) => {
-    // console.log({ operationId, folderID, selectedItem })
     const content = await api.getFolderContent({ operationId, folderID })
     api.checkServerResponse(content)
-    // console.log(content)
     const { entities, params: { currentContainer: { type, id, name, parentId, dateFor, formationId } } } = content
 
     switch (type) {

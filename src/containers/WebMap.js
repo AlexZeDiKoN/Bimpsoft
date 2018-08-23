@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
 import WebMapInner from '../components/WebMap'
 import * as layers from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
@@ -20,6 +21,27 @@ const objProps = (obj) => {
   }
 }
 
+const mapProps = [ 'mapId', 'visible' ]
+const layerProps = [ 'layerId', 'mapId', 'visible' ]
+
+const extract = (object, props) => props.reduce((result, prop) => ({ ...result, [prop]: object[prop] }), {})
+
+const isVisible = (map) => map && map.visible
+
+const getMaps = (state) => Object.keys(state.maps.byId).map((key) => extract(state.maps.byId[key], mapProps))
+
+const getLayers = (state) => Object.keys(state.layers.byId).map((key) => extract(state.layers.byId[key], layerProps))
+
+const visibleLayers = createSelector(
+  getMaps,
+  getLayers,
+  (maps, layers) => layers
+    .filter(({ mapId, visible }) => visible && isVisible(maps.find(({ mapId: id }) => id === mapId)))
+    .map(({ layerId }) => layerId)
+    .sort()
+    .join(',')
+)
+
 const WebMap = connect(
   (state) => ({
     sources: state.webMap.source.sources,
@@ -31,6 +53,7 @@ const WebMap = connect(
     selection: state.selection,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
+    visibleLayers: visibleLayers(state),
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isGridActive: state.viewModes.print,
