@@ -168,6 +168,7 @@ L.PM.Edit.Line.prototype._saved_removeMarker = L.PM.Edit.Line.prototype._removeM
 L.PM.Edit.Line.prototype._removeMarker = function (e) {
   switch (this._layer.options.tsType) {
     case entityKind.POINT:
+    case entityKind.TEXT:
     case entityKind.SEGMENT:
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
@@ -438,7 +439,7 @@ function setActiveLayer (map, layer, skipFire = false) {
   }
   layer.pm.enable({
     snappable: false,
-    draggable: layer.options.tsType !== entityKind.POINT,
+    draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
   })
   if (!skipFire) {
     map.fire('activelayer', { oldLayer: null, newLayer: map.pm.activeLayer })
@@ -692,6 +693,7 @@ function prepareOptions (signType, color, js) {
 export function getGeometry (layer) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
+    case entityKind.TEXT:
       return formGeometry([ layer.getLatLng() ])
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:

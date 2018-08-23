@@ -153,6 +153,9 @@ const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
 function geomPointEquals (point, data) {
+  if (!point || !data) {
+    return false
+  }
   const lng = point.get('lng')
   const lat = point.get('lat')
   return lng !== null && lat !== null &&
@@ -564,7 +567,7 @@ export default class WebMap extends Component {
       points = [ point ]
       anchor = symbol.getAnchor()
     } else if (+type === entityKind.TEXT) {
-      console.log(attributes)
+      // console.log(attributes)
       template = generateTextSymbolSvg(attributes)
       points = [ point ]
       anchor = { x: 0, y: 0 }
@@ -643,7 +646,7 @@ export default class WebMap extends Component {
   }
 
   createTextSign = async (data) => {
-    console.log('createTextSign', data)
+    // console.log('createTextSign', data)
     const { addObject } = this.props
     const { amplifiers, subordinationLevel, coordinatesArray = [] } = data
     const p = coordinatesArray[0]
@@ -727,7 +730,7 @@ export default class WebMap extends Component {
   }
 
   updateText = async (data) => {
-    console.log('updateText',data)
+    // console.log('updateText', data)
     const { id, amplifiers, subordinationLevel, coordinatesArray, ...rest } = data
     const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) })).toJS()
     const layer = this.findLayerById(id)
