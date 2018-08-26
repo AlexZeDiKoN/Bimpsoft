@@ -427,6 +427,7 @@ export default class WebMap extends Component {
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
     this.map.on('escape', this.onEscape)
+    this.map.doubleClickZoom.disable()
   }
 
   onEscape = () => {

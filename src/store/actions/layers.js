@@ -14,6 +14,28 @@ export const ADD_OBJECT = action('ADD_OBJECT')
 export const DEL_OBJECT = action('DEL_OBJECT')
 export const UPD_OBJECT = action('UPD_OBJECT')
 
+const getOrgStructuresTree = (unitsById, relations) => {
+  const byIds = {}
+  const roots = []
+  relations.forEach(({ unitID, parentUnitID }) => {
+    const unit = unitsById[unitID]
+    if (unit) {
+      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
+    }
+  })
+  relations.forEach(({ unitID, parentUnitID }) => {
+    if (byIds.hasOwnProperty(unitID)) {
+      const parent = byIds[parentUnitID]
+      if (parent) {
+        parent.children.push(unitID)
+      } else {
+        roots.push(unitID)
+      }
+    }
+  })
+  return { byIds, roots }
+}
+
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,
   layersData,
@@ -63,7 +85,9 @@ export const selectLayer = (layerId) =>
       dispatch(orgStructures.setOrgStructureUnits(unitsById))
 
       const relations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
-      dispatch(orgStructures.setOrgStructureRelations(relations))
+      const tree = getOrgStructuresTree(unitsById, relations)
+
+      dispatch(orgStructures.setOrgStructureTree(tree.byIds, tree.roots))
     }
   })
 

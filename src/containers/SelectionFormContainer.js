@@ -3,11 +3,10 @@ import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
-import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
 
 const mapStateToProps = (store) => {
-  const { selection } = store
-  const orgStructures = orgStructuresTreeSelector(store)
+  const { selection, orgStructures } = store
+  const { byIds, roots, formation } = orgStructures
   const { showForm } = selection
   let data = null
   if (showForm === null) {
@@ -17,7 +16,7 @@ const mapStateToProps = (store) => {
   } else if (showForm === 'edit') {
     data = selection.data
   }
-  return { showForm, data, orgStructures }
+  return { showForm, data, orgStructures: { byIds, roots, formation } }
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
