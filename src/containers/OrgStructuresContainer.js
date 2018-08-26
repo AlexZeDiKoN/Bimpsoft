@@ -1,27 +1,18 @@
 import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import * as selectionActions from '../store/actions/selection'
+import * as orgStructuresActions from '../store/actions/orgStructures'
 import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
-import { mapObjConvertor } from '../utils'
 
 const mapStateToProps = (store) => {
   const orgStructures = orgStructuresTreeSelector(store)
-  const selectionData = store.selection.data
-  const selectedOrgStructureId = selectionData ? +selectionData.orgStructureId : null
-  return { selectedOrgStructureId, orgStructures }
+  const { selectedId } = store.orgStructures
+  return { selectedId, orgStructures }
 }
 
 const mapDispatchToProps = {
 
-  onClick: (unitID) => (dispatch, getState) => {
-    const {
-      webMap: { center, objects },
-    } = getState()
-    const object = objects.find((object) => +object.unit === unitID)
-    if (object) {
-      dispatch(selectionActions.setSelection(mapObjConvertor.toSelection(object), center))
-    }
-  },
+  onClick: (unitID) => orgStructuresActions.setOrgStructureSelectedId(unitID),
   onDoubleClick: (unitID) => (dispatch, getState) => {
     const {
       webMap: { center, objects },

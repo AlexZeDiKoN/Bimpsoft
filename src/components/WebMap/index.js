@@ -241,7 +241,7 @@ export default class WebMap extends Component {
       }),
       data: PropTypes.shape({
         type: PropTypes.any,
-        orgStructureId: PropTypes.string,
+        orgStructureId: PropTypes.number,
       }),
     }),
     // Redux actions
@@ -259,6 +259,7 @@ export default class WebMap extends Component {
     // TODO: пибрати це після тестування
     loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
+    orgStructureSelectedId: PropTypes.number,
   }
 
   componentDidMount () {
@@ -333,18 +334,16 @@ export default class WebMap extends Component {
     if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
       this.updateShowAmplifiers(nextProps.showAmplifiers)
     }
-    if (nextProps.selection.data !== this.props.selection.data) {
-      if (nextProps.selection.data === null) {
-        clearActiveLayer(this.map, true)
+    if (
+      nextProps.selection.data === this.props.selection.data &&
+      nextProps.orgStructureSelectedId !== this.props.orgStructureSelectedId
+    ) {
+      const layer = this.findLayerByUnitId(nextProps.orgStructureSelectedId)
+      if (layer) {
+        activateLayer(layer)
+        this.map.panTo(getGeometry(layer).point)
       } else {
-        const unitId = nextProps.selection.data.orgStructureId
-        if (unitId) {
-          const layer = this.findLayerByUnitId(unitId)
-          if (layer) {
-            activateLayer(layer)
-            this.map.panTo(getGeometry(layer).point)
-          }
-        }
+        clearActiveLayer(this.map)
       }
     }
     if (nextProps.coordinatesType !== this.props.coordinatesType) {

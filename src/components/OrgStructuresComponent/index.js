@@ -35,7 +35,7 @@ export default class OrgStructuresComponent extends React.Component {
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.selectedOrgStructureId !== this.props.selectedOrgStructureId) {
+    if (prevProps.selectedId !== this.props.selectedId) {
       const scrollRef = this.scrollRef && this.scrollRef.current
       scrollRef && scrollParentToChild(this.scrollPanelRef.current, scrollRef)
     }
@@ -63,7 +63,7 @@ export default class OrgStructuresComponent extends React.Component {
       onDoubleClick,
       onClick,
       wrapper: Wrapper = Fragment,
-      selectedOrgStructureId = null,
+      selectedId = null,
     } = this.props
     const { byIds, roots, formation = null } = orgStructures
     if (formation === null) {
@@ -74,8 +74,8 @@ export default class OrgStructuresComponent extends React.Component {
     const filteredIds = getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter
       ? Object.keys(filteredIds)
-      : selectedOrgStructureId !== null
-        ? getPath(byIds, selectedOrgStructureId).slice(0, -1)
+      : selectedId !== null
+        ? getPath(byIds, selectedId).slice(0, -1)
         : null
 
     return (
@@ -97,7 +97,7 @@ export default class OrgStructuresComponent extends React.Component {
                 textFilter,
                 onClick,
                 onDoubleClick,
-                selectedOrgStructureId,
+                selectedId,
                 scrollRef: this.scrollRef,
               }}
               onMouseUp={this.mouseUpHandler}
@@ -116,7 +116,7 @@ OrgStructuresComponent.propTypes = {
     byIds: PropTypes.object.isRequired,
     formation: PropTypes.object,
   }),
-  selectedOrgStructureId: PropTypes.number,
+  selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
 }

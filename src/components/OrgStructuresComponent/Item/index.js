@@ -25,11 +25,11 @@ export default class Item extends React.Component {
   }
 
   render () {
-    const { tree, textFilter, data, scrollRef, selectedOrgStructureId } = this.props
+    const { tree, textFilter, data, scrollRef, selectedId } = this.props
     const { shortName, app6Code = null, fullName, id } = data
     const icon = tree.canExpand &&
       (<Icon type={tree.expanded ? 'minus' : 'plus'} onClick={tree.onExpand} />)
-    const isSelected = id === selectedOrgStructureId
+    const isSelected = id === selectedId
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}

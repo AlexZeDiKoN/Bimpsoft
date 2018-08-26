@@ -26,8 +26,12 @@ export const updateLayer = (layerData) => ({
 
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
-    const objects = await webmapApi.objGetList(layerId)
+    let objects = await webmapApi.objGetList(layerId)
     api.checkServerResponse(objects)
+
+    // fix response data
+    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
+
     dispatch({
       type: OBJECT_LIST,
       payload: {
@@ -86,8 +90,12 @@ export const deleteObject = (id) =>
 
 export const updateObject = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    const payload = await webmapApi.objUpdate(id, object)
+    let payload = await webmapApi.objUpdate(id, object)
     api.checkServerResponse(payload)
+
+    // fix response data
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
+
     dispatch({
       type: UPD_OBJECT,
       payload,
@@ -96,8 +104,12 @@ export const updateObject = ({ id, ...object }) =>
 
 export const updateObjectGeometry = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    const payload = await webmapApi.objUpdateGeometry(id, object)
+    let payload = await webmapApi.objUpdateGeometry(id, object)
     api.checkServerResponse(payload)
+
+    // fix response data
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
+
     dispatch({
       type: UPD_OBJECT,
       payload,
