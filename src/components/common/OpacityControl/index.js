@@ -6,7 +6,7 @@ import './style.css'
 export default class OpacityControl extends React.Component {
   render () {
     const onChange = this.props.onChange ? (e) => {
-      this.props.onChange(e.target.value)
+      this.props.onChange(parseFloat(e.target.value))
     } : null
     return (
       <div className={'opacity-control ' + this.props.className}>
