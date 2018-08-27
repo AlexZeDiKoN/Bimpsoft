@@ -3,9 +3,8 @@ const OPENSTREETMAP = {
   maxZoom: 20,
 }
 const DZVIN = {
-  source: 'http://10.8.26.84/api/BaseMapLayer/ato/{z}/{y}/{x}',
-  maxZoom: 20,
-  tms: true,
+  source: '/tiles/{z}/{x}/{y}.png',
+  maxZoom: 16
 }
 
 const MapSources = [
