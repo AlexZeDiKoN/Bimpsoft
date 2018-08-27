@@ -48,19 +48,23 @@ export const updateLayer = (layerData) => ({
 
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
-    let objects = await webmapApi.objGetList(layerId)
-    api.checkServerResponse(objects)
+    const state = getState()
+    const layersIds = Object.keys(state.layers.byId)
+    for (const layerId of layersIds) {
+      let objects = await webmapApi.objGetList(layerId)
+      api.checkServerResponse(objects)
 
-    // fix response data
-    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
+      // fix response data
+      objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
 
-    dispatch({
-      type: OBJECT_LIST,
-      payload: {
-        layerId,
-        objects,
-      },
-    })
+      dispatch({
+        type: OBJECT_LIST,
+        payload: {
+          layerId,
+          objects,
+        },
+      })
+    }
     dispatch({
       type: SELECT_LAYER,
       layerId,

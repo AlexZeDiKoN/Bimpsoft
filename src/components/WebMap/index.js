@@ -281,8 +281,13 @@ export default class WebMap extends Component {
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
     }
-    if (nextProps.level !== this.props.level || nextProps.visibleLayers !== this.props.visibleLayers) {
-      this.updateShowLayers(nextProps.level, nextProps.visibleLayers)
+    if (
+      nextProps.level !== this.props.level ||
+      nextProps.visibleLayers !== this.props.visibleLayers ||
+      nextProps.hiddenOpacity !== this.props.hiddenOpacity ||
+      nextProps.layer !== this.props.layer
+    ) {
+      this.updateShowLayers(nextProps.level, nextProps.visibleLayers, nextProps.hiddenOpacity, nextProps.layer)
     }
     if (nextProps.edit !== this.props.edit ||
       nextProps.selection.newShape.type !== this.props.selection.newShape.type
@@ -350,12 +355,10 @@ export default class WebMap extends Component {
       this.indicateMode = type2mode(nextProps.coordinatesType)
     }
     if (nextProps.backOpacity !== this.props.backOpacity && this.map && this.map._container) {
-      // TODO
-      // this.map._container.style.opacity = nextProps.backOpacity / 100
-      // так не працює - значки гаснуть разом з картою...
-    }
-    if (nextProps.hiddenOpacity !== this.props.hiddenOpacity) {
-      // TODO
+      const tilePane = this.map.getPane('tilePane')
+      if (tilePane) {
+        tilePane.style.opacity = nextProps.backOpacity / 100
+      }
     }
     return false
   }
@@ -442,17 +445,25 @@ export default class WebMap extends Component {
     this.props.onMove({ lat, lng })
   }
 
-  updateShowLayers = (levelEdge, visibleLayers) => {
+  updateShowLayer = (levelEdge, layers, hiddenOpacity, selectedLayerId, item) => {
+    if (item.id && item.object) {
+      const { layer, level } = item.object
+      const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
+      const hidden = itemLevel < levelEdge || !layer || !layers.includes(layer)
+      const opacity = Number(selectedLayerId) === Number(layer) ? 1 : (hiddenOpacity / 100)
+
+      item.setOpacity && item.setOpacity(opacity)
+      item.setHidden && item.setHidden(hidden)
+      if (hidden && this.map.pm.activeLayer === item) {
+        clearActiveLayer(this.map)
+      }
+    }
+  }
+
+  updateShowLayers = (levelEdge, visibleLayers, hiddenOpacity, selectedLayerId) => {
     if (this.map) {
       const layers = visibleLayers.split(',')
-      this.map.eachLayer((item) => {
-        if (item.id && item.object) {
-          const { layer, level } = item.object
-          const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-          const invisible = itemLevel < levelEdge || !layer || !layers.includes(layer)
-          item.getElement().style.display = invisible ? 'none' : ''
-        }
-      })
+      this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layers, hiddenOpacity, selectedLayerId, item))
     }
   }
 
@@ -585,7 +596,10 @@ export default class WebMap extends Component {
       template = attributes.template
       color = attributes.color
     }
-    createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
+    const layer = createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
+    const { level, visibleLayers, hiddenOpacity, layer: selectedLayerId } = this.props
+    const layers = visibleLayers.split(',')
+    this.updateShowLayer(level, layers, hiddenOpacity, selectedLayerId, layer)
   }
 
   deleteObject = (layer) => {
