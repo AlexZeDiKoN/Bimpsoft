@@ -21,6 +21,7 @@ const WebMapAttributes = Record({
   template: '',
   color: '',
   texts: [],
+  z: null,
 })
 
 const WebMapObject = Record({

@@ -37,6 +37,7 @@ const WebMap = connect(
     edit: state.viewModes.edit,
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
+    orgStructureSelectedId: state.orgStructures.selectedId,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
     visibleLayers: state.layers.visible ? visibleLayers(state) : '',

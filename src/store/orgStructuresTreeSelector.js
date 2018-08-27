@@ -2,8 +2,7 @@ import { createSelector } from 'reselect'
 
 const orgStructuresTreeSelector = createSelector(
   (state) => state.orgStructures,
-  (state) => state.selection.data,
-  (orgStructures, selectionData) => {
+  (orgStructures) => {
     const { unitsById, relations, formation } = orgStructures
     const byIds = {}
     const roots = []

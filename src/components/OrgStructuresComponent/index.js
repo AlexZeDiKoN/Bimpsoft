@@ -2,16 +2,13 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input, Tooltip } from 'antd'
-import { data, components, utils } from '@DZVIN/CommonComponents'
+import { data, components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import Item from './Item'
 
 const { TextFilter } = data
-const { common: { TreeComponent } } = components
+const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 
-const { getPathFunc } = utils.collection
-
-const getPath = getPathFunc((item) => item.id, (item) => item.id, (item) => item.parentUnitID)
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.shortName + ' ' + item.fullName,
   (item) => item.id,
@@ -30,12 +27,8 @@ function scrollParentToChild (parent, child) {
 }
 
 export default class OrgStructuresComponent extends React.Component {
-  state = {
-    filterText: '',
-  }
-
   componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.selectedOrgStructureId !== this.props.selectedOrgStructureId) {
+    if (prevProps.selectedId !== this.props.selectedId) {
       const scrollRef = this.scrollRef && this.scrollRef.current
       scrollRef && scrollParentToChild(this.scrollPanelRef.current, scrollRef)
     }
@@ -53,30 +46,27 @@ export default class OrgStructuresComponent extends React.Component {
   }
 
   filterTextChangeHandler = ({ target: { value } }) => {
-    this.setState({ filterText: value.trim() })
+    this.props.onFilterTextChange(value.trim())
   }
 
   render () {
-    const { filterText } = this.state
     const {
+      textFilter = null,
       orgStructures = {},
       onDoubleClick,
       onClick,
       wrapper: Wrapper = Fragment,
-      selectedOrgStructureId = null,
+      selectedId = null,
+      expandedIds,
+      onExpand,
     } = this.props
     const { byIds, roots, formation = null } = orgStructures
     if (formation === null) {
       return null
     }
 
-    const textFilter = TextFilter.create(filterText)
     const filteredIds = getFilteredIds(textFilter, byIds)
-    const expandedKeys = textFilter
-      ? Object.keys(filteredIds)
-      : selectedOrgStructureId !== null
-        ? getPath(byIds, selectedOrgStructureId).slice(0, -1)
-        : null
+    const expandedKeys = textFilter ? filteredIds : expandedIds
 
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
@@ -87,8 +77,9 @@ export default class OrgStructuresComponent extends React.Component {
             onChange={this.filterTextChangeHandler}
           />
           <div className="org-structures-scroll" ref={this.scrollPanelRef} >
-            <TreeComponent
+            <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
+              onExpand={onExpand}
               filteredIds={filteredIds}
               byIds={byIds}
               roots={roots}
@@ -97,7 +88,7 @@ export default class OrgStructuresComponent extends React.Component {
                 textFilter,
                 onClick,
                 onDoubleClick,
-                selectedOrgStructureId,
+                selectedId,
                 scrollRef: this.scrollRef,
               }}
               onMouseUp={this.mouseUpHandler}
@@ -116,7 +107,11 @@ OrgStructuresComponent.propTypes = {
     byIds: PropTypes.object.isRequired,
     formation: PropTypes.object,
   }),
-  selectedOrgStructureId: PropTypes.number,
+  textFilter: PropTypes.instanceOf(TextFilter),
+  expandedIds: PropTypes.object,
+  onExpand: PropTypes.func,
+  onFilterTextChange: PropTypes.func,
+  selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
 }

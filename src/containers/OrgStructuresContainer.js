@@ -1,27 +1,17 @@
 import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import * as selectionActions from '../store/actions/selection'
-import orgStructuresTreeSelector from '../store/orgStructuresTreeSelector'
-import { mapObjConvertor } from '../utils'
+import * as orgStructuresActions from '../store/actions/orgStructures'
 
 const mapStateToProps = (store) => {
-  const orgStructures = orgStructuresTreeSelector(store)
-  const selectionData = store.selection.data
-  const selectedOrgStructureId = selectionData ? +selectionData.orgStructureId : null
-  return { selectedOrgStructureId, orgStructures }
+  const { byIds, roots, formation, selectedId, textFilter, expandedIds } = store.orgStructures
+  return { selectedId, textFilter, expandedIds, orgStructures: { byIds, roots, formation } }
 }
 
 const mapDispatchToProps = {
-
-  onClick: (unitID) => (dispatch, getState) => {
-    const {
-      webMap: { center, objects },
-    } = getState()
-    const object = objects.find((object) => +object.unit === unitID)
-    if (object) {
-      dispatch(selectionActions.setSelection(mapObjConvertor.toSelection(object), center))
-    }
-  },
+  onExpand: (key) => orgStructuresActions.expandOrgStructureItem(key),
+  onFilterTextChange: (filterText) => orgStructuresActions.setOrgStructuresFilterText(filterText),
+  onClick: (unitID) => orgStructuresActions.setOrgStructureSelectedId(unitID),
   onDoubleClick: (unitID) => (dispatch, getState) => {
     const {
       webMap: { center, objects },
