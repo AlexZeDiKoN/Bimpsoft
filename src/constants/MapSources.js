@@ -3,7 +3,7 @@ const OPENSTREETMAP = {
   maxZoom: 20,
 }
 const DZVIN = {
-  source: '/tiles/{z}/{y}/{x}.png',
+  source: '/tiles/{z}/{x}/{y}.png',
   maxZoom: 16
 }
 
