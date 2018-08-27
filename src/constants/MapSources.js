@@ -14,7 +14,7 @@ const MapSources = [
   },
   {
     title: 'ДЗВІН',
-    sources: [ OPENSTREETMAP, DZVIN ],
+    sources: [ DZVIN ],
   },
 ]
 
