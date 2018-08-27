@@ -93,8 +93,12 @@ export const selectLayer = (layerId) =>
 
 export const addObject = (object) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    const payload = await webmapApi.objInsert(object)
+    let payload = await webmapApi.objInsert(object)
     api.checkServerResponse(payload)
+
+    // fix response data
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
+
     dispatch({
       type: ADD_OBJECT,
       payload,
