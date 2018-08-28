@@ -49,11 +49,11 @@ const WebMap = connect(
     isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
-    addObject: (object) => dispatch(layers.addObject(object)),
-    deleteObject: (id) => dispatch(layers.deleteObject(id)),
+    addObject: (object) => dispatch(webMapActions.addObject(object)),
+    deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
     editObject: () => dispatch(selectionActions.showEditForm),
-    updateObject: (object) => dispatch(layers.updateObject(object)),
-    updateObjectGeometry: (object) => dispatch(layers.updateObjectGeometry(object)),
+    updateObject: (object) => dispatch(webMapActions.updateObject(object)),
+    updateObjectGeometry: (object) => dispatch(webMapActions.updateObjectGeometry(object)),
     onSelection: (selected) => dispatch(selected
       ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),

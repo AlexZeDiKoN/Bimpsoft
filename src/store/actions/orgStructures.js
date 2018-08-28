@@ -11,11 +11,6 @@ export const setOrgStructureUnits = (unitsById) => ({
   type: SET_ORG_STRUCTURE_UNITS,
   unitsById,
 })
-export const setOrgStructureTree = (byIds, roots) => ({
-  type: SET_ORG_STRUCTURE_TREE,
-  byIds,
-  roots,
-})
 export const setOrgStructureFormation = (formation) => ({
   type: SET_ORG_STRUCTURE_FORMATION,
   formation,
@@ -31,4 +26,9 @@ export const setOrgStructuresFilterText = (filterText) => ({
 export const expandOrgStructureItem = (id) => ({
   type: EXPAND_ORG_STRUCTURE_ITEM,
   id,
+})
+export const setOrgStructureTree = (byIds, roots) => ({
+  type: SET_ORG_STRUCTURE_TREE,
+  byIds,
+  roots,
 })

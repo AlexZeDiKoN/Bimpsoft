@@ -10,14 +10,24 @@ export const updateMap = (mapData) => ({
   mapData,
 })
 
-export const deleteMap = (mapId) => ({
-  type: DELETE_MAP,
-  mapId,
-})
+export const deleteMap = (mapId) => asyncAction.withNotification(
+  async (dispatch) => {
+    dispatch({
+      type: DELETE_MAP,
+      mapId,
+    })
+    dispatch(layers.deleteLayersByMapId(mapId))
+  }
+)
 
-export const deleteAllMaps = {
-  type: DELETE_ALL_MAPS,
-}
+export const deleteAllMaps = (mapId) => asyncAction.withNotification(
+  async (dispatch) => {
+    dispatch({
+      type: DELETE_ALL_MAPS,
+    })
+    dispatch(layers.deleteAllLayers())
+  }
+)
 
 export const openMapFolder = (operationId, folderID, selectedItem = null) => asyncAction.withNotification(
   async (dispatch, _, { api }) => {

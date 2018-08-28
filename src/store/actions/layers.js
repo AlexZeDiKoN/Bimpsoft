@@ -1,18 +1,16 @@
 import { action } from '../../utils/services'
-import { asyncAction, orgStructures } from './index'
+import { asyncAction, orgStructures, webMap } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
+export const DELETE_LAYERS = action('DELETE_LAYERS')
+export const DELETE_ALL_LAYERS = action('DELETE_ALL_LAYERS')
 export const SELECT_LAYER = action('SELECT_LAYER')
 export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_VISIBLE = action('SET_VISIBLE')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
-export const OBJECT_LIST = action('OBJECT_LIST')
-export const ADD_OBJECT = action('ADD_OBJECT')
-export const DEL_OBJECT = action('DEL_OBJECT')
-export const UPD_OBJECT = action('UPD_OBJECT')
 
 const getOrgStructuresTree = (unitsById, relations) => {
   const byIds = {}
@@ -50,26 +48,17 @@ export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
     const state = getState()
     const layersIds = Object.keys(state.layers.byId)
-    for (const layerId of layersIds) {
-      let objects = await webmapApi.objGetList(layerId)
-      api.checkServerResponse(objects)
 
-      // fix response data
-      objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
-
-      dispatch({
-        type: OBJECT_LIST,
-        payload: {
-          layerId,
-          objects,
-        },
-      })
-    }
     dispatch({
       type: SELECT_LAYER,
       layerId,
     })
+
     if (layerId) {
+      for (const layerId of layersIds) {
+        dispatch(webMap.updateObjectsByLayerId(layerId))
+      }
+
       const state = getState()
       const layer = state.layers.byId[layerId]
       const { formationId = null } = layer
@@ -92,60 +81,51 @@ export const selectLayer = (layerId) =>
       const tree = getOrgStructuresTree(unitsById, relations)
 
       dispatch(orgStructures.setOrgStructureTree(tree.byIds, tree.roots))
+    } else {
+      dispatch(orgStructures.setOrgStructureFormation(null))
+      dispatch(orgStructures.setOrgStructureTree({}, []))
     }
   })
 
-export const addObject = (object) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    let payload = await webmapApi.objInsert(object)
-    api.checkServerResponse(payload)
+export const deleteLayersByMapId = (mapId) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+    const state = getState()
+    const { byId } = state.layers
 
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
+    const layersIds = Object.values(byId).filter((layer) => layer.mapId === mapId).map((layer) => layer.layerId)
 
-    dispatch({
-      type: ADD_OBJECT,
-      payload,
-    })
-    return payload.id
+    dispatch(deleteLayers(layersIds))
   })
 
-export const deleteObject = (id) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    const success = await webmapApi.objDelete(id)
-    api.checkServerResponse(success)
+export const deleteLayers = (layersIds) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+    const state = getState()
+    const { selectedId } = state.layers
+
     dispatch({
-      type: DEL_OBJECT,
-      payload: id,
+      type: DELETE_LAYERS,
+      layersIds,
     })
+
+    if (layersIds.includes(selectedId)) {
+      dispatch(selectLayer(null))
+    }
+
+    for (const layerId of layersIds) {
+      dispatch(webMap.allocateObjectsByLayerId(layerId))
+    }
   })
 
-export const updateObject = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    let payload = await webmapApi.objUpdate(id, object)
-    api.checkServerResponse(payload)
-
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
-
-    dispatch({
-      type: UPD_OBJECT,
-      payload,
-    })
-  })
-
-export const updateObjectGeometry = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    let payload = await webmapApi.objUpdateGeometry(id, object)
-    api.checkServerResponse(payload)
-
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
-
-    dispatch({
-      type: UPD_OBJECT,
-      payload,
-    })
+export const deleteAllLayers = () =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+    const state = getState()
+    const { byId } = state.layers
+    const layersIds = Object.keys(byId)
+    for (const layerId of layersIds) {
+      dispatch(webMap.allocateObjectsByLayerId(layerId))
+    }
+    dispatch({ type: DELETE_ALL_LAYERS })
+    dispatch(selectLayer(null))
   })
 
 export const setTimelineFrom = (date) => ({

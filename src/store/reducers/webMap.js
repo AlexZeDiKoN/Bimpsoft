@@ -3,7 +3,6 @@ import { Record, List, Map } from 'immutable'
 import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { OBJECT_LIST, ADD_OBJECT, DEL_OBJECT, UPD_OBJECT } from '../actions/layers'
 import { CoordinatesTypes, MapSources } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 
@@ -120,7 +119,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       }
       return state.set('isTimelineEditMode', payload)
     }
-    case OBJECT_LIST: {
+    case actionNames.OBJECT_LIST: {
       if (!payload) {
         return state
       }
@@ -131,11 +130,15 @@ export default function webMapReducer (state = WebMapState(), action) {
         return map
       })
     }
-    case ADD_OBJECT:
-    case UPD_OBJECT:
+    case actionNames.ADD_OBJECT:
+    case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))
-    case DEL_OBJECT:
+    case actionNames.DEL_OBJECT:
       return payload ? state.deleteIn([ 'objects', payload ]) : state
+    case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
+      const delLayerId = +payload
+      return state.set('objects', state.get('objects').filter(({ layer }) => +layer !== delLayerId))
+    }
     case actionNames.SET_MAP_CENTER: {
       return state.set('center', payload)
     }
