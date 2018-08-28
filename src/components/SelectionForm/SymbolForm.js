@@ -7,7 +7,6 @@ const defaultApp6Code = setStatus(setSymbol(setIdentity2('10000000000000000000',
 const elementsConfigsEditable = {
   ADD_TO_TEMPLATE: { hidden: true }, // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
   NAME: { hidden: true },
-  CODE: { readonly: true },
 }
 
 const elementsConfigsReadOnly = {}
