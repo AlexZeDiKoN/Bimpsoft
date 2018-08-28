@@ -3,8 +3,8 @@
   "version": "0.2.25",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^0.4.44",
-    "@DZVIN/MilSymbolEditor": "^0.2.17",
+    "@DZVIN/CommonComponents": "^0.4.45",
+    "@DZVIN/MilSymbolEditor": "^0.2.19",
     "@DZVIN/milsymbol": "^0.0.1",
     "antd": "^3.5.3",
     "babel-polyfill": "^6.26.0",

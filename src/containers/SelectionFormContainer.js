@@ -3,9 +3,10 @@ import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
+import * as viewModesKeys from '../constants/viewModesKeys'
 
 const mapStateToProps = (store) => {
-  const { selection, orgStructures } = store
+  const { selection, orgStructures, viewModes: { [viewModesKeys.edit]: canEdit } } = store
   const { byIds, roots, formation } = orgStructures
   const { showForm } = selection
   let data = null
@@ -16,7 +17,7 @@ const mapStateToProps = (store) => {
   } else if (showForm === 'edit') {
     data = selection.data
   }
-  return { showForm, data, orgStructures: { byIds, roots, formation } }
+  return { canEdit, showForm, data, orgStructures: { byIds, roots, formation } }
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

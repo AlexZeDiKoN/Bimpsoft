@@ -2,10 +2,12 @@ import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import * as selectionActions from '../store/actions/selection'
 import * as orgStructuresActions from '../store/actions/orgStructures'
+import * as viewModesKeys from '../constants/viewModesKeys'
 
 const mapStateToProps = (store) => {
-  const { byIds, roots, formation, selectedId, textFilter, expandedIds } = store.orgStructures
-  return { selectedId, textFilter, expandedIds, orgStructures: { byIds, roots, formation } }
+  const { orgStructures, viewModes: { [viewModesKeys.edit]: canEdit } } = store
+  const { byIds, roots, formation, selectedId, textFilter, expandedIds } = orgStructures
+  return { canEdit, selectedId, textFilter, expandedIds, orgStructures: { byIds, roots, formation } }
 }
 
 const mapDispatchToProps = {

@@ -28,6 +28,8 @@ export default class LayersComponent extends React.Component {
             onCloseAllMaps={this.props.onCloseAllMaps}
           />
           <LayersListComponent
+            timelineFrom={this.props.timelineFrom}
+            timelineTo={this.props.timelineTo}
             maps={this.props.maps}
             selectedLayerId={this.props.selectedLayerId}
             onSelectLayer={this.props.onSelectLayer}
@@ -41,7 +43,6 @@ export default class LayersComponent extends React.Component {
     )
   }
 }
-const dateType = PropTypes.oneOfType([ PropTypes.string, PropTypes.instanceOf(Date) ])
 
 LayersComponent.propTypes = {
   wrapper: PropTypes.any,
@@ -54,8 +55,8 @@ LayersComponent.propTypes = {
   onChangeLayerVisibility: PropTypes.func,
   onChangeLayerColor: PropTypes.func,
   onCloseMap: PropTypes.func,
-  timelineFrom: dateType,
-  timelineTo: dateType,
+  timelineFrom: PropTypes.any,
+  timelineTo: PropTypes.any,
   onChangeTimeLineFrom: PropTypes.func,
   onChangeTimeLineTo: PropTypes.func,
   visible: PropTypes.bool,

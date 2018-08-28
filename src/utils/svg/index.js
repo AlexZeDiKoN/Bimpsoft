@@ -21,6 +21,7 @@ const generateTextSymbolSvg = ({
     width = Math.max(width, getTextWidth(text.text))
     return `<text font-size="12px" x="0" y="${i * lineHeight + 12}" ${text.underline ? 'text-decoration="underline"' : ''} >${text.text}</text>`
   }).join('')
+  width += 6
   const height = texts.length * lineHeight
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
