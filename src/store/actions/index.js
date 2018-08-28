@@ -6,6 +6,7 @@ import * as notifications from './notifications'
 import * as orgStructures from './orgStructures'
 import * as selection from './selection'
 import * as templates from './templates'
+import * as webMap from './webMap'
 
 export {
   viewModes,
@@ -15,5 +16,6 @@ export {
   selection,
   notifications,
   orgStructures,
+  webMap,
   asyncAction,
 }

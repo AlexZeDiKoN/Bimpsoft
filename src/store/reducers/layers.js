@@ -1,4 +1,4 @@
-import { layers, maps } from '../actions'
+import { layers } from '../actions'
 
 const defItem = { visible: true, locked: false, color: null, shared: false }
 const initState = {
@@ -14,12 +14,8 @@ export default function reducer (state = initState, action) {
   const { type } = action
   switch (type) {
     case layers.SELECT_LAYER: {
-      const { byId } = state
       const { layerId } = action
-      if (byId.hasOwnProperty(layerId)) {
-        return { ...state, selectedId: layerId }
-      }
-      return state
+      return { ...state, selectedId: layerId }
     }
     case layers.UPDATE_LAYER: {
       let { byId } = state
@@ -42,24 +38,17 @@ export default function reducer (state = initState, action) {
       })
       return { ...state, byId }
     }
-    case maps.DELETE_MAP: {
-      let { byId, selectedId } = state
-      const { mapId } = action
-      const newBiId = {}
-      Object.keys(byId).forEach((key) => {
-        const item = byId[key]
-        if (item.mapId === mapId) {
-          if (selectedId === item.layerId) {
-            selectedId = null
-          }
-        } else {
-          newBiId[key] = item
-        }
+    case layers.DELETE_LAYERS: {
+      let { byId } = state
+      const { layersIds } = action
+      byId = { ...byId }
+      layersIds.forEach((layerId) => {
+        delete byId[layerId]
       })
-      return { ...state, byId: newBiId, selectedId }
+      return { ...state, byId }
     }
-    case maps.DELETE_ALL_MAPS: {
-      return { ...state, byId: {}, selectedId: null }
+    case layers.DELETE_ALL_LAYERS: {
+      return { ...state, byId: {} }
     }
     case layers.SET_TIMELINE_FROM: {
       const { date } = action

@@ -43,7 +43,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeVisibility: (visible) => dispatch(layers.setVisible(visible)),
   onChangeBackOpacity: (opacity) => dispatch(layers.setBackOpacity(opacity)),
   onChangeHiddenOpacity: (opacity) => dispatch(layers.setHiddenOpacity(opacity)),
-  onCloseAllMaps: () => dispatch(maps.deleteAllMaps),
+  onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
 })
 
 export default connect(

@@ -371,8 +371,13 @@ L.PM.Edit.Marker.prototype.enable = function (options) {
 }
 
 L.PM.Edit.Marker.prototype._save_disable = L.PM.Edit.Marker.prototype.disable
-L.PM.Edit.Marker.prototype.disable = function () {
-  this._save_disable()
+L.PM.Edit.Marker.prototype.disable = function (...args) {
+  // todo: надо понять почему тут эксепшен падает
+  try {
+    L.PM.Edit.Marker.prototype._save_disable.apply(this, args)
+  } catch (e) {
+    console.error(e)
+  }
   this._editMarker.remove()
 }
 
