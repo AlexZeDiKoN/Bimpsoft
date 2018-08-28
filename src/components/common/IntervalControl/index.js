@@ -27,11 +27,9 @@ export default class IntervalControl extends React.Component {
   }
 }
 
-const dateType = PropTypes.oneOfType([ PropTypes.string, PropTypes.instanceOf(Date) ])
-
 IntervalControl.propTypes = {
-  from: dateType,
-  to: dateType,
+  from: PropTypes.any,
+  to: PropTypes.any,
   onChangeFrom: PropTypes.func,
   onChangeTo: PropTypes.func,
 }
