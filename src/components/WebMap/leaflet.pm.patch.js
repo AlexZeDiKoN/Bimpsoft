@@ -157,6 +157,7 @@ L.PM.Edit.Line.prototype._initMarkers = function () {
 L.PM.Edit.Line.prototype._saved_createMarker = L.PM.Edit.Line.prototype._createMarker
 L.PM.Edit.Line.prototype._createMarker = function (latlng, index) {
   const marker = this._saved_createMarker(latlng)
+  marker.on('dblclick', dblClickOnControlPoint, this._layer)
   marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
   marker.on('mouseup', () => setTimeout(() => {
     if (marker._map) {
@@ -178,6 +179,7 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
     marker = this._saved_createMiddleMarker(leftM, rightM)
   }
   if (marker) {
+    marker.on('dblclick', dblClickOnControlPoint, this._layer)
     marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
     marker.on('mouseup', () => setTimeout(() => {
       if (marker._map) {
@@ -387,6 +389,7 @@ L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
     icon: L.divIcon({ className: 'marker-icon' }),
   })
   marker._pmTempLayer = true
+  marker.on('dblclick', dblClickOnControlPoint)
   marker.on('move', this._onMarkerDrag, this)
   marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
   marker.on('mouseup', () => setTimeout(() => {
@@ -487,6 +490,13 @@ function clickOnLayer (event) {
 function dblClickOnLayer (event) {
   if (event.target._map.pm.activeLayer === event.target) {
     event.target._map.fire('editlayer', event.target)
+  }
+  L.DomEvent.stopPropagation(event)
+}
+
+function dblClickOnControlPoint (event) {
+  if (event.target._map.pm.activeLayer) {
+    event.target._map.fire('editlayer', event.target._map.pm.activeLayer)
   }
   L.DomEvent.stopPropagation(event)
 }

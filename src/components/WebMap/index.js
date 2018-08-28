@@ -269,18 +269,23 @@ export default class WebMap extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
+    // Objects
     if (nextProps.objects !== this.props.objects) {
       this.updateObjects(nextProps.objects)
     }
+    // showMiniMap
     if (nextProps.showMiniMap !== this.props.showMiniMap) {
       this.updateMinimap(nextProps.showMiniMap)
     }
+    // isGridActive
     if (nextProps.isGridActive !== this.props.isGridActive) {
       toggleMapGrid(this.map, nextProps.isGridActive)
     }
+    // sources
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
     }
+    // level, visibleLayers, hiddenOpacity, layer
     if (
       nextProps.level !== this.props.level ||
       nextProps.visibleLayers !== this.props.visibleLayers ||
@@ -289,12 +294,14 @@ export default class WebMap extends Component {
     ) {
       this.updateShowLayers(nextProps.level, nextProps.visibleLayers, nextProps.hiddenOpacity, nextProps.layer)
     }
+    // edit
     if (nextProps.edit !== this.props.edit ||
       nextProps.selection.newShape.type !== this.props.selection.newShape.type
     ) {
       this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
       this.startCreatePoly(nextProps.edit, nextProps.selection.newShape.type)
     }
+    // close 'create' form
     if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create') {
       const { newShape } = nextProps.selection
       switch (newShape.type) {
@@ -308,6 +315,7 @@ export default class WebMap extends Component {
           break
       }
     }
+    // close 'edit' form
     if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit') {
       const { data } = nextProps.selection
       switch (data.type) {
@@ -324,6 +332,7 @@ export default class WebMap extends Component {
           break
       }
     }
+    // searchResult
     if (this.map && nextProps.searchResult && nextProps.searchResult !== this.props.searchResult) {
       if (this.searchMarker) {
         this.searchMarker.removeFrom(this.map)
@@ -336,9 +345,11 @@ export default class WebMap extends Component {
         setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
       }, 500)
     }
+    // showAmplifiers
     if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
       this.updateShowAmplifiers(nextProps.showAmplifiers)
     }
+    // selection
     if (
       nextProps.selection.data === this.props.selection.data &&
       nextProps.orgStructureSelectedId !== this.props.orgStructureSelectedId
@@ -351,9 +362,11 @@ export default class WebMap extends Component {
         clearActiveLayer(this.map)
       }
     }
+    // coordinatesType
     if (nextProps.coordinatesType !== this.props.coordinatesType) {
       this.indicateMode = type2mode(nextProps.coordinatesType)
     }
+    // backOpacity
     if (nextProps.backOpacity !== this.props.backOpacity && this.map && this.map._container) {
       const tilePane = this.map.getPane('tilePane')
       if (tilePane) {
@@ -463,6 +476,9 @@ export default class WebMap extends Component {
   updateShowLayers = (levelEdge, visibleLayers, hiddenOpacity, selectedLayerId) => {
     if (this.map) {
       const layers = visibleLayers.split(',')
+      if (this.map.pm.activeLayer && Number(this.map.pm.activeLayer.object.layer) !== Number(selectedLayerId)) {
+        clearActiveLayer(this.map)
+      }
       this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layers, hiddenOpacity, selectedLayerId, item))
     }
   }
@@ -526,11 +542,15 @@ export default class WebMap extends Component {
       }
       newSources.forEach((newSource) => {
         const { source, ...rest } = newSource
-        const sourceLayer = new TileLayer(source, rest)
+        let url = source
+        if (url && url[0] === '/') {
+          url = `${process.env.REACT_APP_TILES}${url}`
+        }
+        const sourceLayer = new TileLayer(url, rest)
         sourceLayer.addTo(this.map)
         this.sources.push(sourceLayer)
         if (!this.mini) {
-          this.miniSource = new TileLayer(source, { ...rest, minZoom: 0, maxZoom: 15 })
+          this.miniSource = new TileLayer(url, { ...rest, minZoom: 0, maxZoom: 15 })
           this.mini = new Control.MiniMap(this.miniSource, miniMapOptions)
           this.updateMinimap(this.props.showMiniMap)
         }
