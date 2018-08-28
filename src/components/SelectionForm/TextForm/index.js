@@ -1,5 +1,4 @@
 import React from 'react'
-// import { Checkbox, InputNumber } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { List } from 'immutable'
 import PropTypes from 'prop-types'
@@ -13,7 +12,6 @@ import {
   FormRow,
   FormColumn,
   FormDivider,
-  // FormDarkPart,
   FormButtonOk,
   FormButtonCancel,
 } from './../../form'
@@ -24,6 +22,7 @@ const { IconHovered, names: IconNames } = components.icons
 
 export default class TextForm extends React.Component {
   static propTypes = {
+    canEdit: PropTypes.bool,
     coordinatesArray: PropTypes.any,
     subordinationLevel: PropTypes.number,
     transparentBackground: PropTypes.bool,
@@ -48,7 +47,7 @@ export default class TextForm extends React.Component {
         texts = [ { text: '' } ],
       } = {},
     } = props
-    console.log('TextForm',coordinatesArray)
+
     this.state = {
       coordinatesArray,
       subordinationLevel,
@@ -95,7 +94,6 @@ export default class TextForm extends React.Component {
       magnification,
       texts,
     } = this.state
-    console.log('okHandler',coordinatesArray)
     this.props.onChange({
       coordinatesArray,
       subordinationLevel,
@@ -116,27 +114,30 @@ export default class TextForm extends React.Component {
   render () {
     const {
       subordinationLevel,
-      // transparentBackground,
-      // displayAnchorLine,
-      // anchorLineWithArrow,
-      // magnification,
       texts,
     } = this.state
+
+    const { canEdit } = this.props
+
     return (
       <Form className="text-form">
         <FormColumn label={i18n.SUBORDINATION_LEVEL}>
-          <SubordinationLevelSelect value={ subordinationLevel } onChange={this.changeSubordinationLevel} />
+          <SubordinationLevelSelect
+            readOnly={!canEdit}
+            value={ subordinationLevel }
+            onChange={this.changeSubordinationLevel}
+          />
         </FormColumn>
         <FormItem className="text-form-preview">
           <TextSymbol texts={texts.toJS()}/>
         </FormItem>
-        <FormRow label={i18n.TEXT}>
+        {canEdit && (<FormRow label={i18n.TEXT}>
           <IconHovered
             icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
             hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
             onClick={this.addTextHandler}
           />
-        </FormRow>
+        </FormRow>)}
         <FormDivider />
         <div className="text-form-scrollable">
           {texts.map((item, index) => (
@@ -144,29 +145,16 @@ export default class TextForm extends React.Component {
               key={index}
               {...item}
               index={index}
+              readOnly={!canEdit}
               canRemove={texts.size > 1}
               onChange={this.changeTextItemHandler}
               onRemove={this.removeTextItemHandler}
             />
           ))}
         </div>
-        {/* <FormDarkPart> */}
-        {/* <FormRow label={i18n.TRANSPARENT_BACKGROUND}> */}
-        {/* <Checkbox checked={transparentBackground} onChange={this.changeTransparentBackground}/> */}
-        {/* </FormRow> */}
-        {/* <FormRow label={i18n.DISPLAY_ANCHOR_LINE}> */}
-        {/* <Checkbox checked={displayAnchorLine} onChange={this.changeDisplayAnchorLine}/> */}
-        {/* </FormRow> */}
-        {/* <FormRow label={i18n.ANCHOR_LINE_WITH_ARROW}> */}
-        {/* <Checkbox checked={anchorLineWithArrow} onChange={this.changeAnchorLineWithArrow}/> */}
-        {/* </FormRow> */}
-        {/* <FormRow label={i18n.MAGNIFICATION}> */}
-        {/* <InputNumber value={magnification} onChange={this.changeMagnification} /> */}
-        {/* </FormRow> */}
-        {/* </FormDarkPart> */}
         <FormItem>
-          <FormButtonCancel onClick={this.cancelHandler}/>
-          <FormButtonOk onClick={this.okHandler}/>
+          {canEdit && (<FormButtonCancel onClick={this.cancelHandler}/>)}
+          <FormButtonOk onClick={canEdit ? this.okHandler : this.cancelHandler}/>
         </FormItem>
       </Form>
     )

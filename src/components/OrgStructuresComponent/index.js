@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import './style.css'
 import { Input, Tooltip } from 'antd'
 import { data, components } from '@DZVIN/CommonComponents'
+import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
 import Item from './Item'
 
@@ -49,6 +50,10 @@ export default class OrgStructuresComponent extends React.Component {
     this.props.onFilterTextChange(value.trim())
   }
 
+  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit) => (
+    { textFilter, onClick, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
+  ))
+
   render () {
     const {
       textFilter = null,
@@ -59,6 +64,7 @@ export default class OrgStructuresComponent extends React.Component {
       selectedId = null,
       expandedIds,
       onExpand,
+      canEdit,
     } = this.props
     const { byIds, roots, formation = null } = orgStructures
     if (formation === null) {
@@ -67,6 +73,8 @@ export default class OrgStructuresComponent extends React.Component {
 
     const filteredIds = getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
+
+    const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
 
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
@@ -84,13 +92,7 @@ export default class OrgStructuresComponent extends React.Component {
               byIds={byIds}
               roots={roots}
               itemTemplate={Item}
-              commonData={{
-                textFilter,
-                onClick,
-                onDoubleClick,
-                selectedId,
-                scrollRef: this.scrollRef,
-              }}
+              commonData={commonData}
               onMouseUp={this.mouseUpHandler}
             />
           </div>
@@ -102,6 +104,7 @@ export default class OrgStructuresComponent extends React.Component {
 
 OrgStructuresComponent.propTypes = {
   wrapper: PropTypes.any,
+  canEdit: PropTypes.bool,
   orgStructures: PropTypes.shape({
     roots: PropTypes.array.isRequired,
     byIds: PropTypes.object.isRequired,

@@ -380,7 +380,7 @@ L.PM.Edit.Marker.prototype.disable = function (...args) {
   } catch (e) {
     console.error(e)
   }
-  this._editMarker.remove()
+  this._editMarker && this._editMarker.remove()
 }
 
 L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
@@ -460,7 +460,7 @@ export const clearActiveLayer = (map, skipFire = false) => {
   delete map.pm.activeLayer
 }
 
-function setActiveLayer (map, layer, skipFire = false) {
+function setActiveLayer (map, layer, canEdit, skipFire = false) {
   map.pm.activeLayer = layer
   const p = map.pm.activeLayer._path
   if (p) {
@@ -472,26 +472,15 @@ function setActiveLayer (map, layer, skipFire = false) {
     map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
     checkPointSignIconTransparent(map.pm.activeLayer)
   }
-  layer.pm.enable({
-    snappable: false,
-    draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
-  })
+  if (canEdit) {
+    layer.pm.enable({
+      snappable: false,
+      draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
+    })
+  }
   if (!skipFire) {
     map.fire('activelayer', { oldLayer: null, newLayer: map.pm.activeLayer })
   }
-}
-
-function clickOnLayer (event) {
-  activateLayer(event.target)
-  L.DomEvent.stopPropagation(event)
-  event.target._map._container.focus()
-}
-
-function dblClickOnLayer (event) {
-  if (event.target._map.pm.activeLayer === event.target) {
-    event.target._map.fire('editlayer', event.target)
-  }
-  L.DomEvent.stopPropagation(event)
 }
 
 function dblClickOnControlPoint (event) {
@@ -501,12 +490,12 @@ function dblClickOnControlPoint (event) {
   L.DomEvent.stopPropagation(event)
 }
 
-export function activateLayer (newLayer) {
+export function activateLayer (newLayer, canEdit) {
   const map = newLayer._map
   const oldLayer = map.pm.activeLayer
   if (newLayer !== oldLayer) {
     clearActiveLayer(map, true)
-    setActiveLayer(map, newLayer, true)
+    setActiveLayer(map, newLayer, canEdit, true)
     map.fire('activelayer', { oldLayer, newLayer })
   }
 }
@@ -547,13 +536,6 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
       break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
-  }
-  if (layer) {
-    layer.id = id
-    layer.object = object
-    layer.on('click', clickOnLayer)
-    layer.on('dblclick', dblClickOnLayer)
-    layer.addTo(map)
   }
   return layer
 }
