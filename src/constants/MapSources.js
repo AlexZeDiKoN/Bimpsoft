@@ -4,17 +4,17 @@ const OPENSTREETMAP = {
 }
 const DZVIN = {
   source: '/tiles/{z}/{x}/{y}.png',
-  maxZoom: 16
+  maxZoom: 16,
 }
 
 const MapSources = [
   {
-    title: 'Open Street Map',
-    sources: [ OPENSTREETMAP ],
-  },
-  {
     title: 'ДЗВІН',
     sources: [ DZVIN ],
+  },
+  {
+    title: 'Open Street Map',
+    sources: [ OPENSTREETMAP ],
   },
 ]
 
