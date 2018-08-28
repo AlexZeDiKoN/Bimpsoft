@@ -1,3 +1,4 @@
+/* global L */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Shortcuts } from 'react-shortcuts'
@@ -300,6 +301,15 @@ export default class WebMap extends Component {
     ) {
       this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
       this.startCreatePoly(nextProps.edit, nextProps.selection.newShape.type)
+      if (nextProps.selection.newShape.type) {
+        clearActiveLayer(this.map, true)
+      } else {
+        const activeLayer = this.map.pm.activeLayer
+        if (activeLayer) {
+          clearActiveLayer(this.map, true)
+          activateLayer(activeLayer, nextProps.edit)
+        }
+      }
     }
     // close 'create' form
     if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create') {
@@ -354,9 +364,9 @@ export default class WebMap extends Component {
       nextProps.selection.data === this.props.selection.data &&
       nextProps.orgStructureSelectedId !== this.props.orgStructureSelectedId
     ) {
-      const layer = this.findLayerByUnitId(nextProps.orgStructureSelectedId)
+      const layer = this.findLayerByUnitId(nextProps.orgStructureSelectedId, nextProps.layer)
       if (layer) {
-        activateLayer(layer)
+        activateLayer(layer, nextProps.edit)
         this.map.panTo(getGeometry(layer).point)
       } else {
         clearActiveLayer(this.map)
@@ -617,9 +627,33 @@ export default class WebMap extends Component {
       color = attributes.color
     }
     const layer = createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
-    const { level, visibleLayers, hiddenOpacity, layer: selectedLayerId } = this.props
-    const layers = visibleLayers.split(',')
-    this.updateShowLayer(level, layers, hiddenOpacity, selectedLayerId, layer)
+    if (layer) {
+      layer.id = id
+      layer.object = object
+      layer.on('click', this.clickOnLayer)
+      layer.on('dblclick', this.dblClickOnLayer)
+      layer.addTo(this.map)
+      const { level, visibleLayers, hiddenOpacity, layer: selectedLayerId } = this.props
+      const layers = visibleLayers.split(',')
+      this.updateShowLayer(level, layers, hiddenOpacity, selectedLayerId, layer)
+    }
+  }
+
+  clickOnLayer = (event) => {
+    const { target } = event
+    const targetLayer = target.object && target.object.layer
+    if (Number(targetLayer) === this.props.layer) {
+      activateLayer(target, this.props.edit)
+      L.DomEvent.stopPropagation(event)
+      event.target._map._container.focus()
+    }
+  }
+
+  dblClickOnLayer = (event) => {
+    if (event.target._map.pm.activeLayer === event.target) {
+      event.target._map.fire('editlayer', event.target)
+    }
+    L.DomEvent.stopPropagation(event)
   }
 
   deleteObject = (layer) => {
@@ -720,10 +754,10 @@ export default class WebMap extends Component {
     }
   }
 
-  findLayerByUnitId = (id) => {
+  findLayerByUnitId = (id, layerId) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (layer.object && layer.object.unit === id) {
+      if (layer.object && layer.object.unit === id && Number(layer.object.layer) === layerId) {
         return layer
       }
     }
@@ -984,7 +1018,7 @@ export default class WebMap extends Component {
     if (created) {
       const layer = this.findLayerById(created)
       if (layer) {
-        activateLayer(layer)
+        activateLayer(layer, this.props.edit)
         this.map.panTo(getGeometry(layer).point)
       }
       this.props.onSelection(layer || null)
