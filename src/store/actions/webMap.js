@@ -17,6 +17,7 @@ export const actionNames = {
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
+  REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
 }
 
@@ -71,7 +72,7 @@ export const setCenter = (center) => ({
 })
 
 export const addObject = (object) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     let payload = await webmapApi.objInsert(object)
     api.checkServerResponse(payload)
 
@@ -86,7 +87,7 @@ export const addObject = (object) =>
   })
 
 export const deleteObject = (id) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     const success = await webmapApi.objDelete(id)
     api.checkServerResponse(success)
     dispatch({
@@ -95,8 +96,24 @@ export const deleteObject = (id) =>
     })
   })
 
+export const refreshObject = (id) =>
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+    let object = await webmapApi.objRefresh(id)
+    api.checkServerResponse(object)
+
+    // fix response data
+    if (object.id) {
+      object = { ...object, unit: object.unit ? +object.unit : null }
+    }
+
+    dispatch({
+      type: actionNames.REFRESH_OBJECT,
+      payload: { id, object },
+    })
+  })
+
 export const updateObject = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     let payload = await webmapApi.objUpdate(id, object)
     api.checkServerResponse(payload)
 
@@ -110,7 +127,7 @@ export const updateObject = ({ id, ...object }) =>
   })
 
 export const updateObjectsByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     let objects = await webmapApi.objGetList(layerId)
     api.checkServerResponse(objects)
 
@@ -132,7 +149,7 @@ export const allocateObjectsByLayerId = (layerId) => ({
 })
 
 export const updateObjectGeometry = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     let payload = await webmapApi.objUpdateGeometry(id, object)
     api.checkServerResponse(payload)
 

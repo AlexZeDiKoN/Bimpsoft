@@ -139,6 +139,12 @@ export default function webMapReducer (state = WebMapState(), action) {
       const delLayerId = +payload
       return state.set('objects', state.get('objects').filter(({ layer }) => +layer !== delLayerId))
     }
+    case actionNames.REFRESH_OBJECT: {
+      const { id, object } = payload
+      return object.id
+        ? update(state, 'objects', (map) => updateObject(map, object)) // Об'єкт додано або змінено
+        : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
+    }
     case actionNames.SET_MAP_CENTER: {
       return state.set('center', payload)
     }

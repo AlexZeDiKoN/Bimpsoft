@@ -2,7 +2,7 @@ import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
   ADD_TEXT,
   // TODO: пибрати це після тестування
-  LOAD_TEST_OBJECTS, SELECT_PRINT_AREA,
+  SELECT_PRINT_AREA,
 } from '../../constants/shortcuts'
 
 export default {
@@ -19,6 +19,5 @@ export default {
     [ADD_TEXT]: 'alt+0',
     // TODO: пибрати це після тестування
     [SELECT_PRINT_AREA]: 'alt+p',
-    [LOAD_TEST_OBJECTS]: 'alt+`',
   },
 }

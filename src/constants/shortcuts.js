@@ -8,7 +8,5 @@ export const ADD_CIRCLE = 'ADD_CIRCLE'
 export const ADD_RECTANGLE = 'ADD_RECTANGLE'
 export const ADD_SQUARE = 'ADD_SQUARE'
 export const ADD_TEXT = 'ADD_TEXT'
-
 // TODO: прибрати це після тестування
 export const SELECT_PRINT_AREA = 'SELECT_PRINT_AREA'
-export const LOAD_TEST_OBJECTS = 'LOAD_TEST_OBJECTS'

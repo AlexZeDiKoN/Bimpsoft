@@ -559,7 +559,7 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
 }
 
 export function createSearchMarker (point, text) {
-  const icon = new L.Icon.Default({ imagePath: '/images/' })
+  const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
   return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
 }
 
