@@ -48,7 +48,7 @@ const forms = {
 
 export default class SelectionForm extends React.Component {
   changeHandler = (data) => {
-    this.props.onChange(data)
+    this.props.canEdit ? this.props.onChange(data) : this.props.onCancel()
   }
 
   cancelHandler = () => {
@@ -60,7 +60,7 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { data, orgStructures } = this.props
+    const { data, orgStructures, canEdit } = this.props
     if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
@@ -71,6 +71,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper title={title} onClose={this.cancelHandler}>
         <Component
           {...data}
+          canEdit={canEdit}
           orgStructures={orgStructures}
           onChange={this.changeHandler}
           onClose={this.cancelHandler}
