@@ -21,7 +21,21 @@
     -->
     <title>React App</title>
   </head>
-  <script src="http://localhost:3002/socket.io/socket.io.js"></script>
+  <script>
+    const originParts = window.origin.split(':')
+    if (originParts.length > 2) {
+      originParts.splice(-1, 1)
+    }
+    originParts.push('3002')
+    const script = document.createElement('script')
+    script.onload = function() {
+      console.info(`Socket.io script loaded`)
+    }
+    const src = originParts.join(':') + '/socket.io/socket.io.js'
+    script.src = src
+    document.getElementsByTagName('head')[0].appendChild(script)
+  </script>
+  <!--script src="http://localhost:3002/socket.io/socket.io.js"></script-->
   <body>
     <noscript>
       You need to enable JavaScript to run this app.

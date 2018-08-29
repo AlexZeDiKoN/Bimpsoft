@@ -11,6 +11,7 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
+
   setOpacity: function (opacity) {
     this._opacity = opacity
     const el = this.getElement()
@@ -18,6 +19,7 @@ const DzvinMarker = L.Marker.extend({
       el.style.opacity = this._opacity
     }
   },
+
   setHidden: function (hidden) {
     this._hidden = hidden
     const el = this.getElement()
