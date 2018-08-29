@@ -28,11 +28,8 @@
     }
     originParts.push('3002')
     const script = document.createElement('script')
-    script.onload = function() {
-      console.info(`Socket.io script loaded`)
-    }
-    const src = originParts.join(':') + '/socket.io/socket.io.js'
-    script.src = src
+    script.onload = () => console.info(`Socket.io script loaded`)
+    script.src = originParts.join(':') + '/socket.io/socket.io.js'
     document.getElementsByTagName('head')[0].appendChild(script)
   </script>
   <!--script src="http://localhost:3002/socket.io/socket.io.js"></script-->
