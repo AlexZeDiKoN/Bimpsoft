@@ -16,7 +16,7 @@ import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
   ADD_TEXT,
   // TODO: пибрати це після тестування
-  LOAD_TEST_OBJECTS, SELECT_PRINT_AREA,
+  SELECT_PRINT_AREA,
 } from '../../constants/shortcuts'
 import { toggleMapGrid } from '../../services/coordinateGrid'
 import { version } from '../../version'
@@ -227,6 +227,7 @@ export default class WebMap extends Component {
         lng: PropTypes.number,
       }),
     }),
+    socket: PropTypes.any,
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     coordinatesType: PropTypes.string,
@@ -246,6 +247,7 @@ export default class WebMap extends Component {
       }),
     }),
     // Redux actions
+    refreshObject: PropTypes.func,
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
     editObject: PropTypes.func,
@@ -257,16 +259,18 @@ export default class WebMap extends Component {
     hideForm: PropTypes.func,
     onMove: PropTypes.func,
     onDropUnit: PropTypes.func,
-    // TODO: пибрати це після тестування
-    loadTestObjects: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
     orgStructureSelectedId: PropTypes.number,
   }
 
   componentDidMount () {
+    const { sources, socket, refreshObject } = this.props
     this.setMapView()
-    this.setMapSource(this.props.sources)
+    this.setMapSource(sources)
     this.initObjects()
+    if (socket) {
+      socket.on('update object', refreshObject)
+    }
   }
 
   shouldComponentUpdate (nextProps) {
@@ -829,6 +833,7 @@ export default class WebMap extends Component {
     // TODO: скинути дані в сторі
   }
 
+  // TODO: пибрати це після тестування
   handleShortcuts = async (action) => {
     const { addObject } = this.props
     const bounds = this.map.getBounds()
@@ -953,16 +958,10 @@ export default class WebMap extends Component {
       case ADD_TEXT:
         console.info('ADD_TEXT')
         break
-      // TODO: пибрати це після тестування
       case SELECT_PRINT_AREA:
         tempPrintFlag = !tempPrintFlag
         toggleMapGrid(this.map, tempPrintFlag)
         break
-      case LOAD_TEST_OBJECTS: {
-        console.info('LOAD_TEST_OBJECTS')
-        this.props.loadTestObjects()
-        break
-      }
       default:
         console.error(`Unknown action: ${action}`)
     }

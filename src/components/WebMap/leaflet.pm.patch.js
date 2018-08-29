@@ -11,6 +11,7 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
+
   setOpacity: function (opacity) {
     this._opacity = opacity
     const el = this.getElement()
@@ -18,6 +19,7 @@ const DzvinMarker = L.Marker.extend({
       el.style.opacity = this._opacity
     }
   },
+
   setHidden: function (hidden) {
     this._hidden = hidden
     const el = this.getElement()
@@ -541,7 +543,7 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
 }
 
 export function createSearchMarker (point, text) {
-  const icon = new L.Icon.Default({ imagePath: '/images/' })
+  const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
   return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
 }
 

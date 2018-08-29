@@ -8,6 +8,7 @@ const WebmapApi = {
   objUpdateGeometry,
   objInsert,
   objDelete,
+  objRefresh,
   placeSearch,
 }
 
@@ -31,6 +32,10 @@ function objInsert (data) {
 
 function objDelete (id = 0) {
   return getDirect(`${webmapUrl}/obj/${id}/del`, false)
+}
+
+function objRefresh (id = 0) {
+  return getDirect(`${webmapUrl}/obj/${id}/refresh`, false)
 }
 
 function placeSearch (sample) {

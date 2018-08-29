@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import WebMapInner from '../components/WebMap'
-import * as layers from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
@@ -47,8 +46,10 @@ const WebMap = connect(
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isGridActive: state.viewModes.print,
+    socket: window.socket,
   }),
   (dispatch) => ({
+    refreshObject: (id) => dispatch(webMapActions.refreshObject(id)),
     addObject: (object) => dispatch(webMapActions.addObject(object)),
     deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
     editObject: () => dispatch(selectionActions.showEditForm),
@@ -60,8 +61,6 @@ const WebMap = connect(
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     hideForm: () => dispatch(selectionActions.hideForm),
-    // TODO: пибрати це після тестування
-    loadTestObjects: () => dispatch(layers.selectLayer(null)),
     onMove: (center) => dispatch(webMapActions.setCenter(center)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
   }),
