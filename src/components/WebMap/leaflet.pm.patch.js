@@ -1,6 +1,24 @@
 /* global L, DOMParser */
 
+const setOpacity = function (opacity) {
+  this._opacity = opacity
+  const el = this.getElement()
+  if (el) {
+    el.style.opacity = this._opacity
+  }
+}
+
+const setHidden = function (hidden) {
+  this._hidden = hidden
+  const el = this.getElement()
+  if (el) {
+    el.style.display = this._hidden ? 'none' : ''
+  }
+}
+
 const DzvinMarker = L.Marker.extend({
+  setOpacity,
+  setHidden,
   update: function (...args) {
     L.Marker.prototype.update.apply(this, args)
     const el = this.getElement()
@@ -11,23 +29,10 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
-
-  setOpacity: function (opacity) {
-    this._opacity = opacity
-    const el = this.getElement()
-    if (el) {
-      el.style.opacity = this._opacity
-    }
-  },
-
-  setHidden: function (hidden) {
-    this._hidden = hidden
-    const el = this.getElement()
-    if (el) {
-      el.style.display = this._hidden ? 'none' : ''
-    }
-  },
 })
+
+L.Path.prototype.setOpacity = setOpacity
+L.Path.prototype.setHidden = setHidden
 
 // ------------------------ Константи ----------------------------------------------------------------------------------
 const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
