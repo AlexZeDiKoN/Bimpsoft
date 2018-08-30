@@ -213,6 +213,7 @@ export default class WebMap extends Component {
     sources: PropTypes.arrayOf(
       PropTypes.shape({
         source: PropTypes.string,
+        minZoom: PropTypes.number,
         maxZoom: PropTypes.number,
         tms: PropTypes.bool,
       })
@@ -339,11 +340,8 @@ export default class WebMap extends Component {
         case entityKind.TEXT:
           this.updateText(data)
           break
-        case entityKind.CIRCLE:
-          this.updateCircle(data)
-          break
         default:
-          break
+          this.updateFigure(data)
       }
     }
     // searchResult
@@ -792,8 +790,11 @@ export default class WebMap extends Component {
     // TODO: скинути дані в сторі
   }
 
-  updateCircle = async (data) => {
+  updateFigure = async (data) => {
     const { id, coordinates, coordinatesArray, ...rest } = data
+    if (!id) {
+      return
+    }
     const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
     const layer = this.findLayerById(id)
     if (layer) {
