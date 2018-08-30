@@ -84,6 +84,7 @@ export default class SelectionForm extends React.Component {
 
 SelectionForm.propTypes = {
   data: PropTypes.object,
+  canEdit: PropTypes.bool,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
   onAddToTemplates: PropTypes.func,

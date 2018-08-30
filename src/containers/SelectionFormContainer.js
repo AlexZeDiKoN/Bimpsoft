@@ -1,21 +1,35 @@
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { SEGMENT_ARC, SEGMENT_DIRECT } from '../components/SelectionForm/ShapeForm'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
 import * as viewModesKeys from '../constants/viewModesKeys'
+import SelectionTypes from '../constants/SelectionTypes'
 
 const mapStateToProps = (store) => {
   const { selection, orgStructures, viewModes: { [viewModesKeys.edit]: canEdit } } = store
   const { byIds, roots, formation } = orgStructures
   const { showForm } = selection
   let data = null
-  if (showForm === null) {
-    data = null
-  } else if (showForm === 'create') {
+  if (showForm === 'create') {
     data = selection.newShape
   } else if (showForm === 'edit') {
     data = selection.data
+  }
+  if (data) {
+    switch (data.type) {
+      case SelectionTypes.AREA:
+      case SelectionTypes.CURVE:
+        data.segment = SEGMENT_ARC
+        break
+      case SelectionTypes.POLYGON:
+      case SelectionTypes.POLYLINE:
+        data.segment = SEGMENT_DIRECT
+        break
+      default:
+        break
+    }
   }
   return { canEdit, showForm, data, orgStructures: { byIds, roots, formation } }
 }

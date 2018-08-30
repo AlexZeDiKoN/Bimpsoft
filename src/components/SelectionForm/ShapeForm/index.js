@@ -22,8 +22,8 @@ const Option = Select.Option
 
 const { icons: { Icon, IconHovered, names: iconNames } } = components
 
-const SEGMENT_ARC = 'arc'
-const SEGMENT_DIRECT = 'direct'
+export const SEGMENT_ARC = 'arc'
+export const SEGMENT_DIRECT = 'direct'
 
 const TYPE_SOLID = 'solid'
 const TYPE_DASHED = 'dashed'
