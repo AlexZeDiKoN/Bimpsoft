@@ -57,6 +57,7 @@ const typeOption = (value, borderStyle, title) => (
 
 export default class ShapeForm extends React.Component {
   static propTypes = {
+    type: PropTypes.any,
     color: PropTypes.string,
     segment: PropTypes.string,
     lineType: PropTypes.string,
@@ -68,12 +69,14 @@ export default class ShapeForm extends React.Component {
   constructor (props) {
     super(props)
     const {
+      type,
       color = colors.BLUE,
       segment = SEGMENT_DIRECT,
       lineType = TYPE_SOLID,
       coordinatesArray = [ ],
     } = props
     this.state = {
+      type,
       color,
       segment,
       lineType,
@@ -82,27 +85,38 @@ export default class ShapeForm extends React.Component {
     }
   }
 
-  colorChangeHandler = (value) => this.setState({ color: value })
+  colorChangeHandler = (value) => this.setState({
+    color: value,
+  })
 
-  segmentChangeHandler = (value) => this.setState({ segment: value })
+  segmentChangeHandler = (value) => this.setState({
+    segment: value,
+  })
 
-  lineTypeChangeHandler = (value) => this.setState({ lineType: value })
+  lineTypeChangeHandler = (value) => this.setState({
+    lineType: value,
+  })
 
-  coordinateChangeHandler = (index, item) => {
-    this.setState({ coordinatesArray: this.state.coordinatesArray.set(index, item) })
-  }
+  coordinateChangeHandler = (index, item) => this.setState((state) => ({
+    coordinatesArray: state.coordinatesArray.set(index, item),
+  }))
 
   coordinateRemoveHandler = (index) => {
     if (this.state.coordinatesArray.size <= 1) {
       return
     }
-    this.setState({ coordinatesArray: this.state.coordinatesArray.delete(index) })
+    this.setState((state) => ({
+      coordinatesArray: state.coordinatesArray.delete(index),
+    }))
   }
 
-  coordinatesEditClickHandler = () => this.setState({ editCoordinates: !this.state.editCoordinates })
+  coordinatesEditClickHandler = () => this.setState((state) => ({
+    editCoordinates: !state.editCoordinates,
+  }))
 
   okHandler = () => {
     const {
+      type,
       color,
       segment,
       lineType,
@@ -110,6 +124,7 @@ export default class ShapeForm extends React.Component {
       coordinatesArray,
     } = this.state
     this.props.onChange({
+      type,
       color,
       segment,
       lineType,
@@ -122,9 +137,9 @@ export default class ShapeForm extends React.Component {
     this.props.onClose()
   }
 
-  coordinateAddHandler = () => {
-    this.setState({ coordinatesArray: this.state.coordinatesArray.push(coordinates.parse('')) })
-  }
+  coordinateAddHandler = () => this.setState((state) => ({
+    coordinatesArray: state.coordinatesArray.push(coordinates.parse('')),
+  }))
 
   render () {
     const {
