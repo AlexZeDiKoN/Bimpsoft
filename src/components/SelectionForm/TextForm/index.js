@@ -6,18 +6,18 @@ import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
 import { SubordinationLevel } from '../../../constants'
 import TextSymbol from '../../common/TextSymbol'
-import {
-  default as Form,
+import TextItem from './TextItem'
+import './style.css'
+
+const {
+  default: Form,
   FormItem,
   FormRow,
   FormColumn,
   FormDivider,
   FormButtonOk,
   FormButtonCancel,
-} from './../../form'
-import TextItem from './TextItem'
-import './style.css'
-
+} = components.form
 const { IconHovered, names: IconNames } = components.icons
 
 export default class TextForm extends React.Component {

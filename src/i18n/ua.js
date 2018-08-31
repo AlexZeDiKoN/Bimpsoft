@@ -100,3 +100,5 @@ export const REMOVE = 'Видалити'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
+
+export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'

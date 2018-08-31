@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
-import { FormItem } from './../../form'
+const { FormItem } = components.form
 
 const { IconHovered, names: IconNames } = components.icons
 

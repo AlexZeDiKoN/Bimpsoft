@@ -4,7 +4,8 @@ import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
 import SymbolForm from './SymbolForm'
-import ShapeForm from './ShapeForm'
+import LineForm from './LineForm'
+import RactangleForm from './RactangleForm'
 import TextForm from './TextForm'
 
 const forms = {
@@ -14,31 +15,31 @@ const forms = {
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
-    component: ShapeForm,
+    component: RactangleForm,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
-    component: ShapeForm,
+    component: LineForm,
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,

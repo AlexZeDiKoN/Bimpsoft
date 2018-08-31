@@ -2,10 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { FormItem } from './../../form'
 
 const { IconHovered, names: IconNames } = components.icons
-const { InputWithSuffix } = components.form
+const { InputWithSuffix, FormItem } = components.form
 const { Coordinates } = utils
 
 export default class CoordinateItem extends React.Component {
