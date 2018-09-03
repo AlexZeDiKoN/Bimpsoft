@@ -442,6 +442,8 @@ export default class WebMap extends Component {
     })
     this.coordinates.addTo(this.map)
     const scale = new L.Control.SwitchScaleControl({
+      scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
+      splitScale: true,
       // position: 'topleft',
       // dropdownDirection: 'downward',
       ratioCustomItemText: '1: інший...',
