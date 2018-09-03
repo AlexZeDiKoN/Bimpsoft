@@ -29,6 +29,8 @@ import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
+import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
+import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import './bouncemarker'
 import { generateTextSymbolSvg } from '../../utils'
 import {
@@ -439,6 +441,14 @@ export default class WebMap extends Component {
       customLabelFcn: this.showCoordinates,
     })
     this.coordinates.addTo(this.map)
+    const scale = new L.Control.SwitchScaleControl({
+      // position: 'topleft',
+      // dropdownDirection: 'downward',
+      ratioCustomItemText: '1: інший...',
+      customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
+    })
+    this.map.addControl(scale)
+    scale._container.style.left = '20px'
     DomEvent.addListener(this.coordinates._container, 'click', () => {
       this.toggleIndicateMode()
       this.coordinates._update({ latlng: this.coordinates._currentPos })
