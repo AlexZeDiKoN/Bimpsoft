@@ -39,7 +39,7 @@ const epsilon = 1e-5 // Досить мале число, яке можемо в
 const mouseupTimer = 333
 const activelayerColor = '#0a0' // Колір активного тактичного знака
 const activeBackColor = '#252' // Колір фону активного тактичного знака
-// const pointSignSize = 100 // Піксельний розмір тактичного знаку точкового типу
+
 export const entityKind = { // ID в базі даних відповідних типів тактичних знаків
   POINT: 1, // точковий знак (MilSymbol)
   SEGMENT: 2, // знак відрізкового типу
@@ -547,7 +547,7 @@ export function createTacticalSign (id, object, type, points, svg, color, map, a
   return layer
 }
 
-export function createSearchMarker (point, text) {
+export function createSearchMarker (point) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
   return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
 }
