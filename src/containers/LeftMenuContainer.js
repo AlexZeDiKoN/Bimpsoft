@@ -1,10 +1,31 @@
 import { connect } from 'react-redux'
+import { createSelector } from 'reselect'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-// import SelectionTypes from '../constants/SelectionTypes'
+
+const layerNameSelector = createSelector(
+  (state) => state.layers,
+  (state) => state.maps,
+  (layers, maps) => {
+    const { byId, selectedId } = layers
+    if (selectedId === null) {
+      return ''
+    }
+    const layer = byId[selectedId]
+    if (!layer) {
+      return ''
+    }
+
+    const map = maps.byId[layer.mapId]
+    if (!map) {
+      return layer.name
+    }
+    return `${map.name} / ${layer.name}`
+  }
+)
 
 const mapStateToProps = (store) => {
   const {
@@ -18,6 +39,9 @@ const mapStateToProps = (store) => {
     selection: { newShape },
     webMap: { subordinationLevel },
   } = store
+
+  const layerName = layerNameSelector(store)
+
   return {
     isEditMode,
     // isShowPoints,
@@ -26,6 +50,7 @@ const mapStateToProps = (store) => {
     isShowSubordinationLevel,
     newShape,
     subordinationLevel,
+    layerName,
   }
 }
 const mapDispatchToProps = {

@@ -32,6 +32,7 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
     onLinesListClose: PropTypes.func,
+    layerName: PropTypes.string,
   }
 
   selectLineHandler = (type) => {
@@ -65,6 +66,7 @@ export default class LeftMenu extends React.Component {
       onSubordinationLevelChange,
       mapSources,
       isShowSources,
+      layerName,
     } = this.props
 
     const subordinationLevelViewData = SubordinationLevel.list.find((item) => item.value === subordinationLevel)
@@ -152,6 +154,7 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
+        <div className="menu-layer-name">{layerName}</div>
       </div>
     )
   }
