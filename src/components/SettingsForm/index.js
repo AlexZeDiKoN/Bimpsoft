@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Switch } from 'antd'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
-import { default as Form, FormRow } from '../form'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
+
+const { default: Form, FormRow } = components.form
 
 export default class SettingsForm extends React.Component {
   static propTypes = {

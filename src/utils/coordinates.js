@@ -101,9 +101,29 @@ const getName = (coordinate) => {
   return names.hasOwnProperty(type) ? names[type] : ''
 }
 
+const roundLat = (lat) => Math.round(lat * 10000000) / 10000000
+const roundLng = (lng) => Math.round(lng * 10000000) / 10000000
+
+const roundCoordinate = (coordinate = null) => {
+  if (coordinate === null) {
+    return null
+  }
+  coordinate = { ...coordinate }
+  if (coordinate.lat) {
+    coordinate.lat = roundLat(coordinate.lat)
+  }
+  if (coordinate.lng) {
+    coordinate.lng = roundLng(coordinate.lng)
+  }
+  return coordinate
+}
+
 export default {
   parse,
   stringify,
   isWrong,
   getName,
+  roundLat,
+  roundLng,
+  roundCoordinate,
 }
