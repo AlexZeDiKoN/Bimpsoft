@@ -49,6 +49,13 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
   dashArray: [ 5, 5 ],
 }
 
+const switchScaleOptions = {
+  scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
+  splitScale: true,
+  ratioCustomItemText: '1: інший...',
+  customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
+}
+
 const calcPointSize = (zoom) => zoom <= 0
   ? pointSizes.zoom0
   : zoom >= 20
@@ -441,14 +448,7 @@ export default class WebMap extends Component {
       customLabelFcn: this.showCoordinates,
     })
     this.coordinates.addTo(this.map)
-    const scale = new L.Control.SwitchScaleControl({
-      scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
-      splitScale: true,
-      // position: 'topleft',
-      // dropdownDirection: 'downward',
-      ratioCustomItemText: '1: інший...',
-      customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
-    })
+    const scale = new L.Control.SwitchScaleControl(switchScaleOptions)
     this.map.addControl(scale)
     scale._container.style.left = '20px'
     DomEvent.addListener(this.coordinates._container, 'click', () => {
