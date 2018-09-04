@@ -19,14 +19,9 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     this.state.editCoordinates = false
   }
 
-  coordinateRemoveHandler = (index) => {
-    if (this.state.coordinatesArray.size <= 2) {
-      return
-    }
-    this.setState((state) => ({
-      coordinatesArray: state.coordinatesArray.delete(index),
-    }))
-  }
+  coordinateRemoveHandler = (index) => this.setState(
+    (state) => (state.coordinatesArray.size <= 2) ? null : { coordinatesArray: state.coordinatesArray.delete(index) }
+  )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
     editCoordinates: !state.editCoordinates,

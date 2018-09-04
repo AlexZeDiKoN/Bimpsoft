@@ -40,21 +40,19 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
     this.state.widthText = String(width)
   }
 
-  coordinateChangeHandler = (index, coordX) => {
+  coordinateChangeHandler = (index, coordX) => this.setState((state) => {
     if (!coordX || coordinates.isWrong(coordX)) {
-      this.setState((state) => ({
-        coordinatesArray: state.coordinatesArray.set(index, coordX),
-      }))
+      return { coordinatesArray: state.coordinatesArray.set(index, coordX) }
     } else if (index === 0) {
-      const { width } = this.state
+      const { width } = state
       const { lat, lng } = coordX
       const southEast = L.latLng({ lat, lng }).toBounds(width * 2).getSouthEast()
       const coord2 = coordinates.roundCoordinate({ lat: southEast.lat, lng: southEast.lng })
       const coordinatesArray = new List([ coordX, coord2 ])
-      this.setState({ coordinatesArray })
+      return { coordinatesArray }
     } else if (index === 1) {
-      const coord1 = this.state.coordinatesArray.get(0)
-      const coord2 = this.state.coordinatesArray.get(1)
+      const coord1 = state.coordinatesArray.get(0)
+      const coord2 = state.coordinatesArray.get(1)
       const isLatChanged = coord2 && !coordinates.isWrong(coord2) && coord2.lat !== coordX.lat
       const corner1 = L.latLng(coord1)
       const corner2 = L.latLng(coordX)
@@ -62,46 +60,46 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
       const northWest = bounds.getNorthWest()
       let width = northWest.distanceTo(isLatChanged ? bounds.getSouthWest() : bounds.getNorthEast())
       width = Math.round(width)
-      const coordinatesArray = this.state.coordinatesArray.set(1, coordX)
+      const coordinatesArray = state.coordinatesArray.set(1, coordX)
       if (isLatChanged) {
         this.isLatChanged = true
       } else {
         this.isLngChanged = true
       }
-      this.setState({ coordinatesArray, width, widthText: String(width) })
+      return { coordinatesArray, width, widthText: String(width) }
     }
-  }
+  })
 
-  coordinate2BlurHandler = () => {
+  coordinate2BlurHandler = () => this.setState((state) => {
     if (this.isLatChanged && this.isLngChanged) {
       this.isLatChanged = false
       this.isLngChanged = false
-      const { width, coordinatesArray } = this.state
+      const { width, coordinatesArray } = state
       const coord1 = coordinatesArray.get(0)
       if (coord1 && !coordinates.isWrong(coord1)) {
         const { lat, lng } = coord1
         const southEast = L.latLng({ lat, lng }).toBounds(width * 2).getSouthEast()
         const coord2 = { lat: southEast.lat, lng: southEast.lng }
-        this.setState({ coordinatesArray: coordinatesArray.set(1, coord2) })
+        return { coordinatesArray: coordinatesArray.set(1, coord2) }
       }
     }
-  }
+  })
 
-  widthChangeHandler = (widthText) => {
+  widthChangeHandler = (widthText) => this.setState((state) => {
     const width = Number(widthText)
     const newState = { widthText }
     if (Number.isFinite(width)) {
-      const coord1 = this.state.coordinatesArray.get(0)
+      const coord1 = state.coordinatesArray.get(0)
       if (coord1 && !coordinates.isWrong(coord1)) {
         const { lat, lng } = coord1
         const southEast = L.latLng({ lat, lng }).toBounds(width * 2).getSouthEast()
         const coord2 = coordinates.roundCoordinate({ lat: southEast.lat, lng: southEast.lng })
-        newState.coordinatesArray = this.state.coordinatesArray.set(1, coord2)
+        newState.coordinatesArray = state.coordinatesArray.set(1, coord2)
         newState.width = width
       }
     }
-    this.setState(newState)
-  }
+    return newState
+  })
 
   renderCoordinateAndWidth () {
     const {
@@ -119,14 +117,14 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
         <FormRow label={i18n.COORDINATES}/>
         <div className="shape-form-scrollable">
           <CoordinateRow
-            label={'Север-захід'}
+            label={i18n.NORTH_WEST}
             coordinate={coordinatesArray.get(0)}
             index={0}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
           />
           <CoordinateRow
-            label={'Юг-схід'}
+            label={i18n.SOUTH_EAST}
             coordinate={coordinatesArray.get(1)}
             index={1}
             readOnly={!canEdit}
@@ -138,7 +136,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
               readOnly={!canEdit}
               value={widthText}
               onChange={canEdit ? this.widthChangeHandler : null }
-              suffix={i18n.UNITS_OF_MEASURE_M}
+              suffix={i18n.ABBR_METERS}
               isWrong={widthIsWrong}
             />
           </FormRow>

@@ -62,10 +62,10 @@ const WithSegment = (Component) => class SegmentComponent extends Component {
     this.state.segment = typeToSegment.has(type) ? typeToSegment.get(type) : SEGMENT_DIRECT
   }
 
-  segmentChangeHandler = (segment) => {
-    const type = getTypeBySegment(this.state.type, segment)
-    this.setState({ segment, type })
-  }
+  segmentChangeHandler = (segment) => this.setState((state) => {
+    const type = getTypeBySegment(state.type, segment)
+    return { segment, type }
+  })
 
   fillResult (result) {
     super.fillResult(result)

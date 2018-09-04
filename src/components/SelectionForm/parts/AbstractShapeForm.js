@@ -46,7 +46,7 @@ export default class AbstractShapeForm extends React.Component {
     }
   }
 
-  cancelHandler = () => this.props.onClose()
+  cancelHandler = this.props.onClose
 
   renderContent () {
     throw new Error('renderContent() is not implemented')

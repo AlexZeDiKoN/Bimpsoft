@@ -23,20 +23,14 @@ const WithTexts = (Component) => class TextsComponent extends Component {
     this.state.texts = List(texts)
   }
 
-  addTextHandler = () => {
-    this.setState({ texts: this.state.texts.push({ text: '', underline: false }) })
-  }
+  addTextHandler = () => this.setState((state) => ({ texts: state.texts.push({ text: '', underline: false }) }))
 
-  changeTextItemHandler = (index, textItem) => {
-    this.setState({ texts: this.state.texts.set(index, textItem) })
-  }
+  changeTextItemHandler = (index, textItem) => this.setState((state) => ({ texts: state.texts.set(index, textItem) }))
 
-  removeTextItemHandler = (index) => {
-    if (this.state.texts.size <= 1) {
-      return
-    }
-    this.setState({ texts: this.state.texts.delete(index) })
-  }
+  removeTextItemHandler = (index) => this.setState((state) => {
+    const { texts } = state
+    return texts.size <= 1 ? null : { texts: texts.delete(index) }
+  })
 
   fillResult (result) {
     super.fillResult(result)
