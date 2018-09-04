@@ -1,5 +1,0 @@
-export { default as AbstractShapeForm } from './AbstractShapeForm'
-export { default as WithColor } from './WithColor'
-export { default as WithSegment } from './WithSegment'
-export { default as WithLineType } from './WithLineType'
-export { default as WithCoordinatesArray } from './WithCoordinatesArray'

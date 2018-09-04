@@ -12,6 +12,7 @@ export default class CoordinateItem extends React.Component {
     index: PropTypes.number,
     coordinate: PropTypes.object,
     canRemove: PropTypes.bool,
+    readOnly: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
   }
@@ -27,22 +28,23 @@ export default class CoordinateItem extends React.Component {
   }
 
   render () {
-    const { coordinate = {}, canRemove } = this.props
+    const { coordinate = {}, canRemove, readOnly } = this.props
     const isWrong = Coordinates.isWrong(coordinate)
     const suffix = isWrong ? i18n.ERROR : Coordinates.getName(coordinate)
     return (
       <FormItem>
         <InputWithSuffix
+          readOnly={readOnly}
           value={Coordinates.stringify(coordinate)}
           onChange={this.changeHandler}
           isWrong={isWrong}
           suffix={suffix}
         />
-        <IconHovered
+        {!readOnly && (<IconHovered
           icon={canRemove ? IconNames.EMPTY_DEFAULT : IconNames.EMPTY_DISABLE}
           hoverIcon={canRemove ? IconNames.EMPTY_HOVER : IconNames.EMPTY_DISABLE}
           onClick={this.removeClickHandler}
-        />
+        />)}
       </FormItem>
     )
   }

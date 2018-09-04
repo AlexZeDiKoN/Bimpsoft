@@ -75,6 +75,8 @@ export const OK = 'Гаразд'
 export const CANCEL = 'Скасувати'
 
 export const COLOR = 'Колір'
+export const FILLING = 'Заливка'
+export const TRANSPARENT = 'Прозорий'
 export const BLUE = 'Синій'
 export const RED = 'Червоний'
 export const BLACK = 'Чорний'
@@ -94,6 +96,9 @@ export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
 export const NODAL_POINTS = 'Вузлові точки'
+export const SIDE_SIZE = 'Довжина сторони'
+export const RADIUS = 'Радіус'
+export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
 export const EDIT = 'Редагувати'
 export const REMOVE = 'Видалити'
@@ -102,3 +107,7 @@ export const MAP_SOURCE = 'Джерело картографічної інфо�
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
 
 export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'
+export const EMPTY_TEXT = 'Текст пустий'
+
+export const UNITS_OF_MEASURE_M = 'м'
+export const UNITS_OF_MEASURE_KM = 'км'

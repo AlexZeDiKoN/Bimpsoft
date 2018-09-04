@@ -36,7 +36,7 @@ export default class TextItem extends React.Component {
     const { text, underline, canRemove, readOnly } = this.props
     return (
       <FormItem>
-        <Input value={text} onChange={readOnly ? null : this.textChangeHandler} readOnly={true} />
+        <Input value={text} onChange={readOnly ? null : this.textChangeHandler} readOnly={readOnly} />
         {!readOnly && (<IconHovered
           icon={underline ? IconNames.U_ACTIVE : IconNames.U_DEFAULT}
           hoverIcon={IconNames.U_HOVER}

@@ -4,7 +4,7 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
-import { iconOption } from './render'
+import { iconOption, iconDiv } from './render'
 import AbstractShapeForm from './AbstractShapeForm'
 
 const { FormRow } = components.form
@@ -12,6 +12,11 @@ const { icons: { names: iconNames } } = components
 
 const SEGMENT_ARC = 'arc'
 const SEGMENT_DIRECT = 'direct'
+
+const segments = {
+  [SEGMENT_ARC]: { text: i18n.SOLID, icon: 'solid' },
+  [SEGMENT_DIRECT]: { text: i18n.DASHED, icon: 'dashed' },
+}
 
 const typeToSegment = new Map([
   [ SelectionTypes.AREA, SEGMENT_ARC ],
@@ -68,12 +73,20 @@ const WithSegment = (Component) => class SegmentComponent extends Component {
   }
 
   renderSegment () {
+    const { segment } = this.state
+    const segmentInfo = segments[segment]
+    const canEdit = this.isCanEdit()
+
+    const value = canEdit ? (
+      <Select value={ this.state.segment } onChange={this.segmentChangeHandler} >
+        {iconOption(SEGMENT_DIRECT, iconNames.BROKEN_LINE_ACTIVE, i18n.SEGMENT_DIRECT)}
+        {iconOption(SEGMENT_ARC, iconNames.CURVE_ACTIVE, i18n.SEGMENT_ARC)}
+      </Select>
+    ) : iconDiv(segmentInfo.icon, segmentInfo.text)
+
     return (
       <FormRow label={i18n.LINE_SEGMENT}>
-        <Select value={ this.state.segment } onChange={this.segmentChangeHandler} >
-          {iconOption(SEGMENT_DIRECT, iconNames.BROKEN_LINE_ACTIVE, i18n.SEGMENT_DIRECT)}
-          {iconOption(SEGMENT_ARC, iconNames.CURVE_ACTIVE, i18n.SEGMENT_ARC)}
-        </Select>
+        {value}
       </FormRow>
     )
   }

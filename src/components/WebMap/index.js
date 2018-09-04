@@ -791,7 +791,7 @@ export default class WebMap extends Component {
   }
 
   updateFigure = async (data) => {
-    const { id, coordinates, coordinatesArray, ...rest } = data
+    const { id, coordinates, coordinatesArray, subordinationLevel, ...rest } = data
     if (!id) {
       return
     }
@@ -807,6 +807,7 @@ export default class WebMap extends Component {
       layer: layer.object.layer,
       geometry: points,
       ...rest,
+      level: subordinationLevel || 0,
     })
     this.activateCreated(id)
     // TODO: скинути дані в сторі
@@ -815,7 +816,7 @@ export default class WebMap extends Component {
   updateText = async (data) => {
     // console.log('updateText', data)
     const { id, amplifiers, subordinationLevel, coordinatesArray, ...rest } = data
-    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) })).toJS()
+    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
     const layer = this.findLayerById(id)
     if (layer) {
       layer.pm.disable()

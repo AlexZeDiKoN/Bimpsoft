@@ -4,7 +4,7 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import i18n from '../../../i18n'
-import { colorOption } from './render'
+import { colorOption, colorDiv } from './render'
 
 const { FormRow } = components.form
 
@@ -18,7 +18,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
     this.state.color = props.color || colors.BLUE
   }
 
-  colorChangeHandler = (value) => this.setState({ color: value })
+  colorChangeHandler = (color) => this.setState({ color })
 
   fillResult (result) {
     super.fillResult(result)
@@ -26,15 +26,21 @@ const WithColor = (Component) => class ColorComponent extends Component {
   }
 
   renderColor () {
+    const { color } = this.state
+    const canEdit = this.isCanEdit()
+    const value = canEdit ? (
+      <Select value={color} onChange={this.colorChangeHandler}>
+        {colorOption(colors.BLUE)}
+        {colorOption(colors.RED)}
+        {colorOption(colors.BLACK)}
+        {colorOption(colors.GREEN)}
+        {colorOption(colors.YELLOW)}
+      </Select>
+    ) : colorDiv(color)
+
     return (
       <FormRow label={i18n.COLOR}>
-        <Select value={this.state.color} onChange={this.colorChangeHandler}>
-          {colorOption(colors.BLUE, i18n.BLUE)}
-          {colorOption(colors.RED, i18n.RED)}
-          {colorOption(colors.BLACK, i18n.BLACK)}
-          {colorOption(colors.GREEN, i18n.GREEN)}
-          {colorOption(colors.YELLOW, i18n.YELLOW)}
-        </Select>
+        {value}
       </FormRow>
     )
   }

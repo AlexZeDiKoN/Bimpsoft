@@ -3,10 +3,12 @@ import PropTypes from 'prop-types'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
-import SymbolForm from './SymbolForm'
-import LineForm from './LineForm'
-import RactangleForm from './RactangleForm'
-import TextForm from './TextForm'
+import SymbolForm from './forms/SymbolForm'
+import LineForm from './forms/LineForm'
+import RactangleForm from './forms/RactangleForm'
+import SquareForm from './forms/SquareForm'
+import CircleForm from './forms/CircleForm'
+import TextForm from './forms/TextForm'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -35,11 +37,11 @@ const forms = {
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
-    component: LineForm,
+    component: CircleForm,
   },
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
-    component: LineForm,
+    component: SquareForm,
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
@@ -49,7 +51,14 @@ const forms = {
 
 export default class SelectionForm extends React.Component {
   changeHandler = (data) => {
-    this.props.canEdit ? this.props.onChange(data) : this.props.onCancel()
+    if (this.props.canEdit) {
+      if (this.props.data) {
+        data = { ...this.props.data, ...data }
+      }
+      this.props.onChange(this.props.showForm, data)
+    } else {
+      this.props.onCancel()
+    }
   }
 
   cancelHandler = () => {
@@ -61,7 +70,7 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { data, orgStructures, canEdit } = this.props
+    const { data, orgStructures, canEdit, onError } = this.props
     if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
@@ -76,6 +85,7 @@ export default class SelectionForm extends React.Component {
           orgStructures={orgStructures}
           onChange={this.changeHandler}
           onClose={this.cancelHandler}
+          onError={onError}
           onAddToTemplates={this.addToTemplateHandler}
         />
       </Wrapper>
@@ -88,6 +98,7 @@ SelectionForm.propTypes = {
   canEdit: PropTypes.bool,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
+  onError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   wrapper: PropTypes.oneOf([ ModalContainer ]),
   orgStructures: PropTypes.object,

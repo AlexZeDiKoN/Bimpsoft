@@ -14,8 +14,10 @@ export default class AbstractShapeForm extends React.Component {
   static propTypes = {
     type: PropTypes.any,
     style: PropTypes.any,
+    canEdit: PropTypes.bool,
     onChange: PropTypes.func,
     onClose: PropTypes.func,
+    onError: PropTypes.func,
   }
 
   constructor (props) {
@@ -35,7 +37,9 @@ export default class AbstractShapeForm extends React.Component {
   okHandler = () => {
     const errors = this.getErrors()
     this.setState({ errors })
-    if (!Object.entries(errors).length) {
+    if (errors.length) {
+      this.props.onError(errors)
+    } else {
       const result = {}
       this.fillResult(result)
       this.props.onChange(result)
@@ -49,17 +53,21 @@ export default class AbstractShapeForm extends React.Component {
   }
 
   getErrors () {
-    return {}
+    return []
+  }
+
+  isCanEdit () {
+    return this.props.canEdit
   }
 
   render () {
+    const canEdit = this.isCanEdit()
     return (
       <Form className="shape-form">
-        <div>{Object.values(this.state.errors).map(error => error.text)}</div>
         {this.renderContent()}
         <FormItem>
-          <FormButtonCancel onClick={this.cancelHandler}/>
-          <FormButtonOk onClick={this.okHandler}/>
+          {canEdit && (<FormButtonCancel onClick={this.cancelHandler}/>)}
+          <FormButtonOk onClick={canEdit ? this.okHandler : this.cancelHandler}/>
         </FormItem>
       </Form>
     )
