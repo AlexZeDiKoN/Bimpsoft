@@ -38,16 +38,13 @@ const WebMapObject = Record({
 })
 
 const WebMapState = Record({
-  isMapEditMode: false,
-  isPointMarkEditMode: false,
-  isTextMarkEditMode: false,
-  isTimelineEditMode: false,
   center: { lat: 48, lng: 35 },
   zoom: 7,
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
   generalization: false,
+  isMeasureOn: false,
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
@@ -63,38 +60,8 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   })
 
 export default function webMapReducer (state = WebMapState(), action) {
-  let { type, payload } = action
+  const { type, payload } = action
   switch (type) {
-    case actionNames.TOGGLE_MAP_EDIT_MODE: {
-      if (!payload) {
-        payload = !state.get('isMapEditMode')
-      }
-      return state.merge({
-        isMapEditMode: payload,
-        isPointMarkEditMode: false,
-        isTextMarkEditMode: false,
-      })
-    }
-    case actionNames.TOGGLE_POINT_MARK_EDIT_MODE: {
-      if (!payload) {
-        payload = !state.get('isPointMarkEditMode')
-      }
-      return state.merge({
-        isMapEditMode: false,
-        isPointMarkEditMode: payload,
-        isTextMarkEditMode: false,
-      })
-    }
-    case actionNames.TOGGLE_TEXT_MARK_EDIT_MODE: {
-      if (!payload) {
-        payload = !state.get('isTextMarkEditMode')
-      }
-      return state.merge({
-        isMapEditMode: false,
-        isPointMarkEditMode: false,
-        isTextMarkEditMode: payload,
-      })
-    }
     case actionNames.SET_COORDINATES_TYPE: {
       return state.set('coordinatesType', payload)
     }
@@ -110,14 +77,11 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_SOURCE: {
       return state.set('source', payload)
     }
+    case actionNames.SET_MEASURE: {
+      return state.set('isMeasureOn', payload)
+    }
     case actionNames.SUBORDINATION_LEVEL: {
       return state.set('subordinationLevel', payload)
-    }
-    case actionNames.TOGGLE_TIMELINE_EDIT_MODE: {
-      if (!payload) {
-        payload = !state.get('isTimelineEditMode')
-      }
-      return state.set('isTimelineEditMode', payload)
     }
     case actionNames.OBJECT_LIST: {
       if (!payload) {
@@ -154,10 +118,6 @@ export default function webMapReducer (state = WebMapState(), action) {
 }
 
 export const propTypes = PropTypes.shape({
-  isMapEditMode: PropTypes.bool.isRequired,
-  isPointMarkEditMode: PropTypes.bool.isRequired,
-  isTextMarkEditMode: PropTypes.bool.isRequired,
-  isTimelineEditMode: PropTypes.bool.isRequired,
   objects: PropTypes.object.isRequired,
   source: PropTypes.object.isRequired,
 })
