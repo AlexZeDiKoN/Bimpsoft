@@ -37,7 +37,7 @@ const mapStateToProps = (store) => {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
     selection: { newShape },
-    webMap: { subordinationLevel },
+    webMap: { subordinationLevel, isMeasureOn },
   } = store
 
   const layerName = layerNameSelector(store)
@@ -48,6 +48,7 @@ const mapStateToProps = (store) => {
     isShowSources,
     isShowLines,
     isShowSubordinationLevel,
+    isMeasureOn,
     newShape,
     subordinationLevel,
     layerName,
@@ -77,6 +78,7 @@ const mapDispatchToProps = {
   onClickLineSign: () => viewModesActions.viewModeToggle(viewModesKeys.lineSignsList),
   onLinesListClose: () => viewModesActions.viewModeDisable(viewModesKeys.lineSignsList),
   onClickSubordinationLevel: () => viewModesActions.viewModeToggle(viewModesKeys.subordinationLevel),
+  onMeasureChange: (isMeasureOn) => webMapActions.setMeasure(isMeasureOn),
   onSubordinationLevelClose: () => viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel),
   onNewShapeChange: (newShape) => selectionActions.setNewShape(newShape),
   onSubordinationLevelChange: (subordinationLevel) => (dispatch) => {
