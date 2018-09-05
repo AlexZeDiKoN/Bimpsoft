@@ -10,6 +10,7 @@
     width: 2em;
     height: 2em;
     margin-right: 0.5em;
+    flex: 0 0 auto;
   }
   .ant-tooltip{
     .highlight{
@@ -27,9 +28,12 @@
   }
 }
 .org-structure-item-content{
-  .flex;
-  align-items: center;
+  flex: 1 1 auto;
+  width: 10px;
+  text-align: left;
   padding: 0px 0.3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 

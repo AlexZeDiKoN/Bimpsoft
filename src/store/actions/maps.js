@@ -38,11 +38,11 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
     switch (type) {
       case 'layer': {
         if (parentId === null) {
-          dispatch(maps.updateMap({ operationId, mapId: id, name }))
-          const layersData = [ { mapId: null, layerId: id, name, dateFor, formationId } ]
-          dispatch(layers.updateLayers(layersData))
-          const selectedLayer = +folderID
-          dispatch(layers.selectLayer(selectedLayer))
+          // dispatch(maps.updateMap({ operationId, mapId: id, name }))
+          // const layersData = [ { mapId: null, layerId: id, name, dateFor, formationId } ]
+          // dispatch(layers.updateLayers(layersData))
+          // const selectedLayer = +folderID
+          // dispatch(layers.selectLayer(selectedLayer))
         } else {
           dispatch(openMapFolder(operationId, parentId, id))
         }
@@ -50,15 +50,22 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
       }
       case 'layersFolder': {
         dispatch(maps.updateMap({ operationId, mapId: id, name }))
-        const layersData = entities.map(({ id: layerId, name, dateFor, formationId }) =>
-          ({ mapId: id, layerId, name, dateFor, formationId })
+        const layersData = entities.map(({ id: folderID, entityId: layerId, name, dateFor, formationId }) =>
+          ({ mapId: id, layerId, name, dateFor, formationId, folderID })
         )
         dispatch(layers.updateLayers(layersData))
-        let selectedLayer = selectedItem
-        if (selectedLayer === null && entities.length > 0) {
-          selectedLayer = entities[0].id
+        if (layersData.length > 0) {
+          let selectedLayer
+          if (selectedItem === null) {
+            selectedLayer = layersData[0]
+          } else {
+            selectedLayer = layersData.find((layerData) => layerData.folderID === selectedItem)
+          }
+          if (selectedLayer) {
+            dispatch(layers.selectLayer(selectedLayer.layerId))
+          }
         }
-        dispatch(layers.selectLayer(selectedLayer))
+
         break
       }
       default:
