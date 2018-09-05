@@ -242,6 +242,7 @@ export default class WebMap extends Component {
     showMiniMap: PropTypes.bool,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
+    isMeasureOn: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -269,6 +270,7 @@ export default class WebMap extends Component {
     hideForm: PropTypes.func,
     onMove: PropTypes.func,
     onDropUnit: PropTypes.func,
+    stopMeasuring: PropTypes.func,
     isGridActive: PropTypes.bool.isRequired,
     orgStructureSelectedId: PropTypes.number,
   }
@@ -370,6 +372,12 @@ export default class WebMap extends Component {
     if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
       this.updateShowAmplifiers(nextProps.showAmplifiers)
     }
+    // isMeasureOn
+    if (nextProps.isMeasureOn !== this.props.isMeasureOn) {
+      if (nextProps.isMeasureOn !== this.map.measureControl._measuring) {
+        this.map.measureControl._toggleMeasure()
+      }
+    }
     // selection
     if (
       nextProps.selection.data === this.props.selection.data &&
@@ -426,6 +434,8 @@ export default class WebMap extends Component {
       zoomControl: false,
       measureControl: true,
     })
+    this.map.removeControl(this.map.measureControl)
+    this.map.measureControl._map = this.map
     control.zoom({
       zoomInTitle: i18n.ZOOM_IN,
       zoomOutTitle: i18n.ZOOM_OUT,
@@ -467,6 +477,7 @@ export default class WebMap extends Component {
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
     this.map.on('escape', this.onEscape)
+    this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.doubleClickZoom.disable()
   }
 
@@ -475,6 +486,10 @@ export default class WebMap extends Component {
       this.searchMarker.removeFrom(this.map)
       delete this.searchMarker
     }
+  }
+
+  onStopMeasuring = () => {
+    this.props.stopMeasuring()
   }
 
   moveHandler = () => {

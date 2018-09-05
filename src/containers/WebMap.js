@@ -45,6 +45,7 @@ const WebMap = connect(
     coordinatesType: state.webMap.coordinatesType,
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
+    isMeasureOn: state.webMap.isMeasureOn,
     isGridActive: state.viewModes.print,
     socket: window.socket,
   }),
@@ -63,6 +64,7 @@ const WebMap = connect(
     hideForm: () => dispatch(selectionActions.hideForm),
     onMove: (center) => dispatch(webMapActions.setCenter(center)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
+    stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

@@ -20,6 +20,7 @@ export default class LeftMenu extends React.Component {
     isShowPoints: PropTypes.bool,
     isShowLines: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
+    isMeasureOn: PropTypes.bool,
     newShape: PropTypes.object,
     isShowSources: PropTypes.bool,
     mapSources: PropTypes.element,
@@ -33,6 +34,7 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
     onLinesListClose: PropTypes.func,
+    onMeasureChange: PropTypes.func,
     layerName: PropTypes.string,
   }
 
@@ -58,6 +60,7 @@ export default class LeftMenu extends React.Component {
       isEditMode,
       isShowLines,
       isShowSubordinationLevel,
+      isMeasureOn,
       newShape = {},
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       onClickEditMode,
@@ -65,6 +68,7 @@ export default class LeftMenu extends React.Component {
       onClickMapSource,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
+      onMeasureChange,
       mapSources,
       isShowSources,
       layerName,
@@ -155,6 +159,12 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
+        <ContextMenuItem
+          value={!isMeasureOn}
+          text="⇢"
+          checked={isMeasureOn}
+          onClick={onMeasureChange}
+        />
         <div className="menu-layer-name">{layerName}</div>
       </div>
     )
