@@ -9,6 +9,7 @@ import LinesList from '../../LinesList'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
+import { production } from '../../../utils/services'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const iconNames = components.icons.names
@@ -91,7 +92,7 @@ export default class LeftMenu extends React.Component {
               hoverIcon={iconNames.CONVENTIONAL_SIGN_HOVER}
               onClick={this.clickPointHandler}
             />
-            <IconButton
+            {!production && <IconButton
               text={i18n.LINE_SIGN}
               icon={
                 isShowLines
@@ -106,8 +107,8 @@ export default class LeftMenu extends React.Component {
                 shapeType={ newShape.type }
                 ref={this.clickOutsideLinesListRef}
               />)}
-            </IconButton>
-            <IconButton
+            </IconButton>}
+            {!production && <IconButton
               text={i18n.ADD_TEXT}
               icon={
                 newShape.type === SelectionTypes.TEXT
@@ -116,7 +117,7 @@ export default class LeftMenu extends React.Component {
               }
               hoverIcon={iconNames.TEXT_SIGN_HOVER}
               onClick={this.clickTextHandler}
-            />
+            />}
           </Fragment>
         )}
         <IconButton
