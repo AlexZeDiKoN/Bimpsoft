@@ -37,6 +37,7 @@ export default class Item extends React.Component {
       >
         <div className={'org-structure-item' + (isSelected ? ' org-structure-item-selected' : '')}>
           {icon}
+          {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
           <div
             ref={isSelected ? scrollRef : null}
             className="org-structure-item-content"
@@ -45,7 +46,6 @@ export default class Item extends React.Component {
             onDragStart={canEdit ? this.dragStartHandler : null}
             draggable={canEdit}
           >
-            {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
             <HighlightedText text={shortName} textFilter={textFilter} />
           </div>
         </div>
