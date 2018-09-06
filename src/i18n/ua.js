@@ -112,3 +112,5 @@ export const SITUATION_DETAILS = ({ level }) => `Деталізація обст
 
 export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'
 export const EMPTY_TEXT = 'Текст пустий'
+export const CANNOT_OPEN_LAYER_WO_PARENT = 'Неможливо відкрити шар, для якого не задана карта'
+export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрити шар, для якого не задана організаційна структура'
