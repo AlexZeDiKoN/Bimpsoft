@@ -585,6 +585,8 @@ export default class WebMap extends Component {
         if (url && url[0] === '/') {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
+        console.info('REACT_APP_TILES: ', process.env.REACT_APP_TILES)
+        console.info('Create tile layer: ', url)
         const sourceLayer = new TileLayer(url, rest)
         sourceLayer.addTo(this.map)
         this.sources.push(sourceLayer)
