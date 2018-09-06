@@ -88,7 +88,7 @@ export const selectLayer = (layerId) =>
   })
 
 export const deleteLayersByMapId = (mapId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId } = state.layers
 

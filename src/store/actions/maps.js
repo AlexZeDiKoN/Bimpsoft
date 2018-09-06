@@ -1,4 +1,6 @@
 import { action } from '../../utils/services'
+import { ApiError } from '../../constants/errors'
+import i18n from '../../i18n'
 import { asyncAction, maps, layers } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
@@ -33,16 +35,19 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
   async (dispatch, _, { api }) => {
     const content = await api.getFolderContent({ operationId, folderID })
     api.checkServerResponse(content)
-    const { entities, params: { currentContainer: { type, id, name, parentId, dateFor, formationId } } } = content
+    const { entities, params: { currentContainer: { type, id, name, parentId, formationId/*, dateFor */ } } } = content
 
     switch (type) {
       case 'layer': {
         if (parentId === null) {
+          throw new ApiError(i18n.CANNOT_OPEN_LAYER_WO_PARENT)
           // dispatch(maps.updateMap({ operationId, mapId: id, name }))
           // const layersData = [ { mapId: null, layerId: id, name, dateFor, formationId } ]
           // dispatch(layers.updateLayers(layersData))
           // const selectedLayer = +folderID
           // dispatch(layers.selectLayer(selectedLayer))
+        } else if (formationId === null) {
+          throw new ApiError(i18n.CANNOT_OPEN_LAYER_WO_FORMATION)
         } else {
           dispatch(openMapFolder(operationId, parentId, id))
         }
