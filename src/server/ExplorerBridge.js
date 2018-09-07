@@ -4,6 +4,7 @@ import { getExplorerOrigin } from '../utils/services'
 const ACTION_READY = 'ready'
 const ACTION_INIT = 'init'
 const ACTION_OPEN = 'open'
+const ACTION_CLOSE = 'close'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -11,7 +12,8 @@ export default class ExplorerBridge {
   }
 
   init = () => {
-    window.addEventListener('message', (e) => this.onMessage(e))
+    window.addEventListener('message', this.onMessage)
+    window.addEventListener('beforeunload', this.onUnload)
     const isExplorerOpened = window.opener && !window.opener.closed
     if (isExplorerOpened) {
       this.send({ action: ACTION_READY })
@@ -45,5 +47,9 @@ export default class ExplorerBridge {
       }
       default:
     }
+  }
+
+  onUnload = () => {
+    this.send({ action: ACTION_CLOSE })
   }
 }
