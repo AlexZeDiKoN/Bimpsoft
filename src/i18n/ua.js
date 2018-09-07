@@ -28,7 +28,7 @@ export const LATITUDE = 'Широта'
 export const ADD_POINT_SIGN_TEMPLATE = 'Додати шаблон умовного знаку'
 export const MSG_TITLE_SIGN_TEMPLATE_CREATED = 'Шаблону умовного знаку створено'
 export const MSG_TEXT_SIGN_TEMPLATE_CREATED = ({ name, code }) => `Назва:${name}\r\n Код: ${code}`
-
+export const MEASURE = 'Виміряти відстань'
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
 export const SHAPE_POLYGON = 'Багатокутник'

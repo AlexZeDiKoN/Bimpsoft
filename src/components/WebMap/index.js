@@ -227,7 +227,7 @@ export default class WebMap extends Component {
         tms: PropTypes.bool,
       })
     ),
-    visibleLayers: PropTypes.string,
+    layersById: PropTypes.object,
     level: PropTypes.any,
     layer: PropTypes.any,
     searchResult: PropTypes.shape({
@@ -302,14 +302,14 @@ export default class WebMap extends Component {
     if (nextProps.sources !== this.props.sources) {
       this.setMapSource(nextProps.sources)
     }
-    // level, visibleLayers, hiddenOpacity, layer
+    // level, layersById, hiddenOpacity, layer
     if (
       nextProps.level !== this.props.level ||
-      nextProps.visibleLayers !== this.props.visibleLayers ||
+      nextProps.layersById !== this.props.layersById ||
       nextProps.hiddenOpacity !== this.props.hiddenOpacity ||
       nextProps.layer !== this.props.layer
     ) {
-      this.updateShowLayers(nextProps.level, nextProps.visibleLayers, nextProps.hiddenOpacity, nextProps.layer)
+      this.updateShowLayers(nextProps.level, nextProps.layersById, nextProps.hiddenOpacity, nextProps.layer)
     }
     // edit
     if (nextProps.edit !== this.props.edit ||
@@ -497,28 +497,29 @@ export default class WebMap extends Component {
     this.props.onMove({ lat, lng })
   }
 
-  updateShowLayer = (levelEdge, layers, hiddenOpacity, selectedLayerId, item) => {
+  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
     if (item.id && item.object) {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const hidden = itemLevel < levelEdge || !layer || !layers.includes(layer)
+      const hidden = itemLevel < levelEdge || !layer || !layersById[layer] || !layersById[layer].visible
       const opacity = Number(selectedLayerId) === Number(layer) ? 1 : (hiddenOpacity / 100)
 
       item.setOpacity && item.setOpacity(opacity)
       item.setHidden && item.setHidden(hidden)
+      const color = layer && layersById[layer] ? layersById[layer].color : null
+      item.setShadowColor && item.setShadowColor(color)
       if (hidden && this.map.pm.activeLayer === item) {
         clearActiveLayer(this.map)
       }
     }
   }
 
-  updateShowLayers = (levelEdge, visibleLayers, hiddenOpacity, selectedLayerId) => {
+  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId) => {
     if (this.map) {
-      const layers = visibleLayers.split(',')
       if (this.map.pm.activeLayer && Number(this.map.pm.activeLayer.object.layer) !== Number(selectedLayerId)) {
         clearActiveLayer(this.map)
       }
-      this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layers, hiddenOpacity, selectedLayerId, item))
+      this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item))
     }
   }
 
@@ -664,9 +665,8 @@ export default class WebMap extends Component {
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, visibleLayers, hiddenOpacity, layer: selectedLayerId } = this.props
-      const layers = visibleLayers.split(',')
-      this.updateShowLayer(level, layers, hiddenOpacity, selectedLayerId, layer)
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId } = this.props
+      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
     }
   }
 

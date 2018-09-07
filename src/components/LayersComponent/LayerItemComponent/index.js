@@ -10,9 +10,23 @@ import { DATE_TIME_FORMAT } from '../../../constants/formats'
 const { common: { ColorPicker } } = components
 
 export default class LayerItemComponent extends React.Component {
+  selectHandler = () => {
+    const { onSelect, data: { layerId } } = this.props
+    onSelect && onSelect(layerId)
+  }
+
+  changeVisibilityHandler = (isVisible) => {
+    const { onChangeVisibility, data: { layerId } } = this.props
+    onChangeVisibility && onChangeVisibility(layerId, isVisible)
+  }
+
+  changeColorHandler = (color) => {
+    const { onChangeColor, data: { layerId } } = this.props
+    onChangeColor && onChangeColor(layerId, color)
+  }
+
   render () {
     const {
-      onChangeVisibility,
       isSelected,
       data: { visible, name, locked, color, shared, dateFor = null },
     } = this.props
@@ -22,19 +36,19 @@ export default class LayerItemComponent extends React.Component {
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
-        onClick={this.props.onSelect}
+        onClick={this.selectHandler}
       >
         <VisibilityButton
           visible={visible}
           className="layer-item-сomponent-control"
-          onChange={onChangeVisibility}
+          onChange={this.changeVisibilityHandler}
         />
         <Icon className="map-item-сomponent-control" type={lockedIcon} />
         <div className="layer-item-сomponent-title">
           <div className="layer-name">{name}</div>
           <div className="layer-date">{dateString}</div>
         </div>
-        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.props.onChangeColor}/>
+        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
         <Icon className="map-item-сomponent-control" type={sharedIcon} />
       </div>
     )
