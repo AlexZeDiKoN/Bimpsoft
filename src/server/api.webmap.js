@@ -10,6 +10,8 @@ const WebmapApi = {
   objDelete,
   objRefresh,
   placeSearch,
+  layerGetColor,
+  layerSetColor,
 }
 
 export default WebmapApi
@@ -40,4 +42,12 @@ function objRefresh (id = 0) {
 
 function placeSearch (sample) {
   return getDirect(`${webmapUrl}/place?q=${sample}`, false)
+}
+
+function layerGetColor (id) {
+  return getDirect(`${webmapUrl}/color/${id}/get`, false)
+}
+
+function layerSetColor (id, color) {
+  return getDirect(`${webmapUrl}/color/set`, { id, color })
 }
