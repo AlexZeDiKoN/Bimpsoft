@@ -39,10 +39,27 @@ export const updateLayers = (layersData) => ({
   layersData,
 })
 
-export const updateLayer = (layerData) => ({
-  type: UPDATE_LAYER,
-  layerData,
-})
+export const updateLayer = (layerData) =>
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+    dispatch({
+      type: UPDATE_LAYER,
+      layerData,
+    })
+    if (layerData.hasOwnProperty('color')) {
+      await webmapApi.layerSetColor(layerData.layerId, layerData.color)
+    }
+  })
+
+export const updateColorByLayerId = (layerId) =>
+  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+    const data = await webmapApi.layerGetColor(layerId)
+    api.checkServerResponse(data)
+    const layerData = { layerId, color: data.color }
+    dispatch({
+      type: UPDATE_LAYER,
+      layerData,
+    })
+  })
 
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
@@ -56,7 +73,8 @@ export const selectLayer = (layerId) =>
 
     if (layerId) {
       for (const layerId of layersIds) {
-        dispatch(webMap.updateObjectsByLayerId(layerId))
+        await dispatch(webMap.updateObjectsByLayerId(layerId))
+        await dispatch(updateColorByLayerId(Number(layerId)))
       }
 
       const state = getState()
