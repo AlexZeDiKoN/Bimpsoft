@@ -7,6 +7,7 @@ import ServerApi from '../server/api.server'
 import WebmapApi from '../server/api.webmap'
 import ServerApiMilOrg from '../server/api.server.org'
 import rootReducer from './reducers'
+import { initSocketEvents } from './SocketEvents'
 
 let store = null
 
@@ -38,6 +39,8 @@ export default function initStore (options = {}) {
   }
 
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
+
+  initSocketEvents(store.dispatch)
 
   return store
 }
