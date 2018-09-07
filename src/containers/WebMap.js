@@ -1,31 +1,10 @@
 import { connect } from 'react-redux'
-import { createSelector } from 'reselect'
+// import { createSelector } from 'reselect'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
 import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
 import { mapObjConvertor } from '../utils'
-
-const mapProps = [ 'mapId', 'visible' ]
-const layerProps = [ 'layerId', 'mapId', 'visible' ]
-
-const extract = (object, props) => props.reduce((result, prop) => ({ ...result, [prop]: object[prop] }), {})
-
-const isVisible = (map) => map && map.visible
-
-const getMaps = (state) => Object.keys(state.maps.byId).map((key) => extract(state.maps.byId[key], mapProps))
-
-const getLayers = (state) => Object.keys(state.layers.byId).map((key) => extract(state.layers.byId[key], layerProps))
-
-const visibleLayers = createSelector(
-  getMaps,
-  getLayers,
-  (maps, layers) => layers
-    .filter(({ mapId, visible }) => visible && isVisible(maps.find(({ mapId: id }) => id === mapId)))
-    .map(({ layerId }) => layerId)
-    .sort()
-    .join(',')
-)
 
 const WebMap = connect(
   (state) => ({
@@ -39,7 +18,7 @@ const WebMap = connect(
     orgStructureSelectedId: state.orgStructures.selectedId,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
-    visibleLayers: state.layers.visible ? visibleLayers(state) : '',
+    layersById: state.layers.byId,
     backOpacity: state.layers.backOpacity,
     hiddenOpacity: state.layers.hiddenOpacity,
     coordinatesType: state.webMap.coordinatesType,

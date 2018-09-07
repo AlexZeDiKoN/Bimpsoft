@@ -158,9 +158,11 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
-        <ContextMenuItem
+        <IconButton
           value={!isMeasureOn}
-          text="⇢"
+          text={i18n.MEASURE}
+          icon={isMeasureOn ? iconNames.RULLER_HOVER : iconNames.RULLER_ACTIVE}
+          hoverIcon={iconNames.RULLER_HOVER}
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />

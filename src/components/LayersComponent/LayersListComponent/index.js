@@ -7,7 +7,13 @@ import LayerItemComponent from '../LayerItemComponent'
 
 export default class LayersListComponent extends React.Component {
   render () {
-    const { timelineFrom, timelineTo } = this.props
+    const {
+      timelineFrom,
+      timelineTo,
+      onSelectLayer,
+      onChangeLayerColor,
+      onChangeLayerVisibility,
+    } = this.props
     const inDataRange = ({ dateFor }) => (
       (timelineFrom ? moment(dateFor).isAfter(timelineFrom) : true) &&
       (timelineTo ? moment(dateFor).isBefore(timelineTo) : true)
@@ -31,19 +37,9 @@ export default class LayersListComponent extends React.Component {
                 <LayerItemComponent
                   isSelected = {this.props.selectedLayerId === layerData.layerId}
                   key={layerData.layerId}
-                  onSelect={
-                    this.props.onSelectLayer && (() => this.props.onSelectLayer(layerData.layerId))
-                  }
-                  onChangeColor={
-                    this.props.onChangeLayerColor &&
-                      ((color) => {
-                        this.props.onChangeLayerColor(layerData.layerId, color)
-                      })
-                  }
-                  onChangeVisibility={
-                    this.props.onChangeLayerVisibility &&
-                      ((isVisible) => this.props.onChangeLayerVisibility(layerData.layerId, isVisible))
-                  }
+                  onSelect={onSelectLayer}
+                  onChangeColor={onChangeLayerColor}
+                  onChangeVisibility={onChangeLayerVisibility}
                   data={layerData}
                 />
               ))}

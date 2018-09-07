@@ -16,9 +16,20 @@ const setHidden = function (hidden) {
   }
 }
 
+const getDropShadowByColor = (color) => `drop-shadow(0px 0px 1px ${color}) drop-shadow(0px 0px 2px ${color})`
+
+const setShadowColor = function (shadowColor) {
+  this._shadowColor = shadowColor
+  const el = this.getElement()
+  if (el) {
+    el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
+  }
+}
+
 const DzvinMarker = L.Marker.extend({
   setOpacity,
   setHidden,
+  setShadowColor,
   update: function (...args) {
     L.Marker.prototype.update.apply(this, args)
     const el = this.getElement()
@@ -27,6 +38,7 @@ const DzvinMarker = L.Marker.extend({
       if (this._opacity !== undefined) {
         el.style.opacity = this._opacity
       }
+      el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
     }
   },
 })
