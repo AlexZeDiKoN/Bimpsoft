@@ -3,11 +3,9 @@ import PropTypes from 'prop-types'
 import './style.css'
 import { Icon } from 'antd'
 import moment from 'moment'
-import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
-
-const { common: { ColorPicker } } = components
+import ColorPicker from '../../common/ColorPicker'
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {

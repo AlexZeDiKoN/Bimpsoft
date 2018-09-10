@@ -14,8 +14,8 @@ const SEGMENT_ARC = 'arc'
 const SEGMENT_DIRECT = 'direct'
 
 const segments = {
-  [SEGMENT_ARC]: { text: i18n.SOLID, icon: 'solid' },
-  [SEGMENT_DIRECT]: { text: i18n.DASHED, icon: 'dashed' },
+  [SEGMENT_ARC]: { text: i18n.SEGMENT_ARC, icon: iconNames.CURVE_ACTIVE },
+  [SEGMENT_DIRECT]: { text: i18n.SEGMENT_DIRECT, icon: iconNames.BROKEN_LINE_ACTIVE },
 }
 
 const typeToSegment = new Map([

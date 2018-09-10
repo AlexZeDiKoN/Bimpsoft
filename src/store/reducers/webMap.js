@@ -19,6 +19,8 @@ const WebMapAttributes = Record({
   ...amplifiers,
   template: '',
   color: '',
+  fill: '',
+  lineType: 'solid',
   texts: [],
   z: null,
 })

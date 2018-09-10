@@ -10,19 +10,25 @@ const { FormRow } = components.form
 
 const WithColor = (Component) => class ColorComponent extends Component {
   static propTypes = {
-    color: PropTypes.string,
+    amplifiers: PropTypes.object,
   }
 
   constructor (props) {
     super(props)
-    this.state.color = props.color || colors.BLUE
+    let { amplifiers: { color } = {} } = props
+    color = Object.entries(colors.values).find(([ key, value ]) => value === color)
+    color = color ? color[0] : colors.BLUE
+    this.state.color = color
   }
 
   colorChangeHandler = (color) => this.setState({ color })
 
   fillResult (result) {
     super.fillResult(result)
-    result.color = this.state.color
+    if (!result.amplifiers) {
+      result.amplifiers = {}
+    }
+    result.amplifiers.color = colors.values[this.state.color]
   }
 
   renderColor () {
