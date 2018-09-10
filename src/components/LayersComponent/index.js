@@ -33,6 +33,7 @@ export default class LayersComponent extends React.Component {
             maps={this.props.maps}
             selectedLayerId={this.props.selectedLayerId}
             onSelectLayer={this.props.onSelectLayer}
+            onChangeMapColor={this.props.onChangeMapColor}
             onChangeMapVisibility={this.props.onChangeMapVisibility}
             onCloseMap={this.props.onCloseMap}
             onChangeLayerVisibility={this.props.onChangeLayerVisibility}
@@ -51,6 +52,7 @@ LayersComponent.propTypes = {
   onSelectLayer: PropTypes.func,
   onChangeFrom: PropTypes.func,
   onChangeTo: PropTypes.func,
+  onChangeMapColor: PropTypes.func,
   onChangeMapVisibility: PropTypes.func,
   onChangeLayerVisibility: PropTypes.func,
   onChangeLayerColor: PropTypes.func,

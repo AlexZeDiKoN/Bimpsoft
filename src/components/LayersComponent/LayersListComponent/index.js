@@ -10,6 +10,9 @@ export default class LayersListComponent extends React.Component {
     const {
       timelineFrom,
       timelineTo,
+      onChangeMapColor,
+      onCloseMap,
+      onChangeMapVisibility,
       onSelectLayer,
       onChangeLayerColor,
       onChangeLayerVisibility,
@@ -24,13 +27,9 @@ export default class LayersListComponent extends React.Component {
           <Fragment key={map.mapId}>
             <MapItemComponent
               data={map}
-              onClose={
-                this.props.onCloseMap && (() => this.props.onCloseMap(map.mapId))
-              }
-              onChangeVisibility={
-                this.props.onChangeMapVisibility &&
-                  ((isVisible) => this.props.onChangeMapVisibility(map.mapId, isVisible))
-              }
+              onClose={onCloseMap}
+              onChangeColor={onChangeMapColor}
+              onChangeVisibility={onChangeMapVisibility}
             />
             <div className="layers-list-component-children">
               {map.items && map.items.map((layerData) => inDataRange(layerData) && (
@@ -58,6 +57,7 @@ LayersListComponent.propTypes = {
   timelineTo: PropTypes.any,
   onSelectLayer: PropTypes.func,
   onChangeVisibility: PropTypes.func,
+  onChangeMapColor: PropTypes.func,
   onChangeMapVisibility: PropTypes.func,
   onChangeLayerVisibility: PropTypes.func,
   onCloseMap: PropTypes.func,

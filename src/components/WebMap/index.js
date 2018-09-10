@@ -667,6 +667,17 @@ export default class WebMap extends Component {
       layer.addTo(this.map)
       const { level, layersById, hiddenOpacity, layer: selectedLayerId } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
+      const { color = null, fill = null, lineType = null } = attributes
+
+      if (color !== null && color !== '') {
+        layer.setColor && layer.setColor(color)
+      }
+      if (fill !== null && fill !== '') {
+        layer.setFill && layer.setFill(fill)
+      }
+      if (lineType !== null && lineType !== '') {
+        layer.setLineType && layer.setLineType(lineType)
+      }
     }
   }
 
@@ -820,7 +831,7 @@ export default class WebMap extends Component {
   }
 
   updateFigure = async (data) => {
-    const { id, coordinates, coordinatesArray, subordinationLevel, ...rest } = data
+    const { id, amplifiers, coordinates, coordinatesArray, subordinationLevel, ...rest } = data
     if (!id) {
       return
     }
@@ -835,6 +846,7 @@ export default class WebMap extends Component {
       point: points[0],
       layer: layer.object.layer,
       geometry: points,
+      attributes: filterObj(amplifiers),
       ...rest,
       level: subordinationLevel || 0,
     })

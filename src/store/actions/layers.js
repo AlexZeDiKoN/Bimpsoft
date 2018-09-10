@@ -8,7 +8,6 @@ export const DELETE_ALL_LAYERS = action('DELETE_ALL_LAYERS')
 export const SELECT_LAYER = action('SELECT_LAYER')
 export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
-export const SET_VISIBLE = action('SET_VISIBLE')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
 
@@ -50,6 +49,22 @@ export const updateLayer = (layerData) =>
     }
   })
 
+export const updateLayersByMapId = (mapId, layerData) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+    for (const layer of Object.values(getState().layers.byId)) {
+      if (layer.mapId === mapId) {
+        dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
+      }
+    }
+  })
+
+export const updateAllLayers = (layerData) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+    for (const layer of Object.values(getState().layers.byId)) {
+      dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
+    }
+  })
+
 export const updateColorByLayerId = (layerId) =>
   asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
     const data = await webmapApi.layerGetColor(layerId)
@@ -64,6 +79,10 @@ export const updateColorByLayerId = (layerId) =>
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
     const state = getState()
+    if (state.layers.selectedId === layerId) {
+      return
+    }
+
     const layersIds = Object.keys(state.layers.byId)
 
     dispatch({
@@ -154,11 +173,6 @@ export const setTimelineFrom = (date) => ({
 export const setTimelineTo = (date) => ({
   type: SET_TIMELINE_TO,
   date,
-})
-
-export const setVisible = (visible) => ({
-  type: SET_VISIBLE,
-  visible,
 })
 
 export const setBackOpacity = (opacity) => ({

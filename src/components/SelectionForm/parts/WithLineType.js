@@ -16,19 +16,26 @@ const types = {
 
 const WithLineType = (Component) => class LineTypeComponent extends Component {
   static propTypes = {
-    lineType: PropTypes.string,
+    amplifiers: PropTypes.object,
   }
 
   constructor (props) {
     super(props)
-    this.state.lineType = props.lineType || TYPE_SOLID
+    let { amplifiers: { lineType } = {} } = props
+    lineType = Object.entries(types).find(([ key, { value } ]) => value === lineType)
+    lineType = lineType ? lineType[0] : TYPE_SOLID
+    this.state.lineType = lineType
   }
 
   lineTypeChangeHandler = (lineType) => this.setState({ lineType })
 
   fillResult (result) {
     super.fillResult(result)
-    result.lineType = this.state.lineType
+    if (!result.amplifiers) {
+      result.amplifiers = {}
+    }
+    const lineTypeInfo = types[this.state.lineType]
+    result.amplifiers.lineType = lineTypeInfo && lineTypeInfo.value
   }
 
   renderLineType () {

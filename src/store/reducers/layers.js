@@ -6,7 +6,6 @@ const initState = {
   selectedId: null,
   timelineFrom: null,
   timelineTo: null,
-  visible: true,
   backOpacity: 100,
   hiddenOpacity: 10,
 }
@@ -61,10 +60,6 @@ export default function reducer (state = initState, action) {
     case layers.SET_BACK_OPACITY: {
       const { opacity } = action
       return { ...state, backOpacity: opacity }
-    }
-    case layers.SET_VISIBLE: {
-      const { visible } = action
-      return { ...state, visible }
     }
     case layers.SET_HIDDEN_OPACITY: {
       const { opacity } = action

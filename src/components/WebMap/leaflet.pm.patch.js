@@ -16,7 +16,7 @@ const setHidden = function (hidden) {
   }
 }
 
-const getDropShadowByColor = (color) => `drop-shadow(0px 0px 1px ${color}) drop-shadow(0px 0px 2px ${color})`
+const getDropShadowByColor = (color) => `drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 3px ${color})`
 
 const setShadowColor = function (shadowColor) {
   this._shadowColor = shadowColor
@@ -42,6 +42,16 @@ const DzvinMarker = L.Marker.extend({
     }
   },
 })
+
+L.Path.prototype.setColor = function (color) {
+  this.setStyle({ color })
+}
+L.Path.prototype.setFill = function (fillColor) {
+  this.setStyle({ fillColor })
+}
+L.Path.prototype.setLineType = function (lineType) {
+  this.setStyle({ dashArray: lineType === 'dashed' ? '4 7' : null })
+}
 
 L.Path.prototype.setOpacity = setOpacity
 L.Path.prototype.setHidden = setHidden
