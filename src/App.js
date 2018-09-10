@@ -1,78 +1,40 @@
-import React, { Component } from 'react'
-import { WebMap, Tiles } from './components/WebMap'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { HashRouter as Router } from 'react-router-dom'
+import { LocaleProvider } from 'antd'
+import createHistory from 'history/createBrowserHistory'
+import ukUA from 'antd/lib/locale-provider/uk_UA'
+import moment from 'moment'
+import { ErrorBoundary } from './components'
+import { Main } from './layouts'
+import initStore from './store'
+import 'moment/locale/uk'
 import './App.css'
-import { entityKindClass } from './components/WebMap/leaflet.pm.patch'
+import ExplorerBridge from './server/ExplorerBridge'
+import { createNotificator } from './utils'
 
-const tmp = `<svg
-  width="480" height="480"
-  line-point-1="24,240"
-  line-point-2="456,240">
-  <path
-    fill="none"
-    stroke="red" stroke-width="3" stroke-linecap="square"
-    d="M8,240
-       a16,16 0 0,1 16,-16
-       h80
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h106
-       v-65 l-4,6 4,-15 4,15 -4,-6 v35
-       l-20,0 40,0 -20,0 v15
-       l-20,0 40,0 -20,0 v15
-       h106
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h80
-       a16,16 0 0,1 16,16" />
-</svg>`
+moment.locale('uk')
+// Init store and create a history of your choosing (we're using a browser history in this case)
+// for react-redux-router middleware
+const store = initStore({ history: createHistory() })
+const explorerBridge = new ExplorerBridge(store)
+explorerBridge.init()
 
-const objects = [
-  {
-    id: 1,
-    kind: entityKindClass.POINT,
-    code: 'sfgpewrh--mt',
-    options: { direction: 45 },
-    point: [ 48.5, 35 ],
-  }, {
-    id: 2,
-    kind: entityKindClass.POINT,
-    code: '10011500521200000800',
-    point: [ 48.5, 35.5 ],
-  }, {
-    id: 3,
-    kind: entityKindClass.POINT,
-    code: 'SHGPUCDT--AI',
-    point: [ 48.5, 36 ],
-  }, {
-    id: 4,
-    kind: entityKindClass.AREA,
-    points: [ [ 47.8, 34.8 ], [ 48.2, 35.2 ], [ 47.8, 35 ] ],
-    color: '#38f',
-  }, {
-    id: 5,
-    kind: entityKindClass.SEGMENT,
-    points: [ [ 47.5, 34.5 ], [ 47.55, 34.75 ] ],
-    template: tmp,
-    color: 'red',
-  },
-]
+createNotificator(store)
 
-class App extends Component {
+class App extends React.Component {
   render () {
     return (
-      <div className="App">
-        <WebMap
-          center={[ 48, 35 ]}
-          zoom={7}
-          objects={objects}
-        >
-          <Tiles
-            source="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maxZoom={20}
-          />
-          <Tiles
-            source="http://buyalo-w8:6080/arcgis/rest/services/ATO/MapServer/tile/{z}/{y}/{x}"
-            maxZoom={17}
-          />
-        </WebMap>
+      <div id="app" className="app">
+        <LocaleProvider locale={ukUA}>
+          <Provider store={store}>
+            <ErrorBoundary>
+              <Router>
+                <Main/>
+              </Router>
+            </ErrorBoundary>
+          </Provider>
+        </LocaleProvider>
       </div>
     )
   }

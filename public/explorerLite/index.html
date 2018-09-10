@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Провідничок</title>
+    <script>
+         function getIds(){
+          return [...(new Set(location.search.match(/\d+_\d+/g)).keys())]
+        }
+        function addId(){
+          let operation = document.getElementById('operation').value
+          let id = document.getElementById('id').value
+          if(id.length && !/[^\d]{1}/.test(id) && operation.length && !/[^\d]{1}/.test(operation)){
+            id = operation + '_' + id
+            if(getIds().indexOf(id) === -1) {
+              let s = '?'+[...getIds(), id].join()
+              location.search = s
+            }
+          }
+        }
+
+        function removeId(removeId){
+          let s = '?'+getIds().filter(id => removeId !== id).join()
+          location.search = s
+        }
+    </script>
+</head>
+<body>
+<div>
+    <input id="operation" value="" placeholder="Операція"/>
+    <input id="id" value="" placeholder="Id карти або шару"/>
+    <button onclick="addId()">Додати</button>
+</div>
+<br /><br />
+<div id="ids"></div>
+<script type="module">
+    import MapOpener from './MapOpener.js'
+    const MAP_URL = "/#/"
+    const mapOpener = new MapOpener(MAP_URL)
+    mapOpener.init()
+    window.mapOpener = mapOpener
+
+    ids.innerHTML = getIds().map(id=>{
+      let [operationId, folderId] = id.split("_")
+      let onclick = `window.mapOpener.open('${operationId}', ${folderId})`
+      let remove = `removeId('${id}')`
+      return `<div>
+                    <a style="color:blue; cursor:pointer;" onclick="${onclick}">${operationId} ${folderId}</a>
+                    <a style="color:blue; cursor:pointer;" onclick="${remove}">x</a>
+              </div>`
+    }).join('<br />')
+
+
+</script>
+</body>
+</html>

@@ -1,30 +1,137 @@
-/* global L, btoa, DOMParser */
+/* global L, DOMParser */
+
+const setOpacity = function (opacity) {
+  this._opacity = opacity
+  const el = this.getElement()
+  if (el) {
+    el.style.opacity = this._opacity
+  }
+}
+
+const setHidden = function (hidden) {
+  this._hidden = hidden
+  const el = this.getElement()
+  if (el) {
+    el.style.display = this._hidden ? 'none' : ''
+  }
+}
+
+const getDropShadowByColor = (color) => `drop-shadow(0px 0px 1px ${color}) drop-shadow(0px 0px 2px ${color})`
+
+const setShadowColor = function (shadowColor) {
+  this._shadowColor = shadowColor
+  const el = this.getElement()
+  if (el) {
+    el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
+  }
+}
+
+const DzvinMarker = L.Marker.extend({
+  setOpacity,
+  setHidden,
+  setShadowColor,
+  update: function (...args) {
+    L.Marker.prototype.update.apply(this, args)
+    const el = this.getElement()
+    if (el) {
+      el.style.display = this._hidden ? 'none' : ''
+      if (this._opacity !== undefined) {
+        el.style.opacity = this._opacity
+      }
+      el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
+    }
+  },
+})
+
+L.Path.prototype.setOpacity = setOpacity
+L.Path.prototype.setHidden = setHidden
 
 // ------------------------ Константи ----------------------------------------------------------------------------------
+const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
 const mouseupTimer = 333
 const activelayerColor = '#0a0' // Колір активного тактичного знака
 const activeBackColor = '#252' // Колір фону активного тактичного знака
-// const pointSignSize = 100 // Піксельний розмір тактичного знаку точкового типу
-export const entityKindClass = { // ID в базі даних відповідних типів тактичних знаків
-  POINT: 1,
-  SEGMENT: 2,
-  AREA: 3,
+
+export const entityKind = { // ID в базі даних відповідних типів тактичних знаків
+  POINT: 1, // точковий знак (MilSymbol)
+  SEGMENT: 2, // знак відрізкового типу
+  AREA: 3, // замкнута крива лінія
+  CURVE: 4, // незамкнута крива лінія
+  POLYGON: 5, // замкнута ламана лінія (багатокутник)
+  POLYLINE: 6, // незамкнута ламана лінія
+  CIRCLE: 7, // коло
+  RECTANGLE: 8, // прямокутник
+  SQUARE: 9, // квадрат
+  TEXT: 10, // текстова мітка
+  GROUP: 99, // група
 }
+
+const setActivePointSignColors = (node) => {
+  if (!node.hasAttribute) {
+    return
+  }
+  if (node.hasAttribute('stroke')) {
+    const value = node.getAttribute('stroke')
+    if (value && value !== 'none') {
+      node.setAttribute('stroke', activelayerColor)
+    }
+  }
+  if (node.hasAttribute('fill')) {
+    const value = node.getAttribute('fill')
+    if (value && value !== 'none') {
+      node.setAttribute('fill', node.tagName === 'text' || value === 'black' ? activelayerColor : activeBackColor)
+    }
+  }
+  for (const child of node.childNodes) {
+    setActivePointSignColors(child)
+  }
+}
+
+const parser = new DOMParser()
+
+const SvgIcon = L.Icon.extend({
+  options: {
+    svg: null,
+    postProcess: null,
+  },
+
+  createIcon: function (oldIcon) {
+    if (oldIcon && oldIcon.tagName === 'SVG') {
+      return oldIcon
+    }
+    const svg = parser.parseFromString(this.options.svg, 'image/svg+xml').rootElement
+    if (this.options.postProcess) {
+      this.options.postProcess(svg)
+    }
+    const anchor = this.options.iconAnchor
+    if (anchor) {
+      svg.style.marginLeft = (-anchor[0]) + 'px'
+      svg.style.marginTop = (-anchor[1]) + 'px'
+    }
+    return svg
+  },
+
+  createShadow: function () {
+    return null
+  },
+})
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 L.SVG.prototype._updatePoly = function (layer, closed) {
   let result = L.SVG.pointsToPath(layer._rings, closed)
-  if (layer.options && layer.options.tsType === entityKindClass.SEGMENT &&
-    layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length === 2
-  ) {
+  const skipStart = layer.options && layer.options.skipStart
+  const skipEnd = layer.options && layer.options.skipEnd
+  const kind = layer.options && layer.options.tsType
+  const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+  if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
     const js = layer.options.tsTemplate
     if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
       result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
     }
-  } else if (layer.options && layer.options.tsType === entityKindClass.AREA &&
-    layer.options.tsTemplate && layer._rings.length === 1 && layer._rings[0].length >= 3
-  ) {
-    result = prepareBezierAreaPath(layer._rings[0])
+  } else if (kind === entityKind.AREA && length >= 3) {
+    result = prepareBezierPath(layer._rings[0], true)
+  } else if (kind === entityKind.CURVE && length >= 2) {
+    result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
   }
   this._setPath(layer, result)
 }
@@ -69,6 +176,7 @@ L.PM.Edit.Line.prototype._initMarkers = function () {
 L.PM.Edit.Line.prototype._saved_createMarker = L.PM.Edit.Line.prototype._createMarker
 L.PM.Edit.Line.prototype._createMarker = function (latlng, index) {
   const marker = this._saved_createMarker(latlng)
+  marker.on('dblclick', dblClickOnControlPoint, this._layer)
   marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
   marker.on('mouseup', () => setTimeout(() => {
     if (marker._map) {
@@ -83,19 +191,21 @@ L.PM.Edit.Line.prototype._createMarker = function (latlng, index) {
 
 L.PM.Edit.Line.prototype._saved_createMiddleMarker = L.PM.Edit.Line.prototype._createMiddleMarker
 L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
+  const kind = this._layer.options.tsType
   let marker
-  if (this._layer.options.tsType !== entityKindClass.SEGMENT) {
-    // для відрізкових знаків забороняємо створення додаткових вершин
+  // для певних типів знаків забороняємо створення додаткових вершин
+  if (kind !== entityKind.SEGMENT && kind !== entityKind.RECTANGLE && kind !== entityKind.SQUARE) {
     marker = this._saved_createMiddleMarker(leftM, rightM)
   }
   if (marker) {
+    marker.on('dblclick', dblClickOnControlPoint, this._layer)
     marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
     marker.on('mouseup', () => setTimeout(() => {
       if (marker._map) {
         marker._map.pm.draggingMarker = false
       }
     }, mouseupTimer))
-    if (this._layer.options.tsType === entityKindClass.AREA) {
+    if (kind === entityKind.AREA || kind === entityKind.CURVE) {
       setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
     }
   }
@@ -105,10 +215,14 @@ L.PM.Edit.Line.prototype._createMiddleMarker = function (leftM, rightM) {
 L.PM.Edit.Line.prototype._saved_removeMarker = L.PM.Edit.Line.prototype._removeMarker
 L.PM.Edit.Line.prototype._removeMarker = function (e) {
   switch (this._layer.options.tsType) {
-    case entityKindClass.POINT: // для точкових знаків
-    case entityKindClass.SEGMENT: // і для відрізкових знаків
-      break // заброняємо видалення вершин
-    case entityKindClass.AREA: // для площинних знаків
+    case entityKind.POINT:
+    case entityKind.TEXT:
+    case entityKind.SEGMENT:
+    case entityKind.CIRCLE:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      break // для певних типів знаків заброняємо видалення вершин
+    case entityKind.AREA: // для площинних знаків
       if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
         this._saved_removeMarker(e)
         let idx = e.target._index
@@ -118,8 +232,125 @@ L.PM.Edit.Line.prototype._removeMarker = function (e) {
         this._onMarkerDrag({ target: this._getMarkersArray()[idx] })
       }
       break
+    case entityKind.CURVE: // для знаків типу "крива"
+      if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше двох
+        this._saved_removeMarker(e)
+        let idx = e.target._index // TODO: переконатися, що тут усе гаразд!
+        if (idx >= this._getMarkersCount()) {
+          idx = 0
+        }
+        this._onMarkerDrag({ target: this._getMarkersArray()[idx] })
+      }
+      break
+    case entityKind.POLYGON: // для полігонів
+      if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
+        this._saved_removeMarker(e)
+      }
+      break
+    case entityKind.POLYLINE: // для поліліній
+      if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
+        this._saved_removeMarker(e)
+      }
+      break
     default:
       this._saved_removeMarker(e)
+  }
+}
+
+function adjustSquareCorner (map, point, opposite) {
+  let bounds = L.latLngBounds(point, opposite)
+  const nw = bounds.getNorthWest()
+  const ne = bounds.getNorthEast()
+  const sw = bounds.getSouthWest()
+  const se = bounds.getSouthEast()
+  const width = (map.distance(nw, ne) + map.distance(sw, se)) / 2
+  const height = (map.distance(nw, sw) + map.distance(ne, se)) / 2
+  const size = (width + height) / 2
+  bounds = opposite.toBounds(size * 2)
+  if (point.lat > opposite.lat && point.lng > opposite.lng) {
+    point = bounds.getNorthEast()
+  } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
+    point = bounds.getSouthEast()
+  } else if (point.lng < opposite.lng && point.lat < opposite.lat) {
+    point = bounds.getSouthWest()
+  } else {
+    point = bounds.getNorthWest()
+  }
+  return point
+}
+
+L.PM.Edit.Rectangle.prototype._saved_onMarkerDrag = L.PM.Edit.Rectangle.prototype._onMarkerDrag
+L.PM.Edit.Rectangle.prototype._onMarkerDrag = function (e) {
+  this._saved_onMarkerDrag(e) // Здається, цей виклик не потрібен, без нього працює так само
+  const marker = e.target
+  const kind = this._layer.options.tsType
+  if (kind === entityKind.SQUARE) {
+    let point = marker.getLatLng()
+    const opposite = marker._oppositeCornerLatLng
+    point = adjustSquareCorner(marker._map, point, opposite)
+    this._layer.setBounds(L.latLngBounds(point, opposite))
+    this._adjustAllMarkers(this._layer.getLatLngs()[0])
+  }
+}
+
+L.PM.Draw.Rectangle.prototype._saved_syncRectangleSize = L.PM.Draw.Rectangle.prototype._syncRectangleSize
+L.PM.Draw.Rectangle.prototype._syncRectangleSize = function () {
+  if (this._layer.options.tsType === entityKind.SQUARE) {
+    this._hintMarker.off('move', this._syncRectangleSize, this)
+    this._hintMarker.setLatLng(adjustSquareCorner(this._hintMarker._map,
+      this._hintMarker.getLatLng(), this._startMarker.getLatLng()))
+    this._hintMarker.on('move', this._syncRectangleSize, this)
+  }
+  this._saved_syncRectangleSize()
+}
+
+L.PM.Draw.Line.prototype._saved_syncHintLine = L.PM.Draw.Line.prototype._syncHintLine
+L.PM.Draw.Line.prototype._syncHintLine = function () {
+  this._saved_syncHintLine()
+  if (this._layer.options.tsType === entityKind.CURVE) {
+    this._hintline.options.tsType = entityKind.CURVE
+    this._hintline.options.skipStart = true
+    const polyPoints = this._layer.getLatLngs()
+    if (polyPoints.length > 2) {
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 3],
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+      ])
+    } else if (polyPoints.length > 1) {
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+      ])
+    }
+  } else if (this._layer.options.tsType === entityKind.AREA) {
+    this._hintline.options.tsType = entityKind.CURVE
+    this._hintline.options.skipStart = true
+    this._hintline.options.skipEnd = true
+    const polyPoints = this._layer.getLatLngs()
+    if (polyPoints.length > 2) {
+      this._hintline.setLatLngs([
+        polyPoints[polyPoints.length - 3],
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+        polyPoints[0],
+        polyPoints[1],
+        polyPoints[2],
+      ])
+    } else if (polyPoints.length > 1) {
+      this._hintline.setLatLngs([
+        this._hintMarker.getLatLng(),
+        polyPoints[polyPoints.length - 2],
+        polyPoints[polyPoints.length - 1],
+        this._hintMarker.getLatLng(),
+        polyPoints[0],
+        polyPoints[1],
+        // this._hintMarker.getLatLng(),
+      ])
+    }
   }
 }
 
@@ -127,7 +358,8 @@ L.PM.Edit.Line.prototype._saved_onMarkerDrag = L.PM.Edit.Line.prototype._onMarke
 L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   this._saved_onMarkerDrag(e)
   const marker = e.target
-  if (this._layer.options.tsType === entityKindClass.AREA && marker._index >= 0) {
+  const kind = this._layer.options.tsType
+  if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {
     const len = this._getMarkersCount()
     const markerArray = this._getMarkersArray()
     const nextMarkerIndex = (marker._index + 1) % len
@@ -160,9 +392,14 @@ L.PM.Edit.Marker.prototype.enable = function (options) {
 }
 
 L.PM.Edit.Marker.prototype._save_disable = L.PM.Edit.Marker.prototype.disable
-L.PM.Edit.Marker.prototype.disable = function () {
-  this._save_disable()
-  this._editMarker.remove()
+L.PM.Edit.Marker.prototype.disable = function (...args) {
+  // todo: надо понять почему тут эксепшен падает
+  try {
+    L.PM.Edit.Marker.prototype._save_disable.apply(this, args)
+  } catch (e) {
+    console.error(e)
+  }
+  this._editMarker && this._editMarker.remove()
 }
 
 L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
@@ -171,10 +408,13 @@ L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
     icon: L.divIcon({ className: 'marker-icon' }),
   })
   marker._pmTempLayer = true
+  marker.on('dblclick', dblClickOnControlPoint)
   marker.on('move', this._onMarkerDrag, this)
   marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
   marker.on('mouseup', () => setTimeout(() => {
-    if (marker._map) { marker._map.pm.draggingMarker = false }
+    if (marker._map) {
+      marker._map.pm.draggingMarker = false
+    }
   }, mouseupTimer))
   return marker
 }
@@ -184,8 +424,11 @@ L.PM.Edit.Marker.prototype._onMarkerDrag = function (e) {
 }
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
-export function initMapEvents (mymap) {
+export function initMapEvents (mymap, clickInterhandler) {
   mymap.on('click', (event) => {
+    if (clickInterhandler && clickInterhandler(event)) {
+      return
+    }
     if (event.target.pm.draggingMarker) {
       event.target.pm.draggingMarker = false
     } else {
@@ -193,117 +436,216 @@ export function initMapEvents (mymap) {
     }
   })
   L.DomEvent.on(mymap._container, 'keyup', (event) => {
-    if (event.code === 'Delete' && mymap.pm.activeLayer /* && confirm('Вилучити тактичний знак?') */) {
+    if (event.code === 'Delete' && mymap.pm.activeLayer) { // && confirm('Вилучити тактичний знак?')
       const layer = mymap.pm.activeLayer
-      clearActiveLayer(mymap)
-      layer._map.fire('deletelayer', layer)
-      layer._map.removeLayer(layer)
+      if (layer._map.listens('deletelayer')) {
+        layer._map.fire('deletelayer', layer)
+      } else {
+        clearActiveLayer(mymap)
+        layer._map.removeLayer(layer)
+      }
     } else if (event.code === 'Space' && mymap.pm.activeLayer) {
       clearActiveLayer(mymap)
+    } else if (event.code === 'Escape') {
+      mymap.fire('escape')
     }
   })
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
-function clearActiveLayer (map, skipFire = false) {
+function checkPointSignIconTransparent (layer) {
+  if (layer.options.tsType === entityKind.POINT) {
+    setTimeout(() => transparentSvg(layer))
+  }
+}
+
+export const clearActiveLayer = (map, skipFire = false) => {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
-    if (map.pm.activeLayer._path) {
-      map.pm.activeLayer._path.setAttribute('stroke', map.pm.activeLayer.options.color)
+    const p = map.pm.activeLayer._path
+    if (p) {
+      p.setAttribute('stroke', map.pm.activeLayer.options.color)
+      if (p.getAttribute('fill') === activelayerColor) {
+        p.setAttribute('fill', map.pm.activeLayer.options.color)
+      }
     } else if (map.pm.activeLayer.options.iconNormal) {
       map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
+      checkPointSignIconTransparent(map.pm.activeLayer)
     }
     if (!skipFire) {
-      map.fire('activelayer', { old: map.pm.activeLayer, new: null })
+      map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
     }
   }
   delete map.pm.activeLayer
 }
 
-function setActiveLayer (map, layer, skipFire = false) {
+function setActiveLayer (map, layer, canEdit, skipFire = false) {
   map.pm.activeLayer = layer
-  if (map.pm.activeLayer._path) {
-    map.pm.activeLayer._path.setAttribute('stroke', activelayerColor)
+  const p = map.pm.activeLayer._path
+  if (p) {
+    p.setAttribute('stroke', activelayerColor)
+    if (p.getAttribute('fill') === map.pm.activeLayer.options.color) {
+      p.setAttribute('fill', activelayerColor)
+    }
   } else if (map.pm.activeLayer.options.iconActive) {
     map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
+    checkPointSignIconTransparent(map.pm.activeLayer)
   }
-  layer.pm.enable({
-    snappable: false,
-    draggable: layer.options.tsType !== entityKindClass.POINT,
-  })
+  if (canEdit) {
+    layer.pm.enable({
+      snappable: false,
+      draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
+    })
+  }
   if (!skipFire) {
-    map.fire('activelayer', { old: null, new: map.pm.activeLayer })
+    map.fire('activelayer', { oldLayer: null, newLayer: map.pm.activeLayer })
   }
 }
 
-function clickOnLayer (event) {
-  if (event.target !== event.target._map.pm.activeLayer) {
-    const old = event.target._map.pm.activeLayer
-    clearActiveLayer(event.target._map, true)
-    setActiveLayer(event.target._map, event.target, true)
-    event.target._map.fire('activelayer', { old, new: event.target })
+function dblClickOnControlPoint (event) {
+  if (event.target._map.pm.activeLayer) {
+    event.target._map.fire('editlayer', event.target._map.pm.activeLayer)
   }
   L.DomEvent.stopPropagation(event)
 }
 
+export function activateLayer (newLayer, canEdit) {
+  const map = newLayer._map
+  const oldLayer = map.pm.activeLayer
+  if (newLayer !== oldLayer) {
+    clearActiveLayer(map, true)
+    setActiveLayer(map, newLayer, canEdit, true)
+    map.fire('activelayer', { oldLayer, newLayer })
+  }
+}
+
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
-export function createTacticalSign (object, type, points, svg, color, map, anchor) {
+export function createTacticalSign (id, object, type, points, svg, color, map, anchor) {
   let layer
-  const js = svgToJS(svg)
   switch (type) {
-    case entityKindClass.POINT:
-      layer = createPoint(points, js, color, anchor)
+    case entityKind.POINT:
+      layer = createPoint(points, svg, anchor)
       break
-    case entityKindClass.SEGMENT:
-      layer = createSegment(points, js, color)
+    case entityKind.TEXT:
+      layer = createText(points, svg, anchor)
       break
-    case entityKindClass.AREA:
-      layer = createArea(points, js, color)
+    case entityKind.SEGMENT:
+      layer = createSegment(points, svgToJS(svg), color)
+      break
+    case entityKind.AREA:
+      layer = createArea(points)
+      break
+    case entityKind.CURVE:
+      layer = createCurve(points)
+      break
+    case entityKind.POLYGON:
+      layer = createPolygon(points)
+      break
+    case entityKind.POLYLINE:
+      layer = createPolyline(points)
+      break
+    case entityKind.CIRCLE:
+      layer = createCircle(points, map)
+      break
+    case entityKind.RECTANGLE:
+      layer = createRectangle(points)
+      break
+    case entityKind.SQUARE:
+      layer = createSquare(points, map)
       break
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
   }
-  if (layer) {
-    layer.object = object
-    layer.on('click', clickOnLayer)
-    layer.addTo(map)
-  }
   return layer
 }
 
-function createPoint ([ point ], js, color, anchor) {
-  if (!anchor) {
+export function createSearchMarker (point) {
+  const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
+  return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
+}
+
+function createPoint ([ point ], js, anchor) {
+  /* if (!anchor) {
     anchor = getCentralPoint(js)
-  }
-  if (color && js.svg.path) {
+  } */
+  /* if (color && js.svg.path) {
     js.svg.path.map((path) => (path.$.stroke = color))
   }
-  js.svg.$.xmlns = 'http://www.w3.org/2000/svg'
-  let svg = jsToSvg(js)
-  let src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const icon = L.icon({
-    iconUrl: src,
+  js.svg.$.xmlns = 'http://www.w3.org/2000/svg' */
+  // const svg = /* jsToSvg( */ js /* ) */
+  // let src = `data:image/svg+xml;base64,${btoa(svg)}`
+  const icon = new SvgIcon({
+    // iconUrl: src,
+    svg: js,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
-    iconSize: [ js.svg.$.width, js.svg.$.height ],
+    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
-  setActiveColors(js.svg, activelayerColor, activeBackColor)
-  svg = jsToSvg(js)
-  src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const iconActive = L.icon({
-    iconUrl: src,
+  // setActiveColors(js.svg, activelayerColor, activeBackColor)
+  // svg = jsToSvg(js)
+  // src = `data:image/svg+xml;base64,${btoa(svg)}`
+  const iconActive = new SvgIcon({
+    // iconUrl: src,
+    svg: js,
+    postProcess: setActivePointSignColors,
     iconAnchor: [ anchor.x, anchor.y ],
     // iconSize: [ pointSignSize, pointSignSize ],
-    iconSize: [ js.svg.$.width, js.svg.$.height ],
+    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
-  const marker = L.marker(point, { icon, draggable: false })
+  const marker = new DzvinMarker(point, { icon, draggable: false })
+  setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
-  marker.options.tsType = entityKindClass.POINT
+  marker.options.tsType = entityKind.POINT
   return marker
 }
 
-function setActiveColors (svg, stroke, fill) {
+function createText ([ point ], js, anchor) {
+  const icon = new SvgIcon({
+    svg: js,
+    iconAnchor: [ anchor.x, anchor.y ],
+  })
+  const iconActive = new SvgIcon({
+    svg: js,
+    postProcess: setActivePointSignColors,
+    iconAnchor: [ anchor.x, anchor.y ],
+  })
+  const marker = new DzvinMarker(point, { icon, draggable: false })
+
+  setTimeout(() => transparentSvg(marker))
+  marker.options.iconNormal = icon
+  marker.options.iconActive = iconActive
+  marker.options.tsType = entityKind.TEXT
+  return marker
+}
+
+export function updateLayerIcons (layer, svg, anchor) {
+  layer.options.iconNormal = new SvgIcon({
+    svg,
+    iconAnchor: [ anchor.x, anchor.y ],
+  })
+  layer.options.iconActive = new SvgIcon({
+    svg,
+    iconAnchor: [ anchor.x, anchor.y ],
+    postProcess: setActivePointSignColors,
+  })
+  layer.setIcon(layer._map.pm.activeLayer === layer ? layer.options.iconActive : layer.options.iconNormal)
+  setTimeout(() => transparentSvg(layer))
+}
+
+function transparentSvg (marker) {
+  if (!marker || !marker._icon) {
+    return
+  }
+  L.DomUtil.removeClass(marker._icon, 'leaflet-interactive')
+  marker.removeInteractiveTarget(marker._icon)
+  Array.from(marker._icon.children).forEach((child) => {
+    L.DomUtil.addClass(child, 'leaflet-interactive')
+    marker.addInteractiveTarget(child)
+  })
+}
+
+/* function setActiveColors (svg, stroke, fill) {
   for (const key of Object.keys(svg)) {
     if (key === '$') {
       if (svg.$.stroke && svg.$.stroke !== 'none') {
@@ -318,16 +660,54 @@ function setActiveColors (svg, stroke, fill) {
       setActiveColors(svg[key], stroke, fill)
     }
   }
-}
+} */
 
 function createSegment (segment, js, color) {
-  const options = prepareOptions(entityKindClass.SEGMENT, color, js)
+  const options = prepareOptions(entityKind.SEGMENT, color, js)
   return L.polyline(segment, options)
 }
 
-function createArea (area, js, color) {
-  const options = prepareOptions(entityKindClass.AREA, color, js)
+function createArea (area) {
+  const options = prepareOptions(entityKind.AREA)
   return L.polygon(area, options)
+}
+
+function createCurve (curve) {
+  const options = prepareOptions(entityKind.CURVE)
+  return L.polyline(curve, options)
+}
+
+function createPolygon (polygon) {
+  const options = prepareOptions(entityKind.POLYGON)
+  return L.polygon(polygon, options)
+}
+
+function createPolyline (polyline) {
+  const options = prepareOptions(entityKind.POLYLINE)
+  return L.polyline(polyline, options)
+}
+
+function createCircle ([ point1, point2 ], map) {
+  const options = prepareOptions(entityKind.CIRCLE)
+  options.radius = map.distance(point1, point2)
+  return L.circle(point1, options)
+}
+
+function createRectangle (points) {
+  const options = prepareOptions(entityKind.RECTANGLE)
+  return L.rectangle(points, options)
+}
+
+function createSquare ([ point1, point2 ], map) {
+  const bounds = L.latLngBounds(point1, point2)
+  point1 = bounds.getNorthWest()
+  point2 = bounds.getSouthEast()
+  const options = prepareOptions(entityKind.SQUARE)
+  const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
+  const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
+  const size = Math.max(width, height)
+  point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
+  return L.rectangle([ point1, point2 ], options)
 }
 
 function prepareOptions (signType, color, js) {
@@ -356,12 +736,21 @@ function prepareOptions (signType, color, js) {
 
 export function getGeometry (layer) {
   switch (layer.options.tsType) {
-    case entityKindClass.POINT:
+    case entityKind.POINT:
+    case entityKind.TEXT:
       return formGeometry([ layer.getLatLng() ])
-    case entityKindClass.SEGMENT:
+    case entityKind.SEGMENT:
+    case entityKind.POLYLINE:
+    case entityKind.CURVE:
       return formGeometry(layer.getLatLngs())
-    case entityKindClass.AREA:
+    case entityKind.POLYGON:
+    case entityKind.AREA:
       return formGeometry(layer.getLatLngs()[0])
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      return formRectGeometry(layer.getLatLngs()[0])
+    case entityKind.CIRCLE:
+      return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     default:
       return null
   }
@@ -370,15 +759,27 @@ export function getGeometry (layer) {
 function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
-    geometry: coords.map((point) => packPoint(point)).join('\r\n'),
+    geometry: coords,
   }
 }
 
-function packPoint (latLng) {
-  return `${latLng.lat.toFixed(8)}\t${latLng.lng.toFixed(8)}`
+function formRectGeometry (coords) {
+  const bounds = L.latLngBounds(coords)
+  return {
+    point: calcMiddlePoint(coords),
+    geometry: [ bounds.getNorthWest(), bounds.getSouthEast() ],
+  }
 }
 
-function calcMiddlePoint (coords) {
+function formCircleGeometry (point, radius) {
+  const lng = point.toBounds(radius * 2).getEast()
+  return {
+    point,
+    geometry: [ point, { lat: point.lat, lng } ],
+  }
+}
+
+export function calcMiddlePoint (coords) {
   const zero = { lat: 0, lng: 0 }
   if (!coords.length) { return zero }
   const sum = coords.reduce((a, p) => {
@@ -387,29 +788,6 @@ function calcMiddlePoint (coords) {
     return a
   }, zero)
   return { lat: sum.lat / coords.length, lng: sum.lng / coords.length }
-}
-
-export function parseGeometry (type, point, geometry) {
-  let ptArray = geometry ? geometry.split('\r\n') : []
-  ptArray = ptArray.map((line) => line.split('\t').map((value) => +value))
-  switch (type) {
-    case entityKindClass.POINT: // для точкових знаків
-      return ptArray.length >= 1
-        ? ptArray.slice(0, 1)
-        : [ point ]
-    case entityKindClass.SEGMENT: // для відрізкових знаків
-      return ptArray.length >= 2
-        ? ptArray.slice(0, 2)
-        : [ [ point[0], point[1] - 0.02 ], [ point[0], point[1] + 0.02 ] ]
-    case entityKindClass.AREA: // для площинних знаків
-      return ptArray.length >= 3
-        ? ptArray
-        : [ [ point[0] - 0.01, point[1] - 0.02 ],
-          [ point[0] - 0.01, point[1] + 0.02 ],
-          [ point[0] + 0.01, point[1] ] ]
-    default:
-      return [ point ]
-  }
 }
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
@@ -456,7 +834,7 @@ function wrapSvgPath (a) {
 function strechH (decodedPath, dist, templateDist) {
   const arrH = decodedPath.filter((cmd) => cmd[0] === 'h')
   const sumH = arrH.reduce((accum, cmd) => accum + cmd[1], 0)
-  if (sumH !== 0) {
+  if (sumH > epsilon) { // !== 0
     const factor = (dist - (templateDist - sumH)) / sumH
     arrH.map((cmd) => (cmd[1] = cmd[1] * factor))
   }
@@ -648,7 +1026,7 @@ function prepareLinePath (js, d, rings) {
   return wrapSvgPath(decodedPath)
 }
 
-function getCentralPoint (js) {
+/* function getCentralPoint (js) {
   const result = { x: 0, y: 0 }
   if (js.svg.$.width && js.svg.$.height) {
     if (js.svg.$['central-point']) {
@@ -659,11 +1037,11 @@ function getCentralPoint (js) {
       result.x = js.svg.$.width / 2
       result.y = js.svg.$.height / 2
     }
-    result.x = Math.round(result.x / js.svg.$.width/* * pointSignSize */)
-    result.y = Math.round(result.y / js.svg.$.height/* * pointSignSize */)
+    result.x = Math.round(result.x / js.svg.$.width) //  * pointSignSize inside brackets
+    result.y = Math.round(result.y / js.svg.$.height) //  * pointSignSize inside brackets
   }
   return result
-}
+} */
 
 function svgToJS (svg) {
   const parser = new DOMParser()
@@ -701,7 +1079,7 @@ function documentToJS (document) {
   return root
 }
 
-function jsToSvg (js) {
+/* function jsToSvg (js) {
   function tagToText (tagName, tag) {
     let result = ''
     if (Array.isArray(tag)) {
@@ -724,18 +1102,18 @@ function jsToSvg (js) {
     return result
   }
   return tagToText('svg', js.svg)
-}
+} */
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
-function prepareBezierAreaPath (ring) {
+function prepareBezierPath (ring, locked, skipStart, skipEnd) {
   let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, true)) {
+  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart, skipEnd)) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }
   return str || 'M0 0'
 }
 
-function prepareCurve (points, ring, locked) {
+function prepareCurve (points, ring, locked, skipStart, skipEnd) {
   const prevIdx = (idx) => idx > 0 ? idx - 1 : points.length - 1
   const nextIdx = (idx) => idx < points.length - 1 ? idx + 1 : 0
   const pt = (pa) => ({ x: pa[0], y: pa[1] })
@@ -761,30 +1139,39 @@ function prepareCurve (points, ring, locked) {
     ring[0].cp1 = pt(points[0])
     ring[0].cp2 = pt(points[0])
     mem = points[0]
-    result = [ 'M', points[0] ]
+    result = []
+    if (!skipStart) {
+      result = result.concat([ 'M', points[0] ])
+    }
     for (let i = 1; i < points.length - 1; i++) {
       [ cp1, cp2 ] = calcControlPoint(points[i - 1], points[i], points[i + 1])
       ring[i].cp1 = pt(cp1)
       ring[i].cp2 = pt(cp2)
-      result = result.concat([ 'C', mem, cp1, points[i] ])
+      if (skipStart && i === 1) {
+        result = result.concat([ 'M', points[i] ])
+      } else {
+        result = result.concat([ 'C', mem, cp1, points[i] ])
+      }
       mem = cp2
     }
     ring[points.length - 1].cp1 = pt(points[points.length - 1])
     ring[points.length - 1].cp2 = pt(points[points.length - 1])
-    result = result.concat([ 'C', mem, points[points.length - 1], points[points.length - 1] ])
+    if (!skipEnd) {
+      result = result.concat([ 'C', mem, points[ points.length - 1 ], points[ points.length - 1 ] ])
+    }
   }
   return result
 }
 
 function calcControlPoint (pp, pc, pn) {
-  const eq = (a, b) => a[0] === b[0] && a[1] === b[1]
+  const eq = (a, b) => Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon // a[0] === b[0] && a[1] === b[1]
   const sub = (a, b) => [ b[0] - a[0], b[1] - a[1] ]
   const mul = (p, f) => [ p[0] * f, p[1] * f ]
   const add = (a, b) => [ a[0] + b[0], a[1] + b[1] ]
   const len = (p) => Math.hypot(p[0], p[1])
-  const norm = (p, f) => len(p) === 0 ? [ 0, 0 ] : mul([ p[1], -p[0] ], f / len(p))
+  const norm = (p, f) => len(p) < epsilon ? [ 0, 0 ] : mul([ p[1], -p[0] ], f / len(p)) // === 0
 
-  if (eq(pp, pc) && eq(pn, pc)) {
+  if (eq(pp, pn)) { // (eq(pp, pc) && eq(pn, pc)) ||
     return [ pc, pc ]
   }
   if (eq(pp, pc)) {
@@ -801,17 +1188,17 @@ function calcControlPoint (pp, pc, pn) {
     return [ norm(sub(pp, pc), lp / 3), norm(dpn, ln / 3) ]
   }
   if (lp > ln) {
-    if (ln !== 0) {
+    if (ln > epsilon) { // !== 0
       dpn = mul(dpn, lp / ln)
     }
   } else {
-    if (lp !== 0) {
+    if (lp > epsilon) { // !== 0
       dpp = mul(dpp, ln / lp)
     }
   }
   const dir = sub(dpn, dpp)
   const ld = len(dir)
-  const [ cpp, cpn ] = ld === 0 ? [ [ 0, 0 ], [ 0, 0 ] ] : [ mul(dir, lp / 3 / ld), mul(dir, -ln / 3 / ld) ]
+  const [ cpp, cpn ] = ld < epsilon ? [ [ 0, 0 ], [ 0, 0 ] ] : [ mul(dir, lp / 3 / ld), mul(dir, -ln / 3 / ld) ] // === 0
   return [ add(cpp, pc), add(cpn, pc) ]
 }
 

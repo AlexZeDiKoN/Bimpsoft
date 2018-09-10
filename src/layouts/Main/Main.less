@@ -1,0 +1,61 @@
+@import "../../assets/styles/_variables.less";
+@import "../../assets/styles/_mixins.less";
+
+.main{
+  .flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  .highlight{
+    color: @highlight-color;
+  }
+  .obscure{
+    color: @obscure-color;
+  }
+}
+.header {
+  flex: 0 0 auto;
+  background: @toolbar-background;
+  color: @toolbar-color;
+  box-shadow: inset 0 -1px 0 0 @toolbar-border;
+  padding-bottom: 2px;
+}
+.header-top{
+  .flex;
+  flex-direction: row;
+}
+.header-left{
+  .flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+}
+.header-right{
+  .flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.app-body{
+  .flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+
+  > .value-swiper{
+    width: 7px;
+    cursor: col-resize;
+  }
+
+}
+.app-content {
+  flex: 1 1 auto;
+}
+.app-sidebar {
+  flex: 0 0 auto;
+}
+
+.ant-tooltip{
+  pointer-events: none;
+}

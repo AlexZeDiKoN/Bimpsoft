@@ -1,0 +1,70 @@
+@import "../../assets/styles/_variables.less";
+/* ================================= ANTD START ================================= */
+/* Common */
+#app .ant-layout-header,
+#app .ant-layout-sider {
+  background-color: @toolbar-background;
+}
+
+/* Header */
+#app .ant-layout-header {
+  box-shadow: inset 0 -1px 0 0 #aaa, inset 0 1px 0 0 #aaa;
+}
+
+/* Sider */
+#app .ant-layout-sider {
+  box-shadow: inset 1px 0 0 0 #aaa;
+}
+
+/* Button */
+#app .ant-btn {
+  /*background-image: linear-gradient(to top, #999, #eee);*/
+  /*box-shadow: inset 1px 1px 0 0 #fff, inset -1px -1px 0 0 rgba(0, 0, 0, .35);*/
+}
+#app .ant-btn--active {
+  background-color: rgba(255, 255, 255, .5);
+  /*background-image: linear-gradient(to top, #ccc 30%, #888 90%);*/
+  box-shadow: inset 1px 1px 1px 0 rgba(0, 0, 0, .35), inset -1px -1px 1px 0 rgba(0, 0, 0, .35);
+}
+#app .ant-btn:hover,
+#app .ant-btn:focus {
+  color: inherit;
+  border-color: inherit;
+}
+.ant-select-auto-complete.ant-select .ant-input:focus,
+.ant-select-auto-complete.ant-select .ant-input:hover,
+.ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+  border-color: inherit;
+}
+
+/* Dropdown */
+.ant-dropdown .ant-dropdown-menu-item-group-list {
+  padding: 0 5px;
+  list-style-type: none;
+}
+
+/* Tooltip */
+.ant-tooltip .ant-tooltip-inner {
+  background-color: rgba(0, 0, 0, 0.9);
+}
+.ant-tooltip.ant-tooltip-placement-top .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-topLeft .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-topRight .ant-tooltip-arrow {
+  border-top-color: rgba(0, 0, 0, 0.9);
+}
+.ant-tooltip.ant-tooltip-placement-right .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-rightTop .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-rightBottom .ant-tooltip-arrow {
+  border-right-color: rgba(0, 0, 0, 0.9);
+}
+.ant-tooltip.ant-tooltip-placement-bottom .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-bottomLeft .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-bottomRight .ant-tooltip-arrow {
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+.ant-tooltip.ant-tooltip-placement-left .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-leftTop .ant-tooltip-arrow,
+.ant-tooltip.ant-tooltip-placement-leftBottom .ant-tooltip-arrow {
+  border-right-color: rgba(0, 0, 0, 0.9);
+}
+/* ================================= ANTD END ================================= */

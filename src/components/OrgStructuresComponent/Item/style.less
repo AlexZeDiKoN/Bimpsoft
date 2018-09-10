@@ -1,0 +1,39 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.org-structure-item{
+  .flex;
+  justify-items: flex-start;
+  white-space: pre-wrap;
+  align-items: center;
+  .milsymbol{
+    width: 2em;
+    height: 2em;
+    margin-right: 0.5em;
+    flex: 0 0 auto;
+  }
+  .ant-tooltip{
+    .highlight{
+      color: #fff;
+    }
+    .obscure{
+      color: #888;
+    }
+  }
+}
+.org-structure-item-selected{
+  .org-structure-item-content {
+    background: @toolbar-background-selected;
+    color: @toolbar-color-selected;
+  }
+}
+.org-structure-item-content{
+  flex: 1 1 auto;
+  width: 10px;
+  text-align: left;
+  padding: 0px 0.3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+

@@ -1,0 +1,39 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.tabs-panel {
+  .flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+.tabs-panel-headers{
+  .flex;
+  height: 40px;
+  background-color: @toolbar-header-background;
+  flex: 0 0 auto;
+}
+.tabs-panel-header {
+  color: @toolbar-header-text;
+  font-size: 16px;
+  border-bottom: 3px solid @toolbar-header-background;
+  margin: 10px 5px 0px 5px;
+  padding: 0px 5px;
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+.tabs-panel-header-selected{
+  border-bottom: 3px solid #c566bf;
+}
+
+.tabs-panel-content{
+  flex: 1 1 auto;
+  .flex;
+}
+.tabs-panel-container{
+  flex: 1 1 auto;
+  .flex;
+
+}
