@@ -6,14 +6,16 @@ import {
   WithFill,
   WithCoordinateAndRadius,
   WithSubordinationLevel,
+  WithLineType,
 } from '../parts/index'
 
 export default class SquareForm extends
-  compose(WithSubordinationLevel, WithCoordinateAndRadius, WithColor, WithFill)(AbstractShapeForm) {
+  compose(WithSubordinationLevel, WithCoordinateAndRadius, WithColor, WithFill, WithLineType)(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
     ...WithColor.propTypes,
     ...WithFill.propTypes,
+    ...WithLineType.propTypes,
     ...WithCoordinateAndRadius.propTypes,
     ...WithSubordinationLevel.propTypes,
   }
@@ -24,6 +26,7 @@ export default class SquareForm extends
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderFill()}
+        {this.renderLineType()}
         {this.renderCoordinateAndRadius()}
       </Fragment>
     )
