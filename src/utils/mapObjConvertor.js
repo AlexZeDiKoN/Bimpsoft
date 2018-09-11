@@ -1,6 +1,6 @@
 export const toSelection = (object) => {
   const { id, type, code, attributes, affiliation, unit, level, geometry } = object
-  const coordinatesArray = geometry.map(({ lat, lng }) => ({ lng, lat })).toJS()
+  const coordinatesArray = geometry.toJS().map(({ lat, lng }) => ({ lng, lat }))
   return {
     id: +id,
     type: +type,
