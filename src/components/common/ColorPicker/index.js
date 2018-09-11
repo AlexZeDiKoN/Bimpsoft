@@ -19,7 +19,6 @@ export default class ColorPicker extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     color: PropTypes.string,
-    colors: PropTypes.array,
     onChange: PropTypes.func,
   }
 
@@ -54,7 +53,7 @@ export default class ColorPicker extends React.Component {
             {colors.map((color) => (<ColorButton key={color} color={color} onClick={this.clickColorHandler} />))}
           </div>
           <div className="color-picker-controls">
-            <input value={color && ''} onChange={this.inputChangeHandler} />
+            <input value={color || ''} onChange={this.inputChangeHandler} />
             <IconHovered icon={iconNames.EMPTY_DEFAULT} hoverIcon={iconNames.EMPTY_HOVER} onClick={this.clearHandler} />
           </div>
         </div>)}
@@ -74,10 +73,13 @@ class ColorButton extends React.Component {
 
   render () {
     const { color } = this.props
+    const extClassName = (color === undefined)
+      ? ' color-picker-button-undefined'
+      : (color === null || !color.length) ? ' color-picker-button-empty' : ''
     return (
       <button
-        className="color-picker-button"
-        style={{ backgroundColor: color, backgroundImage: color && color.length ? 'none' : '' }}
+        className={'color-picker-button' + extClassName}
+        style={{ backgroundColor: color }}
         onClick={this.clickHandler}
       >
       </button>

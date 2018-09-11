@@ -22,7 +22,7 @@ export default class MapItemComponent extends React.Component {
   }
 
   render () {
-    const { data: { visible, name } } = this.props
+    const { data: { visible, name, color } } = this.props
     return (
       <div className="map-item-сomponent">
         <VisibilityButton
@@ -31,7 +31,7 @@ export default class MapItemComponent extends React.Component {
           onChange={this.changeMapVisibilityHandler}
         />
         <span className="map-item-сomponent-title">{name}</span>
-        <ColorPicker className="map-item-сomponent-control" onChange={this.changeColorHandler}/>
+        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
         <Icon className="map-item-сomponent-control" type="close-circle-o" onClick={this.closeHandler}/>
       </div>
     )

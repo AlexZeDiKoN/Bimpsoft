@@ -3,7 +3,7 @@ import { Record, List, Map } from 'immutable'
 import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { CoordinatesTypes, MapSources } from '../../constants'
+import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 
 const WebMapPoint = Record({
@@ -18,8 +18,8 @@ for (const key of Object.keys(amplifiers)) {
 const WebMapAttributes = Record({
   ...amplifiers,
   template: '',
-  color: '',
-  fill: '',
+  color: colors.BLACK,
+  fill: colors.TRANSPARENT,
   lineType: 'solid',
   texts: [],
   z: null,

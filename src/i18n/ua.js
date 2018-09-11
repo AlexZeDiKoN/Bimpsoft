@@ -82,6 +82,7 @@ export const RED = 'Червоний'
 export const BLACK = 'Чорний'
 export const GREEN = 'Зелений'
 export const YELLOW = 'Жовтий'
+export const WHITE = 'Білий'
 
 export const LINE_SEGMENT = 'Відрізок лінії'
 export const SEGMENT_DIRECT = 'Пряма лінія'
