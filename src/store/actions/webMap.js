@@ -84,12 +84,18 @@ export const deleteObject = (id) =>
   })
 
 export const refreshObject = (id) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
     let object = await webmapApi.objRefresh(id)
     api.checkServerResponse(object)
 
-    // fix response data
     if (object.id) {
+      const { layers: { byId } } = getState()
+      const layerId = object.layer
+      if (!byId.hasOwnProperty(layerId)) {
+        return
+      }
+
+      // fix response data
       object = { ...object, unit: object.unit ? +object.unit : null }
     }
 

@@ -6,7 +6,7 @@
     "@DZVIN/CommonComponents": "^0.4.49",
     "@DZVIN/MilSymbolEditor": "^0.2.20",
     "@DZVIN/milsymbol": "^0.0.1",
-    "antd": "^3.5.3",
+    "antd": "^3.9.2",
     "babel-polyfill": "^6.26.0",
     "history": "^4.7.2",
     "immutable": "^3.8.2",

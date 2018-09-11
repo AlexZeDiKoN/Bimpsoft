@@ -1,10 +1,17 @@
 /* global io */
 import { getWebmapApi } from '../utils/services'
 import { updateColorByLayerId } from './actions/layers'
+import * as webMapActions from './actions/webMap'
 
-const updateLayer = (dispatch) => (layerId) => dispatch(updateColorByLayerId(Number(layerId)))
+const updateLayer = (dispatch) => (layerId) => {
+  dispatch(updateColorByLayerId(Number(layerId)))
+}
 
-export const initSocketEvents = (dispatch) => {
+const updateObject = (dispatch) => (id) => {
+  dispatch(webMapActions.refreshObject(id))
+}
+
+export const initSocketEvents = (dispatch, getState) => {
   let socket
   try {
     socket = io(getWebmapApi())
@@ -13,5 +20,5 @@ export const initSocketEvents = (dispatch) => {
     return
   }
   socket.on('update layer', updateLayer(dispatch))
-  window.socket = socket
+  socket.on('update object', updateObject(dispatch))
 }
