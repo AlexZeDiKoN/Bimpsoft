@@ -1,8 +1,8 @@
 import React from 'react'
-import { Icon } from 'antd'
+import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
-
+const { icons: { Icon } } = components
 export default class OpacityControl extends React.Component {
   render () {
     const onChange = this.props.onChange ? (e) => {
@@ -10,7 +10,7 @@ export default class OpacityControl extends React.Component {
     } : null
     return (
       <div className={'opacity-control ' + this.props.className}>
-        <Icon className="opacity-control-icon" type={this.props.icon}/>
+        <Icon className="opacity-control-icon" icon={this.props.icon}/>
         <input
           type="number"
           step="10"

@@ -15,10 +15,8 @@ const WithFill = (Component) => class FillComponent extends Component {
 
   constructor (props) {
     super(props)
-    let { amplifiers: { fill } = {} } = props
-    fill = Object.entries(colors.values).find(([ key, value ]) => value === fill)
-    fill = fill ? fill[0] : colors.TRANSPARENT
-    this.state.fill = fill
+    const { amplifiers: { fill } = {} } = props
+    this.state.fill = fill || colors.TRANSPARENT
   }
 
   fillChangeHandler = (fill) => this.setState({ fill })
@@ -28,7 +26,7 @@ const WithFill = (Component) => class FillComponent extends Component {
     if (!result.amplifiers) {
       result.amplifiers = {}
     }
-    result.amplifiers.fill = colors.values[this.state.fill]
+    result.amplifiers.fill = this.state.fill
   }
 
   renderFill () {
@@ -42,6 +40,7 @@ const WithFill = (Component) => class FillComponent extends Component {
         {colorOption(colors.BLACK)}
         {colorOption(colors.GREEN)}
         {colorOption(colors.YELLOW)}
+        {colorOption(colors.WHITE)}
       </Select>
     ) : colorDiv(fill)
 

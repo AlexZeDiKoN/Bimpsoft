@@ -5,7 +5,7 @@
 
   width: 20px;
   height: 20px;
-
+  color: @toolbar-color
 }
 
 .color-picker-popup {
@@ -17,7 +17,7 @@
   position: absolute;
   display: none;
   background: #fff;
-  z-index: 10000;
+  z-index: 1000;
 
   input {
     padding: 0px;
@@ -64,7 +64,12 @@
   height: 18px;
   border-radius: 3px;
   border: 1px solid @toolbar-border;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAChJREFUeNpiPHPmDAMMGBsbw9lMDDgA6RKM%2F%2F%2F%2Fh3POnj1LCzsAAgwAQtYIcFfEyzkAAAAASUVORK5CYII%3D');
+  &.color-picker-button-empty{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAChJREFUeNpiPHPmDAMMGBsbw9lMDDgA6RKM%2F%2F%2F%2Fh3POnj1LCzsAAgwAQtYIcFfEyzkAAAAASUVORK5CYII%3D');
+  }
+  &.color-picker-button-undefined{
+    background: #fff url('data:image/gif;base64,R0lGODlhEAAQAHAAACH5BAEAAAcALAAAAAAQABAAggAAACQAAPROOwBgriAAAFybOasUngAAAAMyeLrc/k5IqYa1bNJz8dJC1WWaeJGT6UFs+xQwrBg0zcTyUdsLXsy7Gw5YE8aIPJeSlQAAOw==');
+  }
 }
 .colors-panel{
   .flex;

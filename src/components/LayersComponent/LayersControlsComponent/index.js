@@ -2,7 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Icon } from 'antd'
+import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton, OpacityControl } from '../../common'
+
+const { icons: { names: iconNames } } = components
 
 export default class LayersControlsComponent extends React.Component {
   render () {
@@ -15,13 +18,13 @@ export default class LayersControlsComponent extends React.Component {
         />
         <OpacityControl
           className="layers-сontrols-control"
-          icon="global"
+          icon={iconNames.MAP_RIGHT_BAR_LAST_LAYER_DEFAULT}
           opacity={this.props.backOpacity}
           onChange={this.props.onChangeBackOpacity}
         />
         <OpacityControl
           className="layers-сontrols-control"
-          icon="appstore"
+          icon={iconNames.MAP_RIGHT_BAR_FIRST_LAYER_DEFAULT}
           opacity={this.props.hiddenOpacity}
           onChange={this.props.onChangeHiddenOpacity}
         />

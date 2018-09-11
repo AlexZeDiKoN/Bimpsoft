@@ -15,10 +15,8 @@ const WithColor = (Component) => class ColorComponent extends Component {
 
   constructor (props) {
     super(props)
-    let { amplifiers: { color } = {} } = props
-    color = Object.entries(colors.values).find(([ key, value ]) => value === color)
-    color = color ? color[0] : colors.BLUE
-    this.state.color = color
+    const { amplifiers: { color } = {} } = props
+    this.state.color = color || colors.BLUE
   }
 
   colorChangeHandler = (color) => this.setState({ color })
@@ -28,7 +26,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
     if (!result.amplifiers) {
       result.amplifiers = {}
     }
-    result.amplifiers.color = colors.values[this.state.color]
+    result.amplifiers.color = this.state.color
   }
 
   renderColor () {
@@ -41,6 +39,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
         {colorOption(colors.BLACK)}
         {colorOption(colors.GREEN)}
         {colorOption(colors.YELLOW)}
+        {colorOption(colors.WHITE)}
       </Select>
     ) : colorDiv(color)
 

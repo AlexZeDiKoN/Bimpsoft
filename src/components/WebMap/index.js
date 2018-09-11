@@ -32,6 +32,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import './bouncemarker'
+import { colors } from '../../constants'
 import { generateTextSymbolSvg } from '../../utils'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
@@ -670,10 +671,10 @@ export default class WebMap extends Component {
       const { color = null, fill = null, lineType = null } = attributes
 
       if (color !== null && color !== '') {
-        layer.setColor && layer.setColor(color)
+        layer.setColor && layer.setColor(colors.values.hasOwnProperty(color) ? colors.values[color] : color)
       }
       if (fill !== null && fill !== '') {
-        layer.setFill && layer.setFill(fill)
+        layer.setFill && layer.setFill(colors.values.hasOwnProperty(fill) ? colors.values[fill] : fill)
       }
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)

@@ -26,12 +26,15 @@ const mapStateToProps = (store) => {
       if (!mapCommonData) {
         return
       }
-      map = { ...mapCommonData, items: [], visible: false }
+      map = { ...mapCommonData, items: [], visible: false, color: layer.color }
     }
     map.items.push(layer)
     if (layer.visible) {
       map.visible = true
       visible = true
+    }
+    if (map.color !== undefined && map.color !== layer.color){
+      map.color = undefined
     }
     maps.set(mapId, map)
   })
