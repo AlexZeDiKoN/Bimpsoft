@@ -3,8 +3,6 @@
 
 .org-structure-item{
   .flex;
-  justify-items: flex-start;
-  white-space: pre-wrap;
   align-items: center;
   .milsymbol{
     width: 2em;
@@ -21,13 +19,20 @@
     }
   }
 }
-.org-structure-item-selected{
-  .org-structure-item-content {
+.org-structure-item-selected {
+  .org-structure-item-text {
     background: @toolbar-background-selected;
     color: @toolbar-color-selected;
   }
 }
 .org-structure-item-content{
+  flex: 1 1 auto;
+  .flex;
+  align-items: center;
+  justify-items: flex-start;
+  white-space: pre-wrap;
+}
+.org-structure-item-text{
   flex: 1 1 auto;
   width: 10px;
   text-align: left;
