@@ -238,7 +238,6 @@ export default class WebMap extends Component {
         lng: PropTypes.number,
       }),
     }),
-    socket: PropTypes.any,
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     coordinatesType: PropTypes.string,
@@ -259,7 +258,6 @@ export default class WebMap extends Component {
       }),
     }),
     // Redux actions
-    refreshObject: PropTypes.func,
     addObject: PropTypes.func,
     deleteObject: PropTypes.func,
     editObject: PropTypes.func,
@@ -277,13 +275,10 @@ export default class WebMap extends Component {
   }
 
   componentDidMount () {
-    const { sources, socket, refreshObject } = this.props
+    const { sources } = this.props
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
-    if (socket) {
-      socket.on('update object', refreshObject)
-    }
   }
 
   shouldComponentUpdate (nextProps) {

@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-// import { createSelector } from 'reselect'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
@@ -26,10 +25,8 @@ const WebMap = connect(
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
     isGridActive: state.viewModes.print,
-    socket: window.socket,
   }),
   (dispatch) => ({
-    refreshObject: (id) => dispatch(webMapActions.refreshObject(id)),
     addObject: (object) => dispatch(webMapActions.addObject(object)),
     deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
     editObject: () => dispatch(selectionActions.showEditForm),
