@@ -1,11 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { Icon } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton, OpacityControl } from '../../common'
 
-const { icons: { names: iconNames } } = components
+const { icons: { IconHovered, names: iconNames } } = components
 
 export default class LayersControlsComponent extends React.Component {
   render () {
@@ -28,9 +27,10 @@ export default class LayersControlsComponent extends React.Component {
           opacity={this.props.hiddenOpacity}
           onChange={this.props.onChangeHiddenOpacity}
         />
-        <Icon
+        <IconHovered
           className="layers-сontrols-control"
-          type="close-circle-o"
+          icon={iconNames.CLOSE_ROUND_ACTIVE}
+          hoverIcon={iconNames.CLOSE_ROUND_HOVER}
           onClick={this.props.onCloseAllMaps}
         />
       </div>

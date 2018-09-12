@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { Icon } from 'antd'
 import moment from 'moment'
+import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
+
+const { icons: { IconHovered, names: iconNames } } = components
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
@@ -26,10 +28,8 @@ export default class LayerItemComponent extends React.Component {
   render () {
     const {
       isSelected,
-      data: { visible, name, locked, color, shared, dateFor = null },
+      data: { visible, name, locked, color, dateFor = null },
     } = this.props
-    const lockedIcon = locked ? 'lock' : 'unlock'
-    const sharedIcon = shared ? 'team' : 'user-delete'
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
     return (
       <div
@@ -41,13 +41,19 @@ export default class LayerItemComponent extends React.Component {
           className="layer-item-сomponent-control"
           onChange={this.changeVisibilityHandler}
         />
-        <Icon className="map-item-сomponent-control" type={lockedIcon} />
+        <IconHovered
+          className="map-item-сomponent-control"
+          icon={locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE}
+          hoverIcon={locked ? iconNames.LOCK_HOVER : iconNames.UNLOCK_HOVER}
+        />
         <div className="layer-item-сomponent-title">
           <div className="layer-name">{name}</div>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
-        <Icon className="map-item-сomponent-control" type={sharedIcon} />
+        <IconHovered
+          className="map-item-сomponent-control"
+        />
       </div>
     )
   }
