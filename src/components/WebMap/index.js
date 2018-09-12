@@ -362,7 +362,7 @@ export default class WebMap extends Component {
         coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
       }
       if (coordinates !== text) {
-        text = `${text}<br/>${coordinates}`
+        text = `<strong>${text}</strong><br/><br/>${coordinates}`
       }
       this.map.panTo(point, { animate: false })
       setTimeout(() => {
