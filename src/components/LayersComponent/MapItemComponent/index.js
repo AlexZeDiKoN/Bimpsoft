@@ -1,9 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { Icon } from 'antd'
+import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
+
+const { icons: { IconHovered, names: iconNames } } = components
 
 export default class MapItemComponent extends React.Component {
   changeMapVisibilityHandler = () => {
@@ -32,7 +34,12 @@ export default class MapItemComponent extends React.Component {
         />
         <span className="map-item-сomponent-title">{name}</span>
         <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
-        <Icon className="map-item-сomponent-control" type="close-circle-o" onClick={this.closeHandler}/>
+        <IconHovered
+          className="map-item-сomponent-control"
+          icon={iconNames.CLOSE_ROUND_ACTIVE}
+          hoverIcon={iconNames.CLOSE_ROUND_HOVER}
+          onClick={this.closeHandler}
+        />
       </div>
     )
   }
