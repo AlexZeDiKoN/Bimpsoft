@@ -156,9 +156,9 @@ const toGMS = (value, pos, neg) => {
 }
 const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} ${u.easting.toFixed(0)} ${u.northing.toFixed(0)}`
 const scLabel = ([ x, y ]) => `${x.toFixed(0)}\xA0${y.toFixed(0)}`
-const Wgs84 = (lat, lng) => `\xA0${i18n.LATITUDE}: ${lat.toFixed(wgsAccuracy)}\xA0\xA0\xA0${i18n.LONGITUDE}: ${lng.toFixed(wgsAccuracy)}`
-const Wgs84I = (lat, lng) => `\xA0${toGMS(lat, 'N', 'S')}\xA0\xA0\xA0${toGMS(lng, 'E', 'W')}`
-const Mgrs = (lat, lng) => `\xA0MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
+const Wgs84 = (lat, lng) => `${i18n.LATITUDE}: ${lat.toFixed(wgsAccuracy)}\xA0\xA0\xA0${i18n.LONGITUDE}: ${lng.toFixed(wgsAccuracy)}`
+const Wgs84I = (lat, lng) => `${toGMS(lat, 'N', 'S')}\xA0\xA0\xA0${toGMS(lng, 'E', 'W')}`
+const Mgrs = (lat, lng) => `MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
 const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
@@ -356,7 +356,14 @@ export default class WebMap extends Component {
       if (this.searchMarker) {
         this.searchMarker.removeFrom(this.map)
       }
-      const { point, text } = nextProps.searchResult
+      let { point, text } = nextProps.searchResult
+      let coordinates = this.showCoordinates(point)
+      if (Array.isArray(coordinates)) {
+        coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+      }
+      if (coordinates !== text) {
+        text = `${text}<br/>${coordinates}`
+      }
       this.map.panTo(point, { animate: false })
       setTimeout(() => {
         this.searchMarker = createSearchMarker(point, text)
@@ -582,6 +589,7 @@ export default class WebMap extends Component {
         if (url && url[0] === '/') {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
+        console.info('REACT_APP_PREFIX: ', process.env.REACT_APP_PREFIX)
         console.info('REACT_APP_TILES: ', process.env.REACT_APP_TILES)
         console.info('Create tile layer: ', url)
         const sourceLayer = new TileLayer(url, rest)
