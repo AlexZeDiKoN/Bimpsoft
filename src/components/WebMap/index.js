@@ -39,11 +39,14 @@ import {
   updateLayerIcons, createSearchMarker,
 } from './leaflet.pm.patch'
 
+let MIN_ZOOM = 0
+let MAX_ZOOM = 20
+
 const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
 const wgsAccuracy = 5 // Точність задання координат у системі WGS-84, десяткових знаків
 const pointSizes = { // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
-  zoom0: 2,
-  zoom20: 64,
+  min: 4,
+  max: 96,
 }
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -57,11 +60,16 @@ const switchScaleOptions = {
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
 }
 
-const calcPointSize = (zoom) => zoom <= 0
-  ? pointSizes.zoom0
-  : zoom >= 20
-    ? pointSizes.zoom20
-    : Math.round((zoom / 20) * (pointSizes.zoom20 - pointSizes.zoom0) + pointSizes.zoom0)
+const calcPointSize = (zoom) => {
+  const { min, max } = pointSizes
+  const result = zoom <= MIN_ZOOM
+    ? min
+    : zoom >= MAX_ZOOM
+      ? max
+      : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
+  console.info(zoom, result)
+  return Math.round(result)
+}
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
@@ -593,6 +601,8 @@ export default class WebMap extends Component {
         console.info('REACT_APP_TILES: ', process.env.REACT_APP_TILES)
         console.info('Create tile layer: ', url)
         const sourceLayer = new TileLayer(url, rest)
+        MIN_ZOOM = rest.minZoom || MIN_ZOOM
+        MAX_ZOOM = rest.maxZoom || MAX_ZOOM
         sourceLayer.addTo(this.map)
         this.sources.push(sourceLayer)
         if (!this.mini) {
