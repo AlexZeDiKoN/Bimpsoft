@@ -9,6 +9,16 @@ import ColorPicker from '../../common/ColorPicker'
 
 const { icons: { IconHovered, names: iconNames } } = components
 
+const getLockIcon = (isDark, locked) =>
+  isDark
+    ? (locked ? iconNames.DARK_LOCK_ACTIVE : iconNames.DARK_UNLOCK_ACTIVE)
+    : (locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE)
+
+const getLockIconHover = (isDark, locked) =>
+  isDark
+    ? (locked ? iconNames.DARK_LOCK_HOVER : iconNames.DARK_UNLOCK_HOVER)
+    : (locked ? iconNames.LOCK_HOVER : iconNames.UNLOCK_HOVER)
+
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
     const { onSelect, data: { layerId } } = this.props
@@ -38,13 +48,14 @@ export default class LayerItemComponent extends React.Component {
       >
         <VisibilityButton
           visible={visible}
+          isDark={isSelected}
           className="layer-item-сomponent-control"
           onChange={this.changeVisibilityHandler}
         />
         <IconHovered
-          className="map-item-сomponent-control"
-          icon={locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE}
-          hoverIcon={locked ? iconNames.LOCK_HOVER : iconNames.UNLOCK_HOVER}
+          className="layer-item-сomponent-control"
+          icon={getLockIcon(isSelected, locked)}
+          hoverIcon={getLockIconHover(isSelected, locked)}
         />
         <div className="layer-item-сomponent-title">
           <div className="layer-name">{name}</div>
@@ -52,7 +63,7 @@ export default class LayerItemComponent extends React.Component {
         </div>
         <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
         <IconHovered
-          className="map-item-сomponent-control"
+          className="layer-item-сomponent-control"
         />
       </div>
     )

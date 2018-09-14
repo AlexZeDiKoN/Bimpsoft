@@ -5,7 +5,7 @@
 
   width: 20px;
   height: 20px;
-  color: @toolbar-color
+  color: @toolbar-color;
 }
 
 .color-picker-popup {
@@ -16,13 +16,14 @@
   margin: -72px -5px -5px -226px;
   position: absolute;
   display: none;
-  background: #fff;
+  background: @toolbar-background;
   z-index: 1000;
 
   input {
     padding: 0px;
     margin: 0px 5px;
     width: 139px;
+    height: 100%;
     border-radius: 3px;
     border: 1px solid @toolbar-border;
   }
@@ -37,13 +38,12 @@
 
   .color-picker-button {
     margin: 1px;
+    border-color: #999;
   }
 }
 .color-picker-opened {
   .color-picker-popup {
     display: block;
-
-
   }
   .color-picker-button {
     position: relative;
@@ -53,7 +53,7 @@
 .color-picker-controls{
   .flex;
   height: 24px;
-
+  align-items: center;
   .icon-hovered {
     height: 24px;
     width: 24px;
@@ -63,7 +63,10 @@
   width: 18px;
   height: 18px;
   border-radius: 3px;
-  border: 1px solid @toolbar-border;
+  border: 1px solid @toolbar-header-background;
+  &:hover{
+    border-color: #999;
+  }
   &.color-picker-button-empty{
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAChJREFUeNpiPHPmDAMMGBsbw9lMDDgA6RKM%2F%2F%2F%2Fh3POnj1LCzsAAgwAQtYIcFfEyzkAAAAASUVORK5CYII%3D');
   }
