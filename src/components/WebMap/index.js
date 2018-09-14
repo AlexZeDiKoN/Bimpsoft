@@ -620,28 +620,34 @@ export default class WebMap extends Component {
 
   updateObjects = (objects) => {
     if (this.map) {
-      const ids = []
+      const notChangedIds = new Set()
+      let activeLayerId = null
       this.map.eachLayer((layer) => {
         if (layer.id) {
           const object = objects.get(layer.id)
-          if (!object || layer.object !== object) {
+          if (object && layer.object === object) {
+            notChangedIds.add(layer.id)
+          } else {
             if (object && object.equals(layer.object)) {
-              // console.log(`Leave unchanged object #${layer.id}`)
               layer.object = object
+              notChangedIds.add(layer.id)
             } else {
-              // console.log(`Remove object #${layer.id}`)
+              if (this.map.pm.activeLayer === layer) {
+                activeLayerId = layer.id
+                layer.pm.disable()
+                delete layer._map.pm.activeLayer
+              }
               layer.remove()
             }
-          } else {
-            ids.push(layer.id)
           }
         }
       })
       objects.forEach((object, key) => {
-        // console.info(key, object.toJS())
-        if (!ids.includes(key)) {
-          // console.log(`Create object #${key}`)
+        if (!notChangedIds.has(key)) {
           this.addObject(object)
+          if (activeLayerId === key) {
+            this.activateCreated(key)
+          }
         }
       })
     }
