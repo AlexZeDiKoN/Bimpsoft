@@ -67,7 +67,6 @@ const calcPointSize = (zoom) => {
     : zoom >= MAX_ZOOM
       ? max
       : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-  console.info(zoom, result)
   return Math.round(result)
 }
 
