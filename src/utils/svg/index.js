@@ -19,7 +19,7 @@ const generateTextSymbolSvg = ({
   let width = 0
   const textsEls = texts.map((text, i) => {
     width = Math.max(width, getTextWidth(text.text))
-    return `<text font-size="12px" x="0" y="${i * lineHeight + 12}" ${text.underline ? 'text-decoration="underline"' : ''} >${text.text}</text>`
+    return `<text fill="#000" font-size="12px" x="0" y="${i * lineHeight + 12}" ${text.underline ? 'text-decoration="underline"' : ''} >${text.text}</text>`
   }).join('')
   width += 6
   const height = texts.length * lineHeight

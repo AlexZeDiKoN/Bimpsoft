@@ -393,45 +393,41 @@ L.PM.Edit.Line.prototype._onMarkerDrag = function (e) {
   }
 }
 
-L.PM.Edit.Marker.prototype._save_enable = L.PM.Edit.Marker.prototype.enable
-L.PM.Edit.Marker.prototype.enable = function (options) {
-  this._save_enable(options)
-  this._layer.off('contextmenu', this._removeMarker, this)
-  this._editMarker = this._createMarker(this._layer.getLatLng())
-  this._editMarker.addTo(this._map)
-}
+const PMEditMarker = L.PM.Edit.Marker
 
-L.PM.Edit.Marker.prototype._save_disable = L.PM.Edit.Marker.prototype.disable
-L.PM.Edit.Marker.prototype.disable = function (...args) {
-  // todo: надо понять почему тут эксепшен падает
-  try {
-    L.PM.Edit.Marker.prototype._save_disable.apply(this, args)
-  } catch (e) {
-    console.error(e)
-  }
-  this._editMarker && this._editMarker.remove()
-}
-
-L.PM.Edit.Marker.prototype._createMarker = function (latlng) {
-  const marker = new L.Marker(latlng, {
-    draggable: true,
-    icon: L.divIcon({ className: 'marker-icon' }),
-  })
-  marker._pmTempLayer = true
-  marker.on('dblclick', dblClickOnControlPoint)
-  marker.on('move', this._onMarkerDrag, this)
-  marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
-  marker.on('mouseup', () => setTimeout(() => {
-    if (marker._map) {
-      marker._map.pm.draggingMarker = false
-    }
-  }, mouseupTimer))
-  return marker
-}
-
-L.PM.Edit.Marker.prototype._onMarkerDrag = function (e) {
-  this._layer.setLatLng(e.target.getLatLng())
-}
+L.PM.Edit.Marker = PMEditMarker.extend({
+  enable: function (options) {
+    PMEditMarker.prototype.enable.call(this, options)
+    this._layer.off('contextmenu', this._removeMarker, this)
+    this._editMarker = this._createMarker(this._layer.getLatLng())
+    this._editMarker.addTo(this._map)
+  },
+  disable: function (...args) {
+    this._enabled = false
+    this._layer.dragging && this._layer.dragging.disable()
+    this._layerEdited = false
+    this._editMarker && this._editMarker.remove()
+  },
+  _createMarker: function (latlng) {
+    const marker = new L.Marker(latlng, {
+      draggable: true,
+      icon: L.divIcon({ className: 'marker-icon' }),
+    })
+    marker._pmTempLayer = true
+    marker.on('dblclick', dblClickOnControlPoint)
+    marker.on('move', this._onMarkerDrag, this)
+    marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
+    marker.on('mouseup', () => setTimeout(() => {
+      if (marker._map) {
+        marker._map.pm.draggingMarker = false
+      }
+    }, mouseupTimer))
+    return marker
+  },
+  _onMarkerDrag: function (e) {
+    this._layer.setLatLng(e.target.getLatLng())
+  },
+})
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
 export function initMapEvents (mymap, clickInterhandler) {
@@ -602,7 +598,7 @@ function createPoint ([ point ], js, anchor) {
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
-  const marker = new DzvinMarker(point, { icon, draggable: false })
+  const marker = new DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane', zIndexOffset: 1000 })
   setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
@@ -620,7 +616,7 @@ function createText ([ point ], js, anchor) {
     postProcess: setActivePointSignColors,
     iconAnchor: [ anchor.x, anchor.y ],
   })
-  const marker = new DzvinMarker(point, { icon, draggable: false })
+  const marker = new DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane', zIndexOffset: 1000 })
 
   setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
