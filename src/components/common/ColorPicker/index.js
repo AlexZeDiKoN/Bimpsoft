@@ -54,7 +54,7 @@ export default class ColorPicker extends React.Component {
           </div>
           <div className="color-picker-controls">
             <input value={color || ''} onChange={this.inputChangeHandler} />
-            <IconHovered icon={iconNames.EMPTY_DEFAULT} hoverIcon={iconNames.EMPTY_HOVER} onClick={this.clearHandler} />
+            <ColorButton color={''} onClick={this.clickColorHandler} />
           </div>
         </div>)}
         <ColorButton color={color} onClick={this.clickHandler} />
