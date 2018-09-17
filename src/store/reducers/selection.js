@@ -4,6 +4,7 @@ const initState = {
   showForm: null,
   data: null,
   newShape: {},
+  clipboard: null,
 }
 
 export default function reducer (state = initState, action) {

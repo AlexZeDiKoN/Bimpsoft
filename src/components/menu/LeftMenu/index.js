@@ -34,6 +34,10 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelClose: PropTypes.func,
     onLinesListClose: PropTypes.func,
     onMeasureChange: PropTypes.func,
+    onCopy: PropTypes.func,
+    onCut: PropTypes.func,
+    onPaste: PropTypes.func,
+    onDelete: PropTypes.func,
     layerName: PropTypes.string,
   }
 
@@ -68,6 +72,10 @@ export default class LeftMenu extends React.Component {
       onClickSubordinationLevel,
       onSubordinationLevelChange,
       onMeasureChange,
+      onCopy,
+      onCut,
+      onPaste,
+      onDelete,
       mapSources,
       isShowSources,
       layerName,
@@ -166,6 +174,34 @@ export default class LeftMenu extends React.Component {
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
+        {isEditMode && (
+          <Fragment>
+            <IconButton
+              text={i18n.CUT}
+              icon={iconNames.MAP_SCALE_OPEN_DEFAULT}
+              hoverIcon={iconNames.MAP_SCALE_OPEN_HOVER}
+              onClick={onCut}
+            />
+            <IconButton
+              text={i18n.COPY}
+              icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+              hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+              onClick={onCopy}
+            />
+            <IconButton
+              text={i18n.PASTE}
+              icon={iconNames.MAP_SCALE_CLOSE_DEFAULT}
+              hoverIcon={iconNames.MAP_SCALE_CLOSE_HOVER}
+              onClick={onPaste}
+            />
+            <IconButton
+              text={i18n.DELETE}
+              icon={iconNames.BAR_2_DELETE_ACTIVE}
+              hoverIcon={iconNames.BAR_2_DELETE_HOVER}
+              onClick={onDelete}
+            />
+          </Fragment>
+        )}
         <div className="menu-layer-name">{layerName}</div>
       </div>
     )
