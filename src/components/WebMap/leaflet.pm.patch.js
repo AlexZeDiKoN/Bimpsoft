@@ -439,6 +439,7 @@ export function initMapEvents (mymap, clickInterhandler) {
       event.target.pm.draggingMarker = false
     } else {
       clearActiveLayer(event.target)
+      clearSelectedList(mymap)
     }
   })
   L.DomEvent.on(mymap._container, 'keyup', (event) => {
@@ -449,6 +450,7 @@ export function initMapEvents (mymap, clickInterhandler) {
       } else {
         clearActiveLayer(mymap)
         layer._map.removeLayer(layer)
+        // TODO: delete all objects in selected list
       }
     } else if (event.code === 'Space' && mymap.pm.activeLayer) {
       clearActiveLayer(mymap)
@@ -465,19 +467,18 @@ function checkPointSignIconTransparent (layer) {
   }
 }
 
+export const clearSelectedList = (map) => {
+  map.eachLayer((layer) => {
+    if (layer._selected) {
+      removeLayerFromSelection(layer)
+    }
+  })
+}
+
 export const clearActiveLayer = (map, skipFire = false) => {
   if (map.pm.activeLayer && map.pm.activeLayer.pm) {
     map.pm.activeLayer.pm.disable()
-    const p = map.pm.activeLayer._path
-    if (p) {
-      p.setAttribute('stroke', map.pm.activeLayer.options.color)
-      if (p.getAttribute('fill') === activelayerColor) {
-        p.setAttribute('fill', map.pm.activeLayer.options.color)
-      }
-    } else if (map.pm.activeLayer.options.iconNormal) {
-      map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconNormal)
-      checkPointSignIconTransparent(map.pm.activeLayer)
-    }
+    removeLayerFromSelection(map.pm.activeLayer)
     if (!skipFire) {
       map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
     }
@@ -485,18 +486,24 @@ export const clearActiveLayer = (map, skipFire = false) => {
   delete map.pm.activeLayer
 }
 
+function removeLayerFromSelection (layer) {
+  layer._selected = false
+  const p = layer._path
+  if (p) {
+    p.setAttribute('stroke', layer.options.color)
+    if (p.getAttribute('fill') === activelayerColor) {
+      p.setAttribute('fill', layer.options.color)
+    }
+  } else if (layer.options.iconNormal) {
+    layer.setIcon(layer.options.iconNormal)
+    checkPointSignIconTransparent(layer)
+  }
+}
+
 function setActiveLayer (map, layer, canEdit, skipFire = false) {
   map.pm.activeLayer = layer
-  const p = map.pm.activeLayer._path
-  if (p) {
-    p.setAttribute('stroke', activelayerColor)
-    if (p.getAttribute('fill') === map.pm.activeLayer.options.color) {
-      p.setAttribute('fill', activelayerColor)
-    }
-  } else if (map.pm.activeLayer.options.iconActive) {
-    map.pm.activeLayer.setIcon(map.pm.activeLayer.options.iconActive)
-    checkPointSignIconTransparent(map.pm.activeLayer)
-  }
+  clearSelectedList(map)
+  addLayerToSelection(layer)
   if (canEdit) {
     layer.pm.enable({
       snappable: false,
@@ -508,6 +515,24 @@ function setActiveLayer (map, layer, canEdit, skipFire = false) {
   }
 }
 
+export const addLayerToSelection = (layer) => {
+  layer._selected = true
+  const p = layer._path
+  if (p) {
+    p.setAttribute('stroke', activelayerColor)
+    if (p.getAttribute('fill') === layer.options.color) {
+      p.setAttribute('fill', activelayerColor)
+    }
+  } else if (layer.options.iconActive) {
+    layer.setIcon(layer.options.iconActive)
+    checkPointSignIconTransparent(layer)
+  }
+}
+
+export const setLayerSelected = (layer, selected) => selected
+  ? addLayerToSelection(layer)
+  : removeLayerFromSelection(layer)
+
 function dblClickOnControlPoint (event) {
   if (event.target._map.pm.activeLayer) {
     event.target._map.fire('editlayer', event.target._map.pm.activeLayer)
@@ -515,13 +540,17 @@ function dblClickOnControlPoint (event) {
   L.DomEvent.stopPropagation(event)
 }
 
-export function activateLayer (newLayer, canEdit) {
+export function activateLayer (newLayer, canEdit, exclusive) {
   const map = newLayer._map
-  const oldLayer = map.pm.activeLayer
-  if (newLayer !== oldLayer) {
-    clearActiveLayer(map, true)
-    setActiveLayer(map, newLayer, canEdit, true)
-    map.fire('activelayer', { oldLayer, newLayer })
+  if (exclusive) {
+    setLayerSelected(newLayer, !newLayer._selected)
+  } else {
+    const oldLayer = map.pm.activeLayer
+    if (newLayer !== oldLayer) {
+      clearActiveLayer(map, true)
+      setActiveLayer(map, newLayer, canEdit, true)
+      map.fire('activelayer', { oldLayer, newLayer })
+    }
   }
 }
 
@@ -635,7 +664,7 @@ export function updateLayerIcons (layer, svg, anchor) {
     iconAnchor: [ anchor.x, anchor.y ],
     postProcess: setActivePointSignColors,
   })
-  layer.setIcon(layer._map.pm.activeLayer === layer ? layer.options.iconActive : layer.options.iconNormal)
+  layer.setIcon(layer._selected ? layer.options.iconActive : layer.options.iconNormal)
   setTimeout(() => transparentSvg(layer))
 }
 

@@ -15,7 +15,7 @@ export default function reducer (state = initState, action) {
       if (error instanceof ApiError) {
         return { ...state, [id]: { id, type, message: error.name, description: error.message } }
       } else {
-        return { ...state, [id]: { id, type, message: i18n.ERROR, description: i18n.UNKNOWN_ERROR } }
+        return { ...state, [id]: { id, type, message: i18n.ERROR, description: error.message || i18n.UNKNOWN_ERROR } }
       }
     }
     case notifications.POP_NOTIFICATION: {

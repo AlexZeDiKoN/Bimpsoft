@@ -35,6 +35,7 @@ const WebMap = connect(
     onSelection: (selected) => dispatch(selected
       ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),
+    onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     hideForm: () => dispatch(selectionActions.hideForm),
