@@ -2,6 +2,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Shortcuts } from 'react-shortcuts'
+import { notification } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './leaflet.pm.patch.css'
@@ -34,6 +35,7 @@ import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import './bouncemarker'
 import { colors } from '../../constants'
 import { generateTextSymbolSvg } from '../../utils'
+import WebmapApi from '../../server/api.webmap'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
   updateLayerIcons, createSearchMarker,
@@ -281,8 +283,14 @@ export default class WebMap extends Component {
     orgStructureSelectedId: PropTypes.number,
   }
 
-  componentDidMount () {
+  async componentDidMount () {
     const { sources } = this.props
+    try {
+      this.backVersion = await WebmapApi.getVersion()
+    } catch (err) {
+      this.backVersion = '-?'
+      notification.error({ message: i18n.ERROR, description: err.message })
+    }
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
@@ -477,7 +485,7 @@ export default class WebMap extends Component {
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     initMapEvents(this.map, this.clickInterhandler)
-    this.map.attributionControl.setPrefix(`v${version}`)
+    this.map.attributionControl.setPrefix(`f:v${version} b:v${this.backVersion}`)
     this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.updateObject)
     this.map.on('editlayer', this.editObject)
