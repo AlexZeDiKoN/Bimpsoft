@@ -1,4 +1,7 @@
 /* global L */
+
+import './Map.BoxSelect.css'
+
 /*
  * L.Handler.BoxSelect is used to select objects in rect with ctrl-drag interaction to the map
  * (selecting bounding box), enabled by default.
@@ -79,7 +82,7 @@ const BoxSelect = L.Handler.extend({
     if (!this._moved) {
       this._moved = true
 
-      this._box = L.DomUtil.create('div', 'leaflet-zoom-box', this._container)
+      this._box = L.DomUtil.create('div', 'leaflet-zoom-box leaflet-select-box', this._container)
       L.DomUtil.addClass(this._container, 'leaflet-crosshair')
 
       this._map.fire('boxselectstart')
@@ -136,7 +139,6 @@ const BoxSelect = L.Handler.extend({
     )
 
     this._map
-      // .fitBounds(bounds)
       .fire('boxselectend', { boxSelectBounds: bounds })
   },
 
