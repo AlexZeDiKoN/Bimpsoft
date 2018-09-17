@@ -9,6 +9,10 @@ const initState = {
 export default function reducer (state = initState, action) {
   const { type } = action
   switch (type) {
+    case actions.SELECTED_LIST: {
+      const { list } = action
+      return { ...state, list }
+    }
     case actions.SET_SELECTION: {
       const { data } = action
       return { ...state, data, showForm: null, newShape: {} }

@@ -33,12 +33,13 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import './bouncemarker'
+import './patch/Map.BoxSelect'
 import { colors } from '../../constants'
 import { generateTextSymbolSvg } from '../../utils'
 import WebmapApi from '../../server/api.webmap'
 import {
   entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
-  updateLayerIcons, createSearchMarker,
+  updateLayerIcons, createSearchMarker, setLayerSelected,
 } from './leaflet.pm.patch'
 
 let MIN_ZOOM = 0
@@ -71,6 +72,8 @@ const calcPointSize = (zoom) => {
       : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
   return Math.round(result)
 }
+
+const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
@@ -273,6 +276,7 @@ export default class WebMap extends Component {
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onSelection: PropTypes.func,
+    onSelectedList: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
     hideForm: PropTypes.func,
@@ -496,8 +500,17 @@ export default class WebMap extends Component {
     this.map.on('pm:drawstart', this.startDrawShape)
     this.map.on('escape', this.onEscape)
     this.map.on('stop_measuring', this.onStopMeasuring)
+    this.map.on('boxselectend', this.onBoxSelect)
     this.map.doubleClickZoom.disable()
   }
+
+  onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
+    this.map.eachLayer((layer) => {
+      if (layer.options.tsType) {
+        setLayerSelected(layer, isLayerInBounds(layer, boxSelectBounds))
+      }
+    })
+  })
 
   onEscape = () => {
     if (this.searchMarker) {
@@ -712,7 +725,7 @@ export default class WebMap extends Component {
     const { target } = event
     const targetLayer = target.object && target.object.layer
     if (Number(targetLayer) === this.props.layer) {
-      activateLayer(target, this.props.edit)
+      activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
       L.DomEvent.stopPropagation(event)
       event.target._map._container.focus()
     }
@@ -740,6 +753,7 @@ export default class WebMap extends Component {
         this.props.updateObjectGeometry(data)
       }
     }
+    this.props.onSelectedList(newLayer ? [ newLayer.id ] : [])
   }
 
   editObject = (layer) => {
