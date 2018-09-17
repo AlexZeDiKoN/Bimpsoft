@@ -79,6 +79,10 @@ const mapDispatchToProps = {
   onLinesListClose: () => viewModesActions.viewModeDisable(viewModesKeys.lineSignsList),
   onClickSubordinationLevel: () => viewModesActions.viewModeToggle(viewModesKeys.subordinationLevel),
   onMeasureChange: (isMeasureOn) => webMapActions.setMeasure(isMeasureOn),
+  onCut: selectionActions.cut,
+  onCopy: selectionActions.copy,
+  onPaste: selectionActions.paste,
+  onDelete: selectionActions.deleteSelected,
   onSubordinationLevelClose: () => viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel),
   onNewShapeChange: (newShape) => selectionActions.setNewShape(newShape),
   onSubordinationLevelChange: (subordinationLevel) => (dispatch) => {
