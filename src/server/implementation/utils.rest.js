@@ -1,5 +1,6 @@
 /* global Headers fetch */
 import { getAdminApi, getExplorerApi, getMapApi, getWebmapApi, getServerUrl } from '../../utils/services'
+import { ERROR_ACCESS_DENIED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 
 const absoluteUri = new RegExp('^(http|https)://')
 
@@ -58,6 +59,7 @@ export function getVersionUrl () {
  * @param {string} url
  * @param {Object} data
  * @param {string} route
+ * @param namespace
  * @returns {Promise<any>}
  */
 export async function post (url, data = {}, route = '/do', namespace) {
@@ -119,16 +121,16 @@ function _createGetRequest (url, option) {
           // success code of DELETE request
           return Promise.resolve(null)
         } else if (resp.status === 401) {
-          reject(new Error('Доступ заборонено'))
+          reject(new Error(ERROR_ACCESS_DENIED))
         } else {
-          reject(new Error('Сервер не доступний'))
+          reject(new Error(ERROR_NO_CONNECTION))
         }
       })
       .then((data) => {
         resolve(data)
       })
       .catch((error) => {
-        reject(error.message)
+        reject(new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${error.message})`))
       })
   })
 }
@@ -137,12 +139,18 @@ function _createGetRequest (url, option) {
  *
  * @param {string} url
  * @param option
+ * @param namespace
  * @returns {Promise<*>}
  * @private
  */
 async function _createRequest (url, option, namespace = explorerApi) {
   const serviceUrl = absoluteUri.test(url) ? url : namespace + url
-  const response = await fetch(serviceUrl, option)
+  let response
+  try {
+    response = await fetch(serviceUrl, option)
+  } catch (err) {
+    throw new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${err.message})`)
+  }
   switch (response.status) {
     case 200: {
       if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
@@ -159,9 +167,9 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 204: // success code of DELETE request
       return null
     case 401:
-      throw new Error('Доступ заборонено')
+      throw new Error(ERROR_ACCESS_DENIED)
     default:
-      throw new Error(`Сервер недоступний (${response.status}) (URL: ${serviceUrl})`)
+      throw new Error(`${ERROR_NO_CONNECTION} (${response.status}) (URL: ${serviceUrl})`)
   }
 }
 

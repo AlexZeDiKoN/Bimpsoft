@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { components } from '@DZVIN/CommonComponents'
+// import { components } from '@DZVIN/CommonComponents'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
-const { IconHovered, names: iconNames } = components.icons
+// const { IconHovered, names: iconNames } = components.icons
 
 const colors = [
   '#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00',

@@ -116,3 +116,7 @@ export const INCORRECT_COORDINATE = 'Не вірно задана вузлова
 export const EMPTY_TEXT = 'Текст пустий'
 export const CANNOT_OPEN_LAYER_WO_PARENT = 'Неможливо відкрити шар, для якого не задана карта'
 export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрити шар, для якого не задана організаційна структура'
+
+export const ERROR_ACCESS_DENIED = 'Доступ заборонено'
+export const ERROR_NO_CONNECTION = 'Сервер карти недоступний'
+export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
