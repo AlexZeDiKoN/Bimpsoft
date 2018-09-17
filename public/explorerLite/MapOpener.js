@@ -42,13 +42,13 @@ export default class MapOpener {
   }
 
   postMessage (msg) {
-    console.log('postMessage', msg)
+    // console.log('postMessage', msg)
     this.wnd.postMessage(msg, '*')
   }
 
   onMessage (e) {
     const data = (typeof e.data === 'object') ? e.data : JSON.parse(e.data)
-    console.log(data)
+    // console.log(data)
     const { action } = data
     switch (action) {
       case ACTION_READY: {
