@@ -723,6 +723,10 @@ function createPolyline (polyline) {
 }
 
 function createCircle ([ point1, point2 ], map) {
+  if (!point1 || !point2) {
+    console.error('createCircle: немає координат для круга')
+    return
+  }
   const options = prepareOptions(entityKind.CIRCLE)
   options.radius = map.distance(point1, point2)
   return L.circle(point1, options)
