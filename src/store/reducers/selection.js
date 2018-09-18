@@ -5,6 +5,7 @@ const initState = {
   data: null,
   newShape: {},
   clipboard: null,
+  list: [],
 }
 
 export default function reducer (state = initState, action) {
@@ -52,6 +53,13 @@ export default function reducer (state = initState, action) {
       const { coordinates } = action
       const { coordinatesArray = [] } = state.newShape
       return { ...state, newShape: { ...state.newShape, coordinatesArray: [ ...coordinatesArray, coordinates ] } }
+    }
+    case actions.CLIPBOARD_SET: {
+      const { clipboard } = action
+      return { ...state, clipboard }
+    }
+    case actions.CLIPBOARD_CLEAR: {
+      return { ...state, clipboard: null }
     }
     default:
       return state

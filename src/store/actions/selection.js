@@ -1,7 +1,7 @@
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { withNotification } from './asyncAction'
-import { deleteObject } from './webMap'
+import { deleteObject, addObject } from './webMap'
 
 export const SET_SELECTION = action('SET_SELECTION')
 export const UPDATE_SELECTION = action('UPDATE_SELECTION')
@@ -13,10 +13,8 @@ export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
 export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
-export const CLIPBOARD_COPY = action('CLIPBOARD_COPY')
-export const CLIPBOARD_PASTE = action('CLIPBOARD_PASTE')
-export const CLIPBOARD_CUT = action('CLIPBOARD_CUT')
-export const CLIPBOARD_DELETE = action('CLIPBOARD_DELETE')
+export const CLIPBOARD_SET = action('CLIPBOARD_SET')
+export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
 
 export const selectedList = (list) => ({
   type: SELECTED_LIST,
@@ -82,31 +80,54 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
 
 export const copy = () => withNotification((dispatch, getState) => {
   const {
-    selection: { list = [], data },
+    selection: { list = null },
+    webMap: { objects },
   } = getState()
+
+  const clipboardObjects = []
+  if (Array.isArray(list)) {
+    for (const id of list) {
+      const obj = objects.get(id)
+      if (obj) {
+        const clipboardObject = { ...obj.toJS() }
+        delete clipboardObject.id
+        clipboardObjects.push(clipboardObject)
+      }
+    }
+  }
+
   dispatch({
-    type: CLIPBOARD_COPY,
-    clipboard: data ? [ data.id ] : list,
+    type: CLIPBOARD_SET,
+    clipboard: clipboardObjects,
   })
 })
-export const cut = () => withNotification((dispatch, getState) => {
+
+export const cut = () => withNotification((dispatch) => {
+  dispatch(copy())
+  dispatch(deleteSelected())
+})
+
+export const paste = () => withNotification((dispatch, getState) => {
   const {
-    selection: { list = [], data },
+    selection: { clipboard },
+    layers: { selectedId: layer = null },
   } = getState()
-  dispatch({
-    type: CLIPBOARD_COPY,
-    list,
-  })
-  for (const obj of list) {
-    dispatch(deleteObject(obj.id))
+  if (layer !== null) {
+    if (Array.isArray(clipboard)) {
+      for (const clipboardObject of clipboard) {
+        clipboardObject.layer = layer
+        dispatch(addObject(clipboardObject))
+      }
+    }
+    dispatch({ type: CLIPBOARD_CLEAR })
   }
 })
-export const paste = () => withNotification((dispatch, getState) => {
 
-})
 export const deleteSelected = () => withNotification((dispatch, getState) => {
   const {
-    selection: { list = [], data },
+    selection: { list = [] },
   } = getState()
-
+  for (const id of list) {
+    dispatch(deleteObject(id))
+  }
 })
