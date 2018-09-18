@@ -35,7 +35,14 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
   async (dispatch, _, { api }) => {
     const content = await api.getFolderContent({ operationId, folderID })
     api.checkServerResponse(content)
-    const { entities, params: { currentContainer: { type, id, name, parentId, formationId/*, dateFor */ } } } = content
+    const {
+      entities,
+      params: {
+        currentContainer: {
+          type, id, name, parentId, formationId, /* dateFor, */
+        },
+      },
+    } = content
 
     switch (type) {
       case 'layer': {
