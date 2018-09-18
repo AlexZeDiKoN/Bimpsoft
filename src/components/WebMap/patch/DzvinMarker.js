@@ -12,12 +12,14 @@ const setShadowColor = function (shadowColor) {
   }
 }
 
+const LMarker = L.Marker
+
 export default L.Marker.extend({
   setOpacity,
   setHidden,
   setShadowColor,
   update: function (...args) {
-    L.Marker.prototype.update.apply(this, args)
+    LMarker.prototype.update.apply(this, args)
     const el = this.getElement()
     if (el) {
       el.style.display = this._hidden ? 'none' : ''

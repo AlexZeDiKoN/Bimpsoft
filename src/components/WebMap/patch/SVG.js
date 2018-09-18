@@ -1,5 +1,5 @@
 /* global L */
-import { entityKind } from '../leaflet.pm.patch'
+import entityKind from '../entityKind'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 

@@ -37,9 +37,10 @@ import './patch/Map.BoxSelect'
 import { colors } from '../../constants'
 import { generateTextSymbolSvg } from '../../utils'
 import WebmapApi from '../../server/api.webmap'
+import entityKind from './entityKind'
 import {
-  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
-  updateLayerIcons, createSearchMarker, setLayerSelected,
+  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
+  createSearchMarker, setLayerSelected,
 } from './leaflet.pm.patch'
 
 let MIN_ZOOM = 0
