@@ -1,6 +1,7 @@
 import { layers } from '../actions'
 
 const defItem = { visible: true, locked: false, color: null, shared: false }
+
 const initState = {
   byId: {},
   selectedId: null,
@@ -9,6 +10,7 @@ const initState = {
   backOpacity: 100,
   hiddenOpacity: 10,
 }
+
 export default function reducer (state = initState, action) {
   const { type } = action
   switch (type) {
