@@ -40,7 +40,7 @@
 
       if (progress === 1) {
         opts.start = new Date()
-        progress = 0
+        // progress = 0
         if (opts.loop > 0) {
           opts.loop = opts.loop - 1
         }
@@ -50,7 +50,7 @@
         }
       }
 
-      self._animationId = L.Util.requestAnimFrame(function (timestamp) {
+      self._animationId = L.Util.requestAnimFrame(function (/* timestamp */) {
         self._motionStep(opts)
       })
     },
@@ -105,11 +105,11 @@
       }
       options = options || { duration: 1000, height: -1, loop: 1 }
 
-      // backward compatibility
+      /* // backward compatibility
       if (typeof options === 'number') {
         options.duration = arguments[0]
         options.height = arguments[1]
-      }
+      } */
 
       // Keep original map center
       this._origMapCenter = this._map.project(this._map.getCenter())
