@@ -1,3 +1,3 @@
-import { entityKind } from '../components/WebMap/leaflet.pm.patch'
+import entityKind from '../components/WebMap/entityKind'
 
 export default entityKind
