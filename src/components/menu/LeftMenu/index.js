@@ -178,26 +178,26 @@ export default class LeftMenu extends React.Component {
           <Fragment>
             <IconButton
               text={i18n.CUT}
-              icon={iconNames.MAP_SCALE_OPEN_DEFAULT}
-              hoverIcon={iconNames.MAP_SCALE_OPEN_HOVER}
+              icon={iconNames.CUT_DEFAULT}
+              hoverIcon={iconNames.CUT_HOVER}
               onClick={onCut}
             />
             <IconButton
               text={i18n.COPY}
-              icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-              hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+              icon={iconNames.COPY_DEFAULT}
+              hoverIcon={iconNames.COPY_HOVER}
               onClick={onCopy}
             />
             <IconButton
               text={i18n.PASTE}
-              icon={iconNames.MAP_SCALE_CLOSE_DEFAULT}
-              hoverIcon={iconNames.MAP_SCALE_CLOSE_HOVER}
+              icon={iconNames.PASTE_DEFAULT}
+              hoverIcon={iconNames.PASTE_HOVER}
               onClick={onPaste}
             />
             <IconButton
               text={i18n.DELETE}
-              icon={iconNames.BAR_2_DELETE_ACTIVE}
-              hoverIcon={iconNames.BAR_2_DELETE_HOVER}
+              icon={iconNames.DELETE_DEFAULT}
+              hoverIcon={iconNames.DELETE_HOVER}
               onClick={onDelete}
             />
           </Fragment>

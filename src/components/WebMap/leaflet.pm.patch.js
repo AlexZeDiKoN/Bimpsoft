@@ -544,6 +544,7 @@ export function activateLayer (newLayer, canEdit, exclusive) {
   const map = newLayer._map
   if (exclusive) {
     setLayerSelected(newLayer, !newLayer._selected)
+    map.fire('selectlayer')
   } else {
     const oldLayer = map.pm.activeLayer
     if (newLayer !== oldLayer) {
