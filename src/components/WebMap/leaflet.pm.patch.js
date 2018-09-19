@@ -1,5 +1,9 @@
 /* global L, DOMParser */
 
+import RendererSVG from './patch/renderer/RendererSVG'
+
+const rendererSvg = new RendererSVG()
+
 const setOpacity = function (opacity) {
   this._opacity = opacity
   const el = this.getElement()
@@ -51,6 +55,9 @@ L.Path.prototype.setFill = function (fillColor) {
 }
 L.Path.prototype.setLineType = function (lineType) {
   this.setStyle({ dashArray: lineType === 'dashed' ? '4 7' : null })
+}
+L.Path.prototype.setShadowColor = function (shadowColor) {
+  this.setStyle({ shadowColor })
 }
 
 L.Path.prototype.setOpacity = setOpacity
@@ -750,7 +757,7 @@ function createSquare ([ point1, point2 ], map) {
 }
 
 function prepareOptions (signType, color, js) {
-  const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false }
+  const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false, renderer: rendererSvg }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
     const $ = js.svg.path[0].$
     options.stroke = ($.stroke && $.stroke !== 'none')
