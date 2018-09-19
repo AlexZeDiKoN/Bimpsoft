@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
+import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
 
 const WebMap = connect(

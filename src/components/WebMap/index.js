@@ -5,7 +5,7 @@ import { Shortcuts } from 'react-shortcuts'
 import { notification } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
-import './leaflet.pm.patch.css'
+import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
@@ -39,7 +39,7 @@ import entityKind from './entityKind'
 import {
   initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
   createSearchMarker, setLayerSelected,
-} from './leaflet.pm.patch'
+} from './Tactical'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
