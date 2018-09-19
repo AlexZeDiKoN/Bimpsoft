@@ -595,22 +595,27 @@ export default class WebMap extends Component {
   }
 
   showCoordinates = ({ lng, lat }) => {
-    switch (this.indicateMode) {
-      case indicateModes.WGSI:
-        return Wgs84I(lat, lng)
-      case indicateModes.MGRS:
-        return Mgrs(lat, lng)
-      case indicateModes.UTM:
-        return Utm(lat, lng)
-      case indicateModes.SC42:
-        return Sc42(lat, lng)
-      case indicateModes.USC2000:
-        return Usc2000(lat, lng)
-      case indicateModes.ALL:
-        return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng), Sc42(lat, lng), Usc2000(lat, lng) ]
-          .join('<br/>')
-      default: // WGS-84
-        return Wgs84(lat, lng)
+    try {
+      switch (this.indicateMode) {
+        case indicateModes.WGSI:
+          return Wgs84I(lat, lng)
+        case indicateModes.MGRS:
+          return Mgrs(lat, lng)
+        case indicateModes.UTM:
+          return Utm(lat, lng)
+        case indicateModes.SC42:
+          return Sc42(lat, lng)
+        case indicateModes.USC2000:
+          return Usc2000(lat, lng)
+        case indicateModes.ALL:
+          return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng), Sc42(lat, lng), Usc2000(lat, lng) ]
+            .join('<br/>')
+        default: // WGS-84
+          return Wgs84(lat, lng)
+      }
+    } catch (err) {
+      console.error(err)
+      return '---'
     }
   }
 
