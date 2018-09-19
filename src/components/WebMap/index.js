@@ -490,7 +490,8 @@ export default class WebMap extends Component {
     initMapEvents(this.map, this.clickInterhandler)
     this.map.attributionControl.setPrefix(`f:v${version} b:v${this.backVersion}`)
     this.map.on('deletelayer', this.deleteObject)
-    this.map.on('activelayer', this.updateObject)
+    this.map.on('activelayer', this.activeLayerHandler)
+    this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
     this.map.on('zoomend', this.updatePointSizes)
     this.map.on('moveend', this.moveHandler)
@@ -504,12 +505,30 @@ export default class WebMap extends Component {
   }
 
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
+    const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
-        setLayerSelected(layer, isLayerInBounds(layer, boxSelectBounds))
+        const isInBounds = isLayerInBounds(layer, boxSelectBounds)
+        setLayerSelected(layer, isInBounds)
+        if (isInBounds) {
+          selectedIds.push(layer.id)
+        }
       }
     })
+    this.props.onSelectedList(selectedIds)
   })
+
+  selectLayerHandler = async ({ layer, select }) => {
+    const selectedIds = []
+    this.map.eachLayer((layer) => {
+      if (layer.options.tsType) {
+        if (layer._selected) {
+          selectedIds.push(layer.id)
+        }
+      }
+    })
+    this.props.onSelectedList(selectedIds)
+  }
 
   onEscape = () => {
     if (this.searchMarker) {
@@ -743,7 +762,7 @@ export default class WebMap extends Component {
     this.props.deleteObject(layer.id)
   }
 
-  updateObject = async ({ oldLayer, newLayer }) => {
+  activeLayerHandler = async ({ oldLayer, newLayer }) => {
     this.props.onSelection(newLayer || null)
     if (oldLayer) {
       const data = this.getLayerData(oldLayer)
