@@ -2,7 +2,7 @@
 
 import { setOpacity, setHidden } from './utils/helpers'
 
-export default L.Path.extend({
+export default L.Path.include({
   setColor: function (color) {
     this.setStyle({ color })
   },

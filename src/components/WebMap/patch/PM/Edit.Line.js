@@ -4,9 +4,10 @@ import entityKind from '../../entityKind'
 import { hookSplice, dblClickOnControlPoint, setBezierMiddleMarkerCoords } from '../utils/helpers'
 import { mouseupTimer } from './constants'
 
-const LPMEditLine = L.PM.Edit.Line
+const { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag } = L.PM.Edit.Line.prototype
+const parent = { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag }
 
-export default L.PM.Edit.Line.extend({
+L.PM.Edit.Line.include({
   _getMarkersArray: function () {
     return this.isPolygon()
       ? this._markers[0]
@@ -20,12 +21,12 @@ export default L.PM.Edit.Line.extend({
   },
 
   _initMarkers: function () {
-    LPMEditLine.prototype._initMarkers.apply(this)
+    parent._initMarkers.call(this)
     hookSplice(this._getMarkersArray())
   },
 
   _createMarker: function (latlng, index) {
-    const marker = LPMEditLine.prototype._createMarker.apply(this, latlng)
+    const marker = parent._createMarker.call(this, latlng)
     marker.on('dblclick', dblClickOnControlPoint, this._layer)
     marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
     marker.on('mouseup', () => setTimeout(() => {
@@ -44,7 +45,7 @@ export default L.PM.Edit.Line.extend({
     let marker
     // для певних типів знаків забороняємо створення додаткових вершин
     if (kind !== entityKind.SEGMENT && kind !== entityKind.RECTANGLE && kind !== entityKind.SQUARE) {
-      marker = LPMEditLine.prototype._createMiddleMarker.apply(this, leftM, rightM)
+      marker = parent._createMiddleMarker.call(this, leftM, rightM)
     }
     if (marker) {
       marker.on('dblclick', dblClickOnControlPoint, this._layer)
@@ -72,7 +73,7 @@ export default L.PM.Edit.Line.extend({
         break // для певних типів знаків заброняємо видалення вершин
       case entityKind.AREA: // для площинних знаків
         if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
-          LPMEditLine.prototype._removeMarker.apply(this, e)
+          parent._removeMarker.call(this, e)
           let idx = e.target._index
           if (idx >= this._getMarkersCount()) {
             idx = 0
@@ -82,7 +83,7 @@ export default L.PM.Edit.Line.extend({
         break
       case entityKind.CURVE: // для знаків типу "крива"
         if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше двох
-          LPMEditLine.prototype._removeMarker.apply(this, e)
+          parent._removeMarker.call(this, e)
           let idx = e.target._index // TODO: переконатися, що тут усе гаразд!
           if (idx >= this._getMarkersCount()) {
             idx = 0
@@ -92,20 +93,21 @@ export default L.PM.Edit.Line.extend({
         break
       case entityKind.POLYGON: // для полігонів
         if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
-          LPMEditLine.prototype._removeMarker.apply(this, e)
+          parent._removeMarker.call(this, e)
         }
         break
       case entityKind.POLYLINE: // для поліліній
         if (this._layer._rings[0].length > 2) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
-          LPMEditLine.prototype._removeMarker.apply(this, e)
+          parent._removeMarker.call(this, e)
         }
         break
       default:
-        LPMEditLine.prototype._removeMarker.apply(this, e)
+        parent._removeMarker.call(this, e)
     }
   },
+
   _onMarkerDrag: function (e) {
-    LPMEditLine.prototype._onMarkerDrag.apply(this, e)
+    parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType
     if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {

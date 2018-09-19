@@ -2,11 +2,12 @@
 
 import entityKind from '../../entityKind'
 
-const LPMDrawLine = L.PM.Draw.Line
+const { _syncHintLine } = L.PM.Draw.Line.prototype
+const parent = { _syncHintLine }
 
-export default L.PM.Draw.Line.extend({
+L.PM.Draw.Line.include({
   _syncHintLine: function () {
-    LPMDrawLine.prototype._syncHintLine.apply(this)
+    parent._syncHintLine.call(this)
     if (this._layer.options.tsType === entityKind.CURVE) {
       this._hintline.options.tsType = entityKind.CURVE
       this._hintline.options.skipStart = true

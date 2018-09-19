@@ -3,11 +3,12 @@
 import { dblClickOnControlPoint } from '../utils/helpers'
 import { mouseupTimer } from './constants'
 
-const LPMEditMarker = L.PM.Edit.Marker
+const { enable } = L.PM.Edit.Marker.prototype
+const parent = { enable }
 
-export default L.PM.Edit.Marker.extend({
+L.PM.Edit.Marker.include({
   enable: function (options) {
-    LPMEditMarker.prototype.enable.call(this, options)
+    parent.enable.call(this, options)
     this._layer.off('contextmenu', this._removeMarker, this)
     this._editMarker = this._createMarker(this._layer.getLatLng())
     this._editMarker.addTo(this._map)

@@ -4,7 +4,7 @@ import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
-export default L.SVG.extend({
+export default L.SVG.include({
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     const skipStart = layer.options && layer.options.skipStart

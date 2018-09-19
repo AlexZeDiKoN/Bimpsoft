@@ -3,9 +3,10 @@
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
-const LPMDrawRectangle = L.PM.Draw.Rectangle
+const { _syncRectangleSize } = L.PM.Draw.Rectangle.prototype
+const parent = { _syncRectangleSize }
 
-export default L.PM.Draw.Rectangle.extend({
+L.PM.Draw.Rectangle.include({
   _syncRectangleSize: function () {
     if (this._layer.options.tsType === entityKind.SQUARE) {
       this._hintMarker.off('move', this._syncRectangleSize, this)
@@ -13,6 +14,6 @@ export default L.PM.Draw.Rectangle.extend({
         this._hintMarker.getLatLng(), this._startMarker.getLatLng()))
       this._hintMarker.on('move', this._syncRectangleSize, this)
     }
-    LPMDrawRectangle.prototype._syncRectangleSize.apply(this)
+    parent._syncRectangleSize.call(this)
   },
 })

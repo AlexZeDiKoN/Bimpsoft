@@ -3,11 +3,12 @@
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
-const LPMEditRectangle = L.PM.Edit.Rectangle
+const { _onMarkerDrag } = L.PM.Edit.Rectangle.prototype
+const parent = { _onMarkerDrag }
 
-export default L.PM.Edit.Rectangle.extend({
+L.PM.Edit.Rectangle.include({
   _onMarkerDrag: function (e) {
-    LPMEditRectangle.prototype._onMarkerDrag.apply(this, e) // Здається, цей виклик не потрібен, без нього працює так само
+    parent._onMarkerDrag.call(this, e) // Здається, цей виклик не потрібен, без нього працює так само
     const marker = e.target
     const kind = this._layer.options.tsType
     if (kind === entityKind.SQUARE) {

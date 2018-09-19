@@ -1,8 +1,8 @@
 /* global L */
 
+import './patch'
 import entityKind from './entityKind'
 import { svgToJS } from './patch/utils/SVG'
-import './patch'
 
 // ------------------------ Константи ----------------------------------------------------------------------------------
 const activelayerColor = '#0a0' // Колір активного тактичного знака
@@ -343,7 +343,13 @@ function createSquare ([ point1, point2 ], map) {
 }
 
 function prepareOptions (signType, color, js) {
-  const options = { tsType: signType, tsTemplate: js, noClip: true, draggable: false }
+  const options = {
+    tsType: signType,
+    tsTemplate: js,
+    noClip: true,
+    draggable: false,
+    // renderer: new L.SVG(),
+  }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
     const $ = js.svg.path[0].$
     options.stroke = ($.stroke && $.stroke !== 'none')
