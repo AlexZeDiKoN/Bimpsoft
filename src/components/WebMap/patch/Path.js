@@ -12,6 +12,9 @@ export default L.Path.include({
   setLineType: function (lineType) {
     this.setStyle({ dashArray: lineType === 'dashed' ? '4 7' : null })
   },
+  setShadowColor: function (shadowColor) {
+    this.setStyle({ shadowColor })
+  },
   setOpacity,
   setHidden,
 })
