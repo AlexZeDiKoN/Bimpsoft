@@ -2,7 +2,7 @@
 import { epsilon } from './helpers'
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
-function parseSvgPath (svg) {
+export function parseSvgPath (svg) {
   const length = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 }
   const segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig
   const number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/ig
@@ -151,7 +151,7 @@ function rotate (a, [ sin, cos, angle ], x, y) {
   translate(a, x, y)
 }
 
-function makeSVGPathCommandsAbsolute (a) {
+export function makeSVGPathCommandsAbsolute (a) {
   let subpathStart
   let prevCmd = [ 0, 0 ]
   a.forEach((cmd) => {

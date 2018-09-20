@@ -18,12 +18,14 @@ export default L.SVG.include({
     _initContainer.call(this)
     this._initBlurFilter()
   },
+
   _initBlurFilter: function () {
     const filter = L.SVG.create('filter')
     filter.setAttribute('id', 'blurFilter')
-    filter.innerHTML = `<feGaussianBlur in="StrokePaint" stdDeviation="2"></feGaussianBlur>`
+    filter.innerHTML = `<feGaussianBlur in="StrokePaint" stdDeviation="2" />`
     this._container.appendChild(filter)
   },
+
   _initPath: function (layer) {
     layer._outlinePath = L.SVG.create('path')
     L.DomUtil.addClass(layer._outlinePath, 'leaflet-interactive leaflet-interactive-outline')
@@ -33,6 +35,7 @@ export default L.SVG.include({
 
     _initPath.call(this, layer)
   },
+
   _updateStyle: function (layer) {
     _updateStyle.call(this, layer)
     const { options } = layer
@@ -44,6 +47,7 @@ export default L.SVG.include({
       layer._shadowPath.setAttribute('display', 'none')
     }
   },
+
   _addPath: function (layer) {
     this._rootGroup.appendChild(layer._shadowPath)
 
@@ -52,11 +56,13 @@ export default L.SVG.include({
 
     _addPath.call(this, layer)
   },
+
   _setPath: function (layer, path) {
     _setPath.call(this, layer, path)
     layer._outlinePath.setAttribute('d', path)
     layer._shadowPath.setAttribute('d', path)
   },
+
   _removePath: function (layer) {
     _removePath.call(this, layer)
 
@@ -65,6 +71,7 @@ export default L.SVG.include({
 
     L.DomUtil.remove(layer._shadowPath)
   },
+
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     const skipStart = layer.options && layer.options.skipStart
