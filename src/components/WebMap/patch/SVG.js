@@ -16,6 +16,9 @@ const _removePath = L.SVG.prototype._removePath
 export default L.SVG.include({
   _initContainer: function () {
     _initContainer.call(this)
+    this._initBlurFilter()
+  },
+  _initBlurFilter: function () {
     const filter = L.SVG.create('filter')
     filter.setAttribute('id', 'blurFilter')
     filter.innerHTML = `<feGaussianBlur in="StrokePaint" stdDeviation="2"></feGaussianBlur>`
