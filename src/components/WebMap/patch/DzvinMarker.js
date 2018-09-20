@@ -19,6 +19,7 @@ export default L.Marker.extend({
   setOpacity,
   setHidden,
   setShadowColor,
+
   update: function () {
     parent.update.call(this)
     const el = this.getElement()
