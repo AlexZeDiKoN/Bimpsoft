@@ -5,7 +5,7 @@ import { Shortcuts } from 'react-shortcuts'
 import { notification } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
-import './leaflet.pm.patch.css'
+import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
@@ -32,15 +32,14 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import './bouncemarker'
-import './patch/Map.BoxSelect'
 import { colors } from '../../constants'
 import { generateTextSymbolSvg } from '../../utils'
 import WebmapApi from '../../server/api.webmap'
+import entityKind from './entityKind'
 import {
-  entityKind, initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
-  updateLayerIcons, createSearchMarker, setLayerSelected,
-} from './leaflet.pm.patch'
+  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
+  createSearchMarker, setLayerSelected,
+} from './Tactical'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -491,7 +490,8 @@ export default class WebMap extends Component {
     initMapEvents(this.map, this.clickInterhandler)
     this.map.attributionControl.setPrefix(`f:v${version} b:v${this.backVersion}`)
     this.map.on('deletelayer', this.deleteObject)
-    this.map.on('activelayer', this.updateObject)
+    this.map.on('activelayer', this.activeLayerHandler)
+    this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
     this.map.on('zoomend', this.updatePointSizes)
     this.map.on('moveend', this.moveHandler)
@@ -505,12 +505,30 @@ export default class WebMap extends Component {
   }
 
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
+    const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
-        setLayerSelected(layer, isLayerInBounds(layer, boxSelectBounds))
+        const isInBounds = isLayerInBounds(layer, boxSelectBounds)
+        setLayerSelected(layer, isInBounds)
+        if (isInBounds) {
+          selectedIds.push(layer.id)
+        }
       }
     })
+    this.props.onSelectedList(selectedIds)
   })
+
+  selectLayerHandler = async ({ layer, select }) => {
+    const selectedIds = []
+    this.map.eachLayer((layer) => {
+      if (layer.options.tsType) {
+        if (layer._selected) {
+          selectedIds.push(layer.id)
+        }
+      }
+    })
+    this.props.onSelectedList(selectedIds)
+  }
 
   onEscape = () => {
     if (this.searchMarker) {
@@ -744,7 +762,7 @@ export default class WebMap extends Component {
     this.props.deleteObject(layer.id)
   }
 
-  updateObject = async ({ oldLayer, newLayer }) => {
+  activeLayerHandler = async ({ oldLayer, newLayer }) => {
     this.props.onSelection(newLayer || null)
     if (oldLayer) {
       const data = this.getLayerData(oldLayer)
@@ -809,7 +827,7 @@ export default class WebMap extends Component {
   createTextSign = async (data) => {
     // console.log('createTextSign', data)
     const { addObject } = this.props
-    const { amplifiers, subordinationLevel, coordinatesArray = [] } = data
+    const { amplifiers, subordinationLevel, coordinatesArray } = data
     const p = coordinatesArray[0]
     if (!p) {
       return
@@ -872,7 +890,7 @@ export default class WebMap extends Component {
   }
 
   updateFigure = async (data) => {
-    const { id, amplifiers, coordinates, coordinatesArray, subordinationLevel, ...rest } = data
+    const { id, amplifiers, coordinates: _, coordinatesArray, subordinationLevel, ...rest } = data
     if (!id) {
       return
     }

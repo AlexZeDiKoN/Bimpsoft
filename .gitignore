@@ -12,6 +12,7 @@ package-lock.json
 /build
 
 # misc
+/update.cmd
 .DS_Store
 .env.local
 .env.development
