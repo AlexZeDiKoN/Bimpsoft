@@ -96,6 +96,7 @@ export const SEGMENT_ARC = 'Дуга'
 export const LINE_TYPE = 'Тип лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
+export const SHOW_LEVEL = 'Рівень'
 
 export const LINE_STYLE = 'Стиль лінії'
 export const LINE_STYLE_WAVE = 'Хвиляста'
