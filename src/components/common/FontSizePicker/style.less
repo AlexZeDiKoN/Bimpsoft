@@ -1,0 +1,61 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.font-size-picker{
+
+  width: 22px;
+  height: 22px;
+  color: @toolbar-color;
+}
+
+.font-size-picker-popup {
+  width: 200px;
+  height: 86px;
+  border-radius: 4px;
+  border: 1px solid @toolbar-border;
+  margin: -59px -5px -5px -173px;
+  position: absolute;
+  display: none;
+  background: @toolbar-background;
+  z-index: 1000;
+
+}
+.font-size-picker-input {
+  padding: 0px;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid @toolbar-border;
+}
+.font-size-picker-list{
+  .flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: start;
+  width: 158px;
+  margin: 4px;
+}
+.font-size-picker-opened {
+  .font-size-picker-popup {
+    display: block;
+  }
+  .font-size-picker-input {
+    position: relative;
+    z-index: 10000;
+  }
+}
+
+.font-size-picker-button {
+  margin: 2px;
+  background: @toolbar-background;
+  border: none;
+  width: 22px;
+  height: 22px;
+  padding: 0px;
+  border-radius: 3px;
+  &:hover, &.font-size-picker-button-checked{
+    background: @toolbar-background-selected;
+  }
+}
+

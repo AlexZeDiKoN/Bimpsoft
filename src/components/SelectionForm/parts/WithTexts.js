@@ -11,23 +11,47 @@ import TextItem from './TextItem'
 const { FormItem, FormDivider } = components.form
 const { icons: { names: IconNames, IconHovered } } = components
 
+const getTotalAlign = (texts) => {
+  let totalAlign = null
+  if (texts.size > 0) {
+    totalAlign = texts.get(0).align || Align.LEFT
+    if (texts.some(({ align }) => (align || Align.LEFT) !== totalAlign)) {
+      totalAlign = null
+    }
+  }
+  return totalAlign
+}
+
 const WithTexts = (Component) => class TextsComponent extends Component {
   static propTypes = {
-    texts: PropTypes.arrayOf(PropTypes.object),
+    amplifiers: PropTypes.any,
   }
 
   constructor (props) {
     super(props)
     let { amplifiers: { texts } = {} } = props
     if (!texts) {
-      texts = [ { text: '' } ]
+      texts = [ { text: '', underline: true, align: Align.CENTER, size: 16 } ]
     }
-    this.state.texts = List(texts)
+    this.state.texts = List(texts.map((item) => {
+      const size = Number(item.size)
+      return { ...item, size: Number.isNaN(size) ? 12 : size }
+    }))
   }
 
-  addTextHandler = () => this.setState((state) => ({ texts: state.texts.push({ text: '', underline: false }) }))
+  addTextHandler = () => this.setState(({ texts }) => {
+    const totalAlign = getTotalAlign(texts)
+    return {
+      texts: texts.push({ text: '', underline: false, align: totalAlign || Align.CENTER }),
+    }
+  })
 
   changeTextItemHandler = (index, textItem) => this.setState((state) => ({ texts: state.texts.set(index, textItem) }))
+
+  previewTextItemHandler = (index, preview) => this.setState(({ texts }) => {
+    texts = texts.set(index, { ...texts.get(index), preview })
+    return { texts }
+  })
 
   changeTextsAlignHandler = (align) => this.setState((state) => {
     const texts = state.texts.map((text) => ({ ...text, align }))
@@ -60,35 +84,33 @@ const WithTexts = (Component) => class TextsComponent extends Component {
 
   renderTexts () {
     const { texts } = this.state
-
-    const align = texts.get(0).align || Align.LEFT
-
+    const totalAlign = getTotalAlign(texts)
     const canEdit = this.isCanEdit()
 
     return (
       <Fragment>
         <FormItem className="text-form-preview">
-          <TextSymbol texts={texts.toJS()}/>
+          <TextSymbol texts={texts.map((item) => item.preview ? item.preview : item).toJS()}/>
         </FormItem>
         {canEdit && (<FormItem className="text-form-controls">
           <label>{i18n.TEXT}</label>
           <IconButton
             value={Align.LEFT}
-            checked={align === Align.LEFT}
+            checked={totalAlign === Align.LEFT}
             icon={IconNames.TEXT_ALIGN_LEFT_DEFAULT}
             hoverIcon={IconNames.TEXT_ALIGN_LEFT_HOVER}
             onClick={this.changeTextsAlignHandler}
           />
           <IconButton
             value={Align.CENTER}
-            checked={align === Align.CENTER}
+            checked={totalAlign === Align.CENTER}
             icon={IconNames.TEXT_ALIGN_CENTER_DEFAULT}
             hoverIcon={IconNames.TEXT_ALIGN_CENTER_HOVER}
             onClick={this.changeTextsAlignHandler}
           />
           <IconButton
             value={Align.RIGHT}
-            checked={align === Align.RIGHT}
+            checked={totalAlign === Align.RIGHT}
             icon={IconNames.TEXT_ALIGN_RIGHT_DEFAULT}
             hoverIcon={IconNames.TEXT_ALIGN_RIGHT_HOVER}
             onClick={this.changeTextsAlignHandler}
@@ -104,11 +126,12 @@ const WithTexts = (Component) => class TextsComponent extends Component {
           {texts.map((item, index) => (
             <TextItem
               key={index}
-              {...item}
+              data={item}
               index={index}
               readOnly={!canEdit}
               canRemove={texts.size > 1}
               onChange={this.changeTextItemHandler}
+              onPreview={this.previewTextItemHandler}
               onRemove={this.removeTextItemHandler}
             />
           ))}
