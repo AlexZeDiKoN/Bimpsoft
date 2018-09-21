@@ -85,9 +85,20 @@ export default L.SVG.include({
       }
     } else if (kind === entityKind.AREA && length >= 3) {
       result = prepareBezierPath(layer._rings[0], true)
+      this._updateMask(layer)
     } else if (kind === entityKind.CURVE && length >= 2) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
+      this._updateMask(layer)
     }
     this._setPath(layer, result)
+  },
+
+  _updateMask: function (layer) {
+    const kind = layer.options && layer.options.tsType
+    const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+    if ((kind === entityKind.AREA && length >= 3) || (kind === entityKind.CURVE && length >= 2)) {
+      console.log('path', layer._rings[0])
+      // prepareBezierPath(layer._rings[0], kind === entityKind.AREA)
+    }
   },
 })
