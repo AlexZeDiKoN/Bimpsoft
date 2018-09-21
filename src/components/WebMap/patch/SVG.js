@@ -38,13 +38,24 @@ export default L.SVG.include({
 
   _updateStyle: function (layer) {
     _updateStyle.call(this, layer)
-    const { options } = layer
-    if (options.shadowColor) {
-      layer._shadowPath.removeAttribute('display')
-      layer._shadowPath.setAttribute('filter', 'url(#blurFilter)')
-      layer._shadowPath.setAttribute('stroke', options.shadowColor)
+    const { options: { shadowColor, opacity = 1, hidden }, _shadowPath, _path, _outlinePath } = layer
+
+    if (shadowColor) {
+      _shadowPath.removeAttribute('display')
+      _shadowPath.setAttribute('filter', 'url(#blurFilter)')
+      _shadowPath.setAttribute('stroke', shadowColor)
     } else {
-      layer._shadowPath.setAttribute('display', 'none')
+      _shadowPath.setAttribute('display', 'none')
+    }
+    if (_path.style.opacity !== opacity) {
+      _path.style.opacity = opacity
+      _outlinePath.style.opacity = opacity
+      _shadowPath.style.opacity = opacity
+    }
+    if ((_path.style.display === 'none') !== Boolean(hidden)) {
+      _path.style.display = hidden ? 'none' : ''
+      _outlinePath.style.display = hidden ? 'none' : ''
+      _shadowPath.style.display = hidden ? 'none' : ''
     }
   },
 

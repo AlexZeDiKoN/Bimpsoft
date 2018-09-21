@@ -1,4 +1,6 @@
-const lineHeight = 14
+import { Align } from '../../constants'
+
+const lineCoef = 1.2
 
 const getTextWidth = (text, font = '12px Roboto') => {
   // re-use canvas object for better performance
@@ -16,15 +18,42 @@ const generateTextSymbolSvg = ({
   magnification,
   texts = [],
 }) => {
-  let width = 0
-  const textsEls = texts.map((text, i) => {
-    width = Math.max(width, getTextWidth(text.text))
-    return `<text fill="#000" font-size="12px" x="0" y="${i * lineHeight + 12}" ${text.underline ? 'text-decoration="underline"' : ''} >${text.text}</text>`
+  let maxWidth = 0
+  let fullHeight = 0
+  const textsViewData = texts.map(({ text, bold, size, align, underline }) => {
+    bold = bold ? 'bold' : ''
+    if (!size) {
+      size = 12
+    }
+    const font = `${bold} ${size}px Roboto`
+    const width = getTextWidth(text, font)
+    const height = lineCoef * size
+    fullHeight += height
+    if (width > maxWidth) {
+      maxWidth = width
+    }
+    return {
+      underline: underline ? 'text-decoration="underline"' : '',
+      font,
+      align: align || Align.LEFT,
+      width,
+      height,
+      x: 0,
+      y: fullHeight,
+      text,
+    }
+  })
+  const textsEls = textsViewData.map(({ underline, font, align, x, y, width, height, text }) => {
+    if (align === Align.CENTER) {
+      x = (maxWidth - width) / 2
+    } else if (align === Align.RIGHT) {
+      x = maxWidth - width
+    }
+    return `<text fill="#000" style="font: ${font}; white-space: pre;" x="${x}" y="${y}" ${underline} >${text}</text>`
   }).join('')
-  width += 6
-  const height = texts.length * lineHeight
+  maxWidth += 6
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="${maxWidth}" height="${fullHeight}" viewBox="0 0 ${maxWidth} ${fullHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     ${textsEls}
 </svg>`
 }
