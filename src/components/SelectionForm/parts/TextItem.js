@@ -12,19 +12,27 @@ export default class TextItem extends React.Component {
     index: PropTypes.number,
     text: PropTypes.string,
     underline: PropTypes.bool,
+    bold: PropTypes.bool,
+    size: PropTypes.number,
+    align: PropTypes.string,
     canRemove: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
   }
 
   textChangeHandler = ({ target: { value } }) => {
-    const { onChange, underline, index } = this.props
-    onChange(index, { text: value, underline })
+    const { onChange, underline, index, bold, size, align } = this.props
+    onChange(index, { text: value, underline, bold, size, align })
   }
 
   underlineClickHandler = () => {
-    const { onChange, text, underline, index } = this.props
-    onChange(index, { text, underline: !underline })
+    const { onChange, text, underline, index, bold, size, align } = this.props
+    onChange(index, { text, underline: !underline, bold, size, align })
+  }
+
+  boldClickHandler = () => {
+    const { onChange, text, underline, index, bold, size, align } = this.props
+    onChange(index, { text, underline, bold: !bold, size, align })
   }
 
   removeClickHandler = () => {
@@ -33,7 +41,7 @@ export default class TextItem extends React.Component {
   }
 
   render () {
-    const { text, underline, canRemove, readOnly } = this.props
+    const { text, underline, canRemove, readOnly, bold = false, size = 12 } = this.props
     return (
       <FormItem>
         <Input value={text} onChange={readOnly ? null : this.textChangeHandler} readOnly={readOnly} />
@@ -41,6 +49,11 @@ export default class TextItem extends React.Component {
           icon={underline ? IconNames.U_ACTIVE : IconNames.U_DEFAULT}
           hoverIcon={IconNames.U_HOVER}
           onClick={this.underlineClickHandler}
+        />)}
+        {!readOnly && (<IconHovered
+          icon={bold ? IconNames.B_ACTIVE : IconNames.B_DEFAULT}
+          hoverIcon={IconNames.B_HOVER}
+          onClick={this.boldClickHandler}
         />)}
         {!readOnly && (<IconHovered
           icon={canRemove ? IconNames.EMPTY_DEFAULT : IconNames.EMPTY_DISABLE}
