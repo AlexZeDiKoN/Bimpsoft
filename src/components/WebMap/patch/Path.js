@@ -1,7 +1,5 @@
 /* global L */
 
-import { setOpacity, setHidden } from './utils/helpers'
-
 export default L.Path.include({
   setColor: function (color) {
     this.setStyle({ color })
@@ -19,6 +17,11 @@ export default L.Path.include({
     this.setStyle({ shadowColor })
   },
 
-  setOpacity,
-  setHidden,
+  setOpacity: function (opacity) {
+    this.setStyle({ opacity })
+  },
+
+  setHidden: function (hidden) {
+    this.setStyle({ hidden })
+  },
 })
