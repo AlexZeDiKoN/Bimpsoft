@@ -52,8 +52,16 @@ const WebMapState = Record({
   objects: Map(),
 })
 
+const checkLevel = (object) => {
+  const { code, level } = object
+  if (code && !level) {
+    object.level = +code.slice(8, 10)
+  }
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
+    checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))

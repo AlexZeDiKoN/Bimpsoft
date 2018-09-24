@@ -505,17 +505,21 @@ export default class WebMap extends Component {
   }
 
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
+    const { onSelectedList, layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
-        setLayerSelected(layer, isInBounds)
-        if (isInBounds) {
+        const isOnActiveLayer = layer.object && (+layer.object.layer === activeLayerId)
+        const isActiveLayerVisible = layersById[activeLayerId] && layersById[activeLayerId].visible
+        const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
+        setLayerSelected(layer, isSelected)
+        if (isSelected) {
           selectedIds.push(layer.id)
         }
       }
     })
-    this.props.onSelectedList(selectedIds)
+    onSelectedList(selectedIds)
   })
 
   selectLayerHandler = async ({ layer, select }) => {
