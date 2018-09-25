@@ -1,12 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Switch } from 'antd'
+import { Switch, Slider } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
 
-const { default: Form, FormRow } = components.form
+const { default: Form, FormRow, FormColumn } = components.form
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
@@ -14,13 +14,23 @@ export default class SettingsForm extends React.Component {
     wrapper: PropTypes.oneOf([ ModalContainer ]),
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
+    pointSizes: PropTypes.shape({
+      min: PropTypes.number,
+      max: PropTypes.number,
+    }),
     showAmplifiers: PropTypes.bool,
     generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,
     onChangeGeneralization: PropTypes.func,
+    onChangePointSizes: PropTypes.func,
     onClose: PropTypes.func,
+  }
+
+  changePointSizeHandler = (value) => {
+    const [ min, max ] = value
+    this.props.onChangePointSizes(min, max)
   }
 
   render () {
@@ -31,6 +41,7 @@ export default class SettingsForm extends React.Component {
       wrapper: Wrapper,
       // coordinatesType = CoordinatesTypes.WGS_84,
       showMiniMap,
+      pointSizes: { min, max },
       showAmplifiers,
       // generalization,
       onClose,
@@ -56,6 +67,9 @@ export default class SettingsForm extends React.Component {
           <FormRow label={i18n.AMPLIFIERS}>
             <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
           </FormRow>
+          <FormColumn label={i18n.POINT_SIGN_SIZE}>
+            <Slider range step={1} value={[ min, max ]} onChange={this.changePointSizeHandler} />
+          </FormColumn>
           {/* <FormRow label={i18n.GENERALIZATION}> */}
           {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
           {/* </FormRow> */}

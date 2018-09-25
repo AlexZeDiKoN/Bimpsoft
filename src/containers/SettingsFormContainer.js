@@ -8,6 +8,7 @@ const mapStateToProps = (store) => ({
   visible: store.viewModes[viewModesKeys.settings],
   coordinatesType: store.webMap.coordinatesType,
   showMiniMap: store.webMap.showMiniMap,
+  pointSizes: store.webMap.pointSizes,
   showAmplifiers: store.webMap.showAmplifiers,
   generalization: store.webMap.generalization,
 })
@@ -27,6 +28,9 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeGeneralization: (generalization) => {
     dispatch(webMapActions.setGeneralization(generalization))
   },
+  onChangePointSizes: (min, max) => {
+    dispatch(webMapActions.setPointSizes(min, max))
+  }
 })
 
 export default connect(
