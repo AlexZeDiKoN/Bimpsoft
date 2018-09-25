@@ -46,10 +46,7 @@ let MAX_ZOOM = 20
 
 const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
 const wgsAccuracy = 5 // Точність задання координат у системі WGS-84, десяткових знаків
-const pointSizes = { // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
-  min: 4,
-  max: 96,
-}
+
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
   dashArray: [ 5, 5 ],
@@ -60,16 +57,6 @@ const switchScaleOptions = {
   splitScale: true,
   ratioCustomItemText: '1: інший...',
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
-}
-
-const calcPointSize = (zoom) => {
-  const { min, max } = pointSizes
-  const result = zoom <= MIN_ZOOM
-    ? min
-    : zoom >= MAX_ZOOM
-      ? max
-      : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-  return Math.round(result)
 }
 
 const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
@@ -251,6 +238,10 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
+    pointSizes: PropTypes.shape({
+      min: PropTypes.number,
+      max: PropTypes.number,
+    }),
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
@@ -423,6 +414,10 @@ export default class WebMap extends Component {
         tilePane.style.opacity = nextProps.backOpacity / 100
       }
     }
+    // pointSizes
+    if (nextProps.pointSizes !== this.props.pointSizes && this.map && this.map._container) {
+      this.updatePointSizes()
+    }
     return false
   }
 
@@ -504,18 +499,32 @@ export default class WebMap extends Component {
     this.map.doubleClickZoom.disable()
   }
 
+  calcPointSize = (zoom) => {
+    const { min, max } = this.props.pointSizes
+    const result = zoom <= MIN_ZOOM
+      ? min
+      : zoom >= MAX_ZOOM
+        ? max
+        : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
+    return Math.round(result)
+  }
+
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
+    const { onSelectedList, layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
-        setLayerSelected(layer, isInBounds)
-        if (isInBounds) {
+        const isOnActiveLayer = layer.object && (+layer.object.layer === activeLayerId)
+        const isActiveLayerVisible = layersById[activeLayerId] && layersById[activeLayerId].visible
+        const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
+        setLayerSelected(layer, isSelected)
+        if (isSelected) {
           selectedIds.push(layer.id)
         }
       }
     })
-    this.props.onSelectedList(selectedIds)
+    onSelectedList(selectedIds)
   })
 
   selectLayerHandler = async ({ layer, select }) => {
@@ -577,7 +586,7 @@ export default class WebMap extends Component {
       if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
         const { code, attributes } = layer.object
         const symbol = new Symbol(code,
-          { size: calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
+          { size: this.calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
         updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
       }
     })
@@ -588,7 +597,7 @@ export default class WebMap extends Component {
       if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
         const { code, attributes } = layer.object
         const symbol = new Symbol(code,
-          { size: calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
+          { size: this.calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
         updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
       }
     })
@@ -705,7 +714,7 @@ export default class WebMap extends Component {
     let color = colorOf(affiliation)
     if (+type === entityKind.POINT) {
       const options = {
-        size: calcPointSize(this.map.getZoom()),
+        size: this.calcPointSize(this.map.getZoom()),
         ...(this.props.showAmplifiers ? filterSet(attributes) : {}),
       }
       const symbol = new Symbol(code, options)

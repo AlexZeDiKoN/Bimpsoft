@@ -44,6 +44,7 @@ const WebMapState = Record({
   zoom: 7,
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
+  pointSizes: { min: 4, max: 96 },
   showAmplifiers: true,
   generalization: false,
   isMeasureOn: false,
@@ -52,8 +53,16 @@ const WebMapState = Record({
   objects: Map(),
 })
 
+const checkLevel = (object) => {
+  const { code, level } = object
+  if (code && !level) {
+    object.level = +code.slice(8, 10)
+  }
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
+    checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
@@ -75,6 +84,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SET_GENERALIZATION: {
       return state.set('generalization', payload)
+    }
+    case actionNames.SET_POINT_SIZES: {
+      return state.set('pointSizes', payload)
     }
     case actionNames.SET_SOURCE: {
       return state.set('source', payload)

@@ -45,6 +45,7 @@ export const SHAPE_TEXT = 'Текстова мітка'
 export const UNDEFINED = 'Не вказано'
 
 export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (за замовчуванням)'
+export const POINT_SIGN_SIZE = 'Розмір точкових знаків'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
