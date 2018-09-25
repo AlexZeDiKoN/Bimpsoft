@@ -26,9 +26,20 @@ export default class ColorPicker extends React.Component {
     opened: false,
   }
 
-  clickHandler = () => this.setState((state) => ({ opened: !state.opened }))
+  buttonRef = React.createRef()
 
-  clickColorHandler = (color) => this.props.onChange(color)
+  clickHandler = ({ color, target }) => this.setState((state) => {
+    const opened = !state.opened
+    if (opened) {
+      const el = target
+      const { top, left } = el.getBoundingClientRect()
+      return { opened, top, left }
+    } else {
+      return { opened }
+    }
+  })
+
+  clickColorHandler = ({ color }) => this.props.onChange(color)
 
   inputChangeHandler = ({ target: { value } }) => this.props.onChange && this.props.onChange(value)
 
@@ -38,7 +49,7 @@ export default class ColorPicker extends React.Component {
 
   render () {
     const { color } = this.props
-    const { opened } = this.state
+    const { opened, top, left } = this.state
     const classNames = [ 'color-picker' ]
     if (this.props.className) {
       classNames.push(this.props.className)
@@ -48,13 +59,14 @@ export default class ColorPicker extends React.Component {
     }
     return (
       <div className={classNames.join(' ')} ref={this.clickOutsideRef}>
-        {opened && (<div className="color-picker-popup">
+        {opened && (<div className="color-picker-popup" style={{ top, left }}>
           <div className="color-picker-list">
             {colors.map((color) => (<ColorButton key={color} color={color} onClick={this.clickColorHandler} />))}
           </div>
           <div className="color-picker-controls">
             <input value={color || ''} onChange={this.inputChangeHandler} />
             <ColorButton color={''} onClick={this.clickColorHandler} />
+            <ColorButton className="color-picker-close-button" color={color} onClick={this.clickHandler} />
           </div>
         </div>)}
         <ColorButton color={color} onClick={this.clickHandler} />
@@ -66,19 +78,20 @@ export default class ColorPicker extends React.Component {
 class ColorButton extends React.Component {
   static propTypes = {
     color: PropTypes.string,
+    className: PropTypes.string,
     onClick: PropTypes.func,
   }
 
-  clickHandler = () => this.props.onClick(this.props.color)
+  clickHandler = (e) => this.props.onClick({ color: this.props.color, target: e.target })
 
   render () {
-    const { color } = this.props
+    const { color, className } = this.props
     const extClassName = (color === undefined)
       ? ' color-picker-button-undefined'
       : (color === null || !color.length) ? ' color-picker-button-empty' : ''
     return (
       <button
-        className={'color-picker-button' + extClassName}
+        className={'color-picker-button' + (className ? ` ${className}` : '') + extClassName}
         style={{ backgroundColor: color }}
         onClick={this.clickHandler}
       >
