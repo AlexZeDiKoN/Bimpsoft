@@ -73,7 +73,7 @@ export default class FontSizePicker extends React.Component {
 class FontSizeButton extends React.Component {
   static propTypes = {
     fontSize: PropTypes.number,
-    checked: PropTypes.string,
+    checked: PropTypes.bool,
     onClick: PropTypes.func,
     onPreview: PropTypes.func,
   }
