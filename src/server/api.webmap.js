@@ -13,6 +13,9 @@ export default {
   layerGetColor,
   layerSetColor,
   getVersion,
+  paramGetAll,
+  paramGet,
+  paramSet,
 }
 
 function getVersion () {
@@ -53,4 +56,16 @@ function layerGetColor (id) {
 
 function layerSetColor (id, color) {
   return getDirect(`${webmapUrl}/color/set`, { id, color })
+}
+
+function paramGetAll () {
+  return getDirect(`${webmapUrl}/params`, false)
+}
+
+function paramGet (name) {
+  return getDirect(`${webmapUrl}/param/${name}/get`, false)
+}
+
+function paramSet (name, value) {
+  return getDirect(`${webmapUrl}/param/${name}/set`, { value })
 }

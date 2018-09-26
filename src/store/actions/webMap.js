@@ -7,7 +7,6 @@ export const actionNames = {
   SET_MEASURE: action('SET_MEASURE'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
-  SET_POINT_SIZES: action('SET_POINT_SIZES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
@@ -42,11 +41,6 @@ export const setAmplifiers = (value) => ({
 export const setGeneralization = (value) => ({
   type: actionNames.SET_GENERALIZATION,
   payload: value,
-})
-
-export const setPointSizes = (min, max) => ({
-  type: actionNames.SET_POINT_SIZES,
-  payload: { min, max },
 })
 
 export const setSource = (value) => ({
