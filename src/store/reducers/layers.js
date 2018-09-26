@@ -1,6 +1,6 @@
 import { layers } from '../actions'
 
-const defItem = { visible: true, locked: false, color: null, shared: false }
+const defItem = { visible: true, locked: false, color: null, readOnly: true }
 
 const initState = {
   byId: {},
@@ -32,10 +32,9 @@ export default function reducer (state = initState, action) {
       const { layersData } = action
       byId = { ...byId }
       layersData.forEach((layerData) => {
-        const { operationId, layerId, mapId, name, dateFor, formationId } = layerData
-        let item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
-        item = { ...item, operationId, mapId, layerId, name, dateFor, formationId }
-        byId[layerId] = item
+        const { layerId } = layerData
+        const item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
+        byId[layerId] = { ...item, ...layerData }
       })
       return { ...state, byId }
     }

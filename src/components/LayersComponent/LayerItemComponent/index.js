@@ -7,17 +7,12 @@ import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 
-const { icons: { IconHovered, names: iconNames } } = components
+const { icons: { IconHovered, Icon, names: iconNames } } = components
 
 const getLockIcon = (isDark, locked) =>
   isDark
     ? (locked ? iconNames.DARK_LOCK_ACTIVE : iconNames.DARK_UNLOCK_ACTIVE)
     : (locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE)
-
-const getLockIconHover = (isDark, locked) =>
-  isDark
-    ? (locked ? iconNames.DARK_LOCK_HOVER : iconNames.DARK_UNLOCK_HOVER)
-    : (locked ? iconNames.LOCK_HOVER : iconNames.UNLOCK_HOVER)
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
@@ -38,7 +33,7 @@ export default class LayerItemComponent extends React.Component {
   render () {
     const {
       isSelected,
-      data: { visible, name, locked, color, dateFor = null },
+      data: { visible, name, readOnly, color, dateFor = null },
     } = this.props
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
     return (
@@ -52,10 +47,9 @@ export default class LayerItemComponent extends React.Component {
           className="layer-item-сomponent-control"
           onChange={this.changeVisibilityHandler}
         />
-        <IconHovered
+        <Icon
           className="layer-item-сomponent-control"
-          icon={getLockIcon(isSelected, locked)}
-          hoverIcon={getLockIconHover(isSelected, locked)}
+          icon={getLockIcon(isSelected, readOnly)}
         />
         <div className="layer-item-сomponent-title">
           <div className="layer-name">{name}</div>
