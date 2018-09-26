@@ -5,7 +5,7 @@ import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
 import i18n from '../i18n'
-import { canEditSelector } from '../store/canEditSelector'
+import { canEditSelector } from '../store/selectors/canEditSelector'
 
 const updateActions = {
   edit: selectionActions.updateSelection,

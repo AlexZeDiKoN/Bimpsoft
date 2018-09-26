@@ -5,7 +5,7 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import { canEditSelector, canEditCurrentLayerSelector } from '../store/canEditSelector'
+import { canEditSelector, canEditCurrentLayerSelector } from '../store/selectors/canEditSelector'
 
 const layerNameSelector = createSelector(
   (state) => state.layers,
