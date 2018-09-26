@@ -126,3 +126,6 @@ export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрит
 export const ERROR_ACCESS_DENIED = 'Доступ заборонено'
 export const ERROR_NO_CONNECTION = 'Сервер карти недоступний'
 export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
+
+export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
+export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`

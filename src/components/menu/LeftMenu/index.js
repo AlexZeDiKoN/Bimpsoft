@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
+import { notification } from 'antd/lib/index'
 import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
@@ -16,6 +17,7 @@ const iconNames = components.icons.names
 export default class LeftMenu extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
+    canEditCurrentLayer: PropTypes.bool,
     isShowPoints: PropTypes.bool,
     isShowLines: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
@@ -58,6 +60,19 @@ export default class LeftMenu extends React.Component {
 
   clickOutsideLinesListRef = getClickOutsideRef(() => this.props.onLinesListClose())
 
+  clickEditModeHandler = () => {
+    const {
+      canEditCurrentLayer,
+      onClickEditMode,
+      layerName,
+    } = this.props
+    if (canEditCurrentLayer) {
+      onClickEditMode()
+    } else {
+      notification.warn({ message: i18n.CANNOT_ENABLE_EDIT_MODE, description: i18n.READ_ONLY_LAYER_ACCESS(layerName) })
+    }
+  }
+
   render () {
     const {
       isEditMode,
@@ -66,7 +81,6 @@ export default class LeftMenu extends React.Component {
       isMeasureOn,
       newShape = {},
       subordinationLevel = SubordinationLevel.TEAM_CREW,
-      onClickEditMode,
       onClickLineSign,
       onClickMapSource,
       onClickSubordinationLevel,
@@ -89,7 +103,7 @@ export default class LeftMenu extends React.Component {
           text={i18n.EDIT_MODE}
           icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
           hoverIcon={iconNames.EDIT_HOVER}
-          onClick={onClickEditMode}
+          onClick={this.clickEditModeHandler}
         />
         {isEditMode && (
           <Fragment>

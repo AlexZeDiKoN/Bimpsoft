@@ -5,6 +5,7 @@ import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
+import { canEditSelector } from '../store/canEditSelector'
 
 const WebMap = connect(
   (state) => ({
@@ -12,7 +13,7 @@ const WebMap = connect(
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
-    edit: state.viewModes.edit,
+    edit: canEditSelector(state),
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
     orgStructureSelectedId: state.orgStructures.selectedId,
