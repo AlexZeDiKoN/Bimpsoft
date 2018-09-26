@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Switch, Slider } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import { debounce } from 'debounce'
 import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
@@ -30,7 +31,8 @@ export default class SettingsForm extends React.Component {
 
   changePointSizeHandler = (value) => {
     const [ min, max ] = value
-    this.props.onChangePointSizes(min, max)
+
+    debounce(this.props.onChangePointSizes, 333, true)(min, max)
   }
 
   render () {

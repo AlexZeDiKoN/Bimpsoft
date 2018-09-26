@@ -5,6 +5,7 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
+import { canEditSelector, canEditCurrentLayerSelector } from '../store/selectors/canEditSelector'
 
 const layerNameSelector = createSelector(
   (state) => state.layers,
@@ -30,7 +31,6 @@ const layerNameSelector = createSelector(
 const mapStateToProps = (store) => {
   const {
     viewModes: {
-      [viewModesKeys.edit]: isEditMode,
       // [viewModesKeys.pointSignsList]: isShowPoints,
       [viewModesKeys.mapSourcesList]: isShowSources,
       [viewModesKeys.lineSignsList]: isShowLines,
@@ -41,9 +41,11 @@ const mapStateToProps = (store) => {
   } = store
 
   const layerName = layerNameSelector(store)
-
+  const isEditMode = canEditSelector(store)
+  const canEditCurrentLayer = canEditCurrentLayerSelector(store)
   return {
     isEditMode,
+    canEditCurrentLayer,
     // isShowPoints,
     isShowSources,
     isShowLines,

@@ -8,6 +8,7 @@ import WebmapApi from '../server/api.webmap'
 import ServerApiMilOrg from '../server/api.server.org'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
+import { loadAllParams } from './actions/params'
 
 let store = null
 
@@ -41,6 +42,7 @@ export default function initStore (options = {}) {
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
 
   initSocketEvents(store.dispatch)
+  store.dispatch(loadAllParams())
 
   return store
 }

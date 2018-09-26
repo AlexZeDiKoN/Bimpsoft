@@ -2,8 +2,11 @@ import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
+import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
+import { pointSizesSelector } from '../store/selectors/params'
+import { canEditSelector } from '../store/canEditSelector'
 
 const WebMap = connect(
   (state) => ({
@@ -11,7 +14,7 @@ const WebMap = connect(
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
-    edit: state.viewModes.edit,
+    edit: canEditSelector(state),
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
     orgStructureSelectedId: state.orgStructures.selectedId,
@@ -24,7 +27,7 @@ const WebMap = connect(
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
-    pointSizes: state.webMap.pointSizes, // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
+    pointSizes: pointSizesSelector(state), // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
     isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
@@ -37,6 +40,7 @@ const WebMap = connect(
       ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),
     onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
+    onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     hideForm: () => dispatch(selectionActions.hideForm),

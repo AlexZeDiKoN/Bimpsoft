@@ -266,6 +266,7 @@ export default class WebMap extends Component {
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onSelection: PropTypes.func,
+    onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
@@ -277,14 +278,17 @@ export default class WebMap extends Component {
     orgStructureSelectedId: PropTypes.number,
   }
 
+  constructor (props) {
+    super(props)
+    this.backVersion = '-?'
+    WebmapApi.getVersion()
+      .then((version) => (this.backVersion = version))
+      .catch((err) => notification.error({ message: i18n.ERROR, description: err.message }))
+  }
+
   async componentDidMount () {
     const { sources } = this.props
-    try {
-      this.backVersion = await WebmapApi.getVersion()
-    } catch (err) {
-      this.backVersion = '-?'
-      notification.error({ message: i18n.ERROR, description: err.message })
-    }
+
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
@@ -527,7 +531,7 @@ export default class WebMap extends Component {
     onSelectedList(selectedIds)
   })
 
-  selectLayerHandler = async ({ layer, select }) => {
+  selectLayerHandler = async () => { // { layer, select }
     const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
@@ -560,8 +564,11 @@ export default class WebMap extends Component {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const hidden = itemLevel < levelEdge || !layer || !layersById[layer] || !layersById[layer].visible
-      const opacity = Number(selectedLayerId) === Number(layer) ? 1 : (hiddenOpacity / 100)
+      const isSelectedLayer = Number(selectedLayerId) === Number(layer)
+      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
+      const zIndexOffset = isSelectedLayer ? 1000000000 : 0
 
+      item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
@@ -764,8 +771,14 @@ export default class WebMap extends Component {
   }
 
   dblClickOnLayer = (event) => {
-    if (event.target._map.pm.activeLayer === event.target) {
-      event.target._map.fire('editlayer', event.target)
+    const { target } = event
+    if (event.target._map.pm.activeLayer === target) {
+      event.target._map.fire('editlayer', target)
+    } else {
+      const targetLayer = target.object && Number(target.object.layer)
+      if (targetLayer && targetLayer !== this.props.layer) {
+        this.props.onChangeLayer(targetLayer)
+      }
     }
     L.DomEvent.stopPropagation(event)
   }
