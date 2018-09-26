@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
+import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
 
@@ -37,6 +38,7 @@ const WebMap = connect(
       ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),
     onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
+    onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     hideForm: () => dispatch(selectionActions.hideForm),

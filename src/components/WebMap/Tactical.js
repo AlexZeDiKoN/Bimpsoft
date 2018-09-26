@@ -221,7 +221,7 @@ function createPoint ([ point ], js, anchor) {
     // iconSize: [ pointSignSize, pointSignSize ],
     /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
   })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane', zIndexOffset: 1000 })
+  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
   setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon
   marker.options.iconActive = iconActive
@@ -239,7 +239,7 @@ function createText ([ point ], js, anchor) {
     postProcess: setActivePointSignColors,
     iconAnchor: [ anchor.x, anchor.y ],
   })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane', zIndexOffset: 1000 })
+  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
 
   setTimeout(() => transparentSvg(marker))
   marker.options.iconNormal = icon

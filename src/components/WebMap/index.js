@@ -266,6 +266,7 @@ export default class WebMap extends Component {
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onSelection: PropTypes.func,
+    onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
@@ -560,8 +561,11 @@ export default class WebMap extends Component {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const hidden = itemLevel < levelEdge || !layer || !layersById[layer] || !layersById[layer].visible
-      const opacity = Number(selectedLayerId) === Number(layer) ? 1 : (hiddenOpacity / 100)
+      const isSelectedLayer = Number(selectedLayerId) === Number(layer)
+      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
+      const zIndexOffset = isSelectedLayer ? 1000000000 : 0
 
+      item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
@@ -764,8 +768,14 @@ export default class WebMap extends Component {
   }
 
   dblClickOnLayer = (event) => {
-    if (event.target._map.pm.activeLayer === event.target) {
-      event.target._map.fire('editlayer', event.target)
+    const { target } = event
+    if (event.target._map.pm.activeLayer === target) {
+      event.target._map.fire('editlayer', target)
+    } else {
+      const targetLayer = target.object && Number(target.object.layer)
+      if (targetLayer && targetLayer !== this.props.layer) {
+        this.props.onChangeLayer(targetLayer)
+      }
     }
     L.DomEvent.stopPropagation(event)
   }
