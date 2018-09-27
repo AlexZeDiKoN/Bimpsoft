@@ -762,11 +762,17 @@ export default class WebMap extends Component {
 
   clickOnLayer = (event) => {
     const { target } = event
+    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = target.object && target.object.layer
     if (Number(targetLayer) === this.props.layer) {
       activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
       L.DomEvent.stopPropagation(event)
       event.target._map._container.focus()
+    } else if (useOneClickForActivateLayer) {
+      this.props.onChangeLayer(targetLayer)
+      activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
+      event.target._map._container.focus()
+      L.DomEvent.stopPropagation(event)
     }
   }
 
@@ -778,6 +784,8 @@ export default class WebMap extends Component {
       const targetLayer = target.object && Number(target.object.layer)
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
+        activateLayer(target, this.props.edit)
+        event.target._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
