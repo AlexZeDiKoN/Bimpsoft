@@ -1,8 +1,8 @@
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
-import {asyncAction, maps, layers, webMap} from './index'
-import {updateColorByLayerId} from "./layers";
+import { updateColorByLayerId } from './layers'
+import { asyncAction, maps, layers, webMap } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
