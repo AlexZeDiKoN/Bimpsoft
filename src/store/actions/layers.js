@@ -85,19 +85,12 @@ export const selectLayer = (layerId) =>
       return
     }
 
-    const layersIds = Object.keys(state.layers.byId)
-
     dispatch({
       type: SELECT_LAYER,
       layerId,
     })
 
     if (layerId) {
-      for (const layerId of layersIds) {
-        await dispatch(webMap.updateObjectsByLayerId(layerId))
-        await dispatch(updateColorByLayerId(Number(layerId)))
-      }
-
       const state = getState()
       const layer = state.layers.byId[layerId]
       const { formationId = null } = layer
