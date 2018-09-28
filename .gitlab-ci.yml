@@ -1,0 +1,25 @@
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  script: echo "TODO auto-test"
+
+build:
+  stage: build
+  script: echo "TODO build project"
+  artifacts:
+    paths:
+      - build/index.html
+      - build/static/css/main.*.css
+      - build/static/js/main.*.js
+
+deploy-qa:
+  stage: deploy
+  script: echo "TODO deploy to QA environment"
+
+deploy-zip:
+  stage: deploy
+  script: echo "TODO pack bundle into ZIP file"
