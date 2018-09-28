@@ -100,7 +100,7 @@ export default class LeftMenu extends React.Component {
     return (
       <div className='left-menu'>
         <IconButton
-          text={i18n.EDIT_MODE}
+          title={i18n.EDIT_MODE}
           icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
           hoverIcon={iconNames.EDIT_HOVER}
           onClick={this.clickEditModeHandler}
@@ -108,7 +108,7 @@ export default class LeftMenu extends React.Component {
         {isEditMode && (
           <Fragment>
             <IconButton
-              text={i18n.POINT_SIGN}
+              title={i18n.POINT_SIGN}
               icon={
                 newShape.type === SelectionTypes.POINT
                   ? iconNames.CONVENTIONAL_SIGN_ACTIVE
@@ -118,7 +118,7 @@ export default class LeftMenu extends React.Component {
               onClick={this.clickPointHandler}
             />
             <IconButton
-              text={i18n.LINE_SIGN}
+              title={i18n.LINE_SIGN}
               icon={
                 isShowLines
                   ? iconNames.GROUPING_GRAPHIC_PRIMITIVES_ACTIVE
@@ -134,7 +134,7 @@ export default class LeftMenu extends React.Component {
               />)}
             </IconButton>
             <IconButton
-              text={i18n.ADD_TEXT}
+              title={i18n.ADD_TEXT}
               icon={
                 newShape.type === SelectionTypes.TEXT
                   ? iconNames.TEXT_SIGN_ACTIVE
@@ -146,7 +146,7 @@ export default class LeftMenu extends React.Component {
           </Fragment>
         )}
         <IconButton
-          text={i18n.MAP_SOURCE}
+          title={i18n.MAP_SOURCE}
           icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
           hoverIcon={iconNames.MAP_HOVER}
           onClick={onClickMapSource}
@@ -154,7 +154,7 @@ export default class LeftMenu extends React.Component {
           {mapSources}
         </IconButton>
         <IconButton
-          text={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
+          title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
           icon={
             isShowSubordinationLevel
               ? subordinationLevelViewData.iconActive
@@ -182,7 +182,7 @@ export default class LeftMenu extends React.Component {
         </IconButton>
         <IconButton
           value={!isMeasureOn}
-          text={i18n.MEASURE}
+          title={i18n.MEASURE}
           icon={isMeasureOn ? iconNames.RULLER_HOVER : iconNames.RULLER_ACTIVE}
           hoverIcon={iconNames.RULLER_HOVER}
           checked={isMeasureOn}
@@ -191,25 +191,25 @@ export default class LeftMenu extends React.Component {
         {isEditMode && (
           <Fragment>
             <IconButton
-              text={i18n.CUT}
+              title={i18n.CUT}
               icon={iconNames.CUT_DEFAULT}
               hoverIcon={iconNames.CUT_HOVER}
               onClick={onCut}
             />
             <IconButton
-              text={i18n.COPY}
+              title={i18n.COPY}
               icon={iconNames.COPY_DEFAULT}
               hoverIcon={iconNames.COPY_HOVER}
               onClick={onCopy}
             />
             <IconButton
-              text={i18n.PASTE}
+              title={i18n.PASTE}
               icon={iconNames.PASTE_DEFAULT}
               hoverIcon={iconNames.PASTE_HOVER}
               onClick={onPaste}
             />
             <IconButton
-              text={i18n.DELETE}
+              title={i18n.DELETE}
               icon={iconNames.DELETE_DEFAULT}
               hoverIcon={iconNames.DELETE_HOVER}
               onClick={onDelete}
