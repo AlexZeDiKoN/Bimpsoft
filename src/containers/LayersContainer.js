@@ -1,23 +1,11 @@
 import { connect } from 'react-redux'
+import memoizeOne from 'memoize-one'
 import LayersComponent from '../components/LayersComponent'
 import { layers, maps } from '../store/actions'
 
-const mapStateToProps = (store) => {
-  const {
-    maps: {
-      byId: mapsById,
-    },
-    layers: {
-      byId: layersById,
-      selectedId: selectedLayerId,
-      timelineFrom,
-      timelineTo,
-      backOpacity,
-      hiddenOpacity,
-    },
-  } = store
-  const maps = new Map()
+const getMaps = memoizeOne((layersById, mapsById) => {
   let visible = false
+  const maps = new Map()
   Object.values(layersById).forEach((layer) => {
     const { mapId } = layer
     let map = maps.get(mapId)
@@ -33,12 +21,31 @@ const mapStateToProps = (store) => {
       map.visible = true
       visible = true
     }
-    if (map.color !== undefined && map.color !== layer.color){
+    if (map.color !== undefined && map.color !== layer.color) {
       map.color = undefined
     }
     maps.set(mapId, map)
   })
-  return { maps: [ ...maps.values() ], selectedLayerId, timelineFrom, timelineTo, visible, backOpacity, hiddenOpacity }
+  return { maps: [ ...maps.values() ], visible }
+})
+
+const mapStateToProps = (store) => {
+  const {
+    maps: {
+      byId: mapsById,
+    },
+    layers: {
+      byId: layersById,
+      selectedId: selectedLayerId,
+      timelineFrom,
+      timelineTo,
+      backOpacity,
+      hiddenOpacity,
+    },
+  } = store
+
+  const { maps, visible } = getMaps(layersById, mapsById)
+  return { maps, selectedLayerId, timelineFrom, timelineTo, visible, backOpacity, hiddenOpacity }
 }
 
 const mapDispatchToProps = (dispatch) => ({

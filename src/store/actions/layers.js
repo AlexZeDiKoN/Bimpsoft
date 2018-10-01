@@ -11,28 +11,6 @@ export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
 
-const getOrgStructuresTree = (unitsById, relations) => {
-  const byIds = {}
-  const roots = []
-  relations.forEach(({ unitID, parentUnitID }) => {
-    const unit = unitsById[unitID]
-    if (unit) {
-      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
-    }
-  })
-  relations.forEach(({ unitID, parentUnitID }) => {
-    if (byIds.hasOwnProperty(unitID)) {
-      const parent = byIds[parentUnitID]
-      if (parent) {
-        parent.children.push(unitID)
-      } else {
-        roots.push(unitID)
-      }
-    }
-  })
-  return { byIds, roots }
-}
-
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,
   layersData,
@@ -79,43 +57,28 @@ export const updateColorByLayerId = (layerId) =>
   })
 
 export const selectLayer = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
-    if (state.layers.selectedId === layerId) {
+    const { layers: { selectedId, byId } } = state
+    if (selectedId === layerId) {
       return
     }
 
-    dispatch({
+    await dispatch({
       type: SELECT_LAYER,
       layerId,
     })
 
     if (layerId) {
-      const state = getState()
-      const layer = state.layers.byId[layerId]
+      const layer = byId[layerId]
       const { formationId = null } = layer
       if (formationId === null) {
+        await dispatch(orgStructures.setFormationById(null))
         throw Error('org structure id is undefined')
       }
-
-      const formations = await milOrg.generalFormation.list()
-      const formation = formations.find((formation) => formation.id === formationId)
-      dispatch(orgStructures.setOrgStructureFormation(formation))
-
-      const units = await milOrg.militaryUnit.list()
-      const unitsById = {}
-      units.forEach((item) => {
-        unitsById[item.id] = item
-      })
-      dispatch(orgStructures.setOrgStructureUnits(unitsById))
-
-      const relations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
-      const tree = getOrgStructuresTree(unitsById, relations)
-
-      dispatch(orgStructures.setOrgStructureTree(tree.byIds, tree.roots))
+      await dispatch(orgStructures.setFormationById(formationId))
     } else {
-      dispatch(orgStructures.setOrgStructureFormation(null))
-      dispatch(orgStructures.setOrgStructureTree({}, []))
+      await dispatch(orgStructures.setFormationById(null))
     }
   })
 
