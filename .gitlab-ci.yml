@@ -16,7 +16,7 @@ build:
   script:
     - 'echo "Building project..."'
     - 'echo %yarn%'
-    - 'npm install'
+    - 'call npm install'
     - 'del .env'
     - 'copy .env.production .env'
     - 'call npm run-script build'
@@ -28,10 +28,11 @@ build:
     - 'git push'
     - 'echo "Done!"'
   artifacts:
+    expire_in: 1 month
     paths:
-      - build/index.html
-      - build/static/css/main.*.css
-      - build/static/js/main.*.js
+      - './build/index.html'
+      - './build/static/css/main.*.css'
+      - './build/static/js/main.*.js'
 
 deploy-qa:
   stage: deploy
