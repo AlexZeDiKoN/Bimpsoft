@@ -15,6 +15,7 @@ build:
     - webmap
   script:
     - 'echo "Building project..."'
+    - 'echo "${ACCESS_TOKEN}"'
     - 'call npm install'
     - 'del .env'
     - 'copy .env.production .env'
@@ -23,7 +24,7 @@ build:
     - 'del /Q build\static\css\*.map'
     - 'del /Q build\static\js\*.map'
     - 'git commit -a -m "autocommit inc-version after build"'
-    - 'git push origin HEAD:develop'
+    #- 'git push tumak.aleksandr:2RQsxH5Ln5JwivqUHsG1 origin HEAD:develop'
     - 'echo "Done!"'
   artifacts:
     expire_in: 1 month
