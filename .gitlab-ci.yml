@@ -5,10 +5,14 @@ stages:
 
 test:
   stage: test
+  tags:
+    - webmap
   script: echo "TODO auto-test"
 
 build:
   stage: build
+  tags:
+  - webmap
   script: echo "TODO build project"
   artifacts:
     paths:
@@ -18,8 +22,12 @@ build:
 
 deploy-qa:
   stage: deploy
+  tags:
+  - webmap
   script: echo "TODO deploy to QA environment"
 
 deploy-zip:
   stage: deploy
+  tags:
+  - webmap
   script: echo "TODO pack bundle into ZIP file"
