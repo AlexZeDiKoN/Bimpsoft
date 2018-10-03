@@ -15,17 +15,15 @@ build:
     - webmap
   script:
     - 'echo "Building project..."'
-    - 'echo %yarn%'
     - 'call npm install'
     - 'del .env'
     - 'copy .env.production .env'
     - 'call npm run-script build'
-    - 'dir'
     - 'rmdir /s /q build\explorerLite'
     - 'del /Q build\static\css\*.map'
     - 'del /Q build\static\js\*.map'
     - 'git commit -a -m "autocommit inc-version after build"'
-    - 'git push'
+    - 'git push origin HEAD:develop'
     - 'echo "Done!"'
   artifacts:
     expire_in: 1 month
