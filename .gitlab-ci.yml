@@ -38,6 +38,7 @@ deploy-qa:
     - webmap
   script:
     - 'echo "Deploying to QA environment..."'
+    - 'dir'
     - 'echo "Done!"'
 
 deploy-zip:
@@ -46,4 +47,5 @@ deploy-zip:
     - webmap
   script:
     - 'echo "Packing bundle into ZIP file..."'
+    - 'dir'
     - 'echo "Done!"'
