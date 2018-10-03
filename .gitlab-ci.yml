@@ -14,7 +14,7 @@ build:
   tags:
     - webmap
   script:
-    - 'echo "Building project..."'
+    - 'echo Building project...'
     - 'call npm install'
     - 'del .env'
     - 'copy .env.production .env'
@@ -24,7 +24,7 @@ build:
     - 'del /Q build\static\js\*.map'
     - 'git commit -a -m "[ci skip] autocommit inc-version after build"'
     - 'git push http://tumak.aleksandr:2RQsxH5Ln5JwivqUHsG1@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop'
-    - 'echo "Done!"'
+    - 'echo Done!'
   artifacts:
     expire_in: 1 month
     paths:
@@ -37,15 +37,20 @@ deploy-qa:
   tags:
     - webmap
   script:
-    - 'echo "Deploying to QA environment..."'
-    - 'dir'
-    - 'echo "Done!"'
+    - 'echo Deploying to QA environment...'
+    - 'echo ========= Deploy: 84 ========='
+    - 'rmdir /s /q Z:\MAKET_Everest\SpaceHub\WebMap'
+    - 'xcopy /E /C /I /Q /H /R /Y build Z:\MAKET_Everest\SpaceHub\WebMap'
+    - 'echo ========= Deploy: 85 ========='
+    - 'rmdir /s /q C:\MAKET_Everest\SpaceHub\WebMap'
+    - 'xcopy /E /C /I /Q /H /R /Y build C:\MAKET_Everest\SpaceHub\WebMap'
+    - 'echo Done!'
 
 deploy-zip:
   stage: deploy
   tags:
     - webmap
   script:
-    - 'echo "Packing bundle into ZIP file..."'
+    - 'echo Packing bundle into ZIP file...'
     - 'dir'
-    - 'echo "Done!"'
+    - 'echo Done!'
