@@ -1,5 +1,5 @@
 variables:
-  yarn: 'C:\Program Files (x86)\Yarn\bin'
+  yarn: '"C:\Program Files (x86)\Yarn\bin\yarn.cmd"'
 
 stages:
   - test
@@ -18,7 +18,7 @@ build:
     - webmap
   script:
     - 'echo "Building project..."'
-    - '%yarn%\yarn.cmd install'
+    - '%yarn% install'
     - 'del .env'
     - 'copy .env.production .env'
     - 'call npm run-script build'
