@@ -5,21 +5,45 @@ stages:
 
 test:
   stage: test
+  tags:
+    - webmap
   script: echo "TODO auto-test"
 
 build:
   stage: build
-  script: echo "TODO build project"
+  tags:
+    - webmap
+  script:
+    - 'echo "Building project..."'
+    - 'call npm install'
+    - 'del .env'
+    - 'copy .env.production .env'
+    - 'call npm run-script build'
+    - 'rmdir /s /q build\explorerLite'
+    - 'del /Q build\static\css\*.map'
+    - 'del /Q build\static\js\*.map'
+    - 'git commit -a -m "autocommit inc-version after build"'
+    - 'git push origin HEAD:develop'
+    - 'echo "Done!"'
   artifacts:
+    expire_in: 1 month
     paths:
-      - build/index.html
-      - build/static/css/main.*.css
-      - build/static/js/main.*.js
+      - './build/index.html'
+      - './build/static/css/main.*.css'
+      - './build/static/js/main.*.js'
 
 deploy-qa:
   stage: deploy
-  script: echo "TODO deploy to QA environment"
+  tags:
+    - webmap
+  script:
+    - 'echo "Deploying to QA environment..."'
+    - 'echo "Done!"'
 
 deploy-zip:
   stage: deploy
-  script: echo "TODO pack bundle into ZIP file"
+  tags:
+    - webmap
+  script:
+    - 'echo "Packing bundle into ZIP file..."'
+    - 'echo "Done!"'

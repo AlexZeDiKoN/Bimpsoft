@@ -771,9 +771,12 @@ export default class WebMap extends Component {
   }
 
   deleteObject = (layer) => {
-    layer.pm.disable()
-    delete layer._map.pm.activeLayer
-    this.props.deleteObject(layer.id)
+    const { edit } = this.props
+    if (edit) {
+      layer.pm.disable()
+      delete layer._map.pm.activeLayer
+      this.props.deleteObject(layer.id)
+    }
   }
 
   activeLayerHandler = async ({ oldLayer, newLayer }) => {
