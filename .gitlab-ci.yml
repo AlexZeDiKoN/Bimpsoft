@@ -18,6 +18,7 @@ build:
     - webmap
   script:
     - 'echo "Building project..."'
+    - 'echo %yarn%'
     - '%yarn% install'
     - 'del .env'
     - 'copy .env.production .env'
