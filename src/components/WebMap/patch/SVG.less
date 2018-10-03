@@ -1,3 +1,6 @@
+@svg-select-stroke: #0a0;
+@svg-select-fill: #252;
+
 .leaflet-interactive.leaflet-interactive-outline {
   fill: none;
   stroke: rgba(0,0,0,0);
@@ -6,4 +9,23 @@
 .dzvin-path-shadow{
   fill: none;
   stroke-width: 5px;
+}
+.dzvin-path-selected {
+  stroke: @svg-select-stroke;
+  &:not([fill="none"]) {
+    fill: @svg-select-fill;
+  }
+}
+.dzvin-marker {
+  &.dzvin-marker-selected {
+    .replace-stroke{
+      stroke: @svg-select-stroke;
+    }
+    .replace-fill{
+      fill: @svg-select-fill;
+    }
+    .replace-fill-as-stroke{
+      fill: @svg-select-stroke;
+    }
+  }
 }

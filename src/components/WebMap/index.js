@@ -492,7 +492,7 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('zoomend', this.updatePointSizes)
+    this.map.on('zoomstart', this.updatePointSizes)
     this.map.on('moveend', this.moveHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
@@ -589,22 +589,22 @@ export default class WebMap extends Component {
   }
 
   updatePointSizes = () => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+    // const { pointSizes } = this.props
+    if (this.map) {
+      const zoom = this.calcPointSize(this.map.getZoom())
+      this.map._container.style.setProperty('--point-sign-scale', zoom/100)
+
+      // this.map.eachLayer((layer) => {
+      //   layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
+      // })
+    }
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
     this.map.eachLayer((layer) => {
       if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
         const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
+        const symbol = new Symbol(code, showAmplifiers ? filterSet(attributes) : {})
         updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
       }
     })
@@ -714,37 +714,15 @@ export default class WebMap extends Component {
 
   addObject = (object) => {
     // console.log('addObject', object.toJS())
-    const { id, type, code = '', point, geometry, affiliation, attributes } = object
-    let anchor
-    let template
-    let points = geometry.toJS()
-    let color = colorOf(affiliation)
-    if (+type === entityKind.POINT) {
-      const options = {
-        size: this.calcPointSize(this.map.getZoom()),
-        ...(this.props.showAmplifiers ? filterSet(attributes) : {}),
-      }
-      const symbol = new Symbol(code, options)
-      template = symbol.asSVG()
-      points = [ point ]
-      anchor = symbol.getAnchor()
-    } else if (+type === entityKind.TEXT) {
-      // console.log(attributes)
-      template = generateTextSymbolSvg(attributes)
-      points = [ point ]
-      anchor = { x: 0, y: 0 }
-    } else if (+type === entityKind.SEGMENT) {
-      template = attributes.template
-      color = attributes.color
-    }
-    const layer = createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
+    const { id, attributes } = object
+    const layer = createTacticalSign(object, this.map)
     if (layer) {
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId } = this.props
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId, pointSizes } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null } = attributes
 
@@ -757,6 +735,7 @@ export default class WebMap extends Component {
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
       }
+      layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
     }
   }
 

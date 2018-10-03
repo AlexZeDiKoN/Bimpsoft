@@ -2,10 +2,30 @@
 
 const parser = new DOMParser()
 
+const setActivePointSignColors = (node) => {
+  if (!node.hasAttribute) {
+    return
+  }
+  if (node.hasAttribute('stroke')) {
+    const value = node.getAttribute('stroke')
+    if (value && value !== 'none') {
+      node.classList.add('replace-stroke')
+    }
+  }
+  if (node.hasAttribute('fill')) {
+    const value = node.getAttribute('fill')
+    if (value && value !== 'none') {
+      node.classList.add(node.tagName === 'text' || value === 'black' ? 'replace-fill-as-stroke' : 'replace-fill')
+    }
+  }
+  for (const child of node.childNodes) {
+    setActivePointSignColors(child)
+  }
+}
+
 export default L.Icon.extend({
   options: {
     svg: null,
-    postProcess: null,
   },
 
   createIcon: function (oldIcon) {
@@ -13,14 +33,16 @@ export default L.Icon.extend({
       return oldIcon
     }
     const svg = parser.parseFromString(this.options.svg, 'image/svg+xml').rootElement
-    if (this.options.postProcess) {
-      this.options.postProcess(svg)
-    }
-    const anchor = this.options.iconAnchor
+    setActivePointSignColors(svg)
+    const { anchor } = this.options
     if (anchor) {
-      svg.style.marginLeft = `${-anchor[0]}px`
-      svg.style.marginTop = `${-anchor[1]}px`
+      const { x, y } = anchor
+      svg.style.marginLeft = `calc(${-x}px * var(--point-sign-scale))`
+      svg.style.marginTop = `calc(${-y}px * var(--point-sign-scale))`
     }
+    svg.style.width = `calc(${svg.getAttribute('width')}px * var(--point-sign-scale))`
+    svg.style.height = `calc(${svg.getAttribute('height')}px * var(--point-sign-scale))`
+    svg.style.willChange = 'width, height, transform, margin-left, margin-top'
     return svg
   },
 

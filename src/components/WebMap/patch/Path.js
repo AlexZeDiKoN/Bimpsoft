@@ -5,6 +5,11 @@ export default L.Path.include({
     this.setStyle({ color })
   },
 
+  setSelected: function (selected) {
+    this._selected = selected
+    this.setStyle({ selected })
+  },
+
   setFill: function (fillColor) {
     this.setStyle({ fillColor })
   },

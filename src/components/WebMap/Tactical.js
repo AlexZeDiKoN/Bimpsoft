@@ -1,33 +1,10 @@
 /* global L */
 
 import './patch'
+import { Symbol } from '@DZVIN/milsymbol/dist/milsymbol'
+import { generateTextSymbolSvg } from '../../utils'
 import entityKind from './entityKind'
 import { svgToJS } from './patch/utils/SVG'
-
-// ------------------------ Константи ----------------------------------------------------------------------------------
-const activelayerColor = '#0a0' // Колір активного тактичного знака
-const activeBackColor = '#252' // Колір фону активного тактичного знака
-
-const setActivePointSignColors = (node) => {
-  if (!node.hasAttribute) {
-    return
-  }
-  if (node.hasAttribute('stroke')) {
-    const value = node.getAttribute('stroke')
-    if (value && value !== 'none') {
-      node.setAttribute('stroke', activelayerColor)
-    }
-  }
-  if (node.hasAttribute('fill')) {
-    const value = node.getAttribute('fill')
-    if (value && value !== 'none') {
-      node.setAttribute('fill', node.tagName === 'text' || value === 'black' ? activelayerColor : activeBackColor)
-    }
-  }
-  for (const child of node.childNodes) {
-    setActivePointSignColors(child)
-  }
-}
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
 export function initMapEvents (mymap, clickInterhandler) {
@@ -61,11 +38,6 @@ export function initMapEvents (mymap, clickInterhandler) {
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
-function checkPointSignIconTransparent (layer) {
-  if (layer.options.tsType === entityKind.POINT) {
-    setTimeout(() => transparentSvg(layer))
-  }
-}
 
 export const clearSelectedList = (map) => {
   map.eachLayer((layer) => {
@@ -87,17 +59,7 @@ export const clearActiveLayer = (map, skipFire = false) => {
 }
 
 function removeLayerFromSelection (layer) {
-  layer._selected = false
-  const p = layer._path
-  if (p) {
-    p.setAttribute('stroke', layer.options.color)
-    if (p.getAttribute('fill') === activelayerColor) {
-      p.setAttribute('fill', layer.options.color)
-    }
-  } else if (layer.options.iconNormal) {
-    layer.setIcon(layer.options.iconNormal)
-    checkPointSignIconTransparent(layer)
-  }
+  layer.setSelected && layer.setSelected(false)
 }
 
 function setActiveLayer (map, layer, canEdit, skipFire = false) {
@@ -116,17 +78,7 @@ function setActiveLayer (map, layer, canEdit, skipFire = false) {
 }
 
 export const addLayerToSelection = (layer) => {
-  layer._selected = true
-  const p = layer._path
-  if (p) {
-    p.setAttribute('stroke', activelayerColor)
-    if (p.getAttribute('fill') === layer.options.color) {
-      p.setAttribute('fill', activelayerColor)
-    }
-  } else if (layer.options.iconActive) {
-    layer.setIcon(layer.options.iconActive)
-    checkPointSignIconTransparent(layer)
-  }
+  layer.setSelected && layer.setSelected(true)
 }
 
 export const setLayerSelected = (layer, selected) => selected
@@ -149,116 +101,80 @@ export function activateLayer (newLayer, canEdit, exclusive) {
 }
 
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
-export function createTacticalSign (id, object, type, points, svg, color, map, anchor) {
-  let layer
-  switch (type) {
+export function createTacticalSign (data, map) {
+  const { type } = data
+  switch (+type) {
     case entityKind.POINT:
-      layer = createPoint(points, svg, anchor)
-      break
+      return createPoint(data)
     case entityKind.TEXT:
-      layer = createText(points, svg, anchor)
-      break
+      return createText(data)
     case entityKind.SEGMENT:
-      layer = createSegment(points, svgToJS(svg), color)
-      break
+      return createSegment(data)
     case entityKind.AREA:
-      layer = createArea(points)
-      break
+      return createArea(data)
     case entityKind.CURVE:
-      layer = createCurve(points)
-      break
+      return createCurve(data)
     case entityKind.POLYGON:
-      layer = createPolygon(points)
-      break
+      return createPolygon(data)
     case entityKind.POLYLINE:
-      layer = createPolyline(points)
-      break
+      return createPolyline(data)
     case entityKind.CIRCLE:
-      layer = createCircle(points, map)
-      break
+      return createCircle(data, map)
     case entityKind.RECTANGLE:
-      layer = createRectangle(points)
-      break
+      return createRectangle(data)
     case entityKind.SQUARE:
-      layer = createSquare(points, map)
-      break
+      return createSquare(data, map)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
+      return null
   }
-  return layer
 }
 
+const filterSet = (data) => {
+  const result = {}
+  data.forEach((k, v) => {
+    if (k !== '') {
+      result[v] = k
+    }
+  })
+  return result
+}
 export function createSearchMarker (point) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
   return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
 }
 
-function createPoint ([ point ], js, anchor) {
-  /* if (!anchor) {
-    anchor = getCentralPoint(js)
-  } */
-  /* if (color && js.svg.path) {
-    js.svg.path.map((path) => (path.$.stroke = color))
-  }
-  js.svg.$.xmlns = 'http://www.w3.org/2000/svg' */
-  // const svg = /* jsToSvg( */ js /* ) */
-  // let src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const icon = new L.SvgIcon({
-    // iconUrl: src,
-    svg: js,
-    iconAnchor: [ anchor.x, anchor.y ],
-    // iconSize: [ pointSignSize, pointSignSize ],
-    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
-  })
-  // setActiveColors(js.svg, activelayerColor, activeBackColor)
-  // svg = jsToSvg(js)
-  // src = `data:image/svg+xml;base64,${btoa(svg)}`
-  const iconActive = new L.SvgIcon({
-    // iconUrl: src,
-    svg: js,
-    postProcess: setActivePointSignColors,
-    iconAnchor: [ anchor.x, anchor.y ],
-    // iconSize: [ pointSignSize, pointSignSize ],
-    /* iconSize: [ js.svg.$.width, js.svg.$.height ], */
-  })
+function createPoint (data) {
+  const { code = '', point, attributes } = data
+  const symbol = new Symbol(code, filterSet(attributes))
+  const svg = symbol.asSVG()
+  const anchor = symbol.getAnchor()
+  // const { baseWidth, baseHeight } = symbol
+  const icon = new L.SvgIcon({ svg, anchor })
   const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
   setTimeout(() => transparentSvg(marker))
-  marker.options.iconNormal = icon
-  marker.options.iconActive = iconActive
   marker.options.tsType = entityKind.POINT
   return marker
 }
 
-function createText ([ point ], js, anchor) {
-  const icon = new L.SvgIcon({
-    svg: js,
-    iconAnchor: [ anchor.x, anchor.y ],
-  })
-  const iconActive = new L.SvgIcon({
-    svg: js,
-    postProcess: setActivePointSignColors,
-    iconAnchor: [ anchor.x, anchor.y ],
-  })
+function createText (data) {
+  const { point, attributes } = data
+  const svg = generateTextSymbolSvg(attributes)
+  const anchor = { x: 0, y: 0 }
+  const icon = new L.SvgIcon({ svg, anchor })
   const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
 
   setTimeout(() => transparentSvg(marker))
-  marker.options.iconNormal = icon
-  marker.options.iconActive = iconActive
   marker.options.tsType = entityKind.TEXT
   return marker
 }
 
 export function updateLayerIcons (layer, svg, anchor) {
-  layer.options.iconNormal = new L.SvgIcon({
+  const icon = new L.SvgIcon({
     svg,
     iconAnchor: [ anchor.x, anchor.y ],
   })
-  layer.options.iconActive = new L.SvgIcon({
-    svg,
-    iconAnchor: [ anchor.x, anchor.y ],
-    postProcess: setActivePointSignColors,
-  })
-  layer.setIcon(layer._selected ? layer.options.iconActive : layer.options.iconNormal)
+  layer.setIcon(icon)
   setTimeout(() => transparentSvg(layer))
 }
 
@@ -274,49 +190,36 @@ function transparentSvg (marker) {
   })
 }
 
-/* function setActiveColors (svg, stroke, fill) {
-  for (const key of Object.keys(svg)) {
-    if (key === '$') {
-      if (svg.$.stroke && svg.$.stroke !== 'none') {
-        svg.$.stroke = stroke
-      }
-      if (svg.$.fill && svg.$.fill !== 'none') {
-        svg.$.fill = fill
-      }
-    } else if (Array.isArray(svg[key])) {
-      svg[key].forEach((item) => setActiveColors(item, stroke, fill))
-    } else {
-      setActiveColors(svg[key], stroke, fill)
-    }
-  }
-} */
-
-function createSegment (segment, js, color) {
-  const options = prepareOptions(entityKind.SEGMENT, color, js)
-  return L.polyline(segment, options)
+function createSegment (data) {
+  const { geometry, attributes } = data
+  const points = geometry.toJS()
+  const { template, color } = attributes
+  const options = prepareOptions(entityKind.SEGMENT, color, template)
+  return L.polyline(points, options)
 }
 
-function createArea (area) {
+function createArea (data) {
   const options = prepareOptions(entityKind.AREA)
-  return L.polygon(area, options)
+  return L.polygon(data.geometry.toJS(), options)
 }
 
-function createCurve (curve) {
+function createCurve (data) {
   const options = prepareOptions(entityKind.CURVE)
-  return L.polyline(curve, options)
+  return L.polyline(data.geometry.toJS(), options)
 }
 
-function createPolygon (polygon) {
+function createPolygon (data) {
   const options = prepareOptions(entityKind.POLYGON)
-  return L.polygon(polygon, options)
+  return L.polygon(data.geometry.toJS(), options)
 }
 
-function createPolyline (polyline) {
+function createPolyline (data) {
   const options = prepareOptions(entityKind.POLYLINE)
-  return L.polyline(polyline, options)
+  return L.polyline(data.geometry.toJS(), options)
 }
 
-function createCircle ([ point1, point2 ], map) {
+function createCircle (data, map) {
+  const [ point1, point2 ] = data.geometry.toJS()
   if (!point1 || !point2) {
     console.error('createCircle: немає координат для круга')
     return
@@ -326,12 +229,13 @@ function createCircle ([ point1, point2 ], map) {
   return L.circle(point1, options)
 }
 
-function createRectangle (points) {
+function createRectangle (data) {
   const options = prepareOptions(entityKind.RECTANGLE)
-  return L.rectangle(points, options)
+  return L.rectangle(data.geometry.toJS(), options)
 }
 
-function createSquare ([ point1, point2 ], map) {
+function createSquare (data, map) {
+  let [ point1, point2 ] = data.geometry.toJS()
   const bounds = L.latLngBounds(point1, point2)
   point1 = bounds.getNorthWest()
   point2 = bounds.getSouthEast()
