@@ -1,3 +1,6 @@
+variables:
+  yarn: 'C:\Program Files (x86)\Yarn\bin'
+
 stages:
   - test
   - build
@@ -14,18 +17,17 @@ build:
   tags:
     - webmap
   script:
-    - echo "Building project..."
-    - dir
-    - yarn install
-    - del .env
-    - copy .env.production .env
-    - call npm run-script build
-    - rmdir /s /q build\explorerLite
-    - del /Q build\static\css\*.map
-    - del /Q build\static\js\*.map
-    - git commit -a -m "autocommit inc-version after build"
-    - git push
-    - echo "Done!"
+    - 'echo "Building project..."'
+    - '$yarn\yarn.cmd install'
+    - 'del .env'
+    - 'copy .env.production .env'
+    - 'call npm run-script build'
+    - 'rmdir /s /q build\explorerLite'
+    - 'del /Q build\static\css\*.map'
+    - 'del /Q build\static\js\*.map'
+    - 'git commit -a -m "autocommit inc-version after build"'
+    - 'git push'
+    - 'echo "Done!"'
   artifacts:
     paths:
       - build/index.html
@@ -37,12 +39,13 @@ deploy-qa:
   tags:
     - webmap
   script:
-    - echo "Deploying to QA environment..."
-    - echo "Done!"
+    - 'echo "Deploying to QA environment..."'
+    - 'echo "Done!"'
 
 deploy-zip:
   stage: deploy
   tags:
     - webmap
   script:
-    - echo "Packing bundle into ZIP file"
+    - 'echo "Packing bundle into ZIP file..."'
+    - 'echo "Done!"'
