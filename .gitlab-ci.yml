@@ -18,7 +18,7 @@ build:
     - webmap
   script:
     - 'echo "Building project..."'
-    - '$yarn\yarn.cmd install'
+    - '%yarn%\yarn.cmd install'
     - 'del .env'
     - 'copy .env.production .env'
     - 'call npm run-script build'
