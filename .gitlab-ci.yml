@@ -12,8 +12,21 @@ test:
 build:
   stage: build
   tags:
-  - webmap
-  script: echo "TODO build project"
+    - webmap
+  script:
+    - echo "Building project..."
+    - dir
+    - npm i
+    - npm ddp
+    - del .env
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - del /Q build\static\css\*.map
+    - del /Q build\static\js\*.map
+    - git commit -a -m "autocommit inc-version after build"
+    - git push
+    - echo "Done!"
   artifacts:
     paths:
       - build/index.html
@@ -23,11 +36,14 @@ build:
 deploy-qa:
   stage: deploy
   tags:
-  - webmap
-  script: echo "TODO deploy to QA environment"
+    - webmap
+  script:
+    - echo "Deploying to QA environment..."
+    - echo "Done!"
 
 deploy-zip:
   stage: deploy
   tags:
-  - webmap
-  script: echo "TODO pack bundle into ZIP file"
+    - webmap
+  script:
+    - echo "Packing bundle into ZIP file"
