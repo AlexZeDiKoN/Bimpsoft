@@ -16,8 +16,7 @@ build:
   script:
     - echo "Building project..."
     - dir
-    - npm i
-    - npm ddp
+    - yarn install
     - del .env
     - copy .env.production .env
     - call npm run-script build
