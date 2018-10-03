@@ -1,5 +1,5 @@
 variables:
-  yarn: '"C:\Program Files (x86)\Yarn\bin\yarn.cmd"'
+  yarn: '"C:\Program Files ^(x86^)\Yarn\bin\yarn.cmd"'
 
 stages:
   - test
