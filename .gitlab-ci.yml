@@ -39,7 +39,7 @@ deploy-qa:
   before_script:
     - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
     - 'powershell -noprofile %psCmd%'
-    - 'net use p: \\10.8.26.84 /u:dzvin_a 23$RFV5tgb /persistent:no'
+    - 'net use p: \\10.8.26.84\c$ /u:dzvin_a 23$RFV5tgb /persistent:no'
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 ========='
@@ -57,9 +57,7 @@ deploy-zip:
   script:
     - echo Packing bundle into ZIP file...
     - set jsonfile=package.json
-    - set "psCmd="add-type -As System.Web.Extensions;^
-    - $JSON = new-object Web.Script.Serialization.JavaScriptSerializer;^
-    - $JSON.DeserializeObject($input).version""
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - 'echo Version: %version%'
     - for /f "tokens=1,2,3 delims=/-. " %%x in ("%date%") do set d=%%z%%y%%x
