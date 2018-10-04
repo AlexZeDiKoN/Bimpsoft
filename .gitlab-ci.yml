@@ -29,8 +29,14 @@ build:
     expire_in: 1 month
     paths:
       - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
       - ./build/static/css/main.*.css
       - ./build/static/js/main.*.js
+      - ./build/static/media/*.*
 
 deploy-qa:
   stage: deploy
