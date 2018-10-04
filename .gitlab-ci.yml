@@ -2,6 +2,8 @@ variables:
   exe7z: 'C:\Tools\7z\7za.exe'
   releaseDir: 'C:\Release\WebMap'
   deployDir: 'MAKET_Everest\SpaceHub\WebMap'
+  remotePath: '\\10.8.26.84\c$'
+  gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
 stages:
   - test
@@ -32,7 +34,7 @@ build:
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
     - git commit -a -m "[ci skip] autocommit inc-version after build"
-    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop
+    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
   artifacts:
     expire_in: 1 month
@@ -54,7 +56,7 @@ deploy-qa:
   before_script:
     - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
     - 'powershell -noprofile %psCmd%'
-    - 'net use p: \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
+    - 'net use p: %remotePath% /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 ========='
