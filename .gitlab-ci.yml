@@ -11,6 +11,8 @@ stages:
 
 test:
   stage: test
+  only:
+    - develop
   tags:
     - webmap
   script:
@@ -21,6 +23,8 @@ test:
 
 build:
   stage: build
+  only:
+  - develop
   tags:
     - webmap
   script:
@@ -50,6 +54,8 @@ build:
 
 deploy-qa:
   stage: deploy
+  only:
+  - develop
   tags:
     - webmap
   before_script:
@@ -68,6 +74,8 @@ deploy-qa:
 
 deploy-zip:
   stage: deploy
+  only:
+  - develop
   tags:
     - webmap
   script:
