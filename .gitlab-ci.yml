@@ -7,7 +7,9 @@ test:
   stage: test
   tags:
     - webmap
-  script: echo "TODO auto-test"
+  script:
+    - echo "TODO auto-test"
+    - echo %date%
 
 build:
   stage: build
