@@ -14,43 +14,56 @@ build:
   tags:
     - webmap
   script:
-    - 'echo Building project...'
-    - 'call npm install'
-    - 'del .env'
-    - 'copy .env.production .env'
-    - 'call npm run-script build'
-    - 'rmdir /s /q build\explorerLite'
-    - 'del /Q build\static\css\*.map'
-    - 'del /Q build\static\js\*.map'
-    - 'git commit -a -m "[ci skip] autocommit inc-version after build"'
-    - 'git push http://tumak.aleksandr:2RQsxH5Ln5JwivqUHsG1@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop'
-    - 'echo Done!'
+    - echo Building project...
+    - call npm install
+    - del .env
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - del /Q build\static\css\*.map
+    - del /Q build\static\js\*.map
+    - git commit -a -m "[ci skip] autocommit inc-version after build"
+    - git push http://tumak.aleksandr:2RQsxH5Ln5JwivqUHsG1@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop
+    - echo Done!
   artifacts:
     expire_in: 1 month
     paths:
-      - './build/index.html'
-      - './build/static/css/main.*.css'
-      - './build/static/js/main.*.js'
+      - ./build/index.html
+      - ./build/static/css/main.*.css
+      - ./build/static/js/main.*.js
 
 deploy-qa:
   stage: deploy
   tags:
     - webmap
+  before_script:
+  - 'if (Test-Path p:\) {net use p: /delete}'
+  - 'net use p: \\10.8.26.84 /u:dzvin_a 23$RFV5tgb /persistent:no'
   script:
-    - 'echo Deploying to QA environment...'
-    - 'echo ========= Deploy: 84 ========='
-    - 'rmdir /s /q Z:\MAKET_Everest\SpaceHub\WebMap'
-    - 'xcopy /E /C /I /Q /H /R /Y build Z:\MAKET_Everest\SpaceHub\WebMap'
-    - 'echo ========= Deploy: 85 ========='
-    - 'rmdir /s /q C:\MAKET_Everest\SpaceHub\WebMap'
-    - 'xcopy /E /C /I /Q /H /R /Y build C:\MAKET_Everest\SpaceHub\WebMap'
-    - 'echo Done!'
+    - echo Deploying to QA environment...
+    - echo ========= Deploy: 84 =========
+    - rmdir /s /q P:\MAKET_Everest\SpaceHub\WebMap
+    - xcopy /E /C /I /Q /H /R /Y build P:\MAKET_Everest\SpaceHub\WebMap
+    - echo ========= Deploy: 85 =========
+    - rmdir /s /q C:\MAKET_Everest\SpaceHub\WebMap
+    - xcopy /E /C /I /Q /H /R /Y build C:\MAKET_Everest\SpaceHub\WebMap
+    - echo Done!
 
 deploy-zip:
   stage: deploy
   tags:
     - webmap
   script:
-    - 'echo Packing bundle into ZIP file...'
-    - 'dir'
-    - 'echo Done!'
+    - echo Packing bundle into ZIP file...
+    - set jsonfile=package.json
+    - set "psCmd="add-type -As System.Web.Extensions;^
+    - $JSON = new-object Web.Script.Serialization.JavaScriptSerializer;^
+    - $JSON.DeserializeObject($input).version""
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - echo Version: %version%
+    - for /f "tokens=1,2,3 delims=/-. " %%x in ("%date%") do set d=%%z%%y%%x
+    - for /f "tokens=1,2,3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
+    - cd build
+    - echo Zipping...
+    - "C:\Tools\7z\7za.exe" a -tzip "..\WebmapFrontend_v%version%_%d%_%t%.zip" "*"
+    - echo Done!
