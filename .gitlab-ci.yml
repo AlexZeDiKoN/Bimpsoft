@@ -37,8 +37,9 @@ deploy-qa:
   tags:
     - webmap
   before_script:
-  - 'if (Test-Path p:\) {net use p: /delete}'
-  - 'net use p: \\10.8.26.84 /u:dzvin_a 23$RFV5tgb /persistent:no'
+    - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
+    - 'powershell -noprofile %psCmd%'
+    - 'net use p: \\10.8.26.84 /u:dzvin_a 23$RFV5tgb /persistent:no'
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 ========='
