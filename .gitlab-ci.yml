@@ -2,7 +2,6 @@ variables:
   exe7z: 'C:\Tools\7z\7za.exe'
   releaseDir: 'C:\Release\WebMap'
   deployDir: 'MAKET_Everest\SpaceHub\WebMap'
-  remotePath: '\\10.8.26.84\c$'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
 stages:
@@ -56,7 +55,7 @@ deploy-qa:
   before_script:
     - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
     - 'powershell -noprofile %psCmd%'
-    - 'net use p: %remotePath% /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
+    - 'net use p: \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 ========='
