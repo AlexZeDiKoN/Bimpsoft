@@ -68,8 +68,11 @@ deploy-zip:
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - 'echo Version: %version%'
+    - 'echo %date%'
     - for /f "tokens=1,2,3 delims=/-. " %%x in ("%date%") do set d=%%z%%y%%x
     - for /f "tokens=1,2,3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
+    - 'echo %d%'
+    - 'echo %t%'
     - cd build
     - echo Zipping...
     - '"C:\Tools\7z\7za.exe" a -tzip "..\WebmapFrontend_v%version%_%d%_%t%.zip" "*"'
