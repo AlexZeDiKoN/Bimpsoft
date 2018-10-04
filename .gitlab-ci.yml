@@ -3,6 +3,7 @@ variables:
   releaseDir: 'C:\Release\WebMap'
   deployDir: 'MAKET_Everest\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
+  pwd: '$ADMIN_PASSWORD'
 
 stages:
   - test
@@ -19,6 +20,8 @@ test:
     - echo TODO auto-tests
     - echo %date%
     - echo %time%
+    - echo %$ADMIN_PASSWORD%
+    - echo %pwd%
     - echo Done
 
 build:
