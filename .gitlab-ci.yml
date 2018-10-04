@@ -1,5 +1,5 @@
 variables:
-  7z: 'C:\Tools\7z\7za.exe'
+  exe7z: 'C:\Tools\7z\7za.exe'
 
 stages:
   - test
@@ -14,7 +14,8 @@ test:
     - echo "TODO auto-test"
     - echo %date%
     - echo %time%
-    - echo %7z%
+    - echo %exe7z%
+    - echo %ACCESS_TOKEN%
 
 build:
   stage: build
