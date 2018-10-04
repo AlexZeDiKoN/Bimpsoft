@@ -1,5 +1,8 @@
 variables:
   exe7z: 'C:\Tools\7z\7za.exe'
+  releaseDir: 'C:\Release\WebMap'
+  deployDir: MAKET_Everest\SpaceHub\WebMap
+  remoteServer: '10.8.26.84'
 
 stages:
   - test
@@ -11,11 +14,11 @@ test:
   tags:
     - webmap
   script:
-    - echo "TODO auto-test"
+    - echo TODO auto-tests
     - echo %date%
     - echo %time%
-    - echo %exe7z%
-    - echo %ACCESS_TOKEN%
+    - set
+    - echo Done
 
 build:
   stage: build
@@ -31,8 +34,8 @@ build:
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
     - git commit -a -m "[ci skip] autocommit inc-version after build"
-    - git push http://tumak.aleksandr:2RQsxH5Ln5JwivqUHsG1@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop
-    - echo Done!
+    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@gitlab.intecracy.com/DZVIN/WebMap.git HEAD:develop
+    - echo Done
   artifacts:
     expire_in: 1 month
     paths:
@@ -53,16 +56,16 @@ deploy-qa:
   before_script:
     - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
     - 'powershell -noprofile %psCmd%'
-    - 'net use p: \\10.8.26.84\c$ /u:dzvin_a 23$RFV5tgb /persistent:no'
+    - 'net use p: \\%remoteServer%\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 ========='
-    - rmdir /s /q P:\MAKET_Everest\SpaceHub\WebMap
-    - xcopy /E /C /I /Q /H /R /Y build P:\MAKET_Everest\SpaceHub\WebMap
+    - rmdir /s /q P:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build P:\%deployDir%
     - 'echo ========= Deploy: 85 ========='
-    - rmdir /s /q C:\MAKET_Everest\SpaceHub\WebMap
-    - xcopy /E /C /I /Q /H /R /Y build C:\MAKET_Everest\SpaceHub\WebMap
-    - echo Done!
+    - rmdir /s /q C:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+    - echo Done
 
 deploy-zip:
   stage: deploy
@@ -80,5 +83,5 @@ deploy-zip:
     - echo %pack%
     - cd build
     - echo Zipping...
-    - '"C:\Tools\7z\7za.exe" a -tzip "C:\Release\WebMap\%pack%" "*"'
-    - echo Done!
+    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
+    - echo Done
