@@ -30,12 +30,14 @@ build:
   script:
     - echo Building project...
     - call npm install
-    - del .env
+    - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
     - rmdir /s /q build\explorerLite
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
+    - copy .env.backup .env
+    - del .env.backup
     - git commit -a -m "[ci skip] autocommit inc-version after build"
     - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
