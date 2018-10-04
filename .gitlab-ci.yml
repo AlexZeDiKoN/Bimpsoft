@@ -1,3 +1,6 @@
+variables:
+  7z: 'C:\Tools\7z\7za.exe'
+
 stages:
   - test
   - build
@@ -10,6 +13,8 @@ test:
   script:
     - echo "TODO auto-test"
     - echo %date%
+    - echo %time%
+    - echo %7z%
 
 build:
   stage: build
@@ -68,12 +73,11 @@ deploy-zip:
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - 'echo Version: %version%'
-    - 'echo %date%'
-    - for /f "tokens=1,2,3 delims=/-. " %%x in ("%date%") do set d=%%z%%y%%x
-    - for /f "tokens=1,2,3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
-    - 'echo %d%'
-    - 'echo %t%'
+    - for /f "tokens=2-4 delims=/-. " %%x in ("%date%") do set d=%%z%%x%%y
+    - for /f "tokens=1-3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
+    - set pack="WebmapFrontend_v%version%_%d%_%t%.zip"
+    - echo %pack%
     - cd build
     - echo Zipping...
-    - '"C:\Tools\7z\7za.exe" a -tzip "..\WebmapFrontend_v%version%_%d%_%t%.zip" "*"'
+    - '"C:\Tools\7z\7za.exe" a -tzip "C:\Release\WebMap\%pack%" "*"'
     - echo Done!
