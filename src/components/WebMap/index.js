@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Shortcuts } from 'react-shortcuts'
 import { notification } from 'antd'
+import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -33,7 +34,6 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import { colors } from '../../constants'
-import { generateTextSymbolSvg } from '../../utils'
 import WebmapApi from '../../server/api.webmap'
 import entityKind from './entityKind'
 import {
@@ -86,14 +86,6 @@ const tmp = `<svg
   />
 </svg>`
 // TODO: end
-
-const colorOf = (affiliation) => {
-  switch (affiliation) {
-    // TODO
-    default:
-      return 'black'
-  }
-}
 
 const miniMapOptions = {
   width: 200,
@@ -492,7 +484,6 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('zoomstart', this.updatePointSizes)
     this.map.on('moveend', this.moveHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
@@ -554,10 +545,12 @@ export default class WebMap extends Component {
     this.props.stopMeasuring()
   }
 
-  moveHandler = () => {
+  fireOnMove = debounce((pos) => this.props.onMove(pos), 500)
+
+  moveHandler = debounce(() => {
     const { lat, lng } = this.map.getCenter()
-    this.props.onMove({ lat, lng })
-  }
+    this.fireOnMove({ lat, lng })
+  }, 100)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
     if (item.id && item.object) {
@@ -589,14 +582,11 @@ export default class WebMap extends Component {
   }
 
   updatePointSizes = () => {
-    // const { pointSizes } = this.props
     if (this.map) {
-      const zoom = this.calcPointSize(this.map.getZoom())
-      this.map._container.style.setProperty('--point-sign-scale', zoom/100)
-
-      // this.map.eachLayer((layer) => {
-      //   layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
-      // })
+      const { pointSizes } = this.props
+      this.map.eachLayer((layer) => {
+        layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
+      })
     }
   }
 

@@ -34,15 +34,6 @@ export default L.Icon.extend({
     }
     const svg = parser.parseFromString(this.options.svg, 'image/svg+xml').rootElement
     setActivePointSignColors(svg)
-    const { anchor } = this.options
-    if (anchor) {
-      const { x, y } = anchor
-      svg.style.marginLeft = `calc(${-x}px * var(--point-sign-scale))`
-      svg.style.marginTop = `calc(${-y}px * var(--point-sign-scale))`
-    }
-    svg.style.width = `calc(${svg.getAttribute('width')}px * var(--point-sign-scale))`
-    svg.style.height = `calc(${svg.getAttribute('height')}px * var(--point-sign-scale))`
-    svg.style.willChange = 'width, height, transform, margin-left, margin-top'
     return svg
   },
 

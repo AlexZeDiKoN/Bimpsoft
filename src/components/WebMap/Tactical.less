@@ -11,3 +11,18 @@
   background: none;
   border: none;
 }
+
+.dzvin-marker {
+  will-change: transform;
+  &.dzvin-marker-selected {
+    .replace-stroke{
+      stroke: @svg-select-stroke;
+    }
+    .replace-fill{
+      fill: @svg-select-fill;
+    }
+    .replace-fill-as-stroke{
+      fill: @svg-select-stroke;
+    }
+  }
+}
