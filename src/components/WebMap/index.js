@@ -37,7 +37,7 @@ import { colors } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
 import entityKind from './entityKind'
 import {
-  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
+  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
   createSearchMarker, setLayerSelected,
 } from './Tactical'
 
@@ -484,7 +484,10 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('moveend', this.moveHandler)
+    this.map.on('zoomstart', this.zoomStartHandler)
+    this.map.on('zoomend', this.zoomEndHandler)
+    this.map.on('movestart', this.moveStartHandler)
+    this.map.on('moveend', this.moveEndHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
@@ -547,10 +550,26 @@ export default class WebMap extends Component {
 
   fireOnMove = debounce((pos) => this.props.onMove(pos), 500)
 
-  moveHandler = debounce(() => {
+  pauseUpdater = () => {
+    this.resumeUpdater.clear()
+    L.DzvinMarker.updater.pause()
+  }
+
+  resumeUpdater = debounce(() => {
+    L.DzvinMarker.updater.resume()
+  }, 1000)
+
+  zoomStartHandler = this.pauseUpdater
+
+  zoomEndHandler = this.resumeUpdater
+
+  moveStartHandler = this.pauseUpdater
+
+  moveEndHandler = debounce(() => {
     const { lat, lng } = this.map.getCenter()
     this.fireOnMove({ lat, lng })
-  }, 100)
+    this.resumeUpdater()
+  }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
     if (item.id && item.object) {
@@ -591,13 +610,11 @@ export default class WebMap extends Component {
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code, showAmplifiers ? filterSet(attributes) : {})
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+      })
+    }
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -712,7 +729,7 @@ export default class WebMap extends Component {
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId, pointSizes } = this.props
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId, pointSizes, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null } = attributes
 
@@ -726,6 +743,8 @@ export default class WebMap extends Component {
         layer.setLineType && layer.setLineType(lineType)
       }
       layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
+
+      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
   }
 

@@ -1,10 +1,8 @@
 /* global L */
 
 import './patch'
-import { Symbol } from '@DZVIN/milsymbol/dist/milsymbol'
 import { generateTextSymbolSvg } from '../../utils'
 import entityKind from './entityKind'
-import { svgToJS } from './patch/utils/SVG'
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
 export function initMapEvents (mymap, clickInterhandler) {
@@ -130,64 +128,31 @@ export function createTacticalSign (data, map) {
   }
 }
 
-const filterSet = (data) => {
-  const result = {}
-  data.forEach((k, v) => {
-    if (k !== '') {
-      result[v] = k
-    }
-  })
-  return result
-}
 export function createSearchMarker (point) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
   return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
 }
 
 function createPoint (data) {
-  const { code = '', point, attributes } = data
-  const symbol = new Symbol(code, filterSet(attributes))
-  const svg = symbol.asSVG()
-  const anchor = symbol.getAnchor()
-  // const { baseWidth, baseHeight } = symbol
-  const icon = new L.SvgIcon({ svg, anchor })
+  const { point } = data
+  const icon = new L.PointIcon({ data, zoom: 100 })
   const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
-  setTimeout(() => transparentSvg(marker))
   marker.options.tsType = entityKind.POINT
   return marker
 }
-
-function createText (data) {
-  const { point, attributes } = data
+const textFactory = (data) => {
+  const { attributes } = data
   const svg = generateTextSymbolSvg(attributes)
   const anchor = { x: 0, y: 0 }
-  const icon = new L.SvgIcon({ svg, anchor })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
+  return { svg, anchor }
+}
 
-  setTimeout(() => transparentSvg(marker))
+function createText (data) {
+  const { point } = data
+  const icon = new L.SvgIcon({ data, factory: textFactory })
+  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
   marker.options.tsType = entityKind.TEXT
   return marker
-}
-
-export function updateLayerIcons (layer, svg, anchor) {
-  const icon = new L.SvgIcon({
-    svg,
-    iconAnchor: [ anchor.x, anchor.y ],
-  })
-  layer.setIcon(icon)
-  setTimeout(() => transparentSvg(layer))
-}
-
-function transparentSvg (marker) {
-  if (!marker || !marker._icon) {
-    return
-  }
-  L.DomUtil.removeClass(marker._icon, 'leaflet-interactive')
-  marker.removeInteractiveTarget(marker._icon)
-  Array.from(marker._icon.children).forEach((child) => {
-    L.DomUtil.addClass(child, 'leaflet-interactive')
-    marker.addInteractiveTarget(child)
-  })
 }
 
 function createSegment (data) {
