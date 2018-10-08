@@ -1,13 +1,11 @@
 /* global L */
 
 import { setOpacity, setHidden } from './utils/helpers'
-import UpdateQueue from './UpdateQueue'
 
-const MIN_ZOOM = 0
-const MAX_ZOOM = 20
 
-const { update, initialize, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
-const parent = { update, initialize, _initIcon, _animateZoom, _removeIcon }
+
+const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
+const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
 
 const getDropShadowByColor = (color) => `drop-shadow(0px 0px 10px ${color}) drop-shadow(0px 0px 10px ${color}) drop-shadow(0px 0px 15px ${color})`
 
@@ -18,17 +16,6 @@ const setShadowColor = function (shadowColor) {
     el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
   }
 }
-const calcPointSize = (zoom, pointSizes) => {
-  const { min = 1, max = 200 } = pointSizes || {}
-  const result = zoom <= MIN_ZOOM
-    ? min
-    : zoom >= MAX_ZOOM
-      ? max
-      : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-  return Math.round(result)
-}
-
-const updater = new UpdateQueue()
 
 const DzvinMarker = L.Marker.extend({
   setOpacity,
@@ -44,30 +31,38 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
-  recreateIcon: function () {
-    const marker = this
-    const { icon } = marker.options
-    icon.options.zoom = marker._zoom
-    marker._initIcon()
-    marker.update()
+  optimize: function () {
+    const { icon } = this.options
+    if (icon.shouldRecreate(this.getElement())) {
+      this._reinitIcon()
+      this.update()
+      return true
+    }
+    return false
   },
   setScaleOptions: function (scaleOptions) {
-    const { pointSizes } = scaleOptions
-    this._pointSizes = pointSizes
-    this._zoom = calcPointSize(this._map.getZoom(), this._pointSizes)
+    const { icon } = this.options
+    icon.options.scaleOptions = scaleOptions
     this.update()
-    updater.addToUpdateQueue(this)
   },
   setShowAmplifiers: function (showAmplifiers) {
-    this._showAmplifiers = showAmplifiers
-    updater.addToUpdateQueue(this)
+    const { icon } = this.options
+    icon.options.showAmplifiers = showAmplifiers
   },
   _animateZoom: function (opt) {
-    this._zoom = calcPointSize(opt.zoom, this._pointSizes)
+    const { icon } = this.options
+    icon.options.zoom = opt.zoom
     parent._animateZoom.call(this, opt)
-    updater.addToUpdateQueue(this)
   },
   _initIcon: function () {
+
+  },
+  onAdd: function (map) {
+    const { icon } = this.options
+    icon.options.zoom = map.getZoom()
+    parent.onAdd.call(this, map)
+  },
+  _reinitIcon: function () {
     parent._initIcon.call(this)
     const el = this.getElement()
     el.style.willChange = 'transform'
@@ -85,7 +80,6 @@ const DzvinMarker = L.Marker.extend({
   },
   _removeIcon: function () {
     if (this._icon) {
-      updater.removeFromUpdateQueue(this)
       Array.from(this._icon.children).forEach((child) => {
         this.removeInteractiveTarget(child)
       })
@@ -113,20 +107,29 @@ const DzvinMarker = L.Marker.extend({
   },
 
   _setPos: function (pos) {
-    const { x, y } = pos
-    const zoom = this._zoom
-    const lastPos = this._icon._lastPos
-    if (!lastPos || lastPos.x !== x || lastPos.y !== y || lastPos.zoom !== zoom) {
-      const { anchor, size = 100 } = this._icon
-      const scale = this._zoom / size
-      this._icon._lastPos = { x, y, zoom }
-      L.DomUtil.setTransform(this._icon, { x: x - anchor.x * scale, y: y - anchor.y * scale }, scale)
-      this._zIndex = y + this.options.zIndexOffset
-      this._resetZIndex()
+    const el = this.getElement()
+    if (el) {
+      const { x, y } = pos
+      const { icon } = this.options
+      const { scaleOptions } = icon.options
+      const posState = el.posState
+      const isPosChanged =
+        !posState ||
+        posState.x !== x ||
+        posState.y !== y ||
+        posState.zoom !== this._map.getZoom() ||
+        posState.scaleOptions !== scaleOptions
+      if (isPosChanged) {
+        this._lastPos = { x, y }
+        const { anchor, scale: iconScale } = el.state
+        const currentScale = icon.getScale(this._map.getZoom(), scaleOptions)
+        const scale = currentScale / iconScale
+        L.DomUtil.setTransform(el, { x: x - anchor.x * scale, y: y - anchor.y * scale }, scale)
+        this._zIndex = y + this.options.zIndexOffset
+        this._resetZIndex()
+      }
     }
   },
 })
-
-DzvinMarker.updater = updater
 
 export default DzvinMarker

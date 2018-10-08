@@ -135,21 +135,15 @@ export function createSearchMarker (point) {
 
 function createPoint (data) {
   const { point } = data
-  const icon = new L.PointIcon({ data, zoom: 100 })
+  const icon = new L.PointIcon({ data })
   const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
   marker.options.tsType = entityKind.POINT
   return marker
 }
-const textFactory = (data) => {
-  const { attributes } = data
-  const svg = generateTextSymbolSvg(attributes)
-  const anchor = { x: 0, y: 0 }
-  return { svg, anchor }
-}
 
 function createText (data) {
   const { point } = data
-  const icon = new L.SvgIcon({ data, factory: textFactory })
+  const icon = new L.TextIcon({ data })
   const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
   marker.options.tsType = entityKind.TEXT
   return marker

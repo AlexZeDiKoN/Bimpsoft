@@ -1,58 +1,85 @@
+import debounce from 'debounce'
+
 const PART_SIZE = 5
-const TIMEOUT = 20
+const SLOW_TIMEOUT = 1000
+const QUICK_TIMEOUT = 20
 export default class UpdateQueue {
-  constructor () {
-    this.updateQueue = new Set()
+  constructor (map) {
+    this.map = map
+    this.map.on('layeradd', this.layeraddHandler)
+    this.map.on('layerremove', this.layerremoveHandler)
+    this.map.on('zoomstart', this.pauseUpdater)
+    this.map.on('zoomend', this.resumeUpdater)
+    this.map.on('movestart', this.pauseUpdater)
+    this.map.on('moveend', this.resumeUpdater)
+    this.timeout = null
     this.intervalId = null
+    this.layers = []
   }
 
-  addToUpdateQueue (obj) {
-    this.updateQueue.add(obj)
-    if (!this.isPaused && !this.intervalId) {
-      console.log('UpdateQueue: start')
-      this.intervalId = setInterval(this.processUpdateQueue.bind(this), TIMEOUT)
-    }
+  layeraddHandler = ({ layer }) => {
+    this.layers.unshift(layer)
+    this.setTimeout(QUICK_TIMEOUT)
   }
 
-  checkQueueForStop () {
-    if (this.intervalId && !this.updateQueue.size) {
-      console.log('UpdateQueue: stop')
-      clearInterval(this.intervalId)
-      this.intervalId = null
-    }
+  layerremoveHandler = ({ layer }) => {
+    this.layers = this.layers.filter((item) => item !== layer)
   }
 
-  removeFromUpdateQueue (obj) {
-    this.updateQueue.delete(obj)
-    this.checkQueueForStop()
+  pauseUpdater = () => {
+    this.resumeUpdater.clear()
+    this.pause()
   }
+
+  resumeUpdater = debounce(() => {
+    this.resume()
+  }, 1000)
 
   processUpdateQueue () {
-    let i = 0
-    for (const obj of this.updateQueue) {
-      obj.recreateIcon()
-      this.updateQueue.delete(obj)
-      if (++i > PART_SIZE) {
-        break
+    const layers = this.layers
+    const n = layers.length
+    let nProcessed = 0
+    for (let layerI = 0; layerI < n; layerI++) {
+      const layer = layers[layerI]
+      const isProcessed = layer.optimize && layer.optimize()
+      if (isProcessed) {
+        nProcessed++
+        if (nProcessed >= PART_SIZE) {
+          this.setTimeout(QUICK_TIMEOUT)
+          return
+        }
       }
     }
-    this.checkQueueForStop()
+    this.setTimeout(SLOW_TIMEOUT)
+  }
+
+  setTimeout (timeout) {
+    if (this.timeout !== timeout) {
+      console.log(`UpdateQueue: setTimeout ${timeout}`)
+      this.timeout = timeout
+      if (!this.isPaused) {
+        if (this.intervalId) {
+          clearInterval(this.intervalId)
+        }
+        this.intervalId = setInterval(this.processUpdateQueue.bind(this), this.timeout)
+      }
+    }
   }
 
   pause () {
+    this.isPaused = true
+    console.log('UpdateQueue: pause')
     if (this.intervalId) {
-      this.isPaused = true
-      console.log('UpdateQueue: pause')
       clearInterval(this.intervalId)
       this.intervalId = null
     }
   }
 
   resume () {
-    if (!this.intervalId && this.updateQueue.size) {
-      console.log('UpdateQueue: resume')
-      this.isPaused = false
-      this.intervalId = setInterval(this.processUpdateQueue.bind(this), TIMEOUT)
+    console.log('UpdateQueue: resume')
+    this.isPaused = false
+    if (!this.intervalId) {
+      this.intervalId = setInterval(this.processUpdateQueue.bind(this), this.timeout)
     }
   }
 }

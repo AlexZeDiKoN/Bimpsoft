@@ -8,7 +8,6 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
-import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
@@ -36,6 +35,7 @@ import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import { colors } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
 import entityKind from './entityKind'
+import UpdateQueue from './patch/UpdateQueue'
 import {
   initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
   createSearchMarker, setLayerSelected,
@@ -484,9 +484,6 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('zoomstart', this.zoomStartHandler)
-    this.map.on('zoomend', this.zoomEndHandler)
-    this.map.on('movestart', this.moveStartHandler)
     this.map.on('moveend', this.moveEndHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
@@ -495,6 +492,7 @@ export default class WebMap extends Component {
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectend', this.onBoxSelect)
     this.map.doubleClickZoom.disable()
+    this.updater = new UpdateQueue(this.map)
   }
 
   calcPointSize = (zoom) => {
@@ -548,28 +546,12 @@ export default class WebMap extends Component {
     this.props.stopMeasuring()
   }
 
-  fireOnMove = debounce((pos) => this.props.onMove(pos), 500)
+  fireOnMove = debounce((pos) => this.props.onMove(pos), 300)
 
-  pauseUpdater = () => {
-    this.resumeUpdater.clear()
-    L.DzvinMarker.updater.pause()
-  }
-
-  resumeUpdater = debounce(() => {
-    L.DzvinMarker.updater.resume()
-  }, 1000)
-
-  zoomStartHandler = this.pauseUpdater
-
-  zoomEndHandler = this.resumeUpdater
-
-  moveStartHandler = this.pauseUpdater
-
-  moveEndHandler = debounce(() => {
+  moveEndHandler = () => {
     const { lat, lng } = this.map.getCenter()
     this.fireOnMove({ lat, lng })
-    this.resumeUpdater()
-  }, 500)
+  }
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
     if (item.id && item.object) {
@@ -604,7 +586,7 @@ export default class WebMap extends Component {
     if (this.map) {
       const { pointSizes } = this.props
       this.map.eachLayer((layer) => {
-        layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
+        layer.setScaleOptions && layer.setScaleOptions(pointSizes)
       })
     }
   }
@@ -742,7 +724,7 @@ export default class WebMap extends Component {
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
       }
-      layer.setScaleOptions && layer.setScaleOptions({ pointSizes })
+      layer.setScaleOptions && layer.setScaleOptions(pointSizes)
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
