@@ -11,7 +11,6 @@ import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
-import SubordinationLevel from '../../constants/SubordinationLevel'
 import i18n from '../../i18n'
 import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
@@ -32,7 +31,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -53,7 +52,7 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 }
 
 const switchScaleOptions = {
-  scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
+  scales: SCALES,
   splitScale: true,
   ratioCustomItemText: '1: інший...',
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
@@ -202,6 +201,40 @@ const filterObj = (data) => {
   return Object.keys(data).length ? data : null
 }
 
+const setScaleOptions = (layer, params) => {
+  if (!layer.object || !layer.object.type) {
+    return
+  }
+  switch (+layer.object.type) {
+    case entityKind.POINT:
+      layer.setScaleOptions({
+        min: params[paramsNames.POINT_SIZE_MIN],
+        max: params[paramsNames.POINT_SIZE_MAX],
+      })
+      break
+    case entityKind.TEXT:
+      layer.setScaleOptions({
+        min: params[paramsNames.TEXT_SIZE_MIN],
+        max: params[paramsNames.TEXT_SIZE_MAX],
+      })
+      break
+    case entityKind.SEGMENT:
+    case entityKind.AREA:
+    case entityKind.CURVE:
+    case entityKind.POLYGON:
+    case entityKind.POLYLINE:
+    case entityKind.CIRCLE:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      // todo:
+      // layer.setScaleOptions({
+      //   min: params[paramsNames.LINE_SIZE_MIN],
+      //   max: params[paramsNames.LINE_SIZE_MAX],
+      // })
+      break
+  }
+}
+
 export default class WebMap extends Component {
   static propTypes = {
     // from Redux store
@@ -230,10 +263,7 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
-    pointSizes: PropTypes.shape({
-      min: PropTypes.number,
-      max: PropTypes.number,
-    }),
+    params: PropTypes.object,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
@@ -410,9 +440,9 @@ export default class WebMap extends Component {
         tilePane.style.opacity = nextProps.backOpacity / 100
       }
     }
-    // pointSizes
-    if (nextProps.pointSizes !== this.props.pointSizes && this.map && this.map._container) {
-      this.updatePointSizes()
+    // params
+    if (nextProps.params !== this.props.params && this.map && this.map._container) {
+      this.updateScaleOptions(nextProps.params)
     }
     return false
   }
@@ -495,16 +525,6 @@ export default class WebMap extends Component {
     this.updater = new UpdateQueue(this.map)
   }
 
-  calcPointSize = (zoom) => {
-    const { min, max } = this.props.pointSizes
-    const result = zoom <= MIN_ZOOM
-      ? min
-      : zoom >= MAX_ZOOM
-        ? max
-        : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-    return Math.round(result)
-  }
-
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
     const { onSelectedList, layer: activeLayerId, layersById } = this.props
     const selectedIds = []
@@ -582,11 +602,10 @@ export default class WebMap extends Component {
     }
   }
 
-  updatePointSizes = () => {
+  updateScaleOptions = (params) => {
     if (this.map) {
-      const { pointSizes } = this.props
       this.map.eachLayer((layer) => {
-        layer.setScaleOptions && layer.setScaleOptions(pointSizes)
+        setScaleOptions(layer, params)
       })
     }
   }
@@ -711,7 +730,7 @@ export default class WebMap extends Component {
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId, pointSizes, showAmplifiers } = this.props
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null } = attributes
 
@@ -724,7 +743,8 @@ export default class WebMap extends Component {
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
       }
-      layer.setScaleOptions && layer.setScaleOptions(pointSizes)
+
+      setScaleOptions(layer, params)
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
