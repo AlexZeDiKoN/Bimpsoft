@@ -1,3 +1,9 @@
+variables:
+  exe7z: 'C:\Tools\7z\7za.exe'
+  releaseDir: 'C:\Release\WebMap'
+  deployDir: 'MAKET_Everest\SpaceHub\WebMap'
+  gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
+
 stages:
   - test
   - build
@@ -5,45 +11,88 @@ stages:
 
 test:
   stage: test
+  only:
+    - develop
   tags:
     - webmap
-  script: echo "TODO auto-test"
+  script:
+    - echo TODO auto-tests
+    - echo %date%
+    - echo %time%
+    - echo Done
 
 build:
   stage: build
+  only:
+  - develop
   tags:
     - webmap
   script:
-    - 'echo "Building project..."'
-    - 'call npm install'
-    - 'del .env'
-    - 'copy .env.production .env'
-    - 'call npm run-script build'
-    - 'rmdir /s /q build\explorerLite'
-    - 'del /Q build\static\css\*.map'
-    - 'del /Q build\static\js\*.map'
-    - 'git commit -a -m "autocommit inc-version after build"'
-    - 'git push origin HEAD:develop'
-    - 'echo "Done!"'
+    - echo Building project...
+    - call npm install
+    - copy .env .env.backup
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - copy .env.backup .env
+    - del .env.backup
+    - git commit -a -m "[ci skip] autocommit inc-version after build"
+    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - echo Done
   artifacts:
     expire_in: 1 month
     paths:
-      - './build/index.html'
-      - './build/static/css/main.*.css'
-      - './build/static/js/main.*.js'
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
 
 deploy-qa:
   stage: deploy
+  only:
+  - develop
   tags:
     - webmap
+  before_script:
+    - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
+    - 'powershell -noprofile %psCmd%'
+    - 'net use p: \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
   script:
-    - 'echo "Deploying to QA environment..."'
-    - 'echo "Done!"'
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 84 ========='
+    - rmdir /s /q P:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build P:\%deployDir%
+    - 'echo ========= Deploy: 85 ========='
+    - rmdir /s /q C:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+    - echo Done
 
 deploy-zip:
   stage: deploy
+  only:
+  - develop
   tags:
     - webmap
   script:
-    - 'echo "Packing bundle into ZIP file..."'
-    - 'echo "Done!"'
+    - echo Packing bundle into ZIP file...
+    - git fetch
+    - git checkout origin/develop -- package.json
+    - set jsonfile=package.json
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - 'echo Version: %version%'
+    - for /f "tokens=2-4 delims=/-. " %%x in ("%date%") do set d=%%z%%x%%y
+    - for /f "tokens=1-3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
+    - set pack="WebmapFrontend_v%version%_%d%_%t%.zip"
+    - echo %pack%
+    - del /Q build\static\css\*.map
+    - del /Q build\static\js\*.map
+    - cd build
+    - echo Zipping...
+    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
+    - echo Done
