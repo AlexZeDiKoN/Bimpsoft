@@ -6,12 +6,9 @@ import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
-import { paramsNames, SCALES } from '../../constants'
+import { paramsNames } from '../../constants'
 
-const { default: Form, FormRow, FormDarkPart } = components.form
-
-const MIN_SCALE_NAME = `1:${Math.min(...SCALES)}`
-const MAX_SCALE_NAME = `1:${Math.max(...SCALES)}`
+const { default: Form, FormRow, FormDarkPart, FormDivider } = components.form
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
@@ -71,20 +68,20 @@ export default class SettingsForm extends React.Component {
           <FormRow label={i18n.AMPLIFIERS}>
             <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
           </FormRow>
+          <FormRow label={i18n.POINT_SIGN_SIZE}/>
           <FormDarkPart>
-            <FormRow label={i18n.POINT_SIGN_SIZE}></FormRow>
-            <FormRow label={MAX_SCALE_NAME}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
-            <FormRow label={MIN_SCALE_NAME}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
           </FormDarkPart>
+          <FormRow label={i18n.TEXT_SIGN_SIZE}/>
           <FormDarkPart>
-            <FormRow label={i18n.TEXT_SIGN_SIZE}></FormRow>
-            <FormRow label={MAX_SCALE_NAME}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
-            <FormRow label={MIN_SCALE_NAME}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
           </FormDarkPart>
+          <FormRow label={i18n.LINE_SIGN_SIZE}/>
           <FormDarkPart>
-            <FormRow label={i18n.LINE_SIGN_SIZE}></FormRow>
-            <FormRow label={MAX_SCALE_NAME}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
-            <FormRow label={MIN_SCALE_NAME}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
           </FormDarkPart>
           {/* <FormRow label={i18n.GENERALIZATION}> */}
           {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
