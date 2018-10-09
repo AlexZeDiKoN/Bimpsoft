@@ -32,7 +32,7 @@ export default class SettingsForm extends React.Component {
   changePointSizeHandler = (value) => {
     const [ min, max ] = value
 
-    debounce(this.props.onChangePointSizes, 333, true)(min, max)
+    this.props.onChangePointSizes(min, max)
   }
 
   render () {

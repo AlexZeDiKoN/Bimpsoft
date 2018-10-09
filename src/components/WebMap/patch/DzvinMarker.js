@@ -7,7 +7,7 @@ import { setOpacity, setHidden } from './utils/helpers'
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
 
-const getDropShadowByColor = (color) => `drop-shadow(0px 0px 10px ${color}) drop-shadow(0px 0px 10px ${color}) drop-shadow(0px 0px 15px ${color})`
+const getDropShadowByColor = (color) => `drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 3px ${color})`
 
 const setShadowColor = function (shadowColor) {
   this._shadowColor = shadowColor
@@ -94,8 +94,8 @@ const DzvinMarker = L.Marker.extend({
       if (this._opacity !== undefined) {
         el.style.opacity = this._opacity
       }
-      if (this.lastshadowColor !== this._shadowColor) {
-        this.lastshadowColor = this._shadowColor
+      if (el.lastshadowColor !== this._shadowColor) {
+        el.lastshadowColor = this._shadowColor
         el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
       }
 
