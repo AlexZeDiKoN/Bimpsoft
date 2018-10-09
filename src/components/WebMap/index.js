@@ -182,16 +182,6 @@ function tacticalSignEquals (object, data) {
   // TODO інші властивості
 }
 
-const filterSet = (data) => {
-  const result = {}
-  data.forEach((k, v) => {
-    if (k !== '') {
-      result[v] = k
-    }
-  })
-  return result
-}
-
 const filterObj = (data) => {
   for (const key of Object.keys(data)) {
     if (data[key] === '') {
