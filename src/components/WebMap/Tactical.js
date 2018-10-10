@@ -1,7 +1,6 @@
 /* global L */
 
 import './patch'
-import { generateTextSymbolSvg } from '../../utils'
 import entityKind from './entityKind'
 
 // ------------------------ Ініціалізація подій карти ------------------------------------------------------------------

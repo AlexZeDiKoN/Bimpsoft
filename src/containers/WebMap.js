@@ -5,7 +5,6 @@ import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
-import { pointSizesSelector } from '../store/selectors/params'
 import { canEditSelector } from '../store/canEditSelector'
 
 const WebMap = connect(

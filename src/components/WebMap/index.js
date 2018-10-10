@@ -222,6 +222,7 @@ const setScaleOptions = (layer, params) => {
       //   max: params[paramsNames.LINE_SIZE_MAX],
       // })
       break
+    default:
   }
 }
 

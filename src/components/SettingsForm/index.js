@@ -8,7 +8,7 @@ import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
 import { paramsNames } from '../../constants'
 
-const { default: Form, FormRow, FormDarkPart, FormDivider } = components.form
+const { default: Form, FormRow, FormDarkPart } = components.form
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
