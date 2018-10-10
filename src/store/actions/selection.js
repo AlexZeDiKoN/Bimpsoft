@@ -2,6 +2,7 @@ import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { withNotification } from './asyncAction'
 import { deleteObject, addObject } from './webMap'
+import { canEditSelector } from '../selectors/canEditSelector'
 
 export const SET_SELECTION = action('SET_SELECTION')
 export const UPDATE_SELECTION = action('UPDATE_SELECTION')
@@ -11,6 +12,8 @@ export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
 export const HIDE_FORM = action('HIDE_FORM')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
+export const SHOW_DELETE_FORM = action('SHOW_DELETE_FORM')
+export const HIDE_DELETE_FORM = action('HIDE_DELETE_FORM')
 export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
@@ -79,10 +82,15 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
 })
 
 export const copy = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const canEdit = canEditSelector(state)
+  if (!canEdit) {
+    return
+  }
   const {
     selection: { list = null },
     webMap: { objects },
-  } = getState()
+  } = state
 
   const clipboardObjects = []
   if (Array.isArray(list)) {
@@ -108,10 +116,15 @@ export const cut = () => withNotification((dispatch) => {
 })
 
 export const paste = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const canEdit = canEditSelector(state)
+  if (!canEdit) {
+    return
+  }
   const {
     selection: { clipboard },
     layers: { selectedId: layer = null },
-  } = getState()
+  } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
       for (const clipboardObject of clipboard) {
@@ -124,10 +137,19 @@ export const paste = () => withNotification((dispatch, getState) => {
 })
 
 export const deleteSelected = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const canEdit = canEditSelector(state)
+  if (!canEdit) {
+    return
+  }
   const {
     selection: { list = [] },
-  } = getState()
+  } = state
   for (const id of list) {
     dispatch(deleteObject(id))
   }
+})
+
+export const showDeleteForm = () => ({
+  type: SHOW_DELETE_FORM,
 })

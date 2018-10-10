@@ -42,22 +42,6 @@ export function initMapEvents (mymap, clickInterhandler) {
       clearSelectedList(mymap)
     }
   })
-  L.DomEvent.on(mymap._container, 'keyup', (event) => {
-    if (event.code === 'Delete' && mymap.pm.activeLayer) { // && confirm('Вилучити тактичний знак?')
-      const layer = mymap.pm.activeLayer
-      if (layer._map.listens('deletelayer')) {
-        layer._map.fire('deletelayer', layer)
-      } else {
-        clearActiveLayer(mymap)
-        layer._map.removeLayer(layer)
-        // TODO: delete all objects in selected list
-      }
-    } else if (event.code === 'Space' && mymap.pm.activeLayer) {
-      clearActiveLayer(mymap)
-    } else if (event.code === 'Escape') {
-      mymap.fire('escape')
-    }
-  })
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------

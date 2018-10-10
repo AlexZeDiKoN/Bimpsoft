@@ -10,3 +10,21 @@ export const ADD_SQUARE = 'ADD_SQUARE'
 export const ADD_TEXT = 'ADD_TEXT'
 // TODO: прибрати це після тестування
 export const SELECT_PRINT_AREA = 'SELECT_PRINT_AREA'
+
+export const DELETE = 'DELETE'
+export const COPY = 'COPY'
+export const PASTE = 'PASTE'
+export const CUT = 'CUT'
+export const ESC = 'ESC'
+export const SPACE = 'SPACE'
+export const ENTER = 'ENTER'
+
+export const keyMap = {
+  DELETE: [ 'del', 'backspace' ],
+  COPY: 'ctrl+c',
+  ENTER: 'enter',
+  PASTE: 'ctrl+v',
+  CUT: 'ctrl+x',
+  ESC: 'esc',
+  SPACE: 'space',
+}

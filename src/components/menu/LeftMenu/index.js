@@ -2,6 +2,7 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import { notification } from 'antd/lib/index'
+import { HotKeys } from 'react-hotkeys'
 import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
@@ -11,6 +12,7 @@ import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
+import { shortcuts } from '../../../constants'
 
 const iconNames = components.icons.names
 
@@ -24,7 +26,8 @@ export default class LeftMenu extends React.Component {
     isMeasureOn: PropTypes.bool,
     newShape: PropTypes.object,
     isShowSources: PropTypes.bool,
-    mapSources: PropTypes.element,
+    mapSourcesComponent: PropTypes.any,
+    deleteSelectionComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
@@ -73,6 +76,16 @@ export default class LeftMenu extends React.Component {
     }
   }
 
+  handleShortcuts = {
+    [shortcuts.DELETE]: () => this.props.onDelete(),
+    [shortcuts.COPY]: () => this.props.onCopy(),
+    [shortcuts.CUT]: () => this.props.onCut(),
+    [shortcuts.PASTE]: () => this.props.onPaste(),
+    [shortcuts.ESC]: () => {
+      // todo: close submenu
+    },
+  }
+
   render () {
     const {
       isEditMode,
@@ -90,7 +103,8 @@ export default class LeftMenu extends React.Component {
       onCut,
       onPaste,
       onDelete,
-      mapSources,
+      mapSourcesComponent: MapSourcesComponent,
+      deleteSelectionComponent: DeleteSelectionComponent,
       isShowSources,
       layerName,
     } = this.props
@@ -98,7 +112,11 @@ export default class LeftMenu extends React.Component {
     const subordinationLevelViewData = SubordinationLevel.list.find((item) => item.value === subordinationLevel)
 
     return (
-      <div className='left-menu'>
+      <HotKeys
+        keyMap={shortcuts.keyMap}
+        handlers={this.handleShortcuts}
+        className='left-menu'
+      >
         <IconButton
           title={i18n.EDIT_MODE}
           icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
@@ -151,7 +169,7 @@ export default class LeftMenu extends React.Component {
           hoverIcon={iconNames.MAP_HOVER}
           onClick={onClickMapSource}
         >
-          {mapSources}
+          <MapSourcesComponent/>
         </IconButton>
         <IconButton
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
@@ -213,11 +231,13 @@ export default class LeftMenu extends React.Component {
               icon={iconNames.DELETE_DEFAULT}
               hoverIcon={iconNames.DELETE_HOVER}
               onClick={onDelete}
-            />
+            >
+              <DeleteSelectionComponent />
+            </IconButton>
           </Fragment>
         )}
         <div className="menu-layer-name">{layerName}</div>
-      </div>
+      </HotKeys>
     )
   }
 }

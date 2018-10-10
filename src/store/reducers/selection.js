@@ -25,6 +25,9 @@ export default function reducer (state = initState, action) {
     case actions.SHOW_EDIT_FORM: {
       return { ...state, showForm: 'edit' }
     }
+    case actions.SHOW_DELETE_FORM: {
+      return { ...state, showForm: 'delete' }
+    }
     case actions.HIDE_FORM: {
       return { ...state, showForm: null, newShape: {}, data: {} }
     }

@@ -4,6 +4,7 @@ import * as viewModesKeys from './viewModesKeys'
 import MapSources from './MapSources'
 import Align from './Align'
 import * as colors from './colors'
+import * as shortcuts from './shortcuts'
 
 export {
   CoordinatesTypes,
@@ -12,4 +13,5 @@ export {
   colors,
   Align,
   viewModesKeys,
+  shortcuts,
 }

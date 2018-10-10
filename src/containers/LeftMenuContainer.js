@@ -84,7 +84,7 @@ const mapDispatchToProps = {
   onCut: selectionActions.cut,
   onCopy: selectionActions.copy,
   onPaste: selectionActions.paste,
-  onDelete: selectionActions.deleteSelected,
+  onDelete: selectionActions.showDeleteForm,
   onSubordinationLevelClose: () => viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel),
   onNewShapeChange: (newShape) => selectionActions.setNewShape(newShape),
   onSubordinationLevelChange: (subordinationLevel) => (dispatch) => {

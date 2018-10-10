@@ -12,6 +12,7 @@ import {
   // TemplatesListContainer,
   SettingsFormContainer,
   MapsSourcesContainer,
+  DeleteSelectionContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -20,13 +21,15 @@ import ModalContainer from '../../components/common/ModalContainer'
 
 export default class Main extends React.Component {
   render () {
-    const mapSources = (<MapsSourcesContainer/>)
     return (
       <div id="main" className="main">
         <div className="header">
           <div className="header-top">
             <div className="header-left">
-              <LeftMenuContainer mapSources={mapSources}/>
+              <LeftMenuContainer
+                mapSourcesComponent={MapsSourcesContainer}
+                deleteSelectionComponent={DeleteSelectionContainer}
+              />
             </div>
             <div className="header-right">
               <RightMenuContainer/>

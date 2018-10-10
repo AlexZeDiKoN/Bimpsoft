@@ -32,7 +32,10 @@ const WebMap = connect(
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(webMapActions.addObject(object)),
-    deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
+    onDelete: () => dispatch(selectionActions.showDeleteForm()),
+    onCut: () => dispatch(selectionActions.cut()),
+    onCopy: () => dispatch(selectionActions.copy()),
+    onPaste: () => dispatch(selectionActions.paste()),
     editObject: () => dispatch(selectionActions.showEditForm),
     updateObject: (object) => dispatch(webMapActions.updateObject(object)),
     updateObjectGeometry: (object) => dispatch(webMapActions.updateObjectGeometry(object)),
