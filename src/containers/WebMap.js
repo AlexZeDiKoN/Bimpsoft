@@ -5,7 +5,6 @@ import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
-import { pointSizesSelector } from '../store/selectors/params'
 import { canEditSelector } from '../store/canEditSelector'
 
 const WebMap = connect(
@@ -27,7 +26,7 @@ const WebMap = connect(
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
-    pointSizes: pointSizesSelector(state), // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
+    params: state.params,
     isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({

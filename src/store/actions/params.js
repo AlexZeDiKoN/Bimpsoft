@@ -1,4 +1,6 @@
 import { action } from '../../utils/services'
+import { ApiError } from '../../constants/errors'
+import i18n from '../../i18n'
 import { asyncAction } from './index'
 
 export const actionNames = {
@@ -28,10 +30,13 @@ export const loadParam = (name) =>
 
 export const saveParam = (name, value) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
-    const param = await webmapApi.paramSet(name, value)
-    value = param ? param.value : null
     dispatch({
       type: actionNames.LOAD_PARAM,
       payload: { name, value },
     })
+    try {
+      await webmapApi.paramSet(name, value)
+    } catch (e) {
+      throw new ApiError(i18n.ERROR_WHEN_SAVE_PARAMETER, i18n.SERVER_WARNING, true)
+    }
   })

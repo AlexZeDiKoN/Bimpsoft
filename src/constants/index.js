@@ -5,6 +5,8 @@ import MapSources from './MapSources'
 import Align from './Align'
 import * as colors from './colors'
 import * as shortcuts from './shortcuts'
+import { SCALES } from './scales'
+import * as paramsNames from './params'
 
 export {
   CoordinatesTypes,
@@ -14,4 +16,6 @@ export {
   Align,
   viewModesKeys,
   shortcuts,
+  paramsNames,
+  SCALES,
 }

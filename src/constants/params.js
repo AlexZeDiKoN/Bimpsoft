@@ -1,2 +1,6 @@
 export const POINT_SIZE_MIN = 'point_size_min'
 export const POINT_SIZE_MAX = 'point_size_max'
+export const TEXT_SIZE_MIN = 'text_size_min'
+export const TEXT_SIZE_MAX = 'text_size_max'
+export const LINE_SIZE_MIN = 'line_size_min'
+export const LINE_SIZE_MAX = 'line_size_max'
