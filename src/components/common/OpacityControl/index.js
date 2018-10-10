@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import './style.css'
 const { icons: { Icon } } = components
 export default class OpacityControl extends React.Component {
+  changeHandler = ({ target: { value } }) => {
+    this.props.onChange(parseFloat(value))
+  }
+
   render () {
-    const onChange = this.props.onChange ? (e) => {
-      this.props.onChange(parseFloat(e.target.value))
-    } : null
     return (
       <div className={'opacity-control ' + this.props.className}>
         <Icon className="opacity-control-icon" icon={this.props.icon}/>
@@ -18,7 +19,7 @@ export default class OpacityControl extends React.Component {
           max="100"
           value={this.props.opacity}
           className="opacity-control-input"
-          onChange={onChange}
+          onChange={this.changeHandler}
         />
       </div>
     )

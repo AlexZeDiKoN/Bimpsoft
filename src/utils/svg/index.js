@@ -17,7 +17,7 @@ const generateTextSymbolSvg = ({
   anchorLineWithArrow,
   magnification,
   texts = [],
-}) => {
+}, scale = 100) => {
   let maxWidth = 0
   let fullHeight = 0
   const textsViewData = texts.map(({ text, bold, size, align, underline }) => {
@@ -25,6 +25,7 @@ const generateTextSymbolSvg = ({
     if (!size) {
       size = 12
     }
+    size *= scale / 100
     const font = `${bold} ${size}px Roboto`
     const width = getTextWidth(text, font)
     const height = lineCoef * size

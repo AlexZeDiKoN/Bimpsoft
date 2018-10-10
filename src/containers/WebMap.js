@@ -27,7 +27,7 @@ const WebMap = connect(
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
-    pointSizes: pointSizesSelector(state), // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
+    params: state.params,
     isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({

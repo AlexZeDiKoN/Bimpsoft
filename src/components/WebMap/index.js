@@ -3,15 +3,14 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Shortcuts } from 'react-shortcuts'
 import { notification } from 'antd'
+import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
-import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
-import SubordinationLevel from '../../constants/SubordinationLevel'
 import i18n from '../../i18n'
 import {
   ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
@@ -32,12 +31,12 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors } from '../../constants'
-import { generateTextSymbolSvg } from '../../utils'
+import { colors, SCALES, SubordinationLevel, paramsNames } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
 import entityKind from './entityKind'
+import UpdateQueue from './patch/UpdateQueue'
 import {
-  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
+  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
   createSearchMarker, setLayerSelected,
 } from './Tactical'
 
@@ -53,7 +52,7 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 }
 
 const switchScaleOptions = {
-  scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
+  scales: SCALES,
   splitScale: true,
   ratioCustomItemText: '1: інший...',
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
@@ -86,14 +85,6 @@ const tmp = `<svg
   />
 </svg>`
 // TODO: end
-
-const colorOf = (affiliation) => {
-  switch (affiliation) {
-    // TODO
-    default:
-      return 'black'
-  }
-}
 
 const miniMapOptions = {
   width: 200,
@@ -191,16 +182,6 @@ function tacticalSignEquals (object, data) {
   // TODO інші властивості
 }
 
-const filterSet = (data) => {
-  const result = {}
-  data.forEach((k, v) => {
-    if (k !== '') {
-      result[v] = k
-    }
-  })
-  return result
-}
-
 const filterObj = (data) => {
   for (const key of Object.keys(data)) {
     if (data[key] === '') {
@@ -208,6 +189,40 @@ const filterObj = (data) => {
     }
   }
   return Object.keys(data).length ? data : null
+}
+
+const setScaleOptions = (layer, params) => {
+  if (!layer.object || !layer.object.type) {
+    return
+  }
+  switch (+layer.object.type) {
+    case entityKind.POINT:
+      layer.setScaleOptions({
+        min: params[paramsNames.POINT_SIZE_MIN],
+        max: params[paramsNames.POINT_SIZE_MAX],
+      })
+      break
+    case entityKind.TEXT:
+      layer.setScaleOptions({
+        min: params[paramsNames.TEXT_SIZE_MIN],
+        max: params[paramsNames.TEXT_SIZE_MAX],
+      })
+      break
+    case entityKind.SEGMENT:
+    case entityKind.AREA:
+    case entityKind.CURVE:
+    case entityKind.POLYGON:
+    case entityKind.POLYLINE:
+    case entityKind.CIRCLE:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      // todo:
+      // layer.setScaleOptions({
+      //   min: params[paramsNames.LINE_SIZE_MIN],
+      //   max: params[paramsNames.LINE_SIZE_MAX],
+      // })
+      break
+  }
 }
 
 export default class WebMap extends Component {
@@ -238,10 +253,7 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
-    pointSizes: PropTypes.shape({
-      min: PropTypes.number,
-      max: PropTypes.number,
-    }),
+    params: PropTypes.object,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
@@ -418,9 +430,9 @@ export default class WebMap extends Component {
         tilePane.style.opacity = nextProps.backOpacity / 100
       }
     }
-    // pointSizes
-    if (nextProps.pointSizes !== this.props.pointSizes && this.map && this.map._container) {
-      this.updatePointSizes()
+    // params
+    if (nextProps.params !== this.props.params && this.map && this.map._container) {
+      this.updateScaleOptions(nextProps.params)
     }
     return false
   }
@@ -492,8 +504,7 @@ export default class WebMap extends Component {
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('zoomend', this.updatePointSizes)
-    this.map.on('moveend', this.moveHandler)
+    this.map.on('moveend', this.moveEndHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
@@ -501,16 +512,7 @@ export default class WebMap extends Component {
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectend', this.onBoxSelect)
     this.map.doubleClickZoom.disable()
-  }
-
-  calcPointSize = (zoom) => {
-    const { min, max } = this.props.pointSizes
-    const result = zoom <= MIN_ZOOM
-      ? min
-      : zoom >= MAX_ZOOM
-        ? max
-        : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-    return Math.round(result)
+    this.updater = new UpdateQueue(this.map)
   }
 
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
@@ -554,9 +556,11 @@ export default class WebMap extends Component {
     this.props.stopMeasuring()
   }
 
-  moveHandler = () => {
+  fireOnMove = debounce((pos) => this.props.onMove(pos), 300)
+
+  moveEndHandler = () => {
     const { lat, lng } = this.map.getCenter()
-    this.props.onMove({ lat, lng })
+    this.fireOnMove({ lat, lng })
   }
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
@@ -588,26 +592,20 @@ export default class WebMap extends Component {
     }
   }
 
-  updatePointSizes = () => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+  updateScaleOptions = (params) => {
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        setScaleOptions(layer, params)
+      })
+    }
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+      })
+    }
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -714,37 +712,15 @@ export default class WebMap extends Component {
 
   addObject = (object) => {
     // console.log('addObject', object.toJS())
-    const { id, type, code = '', point, geometry, affiliation, attributes } = object
-    let anchor
-    let template
-    let points = geometry.toJS()
-    let color = colorOf(affiliation)
-    if (+type === entityKind.POINT) {
-      const options = {
-        size: this.calcPointSize(this.map.getZoom()),
-        ...(this.props.showAmplifiers ? filterSet(attributes) : {}),
-      }
-      const symbol = new Symbol(code, options)
-      template = symbol.asSVG()
-      points = [ point ]
-      anchor = symbol.getAnchor()
-    } else if (+type === entityKind.TEXT) {
-      // console.log(attributes)
-      template = generateTextSymbolSvg(attributes)
-      points = [ point ]
-      anchor = { x: 0, y: 0 }
-    } else if (+type === entityKind.SEGMENT) {
-      template = attributes.template
-      color = attributes.color
-    }
-    const layer = createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
+    const { id, attributes } = object
+    const layer = createTacticalSign(object, this.map)
     if (layer) {
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId } = this.props
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null } = attributes
 
@@ -757,6 +733,10 @@ export default class WebMap extends Component {
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
       }
+
+      setScaleOptions(layer, params)
+
+      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
   }
 
