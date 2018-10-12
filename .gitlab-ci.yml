@@ -58,16 +58,14 @@ deploy-qa:
   - develop
   tags:
     - webmap
-  before_script:
-    - 'set psCmd="if (Test-Path p:\) {net use p: /delete}"'
-    - 'powershell -noprofile %psCmd%'
-    - 'net use p: \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no'
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 ========='
+    - 'echo ========= Deploy: 84 (remote) ========='
+    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
     - rmdir /s /q P:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build P:\%deployDir%
-    - 'echo ========= Deploy: 85 ========='
+    - net use \\10.8.26.84\c$ /delete
+    - 'echo ========= Deploy: 85 (local) ========='
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
