@@ -294,13 +294,16 @@ export default class WebMap extends Component {
   constructor (props) {
     super(props)
     this.backVersion = '-?'
-    WebmapApi.getVersion()
-      .then((version) => (this.backVersion = version))
-      .catch((err) => notification.error({ message: i18n.ERROR, description: err.message }))
   }
 
   async componentDidMount () {
     const { sources } = this.props
+
+    try {
+      this.backVersion = await WebmapApi.getVersion()
+    } catch (err) {
+      notification.error({ message: i18n.ERROR, description: err.message })
+    }
 
     this.setMapView()
     this.setMapSource(sources)
