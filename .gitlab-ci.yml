@@ -62,8 +62,8 @@ deploy-qa:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
     - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q P:\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y build P:\%deployDir%
+    - rmdir /s /q \\10.8.26.84\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir%
     - net use \\10.8.26.84\c$ /delete
     - 'echo ========= Deploy: 85 (local) ========='
     - rmdir /s /q C:\%deployDir%
