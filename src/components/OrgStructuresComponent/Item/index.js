@@ -8,7 +8,6 @@ const { common: { TreeComponent, HighlightedText } } = components
 const { TextFilter } = data
 
 export default class Item extends React.Component {
-
   doubleClickHandler = () => {
     const { onDoubleClick, data } = this.props
     onDoubleClick(data.id)

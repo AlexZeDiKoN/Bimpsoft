@@ -16,22 +16,6 @@ export function initMapEvents (mymap, clickInterhandler) {
       clearSelectedList(mymap)
     }
   })
-  L.DomEvent.on(mymap._container, 'keyup', (event) => {
-    if (event.code === 'Delete' && mymap.pm.activeLayer) { // && confirm('Вилучити тактичний знак?')
-      const layer = mymap.pm.activeLayer
-      if (layer._map.listens('deletelayer')) {
-        layer._map.fire('deletelayer', layer)
-      } else {
-        clearActiveLayer(mymap)
-        layer._map.removeLayer(layer)
-        // TODO: delete all objects in selected list
-      }
-    } else if (event.code === 'Space' && mymap.pm.activeLayer) {
-      clearActiveLayer(mymap)
-    } else if (event.code === 'Escape') {
-      mymap.fire('escape')
-    }
-  })
 }
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
@@ -129,13 +113,13 @@ export function createTacticalSign (data, map) {
 
 export function createSearchMarker (point) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
-  return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
+  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: true })
 }
 
 function createPoint (data) {
   const { point } = data
   const icon = new L.PointIcon({ data })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
+  const marker = new L.DzvinMarker(point, { icon, keyboard: false, draggable: false, pane: 'overlayPane' })
   marker.options.tsType = entityKind.POINT
   return marker
 }

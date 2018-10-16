@@ -31,10 +31,15 @@ export const ADD_POINT_SIGN_TEMPLATE = 'Додати шаблон умовног
 export const MSG_TITLE_SIGN_TEMPLATE_CREATED = 'Шаблону умовного знаку створено'
 export const MSG_TEXT_SIGN_TEMPLATE_CREATED = ({ name, code }) => `Назва:${name}\r\n Код: ${code}`
 export const MEASURE = 'Виміряти відстань'
-export const CUT = 'Вирізати'
-export const COPY = 'Копіювати'
-export const PASTE = 'Вставити'
-export const DELETE = 'Видалити'
+export const CUT = 'Вирізати (Ctrl+X)'
+export const COPY = 'Копіювати (Ctrl+C)'
+export const PASTE = 'Вставити (Ctrl+V)'
+export const DELETE = 'Видалити  (Delete)'
+export const REMOVING_SIGNS = 'Видалення знаків'
+export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
+export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
+export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
+
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
 export const SHAPE_POLYGON = 'Багатокутник'

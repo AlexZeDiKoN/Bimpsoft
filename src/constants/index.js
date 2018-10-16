@@ -4,7 +4,9 @@ import * as viewModesKeys from './viewModesKeys'
 import MapSources from './MapSources'
 import Align from './Align'
 import * as colors from './colors'
+import * as shortcuts from './shortcuts'
 import { SCALES } from './scales'
+import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 
 export {
@@ -14,6 +16,8 @@ export {
   colors,
   Align,
   viewModesKeys,
+  shortcuts,
   paramsNames,
   SCALES,
+  FormTypes,
 }
