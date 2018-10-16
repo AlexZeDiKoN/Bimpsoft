@@ -54,7 +54,7 @@ export default class SelectionButtons extends React.Component {
     return (
       <Fragment>
         <MenuDivider />
-        {isSelected && <CountLabel title={`Вибрано знаків: ${nSelected}`}>{nSelected}</CountLabel>}
+        {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
         <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
         <IconButton
           title={i18n.CUT}
@@ -76,9 +76,7 @@ export default class SelectionButtons extends React.Component {
           hoverIcon={isClipboardExist ? iconNames.PASTE_HOVER : null}
           onClick={isClipboardExist ? onPaste : null}
         >
-          {isClipboardExist && <CountLabel
-            className="clipboard-size"
-            title={`Кількість знаків в буфері: ${clipboardSize}`}>
+          {isClipboardExist && <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
             {clipboardSize}
           </CountLabel>}
         </IconButton>

@@ -35,6 +35,11 @@ export const CUT = 'Вирізати (Ctrl+X)'
 export const COPY = 'Копіювати (Ctrl+C)'
 export const PASTE = 'Вставити (Ctrl+V)'
 export const DELETE = 'Видалити  (Delete)'
+export const REMOVING_SIGNS = 'Видалення знаків'
+export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
+export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
+export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
+
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
 export const SHAPE_POLYGON = 'Багатокутник'

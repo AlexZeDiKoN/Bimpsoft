@@ -5,6 +5,7 @@ import './style.css'
 import FocusTrap from 'focus-trap-react'
 import { shortcuts } from '../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../common/HotKeys'
+import i18n from '../../../../i18n'
 
 const { default: Form, FormButtonCancel, FormButtonOk, FormItem } = components.form
 
@@ -27,9 +28,9 @@ export default class DeleteSelectionForm extends React.Component {
               <FormItem>
                 <div className="confirm-icon-warning">!</div>
                 <div>
-                  <div className="confirm-title">Видалення знаків</div>
-                  <div className="confirm-text">{`Шар: ${layerName}`}</div>
-                  <div className="confirm-text">{`Кількість знаків: ${list.length}`}</div>
+                  <div className="confirm-title">{i18n.REMOVING_SIGNS}</div>
+                  <div className="confirm-text">{i18n.LAYER_WITH_NAME(layerName)}</div>
+                  <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>
                 </div>
               </FormItem>
               <FormItem>
