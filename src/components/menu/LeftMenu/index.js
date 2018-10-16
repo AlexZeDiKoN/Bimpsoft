@@ -1,18 +1,15 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import { notification } from 'antd/lib/index'
-import { HotKeys } from 'react-hotkeys'
 import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
-import SelectionTypes from '../../../constants/SelectionTypes'
-import LinesList from '../../LinesList'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
-import { shortcuts } from '../../../constants'
+import MenuDivider from '../MenuDivider'
 
 const iconNames = components.icons.names
 
@@ -20,24 +17,18 @@ export default class LeftMenu extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
     canEditCurrentLayer: PropTypes.bool,
-    isShowPoints: PropTypes.bool,
-    isShowLines: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
-    newShape: PropTypes.object,
-    isShowSources: PropTypes.bool,
-    mapSourcesComponent: PropTypes.any,
-    deleteSelectionComponent: PropTypes.any,
+    createButtonsComponent: PropTypes.any,
+    mapSourceSelectComponent: PropTypes.any,
+    selectionButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
     onClickEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
-    onClickLineSign: PropTypes.func,
-    onClickMapSource: PropTypes.func,
+
     onClickSubordinationLevel: PropTypes.func,
-    onNewShapeChange: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
-    onLinesListClose: PropTypes.func,
     onMeasureChange: PropTypes.func,
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
@@ -46,22 +37,7 @@ export default class LeftMenu extends React.Component {
     layerName: PropTypes.string,
   }
 
-  selectLineHandler = (type) => {
-    this.props.onNewShapeChange({ type })
-    this.props.onLinesListClose()
-  }
-
-  clickTextHandler = () => {
-    this.props.onNewShapeChange(this.props.newShape.type !== SelectionTypes.TEXT ? { type: SelectionTypes.TEXT } : {})
-  }
-
-  clickPointHandler = () => {
-    this.props.onNewShapeChange(this.props.newShape.type !== SelectionTypes.POINT ? { type: SelectionTypes.POINT } : {})
-  }
-
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
-
-  clickOutsideLinesListRef = getClickOutsideRef(() => this.props.onLinesListClose())
 
   clickEditModeHandler = () => {
     const {
@@ -76,101 +52,34 @@ export default class LeftMenu extends React.Component {
     }
   }
 
-  handleShortcuts = {
-    [shortcuts.DELETE]: () => this.props.onDelete(),
-    [shortcuts.COPY]: () => this.props.onCopy(),
-    [shortcuts.CUT]: () => this.props.onCut(),
-    [shortcuts.PASTE]: () => this.props.onPaste(),
-    [shortcuts.ESC]: () => {
-      // todo: close submenu
-    },
-  }
-
   render () {
     const {
       isEditMode,
-      isShowLines,
       isShowSubordinationLevel,
       isMeasureOn,
-      newShape = {},
       subordinationLevel = SubordinationLevel.TEAM_CREW,
-      onClickLineSign,
-      onClickMapSource,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
       onMeasureChange,
-      onCopy,
-      onCut,
-      onPaste,
-      onDelete,
-      mapSourcesComponent: MapSourcesComponent,
-      deleteSelectionComponent: DeleteSelectionComponent,
-      isShowSources,
+      createButtonsComponent: CreateButtonsComponent,
+      mapSourceSelectComponent: MapSourceSelectComponent,
+      selectionButtonsComponent: SelectionButtonsComponent,
       layerName,
     } = this.props
 
     const subordinationLevelViewData = SubordinationLevel.list.find((item) => item.value === subordinationLevel)
 
     return (
-      <HotKeys
-        keyMap={shortcuts.keyMap}
-        handlers={this.handleShortcuts}
-        className='left-menu'
-      >
+      <div className='left-menu' >
         <IconButton
           title={i18n.EDIT_MODE}
           icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
           hoverIcon={iconNames.EDIT_HOVER}
           onClick={this.clickEditModeHandler}
         />
-        {isEditMode && (
-          <Fragment>
-            <IconButton
-              title={i18n.POINT_SIGN}
-              icon={
-                newShape.type === SelectionTypes.POINT
-                  ? iconNames.CONVENTIONAL_SIGN_ACTIVE
-                  : iconNames.CONVENTIONAL_SIGN_DEFAULT
-              }
-              hoverIcon={iconNames.CONVENTIONAL_SIGN_HOVER}
-              onClick={this.clickPointHandler}
-            />
-            <IconButton
-              title={i18n.LINE_SIGN}
-              icon={
-                isShowLines
-                  ? iconNames.GROUPING_GRAPHIC_PRIMITIVES_ACTIVE
-                  : iconNames.GROUPING_GRAPHIC_PRIMITIVES_DEFAULT
-              }
-              hoverIcon={iconNames.GROUPING_GRAPHIC_PRIMITIVES_HOVER}
-              onClick={onClickLineSign}
-            >
-              {isShowLines && (<LinesList
-                onSelect={this.selectLineHandler}
-                shapeType={ newShape.type }
-                ref={this.clickOutsideLinesListRef}
-              />)}
-            </IconButton>
-            <IconButton
-              title={i18n.ADD_TEXT}
-              icon={
-                newShape.type === SelectionTypes.TEXT
-                  ? iconNames.TEXT_SIGN_ACTIVE
-                  : iconNames.TEXT_SIGN_DEFAULT
-              }
-              hoverIcon={iconNames.TEXT_SIGN_HOVER}
-              onClick={this.clickTextHandler}
-            />
-          </Fragment>
-        )}
-        <IconButton
-          title={i18n.MAP_SOURCE}
-          icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
-          hoverIcon={iconNames.MAP_HOVER}
-          onClick={onClickMapSource}
-        >
-          <MapSourcesComponent/>
-        </IconButton>
+        <CreateButtonsComponent />
+        <MenuDivider />
+        <MapSourceSelectComponent />
         <IconButton
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
           icon={
@@ -206,38 +115,9 @@ export default class LeftMenu extends React.Component {
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
-        {isEditMode && (
-          <Fragment>
-            <IconButton
-              title={i18n.CUT}
-              icon={iconNames.CUT_DEFAULT}
-              hoverIcon={iconNames.CUT_HOVER}
-              onClick={onCut}
-            />
-            <IconButton
-              title={i18n.COPY}
-              icon={iconNames.COPY_DEFAULT}
-              hoverIcon={iconNames.COPY_HOVER}
-              onClick={onCopy}
-            />
-            <IconButton
-              title={i18n.PASTE}
-              icon={iconNames.PASTE_DEFAULT}
-              hoverIcon={iconNames.PASTE_HOVER}
-              onClick={onPaste}
-            />
-            <IconButton
-              title={i18n.DELETE}
-              icon={iconNames.DELETE_DEFAULT}
-              hoverIcon={iconNames.DELETE_HOVER}
-              onClick={onDelete}
-            >
-              <DeleteSelectionComponent />
-            </IconButton>
-          </Fragment>
-        )}
+        <SelectionButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>
-      </HotKeys>
+      </div>
     )
   }
 }

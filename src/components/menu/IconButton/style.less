@@ -16,7 +16,8 @@
       display: initial;
     }
   }
-  &.icon-button-checked, &:hover {
+
+  &.icon-button-checked, &.icon-button-hoverable:hover {
     background-color: @toolbar-background-selected;
     > .icon-hovered{
       .icon-hovered-on{
@@ -31,6 +32,8 @@
 
 .icon-button-sub-panel{
   height: 0;
+  .flex;
+  flex-direction: column;
   > * {
     position: absolute;
     z-index: 1050;

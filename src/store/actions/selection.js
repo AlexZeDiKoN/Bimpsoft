@@ -1,8 +1,8 @@
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
+import { canEditSelector } from '../selectors/canEditSelector'
 import { withNotification } from './asyncAction'
 import { deleteObject, addObject } from './webMap'
-import { canEditSelector } from '../selectors/canEditSelector'
 
 export const SET_SELECTION = action('SET_SELECTION')
 export const UPDATE_SELECTION = action('UPDATE_SELECTION')
@@ -37,9 +37,9 @@ export const showEditForm = {
   type: SHOW_EDIT_FORM,
 }
 
-export const hideForm = {
+export const hideForm = () => ({
   type: HIDE_FORM,
-}
+})
 
 export const updateSelection = (data) => ({
   type: UPDATE_SELECTION,
@@ -132,11 +132,10 @@ export const paste = () => withNotification((dispatch, getState) => {
         dispatch(addObject(clipboardObject))
       }
     }
-    dispatch({ type: CLIPBOARD_CLEAR })
   }
 })
 
-export const deleteSelected = () => withNotification((dispatch, getState) => {
+export const deleteSelected = () => withNotification(async (dispatch, getState) => {
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -146,8 +145,9 @@ export const deleteSelected = () => withNotification((dispatch, getState) => {
     selection: { list = [] },
   } = state
   for (const id of list) {
-    dispatch(deleteObject(id))
+    await dispatch(deleteObject(id))
   }
+  dispatch(hideForm())
 })
 
 export const showDeleteForm = () => ({

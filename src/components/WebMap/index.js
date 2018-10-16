@@ -1,7 +1,6 @@
 /* global L */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { HotKeys } from 'react-hotkeys'
 import { notification } from 'antd'
 import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
@@ -27,10 +26,11 @@ import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
+import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer,
+  initMapEvents, createTacticalSign, getGeometry, activateLayer, clearActiveLayer,
   createSearchMarker, setLayerSelected,
 } from './Tactical'
 
@@ -56,28 +56,28 @@ const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeo
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
-const tmp = `<svg
-  width="480" height="480"
-  line-point-1="24,240"
-  line-point-2="456,240"
->
-  <path
-    fill="none"
-    stroke="red" stroke-width="3" stroke-linecap="square"
-    d="M8,240
-       a16,16 0 0,1 16,-16
-       h80
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h106
-       v-65 l-4,6 4,-15 4,15 -4,-6 v35
-       l-20,0 40,0 -20,0 v15
-       l-20,0 40,0 -20,0 v15
-       h106
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h80
-       a16,16 0 0,1 16,16" 
-  />
-</svg>`
+// const tmp = `<svg
+//   width="480" height="480"
+//   line-point-1="24,240"
+//   line-point-2="456,240"
+// >
+//   <path
+//     fill="none"
+//     stroke="red" stroke-width="3" stroke-linecap="square"
+//     d="M8,240
+//        a16,16 0 0,1 16,-16
+//        h80
+//        l15,-23 15,23 -15,23 -15,-23
+//        m30,0 h106
+//        v-65 l-4,6 4,-15 4,15 -4,-6 v35
+//        l-20,0 40,0 -20,0 v15
+//        l-20,0 40,0 -20,0 v15
+//        h106
+//        l15,-23 15,23 -15,23 -15,-23
+//        m30,0 h80
+//        a16,16 0 0,1 16,16"
+//   />
+// </svg>`
 // TODO: end
 
 const miniMapOptions = {
@@ -933,139 +933,140 @@ export default class WebMap extends Component {
     // TODO: скинути дані в сторі
   }
 
-  // TODO: пибрати це після тестування
-  handleShortcuts = async (action) => {
-    const { addObject } = this.props
-    const bounds = this.map.getBounds()
-    const center = bounds.getCenter()
-    const width = bounds.getEast() - bounds.getWest()
-    const height = bounds.getNorth() - bounds.getSouth()
-    let created
-    switch (action) {
-      case ADD_POINT:
-        console.info('ADD_POINT')
-        break
-      case ADD_SEGMENT: {
-        console.info('ADD_SEGMENT')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.SEGMENT,
-          point: calcMiddlePoint(geometry),
-          geometry,
-          attributes: {
-            template: tmp,
-            color: 'red',
-          },
-        })
-        break
-      }
-      case ADD_AREA: {
-        console.info('ADD_AREA')
-        const geometry = [
-          { lat: center.lat - height / 10, lng: center.lng },
-          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.AREA,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_CURVE: {
-        console.info('ADD_CURVE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.CURVE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_POLYGON: {
-        console.info('ADD_POLYGON')
-        const geometry = [
-          { lat: center.lat - height / 10, lng: center.lng },
-          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.POLYGON,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_POLYLINE: {
-        console.info('ADD_POLYLINE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.POLYLINE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_CIRCLE: {
-        console.info('ADD_CIRCLE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.CIRCLE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_RECTANGLE: {
-        console.info('ADD_RECTANGLE')
-        const geometry = [
-          { lat: center.lat - width / 15, lng: center.lng - width / 10 },
-          { lat: center.lat + width / 15, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.RECTANGLE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_SQUARE: {
-        console.info('ADD_SQUARE')
-        const geometry = [
-          { lat: center.lat - width / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + width / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.SQUARE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_TEXT:
-        console.info('ADD_TEXT')
-        break
-      case SELECT_PRINT_AREA:
-        tempPrintFlag = !tempPrintFlag
-        toggleMapGrid(this.map, tempPrintFlag)
-        break
-      default:
-        console.error(`Unknown action: ${action}`)
-    }
-    this.activateCreated(created)
+  // // TODO: пибрати це після тестування
+  // handleShortcuts = async (action) => {
+  //   const { addObject } = this.props
+  //   const bounds = this.map.getBounds()
+  //   const center = bounds.getCenter()
+  //   const width = bounds.getEast() - bounds.getWest()
+  //   const height = bounds.getNorth() - bounds.getSouth()
+  //   let created
+  //   switch (action) {
+  //     case ADD_POINT:
+  //       console.info('ADD_POINT')
+  //       break
+  //     case ADD_SEGMENT: {
+  //       console.info('ADD_SEGMENT')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.SEGMENT,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //         attributes: {
+  //           template: tmp,
+  //           color: 'red',
+  //         },
+  //       })
+  //       break
+  //     }
+  //     case ADD_AREA: {
+  //       console.info('ADD_AREA')
+  //       const geometry = [
+  //         { lat: center.lat - height / 10, lng: center.lng },
+  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.AREA,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_CURVE: {
+  //       console.info('ADD_CURVE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.CURVE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_POLYGON: {
+  //       console.info('ADD_POLYGON')
+  //       const geometry = [
+  //         { lat: center.lat - height / 10, lng: center.lng },
+  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.POLYGON,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_POLYLINE: {
+  //       console.info('ADD_POLYLINE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.POLYLINE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_CIRCLE: {
+  //       console.info('ADD_CIRCLE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.CIRCLE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_RECTANGLE: {
+  //       console.info('ADD_RECTANGLE')
+  //       const geometry = [
+  //         { lat: center.lat - width / 15, lng: center.lng - width / 10 },
+  //         { lat: center.lat + width / 15, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.RECTANGLE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_SQUARE: {
+  //       console.info('ADD_SQUARE')
+  //       const geometry = [
+  //         { lat: center.lat - width / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + width / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.SQUARE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_TEXT:
+  //       console.info('ADD_TEXT')
+  //       break
+  //     default:
+  //       console.error(`Unknown action: ${action}`)
+  //   }
+  //   this.activateCreated(created)
+  // }
+
+  selectPrintAreaHandler = () => {
+    tempPrintFlag = !tempPrintFlag
+    toggleMapGrid(this.map, tempPrintFlag)
   }
 
   startCreatePoly = (edit, type) => {
@@ -1145,38 +1146,31 @@ export default class WebMap extends Component {
     }
   }
 
-  handleShortcuts = {
-    [shortcuts.DELETE]: () => this.props.onDelete(),
-    [shortcuts.COPY]: () => this.props.onCopy(),
-    [shortcuts.CUT]: () => this.props.onCut(),
-    [shortcuts.PASTE]: () => this.props.onPaste(),
-    [shortcuts.ESC]: () => {
-      if (this.searchMarker) {
-        this.searchMarker.removeFrom(this.map)
-        delete this.searchMarker
-      }
-    },
-    [shortcuts.SPACE]: () => {
-      if (this.map.pm.activeLayer) {
-        clearActiveLayer(this.map)
-      }
-    },
+  escapeHandler = () => {
+    if (this.searchMarker) {
+      this.searchMarker.removeFrom(this.map)
+      delete this.searchMarker
+    }
+  }
+
+  spaceHandler = () => {
+    if (this.map.pm.activeLayer) {
+      clearActiveLayer(this.map)
+    }
   }
 
   render () {
     return (
-      <HotKeys
-        keyMap={shortcuts.keyMap}
-        handlers={this.handleShortcuts}
+      <div
+        onDragOver={this.dragOverHandler}
+        onDrop={this.dropHandler}
+        ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        <div
-          onDragOver={this.dragOverHandler}
-          onDrop={this.dropHandler}
-          ref={(container) => (this.container = container)}
-          style={{ height: '100%' }}
-        />
-      </HotKeys>
+        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
+        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
+      </div>
     )
   }
 }

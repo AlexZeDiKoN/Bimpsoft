@@ -1,8 +1,7 @@
-import React, {Fragment} from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 export default class ScaleControl extends React.Component {
-
   changeHandler = ({ target: { value } }) => {
     const { onChange, name } = this.props
     onChange(name, parseFloat(value))

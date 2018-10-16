@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import WebMap from '../../containers/WebMap'
 
 class ApplicationContent extends React.PureComponent {

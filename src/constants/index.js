@@ -6,6 +6,7 @@ import Align from './Align'
 import * as colors from './colors'
 import * as shortcuts from './shortcuts'
 import { SCALES } from './scales'
+import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 
 export {
@@ -18,4 +19,5 @@ export {
   shortcuts,
   paramsNames,
   SCALES,
+  FormTypes,
 }

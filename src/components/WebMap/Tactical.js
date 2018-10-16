@@ -113,13 +113,13 @@ export function createTacticalSign (data, map) {
 
 export function createSearchMarker (point) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
-  return L.marker([ point.lat, point.lng ], { icon, draggable: false, bounceOnAdd: true })
+  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: true })
 }
 
 function createPoint (data) {
   const { point } = data
   const icon = new L.PointIcon({ data })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
+  const marker = new L.DzvinMarker(point, { icon, keyboard: false, draggable: false, pane: 'overlayPane' })
   marker.options.tsType = entityKind.POINT
   return marker
 }

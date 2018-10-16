@@ -2,8 +2,6 @@
 
 import { setOpacity, setHidden } from './utils/helpers'
 
-
-
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
 
@@ -83,8 +81,8 @@ const DzvinMarker = L.Marker.extend({
       Array.from(this._icon.children).forEach((child) => {
         this.removeInteractiveTarget(child)
       })
+      parent._removeIcon.call(this)
     }
-    parent._removeIcon.call(this)
   },
   update: function () {
     parent.update.call(this)
