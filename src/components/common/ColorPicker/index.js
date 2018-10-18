@@ -17,6 +17,7 @@ const colors = [
 
 export default class ColorPicker extends React.Component {
   static propTypes = {
+    title: PropTypes.string,
     className: PropTypes.string,
     color: PropTypes.string,
     onChange: PropTypes.func,
@@ -31,8 +32,7 @@ export default class ColorPicker extends React.Component {
   clickHandler = ({ color, target }) => this.setState((state) => {
     const opened = !state.opened
     if (opened) {
-      const el = target
-      const { top, left } = el.getBoundingClientRect()
+      const { top, left } = target.getBoundingClientRect()
       return { opened, top, left }
     } else {
       return { opened }
@@ -48,7 +48,7 @@ export default class ColorPicker extends React.Component {
   clickOutsideRef = getClickOutsideRef(() => this.setState({ opened: false }))
 
   render () {
-    const { color } = this.props
+    const { color, title } = this.props
     const { opened, top, left } = this.state
     const classNames = [ 'color-picker' ]
     if (this.props.className) {
@@ -69,7 +69,7 @@ export default class ColorPicker extends React.Component {
             <ColorButton className="color-picker-close-button" color={color} onClick={this.clickHandler} />
           </div>
         </div>)}
-        <ColorButton color={color} onClick={this.clickHandler} />
+        <ColorButton title={title} color={color} onClick={this.clickHandler} />
       </div>
     )
   }
@@ -77,6 +77,7 @@ export default class ColorPicker extends React.Component {
 
 class ColorButton extends React.Component {
   static propTypes = {
+    title: PropTypes.string,
     color: PropTypes.string,
     className: PropTypes.string,
     onClick: PropTypes.func,
@@ -85,13 +86,14 @@ class ColorButton extends React.Component {
   clickHandler = (e) => this.props.onClick({ color: this.props.color, target: e.target })
 
   render () {
-    const { color, className } = this.props
+    const { color, title, className } = this.props
     const extClassName = (color === undefined)
       ? ' color-picker-button-undefined'
       : (color === null || !color.length) ? ' color-picker-button-empty' : ''
     return (
       <button
-        className={'color-picker-button' + (className ? ` ${className}` : '') + extClassName}
+        title={title}
+        className={`color-picker-button${className ? ` ${className}` : ''}${extClassName}`}
         style={{ backgroundColor: color }}
         onClick={this.clickHandler}
       >

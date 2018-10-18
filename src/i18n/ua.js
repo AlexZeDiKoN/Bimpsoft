@@ -140,3 +140,10 @@ export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
 
 export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`
+
+export const LAYERS_VISIBILITY = 'Видимість шару'
+export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картографічної основи (%)'
+export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
+export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
+export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
+export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'

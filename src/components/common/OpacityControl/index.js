@@ -9,15 +9,22 @@ export default class OpacityControl extends React.Component {
   }
 
   render () {
+    const { title, icon, opacity, className } = this.props
     return (
-      <div className={'opacity-control ' + this.props.className}>
-        <Icon className="opacity-control-icon" icon={this.props.icon}/>
+      <div className={'opacity-control ' + className}>
+        <div title={title}>
+          <Icon
+            className="opacity-control-icon"
+            icon={icon}
+          />
+        </div>
         <input
+          title={title}
           type="number"
           step="10"
           min="0"
           max="100"
-          value={this.props.opacity}
+          value={opacity}
           className="opacity-control-input"
           onChange={this.changeHandler}
         />
@@ -27,6 +34,7 @@ export default class OpacityControl extends React.Component {
 }
 
 OpacityControl.propTypes = {
+  title: PropTypes.string,
   className: PropTypes.string,
   opacity: PropTypes.number,
   icon: PropTypes.string,
