@@ -4,6 +4,11 @@ variables:
   deployDir: 'MAKET_Everest\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
+cache:
+  paths:
+    - node_modules
+    - yarn.lock
+
 stages:
   - test
   - build
@@ -29,7 +34,7 @@ build:
     - webmap
   script:
     - echo Building project...
-    - call npm install
+    - call yarn
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
