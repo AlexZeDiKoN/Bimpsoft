@@ -98,4 +98,4 @@ deploy-zip:
     - cd build
     - echo Zipping...
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
-    - echo Done.
+    - echo Done
