@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": ">=0.5.58",
-    "@DZVIN/MilSymbolEditor": ">=0.2.20",
+    "@DZVIN/MilSymbolEditor": ">=0.3.25",
     "@DZVIN/milsymbol": ">=0.0.1",
     "antd": "^3.9.2",
     "babel-polyfill": "^6.26.0",
