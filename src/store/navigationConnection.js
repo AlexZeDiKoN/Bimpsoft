@@ -1,5 +1,5 @@
 const toURI = (obj) => Object.entries(obj)
-  .map(([ key, value ]) => `${key}=${encodeURIComponent(JSON.stringify(value))}`)
+  .map(([ key, value ]) => `${key}=${value}`)
   .join('&')
 
 const fromURI = (url) => url
@@ -9,7 +9,7 @@ const fromURI = (url) => url
     const [ key, value ] = param.split('=')
     return {
       ...result,
-      [key]: JSON.parse(decodeURIComponent(value)),
+      [key]: value,
     }
   }, {})
 

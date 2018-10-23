@@ -6,17 +6,20 @@ const crop = (value) => +value.toFixed(6)
 const optionalProp = (obj, key, value) => value
   ? { ...obj, [key]: value }
   : obj
-const optionalArray = (obj, key, array) => array && array.length
-  ? { ...obj, [key]: array }
+const optionalArray = (obj, key, array, pack) => array && array.length
+  ? { ...obj, [key]: pack ? pack(array) : array }
   : obj
+const packMaps = (maps) => maps
+  .map(({ operationId, mapId }) => `${operationId},${mapId}`)
+  .join(';')
 
 const mapStateToProps = createSelector(
   (state) => state.webMap.center,
   (state) => state.webMap.zoom,
-  (state) => Object.values(state.maps.byId).map(({ operationId: oid, mapId: mid }) => ({ oid, mid })),
+  (state) => Object.values(state.maps.byId),
   (state) => state.layers.selectedId,
   ({ lat, lng }, z, maps, layer) => ({
-    pushProps: optionalArray({}, 'maps', maps),
+    pushProps: optionalArray({}, 'maps', maps, packMaps),
     replaceProps: optionalProp({
       lat: crop(lat),
       lng: crop(lng),
