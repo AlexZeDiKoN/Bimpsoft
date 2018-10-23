@@ -3,7 +3,6 @@ import * as selectionActions from '../actions/selection'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const initialState = {
-  [viewModesKeys.edit]: false,
   [viewModesKeys.text]: false,
   [viewModesKeys.print]: false,
   [viewModesKeys.sidebar]: true,

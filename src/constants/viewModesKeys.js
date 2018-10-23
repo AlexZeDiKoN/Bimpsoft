@@ -1,5 +1,4 @@
 export const sidebar = 'sidebar'
-export const edit = 'edit'
 export const pointSignsList = 'pointSignsList'
 export const mapSourcesList = 'mapSourcesList'
 export const lineSignsList = 'lineSignsList'
