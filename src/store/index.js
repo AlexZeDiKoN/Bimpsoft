@@ -9,6 +9,7 @@ import ServerApiMilOrg from '../server/api.server.org'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
+import initNavigationConnection from './initNavigationConnection'
 
 let store = null
 
@@ -40,6 +41,7 @@ export default function initStore (options = {}) {
   }
 
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
+  initNavigationConnection(store, history)
 
   initSocketEvents(store.dispatch)
   store.dispatch(loadAllParams())

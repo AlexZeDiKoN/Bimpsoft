@@ -120,7 +120,10 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
     }
     case actionNames.SET_MAP_CENTER: {
-      return state.set('center', payload)
+      const { center, zoom } = payload
+      return state
+        .set('center', center)
+        .set('zoom', zoom)
     }
     default:
       return state
