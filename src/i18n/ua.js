@@ -139,6 +139,7 @@ export const ERROR_NO_CONNECTION = 'Сервер карти недоступни
 export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
 
 export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
+export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`
 
 export const LAYERS_VISIBILITY = 'Видимість шару'

@@ -2,9 +2,10 @@ import { connect } from 'react-redux'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
+import * as layersActions from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import { canEditSelector, canEditCurrentLayerSelector, layerNameSelector } from '../store/selectors'
+import { canEditSelector, layerNameSelector } from '../store/selectors'
 
 const mapStateToProps = (store) => {
   const {
@@ -16,10 +17,8 @@ const mapStateToProps = (store) => {
 
   const layerName = layerNameSelector(store)
   const isEditMode = canEditSelector(store)
-  const canEditCurrentLayer = canEditCurrentLayerSelector(store)
   return {
     isEditMode,
-    canEditCurrentLayer,
     // isShowPoints,
     isShowSubordinationLevel,
     isMeasureOn,
@@ -28,7 +27,7 @@ const mapStateToProps = (store) => {
   }
 }
 const mapDispatchToProps = {
-  onClickEditMode: () => viewModesActions.viewModeToggle(viewModesKeys.edit),
+  onChangeEditMode: (editMode) => layersActions.setEditMode(editMode),
   // onClickPointSign: () => (dispatch, getState) => {
   //   const {
   //     viewModes: { [viewModesKeys.pointSignsList]: isShowPoints },

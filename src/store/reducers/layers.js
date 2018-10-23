@@ -5,6 +5,7 @@ const defItem = { visible: true, locked: false, color: null, readOnly: true }
 const initState = {
   byId: {},
   selectedId: null,
+  editMode: false,
   timelineFrom: null,
   timelineTo: null,
   backOpacity: 100,
@@ -14,6 +15,10 @@ const initState = {
 export default function reducer (state = initState, action) {
   const { type } = action
   switch (type) {
+    case layers.SET_EDIT_MODE: {
+      const { editMode } = action
+      return { ...state, editMode }
+    }
     case layers.SELECT_LAYER: {
       const { layerId } = action
       return { ...state, selectedId: layerId }

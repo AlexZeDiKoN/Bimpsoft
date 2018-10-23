@@ -3,7 +3,7 @@ import CreateButtons from '../components/menu/CreateButtons'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as selectionActions from '../store/actions/selection'
-import { canEditSelector } from '../store/selectors/canEditSelector'
+import { canEditSelector } from '../store/selectors'
 
 const mapStateToProps = (store) => {
   const {

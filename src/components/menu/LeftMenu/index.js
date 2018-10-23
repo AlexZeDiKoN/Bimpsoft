@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import { notification } from 'antd/lib/index'
 import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
@@ -16,14 +15,13 @@ const iconNames = components.icons.names
 export default class LeftMenu extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
-    canEditCurrentLayer: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
     mapSourceSelectComponent: PropTypes.any,
     selectionButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
-    onClickEditMode: PropTypes.func,
+    onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
 
     onClickSubordinationLevel: PropTypes.func,
@@ -40,16 +38,8 @@ export default class LeftMenu extends React.Component {
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
 
   clickEditModeHandler = () => {
-    const {
-      canEditCurrentLayer,
-      onClickEditMode,
-      layerName,
-    } = this.props
-    if (canEditCurrentLayer) {
-      onClickEditMode()
-    } else {
-      notification.warn({ message: i18n.CANNOT_ENABLE_EDIT_MODE, description: i18n.READ_ONLY_LAYER_ACCESS(layerName) })
-    }
+    const { isEditMode, onChangeEditMode } = this.props
+    onChangeEditMode(!isEditMode)
   }
 
   render () {

@@ -1,4 +1,7 @@
 import { action } from '../../utils/services'
+import { layerNameSelector } from '../selectors'
+import i18n from '../../i18n'
+import { ApiError } from '../../constants/errors'
 import { asyncAction, orgStructures, webMap } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
@@ -6,10 +9,29 @@ export const UPDATE_LAYER = action('UPDATE_LAYER')
 export const DELETE_LAYERS = action('DELETE_LAYERS')
 export const DELETE_ALL_LAYERS = action('DELETE_ALL_LAYERS')
 export const SELECT_LAYER = action('SELECT_LAYER')
+export const SET_EDIT_MODE = action('SET_EDIT_MODE')
 export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
+
+export const setEditMode = (editMode) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+    const state = getState()
+    const { byId, selectedId } = state.layers
+
+    if (!byId.hasOwnProperty(selectedId)) {
+      throw new ApiError(i18n.NO_ACTIVE_LAYER, i18n.CANNOT_ENABLE_EDIT_MODE, true)
+    } else if (byId[selectedId].readOnly) {
+      const layerName = layerNameSelector(state)
+      throw new ApiError(i18n.READ_ONLY_LAYER_ACCESS(layerName), i18n.CANNOT_ENABLE_EDIT_MODE, true)
+    } else {
+      dispatch({
+        type: SET_EDIT_MODE,
+        editMode,
+      })
+    }
+  })
 
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,

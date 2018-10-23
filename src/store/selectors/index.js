@@ -1,3 +1,3 @@
-export { canEditSelector, canEditCurrentLayerSelector } from './canEditSelector'
+export { canEditSelector } from './canEditSelector'
 export { default as layerNameSelector } from './layerNameSelector'
 export { pointSizesSelector } from './params'

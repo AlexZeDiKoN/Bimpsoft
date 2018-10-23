@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector } from '../selectors/canEditSelector'
+import { canEditSelector } from '../selectors'
 import { withNotification } from './asyncAction'
 import { deleteObject, addObject } from './webMap'
 
