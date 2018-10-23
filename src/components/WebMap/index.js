@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { notification } from 'antd'
-import debounce from 'debounce'
+// import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -291,6 +291,11 @@ export default class WebMap extends Component {
   constructor (props) {
     super(props)
     this.backVersion = '-?'
+    this.view = {
+      lat: 0,
+      lng: 0,
+      zoom: 0,
+    }
   }
 
   async componentDidMount () {
@@ -435,6 +440,13 @@ export default class WebMap extends Component {
     if (nextProps.params !== this.props.params && this.map && this.map._container) {
       this.updateScaleOptions(nextProps.params)
     }
+    if (
+      this.view.lat !== nextProps.center.lat || this.view.lng !== nextProps.center.lng ||
+      this.view.zoom !== nextProps.zoom
+    ) {
+      this.view = { lat: nextProps.center.lat, lng: nextProps.center.lng, zoom: nextProps.zoom }
+      this.map && this.map.setView(nextProps.center, nextProps.zoom)
+    }
     return false
   }
 
@@ -505,6 +517,7 @@ export default class WebMap extends Component {
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
     this.map.on('moveend', this.moveEndHandler)
+    this.map.on('zoomend', this.moveEndHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
@@ -548,11 +561,11 @@ export default class WebMap extends Component {
     this.props.stopMeasuring()
   }
 
-  fireOnMove = debounce((pos) => this.props.onMove(pos), 300)
-
   moveEndHandler = () => {
     const { lat, lng } = this.map.getCenter()
-    this.fireOnMove({ lat, lng })
+    const zoom = this.map.getZoom()
+    this.view = { lat, lng, zoom }
+    this.props.onMove({ lat, lng }, zoom)
   }
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
