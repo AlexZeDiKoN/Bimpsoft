@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import navigationConnection from './navigationConnection'
 import { webMap, maps as mapsActions, layers as layersActions } from './actions'
 
-const crop = (value) => +Number(value).toFixed(6)
+const crop = (value) => Number(value).toFixed(6)
 const optionalProp = (obj, key, value) => value
   ? { ...obj, [key]: value }
   : obj
@@ -31,33 +31,33 @@ const mapStateToProps = createSelector(
   ({ lat, lng }, z, maps, layer) => ({
     pushProps: optionalArray({}, 'maps', maps, packMaps),
     replaceProps: optionalProp({
-      lat: crop(lat),
-      lng: crop(lng),
+      lat: +crop(lat),
+      lng: +crop(lng),
       z,
-    }, 'layer', layer),
+    }, 'layer', +layer),
   })
 )
 
 const onHistoryChange = async (prev, next, dispatch) => {
   if (next.lat && next.lng && next.z && (prev.lat !== next.lat || prev.lng !== next.lng || prev.z !== next.z)) {
-    dispatch(webMap.setCenter({ lat: next.lat, lng: next.lng }, next.z))
-  }
-  if (next.layer && next.layer !== prev.layer) {
-    await dispatch(layersActions.selectLayer(next.layer))
+    await dispatch(webMap.setCenter({ lat: +next.lat, lng: +next.lng }, +next.z))
   }
   if (prev.maps !== next.maps) {
     const nextMaps = unpackMaps(next.maps)
     const prevMaps = unpackMaps(prev.maps)
     for (const map of nextMaps) {
       if (!prevMaps.find(findMap(map))) {
-        await dispatch(mapsActions.openMapFolder(map.operationId, map.mapId))
+        await dispatch(mapsActions.openMapFolder(+map.operationId, +map.mapId, +next.layer))
       }
     }
     for (const map of prevMaps) {
       if (!nextMaps.find(findMap(map))) {
-        await dispatch(mapsActions.deleteMap(map.mapId))
+        await dispatch(mapsActions.deleteMap(+map.mapId))
       }
     }
+  }
+  if (next.layer && next.layer !== prev.layer) {
+    await dispatch(layersActions.selectLayer(+next.layer))
   }
 }
 
