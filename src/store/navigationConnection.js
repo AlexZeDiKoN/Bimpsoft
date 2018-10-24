@@ -25,10 +25,10 @@ export default (mapStateToProps, onHistoryChange) => (store, history) => {
     const newUri = `#/?${fullUri}`
     if (push !== pushUri) {
       push = pushUri
-      // console.log(`history.push: "${fullUri}"`)
+      console.log(`history.push: "${fullUri}"`)
       history.push(newUri)
-    } else {
-      // console.log(`history.replace: "${fullUri}"`)
+    } else if (uri !== fullUri) {
+      console.log(`history.replace: "${fullUri}"`)
       history.replace(newUri)
     }
     uri = fullUri
