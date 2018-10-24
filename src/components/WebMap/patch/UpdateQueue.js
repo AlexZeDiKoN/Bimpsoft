@@ -3,11 +3,12 @@ import debounce from 'debounce'
 const PART_SIZE = 5
 const SLOW_TIMEOUT = 1000
 const QUICK_TIMEOUT = 20
+
 export default class UpdateQueue {
   constructor (map) {
     this.map = map
-    this.map.on('layeradd', this.layeraddHandler)
-    this.map.on('layerremove', this.layerremoveHandler)
+    this.map.on('layeradd', this.layerAddHandler)
+    this.map.on('layerremove', this.layerRemoveHandler)
     this.map.on('zoomstart', this.pauseUpdater)
     this.map.on('zoomend', this.resumeUpdater)
     this.map.on('movestart', this.pauseUpdater)
@@ -17,12 +18,12 @@ export default class UpdateQueue {
     this.layers = []
   }
 
-  layeraddHandler = ({ layer }) => {
+  layerAddHandler = ({ layer }) => {
     this.layers.unshift(layer)
     this.setTimeout(QUICK_TIMEOUT)
   }
 
-  layerremoveHandler = ({ layer }) => {
+  layerRemoveHandler = ({ layer }) => {
     this.layers = this.layers.filter((item) => item !== layer)
   }
 
@@ -55,7 +56,7 @@ export default class UpdateQueue {
 
   setTimeout (timeout) {
     if (this.timeout !== timeout) {
-      console.log(`UpdateQueue: setTimeout ${timeout}`)
+      // console.log(`UpdateQueue: setTimeout ${timeout}`)
       this.timeout = timeout
       if (!this.isPaused) {
         if (this.intervalId) {
@@ -68,7 +69,7 @@ export default class UpdateQueue {
 
   pause () {
     this.isPaused = true
-    console.log('UpdateQueue: pause')
+    // console.log('UpdateQueue: pause')
     if (this.intervalId) {
       clearInterval(this.intervalId)
       this.intervalId = null
@@ -76,7 +77,7 @@ export default class UpdateQueue {
   }
 
   resume () {
-    console.log('UpdateQueue: resume')
+    // console.log('UpdateQueue: resume')
     this.isPaused = false
     if (!this.intervalId) {
       this.intervalId = setInterval(this.processUpdateQueue.bind(this), this.timeout)
