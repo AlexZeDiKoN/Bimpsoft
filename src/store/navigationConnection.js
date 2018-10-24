@@ -22,7 +22,7 @@ export default (mapStateToProps, onHistoryChange) => (store, history) => {
     const pushUri = toURI(pushProps)
     const replaceUri = toURI(replaceProps)
     const fullUri = [ pushUri, replaceUri ].filter((item) => item.length).join('&')
-    const newUri = `/#/?${fullUri}`
+    const newUri = `#/?${fullUri}`
     if (push !== pushUri) {
       push = pushUri
       // console.log(`history.push: "${fullUri}"`)

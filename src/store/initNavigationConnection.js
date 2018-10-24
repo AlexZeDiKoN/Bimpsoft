@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import navigationConnection from './navigationConnection'
 import { webMap, /* maps as mapsActions, */ layers as layersActions } from './actions'
 
-const crop = (value) => +value.toFixed(6)
+const crop = (value) => +Number(value).toFixed(6)
 const optionalProp = (obj, key, value) => value
   ? { ...obj, [key]: value }
   : obj
