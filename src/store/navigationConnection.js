@@ -7,10 +7,10 @@ const fromURI = (url) => url
   .filter(Boolean)
   .reduce((result, param) => {
     const [ key, value ] = param.split('=')
-    return {
-      ...result,
-      [key]: value,
+    if (key) {
+      result[key] = value
     }
+    return result
   }, {})
 
 export default (mapStateToProps, onHistoryChange) => (store, history) => {
