@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect'
 import navigationConnection from './navigationConnection'
-import { webMap, /* maps as mapsActions, */ layers as layersActions } from './actions'
+import { webMap, maps as mapsActions, layers as layersActions } from './actions'
 
 const crop = (value) => +Number(value).toFixed(6)
 const optionalProp = (obj, key, value) => value
@@ -12,6 +12,16 @@ const optionalArray = (obj, key, array, pack) => array && array.length
 const packMaps = (maps) => maps
   .map(({ operationId, mapId }) => `${operationId},${mapId}`)
   .join(';')
+const unpackMaps = (maps) => maps && maps.length
+  ? maps
+    .split(';')
+    .map((map) => {
+      const [ operationId = null, mapId = null ] = map.split(',')
+      return { operationId, mapId }
+    })
+    .filter(({ operationId, mapId }) => operationId !== null && mapId !== null)
+  : []
+const findMap = (sample) => (map) => map.operationId === sample.operationId && map.mapId === sample.mapId
 
 const mapStateToProps = createSelector(
   (state) => state.webMap.center,
@@ -35,28 +45,20 @@ const onHistoryChange = async (prev, next, dispatch) => {
   if (next.layer && next.layer !== prev.layer) {
     await dispatch(layersActions.selectLayer(next.layer))
   }
-  /* if (prev.maps !== next.maps) {
-    const nextMaps = next.maps && next.maps.length ? next.maps.split('|') : []
-    const prevMaps = prev.maps && prev.maps.length ? prev.maps.split('|') : []
-    const nextMapsSet = new Set(nextMaps)
-    const prevMapsSet = new Set(prevMaps)
+  if (prev.maps !== next.maps) {
+    const nextMaps = unpackMaps(next.maps)
+    const prevMaps = unpackMaps(prev.maps)
     for (const map of nextMaps) {
-      if (!prevMapsSet.has(map)) {
-        const [ operationId = null, mapId = null ] = map.split(',')
-        if (operationId !== null && mapId !== null) {
-          await dispatch(mapsActions.openMapFolder(operationId, mapId))
-        }
+      if (!prevMaps.find(findMap(map))) {
+        await dispatch(mapsActions.openMapFolder(map.operationId, map.mapId))
       }
     }
     for (const map of prevMaps) {
-      if (!nextMapsSet.has(map)) {
-        const [ operationId = null, mapId = null ] = map.split(',')
-        if (operationId !== null && mapId !== null) {
-          await dispatch(mapsActions.deleteMap(mapId))
-        }
+      if (!nextMaps.find(findMap(map))) {
+        await dispatch(mapsActions.deleteMap(map.mapId))
       }
     }
-  } */
+  }
 }
 
 export default navigationConnection(mapStateToProps, onHistoryChange)
