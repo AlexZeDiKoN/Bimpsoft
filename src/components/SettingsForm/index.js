@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Switch, Slider } from 'antd'
+import { Switch } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
-import { debounce } from 'debounce'
 import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
+import ScaleControl from '../common/ScaleControl'
+import { paramsNames } from '../../constants'
 
-const { default: Form, FormRow, FormColumn } = components.form
+const { default: Form, FormRow, FormDarkPart } = components.form
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
@@ -15,24 +16,23 @@ export default class SettingsForm extends React.Component {
     wrapper: PropTypes.oneOf([ ModalContainer ]),
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
-    pointSizes: PropTypes.shape({
-      min: PropTypes.number,
-      max: PropTypes.number,
-    }),
+    params: PropTypes.object,
     showAmplifiers: PropTypes.bool,
     generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,
     onChangeGeneralization: PropTypes.func,
-    onChangePointSizes: PropTypes.func,
+    onChangeParam: PropTypes.func,
     onClose: PropTypes.func,
   }
 
-  changePointSizeHandler = (value) => {
-    const [ min, max ] = value
+  changeParamHandler = (name, value) => {
+    this.props.onChangeParam(name, value)
+  }
 
-    debounce(this.props.onChangePointSizes, 333, true)(min, max)
+  renderScaleControl (paramName) {
+    return (<ScaleControl name={paramName} value={this.props.params[paramName] } onChange={this.changeParamHandler}/>)
   }
 
   render () {
@@ -43,7 +43,6 @@ export default class SettingsForm extends React.Component {
       wrapper: Wrapper,
       // coordinatesType = CoordinatesTypes.WGS_84,
       showMiniMap,
-      pointSizes: { min, max },
       showAmplifiers,
       // generalization,
       onClose,
@@ -69,9 +68,21 @@ export default class SettingsForm extends React.Component {
           <FormRow label={i18n.AMPLIFIERS}>
             <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
           </FormRow>
-          <FormColumn label={i18n.POINT_SIGN_SIZE}>
-            <Slider range step={1} value={[ min, max ]} onChange={this.changePointSizeHandler} />
-          </FormColumn>
+          <FormRow label={i18n.POINT_SIGN_SIZE}/>
+          <FormDarkPart>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
+          </FormDarkPart>
+          <FormRow label={i18n.TEXT_SIGN_SIZE}/>
+          <FormDarkPart>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
+          </FormDarkPart>
+          <FormRow label={i18n.LINE_SIGN_SIZE}/>
+          <FormDarkPart>
+            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
+            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
+          </FormDarkPart>
           {/* <FormRow label={i18n.GENERALIZATION}> */}
           {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
           {/* </FormRow> */}

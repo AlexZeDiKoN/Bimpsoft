@@ -6,6 +6,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
+import i18n from '../../../i18n'
 
 const { icons: { IconHovered, Icon, names: iconNames } } = components
 
@@ -42,6 +43,7 @@ export default class LayerItemComponent extends React.Component {
         onClick={this.selectHandler}
       >
         <VisibilityButton
+          title={i18n.LAYERS_VISIBILITY}
           visible={visible}
           isDark={isSelected}
           className="layer-item-сomponent-control"
@@ -55,7 +57,12 @@ export default class LayerItemComponent extends React.Component {
           <div className="layer-name">{name}</div>
           <div className="layer-date">{dateString}</div>
         </div>
-        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
+        <ColorPicker
+          title={i18n.LAYERS_HIGHLIGHT_COLOR}
+          className="map-item-сomponent-control"
+          color={color}
+          onChange={this.changeColorHandler}
+        />
         <IconHovered
           className="layer-item-сomponent-control"
         />

@@ -1,4 +1,7 @@
 import { action } from '../../utils/services'
+import { layerNameSelector } from '../selectors'
+import i18n from '../../i18n'
+import { ApiError } from '../../constants/errors'
 import { asyncAction, orgStructures, webMap } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
@@ -6,32 +9,29 @@ export const UPDATE_LAYER = action('UPDATE_LAYER')
 export const DELETE_LAYERS = action('DELETE_LAYERS')
 export const DELETE_ALL_LAYERS = action('DELETE_ALL_LAYERS')
 export const SELECT_LAYER = action('SELECT_LAYER')
+export const SET_EDIT_MODE = action('SET_EDIT_MODE')
 export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
 
-const getOrgStructuresTree = (unitsById, relations) => {
-  const byIds = {}
-  const roots = []
-  relations.forEach(({ unitID, parentUnitID }) => {
-    const unit = unitsById[unitID]
-    if (unit) {
-      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
+export const setEditMode = (editMode) =>
+  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+    const state = getState()
+    const { byId, selectedId } = state.layers
+
+    if (!byId.hasOwnProperty(selectedId)) {
+      throw new ApiError(i18n.NO_ACTIVE_LAYER, i18n.CANNOT_ENABLE_EDIT_MODE, true)
+    } else if (byId[selectedId].readOnly) {
+      const layerName = layerNameSelector(state)
+      throw new ApiError(i18n.READ_ONLY_LAYER_ACCESS(layerName), i18n.CANNOT_ENABLE_EDIT_MODE, true)
+    } else {
+      dispatch({
+        type: SET_EDIT_MODE,
+        editMode,
+      })
     }
   })
-  relations.forEach(({ unitID, parentUnitID }) => {
-    if (byIds.hasOwnProperty(unitID)) {
-      const parent = byIds[parentUnitID]
-      if (parent) {
-        parent.children.push(unitID)
-      } else {
-        roots.push(unitID)
-      }
-    }
-  })
-  return { byIds, roots }
-}
 
 export const updateLayers = (layersData) => ({
   type: UPDATE_LAYERS,
@@ -79,50 +79,28 @@ export const updateColorByLayerId = (layerId) =>
   })
 
 export const selectLayer = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
-    if (state.layers.selectedId === layerId) {
+    const { layers: { selectedId, byId } } = state
+    if (selectedId === layerId) {
       return
     }
 
-    const layersIds = Object.keys(state.layers.byId)
-
-    dispatch({
+    await dispatch({
       type: SELECT_LAYER,
       layerId,
     })
 
     if (layerId) {
-      for (const layerId of layersIds) {
-        await dispatch(webMap.updateObjectsByLayerId(layerId))
-        await dispatch(updateColorByLayerId(Number(layerId)))
-      }
-
-      const state = getState()
-      const layer = state.layers.byId[layerId]
+      const layer = byId[layerId]
       const { formationId = null } = layer
       if (formationId === null) {
+        await dispatch(orgStructures.setFormationById(null))
         throw Error('org structure id is undefined')
       }
-
-      const formations = await milOrg.generalFormation.list()
-      const formation = formations.find((formation) => formation.id === formationId)
-      dispatch(orgStructures.setOrgStructureFormation(formation))
-
-      const units = await milOrg.militaryUnit.list()
-      const unitsById = {}
-      units.forEach((item) => {
-        unitsById[item.id] = item
-      })
-      dispatch(orgStructures.setOrgStructureUnits(unitsById))
-
-      const relations = await milOrg.militaryUnitRelation.list({ formationID: formationId })
-      const tree = getOrgStructuresTree(unitsById, relations)
-
-      dispatch(orgStructures.setOrgStructureTree(tree.byIds, tree.roots))
+      await dispatch(orgStructures.setFormationById(formationId))
     } else {
-      dispatch(orgStructures.setOrgStructureFormation(null))
-      dispatch(orgStructures.setOrgStructureTree({}, []))
+      await dispatch(orgStructures.setFormationById(null))
     }
   })
 

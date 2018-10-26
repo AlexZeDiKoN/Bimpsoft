@@ -23,9 +23,10 @@ export default class VisibilityButton extends React.Component {
   }
 
   render () {
-    const { visible, isDark } = this.props
+    const { visible, title, isDark } = this.props
     return (
       <IconHovered
+        title={title}
         className="visibility-button"
         onClick={this.clickHandler}
         icon={getIcon(isDark, visible)}
@@ -36,6 +37,7 @@ export default class VisibilityButton extends React.Component {
 }
 
 VisibilityButton.propTypes = {
+  title: PropTypes.string,
   visible: PropTypes.bool,
   isDark: PropTypes.bool,
   onChange: PropTypes.func,

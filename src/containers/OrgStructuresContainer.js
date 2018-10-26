@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import * as selectionActions from '../store/actions/selection'
 import * as orgStructuresActions from '../store/actions/orgStructures'
-import { canEditSelector } from '../store/selectors/canEditSelector'
+import { canEditSelector } from '../store/selectors'
 
 const mapStateToProps = (store) => {
   const { orgStructures } = store

@@ -5,8 +5,7 @@ import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
-import { pointSizesSelector } from '../store/selectors/params'
-import { canEditSelector } from '../store/canEditSelector'
+import { canEditSelector } from '../store/selectors'
 
 const WebMap = connect(
   (state) => ({
@@ -27,12 +26,15 @@ const WebMap = connect(
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
-    pointSizes: pointSizesSelector(state), // Розмір точкового тактичного знака НАТО в залежності від масштабу (від і до)
+    params: state.params,
     isGridActive: state.viewModes.print,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(webMapActions.addObject(object)),
-    deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
+    onDelete: () => dispatch(selectionActions.showDeleteForm()),
+    onCut: () => dispatch(selectionActions.cut()),
+    onCopy: () => dispatch(selectionActions.copy()),
+    onPaste: () => dispatch(selectionActions.paste()),
     editObject: () => dispatch(selectionActions.showEditForm),
     updateObject: (object) => dispatch(webMapActions.updateObject(object)),
     updateObjectGeometry: (object) => dispatch(webMapActions.updateObjectGeometry(object)),
@@ -43,8 +45,8 @@ const WebMap = connect(
     onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
-    hideForm: () => dispatch(selectionActions.hideForm),
-    onMove: (center) => dispatch(webMapActions.setCenter(center)),
+    hideForm: () => dispatch(selectionActions.hideForm()),
+    onMove: (center, zoom) => dispatch(webMapActions.setCenter(center, zoom)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
   }),

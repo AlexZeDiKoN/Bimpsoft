@@ -1,8 +1,13 @@
 import { actionNames } from '../actions/params'
+import { paramsNames } from '../../constants'
 
 const initialState = {
-  point_size_min: 4,
-  point_size_max: 96,
+  [paramsNames.POINT_SIZE_MIN]: 4,
+  [paramsNames.POINT_SIZE_MAX]: 96,
+  [paramsNames.TEXT_SIZE_MIN]: 4,
+  [paramsNames.TEXT_SIZE_MAX]: 96,
+  [paramsNames.LINE_SIZE_MIN]: 4,
+  [paramsNames.LINE_SIZE_MAX]: 96,
 }
 
 export default function (state = initialState, action) {

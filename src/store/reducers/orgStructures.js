@@ -7,7 +7,7 @@ const { getPathFunc } = utils.collection
 const getPath = getPathFunc((item) => item.id, (item) => item.id, (item) => item.parentUnitID)
 
 const initState = {
-  unitsById: {},
+  unitsById: null,
   byIds: {},
   roots: [],
   formation: null,

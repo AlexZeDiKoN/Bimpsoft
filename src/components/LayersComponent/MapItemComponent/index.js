@@ -4,6 +4,7 @@ import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
+import i18n from '../../../i18n'
 
 const { icons: { IconHovered, names: iconNames } } = components
 
@@ -28,14 +29,21 @@ export default class MapItemComponent extends React.Component {
     return (
       <div className="map-item-сomponent">
         <VisibilityButton
+          title={i18n.LAYERS_VISIBILITY}
           className="map-item-сomponent-control"
           visible={visible}
           isDark={true}
           onChange={this.changeMapVisibilityHandler}
         />
         <span className="map-item-сomponent-title">{name}</span>
-        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
+        <ColorPicker
+          title={i18n.LAYERS_HIGHLIGHT_COLOR}
+          className="map-item-сomponent-control"
+          color={color}
+          onChange={this.changeColorHandler}
+        />
         <IconHovered
+          title={i18n.LAYERS_CLOSE_CURRENT_MAP}
           className="map-item-сomponent-control"
           icon={iconNames.DARK_CLOSE_ROUND_ACTIVE}
           hoverIcon={iconNames.DARK_CLOSE_ROUND_HOVER}

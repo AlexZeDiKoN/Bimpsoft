@@ -1,24 +1,16 @@
 /* global L */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Shortcuts } from 'react-shortcuts'
 import { notification } from 'antd'
+// import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
-import { Symbol } from '@DZVIN/milsymbol'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
-import SubordinationLevel from '../../constants/SubordinationLevel'
 import i18n from '../../i18n'
-import {
-  ADD_POINT, ADD_SEGMENT, ADD_AREA, ADD_CURVE, ADD_POLYGON, ADD_POLYLINE, ADD_CIRCLE, ADD_RECTANGLE, ADD_SQUARE,
-  ADD_TEXT,
-  // TODO: пибрати це після тестування
-  SELECT_PRINT_AREA,
-} from '../../constants/shortcuts'
 import { toggleMapGrid } from '../../services/coordinateGrid'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -32,12 +24,13 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors } from '../../constants'
-import { generateTextSymbolSvg } from '../../utils'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
 import WebmapApi from '../../server/api.webmap'
+import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
+import UpdateQueue from './patch/UpdateQueue'
 import {
-  initMapEvents, createTacticalSign, getGeometry, calcMiddlePoint, activateLayer, clearActiveLayer, updateLayerIcons,
+  initMapEvents, createTacticalSign, getGeometry, activateLayer, clearActiveLayer,
   createSearchMarker, setLayerSelected,
 } from './Tactical'
 
@@ -53,7 +46,7 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 }
 
 const switchScaleOptions = {
-  scales: [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ],
+  scales: SCALES,
   splitScale: true,
   ratioCustomItemText: '1: інший...',
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
@@ -63,37 +56,29 @@ const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeo
 
 // TODO: прибрати це після тестування
 let tempPrintFlag = false
-const tmp = `<svg
-  width="480" height="480"
-  line-point-1="24,240"
-  line-point-2="456,240"
->
-  <path
-    fill="none"
-    stroke="red" stroke-width="3" stroke-linecap="square"
-    d="M8,240
-       a16,16 0 0,1 16,-16
-       h80
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h106
-       v-65 l-4,6 4,-15 4,15 -4,-6 v35
-       l-20,0 40,0 -20,0 v15
-       l-20,0 40,0 -20,0 v15
-       h106
-       l15,-23 15,23 -15,23 -15,-23
-       m30,0 h80
-       a16,16 0 0,1 16,16" 
-  />
-</svg>`
+// const tmp = `<svg
+//   width="480" height="480"
+//   line-point-1="24,240"
+//   line-point-2="456,240"
+// >
+//   <path
+//     fill="none"
+//     stroke="red" stroke-width="3" stroke-linecap="square"
+//     d="M8,240
+//        a16,16 0 0,1 16,-16
+//        h80
+//        l15,-23 15,23 -15,23 -15,-23
+//        m30,0 h106
+//        v-65 l-4,6 4,-15 4,15 -4,-6 v35
+//        l-20,0 40,0 -20,0 v15
+//        l-20,0 40,0 -20,0 v15
+//        h106
+//        l15,-23 15,23 -15,23 -15,-23
+//        m30,0 h80
+//        a16,16 0 0,1 16,16"
+//   />
+// </svg>`
 // TODO: end
-
-const colorOf = (affiliation) => {
-  switch (affiliation) {
-    // TODO
-    default:
-      return 'black'
-  }
-}
 
 const miniMapOptions = {
   width: 200,
@@ -191,16 +176,6 @@ function tacticalSignEquals (object, data) {
   // TODO інші властивості
 }
 
-const filterSet = (data) => {
-  const result = {}
-  data.forEach((k, v) => {
-    if (k !== '') {
-      result[v] = k
-    }
-  })
-  return result
-}
-
 const filterObj = (data) => {
   for (const key of Object.keys(data)) {
     if (data[key] === '') {
@@ -208,6 +183,41 @@ const filterObj = (data) => {
     }
   }
   return Object.keys(data).length ? data : null
+}
+
+const setScaleOptions = (layer, params) => {
+  if (!layer.object || !layer.object.type) {
+    return
+  }
+  switch (+layer.object.type) {
+    case entityKind.POINT:
+      layer.setScaleOptions({
+        min: params[paramsNames.POINT_SIZE_MIN],
+        max: params[paramsNames.POINT_SIZE_MAX],
+      })
+      break
+    case entityKind.TEXT:
+      layer.setScaleOptions({
+        min: params[paramsNames.TEXT_SIZE_MIN],
+        max: params[paramsNames.TEXT_SIZE_MAX],
+      })
+      break
+    case entityKind.SEGMENT:
+    case entityKind.AREA:
+    case entityKind.CURVE:
+    case entityKind.POLYGON:
+    case entityKind.POLYLINE:
+    case entityKind.CIRCLE:
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE:
+      // todo:
+      // layer.setScaleOptions({
+      //   min: params[paramsNames.LINE_SIZE_MIN],
+      //   max: params[paramsNames.LINE_SIZE_MAX],
+      // })
+      break
+    default:
+  }
 }
 
 export default class WebMap extends Component {
@@ -238,10 +248,7 @@ export default class WebMap extends Component {
     }),
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
-    pointSizes: PropTypes.shape({
-      min: PropTypes.number,
-      max: PropTypes.number,
-    }),
+    params: PropTypes.object,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
@@ -261,7 +268,10 @@ export default class WebMap extends Component {
     }),
     // Redux actions
     addObject: PropTypes.func,
-    deleteObject: PropTypes.func,
+    onDelete: PropTypes.func,
+    onCut: PropTypes.func,
+    onCopy: PropTypes.func,
+    onPaste: PropTypes.func,
     editObject: PropTypes.func,
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -281,13 +291,21 @@ export default class WebMap extends Component {
   constructor (props) {
     super(props)
     this.backVersion = '-?'
-    WebmapApi.getVersion()
-      .then((version) => (this.backVersion = version))
-      .catch((err) => notification.error({ message: i18n.ERROR, description: err.message }))
+    this.view = {
+      lat: 0,
+      lng: 0,
+      zoom: 0,
+    }
   }
 
   async componentDidMount () {
     const { sources } = this.props
+
+    try {
+      this.backVersion = await WebmapApi.getVersion()
+    } catch (err) {
+      notification.error({ message: i18n.ERROR, description: err.message })
+    }
 
     this.setMapView()
     this.setMapSource(sources)
@@ -418,9 +436,16 @@ export default class WebMap extends Component {
         tilePane.style.opacity = nextProps.backOpacity / 100
       }
     }
-    // pointSizes
-    if (nextProps.pointSizes !== this.props.pointSizes && this.map && this.map._container) {
-      this.updatePointSizes()
+    // params
+    if (nextProps.params !== this.props.params && this.map && this.map._container) {
+      this.updateScaleOptions(nextProps.params)
+    }
+    if (
+      this.view.lat !== nextProps.center.lat || this.view.lng !== nextProps.center.lng ||
+      this.view.zoom !== nextProps.zoom
+    ) {
+      this.view = { lat: nextProps.center.lat, lng: nextProps.center.lng, zoom: nextProps.zoom }
+      this.map && this.map.setView(nextProps.center, nextProps.zoom)
     }
     return false
   }
@@ -488,29 +513,18 @@ export default class WebMap extends Component {
     this.map.setView(this.props.center, this.props.zoom)
     initMapEvents(this.map, this.clickInterhandler)
     this.map.attributionControl.setPrefix(`f:v${version} b:v${this.backVersion}`)
-    this.map.on('deletelayer', this.deleteObject)
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)
-    this.map.on('zoomend', this.updatePointSizes)
-    this.map.on('moveend', this.moveHandler)
+    this.map.on('moveend', this.moveEndHandler)
+    this.map.on('zoomend', this.moveEndHandler)
     this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
-    this.map.on('escape', this.onEscape)
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectend', this.onBoxSelect)
     this.map.doubleClickZoom.disable()
-  }
-
-  calcPointSize = (zoom) => {
-    const { min, max } = this.props.pointSizes
-    const result = zoom <= MIN_ZOOM
-      ? min
-      : zoom >= MAX_ZOOM
-        ? max
-        : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-    return Math.round(result)
+    this.updater = new UpdateQueue(this.map)
   }
 
   onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
@@ -543,20 +557,15 @@ export default class WebMap extends Component {
     this.props.onSelectedList(selectedIds)
   }
 
-  onEscape = () => {
-    if (this.searchMarker) {
-      this.searchMarker.removeFrom(this.map)
-      delete this.searchMarker
-    }
-  }
-
   onStopMeasuring = () => {
     this.props.stopMeasuring()
   }
 
-  moveHandler = () => {
+  moveEndHandler = () => {
     const { lat, lng } = this.map.getCenter()
-    this.props.onMove({ lat, lng })
+    const zoom = this.map.getZoom()
+    this.view = { lat, lng, zoom }
+    this.props.onMove({ lat, lng }, zoom)
   }
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
@@ -588,26 +597,20 @@ export default class WebMap extends Component {
     }
   }
 
-  updatePointSizes = () => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(this.props.showAmplifiers ? filterSet(attributes) : {}) })
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+  updateScaleOptions = (params) => {
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        setScaleOptions(layer, params)
+      })
+    }
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map.eachLayer((layer) => {
-      if (layer.id && layer.options && layer.options.tsType === entityKind.POINT) {
-        const { code, attributes } = layer.object
-        const symbol = new Symbol(code,
-          { size: this.calcPointSize(this.map.getZoom()), ...(showAmplifiers ? filterSet(attributes) : {}) })
-        updateLayerIcons(layer, symbol.asSVG(), symbol.getAnchor())
-      }
-    })
+    if (this.map) {
+      this.map.eachLayer((layer) => {
+        layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+      })
+    }
   }
 
   showCoordinates = ({ lng, lat }) => {
@@ -714,37 +717,15 @@ export default class WebMap extends Component {
 
   addObject = (object) => {
     // console.log('addObject', object.toJS())
-    const { id, type, code = '', point, geometry, affiliation, attributes } = object
-    let anchor
-    let template
-    let points = geometry.toJS()
-    let color = colorOf(affiliation)
-    if (+type === entityKind.POINT) {
-      const options = {
-        size: this.calcPointSize(this.map.getZoom()),
-        ...(this.props.showAmplifiers ? filterSet(attributes) : {}),
-      }
-      const symbol = new Symbol(code, options)
-      template = symbol.asSVG()
-      points = [ point ]
-      anchor = symbol.getAnchor()
-    } else if (+type === entityKind.TEXT) {
-      // console.log(attributes)
-      template = generateTextSymbolSvg(attributes)
-      points = [ point ]
-      anchor = { x: 0, y: 0 }
-    } else if (+type === entityKind.SEGMENT) {
-      template = attributes.template
-      color = attributes.color
-    }
-    const layer = createTacticalSign(id, object, +type, points, template, color, this.map, anchor)
+    const { id, attributes } = object
+    const layer = createTacticalSign(object, this.map)
     if (layer) {
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       layer.addTo(this.map)
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId } = this.props
+      const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null } = attributes
 
@@ -757,16 +738,26 @@ export default class WebMap extends Component {
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
       }
+
+      setScaleOptions(layer, params)
+
+      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
   }
 
   clickOnLayer = (event) => {
     const { target } = event
-    const targetLayer = target.object && target.object.layer
-    if (Number(targetLayer) === this.props.layer) {
+    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
+    const targetLayer = target.object && Number(target.object.layer)
+    if (targetLayer === this.props.layer) {
       activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
       L.DomEvent.stopPropagation(event)
       event.target._map._container.focus()
+    } else if (useOneClickForActivateLayer && targetLayer) {
+      this.props.onChangeLayer(targetLayer)
+      activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
+      event.target._map._container.focus()
+      L.DomEvent.stopPropagation(event)
     }
   }
 
@@ -778,15 +769,11 @@ export default class WebMap extends Component {
       const targetLayer = target.object && Number(target.object.layer)
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
+        activateLayer(target, this.props.edit)
+        event.target._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
-  }
-
-  deleteObject = (layer) => {
-    layer.pm.disable()
-    delete layer._map.pm.activeLayer
-    this.props.deleteObject(layer.id)
   }
 
   activeLayerHandler = async ({ oldLayer, newLayer }) => {
@@ -962,139 +949,140 @@ export default class WebMap extends Component {
     // TODO: скинути дані в сторі
   }
 
-  // TODO: пибрати це після тестування
-  handleShortcuts = async (action) => {
-    const { addObject } = this.props
-    const bounds = this.map.getBounds()
-    const center = bounds.getCenter()
-    const width = bounds.getEast() - bounds.getWest()
-    const height = bounds.getNorth() - bounds.getSouth()
-    let created
-    switch (action) {
-      case ADD_POINT:
-        console.info('ADD_POINT')
-        break
-      case ADD_SEGMENT: {
-        console.info('ADD_SEGMENT')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.SEGMENT,
-          point: calcMiddlePoint(geometry),
-          geometry,
-          attributes: {
-            template: tmp,
-            color: 'red',
-          },
-        })
-        break
-      }
-      case ADD_AREA: {
-        console.info('ADD_AREA')
-        const geometry = [
-          { lat: center.lat - height / 10, lng: center.lng },
-          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.AREA,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_CURVE: {
-        console.info('ADD_CURVE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.CURVE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_POLYGON: {
-        console.info('ADD_POLYGON')
-        const geometry = [
-          { lat: center.lat - height / 10, lng: center.lng },
-          { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.POLYGON,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_POLYLINE: {
-        console.info('ADD_POLYLINE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng - width / 10 },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.POLYLINE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_CIRCLE: {
-        console.info('ADD_CIRCLE')
-        const geometry = [
-          { lat: center.lat, lng: center.lng },
-          { lat: center.lat, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.CIRCLE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_RECTANGLE: {
-        console.info('ADD_RECTANGLE')
-        const geometry = [
-          { lat: center.lat - width / 15, lng: center.lng - width / 10 },
-          { lat: center.lat + width / 15, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.RECTANGLE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_SQUARE: {
-        console.info('ADD_SQUARE')
-        const geometry = [
-          { lat: center.lat - width / 10, lng: center.lng - width / 10 },
-          { lat: center.lat + width / 10, lng: center.lng + width / 10 },
-        ]
-        created = await addObject({
-          type: entityKind.SQUARE,
-          point: calcMiddlePoint(geometry),
-          geometry,
-        })
-        break
-      }
-      case ADD_TEXT:
-        console.info('ADD_TEXT')
-        break
-      case SELECT_PRINT_AREA:
-        tempPrintFlag = !tempPrintFlag
-        toggleMapGrid(this.map, tempPrintFlag)
-        break
-      default:
-        console.error(`Unknown action: ${action}`)
-    }
-    this.activateCreated(created)
+  // // TODO: пибрати це після тестування
+  // handleShortcuts = async (action) => {
+  //   const { addObject } = this.props
+  //   const bounds = this.map.getBounds()
+  //   const center = bounds.getCenter()
+  //   const width = bounds.getEast() - bounds.getWest()
+  //   const height = bounds.getNorth() - bounds.getSouth()
+  //   let created
+  //   switch (action) {
+  //     case ADD_POINT:
+  //       console.info('ADD_POINT')
+  //       break
+  //     case ADD_SEGMENT: {
+  //       console.info('ADD_SEGMENT')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.SEGMENT,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //         attributes: {
+  //           template: tmp,
+  //           color: 'red',
+  //         },
+  //       })
+  //       break
+  //     }
+  //     case ADD_AREA: {
+  //       console.info('ADD_AREA')
+  //       const geometry = [
+  //         { lat: center.lat - height / 10, lng: center.lng },
+  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.AREA,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_CURVE: {
+  //       console.info('ADD_CURVE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.CURVE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_POLYGON: {
+  //       console.info('ADD_POLYGON')
+  //       const geometry = [
+  //         { lat: center.lat - height / 10, lng: center.lng },
+  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.POLYGON,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_POLYLINE: {
+  //       console.info('ADD_POLYLINE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng - width / 10 },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.POLYLINE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_CIRCLE: {
+  //       console.info('ADD_CIRCLE')
+  //       const geometry = [
+  //         { lat: center.lat, lng: center.lng },
+  //         { lat: center.lat, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.CIRCLE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_RECTANGLE: {
+  //       console.info('ADD_RECTANGLE')
+  //       const geometry = [
+  //         { lat: center.lat - width / 15, lng: center.lng - width / 10 },
+  //         { lat: center.lat + width / 15, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.RECTANGLE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_SQUARE: {
+  //       console.info('ADD_SQUARE')
+  //       const geometry = [
+  //         { lat: center.lat - width / 10, lng: center.lng - width / 10 },
+  //         { lat: center.lat + width / 10, lng: center.lng + width / 10 },
+  //       ]
+  //       created = await addObject({
+  //         type: entityKind.SQUARE,
+  //         point: calcMiddlePoint(geometry),
+  //         geometry,
+  //       })
+  //       break
+  //     }
+  //     case ADD_TEXT:
+  //       console.info('ADD_TEXT')
+  //       break
+  //     default:
+  //       console.error(`Unknown action: ${action}`)
+  //   }
+  //   this.activateCreated(created)
+  // }
+
+  selectPrintAreaHandler = () => {
+    tempPrintFlag = !tempPrintFlag
+    toggleMapGrid(this.map, tempPrintFlag)
   }
 
   startCreatePoly = (edit, type) => {
@@ -1174,20 +1162,31 @@ export default class WebMap extends Component {
     }
   }
 
+  escapeHandler = () => {
+    if (this.searchMarker) {
+      this.searchMarker.removeFrom(this.map)
+      delete this.searchMarker
+    }
+  }
+
+  spaceHandler = () => {
+    if (this.map.pm.activeLayer) {
+      clearActiveLayer(this.map)
+    }
+  }
+
   render () {
     return (
-      <Shortcuts
-        name='WebMap'
-        handler={this.handleShortcuts}
-        stopPropagation={false}
+      <div
+        onDragOver={this.dragOverHandler}
+        onDrop={this.dropHandler}
+        ref={(container) => (this.container = container)}
+        style={{ height: '100%' }}
       >
-        <div
-          onDragOver={this.dragOverHandler}
-          onDrop={this.dropHandler}
-          ref={(container) => (this.container = container)}
-          style={{ height: '100%' }}
-        />
-      </Shortcuts>
+        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
+        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
+      </div>
     )
   }
 }

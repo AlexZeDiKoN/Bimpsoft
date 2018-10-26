@@ -1,12 +1,23 @@
-export const ADD_POINT = 'ADD_POINT'
-export const ADD_SEGMENT = 'ADD_SEGMENT'
-export const ADD_AREA = 'ADD_AREA'
-export const ADD_CURVE = 'ADD_CURVE'
-export const ADD_POLYGON = 'ADD_POLYGON'
-export const ADD_POLYLINE = 'ADD_POLYLINE'
-export const ADD_CIRCLE = 'ADD_CIRCLE'
-export const ADD_RECTANGLE = 'ADD_RECTANGLE'
-export const ADD_SQUARE = 'ADD_SQUARE'
-export const ADD_TEXT = 'ADD_TEXT'
+import KeyCode from 'keycode-js'
+// info: https://www.w3.org/TR/uievents-key/#named-key-attribute-values
+
+export const ADD_POINT = (e) => e.altKey && e.keyCode === KeyCode.KEY_1
+export const ADD_SEGMENT = (e) => e.altKey && e.keyCode === KeyCode.KEY_2
+export const ADD_AREA = (e) => e.altKey && e.keyCode === KeyCode.KEY_3
+export const ADD_CURVE = (e) => e.altKey && e.keyCode === KeyCode.KEY_4
+export const ADD_POLYGON = (e) => e.altKey && e.keyCode === KeyCode.KEY_5
+export const ADD_POLYLINE = (e) => e.altKey && e.keyCode === KeyCode.KEY_6
+export const ADD_CIRCLE = (e) => e.altKey && e.keyCode === KeyCode.KEY_7
+export const ADD_RECTANGLE = (e) => e.altKey && e.keyCode === KeyCode.KEY_8
+export const ADD_SQUARE = (e) => e.altKey && e.keyCode === KeyCode.KEY_9
+export const ADD_TEXT = (e) => e.altKey && e.keyCode === KeyCode.KEY_0
 // TODO: прибрати це після тестування
-export const SELECT_PRINT_AREA = 'SELECT_PRINT_AREA'
+export const SELECT_PRINT_AREA = (e) => e.altKey && e.keyCode === KeyCode.KEY_P
+
+export const DELETE = (e) => e.key === 'Delete'
+export const ENTER = (e) => e.key === 'Enter'
+export const COPY = (e) => e.key === 'Copy' || (e.ctrlKey && e.keyCode === KeyCode.KEY_C)
+export const PASTE = (e) => e.key === 'Paste' || (e.ctrlKey && e.keyCode === KeyCode.KEY_V)
+export const CUT = (e) => e.key === 'Cut' || (e.ctrlKey && e.keyCode === KeyCode.KEY_X)
+export const ESC = (e) => e.key === 'Escape'
+export const SPACE = (e) => e.key === ' '

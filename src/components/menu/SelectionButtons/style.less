@@ -1,0 +1,23 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.clipboard-size.dzvin-count-label {
+  margin-left: 14px;
+  margin-top: -19px;
+  font-size: 11px;
+  height: 14px;
+  line-height: 11px;
+  border-radius: 2px;
+  border: 2px solid @toolbar-color;
+  color: @toolbar-color;
+  padding: 0px 2px;
+  background: @toolbar-background;
+  pointer-events: none;
+  cursor: inherit;
+
+  .icon-button-hoverable:hover &{
+    border: 2px solid @toolbar-color-selected;
+    color: @toolbar-color-selected;
+    background: @toolbar-background-selected;
+  }
+}

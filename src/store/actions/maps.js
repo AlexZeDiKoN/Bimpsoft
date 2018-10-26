@@ -1,7 +1,8 @@
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
-import { asyncAction, maps, layers } from './index'
+import { updateColorByLayerId } from './layers'
+import { asyncAction, maps, layers, webMap } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
@@ -61,11 +62,15 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
         break
       }
       case 'layersFolder': {
-        dispatch(maps.updateMap({ operationId, mapId: id, name }))
+        await dispatch(maps.updateMap({ operationId, mapId: id, name }))
         const layersData = entities.map(({ id: folderID, entityId: layerId, name, dateFor, formationId, readOnly }) =>
           ({ mapId: id, layerId, name, dateFor, formationId, folderID, readOnly })
         )
-        dispatch(layers.updateLayers(layersData))
+        await dispatch(layers.updateLayers(layersData))
+        for (const { layerId } of layersData) {
+          await dispatch(webMap.updateObjectsByLayerId(layerId))
+          await dispatch(updateColorByLayerId(Number(layerId)))
+        }
         if (layersData.length > 0) {
           let selectedLayer
           if (selectedItem === null) {

@@ -1,17 +1,18 @@
 /* global io */
 import { getWebmapApi } from '../utils/services'
-import { updateColorByLayerId } from './actions/layers'
+import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 
-const updateLayer = (dispatch) => (layerId) => {
-  dispatch(updateColorByLayerId(Number(layerId)))
-}
+const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
+  type: UPDATE_LAYER,
+  layerData: { layerId, color },
+})
 
-const updateObject = (dispatch) => (id) => {
+const updateObject = (dispatch) => ({ id }) => {
   dispatch(webMapActions.refreshObject(id))
 }
 
-export const initSocketEvents = (dispatch, getState) => {
+export const initSocketEvents = (dispatch/* , getState */) => {
   let socket
   try {
     socket = io(getWebmapApi())
@@ -19,6 +20,6 @@ export const initSocketEvents = (dispatch, getState) => {
     console.warn('Вебсокет-сервер недоступний')
     return
   }
-  socket.on('update layer', updateLayer(dispatch))
+  socket.on('update layer color', updateLayer(dispatch))
   socket.on('update object', updateObject(dispatch))
 }

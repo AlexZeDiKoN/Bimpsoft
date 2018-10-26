@@ -38,7 +38,7 @@ export default L.SVG.include({
 
   _updateStyle: function (layer) {
     _updateStyle.call(this, layer)
-    const { options: { shadowColor, opacity = 1, hidden }, _shadowPath, _path, _outlinePath } = layer
+    const { options: { shadowColor, opacity = 1, hidden, selected }, _shadowPath, _path, _outlinePath } = layer
 
     if (shadowColor) {
       _shadowPath.removeAttribute('display')
@@ -56,6 +56,10 @@ export default L.SVG.include({
       _path.style.display = hidden ? 'none' : ''
       _outlinePath.style.display = hidden ? 'none' : ''
       _shadowPath.style.display = hidden ? 'none' : ''
+    }
+    const hasClassSelected = _path.classList.contains('dzvin-path-selected')
+    if (hasClassSelected !== selected) {
+      selected ? _path.classList.add('dzvin-path-selected') : _path.classList.remove('dzvin-path-selected')
     }
   },
 
