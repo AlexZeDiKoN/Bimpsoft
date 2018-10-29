@@ -14,12 +14,15 @@ stages:
   - build
   - deploy
 
-test:
-  stage: test
+.base: &base
   only:
     - develop
   tags:
     - webmap
+
+test:
+  stage: test
+  <<: *base
   script:
     - echo TODO auto-tests
     - echo %date%
@@ -28,10 +31,7 @@ test:
 
 build:
   stage: build
-  only:
-  - develop
-  tags:
-    - webmap
+  <<: *base
   script:
     - echo Building project...
     - call yarn
@@ -41,7 +41,11 @@ build:
     - rmdir /s /q build\explorerLite
     - copy .env.backup .env
     - del .env.backup
-    - git commit -a -m "[ci skip] autocommit inc-version after build"
+    - set jsonfile=package.json
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - git status
+    - git commit -a -m "[CI skip] %version% (autocommit)"
     - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
   artifacts:
@@ -59,10 +63,7 @@ build:
 
 deploy-qa:
   stage: deploy
-  only:
-  - develop
-  tags:
-    - webmap
+  <<: *base
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
@@ -77,10 +78,7 @@ deploy-qa:
 
 deploy-zip:
   stage: deploy
-  only:
-  - develop
-  tags:
-    - webmap
+  <<: *base
   script:
     - echo Packing bundle into ZIP file...
     - git fetch
