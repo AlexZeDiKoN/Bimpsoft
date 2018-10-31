@@ -113,6 +113,7 @@ export default L.SVG.include({
     const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
     if ((kind === entityKind.AREA && length >= 3) || (kind === entityKind.CURVE && length >= 2)) {
       console.log('path', layer._rings[0])
+      console.log('options', layer.options)
       // prepareBezierPath(layer._rings[0], kind === entityKind.AREA)
     }
   },
