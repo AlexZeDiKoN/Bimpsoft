@@ -22,10 +22,10 @@ const WithLineAmplifiers = (Component) => class LineAmplifiersComponent extends 
 
   constructor (props) {
     super(props)
-    let { amplifiers: { lineType, amplType } = {} } = props
-    amplType = Object.entries(types).find(([ key, { value } ]) => value === lineType)
-    amplType = amplType ? amplType[0] : AMPL_NONE
-    this.state = { lineType, amplType }
+    let { amplifiers: { lineAmpl } = {} } = props
+    lineAmpl = Object.entries(types).find(([ key, { value } ]) => value === lineAmpl)
+    lineAmpl = lineAmpl ? lineAmpl[0] : AMPL_NONE
+    this.state.lineAmpl = lineAmpl
   }
 
   lineAmplChangeHandler = (lineAmpl) => this.setState({ lineAmpl })
@@ -44,12 +44,12 @@ const WithLineAmplifiers = (Component) => class LineAmplifiersComponent extends 
 
     const value = canEdit
       ? (
-        <Select value={ lineType } onChange={this.lineTypeChangeHandler}>
+        <Select value={lineAmpl} onChange={this.lineAmplChangeHandler}>
           {typeOption(AMPL_NONE, lineType, types[AMPL_NONE].text)}
           {typeOption(AMPL_SHOW_LEVEL, lineType, types[AMPL_SHOW_LEVEL].text, subordinationLevel)}
         </Select>
       )
-      : typeDiv(typeInfo.value, typeInfo.text, typeInfo.value === AMPL_SHOW_LEVEL ? subordinationLevel : null)
+      : typeDiv(lineType, typeInfo.text, typeInfo.value === AMPL_SHOW_LEVEL ? subordinationLevel : null)
 
     return (
       <FormRow label={i18n.AMPLIFIERS}>

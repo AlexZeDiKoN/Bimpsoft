@@ -5,17 +5,19 @@ import {
   WithColor,
   WithSegment,
   WithLineType,
+  WithLineAmplifiers,
   WithCoordinatesArray,
   WithSubordinationLevel,
 } from '../parts/index'
 
 export default class LineForm extends
-  compose(WithSubordinationLevel, WithCoordinatesArray, WithLineType, WithSegment, WithColor)(AbstractShapeForm) {
+  compose(WithSubordinationLevel, WithCoordinatesArray, WithLineType, WithLineAmplifiers, WithSegment, WithColor)(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
     ...WithColor.propTypes,
     ...WithSegment.propTypes,
     ...WithLineType.propTypes,
+    ...WithLineAmplifiers.propTypes,
     ...WithCoordinatesArray.propTypes,
     ...WithSubordinationLevel.propTypes,
   }
@@ -27,6 +29,7 @@ export default class LineForm extends
         {this.renderColor()}
         {this.renderSegment()}
         {this.renderLineType()}
+        {this.renderLineAmplifiers()}
         {this.renderCoordinatesArray()}
       </Fragment>
     )
