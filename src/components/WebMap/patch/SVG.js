@@ -2,7 +2,7 @@
 import Bezier from 'bezier-js'
 import entityKind from '../entityKind'
 import { prepareLinePath } from './utils/SVG'
-import { prepareBezierPath, bezierPoint } from './utils/Bezier'
+import { prepareBezierPath } from './utils/Bezier'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -86,6 +86,9 @@ export default L.SVG.include({
     layer.removeInteractiveTarget(layer._outlinePath)
 
     L.DomUtil.remove(layer._shadowPath)
+
+    layer.deleteMask && layer.deleteMask()
+    layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
   },
 
   _updatePoly: function (layer, closed) {
@@ -113,7 +116,8 @@ export default L.SVG.include({
     if (layer.options.lineAmpl === 'show-level') {
       const step = 100
       let sum = 0
-      let offset = 0
+      let offset = -step / 2
+      const amplPoints = []
       for (let i = 0; i < layer._rings[0].length - 1; i++) {
         const b = new Bezier(
           layer._rings[0][i].x,
@@ -130,23 +134,32 @@ export default L.SVG.include({
         if (length > 0) {
           let pos = offset + step
           while (pos < length) {
-            const amplPoint = bezierPoint(
-              layer._rings[ 0 ][ i ],
-              layer._rings[ 0 ][ i ].cp2,
-              layer._rings[ 0 ][ i + 1 ].cp1,
-              layer._rings[ 0 ][ i + 1 ],
-              pos / length
-            )
+            const part = pos / length
+            const amplPoint = b.get(part)
+            const n = b.normal(part)
+            amplPoint.n = Math.atan2(n.y, n.x) / Math.PI * 180
             pos += step
-            console.log(amplPoint)
+            amplPoints.push(amplPoint)
           }
           offset = pos - step - length
         }
       }
+      console.log(amplPoints)
       console.log('length', sum)
       console.log('path', layer._rings[0])
-      console.log('options', layer.options)
-      // prepareBezierPath(layer._rings[0], kind === entityKind.AREA)
+      const mask = layer.getMask()
+      mask.innerHTML = `<rect fill="white" x="0" y="0" width="100%" height="100%" />${
+        amplPoints.map(({ x, y }) => `<circle cx="${x}" cy="${y}" r="${10}" fill="black" />`).join('')
+      }`
+      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
+      const amplifierGroup = layer.getAmplifierGroup()
+      amplifierGroup.innerHTML = amplPoints.map(({ x, y, n }) =>
+        `<g transform="translate(${x},${y}) rotate(${n + 90})"><path d="m0,-8 v16" stroke-width="3" stroke="black"/></g>`
+      ).join('')
+    } else {
+      layer.deleteMask && layer.deleteMask()
+      layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
+      layer._path.removeAttribute('mask')
     }
   },
 })
