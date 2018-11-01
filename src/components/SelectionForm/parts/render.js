@@ -38,7 +38,7 @@ export const typeDiv = (borderStyle, title, level) => {
   if (level) {
     amp = extractSubordinationLevelSVG(level, 36, 4, 56, 20)
     if (borderStyle === 'dashed') {
-      dash.strokeDasharray = '4 1'
+      dash.strokeDasharray = '3.5 1.5'
     }
   }
   return (
@@ -54,7 +54,7 @@ export const typeDiv = (borderStyle, title, level) => {
               <rect fill="white" x="0" y="0" width="100%" height="100%" />
               <g dangerouslySetInnerHTML={{ __html: amp.mask }} />
             </mask>
-            <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth="2.5" d="M0,10 h56 m1,1" {...dash} />
+            <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth="2" d="M0,10 h56 m1,1" {...dash} />
             <g stroke="black" strokeWidth="4" fill="none" transform={`translate(28,10)`} dangerouslySetInnerHTML={{ __html: amp.sign }} />
           </svg>
         )

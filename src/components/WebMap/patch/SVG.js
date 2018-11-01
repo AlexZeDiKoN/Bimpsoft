@@ -1,7 +1,8 @@
 /* global L */
+import Bezier from 'bezier-js'
 import entityKind from '../entityKind'
 import { prepareLinePath } from './utils/SVG'
-import { prepareBezierPath } from './utils/Bezier'
+import { prepareBezierPath, bezierPoint } from './utils/Bezier'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -100,7 +101,7 @@ export default L.SVG.include({
       }
     } else if (kind === entityKind.AREA && length >= 3) {
       result = prepareBezierPath(layer._rings[0], true)
-      this._updateMask(layer)
+      // this._updateMask(layer)
     } else if (kind === entityKind.CURVE && length >= 2) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
       this._updateMask(layer)
@@ -109,9 +110,40 @@ export default L.SVG.include({
   },
 
   _updateMask: function (layer) {
-    const kind = layer.options && layer.options.tsType
-    const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
-    if ((kind === entityKind.AREA && length >= 3) || (kind === entityKind.CURVE && length >= 2)) {
+    if (layer.options.lineAmpl === 'show-level') {
+      const step = 100
+      let sum = 0
+      let offset = 0
+      for (let i = 0; i < layer._rings[0].length - 1; i++) {
+        const b = new Bezier(
+          layer._rings[0][i].x,
+          layer._rings[0][i].y,
+          layer._rings[0][i].cp2.x,
+          layer._rings[0][i].cp2.y,
+          layer._rings[0][i + 1].cp1.x,
+          layer._rings[0][i + 1].cp1.y,
+          layer._rings[0][i + 1].x,
+          layer._rings[0][i + 1].y,
+        )
+        const length = b.length()
+        sum += length
+        if (length > 0) {
+          let pos = offset + step
+          while (pos < length) {
+            const amplPoint = bezierPoint(
+              layer._rings[ 0 ][ i ],
+              layer._rings[ 0 ][ i ].cp2,
+              layer._rings[ 0 ][ i + 1 ].cp1,
+              layer._rings[ 0 ][ i + 1 ],
+              pos / length
+            )
+            pos += step
+            console.log(amplPoint)
+          }
+          offset = pos - step - length
+        }
+      }
+      console.log('length', sum)
       console.log('path', layer._rings[0])
       console.log('options', layer.options)
       // prepareBezierPath(layer._rings[0], kind === entityKind.AREA)

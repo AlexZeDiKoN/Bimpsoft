@@ -103,7 +103,7 @@ function bershtainPolynom (p0, p1, p2, p3, t) {
   return ot * ot * ot * p0 + 3 * t * ot * ot * p1 + 3 * t * t * ot * p2 + t * t * t * p3
 }
 
-function bezierPoint (p0, p1, p2, p3, t) {
+export function bezierPoint (p0, p1, p2, p3, t) {
   return {
     x: bershtainPolynom(p0.x, p1.x, p2.x, p3.x, t),
     y: bershtainPolynom(p0.y, p1.y, p2.y, p3.y, t),

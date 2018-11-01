@@ -719,6 +719,7 @@ export default class WebMap extends Component {
     // console.log('addObject', object.toJS())
     const { id, attributes } = object
     const layer = createTacticalSign(object, this.map)
+    layer.options.lineAmpl = attributes.lineAmpl
     if (layer) {
       layer.id = id
       layer.object = object
