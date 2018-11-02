@@ -34,7 +34,7 @@ export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth =
   }
   const sign = simpleLevelSymbolCode(level)
   const ms = new milsymbol.Symbol(sign)
-  console.log(ms)
+  // console.log(ms)
   const dom = ms.asDOM()
   const g = dom.children[1]
   const signText = g.innerHTML

@@ -1,8 +1,10 @@
 /* global L */
+import { colors } from '../../../constants'
 
 export default L.Path.include({
   setColor: function (color) {
     this.setStyle({ color })
+    this._amplifierGroup && this._amplifierGroup.setAttribute('stroke', color)
   },
 
   setSelected: function (selected) {
@@ -42,6 +44,7 @@ export default L.Path.include({
   getAmplifierGroup: function () {
     if (!this._amplifierGroup) {
       this._amplifierGroup = L.SVG.create('g')
+      this._amplifierGroup.setAttribute('stroke', colors.evaluateColor(this.options.color))
       this._renderer._rootGroup.appendChild(this._amplifierGroup)
     }
     return this._amplifierGroup

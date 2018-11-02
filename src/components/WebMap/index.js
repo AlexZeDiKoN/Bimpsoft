@@ -2,7 +2,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { notification } from 'antd'
-// import debounce from 'debounce'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -731,10 +730,10 @@ export default class WebMap extends Component {
       const { color = null, fill = null, lineType = null } = attributes
 
       if (color !== null && color !== '') {
-        layer.setColor && layer.setColor(colors.values.hasOwnProperty(color) ? colors.values[color] : color)
+        layer.setColor && layer.setColor(colors.evaluateColor(color))
       }
       if (fill !== null && fill !== '') {
-        layer.setFill && layer.setFill(colors.values.hasOwnProperty(fill) ? colors.values[fill] : fill)
+        layer.setFill && layer.setFill(colors.evaluateColor(fill))
       }
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
