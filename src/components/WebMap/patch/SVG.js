@@ -1,11 +1,17 @@
 /* global L */
 import Bezier from 'bezier-js'
 import entityKind from '../entityKind'
+import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
+
+const AMPLIFIERS_STEP = 144 // (пікселів) крок відображення ампліфікаторів на лініях
+const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
+const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
+const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
 const _initContainer = L.SVG.prototype._initContainer
 const _initPath = L.SVG.prototype._initPath
@@ -113,8 +119,8 @@ export default L.SVG.include({
   },
 
   _updateMask: function (layer) {
-    if (layer.options.lineAmpl === 'show-level') {
-      const step = 100
+    if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
+      const step = AMPLIFIERS_STEP
       let sum = 0
       let offset = -step / 2
       const amplPoints = []
@@ -137,24 +143,26 @@ export default L.SVG.include({
             const part = pos / length
             const amplPoint = b.get(part)
             const n = b.normal(part)
-            amplPoint.n = Math.atan2(n.y, n.x) / Math.PI * 180
+            amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180
             pos += step
             amplPoints.push(amplPoint)
           }
           offset = pos - step - length
         }
       }
+      const amp = extractSubordinationLevelSVG(layer.object.level, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN)
       console.log(amplPoints)
       console.log('length', sum)
-      console.log('path', layer._rings[0])
       const mask = layer.getMask()
       mask.innerHTML = `<rect fill="white" x="0" y="0" width="100%" height="100%" />${
-        amplPoints.map(({ x, y }) => `<circle cx="${x}" cy="${y}" r="${10}" fill="black" />`).join('')
+        amplPoints.map(({ x, y, n }) =>
+          `<g transform="translate(${x},${y}) rotate(${n})">${amp.mask}</g>`
+        ).join('')
       }`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
       const amplifierGroup = layer.getAmplifierGroup()
       amplifierGroup.innerHTML = amplPoints.map(({ x, y, n }) =>
-        `<g transform="translate(${x},${y}) rotate(${n + 90})"><path d="m0,-8 v16" stroke-width="3" stroke="black"/></g>`
+        `<g stroke="black" stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${n})">${amp.sign}</g>`
       ).join('')
     } else {
       layer.deleteMask && layer.deleteMask()
