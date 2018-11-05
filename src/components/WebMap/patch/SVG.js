@@ -205,27 +205,35 @@ export default L.SVG.include({
   },
 
   _updateMask: function (layer, bezier, locked) {
+    const bounds = layer._map._renderer._bounds
+    const insideMap = ({ x, y }) => x > bounds.min.x - AMPLIFIERS_SIZE && y > bounds.min.y - AMPLIFIERS_SIZE &&
+      x < bounds.max.x + AMPLIFIERS_SIZE && y < bounds.max.y + AMPLIFIERS_SIZE
+    const amplifiers = {
+      rect: `<rect fill="white" x="${bounds.min.x}" y="${bounds.min.y}" width="${bounds.max.x - bounds.min.x}" height="${bounds.max.y - bounds.min.y}" />`,
+      mask: '',
+      group: '',
+    }
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
-      const bounds = layer._map._renderer._bounds
-      const insideMap = ({ x, y }) => x > bounds.min.x - AMPLIFIERS_SIZE && y > bounds.min.y - AMPLIFIERS_SIZE &&
-        x < bounds.max.x + AMPLIFIERS_SIZE && y < bounds.max.y + AMPLIFIERS_SIZE
-      const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked, insideMap)
       const amp = ampSigns[layer.object.level]
-      const mask = layer.getMask()
-      mask.innerHTML = `<rect fill="white" x="${bounds.min.x}" y="${bounds.min.y}" width="${bounds.max.x - bounds.min.x}" height="${bounds.max.y - bounds.min.y}" />${
-        amplPoints.map(({ x, y, n }) =>
-          `<g transform="translate(${x},${y}) rotate(${n})">${amp.mask}</g>`
-        ).join('')
-      }`
-      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
-      const amplifierGroup = layer.getAmplifierGroup()
-      amplifierGroup.innerHTML = amplPoints.map(({ x, y, n }) =>
+      const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked, insideMap)
+      amplifiers.mask += amplPoints.map(({ x, y, n }) =>
+        `<g transform="translate(${x},${y}) rotate(${n})">${amp.mask}</g>`
+      ).join('')
+      amplifiers.group += amplPoints.map(({ x, y, n }) =>
         `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${n})">${amp.sign}</g>`
       ).join('')
+    }
+    if (amplifiers.mask) {
+      layer.getMask().innerHTML = `${amplifiers.rect}${amplifiers.mask}`
+      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
     } else {
       layer.deleteMask && layer.deleteMask()
-      layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
       layer._path.removeAttribute('mask')
+    }
+    if (amplifiers.group) {
+      layer.getAmplifierGroup().innerHTML = amplifiers.group
+    } else {
+      layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
   },
 })
