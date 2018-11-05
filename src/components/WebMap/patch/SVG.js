@@ -2,6 +2,7 @@
 import Bezier from 'bezier-js'
 import entityKind from '../entityKind'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
+import subordinationLevels from '../../../constants/SubordinationLevel'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import './SVG.css'
@@ -13,33 +14,70 @@ const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичног
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
 const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
-const bezierArray = (points, index, bezier, locked) => {
-  const next = locked && index === points.length - 1 ? 0 : index + 1
-  return [
-    points[index].x,
-    points[index].y,
-    bezier ? points[index].cp2.x : points[index].x,
-    bezier ? points[index].cp2.y : points[index].y,
-    bezier ? points[next].cp1.x : points[next].x,
-    bezier ? points[next].cp1.y : points[next].y,
-    points[next].x,
-    points[next].y,
-  ]
+const ampSigns = subordinationLevels.list.reduce((res, { value }) => ({
+  ...res,
+  [value]: extractSubordinationLevelSVG(value, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN),
+}), {})
+
+class Segment {
+  constructor (start, finish) {
+    this.start = start
+    this.finish = finish
+    this.vector = {
+      x: finish.x - start.x,
+      y: finish.y - start.y,
+    }
+  }
+
+  length = () => Math.hypot(this.vector.x, this.vector.y)
+
+  get = (part) => ({
+    x: this.start.x + this.vector.x * part,
+    y: this.start.y + this.vector.y * part,
+  })
+
+  normal = () => ({
+    x: this.start.y - this.finish.y,
+    y: this.finish.x - this.start.x,
+  })
 }
 
 const buildAmplifierPoints = (points, bezier, locked) => {
+  const nextIndex = (index) => locked && index === points.length - 1 ? 0 : index + 1
+  const bezierArray = (points, index) => {
+    const next = nextIndex(index)
+    return [
+      points[index].x,
+      points[index].y,
+      points[index].cp2.x,
+      points[index].cp2.y,
+      points[next].cp1.x,
+      points[next].cp1.y,
+      points[next].x,
+      points[next].y,
+    ]
+  }
+  const lineArray = (points, index) => {
+    const next = nextIndex(index)
+    return [
+      points[index],
+      points[next],
+    ]
+  }
   const step = AMPLIFIERS_STEP
   let offset = -step / 2
   const amplPoints = []
   for (let i = 0; i < points.length - Number(!locked); i++) {
-    const b = new Bezier(...bezierArray(points, i, bezier, locked))
-    const length = b.length()
+    const segment = bezier
+      ? new Bezier(...bezierArray(points, i))
+      : new Segment(...lineArray(points, i))
+    const length = segment.length()
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
         const part = pos / length
-        const amplPoint = b.get(part)
-        const n = b.normal(part)
+        const amplPoint = segment.get(part)
+        const n = segment.normal(part)
         amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180
         pos += step
         amplPoints.push(amplPoint)
@@ -170,7 +208,7 @@ export default L.SVG.include({
   _updateMask: function (layer, bezier, locked) {
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
       const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked)
-      const amp = extractSubordinationLevelSVG(layer.object.level, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN)
+      const amp = ampSigns[layer.object.level]
       const mask = layer.getMask()
       mask.innerHTML = `<rect fill="white" x="-10000" y="-10000" width="20000" height="20000" />${
         amplPoints.map(({ x, y, n }) =>
