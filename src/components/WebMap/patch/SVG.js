@@ -41,7 +41,7 @@ class Segment {
   })
 }
 
-const buildAmplifierPoints = (points, bezier, locked) => {
+const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
   const nextIndex = (index) => locked && index === points.length - 1 ? 0 : index + 1
   const bezierArray = (points, index) => {
     const next = nextIndex(index)
@@ -79,7 +79,7 @@ const buildAmplifierPoints = (points, bezier, locked) => {
         const n = segment.normal(part)
         amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180
         pos += step
-        amplPoints.push(amplPoint)
+        insideMap(amplPoint) && amplPoints.push(amplPoint)
       }
       offset = pos - step - length
     }
@@ -206,10 +206,13 @@ export default L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
-      const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked)
+      const bounds = layer._map._renderer._bounds
+      const insideMap = ({ x, y }) => x > bounds.min.x - AMPLIFIERS_SIZE && y > bounds.min.y - AMPLIFIERS_SIZE &&
+        x < bounds.max.x + AMPLIFIERS_SIZE && y < bounds.max.y + AMPLIFIERS_SIZE
+      const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked, insideMap)
       const amp = ampSigns[layer.object.level]
       const mask = layer.getMask()
-      mask.innerHTML = `<rect fill="white" x="-10000" y="-10000" width="20000" height="20000" />${
+      mask.innerHTML = `<rect fill="white" x="${bounds.min.x}" y="${bounds.min.y}" width="${bounds.max.x - bounds.min.x}" height="${bounds.max.y - bounds.min.y}" />${
         amplPoints.map(({ x, y, n }) =>
           `<g transform="translate(${x},${y}) rotate(${n})">${amp.mask}</g>`
         ).join('')
