@@ -37,8 +37,8 @@ class Segment {
   })
 
   normal = () => ({
-    x: this.start.y - this.finish.y,
-    y: this.finish.x - this.start.x,
+    x: -this.vector.y,
+    y: this.vector.x,
   })
 }
 
