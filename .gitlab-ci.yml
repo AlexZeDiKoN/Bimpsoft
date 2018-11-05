@@ -10,7 +10,7 @@ cache:
     - yarn.lock
 
 stages:
-  - test
+#  - test
   - build
   - deploy
 
@@ -20,14 +20,14 @@ stages:
   tags:
     - webmap
 
-test:
-  stage: test
-  <<: *base
-  script:
-    - echo TODO auto-tests
-    - echo %date%
-    - echo %time%
-    - echo Done
+#test:
+#  stage: test
+#  <<: *base
+#  script:
+#    - echo TODO auto-tests
+#    - echo %date%
+#    - echo %time%
+#    - echo Done
 
 build:
   stage: build

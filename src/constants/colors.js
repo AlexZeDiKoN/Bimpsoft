@@ -27,3 +27,5 @@ export const titles = {
   [YELLOW]: i18n.YELLOW,
   [WHITE]: i18n.WHITE,
 }
+
+export const evaluateColor = (color) => values.hasOwnProperty(color) ? values[color] : color

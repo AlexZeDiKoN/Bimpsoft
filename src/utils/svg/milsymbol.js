@@ -1,4 +1,4 @@
-import { Symbol } from '@DZVIN/milsymbol'
+import milsymbol from '@DZVIN/milsymbol'
 import getBounds from 'svg-path-bounds'
 
 const simpleLevelSymbolCode = (level) => `10031000${`0${level}`.slice(-2)}0000000000`
@@ -28,11 +28,13 @@ const extendRect = (a, b) => {
   }
 }
 
-export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth, boxHeight) => {
+export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth = 0, boxHeight = 0) => {
   if (!level) {
     return null
   }
-  const ms = new Symbol(simpleLevelSymbolCode(level))
+  const sign = simpleLevelSymbolCode(level)
+  const ms = new milsymbol.Symbol(sign)
+  // console.log(ms)
   const dom = ms.asDOM()
   const g = dom.children[1]
   const signText = g.innerHTML
