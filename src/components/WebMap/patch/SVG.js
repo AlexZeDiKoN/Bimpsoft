@@ -22,7 +22,6 @@ const ampSigns = subordinationLevels.list.reduce((res, { value }) => ({
 class Segment {
   constructor (start, finish) {
     this.start = start
-    this.finish = finish
     this.vector = {
       x: finish.x - start.x,
       y: finish.y - start.y,
