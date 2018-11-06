@@ -66,7 +66,8 @@ const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
   const step = AMPLIFIERS_STEP
   let offset = -step / 2
   const amplPoints = []
-  for (let i = 0; i < points.length - Number(!locked); i++) {
+  const last = points.length - Number(!locked)
+  for (let i = 0; i < last; i++) {
     const segment = bezier
       ? new Bezier(...bezierArray(points, i))
       : new Segment(...lineArray(points, i))
@@ -77,9 +78,9 @@ const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
         const part = pos / length
         const amplPoint = segment.get(part)
         const n = segment.normal(part)
-        amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180
+        amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180;
+        (i < last - 1 || length - pos > step / 5) && insideMap(amplPoint) && amplPoints.push(amplPoint)
         pos += step
-        insideMap(amplPoint) && amplPoints.push(amplPoint)
       }
       offset = pos - step - length
     }
