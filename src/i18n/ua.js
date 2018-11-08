@@ -93,6 +93,8 @@ export const SEGMENT_ARC = 'Дуга'
 export const LINE_TYPE = 'Тип лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
+export const WAVED = 'Хвиляста'
+export const STROKED = 'З засічками'
 
 export const NO_ONE = 'Немає'
 export const SHOW_LEVEL = 'Рівень'
