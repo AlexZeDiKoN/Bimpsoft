@@ -14,6 +14,12 @@ const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичног
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
 const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
+const WAVE_STEP = 24 // (пікселів) ширина "хвилі" для хвилястої лінії
+const WAVE_SIZE = 16 // (пікселів) висота "хвилі" для хвилястої лінії
+
+const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
+const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
+
 const ampSigns = subordinationLevels.list.reduce((res, { value }) => ({
   ...res,
   [value]: extractSubordinationLevelSVG(value, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN),
@@ -41,7 +47,7 @@ class Segment {
   })
 }
 
-const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
+const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
   const nextIndex = (index) => locked && index === points.length - 1 ? 0 : index + 1
   const bezierArray = (points, index) => {
     const next = nextIndex(index)
@@ -63,8 +69,6 @@ const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
       points[next],
     ]
   }
-  const step = AMPLIFIERS_STEP
-  let offset = -step / 2
   const amplPoints = []
   const last = points.length - Number(!locked)
   for (let i = 0; i < last; i++) {
@@ -75,10 +79,12 @@ const buildAmplifierPoints = (points, bezier, locked, insideMap) => {
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
-        const part = pos / length
+        const part = pos === 0 || length === 0 ? 0.0001 : pos / length
         const amplPoint = segment.get(part)
-        const n = segment.normal(part)
-        amplPoint.n = (Math.atan2(n.y, n.x) / Math.PI + 0.5) * 180;
+        console.log(part)
+        amplPoint.n = segment.normal(part)
+        console.log(amplPoint.n)
+        amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180;
         (i < last - 1 || length - pos > step / 5) && insideMap(amplPoint) && amplPoints.push(amplPoint)
         pos += step
       }
@@ -182,26 +188,60 @@ export default L.SVG.include({
 
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
+    const lineType = (layer.options && layer.options.lineType) || 'solid'
     const skipStart = layer.options && layer.options.skipStart
     const skipEnd = layer.options && layer.options.skipEnd
     const kind = layer.options && layer.options.tsType
     const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+    const fullPolygon = kind === entityKind.POLYGON && length >= 3
+    const fullPolyline = kind === entityKind.POLYLINE && length >= 2
+    const fullArea = kind === entityKind.AREA && length >= 3
+    const fullCurve = kind === entityKind.CURVE && length >= 2
     if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
-    } else if (kind === entityKind.POLYGON && length >= 3) {
+    } else if (fullPolygon) {
+      switch (lineType) {
+        case 'waved':
+          result = this._buildWaved(layer, false, true)
+          break
+        default:
+          break
+      }
       this._updateMask(layer, false, true)
-    } else if (kind === entityKind.POLYLINE && length >= 2) {
+    } else if (fullPolyline) {
+      switch (lineType) {
+        case 'waved':
+          result = this._buildWaved(layer, false, false)
+          break
+        default:
+          break
+      }
       this._updateMask(layer, false, false)
-    } else if (kind === entityKind.AREA && length >= 3) {
+    } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
+      switch (lineType) {
+        case 'waved':
+          result = this._buildWaved(layer, true, true)
+          break
+        default:
+          break
+      }
       this._updateMask(layer, true, true)
-    } else if (kind === entityKind.CURVE && length >= 2) {
+    } else if (fullCurve) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
+      switch (lineType) {
+        case 'waved':
+          result = this._buildWaved(layer, true, false)
+          break
+        default:
+          break
+      }
       this._updateMask(layer, true, false)
     }
+
     this._setPath(layer, result)
   },
 
@@ -216,12 +256,13 @@ export default L.SVG.include({
     }
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
       const amp = ampSigns[layer.object.level]
-      const amplPoints = buildAmplifierPoints(layer._rings[0], bezier, locked, insideMap)
-      amplifiers.mask += amplPoints.map(({ x, y, n }) =>
-        `<g transform="translate(${x},${y}) rotate(${n})">${amp.mask}</g>`
+      const amplPoints = buildPeriodicPoints(AMPLIFIERS_STEP, -AMPLIFIERS_STEP / 2, layer._rings[0], bezier, locked,
+        insideMap)
+      amplifiers.mask += amplPoints.map(({ x, y, r }) =>
+        `<g transform="translate(${x},${y}) rotate(${r})">${amp.mask}</g>`
       ).join('')
-      amplifiers.group += amplPoints.map(({ x, y, n }) =>
-        `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${n})">${amp.sign}</g>`
+      amplifiers.group += amplPoints.map(({ x, y, r }) =>
+        `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
       ).join('')
     }
     if (amplifiers.mask) {
@@ -236,5 +277,31 @@ export default L.SVG.include({
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
+  },
+
+  _buildWaved: function (layer, bezier, locked) {
+    const bounds = layer._map._renderer._bounds
+    const insideMap = ({ x, y }) => x > bounds.min.x - WAVE_STEP && y > bounds.min.y - WAVE_STEP &&
+      x < bounds.max.x + WAVE_STEP && y < bounds.max.y + WAVE_STEP
+    const wavePoints = buildPeriodicPoints(WAVE_STEP, -WAVE_STEP, layer._rings[0], bezier, locked, insideMap)
+    if (!wavePoints.length) {
+      return 'M0 0'
+    }
+    let waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
+    for (let i = 1; i < wavePoints.length; i++) {
+      const l1 = Math.hypot(wavePoints[i - 1].n.x, wavePoints[i - 1].n.y)
+      const l2 = Math.hypot(wavePoints[i].n.x, wavePoints[i].n.y)
+      const cp1 = {
+        x: wavePoints[i - 1].x - wavePoints[i - 1].n.x * WAVE_SIZE / l1,
+        y: wavePoints[i - 1].y - wavePoints[i - 1].n.y * WAVE_SIZE / l1,
+      }
+      const cp2 = {
+        x: wavePoints[i].x - wavePoints[i].n.x * WAVE_SIZE / l2,
+        y: wavePoints[i].y - wavePoints[i].n.y * WAVE_SIZE / l2,
+      }
+      const p2 = wavePoints[i]
+      waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
+    }
+    return waves
   },
 })
