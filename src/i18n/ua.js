@@ -1,4 +1,5 @@
 export const EDIT_MODE = 'Режим роботи'
+export const DATA = 'Дата'
 export const ADD_TEXT = 'Додати надпис'
 export const PRINT = 'Друк'
 export const TOGGLE_SIDEBAR = 'Відобразити/сховати праву панель'

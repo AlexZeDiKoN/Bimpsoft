@@ -41,8 +41,8 @@ export default class CoordinateItem extends React.Component {
           suffix={suffix}
         />
         {!readOnly && (<IconHovered
-          icon={canRemove ? IconNames.EMPTY_DEFAULT : IconNames.EMPTY_DISABLE}
-          hoverIcon={canRemove ? IconNames.EMPTY_HOVER : IconNames.EMPTY_DISABLE}
+          icon={canRemove ? IconNames.BAR_2_DELETE_DEFAULT : IconNames.BAR_2_DELETE_DISABLE}
+          hoverIcon={canRemove ? IconNames.BAR_2_DELETE_ACTIVE : IconNames.BAR_2_DELETE_DISABLE}
           onClick={this.removeClickHandler}
         />)}
       </FormItem>
