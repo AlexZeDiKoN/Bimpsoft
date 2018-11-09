@@ -14,8 +14,8 @@ const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичног
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
 const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
-const WAVE_STEP = 24 // (пікселів) ширина "хвилі" для хвилястої лінії
-const WAVE_SIZE = 16 // (пікселів) висота "хвилі" для хвилястої лінії
+const WAVE_STEP = 120 // (пікселів) ширина "хвилі" для хвилястої лінії
+const WAVE_SIZE = 80 // (пікселів) висота "хвилі" для хвилястої лінії
 
 const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
 const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
@@ -79,11 +79,9 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) =>
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
-        const part = pos === 0 || length === 0 ? 0.0001 : pos / length
+        const part = pos / length
         const amplPoint = segment.get(part)
-        console.log(part)
         amplPoint.n = segment.normal(part)
-        console.log(amplPoint.n)
         amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180;
         (i < last - 1 || length - pos > step / 5) && insideMap(amplPoint) && amplPoints.push(amplPoint)
         pos += step
@@ -289,15 +287,28 @@ export default L.SVG.include({
     }
     let waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
     for (let i = 1; i < wavePoints.length; i++) {
-      const l1 = Math.hypot(wavePoints[i - 1].n.x, wavePoints[i - 1].n.y)
       const l2 = Math.hypot(wavePoints[i].n.x, wavePoints[i].n.y)
+      const np2 = {
+        x: wavePoints[i].n.x / l2,
+        y: wavePoints[i].n.y / l2,
+      }
+      let np1
+      if (isNaN(wavePoints[i - 1].r)) {
+        np1 = np2
+      } else {
+        const l1 = Math.hypot(wavePoints[i - 1].n.x, wavePoints[i - 1].n.y)
+        np1 = {
+          x: wavePoints[i - 1].n.x / l1,
+          y: wavePoints[i - 1].n.y / l1,
+        }
+      }
       const cp1 = {
-        x: wavePoints[i - 1].x - wavePoints[i - 1].n.x * WAVE_SIZE / l1,
-        y: wavePoints[i - 1].y - wavePoints[i - 1].n.y * WAVE_SIZE / l1,
+        x: wavePoints[i - 1].x - np1.x * WAVE_SIZE,
+        y: wavePoints[i - 1].y - np1.y * WAVE_SIZE,
       }
       const cp2 = {
-        x: wavePoints[i].x - wavePoints[i].n.x * WAVE_SIZE / l2,
-        y: wavePoints[i].y - wavePoints[i].n.y * WAVE_SIZE / l2,
+        x: wavePoints[i].x - np2.x * WAVE_SIZE,
+        y: wavePoints[i].y - np2.y * WAVE_SIZE,
       }
       const p2 = wavePoints[i]
       waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
