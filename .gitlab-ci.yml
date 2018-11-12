@@ -1,0 +1,128 @@
+variables:
+  exe7z: 'C:\Tools\7z\7za.exe'
+  releaseDir: 'C:\Release\WebMap'
+  deployDir: 'MAKET_Everest\SpaceHub\WebMap'
+  deployDirmaster: 'MAKET\SpaceHub\WebMap'
+  gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
+
+cache:
+  paths:
+    - node_modules
+    - yarn.lock
+
+stages:
+#  - test
+  - build
+  - deploy
+
+.base: &base-dev
+  only:
+    - develop
+  tags:
+    - webmap
+
+.base: &base
+  only:
+    - master
+  tags:
+    - webmap-master
+#test:
+#  stage: test
+#  <<: *base
+#  script:
+#    - echo TODO auto-tests
+#    - echo %date%
+#    - echo %time%
+#    - echo Done
+
+build:
+  stage: build
+  <<: *base-dev
+  script:
+    - echo Building project...
+    - call yarn
+    - copy .env .env.backup
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - copy .env.backup .env
+    - del .env.backup
+    - set jsonfile=package.json
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - git status
+    - git commit -a -m "[CI skip] %version% (autocommit)"
+    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - echo Done
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
+
+deploy-qa:
+  stage: deploy
+  <<: *base-dev
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 84 (remote) ========='
+    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+    - rmdir /s /q \\10.8.26.84\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir%
+    - net use \\10.8.26.84\c$ /delete
+    - 'echo ========= Deploy: 85 (local) ========='
+    - rmdir /s /q C:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+    - echo Done
+
+build:
+  stage: build
+  <<: *base
+  script:
+    - echo Building project...
+    - call yarn
+    - copy .env .env.backup
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - copy .env.backup .env
+    - del .env.backup
+    - set jsonfile=package.json
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - git status
+    - git commit -a -m "[CI skip] %version% (autocommit)"
+    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - echo Done
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
+
+deploy-qa:
+  stage: deploy
+  <<: *base
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: dzvin4 (remote) ========='
+    - rmdir /s /q \\dzins1\c$\%deployDirmasterr%
+    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDirmaster%
+    - 'echo ========= Deploy: dzvin2 (local) ========='
+    - rmdir /s /q C:\%deployDirmaster%
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirmaster%
+    - echo Done
