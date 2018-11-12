@@ -14,16 +14,25 @@ const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичног
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
 const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
-const WAVE_STEP = 120 // (пікселів) ширина "хвилі" для хвилястої лінії
-const WAVE_SIZE = 80 // (пікселів) висота "хвилі" для хвилястої лінії
+const WAVE_STEP = 60 // (пікселів) ширина "хвилі" для хвилястої лінії
+const WAVE_SIZE = 40 // (пікселів) висота "хвилі" для хвилястої лінії
 
-const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
-const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
+// const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
+// const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
+
+// TODO потенційно це місце просадки продуктивності:
+// TODO * при маленьких значеннях будуть рвані лінії
+// TODO * при великих може гальмувати відмальовка
+const LUT_STEPS = 1000 // кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
+
+const DRAW_PARTIAL_WAVES = true
 
 const ampSigns = subordinationLevels.list.reduce((res, { value }) => ({
   ...res,
   [value]: extractSubordinationLevelSVG(value, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN),
 }), {})
+
+const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
 
 class Segment {
   constructor (start, finish) {
@@ -45,6 +54,36 @@ class Segment {
     x: -this.vector.y,
     y: this.vector.x,
   })
+}
+
+const prepareLUT = (lut) => {
+  let acc = 0
+  lut[0].al = 0
+  for (let i = 1; i < lut.length; i++) {
+    acc += dist(lut[i], lut[i - 1])
+    lut[i].al = acc
+  }
+}
+
+const getPart = (lut, pos, start = 0, finish = 0) => {
+  if (finish === 0) {
+    finish = lut.length - 1
+  }
+  if (lut[start].al >= pos || start === finish) {
+    return start / LUT_STEPS
+  }
+  if (lut[finish] < pos) {
+    return finish / LUT_STEPS
+  }
+  if (finish - start === 1) {
+    const ds = pos - lut[start].al
+    const df = lut[finish].al - pos
+    return (ds <= df ? start : finish) / LUT_STEPS
+  }
+  const mid = Math.floor((start + finish) / 2)
+  return lut[mid].al > pos
+    ? getPart(lut, pos, start, mid)
+    : getPart(lut, pos, mid, finish)
 }
 
 const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
@@ -75,15 +114,24 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) =>
     const segment = bezier
       ? new Bezier(...bezierArray(points, i))
       : new Segment(...lineArray(points, i))
+    let lut = null
+    if (bezier) {
+      lut = segment.getLUT(LUT_STEPS)
+      prepareLUT(lut)
+    }
     const length = segment.length()
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
-        const part = pos / length
+        const part = bezier
+          ? getPart(lut, pos)
+          : pos / length
         const amplPoint = segment.get(part)
         amplPoint.n = segment.normal(part)
-        amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180;
-        (i < last - 1 || length - pos > step / 5) && insideMap(amplPoint) && amplPoints.push(amplPoint)
+        amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180
+        amplPoint.i = insideMap(amplPoint)
+        amplPoint.o = i < last - 1 || length - pos > step / 5
+        amplPoints.push(amplPoint)
         pos += step
       }
       offset = pos - step - length
@@ -148,6 +196,7 @@ export default L.SVG.include({
       _path.style.display = hidden ? 'none' : ''
       _outlinePath.style.display = hidden ? 'none' : ''
       _shadowPath.style.display = hidden ? 'none' : ''
+      _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     }
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
     if (hasClassSelected !== selected) {
@@ -255,7 +304,7 @@ export default L.SVG.include({
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
       const amp = ampSigns[layer.object.level]
       const amplPoints = buildPeriodicPoints(AMPLIFIERS_STEP, -AMPLIFIERS_STEP / 2, layer._rings[0], bezier, locked,
-        insideMap)
+        insideMap).filter(({ i, o }) => i && o)
       amplifiers.mask += amplPoints.map(({ x, y, r }) =>
         `<g transform="translate(${x},${y}) rotate(${r})">${amp.mask}</g>`
       ).join('')
@@ -287,31 +336,59 @@ export default L.SVG.include({
     }
     let waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
     for (let i = 1; i < wavePoints.length; i++) {
-      const l2 = Math.hypot(wavePoints[i].n.x, wavePoints[i].n.y)
-      const np2 = {
-        x: wavePoints[i].n.x / l2,
-        y: wavePoints[i].n.y / l2,
-      }
-      let np1
-      if (isNaN(wavePoints[i - 1].r)) {
-        np1 = np2
+      if (!wavePoints[i].i) {
+        waves += ` L${wavePoints[i].x} ${wavePoints[i].y}`
       } else {
-        const l1 = Math.hypot(wavePoints[i - 1].n.x, wavePoints[i - 1].n.y)
-        np1 = {
-          x: wavePoints[i - 1].n.x / l1,
-          y: wavePoints[i - 1].n.y / l1,
+        const l2 = Math.hypot(wavePoints[ i ].n.x, wavePoints[ i ].n.y)
+        const np2 = {
+          x: wavePoints[ i ].n.x / l2,
+          y: wavePoints[ i ].n.y / l2,
         }
+        let np1
+        if (isNaN(wavePoints[ i - 1 ].r)) {
+          np1 = np2
+        } else {
+          const l1 = Math.hypot(wavePoints[ i - 1 ].n.x, wavePoints[ i - 1 ].n.y)
+          np1 = {
+            x: wavePoints[ i - 1 ].n.x / l1,
+            y: wavePoints[ i - 1 ].n.y / l1,
+          }
+        }
+        const cp1 = {
+          x: wavePoints[ i - 1 ].x - np1.x * WAVE_SIZE,
+          y: wavePoints[ i - 1 ].y - np1.y * WAVE_SIZE,
+        }
+        const cp2 = {
+          x: wavePoints[ i ].x - np2.x * WAVE_SIZE,
+          y: wavePoints[ i ].y - np2.y * WAVE_SIZE,
+        }
+        const p2 = wavePoints[ i ]
+        waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
       }
-      const cp1 = {
-        x: wavePoints[i - 1].x - np1.x * WAVE_SIZE,
-        y: wavePoints[i - 1].y - np1.y * WAVE_SIZE,
+    }
+    if (DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
+      const p0 = wavePoints[wavePoints.length - 1]
+      const p1 = layer._rings[0][layer._rings[0].length - 1]
+      const rest = dist(p0, p1)
+      if (rest >= 1) {
+        const p2 = {
+          x: p0.x + (p1.x - p0.x) / rest * WAVE_STEP,
+          y: p0.y + (p1.y - p0.y) / rest * WAVE_STEP,
+        }
+        const l = Math.hypot(p0.n.x, p0.n.y)
+        const cp1 = {
+          x: p0.x - p0.n.x / l * WAVE_SIZE,
+          y: p0.y - p0.n.y / l * WAVE_SIZE,
+        }
+        const cp2 = {
+          x: p2.x + cp1.x - p0.x,
+          y: p2.y + cp1.y - p0.y,
+        }
+        const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+        const p = b.split(rest / WAVE_STEP).left.points
+        waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+        // waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
       }
-      const cp2 = {
-        x: wavePoints[i].x - np2.x * WAVE_SIZE,
-        y: wavePoints[i].y - np2.y * WAVE_SIZE,
-      }
-      const p2 = wavePoints[i]
-      waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
     }
     return waves
   },
