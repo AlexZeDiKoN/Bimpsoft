@@ -148,6 +148,7 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
     await dispatch(deleteObject(id))
   }
   dispatch(hideForm())
+  dispatch(selectedList([]))
 })
 
 export const showDeleteForm = () => ({
