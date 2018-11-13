@@ -533,7 +533,7 @@ export default class WebMap extends Component {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (+layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = layersById[activeLayerId] && layersById[activeLayerId].visible
+        const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         setLayerSelected(layer, isSelected)
         if (isSelected) {
@@ -571,7 +571,7 @@ export default class WebMap extends Component {
     if (item.id && item.object) {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const hidden = itemLevel < levelEdge || !layer || !layersById[layer] || !layersById[layer].visible
+      const hidden = itemLevel < levelEdge || !layer || !layersById.hasOwnProperty(layer)
       const isSelectedLayer = Number(selectedLayerId) === Number(layer)
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? 1000000000 : 0
