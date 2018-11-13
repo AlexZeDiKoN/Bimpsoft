@@ -1,9 +1,11 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import './style.css'
 import MapItemComponent from '../MapItemComponent'
 import LayerItemComponent from '../LayerItemComponent'
+import { date } from '../../../utils'
+
+const { inDateRange } = date
 
 export default class LayersListComponent extends React.Component {
   render () {
@@ -17,10 +19,6 @@ export default class LayersListComponent extends React.Component {
       onChangeLayerColor,
       onChangeLayerVisibility,
     } = this.props
-    const inDataRange = ({ dateFor }) => (
-      (timelineFrom ? moment(dateFor).isAfter(timelineFrom) : true) &&
-      (timelineTo ? moment(dateFor).isBefore(timelineTo) : true)
-    )
     return (
       <div className="layers-list-сomponent">
         {this.props.maps && Object.values(this.props.maps).map((map) => (
@@ -32,7 +30,7 @@ export default class LayersListComponent extends React.Component {
               onChangeVisibility={onChangeMapVisibility}
             />
             <div className="layers-list-component-children">
-              {map.items && map.items.map((layerData) => inDataRange(layerData) && (
+              {map.items && map.items.map((layerData) => inDateRange(layerData.dateFor, timelineFrom, timelineTo) && (
                 <LayerItemComponent
                   isSelected = {this.props.selectedLayerId === layerData.layerId}
                   key={layerData.layerId}
