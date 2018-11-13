@@ -1139,8 +1139,10 @@ export default class WebMap extends Component {
         this.map.panTo(getGeometry(layer).point)
       }
       this.props.onSelection(layer || null)
+      this.props.onSelectedList(layer ? [ layer.id ] : [])
     } else {
       this.props.onSelection(null)
+      this.props.onSelectedList([])
     }
   }
 
