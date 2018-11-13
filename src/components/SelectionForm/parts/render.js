@@ -62,7 +62,13 @@ const renderStyledLine = (borderStyle, level) => {
           <g dangerouslySetInnerHTML={{ __html: amp.mask }} />
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth="2" d="M0,10 h56 m1,1" {...dash} />
-        <g stroke="black" strokeWidth="4" fill="none" transform={`translate(28,10)`} dangerouslySetInnerHTML={{ __html: amp.sign }} />
+        <g
+          stroke="black"
+          strokeWidth="4"
+          fill="none"
+          transform={`translate(28,10)`}
+          dangerouslySetInnerHTML={{ __html: amp.sign }}
+        />
       </Fragment>
     )
   } else {
@@ -98,14 +104,12 @@ const renderStyledLine = (borderStyle, level) => {
 }
 
 // dangerouslySetInnerHTML={{ __html: getNato(NATOData) }}
-export const typeDiv = (borderStyle, title, level) => {
-  return (
-    <div className="icon-option">
-      {renderStyledLine(borderStyle, level)}
-      <div className="icon-text">{title}</div>
-    </div>
-  )
-}
+export const typeDiv = (borderStyle, title, level) => (
+  <div className="icon-option">
+    {renderStyledLine(borderStyle, level)}
+    <div className="icon-text">{title}</div>
+  </div>
+)
 
 export const typeOption = (value, borderStyle, title, level) => (
   <Option value={value}>

@@ -200,6 +200,7 @@ export default L.SVG.include({
       _path.style.opacity = opacity
       _outlinePath.style.opacity = opacity
       _shadowPath.style.opacity = opacity
+      _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
     }
     if ((_path.style.display === 'none') !== Boolean(hidden)) {
       _path.style.display = hidden ? 'none' : ''
@@ -282,6 +283,7 @@ export default L.SVG.include({
           break
       }
       this._updateMask(layer, false, false)
+      result += ` m1,1`
     } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
