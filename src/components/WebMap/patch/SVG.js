@@ -14,11 +14,14 @@ const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичног
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
 const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
 
+// Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
+// була строго кратною WAVE_STEP
+
 const WAVE_STEP = 36 // (пікселів) ширина "хвилі" для хвилястої лінії
 const WAVE_SIZE = 24 // (пікселів) висота "хвилі" для хвилястої лінії
 
-// const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
-// const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
+const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
+const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
 
 // TODO потенційно це місце просадки продуктивності:
 // TODO * при маленьких значеннях будуть рвані лінії
@@ -260,6 +263,9 @@ export default L.SVG.include({
         case 'waved':
           result = this._buildWaved(layer, false, true)
           break
+        case 'stroked':
+          result += this._buildStroked(layer, false, true)
+          break
         default:
           break
       }
@@ -268,6 +274,9 @@ export default L.SVG.include({
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, false, false)
+          break
+        case 'stroked':
+          result += this._buildStroked(layer, false, false)
           break
         default:
           break
@@ -279,6 +288,9 @@ export default L.SVG.include({
         case 'waved':
           result = this._buildWaved(layer, true, true)
           break
+        case 'stroked':
+          result += this._buildStroked(layer, true, true)
+          break
         default:
           break
       }
@@ -288,6 +300,9 @@ export default L.SVG.include({
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, true, false)
+          break
+        case 'stroked':
+          result += this._buildStroked(layer, true, false)
           break
         default:
           break
@@ -386,5 +401,19 @@ export default L.SVG.include({
       }
     }
     return `${waves}${locked ? ' Z' : ''}`
+  },
+
+  _buildStroked: function (layer, bezier, locked) {
+    let strokes = ''
+    const bounds = layer._map._renderer._bounds
+    const insideMap = ({ x, y }) => x > bounds.min.x - STROKE_STEP && y > bounds.min.y - STROKE_STEP &&
+      x < bounds.max.x + STROKE_STEP && y < bounds.max.y + STROKE_STEP
+    const strokePoints = buildPeriodicPoints(STROKE_STEP, -STROKE_STEP / 2, layer._rings[0], bezier, locked, insideMap)
+      .filter(({ i, o }) => i && o)
+    for (let i = 0; i < strokePoints.length; i++) {
+      const p = apply(strokePoints[i], setLength(strokePoints[i].n, -STROKE_SIZE))
+      strokes += ` M${strokePoints[i].x} ${strokePoints[i].y} L${p.x} ${p.y}`
+    }
+    return strokes
   },
 })
