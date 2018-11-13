@@ -191,14 +191,14 @@ const setScaleOptions = (layer, params) => {
   switch (+layer.object.type) {
     case entityKind.POINT:
       layer.setScaleOptions({
-        min: params[paramsNames.POINT_SIZE_MIN],
-        max: params[paramsNames.POINT_SIZE_MAX],
+        min: +params[paramsNames.POINT_SIZE_MIN],
+        max: +params[paramsNames.POINT_SIZE_MAX],
       })
       break
     case entityKind.TEXT:
       layer.setScaleOptions({
-        min: params[paramsNames.TEXT_SIZE_MIN],
-        max: params[paramsNames.TEXT_SIZE_MAX],
+        min: +params[paramsNames.TEXT_SIZE_MIN],
+        max: +params[paramsNames.TEXT_SIZE_MAX],
       })
       break
     case entityKind.SEGMENT:
@@ -211,8 +211,8 @@ const setScaleOptions = (layer, params) => {
     case entityKind.SQUARE:
       // todo:
       // layer.setScaleOptions({
-      //   min: params[paramsNames.LINE_SIZE_MIN],
-      //   max: params[paramsNames.LINE_SIZE_MAX],
+      //   min: +params[paramsNames.LINE_SIZE_MIN],
+      //   max: +params[paramsNames.LINE_SIZE_MAX],
       // })
       break
     default:
