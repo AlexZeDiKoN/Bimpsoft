@@ -191,14 +191,14 @@ const setScaleOptions = (layer, params) => {
   switch (+layer.object.type) {
     case entityKind.POINT:
       layer.setScaleOptions({
-        min: params[paramsNames.POINT_SIZE_MIN],
-        max: params[paramsNames.POINT_SIZE_MAX],
+        min: +params[paramsNames.POINT_SIZE_MIN],
+        max: +params[paramsNames.POINT_SIZE_MAX],
       })
       break
     case entityKind.TEXT:
       layer.setScaleOptions({
-        min: params[paramsNames.TEXT_SIZE_MIN],
-        max: params[paramsNames.TEXT_SIZE_MAX],
+        min: +params[paramsNames.TEXT_SIZE_MIN],
+        max: +params[paramsNames.TEXT_SIZE_MAX],
       })
       break
     case entityKind.SEGMENT:
@@ -211,8 +211,8 @@ const setScaleOptions = (layer, params) => {
     case entityKind.SQUARE:
       // todo:
       // layer.setScaleOptions({
-      //   min: params[paramsNames.LINE_SIZE_MIN],
-      //   max: params[paramsNames.LINE_SIZE_MAX],
+      //   min: +params[paramsNames.LINE_SIZE_MIN],
+      //   max: +params[paramsNames.LINE_SIZE_MAX],
       // })
       break
     default:
@@ -533,7 +533,7 @@ export default class WebMap extends Component {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (+layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = layersById[activeLayerId] && layersById[activeLayerId].visible
+        const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         setLayerSelected(layer, isSelected)
         if (isSelected) {
@@ -571,7 +571,7 @@ export default class WebMap extends Component {
     if (item.id && item.object) {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const hidden = itemLevel < levelEdge || !layer || !layersById[layer] || !layersById[layer].visible
+      const hidden = itemLevel < levelEdge || !layer || !layersById.hasOwnProperty(layer)
       const isSelectedLayer = Number(selectedLayerId) === Number(layer)
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? 1000000000 : 0
@@ -719,6 +719,7 @@ export default class WebMap extends Component {
     const { id, attributes } = object
     const layer = createTacticalSign(object, this.map)
     layer.options.lineAmpl = attributes.lineAmpl
+    layer.options.lineType = attributes.lineType
     if (layer) {
       layer.id = id
       layer.object = object
@@ -1138,8 +1139,10 @@ export default class WebMap extends Component {
         this.map.panTo(getGeometry(layer).point)
       }
       this.props.onSelection(layer || null)
+      this.props.onSelectedList(layer ? [ layer.id ] : [])
     } else {
       this.props.onSelection(null)
+      this.props.onSelectedList([])
     }
   }
 

@@ -5,7 +5,7 @@ import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
 import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
-import { canEditSelector } from '../store/selectors'
+import { canEditSelector, visibleLayersSelector } from '../store/selectors'
 
 const WebMap = connect(
   (state) => ({
@@ -19,7 +19,7 @@ const WebMap = connect(
     orgStructureSelectedId: state.orgStructures.selectedId,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
-    layersById: state.layers.byId,
+    layersById: visibleLayersSelector(state),
     backOpacity: state.layers.backOpacity,
     hiddenOpacity: state.layers.hiddenOpacity,
     coordinatesType: state.webMap.coordinatesType,

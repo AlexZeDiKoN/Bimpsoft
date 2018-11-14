@@ -26,6 +26,7 @@ export const clearSelectedList = (map) => {
       removeLayerFromSelection(layer)
     }
   })
+  map.fire('selectlayer')
 }
 
 export const clearActiveLayer = (map, skipFire = false) => {

@@ -98,14 +98,12 @@ const renderStyledLine = (borderStyle, level) => {
 }
 
 // dangerouslySetInnerHTML={{ __html: getNato(NATOData) }}
-export const typeDiv = (borderStyle, title, level) => {
-  return (
-    <div className="icon-option">
-      {renderStyledLine(borderStyle, level)}
-      <div className="icon-text">{title}</div>
-    </div>
-  )
-}
+export const typeDiv = (borderStyle, title, level) => (
+  <div className="icon-option">
+    {renderStyledLine(borderStyle, level)}
+    <div className="icon-text">{title}</div>
+  </div>
+)
 
 export const typeOption = (value, borderStyle, title, level) => (
   <Option value={value}>

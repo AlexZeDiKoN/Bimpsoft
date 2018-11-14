@@ -1,7 +1,7 @@
 variables:
   exe7z: 'C:\Tools\7z\7za.exe'
   releaseDir: 'C:\Release\WebMap'
-  deployDir: 'MAKET_Everest\SpaceHub\WebMap'
+  deployDir: 'MAKET\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
 cache:
