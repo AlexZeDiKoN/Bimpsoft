@@ -5,6 +5,7 @@ export default L.Path.include({
   setColor: function (color) {
     this.setStyle({ color })
     this._amplifierGroup && this._amplifierGroup.setAttribute('stroke', color)
+    this._lineEndsGroup && this._lineEndsGroup.setAttribute('stroke', color)
   },
 
   setSelected: function (selected) {
@@ -50,6 +51,15 @@ export default L.Path.include({
     return this._amplifierGroup
   },
 
+  getLineEndsGroup: function () {
+    if (!this._lineEndsGroup) {
+      this._lineEndsGroup = L.SVG.create('g')
+      this._lineEndsGroup.setAttribute('stroke', colors.evaluateColor(this.options.color))
+      this._renderer._rootGroup.appendChild(this._lineEndsGroup)
+    }
+    return this._lineEndsGroup
+  },
+
   deleteMask: function () {
     if (this._mask) {
       L.DomUtil.remove(this._mask)
@@ -61,6 +71,13 @@ export default L.Path.include({
     if (this._amplifierGroup) {
       L.DomUtil.remove(this._amplifierGroup)
       delete this._amplifierGroup
+    }
+  },
+
+  deleteLineEndsGroup: function () {
+    if (this._lineEndsGroup) {
+      L.DomUtil.remove(this._lineEndsGroup)
+      delete this._lineEndsGroup
     }
   },
 })

@@ -42,6 +42,39 @@ const length = (v) => Math.hypot(v.x, v.y)
 const multiply = (v, k) => ({ x: v.x * k, y: v.y * k })
 const setLength = (v, l) => multiply(v, l / length(v))
 const apply = (p, v) => ({ x: p.x + v.x, y: p.y + v.y })
+const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
+
+const getLineEnd = (layer, end) => {
+  let res = layer.options && layer.options.lineEnds && layer.options.lineEnds[end]
+  if (res === 'none') {
+    res = null
+  }
+  return res
+}
+
+const drawLineEnd = (type, { x, y }, angle) => {
+  let res = `<g stroke-width="3" transform="translate(${x},${y - 6}) rotate(${angle},0,6)">`
+  switch (type) {
+    case 'arrow1':
+      res += `<path fill="none" d="M6,0 l-6,6 l6,6"/>`
+      break
+    case 'arrow2':
+      res += `<path d="M12,0 l-12,6 l12,6 z"/>`
+      break
+    case 'stroke1':
+      res += `<path d="M0,0 v12"/>`
+      break
+    case 'stroke2':
+      res += `<path d="M-3,0 l6,12"/>`
+      break
+    case 'stroke3':
+      res += `<path d="M3,0 l-6,12"/>`
+      break
+    default:
+      break
+  }
+  return `${res}</g>`
+}
 
 class Segment {
   constructor (start, finish) {
@@ -187,6 +220,7 @@ export default L.SVG.include({
       _shadowPath,
       _path,
       _amplifierGroup,
+      _lineEndsGroup,
       _outlinePath,
     } = layer
 
@@ -202,18 +236,21 @@ export default L.SVG.include({
       _outlinePath.style.opacity = opacity
       _shadowPath.style.opacity = opacity
       _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
+      _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
     }
     if ((_path.style.display === 'none') !== Boolean(hidden)) {
       _path.style.display = hidden ? 'none' : ''
       _outlinePath.style.display = hidden ? 'none' : ''
       _shadowPath.style.display = hidden ? 'none' : ''
       _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
+      _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
     }
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
     if (hasClassSelected !== selected) {
       const action = selected ? 'add' : 'remove'
       _path.classList[action]('dzvin-path-selected')
       _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
+      _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
     }
   },
 
@@ -242,6 +279,7 @@ export default L.SVG.include({
 
     layer.deleteMask && layer.deleteMask()
     layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
+    layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
   _updatePoly: function (layer, closed) {
@@ -284,6 +322,7 @@ export default L.SVG.include({
           break
       }
       this._updateMask(layer, false, false)
+      this._updateLineEnds(layer, false)
       result += ` m1,1`
     } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
@@ -311,6 +350,7 @@ export default L.SVG.include({
           break
       }
       this._updateMask(layer, true, false)
+      this._updateLineEnds(layer, true)
     }
 
     this._setPath(layer, result)
@@ -399,7 +439,7 @@ export default L.SVG.include({
           }
           const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
           const p = b.split(rest / WAVE_STEP).left.points
-          waves += ` C${p[ 1 ].x} ${p[ 1 ].y} ${p[ 2 ].x} ${p[ 2 ].y} ${p[ 3 ].x} ${p[ 3 ].y}`
+          waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
         }
       }
     }
@@ -418,5 +458,22 @@ export default L.SVG.include({
       strokes += ` M${strokePoints[i].x} ${strokePoints[i].y} L${p.x} ${p.y}`
     }
     return strokes
+  },
+
+  _updateLineEnds: function (layer, bezier) {
+    const leftEndType = getLineEnd(layer, 'left')
+    const rightEndType = getLineEnd(layer, 'right')
+    if (!leftEndType && !rightEndType) {
+      return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
+    }
+    const ring = layer._rings[0]
+    const leftPlus = ring[1]
+    const rightMinus = ring[ring.length - 2]
+    if (bezier) {
+      // TODO: для кривих Безьє уточнити точки
+    }
+    const leftEnd = drawLineEnd(leftEndType, ring[0], angle(vector(ring[0], leftPlus)))
+    const rightEnd = drawLineEnd(rightEndType, ring[ring.length - 1], angle(vector(ring[ring.length - 1], rightMinus)))
+    layer.getLineEndsGroup().innerHTML = `${leftEnd}${rightEnd}`
   },
 })
