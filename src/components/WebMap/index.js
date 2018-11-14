@@ -720,6 +720,10 @@ export default class WebMap extends Component {
     const layer = createTacticalSign(object, this.map)
     layer.options.lineAmpl = attributes.lineAmpl
     layer.options.lineType = attributes.lineType
+    layer.options.lineEnds = {
+      left: attributes.left,
+      right: attributes.right,
+    }
     if (layer) {
       layer.id = id
       layer.object = object

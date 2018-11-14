@@ -38,18 +38,18 @@ const WithLineAmplifiers = (Component) => class LineAmplifiersComponent extends 
   }
 
   renderLineAmplifiers () {
-    const { lineType, lineAmpl, subordinationLevel } = this.state
+    const { lineAmpl, subordinationLevel } = this.state
     const typeInfo = types[lineAmpl]
     const canEdit = this.isCanEdit()
 
     const value = canEdit
       ? (
         <Select value={lineAmpl} onChange={this.lineAmplChangeHandler}>
-          {typeOption(AMPL_NONE, lineType, types[AMPL_NONE].text)}
-          {typeOption(AMPL_SHOW_LEVEL, lineType, types[AMPL_SHOW_LEVEL].text, subordinationLevel)}
+          {typeOption(AMPL_NONE, 'solid', types[AMPL_NONE].text)}
+          {typeOption(AMPL_SHOW_LEVEL, 'solid', types[AMPL_SHOW_LEVEL].text, subordinationLevel)}
         </Select>
       )
-      : typeDiv(lineType, typeInfo.text, typeInfo.value === AMPL_SHOW_LEVEL ? subordinationLevel : null)
+      : typeDiv('solid', typeInfo.text, typeInfo.value === AMPL_SHOW_LEVEL ? subordinationLevel : null)
 
     return (
       <FormRow label={i18n.AMPLIFIERS}>
