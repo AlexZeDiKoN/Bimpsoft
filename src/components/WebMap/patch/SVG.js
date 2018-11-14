@@ -26,7 +26,7 @@ const STROKE_SIZE = 18 // (пікселів) висота "засічки" дл�
 // TODO потенційно це місце просадки продуктивності:
 // TODO * при маленьких значеннях будуть рвані лінії
 // TODO * при великих може гальмувати відмальовка
-const LUT_STEPS = 1000 // кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
+const LUT_STEPS = 32000 // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
 
 const DRAW_PARTIAL_WAVES = true
 
@@ -74,25 +74,25 @@ const prepareLUT = (lut) => {
   }
 }
 
-const getPart = (lut, pos, start = 0, finish = 0) => {
+const getPart = (steps, lut, pos, start = 0, finish = 0) => {
   if (finish === 0) {
     finish = lut.length - 1
   }
   if (lut[start].al >= pos || start === finish) {
-    return start / LUT_STEPS
+    return start / steps
   }
   if (lut[finish] < pos) {
-    return finish / LUT_STEPS
+    return finish / steps
   }
   if (finish - start === 1) {
     const ds = pos - lut[start].al
     const df = lut[finish].al - pos
-    return (ds <= df ? start : finish) / LUT_STEPS
+    return (ds <= df ? start : finish) / steps
   }
   const mid = Math.floor((start + finish) / 2)
   return lut[mid].al > pos
-    ? getPart(lut, pos, start, mid)
-    : getPart(lut, pos, mid, finish)
+    ? getPart(steps, lut, pos, start, mid)
+    : getPart(steps, lut, pos, mid, finish)
 }
 
 const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
@@ -123,17 +123,18 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) =>
     const segment = bezier
       ? new Bezier(...bezierArray(points, i))
       : new Segment(...lineArray(points, i))
+    const length = segment.length()
+    const steps = Math.min(Math.round(length), LUT_STEPS)
     let lut = null
     if (bezier) {
-      lut = segment.getLUT(LUT_STEPS)
+      lut = segment.getLUT(steps)
       prepareLUT(lut)
     }
-    const length = segment.length()
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
         const part = bezier
-          ? getPart(lut, pos)
+          ? getPart(steps, lut, pos)
           : pos / length
         const amplPoint = segment.get(part)
         amplPoint.n = segment.normal(part)

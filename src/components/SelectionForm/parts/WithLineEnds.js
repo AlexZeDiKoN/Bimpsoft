@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { typeDiv, typeOption } from './render'
+import { endsDiv, endsOption } from './render'
 
 const { FormRow } = components.form
 
@@ -12,6 +12,7 @@ const ENDS_ARROW1 = 'arrow1'
 const ENDS_ARROW2 = 'arrow2'
 const ENDS_STROKE1 = 'stroke1'
 const ENDS_STROKE2 = 'stroke2'
+const ENDS_STROKE3 = 'stroke3'
 
 export const DIRECTION_LEFT = 'left'
 export const DIRECTION_RIGHT = 'right'
@@ -22,6 +23,7 @@ const types = {
   [ENDS_ARROW2]: { text: i18n.ARROW, value: ENDS_ARROW2 },
   [ENDS_STROKE1]: { text: i18n.STROKE, value: ENDS_STROKE1 },
   [ENDS_STROKE2]: { text: i18n.STROKE, value: ENDS_STROKE2 },
+  [ENDS_STROKE3]: { text: i18n.STROKE, value: ENDS_STROKE3 },
 }
 
 const WithLineEnds = (Component) => class LineEndsComponent extends Component {
@@ -58,10 +60,15 @@ const WithLineEnds = (Component) => class LineEndsComponent extends Component {
     const value = canEdit
       ? (
         <Select value={lineEnds} onChange={this.lineEndsChangeHandler(direction)}>
-          {typeOption(ENDS_NONE, 'solid', types[ENDS_NONE].text)}
+          {endsOption(types[ENDS_NONE], direction)}
+          {endsOption(types[ENDS_ARROW1], direction)}
+          {endsOption(types[ENDS_ARROW2], direction)}
+          {endsOption(types[ENDS_STROKE1], direction)}
+          {endsOption(types[ENDS_STROKE2], direction)}
+          {endsOption(types[ENDS_STROKE3], direction)}
         </Select>
       )
-      : typeDiv('solid', typeInfo.text)
+      : endsDiv(typeInfo, direction)
 
     return (
       <FormRow label={i18n[`LINE_ENDS_${direction.toUpperCase()}`]}>
