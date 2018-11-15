@@ -2,44 +2,65 @@
 @import "../../../../assets/styles/_mixins.less";
 
 .confirm-delete-overflow{
+  width: 450px;
   align-self: center;
   overflow: hidden;
   width: auto;
   height: auto;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.18);
+  animation: swipe 0.2s 0.01s both;
 }
 
 .confirm-delete {
-
   line-height: 1.3;
-  animation: swipe 0.2s 0.2s both;
-  border-radius: 0px 0px 7px 7px;
-  border-left: 1px solid @warning-color;
-  border-right: 1px solid @warning-color;
-  border-bottom: 1px solid @warning-color;
-
+  min-width: 450px;
+  
   .confirm-icon-warning {
-    font-size: 26px;
-    font-weight: bold;
-    border-radius: 16px;
-    height: 32px;
-    line-height: 28px;
-    width: 32px;
-    margin: 10px;
-    text-align: center;
-    color: @warning-color;
-    border: 2px solid @warning-color;
-    align-self: start;
-
+    display: none;
   }
+
+  .confirm-modal-window {
+    width: 100%;
+  }
+
   .confirm-title{
-    text-align: left;
     font-weight: bold;
-    line-height: 2;
     font-size: 1.1em;
+    height: 40px;
+    background-color: #5E6269 !important;
+    text-align: center;
+    padding: 8px 40px 8px 24px;
+    color: #ffffff !important;
+  
   }
   .confirm-text{
     text-align: left;
+    padding: 16px 24px;
   }
+  
+  .dzvin-form-item:first-child {
+    margin: 0;
+    width: 100%;
+  }
+
+  .dzvin-form-item:nth-child(2) {
+    margin: 0 24px 24px 24px;
+    display: flex;
+    align-items: flex-start;
+    .dzvin-button {
+      margin: 0;
+      width: 154px;
+      max-width: 122px;
+      height: 40px;
+      padding: 0 15px;
+      &:nth-child(2) {
+        margin-left: 16px;
+      }
+    }
+  }
+  
 }
 .not-clickable-area{
   margin: 0px;
@@ -47,9 +68,27 @@
   width: 100vw;
   height: 100vh;
   top: 0px;
-  left: 0px;
-  background: rgba(0,0,0,0.1);
   z-index: 1000;
+}
+
+.dzvin-button:focus {
+  border-color: #9fa659;
+  color: #fff;
+  outline: #9fa659;
+  background-color: #9fa659;
+}
+
+.dzvin-button:hover {
+  color: #fff;
+  border-color: #b0b37d;
+  background-color: #b0b37d;
+  cursor: pointer;
+}
+
+.dzvin-button-cancel:hover {
+  color: #b0b37d;
+  border-color: #b0b37d;
+  background-color: #fff;
 }
 
 @keyframes swipe {
