@@ -24,6 +24,7 @@ const WebMapAttributes = Record({
   lineAmpl: 'none',
   left: 'none',
   right: 'none',
+  lineNodes: 'none',
   texts: [],
   z: null,
 })

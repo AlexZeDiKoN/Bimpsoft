@@ -23,6 +23,10 @@ const WAVE_SIZE = 24 // (пікселів) висота "хвилі" для хв
 const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
 const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
 
+const NODES_STROKE_WIDTH = 2 // (пікселів) товщина лінії для зображення вузлових точок
+const NODES_CIRCLE_RADIUS = 12 // (пікселів) радіус перекресленого кола у візлових точках
+const NODES_SQUARE_WIDTH = 24 // (пікселів) сторона квадрата у вузлових точках
+
 // TODO потенційно це місце просадки продуктивності:
 // TODO * при маленьких значеннях будуть рвані лінії
 // TODO * при великих може гальмувати відмальовка
@@ -383,6 +387,31 @@ export default L.SVG.include({
       amplifiers.group += amplPoints.map(({ x, y, r }) =>
         `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
       ).join('')
+    }
+    switch (layer.options.lineNodes) {
+      case 'cross-circle': {
+        const d = +(NODES_CIRCLE_RADIUS * Math.sqrt(2) / 2).toFixed(2)
+        layer._rings[0].forEach(({ x, y }) => {
+          amplifiers.mask += `<g transform="translate(${x},${y})"><circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" /></g>`
+          amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
+            <circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" />
+            <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
+          </g>`
+        })
+        break
+      }
+      case 'square': {
+        const d = NODES_SQUARE_WIDTH / 2
+        layer._rings[0].forEach(({ x, y }) => {
+          amplifiers.mask += `<g transform="translate(${x},${y})"><rect fill="black" x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" /></g>`
+          amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
+            <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
+          </g>`
+        })
+        break
+      }
+      default:
+        break
     }
     if (amplifiers.mask) {
       layer.getMask().innerHTML = `${amplifiers.rect}${amplifiers.mask}`

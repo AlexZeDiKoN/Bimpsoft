@@ -190,6 +190,41 @@ const renderLineEnds = (type, direction) => {
   return optionsSvg(picture)
 }
 
+const renderNodes = (type) => {
+  let picture = null
+  switch (type) {
+    case 'none':
+      picture = (
+        <path
+          stroke="rgba(0,0,0,0.65)"
+          strokeWidth="2"
+          fill="none"
+          d="M0,10 h56"
+        />
+      )
+      break
+    case 'cross-circle':
+      picture = (
+        <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
+          <path d="M0,10 h20 M36,10 h20 M22.34,4.34 l11.31,11.31 M22.34,15.66 l11.31,-11.31" />
+          <circle cx="28" cy="10" r="8" />
+        </g>
+      )
+      break
+    case 'square':
+      picture = (
+        <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
+          <path d="M0,10 h20 M36,10 h20" />
+          <rect x="20" y="2" width="16" height="16" />
+        </g>
+      )
+      break
+    default:
+      break
+  }
+  return optionsSvg(picture)
+}
+
 // dangerouslySetInnerHTML={{ __html: getNato(NATOData) }}
 export const typeDiv = (borderStyle, title, level) => (
   <div className="icon-option">
@@ -214,5 +249,18 @@ export const endsDiv = ({ value, text }, direction) => ( // eslint-disable-line 
 export const endsOption = (endsInfo, direction) => (
   <Option value={endsInfo.value}>
     {endsDiv(endsInfo, direction)}
+  </Option>
+)
+
+export const nodesDiv = ({ value, text }) => ( // eslint-disable-line react/prop-types,react/display-name
+  <div className="icon-option">
+    {renderNodes(value)}
+    <div className="icon-text">{text}</div>
+  </div>
+)
+
+export const nodesOption = (nodesInfo) => (
+  <Option value={nodesInfo.value}>
+    {nodesDiv(nodesInfo)}
   </Option>
 )

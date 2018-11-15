@@ -3,16 +3,18 @@ import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { typeDiv, typeOption } from './render'
+import { nodesDiv, nodesOption } from './render'
 
 const { FormRow } = components.form
 
 const NODE_NONE = 'none'
 const NODE_CROSS_CIRCLE = 'cross-circle'
+const NODE_SQUARE = 'square'
 
 const types = {
   [NODE_NONE]: { text: i18n.NO_ONE, value: NODE_NONE },
-  [NODE_CROSS_CIRCLE]: { text: i18n.CROSS_CIRCLE, value: NODE_CROSS_CIRCLE },
+  [NODE_CROSS_CIRCLE]: { text: i18n.SHAPE_CIRCLE, value: NODE_CROSS_CIRCLE },
+  [NODE_SQUARE]: { text: i18n.SHAPE_SQUARE, value: NODE_SQUARE },
 }
 
 const WithLineNodes = (Component) => class LineNodesComponent extends Component {
@@ -45,11 +47,12 @@ const WithLineNodes = (Component) => class LineNodesComponent extends Component 
     const value = canEdit
       ? (
         <Select value={lineNodes} onChange={this.lineNodesChangeHandler}>
-          {typeOption(NODE_NONE, 'solid', types[NODE_NONE].text)}
-          {typeOption(NODE_CROSS_CIRCLE, 'solid', types[NODE_CROSS_CIRCLE].text)}
+          {nodesOption(types[NODE_NONE])}
+          {nodesOption(types[NODE_CROSS_CIRCLE])}
+          {nodesOption(types[NODE_SQUARE])}
         </Select>
       )
-      : typeDiv('solid', typeInfo.text)
+      : nodesDiv(typeInfo)
 
     return (
       <FormRow label={i18n.LINE_NODES}>

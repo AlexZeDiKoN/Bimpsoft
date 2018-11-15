@@ -104,7 +104,6 @@ export const ARROW = 'Стрілка'
 export const STROKE = 'Засічка'
 
 export const LINE_NODES = 'Вузлова точка'
-export const CROSS_CIRCLE = 'Коло'
 
 export const NO_ONE = 'Немає'
 export const SHOW_LEVEL = 'Рівень'
