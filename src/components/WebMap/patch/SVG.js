@@ -44,6 +44,29 @@ const setLength = (v, l) => multiply(v, l / length(v))
 const apply = (p, v) => ({ x: p.x + v.x, y: p.y + v.y })
 const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
 
+const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
+const bezierArray = (points, index, locked) => {
+  const next = nextIndex(points, index, locked)
+  // console.log({ points, index, locked, next })
+  return [
+    points[index].x,
+    points[index].y,
+    points[index].cp2.x,
+    points[index].cp2.y,
+    points[next].cp1.x,
+    points[next].cp1.y,
+    points[next].x,
+    points[next].y,
+  ]
+}
+const lineArray = (points, index, locked) => {
+  const next = nextIndex(points, index, locked)
+  return [
+    points[index],
+    points[next],
+  ]
+}
+
 const getLineEnd = (layer, end) => {
   let res = layer.options && layer.options.lineEnds && layer.options.lineEnds[end]
   if (res === 'none') {
@@ -129,33 +152,12 @@ const getPart = (steps, lut, pos, start = 0, finish = 0) => {
 }
 
 const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
-  const nextIndex = (index) => locked && index === points.length - 1 ? 0 : index + 1
-  const bezierArray = (points, index) => {
-    const next = nextIndex(index)
-    return [
-      points[index].x,
-      points[index].y,
-      points[index].cp2.x,
-      points[index].cp2.y,
-      points[next].cp1.x,
-      points[next].cp1.y,
-      points[next].x,
-      points[next].y,
-    ]
-  }
-  const lineArray = (points, index) => {
-    const next = nextIndex(index)
-    return [
-      points[index],
-      points[next],
-    ]
-  }
   const amplPoints = []
   const last = points.length - Number(!locked)
   for (let i = 0; i < last; i++) {
     const segment = bezier
-      ? new Bezier(...bezierArray(points, i))
-      : new Segment(...lineArray(points, i))
+      ? new Bezier(...bezierArray(points, i, locked))
+      : new Segment(...lineArray(points, i, locked))
     const length = segment.length()
     const steps = Math.min(Math.round(length), LUT_STEPS)
     let lut = null
@@ -214,9 +216,10 @@ export default L.SVG.include({
   },
 
   _updateStyle: function (layer) {
+    const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
-      options: { shadowColor, opacity = 1, hidden, selected },
+      options: { shadowColor, opacity = 1, hidden, selected, color },
       _shadowPath,
       _path,
       _amplifierGroup,
@@ -230,6 +233,11 @@ export default L.SVG.include({
       _shadowPath.setAttribute('stroke', shadowColor)
     } else {
       _shadowPath.setAttribute('display', 'none')
+    }
+    if (colorChanged) {
+      _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
+      _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
+      _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
     }
     if (_path.style.opacity !== opacity) {
       _path.style.opacity = opacity
@@ -410,7 +418,7 @@ export default L.SVG.include({
       waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
     }
     for (let i = 1; i < wavePoints.length; i++) {
-      if (!wavePoints[i].i) {
+      if (!wavePoints[i].i || (i === 1 && getLineEnd(layer, 'left'))) {
         addLineTo(wavePoints[i])
       } else {
         addWave(wavePoints[i - 1], wavePoints[i])
@@ -424,22 +432,26 @@ export default L.SVG.include({
         if (locked) {
           addWave(p0, layer._rings[0][0], false)
         } else {
-          const p2 = {
-            x: p0.x + (p1.x - p0.x) / rest * WAVE_STEP,
-            y: p0.y + (p1.y - p0.y) / rest * WAVE_STEP,
+          if (getLineEnd(layer, 'right')) {
+            waves += ` L${p1.x} ${p1.y}`
+          } else {
+            const p2 = {
+              x: p0.x + (p1.x - p0.x) / rest * WAVE_STEP,
+              y: p0.y + (p1.y - p0.y) / rest * WAVE_STEP,
+            }
+            const l = Math.hypot(p0.n.x, p0.n.y)
+            const cp1 = {
+              x: p0.x - p0.n.x / l * WAVE_SIZE,
+              y: p0.y - p0.n.y / l * WAVE_SIZE,
+            }
+            const cp2 = {
+              x: p2.x + cp1.x - p0.x,
+              y: p2.y + cp1.y - p0.y,
+            }
+            const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+            const p = b.split(rest / WAVE_STEP).left.points
+            waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
           }
-          const l = Math.hypot(p0.n.x, p0.n.y)
-          const cp1 = {
-            x: p0.x - p0.n.x / l * WAVE_SIZE,
-            y: p0.y - p0.n.y / l * WAVE_SIZE,
-          }
-          const cp2 = {
-            x: p2.x + cp1.x - p0.x,
-            y: p2.y + cp1.y - p0.y,
-          }
-          const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
-          const p = b.split(rest / WAVE_STEP).left.points
-          waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
         }
       }
     }
@@ -451,11 +463,15 @@ export default L.SVG.include({
     const bounds = layer._map._renderer._bounds
     const insideMap = ({ x, y }) => x > bounds.min.x - STROKE_STEP && y > bounds.min.y - STROKE_STEP &&
       x < bounds.max.x + STROKE_STEP && y < bounds.max.y + STROKE_STEP
-    const strokePoints = buildPeriodicPoints(STROKE_STEP, -STROKE_STEP / 2, layer._rings[0], bezier, locked, insideMap)
-      .filter(({ i, o }) => i && o)
+    const strokePoints = buildPeriodicPoints(STROKE_STEP, getLineEnd(layer, 'left') ? -1 : -STROKE_STEP / 2,
+      layer._rings[0], bezier, locked, insideMap).filter(({ i, o }) => i && o)
     for (let i = 0; i < strokePoints.length; i++) {
       const p = apply(strokePoints[i], setLength(strokePoints[i].n, -STROKE_SIZE))
-      strokes += ` M${strokePoints[i].x} ${strokePoints[i].y} L${p.x} ${p.y}`
+      if (i < strokePoints.length - 1 ||
+        dist(strokePoints[i], layer._rings[0][layer._rings[0].length - 1]) > STROKE_STEP / 2
+      ) {
+        strokes += ` M${strokePoints[i].x} ${strokePoints[i].y} L${p.x} ${p.y}`
+      }
     }
     return strokes
   },
@@ -467,10 +483,17 @@ export default L.SVG.include({
       return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
     }
     const ring = layer._rings[0]
-    const leftPlus = ring[1]
-    const rightMinus = ring[ring.length - 2]
+    let leftPlus = ring[1]
+    let rightMinus = ring[ring.length - 2]
     if (bezier) {
-      // TODO: для кривих Безьє уточнити точки
+      const bl = new Bezier(...bezierArray(ring, 0, false))
+      const br = new Bezier(...bezierArray(ring, ring.length - 2, false))
+      const ll = bl.length()
+      const lr = br.length()
+      const pl = ll > 40 ? 20 / ll : 0.5
+      const pr = lr > 40 ? (lr - 20) / lr : 0.5
+      leftPlus = bl.get(pl)
+      rightMinus = br.get(pr)
     }
     const leftEnd = drawLineEnd(leftEndType, ring[0], angle(vector(ring[0], leftPlus)))
     const rightEnd = drawLineEnd(rightEndType, ring[ring.length - 1], angle(vector(ring[ring.length - 1], rightMinus)))
