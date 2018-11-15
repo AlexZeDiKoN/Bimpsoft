@@ -391,7 +391,7 @@ export default L.SVG.include({
     switch (layer.options.lineNodes) {
       case 'cross-circle': {
         const d = +(NODES_CIRCLE_RADIUS * Math.sqrt(2) / 2).toFixed(2)
-        layer._rings[0].forEach(({ x, y }) => {
+        layer._rings[0].filter(insideMap).forEach(({ x, y }) => {
           amplifiers.mask += `<g transform="translate(${x},${y})"><circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" /></g>`
           amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
             <circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" />
@@ -402,7 +402,7 @@ export default L.SVG.include({
       }
       case 'square': {
         const d = NODES_SQUARE_WIDTH / 2
-        layer._rings[0].forEach(({ x, y }) => {
+        layer._rings[0].filter(insideMap).forEach(({ x, y }) => {
           amplifiers.mask += `<g transform="translate(${x},${y})"><rect fill="black" x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" /></g>`
           amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
