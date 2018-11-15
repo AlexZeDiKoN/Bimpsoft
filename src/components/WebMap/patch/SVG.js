@@ -26,7 +26,7 @@ const STROKE_SIZE = 18 // (пікселів) висота "засічки" дл�
 // TODO потенційно це місце просадки продуктивності:
 // TODO * при маленьких значеннях будуть рвані лінії
 // TODO * при великих може гальмувати відмальовка
-const LUT_STEPS = 1000 // кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
+const LUT_STEPS = 32000 // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
 
 const DRAW_PARTIAL_WAVES = true
 
@@ -42,6 +42,39 @@ const length = (v) => Math.hypot(v.x, v.y)
 const multiply = (v, k) => ({ x: v.x * k, y: v.y * k })
 const setLength = (v, l) => multiply(v, l / length(v))
 const apply = (p, v) => ({ x: p.x + v.x, y: p.y + v.y })
+const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
+
+const getLineEnd = (layer, end) => {
+  let res = layer.options && layer.options.lineEnds && layer.options.lineEnds[end]
+  if (res === 'none') {
+    res = null
+  }
+  return res
+}
+
+const drawLineEnd = (type, { x, y }, angle) => {
+  let res = `<g stroke-width="3" transform="translate(${x},${y - 6}) rotate(${angle},0,6)">`
+  switch (type) {
+    case 'arrow1':
+      res += `<path fill="none" d="M6,0 l-6,6 l6,6"/>`
+      break
+    case 'arrow2':
+      res += `<path d="M12,0 l-12,6 l12,6 z"/>`
+      break
+    case 'stroke1':
+      res += `<path d="M0,0 v12"/>`
+      break
+    case 'stroke2':
+      res += `<path d="M-3,0 l6,12"/>`
+      break
+    case 'stroke3':
+      res += `<path d="M3,0 l-6,12"/>`
+      break
+    default:
+      break
+  }
+  return `${res}</g>`
+}
 
 class Segment {
   constructor (start, finish) {
@@ -74,25 +107,25 @@ const prepareLUT = (lut) => {
   }
 }
 
-const getPart = (lut, pos, start = 0, finish = 0) => {
+const getPart = (steps, lut, pos, start = 0, finish = 0) => {
   if (finish === 0) {
     finish = lut.length - 1
   }
   if (lut[start].al >= pos || start === finish) {
-    return start / LUT_STEPS
+    return start / steps
   }
   if (lut[finish] < pos) {
-    return finish / LUT_STEPS
+    return finish / steps
   }
   if (finish - start === 1) {
     const ds = pos - lut[start].al
     const df = lut[finish].al - pos
-    return (ds <= df ? start : finish) / LUT_STEPS
+    return (ds <= df ? start : finish) / steps
   }
   const mid = Math.floor((start + finish) / 2)
   return lut[mid].al > pos
-    ? getPart(lut, pos, start, mid)
-    : getPart(lut, pos, mid, finish)
+    ? getPart(steps, lut, pos, start, mid)
+    : getPart(steps, lut, pos, mid, finish)
 }
 
 const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
@@ -123,17 +156,18 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) =>
     const segment = bezier
       ? new Bezier(...bezierArray(points, i))
       : new Segment(...lineArray(points, i))
+    const length = segment.length()
+    const steps = Math.min(Math.round(length), LUT_STEPS)
     let lut = null
     if (bezier) {
-      lut = segment.getLUT(LUT_STEPS)
+      lut = segment.getLUT(steps)
       prepareLUT(lut)
     }
-    const length = segment.length()
     if (length > 0) {
       let pos = offset + step
       while (pos < length) {
         const part = bezier
-          ? getPart(lut, pos)
+          ? getPart(steps, lut, pos)
           : pos / length
         const amplPoint = segment.get(part)
         amplPoint.n = segment.normal(part)
@@ -186,6 +220,7 @@ export default L.SVG.include({
       _shadowPath,
       _path,
       _amplifierGroup,
+      _lineEndsGroup,
       _outlinePath,
     } = layer
 
@@ -200,18 +235,22 @@ export default L.SVG.include({
       _path.style.opacity = opacity
       _outlinePath.style.opacity = opacity
       _shadowPath.style.opacity = opacity
+      _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
+      _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
     }
     if ((_path.style.display === 'none') !== Boolean(hidden)) {
       _path.style.display = hidden ? 'none' : ''
       _outlinePath.style.display = hidden ? 'none' : ''
       _shadowPath.style.display = hidden ? 'none' : ''
       _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
+      _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
     }
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
     if (hasClassSelected !== selected) {
       const action = selected ? 'add' : 'remove'
       _path.classList[action]('dzvin-path-selected')
       _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
+      _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
     }
   },
 
@@ -240,6 +279,7 @@ export default L.SVG.include({
 
     layer.deleteMask && layer.deleteMask()
     layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
+    layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
   _updatePoly: function (layer, closed) {
@@ -282,6 +322,8 @@ export default L.SVG.include({
           break
       }
       this._updateMask(layer, false, false)
+      this._updateLineEnds(layer, false)
+      result += ` m1,1`
     } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
@@ -308,6 +350,7 @@ export default L.SVG.include({
           break
       }
       this._updateMask(layer, true, false)
+      this._updateLineEnds(layer, true)
     }
 
     this._setPath(layer, result)
@@ -396,7 +439,7 @@ export default L.SVG.include({
           }
           const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
           const p = b.split(rest / WAVE_STEP).left.points
-          waves += ` C${p[ 1 ].x} ${p[ 1 ].y} ${p[ 2 ].x} ${p[ 2 ].y} ${p[ 3 ].x} ${p[ 3 ].y}`
+          waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
         }
       }
     }
@@ -415,5 +458,22 @@ export default L.SVG.include({
       strokes += ` M${strokePoints[i].x} ${strokePoints[i].y} L${p.x} ${p.y}`
     }
     return strokes
+  },
+
+  _updateLineEnds: function (layer, bezier) {
+    const leftEndType = getLineEnd(layer, 'left')
+    const rightEndType = getLineEnd(layer, 'right')
+    if (!leftEndType && !rightEndType) {
+      return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
+    }
+    const ring = layer._rings[0]
+    const leftPlus = ring[1]
+    const rightMinus = ring[ring.length - 2]
+    if (bezier) {
+      // TODO: для кривих Безьє уточнити точки
+    }
+    const leftEnd = drawLineEnd(leftEndType, ring[0], angle(vector(ring[0], leftPlus)))
+    const rightEnd = drawLineEnd(rightEndType, ring[ring.length - 1], angle(vector(ring[ring.length - 1], rightMinus)))
+    layer.getLineEndsGroup().innerHTML = `${leftEnd}${rightEnd}`
   },
 })

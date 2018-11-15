@@ -97,6 +97,15 @@ export const DASHED = 'Пунктирна'
 export const WAVED = 'Хвиляста'
 export const STROKED = 'З засічками'
 
+export const REGULAR = 'Звичайний'
+export const LINE_ENDS_LEFT = 'Лівий край' // константа використовується
+export const LINE_ENDS_RIGHT = 'Правий край' // константа використовується
+export const ARROW = 'Стрілка'
+export const STROKE = 'Засічка'
+
+export const LINE_NODES = 'Вузлова точка'
+export const CROSS_CIRCLE = 'Коло'
+
 export const NO_ONE = 'Немає'
 export const SHOW_LEVEL = 'Рівень'
 
