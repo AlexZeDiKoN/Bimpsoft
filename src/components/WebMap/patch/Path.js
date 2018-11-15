@@ -4,8 +4,6 @@ import { colors } from '../../../constants'
 export default L.Path.include({
   setColor: function (color) {
     this.setStyle({ color })
-    this._amplifierGroup && this._amplifierGroup.setAttribute('stroke', color)
-    this._lineEndsGroup && this._lineEndsGroup.setAttribute('stroke', color)
   },
 
   setSelected: function (selected) {
