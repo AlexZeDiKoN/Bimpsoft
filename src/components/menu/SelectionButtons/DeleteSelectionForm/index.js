@@ -27,7 +27,7 @@ export default class DeleteSelectionForm extends React.Component {
             <Form className="confirm-delete">
               <FormItem>
                 <div className="confirm-icon-warning">!</div>
-                <div>
+                <div className="confirm-modal-window">
                   <div className="confirm-title">{i18n.REMOVING_SIGNS}</div>
                   <div className="confirm-text">{i18n.LAYER_WITH_NAME(layerName)}</div>
                   <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>

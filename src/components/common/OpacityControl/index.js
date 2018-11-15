@@ -12,7 +12,7 @@ export default class OpacityControl extends React.Component {
     const { title, icon, opacity, className } = this.props
     return (
       <div className={'opacity-control ' + className}>
-        <div title={title}>
+        <div className="opacity-control-block" title={title}>
           <Icon
             className="opacity-control-icon"
             icon={icon}
