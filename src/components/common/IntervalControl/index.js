@@ -15,7 +15,7 @@ export default class IntervalControl extends React.Component {
           showTime={{ format: TIME_FORMAT }}
           format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeFrom}
-          placeholder={i18n.DATA}
+          placeholder={i18n.DATE}
         />
         <span className="interval-control-label">до</span>
         <DatePicker
@@ -23,7 +23,7 @@ export default class IntervalControl extends React.Component {
           showTime={{ format: TIME_FORMAT }}
           format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeTo}
-          placeholder={i18n.DATA}
+          placeholder={i18n.DATE}
         />
       </div>
     )
