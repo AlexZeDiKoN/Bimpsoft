@@ -231,7 +231,9 @@ export default L.SVG.include({
   },
 
   _updateStyle: function (layer) {
-    const colorChanged = layer._path.style.color !== layer.options.color
+    // TODO: потестувати на великих даних, чи присвоєння, наприклад, "_path.style.opacity = opacity" містить перевірку
+    // TODO: ідентичного значення всередині, чи треба перевіряти зовні
+    // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
       options: { shadowColor, opacity = 1, hidden, selected, color },
@@ -249,32 +251,32 @@ export default L.SVG.include({
     } else {
       _shadowPath.setAttribute('display', 'none')
     }
-    if (colorChanged) {
-      _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
-      _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
-      _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
-    }
+    // if (colorChanged) {
+    _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
+    _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
+    _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
+    // }
     if (_path.style.opacity !== opacity) {
       _path.style.opacity = opacity
       _outlinePath.style.opacity = opacity
       _shadowPath.style.opacity = opacity
-      _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
-      _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
     }
+    _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
+    _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
     if ((_path.style.display === 'none') !== Boolean(hidden)) {
       _path.style.display = hidden ? 'none' : ''
       _outlinePath.style.display = hidden ? 'none' : ''
       _shadowPath.style.display = hidden ? 'none' : ''
-      _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
-      _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
     }
+    _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
+    _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
+    const action = selected ? 'add' : 'remove'
     if (hasClassSelected !== selected) {
-      const action = selected ? 'add' : 'remove'
       _path.classList[action]('dzvin-path-selected')
-      _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
-      _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
     }
+    _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
+    _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
   },
 
   _addPath: function (layer) {

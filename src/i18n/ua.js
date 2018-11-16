@@ -146,3 +146,6 @@ export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків н
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
+
+export const ELEMENT_SIZES = 'Розміри елементів'
+export const ELEMENT_SCALES = 'Рівні для масштабів'

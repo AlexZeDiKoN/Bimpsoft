@@ -1,5 +1,4 @@
 /* global L */
-import { colors } from '../../../constants'
 
 export default L.Path.include({
   setColor: function (color) {
@@ -43,8 +42,8 @@ export default L.Path.include({
   getAmplifierGroup: function () {
     if (!this._amplifierGroup) {
       this._amplifierGroup = L.SVG.create('g')
-      this._amplifierGroup.setAttribute('stroke', colors.evaluateColor(this.options.color))
       this._renderer._rootGroup.appendChild(this._amplifierGroup)
+      this._renderer._updateStyle(this)
     }
     return this._amplifierGroup
   },
@@ -52,8 +51,8 @@ export default L.Path.include({
   getLineEndsGroup: function () {
     if (!this._lineEndsGroup) {
       this._lineEndsGroup = L.SVG.create('g')
-      this._lineEndsGroup.setAttribute('stroke', colors.evaluateColor(this.options.color))
       this._renderer._rootGroup.appendChild(this._lineEndsGroup)
+      this._renderer._updateStyle(this)
     }
     return this._lineEndsGroup
   },

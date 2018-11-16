@@ -1,14 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Switch } from 'antd'
+import { Switch, Collapse, Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
-import { paramsNames } from '../../constants'
+import { SubordinationLevel, paramsNames, SCALES } from '../../constants'
 
-const { default: Form, FormRow, FormDarkPart } = components.form
+const { form: { default: Form, FormRow, FormDarkPart }, icons: { Icon } } = components
+const { Option } = Select
+
+const formatScale = (scale) => `1 : ${scale.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`
 
 export default class SettingsForm extends React.Component {
   static propTypes = {
@@ -27,12 +30,34 @@ export default class SettingsForm extends React.Component {
     onClose: PropTypes.func,
   }
 
-  changeParamHandler = (name, value) => {
-    this.props.onChangeParam(name, value)
+  changeParamOption = (name) => (value) => {
+    const { onChangeParam } = this.props
+
+    onChangeParam(name, value)
   }
 
   renderScaleControl (paramName) {
-    return (<ScaleControl name={paramName} value={this.props.params[paramName] } onChange={this.changeParamHandler}/>)
+    const { params: { [paramName]: value }, onChangeParam } = this.props
+
+    return (
+      <ScaleControl name={paramName} value={value} onChange={onChangeParam}/>
+    )
+  }
+
+  renderLevelControl (paramName) {
+    const { params: { [paramName]: value } } = this.props
+
+    return (
+      <Select value={+value} onChange={this.changeParamOption(paramName)} className="select-level">
+        {SubordinationLevel.list.map(({ value, title, icon }) => (
+          <Option key={value} value={value}>
+            <div className="flex-level">
+              <Icon className="icon-level" icon={icon} /> <span className="text-level">{title}</span>
+            </div>
+          </Option>
+        ))}
+      </Select>
+    )
   }
 
   render () {
@@ -68,21 +93,33 @@ export default class SettingsForm extends React.Component {
           <FormRow label={i18n.AMPLIFIERS}>
             <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
           </FormRow>
-          <FormRow label={i18n.POINT_SIGN_SIZE}/>
-          <FormDarkPart>
-            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
-            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
-          </FormDarkPart>
-          <FormRow label={i18n.TEXT_SIGN_SIZE}/>
-          <FormDarkPart>
-            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
-            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
-          </FormDarkPart>
-          <FormRow label={i18n.LINE_SIGN_SIZE}/>
-          <FormDarkPart>
-            <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
-            <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
-          </FormDarkPart>
+
+          <Collapse accordion>
+            <Collapse.Panel header={i18n.ELEMENT_SIZES} key={1}>
+              <FormRow label={i18n.POINT_SIGN_SIZE}/>
+              <FormDarkPart>
+                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
+                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
+              </FormDarkPart>
+              <FormRow label={i18n.TEXT_SIGN_SIZE}/>
+              <FormDarkPart>
+                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
+                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
+              </FormDarkPart>
+              <FormRow label={i18n.LINE_SIGN_SIZE}/>
+              <FormDarkPart>
+                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
+                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
+              </FormDarkPart>
+            </Collapse.Panel>
+            <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
+              {SCALES.map((scale) => (
+                <FormRow key={scale} label={formatScale(scale)}>
+                  {this.renderLevelControl(`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`)}
+                </FormRow>
+              ))}
+            </Collapse.Panel>
+          </Collapse>
           {/* <FormRow label={i18n.GENERALIZATION}> */}
           {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
           {/* </FormRow> */}
