@@ -511,7 +511,7 @@ export default class WebMap extends Component {
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     initMapEvents(this.map, this.clickInterhandler)
-    this.map.attributionControl.setPrefix(`f:v${version} b:v${this.backVersion}`)
+    this.map.attributionControl.setPrefix(`f${version} b${this.backVersion}`)
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)

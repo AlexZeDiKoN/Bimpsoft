@@ -27,6 +27,8 @@ const NODES_STROKE_WIDTH = 2 // (пікселів) товщина лінії д�
 const NODES_CIRCLE_RADIUS = 12 // (пікселів) радіус перекресленого кола у візлових точках
 const NODES_SQUARE_WIDTH = 24 // (пікселів) сторона квадрата у вузлових точках
 
+const NODES_SPACE = 36 // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
+
 // TODO потенційно це місце просадки продуктивності:
 // TODO * при маленьких значеннях будуть рвані лінії
 // TODO * при великих може гальмувати відмальовка
@@ -73,6 +75,14 @@ const lineArray = (points, index, locked) => {
 
 const getLineEnd = (layer, end) => {
   let res = layer.options && layer.options.lineEnds && layer.options.lineEnds[end]
+  if (res === 'none') {
+    res = null
+  }
+  return res
+}
+
+const getNodes = (layer) => {
+  let res = layer.options && layer.options.lineNodes
   if (res === 'none') {
     res = null
   }
@@ -155,7 +165,7 @@ const getPart = (steps, lut, pos, start = 0, finish = 0) => {
     : getPart(steps, lut, pos, mid, finish)
 }
 
-const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) => {
+const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
   const last = points.length - Number(!locked)
   for (let i = 0; i < last; i++) {
@@ -179,7 +189,8 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap) =>
         amplPoint.n = segment.normal(part)
         amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180
         amplPoint.i = insideMap(amplPoint)
-        amplPoint.o = i < last - 1 || length - pos > step / 5
+        amplPoint.o = (i < last - 1 || length - pos > step / 5) &&
+          (!skipNodes || (pos > NODES_SPACE && length - pos > NODES_SPACE))
         amplPoints.push(amplPoint)
         pos += step
       }
@@ -380,7 +391,7 @@ export default L.SVG.include({
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
       const amp = ampSigns[layer.object.level]
       const amplPoints = buildPeriodicPoints(AMPLIFIERS_STEP, -AMPLIFIERS_STEP / 2, layer._rings[0], bezier, locked,
-        insideMap).filter(({ i, o }) => i && o)
+        insideMap, getNodes(layer)).filter(({ i, o }) => i && o)
       amplifiers.mask += amplPoints.map(({ x, y, r }) =>
         `<g transform="translate(${x},${y}) rotate(${r})">${amp.mask}</g>`
       ).join('')
@@ -493,7 +504,7 @@ export default L.SVG.include({
     const insideMap = ({ x, y }) => x > bounds.min.x - STROKE_STEP && y > bounds.min.y - STROKE_STEP &&
       x < bounds.max.x + STROKE_STEP && y < bounds.max.y + STROKE_STEP
     const strokePoints = buildPeriodicPoints(STROKE_STEP, getLineEnd(layer, 'left') ? -1 : -STROKE_STEP / 2,
-      layer._rings[0], bezier, locked, insideMap).filter(({ i, o }) => i && o)
+      layer._rings[0], bezier, locked, insideMap, getNodes(layer)).filter(({ i, o }) => i && o)
     for (let i = 0; i < strokePoints.length; i++) {
       const p = apply(strokePoints[i], setLength(strokePoints[i].n, -STROKE_SIZE))
       if (i < strokePoints.length - 1 ||
