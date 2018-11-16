@@ -5,7 +5,7 @@ import MapSources from './MapSources'
 import Align from './Align'
 import * as colors from './colors'
 import * as shortcuts from './shortcuts'
-import { SCALES } from './scales'
+import { SCALES, ZOOMS } from './scales'
 import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 
@@ -19,5 +19,6 @@ export {
   shortcuts,
   paramsNames,
   SCALES,
+  ZOOMS,
   FormTypes,
 }

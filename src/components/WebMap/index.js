@@ -564,7 +564,9 @@ export default class WebMap extends Component {
     const { lat, lng } = this.map.getCenter()
     const zoom = this.map.getZoom()
     this.view = { lat, lng, zoom }
-    this.props.onMove({ lat, lng }, zoom)
+
+    const { params, onMove } = this.props
+    onMove({ lat, lng }, zoom, params)
   }
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {

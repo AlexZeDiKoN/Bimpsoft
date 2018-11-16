@@ -53,9 +53,9 @@ export const setSubordinationLevel = (value) => ({
   payload: value,
 })
 
-export const setCenter = (center, zoom) => ({
+export const setCenter = (center, zoom, params) => ({
   type: actionNames.SET_MAP_CENTER,
-  payload: { center, zoom },
+  payload: { center, zoom, params },
 })
 
 export const addObject = (object) =>

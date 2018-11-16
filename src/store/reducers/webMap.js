@@ -3,7 +3,7 @@ import { Record, List, Map } from 'immutable'
 import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { CoordinatesTypes, MapSources, colors } from '../../constants'
+import { ZOOMS, CoordinatesTypes, MapSources, colors, paramsNames } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 
 const WebMapPoint = Record({
@@ -124,10 +124,14 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
     }
     case actionNames.SET_MAP_CENTER: {
-      const { center, zoom } = payload
+      const { center, zoom, params } = payload
+      const scale = ZOOMS[zoom]
+      const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
+      const sl = +level || state.subordinationLevel
       return state
         .set('center', center)
         .set('zoom', zoom)
+        .set('subordinationLevel', sl)
     }
     default:
       return state

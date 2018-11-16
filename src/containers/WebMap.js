@@ -46,7 +46,7 @@ const WebMap = connect(
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     hideForm: () => dispatch(selectionActions.hideForm()),
-    onMove: (center, zoom) => dispatch(webMapActions.setCenter(center, zoom)),
+    onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
   }),
