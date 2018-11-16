@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { SymbolEditorComponent, model } from '@DZVIN/MilSymbolEditor'
+import './style.css'
 
 const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
 const defaultApp6Code = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')

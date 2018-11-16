@@ -1,5 +1,6 @@
 /* global L */
 import { Symbol } from '@DZVIN/milsymbol'
+import { model } from '@DZVIN/MilSymbolEditor'
 import { filterSet, setActivePointSignColors, getSvgNodeFromString } from './utils'
 
 const MIN_ZOOM = 0
@@ -36,7 +37,10 @@ const PointIcon = L.Icon.extend({
     const { data, zoom, scaleOptions, showAmplifiers } = this.options
     const { code = '', attributes } = data
     const scale = this.getScale(zoom, scaleOptions)
-    const symbol = new Symbol(code, { size: scale, ...(showAmplifiers ? filterSet(attributes) : {}) })
+    const symbol = new Symbol(code, {
+      size: scale,
+      ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
+    })
     const svg = symbol.asSVG()
     const anchor = symbol.getAnchor()
     const node = getSvgNodeFromString(svg)
