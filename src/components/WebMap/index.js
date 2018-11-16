@@ -416,13 +416,7 @@ export default class WebMap extends Component {
       nextProps.selection.data === this.props.selection.data &&
       nextProps.orgStructureSelectedId !== this.props.orgStructureSelectedId
     ) {
-      const layer = this.findLayerByUnitId(nextProps.orgStructureSelectedId, nextProps.layer)
-      if (layer) {
-        activateLayer(layer, nextProps.edit)
-        this.map.panTo(getGeometry(layer).point)
-      } else {
-        clearActiveLayer(this.map)
-      }
+      this.selectByOrgStructure(nextProps.orgStructureSelectedId, nextProps.layer)
     }
     // coordinatesType
     if (nextProps.coordinatesType !== this.props.coordinatesType) {
@@ -536,13 +530,25 @@ export default class WebMap extends Component {
         const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         setLayerSelected(layer, isSelected)
-        if (isSelected) {
-          selectedIds.push(layer.id)
-        }
+        isSelected && selectedIds.push(layer.id)
       }
     })
     onSelectedList(selectedIds)
   })
+
+  selectByOrgStructure = (orgStructureSelectedId, layerId) =>  {
+    const { onSelectedList } = this.props
+    const selectedIds = []
+    this.map.eachLayer((layer) => {
+      if (layer.options.tsType) {
+        const { object, id } = layer
+        const isSelected = object && object.unit === orgStructureSelectedId && Number(object.layer) === layerId
+        isSelected && selectedIds.push(id)
+        setLayerSelected(layer, isSelected)
+      }
+    })
+    onSelectedList(selectedIds)
+  }
 
   selectLayerHandler = async () => { // { layer, select }
     const selectedIds = []
