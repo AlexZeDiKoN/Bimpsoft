@@ -1143,7 +1143,7 @@ export default class WebMap extends Component {
       const layer = this.findLayerById(created)
       if (layer) {
         activateLayer(layer, this.props.edit)
-        this.map.panTo(getGeometry(layer).point)
+        !isLayerInBounds(layer, this.map.getBounds()) && this.map.panTo(getGeometry(layer).point)
       }
       this.props.onSelection(layer || null)
       this.props.onSelectedList(layer ? [ layer.id ] : [])
