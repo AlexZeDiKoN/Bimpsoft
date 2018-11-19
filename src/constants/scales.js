@@ -1,4 +1,7 @@
+import SubordinationLevel from './SubordinationLevel'
+
 export const SCALES = [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ]
+
 export const ZOOMS = {
   20: 5000,
   19: 5000,
@@ -20,4 +23,17 @@ export const ZOOMS = {
   3: 5000000,
   2: 5000000,
   1: 5000000,
+}
+
+export const INIT_VALUES = {
+  5000: SubordinationLevel.TEAM_CREW,
+  10000: SubordinationLevel.TEAM_CREW,
+  25000: SubordinationLevel.SQUAD,
+  50000: SubordinationLevel.PLATOON_DETACHMENT,
+  100000: SubordinationLevel.BATTALION_SQUADRON,
+  200000: SubordinationLevel.BRIGADE,
+  500000: SubordinationLevel.DIVISION,
+  1000000: SubordinationLevel.CORPS_MEF,
+  2500000: SubordinationLevel.CORPS_MEF,
+  5000000: SubordinationLevel.CORPS_MEF,
 }
