@@ -12,9 +12,18 @@
 .opacity-control-input {
   flex:0 0 auto;
   width: 45px;
-  border: 1px solid @toolbar-border;
-  padding-left: 3px;
-  border-radius: 3px;
+  padding: 0 3px;
+
+  &:hover, &:focus-within{
+    width: 58px;
+    margin-right: -10px;
+    margin-left: -3px;
+  }
+
+  input{
+    outline: none;
+    padding: 0px 3px;
+  }
 }
 .opacity-control-block {
   display: flex;

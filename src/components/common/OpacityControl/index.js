@@ -1,11 +1,12 @@
 import React from 'react'
+import { InputNumber } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
 const { icons: { Icon } } = components
 export default class OpacityControl extends React.Component {
-  changeHandler = ({ target: { value } }) => {
-    this.props.onChange(parseFloat(value))
+  changeHandler = (value) => {
+    this.props.onChange(Math.max(0, Math.min(100, parseFloat(value))))
   }
 
   render () {
@@ -18,12 +19,12 @@ export default class OpacityControl extends React.Component {
             icon={icon}
           />
         </div>
-        <input
+        <InputNumber
+          size="small"
           title={title}
-          type="number"
-          step="10"
-          min="0"
-          max="100"
+          step={10}
+          min={0}
+          max={100}
           value={opacity}
           className="opacity-control-input"
           onChange={this.changeHandler}
