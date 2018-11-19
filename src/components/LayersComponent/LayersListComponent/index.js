@@ -37,6 +37,7 @@ export default class LayersListComponent extends React.Component {
                   onSelect={onSelectLayer}
                   onChangeColor={onChangeLayerColor}
                   onChangeVisibility={onChangeLayerVisibility}
+                  map={map}
                   data={layerData}
                 />
               ))}

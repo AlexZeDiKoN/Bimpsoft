@@ -35,8 +35,12 @@ export default class LayerItemComponent extends React.Component {
     const {
       isSelected,
       data: { visible, name, readOnly, color, dateFor = null },
+      map: { pathTo },
     } = this.props
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
+    const path = pathTo ? pathTo.map((item) => item.name) : []
+    path.push(name)
+    const breadCrumbs = path.join(' / ')
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
@@ -54,7 +58,7 @@ export default class LayerItemComponent extends React.Component {
           icon={getLockIcon(isSelected, readOnly)}
         />
         <div className="layer-item-сomponent-title">
-          <div className="layer-name">{name}</div>
+          <div className="layer-name" title={breadCrumbs}>{name}</div>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker
@@ -73,6 +77,7 @@ export default class LayerItemComponent extends React.Component {
 
 LayerItemComponent.propTypes = {
   isSelected: PropTypes.bool,
+  map: PropTypes.object,
   data: PropTypes.object,
   onSelect: PropTypes.func,
   onChangeVisibility: PropTypes.func,

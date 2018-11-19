@@ -25,7 +25,8 @@ export default class MapItemComponent extends React.Component {
   }
 
   render () {
-    const { data: { visible, name, color } } = this.props
+    const { data: { visible, name, color, pathTo } } = this.props
+    const breadCrumbs = pathTo ? pathTo.map((item) => item.name).join(' / ') : ''
     return (
       <div className="map-item-сomponent">
         <VisibilityButton
@@ -35,7 +36,7 @@ export default class MapItemComponent extends React.Component {
           isDark={true}
           onChange={this.changeMapVisibilityHandler}
         />
-        <span className="map-item-сomponent-title">{name}</span>
+        <span className="map-item-сomponent-title" title={breadCrumbs}>{name}</span>
         <ColorPicker
           title={i18n.LAYERS_HIGHLIGHT_COLOR}
           className="map-item-сomponent-control"
