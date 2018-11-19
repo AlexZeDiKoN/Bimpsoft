@@ -42,6 +42,7 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
         currentContainer: {
           type, id, name, parentId, formationId, /* dateFor, */
         },
+        pathTo,
       },
     } = content
 
@@ -62,7 +63,7 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
         break
       }
       case 'layersFolder': {
-        await dispatch(maps.updateMap({ operationId, mapId: id, name }))
+        await dispatch(maps.updateMap({ operationId, mapId: id, name, pathTo }))
         const layersData = entities.map(({ id: folderID, entityId: layerId, name, dateFor, formationId, readOnly }) =>
           ({ mapId: id, layerId, name, dateFor, formationId, folderID, readOnly })
         )
