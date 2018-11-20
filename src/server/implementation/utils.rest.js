@@ -1,39 +1,14 @@
 /* global Headers fetch */
-import { getAdminApi, getExplorerApi, getMapApi, getWebmapApi, getServerUrl } from '../../utils/services'
+import { getExplorerApi, getWebmapApi, getServerUrl } from '../../utils/services'
+import { ERROR_ACCESS_DENIED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 
 const absoluteUri = new RegExp('^(http|https)://')
 
-// export const serverUrl = `${explorerApi}/do`
 const serverRootUrl = getServerUrl()
 const explorerApi = serverRootUrl + getExplorerApi()
-const mapApi = serverRootUrl + getMapApi()
-const adminApi = serverRootUrl + getAdminApi()
 const webmapApi = getWebmapApi()
 
-/**
- * getDownloadURL
- * @param {number} id - documentID
- */
-export function getDownloadURL (id) {
-  return `${explorerApi}/file?id=${id}`
-}
-
-/**
- * /mapstate/v1/layers/{id}
- * @param {number} id
- * @returns {string}
- */
-export function getLayerURL (id) {
-  return `${mapApi}/exportLayer/${id}`
-}
-
-export function getMapURL (id) {
-  return `${mapApi}/exportMap/${id}`
-}
-
-export function getWebmapURL () {
-  return webmapApi
-}
+export const getWebmapURL = () => webmapApi
 
 export async function get (url, entityID) {
   const options = _getOptions('GET')
@@ -49,15 +24,12 @@ export async function put (url, data) {
   return _createGetRequest(url, options)
 }
 
-export function getVersionUrl () {
-  return `${adminApi}/version`
-}
-
 /**
- *
+ * async function post
  * @param {string} url
  * @param {Object} data
  * @param {string} route
+ * @param namespace
  * @returns {Promise<any>}
  */
 export async function post (url, data = {}, route = '/do', namespace) {
@@ -79,12 +51,7 @@ export async function getDirect (url, data = {}) {
   return _createRequest(url, options)
 }
 
-/* export function getFileBlob (url, id) {
-  return _getBlob(url, id)
-} */
-
 function _getOptions (method) {
-  // const myHeaders = _getDefaultHeaders(method === 'POST')
   return {
     mode: 'cors',
     credentials: 'include',
@@ -102,6 +69,7 @@ function _getDefaultHeaders (addContentType = true) {
 }
 
 /**
+ * function _createGetRequest
  * @param {string} url
  * @param option
  * @returns {Promise<any>}
@@ -119,30 +87,36 @@ function _createGetRequest (url, option) {
           // success code of DELETE request
           return Promise.resolve(null)
         } else if (resp.status === 401) {
-          reject(new Error('Доступ заборонено'))
+          reject(new Error(ERROR_ACCESS_DENIED))
         } else {
-          reject(new Error('Сервер не доступний'))
+          reject(new Error(ERROR_NO_CONNECTION))
         }
       })
       .then((data) => {
         resolve(data)
       })
       .catch((error) => {
-        reject(error.message)
+        reject(new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${error.message})`))
       })
   })
 }
 
 /**
- *
+ * function _createRequest
  * @param {string} url
  * @param option
+ * @param namespace
  * @returns {Promise<*>}
  * @private
  */
 async function _createRequest (url, option, namespace = explorerApi) {
   const serviceUrl = absoluteUri.test(url) ? url : namespace + url
-  const response = await fetch(serviceUrl, option)
+  let response
+  try {
+    response = await fetch(serviceUrl, option)
+  } catch (err) {
+    throw new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${err.message})`)
+  }
   switch (response.status) {
     case 200: {
       if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
@@ -159,32 +133,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 204: // success code of DELETE request
       return null
     case 401:
-      throw new Error('Доступ заборонено')
+      throw new Error(ERROR_ACCESS_DENIED)
     default:
-      throw new Error(`Сервер недоступний (${response.status}) (URL: ${serviceUrl})`)
+      throw new Error(`${ERROR_NO_CONNECTION} (${response.status}) (URL: ${serviceUrl})`)
   }
 }
-
-/* function _getBlob (url, entityID) {
-  return new Promise((resolve, reject) => {
-    const headers = new Headers()
-    headers.append('Content-Type', 'application/json;charset=UTF-8')
-    fetch(`${serverRootUrl}/${url}/?id=${entityID}`, {
-      credentials: 'include',
-      method: 'GET',
-      headers,
-    }).then((resp) => {
-      if (resp.status === 200) {
-        return resp.blob()
-      } else if (resp.status === 401) {
-        reject(new Error('Доступ заборонено'))
-      } else {
-        reject(new Error('Сервер недоступнний'))
-      }
-    }).then((data) => {
-      resolve(data)
-    }).catch((error) => {
-      reject(error.message)
-    })
-  })
-} */

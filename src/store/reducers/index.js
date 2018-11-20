@@ -8,6 +8,7 @@ import notifications from './notifications'
 import orgStructures from './orgStructures'
 import templates from './templates'
 import selection from './selection'
+import params from './params'
 
 export default combineReducers({
   viewModes,
@@ -19,4 +20,5 @@ export default combineReducers({
   webMap,
   templates,
   selection,
+  params,
 })

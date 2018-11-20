@@ -5,6 +5,7 @@ import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
 import SymbolForm from './forms/SymbolForm'
 import LineForm from './forms/LineForm'
+import AreaForm from './forms/AreaForm'
 import RactangleForm from './forms/RactangleForm'
 import SquareForm from './forms/SquareForm'
 import CircleForm from './forms/CircleForm'
@@ -25,11 +26,11 @@ const forms = {
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
-    component: LineForm,
+    component: AreaForm,
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
-    component: LineForm,
+    component: AreaForm,
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,

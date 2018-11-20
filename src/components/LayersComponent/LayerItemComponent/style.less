@@ -5,18 +5,19 @@
   .flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 5px 5px 20px;
+  padding: 5px 5px 4px 20px;
+  line-height: 1.2em;
   &:not(:last-child) {
     border-bottom: 1px solid @toolbar-border;
   }
 }
 .layer-item-сomponent-selected {
-  padding: 5px 5px 5px 10px;
-  border-left: 10px solid @toolbar-border;
+  background: @toolbar-background-selected;
+  color: @toolbar-color-selected;
 }
 
 .layer-item-сomponent-title{
-  margin: auto 5px;
+  margin: auto 1px;
   flex: 1 1 auto;
   overflow: hidden;
   width: 1px;
@@ -31,6 +32,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    font-size: 0.8em;
   }
 }
 .layer-item-сomponent-selected {
@@ -39,6 +41,6 @@
   }
 }
 .layer-item-сomponent-control{
-  margin: auto 5px;
+  margin: auto 1px;
   flex: 0 0 auto;
 }

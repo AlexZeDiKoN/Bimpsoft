@@ -1,19 +1,21 @@
 import i18n from '../i18n'
 
-export const BLUE = 'blue'
-export const RED = 'red'
-export const BLACK = 'black'
-export const GREEN = 'green'
-export const YELLOW = 'yellow'
-export const TRANSPARENT = 'transparent'
+export const BLUE = 'app6_blue'
+export const RED = 'app6_red'
+export const BLACK = 'app6_black'
+export const GREEN = 'app6_green'
+export const YELLOW = 'app6_yellow'
+export const WHITE = 'app6_white'
+export const TRANSPARENT = 'app6_transparent'
 
 export const values = {
   [TRANSPARENT]: 'none',
-  [BLUE]: '#80e0ff',
-  [RED]: '#ff8080',
-  [BLACK]: '#323438',
-  [GREEN]: '#80ff8a',
-  [YELLOW]: '#fff580',
+  [BLUE]: '#3366ff',
+  [RED]: '#ff0000',
+  [BLACK]: '#000000',
+  [GREEN]: '#339966',
+  [YELLOW]: '#ffff00',
+  [WHITE]: '#ffffff',
 
 }
 export const titles = {
@@ -23,4 +25,7 @@ export const titles = {
   [BLACK]: i18n.BLACK,
   [GREEN]: i18n.GREEN,
   [YELLOW]: i18n.YELLOW,
+  [WHITE]: i18n.WHITE,
 }
+
+export const evaluateColor = (color) => values.hasOwnProperty(color) ? values[color] : color

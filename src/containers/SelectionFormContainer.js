@@ -4,22 +4,24 @@ import { notification } from 'antd'
 import SelectionForm from '../components/SelectionForm'
 import * as selectionActions from '../store/actions/selection'
 import * as templatesActions from '../store/actions/templates'
-import * as viewModesKeys from '../constants/viewModesKeys'
 import i18n from '../i18n'
+import { canEditSelector } from '../store/selectors'
+import { FormTypes } from '../constants'
 
 const updateActions = {
-  edit: selectionActions.updateSelection,
-  create: selectionActions.updateNewShape,
+  [FormTypes.EDIT]: selectionActions.updateSelection,
+  [FormTypes.CREATE]: selectionActions.updateNewShape,
 }
 
 const mapStateToProps = (store) => {
-  const { selection, orgStructures, viewModes: { [viewModesKeys.edit]: canEdit } } = store
+  const { selection, orgStructures } = store
+  const canEdit = canEditSelector(store)
   const { byIds, roots, formation } = orgStructures
   const { showForm } = selection
   let data = null
-  if (showForm === 'create') {
+  if (showForm === FormTypes.CREATE) {
     data = selection.newShape
-  } else if (showForm === 'edit') {
+  } else if (showForm === FormTypes.EDIT) {
     data = selection.data
   }
   return { canEdit, showForm, data, orgStructures: { byIds, roots, formation } }
@@ -29,7 +31,7 @@ const mapDispatchToProps = (dispatch) => {
   const actions = bindActionCreators({
     onChange: (formType, data) => updateActions[formType](data),
     onAddToTemplates: templatesActions.setForm,
-    onCancel: () => selectionActions.hideForm,
+    onCancel: selectionActions.hideForm,
   }, dispatch)
 
   actions.onError = (errors) => {

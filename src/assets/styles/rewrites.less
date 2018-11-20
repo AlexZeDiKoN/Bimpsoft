@@ -34,7 +34,9 @@
 .ant-select-auto-complete.ant-select .ant-input:focus,
 .ant-select-auto-complete.ant-select .ant-input:hover,
 .ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
-  border-color: inherit;
+  border-color: #b0b37d;
+  box-shadow: 0 0 0 2px rgba(159, 166, 89, 0.2);
+  outline-color:  #b0b37d;
 }
 
 /* Dropdown */
@@ -66,5 +68,20 @@
 .ant-tooltip.ant-tooltip-placement-leftTop .ant-tooltip-arrow,
 .ant-tooltip.ant-tooltip-placement-leftBottom .ant-tooltip-arrow {
   border-right-color: rgba(0, 0, 0, 0.9);
+}
+.ant-input:hover, .ant-input:focus, {
+  border-color: #b0b37d !important;
+  outline-color:  #b0b37d !important;
+  box-shadow: 0 0 0 2px rgba(159, 166, 89, 0.2);
+}
+.ant-input::selection {
+  background: #b0b37d !important;
+}
+.ant-select-selection:active,
+.ant-select-selection:hover,
+.ant-select-selection:focus {
+  outline-color:  #b0b37d !important;
+  box-shadow: 0 0 0 2px rgba(159, 166, 89, 0.2);
+  border-color: #b0b37d !important;
 }
 /* ================================= ANTD END ================================= */

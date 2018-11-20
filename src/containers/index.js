@@ -1,23 +1,12 @@
-import LeftMenuContainer from './LeftMenuContainer'
-import RightMenuContainer from './RightMenuContainer'
-import LayersContainer from './LayersContainer.js'
-import OrgStructuresContainer from './OrgStructuresContainer.js'
-import SelectionFormContainer from './SelectionFormContainer.js'
-import TemplateFormContainer from './TemplateFormContainer.js'
-import TemplatesListContainer from './TemplatesListContainer.js'
-import SettingsFormContainer from './SettingsFormContainer.js'
-import MapsSourcesContainer from './MapsSourcesContainer.js'
-import WebMap from './WebMap.js'
-
-export {
-  LeftMenuContainer,
-  RightMenuContainer,
-  SettingsFormContainer,
-  LayersContainer,
-  OrgStructuresContainer,
-  SelectionFormContainer,
-  TemplateFormContainer,
-  TemplatesListContainer,
-  MapsSourcesContainer,
-  WebMap,
-}
+export { default as LeftMenuContainer } from './LeftMenuContainer'
+export { default as CreateButtonsContainer } from './CreateButtonsContainer'
+export { default as RightMenuContainer } from './RightMenuContainer'
+export { default as LayersContainer } from './LayersContainer.js'
+export { default as OrgStructuresContainer } from './OrgStructuresContainer.js'
+export { default as SelectionFormContainer } from './SelectionFormContainer.js'
+export { default as SelectionButtonsContainer } from './SelectionButtonsContainer.js'
+export { default as TemplateFormContainer } from './TemplateFormContainer.js'
+export { default as TemplatesListContainer } from './TemplatesListContainer.js'
+export { default as SettingsFormContainer } from './SettingsFormContainer.js'
+export { default as MapSourceSelectContainer } from './MapSourceSelectContainer.js'
+export { default as WebMap } from './WebMap.js'

@@ -1,13 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { Icon } from 'antd'
 import moment from 'moment'
 import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
+import ColorPicker from '../../common/ColorPicker'
+import i18n from '../../../i18n'
 
-const { common: { ColorPicker } } = components
+const { icons: { IconHovered, Icon, names: iconNames } } = components
+
+const getLockIcon = (isDark, locked) =>
+  isDark
+    ? (locked ? iconNames.DARK_LOCK_ACTIVE : iconNames.DARK_UNLOCK_ACTIVE)
+    : (locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE)
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
@@ -28,28 +34,42 @@ export default class LayerItemComponent extends React.Component {
   render () {
     const {
       isSelected,
-      data: { visible, name, locked, color, shared, dateFor = null },
+      data: { visible, name, readOnly, color, dateFor = null },
+      map: { pathTo },
     } = this.props
-    const lockedIcon = locked ? 'lock' : 'unlock'
-    const sharedIcon = shared ? 'team' : 'user-delete'
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
+    const path = pathTo ? pathTo.map((item) => item.name) : []
+    path.push(name)
+    const breadCrumbs = path.join(' / ')
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
         onClick={this.selectHandler}
       >
         <VisibilityButton
+          title={i18n.LAYERS_VISIBILITY}
           visible={visible}
+          isDark={isSelected}
           className="layer-item-сomponent-control"
           onChange={this.changeVisibilityHandler}
         />
-        <Icon className="map-item-сomponent-control" type={lockedIcon} />
+        <Icon
+          className="layer-item-сomponent-control"
+          icon={getLockIcon(isSelected, readOnly)}
+        />
         <div className="layer-item-сomponent-title">
-          <div className="layer-name">{name}</div>
+          <div className="layer-name" title={breadCrumbs}>{name}</div>
           <div className="layer-date">{dateString}</div>
         </div>
-        <ColorPicker className="map-item-сomponent-control" color={color} onChange={this.changeColorHandler}/>
-        <Icon className="map-item-сomponent-control" type={sharedIcon} />
+        <ColorPicker
+          title={i18n.LAYERS_HIGHLIGHT_COLOR}
+          className="map-item-сomponent-control"
+          color={color}
+          onChange={this.changeColorHandler}
+        />
+        <IconHovered
+          className="layer-item-сomponent-control"
+        />
       </div>
     )
   }
@@ -57,6 +77,7 @@ export default class LayerItemComponent extends React.Component {
 
 LayerItemComponent.propTypes = {
   isSelected: PropTypes.bool,
+  map: PropTypes.object,
   data: PropTypes.object,
   onSelect: PropTypes.func,
   onChangeVisibility: PropTypes.func,

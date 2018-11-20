@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
-// import { createSelector } from 'reselect'
 import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import { getGeometry } from '../components/WebMap/leaflet.pm.patch'
+import * as layersActions from '../store/actions/layers'
+import { getGeometry } from '../components/WebMap/Tactical'
 import { mapObjConvertor } from '../utils'
+import { canEditSelector, visibleLayersSelector } from '../store/selectors'
 
 const WebMap = connect(
   (state) => ({
@@ -12,36 +13,40 @@ const WebMap = connect(
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
-    edit: state.viewModes.edit,
+    edit: canEditSelector(state),
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
     orgStructureSelectedId: state.orgStructures.selectedId,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
-    layersById: state.layers.byId,
+    layersById: visibleLayersSelector(state),
     backOpacity: state.layers.backOpacity,
     hiddenOpacity: state.layers.hiddenOpacity,
     coordinatesType: state.webMap.coordinatesType,
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
+    params: state.params,
     isGridActive: state.viewModes.print,
-    socket: window.socket,
   }),
   (dispatch) => ({
-    refreshObject: (id) => dispatch(webMapActions.refreshObject(id)),
     addObject: (object) => dispatch(webMapActions.addObject(object)),
-    deleteObject: (id) => dispatch(webMapActions.deleteObject(id)),
+    onDelete: () => dispatch(selectionActions.showDeleteForm()),
+    onCut: () => dispatch(selectionActions.cut()),
+    onCopy: () => dispatch(selectionActions.copy()),
+    onPaste: () => dispatch(selectionActions.paste()),
     editObject: () => dispatch(selectionActions.showEditForm),
     updateObject: (object) => dispatch(webMapActions.updateObject(object)),
     updateObjectGeometry: (object) => dispatch(webMapActions.updateObjectGeometry(object)),
     onSelection: (selected) => dispatch(selected
       ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
       : selectionActions.clearSelection),
+    onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
+    onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
     setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
-    hideForm: () => dispatch(selectionActions.hideForm),
-    onMove: (center) => dispatch(webMapActions.setCenter(center)),
+    hideForm: () => dispatch(selectionActions.hideForm()),
+    onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
   }),

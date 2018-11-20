@@ -55,5 +55,8 @@ TextSymbol.propTypes = {
   texts: PropTypes.arrayOf(PropTypes.shape({
     text: PropTypes.string,
     underline: PropTypes.bool,
+    bold: PropTypes.bool,
+    size: PropTypes.number,
+    align: PropTypes.string,
   })),
 }

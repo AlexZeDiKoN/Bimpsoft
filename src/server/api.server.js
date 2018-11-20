@@ -2,7 +2,7 @@ import { ApiError } from '../constants/errors'
 import { post } from './implementation/utils.rest'
 
 /**
- * Получение документов по операции/пунктуменю/папке
+ * Получение документов по операции/пункту меню/папке
  * @param {number} operationId
  * @param {string} mainTag
  * @param {number} folderID

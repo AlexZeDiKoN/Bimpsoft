@@ -91,6 +91,8 @@ const isWrong = (coordinate) => Boolean(coordinate) && (!coordinate.lat || !coor
 
 const names = {
   [CoordinatesTypes.WGS_84]: i18n.WGS_84,
+  [CoordinatesTypes.MGRS]: i18n.MGRS,
+  [CoordinatesTypes.UTM]: i18n.UTM,
 }
 
 const getName = (coordinate) => {

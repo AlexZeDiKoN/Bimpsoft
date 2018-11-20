@@ -1,6 +1,6 @@
 import { maps } from '../actions'
 
-const defItem = { visible: true }
+const defItem = { }
 
 export default function reducer (state = { byId: {} }, action) {
   let { byId } = state

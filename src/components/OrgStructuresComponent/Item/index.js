@@ -8,7 +8,6 @@ const { common: { TreeComponent, HighlightedText } } = components
 const { TextFilter } = data
 
 export default class Item extends React.Component {
-
   doubleClickHandler = () => {
     const { onDoubleClick, data } = this.props
     onDoubleClick(data.id)
@@ -35,18 +34,24 @@ export default class Item extends React.Component {
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
         placement="topLeft"
       >
-        <div className={'org-structure-item' + (isSelected ? ' org-structure-item-selected' : '')}>
+        <div
+          ref={isSelected ? scrollRef : null}
+          className={'org-structure-item' + (isSelected ? ' org-structure-item-selected' : '')}
+        >
           {icon}
-          {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
           <div
-            ref={isSelected ? scrollRef : null}
-            className="org-structure-item-content"
             onDoubleClick={canEdit ? this.doubleClickHandler : null}
             onClick={this.clickHandler}
             onDragStart={canEdit ? this.dragStartHandler : null}
             draggable={canEdit}
+            className="org-structure-item-content"
           >
-            <HighlightedText text={shortName} textFilter={textFilter} />
+            {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
+            <div
+              className="org-structure-item-text"
+            >
+              <HighlightedText text={shortName} textFilter={textFilter} />
+            </div>
           </div>
         </div>
       </Tooltip>

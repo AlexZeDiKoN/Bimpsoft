@@ -4,16 +4,18 @@ import {
   AbstractShapeForm,
   WithColor,
   WithFill,
+  WithLineType,
   WithTwoCoordinates,
   WithSubordinationLevel,
 } from '../parts/index'
 
 export default class RactangleForm extends
-  compose(WithSubordinationLevel, WithTwoCoordinates, WithColor, WithFill)(AbstractShapeForm) {
+  compose(WithSubordinationLevel, WithTwoCoordinates, WithColor, WithFill, WithLineType)(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
     ...WithColor.propTypes,
     ...WithFill.propTypes,
+    ...WithLineType.propTypes,
     ...WithTwoCoordinates.propTypes,
     ...WithSubordinationLevel.propTypes,
   }
@@ -24,6 +26,7 @@ export default class RactangleForm extends
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderFill()}
+        {this.renderLineType()}
         {this.renderTwoCoordinates()}
       </Fragment>
     )

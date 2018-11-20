@@ -10,19 +10,23 @@ const { FormRow } = components.form
 
 const WithFill = (Component) => class FillComponent extends Component {
   static propTypes = {
-    fill: PropTypes.string,
+    amplifiers: PropTypes.object,
   }
 
   constructor (props) {
     super(props)
-    this.state.fill = props.fill || colors.TRANSPARENT
+    const { amplifiers: { fill } = {} } = props
+    this.state.fill = fill || colors.TRANSPARENT
   }
 
   fillChangeHandler = (fill) => this.setState({ fill })
 
   fillResult (result) {
     super.fillResult(result)
-    result.fill = this.state.fill
+    if (!result.amplifiers) {
+      result.amplifiers = {}
+    }
+    result.amplifiers.fill = this.state.fill
   }
 
   renderFill () {
@@ -36,11 +40,12 @@ const WithFill = (Component) => class FillComponent extends Component {
         {colorOption(colors.BLACK)}
         {colorOption(colors.GREEN)}
         {colorOption(colors.YELLOW)}
+        {colorOption(colors.WHITE)}
       </Select>
     ) : colorDiv(fill)
 
     return (
-      <FormRow label={i18n.COLOR}>
+      <FormRow label={i18n.FILLING}>
         {value}
       </FormRow>
     )

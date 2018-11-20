@@ -1,18 +1,24 @@
 import { layers } from '../actions'
 
-const defItem = { visible: true, locked: false, color: null, shared: false }
+const defItem = { visible: true, locked: false, color: null, readOnly: true }
+
 const initState = {
   byId: {},
   selectedId: null,
+  editMode: false,
   timelineFrom: null,
   timelineTo: null,
-  visible: true,
   backOpacity: 100,
   hiddenOpacity: 10,
 }
+
 export default function reducer (state = initState, action) {
   const { type } = action
   switch (type) {
+    case layers.SET_EDIT_MODE: {
+      const { editMode } = action
+      return { ...state, editMode }
+    }
     case layers.SELECT_LAYER: {
       const { layerId } = action
       return { ...state, selectedId: layerId }
@@ -31,10 +37,9 @@ export default function reducer (state = initState, action) {
       const { layersData } = action
       byId = { ...byId }
       layersData.forEach((layerData) => {
-        const { operationId, layerId, mapId, name, dateFor, formationId } = layerData
-        let item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
-        item = { ...item, operationId, mapId, layerId, name, dateFor, formationId }
-        byId[layerId] = item
+        const { layerId } = layerData
+        const item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
+        byId[layerId] = { ...item, ...layerData }
       })
       return { ...state, byId }
     }
@@ -61,10 +66,6 @@ export default function reducer (state = initState, action) {
     case layers.SET_BACK_OPACITY: {
       const { opacity } = action
       return { ...state, backOpacity: opacity }
-    }
-    case layers.SET_VISIBLE: {
-      const { visible } = action
-      return { ...state, visible }
     }
     case layers.SET_HIDDEN_OPACITY: {
       const { opacity } = action

@@ -11,22 +11,28 @@ import {
   // TODO: поки що приховуємо панель шаблонів (повернемося до неї після 25 серпня)
   // TemplatesListContainer,
   SettingsFormContainer,
-  MapsSourcesContainer,
+  MapSourceSelectContainer,
+  SelectionButtonsContainer,
+  CreateButtonsContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
 import ModalContainer from '../../components/common/ModalContainer'
+import { HotKeysContainer } from '../../components/common/HotKeys'
 
 export default class Main extends React.Component {
   render () {
-    const mapSources = (<MapsSourcesContainer/>)
     return (
-      <div id="main" className="main">
+      <HotKeysContainer id="main" className="main">
         <div className="header">
           <div className="header-top">
             <div className="header-left">
-              <LeftMenuContainer mapSources={mapSources}/>
+              <LeftMenuContainer
+                createButtonsComponent={CreateButtonsContainer}
+                mapSourceSelectComponent={MapSourceSelectContainer}
+                selectionButtonsComponent={SelectionButtonsContainer}
+              />
             </div>
             <div className="header-right">
               <RightMenuContainer/>
@@ -47,7 +53,7 @@ export default class Main extends React.Component {
         <SelectionFormContainer wrapper={ ModalContainer }/>
         <TemplateFormContainer wrapper={ ModalContainer }/>
         <SettingsFormContainer wrapper={ ModalContainer }/>
-      </div>
+      </HotKeysContainer>
     )
   }
 }

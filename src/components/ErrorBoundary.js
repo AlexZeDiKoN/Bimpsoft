@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { ERROR_SOMETHING_WENT_WRONG } from '../i18n/ua'
 
 export default class ErrorBoundary extends React.Component {
   static propTypes = {
@@ -20,7 +21,7 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.errorInfo) {
       return (
         <div style={{ textAlign: 'center' }}>
-          <h2>Something went wrong.</h2>
+          <h2>{ERROR_SOMETHING_WENT_WRONG}</h2>
           <details style={{ whiteSpace: 'pre-wrap' }}>
             {this.state.error && this.state.error.toString()}
             <br />

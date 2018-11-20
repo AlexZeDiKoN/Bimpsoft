@@ -10,19 +10,23 @@ const { FormRow } = components.form
 
 const WithColor = (Component) => class ColorComponent extends Component {
   static propTypes = {
-    color: PropTypes.string,
+    amplifiers: PropTypes.object,
   }
 
   constructor (props) {
     super(props)
-    this.state.color = props.color || colors.BLUE
+    const { amplifiers: { color } = {} } = props
+    this.state.color = color || colors.BLUE
   }
 
   colorChangeHandler = (color) => this.setState({ color })
 
   fillResult (result) {
     super.fillResult(result)
-    result.color = this.state.color
+    if (!result.amplifiers) {
+      result.amplifiers = {}
+    }
+    result.amplifiers.color = this.state.color
   }
 
   renderColor () {
@@ -35,6 +39,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
         {colorOption(colors.BLACK)}
         {colorOption(colors.GREEN)}
         {colorOption(colors.YELLOW)}
+        {colorOption(colors.WHITE)}
       </Select>
     ) : colorDiv(color)
 

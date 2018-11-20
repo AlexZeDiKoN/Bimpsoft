@@ -2,7 +2,7 @@ import { getWebmapURL, getDirect } from './implementation/utils.rest'
 
 const webmapUrl = getWebmapURL()
 
-const WebmapApi = {
+export default {
   objGetList,
   objUpdate,
   objUpdateGeometry,
@@ -12,9 +12,15 @@ const WebmapApi = {
   placeSearch,
   layerGetColor,
   layerSetColor,
+  getVersion,
+  paramGetAll,
+  paramGet,
+  paramSet,
 }
 
-export default WebmapApi
+function getVersion () {
+  return getDirect(`${webmapUrl}/version`, false)
+}
 
 function objGetList (layer = null) {
   return getDirect(`${webmapUrl}/obj/${layer}/get`, false)
@@ -50,4 +56,16 @@ function layerGetColor (id) {
 
 function layerSetColor (id, color) {
   return getDirect(`${webmapUrl}/color/set`, { id, color })
+}
+
+function paramGetAll () {
+  return getDirect(`${webmapUrl}/params`, false)
+}
+
+function paramGet (name) {
+  return getDirect(`${webmapUrl}/param/${name}/get`, false)
+}
+
+function paramSet (name, value) {
+  return getDirect(`${webmapUrl}/param/${name}/set`, { value })
 }
