@@ -5,10 +5,13 @@ import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
+import DeleteMapForm from './DeleteMapForm'
 
 const { icons: { IconHovered, names: iconNames } } = components
 
 export default class MapItemComponent extends React.Component {
+  state = { showCloseForm: false }
+
   changeMapVisibilityHandler = () => {
     const { onChangeVisibility, data: { mapId, visible } } = this.props
     onChangeVisibility && onChangeVisibility(mapId, !visible)
@@ -19,16 +22,26 @@ export default class MapItemComponent extends React.Component {
     onChangeColor && onChangeColor(mapId, color)
   }
 
-  closeHandler = () => {
+  closeHandler = () => this.setState({ showCloseForm: true })
+
+  cancelCloseHandler = () => this.setState({ showCloseForm: false })
+
+  okCloseHandler = () => this.setState({ showCloseForm: false }, () => {
     const { onClose, data: { mapId } } = this.props
     onClose && onClose(mapId)
-  }
+  })
 
   render () {
+    const { showCloseForm } = this.state
     const { data: { visible, name, color, pathTo } } = this.props
     const breadCrumbs = pathTo ? pathTo.map((item) => item.name).join(' / ') : ''
     return (
       <div className="map-item-сomponent">
+        {showCloseForm && (<DeleteMapForm
+          name={breadCrumbs}
+          onCancel={this.cancelCloseHandler}
+          onOk={this.okCloseHandler}
+        />)}
         <VisibilityButton
           title={i18n.LAYERS_VISIBILITY}
           className="map-item-сomponent-control"

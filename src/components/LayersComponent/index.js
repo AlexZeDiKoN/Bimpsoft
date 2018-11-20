@@ -8,36 +8,57 @@ import LayersListComponent from './LayersListComponent'
 
 export default class LayersComponent extends React.Component {
   render () {
-    const { wrapper: Wrapper = React.Fragment } = this.props
+    const {
+      wrapper: Wrapper = React.Fragment,
+      timelineFrom,
+      timelineTo,
+      onChangeTimeLineFrom,
+      onChangeTimeLineTo,
+      visible,
+      onChangeVisibility,
+      backOpacity,
+      onChangeBackOpacity,
+      hiddenOpacity,
+      onChangeHiddenOpacity,
+      onCloseAllMaps,
+      maps,
+      selectedLayerId,
+      onSelectLayer,
+      onChangeMapColor,
+      onChangeMapVisibility,
+      onCloseMap,
+      onChangeLayerVisibility,
+      onChangeLayerColor,
+    } = this.props
     return (
       <Wrapper title={i18n.LAYERS}>
         <div className="layers-component">
           <IntervalControl
-            from={this.props.timelineFrom}
-            to={this.props.timelineTo}
-            onChangeFrom={this.props.onChangeTimeLineFrom}
-            onChangeTo={this.props.onChangeTimeLineTo}
+            from={timelineFrom}
+            to={timelineTo}
+            onChangeFrom={onChangeTimeLineFrom}
+            onChangeTo={onChangeTimeLineTo}
           />
           <LayersControlsComponent
-            visible={this.props.visible}
-            onChangeVisibility={this.props.onChangeVisibility}
-            backOpacity={this.props.backOpacity}
-            onChangeBackOpacity={this.props.onChangeBackOpacity}
-            hiddenOpacity={this.props.hiddenOpacity}
-            onChangeHiddenOpacity={this.props.onChangeHiddenOpacity}
-            onCloseAllMaps={this.props.onCloseAllMaps}
+            visible={visible}
+            onChangeVisibility={onChangeVisibility}
+            backOpacity={backOpacity}
+            onChangeBackOpacity={onChangeBackOpacity}
+            hiddenOpacity={hiddenOpacity}
+            onChangeHiddenOpacity={onChangeHiddenOpacity}
+            onCloseAllMaps={onCloseAllMaps}
           />
           <LayersListComponent
-            timelineFrom={this.props.timelineFrom}
-            timelineTo={this.props.timelineTo}
-            maps={this.props.maps}
-            selectedLayerId={this.props.selectedLayerId}
-            onSelectLayer={this.props.onSelectLayer}
-            onChangeMapColor={this.props.onChangeMapColor}
-            onChangeMapVisibility={this.props.onChangeMapVisibility}
-            onCloseMap={this.props.onCloseMap}
-            onChangeLayerVisibility={this.props.onChangeLayerVisibility}
-            onChangeLayerColor={this.props.onChangeLayerColor}
+            timelineFrom={timelineFrom}
+            timelineTo={timelineTo}
+            maps={maps}
+            selectedLayerId={selectedLayerId}
+            onSelectLayer={onSelectLayer}
+            onChangeMapColor={onChangeMapColor}
+            onChangeMapVisibility={onChangeMapVisibility}
+            onCloseMap={onCloseMap}
+            onChangeLayerVisibility={onChangeLayerVisibility}
+            onChangeLayerColor={onChangeLayerColor}
           />
         </div>
       </Wrapper>

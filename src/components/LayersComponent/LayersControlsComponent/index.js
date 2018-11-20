@@ -4,13 +4,23 @@ import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton, OpacityControl } from '../../common'
 import i18n from '../../../i18n'
+import DeleteMapsForm from './DeleteMapsForm'
 
 const { icons: { IconHovered, names: iconNames } } = components
 
 export default class LayersControlsComponent extends React.Component {
+  state = { showCloseForm: false }
+
+  closeHandler = () => this.setState({ showCloseForm: true })
+
+  cancelCloseHandler = () => this.setState({ showCloseForm: false })
+
+  okCloseHandler = () => this.setState({ showCloseForm: false }, this.props.onCloseAllMaps)
+
   render () {
     return (
       <div className="layers-сontrols-сomponent">
+        {this.state.showCloseForm && (<DeleteMapsForm onCancel={this.cancelCloseHandler} onOk={this.okCloseHandler} />)}
         <VisibilityButton
           title={i18n.LAYERS_VISIBILITY}
           className="layers-сontrols-control"
@@ -36,7 +46,7 @@ export default class LayersControlsComponent extends React.Component {
           className="layers-сontrols-control"
           icon={iconNames.CLOSE_ROUND_ACTIVE}
           hoverIcon={iconNames.CLOSE_ROUND_HOVER}
-          onClick={this.props.onCloseAllMaps}
+          onClick={this.closeHandler}
         />
       </div>
     )

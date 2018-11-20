@@ -21,7 +21,7 @@ export default class DeleteSelectionForm extends React.Component {
     const { list, layerName } = this.props
     return (
       <Fragment>
-        <div className="not-clickable-area"></div>
+        <div className="not-clickable-area"> </div>
         <FocusTrap className="confirm-delete-overflow">
           <HotKeysContainer>
             <Form className="confirm-delete">
@@ -34,7 +34,6 @@ export default class DeleteSelectionForm extends React.Component {
                 </div>
               </FormItem>
               <FormItem>
-                <HotKey selector={shortcuts.ENTER} onKey={this.props.onOk} />
                 <FormButtonOk onClick={this.props.onOk} />
                 <HotKey selector={shortcuts.ESC} onKey={this.props.onCancel} />
                 <FormButtonCancel onClick={this.props.onCancel} />
