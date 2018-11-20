@@ -6,7 +6,8 @@ import './style.css'
 const { icons: { Icon } } = components
 export default class OpacityControl extends React.Component {
   changeHandler = (value) => {
-    this.props.onChange(Math.max(0, Math.min(100, parseFloat(value))))
+    value = parseFloat(value)
+    this.props.onChange(Number.isNaN(value) ? 0 : Math.max(0, Math.min(100, value)))
   }
 
   render () {
