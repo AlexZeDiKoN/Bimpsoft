@@ -1,6 +1,6 @@
 variables:
   exe7z: 'C:\Tools\7z\7za.exe'
-  releaseDir: 'C:\Release\WebMap'
+  releaseDir: 'C:\Production'
   deployDir: 'MAKET\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
@@ -13,12 +13,18 @@ stages:
 #  - test
   - build
   - deploy
-
-.base: &base
+  
+.base: &base-dev
   only:
     - develop
   tags:
     - webmap
+
+.base: &base
+  only:
+    - master
+  tags:
+    - webmap-master
 
 #test:
 #  stage: test
@@ -76,6 +82,43 @@ deploy-qa:
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
+######################### START MASTER ##############################
+
+build-master:
+  stage: build
+  <<: *base
+  script:
+    - echo Building project...
+    - call yarn
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
+    - copy .env .env.backup
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - echo Done
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
+
+deploy-master:
+  stage: deploy
+  <<: *base
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: dzvin4 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDirr%
+    - 'echo ========= Deploy: dzvin2 (local) ========='
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirr%
+    - echo Done
 
 deploy-zip:
   stage: deploy
@@ -83,7 +126,7 @@ deploy-zip:
   script:
     - echo Packing bundle into ZIP file...
     - git fetch
-    - git checkout origin/develop -- package.json
+    - git checkout origin/master -- package.json
     - set jsonfile=package.json
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
