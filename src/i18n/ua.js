@@ -37,7 +37,11 @@ export const COPY = 'Копіювати (Ctrl+C)'
 export const PASTE = 'Вставити (Ctrl+V)'
 export const DELETE = 'Видалити  (Delete)'
 export const REMOVING_SIGNS = 'Видалення знаків'
+export const CLOSE_MAP = 'Закриття карти'
+export const CLOSE_MAPS = 'Закриття карт'
+export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
+export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
 
