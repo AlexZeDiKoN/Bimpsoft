@@ -26,7 +26,7 @@ export default class SquareForm extends
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderFill()}
-        {this.renderLineType()}
+        {this.renderLineType(true)}
         {this.renderCoordinateAndRadius()}
       </Fragment>
     )

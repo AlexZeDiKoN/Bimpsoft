@@ -6,7 +6,7 @@ import ModalContainer from '../common/ModalContainer'
 import SymbolForm from './forms/SymbolForm'
 import LineForm from './forms/LineForm'
 import AreaForm from './forms/AreaForm'
-import RactangleForm from './forms/RactangleForm'
+import RectangleForm from './forms/RectangleForm'
 import SquareForm from './forms/SquareForm'
 import CircleForm from './forms/CircleForm'
 import TextForm from './forms/TextForm'
@@ -34,7 +34,7 @@ const forms = {
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
-    component: RactangleForm,
+    component: RectangleForm,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,

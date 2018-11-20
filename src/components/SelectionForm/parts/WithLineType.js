@@ -42,7 +42,7 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     result.amplifiers.lineType = lineTypeInfo && lineTypeInfo.value
   }
 
-  renderLineType () {
+  renderLineType (simple = false) {
     const { lineType } = this.state
     const typeInfo = types[lineType]
     const canEdit = this.isCanEdit()
@@ -52,8 +52,8 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
         <Select value={ lineType } onChange={this.lineTypeChangeHandler}>
           {typeOption(TYPE_SOLID, 'solid', i18n.SOLID)}
           {typeOption(TYPE_DASHED, 'dashed', i18n.DASHED)}
-          {typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
-          {typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
+          {!simple && typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
+          {!simple && typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
         </Select>
       )
       : typeDiv(typeInfo.value, typeInfo.text)
