@@ -27,9 +27,9 @@ export const ZOOMS = {
 
 export const INIT_VALUES = {
   5000: SubordinationLevel.TEAM_CREW,
-  10000: SubordinationLevel.TEAM_CREW,
-  25000: SubordinationLevel.SQUAD,
-  50000: SubordinationLevel.PLATOON_DETACHMENT,
+  10000: SubordinationLevel.SQUAD,
+  25000: SubordinationLevel.PLATOON_DETACHMENT,
+  50000: SubordinationLevel.COMPANY_BATTERY_TROOP,
   100000: SubordinationLevel.BATTALION_SQUADRON,
   200000: SubordinationLevel.BRIGADE,
   500000: SubordinationLevel.DIVISION,
