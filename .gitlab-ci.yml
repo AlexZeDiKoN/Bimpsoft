@@ -37,7 +37,7 @@ stages:
 
 build:
   stage: build
-  <<: *base
+  <<: *base-dev
   script:
     - echo Building project...
     - call yarn
@@ -70,7 +70,7 @@ build:
 
 deploy-qa:
   stage: deploy
-  <<: *base
+  <<: *base-dev
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
