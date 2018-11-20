@@ -125,13 +125,17 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SET_MAP_CENTER: {
       const { center, zoom, params } = payload
-      const scale = ZOOMS[zoom]
-      const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
-      const sl = +level || state.subordinationLevel
-      return state
+      let result = state
         .set('center', center)
         .set('zoom', zoom)
-        .set('subordinationLevel', sl)
+      if (state.zoom !== zoom) {
+        const scale = ZOOMS[zoom]
+        const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
+        const sl = +level || state.subordinationLevel
+        result = result
+          .set('subordinationLevel', sl)
+      }
+      return result
     }
     default:
       return state
