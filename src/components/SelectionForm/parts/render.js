@@ -148,6 +148,37 @@ const renderLineEnds = (type, direction) => {
         </g>
       )
       break
+    case 'arrow3':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h48 M43,5 l5,5 -5,5 v5 l10,-10 -10,-10 v5"
+          />
+        </g>
+      )
+      break
+    case 'arrow4':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h48 M43,5 l5,5 -5,5"
+          />
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            strokeDasharray="4,2"
+            fill="none"
+            d="M43,20 l10,-10 -10,-10"
+          />
+        </g>
+      )
+      break
     case 'stroke1':
       picture = (
         <g transform={`rotate(${angle},28,10)`}>
@@ -180,6 +211,30 @@ const renderLineEnds = (type, direction) => {
             strokeWidth="2"
             fill="none"
             d="M0,10 h48 M51,4 l-6,12"
+          />
+        </g>
+      )
+      break
+    case 'fork':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h42 M48,4 l-6,6 6,6"
+          />
+        </g>
+      )
+      break
+    case 'cross':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h43 M38,0 l10,20 M48,0 l-10,20"
           />
         </g>
       )

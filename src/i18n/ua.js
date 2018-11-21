@@ -106,6 +106,8 @@ export const LINE_ENDS_LEFT = 'Лівий край' // константа вик
 export const LINE_ENDS_RIGHT = 'Правий край' // константа використовується
 export const ARROW = 'Стрілка'
 export const STROKE = 'Засічка'
+export const FORK = 'Розвилка'
+export const CROSS = 'Перехрестя'
 
 export const LINE_NODES = 'Вузлова точка'
 
