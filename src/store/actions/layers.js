@@ -2,6 +2,7 @@ import { action } from '../../utils/services'
 import { layerNameSelector } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
+import { expandMap } from './maps'
 import { asyncAction, orgStructures, webMap } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
@@ -93,7 +94,10 @@ export const selectLayer = (layerId) =>
 
     if (layerId) {
       const layer = byId[layerId]
-      const { formationId = null } = layer
+      const { formationId = null, mapId } = layer
+
+      dispatch(expandMap(mapId, true))
+
       if (formationId === null) {
         await dispatch(orgStructures.setFormationById(null))
         throw Error('org structure id is undefined')

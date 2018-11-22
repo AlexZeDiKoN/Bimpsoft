@@ -18,4 +18,20 @@
     width: 1.7em;
     height: 1.7em;
   }
+  .tree-component-ul{
+    animation: layers-list_show 1s 0.1s both;
+    overflow: hidden;
+  }
+}
+
+@keyframes layers-list_show {
+  from {
+    max-height: 0vh;
+  }
+  95% {
+    max-height: 50vh;
+  }
+  to {
+    max-height: none;
+  }
 }

@@ -536,7 +536,7 @@ export default class WebMap extends Component {
     onSelectedList(selectedIds)
   })
 
-  selectByOrgStructure = (orgStructureSelectedId, layerId) =>  {
+  selectByOrgStructure = (orgStructureSelectedId, layerId) => {
     const { onSelectedList } = this.props
     const selectedIds = []
     this.map.eachLayer((layer) => {

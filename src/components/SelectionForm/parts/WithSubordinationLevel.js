@@ -5,7 +5,7 @@ import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
 import { SubordinationLevel } from '../../../constants'
 
-const { FormRow  } = components.form
+const { FormRow } = components.form
 
 const WithSubordinationLevel = (Component) => class SubordinationLevelComponent extends Component {
   static propTypes = {
@@ -32,7 +32,7 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
     const canEdit = this.isCanEdit()
 
     return (
-      <FormRow  label={i18n.SUBORDINATION_LEVEL}>
+      <FormRow label={i18n.SUBORDINATION_LEVEL}>
         <SubordinationLevelSelect
           readOnly={!canEdit}
           value={ subordinationLevel }

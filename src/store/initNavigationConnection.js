@@ -9,15 +9,15 @@ const optionalProp = (obj, key, value) => value
 const optionalArray = (obj, key, array, pack) => array && array.length
   ? { ...obj, [key]: pack ? pack(array) : array }
   : obj
-const packMaps = (maps) => maps
-  .map(({ operationId, mapId }) => `${operationId},${mapId}`)
+const packMaps = (expandedMaps) => (maps) => maps
+  .map(({ operationId, mapId }) => `${operationId},${mapId},${expandedMaps.hasOwnProperty(mapId) ? 'o' : ''}`)
   .join(';')
 const unpackMaps = (maps) => maps && maps.length
   ? maps
     .split(';')
     .map((map) => {
-      const [ operationId = null, mapId = null ] = map.split(',')
-      return { operationId, mapId }
+      const [ operationId = null, mapId = null, expanded ] = map.split(',')
+      return { operationId, mapId, expanded: Boolean(expanded) }
     })
     .filter(({ operationId, mapId }) => operationId !== null && mapId !== null)
   : []
@@ -27,9 +27,10 @@ const mapStateToProps = createSelector(
   (state) => state.webMap.center,
   (state) => state.webMap.zoom,
   (state) => Object.values(state.maps.byId),
+  (state) => state.maps.expandedIds,
   (state) => state.layers.selectedId,
-  ({ lat, lng }, z, maps, layer) => ({
-    pushProps: optionalArray({}, 'maps', maps, packMaps),
+  ({ lat, lng }, z, maps, expandedMaps, layer) => ({
+    pushProps: optionalArray({}, 'maps', maps, packMaps(expandedMaps)),
     replaceProps: optionalProp({
       lat: +crop(lat),
       lng: +crop(lng),
@@ -46,8 +47,12 @@ const onHistoryChange = async (prev, next, dispatch) => {
     const nextMaps = unpackMaps(next.maps)
     const prevMaps = unpackMaps(prev.maps)
     for (const map of nextMaps) {
-      if (!prevMaps.find(findMap(map))) {
+      const prevMap = prevMaps.find(findMap(map))
+      if (!prevMap) {
         await dispatch(mapsActions.openMapFolder(+map.operationId, +map.mapId, +next.layer))
+      }
+      if (!prevMap || map.expanded !== prevMap.expanded) {
+        await dispatch(mapsActions.expandMap(+map.mapId, map.expanded))
       }
     }
     for (const map of prevMaps) {
