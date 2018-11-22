@@ -1,25 +1,26 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { components } from '@DZVIN/CommonComponents'
+import { data, components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import DeleteMapForm from './DeleteMapForm'
 
-const { icons: { IconHovered, names: iconNames } } = components
+const { TextFilter } = data
+const { icons: { IconHovered, names: iconNames }, common: { expandIcon, TreeComponent } } = components
 
 export default class MapItemComponent extends React.Component {
   state = { showCloseForm: false }
 
   changeMapVisibilityHandler = () => {
-    const { onChangeVisibility, data: { mapId, visible } } = this.props
-    onChangeVisibility && onChangeVisibility(mapId, !visible)
+    const { onChangeMapVisibility, data: { mapId, visible } } = this.props
+    onChangeMapVisibility && onChangeMapVisibility(mapId, !visible)
   }
 
   changeColorHandler = (color) => {
-    const { onChangeColor, data: { mapId } } = this.props
-    onChangeColor && onChangeColor(mapId, color)
+    const { onChangeMapColor, data: { mapId } } = this.props
+    onChangeMapColor && onChangeMapColor(mapId, color)
   }
 
   closeHandler = () => this.setState({ showCloseForm: true })
@@ -27,16 +28,20 @@ export default class MapItemComponent extends React.Component {
   cancelCloseHandler = () => this.setState({ showCloseForm: false })
 
   okCloseHandler = () => this.setState({ showCloseForm: false }, () => {
-    const { onClose, data: { mapId } } = this.props
-    onClose && onClose(mapId)
+    const { onCloseMap, data: { mapId } } = this.props
+    onCloseMap && onCloseMap(mapId)
   })
 
   render () {
     const { showCloseForm } = this.state
-    const { data: { visible, name, color, pathTo } } = this.props
-    const breadCrumbs = pathTo ? pathTo.map((item) => item.name).join(' / ') : ''
+    const { data: { visible, name, color, breadCrumbs }, tree: {
+      expanded,
+      canExpand,
+      onExpand,
+    } } = this.props
     return (
       <div className="map-item-сomponent">
+        {expandIcon(expanded, canExpand, { onClick: onExpand })}
         {showCloseForm && (<DeleteMapForm
           name={breadCrumbs}
           onCancel={this.cancelCloseHandler}
@@ -69,8 +74,10 @@ export default class MapItemComponent extends React.Component {
 }
 
 MapItemComponent.propTypes = {
+  ...TreeComponent.itemPropTypes,
   data: PropTypes.object,
-  onChangeVisibility: PropTypes.func,
-  onChangeColor: PropTypes.func,
-  onClose: PropTypes.func,
+  textFilter: PropTypes.instanceOf(TextFilter),
+  onChangeMapVisibility: PropTypes.func,
+  onChangeMapColor: PropTypes.func,
+  onCloseMap: PropTypes.func,
 }

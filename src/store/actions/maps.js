@@ -7,6 +7,7 @@ import { asyncAction, maps, layers, webMap } from './index'
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
 export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
+export const EXPAND_MAP = action('EXPAND_MAP')
 
 export const updateMap = (mapData) => ({
   type: UPDATE_MAP,
@@ -90,3 +91,12 @@ export const openMapFolder = (operationId, folderID, selectedItem = null) => asy
     }
   }
 )
+
+export const expandMap = (id, expand) => ({
+  type: EXPAND_MAP,
+  id,
+  expand,
+})
+
+export const toggleExpandMap = (id) =>
+  (dispatch, getState) => dispatch(expandMap(id, !getState().maps.expandedIds.hasOwnProperty(id)))

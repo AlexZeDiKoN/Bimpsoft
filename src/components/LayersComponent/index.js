@@ -1,12 +1,45 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import memoizeOne from 'memoize-one'
 import './style.css'
+import { components } from '@DZVIN/CommonComponents'
 import { IntervalControl } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
-import LayersListComponent from './LayersListComponent'
+import MapItemComponent from './MapItemComponent'
+import LayerItemComponent from './LayerItemComponent'
+
+const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+
+const ItemTemplate = (props) =>
+  props.data.id[0] === 'm' ? <MapItemComponent {...props} /> : <LayerItemComponent {...props}/>
+
+ItemTemplate.propTypes = {
+  data: PropTypes.object,
+}
 
 export default class LayersComponent extends React.Component {
+  getCommonData = memoizeOne((selectedLayerId) => {
+    const {
+      onSelectLayer,
+      onChangeMapColor,
+      onChangeMapVisibility,
+      onCloseMap,
+      onChangeLayerVisibility,
+      onChangeLayerColor,
+    } = this.props
+
+    return {
+      selectedLayerId,
+      onSelectLayer,
+      onChangeMapColor,
+      onChangeMapVisibility,
+      onCloseMap,
+      onChangeLayerVisibility,
+      onChangeLayerColor,
+    }
+  })
+
   render () {
     const {
       wrapper: Wrapper = React.Fragment,
@@ -21,15 +54,13 @@ export default class LayersComponent extends React.Component {
       hiddenOpacity,
       onChangeHiddenOpacity,
       onCloseAllMaps,
-      maps,
+      byIds,
+      roots,
       selectedLayerId,
-      onSelectLayer,
-      onChangeMapColor,
-      onChangeMapVisibility,
-      onCloseMap,
-      onChangeLayerVisibility,
-      onChangeLayerColor,
+      onExpand,
+      expandedIds,
     } = this.props
+
     return (
       <Wrapper title={i18n.LAYERS}>
         <div className="layers-component">
@@ -48,17 +79,13 @@ export default class LayersComponent extends React.Component {
             onChangeHiddenOpacity={onChangeHiddenOpacity}
             onCloseAllMaps={onCloseAllMaps}
           />
-          <LayersListComponent
-            timelineFrom={timelineFrom}
-            timelineTo={timelineTo}
-            maps={maps}
-            selectedLayerId={selectedLayerId}
-            onSelectLayer={onSelectLayer}
-            onChangeMapColor={onChangeMapColor}
-            onChangeMapVisibility={onChangeMapVisibility}
-            onCloseMap={onCloseMap}
-            onChangeLayerVisibility={onChangeLayerVisibility}
-            onChangeLayerColor={onChangeLayerColor}
+          <TreeComponentUncontrolled
+            byIds={byIds}
+            roots={roots}
+            commonData={this.getCommonData(selectedLayerId)}
+            itemTemplate={ItemTemplate}
+            expandedKeys={expandedIds}
+            onExpand={onExpand}
           />
         </div>
       </Wrapper>
@@ -69,9 +96,12 @@ export default class LayersComponent extends React.Component {
 LayersComponent.propTypes = {
   wrapper: PropTypes.any,
   selectedLayerId: PropTypes.any,
-  maps: PropTypes.array,
+  byIds: PropTypes.object,
+  roots: PropTypes.array,
   onSelectLayer: PropTypes.func,
   onChangeFrom: PropTypes.func,
+  expandedIds: PropTypes.object.isRequired,
+  onExpand: PropTypes.func,
   onChangeTo: PropTypes.func,
   onChangeMapColor: PropTypes.func,
   onChangeMapVisibility: PropTypes.func,
