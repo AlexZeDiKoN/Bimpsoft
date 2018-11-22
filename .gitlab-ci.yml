@@ -2,6 +2,8 @@ variables:
   exe7z: 'C:\Tools\7z\7za.exe'
   releaseDir: 'C:\Production'
   deployDir: 'MAKET\SpaceHub\WebMap'
+  deployDir2: 'MAKET\SpaceHub_node_1\WebMap'
+  deployDir3: 'MAKET\SpaceHub_node_2\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
 
 cache:
@@ -78,6 +80,30 @@ deploy-qa-84:
     - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
     - rmdir /s /q \\10.8.26.84\c$\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir%
+    - net use \\10.8.26.84\c$ /delete
+    
+deploy-qa-84-node-1:
+  stage: deploy
+  <<: *base-dev
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 84 (remote) ========='
+    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
+    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir2%
+    - net use \\10.8.26.84\c$ /delete
+
+deploy-qa-84-node-2:
+  stage: deploy
+  <<: *base-dev
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 84 (remote) ========='
+    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+    - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
+    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir3%
     - net use \\10.8.26.84\c$ /delete
     
 deploy-qa-85:
