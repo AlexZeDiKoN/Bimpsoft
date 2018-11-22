@@ -54,6 +54,8 @@ export default class OrgStructuresComponent extends React.Component {
     { textFilter, onClick, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
   ))
 
+  getFilteredIds = memoizeOne(getFilteredIds)
+
   render () {
     const {
       textFilter = null,
@@ -71,7 +73,7 @@ export default class OrgStructuresComponent extends React.Component {
       return null
     }
 
-    const filteredIds = getFilteredIds(textFilter, byIds)
+    const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
     const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)

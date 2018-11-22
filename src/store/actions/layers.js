@@ -15,6 +15,7 @@ export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
+export const SET_LAYERS_FILTER_TEXT = action('SET_LAYERS_FILTER_TEXT')
 
 export const setEditMode = (editMode) =>
   asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
@@ -96,7 +97,7 @@ export const selectLayer = (layerId) =>
       const layer = byId[layerId]
       const { formationId = null, mapId } = layer
 
-      dispatch(expandMap(mapId, true))
+      await dispatch(expandMap(mapId, true))
 
       if (formationId === null) {
         await dispatch(orgStructures.setFormationById(null))
@@ -167,4 +168,8 @@ export const setBackOpacity = (opacity) => ({
 export const setHiddenOpacity = (opacity) => ({
   type: SET_HIDDEN_OPACITY,
   opacity,
+})
+export const setFilterText = (filterText) => ({
+  type: SET_LAYERS_FILTER_TEXT,
+  filterText,
 })
