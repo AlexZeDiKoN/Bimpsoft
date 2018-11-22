@@ -2,13 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import moment from 'moment'
-import { components } from '@DZVIN/CommonComponents'
+import { components, data } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 
-const { icons: { Icon, IconHovered, names: iconNames }, common: { TreeComponent } } = components
+const { TextFilter } = data
+const { icons: { Icon, IconHovered, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
 
 const getLockIcon = (isDark, locked) =>
   isDark
@@ -34,6 +35,7 @@ export default class LayerItemComponent extends React.Component {
   render () {
     const {
       selectedLayerId,
+      textFilter,
       data: { visible, name, readOnly, color, dateFor = null, breadCrumbs, layerId },
     } = this.props
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
@@ -55,7 +57,7 @@ export default class LayerItemComponent extends React.Component {
           icon={getLockIcon(isSelected, readOnly)}
         />
         <div className="layer-item-сomponent-title">
-          <div className="layer-name" title={breadCrumbs}>{name}</div>
+          <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker
@@ -75,6 +77,7 @@ export default class LayerItemComponent extends React.Component {
 LayerItemComponent.propTypes = {
   ...TreeComponent.itemPropTypes,
   selectedLayerId: PropTypes.number,
+  textFilter: PropTypes.instanceOf(TextFilter),
   data: PropTypes.object,
   onSelectLayer: PropTypes.func,
   onChangeLayerVisibility: PropTypes.func,
