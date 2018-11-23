@@ -14,6 +14,9 @@ export const actionNames = {
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
+  APP_INFO: action('APP_INFO'),
+  OBJECT_LOCKED: action('OBJECT_LOCKED'),
+  OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
 }
@@ -154,3 +157,22 @@ export const updateObjectGeometry = ({ id, ...object }) =>
       payload,
     })
   })
+
+export const getAppInfo = () =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getVersion, getContactId } }) => {
+    const [ version, contactId ] = await Promise.all([ getVersion(), getContactId() ])
+    return dispatch({
+      type: actionNames.APP_INFO,
+      payload: { version, contactId },
+    })
+  })
+
+export const objectLocked = (objectId, contactName) => ({
+  type: actionNames.OBJECT_LOCKED,
+  payload: { objectId, contactName },
+})
+
+export const objectUnlocked = (objectId) => ({
+  type: actionNames.OBJECT_UNLOCKED,
+  payload: { objectId },
+})

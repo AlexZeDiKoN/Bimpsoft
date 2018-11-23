@@ -28,6 +28,8 @@ const WebMap = connect(
     isMeasureOn: state.webMap.isMeasureOn,
     params: state.params,
     isGridActive: state.viewModes.print,
+    backVersion: state.webMap.version,
+    myContactId: state.webMap.contactId,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(webMapActions.addObject(object)),
@@ -49,6 +51,7 @@ const WebMap = connect(
     onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
+    requestAppInfo: () => dispatch(webMapActions.getAppInfo()),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

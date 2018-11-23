@@ -54,6 +54,9 @@ const WebMapState = Record({
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
+  lockedObjects: Map(),
+  version: null,
+  contactId: null,
 })
 
 const checkLevel = (object) => {
@@ -72,6 +75,11 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
     return merge(obj, rest)
   })
+
+const lockObject = (map, { objectId, contactName }) =>
+  update(map, objectId, contactName)
+
+const unlockObject = (map, { objectId }) => map.get(objectId) ? map.delete(objectId) : map
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -136,6 +144,22 @@ export default function webMapReducer (state = WebMapState(), action) {
           .set('subordinationLevel', sl)
       }
       return result
+    }
+    case actionNames.APP_INFO: {
+      const { version, contactId } = payload
+      return state
+        .set('version', version)
+        .set('contactId', +contactId)
+    }
+    case actionNames.OBJECT_LOCKED: {
+      return update(state, 'lockedObjects', (map) => lockObject(map, payload))
+      // TODO: Індикація залоченого стану при кліку
+      // TODO: Автоматично знімати індикацію, коли об'єкт розлочили (але не автивувати автоматично)
+      // TODO: Зняття локів при виході із SPA
+      // TODO: Heart-beat [DONE: і зняття локів при його припиненні]
+    }
+    case actionNames.OBJECT_UNLOCKED: {
+      return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     default:
       return state

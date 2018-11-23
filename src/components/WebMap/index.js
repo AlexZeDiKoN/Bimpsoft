@@ -1,7 +1,6 @@
 /* global L */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { notification } from 'antd'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -24,7 +23,6 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
-import WebmapApi from '../../server/api.webmap'
 import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -265,6 +263,10 @@ export default class WebMap extends Component {
         orgStructureId: PropTypes.number,
       }),
     }),
+    isGridActive: PropTypes.bool.isRequired,
+    orgStructureSelectedId: PropTypes.number,
+    backVersion: PropTypes.string,
+    contactId: PropTypes.number,
     // Redux actions
     addObject: PropTypes.func,
     onDelete: PropTypes.func,
@@ -283,13 +285,11 @@ export default class WebMap extends Component {
     onMove: PropTypes.func,
     onDropUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
-    isGridActive: PropTypes.bool.isRequired,
-    orgStructureSelectedId: PropTypes.number,
+    requestAppInfo: PropTypes.func,
   }
 
   constructor (props) {
     super(props)
-    this.backVersion = '-?'
     this.view = {
       lat: 0,
       lng: 0,
@@ -298,14 +298,9 @@ export default class WebMap extends Component {
   }
 
   async componentDidMount () {
-    const { sources } = this.props
+    const { sources, requestAppInfo } = this.props
 
-    try {
-      this.backVersion = await WebmapApi.getVersion()
-    } catch (err) {
-      notification.error({ message: i18n.ERROR, description: err.message })
-    }
-
+    await requestAppInfo()
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
@@ -505,7 +500,7 @@ export default class WebMap extends Component {
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     initMapEvents(this.map, this.clickInterhandler)
-    this.map.attributionControl.setPrefix(`f${version} b${this.backVersion}`)
+    this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
     this.map.on('activelayer', this.activeLayerHandler)
     this.map.on('selectlayer', this.selectLayerHandler)
     this.map.on('editlayer', this.editObject)

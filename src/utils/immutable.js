@@ -1,6 +1,6 @@
 export const update = (record, propName, updater, payload) => {
   const oldValue = record.get(propName)
-  const newValue = updater(oldValue, payload)
+  const newValue = typeof updater === 'function' ? updater(oldValue, payload) : updater
   return newValue.equals(oldValue) ? record : record.set(propName, newValue)
 }
 

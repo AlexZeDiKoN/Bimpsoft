@@ -2,7 +2,6 @@ import React from 'react'
 import WebMap from '../../containers/WebMap'
 
 class ApplicationContent extends React.PureComponent {
-  // TODO: запам'ятовувати попередній вигляд карти у localStorage
   render () {
     return (
       <WebMap

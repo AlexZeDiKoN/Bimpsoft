@@ -8,11 +8,19 @@ const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
   layerData: { layerId, color },
 })
 
-const updateObject = (dispatch) => ({ id }) => {
+const updateObject = (dispatch) => ({ id }) =>
   dispatch(webMapActions.refreshObject(id))
+
+const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
+  if (getState().webMap.contactId !== contactId) {
+    dispatch(webMapActions.objectLocked(objectId, contactName))
+  }
 }
 
-export const initSocketEvents = (dispatch/* , getState */) => {
+const unlockObject = (dispatch) => ({ objectId }) =>
+  dispatch(webMapActions.objectUnlocked(objectId))
+
+export const initSocketEvents = (dispatch, getState) => {
   let socket
   try {
     socket = io(getWebmapApi())
@@ -22,4 +30,6 @@ export const initSocketEvents = (dispatch/* , getState */) => {
   }
   socket.on('update layer color', updateLayer(dispatch))
   socket.on('update object', updateObject(dispatch))
+  socket.on('lock object', lockObject(dispatch, getState))
+  socket.on('unlock object', unlockObject(dispatch))
 }
