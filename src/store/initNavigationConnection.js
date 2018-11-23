@@ -10,18 +10,18 @@ const optionalArray = (obj, key, array, pack) => array && array.length
   ? { ...obj, [key]: pack ? pack(array) : array }
   : obj
 const packMaps = (expandedMaps) => (maps) => maps
-  .map(({ operationId, mapId }) => `${operationId},${mapId},${expandedMaps.hasOwnProperty(mapId) ? 'o' : ''}`)
+  .map(({ mapId }) => `${mapId},${expandedMaps.hasOwnProperty(mapId) ? 'o' : ''}`)
   .join(';')
 const unpackMaps = (maps) => maps && maps.length
   ? maps
     .split(';')
     .map((map) => {
-      const [ operationId = null, mapId = null, expanded ] = map.split(',')
-      return { operationId, mapId, expanded: Boolean(expanded) }
+      const [ mapId = null, expanded ] = map.split(',')
+      return { mapId, expanded: Boolean(expanded) }
     })
-    .filter(({ operationId, mapId }) => operationId !== null && mapId !== null)
+    .filter(({ mapId }) => mapId !== null)
   : []
-const findMap = (sample) => (map) => map.operationId === sample.operationId && map.mapId === sample.mapId
+const findMap = (sample) => (map) => map.mapId === sample.mapId
 
 const mapStateToProps = createSelector(
   (state) => state.webMap.center,
@@ -49,7 +49,7 @@ const onHistoryChange = async (prev, next, dispatch) => {
     for (const map of nextMaps) {
       const prevMap = prevMaps.find(findMap(map))
       if (!prevMap) {
-        await dispatch(mapsActions.openMapFolder(+map.operationId, +map.mapId, +next.layer))
+        await dispatch(mapsActions.openMapFolder(+map.mapId, +next.layer))
       }
       if (!prevMap || map.expanded !== prevMap.expanded) {
         await dispatch(mapsActions.expandMap(+map.mapId, map.expanded))

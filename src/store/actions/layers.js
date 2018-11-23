@@ -17,7 +17,7 @@ export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
 
 export const setEditMode = (editMode) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId, selectedId } = state.layers
 
@@ -40,18 +40,18 @@ export const updateLayers = (layersData) => ({
 })
 
 export const updateLayer = (layerData) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { explorerApi: { layerSetColor } }) => {
     dispatch({
       type: UPDATE_LAYER,
       layerData,
     })
     if (layerData.hasOwnProperty('color')) {
-      await webmapApi.layerSetColor(layerData.layerId, layerData.color)
+      await layerSetColor(layerData.layerId, layerData.color)
     }
   })
 
 export const updateLayersByMapId = (mapId, layerData) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     for (const layer of Object.values(getState().layers.byId)) {
       if (layer.mapId === mapId) {
         dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
@@ -60,17 +60,16 @@ export const updateLayersByMapId = (mapId, layerData) =>
   })
 
 export const updateAllLayers = (layerData) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     for (const layer of Object.values(getState().layers.byId)) {
       dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
     }
   })
 
 export const updateColorByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState, { explorerApi: { layerGetColor } }) => {
     if (getState().layers.byId.hasOwnProperty(layerId)) {
-      const data = await webmapApi.layerGetColor(layerId)
-      api.checkServerResponse(data)
+      const data = await layerGetColor(layerId)
       const layerData = { layerId, color: data.color }
       dispatch({
         type: UPDATE_LAYER,
@@ -119,7 +118,7 @@ export const deleteLayersByMapId = (mapId) =>
   })
 
 export const deleteLayers = (layersIds) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { selectedId } = state.layers
 
@@ -138,7 +137,7 @@ export const deleteLayers = (layersIds) =>
   })
 
 export const deleteAllLayers = () =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId } = state.layers
     const layersIds = Object.keys(byId)

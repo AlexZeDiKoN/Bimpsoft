@@ -1,6 +1,4 @@
 import { action } from '../../utils/services'
-import { ApiError } from '../../constants/errors'
-import i18n from '../../i18n'
 import { updateColorByLayerId } from './layers'
 import { asyncAction, maps, layers, webMap } from './index'
 
@@ -33,61 +31,41 @@ export const deleteAllMaps = () => asyncAction.withNotification(
   }
 )
 
-export const openMapFolder = (operationId, folderID, selectedItem = null) => asyncAction.withNotification(
-  async (dispatch, _, { api }) => {
-    const content = await api.getFolderContent({ operationId, folderID })
-    api.checkServerResponse(content)
+export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotification(
+  async (dispatch, _, { explorerApi: { getMap } }) => {
+    const content = await getMap(mapId)
     const {
-      entities,
-      params: {
-        currentContainer: {
-          type, id, name, parentId, formationId, /* dateFor, */
-        },
-        pathTo,
+      layers: entities,
+      map: {
+        id, name,
       },
+      breadcrumbs,
     } = content
 
-    switch (type) {
-      case 'layer': {
-        if (parentId === null) {
-          throw new ApiError(i18n.CANNOT_OPEN_LAYER_WO_PARENT)
-          // dispatch(maps.updateMap({ operationId, mapId: id, name }))
-          // const layersData = [ { mapId: null, layerId: id, name, dateFor, formationId } ]
-          // dispatch(layers.updateLayers(layersData))
-          // const selectedLayer = +folderID
-          // dispatch(layers.selectLayer(selectedLayer))
-        } else if (formationId === null) {
-          throw new ApiError(i18n.CANNOT_OPEN_LAYER_WO_FORMATION)
-        } else {
-          dispatch(openMapFolder(operationId, parentId, id))
-        }
-        break
+    await dispatch(maps.updateMap({ mapId: id, name, breadcrumbs }))
+    const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
+      mapId: id_map,
+      layerId: id,
+      name,
+      dateFor: date_for,
+      formationId: id_formation,
+      readOnly,
+    }))
+    await dispatch(layers.updateLayers(layersData))
+    for (const { layerId } of layersData) {
+      await dispatch(webMap.updateObjectsByLayerId(layerId))
+      await dispatch(updateColorByLayerId(Number(layerId)))
+    }
+    if (layersData.length > 0) {
+      let selectedLayer
+      if (layerId === null) {
+        selectedLayer = layersData[0]
+      } else {
+        selectedLayer = layersData.find(({ id }) => id === layerId)
       }
-      case 'layersFolder': {
-        await dispatch(maps.updateMap({ operationId, mapId: id, name, pathTo }))
-        const layersData = entities.map(({ id: folderID, entityId: layerId, name, dateFor, formationId, readOnly }) =>
-          ({ mapId: id, layerId, name, dateFor, formationId, folderID, readOnly })
-        )
-        await dispatch(layers.updateLayers(layersData))
-        for (const { layerId } of layersData) {
-          await dispatch(webMap.updateObjectsByLayerId(layerId))
-          await dispatch(updateColorByLayerId(Number(layerId)))
-        }
-        if (layersData.length > 0) {
-          let selectedLayer
-          if (selectedItem === null) {
-            selectedLayer = layersData[0]
-          } else {
-            selectedLayer = layersData.find((layerData) => layerData.folderID === selectedItem)
-          }
-          if (selectedLayer) {
-            dispatch(layers.selectLayer(selectedLayer.layerId))
-          }
-        }
-
-        break
+      if (selectedLayer) {
+        dispatch(layers.selectLayer(selectedLayer.layerId))
       }
-      default:
     }
   }
 )

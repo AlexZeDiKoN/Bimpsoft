@@ -286,6 +286,7 @@ export default class WebMap extends Component {
     onDropUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
+    tryLockObject: PropTypes.func,
   }
 
   constructor (props) {

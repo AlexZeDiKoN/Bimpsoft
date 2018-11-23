@@ -1,6 +1,11 @@
 import { action } from '../../utils/services'
 import { asyncAction } from './index'
 
+const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
+let lockHeartBeat
+
+const heartBeat = (objLock, objectId) => () => objLock(objectId)
+
 export const actionNames = {
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
@@ -62,9 +67,8 @@ export const setCenter = (center, zoom, params) => ({
 })
 
 export const addObject = (object) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    let payload = await webmapApi.objInsert(object)
-    api.checkServerResponse(payload)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objInsert } }) => {
+    let payload = await objInsert(object)
 
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }
@@ -77,9 +81,8 @@ export const addObject = (object) =>
   })
 
 export const deleteObject = (id) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    const success = await webmapApi.objDelete(id)
-    api.checkServerResponse(success)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDelete } }) => {
+    await objDelete(id)
     dispatch({
       type: actionNames.DEL_OBJECT,
       payload: id,
@@ -87,9 +90,8 @@ export const deleteObject = (id) =>
   })
 
 export const refreshObject = (id) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
-    let object = await webmapApi.objRefresh(id)
-    api.checkServerResponse(object)
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
+    let object = await objRefresh(id)
 
     if (object.id) {
       const { layers: { byId } } = getState()
@@ -109,9 +111,8 @@ export const refreshObject = (id) =>
   })
 
 export const updateObject = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    let payload = await webmapApi.objUpdate(id, object)
-    api.checkServerResponse(payload)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
+    let payload = await objUpdate(id, object)
 
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }
@@ -123,9 +124,8 @@ export const updateObject = ({ id, ...object }) =>
   })
 
 export const updateObjectsByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    let objects = await webmapApi.objGetList(layerId)
-    api.checkServerResponse(objects)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
+    let objects = await objGetList(layerId)
 
     // fix response data
     objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
@@ -145,9 +145,8 @@ export const allocateObjectsByLayerId = (layerId) => ({
 })
 
 export const updateObjectGeometry = ({ id, ...object }) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    let payload = await webmapApi.objUpdateGeometry(id, object)
-    api.checkServerResponse(payload)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
+    let payload = await objUpdateGeometry(id, object)
 
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }
@@ -176,3 +175,15 @@ export const objectUnlocked = (objectId) => ({
   type: actionNames.OBJECT_UNLOCKED,
   payload: { objectId },
 })
+
+export const tryLockObject = (objectId) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock } }) => {
+    lockHeartBeat && clearInterval(lockHeartBeat)
+    lockHeartBeat = setInterval(heartBeat(objLock, objectId), lockHeartBeatInterval * 1000)
+    try {
+      return (await objLock(objectId)).success
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  })

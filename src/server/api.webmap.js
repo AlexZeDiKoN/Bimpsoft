@@ -21,10 +21,6 @@ export default {
     getDirect(`${webmapUrl}/obj/${id}/unlock`, false),
   placeSearch: (sample) =>
     getDirect(`${webmapUrl}/place?q=${sample}`, false),
-  layerGetColor: (id) =>
-    getDirect(`${webmapUrl}/color/${id}/get`, false),
-  layerSetColor: (id, color) =>
-    getDirect(`${webmapUrl}/color/set`, { id, color }),
   getVersion: () =>
     getDirect(`${webmapUrl}/version`, false),
   getContactId: () =>

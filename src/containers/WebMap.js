@@ -52,6 +52,7 @@ const WebMap = connect(
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
     requestAppInfo: () => dispatch(webMapActions.getAppInfo()),
+    tryLockObject: (objectId) => dispatch(webMapActions.tryLockObject(objectId)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

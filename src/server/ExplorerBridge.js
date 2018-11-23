@@ -41,8 +41,8 @@ export default class ExplorerBridge {
       }
       case ACTION_OPEN: {
         console.info('action', ACTION_OPEN)
-        const { operationId, folderId } = data
-        this.store.dispatch(maps.openMapFolder(operationId, folderId))
+        const { mapId, layerId } = data
+        this.store.dispatch(maps.openMapFolder(mapId, layerId))
         break
       }
       default:

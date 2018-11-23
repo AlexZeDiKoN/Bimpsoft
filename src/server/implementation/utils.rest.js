@@ -24,30 +24,17 @@ export async function put (url, data) {
   return _createGetRequest(url, options)
 }
 
-/**
- * async function post
- * @param {string} url
- * @param {Object} data
- * @param {string} route
- * @param namespace
- * @returns {Promise<any>}
- */
-export async function post (url, data = {}, route = '/do', namespace) {
-  const options = _getOptions('POST')
-  /** @type{server.ServerRequest} */
-  const request = {
-    operation: url,
-    payload: !data ? null : JSON.stringify(data),
-  }
-  options.body = JSON.stringify(request)
-  return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
-}
-
 export async function getDirect (url, data = {}) {
   const options = _getOptions(data ? 'POST' : 'GET')
   if (data) {
     options.body = JSON.stringify(data)
   }
+  return _createRequest(url, options)
+}
+
+export async function putDirect (url, data) {
+  const options = _getOptions('PUT')
+  options.body = JSON.stringify(data)
   return _createRequest(url, options)
 }
 
