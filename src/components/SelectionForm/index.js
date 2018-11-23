@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import FocusTrap from 'focus-trap-react'
+import { HotKeysContainer, HotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
@@ -80,15 +83,20 @@ export default class SelectionForm extends React.Component {
     const { wrapper: Wrapper } = this.props
     return (
       <Wrapper title={title} onClose={this.cancelHandler}>
-        <Component
-          {...data}
-          canEdit={canEdit}
-          orgStructures={orgStructures}
-          onChange={this.changeHandler}
-          onClose={this.cancelHandler}
-          onError={onError}
-          onAddToTemplates={this.addToTemplateHandler}
-        />
+        <FocusTrap>
+          <HotKeysContainer>
+            <Component
+              {...data}
+              canEdit={canEdit}
+              orgStructures={orgStructures}
+              onChange={this.changeHandler}
+              onClose={this.cancelHandler}
+              onError={onError}
+              onAddToTemplates={this.addToTemplateHandler}
+            />
+            <HotKey onKey={this.cancelHandler} selector={shortcuts.ESC}/>
+          </HotKeysContainer>
+        </FocusTrap>
       </Wrapper>
     )
   }
