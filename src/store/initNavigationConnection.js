@@ -10,14 +10,14 @@ const optionalArray = (obj, key, array, pack) => array && array.length
   ? { ...obj, [key]: pack ? pack(array) : array }
   : obj
 const packMaps = (expandedMaps) => (maps) => maps
-  .map(({ mapId }) => `${mapId},${expandedMaps.hasOwnProperty(mapId) ? 'o' : ''}`)
+  .map(({ mapId }) => `${mapId},${expandedMaps.hasOwnProperty(mapId) ? 'o' : 'c'}`)
   .join(';')
 const unpackMaps = (maps) => maps && maps.length
   ? maps
     .split(';')
     .map((map) => {
       const [ mapId = null, expanded ] = map.split(',')
-      return { mapId, expanded: Boolean(expanded) }
+      return { mapId, expanded: expanded === 'o' }
     })
     .filter(({ mapId }) => mapId !== null)
   : []
@@ -35,7 +35,7 @@ const mapStateToProps = createSelector(
       lat: +crop(lat),
       lng: +crop(lng),
       z,
-    }, 'layer', +layer),
+    }, 'layer', layer),
   })
 )
 
@@ -49,20 +49,20 @@ const onHistoryChange = async (prev, next, dispatch) => {
     for (const map of nextMaps) {
       const prevMap = prevMaps.find(findMap(map))
       if (!prevMap) {
-        await dispatch(mapsActions.openMapFolder(+map.mapId, +next.layer))
+        await dispatch(mapsActions.openMapFolder(map.mapId, next.layer))
       }
       if (!prevMap || map.expanded !== prevMap.expanded) {
-        await dispatch(mapsActions.expandMap(+map.mapId, map.expanded))
+        await dispatch(mapsActions.expandMap(map.mapId, map.expanded))
       }
     }
     for (const map of prevMaps) {
       if (!nextMaps.find(findMap(map))) {
-        await dispatch(mapsActions.deleteMap(+map.mapId))
+        await dispatch(mapsActions.deleteMap(map.mapId))
       }
     }
   }
   if (next.layer && next.layer !== prev.layer) {
-    await dispatch(layersActions.selectLayer(+next.layer))
+    await dispatch(layersActions.selectLayer(next.layer))
   }
 }
 

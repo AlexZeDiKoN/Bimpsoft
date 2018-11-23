@@ -1,5 +1,5 @@
 import { ApiError } from '../constants/errors'
-import { getDirect, putDirect } from './implementation/utils.rest'
+import { get, put } from './implementation/utils.rest'
 
 const CODE_SUCCESS = 2000
 
@@ -9,7 +9,7 @@ const CODE_SUCCESS = 2000
  * @returns {Promise<*>}
  */
 const getMap = async (mapId = '0') =>
-  checkServerResponse(await getDirect(`/web_map/map/${mapId}`, false))
+  checkServerResponse(await get(`/web_map/map/${mapId}`))
 
 /**
  * Отримання кольору підсвітки шару
@@ -17,7 +17,7 @@ const getMap = async (mapId = '0') =>
  * @returns {Promise<*>}
  */
 const layerGetColor = async (layerId = '0') =>
-  checkServerResponse(await getDirect(`/web_map/layer/${layerId}`, false)).color
+  checkServerResponse(await get(`/web_map/layer/${layerId}`)).color
 
 /**
  * Встановлення кольору підсвітки шару
@@ -26,7 +26,7 @@ const layerGetColor = async (layerId = '0') =>
  * @returns {Promise<*>}
  */
 const layerSetColor = async (layerId = '0', color = '') =>
-  checkServerResponse(await putDirect(`/web_map/layer/${layerId}`, { color }))
+  checkServerResponse(await put(`/web_map/layer/${layerId}`, { color }))
 
 /**
  * Перевірка відповіді сервера. Кидає ApiError у випадку помилки.

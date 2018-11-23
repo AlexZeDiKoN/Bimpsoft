@@ -1,5 +1,5 @@
 /* global Headers fetch */
-import { getExplorerApi, getWebmapApi, getServerUrl } from '../../utils/services'
+import { getExplorerApi, getWebmapApi, getNodeApi, getServerUrl } from '../../utils/services'
 import { ERROR_ACCESS_DENIED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 
 const absoluteUri = new RegExp('^(http|https)://')
@@ -7,21 +7,37 @@ const absoluteUri = new RegExp('^(http|https)://')
 const serverRootUrl = getServerUrl()
 const explorerApi = serverRootUrl + getExplorerApi()
 const webmapApi = getWebmapApi()
+const nodeApi = getNodeApi()
 
 export const getWebmapURL = () => webmapApi
 
-export async function get (url, entityID) {
+export async function get (url, namespace = nodeApi) {
   const options = _getOptions('GET')
-  const fullUrl = entityID ? url + '/' + entityID : url
-  return _createGetRequest(fullUrl, options)
+  return _createGetRequest(url, options, namespace)
 }
 
-export async function put (url, data) {
+export async function put (url, data, namespace = nodeApi) {
   const options = _getOptions('PUT')
-  if (data) {
-    options.body = JSON.stringify(data)
+  options.body = JSON.stringify(data)
+  return _createGetRequest(url, options, namespace)
+}
+
+/**
+ * async function post
+ * @param {string} url
+ * @param {Object} data
+ * @param {string} route
+ * @param namespace
+ * @returns {Promise<any>}
+ */
+export async function post (url, data = {}, route = '/do', namespace) {
+  const options = _getOptions('POST')
+  const request = {
+    operation: url,
+    payload: !data ? null : JSON.stringify(data),
   }
-  return _createGetRequest(url, options)
+  options.body = JSON.stringify(request)
+  return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
 export async function getDirect (url, data = {}) {
@@ -29,12 +45,6 @@ export async function getDirect (url, data = {}) {
   if (data) {
     options.body = JSON.stringify(data)
   }
-  return _createRequest(url, options)
-}
-
-export async function putDirect (url, data) {
-  const options = _getOptions('PUT')
-  options.body = JSON.stringify(data)
   return _createRequest(url, options)
 }
 
@@ -58,15 +68,16 @@ function _getDefaultHeaders (addContentType = true) {
 /**
  * function _createGetRequest
  * @param {string} url
- * @param option
+ * @param {Object} options
+ * @param {string} [namespace]
  * @returns {Promise<any>}
  * @private
  */
-function _createGetRequest (url, option) {
+function _createGetRequest (url, options, namespace) {
   return new Promise((resolve, reject) => {
-    const serviceUrl = serverRootUrl + url
+    const serviceUrl = `${serverRootUrl}${namespace}${url}`
 
-    fetch(serviceUrl, option)
+    fetch(serviceUrl, options)
       .then((resp) => {
         if (resp.status === 200) {
           return resp.json()
