@@ -6,6 +6,7 @@ import { layersTree } from '../store/selectors'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
+  (state) => state.maps.filterText,
   (expandedIdsSource) => {
     const expandedIds = {}
     Object.keys(expandedIdsSource).forEach((key) => {
@@ -23,12 +24,24 @@ const mapStateToProps = (store) => {
       timelineTo,
       backOpacity,
       hiddenOpacity,
+      textFilter,
     },
   } = store
 
   const { byIds, roots, visible } = layersTree(store)
   const expandedIds = expandedIdsSelector(store)
-  return { expandedIds, byIds, roots, visible, selectedLayerId, timelineFrom, timelineTo, backOpacity, hiddenOpacity }
+  return {
+    textFilter,
+    expandedIds,
+    byIds,
+    roots,
+    visible,
+    selectedLayerId,
+    timelineFrom,
+    timelineTo,
+    backOpacity,
+    hiddenOpacity,
+  }
 }
 
 const mapDispatchToProps = (dispatch) => ({
@@ -45,6 +58,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeHiddenOpacity: (opacity) => dispatch(layers.setHiddenOpacity(opacity)),
   onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
   onExpand: (key) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
+  onFilterTextChange: (filterText) => dispatch(layers.setFilterText(filterText)),
 })
 
 export default connect(

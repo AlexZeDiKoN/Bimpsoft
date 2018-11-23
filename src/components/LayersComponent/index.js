@@ -1,14 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import memoizeOne from 'memoize-one'
+import { Input } from 'antd'
 import './style.css'
-import { components } from '@DZVIN/CommonComponents'
+import { components, data } from '@DZVIN/CommonComponents'
 import { IntervalControl } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
 import MapItemComponent from './MapItemComponent'
 import LayerItemComponent from './LayerItemComponent'
 
+const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 
 const ItemTemplate = (props) =>
@@ -18,8 +20,14 @@ ItemTemplate.propTypes = {
   data: PropTypes.object,
 }
 
+const getFilteredIds = TextFilter.getFilteredIdsFunc(
+  (item) => item.breadCrumbs,
+  (item) => item.id,
+  (item) => item.parentId
+)
+
 export default class LayersComponent extends React.Component {
-  getCommonData = memoizeOne((selectedLayerId) => {
+  getCommonData = memoizeOne((selectedLayerId, textFilter) => {
     const {
       onSelectLayer,
       onChangeMapColor,
@@ -31,6 +39,7 @@ export default class LayersComponent extends React.Component {
 
     return {
       selectedLayerId,
+      textFilter,
       onSelectLayer,
       onChangeMapColor,
       onChangeMapVisibility,
@@ -39,6 +48,12 @@ export default class LayersComponent extends React.Component {
       onChangeLayerColor,
     }
   })
+
+  filterTextChangeHandler = ({ target: { value } }) => {
+    this.props.onFilterTextChange(value.trim())
+  }
+
+  getFilteredIds = memoizeOne(getFilteredIds)
 
   render () {
     const {
@@ -59,11 +74,16 @@ export default class LayersComponent extends React.Component {
       selectedLayerId,
       onExpand,
       expandedIds,
+      textFilter,
     } = this.props
+
+    const filteredIds = this.getFilteredIds(textFilter, byIds)
+    const expandedKeys = textFilter ? filteredIds : expandedIds
 
     return (
       <Wrapper title={i18n.LAYERS}>
         <div className="layers-component">
+          <Input.Search placeholder={ i18n.FILTER } onChange={this.filterTextChangeHandler} />
           <IntervalControl
             from={timelineFrom}
             to={timelineTo}
@@ -82,9 +102,10 @@ export default class LayersComponent extends React.Component {
           <TreeComponentUncontrolled
             byIds={byIds}
             roots={roots}
-            commonData={this.getCommonData(selectedLayerId)}
+            commonData={this.getCommonData(selectedLayerId, textFilter)}
             itemTemplate={ItemTemplate}
-            expandedKeys={expandedIds}
+            expandedKeys={expandedKeys}
+            filteredIds={filteredIds}
             onExpand={onExpand}
           />
         </div>
@@ -96,6 +117,7 @@ export default class LayersComponent extends React.Component {
 LayersComponent.propTypes = {
   wrapper: PropTypes.any,
   selectedLayerId: PropTypes.any,
+  textFilter: PropTypes.instanceOf(TextFilter),
   byIds: PropTypes.object,
   roots: PropTypes.array,
   onSelectLayer: PropTypes.func,
@@ -119,4 +141,5 @@ LayersComponent.propTypes = {
   hiddenOpacity: PropTypes.number,
   onChangeHiddenOpacity: PropTypes.func,
   onCloseAllMaps: PropTypes.func,
+  onFilterTextChange: PropTypes.func,
 }

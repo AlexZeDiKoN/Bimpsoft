@@ -8,7 +8,7 @@ import i18n from '../../../i18n'
 import DeleteMapForm from './DeleteMapForm'
 
 const { TextFilter } = data
-const { icons: { IconHovered, names: iconNames }, common: { expandIcon, TreeComponent } } = components
+const { icons: { IconHovered, names: iconNames }, common: { expandIcon, TreeComponent, HighlightedText } } = components
 
 export default class MapItemComponent extends React.Component {
   state = { showCloseForm: false }
@@ -34,11 +34,11 @@ export default class MapItemComponent extends React.Component {
 
   render () {
     const { showCloseForm } = this.state
-    const { data: { visible, name, color, breadCrumbs }, tree: {
-      expanded,
-      canExpand,
-      onExpand,
-    } } = this.props
+    const {
+      textFilter,
+      data: { visible, name, color, breadCrumbs },
+      tree: { expanded, canExpand, onExpand },
+    } = this.props
     return (
       <div className="map-item-сomponent">
         {expandIcon(expanded, canExpand, { onClick: onExpand })}
@@ -54,7 +54,9 @@ export default class MapItemComponent extends React.Component {
           isDark={true}
           onChange={this.changeMapVisibilityHandler}
         />
-        <span className="map-item-сomponent-title" title={breadCrumbs}>{name}</span>
+        <span className="map-item-сomponent-title" title={breadCrumbs}>
+          <HighlightedText text={name} textFilter={textFilter} />
+        </span>
         <ColorPicker
           title={i18n.LAYERS_HIGHLIGHT_COLOR}
           className="map-item-сomponent-control"
