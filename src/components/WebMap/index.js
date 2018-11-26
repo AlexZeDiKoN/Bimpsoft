@@ -873,7 +873,7 @@ export default class WebMap extends Component {
   findLayerById = (id) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (layer.id === id) {
+      if (Number(layer.id) === Number(id)) {
         return layer
       }
     }
