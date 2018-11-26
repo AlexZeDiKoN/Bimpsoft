@@ -522,7 +522,7 @@ export default class WebMap extends Component {
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
-        const isOnActiveLayer = layer.object && (+layer.object.layer === activeLayerId)
+        const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
         const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         setLayerSelected(layer, isSelected)
@@ -538,7 +538,7 @@ export default class WebMap extends Component {
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
         const { object, id } = layer
-        const isSelected = object && object.unit === orgStructureSelectedId && Number(object.layer) === layerId
+        const isSelected = object && object.unit === orgStructureSelectedId && object.layer === layerId
         isSelected && selectedIds.push(id)
         setLayerSelected(layer, isSelected)
       }
@@ -758,7 +758,7 @@ export default class WebMap extends Component {
   clickOnLayer = (event) => {
     const { target } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
-    const targetLayer = target.object && Number(target.object.layer)
+    const targetLayer = target.object && target.object.layer
     if (targetLayer === this.props.layer) {
       activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
       L.DomEvent.stopPropagation(event)
@@ -776,7 +776,7 @@ export default class WebMap extends Component {
     if (event.target._map.pm.activeLayer === target) {
       event.target._map.fire('editlayer', target)
     } else {
-      const targetLayer = target.object && Number(target.object.layer)
+      const targetLayer = target.object && target.object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
         activateLayer(target, this.props.edit)
@@ -873,7 +873,7 @@ export default class WebMap extends Component {
   findLayerById = (id) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (+layer.id === +id) {
+      if (layer.id === id) {
         return layer
       }
     }
@@ -882,7 +882,7 @@ export default class WebMap extends Component {
   findLayerByUnitId = (id, layerId) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (layer.object && layer.object.unit === id && Number(layer.object.layer) === layerId) {
+      if (layer.object && layer.object.unit === id && layer.object.layer === layerId) {
         return layer
       }
     }
