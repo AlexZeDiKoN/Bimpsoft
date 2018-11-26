@@ -576,7 +576,7 @@ export default class WebMap extends Component {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const hidden = itemLevel < levelEdge || !layer || !layersById.hasOwnProperty(layer)
-      const isSelectedLayer = Number(selectedLayerId) === Number(layer)
+      const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? 1000000000 : 0
 
@@ -593,7 +593,7 @@ export default class WebMap extends Component {
 
   updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId) => {
     if (this.map) {
-      if (this.map.pm.activeLayer && Number(this.map.pm.activeLayer.object.layer) !== Number(selectedLayerId)) {
+      if (this.map.pm.activeLayer && this.map.pm.activeLayer.object.layer !== selectedLayerId) {
         clearActiveLayer(this.map)
       }
       this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item))

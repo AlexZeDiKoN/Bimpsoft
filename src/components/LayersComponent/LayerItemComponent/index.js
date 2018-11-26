@@ -76,7 +76,7 @@ export default class LayerItemComponent extends React.Component {
 
 LayerItemComponent.propTypes = {
   ...TreeComponent.itemPropTypes,
-  selectedLayerId: PropTypes.number,
+  selectedLayerId: PropTypes.string,
   textFilter: PropTypes.instanceOf(TextFilter),
   data: PropTypes.object,
   onSelectLayer: PropTypes.func,
