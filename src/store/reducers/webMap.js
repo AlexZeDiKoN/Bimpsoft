@@ -122,8 +122,8 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.DEL_OBJECT:
       return payload ? state.deleteIn([ 'objects', payload ]) : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
-      const delLayerId = +payload
-      return state.set('objects', state.get('objects').filter(({ layer }) => +layer !== delLayerId))
+      const delLayerId = payload
+      return state.set('objects', state.get('objects').filter(({ layer }) => layer !== delLayerId))
     }
     case actionNames.REFRESH_OBJECT: {
       const { id, object } = payload

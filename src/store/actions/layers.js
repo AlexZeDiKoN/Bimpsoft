@@ -70,8 +70,8 @@ export const updateAllLayers = (layerData) =>
 export const updateColorByLayerId = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState, { explorerApi: { layerGetColor } }) => {
     if (getState().layers.byId.hasOwnProperty(layerId)) {
-      const data = await layerGetColor(layerId)
-      const layerData = { layerId, color: data.color }
+      const color = await layerGetColor(layerId)
+      const layerData = { layerId, color }
       dispatch({
         type: UPDATE_LAYER,
         layerData,

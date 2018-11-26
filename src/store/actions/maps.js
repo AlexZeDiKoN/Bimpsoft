@@ -54,7 +54,7 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
     await dispatch(layers.updateLayers(layersData))
     for (const { layerId } of layersData) {
       await dispatch(webMap.updateObjectsByLayerId(layerId))
-      await dispatch(updateColorByLayerId(Number(layerId)))
+      await dispatch(updateColorByLayerId(layerId))
     }
     if (layersData.length > 0) {
       let selectedLayer
