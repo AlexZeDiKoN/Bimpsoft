@@ -42,7 +42,7 @@ export default class SettingsForm extends React.Component {
     const { params: { [paramName]: value }, onChangeParam } = this.props
 
     return (
-      <ScaleControl name={paramName} value={value} onChange={onChangeParam}/>
+      <ScaleControl name={paramName} value={Number(value)} onChange={onChangeParam}/>
     )
   }
 
