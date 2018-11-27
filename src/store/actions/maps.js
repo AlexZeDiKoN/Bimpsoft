@@ -61,7 +61,7 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
       if (layerId === null) {
         selectedLayer = layersData[0]
       } else {
-        selectedLayer = layersData.find(({ id }) => id === layerId)
+        selectedLayer = layersData.find((layer) => layer.layerId === layerId)
       }
       if (selectedLayer) {
         dispatch(layers.selectLayer(selectedLayer.layerId))
