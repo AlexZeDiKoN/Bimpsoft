@@ -2,7 +2,7 @@ import { action } from '../../utils/services'
 import { asyncAction } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
-let lockHeartBeat
+let lockHeartBeat = null
 
 const heartBeat = (objLock, objectId) => () => objLock(objectId)
 
@@ -186,4 +186,11 @@ export const tryLockObject = (objectId) =>
       console.error(error)
       return false
     }
+  })
+
+export const tryUnlockObject = (objectId) =>
+  asyncAction.withNotification((_1, _2, { webmapApi: { objUnlock } }) => {
+    lockHeartBeat && clearInterval(lockHeartBeat)
+    lockHeartBeat = null
+    return objUnlock(objectId)
   })

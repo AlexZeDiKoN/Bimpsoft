@@ -53,6 +53,7 @@ const WebMap = connect(
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
     requestAppInfo: () => dispatch(webMapActions.getAppInfo()),
     tryLockObject: (objectId) => dispatch(webMapActions.tryLockObject(objectId)),
+    tryUnlockObject: (objectId) => dispatch(webMapActions.tryUnlockObject(objectId)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

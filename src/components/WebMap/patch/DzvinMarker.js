@@ -103,7 +103,16 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
-
+  setLocked: function (locked) {
+    this._locked = locked
+    const el = this.getElement()
+    if (el) {
+      const hasClassLocked = el.classList.contains('dzvin-marker-locked')
+      if (hasClassLocked !== locked) {
+        locked ? el.classList.add('dzvin-marker-locked') : el.classList.remove('dzvin-marker-locked')
+      }
+    }
+  },
   _setPos: function (pos) {
     const el = this.getElement()
     if (el) {

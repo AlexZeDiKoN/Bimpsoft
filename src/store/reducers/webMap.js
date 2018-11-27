@@ -76,10 +76,13 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     return merge(obj, rest)
   })
 
-const lockObject = (map, { objectId, contactName }) =>
-  update(map, objectId, contactName)
+const lockObject = (map, { objectId, contactName }) => map.get(objectId) !== contactName
+  ? map.set(objectId, contactName)
+  : map
 
-const unlockObject = (map, { objectId }) => map.get(objectId) ? map.delete(objectId) : map
+const unlockObject = (map, { objectId }) => map.get(objectId)
+  ? map.delete(objectId)
+  : map
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -153,10 +156,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.OBJECT_LOCKED: {
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
-      // TODO: Індикація залоченого стану при кліку
+      // TODO: [DONE: Індикація залоченого стану при кліку] і показ хінта з іменем того, хто залочив
       // TODO: Автоматично знімати індикацію, коли об'єкт розлочили (але не автивувати автоматично)
       // TODO: Зняття локів при виході із SPA
-      // TODO: Heart-beat [DONE: і зняття локів при його припиненні]
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))

@@ -9,7 +9,7 @@ const CODE_SUCCESS = 2000
  * @returns {Promise<*>}
  */
 const getMap = async (mapId = '0') =>
-  checkServerResponse(await get(`/web_map/map/${mapId}`))
+  checkServerResponse(get(`/web_map/map/${mapId}`))
 
 /**
  * Отримання кольору підсвітки шару
@@ -17,7 +17,7 @@ const getMap = async (mapId = '0') =>
  * @returns {Promise<*>}
  */
 const layerGetColor = async (layerId = '0') =>
-  checkServerResponse(await get(`/web_map/layer/${layerId}`)).color
+  (await checkServerResponse(get(`/web_map/layer/${layerId}`))).color
 
 /**
  * Встановлення кольору підсвітки шару
@@ -26,14 +26,21 @@ const layerGetColor = async (layerId = '0') =>
  * @returns {Promise<*>}
  */
 const layerSetColor = async (layerId = '0', color = '') =>
-  checkServerResponse(await put(`/web_map/layer/${layerId}`, { color }))
+  checkServerResponse(put(`/web_map/layer/${layerId}`, { color }))
 
 /**
  * Перевірка відповіді сервера. Кидає ApiError у випадку помилки.
- * @param {Object} response
+ * @param {Promise} promise
  * @returns {Object}
  */
-const checkServerResponse = (response) => {
+const checkServerResponse = async (promise) => {
+  let response
+  try {
+    response = await promise
+  } catch (error) {
+    console.error(error)
+    throw new ApiError(error.message)
+  }
   if (!response) {
     throw new ApiError('Немає відповіді сервера')
   }

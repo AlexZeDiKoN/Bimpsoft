@@ -10,6 +10,11 @@ export default L.Path.include({
     this.setStyle({ selected })
   },
 
+  setLocked: function (locked) {
+    this._locked = locked
+    this.setStyle({ locked })
+  },
+
   setFill: function (fillColor) {
     this.setStyle({ fillColor })
   },

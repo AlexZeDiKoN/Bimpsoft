@@ -248,7 +248,7 @@ export default L.SVG.include({
     // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
-      options: { shadowColor, opacity = 1, hidden, selected, color },
+      options: { shadowColor, opacity = 1, hidden, selected, locked, color },
       _shadowPath,
       _path,
       _amplifierGroup,
@@ -282,13 +282,21 @@ export default L.SVG.include({
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
+    let action
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
-    const action = selected ? 'add' : 'remove'
+    action = selected ? 'add' : 'remove'
     if (hasClassSelected !== selected) {
       _path.classList[action]('dzvin-path-selected')
     }
     _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
     _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
+    const hasClassLocked = _path.classList.contains('dzvin-path-locked')
+    action = locked ? 'add' : 'remove'
+    if (hasClassLocked !== locked) {
+      _path.classList[action]('dzvin-path-locked')
+    }
+    _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-locked')
+    _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-locked')
   },
 
   _addPath: function (layer) {

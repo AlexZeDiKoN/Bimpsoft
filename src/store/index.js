@@ -43,7 +43,7 @@ export default function initStore (options = {}) {
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
   initNavigationConnection(store, history)
 
-  initSocketEvents(store.dispatch)
+  initSocketEvents(store.dispatch, store.getState)
   store.dispatch(loadAllParams())
 
   return store

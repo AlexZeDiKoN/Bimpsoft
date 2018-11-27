@@ -287,6 +287,7 @@ export default class WebMap extends Component {
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
     tryLockObject: PropTypes.func,
+    tryUnlockObject: PropTypes.func,
   }
 
   constructor (props) {
@@ -787,15 +788,24 @@ export default class WebMap extends Component {
   }
 
   activeLayerHandler = async ({ oldLayer, newLayer }) => {
-    this.props.onSelection(newLayer || null)
+    const { onSelection, tryLockObject, tryUnlockObject, onSelectedList, updateObjectGeometry } = this.props
+    if (oldLayer) {
+      await tryUnlockObject(oldLayer.id)
+      oldLayer.setLocked && oldLayer.setLocked(false)
+    }
+    if (newLayer && !(await tryLockObject(newLayer.id))) {
+      newLayer.setLocked && newLayer.setLocked(true)
+      return
+    }
+    await onSelection(newLayer || null)
     if (oldLayer) {
       const data = this.getLayerData(oldLayer)
       const object = oldLayer.object
       if (!tacticalSignEquals(object, data)) {
-        this.props.updateObjectGeometry(data)
+        await updateObjectGeometry(data)
       }
     }
-    this.props.onSelectedList(newLayer ? [ newLayer.id ] : [])
+    onSelectedList(newLayer ? [ newLayer.id ] : [])
   }
 
   editObject = (layer) => {
