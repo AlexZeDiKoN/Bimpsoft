@@ -189,14 +189,14 @@ const setScaleOptions = (layer, params) => {
   switch (+layer.object.type) {
     case entityKind.POINT:
       layer.setScaleOptions({
-        min: +params[paramsNames.POINT_SIZE_MIN],
-        max: +params[paramsNames.POINT_SIZE_MAX],
+        min: Number(params[paramsNames.POINT_SIZE_MIN]),
+        max: Number(params[paramsNames.POINT_SIZE_MAX]),
       })
       break
     case entityKind.TEXT:
       layer.setScaleOptions({
-        min: +params[paramsNames.TEXT_SIZE_MIN],
-        max: +params[paramsNames.TEXT_SIZE_MAX],
+        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
       })
       break
     case entityKind.SEGMENT:
@@ -207,11 +207,10 @@ const setScaleOptions = (layer, params) => {
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
-      // todo:
-      // layer.setScaleOptions({
-      //   min: +params[paramsNames.LINE_SIZE_MIN],
-      //   max: +params[paramsNames.LINE_SIZE_MAX],
-      // })
+      layer.setScaleOptions({
+        min: Number(params[paramsNames.LINE_SIZE_MIN]),
+        max: Number(params[paramsNames.LINE_SIZE_MAX]),
+      })
       break
     default:
   }
@@ -723,8 +722,8 @@ export default class WebMap extends Component {
     // console.log('addObject', object.toJS())
     const { id, attributes } = object
     const layer = createTacticalSign(object, this.map)
+    layer.options.lineCap = 'butt'
     layer.options.lineAmpl = attributes.lineAmpl
-    layer.options.lineType = attributes.lineType
     layer.options.lineNodes = attributes.lineNodes
     layer.options.lineEnds = {
       left: attributes.left,
@@ -738,7 +737,7 @@ export default class WebMap extends Component {
       layer.addTo(this.map)
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
-      const { color = null, fill = null, lineType = null } = attributes
+      const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
 
       if (color !== null && color !== '') {
         layer.setColor && layer.setColor(colors.evaluateColor(color))
@@ -748,6 +747,9 @@ export default class WebMap extends Component {
       }
       if (lineType !== null && lineType !== '') {
         layer.setLineType && layer.setLineType(lineType)
+      }
+      if (strokeWidth !== null) {
+        layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
 
       setScaleOptions(layer, params)

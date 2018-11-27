@@ -21,6 +21,7 @@ const WebMapAttributes = Record({
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
   lineType: 'solid',
+  strokeWidth: 2,
   lineAmpl: 'none',
   left: 'none',
   right: 'none',

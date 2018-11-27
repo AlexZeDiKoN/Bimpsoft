@@ -7,10 +7,18 @@ import {
   WithCoordinateAndWidth,
   WithSubordinationLevel,
   WithLineType,
+  WithStrokeWidth,
 } from '../parts/index'
 
 export default class SquareForm extends
-  compose(WithSubordinationLevel, WithCoordinateAndWidth, WithColor, WithFill, WithLineType)(AbstractShapeForm) {
+  compose(
+    WithSubordinationLevel,
+    WithCoordinateAndWidth,
+    WithColor,
+    WithFill,
+    WithLineType,
+    WithStrokeWidth
+  )(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
     ...WithColor.propTypes,
@@ -18,6 +26,7 @@ export default class SquareForm extends
     ...WithLineType.propTypes,
     ...WithCoordinateAndWidth.propTypes,
     ...WithSubordinationLevel.propTypes,
+    ...WithStrokeWidth.propTypes,
   }
 
   renderContent () {
@@ -25,6 +34,7 @@ export default class SquareForm extends
       <Fragment>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
+        {this.renderStrokeWidth()}
         {this.renderFill()}
         {this.renderLineType(true)}
         {this.renderCoordinateAndWidth()}

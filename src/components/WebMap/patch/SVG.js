@@ -329,7 +329,7 @@ export default L.SVG.include({
 
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
-    const lineType = (layer.options && layer.options.lineType) || 'solid'
+    const lineType = layer.lineType || 'solid'
     const skipStart = layer.options && layer.options.skipStart
     const skipEnd = layer.options && layer.options.skipEnd
     const kind = layer.options && layer.options.tsType
