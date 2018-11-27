@@ -7,10 +7,18 @@ import {
   WithLineType,
   WithTwoCoordinates,
   WithSubordinationLevel,
+  WithStrokeWidth,
 } from '../parts/index'
 
 export default class RectangleForm extends
-  compose(WithSubordinationLevel, WithTwoCoordinates, WithColor, WithFill, WithLineType)(AbstractShapeForm) {
+  compose(
+    WithSubordinationLevel,
+    WithTwoCoordinates,
+    WithColor,
+    WithFill,
+    WithLineType,
+    WithStrokeWidth
+  )(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
     ...WithColor.propTypes,
@@ -18,6 +26,7 @@ export default class RectangleForm extends
     ...WithLineType.propTypes,
     ...WithTwoCoordinates.propTypes,
     ...WithSubordinationLevel.propTypes,
+    ...WithStrokeWidth.propTypes,
   }
 
   renderContent () {
@@ -25,6 +34,7 @@ export default class RectangleForm extends
       <Fragment>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
+        {this.renderStrokeWidth()}
         {this.renderFill()}
         {this.renderLineType(true)}
         {this.renderTwoCoordinates()}

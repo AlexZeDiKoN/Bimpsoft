@@ -96,6 +96,7 @@ export const SEGMENT_DIRECT = 'Пряма лінія'
 export const SEGMENT_ARC = 'Дуга'
 
 export const LINE_TYPE = 'Тип лінії'
+export const LINE_WIDTH = 'Товщина лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
 export const WAVED = 'Хвиляста'
