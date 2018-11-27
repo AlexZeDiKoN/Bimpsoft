@@ -59,7 +59,8 @@ export const layersTree = createSelector(
         if (!mapCommonData) {
           return
         }
-        const breadCrumbs = mapCommonData.pathTo ? mapCommonData.pathTo.map((item) => item.name).join(' / ') : ''
+        const { breadcrumbs } = mapCommonData
+        const breadCrumbs = breadcrumbs ? breadcrumbs.map((item) => item.name).join(' / ') : ''
         map = { ...mapCommonData, id: mapId, breadCrumbs, children: [], visible: false, color: layer.color }
         byIds[mapId] = map
         roots.push(mapId)
