@@ -78,7 +78,7 @@ deploy-qa-84:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
     - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\10.8.26.84\c$\%deployDir%
+#    - rmdir /s /q \\10.8.26.84\c$\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir%
     - net use \\10.8.26.84\c$ /delete
     
@@ -90,7 +90,7 @@ deploy-qa-84-node-1:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
     - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
+#    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
     - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir2%
     - net use \\10.8.26.84\c$ /delete
 
@@ -102,7 +102,7 @@ deploy-qa-84-node-2:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 84 (remote) ========='
     - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
+ #   - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
     - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir3%
     - net use \\10.8.26.84\c$ /delete
     
