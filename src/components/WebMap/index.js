@@ -269,10 +269,6 @@ export default class WebMap extends Component {
     lockedObjects: PropTypes.object,
     // Redux actions
     addObject: PropTypes.func,
-    onDelete: PropTypes.func,
-    onCut: PropTypes.func,
-    onCopy: PropTypes.func,
-    onPaste: PropTypes.func,
     editObject: PropTypes.func,
     updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -281,7 +277,6 @@ export default class WebMap extends Component {
     onSelectedList: PropTypes.func,
     setNewShapeCoordinates: PropTypes.func,
     showCreateForm: PropTypes.func,
-    hideForm: PropTypes.func,
     onMove: PropTypes.func,
     onDropUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
@@ -526,7 +521,6 @@ export default class WebMap extends Component {
     this.map.on('editlayer', this.editObject)
     this.map.on('moveend', this.moveEndHandler)
     this.map.on('zoomend', this.moveEndHandler)
-    this.map.on('pm:drawend', this.props.hideForm)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('pm:drawstart', this.startDrawShape)
     this.map.on('stop_measuring', this.onStopMeasuring)
@@ -1160,15 +1154,17 @@ export default class WebMap extends Component {
   }
 
   createNewShape = async (e) => {
-    const { addObject } = this.props
+    const { addObject, level } = this.props
     e.layer.options.tsType = this.createPolyType
     // console.log('createNewShape', e.layer.options)
     e.layer.removeFrom(this.map)
     this.activateCreated(await addObject({
       type: this.createPolyType,
       layer: this.props.layer,
+      level,
       ...getGeometry(e.layer),
     }))
+    this.props.editObject()
   }
 
   activateCreated = (created) => {
