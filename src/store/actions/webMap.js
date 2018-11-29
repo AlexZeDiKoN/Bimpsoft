@@ -7,6 +7,12 @@ const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat �
 let lockHeartBeat = null
 
 const heartBeat = (objLock, objectId) => () => objLock(objectId)
+const stopHeartBeat = () => {
+  if (lockHeartBeat) {
+    clearInterval(lockHeartBeat)
+    lockHeartBeat = null
+  }
+}
 
 export const actionNames = {
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
@@ -180,10 +186,7 @@ export const objectUnlocked = (objectId) => ({
 
 export const tryLockObject = (objectId) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock } }) => {
-    if (lockHeartBeat) {
-      clearInterval(lockHeartBeat)
-      lockHeartBeat = null
-    }
+    stopHeartBeat()
     try {
       const result = await objLock(objectId)
       if (result.success) {
@@ -204,7 +207,6 @@ export const tryLockObject = (objectId) =>
 
 export const tryUnlockObject = (objectId) =>
   asyncAction.withNotification((_1, _2, { webmapApi: { objUnlock } }) => {
-    lockHeartBeat && clearInterval(lockHeartBeat)
-    lockHeartBeat = null
+    stopHeartBeat()
     return objUnlock(objectId)
   })

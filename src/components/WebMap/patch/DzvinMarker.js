@@ -109,7 +109,13 @@ const DzvinMarker = L.Marker.extend({
     if (el) {
       const hasClassLocked = el.classList.contains('dzvin-marker-locked')
       if (hasClassLocked !== locked) {
-        locked ? el.classList.add('dzvin-marker-locked') : el.classList.remove('dzvin-marker-locked')
+        if (locked) {
+          el.classList.remove('dzvin-marker-selected')
+          el.classList.add('dzvin-marker-locked')
+        } else {
+          el.classList.remove('dzvin-marker-locked')
+          this._selected && el.classList.add('dzvin-marker-selected')
+        }
       }
     }
   },

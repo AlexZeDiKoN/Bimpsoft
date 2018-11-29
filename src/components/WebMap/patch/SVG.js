@@ -282,21 +282,20 @@ export default L.SVG.include({
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
-    let action
-    const hasClassSelected = _path.classList.contains('dzvin-path-selected')
-    action = selected ? 'add' : 'remove'
-    if (hasClassSelected !== selected) {
-      _path.classList[action]('dzvin-path-selected')
-    }
-    _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
-    _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
     const hasClassLocked = _path.classList.contains('dzvin-path-locked')
-    action = locked ? 'add' : 'remove'
-    if (hasClassLocked !== locked) {
-      _path.classList[action]('dzvin-path-locked')
+    const hasClassSelected = _path.classList.contains('dzvin-path-selected')
+    const lockedAction = locked ? 'add' : 'remove'
+    const selectedAction = selected && !locked ? 'add' : 'remove'
+    if (hasClassSelected !== selected) {
+      _path.classList[selectedAction]('dzvin-path-selected')
     }
-    _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-locked')
-    _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-locked')
+    _amplifierGroup && _amplifierGroup.classList[selectedAction]('dzvin-path-selected')
+    _lineEndsGroup && _lineEndsGroup.classList[selectedAction]('dzvin-path-selected')
+    if (hasClassLocked !== locked) {
+      _path.classList[lockedAction]('dzvin-path-locked')
+    }
+    _amplifierGroup && _amplifierGroup.classList[lockedAction]('dzvin-path-locked')
+    _lineEndsGroup && _lineEndsGroup.classList[lockedAction]('dzvin-path-locked')
   },
 
   _addPath: function (layer) {

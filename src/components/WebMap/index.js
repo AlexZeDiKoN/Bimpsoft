@@ -27,8 +27,7 @@ import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  initMapEvents, createTacticalSign, getGeometry, activateLayer, clearActiveLayer,
-  createSearchMarker, setLayerSelected,
+  initMapEvents, createTacticalSign, getGeometry, activateLayer, clearActiveLayer, createSearchMarker, setLayerSelected,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -303,7 +302,7 @@ export default class WebMap extends Component {
     this.initObjects()
   }
 
-  shouldComponentUpdate (nextProps) {
+  async shouldComponentUpdate (nextProps) {
     // Objects
     if (nextProps.objects !== this.props.objects) {
       this.updateObjects(nextProps.objects)
@@ -341,7 +340,7 @@ export default class WebMap extends Component {
         const activeLayer = this.map.pm.activeLayer
         if (activeLayer) {
           clearActiveLayer(this.map, true)
-          activateLayer(activeLayer, nextProps.edit)
+          await this.activateLayer(activeLayer, nextProps.edit)
         }
       }
     }
@@ -771,23 +770,23 @@ export default class WebMap extends Component {
     }
   }
 
-  clickOnLayer = (event) => {
+  clickOnLayer = async (event) => {
     const { target } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = target.object && target.object.layer
-    if (targetLayer === this.props.layer) {
-      activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
-      L.DomEvent.stopPropagation(event)
-      event.target._map._container.focus()
-    } else if (useOneClickForActivateLayer && targetLayer) {
+    let doActivate = targetLayer === this.props.layer
+    if (!doActivate && useOneClickForActivateLayer && targetLayer) {
       this.props.onChangeLayer(targetLayer)
-      activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
-      event.target._map._container.focus()
+      doActivate = true
+    }
+    if (doActivate) {
+      await this.activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
       L.DomEvent.stopPropagation(event)
+      event.target._map._container.focus()
     }
   }
 
-  dblClickOnLayer = (event) => {
+  dblClickOnLayer = async (event) => {
     const { target } = event
     if (event.target._map.pm.activeLayer === target) {
       event.target._map.fire('editlayer', target)
@@ -795,25 +794,23 @@ export default class WebMap extends Component {
       const targetLayer = target.object && target.object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
-        activateLayer(target, this.props.edit)
+        await this.activateLayer(target, this.props.edit)
         event.target._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
   }
 
+  activateLayer = async (newLayer, canEdit, exclusive) => {
+    newLayer && newLayer.setLocked && newLayer.setLocked(!(await this.props.tryLockObject(newLayer.id)))
+    return activateLayer(newLayer, canEdit, exclusive)
+  }
+
   activeLayerHandler = async ({ oldLayer, newLayer }) => {
-    const { onSelection, tryLockObject, tryUnlockObject, onSelectedList, updateObjectGeometry } = this.props
-    if (oldLayer) {
-      await tryUnlockObject(oldLayer.id)
-      oldLayer.setLocked && oldLayer.setLocked(false)
-    }
-    if (newLayer && !(await tryLockObject(newLayer.id))) {
-      newLayer.setLocked && newLayer.setLocked(true)
-      return
-    }
+    const { onSelection, onSelectedList, updateObjectGeometry, tryUnlockObject } = this.props
+    oldLayer && await tryUnlockObject(oldLayer.id)
     await onSelection(newLayer || null)
-    if (oldLayer) {
+    if (oldLayer && !oldLayer._locked) {
       const data = this.getLayerData(oldLayer)
       const object = oldLayer.object
       if (!tacticalSignEquals(object, data)) {
@@ -1167,11 +1164,11 @@ export default class WebMap extends Component {
     this.props.editObject()
   }
 
-  activateCreated = (created) => {
+  activateCreated = async (created) => {
     if (created) {
       const layer = this.findLayerById(created)
       if (layer) {
-        activateLayer(layer, this.props.edit)
+        await this.activateLayer(layer, this.props.edit)
         !isLayerInBounds(layer, this.map.getBounds()) && this.map.panTo(getGeometry(layer).point)
       }
       this.props.onSelection(layer || null)
