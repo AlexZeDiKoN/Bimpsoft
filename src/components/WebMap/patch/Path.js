@@ -117,6 +117,9 @@ export default L.Path.include({
   },
 
   _updateZoomStyles: function () {
+    if (!this._map) {
+      return
+    }
     const {
       strokeWidth,
       scaleOptions,
@@ -136,15 +139,21 @@ export default L.Path.include({
       }
       const scale = this.scale ? this.scale / 100 : 1
       const styles = {}
+      let hasStyles = false
+      let needRedraw = false
       if (scaleChanged || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
         styles.weight = `${this.scale * strokeWidth / 100}px`
+        hasStyles = true
       }
       if (scaleChanged || lineTypePrev !== lineType) {
         this.lineTypePrev = lineType
         styles.dashArray = lineType === 'dashed' ? `${scale * DASH_LENGTH} ${scale * DASH_LENGTH}` : null
-        this.setStyle(styles)
+        hasStyles = true
+        needRedraw = true
       }
+      hasStyles && this.setStyle(styles)
+      needRedraw && this.redraw()
     }
   },
 })
