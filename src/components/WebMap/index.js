@@ -266,6 +266,7 @@ export default class WebMap extends Component {
     orgStructureSelectedId: PropTypes.number,
     backVersion: PropTypes.string,
     contactId: PropTypes.number,
+    lockedObjects: PropTypes.object,
     // Redux actions
     addObject: PropTypes.func,
     onDelete: PropTypes.func,
@@ -429,6 +430,7 @@ export default class WebMap extends Component {
     if (nextProps.params !== this.props.params && this.map && this.map._container) {
       this.updateScaleOptions(nextProps.params)
     }
+    // viewport
     if (
       this.view.lat !== nextProps.center.lat || this.view.lng !== nextProps.center.lng ||
       this.view.zoom !== nextProps.zoom
@@ -436,7 +438,24 @@ export default class WebMap extends Component {
       this.view = { lat: nextProps.center.lat, lng: nextProps.center.lng, zoom: nextProps.zoom }
       this.map && this.map.setView(nextProps.center, nextProps.zoom)
     }
-    return false
+    return true // TODO: перенсти увесь код в componentDidUpdate
+  }
+
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    // Exit if map is not yet initialized
+    if (!this.map) {
+      return
+    }
+    // Locked state of some objects changed
+    if (this.props.lockedObjects !== prevProps.lockedObjects) {
+      Object.keys(this.map._layers)
+        .filter((key) => this.map._layers[key]._locked)
+        .forEach((key) => {
+          const layer = this.map._layers[key]
+          const isLocked = this.props.lockedObjects.get(layer.id)
+          !isLocked && layer.setLocked && layer.setLocked(false)
+        })
+    }
   }
 
   componentWillUnmount () {

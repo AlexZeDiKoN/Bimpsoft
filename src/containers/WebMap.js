@@ -30,6 +30,7 @@ const WebMap = connect(
     isGridActive: state.viewModes.print,
     backVersion: state.webMap.version,
     myContactId: state.webMap.contactId,
+    lockedObjects: state.webMap.lockedObjects,
   }),
   (dispatch) => ({
     addObject: (object) => dispatch(webMapActions.addObject(object)),

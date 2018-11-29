@@ -1,4 +1,6 @@
 import { action } from '../../utils/services'
+import i18n from '../../i18n'
+import * as notifications from './notifications'
 import { asyncAction } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
@@ -178,10 +180,22 @@ export const objectUnlocked = (objectId) => ({
 
 export const tryLockObject = (objectId) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock } }) => {
-    lockHeartBeat && clearInterval(lockHeartBeat)
-    lockHeartBeat = setInterval(heartBeat(objLock, objectId), lockHeartBeatInterval * 1000)
+    if (lockHeartBeat) {
+      clearInterval(lockHeartBeat)
+      lockHeartBeat = null
+    }
     try {
-      return (await objLock(objectId)).success
+      const result = await objLock(objectId)
+      if (result.success) {
+        lockHeartBeat = setInterval(heartBeat(objLock, objectId), lockHeartBeatInterval * 1000)
+      } else {
+        dispatch(notifications.push({
+          type: 'warning',
+          message: i18n.EDITING,
+          description: `${i18n.OBJECT_EDITING_BY} ${result.lockedBy}`,
+        }))
+      }
+      return result.success
     } catch (error) {
       console.error(error)
       return false

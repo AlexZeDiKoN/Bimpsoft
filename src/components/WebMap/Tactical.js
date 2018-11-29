@@ -48,7 +48,7 @@ function setActiveLayer (map, layer, canEdit, skipFire = false) {
   map.pm.activeLayer = layer
   clearSelectedList(map)
   addLayerToSelection(layer)
-  if (canEdit) {
+  if (canEdit && !layer._locked) {
     layer.pm.enable({
       snappable: false,
       draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
