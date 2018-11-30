@@ -155,11 +155,13 @@ export default function webMapReducer (state = WebMapState(), action) {
         .set('version', version)
         .set('contactId', +contactId)
     }
+    case actionNames.GET_LOCKED_OBJECTS: {
+      return update(state, 'lockedObjects', (map) => Object.entries(payload)
+        .map(([ objectId, { contactName } ]) => ({ objectId, contactName }))
+        .reduce(lockObject, map))
+    }
     case actionNames.OBJECT_LOCKED: {
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
-      // TODO: [DONE: Індикація залоченого стану при кліку] і показ хінта з іменем того, хто залочив
-      // TODO: Автоматично знімати індикацію, коли об'єкт розлочили (але не автивувати автоматично)
-      // TODO: Зняття локів при виході із SPA
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))

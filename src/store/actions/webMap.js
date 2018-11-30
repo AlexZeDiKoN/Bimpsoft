@@ -5,12 +5,18 @@ import { asyncAction } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
+let dropLock = null
 
-const heartBeat = (objLock, objectId) => () => objLock(objectId)
+const heartBeat = (objLock, objUnlock, objectId) => {
+  dropLock = () => objUnlock(objectId)
+  return () => objLock(objectId)
+}
+
 const stopHeartBeat = () => {
   if (lockHeartBeat) {
     clearInterval(lockHeartBeat)
     lockHeartBeat = null
+    dropLock = null
   }
 }
 
@@ -28,6 +34,7 @@ export const actionNames = {
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
   APP_INFO: action('APP_INFO'),
+  GET_LOCKED_OBJECTS: action('GET_LOCKED_OBJECTS'),
   OBJECT_LOCKED: action('OBJECT_LOCKED'),
   OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
@@ -185,12 +192,12 @@ export const objectUnlocked = (objectId) => ({
 })
 
 export const tryLockObject = (objectId) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock } }) => {
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock, objUnlock } }) => {
     stopHeartBeat()
     try {
       const result = await objLock(objectId)
       if (result.success) {
-        lockHeartBeat = setInterval(heartBeat(objLock, objectId), lockHeartBeatInterval * 1000)
+        lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
       } else {
         dispatch(notifications.push({
           type: 'warning',
@@ -210,3 +217,14 @@ export const tryUnlockObject = (objectId) =>
     stopHeartBeat()
     return objUnlock(objectId)
   })
+
+export const getLockedObjects = () =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { lockedObjects } }) => dispatch({
+    type: actionNames.GET_LOCKED_OBJECTS,
+    payload: await lockedObjects(),
+  }))
+
+window.addEventListener('beforeunload', () => {
+  dropLock && dropLock()
+  stopHeartBeat()
+})

@@ -282,6 +282,7 @@ export default class WebMap extends Component {
     requestAppInfo: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
+    getLockedObjects: PropTypes.func,
   }
 
   constructor (props) {
@@ -294,9 +295,10 @@ export default class WebMap extends Component {
   }
 
   async componentDidMount () {
-    const { sources, requestAppInfo } = this.props
+    const { sources, requestAppInfo, getLockedObjects } = this.props
 
     await requestAppInfo()
+    await getLockedObjects()
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
