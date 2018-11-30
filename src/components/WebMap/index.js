@@ -302,153 +302,69 @@ export default class WebMap extends Component {
     this.initObjects()
   }
 
-  async shouldComponentUpdate (nextProps) {
-    // Objects
-    if (nextProps.objects !== this.props.objects) {
-      this.updateObjects(nextProps.objects)
-    }
-    // showMiniMap
-    if (nextProps.showMiniMap !== this.props.showMiniMap) {
-      this.updateMinimap(nextProps.showMiniMap)
-    }
-    // isGridActive
-    if (nextProps.isGridActive !== this.props.isGridActive) {
-      toggleMapGrid(this.map, nextProps.isGridActive)
-    }
-    // sources
-    if (nextProps.sources !== this.props.sources) {
-      this.setMapSource(nextProps.sources)
-    }
-    // level, layersById, hiddenOpacity, layer
-    if (
-      nextProps.level !== this.props.level ||
-      nextProps.layersById !== this.props.layersById ||
-      nextProps.hiddenOpacity !== this.props.hiddenOpacity ||
-      nextProps.layer !== this.props.layer
-    ) {
-      this.updateShowLayers(nextProps.level, nextProps.layersById, nextProps.hiddenOpacity, nextProps.layer)
-    }
-    // edit
-    if (nextProps.edit !== this.props.edit ||
-      nextProps.selection.newShape.type !== this.props.selection.newShape.type
-    ) {
-      this.setMapCursor(nextProps.edit, nextProps.selection.newShape.type)
-      this.startCreatePoly(nextProps.edit, nextProps.selection.newShape.type)
-      if (nextProps.selection.newShape.type) {
-        clearActiveLayer(this.map, true)
-      } else {
-        const activeLayer = this.map.pm.activeLayer
-        if (activeLayer) {
-          clearActiveLayer(this.map, true)
-          await this.activateLayer(activeLayer, nextProps.edit)
-        }
-      }
-    }
-    // close 'create' form
-    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'create') {
-      const { newShape } = nextProps.selection
-      switch (newShape.type) {
-        case entityKind.POINT:
-          this.createPointSign(newShape)
-          break
-        case entityKind.TEXT:
-          this.createTextSign(newShape)
-          break
-        default:
-          break
-      }
-    }
-    // close 'edit' form
-    if (nextProps.selection.showForm === null && this.props.selection.showForm === 'edit') {
-      const { data } = nextProps.selection
-      switch (data.type) {
-        case entityKind.POINT:
-          this.updatePointSign(data)
-          break
-        case entityKind.TEXT:
-          this.updateText(data)
-          break
-        default:
-          this.updateFigure(data)
-      }
-    }
-    // searchResult
-    if (this.map && nextProps.searchResult && nextProps.searchResult !== this.props.searchResult) {
-      if (this.searchMarker) {
-        this.searchMarker.removeFrom(this.map)
-      }
-      let { point, text } = nextProps.searchResult
-      let coordinates = this.showCoordinates(point)
-      if (Array.isArray(coordinates)) {
-        coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
-      }
-      if (coordinates !== text) {
-        text = `<strong>${text}</strong><br/><br/>${coordinates}`
-      }
-      this.map.panTo(point, { animate: false })
-      setTimeout(() => {
-        this.searchMarker = createSearchMarker(point, text)
-        this.searchMarker.addTo(this.map)
-        setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
-      }, 500)
-    }
-    // showAmplifiers
-    if (nextProps.showAmplifiers !== this.props.showAmplifiers) {
-      this.updateShowAmplifiers(nextProps.showAmplifiers)
-    }
-    // isMeasureOn
-    if (nextProps.isMeasureOn !== this.props.isMeasureOn) {
-      if (nextProps.isMeasureOn !== this.map.measureControl._measuring) {
-        this.map.measureControl._toggleMeasure()
-      }
-    }
-    // selection
-    if (
-      nextProps.selection.data === this.props.selection.data &&
-      nextProps.orgStructureSelectedId !== this.props.orgStructureSelectedId
-    ) {
-      this.selectByOrgStructure(nextProps.orgStructureSelectedId, nextProps.layer)
-    }
-    // coordinatesType
-    if (nextProps.coordinatesType !== this.props.coordinatesType) {
-      this.indicateMode = type2mode(nextProps.coordinatesType)
-    }
-    // backOpacity
-    if (nextProps.backOpacity !== this.props.backOpacity && this.map && this.map._container) {
-      const tilePane = this.map.getPane('tilePane')
-      if (tilePane) {
-        tilePane.style.opacity = nextProps.backOpacity / 100
-      }
-    }
-    // params
-    if (nextProps.params !== this.props.params && this.map && this.map._container) {
-      this.updateScaleOptions(nextProps.params)
-    }
-    // viewport
-    if (
-      this.view.lat !== nextProps.center.lat || this.view.lng !== nextProps.center.lng ||
-      this.view.zoom !== nextProps.zoom
-    ) {
-      this.view = { lat: nextProps.center.lat, lng: nextProps.center.lng, zoom: nextProps.zoom }
-      this.map && this.map.setView(nextProps.center, nextProps.zoom)
-    }
-    return true // TODO: перенсти увесь код в componentDidUpdate
-  }
-
   componentDidUpdate (prevProps, prevState, snapshot) {
-    // Exit if map is not yet initialized
-    if (!this.map) {
-      return
+    if (!this.map || !this.map._container) {
+      return // Exit if map is not yet initialized
     }
-    // Locked state of some objects changed
-    if (this.props.lockedObjects !== prevProps.lockedObjects) {
-      Object.keys(this.map._layers)
-        .filter((key) => this.map._layers[key]._locked)
-        .forEach((key) => {
-          const layer = this.map._layers[key]
-          const isLocked = this.props.lockedObjects.get(layer.id)
-          !isLocked && layer.setLocked && layer.setLocked(false)
-        })
+
+    const {
+      objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
+      searchResult, isMeasureOn, orgStructureSelectedId, coordinatesType, backOpacity, params, lockedObjects, center,
+      zoom, selection: { data, showForm, newShape },
+    } = this.props
+
+    if (objects !== prevProps.objects) {
+      this.updateObjects(objects)
+    }
+    if (showMiniMap !== prevProps.showMiniMap) {
+      this.updateMinimap(showMiniMap)
+    }
+    if (showAmplifiers !== prevProps.showAmplifiers) {
+      this.updateShowAmplifiers(showAmplifiers)
+    }
+    if (isGridActive !== prevProps.isGridActive) {
+      toggleMapGrid(this.map, isGridActive)
+    }
+    if (sources !== prevProps.sources) {
+      this.setMapSource(sources)
+    }
+    if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
+      layer !== prevProps.layer
+    ) {
+      this.updateShowLayers(level, layersById, hiddenOpacity, layer)
+    }
+    if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
+      this.adjustEditMode(edit, newShape)
+    }
+    if (showForm === null && prevProps.selection.showForm === 'create') {
+      this.createObject(newShape)
+    }
+    if (showForm === null && prevProps.selection.showForm === 'edit') {
+      this.updateObject(data)
+    }
+    if (searchResult && searchResult !== prevProps.searchResult) {
+      this.placeSearchMarker()
+    }
+    if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
+      this.map.measureControl._toggleMeasure()
+    }
+    if (data === prevProps.selection.data && orgStructureSelectedId !== prevProps.orgStructureSelectedId) {
+      this.selectByOrgStructure(orgStructureSelectedId, layer)
+    }
+    if (coordinatesType !== prevProps.coordinatesType) {
+      this.indicateMode = type2mode(coordinatesType)
+    }
+    if (backOpacity !== prevProps.backOpacity) {
+      this.updateBackOpacity(backOpacity)
+    }
+    if (params !== prevProps.params) {
+      this.updateScaleOptions(params)
+    }
+    if (center.lat !== this.view.lat || center.lng !== this.view.lng || zoom !== this.view.zoom) {
+      this.updateViewport(center, zoom)
+    }
+    if (lockedObjects !== prevProps.lockedObjects) {
+      this.updateLockedObjects(lockedObjects)
     }
   }
 
@@ -456,20 +372,87 @@ export default class WebMap extends Component {
     this.map.remove()
   }
 
-  updateMinimap (showMiniMap) {
-    if (showMiniMap) {
-      this.mini.addTo(this.map)
-    } else {
-      this.mini.remove()
-    }
-  }
-
   indicateMode = indicateModes.WGS
 
   sources = []
 
+  updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
+
+  updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
+    .filter((key) => this.map._layers[key]._locked)
+    .forEach((key) => {
+      const layer = this.map._layers[key]
+      const isLocked = lockedObjects.get(layer.id)
+      !isLocked && layer.setLocked && layer.setLocked(false)
+    })
+
+  adjustEditMode = async (edit, { type }) => {
+    this.setMapCursor(edit, type)
+    this.startCreatePoly(edit, type)
+    if (type) {
+      clearActiveLayer(this.map, true)
+    } else {
+      const activeLayer = this.map.pm.activeLayer
+      if (activeLayer) {
+        clearActiveLayer(this.map, true)
+        await this.activateLayer(activeLayer, edit)
+      }
+    }
+  }
+
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
+  createObject = (newShape) => {
+    switch (newShape.type) {
+      case entityKind.POINT:
+        return this.createPointSign(newShape)
+      case entityKind.TEXT:
+        return this.createTextSign(newShape)
+      default:
+    }
+  }
+
+  updateObject = (data) => {
+    switch (data.type) {
+      case entityKind.POINT:
+        return this.updatePointSign(data)
+      case entityKind.TEXT:
+        return this.updateText(data)
+      default:
+        return this.updateFigure(data)
+    }
+  }
+
+  placeSearchMarker = () => {
+    this.searchMarker && this.searchMarker.removeFrom(this.map)
+    let { point, text } = this.props.searchResult
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+    }
+    if (coordinates !== text) {
+      text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    }
+    this.map.panTo(point, { animate: false })
+    setTimeout(() => {
+      this.searchMarker = createSearchMarker(point, text)
+      this.searchMarker.addTo(this.map)
+      setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
+    }, 500)
+  }
+
+  updateBackOpacity = (backOpacity) => {
+    const tilePane = this.map.getPane('tilePane')
+    if (tilePane) {
+      tilePane.style.opacity = backOpacity / 100
+    }
+  }
+
+  updateViewport = (center, zoom) => {
+    this.view = { ...center, zoom }
+    this.map.setView(center, zoom)
   }
 
   setMapView = () => {
