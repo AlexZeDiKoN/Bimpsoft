@@ -46,20 +46,6 @@ export default function reducer (state = initState, action) {
       }
       return { ...state, expandedIds }
     }
-    case selection.SET_SELECTION: {
-      const { data } = action
-      const { orgStructureId: selectedId = null } = data
-      const resultState = { ...state, selectedId }
-      if (selectedId !== null) {
-        const selectedIds = getPath(state.byIds, selectedId).slice(0, -1)
-        if (selectedIds.length) {
-          const expandedIds = { ...state.expandedIds }
-          selectedIds.forEach((selectedId) => { expandedIds[selectedId] = true })
-          resultState.expandedIds = expandedIds
-        }
-      }
-      return resultState
-    }
     case orgStructures.SET_ORG_STRUCTURE_FILTER_TEXT: {
       const { filterText } = action
       const textFilter = TextFilter.create(filterText)
