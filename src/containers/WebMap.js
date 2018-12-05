@@ -36,7 +36,10 @@ const WebMap = connect(
     addObject: (object) => dispatch(webMapActions.addObject(object)),
     editObject: () => dispatch(selectionActions.showEditForm),
     onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
-    onSelectUnit: (unitID) => dispatch(orgStructuresActions.setOrgStructureSelectedId(unitID)),
+    onSelectUnit: (unitID) => {
+      dispatch(orgStructuresActions.setOrgStructureSelectedId(unitID))
+      dispatch(orgStructuresActions.expandTreeByOrgStructureItem(unitID))
+    },
     onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
     onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
