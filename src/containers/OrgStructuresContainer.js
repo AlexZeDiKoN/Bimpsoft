@@ -16,11 +16,15 @@ const mapDispatchToProps = {
   onFilterTextChange: (filterText) => orgStructuresActions.setOrgStructuresFilterText(filterText),
   onClick: (unitID) => orgStructuresActions.setOrgStructureSelectedId(unitID),
   onDoubleClick: (unitID) => (dispatch, getState) => {
+    const state = getState()
     const {
       webMap: { center, objects },
-    } = getState()
-    const object = objects.find((object) => object.unit === unitID)
-    if (!object) {
+    } = state
+    const canEdit = canEditSelector(state)
+    const unitObjects = objects.filter((object) => object.unit === unitID)
+    if (unitObjects.size) {
+      dispatch(selectionActions.selectedList([ ...unitObjects.keys() ]))
+    } else if (canEdit) {
       dispatch(selectionActions.newShapeFromUnit(unitID, center))
     }
   },
