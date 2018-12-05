@@ -450,8 +450,7 @@ export default class WebMap extends Component {
     this.map.on('moveend', this.moveEndHandler)
     this.map.on('zoomend', this.moveEndHandler)
     this.map.on('pm:create', this.createNewShape)
-    this.map.on('click', this.onMouseUp)
-    // this.map.on('pm:drawstart', this.startDrawShape)
+    this.map.on('click', this.onMouseClick)
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
@@ -493,7 +492,7 @@ export default class WebMap extends Component {
     onSelectedList(newList)
   }
 
-  onMouseUp = (e) => {
+  onMouseClick = (e) => {
     if (!this.isBoxSelection) {
       this.onSelectedListChange([])
     }
@@ -943,11 +942,6 @@ export default class WebMap extends Component {
         break
     }
   }
-
-  // startDrawShape = (e) => {
-  //   e.workingLayer.options.tsType = this.createPolyType
-  //   // console.log('startDrawShape', e.workingLayer.options)
-  // }
 
   createNewShape = async (e) => {
     const { layer } = e
