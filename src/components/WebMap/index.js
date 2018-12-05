@@ -717,14 +717,14 @@ export default class WebMap extends Component {
     // console.log('addObject', object.toJS())
     const { id, attributes } = object
     const layer = createTacticalSign(object, this.map)
-    layer.options.lineCap = 'butt'
-    layer.options.lineAmpl = attributes.lineAmpl
-    layer.options.lineNodes = attributes.lineNodes
-    layer.options.lineEnds = {
-      left: attributes.left,
-      right: attributes.right,
-    }
     if (layer) {
+      layer.options.lineCap = 'butt'
+      layer.options.lineAmpl = attributes.lineAmpl
+      layer.options.lineNodes = attributes.lineNodes
+      layer.options.lineEnds = {
+        left: attributes.left,
+        right: attributes.right,
+      }
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
@@ -754,6 +754,7 @@ export default class WebMap extends Component {
   }
 
   clickOnLayer = async (event) => {
+    L.DomEvent.stopPropagation(event)
     const { target } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = target.object && target.object.layer
@@ -764,12 +765,12 @@ export default class WebMap extends Component {
     }
     if (doActivate) {
       await this.activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
-      L.DomEvent.stopPropagation(event)
       event.target._map._container.focus()
     }
   }
 
   dblClickOnLayer = async (event) => {
+    L.DomEvent.stopPropagation(event)
     const { target } = event
     if (event.target._map.pm.activeLayer === target) {
       event.target._map.fire('editlayer', target)
@@ -781,7 +782,6 @@ export default class WebMap extends Component {
         event.target._map._container.focus()
       }
     }
-    L.DomEvent.stopPropagation(event)
   }
 
   activateLayer = async (newLayer, canEdit, exclusive) => {

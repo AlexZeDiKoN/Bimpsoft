@@ -23,6 +23,9 @@ export default L.Path.include({
   },
 
   setSelected: function (selected) {
+    if (this._selected === selected) {
+      return
+    }
     this._selected = selected
     this.setStyle({ selected })
   },
@@ -148,7 +151,7 @@ export default L.Path.include({
       let needRedraw = false
       if (scaleChanged || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
-        styles.weight = `${this.scale * strokeWidth / 100}px`
+        styles.weight = scale * strokeWidth
         hasStyles = true
       }
       if (scaleChanged || lineTypePrev !== lineType) {

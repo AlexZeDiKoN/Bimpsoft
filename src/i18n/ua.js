@@ -78,9 +78,6 @@ export const DISPLAY_ANCHOR_LINE = 'Відображати лінію прив\'
 export const ANCHOR_LINE_WITH_ARROW = 'Лінія прив\'язки зі стрілкою'
 export const MAGNIFICATION = 'Збільшення'
 
-export const OK = 'Гаразд'
-export const CANCEL = 'Скасувати'
-
 export const COLOR = 'Колір'
 export const FILLING = 'Заливка'
 export const TRANSPARENT = 'Прозорий'
