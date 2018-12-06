@@ -1,8 +1,7 @@
 /* global L */
 
 import entityKind from '../../entityKind'
-import { hookSplice, dblClickOnControlPoint, setBezierMiddleMarkerCoords } from '../utils/helpers'
-import { mouseupTimer } from './constants'
+import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
 
 const { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag } = L.PM.Edit.Line.prototype
 const parent = { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag }
@@ -27,13 +26,6 @@ L.PM.Edit.Line.include({
 
   _createMarker: function (latlng, index) {
     const marker = parent._createMarker.call(this, latlng)
-    marker.on('dblclick', dblClickOnControlPoint, this._layer)
-    marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
-    marker.on('mouseup', () => setTimeout(() => {
-      if (marker._map) {
-        marker._map.pm.draggingMarker = false
-      }
-    }, mouseupTimer))
     if (index >= 0) {
       marker._index = index
     }
@@ -48,13 +40,6 @@ L.PM.Edit.Line.include({
       marker = parent._createMiddleMarker.call(this, leftM, rightM)
     }
     if (marker) {
-      marker.on('dblclick', dblClickOnControlPoint, this._layer)
-      marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
-      marker.on('mouseup', () => setTimeout(() => {
-        if (marker._map) {
-          marker._map.pm.draggingMarker = false
-        }
-      }, mouseupTimer))
       if (kind === entityKind.AREA || kind === entityKind.CURVE) {
         setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
       }

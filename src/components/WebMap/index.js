@@ -27,7 +27,7 @@ import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  initMapEvents, createTacticalSign, getGeometry, activateLayer, clearActiveLayer, createSearchMarker, setLayerSelected,
+  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -142,14 +142,15 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
+const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
+
 function geomPointEquals (point, data) {
   if (!point || !data) {
     return false
   }
   const lng = point.get('lng')
   const lat = point.get('lat')
-  return lng !== null && lat !== null &&
-    +lat.toFixed(6) === data.lat.toFixed(6) && +lng.toFixed(6) === data.lng.toFixed(6)
+  return roundCoord(lat) === roundCoord(data.lat) && roundCoord(lng) === roundCoord(data.lng)
 }
 
 function geomPointListEquals (list, data) {
@@ -162,23 +163,6 @@ function geomPointListEquals (list, data) {
     }
   }
   return true
-}
-
-function tacticalSignEquals (object, data) {
-  return +object.get('id') === +data.id &&
-    +object.get('type') === +data.type &&
-    geomPointEquals(object.get('point'), data.point) &&
-    geomPointListEquals(object.get('geometry'), data.geometry)
-  // TODO інші властивості
-}
-
-const filterObj = (data) => {
-  for (const key of Object.keys(data)) {
-    if (data[key] === '') {
-      delete data[key]
-    }
-  }
-  return Object.keys(data).length ? data : null
 }
 
 const setScaleOptions = (layer, params) => {
@@ -262,22 +246,19 @@ export default class WebMap extends Component {
       }),
     }),
     isGridActive: PropTypes.bool.isRequired,
-    orgStructureSelectedId: PropTypes.number,
     backVersion: PropTypes.string,
     contactId: PropTypes.number,
     lockedObjects: PropTypes.object,
     // Redux actions
-    addObject: PropTypes.func,
     editObject: PropTypes.func,
-    updateObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
-    onSelection: PropTypes.func,
     onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
-    setNewShapeCoordinates: PropTypes.func,
+    onFinishDrawNewShape: PropTypes.func,
     showCreateForm: PropTypes.func,
     onMove: PropTypes.func,
     onDropUnit: PropTypes.func,
+    onSelectUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
     tryLockObject: PropTypes.func,
@@ -311,8 +292,8 @@ export default class WebMap extends Component {
 
     const {
       objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      searchResult, isMeasureOn, orgStructureSelectedId, coordinatesType, backOpacity, params, lockedObjects, center,
-      zoom, selection: { data, showForm, newShape },
+      searchResult, isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, center,
+      zoom, selection: { newShape, list: selectedIds },
     } = this.props
 
     if (objects !== prevProps.objects) {
@@ -338,20 +319,19 @@ export default class WebMap extends Component {
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
     }
-    if (showForm === null && prevProps.selection.showForm === 'create') {
-      this.createObject(newShape)
-    }
-    if (showForm === null && prevProps.selection.showForm === 'edit') {
-      this.updateObject(data)
-    }
     if (searchResult && searchResult !== prevProps.searchResult) {
       this.placeSearchMarker()
     }
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
       this.map.measureControl._toggleMeasure()
     }
-    if (data === prevProps.selection.data && orgStructureSelectedId !== prevProps.orgStructureSelectedId) {
-      this.selectByOrgStructure(orgStructureSelectedId, layer)
+    if (
+      objects !== prevProps.objects ||
+      selectedIds !== prevProps.selection.list ||
+      edit !== prevProps.edit ||
+      layer !== prevProps.layer
+    ) {
+      this.updateSelection(selectedIds, edit, layer)
     }
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
@@ -390,41 +370,11 @@ export default class WebMap extends Component {
 
   adjustEditMode = async (edit, { type }) => {
     this.setMapCursor(edit, type)
-    this.startCreatePoly(edit, type)
-    if (type) {
-      clearActiveLayer(this.map, true)
-    } else {
-      const activeLayer = this.map.pm.activeLayer
-      if (activeLayer) {
-        clearActiveLayer(this.map, true)
-        await this.activateLayer(activeLayer, edit)
-      }
-    }
+    this.updateCreatePoly(edit && type)
   }
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
-  }
-
-  createObject = (newShape) => {
-    switch (newShape.type) {
-      case entityKind.POINT:
-        return this.createPointSign(newShape)
-      case entityKind.TEXT:
-        return this.createTextSign(newShape)
-      default:
-    }
-  }
-
-  updateObject = (data) => {
-    switch (data.type) {
-      case entityKind.POINT:
-        return this.updatePointSign(data)
-      case entityKind.TEXT:
-        return this.updateText(data)
-      default:
-        return this.updateFigure(data)
-    }
   }
 
   placeSearchMarker = () => {
@@ -498,23 +448,65 @@ export default class WebMap extends Component {
       this.coordinates._update({ latlng: this.coordinates._currentPos })
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
-    initMapEvents(this.map, this.clickInterhandler)
     this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
-    this.map.on('activelayer', this.activeLayerHandler)
-    this.map.on('selectlayer', this.selectLayerHandler)
-    this.map.on('editlayer', this.editObject)
     this.map.on('moveend', this.moveEndHandler)
     this.map.on('zoomend', this.moveEndHandler)
     this.map.on('pm:create', this.createNewShape)
-    this.map.on('pm:drawstart', this.startDrawShape)
+    this.map.on('click', this.onMouseClick)
     this.map.on('stop_measuring', this.onStopMeasuring)
-    this.map.on('boxselectend', this.onBoxSelect)
+    this.map.on('boxselectstart', this.onBoxSelectStart)
+    this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
 
-  onBoxSelect = ({ boxSelectBounds }) => setTimeout(() => {
-    const { onSelectedList, layer: activeLayerId, layersById } = this.props
+  onSelectedListChange (newList) {
+    const { selection: { list }, onSelectedList, updateObjectGeometry, onSelectUnit } = this.props
+    if (newList.length === 0 && list === 0) {
+      return
+    }
+
+    // save geometry when one selected item lost focus
+    if (list.length === 1 && list[0] !== newList[0]) {
+      const id = list[0]
+      const layer = this.findLayerById(id)
+      if (layer) {
+        const newGeometry = getGeometry(layer)
+        const { point, geometry } = layer.object
+        const geometryEquals =
+          geomPointEquals(point, newGeometry.point) &&
+          geomPointListEquals(geometry, newGeometry.geometry)
+        if (!geometryEquals) {
+          updateObjectGeometry(id, newGeometry)
+        }
+      }
+    }
+
+    // get unit from new selection
+    let selectedUnit = null
+    if (newList.length === 1 && list[0] !== newList[0]) {
+      const id = newList[0]
+      const layer = this.findLayerById(id)
+      selectedUnit = (layer && layer.object.unit) || null
+    }
+    onSelectUnit(selectedUnit)
+
+    onSelectedList(newList)
+  }
+
+  onMouseClick = (e) => {
+    if (!this.isBoxSelection) {
+      this.onSelectedListChange([])
+    }
+  }
+
+  onBoxSelectStart = () => {
+    this.isBoxSelection = true
+  }
+
+  onBoxSelectEnd = ({ boxSelectBounds }) => {
+    this.isBoxSelection = false
+    const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
@@ -522,37 +514,23 @@ export default class WebMap extends Component {
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
         const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
-        setLayerSelected(layer, isSelected)
         isSelected && selectedIds.push(layer.id)
       }
     })
-    onSelectedList(selectedIds)
-  })
-
-  selectByOrgStructure = (orgStructureSelectedId, layerId) => {
-    const { onSelectedList } = this.props
-    const selectedIds = []
-    this.map.eachLayer((layer) => {
-      if (layer.options.tsType) {
-        const { object, id } = layer
-        const isSelected = object && object.unit === orgStructureSelectedId && object.layer === layerId
-        isSelected && selectedIds.push(id)
-        setLayerSelected(layer, isSelected)
-      }
-    })
-    onSelectedList(selectedIds)
+    this.onSelectedListChange(selectedIds)
   }
 
-  selectLayerHandler = async () => { // { layer, select }
-    const selectedIds = []
+  updateSelection = (selectedIds, edit, layerId) => {
+    const selectedIdsSet = new Set(selectedIds)
+    const canEditLayer = selectedIds.length === 1 && edit
     this.map.eachLayer((layer) => {
       if (layer.options.tsType) {
-        if (layer._selected) {
-          selectedIds.push(layer.id)
-        }
+        const { id } = layer
+        const isSelected = selectedIdsSet.has(id)
+        const isActive = canEditLayer && isSelected && layer.object.layer === layerId
+        setLayerSelected(layer, isSelected, isActive)
       }
     })
-    this.props.onSelectedList(selectedIds)
   }
 
   onStopMeasuring = () => {
@@ -582,17 +560,11 @@ export default class WebMap extends Component {
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
       item.setShadowColor && item.setShadowColor(color)
-      if (hidden && this.map.pm.activeLayer === item) {
-        clearActiveLayer(this.map)
-      }
     }
   }
 
   updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId) => {
     if (this.map) {
-      if (this.map.pm.activeLayer && this.map.pm.activeLayer.object.layer !== selectedLayerId) {
-        clearActiveLayer(this.map)
-      }
       this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item))
     }
   }
@@ -683,7 +655,6 @@ export default class WebMap extends Component {
   updateObjects = (objects) => {
     if (this.map) {
       const notChangedIds = new Set()
-      let activeLayerId = null
       this.map.eachLayer((layer) => {
         if (layer.id) {
           const object = objects.get(layer.id)
@@ -694,11 +665,7 @@ export default class WebMap extends Component {
               layer.object = object
               notChangedIds.add(layer.id)
             } else {
-              if (this.map.pm.activeLayer === layer) {
-                activeLayerId = layer.id
-                layer.pm.disable()
-                delete layer._map.pm.activeLayer
-              }
+              setLayerSelected(layer, false, false)
               layer.remove()
             }
           }
@@ -707,26 +674,23 @@ export default class WebMap extends Component {
       objects.forEach((object, key) => {
         if (!notChangedIds.has(key)) {
           this.addObject(object)
-          if (activeLayerId === key) {
-            this.activateCreated(key)
-          }
         }
       })
     }
   }
 
   addObject = (object) => {
-    // console.log('addObject', object.toJS())
     const { id, attributes } = object
     const layer = createTacticalSign(object, this.map)
-    layer.options.lineCap = 'butt'
-    layer.options.lineAmpl = attributes.lineAmpl
-    layer.options.lineNodes = attributes.lineNodes
-    layer.options.lineEnds = {
-      left: attributes.left,
-      right: attributes.right,
-    }
     if (layer) {
+      layer.options.lineCap = 'butt'
+      layer.options.lineAmpl = attributes.lineAmpl
+      layer.options.lineNodes = attributes.lineNodes
+      layer.options.lineEnds = {
+        left: attributes.left,
+        right: attributes.right,
+      }
+
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
@@ -753,128 +717,54 @@ export default class WebMap extends Component {
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
+    return layer
   }
 
   clickOnLayer = async (event) => {
-    const { target } = event
+    L.DomEvent.stopPropagation(event)
+    const { target: { id, object } } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
-    const targetLayer = target.object && target.object.layer
+    const targetLayer = object && object.layer
     let doActivate = targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
       this.props.onChangeLayer(targetLayer)
       doActivate = true
     }
     if (doActivate) {
-      await this.activateLayer(target, this.props.edit, event.originalEvent.ctrlKey)
-      L.DomEvent.stopPropagation(event)
+      this.selectLayer(id, event.originalEvent.ctrlKey)
+
       event.target._map._container.focus()
     }
   }
 
   dblClickOnLayer = async (event) => {
-    const { target } = event
-    if (event.target._map.pm.activeLayer === target) {
-      event.target._map.fire('editlayer', target)
+    const { target: { id, object } } = event
+    const { selection: { list }, editObject } = this.props
+    if (list.length === 1 && list[0] === object.id) {
+      editObject()
     } else {
-      const targetLayer = target.object && target.object.layer
+      const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
-        await this.activateLayer(target, this.props.edit)
+        await this.selectLayer(id)
         event.target._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
   }
 
-  activateLayer = async (newLayer, canEdit, exclusive) => {
-    newLayer && newLayer.setLocked && newLayer.setLocked(!(await this.props.tryLockObject(newLayer.id)))
-    return activateLayer(newLayer, canEdit, exclusive)
-  }
-
-  activeLayerHandler = async ({ oldLayer, newLayer }) => {
-    const { onSelection, onSelectedList, updateObjectGeometry, tryUnlockObject } = this.props
-    oldLayer && await tryUnlockObject(oldLayer.id)
-    await onSelection(newLayer || null)
-    if (oldLayer && !oldLayer._locked) {
-      const data = this.getLayerData(oldLayer)
-      const object = oldLayer.object
-      if (!tacticalSignEquals(object, data)) {
-        await updateObjectGeometry(data)
+  selectLayer = async (id, exclusive) => {
+    const { selection: { list } } = this.props
+    if (id) {
+      if (exclusive) {
+        this.onSelectedListChange(list.indexOf(id) === -1 ? [ ...list, id ] : list.filter((itemId) => itemId !== id))
+      } else if (list.length !== 1 || list[0] !== id) {
+        this.onSelectedListChange([ id ])
       }
+    } else {
+      this.onSelectedListChange([])
     }
-    onSelectedList(newLayer ? [ newLayer.id ] : [])
-  }
-
-  editObject = (layer) => {
-    // console.log('edit object', layer)
-    this.props.onSelection(layer)
-    this.props.editObject()
-  }
-
-  getLayerData = (layer) => {
-    const { id, options: { tsType: type } } = layer
-    return { id, type, ...getGeometry(layer) }
-  }
-
-  clickInterhandler = (event) => {
-    const { latlng } = event
-    const { edit, selection: { newShape: { type } }, setNewShapeCoordinates, showCreateForm } = this.props
-    if (edit) {
-      switch (type) {
-        case entityKind.TEXT:
-        case entityKind.POINT:
-          setNewShapeCoordinates(latlng)
-          showCreateForm()
-          break
-        default:
-          break
-      }
-    }
-  }
-
-  createPointSign = async (data) => {
-    // console.log('createPointSign', data)
-    const { addObject } = this.props
-    const { code, amplifiers, orgStructureId, subordinationLevel, coordinates: p } = data
-    if (!p) {
-      return
-    }
-    const point = { lat: p.lat, lng: p.lng }
-    const created = await addObject({
-      type: entityKind.POINT,
-      code,
-      attributes: filterObj(amplifiers),
-      point,
-      level: subordinationLevel || 0,
-      unit: orgStructureId || null,
-      layer: this.props.layer,
-      affiliation: +code.slice(3, 4) || 0,
-      geometry: [ point ],
-    })
-    this.activateCreated(created)
-    // TODO: скинути дані в сторі
-  }
-
-  createTextSign = async (data) => {
-    // console.log('createTextSign', data)
-    const { addObject } = this.props
-    const { amplifiers, subordinationLevel, coordinatesArray } = data
-    const p = coordinatesArray[0]
-    if (!p) {
-      return
-    }
-    const point = { lat: p.lat, lng: p.lng }
-    const created = await addObject({
-      type: entityKind.TEXT,
-      attributes: filterObj(amplifiers),
-      point,
-      level: subordinationLevel || 0,
-      unit: null,
-      layer: this.props.layer,
-      affiliation: 0,
-      geometry: [ point ],
-    })
-    this.activateCreated(created)
+    // newLayer && newLayer.setLocked && newLayer.setLocked(!(await this.props.tryLockObject(newLayer.id)))
   }
 
   findLayerById = (id) => {
@@ -884,86 +774,6 @@ export default class WebMap extends Component {
         return layer
       }
     }
-  }
-
-  findLayerByUnitId = (id, layerId) => {
-    for (const lkey of Object.keys(this.map._layers)) {
-      const layer = this.map._layers[lkey]
-      if (layer.object && layer.object.unit === id && layer.object.layer === layerId) {
-        return layer
-      }
-    }
-  }
-
-  updatePointSign = async (data) => {
-    // console.log('updatePointSign', data)
-    const { id, code, coordinates, orgStructureId, amplifiers, subordinationLevel, ...rest } = data
-    const point = { lng: +coordinates.lng, lat: +coordinates.lat }
-    const layer = this.findLayerById(id)
-    if (layer) {
-      layer.pm.disable()
-      delete layer._map.pm.activeLayer
-    }
-    await this.props.updateObject({
-      id,
-      code,
-      point,
-      attributes: filterObj(amplifiers),
-      layer: layer.object.layer,
-      geometry: [ point ],
-      ...rest,
-      level: subordinationLevel || 0,
-      unit: orgStructureId || null,
-      affiliation: +code.slice(3, 4) || 0,
-    })
-    this.activateCreated(id)
-    // TODO: скинути дані в сторі
-  }
-
-  updateFigure = async (data) => {
-    const { id, amplifiers, coordinates: _, coordinatesArray, subordinationLevel, ...rest } = data
-    if (!id) {
-      return
-    }
-    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
-    const layer = this.findLayerById(id)
-    if (layer) {
-      layer.pm.disable()
-      delete layer._map.pm.activeLayer
-    }
-    await this.props.updateObject({
-      id,
-      point: points[0],
-      layer: layer.object.layer,
-      geometry: points,
-      attributes: filterObj(amplifiers),
-      ...rest,
-      level: subordinationLevel || 0,
-    })
-    this.activateCreated(id)
-    // TODO: скинути дані в сторі
-  }
-
-  updateText = async (data) => {
-    // console.log('updateText', data)
-    const { id, amplifiers, subordinationLevel, coordinatesArray, ...rest } = data
-    const points = coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
-    const layer = this.findLayerById(id)
-    if (layer) {
-      layer.pm.disable()
-      delete layer._map.pm.activeLayer
-    }
-    await this.props.updateObject({
-      id,
-      point: points[0],
-      level: subordinationLevel || 0,
-      layer: layer.object.layer,
-      geometry: points,
-      attributes: filterObj(amplifiers),
-      ...rest,
-    })
-    this.activateCreated(id)
-    // TODO: скинути дані в сторі
   }
 
   // // TODO: пибрати це після тестування
@@ -1102,66 +912,45 @@ export default class WebMap extends Component {
     toggleMapGrid(this.map, tempPrintFlag)
   }
 
-  startCreatePoly = (edit, type) => {
-    if (this.map && edit) {
-      switch (type) {
-        case entityKind.POLYLINE:
-        case entityKind.CURVE:
-          this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Line', { hintlineStyle })
-          break
-        case entityKind.POLYGON:
-        case entityKind.AREA:
-          this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
-          break
-        case entityKind.RECTANGLE:
-        case entityKind.SQUARE:
-          this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Rectangle')
-          break
-        case entityKind.CIRCLE:
-          this.createPolyType = type // Не виносити за межі switch!
-          this.map.pm.enableDraw('Circle')
-          break
-        default:
-          break
-      }
+  updateCreatePoly = (type) => {
+    switch (type) {
+      case entityKind.POLYLINE:
+      case entityKind.CURVE:
+        this.createPolyType = type // Не виносити за межі switch!
+        this.map.pm.enableDraw('Line', { hintlineStyle })
+        break
+      case entityKind.POLYGON:
+      case entityKind.AREA:
+        this.createPolyType = type // Не виносити за межі switch!
+        this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
+        break
+      case entityKind.RECTANGLE:
+      case entityKind.SQUARE:
+        this.createPolyType = type // Не виносити за межі switch!
+        this.map.pm.enableDraw('Rectangle')
+        break
+      case entityKind.CIRCLE:
+        this.createPolyType = type // Не виносити за межі switch!
+        this.map.pm.enableDraw('Circle')
+        break
+      case entityKind.TEXT:
+      case entityKind.POINT:
+        this.createPolyType = type // Не виносити за межі switch!
+        this.map.pm.enableDraw('Poly', { finishOn: 'click' })
+        break
+      default:
+        this.createPolyType = null
+        this.map.pm.disableDraw()
+        break
     }
-  }
-
-  startDrawShape = (e) => {
-    e.workingLayer.options.tsType = this.createPolyType
-    // console.log('startDrawShape', e.workingLayer.options)
   }
 
   createNewShape = async (e) => {
-    const { addObject, level } = this.props
-    e.layer.options.tsType = this.createPolyType
-    // console.log('createNewShape', e.layer.options)
-    e.layer.removeFrom(this.map)
-    this.activateCreated(await addObject({
-      type: this.createPolyType,
-      layer: this.props.layer,
-      level,
-      ...getGeometry(e.layer),
-    }))
-    this.props.editObject()
-  }
-
-  activateCreated = async (created) => {
-    if (created) {
-      const layer = this.findLayerById(created)
-      if (layer) {
-        await this.activateLayer(layer, this.props.edit)
-        !isLayerInBounds(layer, this.map.getBounds()) && this.map.panTo(getGeometry(layer).point)
-      }
-      this.props.onSelection(layer || null)
-      this.props.onSelectedList(layer ? [ layer.id ] : [])
-    } else {
-      this.props.onSelection(null)
-      this.props.onSelectedList([])
-    }
+    const { layer } = e
+    layer.options.tsType = this.createPolyType
+    layer.removeFrom(this.map)
+    const geometry = getGeometry(layer)
+    this.props.onFinishDrawNewShape(geometry)
   }
 
   dragOverHandler = (e) => {
@@ -1191,9 +980,7 @@ export default class WebMap extends Component {
   }
 
   spaceHandler = () => {
-    if (this.map.pm.activeLayer) {
-      clearActiveLayer(this.map)
-    }
+    this.onSelectedListChange([])
   }
 
   render () {

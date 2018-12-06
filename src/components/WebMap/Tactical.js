@@ -3,81 +3,56 @@
 import './patch'
 import entityKind from './entityKind'
 
-// ------------------------ Ініціалізація подій карти ------------------------------------------------------------------
-export function initMapEvents (mymap, clickInterhandler) {
-  mymap.on('click', (event) => {
-    if (clickInterhandler && clickInterhandler(event)) {
-      return
-    }
-    if (event.target.pm.draggingMarker) {
-      event.target.pm.draggingMarker = false
-    } else {
-      clearActiveLayer(event.target)
-      clearSelectedList(mymap)
-    }
-  })
-}
-
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
-export const clearSelectedList = (map) => {
-  map.eachLayer((layer) => {
-    if (layer._selected) {
-      removeLayerFromSelection(layer)
+const recursiveForEach = (markers, func) => {
+  for (const marker of markers) {
+    if (Array.isArray(marker)) {
+      recursiveForEach(marker, func)
+    } else {
+      func(marker)
     }
+  }
+}
+
+const getMarkers = (layer) => {
+  const { _markers, _editMarker } = layer.pm
+  const markers = _markers || []
+  if (_editMarker) {
+    markers.push(_editMarker)
+  }
+  return markers
+}
+
+export const enableEdit = (layer) => {
+  layer.pm.enable({
+    snappable: false,
+    draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
   })
-  map.fire('selectlayer')
+  const click = layer.fire.bind(layer, 'click')
+  const dblclick = layer.fire.bind(layer, 'dblclick')
+  recursiveForEach(getMarkers(layer), (marker) => {
+    marker.on('click', click)
+    marker.on('dblclick', dblclick)
+  })
 }
 
-export const clearActiveLayer = (map, skipFire = false) => {
-  if (map.pm.activeLayer && map.pm.activeLayer.pm) {
-    map.pm.activeLayer.pm.disable()
-    removeLayerFromSelection(map.pm.activeLayer)
-    if (!skipFire) {
-      map.fire('activelayer', { oldLayer: map.pm.activeLayer, newLayer: null })
-    }
-  }
-  delete map.pm.activeLayer
+export const disableEdit = (layer) => {
+  recursiveForEach(getMarkers(layer), (marker) => {
+    marker.off('click')
+    marker.off('dblclick')
+  })
+
+  layer.pm.disable()
 }
 
-function removeLayerFromSelection (layer) {
-  layer.setSelected && layer.setSelected(false)
-}
-
-function setActiveLayer (map, layer, canEdit, skipFire = false) {
-  map.pm.activeLayer = layer
-  clearSelectedList(map)
-  addLayerToSelection(layer)
-  if (canEdit && !layer._locked) {
-    layer.pm.enable({
-      snappable: false,
-      draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
-    })
-  }
-  if (!skipFire) {
-    map.fire('activelayer', { oldLayer: null, newLayer: map.pm.activeLayer })
-  }
-}
-
-export const addLayerToSelection = (layer) => {
-  layer.setSelected && layer.setSelected(true)
-}
-
-export const setLayerSelected = (layer, selected) => selected
-  ? addLayerToSelection(layer)
-  : removeLayerFromSelection(layer)
-
-export function activateLayer (newLayer, canEdit, exclusive) {
-  const map = newLayer._map
-  if (exclusive) {
-    setLayerSelected(newLayer, !newLayer._selected)
-    map.fire('selectlayer')
-  } else {
-    const oldLayer = map.pm.activeLayer
-    if (newLayer !== oldLayer) {
-      clearActiveLayer(map, true)
-      setActiveLayer(map, newLayer, canEdit, true)
-      map.fire('activelayer', { oldLayer, newLayer })
+export const setLayerSelected = (layer, selected, active) => {
+  layer.setSelected && layer.setSelected(selected)
+  if (layer.pm.enabled() !== active) {
+    if (active) {
+      enableEdit(layer)
+    } else {
+      disableEdit(layer)
     }
   }
 }
@@ -224,7 +199,7 @@ export function getGeometry (layer) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
-      return formGeometry([ layer.getLatLng() ])
+      return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs()[0])
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:

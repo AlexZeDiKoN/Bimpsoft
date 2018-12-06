@@ -159,9 +159,9 @@ export const allocateObjectsByLayerId = (layerId) => ({
   payload: layerId,
 })
 
-export const updateObjectGeometry = ({ id, ...object }) =>
+export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
-    let payload = await objUpdateGeometry(id, object)
+    let payload = await objUpdateGeometry(id, geometry)
 
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }

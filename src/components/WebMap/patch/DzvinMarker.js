@@ -20,6 +20,9 @@ const DzvinMarker = L.Marker.extend({
   setHidden,
   setShadowColor,
   setSelected: function (selected) {
+    if (this._selected === selected) {
+      return
+    }
     this._selected = selected
     const el = this.getElement()
     if (el) {

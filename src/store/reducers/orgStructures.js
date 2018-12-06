@@ -1,5 +1,5 @@
 import { data, utils } from '@DZVIN/CommonComponents'
-import { orgStructures, selection } from '../actions'
+import { orgStructures } from '../actions'
 
 const { TextFilter } = data
 const { getPathFunc } = utils.collection
@@ -46,19 +46,17 @@ export default function reducer (state = initState, action) {
       }
       return { ...state, expandedIds }
     }
-    case selection.SET_SELECTION: {
-      const { data } = action
-      const { orgStructureId: selectedId = null } = data
-      const resultState = { ...state, selectedId }
+    case orgStructures.EXPAND_TREE_BY_ORG_STRUCTURE_ITEM: {
+      const { selectedId } = action
       if (selectedId !== null) {
         const selectedIds = getPath(state.byIds, selectedId).slice(0, -1)
         if (selectedIds.length) {
           const expandedIds = { ...state.expandedIds }
           selectedIds.forEach((selectedId) => { expandedIds[selectedId] = true })
-          resultState.expandedIds = expandedIds
+          return { ...state, expandedIds }
         }
       }
-      return resultState
+      return state
     }
     case orgStructures.SET_ORG_STRUCTURE_FILTER_TEXT: {
       const { filterText } = action
