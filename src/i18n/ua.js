@@ -5,6 +5,7 @@ export const PRINT = 'Друк'
 export const TOGGLE_SIDEBAR = 'Відобразити/сховати праву панель'
 export const SETTINGS = 'Налаштування'
 export const ERROR = 'Помилка'
+export const COORDINATES_UNDEFINED = 'Координати не задані'
 export const UNKNOWN_ERROR = 'Невідома помилка'
 export const SERVER_ERROR = 'Помилка сервера'
 export const SERVER_WARNING = 'Попередження'
@@ -37,7 +38,11 @@ export const COPY = 'Копіювати (Ctrl+C)'
 export const PASTE = 'Вставити (Ctrl+V)'
 export const DELETE = 'Видалити  (Delete)'
 export const REMOVING_SIGNS = 'Видалення знаків'
+export const CLOSE_MAP = 'Закриття карти'
+export const CLOSE_MAPS = 'Закриття карт'
+export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
+export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
 
@@ -74,9 +79,6 @@ export const DISPLAY_ANCHOR_LINE = 'Відображати лінію прив\'
 export const ANCHOR_LINE_WITH_ARROW = 'Лінія прив\'язки зі стрілкою'
 export const MAGNIFICATION = 'Збільшення'
 
-export const OK = 'Гаразд'
-export const CANCEL = 'Скасувати'
-
 export const COLOR = 'Колір'
 export const FILLING = 'Заливка'
 export const TRANSPARENT = 'Прозорий'
@@ -92,6 +94,7 @@ export const SEGMENT_DIRECT = 'Пряма лінія'
 export const SEGMENT_ARC = 'Дуга'
 
 export const LINE_TYPE = 'Тип лінії'
+export const LINE_WIDTH = 'Товщина лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
 export const WAVED = 'Хвиляста'
@@ -102,6 +105,8 @@ export const LINE_ENDS_LEFT = 'Лівий край' // константа вик
 export const LINE_ENDS_RIGHT = 'Правий край' // константа використовується
 export const ARROW = 'Стрілка'
 export const STROKE = 'Засічка'
+export const FORK = 'Розвилка'
+export const CROSS = 'Перехрестя'
 
 export const LINE_NODES = 'Вузлова точка'
 
@@ -122,6 +127,8 @@ export const SOUTH_EAST = 'Південний схід'
 export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
 export const EDIT = 'Редагувати'
+export const EDITING = 'Редагується'
+export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз редагується користувачем'
 export const REMOVE = 'Видалити'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'

@@ -25,9 +25,8 @@ export const viewModeEnable = (name) => ({
 })
 
 export const search = (sample) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
-    const payload = await webmapApi.placeSearch(sample)
-    api.checkServerResponse(payload)
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { placeSearch } }) => {
+    const payload = await placeSearch(sample)
     dispatch({
       type: SEARCH_PLACE,
       payload,

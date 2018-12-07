@@ -1,12 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import FocusTrap from 'react-focus-lock'
+import { HotKeysContainer, HotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
 import SymbolForm from './forms/SymbolForm'
 import LineForm from './forms/LineForm'
 import AreaForm from './forms/AreaForm'
-import RactangleForm from './forms/RactangleForm'
+import RectangleForm from './forms/RectangleForm'
 import SquareForm from './forms/SquareForm'
 import CircleForm from './forms/CircleForm'
 import TextForm from './forms/TextForm'
@@ -34,7 +37,7 @@ const forms = {
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
-    component: RactangleForm,
+    component: RectangleForm,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
@@ -80,15 +83,20 @@ export default class SelectionForm extends React.Component {
     const { wrapper: Wrapper } = this.props
     return (
       <Wrapper title={title} onClose={this.cancelHandler}>
-        <Component
-          {...data}
-          canEdit={canEdit}
-          orgStructures={orgStructures}
-          onChange={this.changeHandler}
-          onClose={this.cancelHandler}
-          onError={onError}
-          onAddToTemplates={this.addToTemplateHandler}
-        />
+        <FocusTrap>
+          <HotKeysContainer>
+            <Component
+              {...data}
+              canEdit={canEdit}
+              orgStructures={orgStructures}
+              onChange={this.changeHandler}
+              onClose={this.cancelHandler}
+              onError={onError}
+              onAddToTemplates={this.addToTemplateHandler}
+            />
+            <HotKey onKey={this.cancelHandler} selector={shortcuts.ESC}/>
+          </HotKeysContainer>
+        </FocusTrap>
       </Wrapper>
     )
   }

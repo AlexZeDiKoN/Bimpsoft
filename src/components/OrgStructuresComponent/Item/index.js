@@ -15,7 +15,7 @@ export default class Item extends React.Component {
 
   clickHandler = () => {
     const { onClick, data } = this.props
-    onClick(data.id)
+    onClick && onClick(data.id)
   }
 
   dragStartHandler = (e) => {
@@ -40,7 +40,7 @@ export default class Item extends React.Component {
         >
           {icon}
           <div
-            onDoubleClick={canEdit ? this.doubleClickHandler : null}
+            onDoubleClick={this.doubleClickHandler}
             onClick={this.clickHandler}
             onDragStart={canEdit ? this.dragStartHandler : null}
             draggable={canEdit}

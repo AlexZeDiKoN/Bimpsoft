@@ -7,6 +7,8 @@ import './Map.BoxSelect.css'
  * (selecting bounding box), enabled by default.
  */
 
+const DELTA_MOVE = 3
+
 // @namespace Map
 // @section Interaction Options
 L.Map.mergeOptions({
@@ -73,22 +75,28 @@ const BoxSelect = L.Handler.extend({
     L.DomEvent.on(document, {
       contextmenu: L.DomEvent.stop,
       mousemove: this._onMouseMove,
-      mouseup: this._onMouseUp,
+      click: this._onMouseUp,
       keydown: this._onKeyDown,
     }, this)
   },
 
   _onMouseMove: function (e) {
-    if (!this._moved) {
-      this._moved = true
-
-      this._box = L.DomUtil.create('div', 'leaflet-zoom-box leaflet-select-box', this._container)
-      L.DomUtil.addClass(this._container, 'leaflet-crosshair')
-
-      this._map.fire('boxselectstart')
-    }
-
     this._point = this._map.mouseEventToContainerPoint(e)
+
+    if (!this._moved) {
+      const dx = this._startPoint.x - this._point.x
+      const dy = this._startPoint.y - this._point.y
+      if (dx * dx + dy * dy > DELTA_MOVE * DELTA_MOVE) {
+        this._moved = true
+
+        this._box = L.DomUtil.create('div', 'leaflet-zoom-box leaflet-select-box', this._container)
+        L.DomUtil.addClass(this._container, 'leaflet-crosshair')
+
+        this._map.fire('boxselectstart')
+      } else {
+        return
+      }
+    }
 
     const bounds = new L.Bounds(this._point, this._startPoint)
     const size = bounds.getSize()
@@ -111,7 +119,7 @@ const BoxSelect = L.Handler.extend({
     L.DomEvent.off(document, {
       contextmenu: L.DomEvent.stop,
       mousemove: this._onMouseMove,
-      mouseup: this._onMouseUp,
+      click: this._onMouseUp,
       keydown: this._onKeyDown,
     }, this)
 
@@ -128,6 +136,7 @@ const BoxSelect = L.Handler.extend({
     if (!this._moved) {
       return
     }
+    L.DomEvent.stopPropagation(e)
     // Postpone to next JS tick so internal click event handling
     // still see it as "moved".
     this._clearDeferredResetState()

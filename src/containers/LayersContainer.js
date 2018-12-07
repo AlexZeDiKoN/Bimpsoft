@@ -1,51 +1,47 @@
 import { connect } from 'react-redux'
-import memoizeOne from 'memoize-one'
+import { createSelector } from 'reselect'
 import LayersComponent from '../components/LayersComponent'
 import { layers, maps } from '../store/actions'
+import { layersTree } from '../store/selectors'
 
-const getMaps = memoizeOne((layersById, mapsById) => {
-  let visible = false
-  const maps = new Map()
-  Object.values(layersById).forEach((layer) => {
-    const { mapId } = layer
-    let map = maps.get(mapId)
-    if (!map) {
-      const mapCommonData = mapsById[mapId]
-      if (!mapCommonData) {
-        return
-      }
-      map = { ...mapCommonData, items: [], visible: false, color: layer.color }
-    }
-    map.items.push(layer)
-    if (layer.visible) {
-      map.visible = true
-      visible = true
-    }
-    if (map.color !== undefined && map.color !== layer.color) {
-      map.color = undefined
-    }
-    maps.set(mapId, map)
-  })
-  return { maps: [ ...maps.values() ], visible }
-})
+export const expandedIdsSelector = createSelector(
+  (state) => state.maps.expandedIds,
+  (state) => state.maps.filterText,
+  (expandedIdsSource) => {
+    const expandedIds = {}
+    Object.keys(expandedIdsSource).forEach((key) => {
+      expandedIds[`m${key}`] = true
+    })
+    return expandedIds
+  }
+)
 
 const mapStateToProps = (store) => {
   const {
-    maps: {
-      byId: mapsById,
-    },
     layers: {
-      byId: layersById,
       selectedId: selectedLayerId,
       timelineFrom,
       timelineTo,
       backOpacity,
       hiddenOpacity,
+      textFilter,
     },
   } = store
 
-  const { maps, visible } = getMaps(layersById, mapsById)
-  return { maps, selectedLayerId, timelineFrom, timelineTo, visible, backOpacity, hiddenOpacity }
+  const { byIds, roots, visible } = layersTree(store)
+  const expandedIds = expandedIdsSelector(store)
+  return {
+    textFilter,
+    expandedIds,
+    byIds,
+    roots,
+    visible,
+    selectedLayerId,
+    timelineFrom,
+    timelineTo,
+    backOpacity,
+    hiddenOpacity,
+  }
 }
 
 const mapDispatchToProps = (dispatch) => ({
@@ -61,6 +57,8 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeBackOpacity: (opacity) => dispatch(layers.setBackOpacity(opacity)),
   onChangeHiddenOpacity: (opacity) => dispatch(layers.setHiddenOpacity(opacity)),
   onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
+  onExpand: (key) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
+  onFilterTextChange: (filterText) => dispatch(layers.setFilterText(filterText)),
 })
 
 export default connect(

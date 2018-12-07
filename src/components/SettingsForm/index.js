@@ -2,11 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Switch, Collapse, Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import FocusTrap from 'react-focus-lock'
+import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import i18n from '../../i18n'
 import './style.css'
 import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
-import { SubordinationLevel, paramsNames, SCALES } from '../../constants'
+import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
 
 const { form: { default: Form, FormRow, FormDarkPart }, icons: { Icon } } = components
 const { Option } = Select
@@ -40,7 +42,7 @@ export default class SettingsForm extends React.Component {
     const { params: { [paramName]: value }, onChangeParam } = this.props
 
     return (
-      <ScaleControl name={paramName} value={value} onChange={onChangeParam}/>
+      <ScaleControl name={paramName} value={Number(value)} onChange={onChangeParam}/>
     )
   }
 
@@ -79,51 +81,56 @@ export default class SettingsForm extends React.Component {
 
     return (
       <Wrapper title={i18n.SETTINGS} onClose={onClose}>
-        <Form className="settings-form-group">
-          {/* <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}> */}
-          {/* <Select value={coordinatesType} onChange={onChangeCoordinatesType} > */}
-          {/* <Option value={CoordinatesTypes.WGS_84}>{i18n.WGS_84}</Option> */}
-          {/* <Option value={CoordinatesTypes.USK_2000}>{i18n.USK_2000}</Option> */}
-          {/* <Option value={CoordinatesTypes.MGRS}>{i18n.MGRS}</Option> */}
-          {/* </Select> */}
-          {/* </FormRow> */}
-          <FormRow label={i18n.MINIMAP}>
-            <Switch checked={showMiniMap} onChange={onChangeShowMiniMap}/>
-          </FormRow>
-          <FormRow label={i18n.AMPLIFIERS}>
-            <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
-          </FormRow>
+        <FocusTrap>
+          <HotKeysContainer>
+            <Form className="settings-form-group">
+              {/* <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}> */}
+              {/* <Select value={coordinatesType} onChange={onChangeCoordinatesType} > */}
+              {/* <Option value={CoordinatesTypes.WGS_84}>{i18n.WGS_84}</Option> */}
+              {/* <Option value={CoordinatesTypes.USK_2000}>{i18n.USK_2000}</Option> */}
+              {/* <Option value={CoordinatesTypes.MGRS}>{i18n.MGRS}</Option> */}
+              {/* </Select> */}
+              {/* </FormRow> */}
+              <FormRow label={i18n.MINIMAP}>
+                <Switch checked={showMiniMap} onChange={onChangeShowMiniMap}/>
+              </FormRow>
+              <FormRow label={i18n.AMPLIFIERS}>
+                <Switch checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
+              </FormRow>
 
-          <Collapse accordion>
-            <Collapse.Panel header={i18n.ELEMENT_SIZES} key={1}>
-              <FormRow label={i18n.POINT_SIGN_SIZE}/>
-              <FormDarkPart>
-                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
-                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
-              </FormDarkPart>
-              <FormRow label={i18n.TEXT_SIGN_SIZE}/>
-              <FormDarkPart>
-                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
-                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
-              </FormDarkPart>
-              <FormRow label={i18n.LINE_SIGN_SIZE}/>
-              <FormDarkPart>
-                <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
-                <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
-              </FormDarkPart>
-            </Collapse.Panel>
-            <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
-              {SCALES.map((scale) => (
-                <FormRow key={scale} label={formatScale(scale)}>
-                  {this.renderLevelControl(`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`)}
-                </FormRow>
-              ))}
-            </Collapse.Panel>
-          </Collapse>
-          {/* <FormRow label={i18n.GENERALIZATION}> */}
-          {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
-          {/* </FormRow> */}
-        </Form>
+              <Collapse accordion>
+                <Collapse.Panel header={i18n.ELEMENT_SIZES} key={1}>
+                  <FormRow label={i18n.POINT_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.POINT_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
+                  <FormRow label={i18n.TEXT_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.TEXT_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
+                  <FormRow label={i18n.LINE_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
+                </Collapse.Panel>
+                <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
+                  {SCALES.map((scale) => (
+                    <FormRow key={scale} label={formatScale(scale)}>
+                      {this.renderLevelControl(`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`)}
+                    </FormRow>
+                  ))}
+                </Collapse.Panel>
+              </Collapse>
+              {/* <FormRow label={i18n.GENERALIZATION}> */}
+              {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
+              {/* </FormRow> */}
+            </Form>
+            <HotKey onKey={onClose} selector={shortcuts.ESC}/>
+          </HotKeysContainer>
+        </FocusTrap>
       </Wrapper>
     )
   }

@@ -3,9 +3,8 @@ import WebMapInner from '../components/WebMap'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
 import * as layersActions from '../store/actions/layers'
-import { getGeometry } from '../components/WebMap/Tactical'
-import { mapObjConvertor } from '../utils'
 import { canEditSelector, visibleLayersSelector } from '../store/selectors'
+import * as orgStructuresActions from '../store/actions/orgStructures'
 
 const WebMap = connect(
   (state) => ({
@@ -16,7 +15,6 @@ const WebMap = connect(
     edit: canEditSelector(state),
     searchResult: state.viewModes.searchResult,
     selection: state.selection,
-    orgStructureSelectedId: state.orgStructures.selectedId,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
     layersById: visibleLayersSelector(state),
@@ -28,27 +26,28 @@ const WebMap = connect(
     isMeasureOn: state.webMap.isMeasureOn,
     params: state.params,
     isGridActive: state.viewModes.print,
+    backVersion: state.webMap.version,
+    myContactId: state.webMap.contactId,
+    lockedObjects: state.webMap.lockedObjects,
   }),
   (dispatch) => ({
+    onFinishDrawNewShape: (geometry) => dispatch(selectionActions.finishDrawNewShape(geometry)),
+    updateObjectGeometry: (id, geometry) => dispatch(webMapActions.updateObjectGeometry(id, geometry)),
     addObject: (object) => dispatch(webMapActions.addObject(object)),
-    onDelete: () => dispatch(selectionActions.showDeleteForm()),
-    onCut: () => dispatch(selectionActions.cut()),
-    onCopy: () => dispatch(selectionActions.copy()),
-    onPaste: () => dispatch(selectionActions.paste()),
     editObject: () => dispatch(selectionActions.showEditForm),
-    updateObject: (object) => dispatch(webMapActions.updateObject(object)),
-    updateObjectGeometry: (object) => dispatch(webMapActions.updateObjectGeometry(object)),
-    onSelection: (selected) => dispatch(selected
-      ? selectionActions.setSelection(mapObjConvertor.toSelection(selected.object.mergeDeep(getGeometry(selected))))
-      : selectionActions.clearSelection),
     onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
+    onSelectUnit: (unitID) => {
+      dispatch(orgStructuresActions.setOrgStructureSelectedId(unitID))
+      dispatch(orgStructuresActions.expandTreeByOrgStructureItem(unitID))
+    },
     onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
-    setNewShapeCoordinates: ({ lat, lng }) => dispatch(selectionActions.setNewShapeCoordinates({ lng, lat })),
     showCreateForm: () => dispatch(selectionActions.showCreateForm),
-    hideForm: () => dispatch(selectionActions.hideForm()),
     onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
     onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
     stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
+    requestAppInfo: () => dispatch(webMapActions.getAppInfo()),
+    tryLockObject: (objectId) => dispatch(webMapActions.tryLockObject(objectId)),
+    tryUnlockObject: (objectId) => dispatch(webMapActions.tryUnlockObject(objectId)),
   }),
 )(WebMapInner)
 WebMap.displayName = 'WebMap'

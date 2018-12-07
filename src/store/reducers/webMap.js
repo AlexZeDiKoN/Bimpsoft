@@ -21,6 +21,7 @@ const WebMapAttributes = Record({
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
   lineType: 'solid',
+  strokeWidth: 2,
   lineAmpl: 'none',
   left: 'none',
   right: 'none',
@@ -54,6 +55,9 @@ const WebMapState = Record({
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
+  lockedObjects: Map(),
+  version: null,
+  contactId: null,
 })
 
 const checkLevel = (object) => {
@@ -72,6 +76,14 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
     return merge(obj, rest)
   })
+
+const lockObject = (map, { objectId, contactName }) => map.get(objectId) !== contactName
+  ? map.set(objectId, contactName)
+  : map
+
+const unlockObject = (map, { objectId }) => map.get(objectId)
+  ? map.delete(objectId)
+  : map
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -114,8 +126,8 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.DEL_OBJECT:
       return payload ? state.deleteIn([ 'objects', payload ]) : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
-      const delLayerId = +payload
-      return state.set('objects', state.get('objects').filter(({ layer }) => +layer !== delLayerId))
+      const delLayerId = payload
+      return state.set('objects', state.get('objects').filter(({ layer }) => layer !== delLayerId))
     }
     case actionNames.REFRESH_OBJECT: {
       const { id, object } = payload
@@ -125,13 +137,32 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SET_MAP_CENTER: {
       const { center, zoom, params } = payload
-      const scale = ZOOMS[zoom]
-      const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
-      const sl = +level || state.subordinationLevel
-      return state
+      let result = state
         .set('center', center)
         .set('zoom', zoom)
-        .set('subordinationLevel', sl)
+      if (state.zoom !== zoom) {
+        const scale = ZOOMS[zoom]
+        const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
+        const sl = +level || state.subordinationLevel
+        result = result
+          .set('subordinationLevel', sl)
+      }
+      return result
+    }
+    case actionNames.APP_INFO: {
+      const { version, contactId } = payload
+      return state
+        .set('version', version)
+        .set('contactId', +contactId)
+    }
+    case actionNames.OBJECT_LOCKED: {
+      return update(state, 'lockedObjects', (map) => lockObject(map, payload))
+      // TODO: [DONE: Індикація залоченого стану при кліку] і показ хінта з іменем того, хто залочив
+      // TODO: Автоматично знімати індикацію, коли об'єкт розлочили (але не автивувати автоматично)
+      // TODO: Зняття локів при виході із SPA
+    }
+    case actionNames.OBJECT_UNLOCKED: {
+      return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     default:
       return state

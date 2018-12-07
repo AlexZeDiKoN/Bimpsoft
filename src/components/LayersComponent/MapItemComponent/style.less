@@ -5,9 +5,13 @@
   .flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 5px 5px 20px;
+  padding: 5px 5px 5px 6px;
   background: @toolbar-header-background;
   color: #fff;
+  --dzvin-expand-icon-color: #fff;
+  .dzvin-expand-icon {
+    font-size: 0.9em;
+  }
 }
 .map-item-сomponent-title{
   margin: auto 1px;
@@ -21,4 +25,30 @@
 .map-item-сomponent-control{
   margin: auto 1px;
   flex: 0 0 auto;
+}
+.confirm-close-map{
+  width: 0px;
+  height: 1px;
+  flex: 0 0 auto;
+  .flex;
+}
+.confirm-close-map-overflow{
+  width: 350px;
+  margin-left: -380px;
+  position: absolute;
+  z-index: 10000;
+  animation: confirm-close-map 0.2s 0.01s both;
+  transform-origin: right bottom;
+  margin-top: -100px;
+  .dzvin-form {
+    width: 350px;
+  }
+}
+@keyframes confirm-close-map {
+  from {
+    transform: scale(0, 0);
+  }
+  to {
+    transform: scale(1, 1);
+  }
 }

@@ -9,6 +9,10 @@ export default class UpdateQueue {
     this.map = map
     this.map.on('layeradd', this.layerAddHandler)
     this.map.on('layerremove', this.layerRemoveHandler)
+    this.map.on('zoomstart', this.pauseUpdater)
+    this.map.on('zoomend', this.resumeUpdater)
+    this.map.on('movestart', this.pauseUpdater)
+    this.map.on('moveend', this.resumeUpdater)
     this.timeout = null
     this.intervalId = null
     this.layers = []
@@ -30,7 +34,7 @@ export default class UpdateQueue {
 
   resumeUpdater = debounce(() => {
     this.resume()
-  }, 1000)
+  }, 50)
 
   processUpdateQueue () {
     const layers = this.layers

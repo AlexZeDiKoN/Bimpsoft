@@ -93,19 +93,31 @@ const drawLineEnd = (type, { x, y }, angle) => {
   let res = `<g stroke-width="3" transform="translate(${x},${y - 6}) rotate(${angle},0,6)">`
   switch (type) {
     case 'arrow1':
-      res += `<path fill="none" d="M6,0 l-6,6 l6,6"/>`
+      res += `<path fill="none" d="M8,-2 -8,8 8,8"/>`
       break
     case 'arrow2':
       res += `<path d="M12,0 l-12,6 l12,6 z"/>`
       break
+    case 'arrow3':
+      res += `<path fill="none" stroke-width="2" d="M10,-4 l-10,10 10,10 0,5 -15,-15 15,-15 0,5"/>`
+      break
+    case 'arrow4':
+      res += `<path fill="none" stroke-width="2" d="M8,-2 l-8,8 8,8 M8,-6 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+      break
     case 'stroke1':
-      res += `<path d="M0,0 v12"/>`
+      res += `<path d="M0,-2 v16"/>`
       break
     case 'stroke2':
       res += `<path d="M-3,0 l6,12"/>`
       break
     case 'stroke3':
       res += `<path d="M3,0 l-6,12"/>`
+      break
+    case 'fork':
+      res += `<path fill="none" d="M-8,-2 l8,8 -8,8"/>`
+      break
+    case 'cross':
+      res += `<path fill="none" stroke-width="2" d="M-6,-6 l12,24 m-12,0 l12,-24"/>`
       break
     default:
       break
@@ -236,7 +248,7 @@ export default L.SVG.include({
     // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
-      options: { shadowColor, opacity = 1, hidden, selected, color },
+      options: { shadowColor, opacity = 1, hidden, selected, locked, color },
       _shadowPath,
       _path,
       _amplifierGroup,
@@ -270,13 +282,20 @@ export default L.SVG.include({
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
+    const hasClassLocked = _path.classList.contains('dzvin-path-locked')
     const hasClassSelected = _path.classList.contains('dzvin-path-selected')
-    const action = selected ? 'add' : 'remove'
+    const lockedAction = locked ? 'add' : 'remove'
+    const selectedAction = selected && !locked ? 'add' : 'remove'
     if (hasClassSelected !== selected) {
-      _path.classList[action]('dzvin-path-selected')
+      _path.classList[selectedAction]('dzvin-path-selected')
     }
-    _amplifierGroup && _amplifierGroup.classList[action]('dzvin-path-selected')
-    _lineEndsGroup && _lineEndsGroup.classList[action]('dzvin-path-selected')
+    _amplifierGroup && _amplifierGroup.classList[selectedAction]('dzvin-path-selected')
+    _lineEndsGroup && _lineEndsGroup.classList[selectedAction]('dzvin-path-selected')
+    if (hasClassLocked !== locked) {
+      _path.classList[lockedAction]('dzvin-path-locked')
+    }
+    _amplifierGroup && _amplifierGroup.classList[lockedAction]('dzvin-path-locked')
+    _lineEndsGroup && _lineEndsGroup.classList[lockedAction]('dzvin-path-locked')
   },
 
   _addPath: function (layer) {
@@ -309,7 +328,7 @@ export default L.SVG.include({
 
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
-    const lineType = (layer.options && layer.options.lineType) || 'solid'
+    const lineType = layer.lineType || 'solid'
     const skipStart = layer.options && layer.options.skipStart
     const skipEnd = layer.options && layer.options.skipEnd
     const kind = layer.options && layer.options.tsType

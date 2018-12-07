@@ -2,6 +2,7 @@ import { action } from '../../utils/services'
 import { layerNameSelector } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
+import { expandMap } from './maps'
 import { asyncAction, orgStructures, webMap } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
@@ -14,9 +15,10 @@ export const SET_TIMELINE_FROM = action('SET_TIMELINE_FROM')
 export const SET_TIMELINE_TO = action('SET_TIMELINE_TO')
 export const SET_BACK_OPACITY = action('SET_BACK_OPACITY')
 export const SET_HIDDEN_OPACITY = action('SET_HIDDEN_OPACITY')
+export const SET_LAYERS_FILTER_TEXT = action('SET_LAYERS_FILTER_TEXT')
 
 export const setEditMode = (editMode) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId, selectedId } = state.layers
 
@@ -39,18 +41,18 @@ export const updateLayers = (layersData) => ({
 })
 
 export const updateLayer = (layerData) =>
-  asyncAction.withNotification(async (dispatch, _, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { explorerApi: { layerSetColor } }) => {
     dispatch({
       type: UPDATE_LAYER,
       layerData,
     })
     if (layerData.hasOwnProperty('color')) {
-      await webmapApi.layerSetColor(layerData.layerId, layerData.color)
+      await layerSetColor(layerData.layerId, layerData.color)
     }
   })
 
 export const updateLayersByMapId = (mapId, layerData) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     for (const layer of Object.values(getState().layers.byId)) {
       if (layer.mapId === mapId) {
         dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
@@ -59,18 +61,17 @@ export const updateLayersByMapId = (mapId, layerData) =>
   })
 
 export const updateAllLayers = (layerData) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     for (const layer of Object.values(getState().layers.byId)) {
       dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
     }
   })
 
 export const updateColorByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, getState, { explorerApi: { layerGetColor } }) => {
     if (getState().layers.byId.hasOwnProperty(layerId)) {
-      const data = await webmapApi.layerGetColor(layerId)
-      api.checkServerResponse(data)
-      const layerData = { layerId, color: data.color }
+      const color = await layerGetColor(layerId)
+      const layerData = { layerId, color }
       dispatch({
         type: UPDATE_LAYER,
         layerData,
@@ -93,7 +94,10 @@ export const selectLayer = (layerId) =>
 
     if (layerId) {
       const layer = byId[layerId]
-      const { formationId = null } = layer
+      const { formationId = null, mapId } = layer
+
+      await dispatch(expandMap(mapId, true))
+
       if (formationId === null) {
         await dispatch(orgStructures.setFormationById(null))
         throw Error('org structure id is undefined')
@@ -115,7 +119,7 @@ export const deleteLayersByMapId = (mapId) =>
   })
 
 export const deleteLayers = (layersIds) =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { selectedId } = state.layers
 
@@ -134,7 +138,7 @@ export const deleteLayers = (layersIds) =>
   })
 
 export const deleteAllLayers = () =>
-  asyncAction.withNotification(async (dispatch, getState, { api, webmapApi, milOrg }) => {
+  asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId } = state.layers
     const layersIds = Object.keys(byId)
@@ -163,4 +167,8 @@ export const setBackOpacity = (opacity) => ({
 export const setHiddenOpacity = (opacity) => ({
   type: SET_HIDDEN_OPACITY,
   opacity,
+})
+export const setFilterText = (filterText) => ({
+  type: SET_LAYERS_FILTER_TEXT,
+  filterText,
 })

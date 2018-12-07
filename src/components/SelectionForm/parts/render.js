@@ -45,7 +45,7 @@ const optionsSvg = (children) => (
   </svg>
 )
 
-const renderStyledLine = (borderStyle, level) => {
+const renderStyledLine = (borderStyle, level, strokeWidth = 2) => {
   let amp
   const dash = {}
   if (level) {
@@ -61,7 +61,7 @@ const renderStyledLine = (borderStyle, level) => {
           <rect fill="white" x="0" y="0" width="100%" height="100%" />
           <g dangerouslySetInnerHTML={{ __html: amp.mask }} />
         </mask>
-        <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth="2" d="M0,10 h56 m1,1" {...dash} />
+        <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
         <g
           stroke="black"
           strokeWidth="4"
@@ -78,7 +78,7 @@ const renderStyledLine = (borderStyle, level) => {
           <Fragment>
             <path
               stroke="rgba(0,0,0,0.65)"
-              strokeWidth="2"
+              strokeWidth={strokeWidth}
               fill="none"
               d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7"
             />
@@ -89,7 +89,7 @@ const renderStyledLine = (borderStyle, level) => {
           <Fragment>
             <path
               stroke="rgba(0,0,0,0.65)"
-              strokeWidth="2"
+              strokeWidth={strokeWidth}
               fill="none"
               d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
             />
@@ -97,7 +97,10 @@ const renderStyledLine = (borderStyle, level) => {
         )
       default:
         return (
-          <div className="option-line-type" style={{ borderStyle }} />
+          <div
+            className="option-line-type"
+            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth / 2}px` : 1 }}
+          />
         )
     }
   }
@@ -148,6 +151,37 @@ const renderLineEnds = (type, direction) => {
         </g>
       )
       break
+    case 'arrow3':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h48 M43,5 l5,5 -5,5 v5 l10,-10 -10,-10 v5"
+          />
+        </g>
+      )
+      break
+    case 'arrow4':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h48 M43,5 l5,5 -5,5"
+          />
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            strokeDasharray="4,2"
+            fill="none"
+            d="M43,20 l10,-10 -10,-10"
+          />
+        </g>
+      )
+      break
     case 'stroke1':
       picture = (
         <g transform={`rotate(${angle},28,10)`}>
@@ -180,6 +214,30 @@ const renderLineEnds = (type, direction) => {
             strokeWidth="2"
             fill="none"
             d="M0,10 h48 M51,4 l-6,12"
+          />
+        </g>
+      )
+      break
+    case 'fork':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h42 M48,4 l-6,6 6,6"
+          />
+        </g>
+      )
+      break
+    case 'cross':
+      picture = (
+        <g transform={`rotate(${angle},28,10)`}>
+          <path
+            stroke="rgba(0,0,0,0.65)"
+            strokeWidth="2"
+            fill="none"
+            d="M0,10 h43 M38,0 l10,20 M48,0 l-10,20"
           />
         </g>
       )
@@ -226,16 +284,16 @@ const renderNodes = (type) => {
 }
 
 // dangerouslySetInnerHTML={{ __html: getNato(NATOData) }}
-export const typeDiv = (borderStyle, title, level) => (
+export const typeDiv = (borderStyle, title, level, strokeWidth) => (
   <div className="icon-option">
-    {renderStyledLine(borderStyle, level)}
+    {renderStyledLine(borderStyle, level, strokeWidth)}
     <div className="icon-text">{title}</div>
   </div>
 )
 
-export const typeOption = (value, borderStyle, title, level) => (
-  <Option value={value}>
-    {typeDiv(borderStyle, title, level)}
+export const typeOption = (value, borderStyle, title, level, strokeWidth) => (
+  <Option key={value} value={value}>
+    {typeDiv(borderStyle, title, level, strokeWidth)}
   </Option>
 )
 

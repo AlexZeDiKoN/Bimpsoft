@@ -2,13 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import moment from 'moment'
-import { components } from '@DZVIN/CommonComponents'
+import { components, data } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 
-const { icons: { IconHovered, Icon, names: iconNames } } = components
+const { TextFilter } = data
+const { icons: { Icon, IconHovered, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
 
 const getLockIcon = (isDark, locked) =>
   isDark
@@ -17,30 +18,28 @@ const getLockIcon = (isDark, locked) =>
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
-    const { onSelect, data: { layerId } } = this.props
-    onSelect && onSelect(layerId)
+    const { onSelectLayer, data: { layerId } } = this.props
+    onSelectLayer && onSelectLayer(layerId)
   }
 
   changeVisibilityHandler = (isVisible) => {
-    const { onChangeVisibility, data: { layerId } } = this.props
-    onChangeVisibility && onChangeVisibility(layerId, isVisible)
+    const { onChangeLayerVisibility, data: { layerId } } = this.props
+    onChangeLayerVisibility && onChangeLayerVisibility(layerId, isVisible)
   }
 
   changeColorHandler = (color) => {
-    const { onChangeColor, data: { layerId } } = this.props
-    onChangeColor && onChangeColor(layerId, color)
+    const { onChangeLayerColor, data: { layerId } } = this.props
+    onChangeLayerColor && onChangeLayerColor(layerId, color)
   }
 
   render () {
     const {
-      isSelected,
-      data: { visible, name, readOnly, color, dateFor = null },
-      map: { pathTo },
+      selectedLayerId,
+      textFilter,
+      data: { visible, name, readOnly, color, dateFor = null, breadCrumbs, layerId },
     } = this.props
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
-    const path = pathTo ? pathTo.map((item) => item.name) : []
-    path.push(name)
-    const breadCrumbs = path.join(' / ')
+    const isSelected = selectedLayerId === layerId
     return (
       <div
         className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
@@ -58,7 +57,7 @@ export default class LayerItemComponent extends React.Component {
           icon={getLockIcon(isSelected, readOnly)}
         />
         <div className="layer-item-сomponent-title">
-          <div className="layer-name" title={breadCrumbs}>{name}</div>
+          <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker
@@ -76,10 +75,11 @@ export default class LayerItemComponent extends React.Component {
 }
 
 LayerItemComponent.propTypes = {
-  isSelected: PropTypes.bool,
-  map: PropTypes.object,
+  ...TreeComponent.itemPropTypes,
+  selectedLayerId: PropTypes.string,
+  textFilter: PropTypes.instanceOf(TextFilter),
   data: PropTypes.object,
-  onSelect: PropTypes.func,
-  onChangeVisibility: PropTypes.func,
-  onChangeColor: PropTypes.func,
+  onSelectLayer: PropTypes.func,
+  onChangeLayerVisibility: PropTypes.func,
+  onChangeLayerColor: PropTypes.func,
 }

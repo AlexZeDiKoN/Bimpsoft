@@ -3,69 +3,32 @@ import { getWebmapURL, getDirect } from './implementation/utils.rest'
 const webmapUrl = getWebmapURL()
 
 export default {
-  objGetList,
-  objUpdate,
-  objUpdateGeometry,
-  objInsert,
-  objDelete,
-  objRefresh,
-  placeSearch,
-  layerGetColor,
-  layerSetColor,
-  getVersion,
-  paramGetAll,
-  paramGet,
-  paramSet,
-}
-
-function getVersion () {
-  return getDirect(`${webmapUrl}/version`, false)
-}
-
-function objGetList (layer = null) {
-  return getDirect(`${webmapUrl}/obj/${layer}/get`, false)
-}
-
-function objUpdate (id, data) {
-  return getDirect(`${webmapUrl}/obj/set`, { id, ...data })
-}
-
-function objUpdateGeometry (id, data) {
-  return getDirect(`${webmapUrl}/obj/geom`, { id, ...data })
-}
-
-function objInsert (data) {
-  return getDirect(`${webmapUrl}/obj/add`, data)
-}
-
-function objDelete (id = 0) {
-  return getDirect(`${webmapUrl}/obj/${id}/del`, false)
-}
-
-function objRefresh (id = 0) {
-  return getDirect(`${webmapUrl}/obj/${id}/refresh`, false)
-}
-
-function placeSearch (sample) {
-  return getDirect(`${webmapUrl}/place?q=${sample}`, false)
-}
-
-function layerGetColor (id) {
-  return getDirect(`${webmapUrl}/color/${id}/get`, false)
-}
-
-function layerSetColor (id, color) {
-  return getDirect(`${webmapUrl}/color/set`, { id, color })
-}
-
-function paramGetAll () {
-  return getDirect(`${webmapUrl}/params`, false)
-}
-
-function paramGet (name) {
-  return getDirect(`${webmapUrl}/param/${name}/get`, false)
-}
-
-function paramSet (name, value) {
-  return getDirect(`${webmapUrl}/param/${name}/set`, { value })
+  objGetList: (layer = null) =>
+    getDirect(`${webmapUrl}/obj/${layer}/get`, false),
+  objUpdate: (id, data) =>
+    getDirect(`${webmapUrl}/obj/set`, { id, ...data }),
+  objUpdateGeometry: (id, data) =>
+    getDirect(`${webmapUrl}/obj/geom`, { id, ...data }),
+  objInsert: (data) =>
+    getDirect(`${webmapUrl}/obj/add`, data),
+  objDelete: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/del`, false),
+  objRefresh: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
+  objLock: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/lock`, false),
+  objUnlock: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/unlock`, false),
+  placeSearch: (sample) =>
+    getDirect(`${webmapUrl}/place?q=${sample}`, false),
+  getVersion: () =>
+    getDirect(`${webmapUrl}/version`, false),
+  getContactId: () =>
+    getDirect(`${webmapUrl}/contactId`, false),
+  paramGetAll: () =>
+    getDirect(`${webmapUrl}/params`, false),
+  paramGet: (name) =>
+    getDirect(`${webmapUrl}/param/${name}/get`, false),
+  paramSet: (name, value) =>
+    getDirect(`${webmapUrl}/param/${name}/set`, { value }),
 }

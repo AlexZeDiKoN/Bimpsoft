@@ -20,6 +20,9 @@ const DzvinMarker = L.Marker.extend({
   setHidden,
   setShadowColor,
   setSelected: function (selected) {
+    if (this._selected === selected) {
+      return
+    }
     this._selected = selected
     const el = this.getElement()
     if (el) {
@@ -103,7 +106,22 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
-
+  setLocked: function (locked) {
+    this._locked = locked
+    const el = this.getElement()
+    if (el) {
+      const hasClassLocked = el.classList.contains('dzvin-marker-locked')
+      if (hasClassLocked !== locked) {
+        if (locked) {
+          el.classList.remove('dzvin-marker-selected')
+          el.classList.add('dzvin-marker-locked')
+        } else {
+          el.classList.remove('dzvin-marker-locked')
+          this._selected && el.classList.add('dzvin-marker-selected')
+        }
+      }
+    }
+  },
   _setPos: function (pos) {
     const el = this.getElement()
     if (el) {

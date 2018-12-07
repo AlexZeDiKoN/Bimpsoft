@@ -11,6 +11,7 @@ import {
   WithLineEnds,
   WithCoordinatesArray,
   WithSubordinationLevel,
+  WithStrokeWidth,
 } from '../parts/index'
 
 export default class LineForm extends
@@ -23,6 +24,7 @@ export default class LineForm extends
     WithLineEnds,
     WithSegment,
     WithColor,
+    WithStrokeWidth,
   )(AbstractShapeForm) {
   static propTypes = {
     ...AbstractShapeForm.propTypes,
@@ -34,6 +36,7 @@ export default class LineForm extends
     ...WithLineEnds.propTypes,
     ...WithCoordinatesArray.propTypes,
     ...WithSubordinationLevel.propTypes,
+    ...WithStrokeWidth.propTypes,
   }
 
   renderContent () {
@@ -41,6 +44,7 @@ export default class LineForm extends
       <Fragment>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
+        {this.renderStrokeWidth()}
         {this.renderSegment()}
         {this.renderLineType()}
         {this.renderLineAmplifiers()}

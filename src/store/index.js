@@ -3,9 +3,9 @@ import { routerMiddleware } from 'react-router-redux'
 import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
-import ServerApi from '../server/api.server'
-import WebmapApi from '../server/api.webmap'
-import ServerApiMilOrg from '../server/api.server.org'
+import explorerApi from '../server/api.node'
+import webmapApi from '../server/api.webmap'
+import milOrgApi from '../server/api.server.org'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
@@ -28,9 +28,9 @@ export default function initStore (options = {}) {
 
   const middlewares = [
     thunk.withExtraArgument({
-      api: ServerApi,
-      webmapApi: WebmapApi,
-      milOrg: ServerApiMilOrg,
+      explorerApi,
+      webmapApi,
+      milOrgApi,
     }),
   ]
 
@@ -43,7 +43,7 @@ export default function initStore (options = {}) {
   store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
   initNavigationConnection(store, history)
 
-  initSocketEvents(store.dispatch)
+  initSocketEvents(store.dispatch, store.getState)
   store.dispatch(loadAllParams())
 
   return store

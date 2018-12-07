@@ -1,9 +1,12 @@
+import { data } from '@DZVIN/CommonComponents'
 import { layers } from '../actions'
 
+const { TextFilter } = data
 const defItem = { visible: true, locked: false, color: null, readOnly: true }
 
 const initState = {
   byId: {},
+  textFilter: null,
   selectedId: null,
   editMode: false,
   timelineFrom: null,
@@ -70,6 +73,10 @@ export default function reducer (state = initState, action) {
     case layers.SET_HIDDEN_OPACITY: {
       const { opacity } = action
       return { ...state, hiddenOpacity: opacity }
+    }
+    case layers.SET_LAYERS_FILTER_TEXT: {
+      const { filterText } = action
+      return { ...state, textFilter: TextFilter.create(filterText) }
     }
     default:
       return state
