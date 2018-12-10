@@ -199,7 +199,7 @@ deploy-master-dzvin4:
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: dzvin4 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDirr%
+    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDir%
 
 deploy-master-dzvin2:
   stage: deploy
@@ -207,7 +207,7 @@ deploy-master-dzvin2:
   cache: {}
   script:
     - 'echo ========= Deploy: dzvin2 (local) ========='
-    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirr%
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
 
 deploy-zip:
