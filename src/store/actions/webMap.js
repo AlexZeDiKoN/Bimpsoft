@@ -1,3 +1,5 @@
+import { batchActions } from 'redux-batched-actions'
+import { ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import * as notifications from './notifications'
@@ -24,6 +26,8 @@ export const actionNames = {
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
+  SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
+  SET_MARKER: action('SET_MARKER'),
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
@@ -38,6 +42,15 @@ export const setCoordinatesType = (value) => ({
   type: actionNames.SET_COORDINATES_TYPE,
   payload: value,
 })
+
+export const setMarker = (marker) => (dispatch) => {
+  const batch = [ {
+    type: actionNames.SET_MARKER,
+    payload: marker,
+  } ]
+  marker && batch.push(setCenter(marker.point))
+  dispatch(batchActions(batch))
+}
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
@@ -69,9 +82,23 @@ export const setSubordinationLevel = (value) => ({
   payload: value,
 })
 
-export const setCenter = (center, zoom, params) => ({
+export const setSubordinationLevelByZoom = (zoom = null) => (dispatch, getState) => {
+  const { params, subordinationLevel } = getState()
+  const scale = ZOOMS[zoom]
+  const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])
+  if (newSubordinationLevel && newSubordinationLevel !== subordinationLevel) {
+    dispatch(setSubordinationLevel(newSubordinationLevel))
+  }
+}
+
+export const setCenter = (center, zoom) => ({
   type: actionNames.SET_MAP_CENTER,
-  payload: { center, zoom, params },
+  payload: { center, zoom },
+})
+
+export const setScaleToSelection = (scaleToSelected) => ({
+  type: actionNames.SET_SCALE_TO_SELECTION,
+  payload: scaleToSelected,
 })
 
 export const addObject = (object) =>

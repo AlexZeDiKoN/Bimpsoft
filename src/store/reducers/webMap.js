@@ -3,7 +3,7 @@ import { Record, List, Map } from 'immutable'
 import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { ZOOMS, CoordinatesTypes, MapSources, colors, paramsNames } from '../../constants'
+import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 
 const WebMapPoint = Record({
@@ -58,6 +58,8 @@ const WebMapState = Record({
   lockedObjects: Map(),
   version: null,
   contactId: null,
+  scaleToSelection: false,
+  marker: null,
 })
 
 const checkLevel = (object) => {
@@ -106,6 +108,12 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_MEASURE: {
       return state.set('isMeasureOn', payload)
     }
+    case actionNames.SET_SCALE_TO_SELECTION: {
+      return state.set('scaleToSelection', payload)
+    }
+    case actionNames.SET_MARKER: {
+      return state.set('marker', payload)
+    }
     case actionNames.SUBORDINATION_LEVEL: {
       return state.set('subordinationLevel', payload)
     }
@@ -136,16 +144,13 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
     }
     case actionNames.SET_MAP_CENTER: {
-      const { center, zoom, params } = payload
+      const { center, zoom } = payload
       let result = state
-        .set('center', center)
-        .set('zoom', zoom)
-      if (state.zoom !== zoom) {
-        const scale = ZOOMS[zoom]
-        const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
-        const sl = +level || state.subordinationLevel
-        result = result
-          .set('subordinationLevel', sl)
+      if (center) {
+        result = result.set('center', center)
+      }
+      if (zoom) {
+        result = result.set('zoom', zoom)
       }
       return result
     }

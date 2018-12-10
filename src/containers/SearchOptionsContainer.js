@@ -1,10 +1,9 @@
 import { connect } from 'react-redux'
-import * as viewModesKeys from '../constants/viewModesKeys'
 import SearchOptionsComponent from '../components/SearchOptions'
 import * as viewModesActions from '../store/actions/viewModes'
 
 const mapStateToProps = (store) => ({
-  options: store.viewModes[viewModesKeys.searchOptions],
+  options: store.viewModes.searchOptions,
 })
 
 const mapDispatchToProps = (dispatch) => ({

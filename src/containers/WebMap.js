@@ -1,19 +1,18 @@
 import { connect } from 'react-redux'
+import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
-import * as webMapActions from '../store/actions/webMap'
-import * as selectionActions from '../store/actions/selection'
-import * as layersActions from '../store/actions/layers'
 import { canEditSelector, visibleLayersSelector } from '../store/selectors'
-import * as orgStructuresActions from '../store/actions/orgStructures'
+import { webMap, selection, layers, orgStructures } from '../store/actions'
 
-const WebMap = connect(
+const WebMapContainer = connect(
   (state) => ({
     sources: state.webMap.source.sources,
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
     edit: canEditSelector(state),
-    searchResult: state.viewModes.searchResult,
+    marker: state.webMap.marker,
+    scaleToSelection: state.webMap.scaleToSelection,
     selection: state.selection,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
@@ -30,26 +29,34 @@ const WebMap = connect(
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
   }),
-  (dispatch) => ({
-    onFinishDrawNewShape: (geometry) => dispatch(selectionActions.finishDrawNewShape(geometry)),
-    updateObjectGeometry: (id, geometry) => dispatch(webMapActions.updateObjectGeometry(id, geometry)),
-    addObject: (object) => dispatch(webMapActions.addObject(object)),
-    editObject: () => dispatch(selectionActions.showEditForm),
-    onSelectedList: (list) => dispatch(selectionActions.selectedList(list)),
-    onSelectUnit: (unitID) => {
-      dispatch(orgStructuresActions.setOrgStructureSelectedId(unitID))
-      dispatch(orgStructuresActions.expandTreeByOrgStructureItem(unitID))
+  {
+    onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
+    updateObjectGeometry: (id, geometry) => webMap.updateObjectGeometry(id, geometry),
+    addObject: (object) => webMap.addObject(object),
+    editObject: () => selection.showEditForm,
+    onSelectedList: (list) => batchActions([ selection.selectedList(list), webMap.setScaleToSelection(false) ]),
+    onSelectUnit: (unitID) => batchActions([
+      orgStructures.setOrgStructureSelectedId(unitID),
+      orgStructures.expandTreeByOrgStructureItem(unitID),
+    ]),
+    onChangeLayer: (layerId) => layers.selectLayer(layerId),
+    showCreateForm: () => selection.showCreateForm,
+    onMove: (center, zoom, isZoomChangedByUser) => {
+      const batch = [
+        webMap.setCenter(center, zoom),
+        webMap.setScaleToSelection(false),
+      ]
+      isZoomChangedByUser && batch.push(webMap.setSubordinationLevelByZoom(zoom))
+      return batchActions(batch)
     },
-    onChangeLayer: (layerId) => dispatch(layersActions.selectLayer(layerId)),
-    showCreateForm: () => dispatch(selectionActions.showCreateForm),
-    onMove: (center, zoom, params) => dispatch(webMapActions.setCenter(center, zoom, params)),
-    onDropUnit: (unitID, point) => dispatch(selectionActions.newShapeFromUnit(unitID, point)),
-    stopMeasuring: () => dispatch(webMapActions.setMeasure(false)),
-    requestAppInfo: () => dispatch(webMapActions.getAppInfo()),
-    tryLockObject: (objectId) => dispatch(webMapActions.tryLockObject(objectId)),
-    tryUnlockObject: (objectId) => dispatch(webMapActions.tryUnlockObject(objectId)),
-  }),
+    onDropUnit: (unitID, point) => selection.newShapeFromUnit(unitID, point),
+    stopMeasuring: () => webMap.setMeasure(false),
+    onRemoveMarker: () => webMap.setMarker(null),
+    requestAppInfo: () => webMap.getAppInfo(),
+    tryLockObject: (objectId) => webMap.tryLockObject(objectId),
+    tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
+  },
 )(WebMapInner)
-WebMap.displayName = 'WebMap'
+WebMapContainer.displayName = 'WebMap'
 
-export default WebMap
+export default WebMapContainer

@@ -22,12 +22,12 @@ export default L.Path.include({
     this.setStyle({ color })
   },
 
-  setSelected: function (selected) {
-    if (this._selected === selected) {
-      return
+  setSelected: function (selected, inActiveLayer) {
+    if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
+      this._selected = selected
+      this._inActiveLayer = inActiveLayer
+      this.setStyle({ selected, inActiveLayer })
     }
-    this._selected = selected
-    this.setStyle({ selected })
   },
 
   setLocked: function (locked) {

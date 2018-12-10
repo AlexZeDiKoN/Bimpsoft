@@ -2,14 +2,14 @@
 import { connect } from 'react-redux'
 import RightMenu from '../components/menu/RightMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import * as viewModesActions from '../store/actions/viewModes'
+import { viewModes, webMap } from '../store/actions'
 
 const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.sidebar]: isSidebarShow,
       [viewModesKeys.settings]: isSettingsShow,
-      [viewModesKeys.searchEmpty]: searchFailed,
+      searchEmpty: searchFailed,
     },
   } = store
   return {
@@ -21,15 +21,15 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = (dispatch) => ({
   onClickSidebar: () => {
-    const result = dispatch(viewModesActions.viewModeToggle(viewModesKeys.sidebar))
+    const result = dispatch(viewModes.viewModeToggle(viewModesKeys.sidebar))
     window.dispatchEvent(new Event('resize'))
     return result
   },
-  onClickSettings: () => dispatch(viewModesActions.viewModeToggle(viewModesKeys.settings)),
-  onSearch: (sample) => dispatch(viewModesActions.search(sample)),
-  onCoordinates: (text, point) => dispatch(viewModesActions.coordinates({ text, point })),
-  onSelectSearchOption: (index) => dispatch(viewModesActions.searchSelectOption(index)),
-  onClearSearchError: () => dispatch(viewModesActions.searchClearError()),
+  onClickSettings: () => dispatch(viewModes.viewModeToggle(viewModesKeys.settings)),
+  onSearch: (sample) => dispatch(viewModes.search(sample)),
+  onCoordinates: (text, point) => dispatch(webMap.setMarker({ text, point })),
+  onSelectSearchOption: (index) => dispatch(viewModes.searchSelectOption(index)),
+  onClearSearchError: () => dispatch(viewModes.searchClearError()),
 })
 
 const RightMenuContainer = connect(

@@ -59,3 +59,12 @@ export function adjustSquareCorner (map, point, opposite) {
   }
   return point
 }
+
+export function setClassName (el, name, enable) {
+  if (el) {
+    const hasClass = el.classList.contains(name)
+    if (hasClass !== enable) {
+      enable ? el.classList.add(name) : el.classList.remove(name)
+    }
+  }
+}
