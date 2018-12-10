@@ -1,6 +1,6 @@
 /* global L */
 
-import { setOpacity, setHidden } from './utils/helpers'
+import { setOpacity, setHidden, setClassName } from './utils/helpers'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
@@ -19,17 +19,13 @@ const DzvinMarker = L.Marker.extend({
   setOpacity,
   setHidden,
   setShadowColor,
-  setSelected: function (selected) {
-    if (this._selected === selected) {
-      return
-    }
-    this._selected = selected
-    const el = this.getElement()
-    if (el) {
-      const hasClassSelected = el.classList.contains('dzvin-marker-selected')
-      if (hasClassSelected !== selected) {
-        selected ? el.classList.add('dzvin-marker-selected') : el.classList.remove('dzvin-marker-selected')
-      }
+  setSelected: function (selected, inActiveLayer) {
+    if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
+      this._selected = selected
+      this._inActiveLayer = inActiveLayer
+      const el = this.getElement()
+      setClassName(el, 'dzvin-marker-selected', selected && !inActiveLayer)
+      setClassName(el, 'dzvin-marker-selected-on-active-layer', selected && inActiveLayer)
     }
   },
   optimize: function () {
@@ -100,10 +96,8 @@ const DzvinMarker = L.Marker.extend({
         el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
       }
 
-      const hasClassSelected = el.classList.contains('dzvin-marker-selected')
-      if (hasClassSelected !== this._selected) {
-        this._selected ? el.classList.add('dzvin-marker-selected') : el.classList.remove('dzvin-marker-selected')
-      }
+      setClassName(el, 'dzvin-marker-selected', this._selected && !this._onActiveLayer)
+      setClassName(el, 'dzvin-marker-selected-on-active-layer', this._selected && this._onActiveLayer)
     }
   },
   setLocked: function (locked) {
@@ -113,11 +107,9 @@ const DzvinMarker = L.Marker.extend({
       const hasClassLocked = el.classList.contains('dzvin-marker-locked')
       if (hasClassLocked !== locked) {
         if (locked) {
-          el.classList.remove('dzvin-marker-selected')
           el.classList.add('dzvin-marker-locked')
         } else {
           el.classList.remove('dzvin-marker-locked')
-          this._selected && el.classList.add('dzvin-marker-selected')
         }
       }
     }
