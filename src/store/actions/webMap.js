@@ -145,7 +145,7 @@ export const updateObjectsByLayerId = (layerId) =>
     // fix response data
     objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
 
-    dispatch({
+    return dispatch({
       type: actionNames.OBJECT_LIST,
       payload: {
         layerId,
@@ -166,7 +166,7 @@ export const updateObjectGeometry = (id, geometry) =>
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }
 
-    dispatch({
+    return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
     })
