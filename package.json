@@ -8,7 +8,7 @@
     "@DZVIN/milsymbol": ">=0.0.1",
     "antd": "^3.9.2",
     "babel-polyfill": "^6.26.0",
-    "bezier-js": "^2.2.15",
+    "bezier-js": "2.2.18",
     "debounce": "^1.2.0",
     "history": "^4.7.2",
     "immutable": "^3.8.2",
