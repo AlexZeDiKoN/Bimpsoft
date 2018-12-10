@@ -55,7 +55,7 @@ const WebMapContainer = connect(
     requestAppInfo: () => webMap.getAppInfo(),
     tryLockObject: (objectId) => webMap.tryLockObject(objectId),
     tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
-    getLockedObjects: () => dispatch(webMap.getLockedObjects()),
+    getLockedObjects: () => webMap.getLockedObjects(),
   },
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
