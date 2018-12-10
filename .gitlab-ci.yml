@@ -177,6 +177,7 @@ build-master:
 #    - copy .env .env.backup
 #    - copy .env.production .env
     - call npm install
+    - call npm run-script build
     - rmdir /s /q build\explorerLite
     - echo Done
   artifacts:
