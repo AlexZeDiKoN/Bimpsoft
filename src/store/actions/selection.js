@@ -1,3 +1,4 @@
+import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
@@ -45,8 +46,11 @@ export const setNewShape = (newShape) => ({
 
 export const finishNewShape = (newShapeData) => withNotification(async (dispatch) => {
   const id = await dispatch(webMap.addObject(fromSelection(newShapeData)))
-  await dispatch(selectedList([ id ]))
-  await dispatch(hideForm())
+  await dispatch(batchActions([
+    selectedList([ id ]),
+    hideForm(),
+    webMap.setScaleToSelection(false),
+  ]))
 })
 
 export const finishDrawNewShape = ({ geometry, point }) => withNotification(async (dispatch, getState) => {
@@ -164,8 +168,11 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   for (const id of list) {
     await dispatch(webMap.deleteObject(id))
   }
-  dispatch(hideForm())
-  dispatch(selectedList([]))
+  dispatch(batchActions([
+    hideForm(),
+    selectedList([]),
+    webMap.setScaleToSelection(false),
+  ]))
 })
 
 export const showDeleteForm = () => ({

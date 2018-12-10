@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
+import { batchActions } from 'redux-batched-actions'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
-import * as selectionActions from '../store/actions/selection'
-import * as orgStructuresActions from '../store/actions/orgStructures'
+import { selection, orgStructures, webMap } from '../store/actions'
 import { canEditSelector } from '../store/selectors'
 
 const mapStateToProps = (store) => {
@@ -12,9 +12,9 @@ const mapStateToProps = (store) => {
 }
 
 const mapDispatchToProps = {
-  onExpand: (key) => orgStructuresActions.expandOrgStructureItem(key),
-  onFilterTextChange: (filterText) => orgStructuresActions.setOrgStructuresFilterText(filterText),
-  onClick: (unitID) => orgStructuresActions.setOrgStructureSelectedId(unitID),
+  onExpand: (key) => orgStructures.expandOrgStructureItem(key),
+  onFilterTextChange: (filterText) => orgStructures.setOrgStructuresFilterText(filterText),
+  onClick: (unitID) => orgStructures.setOrgStructureSelectedId(unitID),
   onDoubleClick: (unitID) => (dispatch, getState) => {
     const state = getState()
     const {
@@ -23,9 +23,12 @@ const mapDispatchToProps = {
     const canEdit = canEditSelector(state)
     const unitObjects = objects.filter((object) => object.unit === unitID)
     if (unitObjects.size) {
-      dispatch(selectionActions.selectedList([ ...unitObjects.keys() ]))
+      dispatch(batchActions([
+        selection.selectedList([ ...unitObjects.keys() ]),
+        webMap.setScaleToSelection(true),
+      ]))
     } else if (canEdit) {
-      dispatch(selectionActions.newShapeFromUnit(unitID, center))
+      dispatch(selection.newShapeFromUnit(unitID, center))
     }
   },
 }
