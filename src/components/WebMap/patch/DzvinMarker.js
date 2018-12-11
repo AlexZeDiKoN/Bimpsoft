@@ -96,8 +96,8 @@ const DzvinMarker = L.Marker.extend({
         el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
       }
 
-      setClassName(el, 'dzvin-marker-selected', this._selected && !this._onActiveLayer)
-      setClassName(el, 'dzvin-marker-selected-on-active-layer', this._selected && this._onActiveLayer)
+      setClassName(el, 'dzvin-marker-selected', this._selected && !this._inActiveLayer)
+      setClassName(el, 'dzvin-marker-selected-on-active-layer', this._selected && this._inActiveLayer)
     }
   },
   setLocked: function (locked) {
