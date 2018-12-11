@@ -8,7 +8,7 @@ import { HotKeysContainer, HotKey } from '../../common/HotKeys'
 import i18n from '../../../i18n'
 
 const {
-  form: { default: Form, FormButtonCancel, FormButtonOk, FormItem, textItem, header, body },
+  form: { default: Form, buttonNo, buttonYes, FormItem, textItem, header, body },
   common: { notClickableArea },
 } = components
 
@@ -30,9 +30,9 @@ export default class DeleteMapsForm extends React.Component {
               <Form>
                 {textItem(i18n.CLOSE_MAPS_CONFIRM)}
                 <FormItem>
-                  <FormButtonOk onClick={onOk} />
+                  {buttonYes(onOk)}
                   <HotKey selector={shortcuts.ESC} onKey={onCancel} />
-                  <FormButtonCancel onClick={onCancel} />
+                  {buttonNo(onCancel)}
                 </FormItem>
               </Form>
             )}

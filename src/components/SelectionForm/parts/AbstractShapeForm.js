@@ -6,8 +6,9 @@ import './style.css'
 const {
   default: Form,
   FormItem,
-  FormButtonOk,
-  FormButtonCancel,
+  buttonSave,
+  buttonCancel,
+  buttonClose,
 } = components.form
 
 export default class AbstractShapeForm extends React.Component {
@@ -66,8 +67,9 @@ export default class AbstractShapeForm extends React.Component {
       <Form className="shape-form">
         {this.renderContent()}
         <FormItem>
-          {canEdit && (<FormButtonCancel onClick={this.cancelHandler}/>)}
-          <FormButtonOk onClick={canEdit ? this.okHandler : this.cancelHandler}/>
+          {canEdit && buttonCancel(this.cancelHandler)}
+          {canEdit && buttonSave(this.okHandler)}
+          {!canEdit && buttonClose(this.cancelHandler)}
         </FormItem>
       </Form>
     )
