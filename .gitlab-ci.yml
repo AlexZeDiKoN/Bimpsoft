@@ -172,11 +172,8 @@ build-master:
   <<: *base
   script:
     - echo Building project...
-#    - call yarn
-#    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
-#    - copy .env .env.backup
-#    - copy .env.production .env
     - call npm install
+    - call npm audit fix
     - call npm run-script build
     - rmdir /s /q build\explorerLite
     - echo Done
