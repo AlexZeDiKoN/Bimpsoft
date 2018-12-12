@@ -119,7 +119,6 @@ async function _createRequest (url, option, namespace = explorerApi) {
   switch (response.status) {
     case 200: {
       if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
-        /** @type{server.ServerResponse} */
         const jsonPayload = await response.json()
         if (jsonPayload.payload) {
           return JSON.parse(jsonPayload.payload)
@@ -135,6 +134,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 403:
     case 404:
       throw new Error(ERROR_ACCESS_DENIED)
+    case 409:
+      throw new Error(ERROR_OBJ_LOCKED)
     default:
       throw new Error(`${ERROR_NO_CONNECTION} (${response.status}) (URL: ${serviceUrl})`)
   }
