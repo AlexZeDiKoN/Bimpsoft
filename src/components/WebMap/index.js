@@ -519,7 +519,7 @@ export default class WebMap extends Component {
   }
 
   onMouseClick = (e) => {
-    if (!this.isBoxSelection) {
+    if (!this.isBoxSelection && !this.draggingObject) {
       this.onSelectedListChange([])
     }
   }
@@ -731,6 +731,8 @@ export default class WebMap extends Component {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('pm:markerdragstart', this.onDragstartLayer)
+      layer.on('pm:markerdragend', this.onDragendLayer)
       layer.addTo(this.map)
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
@@ -755,6 +757,14 @@ export default class WebMap extends Component {
     }
     return layer
   }
+
+  onDragstartLayer = () => {
+    this.draggingObject = true
+  }
+
+  onDragendLayer = () => setTimeout(() => {
+    this.draggingObject = false
+  }, 0)
 
   clickOnLayer = async (event) => {
     L.DomEvent.stopPropagation(event)
