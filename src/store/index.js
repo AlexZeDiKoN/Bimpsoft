@@ -1,6 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
-import { enableBatching } from 'redux-batched-actions'
+import { batchDispatchMiddleware } from 'redux-batched-actions'
 import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
@@ -28,6 +28,7 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
+    batchDispatchMiddleware,
     thunk.withExtraArgument({
       explorerApi,
       webmapApi,
@@ -41,7 +42,7 @@ export default function initStore (options = {}) {
     middlewares.push(routerMiddleware(history))
   }
 
-  store = createStore(enableBatching(rootReducer), composeEnhancers(applyMiddleware(...middlewares)))
+  store = createStore(rootReducer, composeEnhancers(applyMiddleware(...middlewares)))
   initNavigationConnection(store, history)
 
   initSocketEvents(store.dispatch, store.getState)

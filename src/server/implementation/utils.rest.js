@@ -1,6 +1,6 @@
 /* global Headers fetch */
 import { getExplorerApi, getWebmapApi, getNodeApi, getServerUrl } from '../../utils/services'
-import { ERROR_ACCESS_DENIED, SERVER_ERROR, ERROR_NO_CONNECTION } from '../../i18n/ua'
+import { ERROR_ACCESS_DENIED, SERVER_ERROR, ERROR_OBJ_LOCKED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 
 const absoluteUri = new RegExp('^(http|https)://')
 
@@ -87,6 +87,8 @@ function _createGetRequest (url, options, namespace) {
           return null
         } else if ([ 401, 403, 404 ].indexOf(status) >= 0) {
           reject(new Error(ERROR_ACCESS_DENIED))
+        } else if (status === 409) {
+          reject(new Error(ERROR_OBJ_LOCKED))
         } else if (status === 500) {
           reject(new Error(SERVER_ERROR))
         } else {
@@ -117,7 +119,6 @@ async function _createRequest (url, option, namespace = explorerApi) {
   switch (response.status) {
     case 200: {
       if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
-        /** @type{server.ServerResponse} */
         const jsonPayload = await response.json()
         if (jsonPayload.payload) {
           return JSON.parse(jsonPayload.payload)
@@ -133,6 +134,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 403:
     case 404:
       throw new Error(ERROR_ACCESS_DENIED)
+    case 409:
+      throw new Error(ERROR_OBJ_LOCKED)
     default:
       throw new Error(`${ERROR_NO_CONNECTION} (${response.status}) (URL: ${serviceUrl})`)
   }

@@ -18,15 +18,20 @@ const mapDispatchToProps = {
   onDoubleClick: (unitID) => (dispatch, getState) => {
     const state = getState()
     const {
-      webMap: { center, objects },
+      webMap: { center, objects, subordinationLevel },
     } = state
     const canEdit = canEditSelector(state)
     const unitObjects = objects.filter((object) => object.unit === unitID)
     if (unitObjects.size) {
-      dispatch(batchActions([
+      const batch = [
         selection.selectedList([ ...unitObjects.keys() ]),
         webMap.setScaleToSelection(true),
-      ]))
+      ]
+      const minLevel = unitObjects.reduce((minLevel, { level }) => Math.min(minLevel, level), subordinationLevel)
+      if (minLevel !== subordinationLevel) {
+        batch.push(webMap.setSubordinationLevel(minLevel))
+      }
+      dispatch(batchActions(batch))
     } else if (canEdit) {
       dispatch(selection.newShapeFromUnit(unitID, center))
     }
