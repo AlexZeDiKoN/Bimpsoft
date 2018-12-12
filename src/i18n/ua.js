@@ -142,6 +142,7 @@ export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрит
 export const ERROR_ACCESS_DENIED = 'Доступ заборонено'
 export const ERROR_NO_CONNECTION = 'Сервер карти недоступний'
 export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
+export const ERROR_OBJ_LOCKED = 'Об\'єкт заблоковано для редагування іншим користувачем'
 
 export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
