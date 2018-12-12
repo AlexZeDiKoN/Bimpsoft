@@ -25,7 +25,18 @@ L.PM.Edit.Marker.include({
     })
     marker._pmTempLayer = true
     marker.on('move', this._onMarkerDrag, this)
+    marker.on('dragstart', this._onMarkerDragStart, this)
+    marker.on('dragend', this._onMarkerDragEnd, this)
+
     return marker
+  },
+
+  _onMarkerDragStart (markerEvent) {
+    this._layer.fire('pm:markerdragstart', { markerEvent });
+  },
+
+  _onMarkerDragEnd (markerEvent) {
+    this._layer.fire('pm:markerdragend', { markerEvent });
   },
 
   _onMarkerDrag: function (e) {
