@@ -28,7 +28,7 @@ import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected,
+  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -142,29 +142,6 @@ const Mgrs = (lat, lng) => `MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
 const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
-
-const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
-
-function geomPointEquals (point, data) {
-  if (!point || !data) {
-    return false
-  }
-  const lng = point.get('lng')
-  const lat = point.get('lat')
-  return roundCoord(lat) === roundCoord(data.lat) && roundCoord(lng) === roundCoord(data.lng)
-}
-
-function geomPointListEquals (list, data) {
-  if (list.size !== data.length) {
-    return false
-  }
-  for (let i = 0; i < data.length; i++) {
-    if (!geomPointEquals(list.get(i), data[i])) {
-      return false
-    }
-  }
-  return true
-}
 
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
@@ -495,13 +472,10 @@ export default class WebMap extends Component {
       const id = list[0]
       const layer = this.findLayerById(id)
       if (layer) {
-        const newGeometry = getGeometry(layer)
         const { point, geometry } = layer.object
-        const geometryEquals =
-          geomPointEquals(point, newGeometry.point) &&
-          geomPointListEquals(geometry, newGeometry.geometry)
-        if (!geometryEquals) {
-          updateObjectGeometry(id, newGeometry)
+        const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
+        if (geometryChanged) {
+          updateObjectGeometry(id, getGeometry(layer))
         }
       }
     }
@@ -519,7 +493,7 @@ export default class WebMap extends Component {
   }
 
   onMouseClick = (e) => {
-    if (!this.isBoxSelection) {
+    if (!this.isBoxSelection && !this.draggingObject) {
       this.onSelectedListChange([])
     }
   }
@@ -731,6 +705,8 @@ export default class WebMap extends Component {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('pm:markerdragstart', this.onDragstartLayer)
+      layer.on('pm:markerdragend', this.onDragendLayer)
       layer.addTo(this.map)
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
@@ -755,6 +731,14 @@ export default class WebMap extends Component {
     }
     return layer
   }
+
+  onDragstartLayer = () => {
+    this.draggingObject = true
+  }
+
+  onDragendLayer = () => setTimeout(() => {
+    this.draggingObject = false
+  }, 0)
 
   clickOnLayer = async (event) => {
     L.DomEvent.stopPropagation(event)
