@@ -37,8 +37,8 @@ export const CUT = 'Вирізати (Ctrl+X)'
 export const COPY = 'Копіювати (Ctrl+C)'
 export const PASTE = 'Вставити (Ctrl+V)'
 export const DELETE = 'Видалити  (Delete)'
-export const REMOVING_SIGNS = 'Видалення знаків'
-export const CLOSE_MAP = 'Закриття карти'
+export const REMOVING_SIGNS = 'Видалити знаки?'
+export const CLOSE_MAP = 'Закрити карту?'
 export const CLOSE_MAPS = 'Закриття карт'
 export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
@@ -142,6 +142,7 @@ export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрит
 export const ERROR_ACCESS_DENIED = 'Доступ заборонено'
 export const ERROR_NO_CONNECTION = 'Сервер карти недоступний'
 export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'
+export const ERROR_OBJ_LOCKED = 'Об\'єкт заблоковано для редагування іншим користувачем'
 
 export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
 export const NO_ACTIVE_LAYER = 'Немає активного шару'

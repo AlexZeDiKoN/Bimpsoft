@@ -1,13 +1,11 @@
 import { action } from '../../utils/services'
-import * as asyncAction from './asyncAction'
+import { asyncAction, webMap } from '.'
 
 export const VIEW_MODE_TOGGLE = action('VIEW_MODE_TOGGLE')
 export const VIEW_MODE_DISABLE = action('VIEW_MODE_DISABLE')
 export const VIEW_MODE_ENABLE = action('VIEW_MODE_ENABLE')
-export const SEARCH_PLACE = action('SEARCH_PLACE')
-export const SEARCH_SELECT_OPTION = action('SEARCH_SELECT_OPTION')
-export const SEARCH_CLEAR_ERROR = action('SEARCH_CLEAR_ERROR')
-export const SEARCH_COORDINATES = action('SEARCH_COORDINATES')
+export const SET_SEARCH_OPTIONS = action('SET_SEARCH_OPTIONS')
+export const SET_SEARCH_EMPTY = action('SET_SEARCH_EMPTY')
 
 export const viewModeToggle = (name) => ({
   type: VIEW_MODE_TOGGLE,
@@ -26,23 +24,39 @@ export const viewModeEnable = (name) => ({
 
 export const search = (sample) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { placeSearch } }) => {
-    const payload = await placeSearch(sample)
-    dispatch({
-      type: SEARCH_PLACE,
-      payload,
-    })
+    const searchOptions = await placeSearch(sample)
+    switch (searchOptions.length) {
+      case 0:
+        dispatch({
+          type: SET_SEARCH_EMPTY,
+          payload: true,
+        })
+        break
+      case 1:
+        dispatch(webMap.setMarker(searchOptions[0]))
+        break
+      default:
+        dispatch({
+          type: SET_SEARCH_OPTIONS,
+          payload: searchOptions,
+        })
+        break
+    }
   })
 
-export const searchSelectOption = (index) => ({
-  type: SEARCH_SELECT_OPTION,
-  payload: index,
-})
+export const searchSelectOption = (index) => (dispatch, getState) => {
+  const state = getState()
+  const option = state.viewModes.searchOptions[index]
+  if (option) {
+    dispatch({
+      type: SET_SEARCH_OPTIONS,
+      payload: null,
+    })
+    dispatch(webMap.setMarker(option))
+  }
+}
 
 export const searchClearError = () => ({
-  type: SEARCH_CLEAR_ERROR,
-})
-
-export const coordinates = (payload) => ({
-  type: SEARCH_COORDINATES,
-  payload,
+  type: SET_SEARCH_EMPTY,
+  payload: false,
 })

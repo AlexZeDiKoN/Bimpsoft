@@ -8,6 +8,7 @@ import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
 import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
+import * as debounce from 'debounce'
 import i18n from '../../i18n'
 import { toggleMapGrid } from '../../services/coordinateGrid'
 import { version } from '../../version'
@@ -218,13 +219,14 @@ export default class WebMap extends Component {
     layersById: PropTypes.object,
     level: PropTypes.any,
     layer: PropTypes.any,
-    searchResult: PropTypes.shape({
+    marker: PropTypes.shape({
       text: PropTypes.string,
       point: PropTypes.shape({
         lat: PropTypes.number,
         lng: PropTypes.number,
       }),
     }),
+    scaleToSelection: PropTypes.bool,
     objects: PropTypes.object,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
@@ -240,10 +242,7 @@ export default class WebMap extends Component {
       newShape: PropTypes.shape({
         type: PropTypes.any,
       }),
-      data: PropTypes.shape({
-        type: PropTypes.any,
-        orgStructureId: PropTypes.number,
-      }),
+      list: PropTypes.array,
     }),
     isGridActive: PropTypes.bool.isRequired,
     backVersion: PropTypes.string,
@@ -257,6 +256,7 @@ export default class WebMap extends Component {
     onFinishDrawNewShape: PropTypes.func,
     showCreateForm: PropTypes.func,
     onMove: PropTypes.func,
+    onRemoveMarker: PropTypes.func,
     onDropUnit: PropTypes.func,
     onSelectUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
@@ -268,8 +268,7 @@ export default class WebMap extends Component {
   constructor (props) {
     super(props)
     this.view = {
-      lat: 0,
-      lng: 0,
+      center: { lat: 0, lng: 0 },
       zoom: 0,
     }
   }
@@ -290,8 +289,7 @@ export default class WebMap extends Component {
 
     const {
       objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      searchResult, isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, center,
-      zoom, selection: { newShape, list: selectedIds },
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, selection: { newShape },
     } = this.props
 
     if (objects !== prevProps.objects) {
@@ -317,20 +315,15 @@ export default class WebMap extends Component {
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
     }
-    if (searchResult && searchResult !== prevProps.searchResult) {
-      this.placeSearchMarker()
-    }
+
+    this.updateMarker(prevProps)
+
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
       this.map.measureControl._toggleMeasure()
     }
-    if (
-      objects !== prevProps.objects ||
-      selectedIds !== prevProps.selection.list ||
-      edit !== prevProps.edit ||
-      layer !== prevProps.layer
-    ) {
-      this.updateSelection(selectedIds, edit, layer)
-    }
+
+    this.updateSelection(prevProps)
+
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
     }
@@ -340,9 +333,9 @@ export default class WebMap extends Component {
     if (params !== prevProps.params) {
       this.updateScaleOptions(params)
     }
-    if (center.lat !== this.view.lat || center.lng !== this.view.lng || zoom !== this.view.zoom) {
-      this.updateViewport(center, zoom)
-    }
+
+    this.updateViewport(prevProps)
+
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
     }
@@ -375,22 +368,31 @@ export default class WebMap extends Component {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
 
-  placeSearchMarker = () => {
-    this.searchMarker && this.searchMarker.removeFrom(this.map)
-    let { point, text } = this.props.searchResult
-    let coordinates = this.showCoordinates(point)
-    if (Array.isArray(coordinates)) {
-      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+  updateMarker = (prevProps) => {
+    const { marker } = this.props
+    if (marker !== prevProps.marker) {
+      if (marker) {
+        this.searchMarker && this.searchMarker.removeFrom(this.map)
+        let { point, text } = marker
+        let coordinates = this.showCoordinates(point)
+        if (Array.isArray(coordinates)) {
+          coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+        }
+        if (coordinates !== text) {
+          text = `<strong>${text}</strong><br/><br/>${coordinates}`
+        }
+        setTimeout(() => {
+          this.searchMarker = createSearchMarker(point, text)
+          this.searchMarker.addTo(this.map)
+          setTimeout(() => this.searchMarker && this.searchMarker.bindPopup(text).openPopup(), 1000)
+        }, 500)
+      } else {
+        if (this.searchMarker) {
+          this.searchMarker.removeFrom(this.map)
+          delete this.searchMarker
+        }
+      }
     }
-    if (coordinates !== text) {
-      text = `<strong>${text}</strong><br/><br/>${coordinates}`
-    }
-    this.map.panTo(point, { animate: false })
-    setTimeout(() => {
-      this.searchMarker = createSearchMarker(point, text)
-      this.searchMarker.addTo(this.map)
-      setTimeout(() => this.searchMarker.bindPopup(text).openPopup(), 1000)
-    }, 500)
   }
 
   updateBackOpacity = (backOpacity) => {
@@ -400,9 +402,33 @@ export default class WebMap extends Component {
     }
   }
 
-  updateViewport = (center, zoom) => {
-    this.view = { ...center, zoom }
-    this.map.setView(center, zoom)
+  updateViewport = (prevProps) => {
+    const { center, zoom, scaleToSelection, selection: { list: selectedIds } } = this.props
+
+    if (scaleToSelection !== prevProps.scaleToSelection || selectedIds !== prevProps.selection.list) {
+      if (scaleToSelection) {
+        const selectedIdsSet = new Set(selectedIds)
+        const points = []
+        this.map.eachLayer((layer) =>
+          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry)
+        )
+        if (points.length > 0) {
+          const bounds = L.latLngBounds(points)
+          if (bounds.isValid() && !this.map.getBounds().contains(bounds)) {
+            const center = bounds.getCenter()
+            const zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
+            setTimeout(() => this.props.onMove(center, zoom), 0)
+          }
+        }
+      }
+    }
+
+    if (center.lat !== this.view.center.lat || center.lng !== this.view.center.lng || zoom !== this.view.zoom) {
+      this.view = { center, zoom }
+      this.isUpdatingViewport = true
+      this.map.setView(this.view.center, this.view.zoom, { animate: false })
+      this.isUpdatingViewport = false
+    }
   }
 
   setMapView = () => {
@@ -447,8 +473,8 @@ export default class WebMap extends Component {
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
     this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
-    this.map.on('moveend', this.moveEndHandler)
-    this.map.on('zoomend', this.moveEndHandler)
+    this.map.on('moveend', this.moveHandler)
+    this.map.on('zoomend', this.moveHandler)
     this.map.on('pm:create', this.createNewShape)
     this.map.on('click', this.onMouseClick)
     this.map.on('stop_measuring', this.onStopMeasuring)
@@ -518,31 +544,43 @@ export default class WebMap extends Component {
     this.onSelectedListChange(selectedIds)
   }
 
-  updateSelection = (selectedIds, edit, layerId) => {
-    const selectedIdsSet = new Set(selectedIds)
-    const canEditLayer = selectedIds.length === 1 && edit
-    this.map.eachLayer((layer) => {
-      if (layer.options.tsType) {
-        const { id } = layer
-        const isSelected = selectedIdsSet.has(id)
-        const isActive = canEditLayer && isSelected && layer.object.layer === layerId
-        setLayerSelected(layer, isSelected, isActive)
-      }
-    })
+  updateSelection = (prevProps) => {
+    const { objects, layer: layerId, edit, selection: { list: selectedIds } } = this.props
+    if (
+      objects !== prevProps.objects ||
+      selectedIds !== prevProps.selection.list ||
+      edit !== prevProps.edit ||
+      layerId !== prevProps.layer
+    ) {
+      const selectedIdsSet = new Set(selectedIds)
+      const canEditLayer = selectedIds.length === 1 && edit
+      this.map.eachLayer((layer) => {
+        if (layer.options.tsType) {
+          const { id } = layer
+          const isSelected = selectedIdsSet.has(id)
+          const isActiveLayer = layer.object.layer === layerId
+          const isActive = canEditLayer && isSelected && isActiveLayer
+          setLayerSelected(layer, isSelected, isActive, isActiveLayer)
+        }
+      })
+    }
   }
 
   onStopMeasuring = () => {
     this.props.stopMeasuring()
   }
 
-  moveEndHandler = () => {
-    const { lat, lng } = this.map.getCenter()
+  moveHandler = debounce(() => {
+    if (this.isUpdatingViewport) {
+      return
+    }
+    const center = this.map.getCenter()
     const zoom = this.map.getZoom()
-    this.view = { lat, lng, zoom }
-
-    const { params, onMove } = this.props
-    onMove({ lat, lng }, zoom, params)
-  }
+    const isZoomChanged = zoom !== this.view.zoom
+    this.view = { center, zoom }
+    const { onMove } = this.props
+    onMove(center, zoom, isZoomChanged)
+  }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
     if (item.id && item.object) {
@@ -972,8 +1010,7 @@ export default class WebMap extends Component {
 
   escapeHandler = () => {
     if (this.searchMarker) {
-      this.searchMarker.removeFrom(this.map)
-      delete this.searchMarker
+      this.props.onRemoveMarker()
     }
   }
 
