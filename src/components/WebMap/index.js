@@ -396,7 +396,7 @@ export default class WebMap extends Component {
           if (bounds.isValid() && !this.map.getBounds().contains(bounds)) {
             const center = bounds.getCenter()
             const zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
-            setTimeout(() => this.props.onMove(center, zoom), 0)
+            setTimeout(() => this.props.onMove(center.wrap(), zoom), 0)
           }
         }
       }
@@ -555,7 +555,7 @@ export default class WebMap extends Component {
     const isZoomChanged = zoom !== this.view.zoom
     this.view = { center, zoom }
     const { onMove } = this.props
-    onMove(center, zoom, isZoomChanged)
+    onMove(center.wrap(), zoom, isZoomChanged)
   }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
