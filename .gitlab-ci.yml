@@ -12,7 +12,6 @@ cache:
     - yarn.lock
 
 stages:
-#  - test
   - build
   - deploy
   
@@ -26,7 +25,7 @@ stages:
   only:
     - master
   tags:
-    - webmap-master
+    - webmap
 
 #test:
 #  stage: test
@@ -174,6 +173,8 @@ build-master:
     - echo Building project...
     - call npm install
     - call npm audit fix
+    - copy .env .env.backup
+    - copy .env.production .env
     - call npm run-script build
     - rmdir /s /q build\explorerLite
     - echo Done
