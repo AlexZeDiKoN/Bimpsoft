@@ -57,7 +57,8 @@ export default class LeftMenu extends React.Component {
       layerName,
     } = this.props
 
-    const subordinationLevelViewData = SubordinationLevel.list.find((item) => item.value === subordinationLevel)
+    const subordinationLevelViewData =
+      SubordinationLevel.list.find((item) => item.value === subordinationLevel) || SubordinationLevel.list[0]
 
     return (
       <div className='left-menu' >
