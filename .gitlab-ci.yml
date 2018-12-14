@@ -171,8 +171,8 @@ build-master:
   <<: *base
   script:
     - echo Building project...
-    - call npm install
-    - call npm audit fix
+    - call yarn
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
@@ -191,23 +191,23 @@ build-master:
       - ./build/static/js/*.*
       - ./build/static/media/*.*
 
-deploy-master-dzvin4:
-  stage: deploy
-  <<: *base
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: dzvin4 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDir%
+#deploy-master-dzvin4:
+#  stage: deploy
+#  <<: *base
+#  cache: {}
+#  script:
+#    - echo Deploying to QA environment...
+#    - 'echo ========= Deploy: dzvin4 (remote) ========='
+#    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDir%
 
-deploy-master-dzvin2:
-  stage: deploy
-  <<: *base
-  cache: {}
-  script:
-    - 'echo ========= Deploy: dzvin2 (local) ========='
-    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
-    - echo Done
+#deploy-master-dzvin2:
+#  stage: deploy
+#  <<: *base
+#  cache: {}
+#  script:
+#    - 'echo ========= Deploy: dzvin2 (local) ========='
+#    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+#    - echo Done
 
 deploy-zip:
   stage: deploy
