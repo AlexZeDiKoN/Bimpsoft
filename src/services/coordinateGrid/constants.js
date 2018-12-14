@@ -5,36 +5,16 @@ export const CELL_SIZES = {
     lng: 6,
   },
   500000: {
-    lat: 2,
-    lng: 3,
+    lat: 4 / 2,
+    lng: 6 / 2,
   },
   200000: {
-    lat: 0.667,
-    lng: 1,
+    lat: 4 / 6,
+    lng: 6 / 6,
   },
   100000: {
-    lat: 0.332,
-    lng: 0.5,
-  },
-  50000: {
-    lat: 0.167,
-    lng: 0.25,
-  },
-  25000: {
-    lat: 0.083,
-    lng: 0.125,
-  },
-  10000: {
-    lat: 0.042,
-    lng: 0.063,
-  },
-  5000: {
-    lat: 0.021,
-    lng: 0.031,
-  },
-  2000: {
-    lat: 0.007,
-    lng: 0.01,
+    lat: 4 / 12,
+    lng: 6 / 12,
   },
 }
 export const INIT_GRID_OPTIONS = {
@@ -56,6 +36,16 @@ export const GRID_CELLS_STRUCTURE = {
   row_length: 0,
   column_length: 0,
 }
-export const ZOOM = 50000
+export const ITEM_NUMBER = {
+  '1M': [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'Z',
+  ],
+  '500K': [
+    'А', 'Б', 'В', 'Г',
+  ],
+  '200K': { X: 10, IX: 9, V: 5, IV: 4, I: 1 },
+}
+export const ZOOM = 100000
 export const LAT = 0
 export const LNG = 1
+export const GRID_DATA = {}
