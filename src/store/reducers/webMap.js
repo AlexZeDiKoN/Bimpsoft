@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
-import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
+import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+
+const { APP6Code: { getAmplifier }, app6Data: { amplifiers } } = model
 
 const WebMapPoint = Record({
   lat: null,
@@ -64,9 +66,7 @@ const WebMapState = Record({
 
 const checkLevel = (object) => {
   const { code, level } = object
-  if (code && !level) {
-    object.level = +code.slice(8, 10)
-  }
+  object.level = Number(level || (code && getAmplifier(code)))
 }
 
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
