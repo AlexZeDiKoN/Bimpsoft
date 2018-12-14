@@ -192,22 +192,14 @@ build-master:
       - ./build/static/js/*.*
       - ./build/static/media/*.*
 
-deploy-master-dzvin4:
+deploy-qa29:
   stage: deploy
-  <<: *base
+  <<: *base-dev
   cache: {}
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: dzvin4 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDirr%
-
-deploy-master-dzvin2:
-  stage: deploy
-  <<: *base
-  cache: {}
-  script:
-    - 'echo ========= Deploy: dzvin2 (local) ========='
-    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirr%
+    - 'echo ========= Deploy: 17 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
     - echo Done
 
 deploy-zip:
