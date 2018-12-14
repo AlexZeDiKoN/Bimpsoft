@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
-import { canEditSelector, visibleLayersSelector } from '../store/selectors'
+import { canEditSelector, visibleLayersSelector, activeObjectId } from '../store/selectors'
 import { webMap, selection, layers, orgStructures } from '../store/actions'
 
 const WebMapContainer = connect(
@@ -28,6 +28,7 @@ const WebMapContainer = connect(
     backVersion: state.webMap.version,
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
+    activeObjectId: activeObjectId(state),
   }),
   {
     onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
@@ -55,6 +56,7 @@ const WebMapContainer = connect(
     requestAppInfo: () => webMap.getAppInfo(),
     tryLockObject: (objectId) => webMap.tryLockObject(objectId),
     tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
+    getLockedObjects: () => webMap.getLockedObjects(),
   },
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

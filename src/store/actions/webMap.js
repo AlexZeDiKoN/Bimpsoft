@@ -7,12 +7,18 @@ import { asyncAction } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
+let dropLock = null
 
-const heartBeat = (objLock, objectId) => () => objLock(objectId)
+const heartBeat = (objLock, objUnlock, objectId) => {
+  dropLock = () => objUnlock(objectId)
+  return () => objLock(objectId)
+}
+
 const stopHeartBeat = () => {
   if (lockHeartBeat) {
     clearInterval(lockHeartBeat)
     lockHeartBeat = null
+    dropLock = null
   }
 }
 
@@ -32,6 +38,7 @@ export const actionNames = {
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
   APP_INFO: action('APP_INFO'),
+  GET_LOCKED_OBJECTS: action('GET_LOCKED_OBJECTS'),
   OBJECT_LOCKED: action('OBJECT_LOCKED'),
   OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
@@ -165,7 +172,7 @@ export const updateObjectsByLayerId = (layerId) =>
     // fix response data
     objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
 
-    dispatch({
+    return dispatch({
       type: actionNames.OBJECT_LIST,
       payload: {
         layerId,
@@ -186,7 +193,7 @@ export const updateObjectGeometry = (id, geometry) =>
     // fix response data
     payload = { ...payload, unit: payload.unit ? +payload.unit : null }
 
-    dispatch({
+    return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
     })
@@ -212,24 +219,31 @@ export const objectUnlocked = (objectId) => ({
 })
 
 export const tryLockObject = (objectId) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock } }) => {
-    stopHeartBeat()
-    try {
-      const result = await objLock(objectId)
-      if (result.success) {
-        lockHeartBeat = setInterval(heartBeat(objLock, objectId), lockHeartBeatInterval * 1000)
-      } else {
-        dispatch(notifications.push({
-          type: 'warning',
-          message: i18n.EDITING,
-          description: `${i18n.OBJECT_EDITING_BY} ${result.lockedBy}`,
-        }))
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objLock, objUnlock } }) => {
+    const { webMap: { lockedObjects } } = getState()
+    let lockedBy = lockedObjects.get(objectId)
+    let success = false
+    if (!lockedBy) {
+      stopHeartBeat()
+      try {
+        const result = await objLock(objectId)
+        success = result.success
+        if (success) {
+          lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
+        } else {
+          lockedBy = result.lockedBy
+        }
+      } catch (error) {
+        console.error(error)
+        return false
       }
-      return result.success
-    } catch (error) {
-      console.error(error)
-      return false
     }
+    lockedBy && dispatch(notifications.push({
+      type: 'warning',
+      message: i18n.EDITING,
+      description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
+    }))
+    return success
   })
 
 export const tryUnlockObject = (objectId) =>
@@ -237,3 +251,14 @@ export const tryUnlockObject = (objectId) =>
     stopHeartBeat()
     return objUnlock(objectId)
   })
+
+export const getLockedObjects = () =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { lockedObjects } }) => dispatch({
+    type: actionNames.GET_LOCKED_OBJECTS,
+    payload: await lockedObjects(),
+  }))
+
+window.addEventListener('beforeunload', () => {
+  dropLock && dropLock()
+  stopHeartBeat()
+})
