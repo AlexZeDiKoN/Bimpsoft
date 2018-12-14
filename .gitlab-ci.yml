@@ -12,6 +12,7 @@ cache:
     - yarn.lock
 
 stages:
+#  - test
   - build
   - deploy
   
@@ -25,7 +26,7 @@ stages:
   only:
     - master
   tags:
-    - webmap
+    - webmap-master
 
 #test:
 #  stage: test
@@ -115,40 +116,40 @@ deploy-qa-85:
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
 ##########################################################
-deploy-qa29:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 29 (remote) ========='
-    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
- #   - rmdir /s /q \\10.8.26.84\c$\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
+#deploy-qa29:
+#  stage: deploy
+#  <<: *base-dev
+#  cache: {}
+#  script:
+#    - echo Deploying to QA environment...
+#    - 'echo ========= Deploy: 29 (remote) ========='
+#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+# #   - rmdir /s /q \\10.8.26.84\c$\%deployDir%
+#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
 #    - net use \\10.8.26.84\c$ /delete
 
-deploy-qa-29-node-1:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 29 _node_1 (remote) ========='
-    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+#deploy-qa-29-node-1:
+#  stage: deploy
+#  <<: *base-dev
+#  cache: {}
+#  script:
+#    - echo Deploying to QA environment...
+#    - 'echo ========= Deploy: 29 _node_1 (remote) ========='
+#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
 #    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir2%
-    - net use \\172.16.97.29\c$ /delete
+#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir2%
+#    - net use \\172.16.97.29\c$ /delete
     
-deploy-qa29-node-2:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 29 _node_2 (remote) ========='
-    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
+#deploy-qa29-node-2:
+#  stage: deploy
+#  <<: *base-dev
+#  cache: {}
+#  script:
+#    - echo Deploying to QA environment...
+#    - 'echo ========= Deploy: 29 _node_2 (remote) ========='
+#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
  #   - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
+#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
  #   - net use \\10.8.26.84\c$ /delete
  
 deploy-qa17:
@@ -191,23 +192,15 @@ build-master:
       - ./build/static/js/*.*
       - ./build/static/media/*.*
 
-#deploy-master-dzvin4:
-#  stage: deploy
-#  <<: *base
-#  cache: {}
-#  script:
-#    - echo Deploying to QA environment...
-#    - 'echo ========= Deploy: dzvin4 (remote) ========='
-#    - xcopy /E /C /I /Q /H /R /Y build \\dzins1\c$\%deployDir%
-
-#deploy-master-dzvin2:
-#  stage: deploy
-#  <<: *base
-#  cache: {}
-#  script:
-#    - 'echo ========= Deploy: dzvin2 (local) ========='
-#    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
-#    - echo Done
+deploy-qa29:
+  stage: deploy
+  <<: *base-dev
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 17 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
+    - echo Done
 
 deploy-zip:
   stage: deploy
