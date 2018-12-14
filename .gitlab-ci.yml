@@ -194,7 +194,7 @@ build-master:
 
 deploy-qa29:
   stage: deploy
-  <<: *base-dev
+  <<: *base
   cache: {}
   script:
     - echo Deploying to QA environment...
