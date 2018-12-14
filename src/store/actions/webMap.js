@@ -219,24 +219,31 @@ export const objectUnlocked = (objectId) => ({
 })
 
 export const tryLockObject = (objectId) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objLock, objUnlock } }) => {
-    stopHeartBeat()
-    try {
-      const result = await objLock(objectId)
-      if (result.success) {
-        lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
-      } else {
-        dispatch(notifications.push({
-          type: 'warning',
-          message: i18n.EDITING,
-          description: `${i18n.OBJECT_EDITING_BY} ${result.lockedBy}`,
-        }))
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objLock, objUnlock } }) => {
+    const { webMap: { lockedObjects } } = getState()
+    let lockedBy = lockedObjects.get(objectId)
+    let success = false
+    if (!lockedBy) {
+      stopHeartBeat()
+      try {
+        const result = await objLock(objectId)
+        success = result.success
+        if (success) {
+          lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
+        } else {
+          lockedBy = result.lockedBy
+        }
+      } catch (error) {
+        console.error(error)
+        return false
       }
-      return result.success
-    } catch (error) {
-      console.error(error)
-      return false
     }
+    lockedBy && dispatch(notifications.push({
+      type: 'warning',
+      message: i18n.EDITING,
+      description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
+    }))
+    return success
   })
 
 export const tryUnlockObject = (objectId) =>

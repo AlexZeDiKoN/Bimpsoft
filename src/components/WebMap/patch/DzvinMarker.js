@@ -26,6 +26,7 @@ const DzvinMarker = L.Marker.extend({
       const el = this.getElement()
       setClassName(el, 'dzvin-marker-selected', selected && !inActiveLayer)
       setClassName(el, 'dzvin-marker-selected-on-active-layer', selected && inActiveLayer)
+      !selected && setClassName(el, 'dzvin-marker-locked', false)
     }
   },
   optimize: function () {
