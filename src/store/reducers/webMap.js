@@ -6,19 +6,14 @@ import { actionNames } from '../actions/webMap'
 import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 
-const { APP6Code: { getAmplifier }, app6Data: { amplifiers } } = model
+const { APP6Code: { getAmplifier }, symbolOptions } = model
 
 const WebMapPoint = Record({
   lat: null,
   lng: null,
 })
 
-for (const key of Object.keys(amplifiers)) {
-  amplifiers[key] = ''
-}
-
-const WebMapAttributes = Record({
-  ...amplifiers,
+const webMapAttributesInitValues = {
   template: '',
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
@@ -30,7 +25,13 @@ const WebMapAttributes = Record({
   lineNodes: 'none',
   texts: [],
   z: null,
-})
+}
+for (const key of Object.keys(symbolOptions)) {
+  webMapAttributesInitValues[key] = ''
+}
+webMapAttributesInitValues['enableSignOffset'] = ''
+
+const WebMapAttributes = Record(webMapAttributesInitValues)
 
 const WebMapObject = Record({
   id: null,
