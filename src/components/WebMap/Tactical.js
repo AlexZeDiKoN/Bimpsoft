@@ -217,6 +217,49 @@ export function getGeometry (layer) {
   }
 }
 
+export const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
+
+export const geomPointEquals =
+  (p1, p2) => p1 && p2 && roundCoord(p1.lat) === roundCoord(p2.lat) && roundCoord(p1.lng) === roundCoord(p2.lng)
+
+function geomPointListEquals (list1, list2) {
+  const n = list1.length
+  if (n !== list2.length) {
+    return false
+  }
+  for (let i = 0; i < n; i++) {
+    if (!geomPointEquals(list1[i], list2[i])) {
+      return false
+    }
+  }
+  return true
+}
+
+export function isGeometryChanged (layer, point, geometry) {
+  const { options: { tsType } } = layer
+  switch (tsType) {
+    case entityKind.POINT:
+    case entityKind.TEXT:
+      return !geomPointEquals(layer.getLatLng ? layer.getLatLng() : layer.getLatLngs()[0][0], point)
+    case entityKind.SEGMENT:
+    case entityKind.POLYLINE:
+    case entityKind.CURVE:
+      return !geomPointListEquals(layer.getLatLngs(), geometry)
+    case entityKind.POLYGON:
+    case entityKind.AREA:
+      return !geomPointListEquals(layer.getLatLngs()[0], geometry)
+    case entityKind.RECTANGLE:
+    case entityKind.SQUARE: {
+      const bounds = L.latLngBounds(layer.getLatLngs()[0])
+      return !geomPointListEquals([ bounds.getNorthWest(), bounds.getSouthEast() ], geometry)
+    }
+    case entityKind.CIRCLE:
+      return !geomPointEquals(layer.getLatLng(), point) || layer._map.distance(...geometry) !== layer.getRadius()
+    default:
+      return false
+  }
+}
+
 function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),

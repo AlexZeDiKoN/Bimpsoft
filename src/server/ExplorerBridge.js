@@ -26,8 +26,12 @@ export default class ExplorerBridge {
   }
 
   postMessage = (msg) => {
-    window.opener.postMessage(msg, getExplorerOrigin())
-    console.info(`Message sent`, msg)
+    if (window.opener) {
+      window.opener.postMessage(msg, getExplorerOrigin())
+      console.info(`Message sent`, msg)
+    } else {
+      console.warn(`Message not sent (no opener)`)
+    }
   }
 
   onMessage = (e) => {

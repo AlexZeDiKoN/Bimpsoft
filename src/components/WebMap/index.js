@@ -28,7 +28,7 @@ import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected,
+  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged, geomPointEquals,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -143,29 +143,6 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
-const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
-
-function geomPointEquals (point, data) {
-  if (!point || !data) {
-    return false
-  }
-  const lng = point.get('lng')
-  const lat = point.get('lat')
-  return roundCoord(lat) === roundCoord(data.lat) && roundCoord(lng) === roundCoord(data.lng)
-}
-
-function geomPointListEquals (list, data) {
-  if (list.size !== data.length) {
-    return false
-  }
-  for (let i = 0; i < data.length; i++) {
-    if (!geomPointEquals(list.get(i), data[i])) {
-      return false
-    }
-  }
-  return true
-}
-
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
@@ -248,6 +225,7 @@ export default class WebMap extends Component {
     backVersion: PropTypes.string,
     contactId: PropTypes.number,
     lockedObjects: PropTypes.object,
+    activeObjectId: PropTypes.string,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -263,6 +241,7 @@ export default class WebMap extends Component {
     requestAppInfo: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
+    getLockedObjects: PropTypes.func,
   }
 
   constructor (props) {
@@ -271,12 +250,14 @@ export default class WebMap extends Component {
       center: { lat: 0, lng: 0 },
       zoom: 0,
     }
+    this.activeLayer = null
   }
 
   async componentDidMount () {
-    const { sources, requestAppInfo } = this.props
+    const { sources, requestAppInfo, getLockedObjects } = this.props
 
     await requestAppInfo()
+    await getLockedObjects()
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
@@ -324,6 +305,8 @@ export default class WebMap extends Component {
 
     this.updateSelection(prevProps)
 
+    this.updateActiveObject(prevProps)
+
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
     }
@@ -354,9 +337,13 @@ export default class WebMap extends Component {
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
     .filter((key) => this.map._layers[key]._locked)
     .forEach((key) => {
+      const { activeObjectId } = this.props
       const layer = this.map._layers[key]
       const isLocked = lockedObjects.get(layer.id)
-      !isLocked && layer.setLocked && layer.setLocked(false)
+      if (!isLocked) {
+        layer.setLocked && layer.setLocked(false)
+        layer.id === activeObjectId && this.onSelectedListChange([])
+      }
     })
 
   adjustEditMode = async (edit, { type }) => {
@@ -417,17 +404,15 @@ export default class WebMap extends Component {
           if (bounds.isValid() && !this.map.getBounds().contains(bounds)) {
             const center = bounds.getCenter()
             const zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
-            setTimeout(() => this.props.onMove(center, zoom), 0)
+            setTimeout(() => this.props.onMove(center.wrap(), zoom), 0)
           }
         }
       }
     }
 
-    if (center.lat !== this.view.center.lat || center.lng !== this.view.center.lng || zoom !== this.view.zoom) {
+    if (!geomPointEquals(center, this.view.center) || zoom !== this.view.zoom) {
       this.view = { center, zoom }
-      this.isUpdatingViewport = true
       this.map.setView(this.view.center, this.view.zoom, { animate: false })
-      this.isUpdatingViewport = false
     }
   }
 
@@ -485,7 +470,7 @@ export default class WebMap extends Component {
   }
 
   onSelectedListChange (newList) {
-    const { selection: { list }, onSelectedList, updateObjectGeometry, onSelectUnit } = this.props
+    const { selection: { list }, onSelectedList, updateObjectGeometry, tryUnlockObject, onSelectUnit } = this.props
     if (newList.length === 0 && list === 0) {
       return
     }
@@ -495,13 +480,12 @@ export default class WebMap extends Component {
       const id = list[0]
       const layer = this.findLayerById(id)
       if (layer) {
-        const newGeometry = getGeometry(layer)
         const { point, geometry } = layer.object
-        const geometryEquals =
-          geomPointEquals(point, newGeometry.point) &&
-          geomPointListEquals(geometry, newGeometry.geometry)
-        if (!geometryEquals) {
-          updateObjectGeometry(id, newGeometry)
+        const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
+        if (geometryChanged) {
+          updateObjectGeometry(id, getGeometry(layer))
+        } else {
+          tryUnlockObject(id)
         }
       }
     }
@@ -518,7 +502,7 @@ export default class WebMap extends Component {
     onSelectedList(newList)
   }
 
-  onMouseClick = (e) => {
+  onMouseClick = () => {
     if (!this.isBoxSelection && !this.draggingObject) {
       this.onSelectedListChange([])
     }
@@ -561,8 +545,26 @@ export default class WebMap extends Component {
           const isActiveLayer = layer.object.layer === layerId
           const isActive = canEditLayer && isSelected && isActiveLayer
           setLayerSelected(layer, isSelected, isActive, isActiveLayer)
+          if (isActive) {
+            this.activeLayer = layer
+          }
         }
       })
+    }
+  }
+
+  updateActiveObject = (prevProps) => {
+    const { activeObjectId, tryLockObject } = this.props
+
+    if (activeObjectId && activeObjectId !== prevProps.activeObjectId) {
+      tryLockObject(activeObjectId)
+        .then((success) => {
+          if (!success && this.activeLayer.id === activeObjectId) {
+            this.activeLayer.setLocked && this.activeLayer.setLocked(true)
+            setLayerSelected(this.activeLayer, true, false)
+            this.activeLayer = null
+          }
+        })
     }
   }
 
@@ -571,15 +573,14 @@ export default class WebMap extends Component {
   }
 
   moveHandler = debounce(() => {
-    if (this.isUpdatingViewport) {
-      return
-    }
     const center = this.map.getCenter()
     const zoom = this.map.getZoom()
     const isZoomChanged = zoom !== this.view.zoom
-    this.view = { center, zoom }
-    const { onMove } = this.props
-    onMove(center, zoom, isZoomChanged)
+    if (!geomPointEquals(center, this.view.center) || isZoomChanged) {
+      this.view = { center, zoom }
+      const { onMove } = this.props
+      onMove(center.wrap(), zoom, isZoomChanged)
+    }
   }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
@@ -702,6 +703,7 @@ export default class WebMap extends Component {
               notChangedIds.add(layer.id)
             } else {
               setLayerSelected(layer, false, false)
+              this.activeLayer = null
               layer.remove()
             }
           }
@@ -766,7 +768,7 @@ export default class WebMap extends Component {
     this.draggingObject = false
   }, 0)
 
-  clickOnLayer = async (event) => {
+  clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object } } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
@@ -783,7 +785,7 @@ export default class WebMap extends Component {
     }
   }
 
-  dblClickOnLayer = async (event) => {
+  dblClickOnLayer = (event) => {
     const { target: { id, object } } = event
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
@@ -792,14 +794,14 @@ export default class WebMap extends Component {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
-        await this.selectLayer(id)
+        this.selectLayer(id)
         event.target._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
   }
 
-  selectLayer = async (id, exclusive) => {
+  selectLayer = (id, exclusive) => {
     const { selection: { list } } = this.props
     if (id) {
       if (exclusive) {
@@ -810,7 +812,6 @@ export default class WebMap extends Component {
     } else {
       this.onSelectedListChange([])
     }
-    // newLayer && newLayer.setLocked && newLayer.setLocked(!(await this.props.tryLockObject(newLayer.id)))
   }
 
   findLayerById = (id) => {
