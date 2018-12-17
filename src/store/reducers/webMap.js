@@ -161,12 +161,17 @@ export default function webMapReducer (state = WebMapState(), action) {
         .set('contactId', +contactId)
     }
     case actionNames.GET_LOCKED_OBJECTS: {
+      const myContactId = state.get('contactId')
       return update(state, 'lockedObjects', (map) => Object.entries(payload)
+        .filter(({ contactId }) => contactId !== myContactId)
         .map(([ objectId, { contactName } ]) => ({ objectId, contactName }))
         .reduce(lockObject, map))
     }
     case actionNames.OBJECT_LOCKED: {
-      return update(state, 'lockedObjects', (map) => lockObject(map, payload))
+      const myContactId = state.get('contactId')
+      return payload.contactId === myContactId
+        ? state
+        : update(state, 'lockedObjects', (map) => lockObject(map, payload))
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
