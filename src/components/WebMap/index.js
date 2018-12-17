@@ -28,7 +28,7 @@ import { HotKey } from '../common/HotKeys'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged,
+  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged, geomPointEquals,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -410,11 +410,9 @@ export default class WebMap extends Component {
       }
     }
 
-    if (center.lat !== this.view.center.lat || center.lng !== this.view.center.lng || zoom !== this.view.zoom) {
+    if (!geomPointEquals(center, this.view.center) || zoom !== this.view.zoom) {
       this.view = { center, zoom }
-      this.isUpdatingViewport = true
       this.map.setView(this.view.center, this.view.zoom, { animate: false })
-      this.isUpdatingViewport = false
     }
   }
 
@@ -575,15 +573,14 @@ export default class WebMap extends Component {
   }
 
   moveHandler = debounce(() => {
-    if (this.isUpdatingViewport) {
-      return
-    }
     const center = this.map.getCenter()
     const zoom = this.map.getZoom()
     const isZoomChanged = zoom !== this.view.zoom
-    this.view = { center, zoom }
-    const { onMove } = this.props
-    onMove(center.wrap(), zoom, isZoomChanged)
+    if (!geomPointEquals(center, this.view.center) || isZoomChanged) {
+      this.view = { center, zoom }
+      const { onMove } = this.props
+      onMove(center.wrap(), zoom, isZoomChanged)
+    }
   }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {

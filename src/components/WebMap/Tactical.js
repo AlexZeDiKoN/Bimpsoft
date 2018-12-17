@@ -217,9 +217,9 @@ export function getGeometry (layer) {
   }
 }
 
-const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
+export const roundCoord = (value) => value === null ? NaN : Math.round(Number(value) * 1000000) / 1000000
 
-const geomPointEquals =
+export const geomPointEquals =
   (p1, p2) => p1 && p2 && roundCoord(p1.lat) === roundCoord(p2.lat) && roundCoord(p1.lng) === roundCoord(p2.lng)
 
 function geomPointListEquals (list1, list2) {
