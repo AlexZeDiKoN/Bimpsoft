@@ -199,7 +199,7 @@ deploy-qa29:
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 17 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
+    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
     - echo Done
 
 deploy-zip:
