@@ -40,12 +40,12 @@ export async function post (url, data = {}, route = '/do', namespace) {
   return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
-export async function getDirect (url, data = {}) {
+export async function getDirect (url, data = {}, namespace) {
   const options = _getOptions(data ? 'POST' : 'GET')
   if (data) {
     options.body = JSON.stringify(data)
   }
-  return _createRequest(url, options)
+  return _createRequest(url, options, namespace)
 }
 
 function _getOptions (method) {
@@ -53,7 +53,7 @@ function _getOptions (method) {
     mode: 'cors',
     credentials: 'include',
     method,
-    headers: _getDefaultHeaders(),
+    headers: _getDefaultHeaders(method !== 'GET'),
   }
 }
 

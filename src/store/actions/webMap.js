@@ -28,6 +28,7 @@ export const actionNames = {
   SET_MEASURE: action('SET_MEASURE'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
+  SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
@@ -207,6 +208,18 @@ export const getAppInfo = () =>
       payload: { version, contactId },
     })
   })
+
+export const getMapSources = () =>
+  async (dispatch, _, { webmapApi: { getMapSources } }) => {
+    try {
+      return dispatch({
+        type: actionNames.SET_SOURCES,
+        payload: JSON.parse(await getMapSources()),
+      })
+    } catch (error) {
+      console.warn(error)
+    }
+  }
 
 export const objectLocked = (objectId, contactName) => ({
   type: actionNames.OBJECT_LOCKED,
