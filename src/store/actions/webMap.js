@@ -1,5 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
-import { ZOOMS, paramsNames } from '../../constants'
+import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import * as notifications from './notifications'
@@ -212,9 +212,12 @@ export const getAppInfo = () =>
 export const getMapSources = () =>
   async (dispatch, _, { webmapApi: { getMapSources } }) => {
     try {
+      const data = await getMapSources()
+      // console.info('JSON')
+      // console.info(data)
       return dispatch({
         type: actionNames.SET_SOURCES,
-        payload: JSON.parse(await getMapSources()),
+        payload: (data && data.sources) || MapSources,
       })
     } catch (error) {
       console.warn(error)
