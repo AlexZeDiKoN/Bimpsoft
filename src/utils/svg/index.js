@@ -50,9 +50,11 @@ const generateTextSymbolSvg = ({
     } else if (align === Align.RIGHT) {
       x = maxWidth - width
     }
-    return `<text fill="#000" style="font: ${font}; white-space: pre;" x="${x}" y="${y}" ${underline} >${text}</text>`
+    return `<text fill="#000" style="font: ${font}; white-space: pre;" x="${Math.round(x)}" y="${Math.round(y)}" ${underline} >${text}</text>`
   }).join('')
   maxWidth += 6
+  maxWidth = Math.round(maxWidth)
+  fullHeight = Math.round(fullHeight)
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${maxWidth}" height="${fullHeight}" viewBox="0 0 ${maxWidth} ${fullHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     ${textsEls}
