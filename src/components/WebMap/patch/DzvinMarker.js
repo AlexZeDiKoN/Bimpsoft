@@ -133,7 +133,7 @@ const DzvinMarker = L.Marker.extend({
         const { anchor, scale: iconScale } = el.state
         const currentScale = icon.getScale(this._map.getZoom(), scaleOptions)
         const scale = currentScale / iconScale
-        L.DomUtil.setTransform(el, { x: x - anchor.x * scale, y: y - anchor.y * scale }, scale)
+        L.DomUtil.setTransform(el, { x: Math.round(x - anchor.x * scale), y: Math.round(y - anchor.y * scale) }, scale)
         this._zIndex = y + this.options.zIndexOffset
         this._resetZIndex()
       }
