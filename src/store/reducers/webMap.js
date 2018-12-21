@@ -104,9 +104,6 @@ const simpleSetFields = [ {
   action: actionNames.SET_GENERALIZATION,
   field: 'generalization',
 }, {
-  action: actionNames.SET_SOURCES,
-  field: 'sources',
-}, {
   action: actionNames.SET_SOURCE,
   field: 'source',
 }, {
@@ -143,6 +140,11 @@ export default function webMapReducer (state = WebMapState(), action) {
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })
+    }
+    case actionNames.SET_SOURCES: {
+      return state
+        .set('sources', payload.sources)
+        .set('source', payload.source)
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
