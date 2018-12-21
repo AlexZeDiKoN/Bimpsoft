@@ -213,11 +213,35 @@ export const getMapSources = () =>
   async (dispatch, _, { webmapApi: { getMapSources } }) => {
     try {
       const data = await getMapSources()
-      // console.info('JSON')
-      // console.info(data)
+      /* const data = JSON.parse(`{
+  "sources": [ {
+    "title": "ДЗВІН",
+    "sources": [ {
+      "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+      "minZoom": 5,
+      "maxZoom": 16
+    } ]
+  }, {
+    "title": "Супутник",
+    "sources": [ {
+      "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+      "minZoom": 5,
+      "maxZoom": 16
+    } ]
+  }, {
+    "title": "Ландшафт",
+    "sources": [ {
+      "source": "/tiles/land/{z}/{x}/{y}.jpg",
+      "minZoom": 5,
+      "maxZoom": 16
+    } ]
+  } ]
+}`) */
+      const payload = { ...{ sources: MapSources }, data }
+      payload.source = payload.sources[0]
       return dispatch({
         type: actionNames.SET_SOURCES,
-        payload: (data && data.sources) || MapSources,
+        payload,
       })
     } catch (error) {
       console.warn(error)
