@@ -1,5 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
-import { ZOOMS, paramsNames } from '../../constants'
+import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import * as notifications from './notifications'
@@ -214,7 +214,7 @@ export const getMapSources = () =>
     try {
       return dispatch({
         type: actionNames.SET_SOURCES,
-        payload: JSON.parse(await getMapSources()),
+        payload: JSON.parse(await getMapSources()).sources || MapSources,
       })
     } catch (error) {
       console.warn(error)
