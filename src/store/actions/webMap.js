@@ -212,9 +212,12 @@ export const getAppInfo = () =>
 export const getMapSources = () =>
   async (dispatch, _, { webmapApi: { getMapSources } }) => {
     try {
+      const data = await getMapSources()
+      console.info('JSON')
+      console.info(data)
       return dispatch({
         type: actionNames.SET_SOURCES,
-        payload: JSON.parse(await getMapSources()).sources || MapSources,
+        payload: JSON.parse(data).sources || MapSources,
       })
     } catch (error) {
       console.warn(error)
