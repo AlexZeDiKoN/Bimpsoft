@@ -33,4 +33,6 @@ export default {
     getDirect(`${webmapUrl}/param/${name}/set`, { value }),
   lockedObjects: () =>
     getDirect(`${webmapUrl}/obj/locked`, false),
+  getMapSources: () =>
+    getDirect(`/tiles/index.json`, false, ''),
 }

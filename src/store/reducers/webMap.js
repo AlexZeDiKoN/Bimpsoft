@@ -26,9 +26,11 @@ const webMapAttributesInitValues = {
   texts: [],
   z: null,
 }
+
 for (const key of Object.keys(symbolOptions)) {
   webMapAttributesInitValues[key] = ''
 }
+
 webMapAttributesInitValues['enableSignOffset'] = ''
 
 const WebMapAttributes = Record(webMapAttributesInitValues)
@@ -55,6 +57,7 @@ const WebMapState = Record({
   showAmplifiers: true,
   generalization: false,
   isMeasureOn: false,
+  sources: MapSources,
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
@@ -88,36 +91,48 @@ const unlockObject = (map, { objectId }) => map.get(objectId)
   ? map.delete(objectId)
   : map
 
+const simpleSetFields = [ {
+  action: actionNames.SET_COORDINATES_TYPE,
+  field: 'coordinatesType',
+}, {
+  action: actionNames.SET_MINIMAP,
+  field: 'showMiniMap',
+}, {
+  action: actionNames.SET_AMPLIFIERS,
+  field: 'showAmplifiers',
+}, {
+  action: actionNames.SET_GENERALIZATION,
+  field: 'generalization',
+}, {
+  action: actionNames.SET_SOURCES,
+  field: 'sources',
+}, {
+  action: actionNames.SET_SOURCE,
+  field: 'source',
+}, {
+  action: actionNames.SET_MEASURE,
+  field: 'isMeasureOn',
+}, {
+  action: actionNames.SET_SCALE_TO_SELECTION,
+  field: 'scaleToSelection',
+}, {
+  action: actionNames.SET_MARKER,
+  field: 'marker',
+}, {
+  action: actionNames.SUBORDINATION_LEVEL,
+  field: 'subordinationLevel',
+} ]
+
+const actionField = (actionName) => {
+  const simpleSet = simpleSetFields.find(({ action }) => action === actionName)
+  return simpleSet
+    ? simpleSet.field
+    : null
+}
+
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
   switch (type) {
-    case actionNames.SET_COORDINATES_TYPE: {
-      return state.set('coordinatesType', payload)
-    }
-    case actionNames.SET_MINIMAP: {
-      return state.set('showMiniMap', payload)
-    }
-    case actionNames.SET_AMPLIFIERS: {
-      return state.set('showAmplifiers', payload)
-    }
-    case actionNames.SET_GENERALIZATION: {
-      return state.set('generalization', payload)
-    }
-    case actionNames.SET_SOURCE: {
-      return state.set('source', payload)
-    }
-    case actionNames.SET_MEASURE: {
-      return state.set('isMeasureOn', payload)
-    }
-    case actionNames.SET_SCALE_TO_SELECTION: {
-      return state.set('scaleToSelection', payload)
-    }
-    case actionNames.SET_MARKER: {
-      return state.set('marker', payload)
-    }
-    case actionNames.SUBORDINATION_LEVEL: {
-      return state.set('subordinationLevel', payload)
-    }
     case actionNames.OBJECT_LIST: {
       if (!payload) {
         return state
@@ -174,8 +189,12 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
-    default:
-      return state
+    default: {
+      const field = actionField(type)
+      return field
+        ? state.set(field, payload)
+        : state
+    }
   }
 }
 

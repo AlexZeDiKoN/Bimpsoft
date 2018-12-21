@@ -1,9 +1,9 @@
 {
   "name": "web-map",
-  "version": "3.03.186",
+  "version": "3.03.188",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^3.3.111",
+    "@DZVIN/CommonComponents": "^3.3.113",
     "@DZVIN/MilSymbolEditor": "^3.3.68",
     "@DZVIN/milsymbol": ">=0.0.1",
     "antd": "^3.9.2",

@@ -239,6 +239,7 @@ export default class WebMap extends Component {
     onSelectUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
+    requestMaSources: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
@@ -254,10 +255,13 @@ export default class WebMap extends Component {
   }
 
   async componentDidMount () {
-    const { sources, requestAppInfo, getLockedObjects } = this.props
+    const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
 
-    await requestAppInfo()
-    await getLockedObjects()
+    await Promise.all([
+      requestMaSources(),
+      requestAppInfo(),
+      getLockedObjects(),
+    ])
     this.setMapView()
     this.setMapSource(sources)
     this.initObjects()
