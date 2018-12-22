@@ -33,7 +33,6 @@ const WebMapContainer = connect(
   {
     onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
     updateObjectGeometry: (id, geometry) => webMap.updateObjectGeometry(id, geometry),
-    addObject: (object) => webMap.addObject(object),
     editObject: () => selection.showEditForm,
     onSelectedList: (list) => batchActions([
       selection.selectedList(list),
@@ -56,6 +55,7 @@ const WebMapContainer = connect(
     onDropUnit: (unitID, point) => selection.newShapeFromUnit(unitID, point),
     stopMeasuring: () => webMap.setMeasure(false),
     onRemoveMarker: () => webMap.setMarker(null),
+    addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,
     requestMaSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,

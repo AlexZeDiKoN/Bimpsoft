@@ -142,6 +142,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       })
     }
     case actionNames.SET_SOURCES: {
+      console.log(payload.source)
       return state
         .set('sources', payload.sources)
         .set('source', payload.source)

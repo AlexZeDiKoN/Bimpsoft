@@ -1,0 +1,84 @@
+{
+  "$id": "maps.schema.json",
+  "description": "Визначення растрових підложок для карти",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/mapSource",
+    "minItems": 1
+  },
+  "definitions": {
+    "source": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Шаблон формування URL для завантаження тайлів"
+        },
+        "subdomains": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ],
+          "description": "Субдомени (текстовий рядок для однолітерних, масив для багатолітерних)"
+        },
+        "errorTileUrl": {
+          "type": "string",
+          "description": "URL зображення у випадку помилки завантаження тайлу"
+        },
+        "minZoom": {
+          "type": "number",
+          "description": "Мінімальний зум (0-20)",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "maxZoom": {
+          "type": "number",
+          "description": "Максимальний зум (0-20)",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "zoomOffset": {
+          "type": "number",
+          "description": "Зміщення зуму"
+        },
+        "zoomReverse": {
+          "type": "boolean",
+          "description": "Інверсія зума (maxZoom - zoom замість zoom)"
+        },
+        "tms": {
+          "type": "boolean",
+          "description": "Інверсія Y-координати (за принципом TMS)"
+        },
+        "detectRetina": {
+          "type": "boolean",
+          "description": "Подвоєння якості зображення для дисплеїв з високою роздільною здатністю"
+        },
+        "crossOrigin": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "boolean" }
+          ],
+          "description": "Додавання заголовків CORS"
+        }
+      }
+    },
+    "mapSource": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Підпис для пункта меню вибору картографічної основи"
+        },
+        "sources": {
+          "type": "array",
+          "description": "Перелік тайлових шарів для цієї картографічної основи",
+          "items": {
+            "$ref": "#/definitions/source"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [ "title", "sources" ]
+    }
+  }
+}

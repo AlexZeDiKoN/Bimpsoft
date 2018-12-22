@@ -212,36 +212,40 @@ export const getAppInfo = () =>
 export const getMapSources = () =>
   async (dispatch, _, { webmapApi: { getMapSources } }) => {
     try {
-      const data = await getMapSources()
-      /* const data = JSON.parse(`{
+      let sources = await getMapSources()
+      /* JSON.parse(`[ {
+  "title": "ДЗВІН",
   "sources": [ {
-    "title": "ДЗВІН",
-    "sources": [ {
-      "source": "/tiles/dzvin/{z}/{x}/{y}.png",
-      "minZoom": 5,
-      "maxZoom": 16
-    } ]
-  }, {
-    "title": "Супутник",
-    "sources": [ {
-      "source": "/tiles/sat/{z}/{x}/{y}.jpg",
-      "minZoom": 5,
-      "maxZoom": 16
-    } ]
-  }, {
-    "title": "Ландшафт",
-    "sources": [ {
-      "source": "/tiles/land/{z}/{x}/{y}.jpg",
-      "minZoom": 5,
-      "maxZoom": 16
-    } ]
+    "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+    "minZoom": 5,
+    "maxZoom": 16
   } ]
-}`) */
-      const payload = { ...{ sources: MapSources }, data }
-      payload.source = payload.sources[0]
+}, {
+  "title": "Супутник",
+  "sources": [ {
+    "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+}, {
+  "title": "Ландшафт",
+  "sources": [ {
+    "source": "/tiles/land/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+} ]`) */
+      if (!sources || !sources.length || !Array.isArray(sources)) {
+        sources = MapSources
+      }
       return dispatch({
         type: actionNames.SET_SOURCES,
-        payload,
+        payload: {
+          sources,
+          source: sources[0],
+        },
       })
     } catch (error) {
       console.warn(error)
