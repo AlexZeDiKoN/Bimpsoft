@@ -11,11 +11,11 @@ const DZVIN = {
   maxZoom: 16,
 }
 
-const VECTOR = {
+/* const VECTOR = {
   source: 'http://10.8.16.181/mvt/{z}/{x}/{y}.pbf',
   minZoom: 5,
   maxZoom: 16,
-}
+} */
 
 const MapSources = [ {
   title: 'ДЗВІН',
@@ -23,13 +23,10 @@ const MapSources = [ {
 } ]
 
 if (!production) {
+  DZVIN.source = '/tiles/dzvin/{z}/{x}/{y}.png'
   MapSources.push({
     title: 'Open Street Map',
     sources: [ OPENSTREETMAP ],
-  })
-  MapSources.push({
-    title: 'Вектор',
-    sources: [ VECTOR ],
   })
 }
 
