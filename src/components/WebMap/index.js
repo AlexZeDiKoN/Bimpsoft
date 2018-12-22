@@ -257,13 +257,11 @@ export default class WebMap extends Component {
   async componentDidMount () {
     const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
 
+    await requestAppInfo()
     this.setMapView()
     this.setMapSource(sources)
-    await Promise.all([
-      requestMaSources(),
-      requestAppInfo(),
-      getLockedObjects(),
-    ])
+    await requestMaSources()
+    await getLockedObjects()
     this.initObjects()
   }
 
