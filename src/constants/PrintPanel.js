@@ -20,4 +20,5 @@ export const PRINT_PANEL_KEYS = {
   LEGEND_THIRD_CONTENT: 'legendThirdContent',
   LEGEND_FOURTH_COLOR: 'legendFourthColor',
   LEGEND_FOURTH_CONTENT: 'legendFourthContent',
+  CONFIRM_DATE: `confirmDate`,
 }

@@ -170,9 +170,14 @@ export const FOURTH_ROW = `Рядок 4 (2/3h)`
 export const FIFTH_ROW = `Рядок 4 (1/2h)`
 export const START = `Почата (1/2h)`
 export const FINISH = `Закінчена (1/2h)`
+export const CONFIRM_DATE = `Дата підпису`
 // заголовки
 export const DOC_HEADER = `Заголовок документа`
 export const MAIN_INDICATORS = `Основні показники`
 export const LEGEND = `Умовні позначення`
 export const SIGN = `Знак`
 export const SIGN_CONTENT = `Зміст знаку`
+export const DOCUMENT_SIGNATORIES = `Підпис документа`
+export const POSITION = `Посада`
+export const RANG = `Звання`
+export const FULL_NAME = `ПІБ`
