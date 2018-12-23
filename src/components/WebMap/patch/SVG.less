@@ -1,5 +1,7 @@
-@svg-select-stroke: #0a0;
-@svg-select-fill: #252;
+@svg-select-stroke: #4b5249;
+@svg-select-fill: #a0aa9e;
+@svg-select-stroke-active-layer: #0a0;
+@svg-select-fill-active-layer: #252;
 @svg-locked-stroke: #f00;
 @svg-locked-fill: #800;
 
@@ -8,33 +10,65 @@
   stroke: rgba(0,0,0,0);
   stroke-width: 10px;
 }
+
 .dzvin-path-shadow{
   fill: none;
   stroke-width: 5px;
 }
+
 .dzvin-path-selected {
   stroke: @svg-select-stroke;
   &:not([fill="none"]) {
     fill: @svg-select-fill;
   }
 }
-.dzvin-path-locked {
+
+.dzvin-path-selected-on-active-layer {
+  stroke: @svg-select-stroke-active-layer;
+  &:not([fill="none"]) {
+    fill: @svg-select-fill-active-layer;
+  }
+}
+
+.dzvin-marker-selected {
+  .replace-stroke{
+    stroke: @svg-select-stroke;
+  }
+  .replace-fill{
+    fill: @svg-select-fill;
+  }
+  .replace-fill-as-stroke{
+    fill: @svg-select-stroke;
+  }
+}
+
+.dzvin-marker-selected-on-active-layer {
+  .replace-stroke{
+    stroke: @svg-select-stroke-active-layer;
+  }
+  .replace-fill{
+    fill: @svg-select-fill-active-layer;
+  }
+  .replace-fill-as-stroke{
+    fill: @svg-select-stroke-active-layer;
+  }
+}
+
+&.dzvin-path-locked {
   stroke: @svg-locked-stroke;
   &:not([fill="none"]) {
     fill: @svg-locked-fill;
   }
 }
 
-.dzvin-marker {
-  &.dzvin-marker-selected {
-    .replace-stroke{
-      stroke: @svg-select-stroke;
-    }
-    .replace-fill{
-      fill: @svg-select-fill;
-    }
-    .replace-fill-as-stroke{
-      fill: @svg-select-stroke;
-    }
+&.dzvin-marker-locked {
+  .replace-stroke{
+    stroke: @svg-locked-stroke;
+  }
+  .replace-fill{
+    fill: @svg-locked-fill;
+  }
+  .replace-fill-as-stroke{
+    fill: @svg-locked-stroke;
   }
 }

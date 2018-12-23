@@ -7,6 +7,7 @@ export const SET_ORG_STRUCTURE_FORMATION = action('SET_ORG_STRUCTURE_FORMATION')
 export const SET_ORG_STRUCTURE_SELECTED_ID = action('SET_ORG_STRUCTURE_SELECTED_ID')
 export const SET_ORG_STRUCTURE_FILTER_TEXT = action('SET_ORG_STRUCTURE_FILTER_TEXT')
 export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
+export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
 const CACHE_LIFETIME = 60000
 
@@ -29,6 +30,10 @@ export const setOrgStructuresFilterText = (filterText) => ({
 export const expandOrgStructureItem = (id) => ({
   type: EXPAND_ORG_STRUCTURE_ITEM,
   id,
+})
+export const expandTreeByOrgStructureItem = (selectedId) => ({
+  type: EXPAND_TREE_BY_ORG_STRUCTURE_ITEM,
+  selectedId,
 })
 export const setOrgStructureTree = (byIds, roots) => ({
   type: SET_ORG_STRUCTURE_TREE,

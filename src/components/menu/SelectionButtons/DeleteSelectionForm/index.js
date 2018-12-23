@@ -7,7 +7,7 @@ import { shortcuts } from '../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 
-const { default: Form, FormButtonCancel, FormButtonOk, FormItem } = components.form
+const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
 export default class DeleteSelectionForm extends React.Component {
   static propTypes = {
@@ -18,7 +18,7 @@ export default class DeleteSelectionForm extends React.Component {
   }
 
   render () {
-    const { list, layerName } = this.props
+    const { list, layerName, onOk, onCancel } = this.props
     return (
       <Fragment>
         <div className="not-clickable-area"> </div>
@@ -34,9 +34,9 @@ export default class DeleteSelectionForm extends React.Component {
                 </div>
               </FormItem>
               <FormItem>
-                <FormButtonOk onClick={this.props.onOk} />
-                <HotKey selector={shortcuts.ESC} onKey={this.props.onCancel} />
-                <FormButtonCancel onClick={this.props.onCancel} />
+                {buttonYes(onOk)}
+                <HotKey selector={shortcuts.ESC} onKey={onCancel} />
+                {buttonNo(onCancel)}
               </FormItem>
             </Form>
           </HotKeysContainer>

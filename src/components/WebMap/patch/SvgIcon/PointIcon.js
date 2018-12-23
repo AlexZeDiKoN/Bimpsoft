@@ -44,6 +44,8 @@ const PointIcon = L.Icon.extend({
     const svg = symbol.asSVG()
     const anchor = symbol.getAnchor()
     const node = getSvgNodeFromString(svg)
+    node.setAttribute('width', Math.round(node.getAttribute('width')))
+    node.setAttribute('height', Math.round(node.getAttribute('height')))
     setActivePointSignColors(node)
     node.state = { anchor, zoom, scale, scaleOptions, showAmplifiers, data }
     return node

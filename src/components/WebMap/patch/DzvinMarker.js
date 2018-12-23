@@ -1,6 +1,6 @@
 /* global L */
 
-import { setOpacity, setHidden } from './utils/helpers'
+import { setOpacity, setHidden, setClassName } from './utils/helpers'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
@@ -19,14 +19,14 @@ const DzvinMarker = L.Marker.extend({
   setOpacity,
   setHidden,
   setShadowColor,
-  setSelected: function (selected) {
-    this._selected = selected
-    const el = this.getElement()
-    if (el) {
-      const hasClassSelected = el.classList.contains('dzvin-marker-selected')
-      if (hasClassSelected !== selected) {
-        selected ? el.classList.add('dzvin-marker-selected') : el.classList.remove('dzvin-marker-selected')
-      }
+  setSelected: function (selected, inActiveLayer) {
+    if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
+      this._selected = selected
+      this._inActiveLayer = inActiveLayer
+      const el = this.getElement()
+      setClassName(el, 'dzvin-marker-selected', selected && !inActiveLayer)
+      setClassName(el, 'dzvin-marker-selected-on-active-layer', selected && inActiveLayer)
+      !selected && setClassName(el, 'dzvin-marker-locked', false)
     }
   },
   optimize: function () {
@@ -97,10 +97,8 @@ const DzvinMarker = L.Marker.extend({
         el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
       }
 
-      const hasClassSelected = el.classList.contains('dzvin-marker-selected')
-      if (hasClassSelected !== this._selected) {
-        this._selected ? el.classList.add('dzvin-marker-selected') : el.classList.remove('dzvin-marker-selected')
-      }
+      setClassName(el, 'dzvin-marker-selected', this._selected && !this._inActiveLayer)
+      setClassName(el, 'dzvin-marker-selected-on-active-layer', this._selected && this._inActiveLayer)
     }
   },
   setLocked: function (locked) {
@@ -110,11 +108,9 @@ const DzvinMarker = L.Marker.extend({
       const hasClassLocked = el.classList.contains('dzvin-marker-locked')
       if (hasClassLocked !== locked) {
         if (locked) {
-          el.classList.remove('dzvin-marker-selected')
           el.classList.add('dzvin-marker-locked')
         } else {
           el.classList.remove('dzvin-marker-locked')
-          this._selected && el.classList.add('dzvin-marker-selected')
         }
       }
     }
@@ -137,7 +133,7 @@ const DzvinMarker = L.Marker.extend({
         const { anchor, scale: iconScale } = el.state
         const currentScale = icon.getScale(this._map.getZoom(), scaleOptions)
         const scale = currentScale / iconScale
-        L.DomUtil.setTransform(el, { x: x - anchor.x * scale, y: y - anchor.y * scale }, scale)
+        L.DomUtil.setTransform(el, { x: Math.round(x - anchor.x * scale), y: Math.round(y - anchor.y * scale) }, scale)
         this._zIndex = y + this.options.zIndexOffset
         this._resetZIndex()
       }

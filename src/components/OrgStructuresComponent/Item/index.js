@@ -15,7 +15,7 @@ export default class Item extends React.Component {
 
   clickHandler = () => {
     const { onClick, data } = this.props
-    onClick(data.id)
+    onClick && onClick(data.id)
   }
 
   dragStartHandler = (e) => {
@@ -29,18 +29,18 @@ export default class Item extends React.Component {
     const icon = tree.canExpand &&
       (<Icon type={tree.expanded ? 'minus' : 'plus'} onClick={tree.onExpand} />)
     const isSelected = id === selectedId
+    const classes = [ 'org-structure-item' ]
+    isSelected && classes.push('org-structure-item-selected')
+    tree.canExpand && classes.push('org-structure-item-can-expand')
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
         placement="topLeft"
       >
-        <div
-          ref={isSelected ? scrollRef : null}
-          className={'org-structure-item' + (isSelected ? ' org-structure-item-selected' : '')}
-        >
+        <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
           {icon}
           <div
-            onDoubleClick={canEdit ? this.doubleClickHandler : null}
+            onDoubleClick={this.doubleClickHandler}
             onClick={this.clickHandler}
             onDragStart={canEdit ? this.dragStartHandler : null}
             draggable={canEdit}

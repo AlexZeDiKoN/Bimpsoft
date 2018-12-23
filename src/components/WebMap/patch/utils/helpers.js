@@ -38,13 +38,6 @@ export function hookSplice (arr) {
   }
 }
 
-export function dblClickOnControlPoint (event) {
-  if (event.target._map.pm.activeLayer) {
-    event.target._map.fire('editlayer', event.target._map.pm.activeLayer)
-  }
-  L.DomEvent.stopPropagation(event)
-}
-
 export function adjustSquareCorner (map, point, opposite) {
   let bounds = L.latLngBounds(point, opposite)
   const nw = bounds.getNorthWest()
@@ -65,4 +58,13 @@ export function adjustSquareCorner (map, point, opposite) {
     point = bounds.getNorthWest()
   }
   return point
+}
+
+export function setClassName (el, name, enable) {
+  if (el) {
+    const hasClass = el.classList.contains(name)
+    if (hasClass !== enable) {
+      enable ? el.classList.add(name) : el.classList.remove(name)
+    }
+  }
 }

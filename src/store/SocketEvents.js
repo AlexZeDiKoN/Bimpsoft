@@ -12,7 +12,7 @@ const updateObject = (dispatch) => ({ id }) =>
   dispatch(webMapActions.refreshObject(id))
 
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
-  if (getState().webMap.contactId !== contactId) {
+  if (String(getState().webMap.contactId) !== String(contactId)) {
     dispatch(webMapActions.objectLocked(objectId, contactName))
   }
 }

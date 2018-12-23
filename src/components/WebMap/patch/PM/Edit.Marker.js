@@ -1,8 +1,5 @@
 /* global L */
 
-import { dblClickOnControlPoint } from '../utils/helpers'
-import { mouseupTimer } from './constants'
-
 const { enable } = L.PM.Edit.Marker.prototype
 const parent = { enable }
 
@@ -27,15 +24,19 @@ L.PM.Edit.Marker.include({
       icon: L.divIcon({ className: 'marker-icon' }),
     })
     marker._pmTempLayer = true
-    marker.on('dblclick', dblClickOnControlPoint)
     marker.on('move', this._onMarkerDrag, this)
-    marker.on('mousedown', () => (marker._map.pm.draggingMarker = true))
-    marker.on('mouseup', () => setTimeout(() => {
-      if (marker._map) {
-        marker._map.pm.draggingMarker = false
-      }
-    }, mouseupTimer))
+    marker.on('dragstart', this._onMarkerDragStart, this)
+    marker.on('dragend', this._onMarkerDragEnd, this)
+
     return marker
+  },
+
+  _onMarkerDragStart (markerEvent) {
+    this._layer.fire('pm:markerdragstart', { markerEvent });
+  },
+
+  _onMarkerDragEnd (markerEvent) {
+    this._layer.fire('pm:markerdragend', { markerEvent });
   },
 
   _onMarkerDrag: function (e) {

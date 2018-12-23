@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
+import { batchDispatchMiddleware } from 'redux-batched-actions'
 import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
@@ -27,6 +28,7 @@ export default function initStore (options = {}) {
   } = options
 
   const middlewares = [
+    batchDispatchMiddleware,
     thunk.withExtraArgument({
       explorerApi,
       webmapApi,

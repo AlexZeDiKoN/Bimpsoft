@@ -2,12 +2,12 @@ import { connect } from 'react-redux'
 import MapSourceSelect from '../components/MapSourceSelect'
 import * as webMapActions from '../store/actions/webMap'
 import * as viewModesActions from '../store/actions/viewModes'
-import { MapSources, viewModesKeys } from '../constants'
+import { viewModesKeys } from '../constants'
 
 const mapStateToProps = (store) => ({
   isShowSources: store.viewModes[viewModesKeys.mapSourcesList],
   source: store.webMap.source,
-  sources: MapSources,
+  sources: store.webMap.sources,
 })
 
 const mapDispatchToProps = {

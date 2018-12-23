@@ -1,14 +1,14 @@
 {
   "name": "web-map",
-  "version": "3.02.173",
+  "version": "3.03.196",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^0.5.103",
-    "@DZVIN/MilSymbolEditor": "^0.3.53",
+    "@DZVIN/CommonComponents": "^3.3.113",
+    "@DZVIN/MilSymbolEditor": "^3.3.68",
     "@DZVIN/milsymbol": ">=0.0.1",
     "antd": "^3.9.2",
     "babel-polyfill": "^6.26.0",
-    "bezier-js": "^2.2.15",
+    "bezier-js": "2.2.18",
     "debounce": "^1.2.0",
     "history": "^4.7.2",
     "immutable": "^3.8.2",
@@ -39,6 +39,7 @@
     "react-scripts": "1.1.4",
     "recompose": "^0.27.1",
     "redux": "^4.0.0",
+    "redux-batched-actions": "^0.4.1",
     "redux-thunk": "^2.3.0",
     "svg-path-bounds": "^1.0.1",
     "utm": "^1.1.1"

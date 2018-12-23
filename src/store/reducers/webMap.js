@@ -1,22 +1,19 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
-import * as amplifiers from '@DZVIN/MilSymbolEditor/src/model/symbolOptions'
+import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { ZOOMS, CoordinatesTypes, MapSources, colors, paramsNames } from '../../constants'
+import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+
+const { APP6Code: { getAmplifier }, symbolOptions } = model
 
 const WebMapPoint = Record({
   lat: null,
   lng: null,
 })
 
-for (const key of Object.keys(amplifiers)) {
-  amplifiers[key] = ''
-}
-
-const WebMapAttributes = Record({
-  ...amplifiers,
+const webMapAttributesInitValues = {
   template: '',
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
@@ -28,7 +25,15 @@ const WebMapAttributes = Record({
   lineNodes: 'none',
   texts: [],
   z: null,
-})
+}
+
+for (const key of Object.keys(symbolOptions)) {
+  webMapAttributesInitValues[key] = ''
+}
+
+webMapAttributesInitValues['enableSignOffset'] = ''
+
+const WebMapAttributes = Record(webMapAttributesInitValues)
 
 const WebMapObject = Record({
   id: null,
@@ -52,19 +57,20 @@ const WebMapState = Record({
   showAmplifiers: true,
   generalization: false,
   isMeasureOn: false,
+  sources: MapSources,
   source: MapSources[0],
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
   lockedObjects: Map(),
   version: null,
   contactId: null,
+  scaleToSelection: false,
+  marker: null,
 })
 
 const checkLevel = (object) => {
   const { code, level } = object
-  if (code && !level) {
-    object.level = +code.slice(8, 10)
-  }
+  object.level = Number(level || (code && getAmplifier(code)))
 }
 
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
@@ -85,30 +91,45 @@ const unlockObject = (map, { objectId }) => map.get(objectId)
   ? map.delete(objectId)
   : map
 
+const simpleSetFields = [ {
+  action: actionNames.SET_COORDINATES_TYPE,
+  field: 'coordinatesType',
+}, {
+  action: actionNames.SET_MINIMAP,
+  field: 'showMiniMap',
+}, {
+  action: actionNames.SET_AMPLIFIERS,
+  field: 'showAmplifiers',
+}, {
+  action: actionNames.SET_GENERALIZATION,
+  field: 'generalization',
+}, {
+  action: actionNames.SET_SOURCE,
+  field: 'source',
+}, {
+  action: actionNames.SET_MEASURE,
+  field: 'isMeasureOn',
+}, {
+  action: actionNames.SET_SCALE_TO_SELECTION,
+  field: 'scaleToSelection',
+}, {
+  action: actionNames.SET_MARKER,
+  field: 'marker',
+}, {
+  action: actionNames.SUBORDINATION_LEVEL,
+  field: 'subordinationLevel',
+} ]
+
+const actionField = (actionName) => {
+  const simpleSet = simpleSetFields.find(({ action }) => action === actionName)
+  return simpleSet
+    ? simpleSet.field
+    : null
+}
+
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
   switch (type) {
-    case actionNames.SET_COORDINATES_TYPE: {
-      return state.set('coordinatesType', payload)
-    }
-    case actionNames.SET_MINIMAP: {
-      return state.set('showMiniMap', payload)
-    }
-    case actionNames.SET_AMPLIFIERS: {
-      return state.set('showAmplifiers', payload)
-    }
-    case actionNames.SET_GENERALIZATION: {
-      return state.set('generalization', payload)
-    }
-    case actionNames.SET_SOURCE: {
-      return state.set('source', payload)
-    }
-    case actionNames.SET_MEASURE: {
-      return state.set('isMeasureOn', payload)
-    }
-    case actionNames.SUBORDINATION_LEVEL: {
-      return state.set('subordinationLevel', payload)
-    }
     case actionNames.OBJECT_LIST: {
       if (!payload) {
         return state
@@ -119,6 +140,12 @@ export default function webMapReducer (state = WebMapState(), action) {
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })
+    }
+    case actionNames.SET_SOURCES: {
+      console.log(payload.source)
+      return state
+        .set('sources', payload.sources)
+        .set('source', payload.source)
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
@@ -136,16 +163,13 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
     }
     case actionNames.SET_MAP_CENTER: {
-      const { center, zoom, params } = payload
+      const { center, zoom } = payload
       let result = state
-        .set('center', center)
-        .set('zoom', zoom)
-      if (state.zoom !== zoom) {
-        const scale = ZOOMS[zoom]
-        const level = params && params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`]
-        const sl = +level || state.subordinationLevel
-        result = result
-          .set('subordinationLevel', sl)
+      if (center) {
+        result = result.set('center', center)
+      }
+      if (zoom) {
+        result = result.set('zoom', zoom)
       }
       return result
     }
@@ -155,17 +179,25 @@ export default function webMapReducer (state = WebMapState(), action) {
         .set('version', version)
         .set('contactId', +contactId)
     }
+    case actionNames.GET_LOCKED_OBJECTS: {
+      const myContactId = state.get('contactId')
+      return update(state, 'lockedObjects', (map) => Object.entries(payload)
+        .filter(({ contactId }) => String(contactId) !== String(myContactId))
+        .map(([ objectId, { contactName } ]) => ({ objectId, contactName }))
+        .reduce(lockObject, map))
+    }
     case actionNames.OBJECT_LOCKED: {
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
-      // TODO: [DONE: Індикація залоченого стану при кліку] і показ хінта з іменем того, хто залочив
-      // TODO: Автоматично знімати індикацію, коли об'єкт розлочили (але не автивувати автоматично)
-      // TODO: Зняття локів при виході із SPA
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
-    default:
-      return state
+    default: {
+      const field = actionField(type)
+      return field
+        ? state.set(field, payload)
+        : state
+    }
   }
 }
 

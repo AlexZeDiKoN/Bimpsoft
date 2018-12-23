@@ -4,6 +4,7 @@
 .org-structure-item{
   .flex;
   align-items: center;
+  padding: 3px 0;
   .milsymbol{
     width: 2em;
     height: 2em;
@@ -18,7 +19,11 @@
       color: #888;
     }
   }
+  &:not(.org-structure-item-can-expand) .org-structure-item-content{
+    padding-left: 1em;
+  }
 }
+
 .org-structure-item-selected {
   .org-structure-item-text {
     background: @toolbar-background-selected;

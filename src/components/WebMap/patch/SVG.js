@@ -6,6 +6,7 @@ import subordinationLevels from '../../../constants/SubordinationLevel'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import './SVG.css'
+import { setClassName } from './utils/helpers'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
@@ -248,7 +249,7 @@ export default L.SVG.include({
     // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
-      options: { shadowColor, opacity = 1, hidden, selected, locked, color },
+      options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },
       _shadowPath,
       _path,
       _amplifierGroup,
@@ -282,20 +283,18 @@ export default L.SVG.include({
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
-    const hasClassLocked = _path.classList.contains('dzvin-path-locked')
-    const hasClassSelected = _path.classList.contains('dzvin-path-selected')
-    const lockedAction = locked ? 'add' : 'remove'
-    const selectedAction = selected && !locked ? 'add' : 'remove'
-    if (hasClassSelected !== selected) {
-      _path.classList[selectedAction]('dzvin-path-selected')
-    }
-    _amplifierGroup && _amplifierGroup.classList[selectedAction]('dzvin-path-selected')
-    _lineEndsGroup && _lineEndsGroup.classList[selectedAction]('dzvin-path-selected')
-    if (hasClassLocked !== locked) {
-      _path.classList[lockedAction]('dzvin-path-locked')
-    }
-    _amplifierGroup && _amplifierGroup.classList[lockedAction]('dzvin-path-locked')
-    _lineEndsGroup && _lineEndsGroup.classList[lockedAction]('dzvin-path-locked')
+
+    setClassName(_path, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
+    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
+    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
+
+    setClassName(_path, 'dzvin-path-selected', selected && !inActiveLayer)
+    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected', selected && !inActiveLayer)
+    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected', selected && !inActiveLayer)
+
+    setClassName(_path, 'dzvin-path-locked', locked)
+    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-locked', locked)
+    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-locked', locked)
   },
 
   _addPath: function (layer) {

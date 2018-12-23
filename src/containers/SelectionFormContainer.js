@@ -7,14 +7,15 @@ import * as templatesActions from '../store/actions/templates'
 import i18n from '../i18n'
 import { canEditSelector } from '../store/selectors'
 import { FormTypes } from '../constants'
+import { toSelection } from '../utils/mapObjConvertor'
 
 const updateActions = {
   [FormTypes.EDIT]: selectionActions.updateSelection,
-  [FormTypes.CREATE]: selectionActions.updateNewShape,
+  [FormTypes.CREATE]: selectionActions.finishNewShape,
 }
 
 const mapStateToProps = (store) => {
-  const { selection, orgStructures } = store
+  const { selection, orgStructures, webMap: { objects } } = store
   const canEdit = canEditSelector(store)
   const { byIds, roots, formation } = orgStructures
   const { showForm } = selection
@@ -22,7 +23,10 @@ const mapStateToProps = (store) => {
   if (showForm === FormTypes.CREATE) {
     data = selection.newShape
   } else if (showForm === FormTypes.EDIT) {
-    data = selection.data
+    if (selection.list.length === 1) {
+      const object = objects.get(selection.list[0])
+      data = object ? toSelection(object) : null
+    }
   }
   return { canEdit, showForm, data, orgStructures: { byIds, roots, formation } }
 }

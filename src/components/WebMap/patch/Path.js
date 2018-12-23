@@ -22,9 +22,16 @@ export default L.Path.include({
     this.setStyle({ color })
   },
 
-  setSelected: function (selected) {
-    this._selected = selected
-    this.setStyle({ selected })
+  setSelected: function (selected, inActiveLayer) {
+    if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
+      this._selected = selected
+      this._inActiveLayer = inActiveLayer
+      const newStyle = { selected, inActiveLayer }
+      if (!selected) {
+        newStyle.locked = false
+      }
+      this.setStyle(newStyle)
+    }
   },
 
   setLocked: function (locked) {
@@ -148,7 +155,7 @@ export default L.Path.include({
       let needRedraw = false
       if (scaleChanged || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
-        styles.weight = `${this.scale * strokeWidth / 100}px`
+        styles.weight = scale * strokeWidth
         hasStyles = true
       }
       if (scaleChanged || lineTypePrev !== lineType) {
