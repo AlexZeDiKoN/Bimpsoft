@@ -5,6 +5,7 @@ import * as viewModesActions from '../store/actions/viewModes'
 import * as layersActions from '../store/actions/layers'
 import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
+import { print } from '../store/actions/print'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
 
 const mapStateToProps = (store) => {
@@ -13,6 +14,7 @@ const mapStateToProps = (store) => {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
     webMap: { subordinationLevel, isMeasureOn },
+    print: { printStatus },
   } = store
 
   const layerName = layerNameSelector(store)
@@ -24,6 +26,7 @@ const mapStateToProps = (store) => {
     isMeasureOn,
     subordinationLevel,
     layerName,
+    printStatus,
   }
 }
 const mapDispatchToProps = {
@@ -57,6 +60,7 @@ const mapDispatchToProps = {
     dispatch(webMapActions.setSubordinationLevel(subordinationLevel))
     dispatch(viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel))
   },
+  print: () => print(),
 }
 const LeftMenuContainer = connect(
   mapStateToProps,

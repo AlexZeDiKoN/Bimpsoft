@@ -33,6 +33,9 @@ export default class LeftMenu extends React.Component {
     onPaste: PropTypes.func,
     onDelete: PropTypes.func,
     layerName: PropTypes.string,
+
+    print: PropTypes.func,
+    printStatus: PropTypes.bool,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -55,6 +58,8 @@ export default class LeftMenu extends React.Component {
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
       layerName,
+      print,
+      printStatus,
     } = this.props
 
     const subordinationLevelViewData =
@@ -105,6 +110,14 @@ export default class LeftMenu extends React.Component {
           hoverIcon={iconNames.RULLER_HOVER}
           checked={isMeasureOn}
           onClick={onMeasureChange}
+        />
+        {/* TODO: встановити кошерну іконку */}
+        <IconButton
+          title={i18n.PRINT_BUTTON}
+          icon={printStatus ? iconNames.COPY_HOVER : iconNames.COPY_DEFAULT}
+          hoverIcon={iconNames.COPY_HOVER}
+          checked={printStatus}
+          onClick={print}
         />
         <SelectionButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>

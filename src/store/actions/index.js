@@ -7,6 +7,7 @@ import * as orgStructures from './orgStructures'
 import * as selection from './selection'
 import * as templates from './templates'
 import * as webMap from './webMap'
+import * as print from './print'
 
 export {
   viewModes,
@@ -18,4 +19,5 @@ export {
   orgStructures,
   webMap,
   asyncAction,
+  print,
 }

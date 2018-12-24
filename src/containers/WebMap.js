@@ -29,6 +29,8 @@ const WebMapContainer = connect(
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
     activeObjectId: activeObjectId(state),
+    printStatus: state.print.printStatus,
+    printScale: state.print.printScale,
   }),
   {
     onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),

@@ -35,9 +35,17 @@ const initGridRecalculation = (e) => {
 
 const throttledGridRecalculation = throttle(initGridRecalculation, 200)
 
-const initCoordinateMapGrid = (map) => {
+const initCoordinateMapGrid = (map, scale) => {
+  setScale(map, scale)
   createGrid(map)
   map.on('move', throttledGridRecalculation)
+}
+
+const setScale = (map, scale) => {
+  if (GRID_DATA.scale !== undefined && GRID_DATA.scale !== scale) {
+    removeCoordinateMapGrid(map)
+  }
+  GRID_DATA.scale = scale
 }
 
 const removeCoordinateMapGrid = (map) => {
@@ -49,6 +57,6 @@ const removeCoordinateMapGrid = (map) => {
   GRID_DATA.selectedLayers.eachLayer(removeLayerFromSelectedLayers)
 }
 
-export const toggleMapGrid = (map, isActive) => isActive
-  ? initCoordinateMapGrid(map)
+export const toggleMapGrid = (map, isActive, scale) => isActive
+  ? initCoordinateMapGrid(map, scale)
   : removeCoordinateMapGrid(map)

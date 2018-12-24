@@ -11,8 +11,6 @@ export const ADD_CIRCLE = (e) => e.altKey && e.keyCode === KeyCode.KEY_7
 export const ADD_RECTANGLE = (e) => e.altKey && e.keyCode === KeyCode.KEY_8
 export const ADD_SQUARE = (e) => e.altKey && e.keyCode === KeyCode.KEY_9
 export const ADD_TEXT = (e) => e.altKey && e.keyCode === KeyCode.KEY_0
-// TODO: прибрати це після тестування
-export const SELECT_PRINT_AREA = (e) => e.altKey && e.keyCode === KeyCode.KEY_P
 
 export const DELETE = (e) => e.key === 'Delete'
 export const ENTER = (e) => e.key === 'Enter'

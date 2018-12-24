@@ -1,4 +1,4 @@
-import { CELL_SIZES, GRID_CELLS_STRUCTURE, LAT, LNG, SCREEN_COORDINATES, ZOOM } from '../constants'
+import { CELL_SIZES, GRID_CELLS_STRUCTURE, LAT, LNG, SCREEN_COORDINATES, GRID_DATA } from '../constants'
 import { setInitCoordinates } from './../helpers'
 
 const getRowLength = (initCoordinate, cellSizes, Z) => {
@@ -12,8 +12,8 @@ const getColumnLength = (initCoordinate, cellSizes, Z) => {
 }
 
 const setGridCellsAmount = () => {
-  GRID_CELLS_STRUCTURE.row_length = getRowLength(SCREEN_COORDINATES, CELL_SIZES, ZOOM)
-  GRID_CELLS_STRUCTURE.column_length = getColumnLength(SCREEN_COORDINATES, CELL_SIZES, ZOOM)
+  GRID_CELLS_STRUCTURE.row_length = getRowLength(SCREEN_COORDINATES, CELL_SIZES, GRID_DATA.scale)
+  GRID_CELLS_STRUCTURE.column_length = getColumnLength(SCREEN_COORDINATES, CELL_SIZES, GRID_DATA.scale)
 }
 
 const getCellBLC = (initTlc, cellNum, steps) => ([
@@ -61,5 +61,5 @@ const generateGrid = (startTLC, Z, GRID_CELLS_STRUCTURE) => {
 export const generateCoordinateMatrix = (map) => {
   setInitCoordinates(map.getBounds())
   setGridCellsAmount()
-  return generateGrid(SCREEN_COORDINATES.TLC, CELL_SIZES[ZOOM], GRID_CELLS_STRUCTURE)
+  return generateGrid(SCREEN_COORDINATES.TLC, CELL_SIZES[GRID_DATA.scale], GRID_CELLS_STRUCTURE)
 }

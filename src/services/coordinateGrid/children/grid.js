@@ -7,7 +7,7 @@ import {
   addLayerToSelectedLayers,
   removeLayerFromSelectedLayers,
   addLayerToCurrentGrid,
-} from './../helpers'
+} from '../helpers'
 
 const selectLayer = (layer) => {
   layer.setStyle(SELECTED_CELL_OPTIONS)

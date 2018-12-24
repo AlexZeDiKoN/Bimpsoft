@@ -11,12 +11,10 @@ const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 250
 
-// TODO: заглушка для сайдбара
-const preparationForPrinting = true
-
 export default class Sidebar extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
+    printStatus: PropTypes.bool,
   }
 
   state = {
@@ -53,7 +51,7 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { visible } = this.props
+    const { visible, printStatus } = this.props
     const sidebarDisplay = visible ? '' : 'none'
     return (
       <Fragment>
@@ -64,7 +62,7 @@ export default class Sidebar extends React.Component {
         />
         <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
           <div className="sidebar">
-            {this.changeSidebarPanels(preparationForPrinting)}
+            {this.changeSidebarPanels(printStatus)}
           </div>
         </div>
       </Fragment>

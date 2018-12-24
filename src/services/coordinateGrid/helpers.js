@@ -1,7 +1,7 @@
-import { CELL_SIZES, GRID_DATA, LAT, LNG, SCREEN_COORDINATES, ZOOM } from './constants'
+import { CELL_SIZES, GRID_DATA, LAT, LNG, SCREEN_COORDINATES } from './constants'
 
 export const isAreaOnScreen = (_northEast) => {
-  const Z = CELL_SIZES[ZOOM]
+  const Z = CELL_SIZES[GRID_DATA.scale]
   const leftBorder = SCREEN_COORDINATES.TLC[LNG]
   const topBorder = SCREEN_COORDINATES.TLC[LAT] + Z.lat
   const rightBorder = SCREEN_COORDINATES.BRC[LNG] + Z.lng

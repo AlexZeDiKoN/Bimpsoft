@@ -51,8 +51,6 @@ const switchScaleOptions = {
 
 const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
 
-// TODO: прибрати це після тестування
-let tempPrintFlag = false
 // const tmp = `<svg
 //   width="480" height="480"
 //   line-point-1="24,240"
@@ -226,6 +224,8 @@ export default class WebMap extends Component {
     contactId: PropTypes.number,
     lockedObjects: PropTypes.object,
     activeObjectId: PropTypes.string,
+    printStatus: PropTypes.bool,
+    printScale: PropTypes.number,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -272,8 +272,13 @@ export default class WebMap extends Component {
 
     const {
       objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, selection: { newShape },
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, selection: { newShape }, printStatus,
+      printScale,
     } = this.props
+
+    if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
+      this.selectPrintAreaHandler(printStatus, printScale)
+    }
 
     if (objects !== prevProps.objects) {
       this.updateObjects(objects)
@@ -958,9 +963,8 @@ export default class WebMap extends Component {
   //   this.activateCreated(created)
   // }
 
-  selectPrintAreaHandler = () => {
-    tempPrintFlag = !tempPrintFlag
-    toggleMapGrid(this.map, tempPrintFlag)
+  selectPrintAreaHandler = (status, scale) => {
+    toggleMapGrid(this.map, status, scale)
   }
 
   updateCreatePoly = (type) => {
@@ -1043,7 +1047,6 @@ export default class WebMap extends Component {
       >
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
       </div>
     )
   }
