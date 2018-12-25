@@ -53,7 +53,7 @@ const removeCoordinateMapGrid = (map) => {
   GRID_DATA.currentGrid.removeFrom(map)
   GRID_DATA.selectedLayers.removeFrom(map)
   GRID_DATA.currentMarkers.removeFrom(map)
-  GRID_DATA.currentGrid = GRID_DATA.currentMarkers = null
+  GRID_DATA.currentGrid = GRID_DATA.currentMarkers = GRID_DATA.selectedZone = null
   GRID_DATA.selectedLayers.eachLayer(removeLayerFromSelectedLayers)
 }
 

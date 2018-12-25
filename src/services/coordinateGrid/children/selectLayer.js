@@ -1,9 +1,20 @@
 import { GRID_DATA, SELECTED_CELL_OPTIONS } from '../constants'
 import { addLayerToSelectedLayers, removeLayerFromCurrentGrid } from '../helpers'
 
-export const selectLayer = (layer) => {
-  setSelectedZone(layer)
-  listVerification(GRID_DATA.selectedZone, GRID_DATA.currentGrid)
+// додати листи до групи виділених
+const addToSelected = (layer) => {
+  layer.setStyle(SELECTED_CELL_OPTIONS)
+  removeLayerFromCurrentGrid(layer)
+  addLayerToSelectedLayers(layer)
+}
+
+// перевірка наявності листа в виділеній зоні
+const listVerification = (zone, grid) => {
+  grid.getLayers().forEach((layer) => {
+    if (zone.contains(layer.getCenter())) {
+      addToSelected(layer)
+    }
+  })
 }
 
 // створення і редагування зони покриття
@@ -27,18 +38,7 @@ const setSelectedZone = (layer) => {
   }
 }
 
-// перевірка наявності листа в виділеній зоні
-const listVerification = (zone, grid) => {
-  grid.getLayers().forEach((layer) => {
-    if (zone.contains(layer.getCenter())) {
-      addToSelected(layer)
-    }
-  })
-}
-
-// додати листи до групи виділених
-const addToSelected = (layer) => {
-  layer.setStyle(SELECTED_CELL_OPTIONS)
-  removeLayerFromCurrentGrid(layer)
-  addLayerToSelectedLayers(layer)
+export const selectLayer = (layer) => {
+  setSelectedZone(layer)
+  listVerification(GRID_DATA.selectedZone, GRID_DATA.currentGrid)
 }

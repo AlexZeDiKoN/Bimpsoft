@@ -3,16 +3,9 @@ import { layerGroup, rectangle } from 'leaflet'
 import { INIT_GRID_OPTIONS, LAT, LNG, GRID_DATA } from '../constants'
 import {
   isAreaOnScreen,
-  removeLayerFromSelectedLayers,
-  addLayerToCurrentGrid,
 } from '../helpers'
 import { selectLayer } from './selectLayer'
-
-const deselectLayer = (layer) => {
-  layer.setStyle(INIT_GRID_OPTIONS)
-  removeLayerFromSelectedLayers(layer)
-  addLayerToCurrentGrid(layer)
-}
+import { deselectLayer } from './deselectLayer'
 
 const addClickEvent = (layer) => {
   layer.on('click', (e) =>
@@ -54,6 +47,10 @@ export const updateGrid = (coordinatesList) => {
     if (!isLayerExist(coordinate, layers)) {
       const newLayer = createGridRectangle(coordinate)
       layerGroup.addLayer(newLayer)
+      // TODO: зробити нормальну перевірку
+      if (GRID_DATA.selectedZone.contains(newLayer.getCenter())) {
+        newLayer.removeFrom(layerGroup)
+      }
     }
   })
 }
