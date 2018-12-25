@@ -19,12 +19,12 @@ export const CELL_SIZES = {
 }
 export const INIT_GRID_OPTIONS = {
   color: 'black',
-  fillOpacity: 0,
+  fillOpacity: 0.3,
   weight: 0.5,
 }
 export const SELECTED_CELL_OPTIONS = {
-  color: 'blue',
-  fillOpacity: 0.3,
+  color: 'black',
+  fillOpacity: 0,
 }
 export const SCREEN_COORDINATES = {
   TLC: [ 0, 0 ],
@@ -45,7 +45,6 @@ export const ITEM_NUMBER = {
   ],
   '200K': { X: 10, IX: 9, V: 5, IV: 4, I: 1 },
 }
-export const ZOOM = 100000
 export const LAT = 0
 export const LNG = 1
 export const GRID_DATA = {}

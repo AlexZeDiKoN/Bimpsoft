@@ -1,19 +1,12 @@
 import { concat } from 'lodash'
 import { layerGroup, rectangle } from 'leaflet'
-import { INIT_GRID_OPTIONS, LAT, LNG, SELECTED_CELL_OPTIONS, GRID_DATA } from '../constants'
+import { INIT_GRID_OPTIONS, LAT, LNG, GRID_DATA } from '../constants'
 import {
   isAreaOnScreen,
-  removeLayerFromCurrentGrid,
-  addLayerToSelectedLayers,
   removeLayerFromSelectedLayers,
   addLayerToCurrentGrid,
 } from '../helpers'
-
-const selectLayer = (layer) => {
-  layer.setStyle(SELECTED_CELL_OPTIONS)
-  removeLayerFromCurrentGrid(layer)
-  addLayerToSelectedLayers(layer)
-}
+import { selectLayer } from './selectLayer'
 
 const deselectLayer = (layer) => {
   layer.setStyle(INIT_GRID_OPTIONS)
