@@ -1,0 +1,24 @@
+[ {
+  "title": "ДЗВІН",
+  "sources": [ {
+    "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+    "minZoom": 5,
+    "maxZoom": 16
+  } ]
+}, {
+  "title": "Супутник",
+  "sources": [ {
+    "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+}, {
+  "title": "Ландшафт",
+  "sources": [ {
+    "source": "/tiles/land/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+} ]

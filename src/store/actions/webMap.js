@@ -1,5 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
-import { ZOOMS, paramsNames } from '../../constants'
+import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import * as notifications from './notifications'
@@ -28,6 +28,7 @@ export const actionNames = {
   SET_MEASURE: action('SET_MEASURE'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
+  SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
@@ -111,10 +112,7 @@ export const setScaleToSelection = (scaleToSelected) => ({
 export const addObject = (object) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objInsert } }) => {
     let payload = await objInsert(object)
-
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
-
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
     dispatch({
       type: actionNames.ADD_OBJECT,
       payload,
@@ -133,19 +131,18 @@ export const deleteObject = (id) =>
 
 export const refreshObject = (id) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
+    const { layers: { byId }, objects } = getState()
+    if (!objects.get(id)) {
+      return
+    }
     let object = await objRefresh(id)
-
     if (object.id) {
-      const { layers: { byId } } = getState()
       const layerId = object.layer
       if (!byId.hasOwnProperty(layerId)) {
         return
       }
-
-      // fix response data
-      object = { ...object, unit: object.unit ? +object.unit : null }
+      object = { ...object, unit: object.unit ? +object.unit : null } // fix response data
     }
-
     dispatch({
       type: actionNames.REFRESH_OBJECT,
       payload: { id, object },
@@ -155,10 +152,7 @@ export const refreshObject = (id) =>
 export const updateObject = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     let payload = await objUpdate(id, object)
-
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
-
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
     dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -168,10 +162,7 @@ export const updateObject = ({ id, ...object }) =>
 export const updateObjectsByLayerId = (layerId) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
     let objects = await objGetList(layerId)
-
-    // fix response data
-    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null }))
-
+    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null })) // fix response data
     return dispatch({
       type: actionNames.OBJECT_LIST,
       payload: {
@@ -189,10 +180,7 @@ export const allocateObjectsByLayerId = (layerId) => ({
 export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     let payload = await objUpdateGeometry(id, geometry)
-
-    // fix response data
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null }
-
+    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -207,6 +195,49 @@ export const getAppInfo = () =>
       payload: { version, contactId },
     })
   })
+
+export const getMapSources = () =>
+  async (dispatch, _, { webmapApi: { getMapSources } }) => {
+    try {
+      let sources = await getMapSources()
+      /* JSON.parse(`[ {
+  "title": "ДЗВІН",
+  "sources": [ {
+    "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+    "minZoom": 5,
+    "maxZoom": 16
+  } ]
+}, {
+  "title": "Супутник",
+  "sources": [ {
+    "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+}, {
+  "title": "Ландшафт",
+  "sources": [ {
+    "source": "/tiles/land/{z}/{x}/{y}.jpg",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
+  } ]
+} ]`) */
+      if (!sources || !sources.length || !Array.isArray(sources)) {
+        sources = MapSources
+      }
+      return dispatch({
+        type: actionNames.SET_SOURCES,
+        payload: {
+          sources,
+          source: sources[0],
+        },
+      })
+    } catch (error) {
+      console.warn(error)
+    }
+  }
 
 export const objectLocked = (objectId, contactName) => ({
   type: actionNames.OBJECT_LOCKED,

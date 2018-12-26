@@ -239,6 +239,7 @@ export default class WebMap extends Component {
     onSelectUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
+    requestMaSources: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
@@ -254,12 +255,13 @@ export default class WebMap extends Component {
   }
 
   async componentDidMount () {
-    const { sources, requestAppInfo, getLockedObjects } = this.props
+    const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
 
     await requestAppInfo()
-    await getLockedObjects()
     this.setMapView()
     this.setMapSource(sources)
+    await requestMaSources()
+    await getLockedObjects()
     this.initObjects()
   }
 
@@ -668,9 +670,11 @@ export default class WebMap extends Component {
         if (url && url[0] === '/') {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
-        console.info('REACT_APP_PREFIX: ', process.env.REACT_APP_PREFIX)
-        console.info('REACT_APP_TILES: ', process.env.REACT_APP_TILES)
-        console.info('Create tile layer: ', url)
+        console.info({
+          'REACT_APP_PREFIX': process.env.REACT_APP_PREFIX,
+          'REACT_APP_TILES': process.env.REACT_APP_TILES,
+          'tileLayerURL': url,
+        })
         const sourceLayer = new TileLayer(url, rest)
         MIN_ZOOM = rest.minZoom || MIN_ZOOM
         MAX_ZOOM = rest.maxZoom || MAX_ZOOM

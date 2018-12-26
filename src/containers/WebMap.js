@@ -33,9 +33,11 @@ const WebMapContainer = connect(
   {
     onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
     updateObjectGeometry: (id, geometry) => webMap.updateObjectGeometry(id, geometry),
-    addObject: (object) => webMap.addObject(object),
     editObject: () => selection.showEditForm,
-    onSelectedList: (list) => batchActions([ selection.selectedList(list), webMap.setScaleToSelection(false) ]),
+    onSelectedList: (list) => batchActions([
+      selection.selectedList(list),
+      webMap.setScaleToSelection(false),
+    ]),
     onSelectUnit: (unitID) => batchActions([
       orgStructures.setOrgStructureSelectedId(unitID),
       orgStructures.expandTreeByOrgStructureItem(unitID),
@@ -53,10 +55,12 @@ const WebMapContainer = connect(
     onDropUnit: (unitID, point) => selection.newShapeFromUnit(unitID, point),
     stopMeasuring: () => webMap.setMeasure(false),
     onRemoveMarker: () => webMap.setMarker(null),
-    requestAppInfo: () => webMap.getAppInfo(),
+    addObject: webMap.addObject,
+    requestAppInfo: webMap.getAppInfo,
+    requestMaSources: webMap.getMapSources,
+    getLockedObjects: webMap.getLockedObjects,
     tryLockObject: (objectId) => webMap.tryLockObject(objectId),
     tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
-    getLockedObjects: () => webMap.getLockedObjects(),
   },
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
