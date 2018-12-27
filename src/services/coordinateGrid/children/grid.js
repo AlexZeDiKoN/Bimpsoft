@@ -3,13 +3,9 @@ import { layerGroup, rectangle } from 'leaflet'
 import { INIT_GRID_OPTIONS, LAT, LNG, GRID_DATA } from '../constants'
 import { isAreaOnScreen } from '../helpers'
 import { selectLayer } from './selectLayer'
-import { deselectLayer } from './deselectLayer'
 
 const addClickEvent = (layer) => {
-  layer.on('click', (e) =>
-    e.originalEvent.ctrlKey
-      ? deselectLayer(e.target)
-      : selectLayer(e)
+  layer.on('click', (e) => selectLayer(e)
   )
 }
 
