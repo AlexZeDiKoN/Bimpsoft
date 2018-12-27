@@ -14,8 +14,7 @@ const calculateListCoordinate = (coordinates) => {
 const convertToRoman = (num) => {
   const lookup = ITEM_NUMBER['200K']
   let roman = ''
-  let i
-  for (i in lookup) {
+  for (const i in lookup) {
     while (num >= lookup[i]) {
       roman += i
       num -= lookup[i]
