@@ -472,7 +472,10 @@ export default class WebMap extends Component {
   }
 
   onSelectedListChange (newList) {
-    const { selection: { list }, onSelectedList, updateObjectGeometry, tryUnlockObject, onSelectUnit } = this.props
+    const {
+      selection: { list },
+      onSelectedList, updateObjectGeometry, tryUnlockObject, onSelectUnit, edit,
+    } = this.props
     if (newList.length === 0 && list === 0) {
       return
     }
@@ -481,7 +484,7 @@ export default class WebMap extends Component {
     if (list.length === 1 && list[0] !== newList[0]) {
       const id = list[0]
       const layer = this.findLayerById(id)
-      if (layer) {
+      if (layer && edit) {
         const { point, geometry } = layer.object
         const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
         if (geometryChanged) {

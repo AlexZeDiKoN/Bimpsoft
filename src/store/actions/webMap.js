@@ -131,7 +131,7 @@ export const deleteObject = (id) =>
 
 export const refreshObject = (id) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
-    const { layers: { byId }, objects } = getState()
+    const { layers: { byId }, webMap: { objects } } = getState()
     if (!objects.get(id)) {
       return
     }
@@ -151,6 +151,7 @@ export const refreshObject = (id) =>
 
 export const updateObject = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
+    stopHeartBeat()
     let payload = await objUpdate(id, object)
     payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
     dispatch({
@@ -179,6 +180,7 @@ export const allocateObjectsByLayerId = (layerId) => ({
 
 export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
+    stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
     payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
     return dispatch({
