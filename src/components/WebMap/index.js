@@ -1,5 +1,5 @@
 /* global L */
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
@@ -25,10 +25,18 @@ import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
 import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
 import { HotKey } from '../common/HotKeys'
+import { validateObject } from '../../utils/validation'
+import coordinates from '../../utils/coordinates'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged, geomPointEquals,
+  createTacticalSign,
+  getGeometry,
+  createSearchMarker,
+  setLayerSelected,
+  isGeometryChanged,
+  geomPointEquals,
+  createCoordinateMarker,
 } from './Tactical'
 
 let MIN_ZOOM = 0
@@ -177,7 +185,7 @@ const setScaleOptions = (layer, params) => {
   }
 }
 
-export default class WebMap extends Component {
+export default class WebMap extends React.PureComponent {
   static propTypes = {
     // from Redux store
     center: PropTypes.shape({
@@ -220,6 +228,7 @@ export default class WebMap extends Component {
         type: PropTypes.any,
       }),
       list: PropTypes.array,
+      preview: PropTypes.object,
     }),
     isGridActive: PropTypes.bool.isRequired,
     backVersion: PropTypes.string,
@@ -232,7 +241,6 @@ export default class WebMap extends Component {
     onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
     onFinishDrawNewShape: PropTypes.func,
-    showCreateForm: PropTypes.func,
     onMove: PropTypes.func,
     onRemoveMarker: PropTypes.func,
     onDropUnit: PropTypes.func,
@@ -272,11 +280,12 @@ export default class WebMap extends Component {
 
     const {
       objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, selection: { newShape },
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects,
+      selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
-    if (objects !== prevProps.objects) {
-      this.updateObjects(objects)
+    if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
+      this.updateObjects(objects, preview)
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -297,6 +306,13 @@ export default class WebMap extends Component {
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
+    }
+
+    if (
+      preview !== prevProps.selection.preview ||
+      previewCoordinateIndex !== prevProps.selection.previewCoordinateIndex
+    ) {
+      this.updateCoordinateIndex(preview, previewCoordinateIndex)
     }
 
     this.updateMarker(prevProps)
@@ -350,6 +366,27 @@ export default class WebMap extends Component {
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
+  updateCoordinateIndex (preview = null, coordinateIndex = null) {
+    const point =
+      preview !== null &&
+      coordinateIndex !== null &&
+      preview.geometry.get(coordinateIndex)
+    const coordinateIsCorrect = Boolean(point) && !coordinates.isWrong(point)
+    if (coordinateIsCorrect !== Boolean(this.coordinateMarker)) {
+      if (coordinateIsCorrect) {
+        this.coordinateMarker = createCoordinateMarker(point)
+        this.coordinateMarker.addTo(this.map)
+      } else {
+        this.coordinateMarker.removeFrom(this.map)
+        this.coordinateMarker = null
+      }
+    } else {
+      if (coordinateIsCorrect) {
+        this.coordinateMarker.setLatLng(point)
+      }
+    }
   }
 
   updateMarker = (prevProps) => {
@@ -543,12 +580,13 @@ export default class WebMap extends Component {
   }
 
   updateSelection = (prevProps) => {
-    const { objects, layer: layerId, edit, selection: { list: selectedIds } } = this.props
+    const { objects, layer: layerId, edit, selection: { list: selectedIds, preview } } = this.props
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
       edit !== prevProps.edit ||
-      layerId !== prevProps.layer
+      layerId !== prevProps.layer ||
+      preview !== prevProps.selection.preview
     ) {
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = selectedIds.length === 1 && edit
@@ -558,7 +596,7 @@ export default class WebMap extends Component {
           const isSelected = selectedIdsSet.has(id)
           const isActiveLayer = layer.object.layer === layerId
           const isActive = canEditLayer && isSelected && isActiveLayer
-          setLayerSelected(layer, isSelected, isActive, isActiveLayer)
+          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
           if (isActive) {
             this.activeLayer = layer
           }
@@ -705,37 +743,49 @@ export default class WebMap extends Component {
     this.updateObjects(this.props.objects)
   }
 
-  updateObjects = (objects) => {
+  updateObjects = (objects, preview) => {
     if (this.map) {
-      const notChangedIds = new Set()
+      const existsIds = new Set()
+      const changes = []
       this.map.eachLayer((layer) => {
-        if (layer.id) {
-          const object = objects.get(layer.id)
-          if (object && layer.object === object) {
-            notChangedIds.add(layer.id)
-          } else {
-            if (object && object.equals(layer.object)) {
-              layer.object = object
-              notChangedIds.add(layer.id)
-            } else {
-              setLayerSelected(layer, false, false)
-              this.activeLayer = null
-              layer.remove()
+        const { id } = layer
+        if (id) {
+          const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
+          if (object) {
+            existsIds.add(id)
+            if (layer.object !== object) {
+              changes.push({ object, layer })
             }
+          } else {
+            layer.remove()
           }
         }
       })
-      objects.forEach((object, key) => {
-        if (!notChangedIds.has(key)) {
-          this.addObject(object)
+      for (let i = 0, n = changes.length; i < n; i++) {
+        const { object, layer } = changes[i]
+        const newLayer = this.addObject(object, layer)
+        if (newLayer !== layer) {
+          setLayerSelected(layer, false, false)
+          this.activeLayer = null
+          layer.remove()
+        }
+      }
+      objects.forEach((object, id) => {
+        if (!existsIds.has(id)) {
+          this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
     }
   }
 
-  addObject = (object) => {
+  addObject = (object, prevLayer) => {
     const { id, attributes } = object
-    const layer = createTacticalSign(object, this.map)
+    try {
+      validateObject(object.toJS())
+    } catch (e) {
+      return null
+    }
+    const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
@@ -751,7 +801,9 @@ export default class WebMap extends Component {
       layer.on('dblclick', this.dblClickOnLayer)
       layer.on('pm:markerdragstart', this.onDragstartLayer)
       layer.on('pm:markerdragend', this.onDragendLayer)
-      layer.addTo(this.map)
+
+      layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
+
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
@@ -805,7 +857,7 @@ export default class WebMap extends Component {
     const { target: { id, object } } = event
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
-      editObject()
+      editObject(object.id)
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {

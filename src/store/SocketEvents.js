@@ -2,6 +2,7 @@
 import { getWebmapApi } from '../utils/services'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
+import { catchError } from './actions/asyncAction'
 
 const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
   type: UPDATE_LAYER,
@@ -9,16 +10,16 @@ const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
 })
 
 const updateObject = (dispatch) => ({ id }) =>
-  dispatch(webMapActions.refreshObject(id))
+  catchError(webMapActions.refreshObject)(id)(dispatch)
 
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
   if (String(getState().webMap.contactId) !== String(contactId)) {
-    dispatch(webMapActions.objectLocked(objectId, contactName))
+    catchError(webMapActions.objectLocked)(objectId, contactName)(dispatch)
   }
 }
 
 const unlockObject = (dispatch) => ({ objectId }) =>
-  dispatch(webMapActions.objectUnlocked(objectId))
+  catchError(webMapActions.objectUnlocked)(objectId)(dispatch)
 
 export const initSocketEvents = (dispatch, getState) => {
   let socket

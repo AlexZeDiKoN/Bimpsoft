@@ -2,6 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
+import { validateObject } from '../../utils/validation'
 import * as notifications from './notifications'
 import { asyncAction } from './index'
 
@@ -109,10 +110,20 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
+const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
+  ...rest,
+  unit: unit !== null ? Number(unit) : null,
+  type: type !== null ? Number(type) : null,
+})
+
 export const addObject = (object) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objInsert } }) => {
+    validateObject(object)
+
     let payload = await objInsert(object)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     dispatch({
       type: actionNames.ADD_OBJECT,
       payload,
@@ -141,7 +152,8 @@ export const refreshObject = (id) =>
       if (!byId.hasOwnProperty(layerId)) {
         return
       }
-      object = { ...object, unit: object.unit ? +object.unit : null } // fix response data
+
+      object = fixServerObject(object)
     }
     dispatch({
       type: actionNames.REFRESH_OBJECT,
@@ -152,8 +164,12 @@ export const refreshObject = (id) =>
 export const updateObject = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     stopHeartBeat()
+    validateObject(object)
+
     let payload = await objUpdate(id, object)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -163,7 +179,9 @@ export const updateObject = ({ id, ...object }) =>
 export const updateObjectsByLayerId = (layerId) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
     let objects = await objGetList(layerId)
-    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null })) // fix response data
+
+    objects = objects.map(fixServerObject)
+
     return dispatch({
       type: actionNames.OBJECT_LIST,
       payload: {
@@ -182,7 +200,9 @@ export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,

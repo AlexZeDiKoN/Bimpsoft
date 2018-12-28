@@ -3,12 +3,13 @@ import { batchActions } from 'redux-batched-actions'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import { selection, orgStructures, webMap } from '../store/actions'
 import { canEditSelector } from '../store/selectors'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const { orgStructures } = store
   const canEdit = canEditSelector(store)
   const { byIds, roots, formation, selectedId, textFilter, expandedIds } = orgStructures
-  return { canEdit, selectedId, textFilter, expandedIds, orgStructures: { byIds, roots, formation } }
+  return { canEdit, selectedId, textFilter, expandedIds, byIds, roots, formation }
 }
 
 const mapDispatchToProps = {
@@ -40,7 +41,7 @@ const mapDispatchToProps = {
 
 const OrgStructuresContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(OrgStructuresComponent)
 
 export default OrgStructuresContainer
