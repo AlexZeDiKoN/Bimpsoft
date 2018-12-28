@@ -18,10 +18,10 @@ export const loadAllParams = () =>
       payload,
     })
     if (payload[paramNames.MAP_BASE_OPACITY] !== undefined) {
-      dispatch(layers.setBackOpacity(payload[paramNames.MAP_BASE_OPACITY]))
+      dispatch(layers.setBackOpacity(Number(payload[paramNames.MAP_BASE_OPACITY])))
     }
-    if (payload[paramNames.INACTIVE_LAYERS_OPACITY]) {
-      dispatch(layers.setHiddenOpacity(payload[paramNames.INACTIVE_LAYERS_OPACITY]))
+    if (payload[paramNames.INACTIVE_LAYERS_OPACITY] !== undefined) {
+      dispatch(layers.setHiddenOpacity(Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])))
     }
   })
 
