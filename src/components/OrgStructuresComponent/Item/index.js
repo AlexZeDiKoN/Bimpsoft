@@ -36,6 +36,7 @@ export default class Item extends React.Component {
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
         placement="topLeft"
+        mouseEnterDelay={0.8}
       >
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
           {icon}
