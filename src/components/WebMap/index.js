@@ -348,11 +348,6 @@ export default class WebMap extends Component {
       }
     })
 
-  adjustEditMode = async (edit, { type }) => {
-    this.setMapCursor(edit, type)
-    this.updateCreatePoly(edit && type)
-  }
-
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
@@ -471,28 +466,42 @@ export default class WebMap extends Component {
     this.updater = new UpdateQueue(this.map)
   }
 
+  checkSaveObject = () => {
+    const { selection: { list }, updateObjectGeometry, tryUnlockObject } = this.props
+    const id = list[0]
+    const layer = this.findLayerById(id)
+    if (layer) {
+      const { point, geometry } = layer.object
+      const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
+      if (geometryChanged) {
+        updateObjectGeometry(id, getGeometry(layer))
+      } else {
+        tryUnlockObject(id)
+      }
+    }
+  }
+
+  adjustEditMode = (edit, { type }) => {
+    const { selection: { list } } = this.props
+    if (!edit && list.length === 1) {
+      this.checkSaveObject()
+    }
+    this.setMapCursor(edit, type)
+    this.updateCreatePoly(edit && type)
+  }
+
   onSelectedListChange (newList) {
     const {
       selection: { list },
-      onSelectedList, updateObjectGeometry, tryUnlockObject, onSelectUnit, edit,
+      onSelectedList, onSelectUnit, edit,
     } = this.props
     if (newList.length === 0 && list === 0) {
       return
     }
 
     // save geometry when one selected item lost focus
-    if (list.length === 1 && list[0] !== newList[0]) {
-      const id = list[0]
-      const layer = this.findLayerById(id)
-      if (layer && edit) {
-        const { point, geometry } = layer.object
-        const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
-        if (geometryChanged) {
-          updateObjectGeometry(id, getGeometry(layer))
-        } else {
-          tryUnlockObject(id)
-        }
-      }
+    if (list.length === 1 && list[0] !== newList[0] && edit) {
+      this.checkSaveObject()
     }
 
     // get unit from new selection
