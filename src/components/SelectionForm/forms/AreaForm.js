@@ -11,7 +11,7 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
 
 const Extenders = compose(
   WithSubordinationLevel,
@@ -26,18 +26,7 @@ const Extenders = compose(
 )
 
 export default class AreaForm extends Extenders(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithFill.propTypes,
-    ...WithSegment.propTypes,
-    ...WithLineType.propTypes,
-    ...WithLineAmplifiers.propTypes,
-    ...WithLineNodes.propTypes,
-    ...WithCoordinatesArray.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = AbstractShapeForm.propTypes
 
   renderContent () {
     return (

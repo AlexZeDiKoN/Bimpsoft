@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -17,30 +16,13 @@ const types = {
   [NODE_SQUARE]: { text: i18n.SHAPE_SQUARE, value: NODE_SQUARE },
 }
 
+const PATH = [ 'attributes', 'lineNodes' ]
+
 const WithLineNodes = (Component) => class LineNodesComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-  }
-
-  constructor (props) {
-    super(props)
-    let { amplifiers: { lineNodes } = {} } = props
-    lineNodes = Object.entries(types).find(([ key, { value } ]) => value === lineNodes)
-    lineNodes = lineNodes ? lineNodes[0] : NODE_NONE
-    this.state.lineNodes = lineNodes
-  }
-
-  lineNodesChangeHandler = (lineNodes) => this.setState({ lineNodes })
-
-  fillResult (result) {
-    super.fillResult(result)
-    !result.amplifiers && (result.amplifiers = {})
-    const lineNodesInfo = types[this.state.lineNodes]
-    result.amplifiers.lineNodes = lineNodesInfo && lineNodesInfo.value
-  }
+  lineNodesChangeHandler = (lineNodes) => this.setResult((result) => result.setIn(PATH, lineNodes))
 
   renderLineNodes () {
-    const { lineNodes } = this.state
+    const lineNodes = this.getResult().getIn(PATH)
     const typeInfo = types[lineNodes]
     const canEdit = this.isCanEdit()
 

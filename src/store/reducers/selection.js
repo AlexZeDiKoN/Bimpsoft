@@ -9,6 +9,8 @@ const initState = {
   newShape: EMPTY_OBJECT,
   clipboard: null,
   list: [],
+  preview: null,
+  previewCoordinateIndex: null,
 }
 
 export default function reducer (state = initState, action) {
@@ -33,6 +35,14 @@ export default function reducer (state = initState, action) {
     case actions.SET_NEW_SHAPE: {
       const { newShape } = action
       return { ...state, newShape, showForm: null }
+    }
+    case actions.SET_DATA_PREVIEW: {
+      const { preview } = action
+      return { ...state, preview }
+    }
+    case actions.SET_PREVIEW_COORDINATE: {
+      const { index, isActive } = action
+      return { ...state, previewCoordinateIndex: isActive ? index : null }
     }
     case actions.UPDATE_NEW_SHAPE: {
       const { newShape } = action

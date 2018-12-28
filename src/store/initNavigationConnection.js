@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect'
 import navigationConnection from './navigationConnection'
 import { webMap, maps as mapsActions, layers as layersActions } from './actions'
+import { catchError } from './actions/asyncAction'
 
 const crop = (value) => Number(value).toFixed(6)
 const optionalProp = (obj, key, value) => value
@@ -41,7 +42,7 @@ const mapStateToProps = createSelector(
 
 const onHistoryChange = async (prev, next, dispatch) => {
   if (next.lat && next.lng && next.z && (prev.lat !== next.lat || prev.lng !== next.lng || prev.z !== next.z)) {
-    await dispatch(webMap.setCenter({ lat: +next.lat, lng: +next.lng }, +next.z))
+    await catchError(webMap.setCenter)({ lat: +next.lat, lng: +next.lng }, +next.z)(dispatch)
   }
   if (prev.maps !== next.maps) {
     const nextMaps = unpackMaps(next.maps)
@@ -49,20 +50,20 @@ const onHistoryChange = async (prev, next, dispatch) => {
     for (const map of nextMaps) {
       const prevMap = prevMaps.find(findMap(map))
       if (!prevMap) {
-        await dispatch(mapsActions.openMapFolder(map.mapId, next.layer))
+        await catchError(mapsActions.openMapFolder)(map.mapId, next.layer)(dispatch)
       }
       if (!prevMap || map.expanded !== prevMap.expanded) {
-        await dispatch(mapsActions.expandMap(map.mapId, map.expanded))
+        await catchError(mapsActions.expandMap)(map.mapId, map.expanded)(dispatch)
       }
     }
     for (const map of prevMaps) {
       if (!nextMaps.find(findMap(map))) {
-        await dispatch(mapsActions.deleteMap(map.mapId))
+        await catchError(mapsActions.deleteMap)(map.mapId)(dispatch)
       }
     }
   }
   if (next.layer && next.layer !== prev.layer) {
-    await dispatch(layersActions.selectLayer(next.layer))
+    await catchError(layersActions.selectLayer)(next.layer)(dispatch)
   }
 }
 

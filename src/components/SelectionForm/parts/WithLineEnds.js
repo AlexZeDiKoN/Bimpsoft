@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -34,40 +33,25 @@ const types = {
   [ENDS_CROSS]: { text: i18n.CROSS, value: ENDS_CROSS },
 }
 
+const PATHES = {
+  [DIRECTION_LEFT]: [ 'attributes', DIRECTION_LEFT ],
+  [DIRECTION_RIGHT]: [ 'attributes', DIRECTION_RIGHT ],
+}
+
 const WithLineEnds = (Component) => class LineEndsComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-  }
-
-  constructor (props) {
-    super(props)
-    let { amplifiers: { [DIRECTION_LEFT]: left, [DIRECTION_RIGHT]: right } = {} } = props
-    left = Object.entries(types).find(([ key, { value } ]) => value === left)
-    right = Object.entries(types).find(([ key, { value } ]) => value === right)
-    left = left ? left[0] : ENDS_NONE
-    right = right ? right[0] : ENDS_NONE
-    this.state = { ...this.state, [DIRECTION_LEFT]: left, [DIRECTION_RIGHT]: right }
-  }
-
-  lineEndsChangeHandler = (direction) => (lineEnds) => this.setState({ [direction]: lineEnds })
-
-  fillResult (result) {
-    super.fillResult(result)
-    !result.amplifiers && (result.amplifiers = {})
-    const leftInfo = types[this.state[DIRECTION_LEFT]]
-    const rightInfo = types[this.state[DIRECTION_RIGHT]]
-    result.amplifiers[DIRECTION_LEFT] = leftInfo && leftInfo.value
-    result.amplifiers[DIRECTION_RIGHT] = rightInfo && rightInfo.value
+  lineEndsChangeHandlers = {
+    [DIRECTION_LEFT]: (lineEnds) => this.setResult((result) => result.setIn(PATHES[DIRECTION_LEFT], lineEnds)),
+    [DIRECTION_RIGHT]: (lineEnds) => this.setResult((result) => result.setIn(PATHES[DIRECTION_RIGHT], lineEnds)),
   }
 
   renderLineEnds (direction) {
-    const { [direction]: lineEnds } = this.state
+    const lineEnds = this.getResult().getIn(PATHES[direction])
     const typeInfo = types[lineEnds]
     const canEdit = this.isCanEdit()
 
     const value = canEdit
       ? (
-        <Select value={lineEnds} onChange={this.lineEndsChangeHandler(direction)}>
+        <Select value={lineEnds} onChange={this.lineEndsChangeHandlers[direction]}>
           {endsOption(types[ENDS_NONE], direction)}
           {endsOption(types[ENDS_ARROW1], direction)}
           {endsOption(types[ENDS_ARROW2], direction)}

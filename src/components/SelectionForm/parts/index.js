@@ -1,5 +1,6 @@
 export { default as AbstractShapeForm } from './AbstractShapeForm'
 export { default as WithTexts } from './WithTexts'
+export { default as WithMilSymbol } from './WithMilSymbol'
 export { default as WithColor } from './WithColor'
 export { default as WithFill } from './WithFill'
 export { default as WithSegment } from './WithSegment'

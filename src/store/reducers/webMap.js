@@ -23,7 +23,7 @@ const webMapAttributesInitValues = {
   left: 'none',
   right: 'none',
   lineNodes: 'none',
-  texts: [],
+  texts: List(),
   z: null,
 }
 
@@ -35,7 +35,7 @@ webMapAttributesInitValues['enableSignOffset'] = ''
 
 const WebMapAttributes = Record(webMapAttributesInitValues)
 
-const WebMapObject = Record({
+export const WebMapObject = Record({
   id: null,
   type: null,
   code: null,
@@ -78,7 +78,12 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
-    obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
+    if (attributes) {
+      const { texts, ...otherAttrs } = attributes
+      obj = update(obj, 'attributes', comparator, WebMapAttributes({ texts: List(texts), ...otherAttrs }))
+    } else {
+      obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
+    }
     obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
     return merge(obj, rest)
   })

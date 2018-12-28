@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
@@ -8,29 +7,13 @@ import { colorDiv, colorOption } from './render'
 
 const { FormRow } = components.form
 
+const PATH = [ 'attributes', 'fill' ]
+
 const WithFill = (Component) => class FillComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-  }
-
-  constructor (props) {
-    super(props)
-    const { amplifiers: { fill } = {} } = props
-    this.state.fill = fill || colors.TRANSPARENT
-  }
-
-  fillChangeHandler = (fill) => this.setState({ fill })
-
-  fillResult (result) {
-    super.fillResult(result)
-    if (!result.amplifiers) {
-      result.amplifiers = {}
-    }
-    result.amplifiers.fill = this.state.fill
-  }
+  fillChangeHandler = (fill) => this.setResult((result) => result.setIn(PATH, fill))
 
   renderFill () {
-    const { fill } = this.state
+    const fill = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
     const value = canEdit ? (
       <Select value={fill} onChange={this.fillChangeHandler}>

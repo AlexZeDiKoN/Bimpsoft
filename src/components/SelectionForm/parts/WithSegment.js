@@ -1,11 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import { iconOption, iconDiv } from './render'
-import AbstractShapeForm from './AbstractShapeForm'
 
 const { FormRow } = components.form
 const { icons: { names: iconNames } } = components
@@ -50,35 +48,21 @@ const getTypeBySegment = (type, segment) => {
   }
 }
 
+const TYPE_PATH = [ 'type' ]
+
 const WithSegment = (Component) => class SegmentComponent extends Component {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    segment: PropTypes.string,
-  }
-
-  constructor (props) {
-    super(props)
-    const { type } = props
-    this.state.segment = typeToSegment.has(type) ? typeToSegment.get(type) : SEGMENT_DIRECT
-  }
-
-  segmentChangeHandler = (segment) => this.setState((state) => {
-    const type = getTypeBySegment(state.type, segment)
-    return { segment, type }
-  })
-
-  fillResult (result) {
-    super.fillResult(result)
-    result.segment = this.state.segment
-  }
+  segmentChangeHandler = (segment) => this.setResult((result) =>
+    result.updateIn(TYPE_PATH, (type) => getTypeBySegment(type, segment))
+  )
 
   renderSegment () {
-    const { segment } = this.state
+    const type = this.getResult().getIn(TYPE_PATH)
+    const segment = typeToSegment.get(type)
     const segmentInfo = segments[segment]
     const canEdit = this.isCanEdit()
 
     const value = canEdit ? (
-      <Select value={ this.state.segment } onChange={this.segmentChangeHandler} >
+      <Select value={ segment } onChange={this.segmentChangeHandler} >
         {iconOption(SEGMENT_DIRECT, iconNames.BROKEN_LINE_ACTIVE, i18n.SEGMENT_DIRECT)}
         {iconOption(SEGMENT_ARC, iconNames.CURVE_ACTIVE, i18n.SEGMENT_ARC)}
       </Select>
