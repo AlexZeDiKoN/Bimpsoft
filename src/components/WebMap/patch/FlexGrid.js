@@ -2,39 +2,74 @@
 
 export default L.Layer.extend({
   options: {
-    directions: 1,
-    zones: 1,
+    directions: 1, // кількість напрямків
+    zones: 1, // кількість зон від лінії ромежування
     vertical: false,
   },
 
   initialize: function (box, options) {
     L.setOptions(this, options)
-    this._createLayers(box)
-  },
 
-  addTo: function (map) {
-    this._layers.map(map.addLayer)
-    return this
-  },
-
-  removeFrom: function (map) {
-    if (map) {
-      this._layers.map(map.removeLayer)
-    }
-    return this
-  },
-
-  _createLayers: function (box) {
-    this._layers = []
     const { directions, zones, vertical } = this.options
-    const width = vertical
-      ? (box.getEast() - box.getWest())
-      : (box.getNorth() - box.getSouth())
-    const height = vertical
-      ? (box.getNorth() - box.getSouth())
-      : (box.getEast() - box.getWest())
-    const directionWidth = width / directions
-    const zoneHeight = height / zones / 2
+
+    const nBox = {
+      left: vertical ? box.getWest() : box.getSouth(),
+      right: vertical ? box.getEast() : box.getNorth(),
+      top: vertical ? box.getSouth() : box.getWest(),
+      bottom: vertical ? box.getNorth() : box.getEast(),
+    }
+    const width = nBox.right - nBox.left
+    const height = nBox.bottom - nBox.top
+    const step = {
+      x: width / directions,
+      y: height / zones / 2,
+    }
+
+    this.eternalPoints = []
+    for (let i = 0; i <= directions; i++) {
+      const row = []
+      for (let j = 0; j <= zones * 2; j++) {
+        row.push(!this._isCorner(i, j) ? L.latLng(nBox.left + i * step.x, nBox.top + j * step.y) : null)
+      }
+      this.eternalPoints.push(row)
+    }
+
+    this.additionalPoints = []
+    for (let i = 0; i <= directions; i++) {
+      const row = []
+      for (let j = 0; j <= zones * 2; j++) {
+        row.push(!this._isCorner(i, j) ? [] : null)
+      }
+      this.additionalPoints.push(row)
+    }
   },
 
+  _isCorner: function (i, j) {
+    const { directions, zones } = this.options
+    return (i === 0 || i === directions) && (j === 0 || j === zones * 2)
+  },
+
+  _fullPath: function () {
+
+  },
+
+  _directionPath: function (index) {
+
+  },
+
+  _zonePath: function (index) {
+
+  },
+
+  _segmentPath: function (direction, zone) {
+
+  },
+
+  _boundaryLine: function () {
+
+  },
+
+  _borderLine: function () {
+    // let result = _moveTo()
+  },
 })
