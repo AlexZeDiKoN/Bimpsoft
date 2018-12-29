@@ -775,6 +775,18 @@ export default class WebMap extends React.PureComponent {
           this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
+      const isNew = Boolean(preview && !preview.id)
+      if (isNew === Boolean(this.newLayer)) {
+        isNew && this.addObject(preview, this.newLayer)
+      } else {
+        if (isNew) {
+          this.newLayer = this.addObject(preview, null)
+        } else {
+          setLayerSelected(this.newLayer, false, false)
+          this.newLayer.remove()
+          this.newLayer = null
+        }
+      }
     }
   }
 
@@ -854,16 +866,17 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    const { target: { id, object } } = event
+    const { target: layer } = event
+    const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
-      editObject(object.id)
+      editObject(object.id, getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
         this.selectLayer(id)
-        event.target._map._container.focus()
+        layer._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
