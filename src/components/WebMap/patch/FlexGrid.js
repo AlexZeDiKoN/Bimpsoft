@@ -7,6 +7,11 @@ export default L.Layer.extend({
     vertical: false,
   },
 
+  /**
+   * Створення об'єкта
+   * @param box - обмежуючий прямокутник
+   * @param options - опції
+   */
   initialize: function (box, options) {
     L.setOptions(this, options)
 
@@ -42,33 +47,42 @@ export default L.Layer.extend({
       }
       this.additionalPoints.push(row)
     }
+
+    return this
   },
 
+  // Чи є елемент (точка, відрізок) кутовим?
   _isCorner: function (i, j) {
     const { directions, zones } = this.options
     return (i === 0 || i === directions) && (j === 0 || j === zones * 2)
   },
 
+  // Рендер усієї фігури
   _fullPath: function () {
 
   },
 
+  // Контур напрямку
   _directionPath: function (index) {
 
   },
 
+  // Контур зони
   _zonePath: function (index) {
 
   },
 
+  // Окремий відрізок
   _segmentPath: function (direction, zone) {
 
   },
 
+  // Лінія розмежування
   _boundaryLine: function () {
 
   },
 
+  // Контур операційної зони
   _borderLine: function () {
     // let result = _moveTo()
   },
