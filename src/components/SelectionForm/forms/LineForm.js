@@ -12,7 +12,7 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
 
 export default class LineForm extends
   compose(
@@ -26,18 +26,7 @@ export default class LineForm extends
     WithColor,
     WithStrokeWidth,
   )(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithSegment.propTypes,
-    ...WithLineType.propTypes,
-    ...WithLineAmplifiers.propTypes,
-    ...WithLineNodes.propTypes,
-    ...WithLineEnds.propTypes,
-    ...WithCoordinatesArray.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = AbstractShapeForm.propTypes
 
   renderContent () {
     return (

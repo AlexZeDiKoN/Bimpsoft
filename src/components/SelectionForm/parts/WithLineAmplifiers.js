@@ -1,9 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { typeDiv, typeOption } from './render'
+import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 
 const { FormRow } = components.form
 const AMPL_NONE = 'none'
@@ -14,31 +14,15 @@ const types = {
   [AMPL_SHOW_LEVEL]: { text: i18n.SHOW_LEVEL, value: AMPL_SHOW_LEVEL },
 }
 
+const PATH = [ 'attributes', 'lineAmpl' ]
+
 const WithLineAmplifiers = (Component) => class LineAmplifiersComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-    subordinationLevel: PropTypes.number,
-  }
-
-  constructor (props) {
-    super(props)
-    let { amplifiers: { lineAmpl } = {} } = props
-    lineAmpl = Object.entries(types).find(([ key, { value } ]) => value === lineAmpl)
-    lineAmpl = lineAmpl ? lineAmpl[0] : AMPL_NONE
-    this.state.lineAmpl = lineAmpl
-  }
-
-  lineAmplChangeHandler = (lineAmpl) => this.setState({ lineAmpl })
-
-  fillResult (result) {
-    super.fillResult(result)
-    !result.amplifiers && (result.amplifiers = {})
-    const lineAmplInfo = types[this.state.lineAmpl]
-    result.amplifiers.lineAmpl = lineAmplInfo && lineAmplInfo.value
-  }
+  lineAmplChangeHandler = (lineAmpl) => this.setResult((result) => result.setIn(PATH, lineAmpl))
 
   renderLineAmplifiers () {
-    const { lineAmpl, subordinationLevel } = this.state
+    const result = this.getResult()
+    const lineAmpl = result.getIn(PATH)
+    const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
     const typeInfo = types[lineAmpl]
     const canEdit = this.isCanEdit()
 

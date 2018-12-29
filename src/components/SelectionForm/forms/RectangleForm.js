@@ -8,7 +8,7 @@ import {
   WithTwoCoordinates,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
 
 export default class RectangleForm extends
   compose(
@@ -19,15 +19,7 @@ export default class RectangleForm extends
     WithLineType,
     WithStrokeWidth
   )(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithFill.propTypes,
-    ...WithLineType.propTypes,
-    ...WithTwoCoordinates.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = AbstractShapeForm.propTypes
 
   renderContent () {
     return (

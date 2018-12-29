@@ -3,6 +3,7 @@ import SelectionButtons from '../components/menu/SelectionButtons'
 import { FormTypes } from '../constants'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
 import * as selectionActions from '../store/actions/selection'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const { selection: { showForm, list, clipboard } } = store
@@ -28,7 +29,7 @@ const mapDispatchToProps = {
 
 const SelectionButtonsContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(SelectionButtons)
 
 export default SelectionButtonsContainer

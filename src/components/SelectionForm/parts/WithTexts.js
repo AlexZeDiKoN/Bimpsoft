@@ -1,6 +1,4 @@
 import React, { Fragment } from 'react'
-import PropTypes from 'prop-types'
-import { List } from 'immutable'
 import { components } from '@DZVIN/CommonComponents'
 import TextSymbol from '../../common/TextSymbol'
 import { Align } from '../../../constants'
@@ -10,6 +8,8 @@ import TextItem from './TextItem'
 
 const { FormItem, FormDivider } = components.form
 const { icons: { names: IconNames, IconHovered } } = components
+
+const PATH = [ 'attributes', 'texts' ]
 
 const getTotalAlign = (texts) => {
   let totalAlign = null
@@ -23,67 +23,30 @@ const getTotalAlign = (texts) => {
 }
 
 const WithTexts = (Component) => class TextsComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.any,
-  }
+  addTextHandler = () => this.setResult((result) =>
+    result.updateIn(PATH, (texts) =>
+      texts.push({ text: '', underline: false, align: getTotalAlign(texts) || Align.CENTER })
+    )
+  )
 
-  constructor (props) {
-    super(props)
-    let { amplifiers: { texts } = {} } = props
-    if (!texts) {
-      texts = [ { text: '', underline: true, align: Align.CENTER, size: 16 } ]
-    }
-    this.state.texts = List(texts.map((item) => {
-      const size = Number(item.size)
-      return { ...item, size: Number.isNaN(size) ? 12 : size }
-    }))
-  }
+  changeTextItemHandler = (index, textItem) => this.setResult((result) =>
+    result.setIn([ ...PATH, index ], textItem)
+  )
 
-  addTextHandler = () => this.setState(({ texts }) => {
-    const totalAlign = getTotalAlign(texts)
-    return {
-      texts: texts.push({ text: '', underline: false, align: totalAlign || Align.CENTER }),
-    }
-  })
+  previewTextItemHandler = (index, preview) => this.setResult((result) =>
+    result.updateIn([ ...PATH, index ], (text) => ({ ...text, preview }))
+  )
 
-  changeTextItemHandler = (index, textItem) => this.setState((state) => ({ texts: state.texts.set(index, textItem) }))
+  changeTextsAlignHandler = (align) => this.setResult((result) =>
+    result.updateIn(PATH, (texts) => texts.map((text) => ({ ...text, align })))
+  )
 
-  previewTextItemHandler = (index, preview) => this.setState(({ texts }) => {
-    texts = texts.set(index, { ...texts.get(index), preview })
-    return { texts }
-  })
-
-  changeTextsAlignHandler = (align) => this.setState((state) => {
-    const texts = state.texts.map((text) => ({ ...text, align }))
-    return { texts }
-  })
-
-  removeTextItemHandler = (index) => this.setState((state) => {
-    const { texts } = state
-    return texts.size <= 1 ? null : { texts: texts.delete(index) }
-  })
-
-  fillResult (result) {
-    super.fillResult(result)
-    if (!result.hasOwnProperty('amplifiers')) {
-      result.amplifiers = {}
-    }
-    result.amplifiers.texts = this.state.texts.toJS()
-  }
-
-  getErrors () {
-    const errors = super.getErrors()
-    for (const text of this.state.texts) {
-      if (text && text.text && text.text.length) {
-        return errors
-      }
-    }
-    errors.push(i18n.EMPTY_TEXT)
-    return errors
-  }
+  removeTextItemHandler = (index) => this.setResult((result) =>
+    result.updateIn(PATH, (texts) => texts.size <= 1 ? texts : texts.delete(index))
+  )
 
   renderTexts () {
-    const { texts } = this.state
+    const texts = this.getResult().getIn(PATH)
     const totalAlign = getTotalAlign(texts)
     const canEdit = this.isCanEdit()
 

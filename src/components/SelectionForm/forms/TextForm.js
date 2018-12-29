@@ -4,22 +4,18 @@ import {
   AbstractShapeForm,
   WithTexts,
   WithSubordinationLevel,
-} from '../parts/index'
+} from '../parts'
 
-export default class LineForm extends
+export default class TextForm extends
   compose(WithSubordinationLevel, WithTexts)(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithTexts.propTypes,
-    ...WithSubordinationLevel.propTypes,
-  }
+    static propTypes = AbstractShapeForm.propTypes
 
-  renderContent () {
-    return (
-      <Fragment>
-        {this.renderSubordinationLevel()}
-        {this.renderTexts()}
-      </Fragment>
-    )
-  }
+    renderContent () {
+      return (
+        <Fragment>
+          {this.renderSubordinationLevel()}
+          {this.renderTexts()}
+        </Fragment>
+      )
+    }
 }

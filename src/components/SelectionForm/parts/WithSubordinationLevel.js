@@ -1,33 +1,18 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
-import { SubordinationLevel } from '../../../constants'
 
 const { FormRow } = components.form
 
+export const SUBORDINATION_LEVEL_PATH = [ 'level' ]
+
 const WithSubordinationLevel = (Component) => class SubordinationLevelComponent extends Component {
-  static propTypes = {
-    subordinationLevel: PropTypes.number,
-  }
-
-  constructor (props) {
-    super(props)
-    this.state.subordinationLevel = props.subordinationLevel || SubordinationLevel.TEAM_CREW
-  }
-
-  changeSubordinationLevel = (subordinationLevel) => this.setState({ subordinationLevel })
-
-  fillResult (result) {
-    super.fillResult(result)
-    result.subordinationLevel = this.state.subordinationLevel
-  }
+  changeSubordinationLevel = (subordinationLevel) =>
+    this.setResult((result) => result.setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel))
 
   renderSubordinationLevel () {
-    const {
-      subordinationLevel,
-    } = this.state
+    const subordinationLevel = this.getResult().getIn(SUBORDINATION_LEVEL_PATH)
 
     const canEdit = this.isCanEdit()
 
@@ -35,10 +20,10 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
       <FormRow label={i18n.SUBORDINATION_LEVEL}>
         <SubordinationLevelSelect
           readOnly={!canEdit}
-          value={ subordinationLevel }
+          value={subordinationLevel}
           onChange={this.changeSubordinationLevel}
         />
-      </FormRow >
+      </FormRow>
     )
   }
 }

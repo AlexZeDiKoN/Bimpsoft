@@ -1,8 +1,9 @@
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import LayersComponent from '../components/LayersComponent'
-import { layers, maps } from '../store/actions'
+import { layers, maps, params } from '../store/actions'
 import { layersTree } from '../store/selectors'
+import * as paramNames from '../constants/params'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
@@ -54,8 +55,14 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeTimeLineFrom: (date) => dispatch(layers.setTimelineFrom(date)),
   onChangeTimeLineTo: (date) => dispatch(layers.setTimelineTo(date)),
   onChangeVisibility: (visible) => dispatch(layers.updateAllLayers({ visible })),
-  onChangeBackOpacity: (opacity) => dispatch(layers.setBackOpacity(opacity)),
-  onChangeHiddenOpacity: (opacity) => dispatch(layers.setHiddenOpacity(opacity)),
+  onChangeBackOpacity: (opacity) => {
+    dispatch(layers.setBackOpacity(opacity))
+    dispatch(params.saveParam(paramNames.MAP_BASE_OPACITY, opacity))
+  },
+  onChangeHiddenOpacity: (opacity) => {
+    dispatch(layers.setHiddenOpacity(opacity))
+    dispatch(params.saveParam(paramNames.INACTIVE_LAYERS_OPACITY, opacity))
+  },
   onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
   onExpand: (key) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
   onFilterTextChange: (filterText) => dispatch(layers.setFilterText(filterText)),

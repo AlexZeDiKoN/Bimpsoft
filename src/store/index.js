@@ -11,6 +11,7 @@ import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
 import initNavigationConnection from './initNavigationConnection'
+import { catchError } from './actions/asyncAction'
 
 let store = null
 
@@ -46,7 +47,7 @@ export default function initStore (options = {}) {
   initNavigationConnection(store, history)
 
   initSocketEvents(store.dispatch, store.getState)
-  store.dispatch(loadAllParams())
+  catchError(loadAllParams)()(store.dispatch)
 
   return store
 }
