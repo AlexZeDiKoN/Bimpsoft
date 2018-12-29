@@ -43,6 +43,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) =>
     result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
+      .set('point', coordinate)
   )
 
   attributesChangeHandler = (newAttributes) => this.setResult((result) =>

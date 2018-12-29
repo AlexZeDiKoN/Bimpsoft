@@ -4,7 +4,7 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
-import { WebMapObject } from '../reducers/webMap'
+import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
@@ -30,10 +30,14 @@ export const selectedList = (list) => ({
   list,
 })
 
-export const showEditForm = (id) => (dispatch, getState) => {
+export const showEditForm = (id, geometry) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
-  dispatch(setPreview(objects.get(id)))
+  let object = objects.get(id)
+  if (geometry) {
+    object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
+  }
+  dispatch(setPreview(object))
 }
 
 export const hideForm = () => ({
@@ -109,7 +113,7 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     case SelectionTypes.CIRCLE:
     case SelectionTypes.RECTANGLE:
     case SelectionTypes.SQUARE: {
-      const id = await dispatch(webMap.addObject(object))
+      const id = await dispatch(webMap.addObject(object.toJS()))
       await dispatch(batchActions([
         selectedList([ id ]),
         showEditForm(id),
@@ -133,9 +137,9 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
     layer,
     orgStructureId: id,
     subordinationLevel: natoLevelID,
-    geometry: [ point ],
+    geometry: List([ point ]),
     point: point,
-    attributes: JSON.parse(symbolData || '{}'),
+    attributes: WebMapAttributes(JSON.parse(symbolData || '{}')),
   })))
 })
 

@@ -33,7 +33,7 @@ for (const key of Object.keys(symbolOptions)) {
 
 webMapAttributesInitValues['enableSignOffset'] = ''
 
-const WebMapAttributes = Record(webMapAttributesInitValues)
+export const WebMapAttributes = Record(webMapAttributesInitValues)
 
 export const WebMapObject = Record({
   id: null,
