@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -18,32 +17,13 @@ const types = {
   [TYPE_STROKED]: { text: i18n.STROKED, value: 'stroked' },
 }
 
+const PATH = [ 'attributes', 'lineType' ]
+
 const WithLineType = (Component) => class LineTypeComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-  }
-
-  constructor (props) {
-    super(props)
-    let { amplifiers: { lineType } = {} } = props
-    lineType = Object.entries(types).find(([ key, { value } ]) => value === lineType)
-    lineType = lineType ? lineType[0] : TYPE_SOLID
-    this.state.lineType = lineType
-  }
-
-  lineTypeChangeHandler = (lineType) => this.setState({ lineType })
-
-  fillResult (result) {
-    super.fillResult(result)
-    if (!result.amplifiers) {
-      result.amplifiers = {}
-    }
-    const lineTypeInfo = types[this.state.lineType]
-    result.amplifiers.lineType = lineTypeInfo && lineTypeInfo.value
-  }
+  lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH, lineType))
 
   renderLineType (simple = false) {
-    const { lineType } = this.state
+    const lineType = this.getResult().getIn(PATH)
     const typeInfo = types[lineType]
     const canEdit = this.isCanEdit()
 

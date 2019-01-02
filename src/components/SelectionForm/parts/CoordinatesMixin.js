@@ -1,42 +1,24 @@
 import PropTypes from 'prop-types'
-import { List } from 'immutable'
-import i18n from '../../../i18n'
-import coordinates from '../../../utils/coordinates'
+
+export const COORDINATE_PATH = [ 'geometry' ]
 
 const CoordinatesMixin = (Component) => class CoordinatesComponent extends Component {
   static propTypes = {
-    coordinatesArray: PropTypes.arrayOf(PropTypes.object),
+    onCoordinateFocusChange: PropTypes.func,
   }
 
-  constructor (props) {
-    super(props)
-    const coordinatesArray = props.coordinatesArray || []
-    while (coordinatesArray.length < 2) {
-      coordinatesArray.push(coordinates.parse(''))
-    }
-    this.state.coordinatesArray = List(coordinatesArray)
+  coordinateChangeHandler = (index, item) => this.setResult((result) =>
+    result.setIn([ ...COORDINATE_PATH, index ], item)
+  )
+
+  coordinateFocusChange (isActive, index) {
+    const { onCoordinateFocusChange } = this.props
+    onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
   }
 
-  coordinateChangeHandler = (index, item) => this.setState((state) => ({
-    coordinatesArray: state.coordinatesArray.set(index, item),
-  }))
+  onCoordinateFocusHandler = this.coordinateFocusChange.bind(this, true)
 
-  fillResult (result) {
-    super.fillResult(result)
-    const { state } = this
-    result.coordinatesArray = state.coordinatesArray.toJS()
-  }
-
-  getErrors () {
-    const errors = super.getErrors()
-    for (const coordinate of this.state.coordinatesArray) {
-      if (!coordinate || coordinates.isWrong(coordinate)) {
-        errors.push(i18n.INCORRECT_COORDINATE)
-        break
-      }
-    }
-    return errors
-  }
+  onCoordinateBlurHandler = this.coordinateFocusChange.bind(this, false)
 }
 
 export default CoordinatesMixin

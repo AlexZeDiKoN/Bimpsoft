@@ -3,6 +3,7 @@ import MapSourceSelect from '../components/MapSourceSelect'
 import * as webMapActions from '../store/actions/webMap'
 import * as viewModesActions from '../store/actions/viewModes'
 import { viewModesKeys } from '../constants'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => ({
   isShowSources: store.viewModes[viewModesKeys.mapSourcesList],
@@ -21,7 +22,7 @@ const mapDispatchToProps = {
 
 const MapSourceSelectContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(MapSourceSelect)
 
 export default MapSourceSelectContainer

@@ -7,6 +7,7 @@ import * as webMapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
 import { print } from '../store/actions/print'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
@@ -64,7 +65,7 @@ const mapDispatchToProps = {
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(LeftMenu)
 
 export default LeftMenuContainer

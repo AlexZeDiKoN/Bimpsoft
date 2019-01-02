@@ -53,7 +53,8 @@ const DzvinMarker = L.Marker.extend({
     parent._animateZoom.call(this, opt)
   },
   _initIcon: function () {
-
+    const { icon } = this.options
+    icon.options.zoom = this._map.getZoom()
   },
   onAdd: function (map) {
     const { icon } = this.options

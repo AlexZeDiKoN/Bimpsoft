@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
@@ -8,29 +7,13 @@ import { colorOption, colorDiv } from './render'
 
 const { FormRow } = components.form
 
+const PATH = [ 'attributes', 'color' ]
+
 const WithColor = (Component) => class ColorComponent extends Component {
-  static propTypes = {
-    amplifiers: PropTypes.object,
-  }
-
-  constructor (props) {
-    super(props)
-    const { amplifiers: { color } = {} } = props
-    this.state.color = color || colors.BLUE
-  }
-
-  colorChangeHandler = (color) => this.setState({ color })
-
-  fillResult (result) {
-    super.fillResult(result)
-    if (!result.amplifiers) {
-      result.amplifiers = {}
-    }
-    result.amplifiers.color = this.state.color
-  }
+  colorChangeHandler = (color) => this.setResult((result) => result.setIn(PATH, color))
 
   renderColor () {
-    const { color } = this.state
+    const color = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
     const value = canEdit ? (
       <Select value={color} onChange={this.colorChangeHandler}>

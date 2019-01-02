@@ -3,6 +3,7 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import { canEditSelector, visibleLayersSelector, activeObjectId } from '../store/selectors'
 import { webMap, selection, layers, orgStructures } from '../store/actions'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -32,10 +33,10 @@ const WebMapContainer = connect(
     printStatus: state.print.printStatus,
     printScale: state.print.printScale,
   }),
-  {
-    onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
-    updateObjectGeometry: (id, geometry) => webMap.updateObjectGeometry(id, geometry),
-    editObject: () => selection.showEditForm,
+  catchErrors({
+    onFinishDrawNewShape: selection.finishDrawNewShape,
+    updateObjectGeometry: webMap.updateObjectGeometry,
+    editObject: selection.showEditForm,
     onSelectedList: (list) => batchActions([
       selection.selectedList(list),
       webMap.setScaleToSelection(false),
@@ -44,8 +45,7 @@ const WebMapContainer = connect(
       orgStructures.setOrgStructureSelectedId(unitID),
       orgStructures.expandTreeByOrgStructureItem(unitID),
     ]),
-    onChangeLayer: (layerId) => layers.selectLayer(layerId),
-    showCreateForm: () => selection.showCreateForm,
+    onChangeLayer: layers.selectLayer,
     onMove: (center, zoom, isZoomChangedByUser) => {
       const batch = [
         webMap.setCenter(center, zoom),
@@ -54,16 +54,16 @@ const WebMapContainer = connect(
       isZoomChangedByUser && batch.push(webMap.setSubordinationLevelByZoom(zoom))
       return batchActions(batch)
     },
-    onDropUnit: (unitID, point) => selection.newShapeFromUnit(unitID, point),
+    onDropUnit: selection.newShapeFromUnit,
     stopMeasuring: () => webMap.setMeasure(false),
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,
     requestMaSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,
-    tryLockObject: (objectId) => webMap.tryLockObject(objectId),
-    tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
-  },
+    tryLockObject: webMap.tryLockObject,
+    tryUnlockObject: webMap.tryUnlockObject,
+  }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
 

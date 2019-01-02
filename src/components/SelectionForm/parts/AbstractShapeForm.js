@@ -13,48 +13,28 @@ const {
 
 export default class AbstractShapeForm extends React.Component {
   static propTypes = {
-    type: PropTypes.any,
-    style: PropTypes.any,
+    data: PropTypes.object,
+    preview: PropTypes.object,
     canEdit: PropTypes.bool,
+    onOk: PropTypes.func,
     onChange: PropTypes.func,
     onClose: PropTypes.func,
     onError: PropTypes.func,
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      style: props.style,
-      type: props.type,
-      errors: [],
+  setResult (resultFunc) {
+    const data = resultFunc(this.props.data)
+    if (data && this.props.data !== data) {
+      this.props.onChange(data)
     }
   }
 
-  fillResult (result) {
-    result.style = this.state.style
-    result.type = this.state.type
+  getResult () {
+    return this.props.data
   }
-
-  okHandler = () => {
-    const errors = this.getErrors()
-    this.setState({ errors })
-    if (errors.length) {
-      this.props.onError(errors)
-    } else {
-      const result = {}
-      this.fillResult(result)
-      this.props.onChange(result)
-    }
-  }
-
-  cancelHandler = this.props.onClose
 
   renderContent () {
     throw new Error('renderContent() is not implemented')
-  }
-
-  getErrors () {
-    return []
   }
 
   isCanEdit () {
@@ -63,13 +43,14 @@ export default class AbstractShapeForm extends React.Component {
 
   render () {
     const canEdit = this.isCanEdit()
+    const { onClose, onOk } = this.props
     return (
       <Form className="shape-form">
         {this.renderContent()}
         <FormItem>
-          {canEdit && buttonCancel(this.cancelHandler)}
-          {canEdit && buttonSave(this.okHandler)}
-          {!canEdit && buttonClose(this.cancelHandler)}
+          {canEdit && buttonCancel(onClose)}
+          {canEdit && buttonSave(onOk)}
+          {!canEdit && buttonClose(onClose)}
         </FormItem>
       </Form>
     )

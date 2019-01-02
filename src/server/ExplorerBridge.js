@@ -1,5 +1,6 @@
 import { maps } from '../store/actions'
 import { getExplorerOrigin } from '../utils/services'
+import { catchError } from '../store/actions/asyncAction'
 
 const ACTION_READY = 'ready'
 const ACTION_INIT = 'init'
@@ -46,7 +47,7 @@ export default class ExplorerBridge {
       case ACTION_OPEN: {
         console.info('action', ACTION_OPEN)
         const { mapId, layerId } = data
-        this.store.dispatch(maps.openMapFolder(mapId, layerId))
+        catchError(maps.openMapFolder)(mapId, layerId)(this.store.dispatch)
         break
       }
       default:

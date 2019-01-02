@@ -15,6 +15,8 @@ export default class CoordinateItem extends React.Component {
     readOnly: PropTypes.bool,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
+    onBlur: PropTypes.func,
+    onFocus: PropTypes.func,
   }
 
   changeHandler = (value) => {
@@ -25,6 +27,16 @@ export default class CoordinateItem extends React.Component {
   removeClickHandler = () => {
     const { onRemove, index } = this.props
     onRemove(index)
+  }
+
+  onBlurHandler = () => {
+    const { onBlur, index } = this.props
+    onBlur && onBlur(index)
+  }
+
+  onFocusHandler = () => {
+    const { onFocus, index } = this.props
+    onFocus && onFocus(index)
   }
 
   render () {
@@ -39,6 +51,8 @@ export default class CoordinateItem extends React.Component {
           onChange={this.changeHandler}
           isWrong={isWrong}
           suffix={suffix}
+          onBlur={this.onBlurHandler}
+          onFocus={this.onFocusHandler}
         />
         {!readOnly && (<IconHovered
           icon={canRemove ? IconNames.DELETE_24_DEFAULT : IconNames.DELETE_24_DISABLE}

@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 import { notifications } from '../store/actions'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const { byIds, roots, formation } = store.orgStructures
@@ -33,7 +34,7 @@ const mapDispatchToProps = (dispatch) => ({
 })
 const MilSymbolGeneratorContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(SymbolEditorComponent)
 
 export default MilSymbolGeneratorContainer

@@ -6,6 +6,7 @@ import * as notifications from './notifications'
 import * as orgStructures from './orgStructures'
 import * as selection from './selection'
 import * as templates from './templates'
+import * as params from './params'
 import * as webMap from './webMap'
 import * as print from './print'
 
@@ -18,6 +19,7 @@ export {
   notifications,
   orgStructures,
   webMap,
+  params,
   asyncAction,
   print,
 }

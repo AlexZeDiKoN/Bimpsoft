@@ -8,7 +8,7 @@ import {
   WithSubordinationLevel,
   WithLineType,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
 
 export default class SquareForm extends
   compose(
@@ -19,15 +19,7 @@ export default class SquareForm extends
     WithLineType,
     WithStrokeWidth
   )(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithFill.propTypes,
-    ...WithLineType.propTypes,
-    ...WithCoordinateAndRadius.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = AbstractShapeForm.propTypes
 
   renderContent () {
     return (

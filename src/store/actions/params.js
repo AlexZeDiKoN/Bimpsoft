@@ -1,7 +1,8 @@
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
-import { asyncAction } from './index'
+import * as paramNames from '../../constants/params'
+import { asyncAction, layers } from './index'
 
 export const actionNames = {
   LOAD_PARAMS: action('LOAD_PARAMS'),
@@ -16,6 +17,12 @@ export const loadAllParams = () =>
       type: actionNames.LOAD_PARAMS,
       payload,
     })
+    if (payload[paramNames.MAP_BASE_OPACITY] !== undefined) {
+      dispatch(layers.setBackOpacity(Number(payload[paramNames.MAP_BASE_OPACITY])))
+    }
+    if (payload[paramNames.INACTIVE_LAYERS_OPACITY] !== undefined) {
+      dispatch(layers.setHiddenOpacity(Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])))
+    }
   })
 
 export const loadParam = (name) =>

@@ -11,8 +11,22 @@ export const withNotification = (asyncFunc, payload) => async (dispatch, getStat
     dispatch({ type: ASYNC_ACTION_SUCCESS, payload })
     return res
   } catch (error) {
-    console.error(error)
     dispatch({ type: ASYNC_ACTION_ERROR, payload, error })
-    return null
+    throw error
   }
+}
+
+export const catchError = (getAction) => (...args) => async (dispatch) => {
+  try {
+    return await dispatch(getAction(...args))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const catchErrors = (events) => {
+  for (const key of Object.keys(events)) {
+    events[key] = catchError(events[key])
+  }
+  return events
 }

@@ -32,11 +32,11 @@ L.PM.Edit.Marker.include({
   },
 
   _onMarkerDragStart (markerEvent) {
-    this._layer.fire('pm:markerdragstart', { markerEvent });
+    this._layer.fire('pm:markerdragstart', { markerEvent })
   },
 
   _onMarkerDragEnd (markerEvent) {
-    this._layer.fire('pm:markerdragend', { markerEvent });
+    this._layer.fire('pm:markerdragend', { markerEvent })
   },
 
   _onMarkerDrag: function (e) {
