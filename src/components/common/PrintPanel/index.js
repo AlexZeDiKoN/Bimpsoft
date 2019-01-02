@@ -6,7 +6,7 @@ import WrappedPrintPanel from './PrintPanel'
 const PrintPanel = connect(
   (state) => (
     {
-      docConfirm: state.maps.byId.docInfo.doc_confirm,
+      docConfirm: state.maps.byId.docInfo ? state.maps.byId.docInfo.doc_confirm : ``,
       securityClassification: state.maps.byId.docInfo.security_classification,
     }
   ),
