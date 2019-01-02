@@ -47,4 +47,8 @@ export const ITEM_NUMBER = {
 }
 export const LAT = 0
 export const LNG = 1
-export const GRID_DATA = {}
+export const GRID_DATA = {
+  currentGrid: null,
+  selectedLayers: null,
+  currentMarkers: null,
+}

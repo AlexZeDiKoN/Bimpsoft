@@ -1,5 +1,11 @@
-import { toggleMapGrid } from './coordinateGrid'
+import { connect } from 'react-redux'
+import PrintInner from './print'
 
-export {
-  toggleMapGrid,
-}
+const PrintGrid = connect(
+  (state) => ({
+    printStatus: state.print.printStatus,
+    printScale: state.print.printScale,
+  })
+)(PrintInner)
+
+export default PrintGrid

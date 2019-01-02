@@ -10,7 +10,7 @@ import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
 import * as debounce from 'debounce'
 import i18n from '../../i18n'
-import { toggleMapGrid } from '../../services/coordinateGrid'
+import PrintGrid from '../../services/coordinateGrid'
 import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -279,14 +279,15 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, printStatus,
-      printScale, selection: { newShape, preview, previewCoordinateIndex },
+      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects,
+      selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
-    if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
-      this.selectPrintAreaHandler(printStatus, printScale)
-    }
+    // TODO: видалити
+    // if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
+    //   this.selectPrintAreaHandler(printStatus, printScale)
+    // }
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
@@ -297,9 +298,12 @@ export default class WebMap extends React.PureComponent {
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
     }
-    if (isGridActive !== prevProps.isGridActive) {
-      toggleMapGrid(this.map, isGridActive)
-    }
+
+    // TODO: видалити
+    // if (isGridActive !== prevProps.isGridActive) {
+    //   toggleMapGrid(this.map, isGridActive)
+    // }
+
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
@@ -1039,9 +1043,10 @@ export default class WebMap extends React.PureComponent {
   //   this.activateCreated(created)
   // }
 
-  selectPrintAreaHandler = (status, scale) => {
-    toggleMapGrid(this.map, status, scale)
-  }
+  // TODO: видалити
+  // selectPrintAreaHandler = (status, scale) => {
+  //   toggleMapGrid(this.map, status, scale)
+  // }
 
   updateCreatePoly = (type) => {
     switch (type) {
@@ -1121,6 +1126,9 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
+        {this.map && <PrintGrid
+          map={this.map}
+        />}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
       </div>
