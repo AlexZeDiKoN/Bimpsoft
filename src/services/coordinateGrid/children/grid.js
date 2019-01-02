@@ -41,10 +41,6 @@ export const updateGrid = (coordinatesList) => {
     if (!isLayerExist(coordinate, layers)) {
       const newLayer = createGridRectangle(coordinate)
       layerGroup.addLayer(newLayer)
-      // TODO: зробити нормальну перевірку
-      if (GRID_DATA.selectedZone.contains(newLayer.getCenter())) {
-        newLayer.removeFrom(layerGroup)
-      }
     }
   })
 }

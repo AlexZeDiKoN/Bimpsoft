@@ -31,7 +31,6 @@ const signatories = [
   { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
   { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
 ]
-const classified = `Для службового користування`
 const confirmDate = `22.12.18`
 
 // TODO: вынести в константы
@@ -41,6 +40,8 @@ class PrintPanel extends React.Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
     printScale: PropTypes.func,
+    docConfirm: PropTypes.object,
+    securityClassification: PropTypes.object,
   }
 
   state = {
@@ -75,7 +76,11 @@ class PrintPanel extends React.Component {
   }
 
   render () {
-    const { form: { getFieldDecorator }, printScale } = this.props
+    const {
+      form: { getFieldDecorator },
+      printScale,
+      securityClassification: { classified },
+    } = this.props
     const { FormColumn, FormRow } = components.form
     return (
       <div className='printPanelFormInner'>
