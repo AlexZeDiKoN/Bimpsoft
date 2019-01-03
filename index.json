@@ -12,6 +12,11 @@
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true
+  }, {
+    "source": "/tiles/labels/{z}/{x}/{y}.png",
+    "minZoom": 5,
+    "maxZoom": 16,
+    "tms": true
   } ]
 }, {
   "title": "Ландшафт",

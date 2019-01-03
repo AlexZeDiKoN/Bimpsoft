@@ -1,5 +1,10 @@
 /* global L */
 
+const positive = (value) => value > 0
+const neq = (control) => (value) => value !== control
+const narr = (length) => Array.from(Array(length), (_, index) => index) // Array.apply(null, { length }).map(Number.call, Number)
+const varr = (length, value) => Array.from(Array(length), () => value)
+
 export default L.Layer.extend({
   options: {
     directions: 1, // кількість напрямків
@@ -30,22 +35,24 @@ export default L.Layer.extend({
       y: height / zones / 2,
     }
 
-    this.eternalPoints = []
+    this.eternals = []
     for (let i = 0; i <= directions; i++) {
       const row = []
       for (let j = 0; j <= zones * 2; j++) {
         row.push(!this._isCorner(i, j) ? L.latLng(nBox.left + i * step.x, nBox.top + j * step.y) : null)
       }
-      this.eternalPoints.push(row)
+      this.eternals.push(row)
     }
 
-    this.additionalPoints = []
-    for (let i = 0; i <= directions; i++) {
+    this.directionSegments = varr(directions + 1, varr(zones * 2, []))
+
+    this.zoneSegments = []
+    for (let i = 0; i < directions; i++) {
       const row = []
       for (let j = 0; j <= zones * 2; j++) {
         row.push(!this._isCorner(i, j) ? [] : null)
       }
-      this.additionalPoints.push(row)
+      this.zoneSegments.push(row)
     }
 
     return this
@@ -59,31 +66,68 @@ export default L.Layer.extend({
 
   // Рендер усієї фігури
   _fullPath: function () {
-
+    const { directions, zones } = this.options
+    const d = narr(directions)
+      .filter(positive)
+    const z = narr(zones * 2)
+      .filter(positive)
+      .filter(neq(zones))
+    return `
+      ${this._borderShadow()}
+      ${z.map(this._zoneLine).join('')}
+      ${d.map(this._directionLine).join('')}
+      ${this._boundaryLine()}
+      ${this._borderLine()}
+    `
   },
 
   // Контур напрямку
   _directionPath: function (index) {
-
+    // TODO
   },
 
   // Контур зони
   _zonePath: function (index) {
+    // TODO
+  },
+
+  //
+  _directionLine: function (index) {
+    const { directions, zones } = this.options
+
+  },
+
+  //
+  _zoneLine: function (index) {
+    const { directions, zones } = this.options
 
   },
 
   // Окремий відрізок
   _segmentPath: function (direction, zone) {
-
+    // TODO ???
   },
 
   // Лінія розмежування
   _boundaryLine: function () {
+    const { directions, zones } = this.options
 
   },
 
   // Контур операційної зони
   _borderLine: function () {
-    // let result = _moveTo()
+    const { directions, zones } = this.options
+
+  },
+
+  // Вивернутий контур (тінь навколо зони)
+  _borderShadow: function () {
+    const { directions, zones } = this.options
+
+  },
+
+  // Без'є-шлях вздовж масиву сегментів
+  _segments: function (array) {
+
   },
 })
