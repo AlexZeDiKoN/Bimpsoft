@@ -40,7 +40,7 @@ build:
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - git status
     - git commit -a -m "[CI skip] %version% (autocommit)"
-    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - git push https://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
   artifacts:
     expire_in: 1 hour
