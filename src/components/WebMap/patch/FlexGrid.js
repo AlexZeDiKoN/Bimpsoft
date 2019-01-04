@@ -2,8 +2,8 @@
 
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
-const narr = (length) => Array.from(Array(length), (_, index) => index) // Array.apply(null, { length }).map(Number.call, Number)
-const varr = (length, value) => Array.from(Array(length), () => value)
+const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
+const varr = (length, value) => narr(length).map(() => value)
 
 export default L.Layer.extend({
   options: {
@@ -21,12 +21,14 @@ export default L.Layer.extend({
     L.setOptions(this, options)
 
     const { directions, zones, vertical } = this.options
+    const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
+    const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
 
     const nBox = {
-      left: vertical ? box.getWest() : box.getSouth(),
-      right: vertical ? box.getEast() : box.getNorth(),
-      top: vertical ? box.getSouth() : box.getWest(),
-      bottom: vertical ? box.getNorth() : box.getEast(),
+      left: getMin(vertical),
+      right: getMax(vertical),
+      top: getMin(!vertical),
+      bottom: getMax(!vertical),
     }
     const width = nBox.right - nBox.left
     const height = nBox.bottom - nBox.top
@@ -45,6 +47,7 @@ export default L.Layer.extend({
     }
 
     this.directionSegments = varr(directions + 1, varr(zones * 2, []))
+    this.zoneSegments = varr(directions, varr(zones * 2 + 1, []))
 
     this.zoneSegments = []
     for (let i = 0; i < directions; i++) {
