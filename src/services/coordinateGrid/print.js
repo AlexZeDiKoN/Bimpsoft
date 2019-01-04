@@ -11,20 +11,14 @@ import './coordinateGrid.css'
 import { GRID_DATA } from './constants'
 GRID_DATA.selectedLayers = layerGroup()
 
-export default class PrintInner extends React.PureComponent {
-  static propTypes = {
-    printStatus: PropTypes.bool,
-    printScale: PropTypes.number,
-    map: PropTypes.object,
-  }
+export default function PrintInner (props) {
+  const { map, printScale, printStatus } = props
 
-  // main Grid function
-  createGrid = () => {
-    const { map } = this.props
-    const coordinatesMatrix = generateCoordinateMatrix(map)
+  const createGrid = () => {
+    const coordinatesMatrix = generateCoordinateMatrix(map, printScale)
     if (!GRID_DATA.currentGrid) {
       const Grid = createGridGroup(coordinatesMatrix)
-      const Markers = createMarkersGroup(coordinatesMatrix)
+      const Markers = createMarkersGroup(coordinatesMatrix, printScale)
       Grid.addTo(map)
       Markers.addTo(map)
       GRID_DATA.selectedLayers.addTo(map)
@@ -36,27 +30,25 @@ export default class PrintInner extends React.PureComponent {
     updateMarkers(coordinatesMatrix)
   }
 
-  throttledGridRecalculation = throttle(this.createGrid, 200)
+  const throttledGridRecalculation = throttle(createGrid, 200)
 
-  initCoordinateMapGrid = () => {
+  const initCoordinateMapGrid = () => {
     // TODO: видалити
-    const { map, printScale } = this.props
-    this.setScale(map, printScale)
+    setScale(map, printScale)
 
-    this.createGrid()
-    map.on('move', this.throttledGridRecalculation)
+    createGrid()
+    map.on('move', throttledGridRecalculation)
   }
 
-  setScale = (map, scale) => {
+  const setScale = (map, scale) => {
     if (GRID_DATA.scale !== undefined && GRID_DATA.scale !== scale) {
-      this.removeCoordinateMapGrid(map)
+      removeCoordinateMapGrid(map)
     }
     GRID_DATA.scale = scale
   }
 
-  removeCoordinateMapGrid = () => {
-    const { map } = this.props
-    map.off('move', this.throttledGridRecalculation)
+  const removeCoordinateMapGrid = () => {
+    map.off('move')
     if (GRID_DATA.currentGrid && GRID_DATA.selectedLayers) {
       GRID_DATA.currentGrid.removeFrom(map)
       GRID_DATA.selectedLayers.removeFrom(map)
@@ -66,12 +58,15 @@ export default class PrintInner extends React.PureComponent {
     }
   }
 
-  render () {
-    const { printStatus } = this.props
-    return (
-      <Fragment>
-        {printStatus ? this.initCoordinateMapGrid() : this.removeCoordinateMapGrid()}
-      </Fragment>
-    )
-  }
+  return (
+    <Fragment>
+      {printStatus ? initCoordinateMapGrid() : removeCoordinateMapGrid()}
+    </Fragment>
+  )
+}
+
+PrintInner.propTypes = {
+  printStatus: PropTypes.bool,
+  printScale: PropTypes.number,
+  map: PropTypes.object,
 }
