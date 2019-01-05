@@ -244,9 +244,6 @@ export default L.SVG.include({
   },
 
   _updateStyle: function (layer) {
-    // TODO: потестувати на великих даних, чи присвоєння, наприклад, "_path.style.opacity = opacity" містить перевірку
-    // TODO: ідентичного значення всередині, чи треба перевіряти зовні
-    // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
       options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },

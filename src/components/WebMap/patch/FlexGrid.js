@@ -1,9 +1,11 @@
 /* global L */
 
+import { prepareBezierPath } from './utils/Bezier'
+
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
-const varr = (length, value) => narr(length).map(() => value)
+const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
 export default L.Layer.extend({
   options: {
@@ -37,34 +39,12 @@ export default L.Layer.extend({
       y: height / zones / 2,
     }
 
-    this.eternals = []
-    for (let i = 0; i <= directions; i++) {
-      const row = []
-      for (let j = 0; j <= zones * 2; j++) {
-        row.push(!this._isCorner(i, j) ? L.latLng(nBox.left + i * step.x, nBox.top + j * step.y) : null)
-      }
-      this.eternals.push(row)
-    }
-
-    this.directionSegments = varr(directions + 1, varr(zones * 2, []))
-    this.zoneSegments = varr(directions, varr(zones * 2 + 1, []))
-
-    this.zoneSegments = []
-    for (let i = 0; i < directions; i++) {
-      const row = []
-      for (let j = 0; j <= zones * 2; j++) {
-        row.push(!this._isCorner(i, j) ? [] : null)
-      }
-      this.zoneSegments.push(row)
-    }
+    this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) =>
+      L.latLng(nBox.left + i * step.x, nBox.top + j * step.y)))
+    this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
+    this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
 
     return this
-  },
-
-  // Чи є елемент (точка, відрізок) кутовим?
-  _isCorner: function (i, j) {
-    const { directions, zones } = this.options
-    return (i === 0 || i === directions) && (j === 0 || j === zones * 2)
   },
 
   // Рендер усієї фігури
@@ -94,43 +74,61 @@ export default L.Layer.extend({
     // TODO
   },
 
-  //
-  _directionLine: function (index) {
-    const { directions, zones } = this.options
-
-  },
-
-  //
-  _zoneLine: function (index) {
-    const { directions, zones } = this.options
-
-  },
-
-  // Окремий відрізок
-  _segmentPath: function (direction, zone) {
+  // Окремий відрізок лінії напрямку
+  _directionSegment: function (direction, zone) {
     // TODO ???
+  },
+
+  // Окремий відрізок лінії зони
+  _zoneSegment: function (direction, zone) {
+    // TODO ???
+  },
+
+  // Лінія напрямку
+  _directionLine: function (index, reverse) {
+    const points = this.directionRings[index].reduce((res, seg, idx) =>
+      [ ...res, ...seg, this.eternalRings[index][idx + 1] ], [ this.eternalRings[index][0] ])
+    return prepareBezierPath(reverse ? points.revere() : points)
+  },
+
+  // Лінія зони
+  _zoneLine: function (index, reverse) {
+    const points = this.zoneRings[index].reduce((res, seg, idx) =>
+      [ ...res, ...seg, this.eternalRings[idx + 1][index] ], [ this.eternalRings[0][index] ])
+    return prepareBezierPath(reverse ? points.revere() : points)
   },
 
   // Лінія розмежування
   _boundaryLine: function () {
-    const { directions, zones } = this.options
-
+    const { zones } = this.options
+    return this._zoneLine(zones)
   },
 
   // Контур операційної зони
   _borderLine: function () {
     const { directions, zones } = this.options
-
+    return `
+      ${this._zoneLine(0)}
+      ${this._directionLine(directions)}
+      ${this._zoneLine(zones * 2, true)}
+      ${this._directionLine(0, true)}
+      Z
+    `
   },
 
   // Вивернутий контур (тінь навколо зони)
   _borderShadow: function () {
-    const { directions, zones } = this.options
-
+    // const { directions, zones } = this.options
+    // TODO
+    return ``
   },
 
-  // Без'є-шлях вздовж масиву сегментів
-  _segments: function (array) {
-
+  // Перетворення географічних координат у екранні
+  _project: function () {
+    const projectRing = (ring) => ring.map(this._map.latLngToLayerPoint)
+    const projectRings = (row) => row.map(projectRing)
+    this.eternalRings = this.eternals.map(projectRing)
+    this.directionRings = this.directionSegments.map(projectRings)
+    this.zoneRings = this.zoneSegments.map(projectRings)
   },
 })
