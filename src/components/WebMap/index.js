@@ -1047,6 +1047,12 @@ export default class WebMap extends React.PureComponent {
     toggleMapGrid(this.map, tempPrintFlag)
   }
 
+  dropFlexGrid = () => {
+    const layer = new L.FlexGrid(this.map.getBounds(), { directions: 4, zones: 3 })
+    console.log(layer)
+    layer.addTo(this.map)
+  }
+
   updateCreatePoly = (type) => {
     switch (type) {
       case entityKind.POLYLINE:
@@ -1128,6 +1134,7 @@ export default class WebMap extends React.PureComponent {
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
+        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
       </div>
     )
   }

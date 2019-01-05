@@ -7,7 +7,7 @@ const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
-export default L.Layer.extend({
+const FlexGrid = L.Layer.extend({
   options: {
     directions: 1, // кількість напрямків
     zones: 1, // кількість зон від лінії ромежування
@@ -132,3 +132,5 @@ export default L.Layer.extend({
     this.zoneRings = this.zoneSegments.map(projectRings)
   },
 })
+
+export default FlexGrid

@@ -7,9 +7,9 @@ import './Map.BoxSelect'
 import './Marker.Bounce'
 import { TextIcon, PointIcon } from './SvgIcon'
 import DzvinMarker from './DzvinMarker'
-// import FlexGrid from './FlexGrid'
+import FlexGrid from './FlexGrid'
 
 L.DzvinMarker = DzvinMarker
 L.TextIcon = TextIcon
 L.PointIcon = PointIcon
-// L.FlexGrid = FlexGrid
+L.FlexGrid = FlexGrid
