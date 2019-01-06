@@ -1,20 +1,61 @@
 /* global L */
 
-import { prepareBezierPath } from './utils/Bezier'
-
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
+const commonStyle = {
+  stroke: true,
+  color: '#3388ff',
+  weight: 3,
+  opacity: 1,
+  lineCap: 'round',
+  lineJoin: 'round',
+  dashArray: null,
+  dashOffset: null,
+  fill: false,
+  fillColor: null,
+  fillOpacity: 0.2,
+  fillRule: 'evenodd',
+}
+
+/**
+ * @class FlexGrid
+ * Комплексний графічний об'єкт для представлення операційної зони
+ */
 const FlexGrid = L.Layer.extend({
   options: {
+    // @option directions: Number = 1
+    // Кількість напрямків
     directions: 1, // кількість напрямків
+    // @option zones: Number = 1
+    // Кількість зон
     zones: 1, // кількість зон від лінії ромежування
+    // @option vertical: Boolean = false
+    // Вертикальна операційна зона (напрямки спрямовані вертикально, зони - горизонтально)
     vertical: false,
+    zoneLines: {
+      ...commonStyle,
+    },
+    directionLines: {
+      ...commonStyle,
+    },
+    boundaryLine: {
+      ...commonStyle,
+    },
+    borderLine: {
+      ...commonStyle,
+    },
+    shadow: {
+      ...commonStyle,
+      stroke: false,
+      fill: true,
+    },
   },
 
   /**
+   * @method initialize
    * Створення об'єкта
    * @param box - обмежуючий прямокутник
    * @param options - опції
@@ -47,21 +88,36 @@ const FlexGrid = L.Layer.extend({
     return this
   },
 
-  // Рендер усієї фігури
-  _fullPath: function () {
-    const { directions, zones } = this.options
-    const d = narr(directions)
-      .filter(positive)
+  beforeAdd: function (map) {
+    this._renderer = map.getRenderer(this)
+  },
+
+  onAdd: function () {
+    this._renderer._initFlexGrid(this)
+    this._reset()
+    this._renderer._addPath(this)
+    this._renderer._bringToFront(this)
+  },
+
+  onRemove: function () {
+    this._renderer._removePath(this)
+  },
+
+  // Лінії розмежування зон
+  _zoneLines: function () {
+    const { zones } = this.options
     const z = narr(zones * 2)
       .filter(positive)
       .filter(neq(zones))
-    return `
-      ${this._borderShadow()}
-      ${z.map(this._zoneLine).join('')}
-      ${d.map(this._directionLine).join('')}
-      ${this._boundaryLine()}
-      ${this._borderLine()}
-    `
+    return z.map(this._zoneLine.bind(this))
+  },
+
+  // Лінії розмежування напрямків
+  _directionLines: function () {
+    const { directions } = this.options
+    const d = narr(directions)
+      .filter(positive)
+    return d.map(this._directionLine.bind(this))
   },
 
   // Контур напрямку
@@ -88,14 +144,14 @@ const FlexGrid = L.Layer.extend({
   _directionLine: function (index, reverse) {
     const points = this.directionRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[index][idx + 1] ], [ this.eternalRings[index][0] ])
-    return prepareBezierPath(reverse ? points.revere() : points)
+    return reverse ? points.reverse() : points
   },
 
   // Лінія зони
   _zoneLine: function (index, reverse) {
     const points = this.zoneRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[idx + 1][index] ], [ this.eternalRings[0][index] ])
-    return prepareBezierPath(reverse ? points.revere() : points)
+    return reverse ? points.reverse() : points
   },
 
   // Лінія розмежування
@@ -107,29 +163,31 @@ const FlexGrid = L.Layer.extend({
   // Контур операційної зони
   _borderLine: function () {
     const { directions, zones } = this.options
-    return `
-      ${this._zoneLine(0)}
-      ${this._directionLine(directions)}
-      ${this._zoneLine(zones * 2, true)}
-      ${this._directionLine(0, true)}
-      Z
-    `
-  },
-
-  // Вивернутий контур (тінь навколо зони)
-  _borderShadow: function () {
-    // const { directions, zones } = this.options
-    // TODO
-    return ``
+    return [].concat(
+      this._zoneLine(0),
+      this._directionLine(directions),
+      this._zoneLine(zones * 2, true),
+      this._directionLine(0, true),
+    )
   },
 
   // Перетворення географічних координат у екранні
   _project: function () {
-    const projectRing = (ring) => ring.map(this._map.latLngToLayerPoint)
+    const project = this._map.latLngToLayerPoint.bind(this._map)
+    const projectRing = (ring) => ring.map(project)
     const projectRings = (row) => row.map(projectRing)
     this.eternalRings = this.eternals.map(projectRing)
     this.directionRings = this.directionSegments.map(projectRings)
     this.zoneRings = this.zoneSegments.map(projectRings)
+  },
+
+  _update: function () {
+    this._renderer._updateFlexGrid(this)
+  },
+
+  _reset: function () {
+    this._project()
+    this._update()
   },
 })
 

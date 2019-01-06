@@ -254,12 +254,14 @@ export default L.SVG.include({
       _outlinePath,
     } = layer
 
-    if (shadowColor) {
-      _shadowPath.removeAttribute('display')
-      _shadowPath.setAttribute('filter', 'url(#blurFilter)')
-      _shadowPath.setAttribute('stroke', shadowColor)
-    } else {
-      _shadowPath.setAttribute('display', 'none')
+    if (_shadowPath) {
+      if (shadowColor) {
+        _shadowPath.removeAttribute('display')
+        _shadowPath.setAttribute('filter', 'url(#blurFilter)')
+        _shadowPath.setAttribute('stroke', shadowColor)
+      } else {
+        _shadowPath.setAttribute('display', 'none')
+      }
     }
     // if (colorChanged) {
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
@@ -268,15 +270,15 @@ export default L.SVG.include({
     // }
     if (_path.style.opacity !== opacity) {
       _path.style.opacity = opacity
-      _outlinePath.style.opacity = opacity
-      _shadowPath.style.opacity = opacity
+      _outlinePath && (_outlinePath.style.opacity = opacity)
+      _shadowPath && (_shadowPath.style.opacity = opacity)
     }
     _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
     _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
     if ((_path.style.display === 'none') !== Boolean(hidden)) {
       _path.style.display = hidden ? 'none' : ''
-      _outlinePath.style.display = hidden ? 'none' : ''
-      _shadowPath.style.display = hidden ? 'none' : ''
+      _outlinePath && (_outlinePath.style.display = hidden ? 'none' : '')
+      _shadowPath && (_shadowPath.style.display = hidden ? 'none' : '')
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
     _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
@@ -295,10 +297,14 @@ export default L.SVG.include({
   },
 
   _addPath: function (layer) {
-    this._rootGroup.appendChild(layer._shadowPath)
+    if (layer._shadowPath) {
+      this._rootGroup.appendChild(layer._shadowPath)
+    }
 
-    this._rootGroup.appendChild(layer._outlinePath)
-    layer.addInteractiveTarget(layer._outlinePath)
+    if (layer._outlinePath) {
+      this._rootGroup.appendChild(layer._outlinePath)
+      layer.addInteractiveTarget(layer._outlinePath)
+    }
 
     _addPath.call(this, layer)
   },
@@ -555,5 +561,43 @@ export default L.SVG.include({
     const leftEnd = drawLineEnd(leftEndType, ring[0], angle(vector(ring[0], leftPlus)))
     const rightEnd = drawLineEnd(rightEndType, ring[ring.length - 1], angle(vector(ring[ring.length - 1], rightMinus)))
     layer.getLineEndsGroup().innerHTML = `${leftEnd}${rightEnd}`
+  },
+
+  _initFlexGrid: function (grid) {
+    const group = L.SVG.create('g')
+    grid._path = group
+    if (grid.options.className) {
+      L.DomUtil.addClass(group, grid.options.className)
+    }
+    if (grid.options.interactive) {
+      L.DomUtil.addClass(group, 'leaflet-interactive')
+    }
+    grid._shadow = L.SVG.create('path')
+    grid._zones = L.SVG.create('path')
+    grid._directions = L.SVG.create('path')
+    grid._boundary = L.SVG.create('path')
+    grid._border = L.SVG.create('path')
+    this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
+    this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
+    this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
+    this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
+    this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
+    group.appendChild(grid._shadow)
+    group.appendChild(grid._zones)
+    group.appendChild(grid._directions)
+    group.appendChild(grid._boundary)
+    group.appendChild(grid._border)
+    this._layers[L.Util.stamp(grid)] = grid
+  },
+
+  _updateFlexGrid: function (grid) {
+    const bounds = grid._map._renderer._bounds
+    const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
+    const border = prepareBezierPath(grid._borderLine(), true)
+    grid._shadow.setAttribute('d', `${path}${border}`)
+    grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
+    grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
+    grid._boundary.setAttribute('d', prepareBezierPath(grid._borderLine()))
+    grid._border.setAttribute('d', border)
   },
 })
