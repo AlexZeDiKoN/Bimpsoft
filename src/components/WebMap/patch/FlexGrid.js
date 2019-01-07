@@ -7,7 +7,7 @@ const varr = (length, getValue) => narr(length).map((_, index) => getValue(index
 
 const commonStyle = {
   stroke: true,
-  color: '#3388ff',
+  color: '#38f',
   weight: 3,
   opacity: 1,
   lineCap: 'round',
@@ -37,20 +37,26 @@ const FlexGrid = L.Layer.extend({
     vertical: false,
     zoneLines: {
       ...commonStyle,
+      weight: 2,
     },
     directionLines: {
       ...commonStyle,
+      weight: 2,
+      color: '#000',
     },
     boundaryLine: {
       ...commonStyle,
+      color: '#f00',
     },
     borderLine: {
       ...commonStyle,
+      color: '#000',
     },
     shadow: {
       ...commonStyle,
       stroke: false,
       fill: true,
+      fillColor: '#444',
     },
   },
 
@@ -80,8 +86,11 @@ const FlexGrid = L.Layer.extend({
       y: height / zones / 2,
     }
 
-    this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) =>
-      L.latLng(nBox.left + i * step.x, nBox.top + j * step.y)))
+    this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
+      const x = nBox.left + i * step.x
+      const y = nBox.top + j * step.y
+      return vertical ? L.latLng(y, x) : L.latLng(x, y)
+    }))
     this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
     this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
 
@@ -144,14 +153,14 @@ const FlexGrid = L.Layer.extend({
   _directionLine: function (index, reverse) {
     const points = this.directionRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[index][idx + 1] ], [ this.eternalRings[index][0] ])
-    return reverse ? points.reverse() : points
+    return reverse === true ? points.reverse() : points
   },
 
   // Лінія зони
   _zoneLine: function (index, reverse) {
     const points = this.zoneRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[idx + 1][index] ], [ this.eternalRings[0][index] ])
-    return reverse ? points.reverse() : points
+    return reverse === true ? points.reverse() : points
   },
 
   // Лінія розмежування

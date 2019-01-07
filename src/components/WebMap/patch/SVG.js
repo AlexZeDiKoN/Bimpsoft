@@ -597,7 +597,7 @@ export default L.SVG.include({
     grid._shadow.setAttribute('d', `${path}${border}`)
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
-    grid._boundary.setAttribute('d', prepareBezierPath(grid._borderLine()))
+    grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
   },
 })

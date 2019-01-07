@@ -1048,8 +1048,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dropFlexGrid = () => {
-    const layer = new L.FlexGrid(this.map.getBounds(), { directions: 4, zones: 3 })
-    console.log(layer)
+    const layer = new L.FlexGrid(this.map.getBounds(), { directions: 4, zones: 3, vertical: true })
     layer.addTo(this.map)
   }
 
