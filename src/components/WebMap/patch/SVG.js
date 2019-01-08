@@ -331,10 +331,14 @@ export default L.SVG.include({
   _removePath: function (layer) {
     _removePath.call(this, layer)
 
-    L.DomUtil.remove(layer._outlinePath)
-    layer.removeInteractiveTarget(layer._outlinePath)
+    if (layer._outlinePath) {
+      L.DomUtil.remove(layer._outlinePath)
+      layer.removeInteractiveTarget(layer._outlinePath)
+    }
 
-    L.DomUtil.remove(layer._shadowPath)
+    if (layer._shadowPath) {
+      L.DomUtil.remove(layer._shadowPath)
+    }
 
     layer.deleteMask && layer.deleteMask()
     layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()

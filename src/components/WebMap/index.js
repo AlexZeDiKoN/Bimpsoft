@@ -514,7 +514,7 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
-    if (layer) {
+    if (layer && layer.object) {
       const { point, geometry } = layer.object
       const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
       if (geometryChanged) {
