@@ -243,65 +243,81 @@ export default L.SVG.include({
     _initPath.call(this, layer)
   },
 
+  _setLayerPathStyle: function (layer, style, className) {
+    if (layer.options.tsType === entityKind.FLEXGRID) {
+      this._setPathStyle(layer, layer._zones, style, className)
+      this._setPathStyle(layer, layer._directions, style, className)
+      this._setPathStyle(layer, layer._boundary, style, className)
+      this._setPathStyle(layer, layer._border, style, className)
+    } else {
+      this._setPathStyle(layer, layer._path, style, className)
+    }
+  },
+
+  _setPathStyle: function (layer, path, style, className) {
+    const { _amplifierGroup, _lineEndsGroup, _outlinePath, _shadowPath } = layer
+    if (style) {
+      for (const item of Object.keys(style)) {
+        if (path.style[item] !== style[item]) {
+          path.style[item] = style[item]
+          _outlinePath && (_outlinePath.style[item] = style[item])
+          _shadowPath && (_shadowPath.style[item] = style[item])
+        }
+        _amplifierGroup && (_amplifierGroup.style[item] = style[item])
+        _lineEndsGroup && (_lineEndsGroup.style[item] = style[item])
+      }
+    }
+    if (className) {
+      for (const item of Object.keys(className)) {
+        setClassName(path, item, className[item])
+        _amplifierGroup && setClassName(_amplifierGroup, item, className[item])
+        _lineEndsGroup && setClassName(_lineEndsGroup, item, className[item])
+      }
+    }
+  },
+
   _updateStyle: function (layer) {
-    // TODO: потестувати на великих даних, чи присвоєння, наприклад, "_path.style.opacity = opacity" містить перевірку
-    // TODO: ідентичного значення всередині, чи треба перевіряти зовні
-    // const colorChanged = layer._path.style.color !== layer.options.color
     _updateStyle.call(this, layer)
     const {
       options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },
       _shadowPath,
-      _path,
       _amplifierGroup,
       _lineEndsGroup,
-      _outlinePath,
     } = layer
 
-    if (shadowColor) {
-      _shadowPath.removeAttribute('display')
-      _shadowPath.setAttribute('filter', 'url(#blurFilter)')
-      _shadowPath.setAttribute('stroke', shadowColor)
-    } else {
-      _shadowPath.setAttribute('display', 'none')
+    if (_shadowPath) {
+      if (shadowColor) {
+        _shadowPath.removeAttribute('display')
+        _shadowPath.setAttribute('filter', 'url(#blurFilter)')
+        _shadowPath.setAttribute('stroke', shadowColor)
+      } else {
+        _shadowPath.setAttribute('display', 'none')
+      }
     }
-    // if (colorChanged) {
+
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
-    // }
-    if (_path.style.opacity !== opacity) {
-      _path.style.opacity = opacity
-      _outlinePath.style.opacity = opacity
-      _shadowPath.style.opacity = opacity
-    }
-    _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
-    _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
-    if ((_path.style.display === 'none') !== Boolean(hidden)) {
-      _path.style.display = hidden ? 'none' : ''
-      _outlinePath.style.display = hidden ? 'none' : ''
-      _shadowPath.style.display = hidden ? 'none' : ''
-    }
-    _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
-    _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
 
-    setClassName(_path, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-
-    setClassName(_path, 'dzvin-path-selected', selected && !inActiveLayer)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected', selected && !inActiveLayer)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected', selected && !inActiveLayer)
-
-    setClassName(_path, 'dzvin-path-locked', locked)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-locked', locked)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-locked', locked)
+    this._setLayerPathStyle(layer, {
+      opacity,
+      display: hidden ? 'none' : '',
+    }, {
+      'dzvin-path-selected-on-active-layer': selected && inActiveLayer,
+      'dzvin-path-selected': selected && !inActiveLayer,
+      'dzvin-path-locked': locked,
+    })
   },
 
   _addPath: function (layer) {
-    this._rootGroup.appendChild(layer._shadowPath)
+    if (layer._shadowPath) {
+      this._rootGroup.appendChild(layer._shadowPath)
+    }
 
-    this._rootGroup.appendChild(layer._outlinePath)
-    layer.addInteractiveTarget(layer._outlinePath)
+    if (layer._outlinePath) {
+      this._rootGroup.appendChild(layer._outlinePath)
+      layer.addInteractiveTarget(layer._outlinePath)
+    }
 
     _addPath.call(this, layer)
   },
@@ -315,10 +331,14 @@ export default L.SVG.include({
   _removePath: function (layer) {
     _removePath.call(this, layer)
 
-    L.DomUtil.remove(layer._outlinePath)
-    layer.removeInteractiveTarget(layer._outlinePath)
+    if (layer._outlinePath) {
+      L.DomUtil.remove(layer._outlinePath)
+      layer.removeInteractiveTarget(layer._outlinePath)
+    }
 
-    L.DomUtil.remove(layer._shadowPath)
+    if (layer._shadowPath) {
+      L.DomUtil.remove(layer._shadowPath)
+    }
 
     layer.deleteMask && layer.deleteMask()
     layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
@@ -558,5 +578,46 @@ export default L.SVG.include({
     const leftEnd = drawLineEnd(leftEndType, ring[0], angle(vector(ring[0], leftPlus)))
     const rightEnd = drawLineEnd(rightEndType, ring[ring.length - 1], angle(vector(ring[ring.length - 1], rightMinus)))
     layer.getLineEndsGroup().innerHTML = `${leftEnd}${rightEnd}`
+  },
+
+  _initFlexGrid: function (grid) {
+    const group = L.SVG.create('g')
+    grid._path = group
+    if (grid.options.className) {
+      L.DomUtil.addClass(group, grid.options.className)
+    }
+    grid._shadow = L.SVG.create('path')
+    grid._zones = L.SVG.create('path')
+    grid._directions = L.SVG.create('path')
+    grid._boundary = L.SVG.create('path')
+    grid._border = L.SVG.create('path')
+    if (grid.options.interactive) {
+      L.DomUtil.addClass(grid._zones, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._directions, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._boundary, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._border, 'leaflet-interactive')
+    }
+    this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
+    this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
+    this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
+    this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
+    this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
+    group.appendChild(grid._shadow)
+    group.appendChild(grid._zones)
+    group.appendChild(grid._directions)
+    group.appendChild(grid._boundary)
+    group.appendChild(grid._border)
+    this._layers[L.Util.stamp(grid)] = grid
+  },
+
+  _updateFlexGrid: function (grid) {
+    const bounds = grid._map._renderer._bounds
+    const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
+    const border = prepareBezierPath(grid._borderLine(), true)
+    grid._shadow.setAttribute('d', `${path}${border}`)
+    grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
+    grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
+    grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
+    grid._border.setAttribute('d', border)
   },
 })

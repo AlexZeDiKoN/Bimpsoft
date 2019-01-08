@@ -3,7 +3,9 @@ import { epsilon } from './helpers'
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
 export function prepareBezierPath (ring, locked, skipStart, skipEnd) {
   let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart, skipEnd)) {
+  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring,
+    locked === true, skipStart === true, skipEnd === true)
+  ) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }
   return str || 'M0 0'
