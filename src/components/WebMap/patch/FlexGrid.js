@@ -98,7 +98,6 @@ const FlexGrid = L.Layer.extend({
       const y = nBox.top + j * step.y
       return vertical ? L.latLng(y, x) : L.latLng(x, y)
     }))
-    console.log(this.eternals)
     this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
     this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
 

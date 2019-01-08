@@ -281,10 +281,8 @@ export default L.SVG.include({
     const {
       options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },
       _shadowPath,
-      // _path,
       _amplifierGroup,
       _lineEndsGroup,
-      // _outlinePath,
     } = layer
 
     if (_shadowPath) {
@@ -296,11 +294,10 @@ export default L.SVG.include({
         _shadowPath.setAttribute('display', 'none')
       }
     }
-    // if (colorChanged) {
+
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
-    // }
 
     this._setLayerPathStyle(layer, {
       opacity,
@@ -310,33 +307,6 @@ export default L.SVG.include({
       'dzvin-path-selected': selected && !inActiveLayer,
       'dzvin-path-locked': locked,
     })
-
-    /* if (_path.style.opacity !== opacity) {
-      _path.style.opacity = opacity
-      _outlinePath && (_outlinePath.style.opacity = opacity)
-      _shadowPath && (_shadowPath.style.opacity = opacity)
-    }
-    _amplifierGroup && (_amplifierGroup.style.opacity = opacity)
-    _lineEndsGroup && (_lineEndsGroup.style.opacity = opacity)
-    if ((_path.style.display === 'none') !== Boolean(hidden)) {
-      _path.style.display = hidden ? 'none' : ''
-      _outlinePath && (_outlinePath.style.display = hidden ? 'none' : '')
-      _shadowPath && (_shadowPath.style.display = hidden ? 'none' : '')
-    }
-    _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
-    _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '') */
-
-    /* setClassName(_path, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
-
-    setClassName(_path, 'dzvin-path-selected', selected && !inActiveLayer)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected', selected && !inActiveLayer)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected', selected && !inActiveLayer)
-
-    setClassName(_path, 'dzvin-path-locked', locked)
-    _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-locked', locked)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-locked', locked) */
   },
 
   _addPath: function (layer) {
