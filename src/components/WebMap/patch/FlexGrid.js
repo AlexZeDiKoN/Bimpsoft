@@ -1,5 +1,7 @@
 /* global L */
 
+import entityKind from '../entityKind'
+
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
@@ -35,6 +37,7 @@ const FlexGrid = L.Layer.extend({
     // @option vertical: Boolean = false
     // Вертикальна операційна зона (напрямки спрямовані вертикально, зони - горизонтально)
     vertical: false,
+    tsType: entityKind.FLEXGRID,
     zoneLines: {
       ...commonStyle,
       weight: 2,
@@ -56,6 +59,7 @@ const FlexGrid = L.Layer.extend({
       ...commonStyle,
       stroke: false,
       fill: true,
+      fillOpacity: 0.4,
       fillColor: '#444',
     },
   },
@@ -79,6 +83,7 @@ const FlexGrid = L.Layer.extend({
       top: getMin(!vertical),
       bottom: getMax(!vertical),
     }
+    nBox.center = (nBox.left + nBox.right) / 2
     const width = nBox.right - nBox.left
     const height = nBox.bottom - nBox.top
     const step = {
@@ -86,11 +91,14 @@ const FlexGrid = L.Layer.extend({
       y: height / zones / 2,
     }
 
+    this.id = -99
     this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-      const x = nBox.left + i * step.x
+      const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones)
       const y = nBox.top + j * step.y
       return vertical ? L.latLng(y, x) : L.latLng(x, y)
     }))
+    console.log(this.eternals)
     this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
     this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
 
@@ -197,6 +205,33 @@ const FlexGrid = L.Layer.extend({
   _reset: function () {
     this._project()
     this._update()
+  },
+
+  addInteractiveTarget: function (targetEl) {
+    if (targetEl === this._path) {
+      this._map._targets[L.Util.stamp(this._zones)] = this
+      this._map._targets[L.Util.stamp(this._directions)] = this
+      this._map._targets[L.Util.stamp(this._boundary)] = this
+      this._map._targets[L.Util.stamp(this._border)] = this
+    }
+    return this
+  },
+
+  removeInteractiveTarget: function (targetEl) {
+    if (targetEl === this._path) {
+      delete this._map._targets[L.Util.stamp(this._zones)]
+      delete this._map._targets[L.Util.stamp(this._directions)]
+      delete this._map._targets[L.Util.stamp(this._boundary)]
+      delete this._map._targets[L.Util.stamp(this._border)]
+    }
+    return this
+  },
+
+  setSelected: function (selected) {
+    L.setOptions(this, { selected, inActiveLayer: selected })
+    if (this._renderer) {
+      this._renderer._updateStyle(this)
+    }
   },
 })
 

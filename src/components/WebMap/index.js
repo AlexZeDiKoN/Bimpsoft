@@ -553,7 +553,7 @@ export default class WebMap extends React.PureComponent {
     if (newList.length === 1 && list[0] !== newList[0]) {
       const id = newList[0]
       const layer = this.findLayerById(id)
-      selectedUnit = (layer && layer.object.unit) || null
+      selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
     onSelectUnit(selectedUnit)
 
@@ -601,7 +601,7 @@ export default class WebMap extends React.PureComponent {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = layer.object.layer === layerId
+          const isActiveLayer = layer.object && layer.object.layer === layerId
           const isActive = canEditLayer && isSelected && isActiveLayer
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
           if (isActive) {
@@ -857,10 +857,10 @@ export default class WebMap extends React.PureComponent {
 
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: { id, object } } = event
+    const { target: { id, object, options: { tsType } } } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = object && object.layer
-    let doActivate = targetLayer === this.props.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
       this.props.onChangeLayer(targetLayer)
       doActivate = true
@@ -1048,7 +1048,11 @@ export default class WebMap extends React.PureComponent {
   }
 
   dropFlexGrid = () => {
-    const layer = new L.FlexGrid(this.map.getBounds(), { directions: 4, zones: 3, vertical: true })
+    const layer = new L.FlexGrid(this.map.getBounds(), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
+    layer.on('click', this.clickOnLayer)
+    layer.on('dblclick', this.dblClickOnLayer)
+    layer.on('pm:markerdragstart', this.onDragstartLayer)
+    layer.on('pm:markerdragend', this.onDragendLayer)
     layer.addTo(this.map)
   }
 

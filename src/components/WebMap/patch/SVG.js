@@ -243,15 +243,48 @@ export default L.SVG.include({
     _initPath.call(this, layer)
   },
 
+  _setLayerPathStyle: function (layer, style, className) {
+    if (layer.options.tsType === entityKind.FLEXGRID) {
+      this._setPathStyle(layer, layer._zones, style, className)
+      this._setPathStyle(layer, layer._directions, style, className)
+      this._setPathStyle(layer, layer._boundary, style, className)
+      this._setPathStyle(layer, layer._border, style, className)
+    } else {
+      this._setPathStyle(layer, layer._path, style, className)
+    }
+  },
+
+  _setPathStyle: function (layer, path, style, className) {
+    const { _amplifierGroup, _lineEndsGroup, _outlinePath, _shadowPath } = layer
+    if (style) {
+      for (const item of Object.keys(style)) {
+        if (path.style[item] !== style[item]) {
+          path.style[item] = style[item]
+          _outlinePath && (_outlinePath.style[item] = style[item])
+          _shadowPath && (_shadowPath.style[item] = style[item])
+        }
+        _amplifierGroup && (_amplifierGroup.style[item] = style[item])
+        _lineEndsGroup && (_lineEndsGroup.style[item] = style[item])
+      }
+    }
+    if (className) {
+      for (const item of Object.keys(className)) {
+        setClassName(path, item, className[item])
+        _amplifierGroup && setClassName(_amplifierGroup, item, className[item])
+        _lineEndsGroup && setClassName(_lineEndsGroup, item, className[item])
+      }
+    }
+  },
+
   _updateStyle: function (layer) {
     _updateStyle.call(this, layer)
     const {
       options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },
       _shadowPath,
-      _path,
+      // _path,
       _amplifierGroup,
       _lineEndsGroup,
-      _outlinePath,
+      // _outlinePath,
     } = layer
 
     if (_shadowPath) {
@@ -268,7 +301,17 @@ export default L.SVG.include({
     _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('fill', color)
     // }
-    if (_path.style.opacity !== opacity) {
+
+    this._setLayerPathStyle(layer, {
+      opacity,
+      display: hidden ? 'none' : '',
+    }, {
+      'dzvin-path-selected-on-active-layer': selected && inActiveLayer,
+      'dzvin-path-selected': selected && !inActiveLayer,
+      'dzvin-path-locked': locked,
+    })
+
+    /* if (_path.style.opacity !== opacity) {
       _path.style.opacity = opacity
       _outlinePath && (_outlinePath.style.opacity = opacity)
       _shadowPath && (_shadowPath.style.opacity = opacity)
@@ -281,9 +324,9 @@ export default L.SVG.include({
       _shadowPath && (_shadowPath.style.display = hidden ? 'none' : '')
     }
     _amplifierGroup && (_amplifierGroup.style.display = hidden ? 'none' : '')
-    _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '')
+    _lineEndsGroup && (_lineEndsGroup.style.display = hidden ? 'none' : '') */
 
-    setClassName(_path, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
+    /* setClassName(_path, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
     _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
     _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-selected-on-active-layer', selected && inActiveLayer)
 
@@ -293,7 +336,7 @@ export default L.SVG.include({
 
     setClassName(_path, 'dzvin-path-locked', locked)
     _amplifierGroup && setClassName(_amplifierGroup, 'dzvin-path-locked', locked)
-    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-locked', locked)
+    _lineEndsGroup && setClassName(_lineEndsGroup, 'dzvin-path-locked', locked) */
   },
 
   _addPath: function (layer) {
@@ -569,14 +612,17 @@ export default L.SVG.include({
     if (grid.options.className) {
       L.DomUtil.addClass(group, grid.options.className)
     }
-    if (grid.options.interactive) {
-      L.DomUtil.addClass(group, 'leaflet-interactive')
-    }
     grid._shadow = L.SVG.create('path')
     grid._zones = L.SVG.create('path')
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
+    if (grid.options.interactive) {
+      L.DomUtil.addClass(grid._zones, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._directions, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._boundary, 'leaflet-interactive')
+      L.DomUtil.addClass(grid._border, 'leaflet-interactive')
+    }
     this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
     this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
     this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
