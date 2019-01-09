@@ -42,6 +42,33 @@ const ampSigns = subordinationLevels.list.reduce((res, { value }) => ({
   [value]: extractSubordinationLevelSVG(value, AMPLIFIERS_SIZE, AMPLIFIERS_WINDOW_MARGIN),
 }), {})
 
+function rotatePoint (originX, originY, angle, { x, y }) {
+  angle = angle * Math.PI / 180.0
+  return {
+    x: Math.cos(angle) * (x - originX) - Math.sin(angle) * (y - originY) + originX,
+    y: Math.sin(angle) * (x - originX) + Math.cos(angle) * (y - originY) + originY,
+  }
+}
+
+const getPathFromRect = ({ x, y, width, height }, dx, dy, rotateAngle = 0) => {
+  x += dx
+  y += dy
+  let points = [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  if (rotateAngle !== 0) {
+    const originX = x + width / 2
+    const originY = y + height / 2
+    points = points.map(rotatePoint.bind(null, originX, originY, rotateAngle))
+  }
+  points = points.map(({ x, y }) => `${Math.round(x)} ${Math.round(y)}`)
+  return `M${points.join('L')}z`
+}
+
+const getPathFromCircle = (r, dx, dy) => `
+  M ${dx - r}, ${dy}
+  a ${r},${r} 0 1,0 ${r * 2},0
+  a ${r},${r} 0 1,0 ${-r * 2},0
+`
+
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
 const vector = (ps, pf) => ({ x: pf.x - ps.x, y: pf.y - ps.y })
 const normal = (v) => ({ x: +v.y, y: -v.x })
@@ -213,7 +240,6 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, sk
   return amplPoints
 }
 
-const _initContainer = L.SVG.prototype._initContainer
 const _initPath = L.SVG.prototype._initPath
 const _updateStyle = L.SVG.prototype._updateStyle
 const _setPath = L.SVG.prototype._setPath
@@ -221,17 +247,6 @@ const _addPath = L.SVG.prototype._addPath
 const _removePath = L.SVG.prototype._removePath
 
 export default L.SVG.include({
-  _initContainer: function () {
-    _initContainer.call(this)
-    this._initBlurFilter()
-  },
-
-  _initBlurFilter: function () {
-    const filter = L.SVG.create('filter')
-    filter.setAttribute('id', 'blurFilter')
-    filter.innerHTML = `<feGaussianBlur in="StrokePaint" stdDeviation="2" />`
-    this._container.appendChild(filter)
-  },
 
   _initPath: function (layer) {
     layer._outlinePath = L.SVG.create('path')
@@ -277,19 +292,30 @@ export default L.SVG.include({
   },
 
   _updateStyle: function (layer) {
-    _updateStyle.call(this, layer)
     const {
-      options: { shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color },
+      options: {
+        shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
+        fillColor, fillOpacity, fillRule,
+      },
       _shadowPath,
       _amplifierGroup,
       _lineEndsGroup,
     } = layer
 
+    layer.options.fill = !shadowColor
+    _updateStyle.call(this, layer)
+
     if (_shadowPath) {
       if (shadowColor) {
         _shadowPath.removeAttribute('display')
-        _shadowPath.setAttribute('filter', 'url(#blurFilter)')
         _shadowPath.setAttribute('stroke', shadowColor)
+        _shadowPath.setAttribute('fill', 'none')
+        _shadowPath.setAttribute('stroke-linejoin', 'round')
+        _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
+
+        _shadowPath.setAttribute('fill', fillColor || color)
+        _shadowPath.setAttribute('fill-opacity', fillOpacity)
+        _shadowPath.setAttribute('fill-rule', fillRule || 'evenodd')
       } else {
         _shadowPath.setAttribute('display', 'none')
       }
@@ -424,17 +450,14 @@ export default L.SVG.include({
     const insideMap = ({ x, y }) => x > bounds.min.x - AMPLIFIERS_SIZE && y > bounds.min.y - AMPLIFIERS_SIZE &&
       x < bounds.max.x + AMPLIFIERS_SIZE && y < bounds.max.y + AMPLIFIERS_SIZE
     const amplifiers = {
-      rect: `<rect fill="white" x="${bounds.min.x}" y="${bounds.min.y}" width="${bounds.max.x - bounds.min.x}" height="${bounds.max.y - bounds.min.y}" />`,
-      mask: '',
+      maskPath: [],
       group: '',
     }
     if (layer.options.lineAmpl === 'show-level' && layer.object && layer.object.level) {
       const amp = ampSigns[layer.object.level]
       const amplPoints = buildPeriodicPoints(AMPLIFIERS_STEP, -AMPLIFIERS_STEP / 2, layer._rings[0], bezier, locked,
         insideMap, getNodes(layer)).filter(({ i, o }) => i && o)
-      amplifiers.mask += amplPoints.map(({ x, y, r }) =>
-        `<g transform="translate(${x},${y}) rotate(${r})">${amp.mask}</g>`
-      ).join('')
+      amplifiers.maskPath.push(...amplPoints.map(({ x, y, r }) => getPathFromRect(amp.maskRect, x, y, r)))
       amplifiers.group += amplPoints.map(({ x, y, r }) =>
         `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
       ).join('')
@@ -443,7 +466,7 @@ export default L.SVG.include({
       case 'cross-circle': {
         const d = +(NODES_CIRCLE_RADIUS * Math.sqrt(2) / 2).toFixed(2)
         layer._rings[0].filter(insideMap).forEach(({ x, y }) => {
-          amplifiers.mask += `<g transform="translate(${x},${y})"><circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" /></g>`
+          amplifiers.maskPath.push(getPathFromCircle(NODES_CIRCLE_RADIUS, x, y))
           amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
             <circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS}" />
             <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
@@ -454,7 +477,7 @@ export default L.SVG.include({
       case 'square': {
         const d = NODES_SQUARE_WIDTH / 2
         layer._rings[0].filter(insideMap).forEach(({ x, y }) => {
-          amplifiers.mask += `<g transform="translate(${x},${y})"><rect fill="black" x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" /></g>`
+          amplifiers.maskPath.push(getPathFromRect({ x: -d, y: -d, width: d * 2, height: d * 2 }, x, y, 0))
           amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
           </g>`
@@ -464,12 +487,15 @@ export default L.SVG.include({
       default:
         break
     }
-    if (amplifiers.mask) {
-      layer.getMask().innerHTML = `${amplifiers.rect}${amplifiers.mask}`
+    if (amplifiers.maskPath.length) {
+      amplifiers.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
+      layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
+      layer._shadowPath.setAttribute('mask', `url(#mask-${layer.object.id})`)
     } else {
       layer.deleteMask && layer.deleteMask()
       layer._path.removeAttribute('mask')
+      layer._shadowPath.removeAttribute('mask')
     }
     if (amplifiers.group) {
       layer.getAmplifierGroup().innerHTML = amplifiers.group
