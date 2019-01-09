@@ -601,7 +601,8 @@ export default class WebMap extends React.PureComponent {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = layer.object && layer.object.layer === layerId
+          const isActiveLayer = (layer.options && layer.options.tsType === entityKind.FLEXGRID) ||
+            (layer.object && layer.object.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
           if (isActive) {
