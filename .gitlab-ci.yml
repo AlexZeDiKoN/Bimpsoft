@@ -67,30 +67,6 @@ deploy-qa-11:
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
     - net use \\172.16.97.11\c$ /delete
 
-deploy-qa-11-node-1:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 _node_1 (remote) ========='
-    - net use \\172.16.97.11\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\172.16.97.11\c$\%deployDir2%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir2%
-    - net use \\172.16.97.11\c$ /delete
-    
-deploy-qa-11-node-2:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 _node_2 (remote) ========='
-    - net use \\172.16.97.11\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\172.16.97.11\c$\%deployDir3%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir3%
-    - net use \\172.16.97.11\c$ /delete
-
 deploy-self(17):
   stage: deploy
   <<: *base-dev
