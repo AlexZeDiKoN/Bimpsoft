@@ -33,7 +33,7 @@ const TextIcon = L.Icon.extend({
     const { data, zoom, scaleOptions } = this.options
     const { attributes } = data
     const scale = this.getScale(zoom, scaleOptions)
-    const svg = generateTextSymbolSvg(attributes, scale)
+    const svg = generateTextSymbolSvg({ ...attributes.toJS(), outlineColor: 'var(--outline-color)' }, scale)
     const anchor = { x: 0, y: 0 }
     const node = getSvgNodeFromString(svg)
     setActivePointSignColors(node)

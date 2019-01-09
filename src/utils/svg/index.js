@@ -17,6 +17,7 @@ const generateTextSymbolSvg = ({
   anchorLineWithArrow,
   magnification,
   texts = [],
+  outlineColor = null,
 }, scale = 100) => {
   let maxWidth = 0
   let fullHeight = 0
@@ -44,19 +45,32 @@ const generateTextSymbolSvg = ({
       text,
     }
   })
+
+  let stroke = ''
+  if (outlineColor) {
+    const strokeWidth = Math.round(12 * scale / 100)
+    stroke = `stroke="${outlineColor}" stroke-width="${strokeWidth}" paint-order="stroke"`
+  }
+
   const textsEls = textsViewData.map(({ underline, font, align, x, y, width, height, text }) => {
     if (align === Align.CENTER) {
       x = (maxWidth - width) / 2
     } else if (align === Align.RIGHT) {
       x = maxWidth - width
     }
-    return `<text fill="#000" style="font: ${font}; white-space: pre;" x="${Math.round(x)}" y="${Math.round(y)}" ${underline} >${text}</text>`
+    return `<text
+        fill="#000" style="font: ${font}; white-space: pre;" ${stroke}
+        x="${Math.round(x)}" y="${Math.round(y)}" ${underline}
+    >${text}</text>`
   }).join('')
   maxWidth += 6
   maxWidth = Math.round(maxWidth)
   fullHeight = Math.round(fullHeight)
   return `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${maxWidth}" height="${fullHeight}" viewBox="0 0 ${maxWidth} ${fullHeight}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg
+ version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+ width="${maxWidth}" height="${fullHeight}" viewBox="0 0 ${maxWidth} ${fullHeight}"
+>
     ${textsEls}
 </svg>`
 }
