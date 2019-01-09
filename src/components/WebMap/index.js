@@ -115,20 +115,27 @@ const type2mode = (type) => {
 }
 
 proj4.defs([
+  // СК-42
   [ 'EPSG:28407', `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
   [ 'EPSG:28406', `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
   [ 'EPSG:28405', `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
   [ 'EPSG:28404', `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:5558', `+proj=qsc +ellps=krass +units=m +no_defs` ], // с +proj=geocent работать не хочет, похоже баг или неподдерживамая проекция в proj4, заменил на +proj=qsc, работает, но я не знаю насколько правильные координаты она теперь выдаёт :(
+  // УСК-2000
+  [ `EPSG:6381`, `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
+  [ `EPSG:6383`, `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
+  [ `EPSG:6385`, `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
+  [ `EPSG:6387`, `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
 ])
-const sc42 = (lng, lat) => lng < 27
-  ? proj4('EPSG:28404', [ lng, lat ])
-  : lng < 33
-    ? proj4('EPSG:28405', [ lng, lat ])
-    : lng < 39
-      ? proj4('EPSG:28406', [ lng, lat ])
-      : proj4('EPSG:28407', [ lng, lat ])
-const usc2000 = (lng, lat) => proj4('EPSG:5558', [ lng, lat ])
+
+const sc42 = (lng, lat) => {
+  const z = lng < 27 ? 4 : lng < 33 ? 5 : lng < 39 ? 6 : 7
+  return proj4(`EPSG:2840${z}`, [ lng, lat ])
+}
+
+const usc2000 = (lng, lat) => {
+  const z = lng < 27 ? 1 : lng < 33 ? 3 : lng < 39 ? 5 : 7
+  return proj4(`EPSG:638${z}`, [ lng, lat ])
+}
 
 const z = (v) => `0${v}`.slice(-2)
 const toGMS = (value, pos, neg) => {
@@ -515,7 +522,7 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
-    if (layer) {
+    if (layer && layer.object) {
       const { point, geometry } = layer.object
       const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
       if (geometryChanged) {
@@ -554,7 +561,7 @@ export default class WebMap extends React.PureComponent {
     if (newList.length === 1 && list[0] !== newList[0]) {
       const id = newList[0]
       const layer = this.findLayerById(id)
-      selectedUnit = (layer && layer.object.unit) || null
+      selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
     onSelectUnit(selectedUnit)
 
@@ -602,7 +609,7 @@ export default class WebMap extends React.PureComponent {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = layer.object.layer === layerId
+          const isActiveLayer = layer.object && layer.object.layer === layerId
           const isActive = canEditLayer && isSelected && isActiveLayer
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
           if (isActive) {
@@ -858,10 +865,10 @@ export default class WebMap extends React.PureComponent {
 
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: { id, object } } = event
+    const { target: { id, object, options: { tsType } } } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = object && object.layer
-    let doActivate = targetLayer === this.props.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
       this.props.onChangeLayer(targetLayer)
       doActivate = true
@@ -1048,6 +1055,15 @@ export default class WebMap extends React.PureComponent {
   //   toggleMapGrid(this.map, status, scale)
   // }
 
+  dropFlexGrid = () => {
+    const layer = new L.FlexGrid(this.map.getBounds(), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
+    layer.on('click', this.clickOnLayer)
+    layer.on('dblclick', this.dblClickOnLayer)
+    layer.on('pm:markerdragstart', this.onDragstartLayer)
+    layer.on('pm:markerdragend', this.onDragendLayer)
+    layer.addTo(this.map)
+  }
+
   updateCreatePoly = (type) => {
     switch (type) {
       case entityKind.POLYLINE:
@@ -1131,6 +1147,7 @@ export default class WebMap extends React.PureComponent {
         />}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
       </div>
     )
   }

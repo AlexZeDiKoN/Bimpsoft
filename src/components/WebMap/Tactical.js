@@ -49,7 +49,7 @@ export const disableEdit = (layer) => {
 
 export const setLayerSelected = (layer, selected, active, activeLayer) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
-  if (layer.pm.enabled() !== active) {
+  if (layer.pm && layer.pm.enabled() !== active) {
     if (active) {
       enableEdit(layer)
     } else {
@@ -236,6 +236,8 @@ export function getGeometry (layer) {
       return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
+    case entityKind.FLEXGRID:
+      return formGeometry(layer.eternals.reduce((result, item) => [ ...result, ...item ], []))
     default:
       return null
   }
