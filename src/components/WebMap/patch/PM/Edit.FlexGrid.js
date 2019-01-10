@@ -1,5 +1,7 @@
 /* global L */
 
+import './Edit.FlexGrid.css'
+
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   initialize (layer) {
     this._layer = layer
@@ -104,7 +106,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   _createMarker (latlng, dirIdx, zoneIdx) {
     const marker = new L.Marker(latlng, {
       draggable: true,
-      icon: L.divIcon({ className: 'marker-icon' }),
+      icon: L.divIcon({ className: 'marker-icon protected' }),
     })
     marker._dirIdx = dirIdx
     marker._zoneIdx = zoneIdx
