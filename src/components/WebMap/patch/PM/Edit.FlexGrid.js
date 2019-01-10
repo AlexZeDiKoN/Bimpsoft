@@ -1,6 +1,31 @@
 /* global L */
 
+import { halfPoint, prepareCurve } from '../utils/Bezier'
 import './Edit.FlexGrid.css'
+
+const bezierMiddleMarkerCoords = (map, ring, leftM, rightM, code) => {
+  const p1 = ring[leftM._index[code]]
+  const p2 = ring[rightM._index[code]]
+  const p = halfPoint(p1, p1.cp2, p2.cp1, p2)
+  return map.layerPointToLatLng(p)
+}
+
+const setIndex = (marker, code, index) => {
+  if (!marker._index) {
+    marker._index = {}
+  }
+  marker._index[code] = index
+}
+
+const setMiddle = (marker, middleMarker, code, pos) => {
+  if (!marker._middleMarkers) {
+    marker._middleMarkers = {}
+  }
+  if (!marker._middleMarkers[code]) {
+    marker._middleMarkers[code] = {}
+  }
+  marker._middleMarkers[code][pos] = middleMarker
+}
 
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   initialize (layer) {
@@ -68,100 +93,141 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._markerGroup = new L.LayerGroup()
     this._markerGroup._pmTempLayer = true
     this._map.addLayer(this._markerGroup)
+    this._eternalMarkers = this._layer.eternals
+      .map((arr, dirIdx) => arr.map((point, zoneIdx) =>
+        this._createMarker(point, true, null, dirIdx, zoneIdx, null), this))
+    this._directionMarkers = this._layer.directionSegments
+      .map((arr, dirIdx) => arr.map((segment, zoneIdx) =>
+        this._markerLine(
+          this._eternalMarkers[dirIdx][zoneIdx],
+          this._eternalMarkers[dirIdx][zoneIdx + 1],
+          segment, dirIdx, zoneIdx, 'dir'),
+      this))
+    this._zoneMarkers = this._layer.zoneSegments
+      .map((arr, zoneIdx) => arr.map((segment, dirIdx) =>
+        this._markerLine(
+          this._eternalMarkers[dirIdx][zoneIdx],
+          this._eternalMarkers[dirIdx + 1][zoneIdx],
+          segment, dirIdx, zoneIdx, 'zone'),
+      this))
+  },
 
-    /* // handle coord-rings (outer, inner, etc)
-    const handleRing = (coordsArr) => {
-      // if there is another coords ring, go a level deep and do this again
-      if (Array.isArray(coordsArr[0])) {
-        return coordsArr.map(handleRing, this);
-      }
-
-      // the marker array, it includes only the markers of vertexes (no middle markers)
-      const ringArr = coordsArr.map(this._createMarker, this);
-
-      // create small markers in the middle of the regular markers
-      coordsArr.map((v, k) => {
-        // find the next index fist
-        const nextIndex = this.isPolygon() ? (k + 1) % coordsArr.length : k + 1;
-        // create the marker
-        return this._createMiddleMarker(ringArr[k], ringArr[nextIndex]);
-      });
-
-      return ringArr;
-    },
-
-    // create markers
-    this._markers = handleRing(coords); */
-
-    this._markers = this._layer.eternals
-      .reduce((res, arr, dirIdx) => [
-        ...res,
-        ...arr.map((point, zoneIdx) => this._createMarker(point, dirIdx, zoneIdx), this),
-      ], [])
-    if (this.options.snappable) {
-      this._initSnappableMarkers()
+  _findPrev (dirIdx, zoneIdx, code) {
+    // console.log({ dirIdx, zoneIdx, code })
+    switch (code) {
+      case 'dir':
+        if (zoneIdx > 0) {
+          const segment = this._layer.directionSegments[dirIdx][zoneIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this._layer.eternals[dirIdx][zoneIdx - 1]
+        }
+        break
+      case 'zone':
+        if (dirIdx > 0) {
+          const segment = this._layer.zoneSegments[zoneIdx][dirIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this._layer.eternals[dirIdx - 1][zoneIdx]
+        }
+        break
+      default:
     }
   },
 
-  _createMarker (latlng, dirIdx, zoneIdx) {
+  _findNext (dirIdx, zoneIdx, code) {
+    // console.log(this._layer)
+    // console.log({ dirIdx, zoneIdx, code })
+    const { directions, zones } = this._layer.options
+    switch (code) {
+      case 'dir':
+        if (zoneIdx < zones * 2 - 1) {
+          const segment = this._layer.directionSegments[dirIdx][zoneIdx + 1]
+          return segment.length ? segment[0] : this._layer.eternals[dirIdx][zoneIdx + 2]
+        }
+        break
+      case 'zone':
+        if (dirIdx < directions - 1) {
+          const segment = this._layer.zoneSegments[zoneIdx][dirIdx + 1]
+          return segment.length ? segment[0] : this._layer.eternals[dirIdx + 2][zoneIdx]
+        }
+        break
+      default:
+    }
+  },
+
+  _markerLine (start, finish, segment, dirIdx, zoneIdx, code) {
+    let ring = [ start._latlng, ...segment, finish._latlng ]
+    const p = this._findPrev(dirIdx, zoneIdx, code)
+    const n = this._findNext(dirIdx, zoneIdx, code)
+    if (p) {
+      ring = [ p, ...ring ]
+    }
+    if (n) {
+      ring = [ ...ring, n ]
+    }
+    ring = ring.map(this._map.latLngToLayerPoint.bind(this._map))
+    prepareCurve(ring.map(({ x, y }) => [ x, y ]), ring)
+    if (p) {
+      ring.splice(0, 1)
+    }
+    if (n) {
+      ring.splice(-1, 1)
+    }
+    const res = []
+    let prev = start
+    res.push(prev)
+    setIndex(prev, code, 0)
+    segment.forEach((point, index) => {
+      const next = this._createMarker(point, false, index, dirIdx, zoneIdx, code)
+      setIndex(next, code, index + 1)
+      res.push(this._createMiddleMarker(ring, prev, next, dirIdx, zoneIdx, code))
+      res.push(next)
+      prev = next
+    })
+    const next = finish
+    setIndex(next, code, segment.length + 1)
+    res.push(this._createMiddleMarker(ring, prev, next, dirIdx, zoneIdx, code))
+    res.push(next)
+    return res
+  },
+
+  _createMarker (latlng, eternal, index, dirIdx, zoneIdx, code) {
     const marker = new L.Marker(latlng, {
       draggable: true,
-      icon: L.divIcon({ className: 'marker-icon protected' }),
+      icon: L.divIcon({ className: `marker-icon${eternal ? ` protected` : ``}` }),
     })
     marker._dirIdx = dirIdx
     marker._zoneIdx = zoneIdx
+    marker._code = code
     marker._pmTempLayer = true
     marker.on('dragstart', this._onMarkerDragStart, this)
     marker.on('move', this._onMarkerDrag, this)
     marker.on('dragend', this._onMarkerDragEnd, this)
-    /* if (!this.options.preventMarkerRemoval) {
+    if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
-    } */
+    }
     this._markerGroup.addLayer(marker)
     return marker
   },
 
-  _createMiddleMarker (leftM, rightM) {
-    /* // cancel if there are no two markers
-    if (!leftM || !rightM) {
-      return false
-    }
-
-    const latlng = L.PM.Utils.calcMiddleLatLng(this._map, leftM.getLatLng(), rightM.getLatLng())
-
-    const middleMarker = this._createMarker(latlng)
-    const middleIcon = L.divIcon({ className: 'marker-icon marker-icon-middle' })
-    middleMarker.setIcon(middleIcon)
-
-    // save reference to this middle markers on the neighboor regular markers
-    leftM._middleMarkerNext = middleMarker
-    rightM._middleMarkerPrev = middleMarker
-
+  _createMiddleMarker (ring, leftM, rightM, dirIdx, zoneIdx, code) {
+    const middleMarker = this._createMarker(
+      bezierMiddleMarkerCoords(this._map, ring, leftM, rightM, code),
+      false, null, dirIdx, zoneIdx, code)
+    middleMarker.setIcon(L.divIcon({ className: 'marker-icon marker-icon-middle' }))
+    setMiddle(leftM, middleMarker, code, 'next')
+    setMiddle(rightM, middleMarker, code, 'prev')
     middleMarker.on('click', () => {
-      // TODO: move the next two lines inside _addMarker() as soon as
-      // https://github.com/Leaflet/Leaflet/issues/4484
-      // is fixed
       const icon = L.divIcon({ className: 'marker-icon' })
       middleMarker.setIcon(icon)
-
       this._addMarker(middleMarker, leftM, rightM)
     })
-
     middleMarker.on('movestart', () => {
-      // TODO: This is a workaround. Remove the moveend listener and
-      // callback as soon as this is fixed
-      // https://github.com/Leaflet/Leaflet/issues/4484
       middleMarker.on('moveend', () => {
         const icon = L.divIcon({ className: 'marker-icon' })
         middleMarker.setIcon(icon)
-
         middleMarker.off('moveend')
       })
-
       this._addMarker(middleMarker, leftM, rightM)
     })
-
-    return middleMarker */
+    return middleMarker
   },
 
   _addMarker (newM, leftM, rightM) {
