@@ -302,10 +302,8 @@ export default L.SVG.include({
       _lineEndsGroup,
     } = layer
 
-    layer.options.fill = !shadowColor
-    _updateStyle.call(this, layer)
-
     if (_shadowPath) {
+      layer.options.fill = !shadowColor
       if (shadowColor) {
         _shadowPath.removeAttribute('display')
         _shadowPath.setAttribute('stroke', shadowColor)
@@ -320,6 +318,8 @@ export default L.SVG.include({
         _shadowPath.setAttribute('display', 'none')
       }
     }
+
+    _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
     _lineEndsGroup && _lineEndsGroup.setAttribute('stroke', color)
