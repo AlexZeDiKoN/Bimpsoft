@@ -22,7 +22,8 @@ import {
   DOCUMENT_SIGNATORIES,
   POSITION,
   RANG,
-  FULL_NAME, CONFIRM_DATE,
+  FULL_NAME,
+  CONFIRM_DATE,
 } from './../../../i18n/ua'
 import './style.css'
 
@@ -35,13 +36,18 @@ const confirmDate = `22.12.18`
 
 // TODO: вынести в константы
 const scales = [ '100000', '200000', '500000', '1000000' ]
+const dateFormat = 'DD.MM.YYYY'
 
 class PrintPanel extends React.Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
-    printScale: PropTypes.func,
-    docConfirm: PropTypes.object,
-    securityClassification: PropTypes.object,
+    setPrintScale: PropTypes.func,
+    printScale: PropTypes.number,
+    docConfirm: PropTypes.string,
+    securityClassification: PropTypes.string,
+    setPrintRequisites: PropTypes.func,
+    clearPrintRequisites: PropTypes.func,
+    print: PropTypes.func,
   }
 
   state = {
@@ -55,45 +61,46 @@ class PrintPanel extends React.Component {
 
   changeColorHandler = (color, key) => {
     const colors = this.state.colors
+    const { setPrintRequisites } = this.props
     colors[key] = color
     this.setState({ colors: colors })
+    setPrintRequisites({ [key]: color })
+  }
+
+  cancelPrint = () => {
+    const { print, clearPrintRequisites } = this.props
+    print()
+    clearPrintRequisites()
   }
 
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
-  handleSubmit = (e) => {
-    const customFields = { ...this.state.customFields }
-    e.preventDefault()
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values)
-        console.log('Received values of form: ', customFields)
-      } else {
-        console.log({ values, customFields })
-      }
-    })
+  changeRequisites = (key, data) => {
+    const { setPrintRequisites } = this.props
+    setPrintRequisites({ [key]: data })
   }
 
   render () {
     const {
       form: { getFieldDecorator },
+      setPrintScale,
       printScale,
       securityClassification: { classified },
     } = this.props
     const { FormColumn, FormRow } = components.form
     return (
       <div className='printPanelFormInner'>
-        <Form onSubmit={this.handleSubmit}>
+        <Form>
           <FormRow label={ SCALE }>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.SCALE, {
-                  initialValue: '100000',
+                  initialValue: printScale,
                 }
               )(
                 <Select
-                  onChange={(value) => printScale(value)}
+                  onChange={(value) => setPrintScale(value)}
                 >
                   {this.createSelectChildren(scales)}
                 </Select>
@@ -105,7 +112,8 @@ class PrintPanel extends React.Component {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.MAP_LABEL, {
                   initialValue: classified,
-                }
+                },
+                this.changeRequisites(PRINT_PANEL_KEYS.MAP_LABEL, classified)
               )(
                 <Input
                   disabled
@@ -116,97 +124,59 @@ class PrintPanel extends React.Component {
           <h5 className='docBlock_header'>{DOC_HEADER}</h5>
           <div className='printPanel_docBlock'>
             <FormColumn label={ FIRST_ROW }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FIRST_ROW
-                )(
-                  <Input/>
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+              />
             </FormColumn>
             <FormColumn label={ SECOND_ROW }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.SECOND_ROW
-                )(
-                  <Input/>
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.SECOND_ROW, e.target.value)}
+              />
             </FormColumn>
             <FormColumn label={ THIRD_ROW }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.THIRD_ROW
-                )(
-                  <Input/>
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.THIRD_ROW, e.target.value)}
+              />
             </FormColumn>
             <FormColumn label={ FOURTH_ROW }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FOURTH_ROW
-                )(
-                  <Input/>
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FOURTH_ROW, e.target.value)}
+              />
             </FormColumn>
             <FormColumn label={ FIFTH_ROW }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FIFTH_ROW
-                )(
-                  <Input/>
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+              />
             </FormColumn>
             <FormRow label={ START }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.START
-                )(
-                  <DatePicker />
-                )
-              }
+              <DatePicker
+                format={dateFormat}
+                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.START, dateString)}
+              />
             </FormRow>
             <FormRow label={ FINISH }>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FINISH
-                )(
-                  <DatePicker />
-                )
-              }
+              <DatePicker
+                format={dateFormat}
+                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.FINISH, dateString)}
+              />
             </FormRow>
           </div>
           <h5>{MAIN_INDICATORS}</h5>
           <div className='printPanel_indicators'>
             <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW
-                )(
-                  <Input />
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, e.target.value)}
+              />
             </FormRow>
             <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW
-                )(
-                  <Input />
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, e.target.value)}
+              />
             </FormRow>
             <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW
-                )(
-                  <Input />
-                )
-              }
+              <Input
+                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, e.target.value)}
+              />
             </FormRow>
           </div>
           <h5>{LEGEND}</h5>
@@ -228,13 +198,9 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={17}>
-                {
-                  getFieldDecorator(
-                    PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT
-                  )(
-                    <Input/>
-                  )
-                }
+                <Input
+                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT, e.target.value)}
+                />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -246,13 +212,9 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={17}>
-                {
-                  getFieldDecorator(
-                    PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT
-                  )(
-                    <Input/>
-                  )
-                }
+                <Input
+                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT, e.target.value)}
+                />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -264,13 +226,9 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={17}>
-                {
-                  getFieldDecorator(
-                    PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT
-                  )(
-                    <Input/>
-                  )
-                }
+                <Input
+                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT, e.target.value)}
+                />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -282,13 +240,9 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={17}>
-                {
-                  getFieldDecorator(
-                    PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT
-                  )(
-                    <Input/>
-                  )
-                }
+                <Input
+                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT, e.target.value)}
+                />
               </Col>
             </Row>
           </div>
@@ -325,9 +279,10 @@ class PrintPanel extends React.Component {
           <FormRow label={ CONFIRM_DATE }>
             {
               getFieldDecorator(
-                PRINT_PANEL_KEYS.MAP_LABEL, {
+                PRINT_PANEL_KEYS.CONFIRM_DATE, {
                   initialValue: confirmDate,
-                }
+                },
+                this.changeRequisites(PRINT_PANEL_KEYS.CONFIRM_DATE, confirmDate)
               )(
                 <Input
                   disabled
@@ -339,13 +294,11 @@ class PrintPanel extends React.Component {
           <Row>
             <Col span={12}>
               <Button
-                key="close"
+                onClick={this.cancelPrint}
               >
-                SCALE 200000
+                CANCEL
               </Button>
               <Button
-                type="primary"
-                htmlType="submit"
               >
                 SAVE
               </Button>
