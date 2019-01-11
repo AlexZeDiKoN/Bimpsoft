@@ -4,14 +4,15 @@ import { print, setPrintScale, setPrintRequisites, clearPrintRequisites } from '
 import WrappedPrintPanel from './PrintPanel'
 
 const PrintPanel = connect(
-  (state) => (
-    {
-      docConfirm: state.maps.byId.docInfo ? state.maps.byId.docInfo.doc_confirm : ``,
-      securityClassification: state.maps.byId.docInfo ? state.maps.byId.docInfo.security_classification : ``,
-      requisites: state.print.requisites,
-      printScale: state.print.printScale,
+  ({ maps: { byId }, print: { requisites, printScale, mapId } }) => {
+    const printMap = byId[mapId]
+    return {
+      docConfirm: (printMap && printMap.docConfirm) || '',
+      securityClassification: (printMap && printMap.securityClassification) || '',
+      requisites,
+      printScale,
     }
-  ),
+  },
   {
     print,
     setPrintScale,

@@ -39,19 +39,18 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
       map: {
         id,
         name,
-        doc_confirm,
-        security_classification,
+        doc_confirm: docConfirm,
+        security_classification: securityClassification,
       },
       breadcrumbs,
     } = content
 
     await dispatch(maps.updateMap({
-      mapId:
-      id,
+      mapId: id,
       name,
       breadcrumbs,
-      doc_confirm,
-      security_classification,
+      docConfirm,
+      securityClassification,
     }))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
       mapId: id_map,

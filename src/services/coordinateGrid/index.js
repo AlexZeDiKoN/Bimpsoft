@@ -3,7 +3,7 @@ import PrintInner from './print'
 
 const PrintGrid = connect(
   (state) => ({
-    printStatus: state.print.printStatus,
+    printStatus: Boolean(state.print.mapId),
     printScale: state.print.printScale,
   })
 )(PrintInner)

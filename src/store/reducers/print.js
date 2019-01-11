@@ -2,7 +2,7 @@ import { merge } from 'lodash'
 import { print } from '../actions'
 
 const initState = {
-  printStatus: false,
+  mapId: null,
   printScale: 100000,
   requisites: {},
 }
@@ -11,8 +11,7 @@ export default function reducer (state = initState, action) {
   const { type, payload } = action
   switch (type) {
     case print.PRINT: {
-      const printStatus = !state.printStatus
-      return { ...state, printStatus }
+      return { ...state, mapId: action.mapId }
     }
     case print.PRINT_SCALE: {
       const printScale = +payload
