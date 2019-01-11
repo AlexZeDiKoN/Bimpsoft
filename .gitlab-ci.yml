@@ -5,10 +5,12 @@ variables:
   deployDir2: 'MAKET\SpaceHub_node_1\WebMap'
   deployDir3: 'MAKET\SpaceHub_node_2\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
+  push_version: 'gitlab.intecracy.com/DZVIN/install_update.git'
 
 stages:
   - build
   - deploy
+  - increment-dzvin
   
 .base: &base-dev
   only:
@@ -61,7 +63,7 @@ deploy-qa-11:
   cache: {}
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 (remote) ========='
+    - 'echo ========= Deploy: 11 (remote) ========='
     - net use \\172.16.97.11\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
     - rmdir /s /q \\172.16.97.11\c$\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
@@ -76,6 +78,21 @@ deploy-self(17):
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
+
+Increment_dzvin:
+  stage: increment-dzvin
+  <<: *base-dev
+  script: 
+    - echo run build
+    - echo Done
+    - cd C:\Version-dev\install_update
+    - git checkout develop
+    - git pull
+    - powershell.exe .\Versionalyze_dev.ps1
+    - powershell.exe Start-sleep -s 10
+    - git commit -a -m "autocommit"
+    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:develop
+
 
 ######################### START MASTER ##############################
 
