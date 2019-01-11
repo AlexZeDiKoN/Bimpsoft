@@ -11,7 +11,7 @@ export function prepareBezierPath (ring, locked, skipStart, skipEnd) {
   return str || 'M0 0'
 }
 
-function prepareCurve (points, ring, locked, skipStart, skipEnd) {
+export function prepareCurve (points, ring, locked, skipStart, skipEnd) {
   const prevIdx = (idx) => idx > 0 ? idx - 1 : points.length - 1
   const nextIdx = (idx) => idx < points.length - 1 ? idx + 1 : 0
   const pt = (pa) => ({ x: pa[0], y: pa[1] })
