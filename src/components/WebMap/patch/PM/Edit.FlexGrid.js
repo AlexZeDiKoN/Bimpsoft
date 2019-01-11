@@ -6,7 +6,9 @@ import './Edit.FlexGrid.css'
 const CODE = [ 'dir', 'zone' ]
 const POS = [ 'prev', 'next' ]
 
-const bezierMiddleMarkerCoords = (map, ring, leftIdx, rightIdx, code) => {
+const markerIcon = (className = '') => L.divIcon({ className: `marker-icon ${className}` })
+
+const bezierMiddleMarkerCoords = (map, ring, leftIdx, rightIdx) => {
   const p1 = ring[leftIdx]
   const p2 = ring[rightIdx]
   const p = halfPoint(p1, p1.cp2, p2.cp1, p2)
@@ -28,6 +30,28 @@ const setMiddle = (marker, middleMarker, code, pos) => {
     marker._middleMarkers[code] = {}
   }
   marker._middleMarkers[code][pos] = middleMarker
+}
+
+const incIndexWave = (marker, code) => {
+  let next
+  if (marker._middle) {
+    next = marker._baseMarkers['next']
+  } else {
+    next = marker._middleMarkers[code]['next']
+    marker._index[code] += 1
+  }
+  next && incIndexWave(next, code)
+}
+
+const incSegIndexWave = (marker, code) => {
+  if (marker._eternal) {
+    return
+  }
+  marker._segIdx += 1
+  incSegIndexWave(marker._middle
+    ? marker._baseMarkers['next']
+    : marker._middleMarkers[code]['next'],
+  code)
 }
 
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
@@ -186,13 +210,13 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     segment.forEach((point, index) => {
       const next = this._createMarker(point, false, index, dirIdx, zoneIdx, code)
       setIndex(next, code, index + 1)
-      res.push(this._createMiddleMarker(ring, prev, next, dirIdx, zoneIdx, code))
+      res.push(this._createMiddleMarker(ring, prev, next, index, dirIdx, zoneIdx, code))
       res.push(next)
       prev = next
     })
     const next = finish
     setIndex(next, code, segment.length + 1)
-    res.push(this._createMiddleMarker(ring, prev, next, dirIdx, zoneIdx, code))
+    res.push(this._createMiddleMarker(ring, prev, next, segment.length, dirIdx, zoneIdx, code))
     res.push(next)
     return res
   },
@@ -200,10 +224,12 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   _createMarker (latlng, eternal, index, dirIdx, zoneIdx, code) {
     const marker = new L.Marker(latlng, {
       draggable: true,
-      icon: L.divIcon({ className: `marker-icon${eternal ? ` protected` : ``}` }),
+      icon: markerIcon(eternal ? `protected` : ``),
     })
+    marker._eternal = eternal
     marker._dirIdx = dirIdx
     marker._zoneIdx = zoneIdx
+    marker._segIndex = index
     marker._code = code
     marker._pmTempLayer = true
     marker.on('dragstart', this._onMarkerDragStart, this)
@@ -216,77 +242,61 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     return marker
   },
 
-  _createMiddleMarker (ring, leftM, rightM, dirIdx, zoneIdx, code) {
+  _createMiddleMarker (ring, leftM, rightM, segIdx, dirIdx, zoneIdx, code) {
     const middleMarker = this._createMarker(
-      bezierMiddleMarkerCoords(this._map, ring, leftM._index[code], rightM._index[code], code),
-      false, null, dirIdx, zoneIdx, code)
-    middleMarker.setIcon(L.divIcon({ className: 'marker-icon marker-icon-middle' }))
+      ring ? bezierMiddleMarkerCoords(this._map, ring, leftM._index[code], rightM._index[code]) : L.latLng(0, 0),
+      false, segIdx, dirIdx, zoneIdx, code)
+    middleMarker._middle = true
+    middleMarker.setIcon(markerIcon('marker-icon-middle'))
     middleMarker._baseMarkers = { 'prev': leftM, 'next': rightM }
     setMiddle(leftM, middleMarker, code, 'next')
     setMiddle(rightM, middleMarker, code, 'prev')
+    if (!ring) {
+      this._updateMiddleMarkerPos(middleMarker)
+    }
     middleMarker.on('click', () => {
-      const icon = L.divIcon({ className: 'marker-icon' })
-      middleMarker.setIcon(icon)
-      this._addMarker(middleMarker, leftM, rightM)
+      middleMarker.setIcon(markerIcon())
+      this._addMarker(middleMarker)
     })
     middleMarker.on('movestart', () => {
       middleMarker.on('moveend', () => {
-        const icon = L.divIcon({ className: 'marker-icon' })
-        middleMarker.setIcon(icon)
+        middleMarker.setIcon(markerIcon())
         middleMarker.off('moveend')
       })
-      this._addMarker(middleMarker, leftM, rightM)
+      this._addMarker(middleMarker)
     })
     return middleMarker
   },
 
-  _addMarker (newM, leftM, rightM) {
-    /* // first, make this middlemarker a regular marker
-    newM.off('movestart')
-    newM.off('click')
-
-    // now, create the polygon coordinate point for that marker
-    // and push into marker array
-    // and associate polygon coordinate with marker coordinate
-    const latlng = newM.getLatLng()
-    const coords = this._layer._latlngs
-
-    // the index path to the marker inside the multidimensional marker array
-    const { indexPath, index, parentPath } = this.findDeepMarkerIndex(this._markers, leftM)
-
-    // define the coordsRing that is edited
-    const coordsRing = indexPath.length > 1 ? get(coords, parentPath) : coords
-
-    // define the markers array that is edited
-    const markerArr = indexPath.length > 1 ? get(this._markers, parentPath) : this._markers
-
-    // add coordinate to coordinate array
-    coordsRing.splice(index + 1, 0, latlng)
-
-    // add marker to marker array
-    markerArr.splice(index + 1, 0, newM)
-
-    // set new latlngs to update polygon
-    this._layer.setLatLngs(coords)
-
-    // create the new middlemarkers
-    this._createMiddleMarker(leftM, newM)
-    this._createMiddleMarker(newM, rightM)
-
-    // fire edit event
+  _addMarker (marker) {
+    const { _segIdx: segIdx, _dirIdx: dirIdx, _zoneIdx: zoneIdx, _code: code, _latlng: latlng } = marker
+    marker.off('movestart')
+    marker.off('click')
+    let segment
+    switch (code) {
+      case 'dir':
+        segment = this._layer.directionSegments[dirIdx][zoneIdx]
+        break
+      case 'zone':
+        segment = this._layer.zoneSegments[zoneIdx][dirIdx]
+        break
+      default:
+    }
+    segment.splice(segIdx, 0, latlng)
+    const { prev, next } = marker._baseMarkers
+    this._createMiddleMarker(null, prev, marker, segIdx, dirIdx, zoneIdx, code)
+    this._createMiddleMarker(null, marker, next, segIdx + 1, dirIdx, zoneIdx, code)
+    delete marker._middle
+    delete marker._baseMarkers
+    setIndex(marker, code, next._index[code])
+    incIndexWave(next, code)
+    incSegIndexWave(next, code)
     this._fireEdit()
-
     this._layer.fire('pm:vertexadded', {
       layer: this._layer,
-      marker: newM,
-      indexPath: this.findDeepMarkerIndex(this._markers, newM).indexPath,
+      marker,
       latlng,
-      // TODO: maybe add latlng as well?
     })
-
-    if (this.options.snappable) {
-      this._initSnappableMarkers()
-    } */
   },
 
   _removeMarker (e) {
@@ -396,7 +406,8 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._layer.redraw()
   },
 
-  _updateMiddleMarkerPos (middle, code) {
+  _updateMiddleMarkerPos (middle) {
+    const code = middle._code
     const left = middle._baseMarkers['prev']
     const right = middle._baseMarkers['next']
     let points = [ left, right ]
@@ -410,18 +421,18 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       points = [ ...points, right._middleMarkers[code]['next']._baseMarkers['next'] ]
     }
     const ring = this._prepareRing(points.map((marker) => marker._latlng))
-    middle._latlng = bezierMiddleMarkerCoords(this._map, ring, leftIdx, rightIdx, code)
+    middle._latlng = bezierMiddleMarkerCoords(this._map, ring, leftIdx, rightIdx)
     middle.update()
   },
 
   _updateMiddleMarkers (marker, code, pos) {
     let middle = marker._middleMarkers[code][pos]
     if (middle) {
-      this._updateMiddleMarkerPos(middle, code)
+      this._updateMiddleMarkerPos(middle)
       if (middle._baseMarkers[pos]) {
         middle = middle._baseMarkers[pos]._middleMarkers[code][pos]
         if (middle) {
-          this._updateMiddleMarkerPos(middle, code)
+          this._updateMiddleMarkerPos(middle)
         }
       }
     }
