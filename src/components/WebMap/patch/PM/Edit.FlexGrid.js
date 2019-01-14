@@ -221,7 +221,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     return res
   },
 
-  _createMarker (latlng, eternal, index, dirIdx, zoneIdx, code) {
+  _createMarker (latlng, eternal, segIdx, dirIdx, zoneIdx, code) {
     const marker = new L.Marker(latlng, {
       draggable: true,
       icon: markerIcon(eternal ? `protected` : ``),
@@ -229,7 +229,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     marker._eternal = eternal
     marker._dirIdx = dirIdx
     marker._zoneIdx = zoneIdx
-    marker._segIndex = index
+    marker._segIdx = segIdx
     marker._code = code
     marker._pmTempLayer = true
     marker.on('dragstart', this._onMarkerDragStart, this)
@@ -401,9 +401,25 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
-    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx } = marker
-    this._layer.eternals[dirIdx][zoneIdx] = marker.getLatLng()
+    console.log(marker)
+    console.log(`before`, this._layer)
+    const latLng = marker.getLatLng()
+    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
+    if (eternal) {
+      this._layer.eternals[dirIdx][zoneIdx] = latLng
+    } else {
+      switch (code) {
+        case 'dir':
+          this._layer.directionSegments[dirIdx][zoneIdx][segIdx] = latLng
+          break
+        case 'zone':
+          this._layer.zoneSegments[zoneIdx][dirIdx][segIdx] = latLng
+          break
+        default:
+      }
+    }
     this._layer.redraw()
+    console.log(`after`, this._layer)
   },
 
   _updateMiddleMarkerPos (middle) {
@@ -426,11 +442,11 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _updateMiddleMarkers (marker, code, pos) {
-    let middle = marker._middleMarkers[code][pos]
+    let middle = marker._middleMarkers && marker._middleMarkers[code] && marker._middleMarkers[code][pos]
     if (middle) {
       this._updateMiddleMarkerPos(middle)
       if (middle._baseMarkers[pos]) {
-        middle = middle._baseMarkers[pos]._middleMarkers[code][pos]
+        middle = middle._baseMarkers[pos]._middleMarkers[code] && middle._baseMarkers[pos]._middleMarkers[code][pos]
         if (middle) {
           this._updateMiddleMarkerPos(middle)
         }
@@ -446,23 +462,28 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
 
   _onMarkerDragEnd (e) {
     const marker = e.target
-    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx } = marker
+    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     this._layer.fire('pm:markerdragend', {
       markerEvent: e,
       dirIdx,
       zoneIdx,
+      segIdx,
+      code,
+      eternal,
     })
     this._fireEdit()
   },
 
   _onMarkerDragStart (e) {
     const marker = e.target
-    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _code: code } = marker
+    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     this._layer.fire('pm:markerdragstart', {
       markerEvent: e,
       dirIdx,
       zoneIdx,
+      segIdx,
       code,
+      eternal,
     })
   },
 
