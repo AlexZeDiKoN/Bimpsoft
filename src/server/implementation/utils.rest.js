@@ -11,6 +11,15 @@ const nodeApi = getNodeApi()
 
 export const getWebmapURL = () => webmapApi
 
+const setOptionsData = (options, data) => {
+  if (data) {
+    const isString = (typeof data === 'string')
+    options.body = isString ? data : JSON.stringify(data)
+    const contentType = isString ? 'application/octet-stream;charset=UTF-8' : 'application/json;charset=UTF-8'
+    options.headers.append('Content-Type', contentType)
+  }
+}
+
 export async function get (url, namespace = nodeApi) {
   const options = _getOptions('GET')
   return _createGetRequest(url, options, namespace)
@@ -18,7 +27,7 @@ export async function get (url, namespace = nodeApi) {
 
 export async function put (url, data, namespace = nodeApi) {
   const options = _getOptions('PUT')
-  options.body = JSON.stringify(data)
+  setOptionsData(options, data)
   return _createGetRequest(url, options, namespace)
 }
 
@@ -36,15 +45,13 @@ export async function post (url, data = {}, route = '/do', namespace) {
     operation: url,
     payload: !data ? null : JSON.stringify(data),
   }
-  options.body = JSON.stringify(request)
+  setOptionsData(options, request)
   return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
 export async function getDirect (url, data = {}, namespace) {
   const options = _getOptions(data ? 'POST' : 'GET')
-  if (data) {
-    options.body = JSON.stringify(data)
-  }
+  setOptionsData(options, data)
   return _createRequest(url, options, namespace)
 }
 
@@ -53,16 +60,8 @@ function _getOptions (method) {
     mode: 'cors',
     credentials: 'include',
     method,
-    headers: _getDefaultHeaders(method !== 'GET'),
+    headers: new Headers(),
   }
-}
-
-function _getDefaultHeaders (addContentType = true) {
-  const myHeaders = new Headers()
-  if (addContentType) {
-    myHeaders.append('Content-Type', 'application/json;charset=UTF-8')
-  }
-  return myHeaders
 }
 
 /**

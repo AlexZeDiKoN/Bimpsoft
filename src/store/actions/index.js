@@ -8,6 +8,7 @@ import * as selection from './selection'
 import * as templates from './templates'
 import * as params from './params'
 import * as webMap from './webMap'
+import * as printToFile from './printToFile'
 
 export {
   viewModes,
@@ -20,4 +21,5 @@ export {
   webMap,
   params,
   asyncAction,
+  printToFile,
 }
