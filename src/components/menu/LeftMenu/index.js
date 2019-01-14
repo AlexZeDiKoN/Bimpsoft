@@ -28,10 +28,8 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
     onMeasureChange: PropTypes.func,
-    onCopy: PropTypes.func,
-    onCut: PropTypes.func,
-    onPaste: PropTypes.func,
-    onDelete: PropTypes.func,
+    printFilesCount: PropTypes.number,
+    onCreatePrintFile: PropTypes.func,
     layerName: PropTypes.string,
   }
 
@@ -51,6 +49,8 @@ export default class LeftMenu extends React.Component {
       onClickSubordinationLevel,
       onSubordinationLevelChange,
       onMeasureChange,
+      printFilesCount,
+      onCreatePrintFile,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -106,6 +106,9 @@ export default class LeftMenu extends React.Component {
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
+        { process.env.NODE_ENV === 'development' && (
+          <button onClick={onCreatePrintFile}>pTest{printFilesCount ? `(${printFilesCount})` : ''}</button>
+        )}
         <SelectionButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>
       </div>
