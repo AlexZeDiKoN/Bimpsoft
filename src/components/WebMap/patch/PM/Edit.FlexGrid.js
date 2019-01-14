@@ -32,26 +32,26 @@ const setMiddle = (marker, middleMarker, code, pos) => {
   marker._middleMarkers[code][pos] = middleMarker
 }
 
-const incIndexWave = (marker, code) => {
+const shiftIndexWave = (marker, code, delta) => {
   let next
   if (marker._middle) {
     next = marker._baseMarkers['next']
   } else {
     next = marker._middleMarkers[code]['next']
-    marker._index[code] += 1
+    marker._index[code] += delta
   }
-  next && incIndexWave(next, code)
+  next && shiftIndexWave(next, code, delta)
 }
 
-const incSegIndexWave = (marker, code) => {
+const shiftSegIndexWave = (marker, code, delta) => {
   if (marker._eternal) {
     return
   }
   marker._segIdx += 1
-  incSegIndexWave(marker._middle
+  shiftSegIndexWave(marker._middle
     ? marker._baseMarkers['next']
     : marker._middleMarkers[code]['next'],
-  code)
+  code, delta)
 }
 
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
@@ -289,8 +289,8 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     delete marker._middle
     delete marker._baseMarkers
     setIndex(marker, code, next._index[code])
-    incIndexWave(next, code)
-    incSegIndexWave(next, code)
+    shiftIndexWave(next, code, +1)
+    shiftSegIndexWave(next, code, +1)
     this._fireEdit()
     this._layer.fire('pm:vertexadded', {
       layer: this._layer,
@@ -300,104 +300,38 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _removeMarker (e) {
-    /* // if self intersection isn't allowed, save the coords upon dragstart
-    // in case we need to reset the layer
-    if (!this.options.allowSelfIntersection) {
-      const c = this._layer.getLatLngs()
-      this._coordsBeforeEdit = JSON.parse(JSON.stringify(c))
-    }
-
-    // the marker that should be removed
     const marker = e.target
-
-    // coords of the layer
-    const coords = this._layer.getLatLngs()
-
-    // the index path to the marker inside the multidimensional marker array
-    const { indexPath, index, parentPath } = this.findDeepMarkerIndex(this._markers, marker)
-
-    // only continue if this is NOT a middle marker (those can't be deleted)
-    if (!indexPath) {
+    if (marker._middle) {
       return
     }
-
-    // define the coordsRing that is edited
-    const coordsRing = indexPath.length > 1 ? get(coords, parentPath) : coords
-
-    // define the markers array that is edited
-    const markerArr = indexPath.length > 1 ? get(this._markers, parentPath) : this._markers
-
-    // remove coordinate
-    coordsRing.splice(index, 1)
-
-    // set new latlngs to the polygon
-    this._layer.setLatLngs(coords)
-
-    // if the ring of the poly has no coordinates left, remove the last coord too
-    if (coordsRing.length <= 1) {
-      coordsRing.splice(0, coordsRing.length)
-
-      // set new coords
-      this._layer.setLatLngs(coords)
-
-      // re-enable editing so unnecessary markers are removed
-      // TODO: kind of an ugly workaround maybe do it better?
-      this.disable()
-      this.enable(this.options)
+    const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code } = marker
+    switch (code) {
+      case 'dir':
+        this._layer.directionSegments[dirIdx][zoneIdx].splice(segIdx, 1)
+        break
+      case 'zone':
+        this._layer.zoneSegments[zoneIdx][dirIdx].splice(segIdx, 1)
+        break
+      default:
     }
-
-    // TODO: we may should remove all empty coord-rings here as well.
-
-    // if no coords are left, remove the layer
-    if (this.isEmptyDeep(coords)) {
-      this._layer.remove()
-    }
-
-    // now handle the middle markers
-    // remove the marker and the middlemarkers next to it from the map
-    if (marker._middleMarkerPrev) {
-      this._markerGroup.removeLayer(marker._middleMarkerPrev)
-    }
-    if (marker._middleMarkerNext) {
-      this._markerGroup.removeLayer(marker._middleMarkerNext)
-    }
-
-    // remove the marker from the map
+    const prev = marker._middleMarkers[code]['prev']._baseMarkers['prev']
+    const next = marker._middleMarkers[code]['next']._baseMarkers['next']
+    shiftIndexWave(next, code, -1)
+    shiftSegIndexWave(next, code, -1)
+    this._createMiddleMarker(null, prev, next, segIdx, dirIdx, zoneIdx, code)
+    this._markerGroup.removeLayer(marker._middleMarkers[code]['prev'])
+    this._markerGroup.removeLayer(marker._middleMarkers[code]['next'])
     this._markerGroup.removeLayer(marker)
-
-    let rightMarkerIndex
-    let leftMarkerIndex
-
-    if (this.isPolygon()) {
-      // find neighbor marker-indexes
-      rightMarkerIndex = (index + 1) % markerArr.length
-      leftMarkerIndex = (index + (markerArr.length - 1)) % markerArr.length
-    } else {
-      // find neighbor marker-indexes
-      leftMarkerIndex = index - 1 < 0 ? undefined : index - 1
-      rightMarkerIndex = index + 1 >= markerArr.length ? undefined : index + 1
-    }
-
-    // don't create middlemarkers if there is only one marker left
-    if (rightMarkerIndex !== leftMarkerIndex) {
-      const leftM = markerArr[leftMarkerIndex]
-      const rightM = markerArr[rightMarkerIndex]
-      this._createMiddleMarker(leftM, rightM)
-    }
-
-    // remove the marker from the markers array
-    markerArr.splice(index, 1)
-
-    // fire edit event
+    this._layer.redraw()
     this._fireEdit()
-
-    // fire vertex removal event
     this._layer.fire('pm:vertexremoved', {
       layer: this._layer,
       marker,
-      indexPath,
-      // TODO: maybe add latlng as well?
-    }) */
+      dirIdx,
+      zoneIdx,
+      segIdx,
+      code,
+    })
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
