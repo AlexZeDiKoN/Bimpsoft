@@ -1,7 +1,7 @@
-import { CELL_SIZES, GRID_DATA, LAT, LNG, SCREEN_COORDINATES } from './constants'
+import { CELL_SIZES, LAT, LNG, SCREEN_COORDINATES } from './constants'
 
-export const isAreaOnScreen = (_northEast) => {
-  const Z = CELL_SIZES[GRID_DATA.scale]
+export const isAreaOnScreen = (_northEast, scale) => {
+  const Z = CELL_SIZES[scale]
   const leftBorder = SCREEN_COORDINATES.TLC[LNG]
   const topBorder = SCREEN_COORDINATES.TLC[LAT] + Z.lat
   const rightBorder = SCREEN_COORDINATES.BRC[LNG] + Z.lng
@@ -22,8 +22,8 @@ export const setInitCoordinates = (screenBounds) => {
   SCREEN_COORDINATES.BRC = [ _southWest.lat, _northEast.lng ]
 }
 
-export const removeLayerFromCurrentGrid = (layer) => GRID_DATA.currentGrid.removeLayer(layer)
-export const addLayerToCurrentGrid = (layer) => GRID_DATA.currentGrid.addLayer(layer)
+export const removeLayerFromCurrentGrid = (layer, currentGrid) => currentGrid.removeLayer(layer)
+export const addLayerToCurrentGrid = (layer, currentGrid) => currentGrid.addLayer(layer)
 
-export const addLayerToSelectedLayers = (layer) => GRID_DATA.selectedLayers.addLayer(layer)
-export const removeLayerFromSelectedLayers = (layer) => GRID_DATA.selectedLayers.removeLayer(layer)
+export const addLayerToSelectedLayers = (layer, selectedLayers) => selectedLayers.addLayer(layer)
+export const removeLayerFromSelectedLayers = (layer, selectedLayers) => selectedLayers.removeLayer(layer)

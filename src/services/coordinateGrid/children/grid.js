@@ -1,19 +1,10 @@
 import { concat } from 'lodash'
 import { layerGroup, rectangle } from 'leaflet'
-import { INIT_GRID_OPTIONS, LAT, LNG, GRID_DATA } from '../constants'
+import { INIT_GRID_OPTIONS, LAT, LNG } from '../constants'
 import { isAreaOnScreen } from '../helpers'
 import { selectLayer } from './selectLayer'
 
-const addClickEvent = (layer) => {
-  layer.on('click', (e) => selectLayer(e)
-  )
-}
-
-const createGridRectangle = (coordinates) => {
-  const rectanglePolygon = rectangle(coordinates, INIT_GRID_OPTIONS)
-  addClickEvent(rectanglePolygon)
-  return rectanglePolygon
-}
+const createGridRectangle = (coordinates) => rectangle(coordinates, INIT_GRID_OPTIONS)
 
 const isLayerExist = (coordinate, layers) =>
   layers.some((layer) => {
@@ -23,24 +14,27 @@ const isLayerExist = (coordinate, layers) =>
     return isLatExist && isLngExist
   })
 
-export const createGridGroup = (coordinatesMatrix) => {
-  const rectangles = concat(...coordinatesMatrix).map((coordinates) => createGridRectangle(coordinates))
-  return layerGroup(rectangles)
+export const createGridGroup = (coordinatesMatrix, selectedLayers) => {
+  const rectangles = concat(...coordinatesMatrix)
+    .map((coordinates) => createGridRectangle(coordinates))
+  const currentGrid = layerGroup(rectangles)
+  rectangles.map((rectangle) => rectangle.on('click', (e) => selectLayer(e, currentGrid, selectedLayers)))
+  return currentGrid
 }
 
-export const updateGrid = (coordinatesList) => {
-  const layerGroup = GRID_DATA.currentGrid
-  // delete outside
-  layerGroup.getLayers().forEach((layer) => {
+export const updateGrid = (coordinatesList, scale, currentGrid, selectedLayers) => {
+  // Видаляємо участки які виходять за межі екрану
+  currentGrid.getLayers().forEach((layer) => {
     const { _northEast } = layer.getBounds()
-    !isAreaOnScreen(_northEast) && layer.removeFrom(layerGroup)
+    !isAreaOnScreen(_northEast, scale) && layer.removeFrom(currentGrid)
   })
-  // add new
-  const layers = [ ...layerGroup.getLayers(), ...GRID_DATA.selectedLayers.getLayers() ]
+  // Додаємо нові
+  const layers = [ ...currentGrid.getLayers(), ...selectedLayers.getLayers() ]
   concat(...coordinatesList).forEach((coordinate) => {
     if (!isLayerExist(coordinate, layers)) {
       const newLayer = createGridRectangle(coordinate)
-      layerGroup.addLayer(newLayer)
+      newLayer.on('click', (e) => selectLayer(e, currentGrid, selectedLayers))
+      currentGrid.addLayer(newLayer)
     }
   })
 }

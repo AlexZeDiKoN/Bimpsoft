@@ -1,6 +1,5 @@
 import { concat } from 'lodash'
 import { DivIcon, layerGroup, marker } from 'leaflet'
-import { GRID_DATA } from '../constants'
 import { createItemNumber } from './itemNumbers'
 import { isAreaOnScreen } from './../helpers'
 
@@ -15,10 +14,10 @@ const createIcon = (text) => {
 </svg>`
 }
 
-export const createMarkersGroup = (coordinatesMatrix) => {
+export const createMarkersGroup = (coordinatesMatrix, scale) => {
   const markers = concat(...coordinatesMatrix).map((coordinates) => {
     const markerCoordinate = [ coordinates[1][0], coordinates[0][1] ]
-    const itemNumber = createItemNumber(markerCoordinate)
+    const itemNumber = createItemNumber(markerCoordinate, scale)
     return marker(markerCoordinate, { icon: new DivIcon({
       className: `my-div-icon`,
       html: createIcon(itemNumber),
@@ -36,23 +35,23 @@ const isMarkerExist = (coordinate, markers) =>
     return isLatExist && isLngExist
   })
 
-export const updateMarkers = (coordinatesMatrix) => {
+export const updateMarkers = (coordinatesMatrix, scale, currentMarkers) => {
   // delete outside
-  GRID_DATA.currentMarkers.getLayers().forEach((marker) => {
+  currentMarkers.getLayers().forEach((marker) => {
     const position = marker._latlng
-    !isAreaOnScreen(position) && marker.removeFrom(GRID_DATA.currentMarkers)
+    !isAreaOnScreen(position, scale) && marker.removeFrom(currentMarkers)
   })
   // add new
-  const markers = GRID_DATA.currentMarkers.getLayers()
+  const markers = currentMarkers.getLayers()
   concat(...coordinatesMatrix).forEach((coordinate) => {
     const markerCoordinate = [ coordinate[1][0], coordinate[0][1] ]
     if (!isMarkerExist(markerCoordinate, markers)) {
       const newMarker = marker(markerCoordinate, { icon: new DivIcon({
         className: `my-div-icon`,
-        html: createIcon(createItemNumber(markerCoordinate)),
+        html: createIcon(createItemNumber(markerCoordinate, scale)),
       }),
       })
-      GRID_DATA.currentMarkers.addLayer(newMarker)
+      currentMarkers.addLayer(newMarker)
     }
   })
 }

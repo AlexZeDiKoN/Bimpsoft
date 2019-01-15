@@ -1,13 +1,13 @@
-import { CELL_SIZES, GRID_DATA, ITEM_NUMBER } from '../constants'
+import { CELL_SIZES, ITEM_NUMBER } from '../constants'
 
 const listCoordinate = {}
 const Z1M = {}
 const Z1MDerivative = {}
 
 // координата центра листа
-const calculateListCoordinate = (coordinates) => {
-  listCoordinate.lat = coordinates[0] - CELL_SIZES[GRID_DATA.scale].lat / 2
-  listCoordinate.lng = coordinates[1] + CELL_SIZES[GRID_DATA.scale].lng / 2
+const calculateListCoordinate = (coordinates, scale) => {
+  listCoordinate.lat = coordinates[0] - CELL_SIZES[scale].lat / 2
+  listCoordinate.lng = coordinates[1] + CELL_SIZES[scale].lng / 2
 }
 
 // конвертер арабские -> римские
@@ -34,12 +34,12 @@ const calculateNumberZ1M = () => {
   Z1M.itemNumber = `${ITEM_NUMBER['1M'][Z1M.y]} - ${Z1M.x}`
 }
 
-export const createItemNumber = (coordinates) => {
+export const createItemNumber = (coordinates, scale) => {
   let itemNumber
-  calculateListCoordinate(coordinates)
+  calculateListCoordinate(coordinates, scale)
   calculateNumberZ1M()
-  listPosition(CELL_SIZES[GRID_DATA.scale])
-  switch (GRID_DATA.scale) {
+  listPosition(CELL_SIZES[scale])
+  switch (scale) {
     case 500000:
       Z1MDerivative.itemNumber = `${ITEM_NUMBER['500K'][(Z1MDerivative.x + (Z1MDerivative.y - 1) * 2) - 1]}`
       itemNumber = `${Z1M.itemNumber} - ${Z1MDerivative.itemNumber}`

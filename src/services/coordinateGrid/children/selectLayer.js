@@ -8,23 +8,24 @@ import {
 } from '../helpers'
 
 // додати листи до групи виділених
-const addToSelected = (layer) => {
+const addToSelected = (layer, currentGrid, selectedLayers) => {
   layer.setStyle(SELECTED_CELL_OPTIONS)
-  removeLayerFromCurrentGrid(layer)
-  addLayerToSelectedLayers(layer)
+  removeLayerFromCurrentGrid(layer, currentGrid)
+  addLayerToSelectedLayers(layer, selectedLayers)
 }
 
-const addToDeselected = (layer) => {
+const addToDeselected = (layer, currentGrid, selectedLayers) => {
   layer.setStyle(INIT_GRID_OPTIONS)
-  removeLayerFromSelectedLayers(layer)
-  addLayerToCurrentGrid(layer)
+  removeLayerFromSelectedLayers(layer, selectedLayers)
+  addLayerToCurrentGrid(layer, currentGrid)
 }
 
 // перевірка наявності листа в виділеній зоні
-const listVerification = (zone, grid, selected) => grid.getLayers().concat(selected.getLayers())
+const listVerification = (zone, currentGrid, selectedLayers) => currentGrid.getLayers()
+  .concat(selectedLayers.getLayers())
   .forEach((layer) => zone.contains(layer.getCenter())
-    ? addToSelected(layer)
-    : addToDeselected(layer))
+    ? addToSelected(layer, currentGrid, selectedLayers)
+    : addToDeselected(layer, currentGrid, selectedLayers))
 
 // визначення центру зони
 const getCenter = (coordinates) => {
@@ -88,11 +89,11 @@ const setSelectedZone = (layer, point) => {
     : GRID_DATA.selectedZone = latLngBounds(bounds._northEast, bounds._southWest)
 }
 
-export const selectLayer = (event) => {
+export const selectLayer = (event, currentGrid, selectedLayers) => {
   setSelectedZone(event.target, event.latlng)
-  listVerification(GRID_DATA.selectedZone, GRID_DATA.currentGrid, GRID_DATA.selectedLayers)
+  listVerification(GRID_DATA.selectedZone, currentGrid, selectedLayers)
   // рахуємо кількість виділених листів, або видаляємо зону при їх відсутності
-  GRID_DATA.selectedLayers.getLayers().length
-    ? GRID_DATA.countLists = GRID_DATA.selectedLayers.getLayers().length
+  selectedLayers.getLayers().length
+    ? GRID_DATA.countLists = selectedLayers.getLayers().length
     : GRID_DATA.selectedZone = null
 }

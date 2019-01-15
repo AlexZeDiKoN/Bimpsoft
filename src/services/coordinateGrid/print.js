@@ -9,64 +9,69 @@ import { removeLayerFromSelectedLayers } from './helpers'
 import './coordinateGrid.css'
 
 import { GRID_DATA } from './constants'
-GRID_DATA.selectedLayers = layerGroup()
 
-export default function PrintInner (props) {
-  const { map, printScale, printStatus } = props
+export default class PrintInner extends React.PureComponent {
+  static propTypes = {
+    printStatus: PropTypes.bool,
+    printScale: PropTypes.number,
+    map: PropTypes.object,
+  }
 
-  const createGrid = () => {
+  constructor () {
+    super()
+    this.state = {
+      currentGrid: null,
+      selectedLayers: layerGroup(),
+      currentMarkers: null,
+    }
+  }
+
+  createGrid = () => {
+    const { map, printScale } = this.props
+    const { currentGrid, selectedLayers, currentMarkers } = this.state
     const coordinatesMatrix = generateCoordinateMatrix(map, printScale)
-    if (!GRID_DATA.currentGrid) {
-      const Grid = createGridGroup(coordinatesMatrix)
-      const Markers = createMarkersGroup(coordinatesMatrix, printScale)
-      Grid.addTo(map)
-      Markers.addTo(map)
-      GRID_DATA.selectedLayers.addTo(map)
-      GRID_DATA.currentGrid = Grid
-      GRID_DATA.currentMarkers = Markers
+    if (!currentGrid) {
+      const newGrid = createGridGroup(coordinatesMatrix, selectedLayers)
+      const newMarkers = createMarkersGroup(coordinatesMatrix, printScale)
+      newGrid.addTo(map)
+      newMarkers.addTo(map)
+      selectedLayers.addTo(map)
+      this.setState(({ currentGrid: newGrid }))
+      this.setState(({ currentMarkers: newMarkers }))
       return
     }
-    updateGrid(coordinatesMatrix)
-    updateMarkers(coordinatesMatrix)
+    updateGrid(coordinatesMatrix, printScale, currentGrid, selectedLayers)
+    updateMarkers(coordinatesMatrix, printScale, currentMarkers)
   }
 
-  const throttledGridRecalculation = throttle(createGrid, 200)
-
-  const initCoordinateMapGrid = () => {
-    // TODO: видалити
-    setScale(map, printScale)
-
-    createGrid()
-    map.on('move', throttledGridRecalculation)
+  initCoordinateMapGrid = () => {
+    this.createGrid()
+    this.props.map.on('move', throttle(this.createGrid, 200))
   }
 
-  const setScale = (map, scale) => {
-    if (GRID_DATA.scale !== undefined && GRID_DATA.scale !== scale) {
-      removeCoordinateMapGrid(map)
-    }
-    GRID_DATA.scale = scale
-  }
-
-  const removeCoordinateMapGrid = () => {
+  removeCoordinateMapGrid = () => {
+    const { map } = this.props
+    const { currentGrid, selectedLayers, currentMarkers } = this.state
     map.off('move')
-    if (GRID_DATA.currentGrid && GRID_DATA.selectedLayers) {
-      GRID_DATA.currentGrid.removeFrom(map)
-      GRID_DATA.selectedLayers.removeFrom(map)
-      GRID_DATA.currentMarkers.removeFrom(map)
-      GRID_DATA.currentGrid = GRID_DATA.currentMarkers = GRID_DATA.selectedZone = null
-      GRID_DATA.selectedLayers.eachLayer(removeLayerFromSelectedLayers)
+    if (currentGrid && selectedLayers) {
+      currentGrid.removeFrom(map)
+      selectedLayers.removeFrom(map)
+      currentMarkers.removeFrom(map)
+      this.setState(({
+        currentGrid: null,
+        currentMarkers: null,
+      }))
+      GRID_DATA.selectedZone = null
+      selectedLayers.eachLayer((layer) => removeLayerFromSelectedLayers(layer, selectedLayers))
     }
   }
 
-  return (
-    <Fragment>
-      {printStatus ? initCoordinateMapGrid() : removeCoordinateMapGrid()}
-    </Fragment>
-  )
-}
-
-PrintInner.propTypes = {
-  printStatus: PropTypes.bool,
-  printScale: PropTypes.number,
-  map: PropTypes.object,
+  render () {
+    const { printStatus } = this.props
+    return (
+      <Fragment>
+        {printStatus ? this.initCoordinateMapGrid() : this.removeCoordinateMapGrid()}
+      </Fragment>
+    )
+  }
 }
