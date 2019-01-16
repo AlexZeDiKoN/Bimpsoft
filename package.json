@@ -62,7 +62,7 @@
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "set PORT=3001 && react-scripts start",
-    "build": "run-p -n inc-version build-css build-js",
+    "build": "run-s -n inc-version build-css build-js",
     "build-js": "react-scripts build",
     "test": "run-s -n build-css test-js",
     "test-js": "react-scripts test --env=jsdom",
