@@ -62,6 +62,7 @@ L.FlexGrid = L.Layer.extend({
       fillOpacity: 0.4,
       fillColor: '#444',
     },
+    draggable: true,
   },
 
   /**
@@ -212,20 +213,14 @@ L.FlexGrid = L.Layer.extend({
 
   addInteractiveTarget (targetEl) {
     if (targetEl === this._path) {
-      this._map._targets[L.Util.stamp(this._zones)] = this
-      this._map._targets[L.Util.stamp(this._directions)] = this
-      this._map._targets[L.Util.stamp(this._boundary)] = this
-      this._map._targets[L.Util.stamp(this._border)] = this
+      this._pathes.forEach((path) => (this._map._targets[L.Util.stamp(path)] = this))
     }
     return this
   },
 
   removeInteractiveTarget (targetEl) {
     if (targetEl === this._path) {
-      delete this._map._targets[L.Util.stamp(this._zones)]
-      delete this._map._targets[L.Util.stamp(this._directions)]
-      delete this._map._targets[L.Util.stamp(this._boundary)]
-      delete this._map._targets[L.Util.stamp(this._border)]
+      this._pathes.forEach((path) => delete this._map._targets[L.Util.stamp(path)])
     }
     return this
   },
@@ -235,5 +230,14 @@ L.FlexGrid = L.Layer.extend({
     if (this._renderer) {
       this._renderer._updateStyle(this)
     }
+  },
+
+  // @method bringToFront(): this
+  // Brings the layer to the top of all path layers.
+  bringToFront: function () {
+    if (this._renderer) {
+      this._renderer._bringToFront(this)
+    }
+    return this
   },
 })
