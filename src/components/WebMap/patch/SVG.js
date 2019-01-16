@@ -81,7 +81,6 @@ const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
 const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
 const bezierArray = (points, index, locked) => {
   const next = nextIndex(points, index, locked)
-  // console.log({ points, index, locked, next })
   return [
     points[index].x,
     points[index].y,
