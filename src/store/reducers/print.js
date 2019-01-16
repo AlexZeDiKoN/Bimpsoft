@@ -5,6 +5,7 @@ const initState = {
   mapId: null,
   printScale: 100000,
   requisites: {},
+  selectedZone: null,
 }
 
 export default function reducer (state = initState, action) {
@@ -24,6 +25,9 @@ export default function reducer (state = initState, action) {
     case print.PRINT_REQUISITES_CLEAR: {
       const requisites = {}
       return { ...state, requisites }
+    }
+    case print.SELECTED_ZONE: {
+      return { ...state, selectedZone: action.selectedZone }
     }
     default:
       return state
