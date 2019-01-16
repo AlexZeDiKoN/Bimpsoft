@@ -23,3 +23,7 @@ L.PM.Edit.FlexGrid.prototype._onLayerDrag = function (e) {
   this._tempDragCoord = latlng
   this._layer.fire('pm:drag')
 }
+
+L.PM.Edit.FlexGrid.prototype._dragMixinOnDisable = function () {
+  this._layer._pathes.forEach((el) => L.DomUtil.removeClass(el, 'leaflet-pm-draggable'))
+}
