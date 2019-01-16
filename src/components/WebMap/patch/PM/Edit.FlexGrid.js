@@ -74,7 +74,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (!this._map) {
       return
     }
-    if (!this.enabled()) {
+    if (this.enabled()) {
       this.disable()
     }
     this._enabled = true
@@ -106,6 +106,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     layer.off('mouseup')
     this._layer.off('remove', this._onLayerRemove)
     L.DomUtil.removeClass(layer._path, 'leaflet-pm-draggable')
+    this._dragMixinOnDisable()
     if (this._layerEdited) {
       this._layer.fire('pm:update', {})
     }
