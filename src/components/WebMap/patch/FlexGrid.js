@@ -26,7 +26,7 @@ const commonStyle = {
  * @class FlexGrid
  * Комплексний графічний об'єкт для представлення операційної зони
  */
-const FlexGrid = L.Layer.extend({
+L.FlexGrid = L.Layer.extend({
   options: {
     // @option directions: Number = 1
     // Кількість напрямків
@@ -62,6 +62,7 @@ const FlexGrid = L.Layer.extend({
       fillOpacity: 0.4,
       fillColor: '#444',
     },
+    draggable: true,
   },
 
   /**
@@ -70,7 +71,7 @@ const FlexGrid = L.Layer.extend({
    * @param box - обмежуючий прямокутник
    * @param options - опції
    */
-  initialize: function (box, options) {
+  initialize (box, options) {
     L.setOptions(this, options)
 
     const { directions, zones, vertical } = this.options
@@ -104,23 +105,23 @@ const FlexGrid = L.Layer.extend({
     return this
   },
 
-  beforeAdd: function (map) {
+  beforeAdd (map) {
     this._renderer = map.getRenderer(this)
   },
 
-  onAdd: function () {
+  onAdd () {
     this._renderer._initFlexGrid(this)
     this._reset()
     this._renderer._addPath(this)
     this._renderer._bringToFront(this)
   },
 
-  onRemove: function () {
+  onRemove () {
     this._renderer._removePath(this)
   },
 
   // Лінії розмежування зон
-  _zoneLines: function () {
+  _zoneLines () {
     const { zones } = this.options
     const z = narr(zones * 2)
       .filter(positive)
@@ -129,7 +130,7 @@ const FlexGrid = L.Layer.extend({
   },
 
   // Лінії розмежування напрямків
-  _directionLines: function () {
+  _directionLines () {
     const { directions } = this.options
     const d = narr(directions)
       .filter(positive)
@@ -137,47 +138,47 @@ const FlexGrid = L.Layer.extend({
   },
 
   // Контур напрямку
-  _directionPath: function (index) {
+  _directionPath (index) {
     // TODO
   },
 
   // Контур зони
-  _zonePath: function (index) {
+  _zonePath (index) {
     // TODO
   },
 
   // Окремий відрізок лінії напрямку
-  _directionSegment: function (direction, zone) {
+  _directionSegment (direction, zone) {
     // TODO ???
   },
 
   // Окремий відрізок лінії зони
-  _zoneSegment: function (direction, zone) {
+  _zoneSegment (direction, zone) {
     // TODO ???
   },
 
   // Лінія напрямку
-  _directionLine: function (index, reverse) {
+  _directionLine (index, reverse) {
     const points = this.directionRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[index][idx + 1] ], [ this.eternalRings[index][0] ])
     return reverse === true ? points.reverse() : points
   },
 
   // Лінія зони
-  _zoneLine: function (index, reverse) {
+  _zoneLine (index, reverse) {
     const points = this.zoneRings[index].reduce((res, seg, idx) =>
       [ ...res, ...seg, this.eternalRings[idx + 1][index] ], [ this.eternalRings[0][index] ])
     return reverse === true ? points.reverse() : points
   },
 
   // Лінія розмежування
-  _boundaryLine: function () {
+  _boundaryLine () {
     const { zones } = this.options
     return this._zoneLine(zones)
   },
 
   // Контур операційної зони
-  _borderLine: function () {
+  _borderLine () {
     const { directions, zones } = this.options
     return [].concat(
       this._zoneLine(0),
@@ -188,7 +189,7 @@ const FlexGrid = L.Layer.extend({
   },
 
   // Перетворення географічних координат у екранні
-  _project: function () {
+  _project () {
     const project = this._map.latLngToLayerPoint.bind(this._map)
     const projectRing = (ring) => ring.map(project)
     const projectRings = (row) => row.map(projectRing)
@@ -197,41 +198,46 @@ const FlexGrid = L.Layer.extend({
     this.zoneRings = this.zoneSegments.map(projectRings)
   },
 
-  _update: function () {
+  redraw () {
+    this._reset()
+  },
+
+  _update () {
     this._renderer._updateFlexGrid(this)
   },
 
-  _reset: function () {
+  _reset () {
     this._project()
     this._update()
   },
 
-  addInteractiveTarget: function (targetEl) {
+  addInteractiveTarget (targetEl) {
     if (targetEl === this._path) {
-      this._map._targets[L.Util.stamp(this._zones)] = this
-      this._map._targets[L.Util.stamp(this._directions)] = this
-      this._map._targets[L.Util.stamp(this._boundary)] = this
-      this._map._targets[L.Util.stamp(this._border)] = this
+      this._pathes.forEach((path) => (this._map._targets[L.Util.stamp(path)] = this))
     }
     return this
   },
 
-  removeInteractiveTarget: function (targetEl) {
+  removeInteractiveTarget (targetEl) {
     if (targetEl === this._path) {
-      delete this._map._targets[L.Util.stamp(this._zones)]
-      delete this._map._targets[L.Util.stamp(this._directions)]
-      delete this._map._targets[L.Util.stamp(this._boundary)]
-      delete this._map._targets[L.Util.stamp(this._border)]
+      this._pathes.forEach((path) => delete this._map._targets[L.Util.stamp(path)])
     }
     return this
   },
 
-  setSelected: function (selected) {
+  setSelected (selected) {
     L.setOptions(this, { selected, inActiveLayer: selected })
     if (this._renderer) {
       this._renderer._updateStyle(this)
     }
   },
-})
 
-export default FlexGrid
+  // @method bringToFront(): this
+  // Brings the layer to the top of all path layers.
+  bringToFront: function () {
+    if (this._renderer) {
+      this._renderer._bringToFront(this)
+    }
+    return this
+  },
+})

@@ -60,5 +60,6 @@ export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth =
   return {
     sign: `<g transform="translate(${-width / 2},${-height / 2}) scale(${scale}) translate(${-b[0]},${-b[1]})">${signText}</g>`,
     mask: `<rect fill="black" x="${left}" y="${top}" width="${width + 2 * margin}" height="${height + 2 * margin}" />`,
+    maskRect: { x: left, y: top, width: width + 2 * margin, height: height + 2 * margin },
   }
 }

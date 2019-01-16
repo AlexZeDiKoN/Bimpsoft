@@ -9,7 +9,7 @@ import orgStructures from './orgStructures'
 import templates from './templates'
 import selection from './selection'
 import params from './params'
-import print from './print'
+import printToFile from './printToFile'
 
 export default combineReducers({
   viewModes,
@@ -22,5 +22,5 @@ export default combineReducers({
   templates,
   selection,
   params,
-  print,
+  printToFile,
 })
