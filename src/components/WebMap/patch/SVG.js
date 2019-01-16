@@ -240,14 +240,9 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, sk
   return amplPoints
 }
 
-const _initPath = L.SVG.prototype._initPath
-const _updateStyle = L.SVG.prototype._updateStyle
-const _setPath = L.SVG.prototype._setPath
-const _addPath = L.SVG.prototype._addPath
-const _removePath = L.SVG.prototype._removePath
+const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
 
 export default L.SVG.include({
-
   _initPath: function (layer) {
     layer._outlinePath = L.SVG.create('path')
     L.DomUtil.addClass(layer._outlinePath, 'leaflet-interactive leaflet-interactive-outline')
@@ -260,10 +255,7 @@ export default L.SVG.include({
 
   _setLayerPathStyle: function (layer, style, className) {
     if (layer.options.tsType === entityKind.FLEXGRID) {
-      this._setPathStyle(layer, layer._zones, style, className)
-      this._setPathStyle(layer, layer._directions, style, className)
-      this._setPathStyle(layer, layer._boundary, style, className)
-      this._setPathStyle(layer, layer._border, style, className)
+      layer._pathes.forEach((path) => this._setPathStyle(layer, path, style, className))
     } else {
       this._setPathStyle(layer, layer._path, style, className)
     }
@@ -617,11 +609,9 @@ export default L.SVG.include({
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
+    grid._pathes = [ grid._zones, grid._directions, grid._boundary, grid._border ]
     if (grid.options.interactive) {
-      L.DomUtil.addClass(grid._zones, 'leaflet-interactive')
-      L.DomUtil.addClass(grid._directions, 'leaflet-interactive')
-      L.DomUtil.addClass(grid._boundary, 'leaflet-interactive')
-      L.DomUtil.addClass(grid._border, 'leaflet-interactive')
+      grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
     this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
     this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
@@ -629,10 +619,7 @@ export default L.SVG.include({
     this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
     this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
     group.appendChild(grid._shadow)
-    group.appendChild(grid._zones)
-    group.appendChild(grid._directions)
-    group.appendChild(grid._boundary)
-    group.appendChild(grid._border)
+    grid._pathes.forEach((path) => group.appendChild(path))
     this._layers[L.Util.stamp(grid)] = grid
   },
 
