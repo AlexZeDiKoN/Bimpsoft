@@ -34,10 +34,15 @@ export default class PrintInner extends React.Component {
   }
 
   async componentDidUpdate (prevProps, prevState, snapshot) {
-    if (this.props.printScale !== prevProps.printScale) {
+    const { printStatus, printScale } = this.props
+    if (printScale !== prevProps.printScale) {
       await this.removeCoordinateMapGrid()
-      this.initCoordinateMapGrid(this.props.printStatus)
+      this.initCoordinateMapGrid(printStatus)
     }
+  }
+
+  componentWillUnmount () {
+    this.removeCoordinateMapGrid()
   }
 
   // Ініціалізація гріда
@@ -45,8 +50,6 @@ export default class PrintInner extends React.Component {
     if (printStatus) {
       this.createGrid()
       this.props.map.on('move', throttle(this.createGrid, 200))
-    } else {
-      this.removeCoordinateMapGrid()
     }
   }
 
@@ -124,7 +127,7 @@ export default class PrintInner extends React.Component {
     })
 
   removeCoordinateMapGrid = () => {
-    const { map } = this.props
+    const { map, setSelectedZone } = this.props
     const { currentGrid, selectedLayers, currentMarkers } = this.state
     map.off('move')
     if (currentGrid && selectedLayers) {
@@ -136,6 +139,7 @@ export default class PrintInner extends React.Component {
         currentMarkers: null,
       }))
       selectedLayers.eachLayer((layer) => removeLayerFromSelectedLayers(layer, selectedLayers))
+      setSelectedZone(null)
     }
   }
 

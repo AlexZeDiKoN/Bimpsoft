@@ -6,7 +6,7 @@ export const PRINT_SCALE = action('PRINT_SCALE')
 export const PRINT_REQUISITES = action('PRINT_REQUISITES')
 export const PRINT_REQUISITES_CLEAR = action('PRINT_REQUISITES_CLEAR')
 
-export const print = (mapId) => ({
+export const print = (mapId = null) => ({
   type: PRINT,
   mapId,
 })
