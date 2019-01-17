@@ -1,11 +1,11 @@
-import { CELL_SIZES, LAT, LNG, SCREEN_COORDINATES } from './constants'
+import { CELL_SIZES, LAT, LNG } from './constants'
 
-export const isAreaOnScreen = (_northEast, scale) => {
+export const isAreaOnScreen = (_northEast, scale, screenCoordinates) => {
   const Z = CELL_SIZES[scale]
-  const leftBorder = SCREEN_COORDINATES.TLC[LNG]
-  const topBorder = SCREEN_COORDINATES.TLC[LAT] + Z.lat
-  const rightBorder = SCREEN_COORDINATES.BRC[LNG] + Z.lng
-  const bottomBorder = SCREEN_COORDINATES.BRC[LAT]
+  const leftBorder = screenCoordinates.TLC[LNG]
+  const topBorder = screenCoordinates.TLC[LAT] + Z.lat
+  const rightBorder = screenCoordinates.BRC[LNG] + Z.lng
+  const bottomBorder = screenCoordinates.BRC[LAT]
 
   return _northEast.lat >= bottomBorder &&
     _northEast.lat <= topBorder &&
@@ -15,11 +15,14 @@ export const isAreaOnScreen = (_northEast, scale) => {
 
 export const setInitCoordinates = (screenBounds) => {
   const { _northEast, _southWest } = screenBounds
+  const screenCoordinates = {}
 
-  SCREEN_COORDINATES.TLC = [ _northEast.lat, _southWest.lng ]
-  SCREEN_COORDINATES.TRC = [ _northEast.lat, _northEast.lng ]
-  SCREEN_COORDINATES.BLC = [ _southWest.lat, _southWest.lng ]
-  SCREEN_COORDINATES.BRC = [ _southWest.lat, _northEast.lng ]
+  screenCoordinates.TLC = [ _northEast.lat, _southWest.lng ]
+  screenCoordinates.TRC = [ _northEast.lat, _northEast.lng ]
+  screenCoordinates.BLC = [ _southWest.lat, _southWest.lng ]
+  screenCoordinates.BRC = [ _southWest.lat, _northEast.lng ]
+
+  return screenCoordinates
 }
 
 export const removeLayerFromCurrentGrid = (layer, currentGrid) => currentGrid.removeLayer(layer)

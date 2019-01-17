@@ -4,7 +4,7 @@ import { concat, throttle } from 'lodash'
 import { layerGroup, rectangle } from 'leaflet'
 import { generateCoordinateMatrix } from './children/coordinateMatrix'
 import { createMarkersGroup, updateMarkers } from './children/markers'
-import { isAreaOnScreen, removeLayerFromSelectedLayers } from './helpers'
+import { isAreaOnScreen, removeLayerFromSelectedLayers, setInitCoordinates } from './helpers'
 import { selectLayer } from './children/selectLayer'
 import './coordinateGrid.css'
 
@@ -66,7 +66,7 @@ export default class PrintInner extends React.Component {
       return
     }
     this.updateGrid(coordinatesMatrix)
-    updateMarkers(coordinatesMatrix, printScale, currentMarkers)
+    updateMarkers(coordinatesMatrix, printScale, currentMarkers, map)
   }
 
   // Створення групи елементів гріда
@@ -90,12 +90,13 @@ export default class PrintInner extends React.Component {
 
   // Оновлення елементів гріда
   updateGrid = (coordinatesMatrix) => {
-    const { printScale } = this.props
+    const { printScale, map } = this.props
     const { currentGrid, selectedLayers } = this.state
+    const screenCoordinates = setInitCoordinates(map.getBounds())
     // Видаляємо участки які виходять за межі екрану
     currentGrid.getLayers().forEach((layer) => {
       const { _northEast } = layer.getBounds()
-      !isAreaOnScreen(_northEast, printScale) && layer.removeFrom(currentGrid)
+      !isAreaOnScreen(_northEast, printScale, screenCoordinates) && layer.removeFrom(currentGrid)
     })
     // Додаємо нові
     const layers = [ ...currentGrid.getLayers(), ...selectedLayers.getLayers() ]

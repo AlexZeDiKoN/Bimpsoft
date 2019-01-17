@@ -1,7 +1,7 @@
 import { concat } from 'lodash'
 import { DivIcon, layerGroup, marker } from 'leaflet'
 import { createItemNumber } from './itemNumbers'
-import { isAreaOnScreen } from './../helpers'
+import { isAreaOnScreen, setInitCoordinates } from './../helpers'
 
 const createIcon = (text) => {
   const maxWidth = 200
@@ -35,13 +35,14 @@ const isMarkerExist = (coordinate, markers) =>
     return isLatExist && isLngExist
   })
 
-export const updateMarkers = (coordinatesMatrix, scale, currentMarkers) => {
-  // delete outside
+export const updateMarkers = (coordinatesMatrix, scale, currentMarkers, map) => {
+  const screenCoordinates = setInitCoordinates(map.getBounds())
+  // Видаляємо ті що виходять за межі екрану
   currentMarkers.getLayers().forEach((marker) => {
     const position = marker._latlng
-    !isAreaOnScreen(position, scale) && marker.removeFrom(currentMarkers)
+    !isAreaOnScreen(position, scale, screenCoordinates) && marker.removeFrom(currentMarkers)
   })
-  // add new
+  // Додаємо нові
   const markers = currentMarkers.getLayers()
   concat(...coordinatesMatrix).forEach((coordinate) => {
     const markerCoordinate = [ coordinate[1][0], coordinate[0][1] ]

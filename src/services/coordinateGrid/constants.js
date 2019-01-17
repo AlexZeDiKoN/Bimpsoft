@@ -26,12 +26,6 @@ export const SELECTED_CELL_OPTIONS = {
   color: 'black',
   fillOpacity: 0,
 }
-export const SCREEN_COORDINATES = {
-  TLC: [ 0, 0 ],
-  TRC: [ 0, 0 ],
-  BLC: [ 0, 0 ],
-  BRC: [ 0, 0 ],
-}
 export const GRID_CELLS_STRUCTURE = {
   row_length: 0,
   column_length: 0,
