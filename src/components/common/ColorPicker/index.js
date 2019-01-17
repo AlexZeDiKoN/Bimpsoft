@@ -56,8 +56,7 @@ export default class ColorPicker extends React.Component {
   clickHandler = ({ color, target }) => this.setState((state) => {
     const opened = !state.opened
     if (opened) {
-      const { top, left } = target.getBoundingClientRect()
-      return { opened, top, left }
+      return { opened, top: target.offsetTop, left: target.offsetLeft }
     } else {
       return { opened }
     }

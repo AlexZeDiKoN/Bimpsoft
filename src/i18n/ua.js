@@ -159,3 +159,28 @@ export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карт�
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Рівні для масштабів'
+
+// Друк карти
+// лейбли
+export const SCALE = `Масштаб`
+export const MAP_LABEL = `Гриф`
+export const FIRST_ROW = `Рядок 1 (h)`
+export const SECOND_ROW = `Рядок 2 (2/3h)`
+export const THIRD_ROW = `Рядок 3 (2/3h)`
+export const FOURTH_ROW = `Рядок 4 (2/3h)`
+export const FIFTH_ROW = `Рядок 4 (1/2h)`
+export const START = `Почата (1/2h)`
+export const FINISH = `Закінчена (1/2h)`
+export const CONFIRM_DATE = `Дата підпису`
+// заголовки
+export const DOC_HEADER = `Заголовок документа`
+export const MAIN_INDICATORS = `Основні показники`
+export const LEGEND = `Умовні позначення`
+export const SIGN = `Знак`
+export const SIGN_CONTENT = `Зміст знаку`
+export const DOCUMENT_SIGNATORIES = `Підпис документа`
+export const POSITION = `Посада`
+export const RANG = `Звання`
+export const FULL_NAME = `ПІБ`
+// кнопка меню
+export const PRINT_BUTTON = `Роздрукувати листи карти`
