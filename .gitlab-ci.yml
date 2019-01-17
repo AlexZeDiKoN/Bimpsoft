@@ -77,7 +77,7 @@ deploy-self(17):
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
 
-Increment_dzvin:
+Increment_dzvin_dev:
   stage: increment-dzvin
   <<: *base-dev
   script: 
