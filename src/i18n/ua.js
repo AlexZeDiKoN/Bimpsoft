@@ -183,4 +183,4 @@ export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 // кнопка меню
-export const PRINT_BUTTON = `Роздрукувати глисти карти`
+export const PRINT_BUTTON = `Роздрукувати листи карти`
