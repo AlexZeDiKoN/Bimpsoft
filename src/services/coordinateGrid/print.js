@@ -19,8 +19,8 @@ export default class PrintInner extends React.Component {
     selectedZone: PropTypes.object,
   }
 
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
     this.state = {
       currentGrid: null,
       selectedLayers: layerGroup(),
@@ -28,10 +28,26 @@ export default class PrintInner extends React.Component {
     }
   }
 
+  componentDidMount () {
+    const { printStatus } = this.props
+    this.initCoordinateMapGrid(printStatus)
+  }
+
+  async componentDidUpdate (prevProps, prevState, snapshot) {
+    if (this.props.printScale !== prevProps.printScale) {
+      await this.removeCoordinateMapGrid()
+      this.initCoordinateMapGrid(this.props.printStatus)
+    }
+  }
+
   // Ініціалізація гріда
-  initCoordinateMapGrid = () => {
-    this.createGrid()
-    this.props.map.on('move', throttle(this.createGrid, 200))
+  initCoordinateMapGrid = (printStatus) => {
+    if (printStatus) {
+      this.createGrid()
+      this.props.map.on('move', throttle(this.createGrid, 200))
+    } else {
+      this.removeCoordinateMapGrid()
+    }
   }
 
   // Створення нового гріда, або оновлення існуючого
@@ -125,7 +141,6 @@ export default class PrintInner extends React.Component {
   render () {
     return (
       <Fragment>
-        {this.props.printStatus ? this.initCoordinateMapGrid() : this.removeCoordinateMapGrid()}
       </Fragment>
     )
   }

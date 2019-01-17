@@ -30,7 +30,7 @@ const WebMapContainer = connect(
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
     activeObjectId: activeObjectId(state),
-    printStatus: state.print.printStatus,
+    printStatus: Boolean(state.print.mapId),
     printScale: state.print.printScale,
   }),
   catchErrors({

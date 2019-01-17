@@ -1143,7 +1143,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        {this.map && <PrintGrid map={this.map}/>}
+        {this.map && this.props.printStatus && <PrintGrid map={this.map}/>}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
