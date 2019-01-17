@@ -1,6 +1,8 @@
 /* global L */
 
 import { halfPoint, prepareCurve } from '../utils/Bezier'
+import StretchMixin from './Mixins/Stretch'
+import RotateMixin from './Mixins/Rotate'
 import './Edit.FlexGrid.css'
 
 const CODE = [ 'dir', 'zone' ]
@@ -47,7 +49,7 @@ const shiftSegIndexWave = (marker, code, delta) => {
   if (marker._eternal) {
     return
   }
-  marker._segIdx += 1
+  marker._segIdx += delta
   shiftSegIndexWave(marker._middle
     ? marker._baseMarkers['next']
     : marker._middleMarkers[code]['next'],
@@ -55,6 +57,8 @@ const shiftSegIndexWave = (marker, code, delta) => {
 }
 
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
+  includes: [ StretchMixin, RotateMixin ],
+
   initialize (layer) {
     this._layer = layer
     this._enabled = false
@@ -74,7 +78,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (!this._map) {
       return
     }
-    if (!this.enabled()) {
+    if (this.enabled()) {
       this.disable()
     }
     this._enabled = true
@@ -106,6 +110,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     layer.off('mouseup')
     this._layer.off('remove', this._onLayerRemove)
     L.DomUtil.removeClass(layer._path, 'leaflet-pm-draggable')
+    this._dragMixinOnDisable()
     if (this._layerEdited) {
       this._layer.fire('pm:update', {})
     }
@@ -242,15 +247,15 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     return marker
   },
 
-  _createMiddleMarker (ring, leftM, rightM, segIdx, dirIdx, zoneIdx, code) {
+  _createMiddleMarker (ring, prev, next, segIdx, dirIdx, zoneIdx, code) {
     const middleMarker = this._createMarker(
-      ring ? bezierMiddleMarkerCoords(this._map, ring, leftM._index[code], rightM._index[code]) : L.latLng(0, 0),
+      ring ? bezierMiddleMarkerCoords(this._map, ring, prev._index[code], next._index[code]) : L.latLng(0, 0),
       false, segIdx, dirIdx, zoneIdx, code)
     middleMarker._middle = true
     middleMarker.setIcon(markerIcon('marker-icon-middle'))
-    middleMarker._baseMarkers = { 'prev': leftM, 'next': rightM }
-    setMiddle(leftM, middleMarker, code, 'next')
-    setMiddle(rightM, middleMarker, code, 'prev')
+    middleMarker._baseMarkers = { prev, next }
+    setMiddle(prev, middleMarker, code, 'next')
+    setMiddle(next, middleMarker, code, 'prev')
     if (!ring) {
       this._updateMiddleMarkerPos(middleMarker)
     }
@@ -318,10 +323,10 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     const next = marker._middleMarkers[code]['next']._baseMarkers['next']
     shiftIndexWave(next, code, -1)
     shiftSegIndexWave(next, code, -1)
-    this._createMiddleMarker(null, prev, next, segIdx, dirIdx, zoneIdx, code)
     this._markerGroup.removeLayer(marker._middleMarkers[code]['prev'])
     this._markerGroup.removeLayer(marker._middleMarkers[code]['next'])
     this._markerGroup.removeLayer(marker)
+    this._createMiddleMarker(null, prev, next, segIdx, dirIdx, zoneIdx, code)
     this._layer.redraw()
     this._fireEdit()
     this._layer.fire('pm:vertexremoved', {
