@@ -1049,7 +1049,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dropFlexGrid = () => {
-    const layer = new L.FlexGrid(this.map.getBounds(), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
+    const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
     layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)

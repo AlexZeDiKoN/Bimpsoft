@@ -94,8 +94,9 @@ L.FlexGrid = L.Layer.extend({
 
     this.id = -99
     this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-      const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
-        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones)
+      /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
+      const x = nBox.left + i * step.x
       const y = nBox.top + j * step.y
       return vertical ? L.latLng(y, x) : L.latLng(x, y)
     }))
@@ -209,6 +210,14 @@ L.FlexGrid = L.Layer.extend({
   _reset () {
     this._project()
     this._update()
+  },
+
+  _latLngBounds (pad = 0) {
+    const result = L.latLngBounds([ this.eternals[0][0] ])
+    this.eternals.forEach((row) => row.forEach((item) => result.extend(item)))
+    this.directionSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    this.zoneSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    return result.pad(pad)
   },
 
   addInteractiveTarget (targetEl) {

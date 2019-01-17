@@ -7,6 +7,7 @@ import './Edit.FlexGrid.css'
 
 const CODE = [ 'dir', 'zone' ]
 const POS = [ 'prev', 'next' ]
+const DELTA = 16
 
 const markerIcon = (className = '') => L.divIcon({ className: `marker-icon ${className}` })
 
@@ -87,6 +88,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (this.options.draggable) {
       this._initDraggableLayer()
     }
+    this._map.on(`zoomend`, this._mapOnZoomEnd, this)
   },
 
   _onLayerRemove (e) {
@@ -115,6 +117,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       this._layer.fire('pm:update', {})
     }
     this._layerEdited = false
+    this._map.off(`zoomend`, this._mapOnZoomEnd, this)
     return true
   },
 
@@ -142,6 +145,35 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
           this._eternalMarkers[dirIdx + 1][zoneIdx],
           segment, dirIdx, zoneIdx, 'zone'),
       this))
+    this._mapOnZoomEnd()
+  },
+
+  _mapOnZoomEnd () {
+    this._resizeMarkers && this._resizeMarkers.map((item) => item.removeFrom(this._map))
+    const bounds = this._layer._latLngBounds()
+    const p0 = this._map.project(bounds.getSouthWest())
+    const p1 = this._map.project(bounds.getNorthWest())
+    const p2 = this._map.project(bounds.getNorthEast())
+    const p3 = this._map.project(bounds.getSouthEast())
+    const list = [
+      [ L.point(p0.x - DELTA, p0.y + DELTA), `nesw` ],
+      [ L.point(p0.x - DELTA, (p0.y + p1.y) / 2), `ew` ],
+      [ L.point(p1.x - DELTA, p1.y - DELTA), `nwse` ],
+      [ L.point((p1.x + p2.x) / 2, p1.y - DELTA), `ns` ],
+      [ L.point(p2.x + DELTA, p2.y - DELTA), `nesw` ],
+      [ L.point(p2.x + DELTA, (p2.y + p3.y) / 2), `ew` ],
+      [ L.point(p3.x + DELTA, p3.y + DELTA), `nwse` ],
+      [ L.point((p3.x + p1.x) / 2, p3.y + DELTA), `ns` ],
+      [ L.point(p0.x - DELTA * 2, p0.y + DELTA * 2), `rot` ],
+      [ L.point(p0.x - DELTA * 2, (p0.y + p1.y) / 2), `shit-v` ],
+      [ L.point(p1.x - DELTA * 2, p1.y - DELTA * 2), `rot` ],
+      [ L.point((p1.x + p2.x) / 2, p1.y - DELTA * 2), `shit-h` ],
+      [ L.point(p2.x + DELTA * 2, p2.y - DELTA * 2), `rot` ],
+      [ L.point(p2.x + DELTA * 2, (p2.y + p3.y) / 2), `shit-v` ],
+      [ L.point(p3.x + DELTA * 2, p3.y + DELTA * 2), `rot` ],
+      [ L.point((p3.x + p1.x) / 2, p3.y + DELTA * 2), `shit-h` ],
+    ]
+    this._resizeMarkers = list.map(([ point, cls ]) => this._createResizeMarker(this._map.unproject(point), cls))
   },
 
   _findPrev (dirIdx, zoneIdx, code) {
@@ -243,6 +275,19 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
     }
+    this._markerGroup.addLayer(marker)
+    return marker
+  },
+
+  _createResizeMarker (latlng, className = '') {
+    const marker = new L.Marker(latlng, {
+      draggable: true,
+      icon: markerIcon(`resize ${className}`),
+    })
+    marker._pmTempLayer = true
+    /* marker.on('dragstart', this._onMarkerDragStart, this)
+    marker.on('move', this._onMarkerDrag, this)
+    marker.on('dragend', this._onMarkerDragEnd, this) */
     this._markerGroup.addLayer(marker)
     return marker
   },
