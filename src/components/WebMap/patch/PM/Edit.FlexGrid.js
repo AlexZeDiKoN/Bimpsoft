@@ -57,6 +57,11 @@ const shiftSegIndexWave = (marker, code, delta) => {
   code, delta)
 }
 
+const rotate = (center, { sin, cos }, point) => ({
+  x: cos * (point.x - center.x) + sin * (point.y - center.y) + center.x,
+  y: cos * (point.y - center.y) - sin * (point.x - center.x) + center.y,
+})
+
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   includes: [ StretchMixin, RotateMixin ],
 
@@ -592,10 +597,30 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _applyRotate (oldPoint, newPoint, center) {
+    let angle = Math.atan2(newPoint.y - center.y, newPoint.x - center.x) -
+      Math.atan2(oldPoint.y - center.y, oldPoint.x - center.x)
+    if (angle < 0) {
+      angle += 2 * Math.PI
+    }
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+    angle = { sin, cos }
     this._updatingResizeMarkers = true
     this._resizeMarkers.find(({ _dir: dir }) => dir === `r`).setLatLng(this._map.unproject(newPoint))
-    // angle = atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
+    // rotate(center, angle, point)
     this._updatingResizeMarkers = false
+    const rotatePoint = (point) => {
+      const { lat, lng } = this._map.unproject(rotate(center, angle, point.orig))
+      point.lat = lat
+      point.lng = lng
+    }
+    const rotateRing = (ring) => ring.forEach(rotatePoint)
+    const rotateRings = (row) => row.forEach(rotateRing)
+    this._layer.eternals.forEach(rotateRing)
+    this._layer.directionSegments.forEach(rotateRings)
+    this._layer.zoneSegments.forEach(rotateRings)
+    this._layer.redraw()
+    this._updateMainMarkersPos()
   },
 
   _updateMainMarkersPos () {
@@ -629,16 +654,16 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       return
     }
     this._map._customDrag = true
-    const { /* _cursorClass: cursorClass, */ _dir: dir } = marker
-    /* if (!L.DomUtil.hasClass(cursorClass)) {
-      console.log(`addClass`, cursorClass)
-      L.DomUtil.addClass(this._map._container, cursorClass)
+    const dir = marker._dir
+    /* if (!L.DomUtil.hasClass(marker._cursorClass)) {
+      console.log(`addClass`, marker._cursorClass)
+      L.DomUtil.addClass(this._map._container, marker._cursorClass)
     } */
     const point = this._map.project(marker.getLatLng())
     dir === `r`
       ? this._applyRotate(this._startPoint, point, {
-        x: (this._max.x - this._min.x) / 2,
-        y: (this._max.y - this._min.y) / 2,
+        x: (this._max.x + this._min.x) / 2,
+        y: (this._max.y + this._min.y) / 2,
       })
       : this._applyResize({
         x: point.x - this._startPoint.x,
