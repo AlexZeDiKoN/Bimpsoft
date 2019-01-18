@@ -588,16 +588,26 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
 
   _updateMainMarkersPos () {
     this._updatingMarkers = true
-    this._eternalMarkers.forEach((arr) =>
-      arr.forEach((marker) => marker.setLatLng(this._layer.eternals[marker._dirIdx][marker._zoneIdx])))
-    this._directionMarkers.forEach((arr) =>
-      arr.forEach((arr) =>
-        arr.forEach((marker) => !marker._middle && !marker._eternal &&
-          marker.setLatLng(this._layer.directionSegments[marker._dirIdx][marker._zoneIdx][marker._segIdx]))))
-    this._zoneMarkers.forEach((arr) =>
-      arr.forEach((arr) =>
-        arr.forEach((marker) => !marker._middle && !marker._eternal &&
-          marker.setLatLng(this._layer.zoneSegments[marker._zoneIdx][marker._dirIdx][marker._segIdx]))))
+    this._markerGroup.eachLayer((marker) => {
+      const {
+        _eternal: eternal, _middle: middle, _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code,
+      } = marker
+      let pos
+      if (eternal) {
+        pos = this._layer.eternals[dirIdx][zoneIdx]
+      } else if (!middle) {
+        switch (code) {
+          case 'dir':
+            pos = this._layer.directionSegments[dirIdx][zoneIdx][segIdx]
+            break
+          case 'zone':
+            pos = this._layer.zoneSegments[zoneIdx][dirIdx][segIdx]
+            break
+          default:
+        }
+      }
+      pos && marker.setLatLng(pos)
+    })
     this._markerGroup.eachLayer((marker) => marker._middle && marker.setLatLng(this._getMiddleMarkerPos(marker)))
     this._updatingMarkers = false
   },
