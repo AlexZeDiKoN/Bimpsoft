@@ -31,6 +31,7 @@ export default class LeftMenu extends React.Component {
     printFilesCount: PropTypes.number,
     onCreatePrintFile: PropTypes.func,
     layerName: PropTypes.string,
+
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())

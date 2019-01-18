@@ -10,7 +10,7 @@ import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
 import * as debounce from 'debounce'
 import i18n from '../../i18n'
-import { toggleMapGrid } from '../../services/coordinateGrid'
+import PrintGrid from '../../services/coordinateGrid'
 import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -59,8 +59,6 @@ const switchScaleOptions = {
 
 const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
 
-// TODO: прибрати це після тестування
-let tempPrintFlag = false
 // const tmp = `<svg
 //   width="480" height="480"
 //   line-point-1="24,240"
@@ -242,6 +240,8 @@ export default class WebMap extends React.PureComponent {
     contactId: PropTypes.number,
     lockedObjects: PropTypes.object,
     activeObjectId: PropTypes.string,
+    printStatus: PropTypes.bool,
+    printScale: PropTypes.number,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -286,10 +286,15 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
+      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
       isMeasureOn, coordinatesType, backOpacity, params, lockedObjects,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
+
+    // TODO: видалити
+    // if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
+    //   this.selectPrintAreaHandler(printStatus, printScale)
+    // }
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
@@ -300,9 +305,12 @@ export default class WebMap extends React.PureComponent {
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
     }
-    if (isGridActive !== prevProps.isGridActive) {
-      toggleMapGrid(this.map, isGridActive)
-    }
+
+    // TODO: видалити
+    // if (isGridActive !== prevProps.isGridActive) {
+    //   toggleMapGrid(this.map, isGridActive)
+    // }
+
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
@@ -1043,10 +1051,10 @@ export default class WebMap extends React.PureComponent {
   //   this.activateCreated(created)
   // }
 
-  selectPrintAreaHandler = () => {
-    tempPrintFlag = !tempPrintFlag
-    toggleMapGrid(this.map, tempPrintFlag)
-  }
+  // TODO: видалити
+  // selectPrintAreaHandler = (status, scale) => {
+  //   toggleMapGrid(this.map, status, scale)
+  // }
 
   dropFlexGrid = () => {
     const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
@@ -1135,9 +1143,9 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
+        {this.map && this.props.printStatus && <PrintGrid map={this.map}/>}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
       </div>
     )

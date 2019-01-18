@@ -30,6 +30,8 @@ const WebMapContainer = connect(
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
     activeObjectId: activeObjectId(state),
+    printStatus: Boolean(state.print.mapId),
+    printScale: state.print.printScale,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
