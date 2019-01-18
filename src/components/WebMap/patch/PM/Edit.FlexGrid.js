@@ -171,6 +171,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       [ `ew-resize`, `e` ],
       [ `nwse-resize`, `se` ],
       [ `ns-resize`, `s` ],
+      [ `rotate`, `r` ],
     ].map(([ cls, dir ]) => this._createResizeMarker(L.latLng(0, 0), cls, dir))
     this._updateResizeMarkersPos()
   },
@@ -292,7 +293,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     })
     marker._pmTempLayer = true
     marker._dir = dir
-    marker._cursorClass = className
+    // marker._cursorClass = className
     marker.on('dragstart', this._onResizeMarkerDragStart, this)
     marker.on('move', this._onResizeMarkerDrag, this)
     marker.on('dragend', this._onResizeMarkerDragEnd, this)
@@ -528,6 +529,10 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
           x = (min.x + max.x) / 2
           y = max.y + DELTA
           break
+        case `r`:
+          x = (min.x + max.x) / 2
+          y = min.y - DELTA * 2
+          break
         default:
       }
       marker.setLatLng(this._map.unproject(L.point(x, y)))
@@ -586,6 +591,13 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._setResizeMarkersPos(newMin, newMax)
   },
 
+  _applyRotate (oldPoint, newPoint, center) {
+    this._updatingResizeMarkers = true
+    this._resizeMarkers.find(({ _dir: dir }) => dir === `r`).setLatLng(this._map.unproject(newPoint))
+    // angle = atan2(vector2.y, vector2.x) - atan2(vector1.y, vector1.x);
+    this._updatingResizeMarkers = false
+  },
+
   _updateMainMarkersPos () {
     this._updatingMarkers = true
     this._markerGroup.eachLayer((marker) => {
@@ -617,20 +629,29 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       return
     }
     this._map._customDrag = true
-    L.DomUtil.addClass(this._map._container, marker._cursorClass)
+    const { /* _cursorClass: cursorClass, */ _dir: dir } = marker
+    /* if (!L.DomUtil.hasClass(cursorClass)) {
+      console.log(`addClass`, cursorClass)
+      L.DomUtil.addClass(this._map._container, cursorClass)
+    } */
     const point = this._map.project(marker.getLatLng())
-    const delta = {
-      x: point.x - this._startPoint.x,
-      y: point.y - this._startPoint.y,
-    }
-    this._applyResize(delta, marker._dir)
+    dir === `r`
+      ? this._applyRotate(this._startPoint, point, {
+        x: (this._max.x - this._min.x) / 2,
+        y: (this._max.y - this._min.y) / 2,
+      })
+      : this._applyResize({
+        x: point.x - this._startPoint.x,
+        y: point.y - this._startPoint.y,
+      }, dir)
   },
 
   _onResizeMarkerDragEnd ({ target: marker }) {
     if (this._updatingResizeMarkers) {
       return
     }
-    L.DomUtil.removeClass(this._map._container, marker._cursorClass)
+    /* console.log(`removeClass`, marker._cursorClass)
+    L.DomUtil.removeClass(this._map._container, marker._cursorClass) */
     const dropPoint = (point) => {
       delete point.orig
     }
