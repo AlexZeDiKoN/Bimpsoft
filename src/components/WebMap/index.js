@@ -561,7 +561,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onMouseClick = () => {
-    if (!this.isBoxSelection && !this.draggingObject) {
+    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
     }
   }

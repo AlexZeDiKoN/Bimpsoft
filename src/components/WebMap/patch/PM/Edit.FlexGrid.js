@@ -107,7 +107,8 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       return false
     }
     layer.pm._enabled = false
-    layer.pm._markerGroup && layer.pm._markerGroup.clearLayers()
+    layer.pm._deleteMainMarkers()
+    layer.pm._deleteResizeMarkers()
     layer.off('mousedown')
     layer.off('mouseup')
     this._layer.off('remove', this._onLayerRemove)
@@ -122,9 +123,20 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _initMarkers () {
-    if (this._markerGroup) {
-      this._markerGroup.clearLayers()
-    }
+    this._createMainMarkers()
+    this._mapOnZoomEnd()
+  },
+
+  _deleteMainMarkers () {
+    this._markerGroup && this._markerGroup.clearLayers()
+  },
+
+  _deleteResizeMarkers () {
+    this._resizeMarkerGroup && this._resizeMarkerGroup.clearLayers()
+  },
+
+  _createMainMarkers () {
+    this._deleteMainMarkers()
     this._markerGroup = new L.LayerGroup()
     this._markerGroup._pmTempLayer = true
     this._map.addLayer(this._markerGroup)
@@ -136,44 +148,38 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
         this._markerLine(
           this._eternalMarkers[dirIdx][zoneIdx],
           this._eternalMarkers[dirIdx][zoneIdx + 1],
-          segment, dirIdx, zoneIdx, 'dir'),
-      this))
+          segment, dirIdx, zoneIdx, 'dir'), this))
     this._zoneMarkers = this._layer.zoneSegments
       .map((arr, zoneIdx) => arr.map((segment, dirIdx) =>
         this._markerLine(
           this._eternalMarkers[dirIdx][zoneIdx],
           this._eternalMarkers[dirIdx + 1][zoneIdx],
-          segment, dirIdx, zoneIdx, 'zone'),
-      this))
-    this._mapOnZoomEnd()
+          segment, dirIdx, zoneIdx, 'zone'), this))
   },
 
   _mapOnZoomEnd () {
-    this._resizeMarkers && this._resizeMarkers.map((item) => item.removeFrom(this._map))
+    this._deleteResizeMarkers()
+    this._resizeMarkerGroup = new L.LayerGroup()
+    this._resizeMarkerGroup._pmTempLayer = true
+    this._map.addLayer(this._resizeMarkerGroup)
+    this._resizeMarkers = [
+      [ `nesw-resize`, `sw` ],
+      [ `ew-resize`, `w` ],
+      [ `nwse-resize`, `nw` ],
+      [ `ns-resize`, `n` ],
+      [ `nesw-resize`, `ne` ],
+      [ `ew-resize`, `e` ],
+      [ `nwse-resize`, `se` ],
+      [ `ns-resize`, `s` ],
+    ].map(([ cls, dir ]) => this._createResizeMarker(L.latLng(0, 0), cls, dir))
+    this._updateResizeMarkersPos()
+  },
+
+  _updateResizeMarkersPos () {
     const bounds = this._layer._latLngBounds()
-    const p0 = this._map.project(bounds.getSouthWest())
-    const p1 = this._map.project(bounds.getNorthWest())
-    const p2 = this._map.project(bounds.getNorthEast())
-    const p3 = this._map.project(bounds.getSouthEast())
-    const list = [
-      [ L.point(p0.x - DELTA, p0.y + DELTA), `nesw` ],
-      [ L.point(p0.x - DELTA, (p0.y + p1.y) / 2), `ew` ],
-      [ L.point(p1.x - DELTA, p1.y - DELTA), `nwse` ],
-      [ L.point((p1.x + p2.x) / 2, p1.y - DELTA), `ns` ],
-      [ L.point(p2.x + DELTA, p2.y - DELTA), `nesw` ],
-      [ L.point(p2.x + DELTA, (p2.y + p3.y) / 2), `ew` ],
-      [ L.point(p3.x + DELTA, p3.y + DELTA), `nwse` ],
-      [ L.point((p3.x + p1.x) / 2, p3.y + DELTA), `ns` ],
-      [ L.point(p0.x - DELTA * 2, p0.y + DELTA * 2), `rot` ],
-      [ L.point(p0.x - DELTA * 2, (p0.y + p1.y) / 2), `shit-v` ],
-      [ L.point(p1.x - DELTA * 2, p1.y - DELTA * 2), `rot` ],
-      [ L.point((p1.x + p2.x) / 2, p1.y - DELTA * 2), `shit-h` ],
-      [ L.point(p2.x + DELTA * 2, p2.y - DELTA * 2), `rot` ],
-      [ L.point(p2.x + DELTA * 2, (p2.y + p3.y) / 2), `shit-v` ],
-      [ L.point(p3.x + DELTA * 2, p3.y + DELTA * 2), `rot` ],
-      [ L.point((p3.x + p1.x) / 2, p3.y + DELTA * 2), `shit-h` ],
-    ]
-    this._resizeMarkers = list.map(([ point, cls ]) => this._createResizeMarker(this._map.unproject(point), cls))
+    const min = this._map.project(bounds.getNorthWest())
+    const max = this._map.project(bounds.getSouthEast())
+    this._setResizeMarkersPos(min, max)
   },
 
   _findPrev (dirIdx, zoneIdx, code) {
@@ -279,16 +285,18 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     return marker
   },
 
-  _createResizeMarker (latlng, className = '') {
+  _createResizeMarker (latlng, className = '', dir) {
     const marker = new L.Marker(latlng, {
       draggable: true,
       icon: markerIcon(`resize ${className}`),
     })
     marker._pmTempLayer = true
-    /* marker.on('dragstart', this._onMarkerDragStart, this)
-    marker.on('move', this._onMarkerDrag, this)
-    marker.on('dragend', this._onMarkerDragEnd, this) */
-    this._markerGroup.addLayer(marker)
+    marker._dir = dir
+    marker._cursorClass = className
+    marker.on('dragstart', this._onResizeMarkerDragStart, this)
+    marker.on('move', this._onResizeMarkerDrag, this)
+    marker.on('dragend', this._onResizeMarkerDragEnd, this)
+    this._resizeMarkerGroup.addLayer(marker)
     return marker
   },
 
@@ -373,6 +381,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._markerGroup.removeLayer(marker)
     this._createMiddleMarker(null, prev, next, segIdx, dirIdx, zoneIdx, code)
     this._layer.redraw()
+    this._updateResizeMarkersPos()
     this._fireEdit()
     this._layer.fire('pm:vertexremoved', {
       layer: this._layer,
@@ -401,9 +410,10 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       }
     }
     this._layer.redraw()
+    this._updateResizeMarkersPos()
   },
 
-  _updateMiddleMarkerPos (middle) {
+  _getMiddleMarkerPos (middle) {
     const code = middle._code
     const left = middle._baseMarkers['prev']
     const right = middle._baseMarkers['next']
@@ -418,7 +428,11 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       points = [ ...points, right._middleMarkers[code]['next']._baseMarkers['next'] ]
     }
     const ring = this._prepareRing(points.map((marker) => marker._latlng))
-    middle._latlng = bezierMiddleMarkerCoords(this._map, ring, leftIdx, rightIdx)
+    return bezierMiddleMarkerCoords(this._map, ring, leftIdx, rightIdx)
+  },
+
+  _updateMiddleMarkerPos (middle) {
+    middle._latlng = this._getMiddleMarkerPos(middle)
     middle.update()
   },
 
@@ -436,12 +450,18 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _onMarkerDrag (e) {
+    if (this._updatingMarkers) {
+      return
+    }
     const marker = e.target
     this.updateGridCoordsFromMarkerDrag(marker)
     CODE.forEach((code) => POS.forEach((pos) => this._updateMiddleMarkers(marker, code, pos)))
   },
 
   _onMarkerDragEnd (e) {
+    if (this._updatingMarkers) {
+      return
+    }
     const marker = e.target
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     this._layer.fire('pm:markerdragend', {
@@ -456,6 +476,9 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   _onMarkerDragStart (e) {
+    if (this._updatingMarkers) {
+      return
+    }
     const marker = e.target
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     this._layer.fire('pm:markerdragstart', {
@@ -466,6 +489,165 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       code,
       eternal,
     })
+  },
+
+  _setResizeMarkersPos (min, max) {
+    this._updatingResizeMarkers = true
+    this._resizeMarkers.forEach((marker) => {
+      let x, y
+      switch (marker._dir) {
+        case `nw`:
+          x = min.x - DELTA
+          y = min.y - DELTA
+          break
+        case `ne`:
+          x = max.x + DELTA
+          y = min.y - DELTA
+          break
+        case `se`:
+          x = max.x + DELTA
+          y = max.y + DELTA
+          break
+        case `sw`:
+          x = min.x - DELTA
+          y = max.y + DELTA
+          break
+        case `w`:
+          x = min.x - DELTA
+          y = (min.y + max.y) / 2
+          break
+        case `n`:
+          x = (min.x + max.x) / 2
+          y = min.y - DELTA
+          break
+        case `e`:
+          x = max.x + DELTA
+          y = (min.y + max.y) / 2
+          break
+        case `s`:
+          x = (min.x + max.x) / 2
+          y = max.y + DELTA
+          break
+        default:
+      }
+      marker.setLatLng(this._map.unproject(L.point(x, y)))
+    })
+    this._updatingResizeMarkers = false
+  },
+
+  _applyResize (delta, dir) {
+    const newMin = { ...this._min }
+    const newMax = { ...this._max }
+    switch (dir) {
+      case `nw`:
+        newMin.x += delta.x
+        newMin.y += delta.y
+        break
+      case `ne`:
+        newMax.x += delta.x
+        newMin.y += delta.y
+        break
+      case `se`:
+        newMax.x += delta.x
+        newMax.y += delta.y
+        break
+      case `sw`:
+        newMin.x += delta.x
+        newMax.y += delta.y
+        break
+      case `w`:
+        newMin.x += delta.x
+        break
+      case `n`:
+        newMin.y += delta.y
+        break
+      case `e`:
+        newMax.x += delta.x
+        break
+      case `s`:
+        newMax.y += delta.y
+        break
+      default:
+    }
+    const movePoint = (point) => {
+      const x = (point.orig.x - this._min.x) * (newMax.x - newMin.x) / (this._max.x - this._min.x) + newMin.x
+      const y = (point.orig.y - this._min.y) * (newMax.y - newMin.y) / (this._max.y - this._min.y) + newMin.y
+      const { lat, lng } = this._map.unproject(L.point(x, y))
+      point.lat = lat
+      point.lng = lng
+    }
+    const moveRing = (ring) => ring.forEach(movePoint)
+    const moveRings = (row) => row.forEach(moveRing)
+    this._layer.eternals.forEach(moveRing)
+    this._layer.directionSegments.forEach(moveRings)
+    this._layer.zoneSegments.forEach(moveRings)
+    this._layer.redraw()
+    this._updateMainMarkersPos()
+    this._setResizeMarkersPos(newMin, newMax)
+  },
+
+  _updateMainMarkersPos () {
+    this._updatingMarkers = true
+    this._eternalMarkers.forEach((arr) =>
+      arr.forEach((marker) => marker.setLatLng(this._layer.eternals[marker._dirIdx][marker._zoneIdx])))
+    this._directionMarkers.forEach((arr) =>
+      arr.forEach((arr) =>
+        arr.forEach((marker) => !marker._middle && !marker._eternal &&
+          marker.setLatLng(this._layer.directionSegments[marker._dirIdx][marker._zoneIdx][marker._segIdx]))))
+    this._zoneMarkers.forEach((arr) =>
+      arr.forEach((arr) =>
+        arr.forEach((marker) => !marker._middle && !marker._eternal &&
+          marker.setLatLng(this._layer.zoneSegments[marker._zoneIdx][marker._dirIdx][marker._segIdx]))))
+    this._markerGroup.eachLayer((marker) => marker._middle && marker.setLatLng(this._getMiddleMarkerPos(marker)))
+    this._updatingMarkers = false
+  },
+
+  _onResizeMarkerDrag ({ target: marker }) {
+    if (this._updatingResizeMarkers) {
+      return
+    }
+    this._map._customDrag = true
+    L.DomUtil.addClass(this._map._container, marker._cursorClass)
+    const point = this._map.project(marker.getLatLng())
+    const delta = {
+      x: point.x - this._startPoint.x,
+      y: point.y - this._startPoint.y,
+    }
+    this._applyResize(delta, marker._dir)
+  },
+
+  _onResizeMarkerDragEnd ({ target: marker }) {
+    if (this._updatingResizeMarkers) {
+      return
+    }
+    L.DomUtil.removeClass(this._map._container, marker._cursorClass)
+    const dropPoint = (point) => {
+      delete point.orig
+    }
+    const dropRing = (ring) => ring.forEach(dropPoint)
+    const dropRings = (row) => row.forEach(dropRing)
+    this._layer.eternals.forEach(dropRing)
+    this._layer.directionSegments.forEach(dropRings)
+    this._layer.zoneSegments.forEach(dropRings)
+    setTimeout(() => (this._map._customDrag = false), 10)
+  },
+
+  _onResizeMarkerDragStart ({ target: marker }) {
+    if (this._updatingResizeMarkers) {
+      return
+    }
+    const bounds = this._layer._latLngBounds()
+    this._min = this._map.project(bounds.getNorthWest())
+    this._max = this._map.project(bounds.getSouthEast())
+    this._startPoint = this._map.project(marker.getLatLng())
+    const fixPoint = (point) => {
+      point.orig = this._map.project(point)
+    }
+    const fixRing = (ring) => ring.forEach(fixPoint)
+    const fixRings = (row) => row.forEach(fixRing)
+    this._layer.eternals.forEach(fixRing)
+    this._layer.directionSegments.forEach(fixRings)
+    this._layer.zoneSegments.forEach(fixRings)
   },
 
   _fireEdit () {
