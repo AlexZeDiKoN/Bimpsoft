@@ -1,6 +1,6 @@
 /* global L */
 
-const { _initDraggableLayer } = L.PM.Edit.prototype
+const { _initDraggableLayer, _dragMixinOnMouseMove } = L.PM.Edit.prototype
 
 L.PM.Edit.FlexGrid.prototype._initDraggableLayer = function () {
   this._layer._pathes.forEach((el) => L.DomUtil.addClass(el, 'leaflet-pm-draggable'))
@@ -26,4 +26,9 @@ L.PM.Edit.FlexGrid.prototype._onLayerDrag = function (e) {
 
 L.PM.Edit.FlexGrid.prototype._dragMixinOnDisable = function () {
   this._layer._pathes.forEach((el) => L.DomUtil.removeClass(el, 'leaflet-pm-draggable'))
+}
+
+L.PM.Edit.FlexGrid.prototype._dragMixinOnMouseMove = function (e) {
+  _dragMixinOnMouseMove.call(this, e)
+  this._resizeMarkerGroup.clearLayers()
 }
