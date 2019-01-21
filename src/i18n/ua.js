@@ -184,3 +184,4 @@ export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
+export const FLEX_GRID = `Операційна зона (Alt + R)`

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import IconButton from '../IconButton'
@@ -52,7 +52,7 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
 
     return (
-      <Fragment>
+      <>
         <MenuDivider />
         {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
         <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
@@ -96,7 +96,7 @@ export default class SelectionButtons extends React.Component {
             />
           )}
         </IconButton>
-      </Fragment>
+      </>
     )
   }
 }

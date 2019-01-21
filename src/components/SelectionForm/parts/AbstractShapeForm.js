@@ -11,16 +11,18 @@ const {
   buttonClose,
 } = components.form
 
+export const propTypes = {
+  data: PropTypes.object,
+  preview: PropTypes.object,
+  canEdit: PropTypes.bool,
+  onOk: PropTypes.func,
+  onChange: PropTypes.func,
+  onClose: PropTypes.func,
+  onError: PropTypes.func,
+}
+
 export default class AbstractShapeForm extends React.Component {
-  static propTypes = {
-    data: PropTypes.object,
-    preview: PropTypes.object,
-    canEdit: PropTypes.bool,
-    onOk: PropTypes.func,
-    onChange: PropTypes.func,
-    onClose: PropTypes.func,
-    onError: PropTypes.func,
-  }
+  static propTypes = propTypes
 
   setResult (resultFunc) {
     const data = resultFunc(this.props.data)
