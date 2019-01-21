@@ -57,6 +57,21 @@ class PrintPanel extends React.Component {
       legendThirdColor: undefined,
       legendFourthColor: undefined,
     },
+    setRequisitesFunk: {},
+  }
+
+  componentDidMount () {
+    const { setPrintRequisites } = this.props
+    const Obj = Object.keys(PRINT_PANEL_KEYS)
+      .reduce((prev, current) => (
+        { ...prev,
+          [current]:
+            ({ target }, dateString) => target
+              ? setPrintRequisites({ [current]: target.value })
+              : setPrintRequisites({ [current]: dateString }),
+        }
+      ), {})
+    this.setState({ setRequisitesFunk: Obj })
   }
 
   changeColorHandler = (color, key) => {
@@ -76,11 +91,6 @@ class PrintPanel extends React.Component {
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
-  changeRequisites = (key, data) => {
-    const { setPrintRequisites } = this.props
-    setPrintRequisites({ [key]: data })
-  }
-
   render () {
     const {
       form: { getFieldDecorator },
@@ -88,6 +98,7 @@ class PrintPanel extends React.Component {
       printScale,
       securityClassification: { classified },
     } = this.props
+    const { setRequisitesFunk } = this.state
     const { FormColumn, FormRow } = components.form
     return (
       <div className='printPanelFormInner'>
@@ -113,7 +124,6 @@ class PrintPanel extends React.Component {
                 PRINT_PANEL_KEYS.MAP_LABEL, {
                   initialValue: classified,
                 },
-                this.changeRequisites(PRINT_PANEL_KEYS.MAP_LABEL, classified)
               )(
                 <Input
                   disabled
@@ -125,39 +135,39 @@ class PrintPanel extends React.Component {
           <div className='printPanel_docBlock'>
             <FormColumn label={ FIRST_ROW }>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+                onChange={setRequisitesFunk.FIRST_ROW}
               />
             </FormColumn>
             <FormColumn label={ SECOND_ROW }>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.SECOND_ROW, e.target.value)}
+                onChange={setRequisitesFunk.SECOND_ROW}
               />
             </FormColumn>
             <FormColumn label={ THIRD_ROW }>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.THIRD_ROW, e.target.value)}
+                onChange={setRequisitesFunk.THIRD_ROW}
               />
             </FormColumn>
             <FormColumn label={ FOURTH_ROW }>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FOURTH_ROW, e.target.value)}
+                onChange={setRequisitesFunk.FOURTH_ROW}
               />
             </FormColumn>
             <FormColumn label={ FIFTH_ROW }>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+                onChange={setRequisitesFunk.FIFTH_ROW}
               />
             </FormColumn>
             <FormRow label={ START }>
               <DatePicker
                 format={dateFormat}
-                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.START, dateString)}
+                onChange={setRequisitesFunk.START}
               />
             </FormRow>
             <FormRow label={ FINISH }>
               <DatePicker
                 format={dateFormat}
-                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.FINISH, dateString)}
+                onChange={setRequisitesFunk.FINISH}
               />
             </FormRow>
           </div>
@@ -165,17 +175,17 @@ class PrintPanel extends React.Component {
           <div className='printPanel_indicators'>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, e.target.value)}
+                onChange={setRequisitesFunk.INDICATOR_FIRST_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, e.target.value)}
+                onChange={setRequisitesFunk.INDICATOR_SECOND_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, e.target.value)}
+                onChange={setRequisitesFunk.INDICATOR_THIRD_ROW}
               />
             </FormRow>
           </div>
@@ -199,7 +209,7 @@ class PrintPanel extends React.Component {
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunk.LEGEND_FIRST_CONTENT}
                 />
               </Col>
             </Row>
@@ -213,7 +223,7 @@ class PrintPanel extends React.Component {
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunk.LEGEND_SECOND_CONTENT}
                 />
               </Col>
             </Row>
@@ -227,7 +237,7 @@ class PrintPanel extends React.Component {
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunk.LEGEND_THIRD_CONTENT}
                 />
               </Col>
             </Row>
@@ -241,7 +251,7 @@ class PrintPanel extends React.Component {
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunk.LEGEND_FOURTH_CONTENT}
                 />
               </Col>
             </Row>
@@ -282,7 +292,6 @@ class PrintPanel extends React.Component {
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
                   initialValue: confirmDate,
                 },
-                this.changeRequisites(PRINT_PANEL_KEYS.CONFIRM_DATE, confirmDate)
               )(
                 <Input
                   disabled

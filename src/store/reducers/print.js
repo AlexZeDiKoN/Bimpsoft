@@ -2,7 +2,8 @@ import { merge } from 'lodash'
 import { print } from '../actions'
 
 const initState = {
-  mapId: null,
+  // TODO: замінити на null
+  mapId: '5c1117ac707a1315a1000001',
   printScale: 100000,
   requisites: {},
   selectedZone: null,

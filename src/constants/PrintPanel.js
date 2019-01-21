@@ -1,5 +1,4 @@
 export const PRINT_PANEL_KEYS = {
-  ID: 'id',
   SCALE: 'scale',
   MAP_LABEL: 'mapLabel',
   FIRST_ROW: 'firstRow',
