@@ -181,11 +181,11 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._updateResizeMarkersPos()
   },
 
-  _updateResizeMarkersPos () {
+  _updateResizeMarkersPos (skipR = false) {
     const bounds = this._layer._latLngBounds()
     const min = this._map.project(bounds.getNorthWest())
     const max = this._map.project(bounds.getSouthEast())
-    this._setResizeMarkersPos(min, max)
+    this._setResizeMarkersPos(min, max, skipR)
   },
 
   _findPrev (dirIdx, zoneIdx, code) {
@@ -497,7 +497,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     })
   },
 
-  _setResizeMarkersPos (min, max) {
+  _setResizeMarkersPos (min, max, skipR = false) {
     this._updatingResizeMarkers = true
     this._resizeMarkers.forEach((marker) => {
       let x, y
@@ -535,6 +535,9 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
           y = max.y + DELTA
           break
         case `r`:
+          if (skipR) {
+            return
+          }
           x = (min.x + max.x) / 2
           y = min.y - DELTA * 2
           break
@@ -602,6 +605,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (angle < 0) {
       angle += 2 * Math.PI
     }
+    angle = 2 * Math.PI - angle
     const cos = Math.cos(angle)
     const sin = Math.sin(angle)
     angle = { sin, cos }
@@ -621,6 +625,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._layer.zoneSegments.forEach(rotateRings)
     this._layer.redraw()
     this._updateMainMarkersPos()
+    this._updateResizeMarkersPos(true)
   },
 
   _updateMainMarkersPos () {
@@ -686,6 +691,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._layer.directionSegments.forEach(dropRings)
     this._layer.zoneSegments.forEach(dropRings)
     setTimeout(() => (this._map._customDrag = false), 10)
+    marker._dir === `r` && this._updateResizeMarkersPos()
   },
 
   _onResizeMarkerDragStart ({ target: marker }) {
