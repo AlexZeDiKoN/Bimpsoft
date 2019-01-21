@@ -57,6 +57,11 @@ const shiftSegIndexWave = (marker, code, delta) => {
   code, delta)
 }
 
+const rotate = (center, { sin, cos }, point) => ({
+  x: cos * (point.x - center.x) + sin * (point.y - center.y) + center.x,
+  y: cos * (point.y - center.y) - sin * (point.x - center.x) + center.y,
+})
+
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   includes: [ StretchMixin, RotateMixin ],
 
@@ -171,15 +176,16 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       [ `ew-resize`, `e` ],
       [ `nwse-resize`, `se` ],
       [ `ns-resize`, `s` ],
+      [ `rotate`, `r` ],
     ].map(([ cls, dir ]) => this._createResizeMarker(L.latLng(0, 0), cls, dir))
     this._updateResizeMarkersPos()
   },
 
-  _updateResizeMarkersPos () {
+  _updateResizeMarkersPos (skipR = false) {
     const bounds = this._layer._latLngBounds()
     const min = this._map.project(bounds.getNorthWest())
     const max = this._map.project(bounds.getSouthEast())
-    this._setResizeMarkersPos(min, max)
+    this._setResizeMarkersPos(min, max, skipR)
   },
 
   _findPrev (dirIdx, zoneIdx, code) {
@@ -292,7 +298,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     })
     marker._pmTempLayer = true
     marker._dir = dir
-    marker._cursorClass = className
+    // marker._cursorClass = className
     marker.on('dragstart', this._onResizeMarkerDragStart, this)
     marker.on('move', this._onResizeMarkerDrag, this)
     marker.on('dragend', this._onResizeMarkerDragEnd, this)
@@ -491,7 +497,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     })
   },
 
-  _setResizeMarkersPos (min, max) {
+  _setResizeMarkersPos (min, max, skipR = false) {
     this._updatingResizeMarkers = true
     this._resizeMarkers.forEach((marker) => {
       let x, y
@@ -527,6 +533,13 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
         case `s`:
           x = (min.x + max.x) / 2
           y = max.y + DELTA
+          break
+        case `r`:
+          if (skipR) {
+            return
+          }
+          x = (min.x + max.x) / 2
+          y = min.y - DELTA * 2
           break
         default:
       }
@@ -586,6 +599,35 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._setResizeMarkersPos(newMin, newMax)
   },
 
+  _applyRotate (oldPoint, newPoint, center) {
+    let angle = Math.atan2(newPoint.y - center.y, newPoint.x - center.x) -
+      Math.atan2(oldPoint.y - center.y, oldPoint.x - center.x)
+    if (angle < 0) {
+      angle += 2 * Math.PI
+    }
+    angle = 2 * Math.PI - angle
+    const cos = Math.cos(angle)
+    const sin = Math.sin(angle)
+    angle = { sin, cos }
+    this._updatingResizeMarkers = true
+    this._resizeMarkers.find(({ _dir: dir }) => dir === `r`).setLatLng(this._map.unproject(newPoint))
+    // rotate(center, angle, point)
+    this._updatingResizeMarkers = false
+    const rotatePoint = (point) => {
+      const { lat, lng } = this._map.unproject(rotate(center, angle, point.orig))
+      point.lat = lat
+      point.lng = lng
+    }
+    const rotateRing = (ring) => ring.forEach(rotatePoint)
+    const rotateRings = (row) => row.forEach(rotateRing)
+    this._layer.eternals.forEach(rotateRing)
+    this._layer.directionSegments.forEach(rotateRings)
+    this._layer.zoneSegments.forEach(rotateRings)
+    this._layer.redraw()
+    this._updateMainMarkersPos()
+    this._updateResizeMarkersPos(true)
+  },
+
   _updateMainMarkersPos () {
     this._updatingMarkers = true
     this._markerGroup.eachLayer((marker) => {
@@ -617,20 +659,29 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       return
     }
     this._map._customDrag = true
-    L.DomUtil.addClass(this._map._container, marker._cursorClass)
+    const dir = marker._dir
+    /* if (!L.DomUtil.hasClass(marker._cursorClass)) {
+      console.log(`addClass`, marker._cursorClass)
+      L.DomUtil.addClass(this._map._container, marker._cursorClass)
+    } */
     const point = this._map.project(marker.getLatLng())
-    const delta = {
-      x: point.x - this._startPoint.x,
-      y: point.y - this._startPoint.y,
-    }
-    this._applyResize(delta, marker._dir)
+    dir === `r`
+      ? this._applyRotate(this._startPoint, point, {
+        x: (this._max.x + this._min.x) / 2,
+        y: (this._max.y + this._min.y) / 2,
+      })
+      : this._applyResize({
+        x: point.x - this._startPoint.x,
+        y: point.y - this._startPoint.y,
+      }, dir)
   },
 
   _onResizeMarkerDragEnd ({ target: marker }) {
     if (this._updatingResizeMarkers) {
       return
     }
-    L.DomUtil.removeClass(this._map._container, marker._cursorClass)
+    /* console.log(`removeClass`, marker._cursorClass)
+    L.DomUtil.removeClass(this._map._container, marker._cursorClass) */
     const dropPoint = (point) => {
       delete point.orig
     }
@@ -640,6 +691,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._layer.directionSegments.forEach(dropRings)
     this._layer.zoneSegments.forEach(dropRings)
     setTimeout(() => (this._map._customDrag = false), 10)
+    marker._dir === `r` && this._updateResizeMarkersPos()
   },
 
   _onResizeMarkerDragStart ({ target: marker }) {
