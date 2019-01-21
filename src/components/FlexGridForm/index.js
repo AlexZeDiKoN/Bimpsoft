@@ -15,15 +15,13 @@ export default class extends React.PureComponent {
     zones: PropTypes.bool,
     visible: PropTypes.bool,
     dropFlexGrid: PropTypes.func,
-    setFlexGridOptions: PropTypes.func,
+    setDirections: PropTypes.func,
+    setZones: PropTypes.func,
   }
 
-  onZonesChange (e) {
-    console.log(`onZonesChange`, e)
-  }
-
-  onDirectionsChange (e) {
-    console.log(`onDirectionsChange`, e)
+  onDirectionsChange = ({ target: { value } }) => {
+    const { setDirections } = this.props
+    setDirections(value)
   }
 
   render () {
@@ -33,6 +31,7 @@ export default class extends React.PureComponent {
       directions,
       zones,
       dropFlexGrid,
+      setZones,
     } = this.props
 
     if (!visible) {
@@ -46,7 +45,7 @@ export default class extends React.PureComponent {
             <input defaultValue={directions} onChange={this.onDirectionsChange} />
           </FormRow>
           <FormRow label={i18n.DIRECTION_ZONES}>
-            <Switch defaultValue={zones !== 1} onChange={this.onZonesChange}/>
+            <Switch defaultChecked={zones} onChange={setZones}/>
           </FormRow>
           <Button onClick={dropFlexGrid}>
             {i18n.CREATE}

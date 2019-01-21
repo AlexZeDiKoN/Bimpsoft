@@ -14,7 +14,8 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = ({
   dropFlexGrid: flexGrid.dropFlexGrid,
-  setFlexGridOptions: flexGrid.setFlexGridOptions,
+  setDirections: flexGrid.setFlexGridDirections,
+  setZones: flexGrid.setFlexGridZones,
 })
 
 export default connect(

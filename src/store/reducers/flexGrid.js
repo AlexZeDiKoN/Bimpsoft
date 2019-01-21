@@ -14,10 +14,12 @@ export default function reducer (state = initState, action) {
     case actions.DROP_FLEX_GRID: {
       return { ...state, options: false, visible: true }
     }
-    case actions.SET_FLEX_GRID_OPTIONS: {
-      const options = payload
-      options.zones = options.zones ? 3 : 1
-      return { ...state, ...options }
+    case actions.SET_DIRECTIONS: {
+      return { ...state, directions: payload }
+    }
+    case actions.SET_ZONES: {
+      const zones = payload ? 3 : 1
+      return { ...state, zones }
     }
     case actions.SHOW_FLEX_GRID_FORM: {
       return { ...state, options: true }

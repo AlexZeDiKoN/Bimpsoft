@@ -4,7 +4,7 @@ const theSame = (value) => value
 const optionsForm = ({ flexGrid: { options } }) => options
 const visibleFlag = ({ flexGrid: { visible } }) => visible
 const optionDirections = ({ flexGrid: { directions } }) => directions
-const optionZones = ({ flexGrid: { zones } }) => zones
+const optionZones = ({ flexGrid: { zones } }) => zones !== 1
 const optionVertical = ({ flexGrid: { vertical } }) => vertical
 
 export const showFlexGridOptions = createSelector(
