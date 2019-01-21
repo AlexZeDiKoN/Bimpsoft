@@ -21,7 +21,7 @@ export default class extends React.PureComponent {
 
   onDirectionsChange = ({ target: { value } }) => {
     const { setDirections } = this.props
-    setDirections(value)
+    setDirections(Number(value))
   }
 
   render () {
