@@ -39,7 +39,7 @@ export default class SelectionButtons extends React.Component {
         <MenuDivider />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={handler} />
         <IconButton
-          title={i18n.FLEX_GRID}
+          title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`}
           icon={icon}
           hoverIcon={iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_HOVER}
           onClick={handler}
