@@ -20,6 +20,7 @@ export default class LeftMenu extends React.Component {
     createButtonsComponent: PropTypes.any,
     mapSourceSelectComponent: PropTypes.any,
     selectionButtonsComponent: PropTypes.any,
+    flexGridButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
     onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
@@ -55,6 +56,7 @@ export default class LeftMenu extends React.Component {
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
+      flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
     } = this.props
 
@@ -111,6 +113,7 @@ export default class LeftMenu extends React.Component {
           <button onClick={onCreatePrintFile}>pTest{printFilesCount ? `(${printFilesCount})` : ''}</button>
         )}
         <SelectionButtonsComponent />
+        <FlexGridButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>
       </div>
     )

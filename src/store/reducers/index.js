@@ -11,6 +11,7 @@ import selection from './selection'
 import params from './params'
 import print from './print'
 import printToFile from './printToFile'
+import flexGrid from './flexGrid'
 
 export default combineReducers({
   viewModes,
@@ -25,4 +26,5 @@ export default combineReducers({
   params,
   print,
   printToFile,
+  flexGrid,
 })

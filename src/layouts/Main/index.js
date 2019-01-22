@@ -8,12 +8,14 @@ import {
   RightMenuContainer,
   SelectionFormContainer,
   TemplateFormContainer,
-  // TODO: поки що приховуємо панель шаблонів (повернемося до неї після 25 серпня)
+  // TODO: поки що приховуємо панель шаблонів
   // TemplatesListContainer,
   SettingsFormContainer,
   MapSourceSelectContainer,
   SelectionButtonsContainer,
   CreateButtonsContainer,
+  FlexGridButtonsContainer,
+  FlexGridOptionsContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -32,6 +34,7 @@ export default class Main extends React.Component {
                 createButtonsComponent={CreateButtonsContainer}
                 mapSourceSelectComponent={MapSourceSelectContainer}
                 selectionButtonsComponent={SelectionButtonsContainer}
+                flexGridButtonsComponent={FlexGridButtonsContainer}
               />
             </div>
             <div className="header-right">
@@ -50,9 +53,10 @@ export default class Main extends React.Component {
           </div>
           <SidebarContainer />
         </div>
-        <SelectionFormContainer wrapper={ ModalContainer }/>
-        <TemplateFormContainer wrapper={ ModalContainer }/>
-        <SettingsFormContainer wrapper={ ModalContainer }/>
+        <SelectionFormContainer wrapper={ModalContainer} />
+        <TemplateFormContainer wrapper={ModalContainer} />
+        <SettingsFormContainer wrapper={ModalContainer} />
+        <FlexGridOptionsContainer wrapper={ModalContainer} />
       </HotKeysContainer>
     )
   }

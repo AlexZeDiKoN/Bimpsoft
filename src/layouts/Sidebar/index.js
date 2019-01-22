@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
@@ -32,7 +32,7 @@ export default class Sidebar extends React.Component {
       return <PrintPanel />
     } else {
       return (
-        <Fragment>
+        <>
           <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight }}>
             <TabsPanel tabs={[ OrgStructuresContainer ]} />
           </div>
@@ -45,7 +45,7 @@ export default class Sidebar extends React.Component {
           <div className="sidebar-panel2">
             <TabsPanel tabs={[ LayersContainer ]} />
           </div>
-        </Fragment>
+        </>
       )
     }
   }
@@ -54,7 +54,7 @@ export default class Sidebar extends React.Component {
     const { visible, printStatus } = this.props
     const sidebarDisplay = visible ? '' : 'none'
     return (
-      <Fragment>
+      <>
         <ValueSwiper
           style={{ display: sidebarDisplay }}
           value={this.state.sidebarWidth}
@@ -65,7 +65,7 @@ export default class Sidebar extends React.Component {
             {this.changeSidebarPanels(printStatus)}
           </div>
         </div>
-      </Fragment>
+      </>
     )
   }
 }
