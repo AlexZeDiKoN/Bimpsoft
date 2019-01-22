@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Button } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
-import { PRINT_PANEL_KEYS } from './../../../constants'
+import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from './../../../constants'
 import {
   SCALE,
   MAP_LABEL,
@@ -57,29 +57,45 @@ class PrintPanel extends React.Component {
       legendThirdColor: undefined,
       legendFourthColor: undefined,
     },
-    setRequisitesFunk: {},
+    setRequisitesFunc: {},
   }
 
   componentDidMount () {
-    const { setPrintRequisites } = this.props
-    const Obj = Object.keys(PRINT_PANEL_KEYS)
-      .reduce((prev, current) => (
-        { ...prev,
-          [current]:
-            ({ target }, dateString) => target
-              ? setPrintRequisites({ [current]: target.value })
-              : setPrintRequisites({ [current]: dateString }),
-        }
-      ), {})
-    this.setState({ setRequisitesFunk: Obj })
+    this.createSetFunctions()
   }
 
-  changeColorHandler = (color, key) => {
-    const colors = this.state.colors
+  createSetFunctions = () => {
     const { setPrintRequisites } = this.props
-    colors[key] = color
-    this.setState({ colors: colors })
-    setPrintRequisites({ [key]: color })
+    const Obj = Object.assign(
+      Object.keys(PRINT_PANEL_KEYS)
+        .reduce((prev, current) => (
+          {
+            ...prev,
+            [ current ]:
+              ({ target }, dateString) => target
+                ? setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: target.value })
+                : setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: dateString }),
+          }
+        ), {}),
+      Object.keys(COLOR_PICKER_KEYS)
+        .reduce((prev, current) => ({
+          ...prev,
+          [ current ]: (color) => {
+            setPrintRequisites({ [ COLOR_PICKER_KEYS[current] ]: color })
+            this.setState((prevState) => (
+              {
+                colors: { ...prevState.colors, [ COLOR_PICKER_KEYS[current] ]: color },
+              }
+            ))
+          },
+        }), {}),
+    )
+    this.setState({ setRequisitesFunc: Obj })
+  }
+
+  setScale = (value) => {
+    const { setPrintScale } = this.props
+    setPrintScale(value)
   }
 
   cancelPrint = () => {
@@ -94,80 +110,74 @@ class PrintPanel extends React.Component {
   render () {
     const {
       form: { getFieldDecorator },
-      setPrintScale,
       printScale,
       securityClassification: { classified },
     } = this.props
-    const { setRequisitesFunk } = this.state
+    const { setRequisitesFunc, colors } = this.state
     const { FormColumn, FormRow } = components.form
     return (
       <div className='printPanelFormInner'>
         <Form>
-          <FormRow label={ SCALE }>
+          <FormRow className='printPanel_scale' label={SCALE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.SCALE, {
                   initialValue: printScale,
-                }
-              )(
-                <Select
-                  onChange={(value) => setPrintScale(value)}
-                >
-                  {this.createSelectChildren(scales)}
-                </Select>
-              )
-            }
-          </FormRow>
-          <FormRow label={ MAP_LABEL }>
-            {
-              getFieldDecorator(
-                PRINT_PANEL_KEYS.MAP_LABEL, {
-                  initialValue: classified,
                 },
               )(
-                <Input
-                  disabled
-                />
+                <Select
+                  onChange={this.setScale}
+                >
+                  {this.createSelectChildren(scales)}
+                </Select>,
               )
             }
           </FormRow>
+          <Row className='printPanelSecurity'>
+            <Col span={5}>
+              {MAP_LABEL}
+            </Col>
+            <Col span={19}>
+              {classified}
+            </Col>
+          </Row>
           <h5 className='docBlock_header'>{DOC_HEADER}</h5>
           <div className='printPanel_docBlock'>
-            <FormColumn label={ FIRST_ROW }>
+            <FormColumn label={FIRST_ROW}>
               <Input
-                onChange={setRequisitesFunk.FIRST_ROW}
+                onChange={setRequisitesFunc.FIRST_ROW}
               />
             </FormColumn>
-            <FormColumn label={ SECOND_ROW }>
+            <FormColumn label={SECOND_ROW}>
               <Input
-                onChange={setRequisitesFunk.SECOND_ROW}
+                onChange={setRequisitesFunc.SECOND_ROW}
               />
             </FormColumn>
-            <FormColumn label={ THIRD_ROW }>
+            <FormColumn label={THIRD_ROW}>
               <Input
-                onChange={setRequisitesFunk.THIRD_ROW}
+                onChange={setRequisitesFunc.THIRD_ROW}
               />
             </FormColumn>
-            <FormColumn label={ FOURTH_ROW }>
+            <FormColumn label={FOURTH_ROW}>
               <Input
-                onChange={setRequisitesFunk.FOURTH_ROW}
+                onChange={setRequisitesFunc.FOURTH_ROW}
               />
             </FormColumn>
-            <FormColumn label={ FIFTH_ROW }>
+            <FormColumn label={FIFTH_ROW}>
               <Input
-                onChange={setRequisitesFunk.FIFTH_ROW}
+                onChange={setRequisitesFunc.FIFTH_ROW}
               />
             </FormColumn>
-            <FormRow label={ START }>
+            <FormRow label={START}>
               <DatePicker
                 format={dateFormat}
-                onChange={setRequisitesFunk.START}
+                onChange={setRequisitesFunc.START}
               />
             </FormRow>
-            <FormRow label={ FINISH }>
+            <FormRow label={FINISH}>
               <DatePicker
                 format={dateFormat}
-                onChange={setRequisitesFunk.FINISH}
+                onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>
           </div>
@@ -175,17 +185,17 @@ class PrintPanel extends React.Component {
           <div className='printPanel_indicators'>
             <FormRow>
               <Input
-                onChange={setRequisitesFunk.INDICATOR_FIRST_ROW}
+                onChange={setRequisitesFunc.INDICATOR_FIRST_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={setRequisitesFunk.INDICATOR_SECOND_ROW}
+                onChange={setRequisitesFunc.INDICATOR_SECOND_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={setRequisitesFunk.INDICATOR_THIRD_ROW}
+                onChange={setRequisitesFunc.INDICATOR_THIRD_ROW}
               />
             </FormRow>
           </div>
@@ -202,56 +212,56 @@ class PrintPanel extends React.Component {
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_FIRST_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_FIRST_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
                 />
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={setRequisitesFunk.LEGEND_FIRST_CONTENT}
+                  onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_SECOND_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_SECOND_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
                 />
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={setRequisitesFunk.LEGEND_SECOND_CONTENT}
+                  onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_THIRD_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_THIRD_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
                 />
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={setRequisitesFunk.LEGEND_THIRD_CONTENT}
+                  onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_FOURTH_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_FOURTH_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
                 />
               </Col>
               <Col span={17}>
                 <Input
-                  onChange={setRequisitesFunk.LEGEND_FOURTH_CONTENT}
+                  onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
                 />
               </Col>
             </Row>
@@ -286,7 +296,7 @@ class PrintPanel extends React.Component {
               )
             })}
           </div>
-          <FormRow label={ CONFIRM_DATE }>
+          <FormRow label={CONFIRM_DATE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
@@ -295,7 +305,7 @@ class PrintPanel extends React.Component {
               )(
                 <Input
                   disabled
-                />
+                />,
               )
             }
           </FormRow>
