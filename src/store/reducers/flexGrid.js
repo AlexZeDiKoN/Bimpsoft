@@ -1,10 +1,17 @@
 import * as actions from '../actions/flexGrid'
 
+const MIN_DIRECTIONS = 1
+const DEF_DIRECTIONS = 3
+const MAX_DIRECTIONS = 10
+
+const HAS_ZONES = 3
+const HASNT_ZONES = 1
+
 const initState = {
   options: false,
   visible: false,
-  directions: 4,
-  zones: 3,
+  directions: DEF_DIRECTIONS,
+  zones: HAS_ZONES,
   vertical: true,
   present: false,
 }
@@ -16,10 +23,14 @@ export default function reducer (state = initState, action) {
       return { ...state, options: false, visible: true }
     }
     case actions.SET_DIRECTIONS: {
-      return { ...state, directions: payload }
+      let directions = Number(payload)
+      if (isNaN(directions) || directions < MIN_DIRECTIONS || directions > MAX_DIRECTIONS) {
+        directions = DEF_DIRECTIONS
+      }
+      return { ...state, directions }
     }
     case actions.SET_ZONES: {
-      const zones = payload ? 3 : 1
+      const zones = payload ? HAS_ZONES : HASNT_ZONES
       return { ...state, zones }
     }
     case actions.FLEX_GRID_CREATED: {
