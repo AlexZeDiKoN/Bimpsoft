@@ -242,6 +242,12 @@ export default class WebMap extends React.PureComponent {
     activeObjectId: PropTypes.string,
     printStatus: PropTypes.bool,
     printScale: PropTypes.number,
+    flexGridParams: PropTypes.shape({
+      directions: PropTypes.number,
+      zones: PropTypes.number,
+      vertical: PropTypes.bool,
+    }),
+    flexGridVisible: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -258,6 +264,8 @@ export default class WebMap extends React.PureComponent {
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
+    flexGridCreated: PropTypes.func,
+    flexGridDeleted: PropTypes.func,
   }
 
   constructor (props) {
@@ -287,7 +295,7 @@ export default class WebMap extends React.PureComponent {
 
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects,
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -354,6 +362,10 @@ export default class WebMap extends React.PureComponent {
 
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
+    }
+
+    if (flexGridVisible !== prevProps.flexGridVisible) {
+      this.showFlexGrid(flexGridVisible)
     }
   }
 
@@ -1056,13 +1068,33 @@ export default class WebMap extends React.PureComponent {
   //   toggleMapGrid(this.map, status, scale)
   // }
 
+  showFlexGrid = (show) => {
+    if (!this.map) {
+      return
+    }
+    if (show) {
+      if (this.flexGrid) {
+        this.flexGrid.addTo(this.map)
+      } else {
+        this.dropFlexGrid()
+      }
+    } else {
+      if (this.flexGrid) {
+        this.flexGrid.removeFrom(this.map)
+      }
+    }
+  }
+
   dropFlexGrid = () => {
-    const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
+    const { flexGridParams: { directions, zones, vertical }, flexGridCreated } = this.props
+    const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions, zones, vertical })
     layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
     layer.addTo(this.map)
+    this.flexGrid = layer
+    flexGridCreated && flexGridCreated()
   }
 
   updateCreatePoly = (type) => {
@@ -1146,7 +1178,6 @@ export default class WebMap extends React.PureComponent {
         {this.map && this.props.printStatus && <PrintGrid map={this.map}/>}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
       </div>
     )
   }

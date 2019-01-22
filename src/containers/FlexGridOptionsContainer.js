@@ -16,6 +16,7 @@ const mapDispatchToProps = ({
   dropFlexGrid: flexGrid.dropFlexGrid,
   setDirections: flexGrid.setFlexGridDirections,
   setZones: flexGrid.setFlexGridZones,
+  closeForm: flexGrid.closeForm,
 })
 
 export default connect(
