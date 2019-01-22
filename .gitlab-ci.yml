@@ -2,47 +2,32 @@ variables:
   exe7z: 'C:\Tools\7z\7za.exe'
   releaseDir: 'C:\Production'
   deployDir: 'MAKET\SpaceHub\WebMap'
-  deployDir2: 'MAKET\SpaceHub_node_1\WebMap'
-  deployDir3: 'MAKET\SpaceHub_node_2\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
-
-cache:
-  paths:
-    - node_modules
-    - yarn.lock
+  push_version: 'gitlab.intecracy.com/DZVIN/install_update.git'
 
 stages:
-#  - test
   - build
   - deploy
+  - increment-dzvin
   
 .base: &base-dev
   only:
     - develop
   tags:
-    - webmap
+    - webmap-dev
 
 .base: &base
   only:
     - master
   tags:
-    - webmap
-
-#test:
-#  stage: test
-#  <<: *base
-#  script:
-#    - echo TODO auto-tests
-#    - echo %date%
-#    - echo %time%
-#    - echo Done
+    - webmap-dev
 
 build:
   stage: build
   <<: *base-dev
   script:
     - echo Building project...
-    - call yarn
+    - call yarn --production
     - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
     - copy .env .env.backup
     - copy .env.production .env
@@ -55,10 +40,10 @@ build:
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - git status
     - git commit -a -m "[CI skip] %version% (autocommit)"
-    - git push http://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - git push https://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
   artifacts:
-    expire_in: 1 month
+    expire_in: 1 hour
     paths:
       - ./build/index.html
       - ./build/manifest.json
@@ -70,100 +55,40 @@ build:
       - ./build/static/js/*.*
       - ./build/static/media/*.*
 
-deploy-qa-84:
+deploy-qa-11:
   stage: deploy
   <<: *base-dev
   cache: {}
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 (remote) ========='
-#    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-#    - rmdir /s /q \\10.8.26.84\c$\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir%
- #   - net use \\10.8.26.84\c$ /delete
-    
-deploy-qa-84-node-1:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 (remote) ========='
-#    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-#    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
-    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir2%
-#    - net use \\10.8.26.84\c$ /delete
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
 
-deploy-qa-84-node-2:
+
+deploy-self(17):
   stage: deploy
   <<: *base-dev
   cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 84 (remote) ========='
-#    - net use \\10.8.26.84\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
- #   - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
-    - xcopy /E /C /I /Q /H /R /Y build \\10.8.26.84\c$\%deployDir3%
-#    - net use \\10.8.26.84\c$ /delete
-    
-deploy-qa-85:
-  stage: deploy
-  <<: *base-dev
-  cache: {}
-  script:
-    - 'echo ========= Deploy: 85 (local) ========='
+  script:   
+    - 'echo ========= Deploy: 17 (local) ========='
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - echo Done
-##########################################################
-#deploy-qa29:
-#  stage: deploy
-#  <<: *base-dev
-#  cache: {}
-#  script:
-#    - echo Deploying to QA environment...
-#    - 'echo ========= Deploy: 29 (remote) ========='
-#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-# #   - rmdir /s /q \\10.8.26.84\c$\%deployDir%
-#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
-#    - net use \\10.8.26.84\c$ /delete
 
-#deploy-qa-29-node-1:
-#  stage: deploy
-#  <<: *base-dev
-#  cache: {}
-#  script:
-#    - echo Deploying to QA environment...
-#    - 'echo ========= Deploy: 29 _node_1 (remote) ========='
-#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-#    - rmdir /s /q \\10.8.26.84\c$\%deployDir2%
-#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir2%
-#    - net use \\172.16.97.29\c$ /delete
-    
-#deploy-qa29-node-2:
-#  stage: deploy
-#  <<: *base-dev
-#  cache: {}
-#  script:
-#    - echo Deploying to QA environment...
-#    - 'echo ========= Deploy: 29 _node_2 (remote) ========='
-#    - net use \\172.16.97.29\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
- #   - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
-#    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir3%
- #   - net use \\10.8.26.84\c$ /delete
- 
-deploy-qa17:
-  stage: deploy
+Increment_dzvin_dev:
+  stage: increment-dzvin
   <<: *base-dev
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 17 (remote) ========='
-    - net use \\172.16.97.17\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
- #   - rmdir /s /q \\10.8.26.84\c$\%deployDir3%
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.17\c$\%deployDir3%
- #   - net use \\10.8.26.84\c$ /delete
-##########################################################
+  script: 
+    - echo run build
+    - echo Done
+    - cd C:\Version-dev\install_update
+    - git checkout develop
+    - git pull
+    - powershell.exe .\Versionalyze_dev.ps1
+    - powershell.exe Start-sleep -s 10
+    - git commit -a -m "autocommit"
+    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:develop
+  dependencies: []
 
 ######################### START MASTER ##############################
 
@@ -180,7 +105,7 @@ build-master:
     - rmdir /s /q build\explorerLite
     - echo Done
   artifacts:
-    expire_in: 1 month
+    expire_in: 1 hour
     paths:
       - ./build/index.html
       - ./build/manifest.json
@@ -198,9 +123,9 @@ deploy-qa29:
   cache: {}
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 17 (remote) ========='
+    - 'echo ========= Deploy: 29 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
-    - echo Done
+
 
 deploy-qa43:
   stage: deploy
@@ -208,9 +133,8 @@ deploy-qa43:
   cache: {}
   script:
     - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 17 (remote) ========='
+    - 'echo ========= Deploy: 43 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.43\c$\%deployDir%
-    - echo Done
 
 deploy-zip:
   stage: deploy
@@ -223,13 +147,27 @@ deploy-zip:
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - 'echo Version: %version%'
-    - for /f "tokens=2-4 delims=/-. " %%x in ("%date%") do set d=%%z%%x%%y
-    - for /f "tokens=1-3 delims=:-., " %%x in ("%time%") do set t=%%x%%y%%z
-    - set pack="WebmapFrontend_v%version%_%d%_%t%.zip"
+    - set pack="WebmapFrontend_v%version%.zip"
     - echo %pack%
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
     - cd build
     - echo Zipping...
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
+    - echo "copy to remote"
+    - call pscp -batch -pw %SSH_PASS% %releaseDir%\WebmapFrontend_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
+
+Increment_dzvin:
+  stage: increment-dzvin
+  <<: *base
+  script:
+    - echo run increment
     - echo Done
+    - cd c:\Production\Version\install_update
+    - git checkout master
+    - git pull
+    - powershell.exe .\Versionalyze.ps1
+    - powershell.exe Start-sleep -s 10
+    - git commit -a -m "autocommit"
+    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
+  dependencies: []
