@@ -62,10 +62,8 @@ deploy-qa-11:
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 11 (remote) ========='
-    - net use \\172.16.97.11\c$ /u:%ADMIN_LOGIN% %ADMIN_PASSWORD% /persistent:no
-    - rmdir /s /q \\172.16.97.11\c$\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
-    - net use \\172.16.97.11\c$ /delete
+
 
 deploy-self(17):
   stage: deploy
@@ -90,7 +88,7 @@ Increment_dzvin_dev:
     - powershell.exe Start-sleep -s 10
     - git commit -a -m "autocommit"
     - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:develop
-
+  dependencies: []
 
 ######################### START MASTER ##############################
 
@@ -157,7 +155,7 @@ deploy-zip:
     - echo Zipping...
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
     - echo "copy to remote"
-    - pscp -pw %SSH_PASS% %releaseDir%\%pack% %SSH_USER_HOST%:%REMOTE_PATH%
+    - call pscp -batch -pw %SSH_PASS% %releaseDir%\WebmapFrontend_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
 
 Increment_dzvin:
   stage: increment-dzvin
@@ -172,3 +170,4 @@ Increment_dzvin:
     - powershell.exe Start-sleep -s 10
     - git commit -a -m "autocommit"
     - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
+  dependencies: []
