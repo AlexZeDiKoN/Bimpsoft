@@ -141,8 +141,6 @@ deploy-zip:
   <<: *base
   script:
     - echo Packing bundle into ZIP file...
-    - git fetch
-    - git checkout origin/master -- package.json
     - set jsonfile=package.json
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
