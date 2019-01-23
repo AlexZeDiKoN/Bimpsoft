@@ -1,6 +1,8 @@
 /* global L */
 
+import pointInSvgPolygon from 'point-in-svg-polygon'
 import entityKind from '../entityKind'
+import { prepareBezierPath } from './utils/Bezier'
 
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
@@ -138,24 +140,96 @@ L.FlexGrid = L.Layer.extend({
     return d.map(this._directionLine.bind(this))
   },
 
-  // Контур напрямку
-  _directionPath (index) {
-    // TODO
+  _findPrev (dirIdx, zoneIdx, code) {
+    switch (code) {
+      case 'dir':
+        if (zoneIdx > 0) {
+          const segment = this.directionRings[dirIdx][zoneIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this.eternalRings[dirIdx][zoneIdx - 1]
+        }
+        break
+      case 'zone':
+        if (dirIdx > 0) {
+          const segment = this.zoneRings[zoneIdx][dirIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this.eternalRings[dirIdx - 1][zoneIdx]
+        }
+        break
+      default:
+    }
   },
 
-  // Контур зони
-  _zonePath (index) {
-    // TODO
+  _findNext (dirIdx, zoneIdx, code) {
+    const { directions, zones } = this.options
+    switch (code) {
+      case 'dir':
+        if (zoneIdx < zones * 2 - 1) {
+          const segment = this.directionRings[dirIdx][zoneIdx + 1]
+          return segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
+        }
+        break
+      case 'zone':
+        if (dirIdx < directions - 1) {
+          const segment = this.zoneRings[zoneIdx][dirIdx + 1]
+          return segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
+        }
+        break
+      default:
+    }
   },
 
-  // Окремий відрізок лінії напрямку
-  _directionSegment (direction, zone) {
-    // TODO ???
+  _buildRing (points, dirIdx, zoneIdx, code) {
+    const p = this._findPrev(dirIdx, zoneIdx, code)
+    const n = this._findNext(dirIdx, zoneIdx, code)
+    points = [ ...points ]
+    if (p) {
+      points = [ { ...p }, ...points ]
+    }
+    if (n) {
+      points = [ ...points, { ...n } ]
+    }
+    return prepareBezierPath(points, false, p, n)
   },
 
-  // Окремий відрізок лінії зони
-  _zoneSegment (direction, zone) {
-    // TODO ???
+  // Контур комірки
+  _cellRings (dirIdx, zoneIdx) {
+    const rings = []
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx][zoneIdx],
+        ...this.zoneRings[zoneIdx][dirIdx],
+        this.eternalRings[dirIdx + 1][zoneIdx],
+      ], dirIdx, zoneIdx, 'zone'))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx + 1][zoneIdx],
+        ...this.directionRings[dirIdx + 1][zoneIdx],
+        this.eternalRings[dirIdx + 1][zoneIdx + 1],
+      ], dirIdx, zoneIdx, 'dir'))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx + 1][zoneIdx + 1],
+        ...this.zoneRings[zoneIdx + 1][dirIdx].reverse(),
+        this.eternalRings[dirIdx][zoneIdx + 1],
+      ], dirIdx, zoneIdx, 'zone'))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx][zoneIdx + 1],
+        ...this.directionRings[dirIdx][zoneIdx].reverse(),
+        this.eternalRings[dirIdx][zoneIdx],
+      ], dirIdx, zoneIdx, 'dir'))
+    console.log({ dirIdx, zoneIdx, rings })
+    return rings.join(' ')
+  },
+
+  _buildCellRings () {
+    const { directions, zones } = this.options
+    const d = narr(directions)
+    const z = narr(zones * 2)
+    return d.map((_, dirIdx) => z.map((_, zoneIdx) => this._cellRings(dirIdx, zoneIdx)))
+  },
+
+  _buildCellSegments () {
+    return this.cellRings.map((row) => row.map(pointInSvgPolygon.segments))
   },
 
   // Лінія напрямку
@@ -195,8 +269,11 @@ L.FlexGrid = L.Layer.extend({
     const projectRing = (ring) => ring.map(project)
     const projectRings = (row) => row.map(projectRing)
     this.eternalRings = this.eternals.map(projectRing)
+    console.log(`this.eternalRings`, this.eternalRings)
     this.directionRings = this.directionSegments.map(projectRings)
     this.zoneRings = this.zoneSegments.map(projectRings)
+    this.cellRings = this._buildCellRings()
+    this.cellSegments = this._buildCellSegments()
   },
 
   redraw () {
