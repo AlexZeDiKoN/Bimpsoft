@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
+import pointInSvgPolygon from 'point-in-svg-polygon'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
@@ -562,9 +563,15 @@ export default class WebMap extends React.PureComponent {
     onSelectedList(newList)
   }
 
-  onMouseClick = () => {
+  onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+      const { x, y } = e.layerPoint
+      this.flexGrid && this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+        if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+          console.info(`Inside [${dirIdx}, ${zoneIdx}]`)
+        }
+      }))
     }
   }
 
