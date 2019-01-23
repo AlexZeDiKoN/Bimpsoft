@@ -58,10 +58,12 @@ class PrintPanel extends React.Component {
       legendFourthColor: undefined,
     },
     setRequisitesFunc: {},
+    legendTableType: '',
   }
 
   componentDidMount () {
     this.createSetFunctions()
+    this.changeLegendTableType('left')
   }
 
   createSetFunctions = () => {
@@ -98,6 +100,15 @@ class PrintPanel extends React.Component {
     setPrintScale(value)
   }
 
+  changeLegendTableType = (newType) => {
+    const { legendTableType } = this.state
+    const { setPrintRequisites } = this.props
+    if (legendTableType !== newType) {
+      this.setState({ legendTableType: newType })
+      setPrintRequisites({ [PRINT_PANEL_KEYS.LEGEND_TABLE_TYPE]: newType })
+    }
+  }
+
   cancelPrint = () => {
     const { print, clearPrintRequisites } = this.props
     print()
@@ -113,8 +124,8 @@ class PrintPanel extends React.Component {
       printScale,
       securityClassification: { classified },
     } = this.props
-    const { setRequisitesFunc, colors } = this.state
-    const { FormColumn, FormRow } = components.form
+    const { setRequisitesFunc, colors, legendTableType } = this.state
+    const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
     return (
       <div className='printPanelFormInner'>
         <Form>
@@ -199,10 +210,38 @@ class PrintPanel extends React.Component {
               />
             </FormRow>
           </div>
-          <h5>{LEGEND}</h5>
+          <Row className='printPanel_legend'>
+            <Col span={18}>
+              <h5>{LEGEND}</h5>
+            </Col>
+            <Col
+              span={6}
+              className='printPanel_legendControl'
+            >
+              <Button
+                htmlType='button'
+                type='normal'
+                icon='left'
+                size='small'
+                className={legendTableType !== 'left' ? '' : 'active'}
+                onClick={() => this.changeLegendTableType('left')}
+              />
+              <Button
+                htmlType='button'
+                type='normal'
+                icon='right'
+                size='small'
+                className={legendTableType === 'left' ? '' : 'active'}
+                onClick={() => this.changeLegendTableType('right')}
+              />
+            </Col>
+          </Row>
           <div className='printPanelSign_block'>
             <Row className='printPanelSignTitle_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType !== 'left' ? 'right' : ''}
+              >
                 {SIGN}
               </Col>
               <Col span={18}>
@@ -210,62 +249,75 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR ]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
                   onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR ]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
                   onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR ]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
                   onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR ]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
                   onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
                 />
               </Col>
             </Row>
           </div>
+          {/* TODO: поправить стили */}
           <h5>{DOCUMENT_SIGNATORIES}</h5>
           <div className='printPanel_signatories'>
             <Row className='printPanelSignatoriesTitle_row'>
@@ -296,7 +348,7 @@ class PrintPanel extends React.Component {
               )
             })}
           </div>
-          <FormRow label={CONFIRM_DATE}>
+          <FormRow className='printPanel_confirmDate' label={CONFIRM_DATE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
@@ -310,17 +362,13 @@ class PrintPanel extends React.Component {
             }
           </FormRow>
 
-          <Row>
+          <Row className='printPanel_buttonBlock'>
             <Col span={12}>
-              <Button
-                onClick={this.cancelPrint}
-              >
-                CANCEL
-              </Button>
-              <Button
-              >
-                SAVE
-              </Button>
+              <ButtonCancel onClick={this.cancelPrint} />
+            </Col>
+            <Col span={12}>
+              {/* TODO: доделать отправку */}
+              <ButtonSave/>
             </Col>
           </Row>
         </Form>

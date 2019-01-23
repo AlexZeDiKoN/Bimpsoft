@@ -1,31 +1,126 @@
 .printPanelFormInner {
   overflow-y: scroll;
-}
 
-.PrintPanel_colorPicker {
-  .color-picker-popup {
-    left: 190px !important;
+  .PrintPanel_colorPicker {
+    .color-picker-popup {
+      left: 190px !important;
+    }
   }
-}
 
-.printPanel_indicators {
-  .dzvin-form-row {
-    margin-top: 1px;
-    margin-bottom: 1px;
-    .dzvin-form-input {
-      width: 100%;
-      input {
-        padding: 0;
+  .printPanel_indicators {
+    .dzvin-form-row {
+      margin-top: 0;
+      margin-bottom: 2px;
+      .dzvin-form-input {
+        width: 100%;
+        input {
+          padding: 0;
+        }
       }
     }
   }
-}
 
-.printPanelSign_row {
-  .ant-col-6 {
+  .printPanelSign_row {
+    .ant-col-6 {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 32px;
+    }
+  }
+
+  .printPanel_docBlock {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding: 8px 0;
+  }
+
+  .printPanelSecurity {
+    margin: 8px 0;
+    div:last-child {
+      font-weight: bold;
+    }
+  }
+
+  h5 {
+    margin: 8px 0;
+  }
+
+  .printPanelSign_block {
+    border: 1px solid grey;
+    margin: 0 15px;
+    .printPanelSignTitle_row {
+      display: flex;
+      border-bottom: 1px solid grey;
+    }
+      .right {
+        order: 1;
+      }
+    .printPanelSign_row {
+      display: flex;
+      .right {
+        order: 1;
+      }
+    }
+  }
+
+  .printPanel_indicators {
+    .dzvin-form-input {
+      border-bottom: 1px solid lightgray;
+      input {
+        border-radius: 0;
+        border: 0;
+      }
+    }
+    .dzvin-form-row:last-child {
+      .dzvin-form-input {
+        border: 0;
+      }
+    }
+  }
+
+  .printPanel_legend {
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 32px;
+    .printPanel_legendControl {
+      button {
+        height: 20px;
+        width: 20px;
+        font-size: 10px;
+        padding: 0 !important;
+      }
+      button:hover {
+        color: #fff !important;
+        border-color: #b0b37d !important;
+        background-color: #b0b37d;
+        cursor: pointer;
+      }
+      button.active {
+        color: #fff !important;
+        border-color: #b0b37d !important;
+        background-color: #b0b37d;
+      }
+    }
+  }
+
+  .printPanel_signatories {
+    margin-bottom: 15px;
+    .ant-row {
+      border: 1px solid grey;
+      border-top: 0;
+      div {
+        border-right: 1px solid grey;
+      }
+      div:last-child {
+        border: 0;
+      }
+    }
+    .ant-row:first-child {
+      border-top: 1px solid grey;
+    }
+  }
+
+  .printPanel_buttonBlock {
+    margin: 25px 0 25px;
   }
 }

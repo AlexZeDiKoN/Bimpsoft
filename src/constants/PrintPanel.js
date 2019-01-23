@@ -11,6 +11,7 @@ export const PRINT_PANEL_KEYS = {
   INDICATOR_FIRST_ROW: 'indiFirst',
   INDICATOR_SECOND_ROW: 'indiSecond',
   INDICATOR_THIRD_ROW: 'indiThird',
+  LEGEND_TABLE_TYPE: 'legendTableType',
   LEGEND_FIRST_CONTENT: 'legendFirstContent',
   LEGEND_SECOND_CONTENT: 'legendSecondContent',
   LEGEND_THIRD_CONTENT: 'legendThirdContent',
