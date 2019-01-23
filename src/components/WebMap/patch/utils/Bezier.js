@@ -4,7 +4,7 @@ import { epsilon } from './helpers'
 export function prepareBezierPath (ring, locked, skipStart, skipEnd) {
   let str = ''
   for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring,
-    locked === true, skipStart === true, skipEnd === true)
+    locked === true, !locked && skipStart === true && ring.length > 3, !locked && skipEnd === true && ring.length > 3)
   ) {
     str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
   }

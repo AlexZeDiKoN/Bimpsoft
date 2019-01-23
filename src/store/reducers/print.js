@@ -6,6 +6,7 @@ const initState = {
   printScale: 100000,
   requisites: {},
   selectedZone: null,
+  dpi: 600,
 }
 
 export default function reducer (state = initState, action) {
