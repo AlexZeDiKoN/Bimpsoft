@@ -1087,33 +1087,31 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateCreatePoly = (type) => {
+    const layerOptions = {
+      tsType: type,
+    }
+    const options = { templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Line', { hintlineStyle })
+        this.map.pm.enableDraw('Line', { ...options, hintlineStyle })
         break
       case entityKind.POLYGON:
       case entityKind.AREA:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
+        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'dblclick' })
         break
       case entityKind.RECTANGLE:
       case entityKind.SQUARE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Rectangle')
+        this.map.pm.enableDraw('Rectangle', options)
         break
       case entityKind.CIRCLE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Circle')
+        this.map.pm.enableDraw('Circle', options)
         break
       case entityKind.TEXT:
       case entityKind.POINT:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'click' })
+        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'click' })
         break
       default:
-        this.createPolyType = null
         this.map.pm.disableDraw()
         break
     }
@@ -1121,7 +1119,6 @@ export default class WebMap extends React.PureComponent {
 
   createNewShape = async (e) => {
     const { layer } = e
-    layer.options.tsType = this.createPolyType
     layer.removeFrom(this.map)
     const geometry = getGeometry(layer)
     this.props.onFinishDrawNewShape(geometry)
