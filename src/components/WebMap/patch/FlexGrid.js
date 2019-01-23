@@ -177,17 +177,23 @@ L.FlexGrid = L.Layer.extend({
     }
   },
 
-  _buildRing (points, dirIdx, zoneIdx, code) {
+  _buildRing (points, dirIdx, zoneIdx, code, skipMove, reverse) {
     const p = this._findPrev(dirIdx, zoneIdx, code)
     const n = this._findNext(dirIdx, zoneIdx, code)
-    points = [ ...points ]
+    let skipStart, skipEnd
     if (p) {
-      points = [ { ...p }, ...points ]
+      skipStart = true
+      points = [ p, ...points ]
     }
     if (n) {
-      points = [ ...points, { ...n } ]
+      skipEnd = true
+      points = [ ...points, n ]
     }
-    return prepareBezierPath(points, false, p, n)
+    if (reverse) {
+      [ skipStart, skipEnd ] = [ skipEnd, skipStart ]
+      points = points.reverse()
+    }
+    return prepareBezierPath(points, false, skipStart, skipEnd, skipMove)
   },
 
   // Контур комірки
@@ -198,26 +204,25 @@ L.FlexGrid = L.Layer.extend({
         this.eternalRings[dirIdx][zoneIdx],
         ...this.zoneRings[zoneIdx][dirIdx],
         this.eternalRings[dirIdx + 1][zoneIdx],
-      ], dirIdx, zoneIdx, 'zone'))
+      ], dirIdx, zoneIdx, 'zone', false, false))
     rings.push(this._buildRing(
       [
         this.eternalRings[dirIdx + 1][zoneIdx],
         ...this.directionRings[dirIdx + 1][zoneIdx],
         this.eternalRings[dirIdx + 1][zoneIdx + 1],
-      ], dirIdx, zoneIdx, 'dir'))
+      ], dirIdx + 1, zoneIdx, 'dir', true, false))
     rings.push(this._buildRing(
       [
+        this.eternalRings[dirIdx][zoneIdx + 1],
+        ...this.zoneRings[zoneIdx + 1][dirIdx],
         this.eternalRings[dirIdx + 1][zoneIdx + 1],
-        ...this.zoneRings[zoneIdx + 1][dirIdx].reverse(),
-        this.eternalRings[dirIdx][zoneIdx + 1],
-      ], dirIdx, zoneIdx, 'zone'))
+      ], dirIdx, zoneIdx + 1, 'zone', true, true))
     rings.push(this._buildRing(
       [
-        this.eternalRings[dirIdx][zoneIdx + 1],
-        ...this.directionRings[dirIdx][zoneIdx].reverse(),
         this.eternalRings[dirIdx][zoneIdx],
-      ], dirIdx, zoneIdx, 'dir'))
-    console.log({ dirIdx, zoneIdx, rings })
+        ...this.directionRings[dirIdx][zoneIdx],
+        this.eternalRings[dirIdx][zoneIdx + 1],
+      ], dirIdx, zoneIdx, 'dir', true, true))
     return rings.join(' ')
   },
 
@@ -269,7 +274,6 @@ L.FlexGrid = L.Layer.extend({
     const projectRing = (ring) => ring.map(project)
     const projectRings = (row) => row.map(projectRing)
     this.eternalRings = this.eternals.map(projectRing)
-    console.log(`this.eternalRings`, this.eternalRings)
     this.directionRings = this.directionSegments.map(projectRings)
     this.zoneRings = this.zoneSegments.map(projectRings)
     this.cellRings = this._buildCellRings()
