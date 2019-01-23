@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { concat, throttle } from 'lodash'
 import { layerGroup, rectangle } from 'leaflet'
@@ -145,8 +145,8 @@ export default class PrintInner extends React.Component {
 
   render () {
     return (
-      <Fragment>
-      </Fragment>
+      <>
+      </>
     )
   }
 }

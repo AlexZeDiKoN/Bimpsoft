@@ -1,6 +1,7 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
+
 export default class ScaleControl extends React.Component {
   changeHandler = ({ target: { value } }) => {
     const { onChange, name } = this.props
@@ -11,7 +12,7 @@ export default class ScaleControl extends React.Component {
     const { value } = this.props
     const step = value < 15 ? 1 : Math.ceil(value / 100) * 10
     return (
-      <Fragment>
+      <>
         <input
           type="number"
           className="scale-control-input"
@@ -20,7 +21,7 @@ export default class ScaleControl extends React.Component {
           value={value}
           onChange={this.changeHandler}
         /> %
-      </Fragment>
+      </>
     )
   }
 }

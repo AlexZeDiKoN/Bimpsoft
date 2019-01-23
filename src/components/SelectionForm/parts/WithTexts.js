@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import TextSymbol from '../../common/TextSymbol'
 import { Align } from '../../../constants'
@@ -51,7 +51,7 @@ const WithTexts = (Component) => class TextsComponent extends Component {
     const canEdit = this.isCanEdit()
 
     return (
-      <Fragment>
+      <>
         <FormItem className="text-form-preview">
           <TextSymbol texts={texts.map((item) => item.preview ? item.preview : item).toJS()}/>
         </FormItem>
@@ -99,7 +99,7 @@ const WithTexts = (Component) => class TextsComponent extends Component {
             />
           ))}
         </div>
-      </Fragment>
+      </>
     )
   }
 }

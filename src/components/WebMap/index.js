@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
+import pointInSvgPolygon from 'point-in-svg-polygon'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
@@ -27,6 +28,7 @@ import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../.
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import coordinates from '../../utils/coordinates'
+import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -114,28 +116,9 @@ const type2mode = (type) => {
   }
 }
 
-proj4.defs([
-  // СК-42
-  [ 'EPSG:28407', `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28406', `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28405', `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28404', `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  // УСК-2000
-  [ `EPSG:6381`, `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
-  [ `EPSG:6383`, `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
-  [ `EPSG:6385`, `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
-  [ `EPSG:6387`, `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,0,0.35,0.736,0 +units=m +no_defs` ],
-])
+const sc42 = (lng, lat) => proj4(getSC42Projection(lng), [ lng, lat ])
 
-const sc42 = (lng, lat) => {
-  const z = lng < 27 ? 4 : lng < 33 ? 5 : lng < 39 ? 6 : 7
-  return proj4(`EPSG:2840${z}`, [ lng, lat ])
-}
-
-const usc2000 = (lng, lat) => {
-  const z = lng < 27 ? 1 : lng < 33 ? 3 : lng < 39 ? 5 : 7
-  return proj4(`EPSG:638${z}`, [ lng, lat ])
-}
+const usc2000 = (lng, lat) => proj4(getUSC2000Projection(lng), [ lng, lat ])
 
 const z = (v) => `0${v}`.slice(-2)
 const toGMS = (value, pos, neg) => {
@@ -242,6 +225,12 @@ export default class WebMap extends React.PureComponent {
     activeObjectId: PropTypes.string,
     printStatus: PropTypes.bool,
     printScale: PropTypes.number,
+    flexGridParams: PropTypes.shape({
+      directions: PropTypes.number,
+      zones: PropTypes.number,
+      vertical: PropTypes.bool,
+    }),
+    flexGridVisible: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -258,6 +247,8 @@ export default class WebMap extends React.PureComponent {
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
+    flexGridCreated: PropTypes.func,
+    flexGridDeleted: PropTypes.func,
   }
 
   constructor (props) {
@@ -287,7 +278,7 @@ export default class WebMap extends React.PureComponent {
 
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects,
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -354,6 +345,10 @@ export default class WebMap extends React.PureComponent {
 
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
+    }
+
+    if (flexGridVisible !== prevProps.flexGridVisible) {
+      this.showFlexGrid(flexGridVisible)
     }
   }
 
@@ -568,9 +563,15 @@ export default class WebMap extends React.PureComponent {
     onSelectedList(newList)
   }
 
-  onMouseClick = () => {
-    if (!this.isBoxSelection && !this.draggingObject) {
+  onMouseClick = (e) => {
+    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+      const { x, y } = e.layerPoint
+      this.flexGrid && this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+        if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+          console.info(`Inside [${dirIdx}, ${zoneIdx}]`)
+        }
+      }))
     }
   }
 
@@ -1056,43 +1057,61 @@ export default class WebMap extends React.PureComponent {
   //   toggleMapGrid(this.map, status, scale)
   // }
 
+  showFlexGrid = (show) => {
+    if (!this.map) {
+      return
+    }
+    if (show) {
+      if (this.flexGrid) {
+        this.flexGrid.addTo(this.map)
+      } else {
+        this.dropFlexGrid()
+      }
+    } else {
+      if (this.flexGrid) {
+        this.flexGrid.removeFrom(this.map)
+      }
+    }
+  }
+
   dropFlexGrid = () => {
-    const layer = new L.FlexGrid(this.map.getBounds(), { interactive: true, directions: 4, zones: 3 }) // , vertical: true
+    const { flexGridParams: { directions, zones, vertical }, flexGridCreated } = this.props
+    const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions, zones, vertical })
     layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
     layer.addTo(this.map)
+    this.flexGrid = layer
+    flexGridCreated && flexGridCreated()
   }
 
   updateCreatePoly = (type) => {
+    const layerOptions = {
+      tsType: type,
+    }
+    const options = { templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Line', { hintlineStyle })
+        this.map.pm.enableDraw('Line', { ...options, hintlineStyle })
         break
       case entityKind.POLYGON:
       case entityKind.AREA:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
+        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'dblclick' })
         break
       case entityKind.RECTANGLE:
       case entityKind.SQUARE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Rectangle')
+        this.map.pm.enableDraw('Rectangle', options)
         break
       case entityKind.CIRCLE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Circle')
+        this.map.pm.enableDraw('Circle', options)
         break
       case entityKind.TEXT:
       case entityKind.POINT:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'click' })
+        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'click' })
         break
       default:
-        this.createPolyType = null
         this.map.pm.disableDraw()
         break
     }
@@ -1100,7 +1119,6 @@ export default class WebMap extends React.PureComponent {
 
   createNewShape = async (e) => {
     const { layer } = e
-    layer.options.tsType = this.createPolyType
     layer.removeFrom(this.map)
     const geometry = getGeometry(layer)
     this.props.onFinishDrawNewShape(geometry)
@@ -1146,7 +1164,6 @@ export default class WebMap extends React.PureComponent {
         {this.map && this.props.printStatus && <PrintGrid map={this.map}/>}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={this.dropFlexGrid} />
       </div>
     )
   }

@@ -184,3 +184,8 @@ export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
+export const FLEX_GRID = `Операційна зона`
+export const FLEX_GRID_SHORTCUT = `Alt + R`
+export const DIRECTIONS_AMOUNT = `Кількість напрямків`
+export const DIRECTION_ZONES = `Зони напрямків`
+export const CREATE = `Створити`

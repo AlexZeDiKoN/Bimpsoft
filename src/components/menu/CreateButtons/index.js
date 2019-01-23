@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import IconButton from '../IconButton'
@@ -48,7 +48,7 @@ export default class CreateButtons extends React.PureComponent {
       return null
     }
     return (
-      <Fragment>
+      <>
         <MenuDivider />
         <IconButton
           title={i18n.POINT_SIGN}
@@ -86,7 +86,7 @@ export default class CreateButtons extends React.PureComponent {
           hoverIcon={iconNames.TEXT_SIGN_HOVER}
           onClick={this.clickTextHandler}
         />
-      </Fragment>
+      </>
     )
   }
 }

@@ -1,6 +1,8 @@
 /* global L */
 
+import pointInSvgPolygon from 'point-in-svg-polygon'
 import entityKind from '../entityKind'
+import { prepareBezierPath } from './utils/Bezier'
 
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
@@ -94,8 +96,9 @@ L.FlexGrid = L.Layer.extend({
 
     this.id = -99
     this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-      const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
-        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones)
+      /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
+      const x = nBox.left + i * step.x
       const y = nBox.top + j * step.y
       return vertical ? L.latLng(y, x) : L.latLng(x, y)
     }))
@@ -137,24 +140,101 @@ L.FlexGrid = L.Layer.extend({
     return d.map(this._directionLine.bind(this))
   },
 
-  // Контур напрямку
-  _directionPath (index) {
-    // TODO
+  _findPrev (dirIdx, zoneIdx, code) {
+    switch (code) {
+      case 'dir':
+        if (zoneIdx > 0) {
+          const segment = this.directionRings[dirIdx][zoneIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this.eternalRings[dirIdx][zoneIdx - 1]
+        }
+        break
+      case 'zone':
+        if (dirIdx > 0) {
+          const segment = this.zoneRings[zoneIdx][dirIdx - 1]
+          return segment.length ? segment[segment.length - 1] : this.eternalRings[dirIdx - 1][zoneIdx]
+        }
+        break
+      default:
+    }
   },
 
-  // Контур зони
-  _zonePath (index) {
-    // TODO
+  _findNext (dirIdx, zoneIdx, code) {
+    const { directions, zones } = this.options
+    switch (code) {
+      case 'dir':
+        if (zoneIdx < zones * 2 - 1) {
+          const segment = this.directionRings[dirIdx][zoneIdx + 1]
+          return segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
+        }
+        break
+      case 'zone':
+        if (dirIdx < directions - 1) {
+          const segment = this.zoneRings[zoneIdx][dirIdx + 1]
+          return segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
+        }
+        break
+      default:
+    }
   },
 
-  // Окремий відрізок лінії напрямку
-  _directionSegment (direction, zone) {
-    // TODO ???
+  _buildRing (points, dirIdx, zoneIdx, code, skipMove, reverse) {
+    const p = this._findPrev(dirIdx, zoneIdx, code)
+    const n = this._findNext(dirIdx, zoneIdx, code)
+    let skipStart, skipEnd
+    if (p) {
+      skipStart = true
+      points = [ p, ...points ]
+    }
+    if (n) {
+      skipEnd = true
+      points = [ ...points, n ]
+    }
+    if (reverse) {
+      [ skipStart, skipEnd ] = [ skipEnd, skipStart ]
+      points = points.reverse()
+    }
+    return prepareBezierPath(points, false, skipStart, skipEnd, skipMove)
   },
 
-  // Окремий відрізок лінії зони
-  _zoneSegment (direction, zone) {
-    // TODO ???
+  // Контур комірки
+  _cellRings (dirIdx, zoneIdx) {
+    const rings = []
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx][zoneIdx],
+        ...this.zoneRings[zoneIdx][dirIdx],
+        this.eternalRings[dirIdx + 1][zoneIdx],
+      ], dirIdx, zoneIdx, 'zone', false, false))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx + 1][zoneIdx],
+        ...this.directionRings[dirIdx + 1][zoneIdx],
+        this.eternalRings[dirIdx + 1][zoneIdx + 1],
+      ], dirIdx + 1, zoneIdx, 'dir', true, false))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx][zoneIdx + 1],
+        ...this.zoneRings[zoneIdx + 1][dirIdx],
+        this.eternalRings[dirIdx + 1][zoneIdx + 1],
+      ], dirIdx, zoneIdx + 1, 'zone', true, true))
+    rings.push(this._buildRing(
+      [
+        this.eternalRings[dirIdx][zoneIdx],
+        ...this.directionRings[dirIdx][zoneIdx],
+        this.eternalRings[dirIdx][zoneIdx + 1],
+      ], dirIdx, zoneIdx, 'dir', true, true))
+    return rings.join(' ')
+  },
+
+  _buildCellRings () {
+    const { directions, zones } = this.options
+    const d = narr(directions)
+    const z = narr(zones * 2)
+    return d.map((_, dirIdx) => z.map((_, zoneIdx) => this._cellRings(dirIdx, zoneIdx)))
+  },
+
+  _buildCellSegments () {
+    return this.cellRings.map((row) => row.map(pointInSvgPolygon.segments))
   },
 
   // Лінія напрямку
@@ -196,6 +276,8 @@ L.FlexGrid = L.Layer.extend({
     this.eternalRings = this.eternals.map(projectRing)
     this.directionRings = this.directionSegments.map(projectRings)
     this.zoneRings = this.zoneSegments.map(projectRings)
+    this.cellRings = this._buildCellRings()
+    this.cellSegments = this._buildCellSegments()
   },
 
   redraw () {
@@ -209,6 +291,14 @@ L.FlexGrid = L.Layer.extend({
   _reset () {
     this._project()
     this._update()
+  },
+
+  _latLngBounds (pad = 0) {
+    const result = L.latLngBounds([ this.eternals[0][0] ])
+    this.eternals.forEach((row) => row.forEach((item) => result.extend(item)))
+    this.directionSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    this.zoneSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    return result.pad(pad)
   },
 
   addInteractiveTarget (targetEl) {
