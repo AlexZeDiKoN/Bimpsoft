@@ -7,9 +7,8 @@ const PrintPanel = connect(
   ({ maps: { byId }, print: { requisites, printScale, mapId } }) => {
     const printMap = byId[mapId]
     return {
-      docConfirm: (printMap && printMap.docConfirm) || '',
-      securityClassification: (printMap && printMap.securityClassification) || '',
-      requisites,
+      docConfirm: (printMap && printMap.docConfirm) || {},
+      securityClassification: (printMap && printMap.securityClassification) || {},
       printScale,
     }
   },
