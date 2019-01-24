@@ -4,9 +4,11 @@ import { print } from '../actions'
 const initState = {
   mapId: null,
   printScale: 100000,
-  requisites: {},
+  requisites: {
+    dpi: '600',
+    coordinatesType: 'USK-2000',
+  },
   selectedZone: null,
-  dpi: 600,
 }
 
 export default function reducer (state = initState, action) {
