@@ -14,7 +14,7 @@ proj4.defs([
 ])
 
 export const getUSC2000Projection = (lng) =>
-  lng < 27 ? 'EPSG:5562' : lng < 33 ? 'EPSG:5563' : lng < 39 ? 'EPSG:5564' : 'EPSG:5565'
+  lng < 24 ? 'EPSG:5562' : lng < 30 ? 'EPSG:5563' : lng < 36 ? 'EPSG:5564' : 'EPSG:5565'
 
 export const getSC42Projection = (lng) =>
   lng < 24 ? 'EPSG:28404' : lng < 30 ? 'EPSG:28405' : lng < 36 ? 'EPSG:28406' : 'EPSG:28407'
