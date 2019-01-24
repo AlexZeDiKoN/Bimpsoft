@@ -8,7 +8,7 @@ import * as shortcuts from './shortcuts'
 import { SCALES, ZOOMS, INIT_VALUES } from './scales'
 import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
-import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from './PrintPanel'
+import * as Print from './PrintPanel'
 
 export {
   CoordinatesTypes,
@@ -23,6 +23,5 @@ export {
   ZOOMS,
   INIT_VALUES,
   FormTypes,
-  PRINT_PANEL_KEYS,
-  COLOR_PICKER_KEYS,
+  Print,
 }

@@ -1,12 +1,15 @@
 import { merge } from 'lodash'
 import { print } from '../actions'
+import { Print } from '../../constants'
 
 const initState = {
   mapId: null,
   printScale: 100000,
-  requisites: {},
+  requisites: {
+    dpi: Print.DPI_TYPES[3],
+    coordinatesType: Print.PRINT_COORDINATES_TYPES[0],
+  },
   selectedZone: null,
-  dpi: 600,
 }
 
 export default function reducer (state = initState, action) {
