@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Button } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
-import { PRINT_PANEL_KEYS } from './../../../constants'
+import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from './../../../constants'
 import {
   SCALE,
   MAP_LABEL,
@@ -57,14 +57,56 @@ class PrintPanel extends React.Component {
       legendThirdColor: undefined,
       legendFourthColor: undefined,
     },
+    setRequisitesFunc: {},
+    legendTableType: '',
   }
 
-  changeColorHandler = (color, key) => {
-    const colors = this.state.colors
+  componentDidMount () {
+    this.createSetFunctions()
+    this.changeLegendTableType('left')
+  }
+
+  createSetFunctions = () => {
     const { setPrintRequisites } = this.props
-    colors[key] = color
-    this.setState({ colors: colors })
-    setPrintRequisites({ [key]: color })
+    const Obj = Object.assign(
+      Object.keys(PRINT_PANEL_KEYS)
+        .reduce((prev, current) => (
+          {
+            ...prev,
+            [ current ]:
+              ({ target }, dateString) => target
+                ? setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: target.value })
+                : setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: dateString }),
+          }
+        ), {}),
+      Object.keys(COLOR_PICKER_KEYS)
+        .reduce((prev, current) => ({
+          ...prev,
+          [ current ]: (color) => {
+            setPrintRequisites({ [ COLOR_PICKER_KEYS[current] ]: color })
+            this.setState((prevState) => (
+              {
+                colors: { ...prevState.colors, [ COLOR_PICKER_KEYS[current] ]: color },
+              }
+            ))
+          },
+        }), {}),
+    )
+    this.setState({ setRequisitesFunc: Obj })
+  }
+
+  setScale = (value) => {
+    const { setPrintScale } = this.props
+    setPrintScale(value)
+  }
+
+  changeLegendTableType = (newType) => {
+    const { legendTableType } = this.state
+    const { setPrintRequisites } = this.props
+    if (legendTableType !== newType) {
+      this.setState({ legendTableType: newType })
+      setPrintRequisites({ [PRINT_PANEL_KEYS.LEGEND_TABLE_TYPE]: newType })
+    }
   }
 
   cancelPrint = () => {
@@ -76,88 +118,77 @@ class PrintPanel extends React.Component {
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
-  changeRequisites = (key, data) => {
-    const { setPrintRequisites } = this.props
-    setPrintRequisites({ [key]: data })
-  }
-
   render () {
     const {
       form: { getFieldDecorator },
-      setPrintScale,
       printScale,
       securityClassification: { classified },
     } = this.props
-    const { FormColumn, FormRow } = components.form
+    const { setRequisitesFunc, colors, legendTableType } = this.state
+    const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
     return (
       <div className='printPanelFormInner'>
         <Form>
-          <FormRow label={ SCALE }>
+          <FormRow className='printPanel_scale' label={SCALE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.SCALE, {
                   initialValue: printScale,
-                }
+                },
               )(
                 <Select
-                  onChange={(value) => setPrintScale(value)}
+                  onChange={this.setScale}
                 >
                   {this.createSelectChildren(scales)}
-                </Select>
+                </Select>,
               )
             }
           </FormRow>
-          <FormRow label={ MAP_LABEL }>
-            {
-              getFieldDecorator(
-                PRINT_PANEL_KEYS.MAP_LABEL, {
-                  initialValue: classified,
-                },
-                this.changeRequisites(PRINT_PANEL_KEYS.MAP_LABEL, classified)
-              )(
-                <Input
-                  disabled
-                />
-              )
-            }
-          </FormRow>
+          <Row className='printPanelSecurity'>
+            <Col span={5}>
+              {MAP_LABEL}
+            </Col>
+            <Col span={19}>
+              {classified}
+            </Col>
+          </Row>
           <h5 className='docBlock_header'>{DOC_HEADER}</h5>
           <div className='printPanel_docBlock'>
-            <FormColumn label={ FIRST_ROW }>
+            <FormColumn label={FIRST_ROW}>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+                onChange={setRequisitesFunc.FIRST_ROW}
               />
             </FormColumn>
-            <FormColumn label={ SECOND_ROW }>
+            <FormColumn label={SECOND_ROW}>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.SECOND_ROW, e.target.value)}
+                onChange={setRequisitesFunc.SECOND_ROW}
               />
             </FormColumn>
-            <FormColumn label={ THIRD_ROW }>
+            <FormColumn label={THIRD_ROW}>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.THIRD_ROW, e.target.value)}
+                onChange={setRequisitesFunc.THIRD_ROW}
               />
             </FormColumn>
-            <FormColumn label={ FOURTH_ROW }>
+            <FormColumn label={FOURTH_ROW}>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FOURTH_ROW, e.target.value)}
+                onChange={setRequisitesFunc.FOURTH_ROW}
               />
             </FormColumn>
-            <FormColumn label={ FIFTH_ROW }>
+            <FormColumn label={FIFTH_ROW}>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.FIFTH_ROW, e.target.value)}
+                onChange={setRequisitesFunc.FIFTH_ROW}
               />
             </FormColumn>
-            <FormRow label={ START }>
+            <FormRow label={START}>
               <DatePicker
                 format={dateFormat}
-                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.START, dateString)}
+                onChange={setRequisitesFunc.START}
               />
             </FormRow>
-            <FormRow label={ FINISH }>
+            <FormRow label={FINISH}>
               <DatePicker
                 format={dateFormat}
-                onChange={(date, dateString) => this.changeRequisites(PRINT_PANEL_KEYS.FINISH, dateString)}
+                onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>
           </div>
@@ -165,24 +196,52 @@ class PrintPanel extends React.Component {
           <div className='printPanel_indicators'>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, e.target.value)}
+                onChange={setRequisitesFunc.INDICATOR_FIRST_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, e.target.value)}
+                onChange={setRequisitesFunc.INDICATOR_SECOND_ROW}
               />
             </FormRow>
             <FormRow>
               <Input
-                onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, e.target.value)}
+                onChange={setRequisitesFunc.INDICATOR_THIRD_ROW}
               />
             </FormRow>
           </div>
-          <h5>{LEGEND}</h5>
+          <Row className='printPanel_legend'>
+            <Col span={18}>
+              <h5>{LEGEND}</h5>
+            </Col>
+            <Col
+              span={6}
+              className='printPanel_legendControl'
+            >
+              <Button
+                htmlType='button'
+                type='normal'
+                icon='left'
+                size='small'
+                className={legendTableType !== 'left' ? '' : 'active'}
+                onClick={() => this.changeLegendTableType('left')}
+              />
+              <Button
+                htmlType='button'
+                type='normal'
+                icon='right'
+                size='small'
+                className={legendTableType === 'left' ? '' : 'active'}
+                onClick={() => this.changeLegendTableType('right')}
+              />
+            </Col>
+          </Row>
           <div className='printPanelSign_block'>
             <Row className='printPanelSignTitle_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType !== 'left' ? 'right' : ''}
+              >
                 {SIGN}
               </Col>
               <Col span={18}>
@@ -190,62 +249,75 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_FIRST_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_FIRST_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_SECOND_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_SECOND_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_THIRD_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_THIRD_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
                 />
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col
+                span={6}
+                className={legendTableType === 'left' ? '' : 'right'}
+              >
                 <ColorPicker
-                  color={this.state.colors[PRINT_PANEL_KEYS.LEGEND_FOURTH_COLOR]}
+                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR ]}
                   className='PrintPanel_colorPicker'
-                  onChange={(color) => this.changeColorHandler(color, PRINT_PANEL_KEYS.LEGEND_FOURTH_COLOR)}
+                  onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
                 />
               </Col>
-              <Col span={17}>
+              <Col span={18}>
                 <Input
-                  onChange={(e) => this.changeRequisites(PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT, e.target.value)}
+                  onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
                 />
               </Col>
             </Row>
           </div>
+          {/* TODO: поправить стили */}
           <h5>{DOCUMENT_SIGNATORIES}</h5>
           <div className='printPanel_signatories'>
             <Row className='printPanelSignatoriesTitle_row'>
@@ -276,32 +348,27 @@ class PrintPanel extends React.Component {
               )
             })}
           </div>
-          <FormRow label={ CONFIRM_DATE }>
+          <FormRow className='printPanel_confirmDate' label={CONFIRM_DATE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
                   initialValue: confirmDate,
                 },
-                this.changeRequisites(PRINT_PANEL_KEYS.CONFIRM_DATE, confirmDate)
               )(
                 <Input
                   disabled
-                />
+                />,
               )
             }
           </FormRow>
 
-          <Row>
+          <Row className='printPanel_buttonBlock'>
             <Col span={12}>
-              <Button
-                onClick={this.cancelPrint}
-              >
-                CANCEL
-              </Button>
-              <Button
-              >
-                SAVE
-              </Button>
+              <ButtonCancel onClick={this.cancelPrint} />
+            </Col>
+            <Col span={12}>
+              {/* TODO: доделать отправку */}
+              <ButtonSave/>
             </Col>
           </Row>
         </Form>
