@@ -163,7 +163,7 @@ export const ELEMENT_SCALES = 'Рівні для масштабів'
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
-export const DPI = 'Роздільна здатність'
+export const DPI = 'Роздільна здатність (DPI)'
 export const COORDINATES_TYPE = 'Система координат'
 export const MAP_LABEL = `Гриф`
 export const FIRST_ROW = `Рядок 1 (h)`
