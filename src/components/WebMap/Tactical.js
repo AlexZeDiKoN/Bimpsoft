@@ -237,7 +237,7 @@ export function getGeometry (layer) {
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     case entityKind.FLEXGRID:
-      return formGeometry(layer.eternals.reduce((result, item) => [ ...result, ...item ], []))
+      return formGeometry(layer.eternals.reduce((result, item) => result.concat(item), []))
     default:
       return null
   }

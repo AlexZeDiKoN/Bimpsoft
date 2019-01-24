@@ -139,6 +139,14 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
+const zoneCode = (value, zones) => {
+  let result = value - zones
+  if (result >= 0) {
+    result += 1
+  }
+  return result
+}
+
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
@@ -567,11 +575,14 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
       const { x, y } = e.layerPoint
-      this.flexGrid && this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-        if (pointInSvgPolygon.isInside([ x, y ], cell)) {
-          console.info(`Inside [${dirIdx}, ${zoneIdx}]`)
-        }
-      }))
+      if (this.flexGrid) {
+        const zones = this.flexGrid.options.zones
+        this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+          if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+            console.info(`Inside [d:${dirIdx + 1}, z:${zoneCode(zoneIdx, zones)}]`)
+          }
+        }))
+      }
     }
   }
 
