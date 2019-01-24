@@ -1,6 +1,12 @@
 .printPanelFormInner {
   overflow-y: scroll;
 
+  .dzvin-form-row {
+    label {
+      font-size: 12px;
+    }
+  }
+
   .PrintPanel_colorPicker {
     .color-picker-popup {
       left: 190px !important;
@@ -108,8 +114,15 @@
     .ant-row {
       border: 1px solid grey;
       border-top: 0;
+      max-height: 19px;
+      overflow: hidden;
+      font-size: 12px;
       div {
         border-right: 1px solid grey;
+        max-height: 19px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       div:last-child {
         border: 0;

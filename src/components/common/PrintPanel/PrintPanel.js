@@ -317,14 +317,13 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
           </div>
-          {/* TODO: поправить стили */}
           <h5>{DOCUMENT_SIGNATORIES}</h5>
           <div className='printPanel_signatories'>
             <Row className='printPanelSignatoriesTitle_row'>
-              <Col span={12}>
+              <Col span={10}>
                 {POSITION}
               </Col>
-              <Col span={4}>
+              <Col span={6}>
                 {RANG}
               </Col>
               <Col span={8}>
@@ -335,10 +334,10 @@ class PrintPanel extends React.Component {
               const { position, role, name, date } = rowData
               return (
                 <Row key={date}>
-                  <Col span={12}>
+                  <Col span={10}>
                     {position}
                   </Col>
-                  <Col span={4}>
+                  <Col span={6}>
                     {role}
                   </Col>
                   <Col span={8}>
