@@ -1,3 +1,5 @@
+import { CoordinatesTypes } from '../constants'
+
 export const PRINT_PANEL_KEYS = {
   MAP_LABEL: 'mapLabel',
   FIRST_ROW: 'firstRow',
@@ -37,4 +39,4 @@ export const DATE_FORMAT = 'DD.MM.YYYY'
 
 export const DPI_TYPES = [ '150', '200', '300', '600' ]
 
-export const PRINT_COORDINATES_TYPES = [ 'USC-2000', 'UTM' ]
+export const PRINT_COORDINATES_TYPES = [ CoordinatesTypes.USC_2000, CoordinatesTypes.UTM ]
