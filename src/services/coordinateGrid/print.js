@@ -21,23 +21,21 @@ export default class PrintInner extends React.Component {
 
   constructor (props) {
     super(props)
-    this.state = {
-      currentGrid: null,
-      selectedLayers: layerGroup(),
-      currentMarkers: null,
-    }
+    this.currentGrid = null
+    this.selectedLayers = layerGroup()
+    this.currentMarkers = null
   }
 
   componentDidMount () {
     const { printStatus } = this.props
-    this.initCoordinateMapGrid(printStatus)
+    printStatus && this.initCoordinateMapGrid()
   }
 
   async componentDidUpdate (prevProps, prevState, snapshot) {
     const { printStatus, printScale } = this.props
-    if (printScale !== prevProps.printScale) {
-      await this.removeCoordinateMapGrid()
-      this.initCoordinateMapGrid(printStatus)
+    if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
+      this.removeCoordinateMapGrid()
+      printStatus && this.initCoordinateMapGrid()
     }
   }
 
@@ -46,17 +44,15 @@ export default class PrintInner extends React.Component {
   }
 
   // Ініціалізація гріда
-  initCoordinateMapGrid = (printStatus) => {
-    if (printStatus) {
-      this.createGrid()
-      this.props.map.on('move', throttle(this.createGrid, 200))
-    }
+  initCoordinateMapGrid () {
+    this.createGrid()
+    this.props.map.on('move', this.onMoveHandler)
   }
 
   // Створення нового гріда, або оновлення існуючого
-  createGrid = () => {
+  createGrid () {
     const { map, printScale } = this.props
-    const { currentGrid, selectedLayers, currentMarkers } = this.state
+    const { currentGrid, selectedLayers, currentMarkers } = this
     const coordinatesMatrix = generateCoordinateMatrix(map, printScale)
     if (!currentGrid) {
       const newGrid = this.createGridGroup(coordinatesMatrix)
@@ -64,17 +60,19 @@ export default class PrintInner extends React.Component {
       newGrid.addTo(map)
       newMarkers.addTo(map)
       selectedLayers.addTo(map)
-      this.setState(({ currentGrid: newGrid }))
-      this.setState(({ currentMarkers: newMarkers }))
+      this.currentGrid = newGrid
+      this.currentMarkers = newMarkers
       return
     }
     this.updateGrid(coordinatesMatrix)
     updateMarkers(coordinatesMatrix, printScale, currentMarkers, map)
   }
 
+  onMoveHandler = throttle(this.createGrid.bind(this), 200)
+
   // Створення групи елементів гріда
   createGridGroup = (coordinatesMatrix) => {
-    const { selectedLayers } = this.state
+    const { selectedLayers } = this
     const rectangles = concat(...coordinatesMatrix)
       .map((coordinates) => this.createGridRectangle(coordinates))
     const currentGrid = layerGroup(rectangles)
@@ -94,7 +92,7 @@ export default class PrintInner extends React.Component {
   // Оновлення елементів гріда
   updateGrid = (coordinatesMatrix) => {
     const { printScale, map } = this.props
-    const { currentGrid, selectedLayers } = this.state
+    const { currentGrid, selectedLayers } = this
     const screenCoordinates = setInitCoordinates(map.getBounds())
     // Видаляємо участки які виходять за межі екрану
     currentGrid.getLayers().forEach((layer) => {
@@ -127,19 +125,17 @@ export default class PrintInner extends React.Component {
     })
 
   removeCoordinateMapGrid = () => {
-    const { map, setSelectedZone } = this.props
-    const { currentGrid, selectedLayers, currentMarkers } = this.state
-    map.off('move')
+    const { map } = this.props
+    const { currentGrid, selectedLayers, currentMarkers } = this
+    map.off('move', this.onMoveHandler)
     if (currentGrid && selectedLayers) {
       currentGrid.removeFrom(map)
       selectedLayers.removeFrom(map)
       currentMarkers.removeFrom(map)
-      this.setState(({
-        currentGrid: null,
-        currentMarkers: null,
-      }))
+      this.currentGrid = null
+      this.currentMarkers = null
+
       selectedLayers.eachLayer((layer) => removeLayerFromSelectedLayers(layer, selectedLayers))
-      setSelectedZone(null)
     }
   }
 
