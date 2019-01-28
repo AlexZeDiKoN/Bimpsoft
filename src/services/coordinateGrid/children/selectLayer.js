@@ -98,9 +98,10 @@ const prepareSelectedZone = (layer, point, selectedZone) => {
 export const selectLayer = (event, currentGrid, selectedLayers, selectedZone, setSelectedZone) => {
   const newSelectedZone = prepareSelectedZone(event.target, event.latlng, selectedZone)
   listVerification(newSelectedZone, currentGrid, selectedLayers)
-  setSelectedZone({ northEast: newSelectedZone._northEast, southWest: newSelectedZone._southWest })
   // рахуємо кількість виділених листів, або видаляємо зону при їх відсутності
+  const northEast = { lat: newSelectedZone._northEast.lat, lng: newSelectedZone._northEast.lng }
+  const southWest = { lat: newSelectedZone._southWest.lat, lng: newSelectedZone._southWest.lng }
   selectedLayers.getLayers().length
-    ? setSelectedZone({ northEast: newSelectedZone._northEast, southWest: newSelectedZone._southWest })
+    ? setSelectedZone({ northEast: northEast, southWest: southWest })
     : setSelectedZone(null)
 }

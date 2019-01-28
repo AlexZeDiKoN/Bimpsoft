@@ -27,10 +27,10 @@ const mapStateToProps = (store) => {
   }
 }
 const mapDispatchToProps = {
-  onChangeEditMode: (editMode) => layers.setEditMode(editMode),
+  onChangeEditMode: layers.setEditMode,
   onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
-  onMeasureChange: (isMeasureOn) => webMap.setMeasure(isMeasureOn),
-  createPrintFile: () => print.createPrintFile(),
+  onMeasureChange: webMap.setMeasure,
+  createPrintFile: print.createPrintFile,
   onSubordinationLevelClose: () => viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   onSubordinationLevelChange: (subordinationLevel) => batchActions([
     webMap.setSubordinationLevel(subordinationLevel),
