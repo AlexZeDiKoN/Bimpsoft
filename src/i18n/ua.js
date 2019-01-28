@@ -68,7 +68,7 @@ export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
 export const WGS_84 = 'WGS-84'
-export const USK_2000 = 'УСК-2000'
+export const USC_2000 = 'УСК-2000'
 export const MGRS = 'MGRS'
 export const UTM = 'UTM'
 

@@ -22,7 +22,10 @@ export const createPrintFile = () =>
     const {
       webMap: { objects },
       print: {
-        dpi,
+        requisites: {
+          dpi,
+          coordinatesType,
+        },
         printScale,
         selectedZone: { southWest, northEast },
       },
@@ -30,7 +33,7 @@ export const createPrintFile = () =>
     const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
     const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, printScale)
     console.log(svg)
-    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg })
+    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType })
     const { id } = result
     dispatch(printFileSet({ id }))
   })
