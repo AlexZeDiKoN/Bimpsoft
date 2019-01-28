@@ -46,6 +46,7 @@ class PrintPanel extends React.Component {
     clearPrintRequisites: PropTypes.func,
     print: PropTypes.func,
     requisites: PropTypes.object,
+    createPrintFile: PropTypes.func,
   }
 
   state = {
@@ -129,6 +130,7 @@ class PrintPanel extends React.Component {
       printScale,
       securityClassification: { classified },
       requisites: { dpi, coordinatesType },
+      createPrintFile,
     } = this.props
     const { setRequisitesFunc, colors, legendTableType } = this.state
     const {
@@ -408,8 +410,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              {/* TODO: доделать отправку */}
-              <ButtonSave/>
+              <ButtonSave onClick={createPrintFile}/>
             </Col>
           </Row>
         </Form>
