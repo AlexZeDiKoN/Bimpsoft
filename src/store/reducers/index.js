@@ -10,7 +10,6 @@ import templates from './templates'
 import selection from './selection'
 import params from './params'
 import print from './print'
-import printToFile from './printToFile'
 import flexGrid from './flexGrid'
 
 export default combineReducers({
@@ -25,6 +24,5 @@ export default combineReducers({
   selection,
   params,
   print,
-  printToFile,
   flexGrid,
 })

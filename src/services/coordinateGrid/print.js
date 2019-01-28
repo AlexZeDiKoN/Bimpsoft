@@ -125,7 +125,7 @@ export default class PrintInner extends React.Component {
     })
 
   removeCoordinateMapGrid = () => {
-    const { map } = this.props
+    const { map, setSelectedZone } = this.props
     const { currentGrid, selectedLayers, currentMarkers } = this
     map.off('move', this.onMoveHandler)
     if (currentGrid && selectedLayers) {
@@ -134,6 +134,7 @@ export default class PrintInner extends React.Component {
       currentMarkers.removeFrom(map)
       this.currentGrid = null
       this.currentMarkers = null
+      setSelectedZone(null)
 
       selectedLayers.eachLayer((layer) => removeLayerFromSelectedLayers(layer, selectedLayers))
     }

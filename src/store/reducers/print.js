@@ -33,6 +33,14 @@ export default function reducer (state = initState, action) {
     case print.SELECTED_ZONE: {
       return { ...state, selectedZone: action.selectedZone }
     }
+    case print.PRINT_FILE_SET: {
+      return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
+    }
+    case print.PRINT_FILE_REMOVE: {
+      const printFiles = { ...state.printFiles }
+      delete printFiles[payload]
+      return { ...state, printFiles }
+    }
     default:
       return state
   }
