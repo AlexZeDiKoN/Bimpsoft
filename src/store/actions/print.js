@@ -61,7 +61,7 @@ export const createPrintFile = () =>
     } = state
     const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
     const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
-    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg })
+    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
     const { id } = result
     dispatch(printFileSet({ id }))
   })
