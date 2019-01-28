@@ -121,6 +121,12 @@ class PrintPanel extends React.Component {
     clearPrintRequisites()
   }
 
+  createPrintFile = () => {
+    const { createPrintFile } = this.props
+    createPrintFile()
+    this.cancelPrint()
+  }
+
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
@@ -130,7 +136,6 @@ class PrintPanel extends React.Component {
       printScale,
       securityClassification: { classified },
       requisites: { dpi, coordinatesType },
-      createPrintFile,
     } = this.props
     const { setRequisitesFunc, colors, legendTableType } = this.state
     const {
@@ -410,7 +415,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              <ButtonSave onClick={createPrintFile}/>
+              <ButtonSave onClick={this.createPrintFile}/>
             </Col>
           </Row>
         </Form>
