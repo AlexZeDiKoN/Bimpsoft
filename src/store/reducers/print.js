@@ -1,5 +1,5 @@
 import { merge } from 'lodash'
-import { print, printToFile } from '../actions'
+import { print } from '../actions'
 import { Print } from '../../constants'
 
 const initState = {
@@ -33,10 +33,10 @@ export default function reducer (state = initState, action) {
     case print.SELECTED_ZONE: {
       return { ...state, selectedZone: action.selectedZone }
     }
-    case printToFile.PRINT_FILE_SET: {
+    case print.PRINT_FILE_SET: {
       return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
     }
-    case printToFile.PRINT_FILE_REMOVE: {
+    case print.PRINT_FILE_REMOVE: {
       const printFiles = { ...state.printFiles }
       delete printFiles[payload]
       return { ...state, printFiles }

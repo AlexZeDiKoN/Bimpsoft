@@ -30,7 +30,7 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelClose: PropTypes.func,
     onMeasureChange: PropTypes.func,
     printFilesCount: PropTypes.number,
-    onCreatePrintFile: PropTypes.func,
+    createPrintFile: PropTypes.func,
     layerName: PropTypes.string,
 
   }
@@ -52,7 +52,7 @@ export default class LeftMenu extends React.Component {
       onSubordinationLevelChange,
       onMeasureChange,
       printFilesCount,
-      onCreatePrintFile,
+      createPrintFile,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -110,7 +110,7 @@ export default class LeftMenu extends React.Component {
           onClick={onMeasureChange}
         />
         { process.env.NODE_ENV === 'development' && (
-          <button onClick={onCreatePrintFile}>pTest{printFilesCount ? `(${printFilesCount})` : ''}</button>
+          <button onClick={createPrintFile}>pTest{printFilesCount ? `(${printFilesCount})` : ''}</button>
         )}
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />

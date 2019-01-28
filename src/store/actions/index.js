@@ -9,7 +9,6 @@ import * as templates from './templates'
 import * as params from './params'
 import * as webMap from './webMap'
 import * as print from './print'
-import * as printToFile from './printToFile'
 import * as flexGrid from './flexGrid'
 
 export {
@@ -24,6 +23,5 @@ export {
   params,
   asyncAction,
   print,
-  printToFile,
   flexGrid,
 }
