@@ -1,4 +1,3 @@
-import { merge } from 'lodash'
 import { print } from '../actions'
 import { Print } from '../../constants'
 
@@ -23,7 +22,7 @@ export default function reducer (state = initState, action) {
       return { ...state, printScale }
     }
     case print.PRINT_REQUISITES: {
-      const requisites = merge(state.requisites, action.payload)
+      const requisites = { ...state.requisites, ...payload }
       return { ...state, requisites }
     }
     case print.PRINT_REQUISITES_CLEAR: {
