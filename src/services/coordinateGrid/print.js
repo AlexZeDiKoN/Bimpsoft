@@ -8,7 +8,7 @@ import { isAreaOnScreen, removeLayerFromSelectedLayers, setInitCoordinates } fro
 import { selectLayer } from './children/selectLayer'
 import './coordinateGrid.css'
 
-import { INIT_GRID_OPTIONS, LAT, LNG } from './constants'
+import { INIT_GRID_OPTIONS, LAT, LNG, MIN_ZOOM } from './constants'
 
 export default class PrintInner extends React.Component {
   static propTypes = {
@@ -24,6 +24,7 @@ export default class PrintInner extends React.Component {
     this.currentGrid = null
     this.selectedLayers = layerGroup()
     this.currentMarkers = null
+    this.gridHide = false
   }
 
   componentDidMount () {
@@ -50,22 +51,30 @@ export default class PrintInner extends React.Component {
   }
 
   // Створення нового гріда, або оновлення існуючого
-  createGrid () {
+  async createGrid () {
     const { map, printScale } = this.props
-    const { currentGrid, selectedLayers, currentMarkers } = this
-    const coordinatesMatrix = generateCoordinateMatrix(map, printScale)
-    if (!currentGrid) {
-      const newGrid = this.createGridGroup(coordinatesMatrix)
-      const newMarkers = createMarkersGroup(coordinatesMatrix, printScale)
-      newGrid.addTo(map)
-      newMarkers.addTo(map)
-      selectedLayers.addTo(map)
-      this.currentGrid = newGrid
-      this.currentMarkers = newMarkers
-      return
+    const zoom = map.getZoom()
+    if (zoom >= MIN_ZOOM[printScale]) {
+      const { currentGrid, selectedLayers, currentMarkers, gridHide } = this
+      const coordinatesMatrix = generateCoordinateMatrix(map, printScale)
+      if (!currentGrid) {
+        const newGrid = this.createGridGroup(coordinatesMatrix)
+        const newMarkers = createMarkersGroup(coordinatesMatrix, printScale)
+        newGrid.addTo(map)
+        newMarkers.addTo(map)
+        selectedLayers.addTo(map)
+        this.currentGrid = newGrid
+        this.currentMarkers = newMarkers
+        return
+      }
+      if (gridHide) {
+        this.showGrid()
+      }
+      this.updateGrid(coordinatesMatrix)
+      updateMarkers(coordinatesMatrix, printScale, currentMarkers, map)
+    } else {
+      this.hideGrid()
     }
-    this.updateGrid(coordinatesMatrix)
-    updateMarkers(coordinatesMatrix, printScale, currentMarkers, map)
   }
 
   onMoveHandler = throttle(this.createGrid.bind(this), 200)
@@ -124,14 +133,36 @@ export default class PrintInner extends React.Component {
       return isLatExist && isLngExist
     })
 
-  removeCoordinateMapGrid = () => {
-    const { map, setSelectedZone } = this.props
+  hideGrid = () => {
+    this.clearCoordinateMapGrid()
+    this.gridHide = true
+  }
+
+  showGrid = () => {
+    const { map } = this.props
     const { currentGrid, selectedLayers, currentMarkers } = this
-    map.off('move', this.onMoveHandler)
+    currentGrid.addTo(map)
+    currentMarkers.addTo(map)
+    selectedLayers.addTo(map)
+    this.gridHide = false
+  }
+
+  clearCoordinateMapGrid = () => {
+    const { map } = this.props
+    const { currentGrid, selectedLayers, currentMarkers } = this
     if (currentGrid && selectedLayers) {
       currentGrid.removeFrom(map)
       selectedLayers.removeFrom(map)
       currentMarkers.removeFrom(map)
+    }
+  }
+
+  removeCoordinateMapGrid = () => {
+    const { map, setSelectedZone } = this.props
+    const { currentGrid, selectedLayers } = this
+    map.off('move', this.onMoveHandler)
+    if (currentGrid && selectedLayers) {
+      this.clearCoordinateMapGrid()
       this.currentGrid = null
       this.currentMarkers = null
       setSelectedZone(null)
