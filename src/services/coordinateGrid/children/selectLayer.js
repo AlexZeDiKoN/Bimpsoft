@@ -85,20 +85,23 @@ const reductionZone = (bounds, point, selectedZone) => {
 // створення і редагування зони покриття
 const prepareSelectedZone = (layer, point, selectedZone) => {
   const bounds = layer.getBounds()
-  return selectedZone
-    // перевіряємо чи клік був в середені зони
-    ? selectedZone.contains(point)
-      ? reductionZone(bounds, point, selectedZone)
-      : increaseZone(bounds, selectedZone)
-    : latLngBounds(bounds._northEast, bounds._southWest)
+  if (selectedZone) {
+    const selectedZoneBounds = latLngBounds(selectedZone.northEast, selectedZone.southWest)
+    return selectedZoneBounds.contains(point)
+      ? reductionZone(bounds, point, selectedZoneBounds)
+      : increaseZone(bounds, selectedZoneBounds)
+  } else {
+    return latLngBounds(bounds._northEast, bounds._southWest)
+  }
 }
 
 export const selectLayer = (event, currentGrid, selectedLayers, selectedZone, setSelectedZone) => {
   const newSelectedZone = prepareSelectedZone(event.target, event.latlng, selectedZone)
   listVerification(newSelectedZone, currentGrid, selectedLayers)
-  setSelectedZone(newSelectedZone)
   // рахуємо кількість виділених листів, або видаляємо зону при їх відсутності
+  const northEast = { lat: newSelectedZone._northEast.lat, lng: newSelectedZone._northEast.lng }
+  const southWest = { lat: newSelectedZone._southWest.lat, lng: newSelectedZone._southWest.lng }
   selectedLayers.getLayers().length
-    ? setSelectedZone(newSelectedZone)
+    ? setSelectedZone({ northEast: northEast, southWest: southWest })
     : setSelectedZone(null)
 }

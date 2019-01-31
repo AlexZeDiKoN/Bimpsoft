@@ -1,5 +1,5 @@
 import React from 'react'
-import WebMap from '../../containers/WebMap'
+import { WebMap, PrintGrid } from '../../containers'
 
 class ApplicationContent extends React.PureComponent {
   render () {
@@ -7,7 +7,11 @@ class ApplicationContent extends React.PureComponent {
       <WebMap
         center={[ 48.5, 38 ]}
         zoom={14}
-      />
+      >
+        {(map) => <>
+          <PrintGrid map={map} />
+        </>}
+      </WebMap>
     )
   }
 }

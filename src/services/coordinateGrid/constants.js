@@ -17,6 +17,12 @@ export const CELL_SIZES = {
     lng: 6 / 12,
   },
 }
+export const MIN_ZOOM = {
+  100000: 8,
+  200000: 7,
+  500000: 6,
+  1000000: 5,
+}
 export const INIT_GRID_OPTIONS = {
   color: 'black',
   fillOpacity: 0.3,

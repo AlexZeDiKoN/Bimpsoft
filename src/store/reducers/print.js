@@ -1,12 +1,14 @@
-import { merge } from 'lodash'
 import { print } from '../actions'
+import { Print } from '../../constants'
 
 const initState = {
   mapId: null,
   printScale: 100000,
-  requisites: {},
+  requisites: {
+    dpi: Print.DPI_TYPES[3],
+    coordinatesType: Print.PRINT_COORDINATES_TYPES[0],
+  },
   selectedZone: null,
-  dpi: 600,
 }
 
 export default function reducer (state = initState, action) {
@@ -20,7 +22,7 @@ export default function reducer (state = initState, action) {
       return { ...state, printScale }
     }
     case print.PRINT_REQUISITES: {
-      const requisites = merge(state.requisites, action.payload)
+      const requisites = { ...state.requisites, ...payload }
       return { ...state, requisites }
     }
     case print.PRINT_REQUISITES_CLEAR: {
@@ -29,6 +31,14 @@ export default function reducer (state = initState, action) {
     }
     case print.SELECTED_ZONE: {
       return { ...state, selectedZone: action.selectedZone }
+    }
+    case print.PRINT_FILE_SET: {
+      return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
+    }
+    case print.PRINT_FILE_REMOVE: {
+      const printFiles = { ...state.printFiles }
+      delete printFiles[payload]
+      return { ...state, printFiles }
     }
     default:
       return state

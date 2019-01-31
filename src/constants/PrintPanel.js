@@ -1,5 +1,6 @@
+import { CoordinatesTypes } from '../constants'
+
 export const PRINT_PANEL_KEYS = {
-  SCALE: 'scale',
   MAP_LABEL: 'mapLabel',
   FIRST_ROW: 'firstRow',
   SECOND_ROW: 'secondRow',
@@ -25,3 +26,17 @@ export const COLOR_PICKER_KEYS = {
   LEGEND_THIRD_COLOR: 'legendThirdColor',
   LEGEND_FOURTH_COLOR: 'legendFourthColor',
 }
+
+export const PRINT_SELECTS_KEYS = {
+  SCALE: 'scale',
+  DPI: 'dpi',
+  COORDINATES_TYPES: 'coordinatesType',
+}
+
+export const PRINT_SCALES = [ '100000', '200000', '500000', '1000000' ]
+
+export const DATE_FORMAT = 'DD.MM.YYYY'
+
+export const DPI_TYPES = [ '150', '200', '300', '600' ]
+
+export const PRINT_COORDINATES_TYPES = [ CoordinatesTypes.USC_2000, CoordinatesTypes.UTM ]

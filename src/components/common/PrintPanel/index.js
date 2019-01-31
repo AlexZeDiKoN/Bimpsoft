@@ -1,5 +1,8 @@
 import { connect } from 'react-redux'
-import { print, setPrintScale, setPrintRequisites, clearPrintRequisites } from '../../../store/actions/print'
+import {
+  print, setPrintScale, setPrintRequisites,
+  clearPrintRequisites, createPrintFile,
+} from '../../../store/actions/print'
 
 import WrappedPrintPanel from './PrintPanel'
 
@@ -10,6 +13,7 @@ const PrintPanel = connect(
       docConfirm: (printMap && printMap.docConfirm) || {},
       securityClassification: (printMap && printMap.securityClassification) || {},
       printScale,
+      requisites,
     }
   },
   {
@@ -17,6 +21,7 @@ const PrintPanel = connect(
     setPrintScale,
     setPrintRequisites,
     clearPrintRequisites,
+    createPrintFile,
   }
 )(WrappedPrintPanel)
 

@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Button } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
-import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from './../../../constants'
+import { Print } from './../../../constants'
 import {
   SCALE,
+  DPI,
   MAP_LABEL,
   DOC_HEADER,
   FIRST_ROW,
@@ -23,7 +24,7 @@ import {
   POSITION,
   RANG,
   FULL_NAME,
-  CONFIRM_DATE,
+  CONFIRM_DATE, COORDINATES_TYPE,
 } from './../../../i18n/ua'
 import './style.css'
 
@@ -33,10 +34,6 @@ const signatories = [
   { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
 ]
 const confirmDate = `22.12.18`
-
-// TODO: вынести в константы
-const scales = [ '100000', '200000', '500000', '1000000' ]
-const dateFormat = 'DD.MM.YYYY'
 
 class PrintPanel extends React.Component {
   static propTypes = {
@@ -48,6 +45,8 @@ class PrintPanel extends React.Component {
     setPrintRequisites: PropTypes.func,
     clearPrintRequisites: PropTypes.func,
     print: PropTypes.func,
+    requisites: PropTypes.object,
+    createPrintFile: PropTypes.func,
   }
 
   state = {
@@ -68,6 +67,7 @@ class PrintPanel extends React.Component {
 
   createSetFunctions = () => {
     const { setPrintRequisites } = this.props
+    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
     const Obj = Object.assign(
       Object.keys(PRINT_PANEL_KEYS)
         .reduce((prev, current) => (
@@ -100,12 +100,18 @@ class PrintPanel extends React.Component {
     setPrintScale(value)
   }
 
+  setPrintParameters = (value, key) => {
+    const { setPrintRequisites } = this.props
+    setPrintRequisites({ [ key ]: value })
+  }
+
   changeLegendTableType = (newType) => {
     const { legendTableType } = this.state
     const { setPrintRequisites } = this.props
+    const { LEGEND_TABLE_TYPE } = Print.PRINT_PANEL_KEYS
     if (legendTableType !== newType) {
       this.setState({ legendTableType: newType })
-      setPrintRequisites({ [PRINT_PANEL_KEYS.LEGEND_TABLE_TYPE]: newType })
+      setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType })
     }
   }
 
@@ -113,6 +119,12 @@ class PrintPanel extends React.Component {
     const { print, clearPrintRequisites } = this.props
     print()
     clearPrintRequisites()
+  }
+
+  createPrintFile = () => {
+    const { createPrintFile } = this.props
+    createPrintFile()
+    this.cancelPrint()
   }
 
   createSelectChildren = (incomeData) => incomeData
@@ -123,8 +135,13 @@ class PrintPanel extends React.Component {
       form: { getFieldDecorator },
       printScale,
       securityClassification: { classified },
+      requisites: { dpi, coordinatesType },
     } = this.props
     const { setRequisitesFunc, colors, legendTableType } = this.state
+    const {
+      PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
+      DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_COORDINATES_TYPES,
+    } = Print
     const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
     return (
       <div className='printPanelFormInner'>
@@ -132,18 +149,50 @@ class PrintPanel extends React.Component {
           <FormRow className='printPanel_scale' label={SCALE}>
             {
               getFieldDecorator(
-                PRINT_PANEL_KEYS.SCALE, {
+                PRINT_SELECTS_KEYS.SCALE, {
                   initialValue: printScale,
                 },
               )(
                 <Select
                   onChange={this.setScale}
                 >
-                  {this.createSelectChildren(scales)}
+                  {this.createSelectChildren(PRINT_SCALES)}
                 </Select>,
               )
             }
           </FormRow>
+          {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
+          <Row className='printPanel_dpi invisible' label={DPI}>
+            {
+              getFieldDecorator(
+                PRINT_SELECTS_KEYS.DPI, {
+                  initialValue: dpi,
+                },
+              )(
+                <Select
+                  onChange={(value) => this.setPrintParameters(value, PRINT_SELECTS_KEYS.DPI)}
+                >
+                  {this.createSelectChildren(DPI_TYPES)}
+                </Select>,
+              )
+            }
+          </Row>
+          {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
+          <Row className='printPanel_coordinatesType invisible' label={COORDINATES_TYPE}>
+            {
+              getFieldDecorator(
+                PRINT_SELECTS_KEYS.COORDINATES_TYPES, {
+                  initialValue: coordinatesType,
+                },
+              )(
+                <Select
+                  onChange={(value) => this.setPrintParameters(value, PRINT_SELECTS_KEYS.COORDINATES_TYPES)}
+                >
+                  {this.createSelectChildren(PRINT_COORDINATES_TYPES)}
+                </Select>,
+              )
+            }
+          </Row>
           <Row className='printPanelSecurity'>
             <Col span={5}>
               {MAP_LABEL}
@@ -181,13 +230,13 @@ class PrintPanel extends React.Component {
             </FormColumn>
             <FormRow label={START}>
               <DatePicker
-                format={dateFormat}
+                format={DATE_FORMAT}
                 onChange={setRequisitesFunc.START}
               />
             </FormRow>
             <FormRow label={FINISH}>
               <DatePicker
-                format={dateFormat}
+                format={DATE_FORMAT}
                 onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>
@@ -317,14 +366,13 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
           </div>
-          {/* TODO: поправить стили */}
           <h5>{DOCUMENT_SIGNATORIES}</h5>
           <div className='printPanel_signatories'>
             <Row className='printPanelSignatoriesTitle_row'>
-              <Col span={12}>
+              <Col span={10}>
                 {POSITION}
               </Col>
-              <Col span={4}>
+              <Col span={6}>
                 {RANG}
               </Col>
               <Col span={8}>
@@ -335,10 +383,10 @@ class PrintPanel extends React.Component {
               const { position, role, name, date } = rowData
               return (
                 <Row key={date}>
-                  <Col span={12}>
+                  <Col span={10}>
                     {position}
                   </Col>
-                  <Col span={4}>
+                  <Col span={6}>
                     {role}
                   </Col>
                   <Col span={8}>
@@ -367,8 +415,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              {/* TODO: доделать отправку */}
-              <ButtonSave/>
+              <ButtonSave onClick={this.createPrintFile}/>
             </Col>
           </Row>
         </Form>

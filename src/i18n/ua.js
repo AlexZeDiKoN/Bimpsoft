@@ -68,7 +68,7 @@ export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
 export const WGS_84 = 'WGS-84'
-export const USK_2000 = 'УСК-2000'
+export const USC_2000 = 'УСК-2000'
 export const MGRS = 'MGRS'
 export const UTM = 'UTM'
 
@@ -163,6 +163,8 @@ export const ELEMENT_SCALES = 'Рівні для масштабів'
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
+export const DPI = 'Роздільна здатність (DPI)'
+export const COORDINATES_TYPE = 'Система координат'
 export const MAP_LABEL = `Гриф`
 export const FIRST_ROW = `Рядок 1 (h)`
 export const SECOND_ROW = `Рядок 2 (2/3h)`

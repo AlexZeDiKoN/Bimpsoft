@@ -37,6 +37,6 @@ export default {
     getDirect(`${webmapUrl}/obj/locked`, false),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
-  printFileCreate: ({ dpi, northEast, southWest, svg }) =>
-    getDirect(`${webmapUrl}/printFile/add?dpi=${dpi}&northEast=${northEast}&southWest=${southWest}`, svg, ''),
+  printFileCreate: ({ dpi, northEast, southWest, svg, coordinatesType, printScale, projection }) =>
+    getDirect(`${webmapUrl}/printFile/add?dpi=${dpi}&northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}&coordinatesType=${coordinatesType}&scale=${printScale}&projection=${projection}`, svg, ''),
 }

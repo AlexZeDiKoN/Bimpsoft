@@ -11,7 +11,6 @@ import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
 import * as debounce from 'debounce'
 import i18n from '../../i18n'
-import PrintGrid from '../../services/coordinateGrid'
 import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -24,7 +23,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, CoordinatesTypes } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import coordinates from '../../utils/coordinates'
@@ -108,9 +107,9 @@ const indicateModes = {
 
 const type2mode = (type) => {
   switch (type) {
-    case 'USK-2000':
+    case CoordinatesTypes.USC_2000:
       return indicateModes.USC2000
-    case 'MGRS':
+    case CoordinatesTypes.MGRS:
       return indicateModes.MGRS
     default:
       return indicateModes.WGS
@@ -184,6 +183,7 @@ const setScaleOptions = (layer, params) => {
 
 export default class WebMap extends React.PureComponent {
   static propTypes = {
+    children: PropTypes.func,
     // from Redux store
     center: PropTypes.shape({
       lat: PropTypes.number,
@@ -294,11 +294,6 @@ export default class WebMap extends React.PureComponent {
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
-    // TODO: видалити
-    // if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
-    //   this.selectPrintAreaHandler(printStatus, printScale)
-    // }
-
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
     }
@@ -308,11 +303,6 @@ export default class WebMap extends React.PureComponent {
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
     }
-
-    // TODO: видалити
-    // if (isGridActive !== prevProps.isGridActive) {
-    //   toggleMapGrid(this.map, isGridActive)
-    // }
 
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
@@ -1080,11 +1070,6 @@ export default class WebMap extends React.PureComponent {
   //   this.activateCreated(created)
   // }
 
-  // TODO: видалити
-  // selectPrintAreaHandler = (status, scale) => {
-  //   toggleMapGrid(this.map, status, scale)
-  // }
-
   showFlexGrid = (show) => {
     if (!this.map) {
       return
@@ -1241,7 +1226,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        {this.map && this.props.printStatus && <PrintGrid map={this.map}/>}
+        {this.map && this.props.children(this.map)}
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
       </div>
