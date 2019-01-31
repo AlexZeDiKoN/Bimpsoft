@@ -117,7 +117,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
   }
   switch (response.status) {
     case 200: {
-      if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
+      const contentType = response.headers.get('content-type') || ''
+      if (contentType.slice(0, 16) === 'application/json') {
         const jsonPayload = await response.json()
         if (jsonPayload.payload) {
           return JSON.parse(jsonPayload.payload)
@@ -125,7 +126,9 @@ async function _createRequest (url, option, namespace = explorerApi) {
           return jsonPayload
         }
       }
-      return response.text()
+      const text = await response.text()
+      // console.log(url, text)
+      return text
     }
     case 204: // success code of DELETE request
       return null

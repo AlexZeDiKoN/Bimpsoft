@@ -1,11 +1,12 @@
+const eq = (oldValue, newValue) => newValue === oldValue || (newValue && newValue.equals && newValue.equals(oldValue))
+
 export const update = (record, propName, updater, payload) => {
   const oldValue = record.get(propName)
   const newValue = typeof updater === 'function' ? updater(oldValue, payload) : updater
-  return newValue.equals(oldValue) ? record : record.set(propName, newValue)
+  return eq(newValue, oldValue) ? record : record.set(propName, newValue)
 }
 
-export const comparator = (oldValue, newValue) =>
-  newValue === oldValue || newValue.equals(oldValue) ? oldValue : newValue
+export const comparator = (oldValue, newValue) => eq(oldValue, newValue) ? oldValue : newValue
 
 export const filter = (map, condition) => {
   const filtered = map.filter(condition)

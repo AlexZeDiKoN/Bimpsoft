@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
 import { updateColorByLayerId } from './layers'
-import { asyncAction, maps, layers, webMap } from './index'
+import { asyncAction, maps, layers, webMap, flexGrid } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
@@ -76,6 +76,7 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
         dispatch(layers.selectLayer(selectedLayer.layerId))
       }
     }
+    await dispatch(flexGrid.getFlexGrid(mapId))
   }
 )
 
