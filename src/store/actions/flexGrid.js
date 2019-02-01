@@ -52,8 +52,7 @@ export const flexGridCreated = (mapId, geometry, attributes) =>
   })
 
 export const flexGridChanged = (id, mapId, geometry, attributes) =>
-  asyncAction.withNotification((dispatch, _, { webmapApi: { objUpdate } }) => objUpdate({
-    id,
+  asyncAction.withNotification((dispatch, _, { webmapApi: { objUpdate } }) => objUpdate(id, {
     type: entityKind.FLEXGRID,
     layer: mapId,
     ...geometry,
