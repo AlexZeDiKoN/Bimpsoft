@@ -72,8 +72,10 @@ L.FlexGrid = L.Layer.extend({
    * Створення об'єкта
    * @param box - обмежуючий прямокутник
    * @param options - опції
+   * @param id - ідентифікатор
+   * @param geometry - геометрія
    */
-  initialize (box, options) {
+  initialize (box, options, id, geometry) {
     L.setOptions(this, options)
 
     const { directions, zones, vertical } = this.options
@@ -94,16 +96,24 @@ L.FlexGrid = L.Layer.extend({
       y: height / zones / 2,
     }
 
-    this.id = -99
-    this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-      /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
-        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
-      const x = nBox.left + i * step.x
-      const y = nBox.top + j * step.y
-      return vertical ? L.latLng(y, x) : L.latLng(x, y)
-    }))
-    this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
-    this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
+    this.id = id
+    if (geometry) {
+      const copyRow = (row) => row.map(L.latLng)
+      const copyRing = (ring) => ring.map(copyRow)
+      this.eternals = geometry.eternals.map(copyRow)
+      this.directionSegments = geometry.directionSegments.map(copyRing)
+      this.zoneSegments = geometry.zoneSegments.map(copyRing)
+    } else {
+      this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
+        /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+          Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
+        const x = nBox.left + i * step.x
+        const y = nBox.top + j * step.y
+        return vertical ? L.latLng(y, x) : L.latLng(x, y)
+      }))
+      this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
+      this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
+    }
 
     return this
   },

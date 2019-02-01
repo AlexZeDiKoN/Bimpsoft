@@ -1,4 +1,6 @@
+import { List, Record } from 'immutable'
 import * as actions from '../actions/flexGrid'
+import { merge, update } from '../../utils/immutable'
 
 const MIN_DIRECTIONS = 1
 const DEF_DIRECTIONS = 3
@@ -7,49 +9,90 @@ const MAX_DIRECTIONS = 10
 const HAS_ZONES = 3
 const HASNT_ZONES = 1
 
-const initState = {
-  options: false,
-  visible: false,
+const FlexGrid = Record({
+  id: null,
+  deleted: null,
+  eternals: List(),
+  directionSegments: List(),
+  zoneSegments: List(),
   directions: DEF_DIRECTIONS,
   zones: HAS_ZONES,
-  vertical: true,
-  present: false,
-}
+})
 
-export default function reducer (state = initState, action) {
+const FlexGridState = Record({
+  options: false,
+  visible: false,
+  vertical: false,
+  present: false,
+  flexGrid: FlexGrid(),
+})
+
+export default function reducer (state = FlexGridState(), action) {
   const { type, payload } = action
   switch (type) {
     case actions.DROP_FLEX_GRID: {
-      return { ...state, options: false, visible: true }
+      return merge(state, {
+        options: false,
+        visible: true,
+      })
     }
     case actions.SET_DIRECTIONS: {
       let directions = Number(payload)
       if (isNaN(directions) || directions < MIN_DIRECTIONS || directions > MAX_DIRECTIONS) {
         directions = DEF_DIRECTIONS
       }
-      return { ...state, directions }
+      return update(state, 'flexGrid', merge, { directions })
     }
     case actions.SET_ZONES: {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
-      return { ...state, zones }
+      return update(state, 'flexGrid', merge, { zones })
     }
     case actions.FLEX_GRID_CREATED: {
-      return { ...state, present: true }
+      return update(state, 'present', true)
     }
     case actions.FLEX_GRID_DELETED: {
-      return { ...state, present: false, visible: false }
+      return merge(state, {
+        present: false,
+        visible: false,
+      })
     }
     case actions.SHOW_FLEX_GRID_FORM: {
       const delta = state.present
         ? { visible: true }
         : { options: true }
-      return { ...state, ...delta }
+      return merge(state, delta)
     }
     case actions.HIDE_FLEX_GRID: {
-      return { ...state, visible: false }
+      return update(state, 'visible', false)
     }
     case actions.CLOSE_FLEX_GRID_FORM: {
-      return { ...state, options: false }
+      return update(state, 'options', false)
+    }
+    case actions.GET_FLEXGRID: {
+      // console.log(`GET_FLEXGRID`, payload)
+      const {
+        id,
+        deleted,
+        attributes: { directions, zones },
+        geometry: [ eternals, directionSegments, zoneSegments ],
+      } = payload
+      return payload
+        ? update(merge(state, {
+          present: !deleted,
+        }), 'flexGrid', merge, {
+          id,
+          deleted,
+          directions,
+          zones,
+          eternals: List(eternals),
+          directionSegments: List(directionSegments),
+          zoneSegments: List(zoneSegments),
+        })
+        : merge(state, {
+          visible: false,
+          present: false,
+          flexGrid: FlexGrid(),
+        })
     }
     default:
       return state

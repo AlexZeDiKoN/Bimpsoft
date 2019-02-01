@@ -5,6 +5,7 @@ import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+import entityKind from '../../components/WebMap/entityKind'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -96,6 +97,8 @@ const unlockObject = (map, { objectId }) => map.get(objectId)
   ? map.delete(objectId)
   : map
 
+const notFlexGrid = (object) => object.type !== entityKind.FLEXGRID
+
 const simpleSetFields = [ {
   action: actionNames.SET_COORDINATES_TYPE,
   field: 'coordinatesType',
@@ -141,7 +144,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       }
       const { layerId, objects } = payload
       return update(state, 'objects', (map) => {
-        map = objects.reduce(updateObject, map)
+        map = objects.filter(notFlexGrid).reduce(updateObject, map)
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })
