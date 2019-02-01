@@ -582,7 +582,7 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
       const { x, y } = e.layerPoint
-      if (this.flexGrid) {
+      if (this.flexGrid && this.props.flexGridVisible) {
         const zones = this.flexGrid.options.zones
         this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
           if (pointInSvgPolygon.isInside([ x, y ], cell)) {
