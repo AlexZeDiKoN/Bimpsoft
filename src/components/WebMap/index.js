@@ -783,8 +783,8 @@ export default class WebMap extends React.PureComponent {
       const existsIds = new Set()
       const changes = []
       this.map.eachLayer((layer) => {
-        const { id } = layer
-        if (id) {
+        const { id, options: { tsType: type } } = layer
+        if (id && type !== entityKind.FLEXGRID) {
           const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
           if (object) {
             existsIds.add(id)

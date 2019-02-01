@@ -3,8 +3,9 @@ import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
+import entityKind from '../../components/WebMap/entityKind'
 import * as notifications from './notifications'
-import { asyncAction } from './index'
+import { asyncAction, flexGrid } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -147,12 +148,16 @@ export const refreshObject = (id) =>
       return
     }
     let object = await objRefresh(id)
-    if (object.id) {
+    if (Number(object.type) === entityKind.FLEXGRID) {
+      dispatch({
+        type: flexGrid.GET_FLEXGRID,
+        payload: object,
+      })
+    } else if (object.id) {
       const layerId = object.layer
       if (!byId.hasOwnProperty(layerId)) {
         return
       }
-
       object = fixServerObject(object)
     }
     dispatch({

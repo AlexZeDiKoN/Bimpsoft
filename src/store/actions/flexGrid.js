@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
-import * as asyncAction from './asyncAction'
 import entityKind from '../../components/WebMap/entityKind'
+import * as asyncAction from './asyncAction'
 
 export const DROP_FLEX_GRID = action('DROP_FLEX_GRID')
 export const SHOW_FLEX_GRID_FORM = action('SHOW_FLEX_GRID_FORM')
