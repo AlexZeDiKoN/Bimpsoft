@@ -5,26 +5,11 @@ import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
 import { Print } from './../../../constants'
 import {
-  SCALE,
-  DPI,
-  MAP_LABEL,
-  DOC_HEADER,
-  FIRST_ROW,
-  SECOND_ROW,
-  THIRD_ROW,
-  FOURTH_ROW,
-  FIFTH_ROW,
-  START,
-  FINISH,
-  MAIN_INDICATORS,
-  LEGEND,
-  SIGN,
-  SIGN_CONTENT,
-  DOCUMENT_SIGNATORIES,
-  POSITION,
-  RANG,
-  FULL_NAME,
-  CONFIRM_DATE, COORDINATES_TYPE,
+  SCALE, DPI, MAP_LABEL, DOC_HEADER, FIRST_ROW,
+  SECOND_ROW, THIRD_ROW, FOURTH_ROW, FIFTH_ROW,
+  START, FINISH, MAIN_INDICATORS, LEGEND, SIGN,
+  SIGN_CONTENT, DOCUMENT_SIGNATORIES, POSITION,
+  RANG, FULL_NAME, CONFIRM_DATE, COORDINATES_TYPE,
 } from './../../../i18n/ua'
 import './style.css'
 
@@ -124,7 +109,6 @@ class PrintPanel extends React.Component {
   createPrintFile = () => {
     const { createPrintFile } = this.props
     createPrintFile()
-    this.cancelPrint()
   }
 
   createSelectChildren = (incomeData) => incomeData

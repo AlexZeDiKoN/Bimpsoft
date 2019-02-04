@@ -1,6 +1,8 @@
 import { action } from '../../utils/services'
 import { getUSC2000Projection } from '../../utils/projection'
 import { getMapObjectsSvg } from '../../utils/svg/mapObjects'
+import { PRINT_ZONE_UNDEFINED, ERROR } from '../../i18n/ua'
+import * as notifications from './notifications'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -47,21 +49,32 @@ export const printFileRemove = (id) => ({
 
 export const createPrintFile = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { printFileCreate } }) => {
-    const state = getState()
-    const {
-      webMap: { objects },
-      print: {
-        requisites: {
-          dpi,
-          coordinatesType,
+    try {
+      const state = getState()
+      const {
+        webMap: { objects },
+        print: {
+          requisites: {
+            dpi,
+            coordinatesType,
+          },
+          printScale,
+          selectedZone: { southWest, northEast },
         },
-        printScale,
-        selectedZone: { southWest, northEast },
-      },
-    } = state
-    const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-    const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
-    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
-    const { id } = result
-    dispatch(printFileSet({ id }))
+      } = state
+      const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
+      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
+      const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
+      const { id } = result
+      dispatch(printFileSet({ id }))
+    } catch (e) {
+      dispatch(notifications.push({
+        message: ERROR,
+        description: PRINT_ZONE_UNDEFINED,
+        type: 'error',
+      }))
+      return
+    }
+    dispatch(print())
+    dispatch(clearPrintRequisites())
   })
