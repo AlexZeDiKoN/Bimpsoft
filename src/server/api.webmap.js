@@ -31,6 +31,8 @@ export default {
     getDirect(`${webmapUrl}/param/${name}/get`, false),
   paramSet: (name, value) =>
     getDirect(`${webmapUrl}/param/${name}/set`, { value }),
+  getFlexGrid: (mapId) =>
+    getDirect(`${webmapUrl}/grid/${mapId}/get`, false),
   lockedObjects: () =>
     getDirect(`${webmapUrl}/obj/locked`, false),
   getMapSources: () =>

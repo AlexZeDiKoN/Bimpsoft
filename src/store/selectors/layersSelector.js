@@ -12,6 +12,11 @@ export const canEditSelector = createSelector(
   }
 )
 
+export const activeMapSelector = createSelector(
+  (state) => state.layers,
+  ({ byId, selectedId }) => selectedId && byId[selectedId] && byId[selectedId].mapId
+)
+
 export const inTimeRangeLayers = createSelector(
   (state) => state.layers.byId,
   (state) => state.layers.timelineFrom,

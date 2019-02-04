@@ -2,7 +2,8 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
-  canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible,
+  canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
+  activeMapSelector,
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
@@ -36,6 +37,8 @@ const WebMapContainer = connect(
     printScale: state.print.printScale,
     flexGridParams: flexGridParams(state),
     flexGridVisible: flexGridVisible(state),
+    flexGridData: flexGridData(state),
+    activeMapId: activeMapSelector(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -68,6 +71,7 @@ const WebMapContainer = connect(
     tryLockObject: webMap.tryLockObject,
     tryUnlockObject: webMap.tryUnlockObject,
     flexGridCreated: flexGrid.flexGridCreated,
+    flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
   }),
 )(WebMapInner)

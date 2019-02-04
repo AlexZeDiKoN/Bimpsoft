@@ -28,6 +28,7 @@ import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import coordinates from '../../utils/coordinates'
 import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
+import { flexGridPropTypes } from '../../store/selectors'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -138,6 +139,14 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
+const zoneCode = (value, zones) => {
+  let result = value - zones
+  if (result >= 0) {
+    result += 1
+  }
+  return result
+}
+
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
@@ -231,6 +240,8 @@ export default class WebMap extends React.PureComponent {
       vertical: PropTypes.bool,
     }),
     flexGridVisible: PropTypes.bool,
+    flexGridData: flexGridPropTypes,
+    activeMapId: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -248,6 +259,7 @@ export default class WebMap extends React.PureComponent {
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
     flexGridCreated: PropTypes.func,
+    flexGridChanged: PropTypes.func,
     flexGridDeleted: PropTypes.func,
   }
 
@@ -278,7 +290,7 @@ export default class WebMap extends React.PureComponent {
 
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible,
+      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible, flexGridData,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -339,6 +351,10 @@ export default class WebMap extends React.PureComponent {
 
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
+    }
+
+    if (flexGridData !== prevProps.flexGridData) {
+      this.updateFlexGrid(flexGridData)
     }
   }
 
@@ -504,12 +520,21 @@ export default class WebMap extends React.PureComponent {
   }
 
   checkSaveObject = () => {
-    const { selection: { list }, updateObjectGeometry, tryUnlockObject } = this.props
+    const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
-    if (layer && layer.object) {
-      const { point, geometry } = layer.object
-      const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
+    if (layer) {
+      let checkPoint = null
+      let checkGeometry
+      if (layer.object) {
+        const { point, geometry } = layer.object
+        checkPoint = point.toJS()
+        checkGeometry = geometry.toArray()
+      } else if (layer === this.flexGrid) {
+        const { eternals, directionSegments, zoneSegments } = flexGridData
+        checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]
+      }
+      const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (geometryChanged) {
         updateObjectGeometry(id, getGeometry(layer))
       } else {
@@ -557,11 +582,14 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
       const { x, y } = e.layerPoint
-      this.flexGrid && this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-        if (pointInSvgPolygon.isInside([ x, y ], cell)) {
-          console.info(`Inside [${dirIdx}, ${zoneIdx}]`)
-        }
-      }))
+      if (this.flexGrid && this.props.flexGridVisible) {
+        const zones = this.flexGrid.options.zones
+        this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+          if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+            console.info(`Inside [d:${dirIdx + 1}, z:${zoneCode(zoneIdx, zones)}]`)
+          }
+        }))
+      }
     }
   }
 
@@ -755,8 +783,8 @@ export default class WebMap extends React.PureComponent {
       const existsIds = new Set()
       const changes = []
       this.map.eachLayer((layer) => {
-        const { id } = layer
-        if (id) {
+        const { id, options: { tsType: type } } = layer
+        if (id && type !== entityKind.FLEXGRID) {
           const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
           if (object) {
             existsIds.add(id)
@@ -1059,16 +1087,68 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  dropFlexGrid = () => {
-    const { flexGridParams: { directions, zones, vertical }, flexGridCreated } = this.props
-    const layer = new L.FlexGrid(this.map.getBounds().pad(-0.2), { interactive: true, directions, zones, vertical })
+  dropFlexGrid = (show = true) => {
+    if (this.flexGrid) {
+      this.flexGrid.removeFrom(this.map)
+    }
+    const {
+      flexGridParams: {
+        vertical,
+      },
+      flexGridData: {
+        directions,
+        zones,
+        id,
+        deleted,
+        eternals,
+        directionSegments,
+        zoneSegments,
+      },
+      flexGridCreated,
+      flexGridChanged,
+      activeMapId,
+    } = this.props
+    const layer = new L.FlexGrid(
+      this.map.getBounds().pad(-0.2),
+      {
+        interactive: true,
+        directions,
+        zones,
+        vertical,
+      },
+      id,
+      id && !deleted
+        ? {
+          eternals: eternals.toArray(),
+          directionSegments: directionSegments.toArray(),
+          zoneSegments: zoneSegments.toArray(),
+        }
+        : undefined,
+    )
     layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
-    layer.addTo(this.map)
+    if (show) {
+      layer.addTo(this.map)
+    }
     this.flexGrid = layer
-    flexGridCreated && flexGridCreated()
+    const geometry = getGeometry(layer)
+    if (!id) {
+      flexGridCreated && flexGridCreated(activeMapId, geometry, { directions, zones })
+    } else if (deleted) {
+      flexGridChanged && flexGridChanged(id, activeMapId, geometry, { directions, zones })
+    }
+  }
+
+  updateFlexGrid = (flexGridData) => {
+    if ((!flexGridData.id || !!flexGridData.deleted) && this.flexGrid) {
+      this.flexGrid.removeFrom(this.map)
+      delete this.flexGrid
+    } else {
+      const { flexGridVisible } = this.props
+      this.dropFlexGrid(flexGridVisible)
+    }
   }
 
   updateCreatePoly = (type) => {

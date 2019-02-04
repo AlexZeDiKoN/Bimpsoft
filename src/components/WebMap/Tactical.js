@@ -237,7 +237,7 @@ export function getGeometry (layer) {
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     case entityKind.FLEXGRID:
-      return formGeometry(layer.eternals.reduce((result, item) => [ ...result, ...item ], []))
+      return formFlexGridGeometry(layer.eternals, layer.directionSegments, layer.zoneSegments)
     default:
       return null
   }
@@ -249,16 +249,20 @@ export const geomPointEquals =
   (p1, p2) => p1 && p2 && roundCoord(p1.lat) === roundCoord(p2.lat) && roundCoord(p1.lng) === roundCoord(p2.lng)
 
 function geomPointListEquals (list1, list2) {
-  const n = list1.length
-  if (n !== list2.length) {
-    return false
-  }
-  for (let i = 0; i < n; i++) {
-    if (!geomPointEquals(list1[i], list2[i])) {
+  if (Array.isArray(list1) && Array.isArray(list2)) {
+    const n = list1.length
+    if (n !== list2.length) {
       return false
     }
+    for (let i = 0; i < n; i++) {
+      if (!geomPointListEquals(list1[i], list2[i])) {
+        return false
+      }
+    }
+    return true
+  } else {
+    return geomPointEquals(list1, list2)
   }
-  return true
 }
 
 export function isGeometryChanged (layer, point, geometry) {
@@ -281,6 +285,8 @@ export function isGeometryChanged (layer, point, geometry) {
     }
     case entityKind.CIRCLE:
       return !geomPointEquals(layer.getLatLng(), point) || layer._map.distance(...geometry) !== layer.getRadius()
+    case entityKind.FLEXGRID:
+      return !geomPointListEquals([ layer.eternals, layer.directionSegments, layer.zoneSegments ], geometry)
     default:
       return false
   }
@@ -290,6 +296,13 @@ function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
     geometry: coords,
+  }
+}
+
+function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
+  return {
+    point: calcMiddlePoint(eternals.reduce((result, item) => result.concat(item), [])),
+    geometry: [ eternals, directionSegments, zoneSegments ],
   }
 }
 
