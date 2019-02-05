@@ -3,29 +3,8 @@ import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Button } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
-import { Print } from './../../../constants'
-import {
-  SCALE,
-  DPI,
-  MAP_LABEL,
-  DOC_HEADER,
-  FIRST_ROW,
-  SECOND_ROW,
-  THIRD_ROW,
-  FOURTH_ROW,
-  FIFTH_ROW,
-  START,
-  FINISH,
-  MAIN_INDICATORS,
-  LEGEND,
-  SIGN,
-  SIGN_CONTENT,
-  DOCUMENT_SIGNATORIES,
-  POSITION,
-  RANG,
-  FULL_NAME,
-  CONFIRM_DATE, COORDINATES_TYPE,
-} from './../../../i18n/ua'
+import i18n from '../../../i18n'
+import { Print } from '../../../constants'
 import './style.css'
 
 // TODO: заменить реальными данными
@@ -124,7 +103,6 @@ class PrintPanel extends React.Component {
   createPrintFile = () => {
     const { createPrintFile } = this.props
     createPrintFile()
-    this.cancelPrint()
   }
 
   createSelectChildren = (incomeData) => incomeData
@@ -146,7 +124,7 @@ class PrintPanel extends React.Component {
     return (
       <div className='printPanelFormInner'>
         <Form>
-          <FormRow className='printPanel_scale' label={SCALE}>
+          <FormRow className='printPanel_scale' label={i18n.SCALE}>
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.SCALE, {
@@ -162,7 +140,7 @@ class PrintPanel extends React.Component {
             }
           </FormRow>
           {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
-          <Row className='printPanel_dpi invisible' label={DPI}>
+          <Row className='printPanel_dpi invisible' label={i18n.DPI}>
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.DPI, {
@@ -178,7 +156,7 @@ class PrintPanel extends React.Component {
             }
           </Row>
           {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
-          <Row className='printPanel_coordinatesType invisible' label={COORDINATES_TYPE}>
+          <Row className='printPanel_coordinatesType invisible' label={i18n.COORDINATES_TYPE}>
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.COORDINATES_TYPES, {
@@ -195,53 +173,53 @@ class PrintPanel extends React.Component {
           </Row>
           <Row className='printPanelSecurity'>
             <Col span={5}>
-              {MAP_LABEL}
+              {i18n.MAP_LABEL}
             </Col>
             <Col span={19}>
               {classified}
             </Col>
           </Row>
-          <h5 className='docBlock_header'>{DOC_HEADER}</h5>
+          <h5 className='docBlock_header'>{i18n.DOC_HEADER}</h5>
           <div className='printPanel_docBlock'>
-            <FormColumn label={FIRST_ROW}>
+            <FormColumn label={i18n.FIRST_ROW}>
               <Input
                 onChange={setRequisitesFunc.FIRST_ROW}
               />
             </FormColumn>
-            <FormColumn label={SECOND_ROW}>
+            <FormColumn label={i18n.SECOND_ROW}>
               <Input
                 onChange={setRequisitesFunc.SECOND_ROW}
               />
             </FormColumn>
-            <FormColumn label={THIRD_ROW}>
+            <FormColumn label={i18n.THIRD_ROW}>
               <Input
                 onChange={setRequisitesFunc.THIRD_ROW}
               />
             </FormColumn>
-            <FormColumn label={FOURTH_ROW}>
+            <FormColumn label={i18n.FOURTH_ROW}>
               <Input
                 onChange={setRequisitesFunc.FOURTH_ROW}
               />
             </FormColumn>
-            <FormColumn label={FIFTH_ROW}>
+            <FormColumn label={i18n.FIFTH_ROW}>
               <Input
                 onChange={setRequisitesFunc.FIFTH_ROW}
               />
             </FormColumn>
-            <FormRow label={START}>
+            <FormRow label={i18n.START}>
               <DatePicker
                 format={DATE_FORMAT}
                 onChange={setRequisitesFunc.START}
               />
             </FormRow>
-            <FormRow label={FINISH}>
+            <FormRow label={i18n.FINISH}>
               <DatePicker
                 format={DATE_FORMAT}
                 onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>
           </div>
-          <h5>{MAIN_INDICATORS}</h5>
+          <h5>{i18n.MAIN_INDICATORS}</h5>
           <div className='printPanel_indicators'>
             <FormRow>
               <Input
@@ -261,7 +239,7 @@ class PrintPanel extends React.Component {
           </div>
           <Row className='printPanel_legend'>
             <Col span={18}>
-              <h5>{LEGEND}</h5>
+              <h5>{i18n.LEGEND}</h5>
             </Col>
             <Col
               span={6}
@@ -291,10 +269,10 @@ class PrintPanel extends React.Component {
                 span={6}
                 className={legendTableType !== 'left' ? 'right' : ''}
               >
-                {SIGN}
+                {i18n.SIGN}
               </Col>
               <Col span={18}>
-                {SIGN_CONTENT}
+                {i18n.SIGN_CONTENT}
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -366,17 +344,17 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
           </div>
-          <h5>{DOCUMENT_SIGNATORIES}</h5>
+          <h5>{i18n.DOCUMENT_SIGNATORIES}</h5>
           <div className='printPanel_signatories'>
             <Row className='printPanelSignatoriesTitle_row'>
               <Col span={10}>
-                {POSITION}
+                {i18n.POSITION}
               </Col>
               <Col span={6}>
-                {RANG}
+                {i18n.RANG}
               </Col>
               <Col span={8}>
-                {FULL_NAME}
+                {i18n.FULL_NAME}
               </Col>
             </Row>
             {signatories.map((rowData) => {
@@ -396,7 +374,7 @@ class PrintPanel extends React.Component {
               )
             })}
           </div>
-          <FormRow className='printPanel_confirmDate' label={CONFIRM_DATE}>
+          <FormRow className='printPanel_confirmDate' label={i18n.CONFIRM_DATE}>
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {

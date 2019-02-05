@@ -26,7 +26,7 @@ export default function reducer (state = initState, action) {
       return { ...state, requisites }
     }
     case print.PRINT_REQUISITES_CLEAR: {
-      const requisites = {}
+      const { requisites } = initState
       return { ...state, requisites }
     }
     case print.SELECTED_ZONE: {

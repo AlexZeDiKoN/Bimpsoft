@@ -1,6 +1,8 @@
+import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { getUSC2000Projection } from '../../utils/projection'
 import { getMapObjectsSvg } from '../../utils/svg/mapObjects'
+import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -56,12 +58,21 @@ export const createPrintFile = () =>
           coordinatesType,
         },
         printScale,
-        selectedZone: { southWest, northEast },
+        selectedZone,
       },
     } = state
-    const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-    const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
-    const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
-    const { id } = result
-    dispatch(printFileSet({ id }))
+    if (selectedZone) {
+      const { southWest, northEast } = selectedZone
+      const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
+      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
+      const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
+      const { id } = result
+      dispatch(batchActions([
+        printFileSet({ id }),
+        print(),
+        clearPrintRequisites(),
+      ]))
+    } else {
+      throw new Error(PRINT_ZONE_UNDEFINED)
+    }
   })

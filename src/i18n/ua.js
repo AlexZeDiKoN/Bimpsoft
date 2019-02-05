@@ -6,6 +6,7 @@ export const TOGGLE_SIDEBAR = 'Відобразити/сховати праву 
 export const SETTINGS = 'Налаштування'
 export const ERROR = 'Помилка'
 export const COORDINATES_UNDEFINED = 'Координати не задані'
+export const PRINT_ZONE_UNDEFINED = 'Область друку не задана'
 export const UNKNOWN_ERROR = 'Невідома помилка'
 export const SERVER_ERROR = 'Помилка сервера'
 export const VALIDATION_ERROR = 'Помилка валідації'

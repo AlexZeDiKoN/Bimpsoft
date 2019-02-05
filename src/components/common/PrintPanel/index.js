@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { catchErrors } from '../../../store/actions/asyncAction'
 import {
   print, setPrintScale, setPrintRequisites,
   clearPrintRequisites, createPrintFile,
@@ -16,13 +17,13 @@ const PrintPanel = connect(
       requisites,
     }
   },
-  {
+  catchErrors({
     print,
     setPrintScale,
     setPrintRequisites,
     clearPrintRequisites,
     createPrintFile,
-  }
+  }),
 )(WrappedPrintPanel)
 
 export default PrintPanel
