@@ -94,7 +94,11 @@ export default function reducer (state = FlexGridState(), action) {
             flexGrid: FlexGrid(),
           })
       } else {
-        return update(state, 'flexGrid', FlexGrid())
+        return merge(state, {
+          visible: false,
+          present: false,
+          flexGrid: FlexGrid(),
+        })
       }
     }
     default:
