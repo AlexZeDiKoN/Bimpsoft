@@ -47,16 +47,20 @@ export const printFileRemove = (id) => ({
   payload: id,
 })
 
+// TODO: заменить реальными данными
+const signatories = [
+  { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
+  { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
+]
+const confirmDate = `22.12.18`
+
 export const createPrintFile = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { printFileCreate } }) => {
     const state = getState()
     const {
       webMap: { objects },
       print: {
-        requisites: {
-          dpi,
-          projectionGroup,
-        },
+        requisites,
         printScale,
         selectedZone,
       },
@@ -64,7 +68,17 @@ export const createPrintFile = () =>
     if (selectedZone) {
       const { southWest, northEast } = selectedZone
       const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, projectionGroup, printScale)
+      const svg = getMapObjectsSvg({
+        objects,
+        southWest,
+        northEast,
+        projection,
+        requisites,
+        printScale,
+        signatories,
+        confirmDate,
+      })
+      const { dpi, projectionGroup } = requisites
       const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, projectionGroup, printScale })
       const { id } = result
       dispatch(batchActions([
