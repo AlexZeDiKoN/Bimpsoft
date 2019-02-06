@@ -11,6 +11,7 @@ export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_CREATED = action('FLEX_GRID_CREATED')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
+export const FLEX_GRID_CALC_UNITS = action('FLEX_GRID_CALC_UNITS')
 
 export const setFlexGridDirections = (value) => ({
   type: SET_DIRECTIONS,
@@ -68,3 +69,14 @@ export const getFlexGrid = (mapId) =>
     type: GET_FLEXGRID,
     payload: await getFlexGrid(mapId),
   }))
+
+export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
+  const state = getState()
+  const objects = state.webMap.objects
+  const units = state.orgStructures.unitsById
+
+}
+
+export const fixInstance = (flexGrid) => (_1, _2, extra) => {
+  extra.flexGridInstance = flexGrid
+}

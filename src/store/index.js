@@ -12,6 +12,7 @@ import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
 import initNavigationConnection from './initNavigationConnection'
 import { catchError } from './actions/asyncAction'
+// import { setVariant } from './actions/maps'
 
 let store = null
 
@@ -48,6 +49,10 @@ export default function initStore (options = {}) {
 
   initSocketEvents(store.dispatch, store.getState)
   catchError(loadAllParams)()(store.dispatch)
+
+  /* setTimeout(() => {
+    store.dispatch(setVariant('5c110ade6de3ac15a1000002', 555))
+  }, 6000) */
 
   return store
 }

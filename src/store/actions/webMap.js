@@ -6,6 +6,7 @@ import { validateObject } from '../../utils/validation'
 import entityKind from '../../components/WebMap/entityKind'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
+import { activeMapSelector } from '../selectors'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -143,7 +144,13 @@ export const deleteObject = (id) =>
 
 export const refreshObject = (id) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
-    const { layers: { byId }, webMap: { objects } } = getState()
+    const state = getState()
+    const { layers: { byId }, webMap: { objects }, flexGrid: { flexGrid: currentGrid } } = state
+    if (currentGrid && currentGrid.id === id) {
+      const mapId = activeMapSelector(state)
+      mapId && await dispatch(flexGrid.getFlexGrid(mapId))
+      return
+    }
     if (!objects.get(id)) {
       return
     }
