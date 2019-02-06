@@ -27,8 +27,8 @@ build:
   <<: *base-dev
   script:
     - echo Building project...
-    - call yarn --production
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
+    - call npm i
+#    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
