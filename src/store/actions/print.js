@@ -55,7 +55,7 @@ export const createPrintFile = () =>
       print: {
         requisites: {
           dpi,
-          coordinatesType,
+          projectionGroup,
         },
         printScale,
         selectedZone,
@@ -64,8 +64,8 @@ export const createPrintFile = () =>
     if (selectedZone) {
       const { southWest, northEast } = selectedZone
       const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, coordinatesType, printScale)
-      const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, coordinatesType, printScale })
+      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, projectionGroup, printScale)
+      const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, projectionGroup, printScale })
       const { id } = result
       dispatch(batchActions([
         printFileSet({ id }),
