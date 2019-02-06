@@ -5,7 +5,7 @@ import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
 import { circleToD, getAmplifiers, pointsToD, rectToPoints, stroked, waved } from './lines'
-import { generateTextSymbolSvg } from './index'
+import { generateTextSymbolSvg, stringRender } from './index'
 
 const mapObjectBuilders = new Map()
 let lastMaskId = 1
@@ -87,7 +87,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data) => {
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data) => {
   const { outlineColor = 'none', coordToPixels, scale } = commonData
   const { attributes, point } = data
-  const svg = generateTextSymbolSvg({ ...attributes.toJS(), outlineColor }, 10 * scale)
+  const svg = generateTextSymbolSvg(stringRender)({ ...attributes.toJS(), outlineColor }, 10 * scale)
   return svgToG(svg, coordToPixels(point))
 })
 mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data) => {

@@ -1,5 +1,6 @@
 import proj4 from 'proj4'
 import { roundXY } from '../../utils/svg/lines'
+import { printLegend, stringRender } from '../index'
 import { getMapObjectSvg } from './mapObject'
 
 const PRINT_SCALE = 10
@@ -22,7 +23,11 @@ const getCoordToPixels = (projection, dpi, scale, { min, max }) => {
   }
 }
 
-export const getMapObjectsSvg = (objects, southWest, northEast, projection, dpi, printScale) => {
+export const getMapObjectsSvg = ({
+  objects, southWest, northEast, projection, requisites, signatories, printScale, confirmDate,
+}) => {
+  const { dpi } = requisites
+
   const [ lngSW, latSW ] = proj4(projection, [ southWest.lng, southWest.lat ])
   const [ lngNE, latNE ] = proj4(projection, [ northEast.lng, northEast.lat ])
 
@@ -42,6 +47,19 @@ export const getMapObjectsSvg = (objects, southWest, northEast, projection, dpi,
   const commonData = { bounds, coordToPixels, scale: PRINT_SCALE }
   const groups = objects.map(getMapObjectSvg(commonData)).filter(Boolean).toArray()
 
+  const widthMM = (boundsCoord.max.lng - boundsCoord.min.lng) / printScale * 1000
+  const heightMM = (boundsCoord.max.lat - boundsCoord.min.lat) / printScale * 1000
+
+  const legendEls = printLegend(stringRender)({
+    widthMM,
+    heightMM,
+    dpi,
+    requisites,
+    signatories,
+    confirmDate,
+    printScale,
+  })
+
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
   return `
@@ -50,5 +68,6 @@ export const getMapObjectsSvg = (objects, southWest, northEast, projection, dpi,
   x="0px" y="0px" width="${width}px" height="${height}px"
   viewBox="${bounds.min.x} ${bounds.min.y} ${width} ${height}" fill="none">
   ${groups.join('\r\n')}
+  <g transform="scale(${width / widthMM}, ${height / heightMM})" >${legendEls.join('\r\n')}</g>
 </svg>`
 }

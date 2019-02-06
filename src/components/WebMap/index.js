@@ -40,6 +40,7 @@ import {
   geomPointEquals,
   createCoordinateMarker,
 } from './Tactical'
+import { MapProvider } from './MapContext'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -183,7 +184,7 @@ const setScaleOptions = (layer, params) => {
 
 export default class WebMap extends React.PureComponent {
   static propTypes = {
-    children: PropTypes.func,
+    children: PropTypes.any,
     // from Redux store
     center: PropTypes.shape({
       lat: PropTypes.number,
@@ -1235,7 +1236,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        {this.map && this.props.children(this.map)}
+        <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
       </div>
