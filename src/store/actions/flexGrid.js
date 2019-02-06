@@ -71,9 +71,9 @@ export const getFlexGrid = (mapId) =>
   }))
 
 export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
-  const state = getState()
-  const objects = state.webMap.objects
-  const units = state.orgStructures.unitsById
+  // const state = getState()
+  // const objects = state.webMap.objects
+  // const units = state.orgStructures.unitsById
 
 }
 
