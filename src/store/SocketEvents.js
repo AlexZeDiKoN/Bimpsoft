@@ -21,6 +21,9 @@ const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }
 const unlockObject = (dispatch) => ({ objectId }) =>
   catchError(webMapActions.objectUnlocked)(objectId)(dispatch)
 
+// const printStatusIndicator = (dispatch) => (data) =>
+//   console.log(data)
+
 export const initSocketEvents = (dispatch, getState) => {
   let socket
   try {
@@ -33,4 +36,5 @@ export const initSocketEvents = (dispatch, getState) => {
   socket.on('update object', updateObject(dispatch))
   socket.on('lock object', lockObject(dispatch, getState))
   socket.on('unlock object', unlockObject(dispatch))
+  // socket.on('printStatus', printStatusIndicator(dispatch))
 }

@@ -118,7 +118,7 @@ class PrintPanel extends React.Component {
     const { setRequisitesFunc, colors, legendTableType } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
-      DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_COORDINATES_TYPES,
+      DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
     } = Print
     const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
     return (
@@ -159,14 +159,14 @@ class PrintPanel extends React.Component {
           <Row className='printPanel_coordinatesType invisible' label={i18n.COORDINATES_TYPE}>
             {
               getFieldDecorator(
-                PRINT_SELECTS_KEYS.COORDINATES_TYPES, {
+                PRINT_SELECTS_KEYS.PROJECTION_GROUP, {
                   initialValue: coordinatesType,
                 },
               )(
                 <Select
                   onChange={(value) => this.setPrintParameters(value, PRINT_SELECTS_KEYS.COORDINATES_TYPES)}
                 >
-                  {this.createSelectChildren(PRINT_COORDINATES_TYPES)}
+                  {this.createSelectChildren(PRINT_PROJECTION_GROUP)}
                 </Select>,
               )
             }

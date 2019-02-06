@@ -6,7 +6,7 @@ const initState = {
   printScale: 100000,
   requisites: {
     dpi: Print.DPI_TYPES[3],
-    coordinatesType: Print.PRINT_COORDINATES_TYPES[0],
+    projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
   },
   selectedZone: null,
 }
