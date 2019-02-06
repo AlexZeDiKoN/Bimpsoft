@@ -73,6 +73,7 @@ const WebMapContainer = connect(
     flexGridCreated: flexGrid.flexGridCreated,
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
+    fixFlexGridInstance: flexGrid.fixInstance,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

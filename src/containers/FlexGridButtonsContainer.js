@@ -16,6 +16,7 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = {
   showFlexGridOptions: flexGridActions.showFlexGridOptions,
   hideFlexGrid: flexGridActions.hideFlexGrid,
+  calcFlexGridUnits: flexGridActions.calcUnits,
 }
 
 const FlexGridButtonsContainer = connect(

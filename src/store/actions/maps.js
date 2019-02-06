@@ -6,6 +6,7 @@ export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
 export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
 export const EXPAND_MAP = action('EXPAND_MAP')
+export const SET_CALC_VARIANT = action('SET_CALC_VARIANT')
 
 export const updateMap = (mapData) => ({
   type: UPDATE_MAP,
@@ -30,6 +31,21 @@ export const deleteAllMaps = () => asyncAction.withNotification(
     dispatch(layers.deleteAllLayers())
   }
 )
+
+export const setVariant = (mapId, variantId) => ({
+  type: SET_CALC_VARIANT,
+  payload: { mapId, variantId },
+})
+
+export const clearVariant = (variantId) => ({
+  type: SET_CALC_VARIANT,
+  payload: { mapId: null, variantId },
+})
+
+export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
+  await dispatch(openMapFolder(mapId))
+  return dispatch(setVariant(mapId, variantId))
+}
 
 export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotification(
   async (dispatch, _, { explorerApi: { getMap } }) => {

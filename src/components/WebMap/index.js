@@ -226,6 +226,7 @@ export default class WebMap extends React.PureComponent {
       }),
       list: PropTypes.array,
       preview: PropTypes.object,
+      previewCoordinateIndex: PropTypes.any,
     }),
     isGridActive: PropTypes.bool.isRequired,
     backVersion: PropTypes.string,
@@ -261,6 +262,7 @@ export default class WebMap extends React.PureComponent {
     flexGridCreated: PropTypes.func,
     flexGridChanged: PropTypes.func,
     flexGridDeleted: PropTypes.func,
+    fixFlexGridInstance: PropTypes.func,
   }
 
   constructor (props) {
@@ -1107,6 +1109,7 @@ export default class WebMap extends React.PureComponent {
       flexGridCreated,
       flexGridChanged,
       activeMapId,
+      fixFlexGridInstance,
     } = this.props
     const layer = new L.FlexGrid(
       this.map.getBounds().pad(-0.2),
@@ -1133,6 +1136,7 @@ export default class WebMap extends React.PureComponent {
       layer.addTo(this.map)
     }
     this.flexGrid = layer
+    fixFlexGridInstance && fixFlexGridInstance(layer)
     const geometry = getGeometry(layer)
     if (!id) {
       flexGridCreated && flexGridCreated(activeMapId, geometry, { directions, zones })
@@ -1142,10 +1146,15 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateFlexGrid = (flexGridData) => {
-    if ((!flexGridData.id || !!flexGridData.deleted) && this.flexGrid) {
+    const {
+      fixFlexGridInstance,
+    } = this.props
+    const actual = flexGridData.id && !flexGridData.deleted
+    if (!actual && this.flexGrid) {
       this.flexGrid.removeFrom(this.map)
       delete this.flexGrid
-    } else {
+      fixFlexGridInstance && fixFlexGridInstance(null)
+    } else if (actual && !this.flexGrid) {
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
     }

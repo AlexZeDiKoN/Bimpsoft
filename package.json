@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "4.03.236",
+  "version": "4.03.238",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^4.3.123",
@@ -31,7 +31,7 @@
     "react": "^16.7.0",
     "react-color": "^2.14.1",
     "react-dom": "^16.7.0",
-    "react-draggable": "^3.0.5",
+    "react-draggable": "^3.1.1",
     "react-easy-swipe": "0.0.16",
     "react-focus-lock": "^1.17.6",
     "react-redux": "^6.0.0",
