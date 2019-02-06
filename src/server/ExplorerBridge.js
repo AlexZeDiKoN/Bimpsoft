@@ -5,6 +5,7 @@ import { catchError } from '../store/actions/asyncAction'
 const ACTION_READY = 'ready'
 const ACTION_INIT = 'init'
 const ACTION_OPEN = 'open'
+const ACTION_OPEN_VARIANT = 'open variant'
 const ACTION_CLOSE = 'close'
 
 export default class ExplorerBridge {
@@ -48,6 +49,12 @@ export default class ExplorerBridge {
         console.info('action', ACTION_OPEN)
         const { mapId, layerId } = data
         catchError(maps.openMapFolder)(mapId, layerId)(this.store.dispatch)
+        break
+      }
+      case ACTION_OPEN_VARIANT: {
+        console.info('action', ACTION_OPEN_VARIANT)
+        const { mapId, variantId } = data
+        catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
         break
       }
       default:

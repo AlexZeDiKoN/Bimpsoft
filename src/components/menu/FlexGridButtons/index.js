@@ -15,6 +15,7 @@ export default class SelectionButtons extends React.Component {
     visible: PropTypes.bool,
     showFlexGridOptions: PropTypes.func,
     hideFlexGrid: PropTypes.func,
+    calcFlexGridUnits: PropTypes.func,
   }
 
   render () {
@@ -23,26 +24,40 @@ export default class SelectionButtons extends React.Component {
       visible,
       showFlexGridOptions,
       hideFlexGrid,
+      calcFlexGridUnits,
     } = this.props
 
     if (!isEditMode) {
       return null
     }
 
-    const handler = visible ? hideFlexGrid : showFlexGridOptions
-    const icon = visible
+    const dropHandler = visible ? hideFlexGrid : showFlexGridOptions
+    const calcHandler = visible ? calcFlexGridUnits : null
+    const dropIcon = visible
       ? iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_ACTIVE
       : iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_DEFAULT
+    const calcIcon = visible
+      ? iconNames.NONE_ICON_DEFAULT
+      : iconNames.NONE_ICON_DISABLE
+    const calcIconHover = visible
+      ? iconNames.NONE_ICON_HOVER
+      : iconNames.NONE_ICON_DISABLE
 
     return (
       <>
         <MenuDivider />
-        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={handler} />
+        <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={dropHandler} />
         <IconButton
           title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`}
-          icon={icon}
+          icon={dropIcon}
           hoverIcon={iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_HOVER}
-          onClick={handler}
+          onClick={dropHandler}
+        />
+        <IconButton
+          title={i18n.CALCULATE}
+          icon={calcIcon}
+          hoverIcon={calcIconHover}
+          onClick={calcHandler}
         />
       </>
     )

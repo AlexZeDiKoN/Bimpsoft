@@ -1,11 +1,15 @@
 import { maps } from '../actions'
 
-const defItem = { }
-const initState = { byId: {}, expandedIds: {} }
+const defItem = {}
+const initState = {
+  byId: {},
+  expandedIds: {},
+  calc: {},
+}
 
 export default function reducer (state = initState, action) {
   let { byId } = state
-  const { type } = action
+  const { type, payload } = action
   switch (type) {
     case maps.UPDATE_MAP: {
       const { mapData } = action
@@ -38,6 +42,27 @@ export default function reducer (state = initState, action) {
         delete expandedIds[id]
       }
       return { ...state, expandedIds }
+    }
+    case maps.SET_CALC_VARIANT: {
+      let calc = { ...state.calc }
+      const { mapId, variantId } = payload
+      if (mapId) {
+        if (!variantId && calc[mapId]) {
+          delete calc[mapId]
+        } else if (calc[mapId] !== variantId) {
+          calc[mapId] = variantId
+        }
+      } else if (!variantId) {
+        calc = {}
+      } else {
+        Object.entries(calc)
+          .forEach(([ key, value ]) => {
+            if (value === variantId) {
+              delete calc[key]
+            }
+          })
+      }
+      return { ...state, calc }
     }
     default:
       return state

@@ -192,3 +192,4 @@ export const FLEX_GRID_SHORTCUT = `Alt + R`
 export const DIRECTIONS_AMOUNT = `Кількість напрямків`
 export const DIRECTION_ZONES = `Зони напрямків`
 export const CREATE = `Створити`
+export const CALCULATE = `Розрахувати`
