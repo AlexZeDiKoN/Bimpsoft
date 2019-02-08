@@ -1,5 +1,6 @@
 /* global L */
-import { generateTextSymbolSvg, stringRender } from '../../../../utils'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { renderTextSymbol } from '../../../../utils'
 import { setActivePointSignColors, getSvgNodeFromString } from './utils'
 
 const MIN_ZOOM = 0
@@ -33,9 +34,8 @@ const TextIcon = L.Icon.extend({
     const { data, zoom, scaleOptions } = this.options
     const { attributes } = data
     const scale = this.getScale(zoom, scaleOptions)
-    const svg = generateTextSymbolSvg(stringRender)(
-      { ...attributes.toJS(), outlineColor: 'var(--outline-color)' },
-      scale
+    const svg = renderToStaticMarkup(
+      renderTextSymbol({ ...attributes.toJS(), outlineColor: 'var(--outline-color)' }, scale)
     )
     const anchor = { x: 0, y: 0 }
     const node = getSvgNodeFromString(svg)
