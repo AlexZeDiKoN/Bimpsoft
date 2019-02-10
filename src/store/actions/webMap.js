@@ -4,9 +4,9 @@ import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
 import entityKind from '../../components/WebMap/entityKind'
+import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
-import { activeMapSelector } from '../selectors'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null

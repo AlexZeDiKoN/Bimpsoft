@@ -1,6 +1,8 @@
+import React from 'react'
+import ReactDOMServer from 'react-dom/server'
 import proj4 from 'proj4'
 import { roundXY } from '../../utils/svg/lines'
-import { printLegend, stringRender } from '../index'
+import { printLegend } from '../index'
 import { getMapObjectSvg } from './mapObject'
 
 const PRINT_SCALE = 10
@@ -50,24 +52,20 @@ export const getMapObjectsSvg = ({
   const widthMM = (boundsCoord.max.lng - boundsCoord.min.lng) / printScale * 1000
   const heightMM = (boundsCoord.max.lat - boundsCoord.min.lat) / printScale * 1000
 
-  const legendEls = printLegend(stringRender)({
-    widthMM,
-    heightMM,
-    dpi,
-    requisites,
-    signatories,
-    confirmDate,
-    printScale,
-  })
-
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
+
+  const legendString = ReactDOMServer.renderToStaticMarkup(
+    <g transform={`scale(${width / widthMM}, ${height / heightMM})`} >
+      {printLegend({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale })}
+    </g>
+  )
   return `
 <svg
   xmlns="http://www.w3.org/2000/svg" version="1.2"
   x="0px" y="0px" width="${width}px" height="${height}px"
   viewBox="${bounds.min.x} ${bounds.min.y} ${width} ${height}" fill="none">
   ${groups.join('\r\n')}
-  <g transform="scale(${width / widthMM}, ${height / heightMM})" >${legendEls.join('\r\n')}</g>
+  ${legendString}
 </svg>`
 }

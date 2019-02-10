@@ -1,5 +1,7 @@
+/* eslint-disable react/prop-types */
+import React, { Fragment } from 'react'
 import { Align } from '../../constants'
-import { rectToPoints } from './lines'
+import { pointsToD, rectToPoints } from './lines'
 
 const lineCoef = 1.2
 
@@ -44,7 +46,7 @@ export const getLines = (longText, maxWidth, font) => {
   return lines
 }
 
-export const generateTextSymbolSvg = (renderStrategy) => ({
+export const renderTextSymbol = ({
   transparentBackground,
   displayAnchorLine,
   anchorLineWithArrow,
@@ -70,15 +72,7 @@ export const generateTextSymbolSvg = (renderStrategy) => ({
     const lineStrokeWidth = underline ? (bold ? 7 : 4) * scale / 100 : 0
     fullHeight += lineSpace + lineStrokeWidth
 
-    return {
-      underline,
-      font,
-      align,
-      y,
-      text,
-      lineSpace,
-      lineStrokeWidth,
-    }
+    return { underline, font, align, y, text, lineSpace, lineStrokeWidth }
   })
 
   maxWidth += 6
@@ -88,26 +82,22 @@ export const generateTextSymbolSvg = (renderStrategy) => ({
   if (outlineColor) {
     const strokeWidth = 12 * scale / 100
     fullHeight = fullHeight + strokeWidth / 2
-    commonProps = {
-      stroke: outlineColor,
-      strokeWidth,
-      paintOrder: 'stroke',
-      fill: '#000',
-    }
+    commonProps = { stroke: outlineColor, strokeWidth, paintOrder: 'stroke', fill: '#000' }
   }
 
-  const els = []
-
-  texts.forEach(({ text, font, align, y, lineSpace, lineStrokeWidth }, i) => {
-    const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
-    const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
-    els.push(renderStrategy.text({ ...commonProps, text, font, textAnchor, x, y, key: `text${i}` }))
-    lineStrokeWidth && els.push(renderStrategy.path({
-      ...commonProps,
-      points: rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }),
-      key: `line${i}`,
-    }))
-  })
-
-  return renderStrategy.svg(els, { width: maxWidth, height: fullHeight })
+  return <svg width={maxWidth} height={fullHeight} viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg">
+    {texts.map(({ text, font, align, y, lineSpace, lineStrokeWidth }, i) => {
+      const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
+      const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
+      return <Fragment key={i}>
+        <text fill="#000" style={{ font, whiteSpace: 'pre' }} x={x} y={y} textAnchor={textAnchor} {...commonProps}>
+          {text}
+        </text>
+        {Boolean(lineStrokeWidth) && <path
+          {...commonProps}
+          d={pointsToD(rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }), true)}
+        />}
+      </Fragment>
+    })}
+  </svg>
 }

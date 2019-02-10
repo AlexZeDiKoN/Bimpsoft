@@ -1,6 +1,15 @@
-import { PRINT_PANEL_KEYS } from '../../constants/PrintPanel'
-import { rectToPoints } from './lines'
+/* eslint-disable react/prop-types */
+import React, { Fragment } from 'react'
+import i18n from '../../i18n'
+import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from '../../constants/PrintPanel'
+import { pointsToD, rectToPoints } from './lines'
 import { getFont, getLines, getTextWidth } from './index'
+
+const TextAnchors = {
+  START: 'start',
+  END: 'end',
+  MIDDLE: 'middle',
+}
 
 const SIZE_1 = 1
 const SIZE_2 = 2 / 3
@@ -9,90 +18,234 @@ const SIZE_4 = 1 / 3
 const SIZE_5 = 1 / 4
 const SIZE_6 = 1 / 5
 
+const INDICATORS_WIDTH = 300
+const INDICATORS_HEIGHT = 200
+const INDICATORS_PADDING = 15
+
+const SIGN_MARGING_LEFT = 200
+const SIGN_HEIGHT = 200
+const SIGN_COLOR_ROW_WIDTH = 80
+const SIGN_DESCR_ROW_WIDTH = 220
+
 const getH = (n) => n <= 6 ? 15 : n <= 10 ? 30 : n <= 20 ? 40 : n <= 30 ? 50 : 60
+
+const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
+  <text
+    stroke="#fff"
+    strokeWidth={fontHeight / 5}
+    fill="none"
+    fontSize={fontHeight}
+    fontFamily="Arial"
+    x={x}
+    y={y + fontHeight * 0.77}
+    textAnchor={align}
+  >{text}</text>
+  <text
+    fill="#000"
+    fontSize={fontHeight}
+    fontFamily="Arial"
+    x={x}
+    y={y + fontHeight * 0.77}
+    textAnchor={align}
+  >{text}</text>
+</Fragment>
 
 /**
  * @description Renderer used only in Component.render method.
  * It have any context values that not needed outside Component.render
  */
 class Renderer {
-  constructor (renderStrategy, width, height, h) {
-    this.renderStrategy = renderStrategy
+  constructor (width, height, h) {
     this.width = width
     this.height = height
     this.h = h
     this.top = 0
     this.bottom = height
+    this.d = []
   }
 
-  topText (text, margin, scale) {
-    if (!text) {
-      return null
-    }
-
-    const fontHeight = this.h * scale
-    const lines = getLines(text, this.width / 2, getFont(fontHeight))
-    return lines.map(({ text }) => {
-      const y = this.top + margin
-      margin = 5
-      this.top = y + fontHeight
-      return this.renderStrategy.text({
-        key: text,
-        y,
-        x: this.width / 2,
-        width: this.width,
-        height: fontHeight,
-        font: getFont(fontHeight),
-        fill: '#000000',
-        textAnchor: 'middle',
-        alignmentBaseline: 'hanging',
-        text,
-      })
-    })
-  }
-
-  bottomText (text, margin, scale, align = 'start', width = this.width / 2) {
-    if (!text) {
-      return null
-    }
+  textToLines (text, scale, align, width) {
     const fontHeight = this.h * scale
     const lines = getLines(text, width, getFont(fontHeight))
-    const x = (align === 'start')
+    const x = (align === TextAnchors.START)
       ? ((this.width - width) / 2)
-      : (align === 'end')
+      : (align === TextAnchors.END)
         ? ((this.width + width) / 2)
         : (this.width / 2)
-    return lines.reverse().map(({ text }) => {
-      const y = this.bottom - margin
-      margin = 5
-      this.bottom = y - fontHeight
-      return this.renderStrategy.text({
-        key: text,
-        y,
-        x,
-        width,
-        height: fontHeight,
-        font: getFont(fontHeight),
-        fill: '#000000',
-        textAnchor: align,
-        alignmentBaseline: 'hanging',
-        text,
-      })
-    })
+    return { fontHeight, lines, x, align }
   }
 
-  indicator (text) {
-    const els = []
-    if (text) {
-      if (!this.indicatorTop) {
-        els.push(this.topText('ОСНОВНІ ПОКАЗНИКИ', 30, SIZE_3))
-        this.top += 20
-        this.indicatorTop = this.top
-      }
-      els.push(this.topText(text, 20, SIZE_3))
-      this.indicatorBottom = this.top
+  topText (text, margin, scale, align = TextAnchors.START, width = this.width / 2) {
+    if (!text) {
+      return null
     }
-    return els
+    const { fontHeight, lines, x } = this.textToLines(text, scale, align, width)
+    return <>
+      {lines.map(({ text }, i) => {
+        const y = this.top + margin
+        margin = 5
+        this.top = y + fontHeight
+        return renderText(text, x, y, fontHeight, align, i)
+      })}
+    </>
+  }
+
+  bottomText (text, margin, scale, align = TextAnchors.START, width = this.width / 2) {
+    if (!text) {
+      return null
+    }
+    const { fontHeight, lines, x } = this.textToLines(text, scale, align, width)
+
+    return <>
+      {lines.map(({ text }, i) => {
+        const y = this.bottom - margin
+        margin = 5
+        this.bottom = y - fontHeight
+        return renderText(text, x, y, fontHeight, align, i)
+      })}
+    </>
+  }
+
+  signs (...signs) {
+    signs = signs.filter(({ text, color }) => Boolean(text) || Boolean(color))
+
+    if (signs.length === 0) {
+      return null
+    }
+
+    const signsFrameY = this.bottom - SIGN_HEIGHT
+    const signsFrameX = this.width - SIGN_MARGING_LEFT - SIGN_DESCR_ROW_WIDTH - SIGN_COLOR_ROW_WIDTH
+
+    const titleFontSize = SIZE_2 * this.h
+    const title = renderText(
+      i18n.LEGEND.toUpperCase(),
+      signsFrameX + (SIGN_DESCR_ROW_WIDTH + SIGN_COLOR_ROW_WIDTH) / 2,
+      signsFrameY - 10,
+      titleFontSize,
+      TextAnchors.MIDDLE
+    )
+
+    this.bottom = signsFrameY - 10
+
+    const cellMerging = 10
+    const wrapHeight = 5
+    const width = INDICATORS_WIDTH
+    const height = INDICATORS_HEIGHT
+    const x = signsFrameX
+    let y = signsFrameY
+    const rowHeight = height / 5
+    const colorRectSize = rowHeight / 2
+
+    // frame
+    this.d.push(pointsToD(rectToPoints({ x, y, width, height }), true))
+
+    // vertical line
+    this.d.push(pointsToD([ { x: x + SIGN_COLOR_ROW_WIDTH, y }, { x: x + SIGN_COLOR_ROW_WIDTH, y: y + height } ]))
+
+    const signTitle = renderText(
+      i18n.SIGN,
+      signsFrameX + SIGN_COLOR_ROW_WIDTH / 2,
+      y + (rowHeight - titleFontSize) / 2,
+      titleFontSize,
+      TextAnchors.MIDDLE
+    )
+    const descrTitle = renderText(
+      i18n.SIGN_CONTENT,
+      signsFrameX + SIGN_COLOR_ROW_WIDTH + SIGN_DESCR_ROW_WIDTH / 2,
+      y + (rowHeight - titleFontSize) / 2,
+      titleFontSize,
+      TextAnchors.MIDDLE
+    )
+
+    // line under title
+    y += rowHeight
+    this.d.push(pointsToD([ { x, y }, { x: x + width, y } ]))
+
+    const els = []
+    signs.forEach(({ text, color }, rowI) => {
+      if (text) {
+        const xDescr = signsFrameX + SIGN_COLOR_ROW_WIDTH + cellMerging
+        const { fontHeight, lines, align } =
+          this.textToLines(text, SIZE_2, TextAnchors.START, SIGN_DESCR_ROW_WIDTH - cellMerging * 2)
+        let yDescr = y + (rowHeight - fontHeight * lines.length - wrapHeight * (lines.length - 1)) / 2
+        lines.forEach(({ text }, lineI) => {
+          els.push(renderText(text, xDescr, yDescr, fontHeight, align, `${rowI}-${lineI}`))
+          yDescr += wrapHeight + fontHeight
+        })
+      }
+      if (color) {
+        const colorD = pointsToD(rectToPoints({
+          x: x + (SIGN_COLOR_ROW_WIDTH - colorRectSize) / 2,
+          y: y + (rowHeight - colorRectSize) / 2,
+          width: colorRectSize,
+          height: colorRectSize,
+        }), true)
+        els.push(<path key={`color-${rowI}`} fill={color} d={colorD}/>)
+      }
+      y += rowHeight
+      this.d.push(pointsToD([ { x, y }, { x: x + width, y } ]))
+    })
+
+    return <>
+      {title}{signTitle}{descrTitle}{els}
+    </>
+  }
+
+  indicators (...texts) {
+    texts = texts.filter(Boolean)
+    if (texts.length === 0) {
+      return null
+    }
+    const indicatorsFrameY = this.top + 40 + SIZE_3 * this.h
+    const title = this.topText(i18n.MAIN_INDICATORS.toUpperCase(), 20, SIZE_3, TextAnchors.MIDDLE)
+    this.top += 20
+
+    const wrapHeight = 5
+    const textWidth = INDICATORS_WIDTH - INDICATORS_PADDING * 2
+    texts = texts.map((text) => this.textToLines(text, SIZE_3, TextAnchors.START, textWidth))
+    const fillHeight = texts.reduce(
+      (v, { lines, fontHeight }) => v + lines.length * fontHeight + (lines.length - 1) * wrapHeight,
+      0
+    )
+    const margin = (INDICATORS_HEIGHT - INDICATORS_PADDING * 2 - fillHeight) / texts.length
+    let y = this.top + INDICATORS_PADDING + margin / 2.0
+
+    this.d.push(pointsToD(rectToPoints({
+      width: INDICATORS_WIDTH,
+      height: INDICATORS_HEIGHT,
+      x: (this.width - INDICATORS_WIDTH) / 2,
+      y: indicatorsFrameY,
+    }), true))
+
+    return <>
+      {title}
+      {texts.map(({ fontHeight, lines, x, align }, i) => {
+        if (i > 0) {
+          y += margin
+        }
+        return lines.map(({ text }, j) => {
+          if (j > 0) {
+            y += wrapHeight
+          }
+          const el = renderText(text, x, y, fontHeight, TextAnchors.START, `${i}-${j}`)
+          y += fontHeight
+          return el
+        })
+      })}
+    </>
+  }
+
+  topRightTexts (texts) {
+    texts = texts.filter(Boolean)
+    const fontHeight = SIZE_5 * this.h
+    const marging = 30
+    const lineSpace = 5
+    const y = marging
+    const maxWidth = texts.reduce((width, text) => Math.max(width, this.getTextWidth(text, SIZE_5)), 0)
+    const x = this.width - maxWidth - marging
+    return texts.map((text, i) =>
+      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i)
+    )
   }
 
   getTextWidth (text, scale) {
@@ -101,60 +254,63 @@ class Renderer {
   }
 
   frames () {
-    const els = []
-
-    if (this.indicatorTop) {
-      const width = 300
-      const height = this.indicatorBottom - this.indicatorTop + (20)
-      const x = (this.width - width) / 2
-      const y = this.indicatorTop
-      const points = rectToPoints({ width, height, x, y })
-      els.push(this.renderStrategy.path({
-        key: 'indicatorFrame',
-        fill: 'none',
-        stroke: '#000000',
-        strokeWidth: this.h / 20,
-        points,
-      }))
-    }
-    return els
+    return Boolean(this.d.length) &&
+      <path key='indicatorFrame' fill='none' stroke='#000000' strokeWidth={this.h / 10} d={this.d.join(' ')} />
   }
 }
 
-export const printLegend = (renderStrategy) =>
-  ({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale }) => {
-    const h = getH(6)
+export const printLegend = (params) => {
+  const { widthMM, heightMM, requisites, signatories, confirmDate, printScale, classified } = params
+  const h = getH(6)
 
-    const renderer = new Renderer(renderStrategy, widthMM, heightMM, h)
+  const renderer = new Renderer(widthMM, heightMM, h)
 
-    let maxWidth = signatories.reduce((width, { role, name, position }) => Math.max(
-      width,
-      renderer.getTextWidth(role, SIZE_6) + 30 + renderer.getTextWidth(name, SIZE_4),
-      renderer.getTextWidth(position, SIZE_5)
-    ), 0)
-    maxWidth = Math.max(maxWidth, renderer.getTextWidth(confirmDate, SIZE_4))
+  let maxWidth = signatories.reduce((width, { role, name, position }) => Math.max(
+    width,
+    renderer.getTextWidth(role, SIZE_6) + 30 + renderer.getTextWidth(name, SIZE_4),
+    renderer.getTextWidth(position, SIZE_5)
+  ), 0)
+  maxWidth = Math.max(maxWidth, renderer.getTextWidth(confirmDate, SIZE_4))
 
-    const els = [
-      renderer.topText(requisites[PRINT_PANEL_KEYS.FIRST_ROW], 80, SIZE_1),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.SECOND_ROW], 25, SIZE_2),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.THIRD_ROW], 20, SIZE_2),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.FOURTH_ROW], 20, SIZE_2),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.FIFTH_ROW], 20, SIZE_3),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.START], 20, SIZE_3),
-      renderer.topText(requisites[PRINT_PANEL_KEYS.FINISH], 20, SIZE_3),
-      ...renderer.indicator(requisites[PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW]),
-      ...renderer.indicator(requisites[PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW]),
-      ...renderer.indicator(requisites[PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW]),
-      renderer.bottomText(`МАСШТАБ 1:${printScale}`, 50, SIZE_4, 'middle', maxWidth),
-      renderer.bottomText(confirmDate, 10, SIZE_4, 'start', maxWidth),
-    ]
-    signatories.forEach(({ role, name, position }, i) =>
-      els.push(
-        renderer.bottomText(role, 10, SIZE_6, 'start', maxWidth),
-        renderer.bottomText(name, -h * SIZE_6, SIZE_4, 'end', maxWidth),
-        renderer.bottomText(position, 10, SIZE_5, 'start', maxWidth),
-      )
-    )
-    els.push(...renderer.frames())
-    return els
-  }
+  return <>
+    {renderer.topRightTexts([ i18n.MAP_LABEL, classified, i18n.MAP_COPY ])}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.FIRST_ROW], 80, SIZE_1, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.SECOND_ROW], 25, SIZE_2, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.THIRD_ROW], 20, SIZE_2, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.FOURTH_ROW], 20, SIZE_2, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.FIFTH_ROW], 20, SIZE_3, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.START], 20, SIZE_3, TextAnchors.MIDDLE)}
+    {renderer.topText(requisites[PRINT_PANEL_KEYS.FINISH], 20, SIZE_3, TextAnchors.MIDDLE)}
+    {renderer.indicators(
+      requisites[PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW],
+      requisites[PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW],
+      requisites[PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW],
+    )}
+    {renderer.bottomText(`${i18n.SCALE.toUpperCase()} 1:${printScale}`, 50, SIZE_4, TextAnchors.MIDDLE, maxWidth)}
+    {renderer.bottomText(confirmDate, 10, SIZE_4, TextAnchors.START, maxWidth)}
+    {signatories.map(({ role, name, position }, i) => <Fragment key={i}>
+      {renderer.bottomText(role, 10, SIZE_6, TextAnchors.START, maxWidth)}
+      {renderer.bottomText(name, -h * SIZE_6, SIZE_4, TextAnchors.END, maxWidth)}
+      {renderer.bottomText(position, 10, SIZE_5, TextAnchors.START, maxWidth)}
+    </Fragment>)}
+    {renderer.signs(
+      {
+        text: requisites[PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT],
+        color: requisites[COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR],
+      },
+      {
+        text: requisites[PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT],
+        color: requisites[COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR],
+      },
+      {
+        text: requisites[PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT],
+        color: requisites[COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR],
+      },
+      {
+        text: requisites[PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT],
+        color: requisites[COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR],
+      },
+    )}
+    {renderer.frames()}
+  </>
+}
