@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { generateTextSymbolSvg, jsxRender } from '../../../utils'
+import { renderTextSymbol } from '../../../utils'
 
 export default class TextSymbol extends React.PureComponent {
   render () {
@@ -14,9 +14,7 @@ export default class TextSymbol extends React.PureComponent {
       ...otherProps
     } = this.props
     return <div className="textsymbol" { ...otherProps } >
-      {generateTextSymbolSvg(jsxRender)(
-        { transparentBackground, displayAnchorLine, anchorLineWithArrow, magnification, texts }
-      )}
+      {renderTextSymbol({ transparentBackground, displayAnchorLine, anchorLineWithArrow, magnification, texts })}
     </div>
   }
 }

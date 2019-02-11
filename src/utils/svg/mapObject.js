@@ -1,3 +1,4 @@
+import { renderToStaticMarkup } from 'react-dom/server'
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { filterSet } from '../../components/WebMap/patch/SvgIcon/utils'
@@ -5,7 +6,7 @@ import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
 import { circleToD, getAmplifiers, pointsToD, rectToPoints, stroked, waved } from './lines'
-import { generateTextSymbolSvg, stringRender } from './index'
+import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
 let lastMaskId = 1
@@ -87,7 +88,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data) => {
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data) => {
   const { outlineColor = 'none', coordToPixels, scale } = commonData
   const { attributes, point } = data
-  const svg = generateTextSymbolSvg(stringRender)({ ...attributes.toJS(), outlineColor }, 10 * scale)
+  const svg = renderToStaticMarkup(renderTextSymbol({ ...attributes.toJS(), outlineColor }, 10 * scale))
   return svgToG(svg, coordToPixels(point))
 })
 mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data) => {

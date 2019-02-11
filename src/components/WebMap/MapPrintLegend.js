@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import leaflet from 'leaflet'
 import memoizeOne from 'memoize-one'
-import { printLegend, jsxRender } from '../../utils'
+import { printLegend } from '../../utils'
 import { MapPortal, renderZoomable } from './MapContext'
 
 // TODO: заменить реальными данными
@@ -55,12 +55,13 @@ export default class MapPrintLegend extends React.Component {
     selectedZone: PropTypes.object,
     requisites: PropTypes.object,
     printScale: PropTypes.number,
+    securityClassification: PropTypes.object,
   }
 
   getDimension = memoizeOne(getDimension)
 
   renderByZoom = ({ zoom, animZoom, offset, animOffset }) => {
-    const { selectedZone, requisites, printScale } = this.props
+    const { selectedZone, requisites, printScale, securityClassification: { classified } } = this.props
     const { dpi } = requisites
     const { width, height, tx, ty, scale, widthMM, heightMM } =
       this.getDimension(printScale, selectedZone, zoom, animZoom, offset, animOffset)
@@ -70,7 +71,7 @@ export default class MapPrintLegend extends React.Component {
       style={{ pointerEvents: 'none', width, height, transform: `translate(${tx}px,${ty}px) scale(${scale})` }}
       viewBox={`0 0 ${widthMM} ${heightMM}`}
     >
-      {printLegend(jsxRender)({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale })}
+      {printLegend({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale, classified })}
     </svg>
   }
 
