@@ -1,6 +1,8 @@
 import { action } from '../../utils/services'
 import entityKind from '../../components/WebMap/entityKind'
+import { activeMapSelector } from '../selectors'
 import * as asyncAction from './asyncAction'
+import * as maps from './maps'
 
 export const DROP_FLEX_GRID = action('DROP_FLEX_GRID')
 export const SHOW_FLEX_GRID_FORM = action('SHOW_FLEX_GRID_FORM')
@@ -71,10 +73,16 @@ export const getFlexGrid = (mapId) =>
   }))
 
 export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
-  // const state = getState()
-  // const objects = state.webMap.objects
-  // const units = state.orgStructures.unitsById
-
+  const state = getState()
+  const mapId = activeMapSelector(state)
+  const variantId = state.maps.calc[mapId]
+  if (variantId) {
+    // const objects = state.webMap.objects
+    // const units = state.orgStructures.unitsById
+    const result = 'TEST'
+    window.explorerBridge.variantResult(variantId, result)
+  }
+  dispatch(maps.cancelVariant())
 }
 
 export const fixInstance = (flexGrid) => (_1, _2, extra) => {
