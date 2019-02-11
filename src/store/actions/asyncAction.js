@@ -4,6 +4,10 @@ export const ASYNC_ACTION_START = action('ASYNC_ACTION_START')
 export const ASYNC_ACTION_SUCCESS = action('ASYNC_ACTION_SUCCESS')
 export const ASYNC_ACTION_ERROR = action('ASYNC_ACTION_ERROR')
 
+// TODO: Індикацію помилки винести на рівень catchError
+// TODO: Із withNotification прибрати перехват помилки
+// TODO: Потім переконатися, що усі використання withNotification обгорнуті зовні у catchError
+
 export const withNotification = (asyncFunc, payload) => async (dispatch, getState, options) => {
   dispatch({ type: ASYNC_ACTION_START, payload })
   try {

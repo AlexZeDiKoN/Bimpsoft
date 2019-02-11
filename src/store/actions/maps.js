@@ -37,10 +37,17 @@ export const setVariant = (mapId, variantId) => ({
   payload: { mapId, variantId },
 })
 
-export const clearVariant = (variantId) => ({
+export const cancelVariant = (variantId = null) => ({
   type: SET_CALC_VARIANT,
   payload: { mapId: null, variantId },
 })
+
+export const clearVariant = (variantId = null, fromExplorer = false) => {
+  if (!fromExplorer) {
+    window.explorerBridge.cancelVariant(variantId)
+  }
+  return cancelVariant(variantId)
+}
 
 export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
   await dispatch(openMapFolder(mapId))
