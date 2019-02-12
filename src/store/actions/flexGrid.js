@@ -112,7 +112,6 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
         }
       })
     }
-    console.info(result)
     window.explorerBridge.variantResult(variantId, result)
   }
   dispatch(maps.cancelVariant())
