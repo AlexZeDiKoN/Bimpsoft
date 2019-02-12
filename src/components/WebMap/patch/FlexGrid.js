@@ -348,7 +348,7 @@ L.FlexGrid = L.Layer.extend({
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
     const { zones } = this.options
-    this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+    this.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
       if (pointInSvgPolygon.isInside([ x, y ], cell)) {
         result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
       }
