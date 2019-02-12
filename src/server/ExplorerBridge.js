@@ -62,6 +62,7 @@ export default class ExplorerBridge {
       }
       case ACTION_CLOSE: {
         this.abandoned = true
+        catchError(maps.clearVariant)(null, true)(this.store.dispatch)
         break
       }
       case ACTION_OPEN_VARIANT: {

@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
 import entityKind from '../../components/WebMap/entityKind'
-import { activeMapSelector } from '../selectors'
+import { activeMapSelector, visibleLayersSelector } from '../selectors'
 import * as asyncAction from './asyncAction'
 import * as maps from './maps'
 
@@ -13,7 +13,6 @@ export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_CREATED = action('FLEX_GRID_CREATED')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
-// export const FLEX_GRID_CALC_UNITS = action('FLEX_GRID_CALC_UNITS')
 
 export const setFlexGridDirections = (value) => ({
   type: SET_DIRECTIONS,
@@ -66,10 +65,11 @@ export const flexGridDeleted = () => ({
   type: FLEX_GRID_DELETED,
 })
 
-export const getFlexGrid = (mapId) =>
+export const getFlexGrid = (mapId, showFlexGrid) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getFlexGrid } }) => dispatch({
     type: GET_FLEXGRID,
     payload: await getFlexGrid(mapId),
+    showFlexGrid,
   }))
 
 export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
@@ -77,9 +77,35 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
   const mapId = activeMapSelector(state)
   const variantId = state.maps.calc[mapId]
   if (variantId) {
-    // const objects = state.webMap.objects
+    const layers = visibleLayersSelector(state)
+    const objects = state.webMap.objects
+      .filter(({ layer, type }) => Boolean(layers[layer]) && type === entityKind.POINT)
     // const units = state.orgStructures.unitsById
-    const result = 'TEST'
+    const result = []
+    if (flexGridInstance) {
+      const { options: { directions, zones } } = flexGridInstance
+      for (let i = 1; i <= directions; i++) {
+        for (let j = -zones; j <= zones; j++) {
+          if (j !== 0) {
+            result.push({
+              direction: i,
+              zone: j,
+              units: [],
+            })
+          }
+        }
+      }
+      objects.forEach(({ point, unit }) => {
+        const cell = flexGridInstance.isInsideCell(point)
+        if (cell) {
+          const [ d, z ] = cell
+          result
+            .find(({ direction, zone }) => direction === d && zone === z)
+            .units.push(unit)
+        }
+      })
+    }
+    console.info(result)
     window.explorerBridge.variantResult(variantId, result)
   }
   dispatch(maps.cancelVariant())
