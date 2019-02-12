@@ -3,7 +3,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
-import pointInSvgPolygon from 'point-in-svg-polygon'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
@@ -140,14 +139,6 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
-const zoneCode = (value, zones) => {
-  let result = value - zones
-  if (result >= 0) {
-    result += 1
-  }
-  return result
-}
-
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
@@ -244,6 +235,7 @@ export default class WebMap extends React.PureComponent {
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
+    inICTMode: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -352,12 +344,12 @@ export default class WebMap extends React.PureComponent {
       this.updateLockedObjects(lockedObjects)
     }
 
-    if (flexGridVisible !== prevProps.flexGridVisible) {
-      this.showFlexGrid(flexGridVisible)
-    }
-
     if (flexGridData !== prevProps.flexGridData) {
       this.updateFlexGrid(flexGridData)
+    }
+
+    if (flexGridVisible !== prevProps.flexGridVisible) {
+      this.showFlexGrid(flexGridVisible)
     }
   }
 
@@ -584,15 +576,6 @@ export default class WebMap extends React.PureComponent {
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
-      const { x, y } = e.layerPoint
-      if (this.flexGrid && this.props.flexGridVisible) {
-        const zones = this.flexGrid.options.zones
-        this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-          if (pointInSvgPolygon.isInside([ x, y ], cell)) {
-            console.info(`Inside [d:${dirIdx + 1}, z:${zoneCode(zoneIdx, zones)}]`)
-          }
-        }))
-      }
     }
   }
 
@@ -1080,6 +1063,10 @@ export default class WebMap extends React.PureComponent {
     if (show) {
       if (this.flexGrid) {
         this.flexGrid.addTo(this.map)
+        const { inICTMode } = this.props
+        if (inICTMode) {
+          this.map.fitBounds(this.flexGrid.getBounds())
+        }
       } else {
         this.dropFlexGrid()
       }

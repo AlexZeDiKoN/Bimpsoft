@@ -28,7 +28,7 @@ const FlexGridState = Record({
 })
 
 export default function reducer (state = FlexGridState(), action) {
-  const { type, payload } = action
+  const { type, payload, showFlexGrid } = action
   switch (type) {
     case actions.DROP_FLEX_GRID: {
       return merge(state, {
@@ -69,37 +69,30 @@ export default function reducer (state = FlexGridState(), action) {
       return update(state, 'options', false)
     }
     case actions.GET_FLEXGRID: {
-      if (payload) {
-        const {
+      const {
+        id,
+        deleted,
+        attributes: { directions, zones },
+        geometry: [ eternals, directionSegments, zoneSegments ],
+      } = payload
+      return payload
+        ? update(merge(state, {
+          present: !deleted,
+          visible: showFlexGrid || state.visible,
+        }), 'flexGrid', merge, {
           id,
           deleted,
-          attributes: { directions, zones },
-          geometry: [ eternals, directionSegments, zoneSegments ],
-        } = payload
-        return payload
-          ? update(merge(state, {
-            present: !deleted,
-          }), 'flexGrid', merge, {
-            id,
-            deleted,
-            directions,
-            zones,
-            eternals: List(eternals),
-            directionSegments: List(directionSegments),
-            zoneSegments: List(zoneSegments),
-          })
-          : merge(state, {
-            visible: false,
-            present: false,
-            flexGrid: FlexGrid(),
-          })
-      } else {
-        return merge(state, {
+          directions,
+          zones,
+          eternals: List(eternals),
+          directionSegments: List(directionSegments),
+          zoneSegments: List(zoneSegments),
+        })
+        : merge(state, {
           visible: false,
           present: false,
           flexGrid: FlexGrid(),
         })
-      }
     }
     default:
       return state
