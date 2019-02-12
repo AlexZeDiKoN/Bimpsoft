@@ -12,10 +12,12 @@ export const PRINT_REQUISITES = action('PRINT_REQUISITES')
 export const PRINT_REQUISITES_CLEAR = action('PRINT_REQUISITES_CLEAR')
 export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
+export const FILES_TO_PRINT = action('FILES_TO_PRINT')
 
-export const print = (mapId = null) => ({
+export const print = (mapId = null, name = '') => ({
   type: PRINT,
   mapId,
+  name,
 })
 
 export const setPrintScale = (scale) => ({
@@ -37,14 +39,18 @@ export const setSelectedZone = (selectedZone) => ({
   selectedZone,
 })
 
-export const printFileSet = (printFile) => ({
+export const printFileSet = (id, message, name) => ({
   type: PRINT_FILE_SET,
-  payload: printFile,
+  payload: { id, message, name },
 })
 
 export const printFileRemove = (id) => ({
   type: PRINT_FILE_REMOVE,
   payload: id,
+})
+
+export const onFilesToPrint = () => ({
+  type: FILES_TO_PRINT,
 })
 
 export const createPrintFile = () =>
@@ -59,16 +65,17 @@ export const createPrintFile = () =>
         },
         printScale,
         selectedZone,
+        mapName,
       },
     } = state
     if (selectedZone) {
       const { southWest, northEast } = selectedZone
       const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
       const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, projectionGroup, printScale)
-      const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, projectionGroup, printScale })
-      const { id } = result
+      const result = await printFileCreate({ southWest, northEast, dpi, svg, projectionGroup, printScale, mapName })
+      const { id, name } = result
       dispatch(batchActions([
-        printFileSet({ id }),
+        printFileSet(id, 'sent', name),
         print(),
         clearPrintRequisites(),
       ]))

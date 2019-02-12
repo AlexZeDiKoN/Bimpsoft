@@ -3,19 +3,22 @@ import { Print } from '../../constants'
 
 const initState = {
   mapId: null,
+  mapName: '',
   printScale: 100000,
   requisites: {
     dpi: Print.DPI_TYPES[3],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
   },
   selectedZone: null,
+  printFiles: null,
+  filesToPrint: false,
 }
 
 export default function reducer (state = initState, action) {
   const { type, payload } = action
   switch (type) {
     case print.PRINT: {
-      return { ...state, mapId: action.mapId }
+      return { ...state, mapId: action.mapId, mapName: action.name }
     }
     case print.PRINT_SCALE: {
       const printScale = +payload
@@ -34,6 +37,9 @@ export default function reducer (state = initState, action) {
     }
     case print.PRINT_FILE_SET: {
       return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
+    }
+    case print.FILES_TO_PRINT: {
+      return { ...state, filesToPrint: !state.filesToPrint }
     }
     case print.PRINT_FILE_REMOVE: {
       const printFiles = { ...state.printFiles }

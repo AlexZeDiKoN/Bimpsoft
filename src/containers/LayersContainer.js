@@ -49,7 +49,7 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeMapVisibility: (mapId, visible) => dispatch(layers.updateLayersByMapId(mapId, { visible })),
   onChangeMapColor: (mapId, color) => dispatch(layers.updateLayersByMapId(mapId, { color })),
   onCloseMap: (mapId) => dispatch(maps.deleteMap(mapId)),
-  onPrintMap: (mapId) => dispatch(print.print(mapId)),
+  onPrintMap: (mapId, name) => dispatch(print.print(mapId, name)),
   onChangeLayerVisibility: (layerId, visible) => dispatch(layers.updateLayer({ layerId, visible })),
   onChangeLayerColor: (layerId, color) => dispatch(layers.updateLayer({ layerId, color })),
   onSelectLayer: (layerId) => dispatch(layers.selectLayer(layerId)),

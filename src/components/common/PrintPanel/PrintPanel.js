@@ -19,7 +19,7 @@ class PrintPanel extends React.Component {
     form: PropTypes.object.isRequired,
     setPrintScale: PropTypes.func,
     printScale: PropTypes.number,
-    docConfirm: PropTypes.object,
+    docConfirm: PropTypes.array,
     securityClassification: PropTypes.object,
     setPrintRequisites: PropTypes.func,
     clearPrintRequisites: PropTypes.func,

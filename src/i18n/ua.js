@@ -42,6 +42,7 @@ export const REMOVING_SIGNS = 'Видалити знаки?'
 export const CLOSE_MAP = 'Закрити карту?'
 export const CLOSE_MAPS = 'Закриття карт'
 export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
+export const FILES_TO_PRINT = 'Файли на друк'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`

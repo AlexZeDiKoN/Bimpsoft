@@ -2,6 +2,7 @@
 import { getWebmapApi } from '../utils/services'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
+import { printFileSet } from './actions/print'
 import { catchError } from './actions/asyncAction'
 
 const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
@@ -21,8 +22,8 @@ const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }
 const unlockObject = (dispatch) => ({ objectId }) =>
   catchError(webMapActions.objectUnlocked)(objectId)(dispatch)
 
-// const printStatusIndicator = (dispatch) => (data) =>
-//   console.log(data)
+const printGeneratingStatus = (dispatch) => ({ id, message, name }) =>
+  catchError(printFileSet)(id, message, name)(dispatch)
 
 export const initSocketEvents = (dispatch, getState) => {
   let socket
@@ -36,5 +37,5 @@ export const initSocketEvents = (dispatch, getState) => {
   socket.on('update object', updateObject(dispatch))
   socket.on('lock object', lockObject(dispatch, getState))
   socket.on('unlock object', unlockObject(dispatch))
-  // socket.on('printStatus', printStatusIndicator(dispatch))
+  socket.on('printStatus', printGeneratingStatus(dispatch))
 }

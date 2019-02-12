@@ -33,8 +33,8 @@ export default class MapItemComponent extends React.Component {
   })
 
   onPrintMapHandler = () => {
-    const { onPrintMap, data: { mapId } } = this.props
-    onPrintMap && onPrintMap(mapId)
+    const { onPrintMap, data: { mapId, name } } = this.props
+    onPrintMap && onPrintMap(mapId, name)
   }
 
   render () {
