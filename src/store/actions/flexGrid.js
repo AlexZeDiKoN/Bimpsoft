@@ -79,7 +79,7 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
   if (variantId) {
     const layers = visibleLayersSelector(state)
     const objects = state.webMap.objects
-      .filter(({ layer, type }) => Boolean(layers[layer]) && type === entityKind.POINT)
+      .filter(({ layer, type, unit }) => Boolean(layers[layer]) && type === entityKind.POINT && Boolean(unit))
     // const units = state.orgStructures.unitsById
     const result = []
     if (flexGridInstance) {
@@ -95,13 +95,20 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
           }
         }
       }
-      objects.forEach(({ point, unit }) => {
-        const cell = flexGridInstance.isInsideCell(point)
-        if (cell) {
-          const [ d, z ] = cell
-          result
-            .find(({ direction, zone }) => direction === d && zone === z)
-            .units.push(unit)
+      const unitList = []
+      objects.forEach(({ point, unit, layer }) => {
+        if (!unitList.includes(unit)) {
+          const cell = flexGridInstance.isInsideCell(point)
+          if (cell) {
+            const [ d, z ] = cell
+            result
+              .find(({ direction, zone }) => direction === d && zone === z)
+              .units.push({
+                unit,
+                formation: layers[layer].formationId,
+              })
+            unitList.push(unit)
+          }
         }
       })
     }

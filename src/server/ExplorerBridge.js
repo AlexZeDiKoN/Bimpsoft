@@ -28,6 +28,10 @@ export default class ExplorerBridge {
     if (isExplorerOpened) {
       this.send({ action: ACTION_READY })
     }
+
+    setTimeout(() => {
+      catchError(maps.openMapFolderVariant)('5c0e38556a16f415a1000001', 555)(this.store.dispatch)
+    }, 7000)
   }
 
   send = (obj) => {
