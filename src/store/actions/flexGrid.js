@@ -96,7 +96,7 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
         }
       }
       const unitList = []
-      objects.forEach(({ point, unit, layer }) => {
+      objects.forEach(({ id, point, unit, layer }) => {
         if (!unitList.includes(unit)) {
           const cell = flexGridInstance.isInsideCell(point)
           if (cell) {
@@ -104,6 +104,7 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
             result
               .find(({ direction, zone }) => direction === d && zone === z)
               .units.push({
+                id,
                 unit,
                 formation: layers[layer].formationId,
               })
@@ -112,7 +113,10 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
         }
       })
     }
-    window.explorerBridge.variantResult(variantId, result)
+    window.explorerBridge.variantResult(variantId, result.map(({ units, ...rest }) => ({
+      units: units.map(({ unit, formation }) => ({ unit, formation })),
+      ...rest,
+    })))
   }
   dispatch(maps.cancelVariant())
 }
