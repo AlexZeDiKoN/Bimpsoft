@@ -1,54 +1,74 @@
 import React, { PureComponent } from 'react'
+import { Dropdown, Icon, Menu } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import IconButton from '../IconButton'
 import i18n from '../../../i18n'
+import { Print } from '../../../constants'
+import './style.css'
 
 const iconNames = components.icons.names
 
 export default class PrintFiles extends PureComponent {
-  static propTypes = {}
-
-  constructor (props) {
-    super(props)
-    this.state = {
-      active: false,
-      visible: false,
-    }
+  static propTypes = {
+    printFiles: PropTypes.object,
   }
 
-  onHoverOn = () => {
-    if (!this.state.active) {
-      this.setState({ visible: true })
-    }
+  state = {
+    visible: false,
   }
 
-  onHoverOff = () => {
-    if (!this.state.active) {
-      this.setState({ visible: false })
-    }
+  handleVisibleChange = (flag) => {
+    this.setState({ visible: flag })
   }
 
-  onClickHandler = () => {
-    this.setState((prevState) => ({
-      active: !prevState.active,
-      visible: !prevState.active,
-    }))
+  renderFileBox = () => {
+    const { printFiles } = this.props
+    const files = Object.keys(printFiles)
+    console.log(printFiles)
+    return (
+      <Menu className='fileBox' onClick={this.handleVisibleChange}>
+        {files.map((fileId) => {
+          const { name, message } = printFiles[fileId]
+          return (
+            <Menu.Item key={fileId} className='fileBox_unit'>
+              <div className='fileBox_mapName'>
+                {name}
+              </div>
+              <div className='fileBox_status'>
+                {Print.PRINT_STEPS_KEYS[message]}
+              </div>
+              <div className='fileBox_control'>
+                {message !== 'done'
+                  ? <Icon type="compass" spin />
+                  : <IconButton
+                    title={i18n.OPEN_FILE}
+                    icon={iconNames.MAP_DEFAULT}
+                    hoverIcon={iconNames.MAP_HOVER}
+                  />}
+              </div>
+            </Menu.Item>
+          )
+        })}
+      </Menu>
+    )
   }
 
   render () {
     return (
-      <div onMouseEnter={this.onHoverOn} onMouseLeave={this.onHoverOff}>
+      <Dropdown
+        overlay={this.renderFileBox()}
+        trigger={[ 'click' ]}
+        placement='bottomCenter'
+        onVisibleChange={this.handleVisibleChange}
+        visible={this.state.visible}
+      >
         <IconButton
           title={i18n.FILES_TO_PRINT}
           icon={this.state.visible ? iconNames.SAVE_ACTIVE : iconNames.SAVE_DEFAULT}
           hoverIcon={iconNames.SAVE_HOVER}
-          onClick={this.onClickHandler}
         />
-        {this.state.visible && <div style={{ position: 'absolute', color: 'red' }}>
-          qwerqwerqwer
-        </div>}
-      </div>
+      </Dropdown>
     )
   }
 }

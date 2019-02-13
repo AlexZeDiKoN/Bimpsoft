@@ -5,22 +5,12 @@ import { print, viewModes, webMap } from '../store/actions'
 
 const mapStateToProps = (store) => {
   const {
-    viewModes: {
-      [viewModesKeys.sidebar]: isSidebarShow,
-      [viewModesKeys.settings]: isSettingsShow,
-      searchEmpty: searchFailed,
-    },
     print: {
       printFiles,
-      filesToPrint,
     },
   } = store
   return {
-    isSettingsShow,
-    isSidebarShow,
-    searchFailed,
     printFiles,
-    filesToPrint,
   }
 }
 

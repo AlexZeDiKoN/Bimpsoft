@@ -22,8 +22,6 @@ export default class RightMenu extends React.Component {
     onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
-    onFilesToPrint: PropTypes.func,
-    filesToPrint: PropTypes.bool,
     printFiles: PropTypes.object,
   }
 
@@ -49,8 +47,7 @@ export default class RightMenu extends React.Component {
 
   render () {
     const {
-      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar,
-      searchFailed, printFiles, onFilesToPrint, filesToPrint,
+      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles,
     } = this.props
     return (
       <div className='left-menu'>
