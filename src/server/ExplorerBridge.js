@@ -38,7 +38,7 @@ export default class ExplorerBridge {
     } else if (window.opener.closed) {
       console.warn('Message not sent (closed)')
     } else {
-      const msg = JSON.stringify(obj)
+      const msg = JSON.stringify({ ...obj, sender: 'WebMap' })
       window.opener.postMessage(msg, getExplorerOrigin())
       console.info(`Message sent`, msg)
     }
@@ -46,36 +46,37 @@ export default class ExplorerBridge {
 
   onMessage = (e) => {
     const data = (typeof e.data === 'object') ? e.data : JSON.parse(e.data)
-    const { action } = data
-    if (action) {
+    const { action, sender } = data
+    if (sender === 'Explorer') {
+      delete data.sender
       console.info('Message from Explorer >> ', JSON.stringify(data, null, 2))
-    }
-    switch (action) {
-      case ACTION_INIT: {
-        this.send({ action: ACTION_READY })
-        break
+      switch (action) {
+        case ACTION_INIT: {
+          this.send({ action: ACTION_READY })
+          break
+        }
+        case ACTION_OPEN: {
+          const { mapId, layerId } = data
+          catchError(maps.openMapFolder)(mapId, layerId)(this.store.dispatch)
+          break
+        }
+        case ACTION_CLOSE: {
+          this.abandoned = true
+          catchError(maps.clearVariant)(null, true)(this.store.dispatch)
+          break
+        }
+        case ACTION_OPEN_VARIANT: {
+          const { mapId, variantId } = data
+          catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
+          break
+        }
+        case ACTION_CLOSE_VARIANT: {
+          const { variantId } = data
+          catchError(maps.clearVariant)(variantId, true)(this.store.dispatch)
+          break
+        }
+        default:
       }
-      case ACTION_OPEN: {
-        const { mapId, layerId } = data
-        catchError(maps.openMapFolder)(mapId, layerId)(this.store.dispatch)
-        break
-      }
-      case ACTION_CLOSE: {
-        this.abandoned = true
-        catchError(maps.clearVariant)(null, true)(this.store.dispatch)
-        break
-      }
-      case ACTION_OPEN_VARIANT: {
-        const { mapId, variantId } = data
-        catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
-        break
-      }
-      case ACTION_CLOSE_VARIANT: {
-        const { variantId } = data
-        catchError(maps.clearVariant)(variantId, true)(this.store.dispatch)
-        break
-      }
-      default:
     }
   }
 
