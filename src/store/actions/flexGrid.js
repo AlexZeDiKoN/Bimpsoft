@@ -1,8 +1,11 @@
 import { action } from '../../utils/services'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector, visibleLayersSelector } from '../selectors'
+import i18n from '../../i18n'
 import * as asyncAction from './asyncAction'
 import * as maps from './maps'
+import * as selection from './selection'
+import * as notifications from './notifications'
 
 export const DROP_FLEX_GRID = action('DROP_FLEX_GRID')
 export const SHOW_FLEX_GRID_FORM = action('SHOW_FLEX_GRID_FORM')
@@ -13,6 +16,16 @@ export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_CREATED = action('FLEX_GRID_CREATED')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
+
+const getId = ({ id }) => id
+
+const findInGrid = (grid, testUnit, cellDirection, cellZone) => grid
+  .filter(({ direction, zone }) => direction !== cellDirection || zone !== cellZone)
+  .flatMap(({ units }) => units.filter(({ unit }) => unit === testUnit).map(getId))
+
+const findInCell = (units, testUnit, formationId) => units
+  .filter(({ unit, formation }) => unit === testUnit && formation !== formationId)
+  .map(getId)
 
 export const setFlexGridDirections = (value) => ({
   type: SET_DIRECTIONS,
@@ -73,6 +86,7 @@ export const getFlexGrid = (mapId, showFlexGrid) =>
   }))
 
 export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
+  let invalid = []
   const state = getState()
   const mapId = activeMapSelector(state)
   const variantId = state.maps.calc[mapId]
@@ -80,7 +94,6 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
     const layers = visibleLayersSelector(state)
     const objects = state.webMap.objects
       .filter(({ layer, type, unit }) => Boolean(layers[layer]) && type === entityKind.POINT && Boolean(unit))
-    // const units = state.orgStructures.unitsById
     const result = []
     if (flexGridInstance) {
       const { options: { directions, zones } } = flexGridInstance
@@ -95,30 +108,41 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
           }
         }
       }
-      const unitList = []
       objects.forEach(({ id, point, unit, layer }) => {
-        if (!unitList.includes(unit)) {
-          const cell = flexGridInstance.isInsideCell(point)
-          if (cell) {
-            const [ d, z ] = cell
-            result
-              .find(({ direction, zone }) => direction === d && zone === z)
-              .units.push({
-                id,
-                unit,
-                formation: layers[layer].formationId,
-              })
-            unitList.push(unit)
+        const cell = flexGridInstance.isInsideCell(point)
+        if (cell) {
+          const [ d, z ] = cell
+          const { units } = result.find(({ direction, zone }) => direction === d && zone === z)
+          const insideOtherCell = findInGrid(result, unit, d, z)
+          const thisCellButOtherFormation = findInCell(units, unit, layers[layer].formationId)
+          if (insideOtherCell.length || thisCellButOtherFormation.length) {
+            invalid = invalid.concat(insideOtherCell, thisCellButOtherFormation)
+          } else if (!units.find((item) => item.unit === unit)) {
+            units.push({
+              id,
+              unit,
+              formation: layers[layer].formationId,
+            })
           }
         }
       })
     }
-    window.explorerBridge.variantResult(variantId, result.map(({ units, ...rest }) => ({
-      units: units.map(({ unit, formation }) => ({ unit, formation })),
-      ...rest,
-    })))
+    if (!invalid.length) {
+      window.explorerBridge.variantResult(variantId, result.map(({ units, ...rest }) => ({
+        units: units.map(({ unit, formation }) => ({ unit, formation })),
+        ...rest,
+      })))
+    }
   }
-  dispatch(maps.cancelVariant())
+  if (invalid.length) {
+    dispatch(selection.selectedList(invalid))
+    dispatch(notifications.push({
+      message: i18n.SERVER_WARNING,
+      description: i18n.INVALID_UNITS_IN_GRID,
+    }))
+  } else {
+    dispatch(maps.cancelVariant())
+  }
 }
 
 export const fixInstance = (flexGrid) => (_1, _2, extra) => {

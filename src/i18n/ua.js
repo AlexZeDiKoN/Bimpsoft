@@ -194,3 +194,4 @@ export const DIRECTIONS_AMOUNT = `Кількість напрямків`
 export const DIRECTION_ZONES = `Зони напрямків`
 export const CREATE = `Створити`
 export const CALCULATE = `Розрахувати`
+export const INVALID_UNITS_IN_GRID = 'Неоднозначність визначення місцеположення підрозділу'
