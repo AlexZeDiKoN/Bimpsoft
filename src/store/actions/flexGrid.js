@@ -116,7 +116,7 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
           const insideOtherCell = findInGrid(result, unit, d, z)
           const thisCellButOtherFormation = findInCell(units, unit, layers[layer].formationId)
           if (insideOtherCell.length || thisCellButOtherFormation.length) {
-            invalid = invalid.concat(insideOtherCell, thisCellButOtherFormation)
+            invalid = invalid.concat(insideOtherCell, thisCellButOtherFormation, [ id ])
           } else if (!units.find((item) => item.unit === unit)) {
             units.push({
               id,
@@ -137,7 +137,8 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
   if (invalid.length) {
     dispatch(selection.selectedList(invalid))
     dispatch(notifications.push({
-      message: i18n.SERVER_WARNING,
+      type: 'error',
+      message: i18n.ERROR,
       description: i18n.INVALID_UNITS_IN_GRID,
     }))
   } else {
