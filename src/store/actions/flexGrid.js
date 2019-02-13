@@ -1,8 +1,11 @@
 import { action } from '../../utils/services'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector, visibleLayersSelector } from '../selectors'
+import i18n from '../../i18n'
 import * as asyncAction from './asyncAction'
 import * as maps from './maps'
+import * as selection from './selection'
+import * as notifications from './notifications'
 
 export const DROP_FLEX_GRID = action('DROP_FLEX_GRID')
 export const SHOW_FLEX_GRID_FORM = action('SHOW_FLEX_GRID_FORM')
@@ -83,7 +86,7 @@ export const getFlexGrid = (mapId, showFlexGrid) =>
   }))
 
 export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
-  const invalid = []
+  let invalid = []
   const state = getState()
   const mapId = activeMapSelector(state)
   const variantId = state.maps.calc[mapId]
@@ -91,7 +94,6 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
     const layers = visibleLayersSelector(state)
     const objects = state.webMap.objects
       .filter(({ layer, type, unit }) => Boolean(layers[layer]) && type === entityKind.POINT && Boolean(unit))
-    // const units = state.orgStructures.unitsById
     const result = []
     if (flexGridInstance) {
       const { options: { directions, zones } } = flexGridInstance
@@ -114,7 +116,7 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
           const insideOtherCell = findInGrid(result, unit, d, z)
           const thisCellButOtherFormation = findInCell(units, unit, layers[layer].formationId)
           if (insideOtherCell.length || thisCellButOtherFormation.length) {
-            invalid.concat(insideOtherCell, thisCellButOtherFormation)
+            invalid = invalid.concat(insideOtherCell, thisCellButOtherFormation)
           } else if (!units.find((item) => item.unit === unit)) {
             units.push({
               id,
@@ -133,7 +135,11 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
     }
   }
   if (invalid.length) {
-    // TODO
+    dispatch(selection.selectedList(invalid))
+    dispatch(notifications.push({
+      message: i18n.SERVER_WARNING,
+      description: i18n.INVALID_UNITS_IN_GRID,
+    }))
   } else {
     dispatch(maps.cancelVariant())
   }
