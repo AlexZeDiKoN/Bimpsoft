@@ -20,7 +20,7 @@ const zoneCode = (value, zones) => {
 const commonStyle = {
   stroke: true,
   color: '#38f',
-  weight: 3,
+  weight: 5,
   opacity: 1,
   lineCap: 'round',
   lineJoin: 'round',
@@ -50,11 +50,11 @@ L.FlexGrid = L.Layer.extend({
     tsType: entityKind.FLEXGRID,
     zoneLines: {
       ...commonStyle,
-      weight: 2,
+      weight: 3,
     },
     directionLines: {
       ...commonStyle,
-      weight: 2,
+      weight: 3,
       color: '#000',
     },
     boundaryLine: {

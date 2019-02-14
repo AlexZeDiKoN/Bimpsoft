@@ -13,7 +13,6 @@ export const HIDE_FLEX_GRID = action('HIDE_FLEX_GRID')
 export const SET_DIRECTIONS = action('SET_DIRECTIONS')
 export const SET_ZONES = action('SET_ZONES')
 export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
-// export const FLEX_GRID_CREATED = action('FLEX_GRID_CREATED')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
 
@@ -61,9 +60,6 @@ export const flexGridCreated = (mapId, geometry, attributes) =>
       ...geometry,
       attributes,
     })
-    /* dispatch({
-      type: FLEX_GRID_CREATED,
-    }) */
     dispatch(getFlexGrid(mapId))
   })
 

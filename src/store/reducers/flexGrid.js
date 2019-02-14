@@ -47,9 +47,6 @@ export default function reducer (state = FlexGridState(), action) {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
       return update(state, 'flexGrid', merge, { zones })
     }
-    /* case actions.FLEX_GRID_CREATED: {
-      return update(state, 'present', true)
-    } */
     case actions.FLEX_GRID_DELETED: {
       return merge(state, {
         present: false,
