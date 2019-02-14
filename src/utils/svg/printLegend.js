@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 import i18n from '../../i18n'
 import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from '../../constants/PrintPanel'
 import { pointsToD, rectToPoints } from './lines'
+import { FONT_FAMILY } from './text'
 import { getFont, getLines, getTextWidth } from './index'
 
 const TextAnchors = {
@@ -35,7 +36,7 @@ const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
     strokeWidth={fontHeight / 5}
     fill="none"
     fontSize={fontHeight}
-    fontFamily="Arial"
+    fontFamily={FONT_FAMILY}
     x={x}
     y={y + fontHeight * 0.77}
     textAnchor={align}
@@ -43,7 +44,7 @@ const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
   <text
     fill="#000"
     fontSize={fontHeight}
-    fontFamily="Arial"
+    fontFamily={FONT_FAMILY}
     x={x}
     y={y + fontHeight * 0.77}
     textAnchor={align}

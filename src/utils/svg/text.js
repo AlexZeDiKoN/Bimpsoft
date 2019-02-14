@@ -3,11 +3,12 @@ import React, { Fragment } from 'react'
 import { Align } from '../../constants'
 import { pointsToD, rectToPoints } from './lines'
 
+export const FONT_FAMILY = 'Arial'
 const lineCoef = 1.2
 
 let ctx = null
 
-function getCTX (font = '12px Arial') {
+function getCTX (font = `12px ${FONT_FAMILY}`) {
   // re-use canvas object for better performance
   if (!ctx) {
     ctx = document.createElement('canvas').getContext('2d')
@@ -16,7 +17,7 @@ function getCTX (font = '12px Arial') {
   return ctx
 }
 
-export const getFont = (size, bold) => `${bold ? 'bold' : ''} ${Math.round(size)}px Arial`
+export const getFont = (size, bold) => `${bold ? 'bold' : ''} ${Math.round(size)}px ${FONT_FAMILY}`
 
 export const getTextWidth = (text, font) => getCTX(font).measureText(text).width
 
@@ -53,15 +54,14 @@ export const renderTextSymbol = ({
   magnification,
   texts = [],
   outlineColor = null,
-}, scale = 100) => {
+}, scale = 100, isSvg = false) => {
   let maxWidth = 0
   let fullHeight = 0
 
   texts = texts.map(({ text, bold, size, align, underline }) => {
     const fontSize = (size || 12) * scale / 100
 
-    const font = getFont(fontSize, bold)
-    const width = getTextWidth(text, font)
+    const width = getTextWidth(text, getFont(fontSize, bold))
     if (width > maxWidth) {
       maxWidth = width
     }
@@ -72,32 +72,43 @@ export const renderTextSymbol = ({
     const lineStrokeWidth = underline ? (bold ? 7 : 4) * scale / 100 : 0
     fullHeight += lineSpace + lineStrokeWidth
 
-    return { underline, font, align, y, text, lineSpace, lineStrokeWidth }
+    return { underline, fontSize, align, y, text, lineSpace, lineStrokeWidth }
   })
 
   maxWidth += 6
   maxWidth = Math.round(maxWidth)
 
-  let commonProps = {}
+  let outlineProps = false
   if (outlineColor) {
     const strokeWidth = 12 * scale / 100
     fullHeight = fullHeight + strokeWidth / 2
-    commonProps = { stroke: outlineColor, strokeWidth, paintOrder: 'stroke', fill: '#000' }
+    outlineProps = { stroke: outlineColor, strokeWidth, fill: 'none' }
   }
 
-  return <svg width={maxWidth} height={fullHeight} viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg">
-    {texts.map(({ text, font, align, y, lineSpace, lineStrokeWidth }, i) => {
-      const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
-      const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
-      return <Fragment key={i}>
-        <text fill="#000" style={{ font, whiteSpace: 'pre' }} x={x} y={y} textAnchor={textAnchor} {...commonProps}>
-          {text}
-        </text>
-        {Boolean(lineStrokeWidth) && <path
-          {...commonProps}
-          d={pointsToD(rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }), true)}
-        />}
-      </Fragment>
-    })}
-  </svg>
+  const textsEls = texts.map(({ text, fontSize, align, y, lineSpace, lineStrokeWidth }, i) => {
+    const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
+    const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
+    const lineD = Boolean(lineStrokeWidth) &&
+      pointsToD(rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }), true)
+    return <Fragment key={i}>
+      {outlineProps &&
+      <text fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor} {...outlineProps}>
+        {text}
+      </text>
+      }
+      <text fill="#000" fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor}>
+        {text}
+      </text>
+      {lineD && outlineColor && <path d={lineD} {...outlineProps}/>}
+      {lineD && <path fill="#000" d={lineD} />}
+    </Fragment>
+  })
+
+  return isSvg
+    ? <svg
+      width={maxWidth}
+      height={fullHeight}
+      viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg"
+    >{textsEls}</svg>
+    : textsEls
 }

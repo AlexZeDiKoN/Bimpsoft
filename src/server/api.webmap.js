@@ -37,6 +37,14 @@ export default {
     getDirect(`${webmapUrl}/obj/locked`, false),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
-  printFileCreate: ({ dpi, northEast, southWest, svg, projectionGroup, printScale, projection }) =>
-    getDirect(`${webmapUrl}/printFile/add?dpi=${dpi}&northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}&projectionGroup=${projectionGroup}&scale=${printScale}&projection=${projection}`, svg, ''),
+  printFileCreate: ({ dpi, northEast, southWest, svg, projectionGroup, printScale, projection }) => {
+    const formData = new FormData()
+    const blob = new Blob([ svg ], { type: 'text/html' })
+    formData.append('mapobjects', blob, 'mapobjects.svg')
+    return getDirect(
+      `${webmapUrl}/printToFile/add?dpi=${dpi}&northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}&projectionGroup=${projectionGroup}&scale=${printScale}&projection=${projection}`,
+      formData,
+      ''
+    )
+  },
 }
