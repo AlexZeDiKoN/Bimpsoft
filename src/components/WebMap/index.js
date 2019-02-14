@@ -1120,11 +1120,13 @@ export default class WebMap extends React.PureComponent {
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
-    if (show) {
+    if (show && id) {
       layer.addTo(this.map)
     }
-    this.flexGrid = layer
-    fixFlexGridInstance && fixFlexGridInstance(layer)
+    if (id) {
+      this.flexGrid = layer
+      fixFlexGridInstance && fixFlexGridInstance(layer)
+    }
     const geometry = getGeometry(layer)
     if (!id) {
       flexGridCreated && flexGridCreated(activeMapId, geometry, { directions, zones })
