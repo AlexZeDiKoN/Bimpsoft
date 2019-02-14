@@ -1152,7 +1152,7 @@ export default class WebMap extends React.PureComponent {
     const layerOptions = {
       tsType: type,
     }
-    const options = { templineStyle: layerOptions, pathOptions: layerOptions }
+    const options = { tooltips: false, templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:

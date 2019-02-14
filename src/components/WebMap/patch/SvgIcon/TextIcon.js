@@ -35,7 +35,7 @@ const TextIcon = L.Icon.extend({
     const { attributes } = data
     const scale = this.getScale(zoom, scaleOptions)
     const svg = renderToStaticMarkup(
-      renderTextSymbol({ ...attributes.toJS(), outlineColor: 'var(--outline-color)' }, scale)
+      renderTextSymbol({ ...attributes.toJS(), outlineColor: 'var(--outline-color)' }, scale, true)
     )
     const anchor = { x: 0, y: 0 }
     const node = getSvgNodeFromString(svg)

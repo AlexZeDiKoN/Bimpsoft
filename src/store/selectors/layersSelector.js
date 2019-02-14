@@ -1,12 +1,11 @@
 import { createSelector } from 'reselect'
 import { date } from '../../utils'
 
-const theSame = (value) => value
-const activeMapId = ({ layers: { byId, selectedId } }) => selectedId && byId[selectedId] && byId[selectedId].mapId
+const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
 
 export const canEditSelector = createSelector(
-  (state) => state.layers,
+  layersSelector,
   ({ editMode, byId, selectedId, timelineFrom, timelineTo }) => {
     if (!editMode || !byId.hasOwnProperty(selectedId)) {
       return false
@@ -17,12 +16,13 @@ export const canEditSelector = createSelector(
 )
 
 export const activeMapSelector = createSelector(
-  activeMapId,
-  theSame
+  layersSelector,
+  (state) => state.print.mapId,
+  ({ byId, selectedId }, printMapId) => printMapId || (selectedId && byId[selectedId] && byId[selectedId].mapId)
 )
 
 export const inICTMode = createSelector(
-  activeMapId,
+  activeMapSelector,
   calc,
   (activeMapId, calc) => activeMapId && calc && calc[activeMapId]
 )

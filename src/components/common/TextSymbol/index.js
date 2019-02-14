@@ -14,7 +14,11 @@ export default class TextSymbol extends React.PureComponent {
       ...otherProps
     } = this.props
     return <div className="textsymbol" { ...otherProps } >
-      {renderTextSymbol({ transparentBackground, displayAnchorLine, anchorLineWithArrow, magnification, texts })}
+      {renderTextSymbol(
+        { transparentBackground, displayAnchorLine, anchorLineWithArrow, magnification, texts },
+        100,
+        true
+      )}
     </div>
   }
 }

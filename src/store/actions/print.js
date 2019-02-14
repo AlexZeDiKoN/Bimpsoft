@@ -1,8 +1,10 @@
 import { batchActions } from 'redux-batched-actions'
+import ReactDOMServer from 'react-dom/server'
 import { action } from '../../utils/services'
 import { getUSC2000Projection } from '../../utils/projection'
 import { getMapObjectsSvg } from '../../utils/svg/mapObjects'
 import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
+import { visibleLayersSelector } from '../selectors'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -65,10 +67,11 @@ export const createPrintFile = () =>
         selectedZone,
       },
     } = state
+    const layersById = visibleLayersSelector(state)
     if (selectedZone) {
       const { southWest, northEast } = selectedZone
       const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-      const svg = getMapObjectsSvg({
+      const svg = ReactDOMServer.renderToStaticMarkup(getMapObjectsSvg({
         objects,
         southWest,
         northEast,
@@ -77,7 +80,8 @@ export const createPrintFile = () =>
         printScale,
         signatories,
         confirmDate,
-      })
+        layersById,
+      }))
       const { dpi, projectionGroup } = requisites
       const result = await printFileCreate({ southWest, northEast, projection, dpi, svg, projectionGroup, printScale })
       const { id } = result

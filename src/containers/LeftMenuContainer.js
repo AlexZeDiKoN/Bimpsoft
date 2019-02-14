@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap, print } from '../store/actions'
+import { viewModes, layers, webMap } from '../store/actions'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -30,7 +30,6 @@ const mapDispatchToProps = {
   onChangeEditMode: layers.setEditMode,
   onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
   onMeasureChange: webMap.setMeasure,
-  createPrintFile: print.createPrintFile,
   onSubordinationLevelClose: () => viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   onSubordinationLevelChange: (subordinationLevel) => batchActions([
     webMap.setSubordinationLevel(subordinationLevel),

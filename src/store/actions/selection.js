@@ -135,7 +135,7 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
     type: SelectionTypes.POINT,
     code,
     layer,
-    orgStructureId: id,
+    unit: id,
     subordinationLevel: natoLevelID,
     geometry: List([ point ]),
     point: point,

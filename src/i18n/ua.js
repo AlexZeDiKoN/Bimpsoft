@@ -151,7 +151,9 @@ export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути р
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`
 
-export const LAYERS_VISIBILITY = 'Видимість шару'
+export const MAPS_VISIBILITY = 'Видимість усіх карт'
+export const MAP_VISIBILITY = 'Видимість карти'
+export const LAYER_VISIBILITY = 'Видимість шару'
 export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картографічної основи (%)'
 export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
