@@ -27,7 +27,7 @@ export default class PrintFiles extends PureComponent {
     const files = Object.keys(printFiles)
     console.log(printFiles)
     return (
-      <Menu className='fileBox' onClick={this.handleVisibleChange}>
+      <Menu className='fileBox'>
         {files.map((fileId) => {
           const { name, message } = printFiles[fileId]
           return (
