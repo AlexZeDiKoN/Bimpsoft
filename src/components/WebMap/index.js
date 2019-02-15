@@ -3,7 +3,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
-import pointInSvgPolygon from 'point-in-svg-polygon'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import { forward } from 'mgrs'
@@ -40,6 +39,7 @@ import {
   geomPointEquals,
   createCoordinateMarker,
 } from './Tactical'
+import { MapProvider } from './MapContext'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -139,14 +139,6 @@ const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
 const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
 const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
 
-const zoneCode = (value, zones) => {
-  let result = value - zones
-  if (result >= 0) {
-    result += 1
-  }
-  return result
-}
-
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
@@ -183,7 +175,7 @@ const setScaleOptions = (layer, params) => {
 
 export default class WebMap extends React.PureComponent {
   static propTypes = {
-    children: PropTypes.func,
+    children: PropTypes.any,
     // from Redux store
     center: PropTypes.shape({
       lat: PropTypes.number,
@@ -243,6 +235,7 @@ export default class WebMap extends React.PureComponent {
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
+    inICTMode: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -351,12 +344,12 @@ export default class WebMap extends React.PureComponent {
       this.updateLockedObjects(lockedObjects)
     }
 
-    if (flexGridVisible !== prevProps.flexGridVisible) {
-      this.showFlexGrid(flexGridVisible)
-    }
-
     if (flexGridData !== prevProps.flexGridData) {
       this.updateFlexGrid(flexGridData)
+    }
+
+    if (flexGridVisible !== prevProps.flexGridVisible) {
+      this.showFlexGrid(flexGridVisible)
     }
   }
 
@@ -583,15 +576,6 @@ export default class WebMap extends React.PureComponent {
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
-      const { x, y } = e.layerPoint
-      if (this.flexGrid && this.props.flexGridVisible) {
-        const zones = this.flexGrid.options.zones
-        this.flexGrid.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-          if (pointInSvgPolygon.isInside([ x, y ], cell)) {
-            console.info(`Inside [d:${dirIdx + 1}, z:${zoneCode(zoneIdx, zones)}]`)
-          }
-        }))
-      }
     }
   }
 
@@ -1079,6 +1063,10 @@ export default class WebMap extends React.PureComponent {
     if (show) {
       if (this.flexGrid) {
         this.flexGrid.addTo(this.map)
+        const { inICTMode } = this.props
+        if (inICTMode) {
+          this.map.fitBounds(this.flexGrid.getBounds())
+        }
       } else {
         this.dropFlexGrid()
       }
@@ -1132,11 +1120,13 @@ export default class WebMap extends React.PureComponent {
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
-    if (show) {
+    if (show && id) {
       layer.addTo(this.map)
     }
-    this.flexGrid = layer
-    fixFlexGridInstance && fixFlexGridInstance(layer)
+    if (id) {
+      this.flexGrid = layer
+      fixFlexGridInstance && fixFlexGridInstance(layer)
+    }
     const geometry = getGeometry(layer)
     if (!id) {
       flexGridCreated && flexGridCreated(activeMapId, geometry, { directions, zones })
@@ -1164,7 +1154,7 @@ export default class WebMap extends React.PureComponent {
     const layerOptions = {
       tsType: type,
     }
-    const options = { templineStyle: layerOptions, pathOptions: layerOptions }
+    const options = { tooltips: false, templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:
@@ -1235,7 +1225,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        {this.map && this.props.children(this.map)}
+        <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
       </div>

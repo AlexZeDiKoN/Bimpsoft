@@ -9,10 +9,18 @@ const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
+const zoneCode = (value, zones) => {
+  let result = value - zones
+  if (result >= 0) {
+    result += 1
+  }
+  return result
+}
+
 const commonStyle = {
   stroke: true,
   color: '#38f',
-  weight: 3,
+  weight: 5,
   opacity: 1,
   lineCap: 'round',
   lineJoin: 'round',
@@ -42,11 +50,11 @@ L.FlexGrid = L.Layer.extend({
     tsType: entityKind.FLEXGRID,
     zoneLines: {
       ...commonStyle,
-      weight: 2,
+      weight: 3,
     },
     directionLines: {
       ...commonStyle,
-      weight: 2,
+      weight: 3,
       color: '#000',
     },
     boundaryLine: {
@@ -330,6 +338,22 @@ L.FlexGrid = L.Layer.extend({
     if (this._renderer) {
       this._renderer._updateStyle(this)
     }
+  },
+
+  getBounds () {
+    return this._latLngBounds()
+  },
+
+  isInsideCell (latLng) {
+    let result = null
+    const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
+    const { zones } = this.options
+    this.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
+      if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+        result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
+      }
+    }))
+    return result
   },
 
   // @method bringToFront(): this

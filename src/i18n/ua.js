@@ -153,7 +153,9 @@ export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути р
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`
 
-export const LAYERS_VISIBILITY = 'Видимість шару'
+export const MAPS_VISIBILITY = 'Видимість усіх карт'
+export const MAP_VISIBILITY = 'Видимість карти'
+export const LAYER_VISIBILITY = 'Видимість шару'
 export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картографічної основи (%)'
 export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
@@ -169,6 +171,7 @@ export const SCALE = `Масштаб`
 export const DPI = 'Роздільна здатність (DPI)'
 export const COORDINATES_TYPE = 'Система координат'
 export const MAP_LABEL = `Гриф`
+export const MAP_COPY = 'Прим. № __'
 export const FIRST_ROW = `Рядок 1 (h)`
 export const SECOND_ROW = `Рядок 2 (2/3h)`
 export const THIRD_ROW = `Рядок 3 (2/3h)`
@@ -195,3 +198,4 @@ export const DIRECTIONS_AMOUNT = `Кількість напрямків`
 export const DIRECTION_ZONES = `Зони напрямків`
 export const CREATE = `Створити`
 export const CALCULATE = `Розрахувати`
+export const INVALID_UNITS_IN_GRID = 'Неоднозначність визначення місцеположення підрозділу'

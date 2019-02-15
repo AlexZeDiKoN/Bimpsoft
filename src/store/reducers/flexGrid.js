@@ -28,7 +28,7 @@ const FlexGridState = Record({
 })
 
 export default function reducer (state = FlexGridState(), action) {
-  const { type, payload } = action
+  const { type, payload, showFlexGrid } = action
   switch (type) {
     case actions.DROP_FLEX_GRID: {
       return merge(state, {
@@ -46,9 +46,6 @@ export default function reducer (state = FlexGridState(), action) {
     case actions.SET_ZONES: {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
       return update(state, 'flexGrid', merge, { zones })
-    }
-    case actions.FLEX_GRID_CREATED: {
-      return update(state, 'present', true)
     }
     case actions.FLEX_GRID_DELETED: {
       return merge(state, {
@@ -69,7 +66,7 @@ export default function reducer (state = FlexGridState(), action) {
       return update(state, 'options', false)
     }
     case actions.GET_FLEXGRID: {
-      if (payload) {
+      if (payload) { // Без цієї умови деструктуризація нижче кине ексепш
         const {
           id,
           deleted,
@@ -79,6 +76,7 @@ export default function reducer (state = FlexGridState(), action) {
         return payload
           ? update(merge(state, {
             present: !deleted,
+            visible: (showFlexGrid || state.visible) && !deleted,
           }), 'flexGrid', merge, {
             id,
             deleted,

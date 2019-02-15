@@ -1,5 +1,8 @@
+/* eslint-disable react/prop-types */
+import React from 'react'
 import proj4 from 'proj4'
 import { roundXY } from '../../utils/svg/lines'
+import { printLegend } from '../index'
 import { getMapObjectSvg } from './mapObject'
 
 const PRINT_SCALE = 10
@@ -22,7 +25,11 @@ const getCoordToPixels = (projection, dpi, scale, { min, max }) => {
   }
 }
 
-export const getMapObjectsSvg = (objects, southWest, northEast, projection, dpi, printScale) => {
+export const getMapObjectsSvg = ({
+  objects, southWest, northEast, projection, requisites, signatories, printScale, confirmDate, layersById,
+}) => {
+  const { dpi } = requisites
+
   const [ lngSW, latSW ] = proj4(projection, [ southWest.lng, southWest.lat ])
   const [ lngNE, latNE ] = proj4(projection, [ northEast.lng, northEast.lat ])
 
@@ -39,16 +46,24 @@ export const getMapObjectsSvg = (objects, southWest, northEast, projection, dpi,
     min: { x: Math.min(xSW, xNE), y: Math.min(ySW, yNE) },
     max: { x: Math.max(xSW, xNE), y: Math.max(ySW, yNE) },
   }
-  const commonData = { bounds, coordToPixels, scale: PRINT_SCALE }
-  const groups = objects.map(getMapObjectSvg(commonData)).filter(Boolean).toArray()
+  const commonData = { bounds, coordToPixels, scale: PRINT_SCALE, layersById }
+
+  const widthMM = (boundsCoord.max.lng - boundsCoord.min.lng) / printScale * 1000
+  const heightMM = (boundsCoord.max.lat - boundsCoord.min.lat) / printScale * 1000
 
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
-  return `
-<svg
-  xmlns="http://www.w3.org/2000/svg" version="1.2"
-  x="0px" y="0px" width="${width}px" height="${height}px"
-  viewBox="${bounds.min.x} ${bounds.min.y} ${width} ${height}" fill="none">
-  ${groups.join('\r\n')}
-</svg>`
+
+  return <svg
+    xmlns="http://www.w3.org/2000/svg" version="1.2"
+    width={width}
+    height={height}
+    viewBox={`${bounds.min.x} ${bounds.min.y} ${width} ${height}`}
+    fill="none"
+  >
+    {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)}
+    <g transform={`scale(${width / widthMM}, ${height / heightMM})`} >
+      {printLegend({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale })}
+    </g>
+  </svg>
 }

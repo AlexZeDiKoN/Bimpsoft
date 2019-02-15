@@ -37,17 +37,24 @@ export const setVariant = (mapId, variantId) => ({
   payload: { mapId, variantId },
 })
 
-export const clearVariant = (variantId) => ({
+export const cancelVariant = (variantId = null) => ({
   type: SET_CALC_VARIANT,
   payload: { mapId: null, variantId },
 })
 
-export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
-  await dispatch(openMapFolder(mapId))
-  return dispatch(setVariant(mapId, variantId))
+export const clearVariant = (variantId = null, fromExplorer = false) => {
+  if (!fromExplorer) {
+    window.explorerBridge.cancelVariant(variantId)
+  }
+  return cancelVariant(variantId)
 }
 
-export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotification(
+export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
+  await dispatch(setVariant(mapId, variantId))
+  return dispatch(openMapFolder(mapId, null, true))
+}
+
+export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
   async (dispatch, _, { explorerApi: { getMap } }) => {
     const content = await getMap(mapId)
     const {
@@ -92,7 +99,7 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
         dispatch(layers.selectLayer(selectedLayer.layerId))
       }
     }
-    await dispatch(flexGrid.getFlexGrid(mapId))
+    await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))
   }
 )
 

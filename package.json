@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "4.03.238",
+  "version": "5.01.254",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^4.3.123",
@@ -19,7 +19,7 @@
     "leaflet-minimap": "^3.6.1",
     "leaflet-switch-scale-control": "^0.7.0",
     "leaflet.coordinates": "^0.1.5",
-    "leaflet.pm": "^0.24.0",
+    "leaflet.pm": "^2.0.2",
     "lodash": "^4.17.10",
     "memoize-one": "^3.1.1",
     "mgrs": "^1.0.0",
@@ -46,9 +46,8 @@
     "utm": "^1.1.1"
   },
   "devDependencies": {
-    "eslint": "5.6.0",
     "eslint-config-import": "^0.13.0",
-    "eslint-config-standard": "^11.0.0",
+    "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",

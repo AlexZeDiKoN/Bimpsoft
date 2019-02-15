@@ -53,7 +53,7 @@ export default class MapItemComponent extends React.Component {
           onOk={this.okCloseHandler}
         />)}
         <VisibilityButton
-          title={i18n.LAYERS_VISIBILITY}
+          title={i18n.MAP_VISIBILITY}
           className="map-item-сomponent-control"
           visible={visible}
           isDark={true}

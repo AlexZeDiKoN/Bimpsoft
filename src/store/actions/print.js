@@ -1,8 +1,10 @@
 import { batchActions } from 'redux-batched-actions'
+import ReactDOMServer from 'react-dom/server'
 import { action } from '../../utils/services'
 import { getUSC2000Projection } from '../../utils/projection'
 import { getMapObjectsSvg } from '../../utils/svg/mapObjects'
 import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
+import { visibleLayersSelector } from '../selectors'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -49,6 +51,13 @@ export const printFileRemove = (id) => ({
   payload: id,
 })
 
+// TODO: заменить реальными данными
+const signatories = [
+  { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
+  { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
+]
+const confirmDate = `22.12.18`
+
 export const onFilesToPrint = () => ({
   type: FILES_TO_PRINT,
 })
@@ -59,19 +68,28 @@ export const createPrintFile = () =>
     const {
       webMap: { objects },
       print: {
-        requisites: {
-          dpi,
-          projectionGroup,
-        },
+        requisites,
         printScale,
         selectedZone,
         mapName,
       },
     } = state
+    const layersById = visibleLayersSelector(state)
     if (selectedZone) {
       const { southWest, northEast } = selectedZone
       const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-      const svg = getMapObjectsSvg(objects, southWest, northEast, projection, dpi, projectionGroup, printScale)
+      const svg = ReactDOMServer.renderToStaticMarkup(getMapObjectsSvg({
+        objects,
+        southWest,
+        northEast,
+        projection,
+        requisites,
+        printScale,
+        signatories,
+        confirmDate,
+        layersById,
+      }))
+      const { dpi, projectionGroup } = requisites
       const result = await printFileCreate({ southWest, northEast, dpi, svg, projectionGroup, printScale, mapName })
       const { id, name } = result
       dispatch(batchActions([

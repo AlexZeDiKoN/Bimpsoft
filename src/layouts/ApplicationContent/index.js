@@ -1,5 +1,6 @@
 import React from 'react'
-import { WebMap, PrintGrid } from '../../containers'
+import { WebMap, PrintGrid, PrintLegendContainer } from '../../containers'
+import { MapConsumer } from '../../components/WebMap/MapContext'
 
 class ApplicationContent extends React.PureComponent {
   render () {
@@ -8,9 +9,8 @@ class ApplicationContent extends React.PureComponent {
         center={[ 48.5, 38 ]}
         zoom={14}
       >
-        {(map) => <>
-          <PrintGrid map={map} />
-        </>}
+        <MapConsumer>{(map) => map && <PrintGrid map={map} />}</MapConsumer>
+        <PrintLegendContainer />
       </WebMap>
     )
   }

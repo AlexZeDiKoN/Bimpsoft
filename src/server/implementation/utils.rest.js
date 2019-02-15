@@ -14,9 +14,14 @@ export const getWebmapURL = () => webmapApi
 const setOptionsData = (options, data) => {
   if (data) {
     const isString = (typeof data === 'string')
-    options.body = isString ? data : JSON.stringify(data)
-    const contentType = isString ? 'application/octet-stream;charset=UTF-8' : 'application/json;charset=UTF-8'
-    options.headers.append('Content-Type', contentType)
+    const isFormData = (data instanceof FormData)
+    if (isFormData) {
+      options.headers.delete('Content-Type')
+    } else {
+      const contentType = isString ? 'application/octet-stream;charset=UTF-8' : 'application/json;charset=UTF-8'
+      options.headers.append('Content-Type', contentType)
+    }
+    options.body = (isString || isFormData) ? data : JSON.stringify(data)
   }
 }
 

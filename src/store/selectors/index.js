@@ -1,6 +1,5 @@
 export * from './layersSelector'
 export * from './objects'
-export * from './maps'
 export * from './flexGrid'
 export { default as layerNameSelector } from './layerNameSelector'
 export { pointSizesSelector } from './params'

@@ -8,7 +8,7 @@ export default class extends React.PureComponent {
   static displayName = 'ICTInfo'
 
   static propTypes = {
-    inICTMode: PropTypes.number,
+    inICTMode: PropTypes.string,
     clearVariant: PropTypes.func,
   }
 

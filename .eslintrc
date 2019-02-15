@@ -20,5 +20,8 @@
     "max-len": [ "error", {
       "code": 120, "ignoreTrailingComments": true, "ignoreUrls": true, "ignoreTemplateLiterals": true
     }]
+  },
+  "env": {
+    "browser": true
   }
 }

@@ -91,7 +91,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._initMarkers()
     this._layer.on('remove', this._onLayerRemove, this)
     if (this.options.draggable) {
-      this._initDraggableLayer()
+      this.enableLayerDrag()
     }
     this._map.on(`zoomend`, this._mapOnZoomEnd, this)
   },
