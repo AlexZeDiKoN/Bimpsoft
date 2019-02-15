@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import { Dropdown, Icon, Menu } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
@@ -22,6 +22,19 @@ export default class PrintFiles extends PureComponent {
     this.setState({ visible: flag })
   }
 
+  renderIconBox = (message) => <Fragment>
+    {message !== 'error'
+      ? message !== 'done'
+        ? <Icon type="compass" spin />
+        : <IconButton
+          title={i18n.OPEN_FILE}
+          icon={iconNames.MAP_DEFAULT}
+          hoverIcon={iconNames.MAP_HOVER}
+        />
+      : <Icon type="reload"/>}
+    <Icon type="close"/>
+  </Fragment>
+
   renderFileBox = () => {
     const { printFiles } = this.props
     const files = Object.keys(printFiles)
@@ -39,13 +52,7 @@ export default class PrintFiles extends PureComponent {
                 {Print.PRINT_STEPS_KEYS[message]}
               </div>
               <div className='fileBox_control'>
-                {message !== 'done'
-                  ? <Icon type="compass" spin />
-                  : <IconButton
-                    title={i18n.OPEN_FILE}
-                    icon={iconNames.MAP_DEFAULT}
-                    hoverIcon={iconNames.MAP_HOVER}
-                  />}
+                { this.renderIconBox(message) }
               </div>
             </Menu.Item>
           )
