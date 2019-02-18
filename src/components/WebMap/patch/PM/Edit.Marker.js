@@ -5,7 +5,7 @@ const parent = { enable }
 
 L.PM.Edit.Marker.include({
   enable: function (options) {
-    parent.enable.call(this, options)
+    parent.enable.call(this, options === undefined ? { draggable: false, snappable: false } : options)
     this._layer.off('contextmenu', this._removeMarker, this)
     this._editMarker = this._createMarker(this._layer.getLatLng())
     this._editMarker.addTo(this._map)
