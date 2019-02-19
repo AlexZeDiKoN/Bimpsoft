@@ -47,4 +47,6 @@ export default {
       ''
     )
   },
+  printFileCancel: (id) =>
+    getDirect(`${webmapUrl}/printToFile/cancel`, { id }),
 }

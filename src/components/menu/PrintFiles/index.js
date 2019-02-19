@@ -12,6 +12,7 @@ const iconNames = components.icons.names
 export default class PrintFiles extends PureComponent {
   static propTypes = {
     printFiles: PropTypes.object,
+    printFileCancel: PropTypes.func,
   }
 
   state = {
@@ -22,18 +23,28 @@ export default class PrintFiles extends PureComponent {
     this.setState({ visible: flag })
   }
 
-  renderIconBox = (message) => <Fragment>
-    {message !== 'error'
-      ? message !== 'done'
-        ? <Icon type="compass" spin />
-        : <IconButton
-          title={i18n.OPEN_FILE}
-          icon={iconNames.MAP_DEFAULT}
-          hoverIcon={iconNames.MAP_HOVER}
+  renderIconBox = (message, fileId) => {
+    const { printFileCancel } = this.props
+    return (
+      <Fragment>
+        {message !== 'error'
+          ? message !== 'done'
+            ? <Icon type="compass" spin />
+            : <IconButton
+              title={i18n.OPEN_FILE}
+              icon={iconNames.MAP_DEFAULT}
+              hoverIcon={iconNames.MAP_HOVER}
+            />
+          : <Icon type="reload"/>}
+        <IconButton
+          title={i18n.CANCEL_FILE}
+          icon={iconNames.CLOSE}
+          hoverIcon={iconNames.CLOSE}
+          onClick={() => printFileCancel(fileId)}
         />
-      : <Icon type="reload"/>}
-    <Icon type="close"/>
-  </Fragment>
+      </Fragment>
+    )
+  }
 
   renderFileBox = () => {
     const { printFiles } = this.props
@@ -52,7 +63,7 @@ export default class PrintFiles extends PureComponent {
                 {Print.PRINT_STEPS_KEYS[message]}
               </div>
               <div className='fileBox_control'>
-                { this.renderIconBox(message) }
+                { this.renderIconBox(message, fileId) }
               </div>
             </Menu.Item>
           )

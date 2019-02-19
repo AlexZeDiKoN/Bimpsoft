@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment } from 'react'
 import i18n from '../../i18n'
-import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from '../../constants/PrintPanel'
+import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from '../../constants/Print'
 import { pointsToD, rectToPoints } from './lines'
 import { FONT_FAMILY } from './text'
 import { getFont, getLines, getTextWidth } from './index'

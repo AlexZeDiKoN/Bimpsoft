@@ -51,7 +51,7 @@ export default class RightMenu extends React.Component {
     } = this.props
     return (
       <div className='left-menu'>
-        {printFiles && <PrintFilesContainer/>}
+        {(Object.keys(printFiles).length !== 0) && <PrintFilesContainer/>}
         <Input.Search
           placeholder={i18n.SEARCH}
           style={{ width: 200 }}

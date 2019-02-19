@@ -46,10 +46,15 @@ export const printFileSet = (id, message, name) => ({
   payload: { id, message, name },
 })
 
-export const printFileRemove = (id) => ({
-  type: PRINT_FILE_REMOVE,
-  payload: id,
-})
+export const printFileCancel = (id) => {
+  return (dispatch, getState, { webmapApi: { printFileCancel } }) => {
+    printFileCancel(id)
+    dispatch({
+      type: PRINT_FILE_REMOVE,
+      payload: id,
+    })
+  }
+}
 
 // TODO: заменить реальными данными
 const signatories = [
