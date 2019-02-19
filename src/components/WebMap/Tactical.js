@@ -26,9 +26,16 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  layer.pm.enable({
-    snappable: false,
-    draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
+  const draggable = layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT
+  layer.pm.enable()
+  draggable && layer.pm.enableLayerDrag()
+  layer.on('pm:dragstart', () => {
+    const { _markerGroup, _helperLayers } = layer.pm
+    _markerGroup && _markerGroup.clearLayers()
+    _helperLayers && _helperLayers.clearLayers()
+  })
+  layer.on('pm:dragend', () => {
+    layer.pm._initMarkers()
   })
   const click = layer.fire.bind(layer, 'click')
   const dblclick = layer.fire.bind(layer, 'dblclick')
@@ -223,7 +230,7 @@ export function getGeometry (layer) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
-      return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs()[0])
+      return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs())
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:

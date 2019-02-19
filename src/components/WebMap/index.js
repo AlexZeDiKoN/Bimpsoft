@@ -506,6 +506,7 @@ export default class WebMap extends React.PureComponent {
     this.map.on('moveend', this.moveHandler)
     this.map.on('zoomend', this.moveHandler)
     this.map.on('pm:create', this.createNewShape)
+    this.map.on('pm:drawstart', this.onDrawStart)
     this.map.on('click', this.onMouseClick)
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
@@ -1173,7 +1174,7 @@ export default class WebMap extends React.PureComponent {
         break
       case entityKind.TEXT:
       case entityKind.POINT:
-        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'click' })
+        this.map.pm.enableDraw('Line', options)
         break
       default:
         this.map.pm.disableDraw()
@@ -1181,11 +1182,22 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  createNewShape = async (e) => {
+  createNewShape = (e) => {
     const { layer } = e
     layer.removeFrom(this.map)
     const geometry = getGeometry(layer)
     this.props.onFinishDrawNewShape(geometry)
+  }
+
+  onDrawStart = ({ workingLayer }) => {
+    const { options: { tsType } } = workingLayer
+    if (tsType === entityKind.TEXT || tsType === entityKind.POINT) {
+      workingLayer.on('pm:vertexadded', ({ workingLayer }) => {
+        const geometry = getGeometry(workingLayer)
+        this.map.pm.disableDraw('Line')
+        this.props.onFinishDrawNewShape(geometry)
+      })
+    }
   }
 
   dragOverHandler = (e) => {
