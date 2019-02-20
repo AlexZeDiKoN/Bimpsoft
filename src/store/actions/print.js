@@ -14,7 +14,7 @@ export const PRINT_REQUISITES = action('PRINT_REQUISITES')
 export const PRINT_REQUISITES_CLEAR = action('PRINT_REQUISITES_CLEAR')
 export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
-export const FILES_TO_PRINT = action('FILES_TO_PRINT')
+export const PRINT_FILE_LOG = action('PRINT_FILE_LOG')
 
 export const print = (mapId = null, name = '') => ({
   type: PRINT,
@@ -46,15 +46,23 @@ export const printFileSet = (id, message, name) => ({
   payload: { id, message, name },
 })
 
-export const printFileCancel = (id) => {
-  return (dispatch, getState, { webmapApi: { printFileCancel } }) => {
+export const printFileList = () =>
+  async (dispatch, getState, { webmapApi: { printFileList } }) => {
+    const filesList = await printFileList()
+    dispatch({
+      type: PRINT_FILE_LOG,
+      filesList,
+    })
+  }
+
+export const printFileCancel = (id) =>
+  (dispatch, getState, { webmapApi: { printFileCancel } }) => {
     printFileCancel(id)
     dispatch({
       type: PRINT_FILE_REMOVE,
       payload: id,
     })
   }
-}
 
 // TODO: заменить реальными данными
 const signatories = [
@@ -62,10 +70,6 @@ const signatories = [
   { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
 ]
 const confirmDate = `22.12.18`
-
-export const onFilesToPrint = () => ({
-  type: FILES_TO_PRINT,
-})
 
 export const createPrintFile = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { printFileCreate } }) => {

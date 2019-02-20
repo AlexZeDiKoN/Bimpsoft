@@ -49,7 +49,6 @@ export default class PrintFiles extends PureComponent {
   renderFileBox = () => {
     const { printFiles } = this.props
     const files = Object.keys(printFiles)
-    console.log(printFiles)
     return (
       <Menu className='fileBox'>
         {files.map((fileId) => {

@@ -13,7 +13,6 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case maps.UPDATE_MAP: {
       const { mapData } = action
-      // TODO: попросити Єфановців замінити на camelCase
       const { mapId, name, breadcrumbs, docConfirm, securityClassification } = mapData
       let item = byId.hasOwnProperty(mapId) ? byId[mapId] : defItem
       item = { ...item, mapId, name, breadcrumbs, docConfirm, securityClassification }

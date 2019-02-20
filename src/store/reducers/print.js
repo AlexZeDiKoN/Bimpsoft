@@ -11,7 +11,6 @@ const initState = {
   },
   selectedZone: null,
   printFiles: {},
-  filesToPrint: false,
 }
 
 export default function reducer (state = initState, action) {
@@ -38,17 +37,20 @@ export default function reducer (state = initState, action) {
     case print.PRINT_FILE_SET: {
       const { id, message } = payload
       const { printFiles } = state
-      if (message === 'sent' || (printFiles && printFiles[id])) {
+      if (message === 'sent' || printFiles[id]) {
         return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
       } else {
         return { ...state }
       }
     }
-    case print.FILES_TO_PRINT: {
-      return { ...state, filesToPrint: !state.filesToPrint }
+    case print.PRINT_FILE_LOG: {
+      const printFiles = {}
+      action.filesList.forEach(({ file_id: id, status: message, map_name: name }) => {
+        printFiles[id] = { id, message, name }
+      })
+      return { ...state, printFiles }
     }
     case print.PRINT_FILE_REMOVE: {
-      console.log(payload)
       const printFiles = { ...state.printFiles }
       delete printFiles[payload]
       return { ...state, printFiles }
