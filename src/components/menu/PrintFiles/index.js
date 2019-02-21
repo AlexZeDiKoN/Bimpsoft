@@ -51,15 +51,19 @@ export default class PrintFiles extends PureComponent {
       <Fragment>
         {message !== 'error'
           ? message !== 'done'
-            ? <Icon type="compass" spin />
+            ? <Icon className='loader-icon' type="compass" spin />
             : <IconButton
               title={i18n.OPEN_FILE}
               icon={iconNames.MAP_DEFAULT}
               hoverIcon={iconNames.MAP_HOVER}
             />
-          : <Icon type="reload"/>}
+          : <IconButton
+            title={i18n.RETRY_FILE}
+            icon={iconNames.REFRESH_DEFAULT}
+            hoverIcon={iconNames.REFRESH_HOVER}
+          />}
         <IconButton
-          title={i18n.CANCEL_FILE}
+          title={message === 'done' ? i18n.CLEAN_FILE : i18n.CANCEL_FILE}
           icon={iconNames.CLOSE}
           hoverIcon={iconNames.CLOSE}
           onClick={cancelFunc[fileId]}
