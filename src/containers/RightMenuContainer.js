@@ -11,11 +11,15 @@ const mapStateToProps = (store) => {
       [viewModesKeys.settings]: isSettingsShow,
       searchEmpty: searchFailed,
     },
+    print: {
+      printFiles,
+    },
   } = store
   return {
     isSettingsShow,
     isSidebarShow,
     searchFailed,
+    printFiles,
   }
 }
 

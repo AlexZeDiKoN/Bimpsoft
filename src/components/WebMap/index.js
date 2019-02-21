@@ -107,7 +107,7 @@ const indicateModes = {
 
 const type2mode = (type) => {
   switch (type) {
-    case CoordinatesTypes.USC_2000:
+    case CoordinatesTypes.UCS_2000:
       return indicateModes.USC2000
     case CoordinatesTypes.MGRS:
       return indicateModes.MGRS
