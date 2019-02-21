@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import IconButton from '../IconButton'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
-import IconBox from './inbox'
+import IconBox from './IconBox'
 import './style.css'
 
 const iconNames = components.icons.names
@@ -18,7 +18,6 @@ export default class PrintFiles extends PureComponent {
 
   state = {
     visible: false,
-    cancelFunc: {},
   }
 
   handleVisibleChange = (flag) => {

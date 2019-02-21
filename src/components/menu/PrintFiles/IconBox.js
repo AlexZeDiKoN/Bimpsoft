@@ -21,7 +21,6 @@ export default class IconBox extends Component {
 
   render () {
     const { message } = this.props
-    console.log(this.props)
     return (
       <Fragment>
         {message !== 'error'
