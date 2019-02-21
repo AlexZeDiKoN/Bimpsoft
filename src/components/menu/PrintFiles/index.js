@@ -1,10 +1,11 @@
-import React, { PureComponent, Fragment } from 'react'
-import { Dropdown, Icon, Menu } from 'antd'
+import React, { PureComponent } from 'react'
+import { Dropdown, Menu } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import IconButton from '../IconButton'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
+import IconBox from './inbox'
 import './style.css'
 
 const iconNames = components.icons.names
@@ -20,60 +21,12 @@ export default class PrintFiles extends PureComponent {
     cancelFunc: {},
   }
 
-  componentDidMount () {
-    this.createCancelFunctions()
-  }
-
-  componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.printFiles !== this.props.printFiles) {
-      this.createCancelFunctions()
-    }
-  }
-
   handleVisibleChange = (flag) => {
     this.setState({ visible: flag })
   }
 
-  createCancelFunctions = () => {
-    const { printFiles, printFileCancel } = this.props
-    const Obj = Object.keys(printFiles).reduce((prev, current) => ({
-      ...prev,
-      [ current ]: () => {
-        printFileCancel(current)
-      },
-    }), {})
-    this.setState({ cancelFunc: Obj })
-  }
-
-  renderIconBox = (message, fileId) => {
-    const { cancelFunc } = this.state
-    return (
-      <Fragment>
-        {message !== 'error'
-          ? message !== 'done'
-            ? <Icon className='loader-icon' type="compass" spin />
-            : <IconButton
-              title={i18n.OPEN_FILE}
-              icon={iconNames.MAP_DEFAULT}
-              hoverIcon={iconNames.MAP_HOVER}
-            />
-          : <IconButton
-            title={i18n.RETRY_FILE}
-            icon={iconNames.REFRESH_DEFAULT}
-            hoverIcon={iconNames.REFRESH_HOVER}
-          />}
-        <IconButton
-          title={message === 'done' ? i18n.CLEAN_FILE : i18n.CANCEL_FILE}
-          icon={iconNames.CLOSE}
-          hoverIcon={iconNames.CLOSE}
-          onClick={cancelFunc[fileId]}
-        />
-      </Fragment>
-    )
-  }
-
   renderFileBox = () => {
-    const { printFiles } = this.props
+    const { printFiles, printFileCancel } = this.props
     const files = Object.keys(printFiles)
     return (
       <Menu className='fileBox'>
@@ -88,7 +41,7 @@ export default class PrintFiles extends PureComponent {
                 {Print.PRINT_STEPS_KEYS[message]}
               </div>
               <div className='fileBox_control'>
-                { this.renderIconBox(message, fileId) }
+                <IconBox message={message} fileId={fileId} onClose={printFileCancel} />
               </div>
             </Menu.Item>
           )
