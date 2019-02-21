@@ -17,14 +17,36 @@ export default class PrintFiles extends PureComponent {
 
   state = {
     visible: false,
+    cancelFunc: {},
+  }
+
+  componentDidMount () {
+    this.createCancelFunctions()
+  }
+
+  componentDidUpdate (prevProps, prevState, snapshot) {
+    if (prevProps.printFiles !== this.props.printFiles) {
+      this.createCancelFunctions()
+    }
   }
 
   handleVisibleChange = (flag) => {
     this.setState({ visible: flag })
   }
 
+  createCancelFunctions = () => {
+    const { printFiles, printFileCancel } = this.props
+    const Obj = Object.keys(printFiles).reduce((prev, current) => ({
+      ...prev,
+      [ current ]: () => {
+        printFileCancel(current)
+      },
+    }), {})
+    this.setState({ cancelFunc: Obj })
+  }
+
   renderIconBox = (message, fileId) => {
-    const { printFileCancel } = this.props
+    const { cancelFunc } = this.state
     return (
       <Fragment>
         {message !== 'error'
@@ -40,7 +62,7 @@ export default class PrintFiles extends PureComponent {
           title={i18n.CANCEL_FILE}
           icon={iconNames.CLOSE}
           hoverIcon={iconNames.CLOSE}
-          onClick={() => printFileCancel(fileId)}
+          onClick={cancelFunc[fileId]}
         />
       </Fragment>
     )
