@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment } from 'react'
+import ReactDOMServer from 'react-dom/server'
 import i18n from '../../i18n'
 import { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } from '../../constants/Print'
 import { pointsToD, rectToPoints } from './lines'
@@ -12,6 +13,7 @@ const TextAnchors = {
   MIDDLE: 'middle',
 }
 
+const MM_PER_INCH = 25.4
 const SIZE_1 = 1
 const SIZE_2 = 2 / 3
 const SIZE_3 = 1 / 2
@@ -314,4 +316,15 @@ export const printLegend = (params) => {
     )}
     {renderer.frames()}
   </>
+}
+
+export const printLegendSvgStr = (props) => {
+  const { widthMM, heightMM, dpi } = props
+  return ReactDOMServer.renderToStaticMarkup(<svg
+    xmlns="http://www.w3.org/2000/svg" version="1.2"
+    width={widthMM * dpi / MM_PER_INCH}
+    height={heightMM * dpi / MM_PER_INCH}
+    viewBox={`0 0 ${widthMM} ${heightMM}`}
+    fill="none"
+  >{printLegend(props)}</svg>)
 }

@@ -1,10 +1,9 @@
 import { batchActions } from 'redux-batched-actions'
-import ReactDOMServer from 'react-dom/server'
 import { action } from '../../utils/services'
-import { getUSC2000Projection } from '../../utils/projection'
-import { getMapObjectsSvg } from '../../utils/svg/mapObjects'
+import { getMapSvg } from '../../utils/svg/mapObjects'
 import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
 import { visibleLayersSelector } from '../selectors'
+import { printLegendSvgStr } from '../../utils/svg'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -72,10 +71,10 @@ const signatories = [
 const confirmDate = `22.12.18`
 
 export const createPrintFile = () =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { printFileCreate } }) => {
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
     const state = getState()
     const {
-      webMap: { objects },
+      webMap: { objects, showAmplifiers },
       print: {
         requisites,
         printScale,
@@ -86,30 +85,40 @@ export const createPrintFile = () =>
     } = state
     const layersById = visibleLayersSelector(state)
     if (selectedZone) {
+      const { dpi, projectionGroup } = requisites
       const { southWest, northEast } = selectedZone
-      const projection = getUSC2000Projection((southWest.lng + northEast.lng) / 2)
-      const svg = ReactDOMServer.renderToStaticMarkup(getMapObjectsSvg({
-        objects,
-        southWest,
-        northEast,
-        projection,
+
+      const printBounds = await getPrintBounds({
+        extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
+        scale: printScale,
+        projectionGroup,
+      })
+
+      // const printBounds = {
+      //   parts: [
+      //     {
+      //       srid: 5563,
+      //       extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
+      //       angle: 2,
+      //     },
+      //   ],
+      //   size: [ 500, 500 ],
+      // }
+
+      const { parts, size: [ width, height ] } = printBounds
+      const partsSvgs = parts.map((part) => getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+
+      const legendSvg = printLegendSvgStr({
+        widthMM: width,
+        heightMM: height,
+        dpi,
         requisites,
-        printScale,
         signatories,
         confirmDate,
-        layersById,
-      }))
-      const { dpi, projectionGroup } = requisites
-      const result = await printFileCreate({
-        southWest,
-        northEast,
-        dpi,
-        svg,
-        projectionGroup,
         printScale,
-        mapName,
-        mapId,
       })
+
+      const result = await printFileCreate({ printBounds, dpi, partsSvgs, legendSvg, mapName, mapId })
       const { id } = result
       dispatch(batchActions([
         printFileSet(id, 'sent', mapName),
