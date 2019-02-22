@@ -81,6 +81,7 @@ export const createPrintFile = () =>
         printScale,
         selectedZone,
         mapName,
+        mapId,
       },
     } = state
     const layersById = visibleLayersSelector(state)
@@ -99,10 +100,19 @@ export const createPrintFile = () =>
         layersById,
       }))
       const { dpi, projectionGroup } = requisites
-      const result = await printFileCreate({ southWest, northEast, dpi, svg, projectionGroup, printScale, mapName })
-      const { id, name } = result
+      const result = await printFileCreate({
+        southWest,
+        northEast,
+        dpi,
+        svg,
+        projectionGroup,
+        printScale,
+        mapName,
+        mapId,
+      })
+      const { id } = result
       dispatch(batchActions([
-        printFileSet(id, 'sent', name),
+        printFileSet(id, 'sent', mapName),
         print(),
         clearPrintRequisites(),
       ]))
