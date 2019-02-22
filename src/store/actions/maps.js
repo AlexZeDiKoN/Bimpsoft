@@ -96,7 +96,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
         selectedLayer = layersData.find((layer) => layer.layerId === layerId)
       }
       if (selectedLayer) {
-        dispatch(layers.selectLayer(selectedLayer.layerId))
+        await dispatch(layers.selectLayer(selectedLayer.layerId))
       }
     }
     await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))

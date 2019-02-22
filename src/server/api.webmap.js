@@ -37,15 +37,16 @@ export default {
     getDirect(`${webmapUrl}/obj/locked`, false),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
-  printFileCreate: ({ dpi, northEast, southWest, svg, projectionGroup, printScale, mapName, mapId }) => {
+  getPrintBounds: (data) =>
+    getDirect(`${webmapUrl}/printToFile/getPrintBounds`, data),
+  printFileCreate: ({ printBounds, dpi, mapName, mapId, partsSvgs, legendSvg }) => {
     const formData = new FormData()
-    const blob = new Blob([ svg ], { type: 'text/html' })
-    formData.append('mapobjects', blob, 'mapobjects.svg')
-    return getDirect(
-      `${webmapUrl}/printToFile/add?dpi=${dpi}&northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}&projectionGroup=${projectionGroup}&scale=${printScale}&mapName=${mapName}&mapId=${mapId}`,
-      formData,
-      ''
-    )
+    partsSvgs.forEach((part, i) => {
+      formData.append('parts', new Blob([ part ], { type: 'text/html' }), `part${i}.svg`)
+    })
+    formData.append('legend', new Blob([ legendSvg ], { type: 'text/html' }), 'legend.svg')
+    formData.append('params', JSON.stringify({ ...printBounds, dpi, mapName, mapId }))
+    return getDirect(`${webmapUrl}/printToFile/add`, formData, '')
   },
   printFileCancel: (id) =>
     getDirect(`${webmapUrl}/printToFile/cancel`, { id }),
