@@ -2,7 +2,7 @@ import React from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
-import { LayersContainer, OrgStructuresContainer } from '../../containers'
+import { LayersContainer, OrgStructuresContainer, MarchContainer } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
@@ -15,6 +15,7 @@ export default class Sidebar extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
+    marchEdit: PropTypes.bool,
   }
 
   state = {
@@ -27,9 +28,12 @@ export default class Sidebar extends React.Component {
     this.setState({ sidebarWidth })
   }
 
-  changeSidebarPanels = (preparationForPrinting) => {
-    if (preparationForPrinting) {
+  changeSidebarPanels = () => {
+    const { printStatus, marchEdit } = this.props
+    if (printStatus) {
       return <PrintPanel />
+    } else if (marchEdit) {
+      return <MarchContainer />
     } else {
       return (
         <>
@@ -51,7 +55,7 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { visible, printStatus } = this.props
+    const { visible } = this.props
     const sidebarDisplay = visible ? '' : 'none'
     return (
       <>
@@ -62,7 +66,7 @@ export default class Sidebar extends React.Component {
         />
         <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
           <div className="sidebar">
-            {this.changeSidebarPanels(printStatus)}
+            {this.changeSidebarPanels()}
           </div>
         </div>
       </>
