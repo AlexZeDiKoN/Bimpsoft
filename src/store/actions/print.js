@@ -5,6 +5,7 @@ import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
 import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
 import { asyncAction } from './index'
+import { Print } from '../../constants'
 
 export const PRINT = action('PRINT')
 export const SELECTED_ZONE = action('SELECTED_ZONE')
@@ -121,7 +122,7 @@ export const createPrintFile = () =>
       const result = await printFileCreate({ printBounds, dpi, partsSvgs, legendSvg, mapName, mapId })
       const { id } = result
       dispatch(batchActions([
-        printFileSet(id, 'sent', mapName),
+        printFileSet(id, Print.PRINT_STEPS.SENT, mapName),
         print(),
         clearPrintRequisites(),
       ]))

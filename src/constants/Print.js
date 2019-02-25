@@ -33,12 +33,20 @@ export const PRINT_SELECTS_KEYS = {
   PROJECTION_GROUP: 'projectionGroup',
 }
 
+export const PRINT_STEPS = {
+  SENT: 'sent',
+  RECEIVED: 'received',
+  PROCESSING: 'processing',
+  DONE: 'done',
+  ERROR: 'error',
+}
+
 export const PRINT_STEPS_KEYS = {
-  'sent': 'Надіслано в обробку',
-  'received': 'Поставлено в чергу',
-  'processing': 'Формування графічного файлу',
-  'done': 'Файл сформовано',
-  'error': 'Виникла помилка',
+  [PRINT_STEPS.SENT]: 'Надіслано в обробку',
+  [PRINT_STEPS.RECEIVED]: 'Поставлено в чергу',
+  [PRINT_STEPS.PROCESSING]: 'Формування графічного файлу',
+  [PRINT_STEPS.DONE]: 'Файл сформовано',
+  [PRINT_STEPS.ERROR]: 'Виникла помилка',
 }
 
 // TODO: тимчасово прибрано масштаб '1000000'
