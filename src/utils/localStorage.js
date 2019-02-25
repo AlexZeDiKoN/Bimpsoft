@@ -14,5 +14,5 @@ export const LS = {
     }
     return parsedData
   },
-  clear: window.localStorage.clear(),
+  clear: () => window.localStorage.clear(),
 }

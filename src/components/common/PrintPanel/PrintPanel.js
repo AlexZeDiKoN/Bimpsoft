@@ -36,12 +36,12 @@ class PrintPanel extends React.Component {
       legendFourthColor: undefined,
     },
     setRequisitesFunc: {},
-    legendTableType: '',
+    legendTableType: 'left',
   }
 
   componentDidMount () {
     this.createSetFunctions()
-    this.changeLegendTableType('left')
+    // this.changeLegendTableType('left')
   }
 
   createSetFunctions = () => {

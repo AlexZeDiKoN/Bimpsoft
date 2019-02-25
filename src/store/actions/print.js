@@ -4,8 +4,9 @@ import { getMapSvg } from '../../utils/svg/mapObjects'
 import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
 import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
-import { asyncAction } from './index'
+import { LS } from '../../utils'
 import { Print } from '../../constants'
+import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
 export const SELECTED_ZONE = action('SELECTED_ZONE')
@@ -27,14 +28,24 @@ export const setPrintScale = (scale) => ({
   payload: scale,
 })
 
-export const setPrintRequisites = (data) => ({
-  type: PRINT_REQUISITES,
-  payload: data,
-})
+export const setPrintRequisites = (data) => {
+  const dataArray = Object.entries(data)[0]
+  const key = dataArray[0]
+  const value = dataArray[1]
+  LS.set(Print.LS_GROUP, key, value)
+  return ({
+    type: PRINT_REQUISITES,
+    payload: data,
+  })
+}
 
-export const clearPrintRequisites = () => ({
-  type: PRINT_REQUISITES_CLEAR,
-})
+export const clearPrintRequisites = () =>
+  (dispatch) => {
+    LS.clear()
+    dispatch({
+      type: PRINT_REQUISITES_CLEAR,
+    })
+  }
 
 export const setSelectedZone = (selectedZone) => ({
   type: SELECTED_ZONE,
