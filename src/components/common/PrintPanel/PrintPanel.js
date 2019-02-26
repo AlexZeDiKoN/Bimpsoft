@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Button } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import moment from 'moment'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
@@ -28,20 +29,22 @@ class PrintPanel extends React.Component {
     createPrintFile: PropTypes.func,
   }
 
-  state = {
-    colors: {
-      legendFirstColor: undefined,
-      legendSecondColor: undefined,
-      legendThirdColor: undefined,
-      legendFourthColor: undefined,
-    },
-    setRequisitesFunc: {},
-    legendTableType: '',
+  constructor (props) {
+    super(props)
+    this.state = {
+      colors: {
+        legendFirstColor: props.requisites.legendFirstColor || undefined,
+        legendSecondColor: props.requisites.legendSecondColor || undefined,
+        legendThirdColor: props.requisites.legendThirdColor || undefined,
+        legendFourthColor: props.requisites.legendFourthColor || undefined,
+      },
+      setRequisitesFunc: {},
+      legendTableType: props.requisites.legendTableType,
+    }
   }
 
   componentDidMount () {
     this.createSetFunctions()
-    this.changeLegendTableType('left')
   }
 
   createSetFunctions = () => {
@@ -113,7 +116,7 @@ class PrintPanel extends React.Component {
       form: { getFieldDecorator },
       printScale,
       securityClassification: { classified },
-      requisites: { dpi, coordinatesType },
+      requisites,
     } = this.props
     const { setRequisitesFunc, colors, legendTableType } = this.state
     const {
@@ -144,7 +147,7 @@ class PrintPanel extends React.Component {
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.DPI, {
-                  initialValue: dpi,
+                  initialValue: requisites.dpi,
                 },
               )(
                 <Select
@@ -160,7 +163,7 @@ class PrintPanel extends React.Component {
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.PROJECTION_GROUP, {
-                  initialValue: coordinatesType,
+                  initialValue: requisites.coordinatesType,
                 },
               )(
                 <Select
@@ -182,39 +185,81 @@ class PrintPanel extends React.Component {
           <h5 className='docBlock_header'>{i18n.DOC_HEADER}</h5>
           <div className='printPanel_docBlock'>
             <FormColumn label={i18n.FIRST_ROW}>
-              <Input
-                onChange={setRequisitesFunc.FIRST_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.FIRST_ROW, {
+                    initialValue: requisites.firstRow,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.FIRST_ROW}
+                  />
+                )
+              }
             </FormColumn>
             <FormColumn label={i18n.SECOND_ROW}>
-              <Input
-                onChange={setRequisitesFunc.SECOND_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.SECOND_ROW, {
+                    initialValue: requisites.secondRow,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.SECOND_ROW}
+                  />
+                )
+              }
             </FormColumn>
             <FormColumn label={i18n.THIRD_ROW}>
-              <Input
-                onChange={setRequisitesFunc.THIRD_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.THIRD_ROW, {
+                    initialValue: requisites.thirdRow,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.THIRD_ROW}
+                  />
+                )
+              }
             </FormColumn>
             <FormColumn label={i18n.FOURTH_ROW}>
-              <Input
-                onChange={setRequisitesFunc.FOURTH_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.FOURTH_ROW, {
+                    initialValue: requisites.fourthRow,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.FOURTH_ROW}
+                  />
+                )
+              }
             </FormColumn>
             <FormColumn label={i18n.FIFTH_ROW}>
-              <Input
-                onChange={setRequisitesFunc.FIFTH_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.FIFTH_ROW, {
+                    initialValue: requisites.fifthRow,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.FIFTH_ROW}
+                  />
+                )
+              }
             </FormColumn>
             <FormRow label={i18n.START}>
               <DatePicker
                 format={DATE_FORMAT}
+                defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.START}
               />
             </FormRow>
             <FormRow label={i18n.FINISH}>
               <DatePicker
                 format={DATE_FORMAT}
+                defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>
@@ -222,19 +267,43 @@ class PrintPanel extends React.Component {
           <h5>{i18n.MAIN_INDICATORS}</h5>
           <div className='printPanel_indicators'>
             <FormRow>
-              <Input
-                onChange={setRequisitesFunc.INDICATOR_FIRST_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, {
+                    initialValue: requisites.indiFirst,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.INDICATOR_FIRST_ROW}
+                  />
+                )
+              }
             </FormRow>
             <FormRow>
-              <Input
-                onChange={setRequisitesFunc.INDICATOR_SECOND_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, {
+                    initialValue: requisites.indiSecond,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.INDICATOR_SECOND_ROW}
+                  />
+                )
+              }
             </FormRow>
             <FormRow>
-              <Input
-                onChange={setRequisitesFunc.INDICATOR_THIRD_ROW}
-              />
+              {
+                getFieldDecorator(
+                  PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, {
+                    initialValue: requisites.indiThird,
+                  },
+                )(
+                  <Input
+                    onChange={setRequisitesFunc.INDICATOR_THIRD_ROW}
+                  />
+                )
+              }
             </FormRow>
           </div>
           <Row className='printPanel_legend'>
@@ -287,9 +356,17 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={18}>
-                <Input
-                  onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
-                />
+                {
+                  getFieldDecorator(
+                    PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT, {
+                      initialValue: requisites.legendFirstContent,
+                    },
+                  )(
+                    <Input
+                      onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
+                    />
+                  )
+                }
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -304,9 +381,17 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={18}>
-                <Input
-                  onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
-                />
+                {
+                  getFieldDecorator(
+                    PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT, {
+                      initialValue: requisites.legendSecondContent,
+                    },
+                  )(
+                    <Input
+                      onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
+                    />
+                  )
+                }
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -321,9 +406,17 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={18}>
-                <Input
-                  onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
-                />
+                {
+                  getFieldDecorator(
+                    PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT, {
+                      initialValue: requisites.legendThirdContent,
+                    },
+                  )(
+                    <Input
+                      onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
+                    />
+                  )
+                }
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
@@ -338,9 +431,17 @@ class PrintPanel extends React.Component {
                 />
               </Col>
               <Col span={18}>
-                <Input
-                  onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
-                />
+                {
+                  getFieldDecorator(
+                    PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT, {
+                      initialValue: requisites.legendFourthContent,
+                    },
+                  )(
+                    <Input
+                      onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
+                    />
+                  )
+                }
               </Col>
             </Row>
           </div>

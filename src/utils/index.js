@@ -4,6 +4,7 @@ import * as date from './date'
 import createNotificator from './createNotificator'
 import coordinates from './coordinates'
 import * as mapObjConvertor from './mapObjConvertor'
+import { LS } from './localStorage'
 export * from './redux'
 export * from './svg'
 
@@ -14,4 +15,5 @@ export {
   createNotificator,
   coordinates,
   mapObjConvertor,
+  LS,
 }

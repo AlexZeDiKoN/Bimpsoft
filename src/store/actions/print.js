@@ -4,6 +4,8 @@ import { getMapSvg } from '../../utils/svg/mapObjects'
 import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
 import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
+import { LS } from '../../utils'
+import { Print } from '../../constants'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -15,25 +17,50 @@ export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
 export const PRINT_FILE_LOG = action('PRINT_FILE_LOG')
 
-export const print = (mapId = null, name = '') => ({
-  type: PRINT,
-  mapId,
-  name,
-})
+export const print = (mapId = null, name = '') =>
+  (dispatch, getState) => {
+    if (getState().print.mapId === null) {
+      const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
+      const requisites = Object.keys(Object.assign(PRINT_PANEL_KEYS, COLOR_PICKER_KEYS))
+        .reduce((prev, current) => (
+          {
+            ...prev,
+            [PRINT_PANEL_KEYS[current]]: LS.get(Print.LS_GROUP, PRINT_PANEL_KEYS[current]),
+          }
+        ), {})
+      dispatch(
+        setPrintRequisites(requisites)
+      )
+    }
+    dispatch({
+      type: PRINT,
+      mapId,
+      name,
+    })
+  }
 
 export const setPrintScale = (scale) => ({
   type: PRINT_SCALE,
   payload: scale,
 })
 
-export const setPrintRequisites = (data) => ({
-  type: PRINT_REQUISITES,
-  payload: data,
-})
+export const setPrintRequisites = (data) => {
+  for (const [ key, value ] of Object.entries(data)) {
+    LS.set(Print.LS_GROUP, key, value)
+  }
+  return ({
+    type: PRINT_REQUISITES,
+    payload: data,
+  })
+}
 
-export const clearPrintRequisites = () => ({
-  type: PRINT_REQUISITES_CLEAR,
-})
+export const clearPrintRequisites = () =>
+  (dispatch) => {
+    LS.clear()
+    dispatch({
+      type: PRINT_REQUISITES_CLEAR,
+    })
+  }
 
 export const setSelectedZone = (selectedZone) => ({
   type: SELECTED_ZONE,
@@ -118,10 +145,10 @@ export const createPrintFile = () =>
         printScale,
       })
 
-      const result = await printFileCreate({ printBounds, dpi, partsSvgs, legendSvg, mapName, mapId })
+      const result = await printFileCreate({ printBounds, dpi, partsSvgs, legendSvg, mapName, mapId, requisites })
       const { id } = result
       dispatch(batchActions([
-        printFileSet(id, 'sent', mapName),
+        printFileSet(id, Print.PRINT_STEPS.SENT, mapName),
         print(),
         clearPrintRequisites(),
       ]))

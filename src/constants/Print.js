@@ -1,4 +1,5 @@
 import { CoordinatesTypes } from '../constants'
+import i18n from '../i18n'
 
 export const PRINT_PANEL_KEYS = {
   MAP_LABEL: 'mapLabel',
@@ -33,12 +34,20 @@ export const PRINT_SELECTS_KEYS = {
   PROJECTION_GROUP: 'projectionGroup',
 }
 
+export const PRINT_STEPS = {
+  SENT: 'sent',
+  RECEIVED: 'received',
+  PROCESSING: 'processing',
+  DONE: 'done',
+  ERROR: 'error',
+}
+
 export const PRINT_STEPS_KEYS = {
-  'sent': 'Надіслано в обробку',
-  'received': 'Поставлено в чергу',
-  'processing': 'Формування графічного файлу',
-  'done': 'Файл сформовано',
-  'error': 'Виникла помилка',
+  [PRINT_STEPS.SENT]: i18n.SENT_TO_PROCESSING,
+  [PRINT_STEPS.RECEIVED]: i18n.PUT_IN_QUEUE,
+  [PRINT_STEPS.PROCESSING]: i18n.FORMATION_FILE,
+  [PRINT_STEPS.DONE]: i18n.FILE_IS_GENERATED,
+  [PRINT_STEPS.ERROR]: i18n.ERROR_OCCURRED,
 }
 
 // TODO: тимчасово прибрано масштаб '1000000'
@@ -49,3 +58,5 @@ export const DATE_FORMAT = 'DD.MM.YYYY'
 export const DPI_TYPES = [ '150', '200', '300', '600' ]
 
 export const PRINT_PROJECTION_GROUP = [ CoordinatesTypes.UCS_2000, CoordinatesTypes.UTM ]
+
+export const LS_GROUP = 'print'
