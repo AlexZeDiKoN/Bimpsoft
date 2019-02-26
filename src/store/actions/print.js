@@ -17,11 +17,27 @@ export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
 export const PRINT_FILE_LOG = action('PRINT_FILE_LOG')
 
-export const print = (mapId = null, name = '') => ({
-  type: PRINT,
-  mapId,
-  name,
-})
+export const print = (mapId = null, name = '') =>
+  (dispatch, getState) => {
+    if (getState().print.mapId === null) {
+      const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
+      const requisites = Object.keys(Object.assign(PRINT_PANEL_KEYS, COLOR_PICKER_KEYS))
+        .reduce((prev, current) => (
+          {
+            ...prev,
+            [PRINT_PANEL_KEYS[current]]: LS.get(Print.LS_GROUP, PRINT_PANEL_KEYS[current]),
+          }
+        ), {})
+      dispatch(
+        setPrintRequisites(requisites)
+      )
+    }
+    dispatch({
+      type: PRINT,
+      mapId,
+      name,
+    })
+  }
 
 export const setPrintScale = (scale) => ({
   type: PRINT_SCALE,
