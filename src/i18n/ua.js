@@ -202,3 +202,9 @@ export const DIRECTION_ZONES = `Зони напрямків`
 export const CREATE = `Створити`
 export const CALCULATE = `Розрахувати`
 export const INVALID_UNITS_IN_GRID = 'Неоднозначність визначення місцеположення підрозділу'
+// стани
+export const SENT_TO_PROCESSING = 'Надіслано в обробку'
+export const PUT_IN_QUEUE = 'Поставлено в чергу'
+export const FORMATION_FILE = 'Формування графічного файлу'
+export const FILE_IS_GENERATED = 'Файл сформовано'
+export const ERROR_OCCURRED = 'Виникла помилка'

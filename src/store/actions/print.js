@@ -45,10 +45,9 @@ export const setPrintScale = (scale) => ({
 })
 
 export const setPrintRequisites = (data) => {
-  const dataArray = Object.entries(data)[0]
-  const key = dataArray[0]
-  const value = dataArray[1]
-  LS.set(Print.LS_GROUP, key, value)
+  for (const [ key, value ] of Object.entries(data)) {
+    LS.set(Print.LS_GROUP, key, value)
+  }
   return ({
     type: PRINT_REQUISITES,
     payload: data,

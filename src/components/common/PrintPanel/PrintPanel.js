@@ -252,14 +252,14 @@ class PrintPanel extends React.Component {
             <FormRow label={i18n.START}>
               <DatePicker
                 format={DATE_FORMAT}
-                defaultValue={moment(requisites.start, DATE_FORMAT)}
+                defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.START}
               />
             </FormRow>
             <FormRow label={i18n.FINISH}>
               <DatePicker
                 format={DATE_FORMAT}
-                defaultValue={moment(requisites.finish, DATE_FORMAT)}
+                defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.FINISH}
               />
             </FormRow>

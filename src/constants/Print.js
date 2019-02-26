@@ -1,4 +1,5 @@
 import { CoordinatesTypes } from '../constants'
+import i18n from '../i18n'
 
 export const PRINT_PANEL_KEYS = {
   MAP_LABEL: 'mapLabel',
@@ -42,11 +43,11 @@ export const PRINT_STEPS = {
 }
 
 export const PRINT_STEPS_KEYS = {
-  [PRINT_STEPS.SENT]: 'Надіслано в обробку',
-  [PRINT_STEPS.RECEIVED]: 'Поставлено в чергу',
-  [PRINT_STEPS.PROCESSING]: 'Формування графічного файлу',
-  [PRINT_STEPS.DONE]: 'Файл сформовано',
-  [PRINT_STEPS.ERROR]: 'Виникла помилка',
+  [PRINT_STEPS.SENT]: i18n.SENT_TO_PROCESSING,
+  [PRINT_STEPS.RECEIVED]: i18n.PUT_IN_QUEUE,
+  [PRINT_STEPS.PROCESSING]: i18n.FORMATION_FILE,
+  [PRINT_STEPS.DONE]: i18n.FILE_IS_GENERATED,
+  [PRINT_STEPS.ERROR]: i18n.ERROR_OCCURRED,
 }
 
 // TODO: тимчасово прибрано масштаб '1000000'

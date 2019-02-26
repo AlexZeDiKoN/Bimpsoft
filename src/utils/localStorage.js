@@ -1,18 +1,25 @@
 export const LS = {
-  set: (group, key, data) => (
-    typeof data === 'string'
-      ? window.localStorage.setItem(`${group}::${key}`, data)
-      : window.localStorage.setItem(`${group}::${key}`, JSON.stringify(data))
-  ),
-  get: (group, key) => {
-    const data = window.localStorage.getItem(`${group}::${key}`)
-    let parsedData
-    try {
-      parsedData = JSON.parse(data)
-    } catch (e) {
-      return data
+  set: (group, key, data) => {
+    const type = typeof data
+    window.localStorage.setItem(`${group}::${key}::type`, type)
+    switch (type) {
+      case 'object': {
+        window.localStorage.setItem(`${group}::${key}::data`, JSON.stringify(data))
+        break
+      }
+      default:
+        window.localStorage.setItem(`${group}::${key}::data`, data)
     }
-    return parsedData
+  },
+  get: (group, key) => {
+    const type = window.localStorage.getItem(`${group}::${key}::type`)
+    switch (type) {
+      case 'object': {
+        return JSON.parse(window.localStorage.getItem(`${group}::${key}::data`))
+      }
+      default:
+        return window.localStorage.getItem(`${group}::${key}::data`)
+    }
   },
   clear: () => window.localStorage.clear(),
 }
