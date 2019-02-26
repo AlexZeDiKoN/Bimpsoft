@@ -2,10 +2,9 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-import { pointsToD } from '../../utils/svg/lines'
+import { pointsToD, LINE_WIDTH } from '../../utils/svg/lines'
 import { getMapObjectSvg } from './mapObject'
 
-const PRINT_SCALE = 10
 const METERS_PER_INCH = 0.0254
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
@@ -32,15 +31,15 @@ const getCoordToPixels = (projection, dpi, scale, angle, { min, max }) => {
     const [ x, y ] = proj4(projection, [ lng, lat ])
     let point = add({ x, y }, tX, tY)
     point = multiply(point, metersToPixels, -metersToPixels)
-    point = rotate(point, cos, sin)
     point = add(point, tX2, tY2)
+    point = rotate(point, cos, sin)
     return point
   }
 }
 
 export const getMapSvg = (
   { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ], angle },
-  { parts, objects, dpi, printScale, layersById, showAmplifiers }
+  { objects, dpi, printScale, layersById, showAmplifiers }
 ) => {
   const projection = `EPSG:${srid}`
   const [ lngSW, latSW ] = proj4(projection, [ southWestLng, southWestLat ])
@@ -92,11 +91,14 @@ export const getMapSvg = (
     }
   })
   const bounds = { min, max }
-  const commonData = { bounds, coordToPixels, scale: PRINT_SCALE, layersById, showAmplifiers }
 
+  const lineWidthMM = 0.75
+  const lineWidthPX = lineWidthMM * dpi / (METERS_PER_INCH * 1000)
+  const scale = lineWidthPX / LINE_WIDTH
+
+  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
-
   return ReactDOMServer.renderToStaticMarkup(<svg
     xmlns="http://www.w3.org/2000/svg" version="1.2"
     width={width}
@@ -104,7 +106,9 @@ export const getMapSvg = (
     viewBox={`${bounds.min.x} ${bounds.min.y} ${width} ${height}`}
     fill="none"
   >
-    <path fill="none" stroke="#00ff00" strokeWidth={5} d={pointsToD(edgePoints, true)} />
-    {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)})
+    <mask id={`extents`}><path fillRule="nonzero" fill="#ffffff" d={pointsToD(edgePoints, true)} /></mask>
+    <g mask="url(#extents)">
+      {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)})
+    </g>
   </svg>)
 }

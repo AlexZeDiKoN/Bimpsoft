@@ -91,17 +91,22 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
 
 mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { showAmplifiers, coordToPixels, scale } = commonData
+  const { showAmplifiers, coordToPixels } = commonData
   let { code = '', attributes, point } = data
   const symbol = new Symbol(code, {
-    size: 100 * scale,
     outlineWidth: 3,
     outlineColor: colors.evaluateColor(outlineColor),
     ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
   })
+  let { x, y } = symbol.getAnchor()
+  const { bbox } = symbol
+  const marginX = (symbol.width - (bbox.x2 - bbox.x1)) / 2
+  const marginY = (symbol.height - (bbox.y2 - bbox.y1)) / 2
+  x += bbox.x1 - marginX
+  y += bbox.y1 - marginY
   point = coordToPixels(point)
   return <g
-    transform={`translate(${Math.round(point.x)},${Math.round(point.y)})`}
+    transform={`translate(${Math.round(point.x - x)},${Math.round(point.y - y)})`}
     dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG()) }}
   />
 })
