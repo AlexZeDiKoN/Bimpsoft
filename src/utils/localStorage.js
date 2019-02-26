@@ -4,21 +4,22 @@ export const LS = {
     window.localStorage.setItem(`${group}::${key}::type`, type)
     switch (type) {
       case 'object': {
-        window.localStorage.setItem(`${group}::${key}::data`, JSON.stringify(data))
+        data = JSON.stringify(data)
         break
       }
       default:
-        window.localStorage.setItem(`${group}::${key}::data`, data)
     }
+    window.localStorage.setItem(`${group}::${key}::data`, data)
   },
   get: (group, key) => {
     const type = window.localStorage.getItem(`${group}::${key}::type`)
+    const data = window.localStorage.getItem(`${group}::${key}::data`)
     switch (type) {
       case 'object': {
-        return JSON.parse(window.localStorage.getItem(`${group}::${key}::data`))
+        return JSON.parse(data)
       }
       default:
-        return window.localStorage.getItem(`${group}::${key}::data`)
+        return data
     }
   },
   clear: () => window.localStorage.clear(),
