@@ -10,6 +10,7 @@ const iconNames = components.icons.names
 export default class IconBox extends Component {
   static propTypes = {
     fileId: PropTypes.string,
+    mapName: PropTypes.string,
     onClose: PropTypes.func,
     onRetry: PropTypes.func,
     message: PropTypes.string,
@@ -21,8 +22,8 @@ export default class IconBox extends Component {
   }
 
   handleRetry = () => {
-    const { fileId, onRetry } = this.props
-    onRetry(fileId)
+    const { fileId, mapName, onRetry } = this.props
+    onRetry(fileId, mapName)
   }
 
   render () {

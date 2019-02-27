@@ -44,6 +44,7 @@ export default class PrintFiles extends PureComponent {
                 <IconBox
                   message={message}
                   fileId={fileId}
+                  mapName={name}
                   onClose={printFileCancel}
                   onRetry={printFileRetry}
                 />
