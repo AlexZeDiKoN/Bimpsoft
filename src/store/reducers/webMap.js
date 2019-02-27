@@ -6,6 +6,7 @@ import { actionNames } from '../actions/webMap'
 import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
+import { LINE_WIDTH } from '../../utils/svg/lines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -19,7 +20,7 @@ const webMapAttributesInitValues = {
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
   lineType: 'solid',
-  strokeWidth: 2,
+  strokeWidth: LINE_WIDTH,
   lineAmpl: 'none',
   left: 'none',
   right: 'none',

@@ -10,13 +10,20 @@ const iconNames = components.icons.names
 export default class IconBox extends Component {
   static propTypes = {
     fileId: PropTypes.string,
+    mapName: PropTypes.string,
     onClose: PropTypes.func,
+    onRetry: PropTypes.func,
     message: PropTypes.string,
   }
 
   handleClose = () => {
     const { fileId, onClose } = this.props
     onClose(fileId)
+  }
+
+  handleRetry = () => {
+    const { fileId, mapName, onRetry } = this.props
+    onRetry(fileId, mapName)
   }
 
   render () {
@@ -35,6 +42,7 @@ export default class IconBox extends Component {
             title={i18n.RETRY_FILE}
             icon={iconNames.REFRESH_DEFAULT}
             hoverIcon={iconNames.REFRESH_HOVER}
+            onClick={this.handleRetry}
           />}
         <IconButton
           title={message === 'done' ? i18n.CLEAN_FILE : i18n.CANCEL_FILE}

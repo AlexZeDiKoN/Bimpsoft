@@ -48,9 +48,7 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
   </g>
 }
 
-const svgToG = (svg, { x, y }) => svg
-  .replace(/^(\r|\n|.)*?<svg\b/i, `<g transform="translate(${Math.round(x)},${Math.round(y)})" `)
-  .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
+const svgToG = (svg) => svg.replace(/^(\r|\n|.)*?<svg\b/i, '<g ').replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
 
 const getLineSvg = (points, attributes, layerData) => {
   const {
@@ -93,15 +91,24 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
 
 mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { showAmplifiers, coordToPixels, scale } = commonData
-  const { code = '', attributes, point } = data
+  const { showAmplifiers, coordToPixels } = commonData
+  let { code = '', attributes, point } = data
   const symbol = new Symbol(code, {
-    size: 100 * scale,
     outlineWidth: 3,
     outlineColor: colors.evaluateColor(outlineColor),
     ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
   })
-  return <g dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG(), coordToPixels(point)) }} />
+  let { x, y } = symbol.getAnchor()
+  const { bbox } = symbol
+  const marginX = (symbol.width - (bbox.x2 - bbox.x1)) / 2
+  const marginY = (symbol.height - (bbox.y2 - bbox.y1)) / 2
+  x += bbox.x1 - marginX
+  y += bbox.y1 - marginY
+  point = coordToPixels(point)
+  return <g
+    transform={`translate(${Math.round(point.x - x)},${Math.round(point.y - y)})`}
+    dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG()) }}
+  />
 })
 
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {

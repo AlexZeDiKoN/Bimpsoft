@@ -2,6 +2,8 @@ import Bezier from 'bezier-js'
 import subordinationLevels from '../../constants/SubordinationLevel'
 import { extractSubordinationLevelSVG } from './milsymbol'
 
+export const LINE_WIDTH = 2 // (пікселів) товщина ліній
+
 const AMPLIFIERS_STEP = 144 // (пікселів) крок відображення ампліфікаторів на лініях
 const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
 const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
