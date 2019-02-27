@@ -90,6 +90,14 @@ export const printFileCancel = (id) =>
     })
   }
 
+export const printFileRetry = (id, name) =>
+  (dispatch, getState, { webmapApi: { printFileRetry } }) => {
+    printFileRetry(id)
+    dispatch(
+      printFileSet(id, Print.PRINT_STEPS.SENT, name)
+    )
+  }
+
 // TODO: заменить реальными данными
 const signatories = [
   { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },

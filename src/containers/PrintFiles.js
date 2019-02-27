@@ -16,6 +16,7 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = {
   printFileCancel: print.printFileCancel,
+  printFileRetry: print.printFileRetry,
 }
 
 const PrintFilesContainer = connect(

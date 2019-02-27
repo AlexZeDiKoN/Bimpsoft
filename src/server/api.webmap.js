@@ -50,6 +50,8 @@ export default {
   },
   printFileCancel: (id) =>
     getDirect(`${webmapUrl}/printToFile/cancel`, { id }),
+  printFileRetry: (id) =>
+    getDirect(`${webmapUrl}/printToFile/retry`, { id }),
   printFileList: () =>
     getDirect(`${webmapUrl}/printToFile/list`, false),
 }
