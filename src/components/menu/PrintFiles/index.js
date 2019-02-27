@@ -14,6 +14,7 @@ export default class PrintFiles extends PureComponent {
   static propTypes = {
     printFiles: PropTypes.object,
     printFileCancel: PropTypes.func,
+    printFileRetry: PropTypes.func,
   }
 
   state = {
@@ -25,7 +26,7 @@ export default class PrintFiles extends PureComponent {
   }
 
   renderFileBox = () => {
-    const { printFiles, printFileCancel } = this.props
+    const { printFiles, printFileCancel, printFileRetry } = this.props
     const files = Object.keys(printFiles)
     return (
       <Menu className='fileBox'>
@@ -40,7 +41,12 @@ export default class PrintFiles extends PureComponent {
                 {Print.PRINT_STEPS_KEYS[message]}
               </div>
               <div className='fileBox_control'>
-                <IconBox message={message} fileId={fileId} onClose={printFileCancel} />
+                <IconBox
+                  message={message}
+                  fileId={fileId}
+                  onClose={printFileCancel}
+                  onRetry={printFileRetry}
+                />
               </div>
             </Menu.Item>
           )

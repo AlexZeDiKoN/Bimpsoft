@@ -90,6 +90,11 @@ export const printFileCancel = (id) =>
     })
   }
 
+export const printFileRetry = (id) =>
+  (dispatch, getState, { webmapApi: { printFileRetry } }) => {
+    printFileRetry(id)
+  }
+
 // TODO: заменить реальными данными
 const signatories = [
   { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
