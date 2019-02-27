@@ -4,6 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
+import { LINE_WIDTH } from '../../../utils/svg/lines'
 
 const { Option } = Select
 const { icons: { Icon } } = components
@@ -45,7 +46,7 @@ const optionsSvg = (children) => (
   </svg>
 )
 
-const renderStyledLine = (borderStyle, level, strokeWidth = 2) => {
+const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   let amp
   const dash = {}
   if (level) {
