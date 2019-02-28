@@ -7,6 +7,7 @@ import { error } from '../utils/devLoggers'
 import explorerApi from '../server/api.node'
 import webmapApi from '../server/api.webmap'
 import milOrgApi from '../server/api.server.org'
+import indicatorApi from '../server/api.indicator'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
@@ -36,6 +37,7 @@ export default function initStore (options = {}) {
       explorerApi,
       webmapApi,
       milOrgApi,
+      indicatorApi,
     }),
   ]
 
