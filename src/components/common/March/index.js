@@ -10,13 +10,20 @@ const { IconHovered } = components.icons
 class March extends Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
+    indicators: PropTypes.array,
+  }
+
+  clickHandler = (e) => {
+    console.log(e)
   }
 
   render () {
     const {
       form: { getFieldDecorator },
+      indicators,
     } = this.props
     const { FormRow } = components.form
+    console.log(indicators)
     return (
       <div className='march_container'>
         <div className='march_title'>
@@ -31,6 +38,12 @@ class March extends Component {
               <FormRow className='march_name-title'>
                 <Input placeholder='placeholder' />
               </FormRow>
+              {/*<IndicatorDataMapping*/}
+                {/*indicator={ indicators[0] }*/}
+                {/*label='test'*/}
+                {/*onHandler={this.clickHandler}*/}
+                {/*disable={false}*/}
+              {/*/>*/}
             </div>
             <div className='march_name-load'> </div>
           </div>

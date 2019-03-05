@@ -57,7 +57,7 @@ export async function post (url, data = {}, route = '/do', namespace) {
 export async function getDirect (url, data = {}, namespace) {
   const options = _getOptions(data ? 'POST' : 'GET')
   setOptionsData(options, data)
-  return _createRequest(url, options, namespace)
+  return _createRequest(url, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
 function _getOptions (method) {
