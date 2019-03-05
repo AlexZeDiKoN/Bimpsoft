@@ -6,15 +6,13 @@ import i18n from '../../../i18n'
 import './style.css'
 
 const { IconHovered } = components.icons
+const { IndicatorDataMapping } = components.form
+const { form } = components
 
 class March extends Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
     indicators: PropTypes.array,
-  }
-
-  clickHandler = (e) => {
-    console.log(e)
   }
 
   render () {
@@ -23,7 +21,6 @@ class March extends Component {
       indicators,
     } = this.props
     const { FormRow } = components.form
-    console.log(indicators)
     return (
       <div className='march_container'>
         <div className='march_title'>
@@ -38,12 +35,10 @@ class March extends Component {
               <FormRow className='march_name-title'>
                 <Input placeholder='placeholder' />
               </FormRow>
-              {/*<IndicatorDataMapping*/}
-                {/*indicator={ indicators[0] }*/}
-                {/*label='test'*/}
-                {/*onHandler={this.clickHandler}*/}
-                {/*disable={false}*/}
-              {/*/>*/}
+              <IndicatorDataMapping
+                indicator={ indicators[0] }
+                label='test'
+              />
             </div>
             <div className='march_name-load'> </div>
           </div>
