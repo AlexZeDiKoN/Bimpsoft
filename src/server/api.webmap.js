@@ -39,13 +39,13 @@ export default {
     getDirect(`/tiles/index.json`, false, ''),
   getPrintBounds: (data) =>
     getDirect(`${webmapUrl}/printToFile/getPrintBounds`, data),
-  printFileCreate: ({ printBounds, dpi, mapName, mapId, partsSvgs, legendSvg, requisites }) => {
+  printFileCreate: ({ printBounds, scale, dpi, mapName, mapId, partsSvgs, legendSvg, requisites }) => {
     const formData = new FormData()
     partsSvgs.forEach((part, i) => {
-      formData.append('parts', new Blob([ part ], { type: 'text/html' }), `part${i}.svg`)
+      formData.append('SvgParts', new Blob([ part ], { type: 'text/html' }), `part${i}.svg`)
     })
     formData.append('legend', new Blob([ legendSvg ], { type: 'text/html' }), 'legend.svg')
-    formData.append('params', JSON.stringify({ ...printBounds, dpi, mapName, mapId, requisites }))
+    formData.append('params', JSON.stringify({ ...printBounds, scale, dpi, mapName, mapId, requisites }))
     return getDirect(`${webmapUrl}/printToFile/add`, formData, '')
   },
   printFileCancel: (id) =>

@@ -153,7 +153,9 @@ export const createPrintFile = () =>
         printScale,
       })
 
-      const result = await printFileCreate({ printBounds, dpi, partsSvgs, legendSvg, mapName, mapId, requisites })
+      const result = await printFileCreate({
+        scale: printScale, printBounds, dpi, partsSvgs, legendSvg, mapName, mapId, requisites
+      })
       const { id } = result
       dispatch(batchActions([
         printFileSet(id, Print.PRINT_STEPS.SENT, mapName),
