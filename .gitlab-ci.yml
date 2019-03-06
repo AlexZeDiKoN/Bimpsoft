@@ -27,7 +27,7 @@ build:
   <<: *base-dev
   script:
     - echo Building project...
-    -  call npm install --no-bin-links --develop
+    -  call npm i
 #    - call npm install
 #    - call yarn
 #    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
