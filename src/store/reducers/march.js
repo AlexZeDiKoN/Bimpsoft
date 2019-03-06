@@ -2,7 +2,7 @@ import { march } from '../actions'
 
 const initState = {
   marchEdit: true,
-  indicators: [],
+  indicators: {},
 }
 
 export default function reducer (state = initState, action) {
@@ -10,7 +10,8 @@ export default function reducer (state = initState, action) {
 
   switch (type) {
     case march.GET_TYPE_KINDS: {
-      return { ...state, indicators: payload }
+      const indicators = payload.reduce((prev, current) => ({ ...prev, [ current.typeCode ]: current }), {})
+      return { ...state, indicators }
     }
     default:
       return state

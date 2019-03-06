@@ -30,9 +30,6 @@ export default class LeftMenu extends React.Component {
     onSubordinationLevelClose: PropTypes.func,
     onMeasureChange: PropTypes.func,
     layerName: PropTypes.string,
-
-    // TODO: delete after test
-    getIndicator: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -110,13 +107,6 @@ export default class LeftMenu extends React.Component {
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>
-
-        <IconButton
-          title={`TEST`}
-          icon={iconNames.NONE_ICON_DEFAULT}
-          hoverIcon={iconNames.NONE_ICON_ACTIVE}
-          onClick={this.props.getIndicator}
-        />
       </div>
     )
   }

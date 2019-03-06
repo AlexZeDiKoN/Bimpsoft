@@ -12,7 +12,7 @@ const { form } = components
 class March extends Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
-    indicators: PropTypes.array,
+    indicators: PropTypes.object.isRequired,
   }
 
   render () {
@@ -20,6 +20,7 @@ class March extends Component {
       form: { getFieldDecorator },
       indicators,
     } = this.props
+    console.log(indicators)
     const { FormRow } = components.form
     return (
       <div className='march_container'>
@@ -36,8 +37,8 @@ class March extends Component {
                 <Input placeholder='placeholder' />
               </FormRow>
               <IndicatorDataMapping
-                indicator={ indicators[0] }
-                label='test'
+                indicator={ indicators['МШВ001'] }
+                onHandler={(e) => console.log(e)}
               />
             </div>
             <div className='march_name-load'> </div>

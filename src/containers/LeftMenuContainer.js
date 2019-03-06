@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap, march } from '../store/actions'
+import { viewModes, layers, webMap } from '../store/actions'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -35,8 +35,6 @@ const mapDispatchToProps = {
     webMap.setSubordinationLevel(subordinationLevel),
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
-  // TODO: delete after tests
-  getIndicator: march.getIndicator,
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
