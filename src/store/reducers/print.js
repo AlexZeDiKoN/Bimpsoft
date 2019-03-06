@@ -39,6 +39,7 @@ export default function reducer (state = initState, action) {
       const { id, message } = payload
       const { printFiles } = state
       if (message === Print.PRINT_STEPS.SENT || printFiles[id]) {
+        payload.name = payload.name || state.printFiles[payload.id].name
         return { ...state, printFiles: { ...state.printFiles, [payload.id]: payload } }
       } else {
         return { ...state }
