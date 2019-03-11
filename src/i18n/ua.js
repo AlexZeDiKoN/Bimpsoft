@@ -1,3 +1,4 @@
+export const AUTO = 'Автоматично'
 export const EDIT_MODE = 'Режим роботи'
 export const DATE = 'Дата'
 export const ADD_TEXT = 'Додати надпис'
@@ -161,7 +162,7 @@ export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
-export const ELEMENT_SCALES = 'Рівні для масштабів'
+export const ELEMENT_SCALES = 'Деталізація обстановки'
 
 // Друк карти
 // лейбли

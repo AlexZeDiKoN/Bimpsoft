@@ -22,12 +22,14 @@ export default class LeftMenu extends React.Component {
     selectionButtonsComponent: PropTypes.any,
     flexGridButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
+    subordinationAuto: PropTypes.bool,
     onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
 
     onClickSubordinationLevel: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
+    onSetSubordinationLevelAuto: PropTypes.func,
     onMeasureChange: PropTypes.func,
     layerName: PropTypes.string,
   }
@@ -45,8 +47,10 @@ export default class LeftMenu extends React.Component {
       isShowSubordinationLevel,
       isMeasureOn,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
+      subordinationAuto,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
+      onSetSubordinationLevelAuto,
       onMeasureChange,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
@@ -77,18 +81,25 @@ export default class LeftMenu extends React.Component {
               : subordinationLevelViewData.icon
           }
           hoverIcon={subordinationLevelViewData.iconActive}
-          checked={isShowSubordinationLevel}
+          checked={isShowSubordinationLevel || !subordinationAuto}
           onClick={onClickSubordinationLevel}
         >
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
+              <ContextMenuItem
+                icon={iconNames.NONE_ICON_DEFAULT}
+                text={i18n.AUTO}
+                checked={subordinationAuto}
+                hoverIcon={iconNames.NONE_ICON_ACTIVE}
+                onClick={onSetSubordinationLevelAuto}
+              />
               {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
                 <ContextMenuItem
                   key={value}
                   value={value}
                   icon={icon}
                   text={title}
-                  checked={value === subordinationLevel}
+                  checked={!subordinationAuto && value === subordinationLevel}
                   hoverIcon={iconActive}
                   onClick={onSubordinationLevelChange}
                 />
