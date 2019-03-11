@@ -167,7 +167,7 @@ export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
-export const ELEMENT_SCALES = 'Деталізація обстанивки'
+export const ELEMENT_SCALES = 'Деталізація обстановки'
 
 // Друк карти
 // лейбли
