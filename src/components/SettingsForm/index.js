@@ -23,7 +23,7 @@ export default class SettingsForm extends React.Component {
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     showAmplifiers: PropTypes.bool,
-    generalization: PropTypes.bool,
+    // generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,

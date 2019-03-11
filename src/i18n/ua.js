@@ -1,3 +1,4 @@
+export const AUTO = 'Автоматично'
 export const EDIT_MODE = 'Режим роботи'
 export const DATE = 'Дата'
 export const ADD_TEXT = 'Додати надпис'
