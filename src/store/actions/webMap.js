@@ -34,6 +34,7 @@ export const actionNames = {
   SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
+  SUBORDINATION_LEVEL_AUTO: action('SUBORDINATION_LEVEL_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
@@ -93,14 +94,24 @@ export const setSubordinationLevel = (value) => ({
   payload: value,
 })
 
-export const setSubordinationLevelByZoom = (zoom = null) => (dispatch, getState) => {
-  const { params, subordinationLevel } = getState()
-  const scale = ZOOMS[zoom]
-  const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])
-  if (newSubordinationLevel && newSubordinationLevel !== subordinationLevel) {
-    dispatch(setSubordinationLevel(newSubordinationLevel))
+export const setSubordinationLevelByZoom = (byZoom = null) => (dispatch, getState) => {
+  const { params, webMap: { subordinationAuto, subordinationLevel, zoom } } = getState()
+  if (subordinationAuto) {
+    if (byZoom === null) {
+      byZoom = zoom
+    }
+    const scale = ZOOMS[byZoom]
+    const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])
+    if (newSubordinationLevel && newSubordinationLevel !== subordinationLevel) {
+      dispatch(setSubordinationLevel(newSubordinationLevel))
+    }
   }
 }
+
+export const setSubordinationLevelAuto = (value) => ({
+  type: actionNames.SUBORDINATION_LEVEL_AUTO,
+  payload: value,
+})
 
 export const setCenter = (center, zoom) => ({
   type: actionNames.SET_MAP_CENTER,

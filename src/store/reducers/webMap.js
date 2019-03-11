@@ -57,10 +57,11 @@ const WebMapState = Record({
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
-  generalization: false,
+  // generalization: false,
   isMeasureOn: false,
   sources: MapSources,
   source: MapSources[0],
+  subordinationAuto: true,
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
   lockedObjects: Map(),
@@ -109,10 +110,10 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SET_AMPLIFIERS,
   field: 'showAmplifiers',
-}, {
+}, /* {
   action: actionNames.SET_GENERALIZATION,
   field: 'generalization',
-}, {
+}, */{
   action: actionNames.SET_SOURCE,
   field: 'source',
 }, {
@@ -127,6 +128,9 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SUBORDINATION_LEVEL,
   field: 'subordinationLevel',
+}, {
+  action: actionNames.SUBORDINATION_LEVEL_AUTO,
+  field: 'subordinationAuto',
 } ]
 
 const actionField = (actionName) => {

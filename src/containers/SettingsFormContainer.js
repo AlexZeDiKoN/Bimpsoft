@@ -11,7 +11,7 @@ const mapStateToProps = (store) => ({
   showMiniMap: store.webMap.showMiniMap,
   params: store.params,
   showAmplifiers: store.webMap.showAmplifiers,
-  generalization: store.webMap.generalization,
+  // generalization: store.webMap.generalization,
 })
 const mapDispatchToProps = (dispatch) => ({
   onClose: () => {
@@ -26,9 +26,9 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeShowAmplifier: (showAmplifiers) => {
     dispatch(webMapActions.setAmplifiers(showAmplifiers))
   },
-  onChangeGeneralization: (generalization) => {
+  /* onChangeGeneralization: (generalization) => {
     dispatch(webMapActions.setGeneralization(generalization))
-  },
+  }, */
   onChangeParam: (type, value) => {
     dispatch(paramsActions.saveParam(type, value))
   },
