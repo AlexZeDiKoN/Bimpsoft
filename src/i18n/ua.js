@@ -212,3 +212,4 @@ export const RETRY_FILE = 'Спробувати ще раз'
 
 // Марш
 export const MARCH_TITLE = 'Маршрут маршу'
+export const OPEN_MARCH_FILE = 'Вибір існуючого маршруту'

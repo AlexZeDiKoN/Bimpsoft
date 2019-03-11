@@ -4,8 +4,10 @@ import { Form, Icon, Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import './style.css'
+import IconButton from '../../menu/IconButton'
+import { OPEN_MARCH_FILE } from '../../../i18n/ua'
 
-const { IconHovered } = components.icons
+const iconNames = components.icons.names
 const { IndicatorDataMapping } = components.form
 const { form } = components
 
@@ -27,21 +29,36 @@ class March extends Component {
         <div className='march_title'>
           {i18n.MARCH_TITLE}
         </div>
-        <Form>
+        <Form className='march_form'>
           <div className='march_name'>
             <div className='march_name-indicator'>
               <Icon type="branches" />
             </div>
             <div className='march_name-form'>
-              <FormRow className='march_name-title'>
-                <Input placeholder='placeholder' />
+              <FormRow>
+                <Input
+                  className='march_name-title'
+                  placeholder='placeholder'
+                />
               </FormRow>
-              <IndicatorDataMapping
-                indicator={ indicators['МШВ001'] }
-                onHandler={(e) => console.log(e)}
+              <FormRow>
+                <IndicatorDataMapping
+                  indicator={ indicators['МШВ001'] }
+                  onHandler={(e) => console.info(e)}
+                />
+              </FormRow>
+            </div>
+            <div className='march_name-load'>
+              <IconButton
+                title={OPEN_MARCH_FILE}
+                icon={iconNames.PACK_DEFAULT}
+                hoverIcon={iconNames.PACK_HOVER}
+                onClick={() => console.info('open file')}
               />
             </div>
-            <div className='march_name-load'> </div>
+          </div>
+          <div className='march_track'>
+            
           </div>
         </Form>
       </div>

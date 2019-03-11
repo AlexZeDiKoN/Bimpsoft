@@ -9,6 +9,7 @@ const SIDEBAR_PANEL_SIZE_MIN = 100
 
 const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 300
+const SIDEBAR_SIZE_MARCH_DEFAULT = 400
 const SIDEBAR_SIZE_MIN = 250
 
 export default class Sidebar extends React.Component {
@@ -20,7 +21,7 @@ export default class Sidebar extends React.Component {
 
   state = {
     topPanelHeight: SIDEBAR_PANEL_SIZE_DEFAULT,
-    sidebarWidth: SIDEBAR_SIZE_DEFAULT,
+    sidebarWidth: this.props.marchEdit ? SIDEBAR_SIZE_MARCH_DEFAULT : SIDEBAR_SIZE_DEFAULT,
   }
 
   changeWidthHandler = (startValue, pos) => {
