@@ -58,7 +58,12 @@ class March extends Component {
             </div>
           </div>
           <div className='march_track'>
-            
+            <div className='march_points'>
+              
+            </div>
+            <div className='march_segment'>
+
+            </div>
           </div>
         </Form>
       </div>
