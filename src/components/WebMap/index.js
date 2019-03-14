@@ -207,6 +207,8 @@ export default class WebMap extends React.PureComponent {
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
+    isMarkersOn: PropTypes.bool,
+    isTopographicObjectsOn: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -284,8 +286,9 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible, flexGridData,
+      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
+      isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
+      flexGridData,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -298,7 +301,6 @@ export default class WebMap extends React.PureComponent {
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
     }
-
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
@@ -310,24 +312,24 @@ export default class WebMap extends React.PureComponent {
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
     }
-
     if (
       preview !== prevProps.selection.preview ||
       previewCoordinateIndex !== prevProps.selection.previewCoordinateIndex
     ) {
       this.updateCoordinateIndex(preview, previewCoordinateIndex)
     }
-
     this.updateMarker(prevProps)
-
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
       this.map.measureControl._toggleMeasure()
     }
-
+    if (isMarkersOn !== prevProps.isMarkersOn) {
+      // TODO
+    }
+    if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
+      // TODO
+    }
     this.updateSelection(prevProps)
-
     this.updateActiveObject(prevProps)
-
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
     }
@@ -337,17 +339,13 @@ export default class WebMap extends React.PureComponent {
     if (params !== prevProps.params) {
       this.updateScaleOptions(params)
     }
-
     this.updateViewport(prevProps)
-
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
     }
-
     if (flexGridData !== prevProps.flexGridData) {
       this.updateFlexGrid(flexGridData)
     }
-
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }

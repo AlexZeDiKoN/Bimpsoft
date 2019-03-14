@@ -59,6 +59,8 @@ const WebMapState = Record({
   showAmplifiers: true,
   // generalization: false,
   isMeasureOn: false,
+  isMarkersOn: false,
+  isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
   subordinationAuto: true,
@@ -129,16 +131,26 @@ const simpleSetFields = [ {
   action: actionNames.SUBORDINATION_LEVEL,
   field: 'subordinationLevel',
 }, {
-  action: actionNames.SUBORDINATION_LEVEL_AUTO,
+  action: actionNames.SUBORDINATION_AUTO,
   field: 'subordinationAuto',
 } ]
 
-const actionField = (actionName) => {
-  const simpleSet = simpleSetFields.find(({ action }) => action === actionName)
-  return simpleSet
-    ? simpleSet.field
-    : null
+const toggleSetFields = [ {
+  action: actionNames.TOGGLE_MARKERS,
+  field: 'isMarkersOn',
+}, {
+  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+  field: 'isTopographicObjectsOn',
+} ]
+
+const findField = (actionName, list) => {
+  const item = list.find(({ action }) => action === actionName)
+  return item && item.field
 }
+
+const simpleSetField = (actionName) => findField(actionName, simpleSetFields)
+
+const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -205,10 +217,9 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     default: {
-      const field = actionField(type)
-      return field
-        ? state.set(field, payload)
-        : state
+      const f1 = simpleSetField(type)
+      const f2 = simpleToggleField(type)
+      return (f1 && state.set(f1, payload)) || (f2 && state.set(f2, !state.get(f2))) || state
     }
   }
 }

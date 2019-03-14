@@ -79,7 +79,10 @@ function _getOptions (method) {
  */
 function _createGetRequest (url, options, namespace) {
   return new Promise((resolve, reject) => {
-    const serviceUrl = `${serverRootUrl}${namespace}${url}`
+    const namespaceAbsolute = absoluteUri.test(namespace)
+    const prefix = namespaceAbsolute ? namespace : `${serverRootUrl}${namespace}`
+    const serviceUrl = `${prefix}${url}`
+    // console.log({ namespace, namespaceAbsolute, prefix, serviceUrl })
 
     fetch(serviceUrl, options)
       .then((resp) => {
@@ -113,7 +116,7 @@ function _createGetRequest (url, options, namespace) {
  * @private
  */
 async function _createRequest (url, option, namespace = explorerApi) {
-  const serviceUrl = absoluteUri.test(url) ? url : namespace + url
+  const serviceUrl = absoluteUri.test(url) ? url : `${namespace}${url}`
   let response
   try {
     response = await fetch(serviceUrl, option)

@@ -23,15 +23,19 @@ export default class LeftMenu extends React.Component {
     flexGridButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
     subordinationAuto: PropTypes.bool,
+    layerName: PropTypes.string,
+    marker: PropTypes.bool,
+    topographicObjects: PropTypes.bool,
+
     onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
-
     onClickSubordinationLevel: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
     onSetSubordinationLevelAuto: PropTypes.func,
     onMeasureChange: PropTypes.func,
-    layerName: PropTypes.string,
+    onMarkerChange: PropTypes.func,
+    onTopographicObjectsChange: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -48,10 +52,14 @@ export default class LeftMenu extends React.Component {
       isMeasureOn,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       subordinationAuto,
+      marker,
+      topographicObjects,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
       onSetSubordinationLevelAuto,
       onMeasureChange,
+      onMarkerChange,
+      onTopographicObjectsChange,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -114,6 +122,20 @@ export default class LeftMenu extends React.Component {
           hoverIcon={iconNames.RULLER_HOVER}
           checked={isMeasureOn}
           onClick={onMeasureChange}
+        />
+        <IconButton
+          title={i18n.MARKER}
+          icon={iconNames.NONE_ICON_DEFAULT}
+          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          checked={marker}
+          onClick={onMarkerChange}
+        />
+        <IconButton
+          title={i18n.TOPOGRAPHIC_OBJECTS}
+          icon={iconNames.NONE_ICON_DEFAULT}
+          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          checked={topographicObjects}
+          onClick={onTopographicObjectsChange}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />

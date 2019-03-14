@@ -163,6 +163,9 @@ export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карт�
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
+export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
+export const MARKER = 'Маркер'
+export const MESSAGE = 'Повідомлення'
 
 // Друк карти
 // лейбли
@@ -196,7 +199,8 @@ export const FLEX_GRID_SHORTCUT = `Alt + R`
 export const DIRECTIONS_AMOUNT = `Кількість напрямків`
 export const DIRECTION_ZONES = `Зони напрямків`
 export const CREATE = `Створити`
-export const CALCULATE = `Розрахувати`
+export const SEND_TO_ICT = `Передати до ІРЗ склад угруповань в ОЗ`
+export const SENT_TO_ICT = `Склад угруповань в ОЗ успішно передано до ІРЗ`
 export const INVALID_UNITS_IN_GRID = 'Неоднозначність визначення місцеположення підрозділу'
 // стани
 export const SENT_TO_PROCESSING = 'Надіслано в обробку'

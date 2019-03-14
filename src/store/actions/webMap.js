@@ -34,7 +34,7 @@ export const actionNames = {
   SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
-  SUBORDINATION_LEVEL_AUTO: action('SUBORDINATION_LEVEL_AUTO'),
+  SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
@@ -48,6 +48,8 @@ export const actionNames = {
   OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
+  TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
+  TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
 }
 
 export const setCoordinatesType = (value) => ({
@@ -109,7 +111,7 @@ export const setSubordinationLevelByZoom = (byZoom = null) => (dispatch, getStat
 }
 
 export const setSubordinationLevelAuto = (value) => ({
-  type: actionNames.SUBORDINATION_LEVEL_AUTO,
+  type: actionNames.SUBORDINATION_AUTO,
   payload: value,
 })
 
@@ -334,6 +336,15 @@ export const getLockedObjects = () =>
     payload: await lockedObjects(),
   }))
 
+export const toggleMarkers = () => ({
+  type: actionNames.TOGGLE_MARKERS,
+})
+
+export const toggleTopographicObjects = () => ({
+  type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+})
+
+// Ініціалізація
 window.addEventListener('beforeunload', () => {
   dropLock && dropLock()
   stopHeartBeat()
