@@ -54,7 +54,7 @@ export default class SelectionButtons extends React.Component {
           onClick={dropHandler}
         />
         <IconButton
-          title={i18n.CALCULATE}
+          title={i18n.SEND_TO_ICT}
           icon={calcIcon}
           hoverIcon={calcIconHover}
           onClick={calcHandler}

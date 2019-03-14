@@ -129,6 +129,11 @@ export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
         units: units.map(({ unit, formation }) => ({ unit, formation })),
         ...rest,
       })))
+      dispatch(notifications.push({
+        type: 'success',
+        message: i18n.MESSAGE,
+        description: i18n.SENT_TO_ICT,
+      }))
     }
   }
   if (invalid.length) {
