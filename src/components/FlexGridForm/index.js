@@ -49,7 +49,7 @@ export default class extends React.PureComponent {
           <HotKeysContainer>
             <Form className="settings-form-group">
               <FormRow label={i18n.DIRECTIONS_AMOUNT}>
-                <input defaultValue={directions} onChange={this.onDirectionsChange} />
+                <input type="number" defaultValue={directions} onChange={this.onDirectionsChange} />
               </FormRow>
               <FormRow label={i18n.DIRECTION_ZONES}>
                 <Switch defaultChecked={zones} onChange={setZones}/>
