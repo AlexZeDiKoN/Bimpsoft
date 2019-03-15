@@ -278,6 +278,10 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    window.addEventListener('beforeunload', (e) => {
+      this.onSelectedListChange([])
+    })
+    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -352,6 +356,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   componentWillUnmount () {
+    delete window.webMap
     this.map.remove()
   }
 
@@ -530,9 +535,20 @@ export default class WebMap extends React.PureComponent {
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (geometryChanged) {
-        updateObjectGeometry(id, getGeometry(layer))
+        return updateObjectGeometry(id, getGeometry(layer))
       } else {
-        tryUnlockObject(id)
+        return tryUnlockObject(id)
+      }
+    }
+  }
+
+  checkSaveEditedObject = async () => {
+    const { edit, selection: { list } } = this.props
+    if (edit && list.length === 1) {
+      const layer = this.findLayerById(list[0])
+      if (layer && layer.object) {
+        await this.checkSaveObject()
+        return layer.object.id
       }
     }
   }
