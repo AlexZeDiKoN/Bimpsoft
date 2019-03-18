@@ -355,6 +355,7 @@ export default class WebMap extends React.PureComponent {
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
 
   componentWillUnmount () {
@@ -739,10 +740,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setMapCursor = (edit, type) => {
+  crosshairCursor = (on) => {
     if (this.map) {
-      this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+      this.map._container.style.cursor = on ? 'crosshair' : ''
     }
+  }
+
+  setMapCursor = (edit, type) => {
+    this.crosshairCursor(edit && type)
   }
 
   setMapSource = (newSources) => {
