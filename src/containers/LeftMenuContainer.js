@@ -38,7 +38,7 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = {
   onChangeEditMode: layers.setEditMode,
   onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
-  onMeasureChange: webMap.setMeasure,
+  onMeasureChange: webMap.toggleMeasure,
   onMarkerChange: webMap.toggleMarkers,
   onTopographicObjectsChange: webMap.toggleTopographicObjects,
   onSubordinationLevelClose: () => viewModes.viewModeDisable(viewModesKeys.subordinationLevel),

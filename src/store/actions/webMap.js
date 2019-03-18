@@ -28,7 +28,6 @@ const stopHeartBeat = () => {
 export const actionNames = {
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
-  SET_MEASURE: action('SET_MEASURE'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
   SET_SOURCES: action('SET_SOURCES'),
@@ -48,6 +47,7 @@ export const actionNames = {
   OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
+  TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
 }
@@ -68,11 +68,6 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value,
-})
-
-export const setMeasure = (value) => ({
-  type: actionNames.SET_MEASURE,
   payload: value,
 })
 
@@ -335,6 +330,10 @@ export const getLockedObjects = () =>
     type: actionNames.GET_LOCKED_OBJECTS,
     payload: await lockedObjects(),
   }))
+
+export const toggleMeasure = () => ({
+  type: actionNames.TOGGLE_MEASURE,
+})
 
 export const toggleMarkers = () => ({
   type: actionNames.TOGGLE_MARKERS,

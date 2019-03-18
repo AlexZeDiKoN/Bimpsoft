@@ -324,7 +324,9 @@ export default class WebMap extends React.PureComponent {
     }
     this.updateMarker(prevProps)
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
+      this.byReact = true
       this.map.measureControl._toggleMeasure()
+      this.byReact = false
     }
     if (isMarkersOn !== prevProps.isMarkersOn) {
       // TODO
@@ -657,7 +659,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onStopMeasuring = () => {
-    this.props.stopMeasuring()
+    if (!this.byReact) {
+      this.props.stopMeasuring()
+    }
   }
 
   moveHandler = debounce(() => {
