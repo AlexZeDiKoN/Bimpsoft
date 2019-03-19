@@ -1,56 +1,96 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Form, Icon, Input } from 'antd'
+import { Form, Icon, Input, Button, Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import { MARCH_KEYS } from '../../../constants'
 import './style.css'
 import IconButton from '../../menu/IconButton'
-import { OPEN_MARCH_FILE } from '../../../i18n/ua'
+import Segment from './children/Segment'
 
 const iconNames = components.icons.names
-const { IndicatorDataMapping } = components.form
-const { form } = components
 
 class March extends Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
     indicators: PropTypes.object.isRequired,
+    setMarchParams: PropTypes.func,
   }
+
+  handleMarchType = (e, key, marchTypeIndicator) => {
+    const { setMarchParams } = this.props
+    const activeType = marchTypeIndicator.typeValues.filter((item) => item.id === +e)
+    const marchTypeObj = {
+      indicatorId: marchTypeIndicator.id,
+      typeId: activeType[0].id,
+      typeName: activeType[0].name,
+    }
+    setMarchParams({ [key]: marchTypeObj })
+  }
+
+  // handleSubmit = (e) => {
+  //   e.preventDefault()
+  //   this.props.form.validateFields((err, values) => {
+  //     if (!err) {
+  //       // values.marchType = this.state.marchType
+  //       console.log('Received values of form: ', values)
+  //     }
+  //   })
+  // }
+
+  createSelectChildren = (incomeData) => incomeData
+    .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
 
   render () {
     const {
+      form,
       form: { getFieldDecorator },
       indicators,
+      setMarchParams,
     } = this.props
-    console.log(indicators)
-    const { FormRow } = components.form
+    const { FormRow, IndicatorDataMapping } = components.form
     return (
       <div className='march_container'>
         <div className='march_title'>
           {i18n.MARCH_TITLE}
         </div>
-        <Form className='march_form'>
+        {indicators && <Form className='march_form'>
           <div className='march_name'>
             <div className='march_name-indicator'>
               <Icon type="branches" />
             </div>
             <div className='march_name-form'>
               <FormRow>
-                <Input
-                  className='march_name-title'
-                  placeholder='placeholder'
-                />
+                {
+                  getFieldDecorator(
+                    MARCH_KEYS.MARCH_NAME
+                  )(
+                    <Input
+                      className='march_name-title'
+                      placeholder={i18n.MARCH_NAME}
+                      onChange={({ target }) => setMarchParams({ [MARCH_KEYS.MARCH_NAME]: target.value })}
+                    />
+                  )
+                }
               </FormRow>
               <FormRow>
-                <IndicatorDataMapping
-                  indicator={ indicators['МШВ001'] }
-                  onHandler={(e) => console.info(e)}
-                />
+                {
+                  getFieldDecorator(
+                    MARCH_KEYS.MARCH_TYPE
+                  )(
+                    <Select
+                      placeholder={i18n.MARCH_TYPE}
+                      onChange={(e) => this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE, indicators['МШВ001'])}
+                    >
+                      {this.createSelectChildren(indicators['МШВ001'].typeValues)}
+                    </Select>
+                  )
+                }
               </FormRow>
             </div>
             <div className='march_name-load'>
               <IconButton
-                title={OPEN_MARCH_FILE}
+                title={i18n.OPEN_MARCH_FILE}
                 icon={iconNames.PACK_DEFAULT}
                 hoverIcon={iconNames.PACK_HOVER}
                 onClick={() => console.info('open file')}
@@ -58,14 +98,28 @@ class March extends Component {
             </div>
           </div>
           <div className='march_track'>
-            <div className='march_points'>
-              
-            </div>
-            <div className='march_segment'>
-
-            </div>
+            <Segment
+              form={form}
+              indicators={indicators}
+            />
           </div>
-        </Form>
+          <div className='march_buttonBlock'>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className='march_button-submit'
+            >
+              Зберегти
+            </Button>
+            <Button
+              htmlType="reset"
+              className='march_button-cancel'
+              onClick={() => console.log('cancel')}
+            >
+              Скасувати
+            </Button>
+          </div>
+        </Form>}
       </div>
     )
   }

@@ -1,4 +1,6 @@
 export const MARCH_KEYS = {
+  MARCH_NAME: 'marchName',
+  MARCH_TYPE: 'marchType',
 
 }
 

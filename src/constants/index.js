@@ -9,6 +9,7 @@ import { SCALES, ZOOMS, INIT_VALUES } from './scales'
 import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 import * as Print from './Print'
+import { MARCH_KEYS } from './March'
 
 export {
   CoordinatesTypes,
@@ -24,4 +25,5 @@ export {
   INIT_VALUES,
   FormTypes,
   Print,
+  MARCH_KEYS,
 }
