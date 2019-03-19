@@ -329,10 +329,10 @@ export default class WebMap extends React.PureComponent {
       this.byReact = false
     }
     if (isMarkersOn !== prevProps.isMarkersOn) {
-      // TODO
+      this.updateMarkersOn(isMarkersOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
-      // TODO
+      this.topoInfoMode = isTopographicObjectsOn
     }
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
@@ -591,9 +591,40 @@ export default class WebMap extends React.PureComponent {
     onSelectedList(newList)
   }
 
+  updateMarkersOn = (isMarkersOn) => {
+    this.addMarkerMode = isMarkersOn
+    if (!isMarkersOn && this.markers && this.markers.length && this.map) {
+      this.markers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markers
+    } else {
+      this.markers = []
+    }
+  }
+
+  addUserMarker = (point) => {
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+    }
+    let text = 'Орієнтир' // TODO
+    text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    setTimeout(() => {
+      const marker = createSearchMarker(point, text)
+      marker.addTo(this.map)
+      this.markers.push(marker)
+      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+    }, 50)
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+    }
+    if (this.addMarkerMode) {
+      this.addUserMarker(e.latlng)
+    }
+    if (this.topoInfoMode) {
+      // TODO
     }
   }
 
