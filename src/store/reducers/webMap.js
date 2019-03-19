@@ -119,9 +119,6 @@ const simpleSetFields = [ {
   action: actionNames.SET_SOURCE,
   field: 'source',
 }, {
-  action: actionNames.SET_MEASURE,
-  field: 'isMeasureOn',
-}, {
   action: actionNames.SET_SCALE_TO_SELECTION,
   field: 'scaleToSelection',
 }, {
@@ -136,6 +133,9 @@ const simpleSetFields = [ {
 } ]
 
 const toggleSetFields = [ {
+  action: actionNames.TOGGLE_MEASURE,
+  field: 'isMeasureOn',
+}, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
 }, {
@@ -218,8 +218,18 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     default: {
       const f1 = simpleSetField(type)
+      if (f1) {
+        return state.set(f1, payload)
+      }
       const f2 = simpleToggleField(type)
-      return (f1 && state.set(f1, payload)) || (f2 && state.set(f2, !state.get(f2))) || state
+      if (f2) {
+        return toggleSetFields
+          .map(({ field }) => field)
+          .filter((field) => field !== f2)
+          .reduce((current, field) => current.set(field, false), state)
+          .set(f2, !state.get(f2))
+      }
+      return state
     }
   }
 }

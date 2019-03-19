@@ -115,6 +115,7 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
+        <MenuDivider />
         <IconButton
           value={!isMeasureOn}
           title={i18n.MEASURE}

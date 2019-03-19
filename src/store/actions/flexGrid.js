@@ -4,6 +4,7 @@ import { activeMapSelector, visibleLayersSelector } from '../selectors'
 import i18n from '../../i18n'
 import * as asyncAction from './asyncAction'
 import * as maps from './maps'
+import * as webMap from './webMap'
 import * as selection from './selection'
 import * as notifications from './notifications'
 
@@ -82,7 +83,11 @@ export const getFlexGrid = (mapId, showFlexGrid) =>
     showFlexGrid,
   }))
 
-export const calcUnits = () => (dispatch, getState, { flexGridInstance }) => {
+export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) => {
+  const edited = await window.webMap.checkSaveEditedObject()
+  if (edited) {
+    await webMap.refreshObject(edited)
+  }
   let invalid = []
   const state = getState()
   const mapId = activeMapSelector(state)

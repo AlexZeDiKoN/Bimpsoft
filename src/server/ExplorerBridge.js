@@ -14,6 +14,7 @@ const ACTION_OPEN_VARIANT = 'open variant'
 const ACTION_CLOSE_VARIANT = 'close variant'
 const ACTION_VARIANT_RESULT = 'variant result'
 const ACTION_CLOSE = 'close'
+const ACTION_SHOW_UNIT = 'show unit'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -41,6 +42,7 @@ export default class ExplorerBridge {
       const msg = JSON.stringify({ ...obj, sender: 'WebMap' })
       window.opener.postMessage(msg, getExplorerOrigin())
       console.info(`Message sent`, msg)
+      return true
     }
   }
 
@@ -80,15 +82,12 @@ export default class ExplorerBridge {
     }
   }
 
-  onUnload = () => {
-    this.send({ action: ACTION_CLOSE })
-  }
+  onUnload = () => this.send({ action: ACTION_CLOSE })
 
-  cancelVariant = (variantId = null) => {
-    this.send({ action: ACTION_CLOSE_VARIANT, variantId })
-  }
+  cancelVariant = (variantId = null) => this.send({ action: ACTION_CLOSE_VARIANT, variantId })
 
-  variantResult = (variantId, result) => {
-    this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
-  }
+  variantResult = (variantId, result) => this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
+
+  showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
+    window.open(`/explorer/#/_/military-organization/units/${unitId}`, `explorer`, '', true)
 }

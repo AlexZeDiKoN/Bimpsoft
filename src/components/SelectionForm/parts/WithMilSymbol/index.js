@@ -71,9 +71,10 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         elementsConfigs={elementsConfigs}
         onCodeAndLevelChange={this.codeChangeHandler}
         onAmplifiersChange={this.attributesChangeHandler}
-        onNameChange={this.nameChangeHandler}
+        // onNameChange={this.nameChangeHandler}
         onCoordinatesChange={this.coordinatesChangeHandler}
         onOrgStructureChange={this.unitChangeHandler}
+        onUnitInfo={window.explorerBridge.showUnitInfo}
       />
     )
   }

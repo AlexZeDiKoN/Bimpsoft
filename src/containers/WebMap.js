@@ -65,7 +65,7 @@ const WebMapContainer = connect(
       return batchActions(batch)
     },
     onDropUnit: selection.newShapeFromUnit,
-    stopMeasuring: () => webMap.setMeasure(false),
+    stopMeasuring: webMap.toggleMeasure,
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,

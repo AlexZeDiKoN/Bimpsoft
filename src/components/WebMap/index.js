@@ -278,6 +278,10 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    window.addEventListener('beforeunload', (e) => {
+      this.onSelectedListChange([])
+    })
+    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -320,13 +324,15 @@ export default class WebMap extends React.PureComponent {
     }
     this.updateMarker(prevProps)
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
+      this.byReact = true
       this.map.measureControl._toggleMeasure()
+      this.byReact = false
     }
     if (isMarkersOn !== prevProps.isMarkersOn) {
-      // TODO
+      this.updateMarkersOn(isMarkersOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
-      // TODO
+      this.topoInfoMode = isTopographicObjectsOn
     }
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
@@ -349,9 +355,11 @@ export default class WebMap extends React.PureComponent {
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
 
   componentWillUnmount () {
+    delete window.webMap
     this.map.remove()
   }
 
@@ -530,9 +538,20 @@ export default class WebMap extends React.PureComponent {
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (geometryChanged) {
-        updateObjectGeometry(id, getGeometry(layer))
+        return updateObjectGeometry(id, getGeometry(layer))
       } else {
-        tryUnlockObject(id)
+        return tryUnlockObject(id)
+      }
+    }
+  }
+
+  checkSaveEditedObject = async () => {
+    const { edit, selection: { list } } = this.props
+    if (edit && list.length === 1) {
+      const layer = this.findLayerById(list[0])
+      if (layer && layer.object) {
+        await this.checkSaveObject()
+        return layer.object.id
       }
     }
   }
@@ -572,9 +591,40 @@ export default class WebMap extends React.PureComponent {
     onSelectedList(newList)
   }
 
+  updateMarkersOn = (isMarkersOn) => {
+    this.addMarkerMode = isMarkersOn
+    if (!isMarkersOn && this.markers && this.markers.length && this.map) {
+      this.markers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markers
+    } else {
+      this.markers = []
+    }
+  }
+
+  addUserMarker = (point) => {
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+    }
+    let text = 'Орієнтир' // TODO
+    text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    setTimeout(() => {
+      const marker = createSearchMarker(point, text)
+      marker.addTo(this.map)
+      this.markers.push(marker)
+      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+    }, 50)
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+    }
+    if (this.addMarkerMode) {
+      this.addUserMarker(e.latlng)
+    }
+    if (this.topoInfoMode) {
+      // TODO
     }
   }
 
@@ -641,7 +691,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onStopMeasuring = () => {
-    this.props.stopMeasuring()
+    if (!this.byReact) {
+      this.props.stopMeasuring()
+    }
   }
 
   moveHandler = debounce(() => {
@@ -719,10 +771,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setMapCursor = (edit, type) => {
+  crosshairCursor = (on) => {
     if (this.map) {
-      this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+      this.map._container.style.cursor = on ? 'crosshair' : ''
     }
+  }
+
+  setMapCursor = (edit, type) => {
+    this.crosshairCursor(edit && type)
   }
 
   setMapSource = (newSources) => {
