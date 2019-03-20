@@ -48,7 +48,7 @@ class March extends Component {
       indicators,
       setMarchParams,
     } = this.props
-    const { FormRow, IndicatorDataMapping } = components.form
+    const { FormRow } = components.form
     const { MARCH_KEYS } = MarchKeys
     return (
       <div className='march_container'>
