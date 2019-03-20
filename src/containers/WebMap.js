@@ -1,8 +1,12 @@
 import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
-import { canEditSelector, visibleLayersSelector, activeObjectId } from '../store/selectors'
-import { webMap, selection, layers, orgStructures } from '../store/actions'
+import {
+  canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
+  activeMapSelector, inICTMode,
+} from '../store/selectors'
+import { webMap, selection, layers, orgStructures, flexGrid } from '../store/actions'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -10,6 +14,8 @@ const WebMapContainer = connect(
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
+    isMarkersOn: state.webMap.isMarkersOn,
+    isTopographicObjectsOn: state.webMap.isTopographicObjectsOn,
     edit: canEditSelector(state),
     marker: state.webMap.marker,
     scaleToSelection: state.webMap.scaleToSelection,
@@ -29,11 +35,18 @@ const WebMapContainer = connect(
     myContactId: state.webMap.contactId,
     lockedObjects: state.webMap.lockedObjects,
     activeObjectId: activeObjectId(state),
+    printStatus: Boolean(state.print.mapId),
+    printScale: state.print.printScale,
+    flexGridParams: flexGridParams(state),
+    flexGridVisible: flexGridVisible(state),
+    flexGridData: flexGridData(state),
+    activeMapId: activeMapSelector(state),
+    inICTMode: inICTMode(state),
   }),
-  {
-    onFinishDrawNewShape: (geometry) => selection.finishDrawNewShape(geometry),
-    updateObjectGeometry: (id, geometry) => webMap.updateObjectGeometry(id, geometry),
-    editObject: () => selection.showEditForm,
+  catchErrors({
+    onFinishDrawNewShape: selection.finishDrawNewShape,
+    updateObjectGeometry: webMap.updateObjectGeometry,
+    editObject: selection.showEditForm,
     onSelectedList: (list) => batchActions([
       selection.selectedList(list),
       webMap.setScaleToSelection(false),
@@ -42,8 +55,7 @@ const WebMapContainer = connect(
       orgStructures.setOrgStructureSelectedId(unitID),
       orgStructures.expandTreeByOrgStructureItem(unitID),
     ]),
-    onChangeLayer: (layerId) => layers.selectLayer(layerId),
-    showCreateForm: () => selection.showCreateForm,
+    onChangeLayer: layers.selectLayer,
     onMove: (center, zoom, isZoomChangedByUser) => {
       const batch = [
         webMap.setCenter(center, zoom),
@@ -52,16 +64,20 @@ const WebMapContainer = connect(
       isZoomChangedByUser && batch.push(webMap.setSubordinationLevelByZoom(zoom))
       return batchActions(batch)
     },
-    onDropUnit: (unitID, point) => selection.newShapeFromUnit(unitID, point),
-    stopMeasuring: () => webMap.setMeasure(false),
+    onDropUnit: selection.newShapeFromUnit,
+    stopMeasuring: webMap.toggleMeasure,
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,
     requestMaSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,
-    tryLockObject: (objectId) => webMap.tryLockObject(objectId),
-    tryUnlockObject: (objectId) => webMap.tryUnlockObject(objectId),
-  },
+    tryLockObject: webMap.tryLockObject,
+    tryUnlockObject: webMap.tryUnlockObject,
+    flexGridCreated: flexGrid.flexGridCreated,
+    flexGridChanged: flexGrid.flexGridChanged,
+    flexGridDeleted: flexGrid.flexGridDeleted,
+    fixFlexGridInstance: flexGrid.fixInstance,
+  }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
 

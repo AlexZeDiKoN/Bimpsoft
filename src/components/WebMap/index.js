@@ -1,5 +1,5 @@
 /* global L */
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
@@ -10,7 +10,6 @@ import { fromLatLon } from 'utm'
 import proj4 from 'proj4'
 import * as debounce from 'debounce'
 import i18n from '../../i18n'
-import { toggleMapGrid } from '../../services/coordinateGrid'
 import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
@@ -23,13 +22,24 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, CoordinatesTypes } from '../../constants'
 import { HotKey } from '../common/HotKeys'
+import { validateObject } from '../../utils/validation'
+import coordinates from '../../utils/coordinates'
+import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
+import { flexGridPropTypes } from '../../store/selectors'
 import entityKind from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
-  createTacticalSign, getGeometry, createSearchMarker, setLayerSelected, isGeometryChanged, geomPointEquals,
+  createTacticalSign,
+  getGeometry,
+  createSearchMarker,
+  setLayerSelected,
+  isGeometryChanged,
+  geomPointEquals,
+  createCoordinateMarker,
 } from './Tactical'
+import { MapProvider } from './MapContext'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -51,8 +61,6 @@ const switchScaleOptions = {
 
 const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
 
-// TODO: прибрати це після тестування
-let tempPrintFlag = false
 // const tmp = `<svg
 //   width="480" height="480"
 //   line-point-1="24,240"
@@ -99,30 +107,18 @@ const indicateModes = {
 
 const type2mode = (type) => {
   switch (type) {
-    case 'USK-2000':
+    case CoordinatesTypes.UCS_2000:
       return indicateModes.USC2000
-    case 'MGRS':
+    case CoordinatesTypes.MGRS:
       return indicateModes.MGRS
     default:
       return indicateModes.WGS
   }
 }
 
-proj4.defs([
-  [ 'EPSG:28407', `+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28406', `+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28405', `+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:28404', `+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs` ],
-  [ 'EPSG:5558', `+proj=qsc +ellps=krass +units=m +no_defs` ], // с +proj=geocent работать не хочет, похоже баг или неподдерживамая проекция в proj4, заменил на +proj=qsc, работает, но я не знаю насколько правильные координаты она теперь выдаёт :(
-])
-const sc42 = (lng, lat) => lng < 27
-  ? proj4('EPSG:28404', [ lng, lat ])
-  : lng < 33
-    ? proj4('EPSG:28405', [ lng, lat ])
-    : lng < 39
-      ? proj4('EPSG:28406', [ lng, lat ])
-      : proj4('EPSG:28407', [ lng, lat ])
-const usc2000 = (lng, lat) => proj4('EPSG:5558', [ lng, lat ])
+const sc42 = (lng, lat) => proj4(getSC42Projection(lng), [ lng, lat ])
+
+const usc2000 = (lng, lat) => proj4(getUSC2000Projection(lng), [ lng, lat ])
 
 const z = (v) => `0${v}`.slice(-2)
 const toGMS = (value, pos, neg) => {
@@ -177,8 +173,9 @@ const setScaleOptions = (layer, params) => {
   }
 }
 
-export default class WebMap extends Component {
+export default class WebMap extends React.PureComponent {
   static propTypes = {
+    children: PropTypes.any,
     // from Redux store
     center: PropTypes.shape({
       lat: PropTypes.number,
@@ -210,6 +207,8 @@ export default class WebMap extends Component {
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
+    isMarkersOn: PropTypes.bool,
+    isTopographicObjectsOn: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -220,19 +219,31 @@ export default class WebMap extends Component {
         type: PropTypes.any,
       }),
       list: PropTypes.array,
+      preview: PropTypes.object,
+      previewCoordinateIndex: PropTypes.any,
     }),
     isGridActive: PropTypes.bool.isRequired,
     backVersion: PropTypes.string,
     contactId: PropTypes.number,
     lockedObjects: PropTypes.object,
     activeObjectId: PropTypes.string,
+    printStatus: PropTypes.bool,
+    printScale: PropTypes.number,
+    flexGridParams: PropTypes.shape({
+      directions: PropTypes.number,
+      zones: PropTypes.number,
+      vertical: PropTypes.bool,
+    }),
+    flexGridVisible: PropTypes.bool,
+    flexGridData: flexGridPropTypes,
+    activeMapId: PropTypes.any,
+    inICTMode: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
     onFinishDrawNewShape: PropTypes.func,
-    showCreateForm: PropTypes.func,
     onMove: PropTypes.func,
     onRemoveMarker: PropTypes.func,
     onDropUnit: PropTypes.func,
@@ -243,6 +254,10 @@ export default class WebMap extends Component {
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
+    flexGridCreated: PropTypes.func,
+    flexGridChanged: PropTypes.func,
+    flexGridDeleted: PropTypes.func,
+    fixFlexGridInstance: PropTypes.func,
   }
 
   constructor (props) {
@@ -263,6 +278,10 @@ export default class WebMap extends Component {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    window.addEventListener('beforeunload', (e) => {
+      this.onSelectedListChange([])
+    })
+    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -271,21 +290,20 @@ export default class WebMap extends Component {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, isGridActive, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, selection: { newShape },
+      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
+      isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
+      flexGridData,
+      selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
-    if (objects !== prevProps.objects) {
-      this.updateObjects(objects)
+    if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
+      this.updateObjects(objects, preview)
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
     }
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
-    }
-    if (isGridActive !== prevProps.isGridActive) {
-      toggleMapGrid(this.map, isGridActive)
     }
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
@@ -298,17 +316,26 @@ export default class WebMap extends Component {
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
     }
-
-    this.updateMarker(prevProps)
-
-    if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
-      this.map.measureControl._toggleMeasure()
+    if (
+      preview !== prevProps.selection.preview ||
+      previewCoordinateIndex !== prevProps.selection.previewCoordinateIndex
+    ) {
+      this.updateCoordinateIndex(preview, previewCoordinateIndex)
     }
-
+    this.updateMarker(prevProps)
+    if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
+      this.byReact = true
+      this.map.measureControl._toggleMeasure()
+      this.byReact = false
+    }
+    if (isMarkersOn !== prevProps.isMarkersOn) {
+      this.updateMarkersOn(isMarkersOn)
+    }
+    if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
+      this.topoInfoMode = isTopographicObjectsOn
+    }
     this.updateSelection(prevProps)
-
     this.updateActiveObject(prevProps)
-
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
     }
@@ -318,15 +345,21 @@ export default class WebMap extends Component {
     if (params !== prevProps.params) {
       this.updateScaleOptions(params)
     }
-
     this.updateViewport(prevProps)
-
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
     }
+    if (flexGridData !== prevProps.flexGridData) {
+      this.updateFlexGrid(flexGridData)
+    }
+    if (flexGridVisible !== prevProps.flexGridVisible) {
+      this.showFlexGrid(flexGridVisible)
+    }
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
 
   componentWillUnmount () {
+    delete window.webMap
     this.map.remove()
   }
 
@@ -348,13 +381,29 @@ export default class WebMap extends Component {
       }
     })
 
-  adjustEditMode = async (edit, { type }) => {
-    this.setMapCursor(edit, type)
-    this.updateCreatePoly(edit && type)
-  }
-
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
+  updateCoordinateIndex (preview = null, coordinateIndex = null) {
+    const point =
+      preview !== null &&
+      coordinateIndex !== null &&
+      preview.geometry.get(coordinateIndex)
+    const coordinateIsCorrect = Boolean(point) && !coordinates.isWrong(point)
+    if (coordinateIsCorrect !== Boolean(this.coordinateMarker)) {
+      if (coordinateIsCorrect) {
+        this.coordinateMarker = createCoordinateMarker(point)
+        this.coordinateMarker.addTo(this.map)
+      } else {
+        this.coordinateMarker.removeFrom(this.map)
+        this.coordinateMarker = null
+      }
+    } else {
+      if (coordinateIsCorrect) {
+        this.coordinateMarker.setLatLng(point)
+      }
+    }
   }
 
   updateMarker = (prevProps) => {
@@ -463,6 +512,7 @@ export default class WebMap extends Component {
     this.map.on('moveend', this.moveHandler)
     this.map.on('zoomend', this.moveHandler)
     this.map.on('pm:create', this.createNewShape)
+    this.map.on('pm:drawstart', this.onDrawStart)
     this.map.on('click', this.onMouseClick)
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
@@ -471,28 +521,62 @@ export default class WebMap extends Component {
     this.updater = new UpdateQueue(this.map)
   }
 
+  checkSaveObject = () => {
+    const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
+    const id = list[0]
+    const layer = this.findLayerById(id)
+    if (layer) {
+      let checkPoint = null
+      let checkGeometry
+      if (layer.object) {
+        const { point, geometry } = layer.object
+        checkPoint = point.toJS()
+        checkGeometry = geometry.toArray()
+      } else if (layer === this.flexGrid) {
+        const { eternals, directionSegments, zoneSegments } = flexGridData
+        checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]
+      }
+      const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
+      if (geometryChanged) {
+        return updateObjectGeometry(id, getGeometry(layer))
+      } else {
+        return tryUnlockObject(id)
+      }
+    }
+  }
+
+  checkSaveEditedObject = async () => {
+    const { edit, selection: { list } } = this.props
+    if (edit && list.length === 1) {
+      const layer = this.findLayerById(list[0])
+      if (layer && layer.object) {
+        await this.checkSaveObject()
+        return layer.object.id
+      }
+    }
+  }
+
+  adjustEditMode = (edit, { type }) => {
+    const { selection: { list } } = this.props
+    if (!edit && list.length === 1) {
+      this.checkSaveObject()
+    }
+    this.setMapCursor(edit, type)
+    this.updateCreatePoly(edit && type)
+  }
+
   onSelectedListChange (newList) {
     const {
       selection: { list },
-      onSelectedList, updateObjectGeometry, tryUnlockObject, onSelectUnit, edit,
+      onSelectedList, onSelectUnit, edit,
     } = this.props
     if (newList.length === 0 && list === 0) {
       return
     }
 
     // save geometry when one selected item lost focus
-    if (list.length === 1 && list[0] !== newList[0]) {
-      const id = list[0]
-      const layer = this.findLayerById(id)
-      if (layer && edit) {
-        const { point, geometry } = layer.object
-        const geometryChanged = isGeometryChanged(layer, point.toJS(), geometry.toArray())
-        if (geometryChanged) {
-          updateObjectGeometry(id, getGeometry(layer))
-        } else {
-          tryUnlockObject(id)
-        }
-      }
+    if (list.length === 1 && list[0] !== newList[0] && edit) {
+      this.checkSaveObject()
     }
 
     // get unit from new selection
@@ -500,16 +584,47 @@ export default class WebMap extends Component {
     if (newList.length === 1 && list[0] !== newList[0]) {
       const id = newList[0]
       const layer = this.findLayerById(id)
-      selectedUnit = (layer && layer.object.unit) || null
+      selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
     onSelectUnit(selectedUnit)
 
     onSelectedList(newList)
   }
 
-  onMouseClick = () => {
-    if (!this.isBoxSelection && !this.draggingObject) {
+  updateMarkersOn = (isMarkersOn) => {
+    this.addMarkerMode = isMarkersOn
+    if (!isMarkersOn && this.markers && this.markers.length && this.map) {
+      this.markers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markers
+    } else {
+      this.markers = []
+    }
+  }
+
+  addUserMarker = (point) => {
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+    }
+    let text = 'Орієнтир' // TODO
+    text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    setTimeout(() => {
+      const marker = createSearchMarker(point, text)
+      marker.addTo(this.map)
+      this.markers.push(marker)
+      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+    }, 50)
+  }
+
+  onMouseClick = (e) => {
+    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+    }
+    if (this.addMarkerMode) {
+      this.addUserMarker(e.latlng)
+    }
+    if (this.topoInfoMode) {
+      // TODO
     }
   }
 
@@ -534,12 +649,13 @@ export default class WebMap extends Component {
   }
 
   updateSelection = (prevProps) => {
-    const { objects, layer: layerId, edit, selection: { list: selectedIds } } = this.props
+    const { objects, layer: layerId, edit, selection: { list: selectedIds, preview } } = this.props
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
       edit !== prevProps.edit ||
-      layerId !== prevProps.layer
+      layerId !== prevProps.layer ||
+      preview !== prevProps.selection.preview
     ) {
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = selectedIds.length === 1 && edit
@@ -547,9 +663,10 @@ export default class WebMap extends Component {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = layer.object.layer === layerId
+          const isActiveLayer = (layer.options && layer.options.tsType === entityKind.FLEXGRID) ||
+            (layer.object && layer.object.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
-          setLayerSelected(layer, isSelected, isActive, isActiveLayer)
+          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
           if (isActive) {
             this.activeLayer = layer
           }
@@ -574,7 +691,9 @@ export default class WebMap extends Component {
   }
 
   onStopMeasuring = () => {
-    this.props.stopMeasuring()
+    if (!this.byReact) {
+      this.props.stopMeasuring()
+    }
   }
 
   moveHandler = debounce(() => {
@@ -652,10 +771,14 @@ export default class WebMap extends Component {
     }
   }
 
-  setMapCursor = (edit, type) => {
+  crosshairCursor = (on) => {
     if (this.map) {
-      this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+      this.map._container.style.cursor = on ? 'crosshair' : ''
     }
+  }
+
+  setMapCursor = (edit, type) => {
+    this.crosshairCursor(edit && type)
   }
 
   setMapSource = (newSources) => {
@@ -696,37 +819,64 @@ export default class WebMap extends Component {
     this.updateObjects(this.props.objects)
   }
 
-  updateObjects = (objects) => {
+  updateObjects = (objects, preview) => {
     if (this.map) {
-      const notChangedIds = new Set()
+      const existsIds = new Set()
+      const changes = []
       this.map.eachLayer((layer) => {
-        if (layer.id) {
-          const object = objects.get(layer.id)
-          if (object && layer.object === object) {
-            notChangedIds.add(layer.id)
-          } else {
-            if (object && object.equals(layer.object)) {
-              layer.object = object
-              notChangedIds.add(layer.id)
-            } else {
-              setLayerSelected(layer, false, false)
-              this.activeLayer = null
-              layer.remove()
+        const { id, options: { tsType: type } } = layer
+        if (id && type !== entityKind.FLEXGRID) {
+          const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
+          if (object) {
+            existsIds.add(id)
+            if (layer.object !== object) {
+              changes.push({ object, layer })
             }
+          } else {
+            layer.remove()
+            layer.pm && layer.pm.disable()
           }
         }
       })
-      objects.forEach((object, key) => {
-        if (!notChangedIds.has(key)) {
-          this.addObject(object)
+      for (let i = 0, n = changes.length; i < n; i++) {
+        const { object, layer } = changes[i]
+        const newLayer = this.addObject(object, layer)
+        if (newLayer !== layer) {
+          setLayerSelected(layer, false, false)
+          this.activeLayer = null
+          layer.remove()
+          layer.pm && layer.pm.disable()
+        }
+      }
+      objects.forEach((object, id) => {
+        if (!existsIds.has(id)) {
+          this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
+      const isNew = Boolean(preview && !preview.id)
+      if (isNew === Boolean(this.newLayer)) {
+        isNew && this.addObject(preview, this.newLayer)
+      } else {
+        if (isNew) {
+          this.newLayer = this.addObject(preview, null)
+        } else {
+          setLayerSelected(this.newLayer, false, false)
+          this.newLayer.remove()
+          this.newLayer.pm && this.newLayer.pm.disable()
+          this.newLayer = null
+        }
+      }
     }
   }
 
-  addObject = (object) => {
+  addObject = (object, prevLayer) => {
     const { id, attributes } = object
-    const layer = createTacticalSign(object, this.map)
+    try {
+      validateObject(object.toJS())
+    } catch (e) {
+      return null
+    }
+    const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
@@ -742,7 +892,9 @@ export default class WebMap extends Component {
       layer.on('dblclick', this.dblClickOnLayer)
       layer.on('pm:markerdragstart', this.onDragstartLayer)
       layer.on('pm:markerdragend', this.onDragendLayer)
-      layer.addTo(this.map)
+
+      layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
+
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
@@ -777,10 +929,10 @@ export default class WebMap extends Component {
 
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: { id, object } } = event
+    const { target: { id, object, options: { tsType } } } = event
     const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = object && object.layer
-    let doActivate = targetLayer === this.props.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
       this.props.onChangeLayer(targetLayer)
       doActivate = true
@@ -793,16 +945,17 @@ export default class WebMap extends Component {
   }
 
   dblClickOnLayer = (event) => {
-    const { target: { id, object } } = event
+    const { target: layer } = event
+    const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
-      editObject()
+      editObject(object.id, getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         this.props.onChangeLayer(targetLayer)
         this.selectLayer(id)
-        event.target._map._container.focus()
+        layer._map._container.focus()
       }
     }
     L.DomEvent.stopPropagation(event)
@@ -961,50 +1114,147 @@ export default class WebMap extends Component {
   //   this.activateCreated(created)
   // }
 
-  selectPrintAreaHandler = () => {
-    tempPrintFlag = !tempPrintFlag
-    toggleMapGrid(this.map, tempPrintFlag)
+  showFlexGrid = (show) => {
+    if (!this.map) {
+      return
+    }
+    if (show) {
+      if (this.flexGrid) {
+        this.flexGrid.addTo(this.map)
+        const { inICTMode } = this.props
+        if (inICTMode) {
+          this.map.fitBounds(this.flexGrid.getBounds())
+        }
+      } else {
+        this.dropFlexGrid()
+      }
+    } else {
+      if (this.flexGrid) {
+        this.flexGrid.removeFrom(this.map)
+      }
+    }
+  }
+
+  dropFlexGrid = (show = true) => {
+    if (this.flexGrid) {
+      this.flexGrid.removeFrom(this.map)
+    }
+    const {
+      flexGridParams: {
+        vertical,
+      },
+      flexGridData: {
+        directions,
+        zones,
+        id,
+        deleted,
+        eternals,
+        directionSegments,
+        zoneSegments,
+      },
+      flexGridCreated,
+      flexGridChanged,
+      activeMapId,
+      fixFlexGridInstance,
+    } = this.props
+    const layer = new L.FlexGrid(
+      this.map.getBounds().pad(-0.2),
+      {
+        interactive: true,
+        directions,
+        zones,
+        vertical,
+      },
+      id,
+      id && !deleted
+        ? {
+          eternals: eternals.toArray(),
+          directionSegments: directionSegments.toArray(),
+          zoneSegments: zoneSegments.toArray(),
+        }
+        : undefined,
+    )
+    layer.on('click', this.clickOnLayer)
+    layer.on('dblclick', this.dblClickOnLayer)
+    layer.on('pm:markerdragstart', this.onDragstartLayer)
+    layer.on('pm:markerdragend', this.onDragendLayer)
+    if (show && id) {
+      layer.addTo(this.map)
+    }
+    if (id) {
+      this.flexGrid = layer
+      fixFlexGridInstance && fixFlexGridInstance(layer)
+    }
+    const geometry = getGeometry(layer)
+    if (!id) {
+      flexGridCreated && flexGridCreated(activeMapId, geometry, { directions, zones })
+    } else if (deleted) {
+      flexGridChanged && flexGridChanged(id, activeMapId, geometry, { directions, zones })
+    }
+  }
+
+  updateFlexGrid = (flexGridData) => {
+    const {
+      fixFlexGridInstance,
+    } = this.props
+    const actual = flexGridData.id && !flexGridData.deleted
+    if (!actual && this.flexGrid) {
+      this.flexGrid.removeFrom(this.map)
+      delete this.flexGrid
+      fixFlexGridInstance && fixFlexGridInstance(null)
+    } else if (actual && !this.flexGrid) {
+      const { flexGridVisible } = this.props
+      this.dropFlexGrid(flexGridVisible)
+    }
   }
 
   updateCreatePoly = (type) => {
+    const layerOptions = {
+      tsType: type,
+    }
+    const options = { tooltips: false, templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Line', { hintlineStyle })
+        this.map.pm.enableDraw('Line', { ...options, hintlineStyle })
         break
       case entityKind.POLYGON:
       case entityKind.AREA:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'dblclick', hintlineStyle })
+        this.map.pm.enableDraw('Poly', { ...options, finishOn: 'dblclick' })
         break
       case entityKind.RECTANGLE:
       case entityKind.SQUARE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Rectangle')
+        this.map.pm.enableDraw('Rectangle', options)
         break
       case entityKind.CIRCLE:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Circle')
+        this.map.pm.enableDraw('Circle', options)
         break
       case entityKind.TEXT:
       case entityKind.POINT:
-        this.createPolyType = type // Не виносити за межі switch!
-        this.map.pm.enableDraw('Poly', { finishOn: 'click' })
+        this.map.pm.enableDraw('Line', options)
         break
       default:
-        this.createPolyType = null
         this.map.pm.disableDraw()
         break
     }
   }
 
-  createNewShape = async (e) => {
+  createNewShape = (e) => {
     const { layer } = e
-    layer.options.tsType = this.createPolyType
     layer.removeFrom(this.map)
     const geometry = getGeometry(layer)
     this.props.onFinishDrawNewShape(geometry)
+  }
+
+  onDrawStart = ({ workingLayer }) => {
+    const { options: { tsType } } = workingLayer
+    if (tsType === entityKind.TEXT || tsType === entityKind.POINT) {
+      workingLayer.on('pm:vertexadded', ({ workingLayer }) => {
+        const geometry = getGeometry(workingLayer)
+        this.map.pm.disableDraw('Line')
+        this.props.onFinishDrawNewShape(geometry)
+      })
+    }
   }
 
   dragOverHandler = (e) => {
@@ -1044,9 +1294,9 @@ export default class WebMap extends Component {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
+        <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.SELECT_PRINT_AREA} onKey={this.selectPrintAreaHandler} />
       </div>
     )
   }

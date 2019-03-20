@@ -1,15 +1,12 @@
 import { epsilon } from './helpers'
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
-export function prepareBezierPath (ring, locked, skipStart, skipEnd) {
-  let str = ''
-  for (const item of prepareCurve(ring.map((r) => [ r.x, r.y ]), ring, locked, skipStart, skipEnd)) {
-    str += `${(typeof item === 'string' ? item : `${item[0]} ${item[1]}`)} `
-  }
-  return str || 'M0 0'
-}
+export const prepareBezierPath = (ring, locked, skipStart, skipEnd, skipMove) =>
+  prepareCurve(ring, locked === true, skipStart === true, skipEnd === true, skipMove === true)
+    .join(' ') || (skipMove === true ? '' : 'M 0 0')
 
-function prepareCurve (points, ring, locked, skipStart, skipEnd) {
+function prepareCurve (ring, locked, skipStart, skipEnd, skipMove) {
+  const points = ring.map(({ x, y }) => [ x, y ])
   const prevIdx = (idx) => idx > 0 ? idx - 1 : points.length - 1
   const nextIdx = (idx) => idx < points.length - 1 ? idx + 1 : 0
   const pt = (pa) => ({ x: pa[0], y: pa[1] })
@@ -22,38 +19,43 @@ function prepareCurve (points, ring, locked, skipStart, skipEnd) {
     ring[0].cp2 = pt(cp2)
     last = cp1
     mem = cp2
-    result = [ 'M', points[0] ]
+    result = []
+    if (!skipMove) {
+      result = result.concat([ 'M', ...points[0] ])
+    }
     for (let i = 1; i < points.length; i++) {
       [ cp1, cp2 ] = calcControlPoint(points[prevIdx(i)], points[i], points[nextIdx(i)])
       ring[i].cp1 = pt(cp1)
       ring[i].cp2 = pt(cp2)
-      result = result.concat([ 'C', mem, cp1, points[i] ])
+      result = result.concat([ 'C', ...mem, ...cp1, ...points[i] ])
       mem = cp2
     }
-    result = result.concat([ 'C', mem, last, points[0], 'Z' ])
+    result = result.concat([ 'C', ...mem, ...last, ...points[0], 'Z' ])
   } else {
     ring[0].cp1 = pt(points[0])
     ring[0].cp2 = pt(points[0])
     mem = points[0]
     result = []
-    if (!skipStart) {
-      result = result.concat([ 'M', points[0] ])
+    if (!skipStart && !skipMove) {
+      result = result.concat([ 'M', ...points[0] ])
     }
     for (let i = 1; i < points.length - 1; i++) {
       [ cp1, cp2 ] = calcControlPoint(points[i - 1], points[i], points[i + 1])
       ring[i].cp1 = pt(cp1)
       ring[i].cp2 = pt(cp2)
       if (skipStart && i === 1) {
-        result = result.concat([ 'M', points[i] ])
+        if (!skipMove) {
+          result = result.concat([ 'M', ...points[i] ])
+        }
       } else {
-        result = result.concat([ 'C', mem, cp1, points[i] ])
+        result = result.concat([ 'C', ...mem, ...cp1, ...points[i] ])
       }
       mem = cp2
     }
     ring[points.length - 1].cp1 = pt(points[points.length - 1])
     ring[points.length - 1].cp2 = pt(points[points.length - 1])
     if (!skipEnd) {
-      result = result.concat([ 'C', mem, points[ points.length - 1 ], points[ points.length - 1 ] ])
+      result = result.concat([ 'C', ...mem, ...points[points.length - 1], ...points[points.length - 1] ])
     }
   }
   return result

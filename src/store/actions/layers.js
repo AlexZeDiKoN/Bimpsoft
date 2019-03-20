@@ -92,8 +92,8 @@ export const selectLayer = (layerId) =>
       layerId,
     })
 
-    if (layerId) {
-      const layer = byId[layerId]
+    const layer = layerId ? byId[layerId] : null
+    if (layer) {
       const { formationId = null, mapId } = layer
 
       await dispatch(expandMap(mapId, true))

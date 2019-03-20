@@ -27,8 +27,10 @@ build:
   <<: *base-dev
   script:
     - echo Building project...
-    - call yarn --production
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
+    -  call npm i
+#    - call npm install
+#    - call yarn
+#    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
@@ -40,7 +42,7 @@ build:
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - git status
     - git commit -a -m "[CI skip] %version% (autocommit)"
-    - git push https://%ACCESS_USER%:%ACCESS_TOKEN%@%gitlabPath% HEAD:develop
+    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%gitlabPath% HEAD:develop
     - echo Done
   artifacts:
     expire_in: 1 hour

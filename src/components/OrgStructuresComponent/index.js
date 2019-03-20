@@ -27,7 +27,7 @@ function scrollParentToChild (parent, child) {
   }
 }
 
-export default class OrgStructuresComponent extends React.Component {
+export default class OrgStructuresComponent extends React.PureComponent {
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevProps.selectedId !== this.props.selectedId) {
       const scrollRef = this.scrollRef && this.scrollRef.current
@@ -59,7 +59,9 @@ export default class OrgStructuresComponent extends React.Component {
   render () {
     const {
       textFilter = null,
-      orgStructures = {},
+      byIds,
+      roots,
+      formation = null,
       onDoubleClick,
       onClick,
       wrapper: Wrapper = Fragment,
@@ -68,7 +70,7 @@ export default class OrgStructuresComponent extends React.Component {
       onExpand,
       canEdit,
     } = this.props
-    const { byIds, roots, formation = null } = orgStructures
+
     if (formation === null) {
       return null
     }
@@ -107,11 +109,9 @@ export default class OrgStructuresComponent extends React.Component {
 OrgStructuresComponent.propTypes = {
   wrapper: PropTypes.any,
   canEdit: PropTypes.bool,
-  orgStructures: PropTypes.shape({
-    roots: PropTypes.array.isRequired,
-    byIds: PropTypes.object.isRequired,
-    formation: PropTypes.object,
-  }),
+  roots: PropTypes.array.isRequired,
+  byIds: PropTypes.object.isRequired,
+  formation: PropTypes.object,
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,

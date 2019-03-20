@@ -4,6 +4,7 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as selectionActions from '../store/actions/selection'
 import { canEditSelector } from '../store/selectors'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
@@ -25,7 +26,7 @@ const mapDispatchToProps = {
 }
 const CreateButtonsContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(CreateButtons)
 
 export default CreateButtonsContainer

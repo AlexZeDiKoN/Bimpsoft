@@ -5,13 +5,11 @@ import { setOpacity, setHidden, setClassName } from './utils/helpers'
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
 
-const getDropShadowByColor = (color) => `drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 2px ${color}) drop-shadow(0px 0px 3px ${color})`
-
 const setShadowColor = function (shadowColor) {
   this._shadowColor = shadowColor
   const el = this.getElement()
   if (el) {
-    el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
+    el.style.setProperty('--outline-color', this._shadowColor || 'none')
   }
 }
 
@@ -53,7 +51,8 @@ const DzvinMarker = L.Marker.extend({
     parent._animateZoom.call(this, opt)
   },
   _initIcon: function () {
-
+    const { icon } = this.options
+    icon.options.zoom = this._map.getZoom()
   },
   onAdd: function (map) {
     const { icon } = this.options
@@ -94,7 +93,7 @@ const DzvinMarker = L.Marker.extend({
       }
       if (el.lastshadowColor !== this._shadowColor) {
         el.lastshadowColor = this._shadowColor
-        el.style.filter = this._shadowColor ? getDropShadowByColor(this._shadowColor) : ''
+        el.style.setProperty('--outline-color', this._shadowColor || 'transparent')
       }
 
       setClassName(el, 'dzvin-marker-selected', this._selected && !this._inActiveLayer)

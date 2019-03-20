@@ -1,6 +1,7 @@
 /* global L */
 
 import './patch'
+import coordinates from '../../utils/coordinates'
 import entityKind from './entityKind'
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
@@ -25,9 +26,16 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  layer.pm.enable({
-    snappable: false,
-    draggable: layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT,
+  const draggable = layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT
+  layer.pm.enable()
+  draggable && layer.pm.enableLayerDrag()
+  layer.on('pm:dragstart', () => {
+    const { _markerGroup, _helperLayers } = layer.pm
+    _markerGroup && _markerGroup.clearLayers()
+    _helperLayers && _helperLayers.clearLayers()
+  })
+  layer.on('pm:dragend', () => {
+    layer.pm._initMarkers()
   })
   const click = layer.fire.bind(layer, 'click')
   const dblclick = layer.fire.bind(layer, 'dblclick')
@@ -48,7 +56,7 @@ export const disableEdit = (layer) => {
 
 export const setLayerSelected = (layer, selected, active, activeLayer) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
-  if (layer.pm.enabled() !== active) {
+  if (layer.pm && layer.pm.enabled() !== active) {
     if (active) {
       enableEdit(layer)
     } else {
@@ -58,29 +66,29 @@ export const setLayerSelected = (layer, selected, active, activeLayer) => {
 }
 
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
-export function createTacticalSign (data, map) {
+export function createTacticalSign (data, map, prevLayer) {
   const { type } = data
   switch (+type) {
     case entityKind.POINT:
-      return createPoint(data)
+      return createPoint(data, prevLayer)
     case entityKind.TEXT:
-      return createText(data)
+      return createText(data, prevLayer)
     case entityKind.SEGMENT:
-      return createSegment(data)
+      return createSegment(data, prevLayer)
     case entityKind.AREA:
-      return createArea(data)
+      return createPolygon(entityKind.AREA, data, prevLayer)
     case entityKind.CURVE:
-      return createCurve(data)
+      return createPolyline(entityKind.CURVE, data, prevLayer)
     case entityKind.POLYGON:
-      return createPolygon(data)
+      return createPolygon(entityKind.POLYGON, data, prevLayer)
     case entityKind.POLYLINE:
-      return createPolyline(data)
+      return createPolyline(entityKind.POLYLINE, data, prevLayer)
     case entityKind.CIRCLE:
-      return createCircle(data, map)
+      return createCircle(data, map, prevLayer)
     case entityKind.RECTANGLE:
-      return createRectangle(data)
+      return createRectangle(type, data.geometry.toJS(), prevLayer)
     case entityKind.SQUARE:
-      return createSquare(data, map)
+      return createSquare(data, map, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -92,23 +100,37 @@ export function createSearchMarker (point) {
   return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: true })
 }
 
-function createPoint (data) {
+export function createCoordinateMarker (point) {
+  return L.marker(point, { icon: L.divIcon({ className: 'marker-icon' }), keyboard: false, draggable: false })
+}
+
+function createMarker (point, icon, layer) {
+  if (layer && (layer instanceof L.DzvinMarker)) {
+    layer.setIcon(icon)
+    layer.setLatLng(point)
+  } else {
+    layer = new L.DzvinMarker(point, { icon, keyboard: false, draggable: false, pane: 'overlayPane' })
+  }
+  return layer
+}
+
+function createPoint (data, layer) {
   const { point } = data
   const icon = new L.PointIcon({ data })
-  const marker = new L.DzvinMarker(point, { icon, keyboard: false, draggable: false, pane: 'overlayPane' })
-  marker.options.tsType = entityKind.POINT
-  return marker
+  layer = createMarker(point, icon, layer)
+  layer.options.tsType = entityKind.POINT
+  return layer
 }
 
-function createText (data) {
+function createText (data, layer) {
   const { point } = data
   const icon = new L.TextIcon({ data })
-  const marker = new L.DzvinMarker(point, { icon, draggable: false, pane: 'overlayPane' })
-  marker.options.tsType = entityKind.TEXT
-  return marker
+  layer = createMarker(point, icon, layer)
+  layer.options.tsType = entityKind.TEXT
+  return layer
 }
 
-function createSegment (data) {
+function createSegment (data, prevLayer) {
   const { geometry, attributes } = data
   const points = geometry.toJS()
   const { template, color } = attributes
@@ -116,27 +138,29 @@ function createSegment (data) {
   return L.polyline(points, options)
 }
 
-function createArea (data) {
-  const options = prepareOptions(entityKind.AREA)
-  return L.polygon(data.geometry.toJS(), options)
+function createPolygon (type, data, layer) {
+  if (layer && (layer instanceof L.Polygon)) {
+    layer.setLatLngs(data.geometry.toJS())
+    layer.setStyle({ tsType: type })
+  } else {
+    const options = prepareOptions(type)
+    layer = L.polygon(data.geometry.toJS(), options)
+  }
+  return layer
 }
 
-function createCurve (data) {
-  const options = prepareOptions(entityKind.CURVE)
-  return L.polyline(data.geometry.toJS(), options)
+function createPolyline (type, data, layer) {
+  if (layer && (layer instanceof L.Polyline)) {
+    layer.setLatLngs(data.geometry.toJS())
+    layer.setStyle({ tsType: type })
+  } else {
+    const options = prepareOptions(type)
+    layer = L.polyline(data.geometry.toJS(), options)
+  }
+  return layer
 }
 
-function createPolygon (data) {
-  const options = prepareOptions(entityKind.POLYGON)
-  return L.polygon(data.geometry.toJS(), options)
-}
-
-function createPolyline (data) {
-  const options = prepareOptions(entityKind.POLYLINE)
-  return L.polyline(data.geometry.toJS(), options)
-}
-
-function createCircle (data, map) {
+function createCircle (data, map, prevLayer) {
   const [ point1, point2 ] = data.geometry.toJS()
   if (!point1 || !point2) {
     console.error('createCircle: немає координат для круга')
@@ -147,22 +171,29 @@ function createCircle (data, map) {
   return L.circle(point1, options)
 }
 
-function createRectangle (data) {
-  const options = prepareOptions(entityKind.RECTANGLE)
-  return L.rectangle(data.geometry.toJS(), options)
+function createRectangle (type, points, layer) {
+  if (layer && (layer instanceof L.Rectangle)) {
+    layer.setBounds(points)
+  } else {
+    const options = prepareOptions(type)
+    layer = L.rectangle(points, options)
+  }
+  return layer
 }
 
-function createSquare (data, map) {
-  let [ point1, point2 ] = data.geometry.toJS()
+function createSquare (data, map, layer) {
+  let [ point1 = null, point2 = null ] = data.geometry.toJS()
+  if (point1 === null || point2 === null || coordinates.isWrong(point1) || coordinates.isWrong(point2)) {
+    return null
+  }
   const bounds = L.latLngBounds(point1, point2)
   point1 = bounds.getNorthWest()
   point2 = bounds.getSouthEast()
-  const options = prepareOptions(entityKind.SQUARE)
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
   const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
   const size = Math.max(width, height)
   point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
-  return L.rectangle([ point1, point2 ], options)
+  return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
 }
 
 function prepareOptions (signType, color, js) {
@@ -199,7 +230,7 @@ export function getGeometry (layer) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
-      return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs()[0])
+      return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs())
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
@@ -212,6 +243,8 @@ export function getGeometry (layer) {
       return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
+    case entityKind.FLEXGRID:
+      return formFlexGridGeometry(layer.eternals, layer.directionSegments, layer.zoneSegments)
     default:
       return null
   }
@@ -223,16 +256,20 @@ export const geomPointEquals =
   (p1, p2) => p1 && p2 && roundCoord(p1.lat) === roundCoord(p2.lat) && roundCoord(p1.lng) === roundCoord(p2.lng)
 
 function geomPointListEquals (list1, list2) {
-  const n = list1.length
-  if (n !== list2.length) {
-    return false
-  }
-  for (let i = 0; i < n; i++) {
-    if (!geomPointEquals(list1[i], list2[i])) {
+  if (Array.isArray(list1) && Array.isArray(list2)) {
+    const n = list1.length
+    if (n !== list2.length) {
       return false
     }
+    for (let i = 0; i < n; i++) {
+      if (!geomPointListEquals(list1[i], list2[i])) {
+        return false
+      }
+    }
+    return true
+  } else {
+    return geomPointEquals(list1, list2)
   }
-  return true
 }
 
 export function isGeometryChanged (layer, point, geometry) {
@@ -255,6 +292,8 @@ export function isGeometryChanged (layer, point, geometry) {
     }
     case entityKind.CIRCLE:
       return !geomPointEquals(layer.getLatLng(), point) || layer._map.distance(...geometry) !== layer.getRadius()
+    case entityKind.FLEXGRID:
+      return !geomPointListEquals([ layer.eternals, layer.directionSegments, layer.zoneSegments ], geometry)
     default:
       return false
   }
@@ -264,6 +303,13 @@ function formGeometry (coords) {
   return {
     point: calcMiddlePoint(coords),
     geometry: coords,
+  }
+}
+
+function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
+  return {
+    point: calcMiddlePoint(eternals.reduce((result, item) => result.concat(item), [])),
+    geometry: [ eternals, directionSegments, zoneSegments ],
   }
 }
 

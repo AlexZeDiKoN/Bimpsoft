@@ -7,6 +7,7 @@ import SearchOptions from '../../../containers/SearchOptionsContainer'
 import coordinates from '../../../utils/coordinates'
 import './style.css'
 import i18n from '../../../i18n'
+import PrintFilesContainer from '../../../containers/PrintFiles'
 
 const iconNames = components.icons.names
 
@@ -21,6 +22,7 @@ export default class RightMenu extends React.Component {
     onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
+    printFiles: PropTypes.object,
   }
 
   search = (sample) => {
@@ -45,10 +47,11 @@ export default class RightMenu extends React.Component {
 
   render () {
     const {
-      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed,
+      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles,
     } = this.props
     return (
       <div className='left-menu'>
+        {(Object.keys(printFiles).length !== 0) && <PrintFilesContainer/>}
         <Input.Search
           placeholder={i18n.SEARCH}
           style={{ width: 200 }}

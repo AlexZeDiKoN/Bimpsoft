@@ -9,6 +9,8 @@ import orgStructures from './orgStructures'
 import templates from './templates'
 import selection from './selection'
 import params from './params'
+import print from './print'
+import flexGrid from './flexGrid'
 
 export default combineReducers({
   viewModes,
@@ -21,4 +23,6 @@ export default combineReducers({
   templates,
   selection,
   params,
+  print,
+  flexGrid,
 })

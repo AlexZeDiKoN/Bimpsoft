@@ -6,7 +6,7 @@ import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
-import SymbolForm from './forms/SymbolForm'
+import MilSymbolForm from './forms/MilSymbolForm'
 import LineForm from './forms/LineForm'
 import AreaForm from './forms/AreaForm'
 import RectangleForm from './forms/RectangleForm'
@@ -17,7 +17,7 @@ import TextForm from './forms/TextForm'
 const forms = {
   [SelectionTypes.POINT]: {
     title: i18n.MIL_SYMBOL,
-    component: SymbolForm,
+    component: MilSymbolForm,
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
@@ -56,17 +56,8 @@ const forms = {
 export default class SelectionForm extends React.Component {
   changeHandler = (data) => {
     if (this.props.canEdit) {
-      if (this.props.data) {
-        data = { ...this.props.data, ...data }
-      }
-      this.props.onChange(this.props.showForm, data)
-    } else {
-      this.props.onCancel()
+      this.props.onChange(data)
     }
-  }
-
-  cancelHandler = () => {
-    this.props.onCancel()
   }
 
   addToTemplateHandler = (data) => {
@@ -74,7 +65,7 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { data, orgStructures, canEdit, onError } = this.props
+    const { data, orgStructures, canEdit, onCancel, onOk, onCoordinateFocusChange } = this.props
     if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
@@ -82,19 +73,20 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (
-      <Wrapper title={title} onClose={this.cancelHandler}>
+      <Wrapper title={title} onClose={onCancel}>
         <FocusTrap>
           <HotKeysContainer>
             <Component
-              {...data}
+              data={data}
               canEdit={canEdit}
               orgStructures={orgStructures}
+              onOk={onOk}
               onChange={this.changeHandler}
-              onClose={this.cancelHandler}
-              onError={onError}
+              onClose={onCancel}
               onAddToTemplates={this.addToTemplateHandler}
+              onCoordinateFocusChange={onCoordinateFocusChange}
             />
-            <HotKey onKey={this.cancelHandler} selector={shortcuts.ESC}/>
+            <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
           </HotKeysContainer>
         </FocusTrap>
       </Wrapper>
@@ -105,10 +97,13 @@ export default class SelectionForm extends React.Component {
 SelectionForm.propTypes = {
   data: PropTypes.object,
   canEdit: PropTypes.bool,
+  showForm: PropTypes.string,
   onChange: PropTypes.func,
+  onOk: PropTypes.func,
   onCancel: PropTypes.func,
   onError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
+  onCoordinateFocusChange: PropTypes.func,
   wrapper: PropTypes.oneOf([ ModalContainer ]),
   orgStructures: PropTypes.object,
 }

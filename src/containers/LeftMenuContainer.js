@@ -1,66 +1,61 @@
 import { connect } from 'react-redux'
+import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import * as viewModesActions from '../store/actions/viewModes'
-import * as layersActions from '../store/actions/layers'
-import * as webMapActions from '../store/actions/webMap'
-import * as selectionActions from '../store/actions/selection'
+import { viewModes, layers, webMap } from '../store/actions'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
+import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
-    webMap: { subordinationLevel, isMeasureOn },
+    webMap: {
+      subordinationLevel,
+      subordinationAuto,
+      isMeasureOn,
+      isMarkersOn: marker,
+      isTopographicObjectsOn: topographicObjects,
+    },
+    print: { printFiles },
   } = store
 
   const layerName = layerNameSelector(store)
   const isEditMode = canEditSelector(store)
   return {
     isEditMode,
-    // isShowPoints,
     isShowSubordinationLevel,
     isMeasureOn,
     subordinationLevel,
+    subordinationAuto,
+    marker,
+    topographicObjects,
     layerName,
+    printFilesCount: printFiles ? Object.keys(printFiles).length : null,
   }
 }
 const mapDispatchToProps = {
-  onChangeEditMode: (editMode) => layersActions.setEditMode(editMode),
-  // onClickPointSign: () => (dispatch, getState) => {
-  //   const {
-  //     viewModes: { [viewModesKeys.pointSignsList]: isShowPoints },
-  //     selection: { newShape },
-  //   } = getState()
-  //
-  //   if (isShowPoints) {
-  //     if (newShape && newShape.type !== SelectionTypes.POINT) {
-  //       dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
-  //     } else {
-  //       dispatch(viewModesActions.viewModeDisable(viewModesKeys.pointSignsList))
-  //       dispatch(selectionActions.setNewShape({}))
-  //     }
-  //   } else {
-  //     dispatch(selectionActions.setNewShape({ type: SelectionTypes.POINT }))
-  //     dispatch(viewModesActions.viewModeToggle(viewModesKeys.pointSignsList))
-  //   }
-  // },
-  onClickSubordinationLevel: () => viewModesActions.viewModeToggle(viewModesKeys.subordinationLevel),
-  onMeasureChange: (isMeasureOn) => webMapActions.setMeasure(isMeasureOn),
-  onCut: selectionActions.cut,
-  onCopy: selectionActions.copy,
-  onPaste: selectionActions.paste,
-  onDelete: selectionActions.showDeleteForm,
-  onSubordinationLevelClose: () => viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel),
-  onSubordinationLevelChange: (subordinationLevel) => (dispatch) => {
-    dispatch(webMapActions.setSubordinationLevel(subordinationLevel))
-    dispatch(viewModesActions.viewModeDisable(viewModesKeys.subordinationLevel))
-  },
+  onChangeEditMode: layers.setEditMode,
+  onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
+  onMeasureChange: webMap.toggleMeasure,
+  onMarkerChange: webMap.toggleMarkers,
+  onTopographicObjectsChange: webMap.toggleTopographicObjects,
+  onSubordinationLevelClose: () => viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
+  onSetSubordinationLevelAuto: () => batchActions([
+    webMap.setSubordinationLevelAuto(true),
+    webMap.setSubordinationLevelByZoom(),
+    viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
+  ]),
+  onSubordinationLevelChange: (subordinationLevel) => batchActions([
+    webMap.setSubordinationLevelAuto(false),
+    webMap.setSubordinationLevel(subordinationLevel),
+    viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
+  ]),
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(LeftMenu)
 
 export default LeftMenuContainer

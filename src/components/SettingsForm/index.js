@@ -23,7 +23,7 @@ export default class SettingsForm extends React.Component {
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     showAmplifiers: PropTypes.bool,
-    generalization: PropTypes.bool,
+    // generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,
@@ -87,7 +87,7 @@ export default class SettingsForm extends React.Component {
               {/* <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}> */}
               {/* <Select value={coordinatesType} onChange={onChangeCoordinatesType} > */}
               {/* <Option value={CoordinatesTypes.WGS_84}>{i18n.WGS_84}</Option> */}
-              {/* <Option value={CoordinatesTypes.USK_2000}>{i18n.USK_2000}</Option> */}
+              {/* <Option value={CoordinatesTypes.USC_2000}>{i18n.USC_2000}</Option> */}
               {/* <Option value={CoordinatesTypes.MGRS}>{i18n.MGRS}</Option> */}
               {/* </Select> */}
               {/* </FormRow> */}

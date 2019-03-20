@@ -11,6 +11,20 @@ const nodeApi = getNodeApi()
 
 export const getWebmapURL = () => webmapApi
 
+const setOptionsData = (options, data) => {
+  if (data) {
+    const isString = (typeof data === 'string')
+    const isFormData = (data instanceof FormData)
+    if (isFormData) {
+      options.headers.delete('Content-Type')
+    } else {
+      const contentType = isString ? 'application/octet-stream;charset=UTF-8' : 'application/json;charset=UTF-8'
+      options.headers.append('Content-Type', contentType)
+    }
+    options.body = (isString || isFormData) ? data : JSON.stringify(data)
+  }
+}
+
 export async function get (url, namespace = nodeApi) {
   const options = _getOptions('GET')
   return _createGetRequest(url, options, namespace)
@@ -18,7 +32,7 @@ export async function get (url, namespace = nodeApi) {
 
 export async function put (url, data, namespace = nodeApi) {
   const options = _getOptions('PUT')
-  options.body = JSON.stringify(data)
+  setOptionsData(options, data)
   return _createGetRequest(url, options, namespace)
 }
 
@@ -36,15 +50,13 @@ export async function post (url, data = {}, route = '/do', namespace) {
     operation: url,
     payload: !data ? null : JSON.stringify(data),
   }
-  options.body = JSON.stringify(request)
+  setOptionsData(options, request)
   return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
 }
 
 export async function getDirect (url, data = {}, namespace) {
   const options = _getOptions(data ? 'POST' : 'GET')
-  if (data) {
-    options.body = JSON.stringify(data)
-  }
+  setOptionsData(options, data)
   return _createRequest(url, options, namespace)
 }
 
@@ -53,16 +65,8 @@ function _getOptions (method) {
     mode: 'cors',
     credentials: 'include',
     method,
-    headers: _getDefaultHeaders(method !== 'GET'),
+    headers: new Headers(),
   }
-}
-
-function _getDefaultHeaders (addContentType = true) {
-  const myHeaders = new Headers()
-  if (addContentType) {
-    myHeaders.append('Content-Type', 'application/json;charset=UTF-8')
-  }
-  return myHeaders
 }
 
 /**
@@ -75,7 +79,10 @@ function _getDefaultHeaders (addContentType = true) {
  */
 function _createGetRequest (url, options, namespace) {
   return new Promise((resolve, reject) => {
-    const serviceUrl = `${serverRootUrl}${namespace}${url}`
+    const namespaceAbsolute = absoluteUri.test(namespace)
+    const prefix = namespaceAbsolute ? namespace : `${serverRootUrl}${namespace}`
+    const serviceUrl = `${prefix}${url}`
+    // console.log({ namespace, namespaceAbsolute, prefix, serviceUrl })
 
     fetch(serviceUrl, options)
       .then((resp) => {
@@ -109,7 +116,7 @@ function _createGetRequest (url, options, namespace) {
  * @private
  */
 async function _createRequest (url, option, namespace = explorerApi) {
-  const serviceUrl = absoluteUri.test(url) ? url : namespace + url
+  const serviceUrl = absoluteUri.test(url) ? url : `${namespace}${url}`
   let response
   try {
     response = await fetch(serviceUrl, option)
@@ -118,7 +125,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
   }
   switch (response.status) {
     case 200: {
-      if (response.headers.get('content-type').slice(0, 16) === 'application/json') {
+      const contentType = response.headers.get('content-type') || ''
+      if (contentType.slice(0, 16) === 'application/json') {
         const jsonPayload = await response.json()
         if (jsonPayload.payload) {
           return JSON.parse(jsonPayload.payload)
@@ -126,7 +134,9 @@ async function _createRequest (url, option, namespace = explorerApi) {
           return jsonPayload
         }
       }
-      return response.text()
+      const text = await response.text()
+      // console.log(url, text)
+      return text
     }
     case 204: // success code of DELETE request
       return null

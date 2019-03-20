@@ -1,7 +1,6 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { compose } from 'redux'
 import {
-  AbstractShapeForm,
   WithColor,
   WithFill,
   WithSegment,
@@ -11,7 +10,8 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
+import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../parts/AbstractShapeForm'
 
 const Extenders = compose(
   WithSubordinationLevel,
@@ -26,22 +26,11 @@ const Extenders = compose(
 )
 
 export default class AreaForm extends Extenders(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithFill.propTypes,
-    ...WithSegment.propTypes,
-    ...WithLineType.propTypes,
-    ...WithLineAmplifiers.propTypes,
-    ...WithLineNodes.propTypes,
-    ...WithCoordinatesArray.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     return (
-      <Fragment>
+      <>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderStrokeWidth()}
@@ -51,7 +40,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
         {this.renderLineAmplifiers()}
         {this.renderLineNodes()}
         {this.renderCoordinatesArray()}
-      </Fragment>
+      </>
     )
   }
 }

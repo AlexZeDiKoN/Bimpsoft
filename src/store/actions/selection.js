@@ -1,14 +1,18 @@
 import { batchActions } from 'redux-batched-actions'
+import { List } from 'immutable'
+import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
-import { fromSelection } from '../../utils/mapObjConvertor'
+import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
+import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
 
 export const SHOW_CREATE_FORM = action('SHOW_CREATE_FORM')
 export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
 export const HIDE_FORM = action('HIDE_FORM')
+export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
 export const SHOW_DELETE_FORM = action('SHOW_DELETE_FORM')
@@ -16,41 +20,64 @@ export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
 export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
+export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
+
+const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
+const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({
   type: SELECTED_LIST,
   list,
 })
 
-export const showCreateForm = {
-  type: SHOW_CREATE_FORM,
-}
-
-export const showEditForm = {
-  type: SHOW_EDIT_FORM,
+export const showEditForm = (id, geometry) => (dispatch, getState) => {
+  const state = getState()
+  const { webMap: { objects } } = state
+  let object = objects.get(id)
+  if (geometry) {
+    object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
+  }
+  dispatch(setPreview(object))
 }
 
 export const hideForm = () => ({
   type: HIDE_FORM,
 })
 
-export const updateSelection = (data) => withNotification(async (dispatch) => {
-  await dispatch(webMap.updateObject(fromSelection(data)))
-  await dispatch(hideForm())
+export const setPreview = (preview) => ({
+  type: SET_DATA_PREVIEW,
+  preview,
+})
+
+export const savePreview = () => withNotification(async (dispatch, getState) => {
+  const { selection: { preview } } = getState()
+  if (preview) {
+    const data = preview.toJS()
+    if (data.id) {
+      await dispatch(webMap.updateObject(data))
+      dispatch(batchActions([ setPreview(null, []) ]))
+    } else {
+      const id = await dispatch(webMap.addObject(data))
+      await dispatch(batchActions([
+        setPreview(null, []),
+        selectedList([ id ]),
+        webMap.setScaleToSelection(false),
+      ]))
+    }
+  }
+})
+
+export const clearPreview = () => batchActions([ hideForm(), setPreview(null, []) ])
+
+export const setPreviewCoordinate = (index, isActive) => ({
+  type: SET_PREVIEW_COORDINATE,
+  index,
+  isActive,
 })
 
 export const setNewShape = (newShape) => ({
   type: SET_NEW_SHAPE,
   newShape,
-})
-
-export const finishNewShape = (newShapeData) => withNotification(async (dispatch) => {
-  const id = await dispatch(webMap.addObject(fromSelection(newShapeData)))
-  await dispatch(batchActions([
-    selectedList([ id ]),
-    hideForm(),
-    webMap.setScaleToSelection(false),
-  ]))
 })
 
 export const finishDrawNewShape = ({ geometry, point }) => withNotification(async (dispatch, getState) => {
@@ -60,11 +87,23 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     webMap: { subordinationLevel: level },
   } = getState()
 
+  geometry = List(geometry)
+  const object = WebMapObject({ type, layer, level, geometry, point })
+
   switch (type) {
     case SelectionTypes.POINT:
+      await dispatch(batchActions([
+        setNewShape({}),
+        setPreview(object.set('code', DEFAULT_APP6_CODE)),
+      ]))
+      break
     case SelectionTypes.TEXT:
-      await dispatch(setNewShape({ type, layer, subordinationLevel: level, coordinatesArray: geometry }))
-      await dispatch(showCreateForm)
+      await dispatch(batchActions([
+        setNewShape({}),
+        setPreview(object.updateIn([ 'attributes', 'texts' ], (texts) =>
+          texts.push({ text: '', underline: true, align: Align.CENTER, size: 16 })
+        )),
+      ]))
       break
     case SelectionTypes.SEGMENT:
     case SelectionTypes.AREA:
@@ -74,9 +113,11 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     case SelectionTypes.CIRCLE:
     case SelectionTypes.RECTANGLE:
     case SelectionTypes.SQUARE: {
-      const id = await dispatch(webMap.addObject({ type, layer, level, geometry, point }))
-      await dispatch(selectedList([ id ]))
-      await dispatch(showEditForm)
+      const id = await dispatch(webMap.addObject(object.toJS()))
+      await dispatch(batchActions([
+        selectedList([ id ]),
+        showEditForm(id),
+      ]))
       break
     }
     default:
@@ -90,16 +131,16 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
     layers: { selectedId: layer },
   } = getState()
   const { app6Code: code, id, symbolData, natoLevelID } = unit
-  dispatch(setNewShape({
+  dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
     code,
     layer,
-    orgStructureId: id,
+    unit: id,
     subordinationLevel: natoLevelID,
-    coordinatesArray: [ point ],
-    amplifiers: JSON.parse(symbolData || '{}'),
-  }))
-  dispatch(showCreateForm)
+    geometry: List([ point ]),
+    point: point,
+    attributes: WebMapAttributes(JSON.parse(symbolData || '{}')),
+  })))
 })
 
 export const copy = () => withNotification((dispatch, getState) => {

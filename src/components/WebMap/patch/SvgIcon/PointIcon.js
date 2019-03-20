@@ -39,6 +39,8 @@ const PointIcon = L.Icon.extend({
     const scale = this.getScale(zoom, scaleOptions)
     const symbol = new Symbol(code, {
       size: scale,
+      outlineWidth: 3,
+      outlineColor: 'var(--outline-color)',
       ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
     })
     const svg = symbol.asSVG()

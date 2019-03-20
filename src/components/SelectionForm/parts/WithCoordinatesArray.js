@@ -3,7 +3,7 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import coordinates from '../../../utils/coordinates'
 import CoordinateItem from './CoordinateItem'
-import CoordinatesMixin from './CoordinatesMixin'
+import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
   FormRow,
@@ -14,28 +14,25 @@ const {
 const { icons: { IconHovered, names: iconNames } } = components
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
-  constructor (props) {
-    super(props)
-    this.state.editCoordinates = false
-  }
+  state = { editCoordinates: false }
 
-  coordinateRemoveHandler = (index) => this.setState(
-    (state) => (state.coordinatesArray.size <= 2) ? null : { coordinatesArray: state.coordinatesArray.delete(index) }
+  coordinateRemoveHandler = (index) => this.setResult((result) =>
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
+      coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index)
+    )
   )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
     editCoordinates: !state.editCoordinates,
   }))
 
-  coordinateAddHandler = () => this.setState((state) => ({
-    coordinatesArray: state.coordinatesArray.push(coordinates.parse('')),
-  }))
+  coordinateAddHandler = () => this.setResult((result) =>
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push(coordinates.parse('')))
+  )
 
   renderCoordinatesArray () {
-    const {
-      coordinatesArray,
-      editCoordinates,
-    } = this.state
+    const { editCoordinates } = this.state
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
     const canEdit = this.isCanEdit()
     return (
       <FormDarkPart>
@@ -64,6 +61,8 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
               canRemove={coordinatesArray.size > 2}
               onChange={this.coordinateChangeHandler}
               onRemove={this.coordinateRemoveHandler}
+              onFocus={this.onCoordinateFocusHandler}
+              onBlur={this.onCoordinateBlurHandler}
             />
           ))}
         </div>

@@ -1,14 +1,14 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { compose } from 'redux'
 import {
-  AbstractShapeForm,
   WithColor,
   WithFill,
   WithLineType,
   WithTwoCoordinates,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
+import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../parts/AbstractShapeForm'
 
 export default class RectangleForm extends
   compose(
@@ -19,26 +19,18 @@ export default class RectangleForm extends
     WithLineType,
     WithStrokeWidth
   )(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithFill.propTypes,
-    ...WithLineType.propTypes,
-    ...WithTwoCoordinates.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     return (
-      <Fragment>
+      <>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderStrokeWidth()}
         {this.renderFill()}
         {this.renderLineType(true)}
         {this.renderTwoCoordinates()}
-      </Fragment>
+      </>
     )
   }
 }

@@ -5,6 +5,8 @@ import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { CoordinatesTypes, MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+import entityKind from '../../components/WebMap/entityKind'
+import { LINE_WIDTH } from '../../utils/svg/lines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -18,12 +20,12 @@ const webMapAttributesInitValues = {
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
   lineType: 'solid',
-  strokeWidth: 2,
+  strokeWidth: LINE_WIDTH,
   lineAmpl: 'none',
   left: 'none',
   right: 'none',
   lineNodes: 'none',
-  texts: [],
+  texts: List(),
   z: null,
 }
 
@@ -33,9 +35,9 @@ for (const key of Object.keys(symbolOptions)) {
 
 webMapAttributesInitValues['enableSignOffset'] = ''
 
-const WebMapAttributes = Record(webMapAttributesInitValues)
+export const WebMapAttributes = Record(webMapAttributesInitValues)
 
-const WebMapObject = Record({
+export const WebMapObject = Record({
   id: null,
   type: null,
   code: null,
@@ -55,10 +57,13 @@ const WebMapState = Record({
   coordinatesType: CoordinatesTypes.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
-  generalization: false,
+  // generalization: false,
   isMeasureOn: false,
+  isMarkersOn: false,
+  isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
+  subordinationAuto: true,
   subordinationLevel: SubordinationLevel.TEAM_CREW,
   objects: Map(),
   lockedObjects: Map(),
@@ -78,7 +83,12 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
-    obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
+    if (attributes) {
+      const { texts, ...otherAttrs } = attributes
+      obj = update(obj, 'attributes', comparator, WebMapAttributes({ texts: List(texts), ...otherAttrs }))
+    } else {
+      obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
+    }
     obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
     return merge(obj, rest)
   })
@@ -91,6 +101,8 @@ const unlockObject = (map, { objectId }) => map.get(objectId)
   ? map.delete(objectId)
   : map
 
+const notFlexGrid = (object) => object.type !== entityKind.FLEXGRID
+
 const simpleSetFields = [ {
   action: actionNames.SET_COORDINATES_TYPE,
   field: 'coordinatesType',
@@ -100,15 +112,12 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SET_AMPLIFIERS,
   field: 'showAmplifiers',
-}, {
+}, /* {
   action: actionNames.SET_GENERALIZATION,
   field: 'generalization',
-}, {
+}, */{
   action: actionNames.SET_SOURCE,
   field: 'source',
-}, {
-  action: actionNames.SET_MEASURE,
-  field: 'isMeasureOn',
 }, {
   action: actionNames.SET_SCALE_TO_SELECTION,
   field: 'scaleToSelection',
@@ -118,14 +127,30 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SUBORDINATION_LEVEL,
   field: 'subordinationLevel',
+}, {
+  action: actionNames.SUBORDINATION_AUTO,
+  field: 'subordinationAuto',
 } ]
 
-const actionField = (actionName) => {
-  const simpleSet = simpleSetFields.find(({ action }) => action === actionName)
-  return simpleSet
-    ? simpleSet.field
-    : null
+const toggleSetFields = [ {
+  action: actionNames.TOGGLE_MEASURE,
+  field: 'isMeasureOn',
+}, {
+  action: actionNames.TOGGLE_MARKERS,
+  field: 'isMarkersOn',
+}, {
+  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+  field: 'isTopographicObjectsOn',
+} ]
+
+const findField = (actionName, list) => {
+  const item = list.find(({ action }) => action === actionName)
+  return item && item.field
 }
+
+const simpleSetField = (actionName) => findField(actionName, simpleSetFields)
+
+const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -136,13 +161,12 @@ export default function webMapReducer (state = WebMapState(), action) {
       }
       const { layerId, objects } = payload
       return update(state, 'objects', (map) => {
-        map = objects.reduce(updateObject, map)
+        map = objects.filter(notFlexGrid).reduce(updateObject, map)
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })
     }
     case actionNames.SET_SOURCES: {
-      console.log(payload.source)
       return state
         .set('sources', payload.sources)
         .set('source', payload.source)
@@ -193,10 +217,19 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     default: {
-      const field = actionField(type)
-      return field
-        ? state.set(field, payload)
-        : state
+      const f1 = simpleSetField(type)
+      if (f1) {
+        return state.set(f1, payload)
+      }
+      const f2 = simpleToggleField(type)
+      if (f2) {
+        return toggleSetFields
+          .map(({ field }) => field)
+          .filter((field) => field !== f2)
+          .reduce((current, field) => current.set(field, false), state)
+          .set(f2, !state.get(f2))
+      }
+      return state
     }
   }
 }

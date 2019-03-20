@@ -46,7 +46,7 @@ export default class LayerItemComponent extends React.Component {
         onClick={this.selectHandler}
       >
         <VisibilityButton
-          title={i18n.LAYERS_VISIBILITY}
+          title={i18n.LAYER_VISIBILITY}
           visible={visible}
           isDark={isSelected}
           className="layer-item-сomponent-control"

@@ -2,8 +2,11 @@ import { batchActions } from 'redux-batched-actions'
 import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
+import { validateObject } from '../../utils/validation'
+import entityKind from '../../components/WebMap/entityKind'
+import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
-import { asyncAction } from './index'
+import { asyncAction, flexGrid } from './index'
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -25,12 +28,12 @@ const stopHeartBeat = () => {
 export const actionNames = {
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
-  SET_MEASURE: action('SET_MEASURE'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
   SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
   SUBORDINATION_LEVEL: action('SUBORDINATION_LEVEL'),
+  SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
@@ -44,6 +47,9 @@ export const actionNames = {
   OBJECT_UNLOCKED: action('OBJECT_UNLOCKED'),
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
+  TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
+  TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
+  TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
 }
 
 export const setCoordinatesType = (value) => ({
@@ -62,11 +68,6 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value,
-})
-
-export const setMeasure = (value) => ({
-  type: actionNames.SET_MEASURE,
   payload: value,
 })
 
@@ -90,14 +91,24 @@ export const setSubordinationLevel = (value) => ({
   payload: value,
 })
 
-export const setSubordinationLevelByZoom = (zoom = null) => (dispatch, getState) => {
-  const { params, subordinationLevel } = getState()
-  const scale = ZOOMS[zoom]
-  const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])
-  if (newSubordinationLevel && newSubordinationLevel !== subordinationLevel) {
-    dispatch(setSubordinationLevel(newSubordinationLevel))
+export const setSubordinationLevelByZoom = (byZoom = null) => (dispatch, getState) => {
+  const { params, webMap: { subordinationAuto, subordinationLevel, zoom } } = getState()
+  if (subordinationAuto) {
+    if (byZoom === null) {
+      byZoom = zoom
+    }
+    const scale = ZOOMS[byZoom]
+    const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])
+    if (newSubordinationLevel && newSubordinationLevel !== subordinationLevel) {
+      dispatch(setSubordinationLevel(newSubordinationLevel))
+    }
   }
 }
+
+export const setSubordinationLevelAuto = (value) => ({
+  type: actionNames.SUBORDINATION_AUTO,
+  payload: value,
+})
 
 export const setCenter = (center, zoom) => ({
   type: actionNames.SET_MAP_CENTER,
@@ -109,10 +120,20 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
+const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
+  ...rest,
+  unit: unit !== null ? Number(unit) : null,
+  type: type !== null ? Number(type) : null,
+})
+
 export const addObject = (object) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objInsert } }) => {
+    validateObject(object)
+
     let payload = await objInsert(object)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     dispatch({
       type: actionNames.ADD_OBJECT,
       payload,
@@ -131,17 +152,28 @@ export const deleteObject = (id) =>
 
 export const refreshObject = (id) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
-    const { layers: { byId }, webMap: { objects } } = getState()
+    const state = getState()
+    const { layers: { byId }, webMap: { objects }, flexGrid: { flexGrid: currentGrid } } = state
+    if (currentGrid && currentGrid.id === id) {
+      const mapId = activeMapSelector(state)
+      mapId && await dispatch(flexGrid.getFlexGrid(mapId))
+      return
+    }
     if (!objects.get(id)) {
       return
     }
     let object = await objRefresh(id)
-    if (object.id) {
+    if (Number(object.type) === entityKind.FLEXGRID) {
+      dispatch({
+        type: flexGrid.GET_FLEXGRID,
+        payload: object,
+      })
+    } else if (object.id) {
       const layerId = object.layer
       if (!byId.hasOwnProperty(layerId)) {
         return
       }
-      object = { ...object, unit: object.unit ? +object.unit : null } // fix response data
+      object = fixServerObject(object)
     }
     dispatch({
       type: actionNames.REFRESH_OBJECT,
@@ -152,8 +184,12 @@ export const refreshObject = (id) =>
 export const updateObject = ({ id, ...object }) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     stopHeartBeat()
+    validateObject(object)
+
     let payload = await objUpdate(id, object)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -163,7 +199,9 @@ export const updateObject = ({ id, ...object }) =>
 export const updateObjectsByLayerId = (layerId) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
     let objects = await objGetList(layerId)
-    objects = objects.map(({ unit, ...rest }) => ({ ...rest, unit: unit ? +unit : null })) // fix response data
+
+    objects = objects.map(fixServerObject)
+
     return dispatch({
       type: actionNames.OBJECT_LIST,
       payload: {
@@ -182,7 +220,9 @@ export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
-    payload = { ...payload, unit: payload.unit ? +payload.unit : null } // fix response data
+
+    payload = fixServerObject(payload)
+
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -291,6 +331,19 @@ export const getLockedObjects = () =>
     payload: await lockedObjects(),
   }))
 
+export const toggleMeasure = () => ({
+  type: actionNames.TOGGLE_MEASURE,
+})
+
+export const toggleMarkers = () => ({
+  type: actionNames.TOGGLE_MARKERS,
+})
+
+export const toggleTopographicObjects = () => ({
+  type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+})
+
+// Ініціалізація
 window.addEventListener('beforeunload', () => {
   dropLock && dropLock()
   stopHeartBeat()

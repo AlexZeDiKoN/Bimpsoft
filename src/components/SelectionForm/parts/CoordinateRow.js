@@ -22,8 +22,18 @@ export default class CoordinateRow extends React.Component {
     onChange && onChange(index, Coordinates.parse(value))
   }
 
+  onBlurHandler = () => {
+    const { onBlur, index } = this.props
+    onBlur && onBlur(index)
+  }
+
+  onFocusHandler = () => {
+    const { onFocus, index } = this.props
+    onFocus && onFocus(index)
+  }
+
   render () {
-    const { coordinate = {}, index, label, onBlur, onFocus, readOnly } = this.props
+    const { coordinate = {}, index, label, readOnly } = this.props
     const isWrong = Coordinates.isWrong(coordinate)
     const suffix = isWrong ? i18n.ERROR : Coordinates.getName(coordinate)
     return (
@@ -33,8 +43,8 @@ export default class CoordinateRow extends React.Component {
           onChange={this.changeHandler}
           isWrong={isWrong}
           suffix={suffix}
-          onBlur={onBlur}
-          onFocus={onFocus}
+          onBlur={this.onBlurHandler}
+          onFocus={this.onFocusHandler}
           readOnly={readOnly}
         />
       </FormRow>

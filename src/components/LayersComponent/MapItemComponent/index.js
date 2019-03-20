@@ -32,6 +32,11 @@ export default class MapItemComponent extends React.Component {
     onCloseMap && onCloseMap(mapId)
   })
 
+  onPrintMapHandler = () => {
+    const { onPrintMap, data: { mapId, name } } = this.props
+    onPrintMap && onPrintMap(mapId, name)
+  }
+
   render () {
     const { showCloseForm } = this.state
     const {
@@ -48,7 +53,7 @@ export default class MapItemComponent extends React.Component {
           onOk={this.okCloseHandler}
         />)}
         <VisibilityButton
-          title={i18n.LAYERS_VISIBILITY}
+          title={i18n.MAP_VISIBILITY}
           className="map-item-сomponent-control"
           visible={visible}
           isDark={true}
@@ -70,6 +75,7 @@ export default class MapItemComponent extends React.Component {
           hoverIcon={iconNames.DARK_CLOSE_ROUND_HOVER}
           onClick={this.closeHandler}
         />
+        <button onClick={this.onPrintMapHandler}>p</button>
       </div>
     )
   }
@@ -82,4 +88,5 @@ MapItemComponent.propTypes = {
   onChangeMapVisibility: PropTypes.func,
   onChangeMapColor: PropTypes.func,
   onCloseMap: PropTypes.func,
+  onPrintMap: PropTypes.func,
 }

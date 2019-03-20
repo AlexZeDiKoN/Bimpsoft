@@ -5,7 +5,7 @@ import { components } from '@DZVIN/CommonComponents'
 import './style.css'
 const { IconHovered } = components.icons
 
-export default class IconButton extends React.Component {
+export default class IconButton extends React.PureComponent {
   static propTypes = {
     icon: PropTypes.string,
     hoverIcon: PropTypes.string,

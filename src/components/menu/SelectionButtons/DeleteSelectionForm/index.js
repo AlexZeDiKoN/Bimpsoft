@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import './style.css'
@@ -20,7 +20,7 @@ export default class DeleteSelectionForm extends React.Component {
   render () {
     const { list, layerName, onOk, onCancel } = this.props
     return (
-      <Fragment>
+      <>
         <div className="not-clickable-area"> </div>
         <FocusTrap className="confirm-delete-overflow">
           <HotKeysContainer>
@@ -41,7 +41,7 @@ export default class DeleteSelectionForm extends React.Component {
             </Form>
           </HotKeysContainer>
         </FocusTrap>
-      </Fragment>
+      </>
     )
   }
 }

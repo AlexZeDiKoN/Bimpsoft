@@ -5,6 +5,7 @@ const { Provider, Consumer } = React.createContext()
 
 export class HotKeysContainer extends React.Component {
   static propTypes = {
+    children: PropTypes.any,
     listeners: PropTypes.instanceOf(Set),
     selector: PropTypes.func,
     onKey: PropTypes.func,
@@ -12,18 +13,18 @@ export class HotKeysContainer extends React.Component {
 
   listeners = new Set()
 
-  pressedkeys = new Set()
+  pressedKeys = new Set()
 
   onKeyDown = (e) => {
-    if (!this.pressedkeys.has(e.keyCode)) {
+    if (!this.pressedKeys.has(e.keyCode)) {
       this.listeners.forEach((listener) => listener.onKeyDown(e))
-      this.pressedkeys.add(e.keyCode)
+      this.pressedKeys.add(e.keyCode)
     }
     e.stopPropagation()
   }
 
   onKeyUp = (e) => {
-    this.pressedkeys.delete(e.keyCode)
+    this.pressedKeys.delete(e.keyCode)
   }
 
   render () {

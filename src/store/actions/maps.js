@@ -1,11 +1,12 @@
 import { action } from '../../utils/services'
 import { updateColorByLayerId } from './layers'
-import { asyncAction, maps, layers, webMap } from './index'
+import { asyncAction, maps, layers, webMap, flexGrid } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
 export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
 export const EXPAND_MAP = action('EXPAND_MAP')
+export const SET_CALC_VARIANT = action('SET_CALC_VARIANT')
 
 export const updateMap = (mapData) => ({
   type: UPDATE_MAP,
@@ -31,18 +32,49 @@ export const deleteAllMaps = () => asyncAction.withNotification(
   }
 )
 
-export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotification(
+export const setVariant = (mapId, variantId) => ({
+  type: SET_CALC_VARIANT,
+  payload: { mapId, variantId },
+})
+
+export const cancelVariant = (variantId = null) => ({
+  type: SET_CALC_VARIANT,
+  payload: { mapId: null, variantId },
+})
+
+export const clearVariant = (variantId = null, fromExplorer = false) => {
+  if (!fromExplorer) {
+    window.explorerBridge.cancelVariant(variantId)
+  }
+  return cancelVariant(variantId)
+}
+
+export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
+  await dispatch(setVariant(mapId, variantId))
+  return dispatch(openMapFolder(mapId, null, true))
+}
+
+export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
   async (dispatch, _, { explorerApi: { getMap } }) => {
     const content = await getMap(mapId)
     const {
       layers: entities,
       map: {
-        id, name,
+        id,
+        name,
+        doc_confirm: docConfirm,
+        security_classification: securityClassification,
       },
       breadcrumbs,
     } = content
 
-    await dispatch(maps.updateMap({ mapId: id, name, breadcrumbs }))
+    await dispatch(maps.updateMap({
+      mapId: id,
+      name,
+      breadcrumbs,
+      docConfirm,
+      securityClassification,
+    }))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
       mapId: id_map,
       layerId: id,
@@ -64,9 +96,10 @@ export const openMapFolder = (mapId, layerId = null) => asyncAction.withNotifica
         selectedLayer = layersData.find((layer) => layer.layerId === layerId)
       }
       if (selectedLayer) {
-        dispatch(layers.selectLayer(selectedLayer.layerId))
+        await dispatch(layers.selectLayer(selectedLayer.layerId))
       }
     }
+    await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))
   }
 )
 

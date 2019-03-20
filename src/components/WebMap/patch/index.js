@@ -1,5 +1,6 @@
 /* global L */
 
+import './FlexGrid'
 import './PM'
 import './Path'
 import './SVG'

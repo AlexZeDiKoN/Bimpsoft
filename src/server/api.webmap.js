@@ -31,8 +31,27 @@ export default {
     getDirect(`${webmapUrl}/param/${name}/get`, false),
   paramSet: (name, value) =>
     getDirect(`${webmapUrl}/param/${name}/set`, { value }),
+  getFlexGrid: (mapId) =>
+    getDirect(`${webmapUrl}/grid/${mapId}/get`, false),
   lockedObjects: () =>
     getDirect(`${webmapUrl}/obj/locked`, false),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
+  getPrintBounds: (data) =>
+    getDirect(`${webmapUrl}/printToFile/getPrintBounds`, data),
+  printFileCreate: ({ printBounds, scale, dpi, mapName, mapId, partsSvgs, legendSvg, requisites }) => {
+    const formData = new FormData()
+    partsSvgs.forEach((part, i) => {
+      formData.append('SvgParts', new Blob([ part ], { type: 'text/html' }), `part${i}.svg`)
+    })
+    formData.append('legend', new Blob([ legendSvg ], { type: 'text/html' }), 'legend.svg')
+    formData.append('params', JSON.stringify({ ...printBounds, scale, dpi, mapName, mapId, requisites }))
+    return getDirect(`${webmapUrl}/printToFile/add`, formData, '')
+  },
+  printFileCancel: (id) =>
+    getDirect(`${webmapUrl}/printToFile/cancel`, { id }),
+  printFileRetry: (id) =>
+    getDirect(`${webmapUrl}/printToFile/retry`, { id }),
+  printFileList: () =>
+    getDirect(`${webmapUrl}/printToFile/list`, false),
 }

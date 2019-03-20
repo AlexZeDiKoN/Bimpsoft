@@ -1,8 +1,11 @@
 import { createSelector } from 'reselect'
 import { date } from '../../utils'
 
+const layersSelector = ({ layers }) => layers
+const calc = (state) => state.maps.calc
+
 export const canEditSelector = createSelector(
-  (state) => state.layers,
+  layersSelector,
   ({ editMode, byId, selectedId, timelineFrom, timelineTo }) => {
     if (!editMode || !byId.hasOwnProperty(selectedId)) {
       return false
@@ -10,6 +13,18 @@ export const canEditSelector = createSelector(
     const { readOnly, visible, dateFor } = byId[selectedId]
     return !readOnly && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
   }
+)
+
+export const activeMapSelector = createSelector(
+  layersSelector,
+  (state) => state.print.mapId,
+  ({ byId, selectedId }, printMapId) => printMapId || (selectedId && byId[selectedId] && byId[selectedId].mapId)
+)
+
+export const inICTMode = createSelector(
+  activeMapSelector,
+  calc,
+  (activeMapId, calc) => activeMapId && calc && calc[activeMapId]
 )
 
 export const inTimeRangeLayers = createSelector(
@@ -30,11 +45,13 @@ export const inTimeRangeLayers = createSelector(
 
 export const visibleLayersSelector = createSelector(
   inTimeRangeLayers,
-  (byId) => {
+  activeMapSelector,
+  inICTMode,
+  (byId, activeMapId, variantId) => {
     const result = {}
     for (const layer of Object.values(byId)) {
-      const { layerId, visible } = layer
-      if (visible) {
+      const { layerId, mapId, visible } = layer
+      if (visible && (!variantId || mapId === activeMapId)) {
         result[layerId] = layer
       }
     }

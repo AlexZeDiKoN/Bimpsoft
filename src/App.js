@@ -7,6 +7,7 @@ import ukUA from 'antd/lib/locale-provider/uk_UA'
 import moment from 'moment'
 import { ErrorBoundary } from './components'
 import { Main } from './layouts'
+import { ICTInfoPopup } from './containers'
 import initStore from './store'
 import 'moment/locale/uk'
 import './App.css'
@@ -17,8 +18,8 @@ moment.locale('uk')
 // Init store and create a history of your choosing (we're using a browser history in this case)
 // for react-redux-router middleware
 const store = initStore({ history: createHistory() })
-const explorerBridge = new ExplorerBridge(store)
-explorerBridge.init()
+window.explorerBridge = new ExplorerBridge(store)
+window.explorerBridge.init()
 
 createNotificator(store)
 
@@ -32,6 +33,7 @@ class App extends React.Component {
               <Router>
                 <Main/>
               </Router>
+              <ICTInfoPopup />
             </ErrorBoundary>
           </Provider>
         </LocaleProvider>

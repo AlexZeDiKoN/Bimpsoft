@@ -20,19 +20,22 @@ export default class LeftMenu extends React.Component {
     createButtonsComponent: PropTypes.any,
     mapSourceSelectComponent: PropTypes.any,
     selectionButtonsComponent: PropTypes.any,
+    flexGridButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
+    subordinationAuto: PropTypes.bool,
+    layerName: PropTypes.string,
+    marker: PropTypes.bool,
+    topographicObjects: PropTypes.bool,
+
     onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
-
     onClickSubordinationLevel: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
+    onSetSubordinationLevelAuto: PropTypes.func,
     onMeasureChange: PropTypes.func,
-    onCopy: PropTypes.func,
-    onCut: PropTypes.func,
-    onPaste: PropTypes.func,
-    onDelete: PropTypes.func,
-    layerName: PropTypes.string,
+    onMarkerChange: PropTypes.func,
+    onTopographicObjectsChange: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -48,12 +51,19 @@ export default class LeftMenu extends React.Component {
       isShowSubordinationLevel,
       isMeasureOn,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
+      subordinationAuto,
+      marker,
+      topographicObjects,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
+      onSetSubordinationLevelAuto,
       onMeasureChange,
+      onMarkerChange,
+      onTopographicObjectsChange,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
+      flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
     } = this.props
 
@@ -79,18 +89,25 @@ export default class LeftMenu extends React.Component {
               : subordinationLevelViewData.icon
           }
           hoverIcon={subordinationLevelViewData.iconActive}
-          checked={isShowSubordinationLevel}
+          checked={isShowSubordinationLevel || !subordinationAuto}
           onClick={onClickSubordinationLevel}
         >
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
+              <ContextMenuItem
+                icon={iconNames.NONE_ICON_DEFAULT}
+                text={i18n.AUTO}
+                checked={subordinationAuto}
+                hoverIcon={iconNames.NONE_ICON_ACTIVE}
+                onClick={onSetSubordinationLevelAuto}
+              />
               {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
                 <ContextMenuItem
                   key={value}
                   value={value}
                   icon={icon}
                   text={title}
-                  checked={value === subordinationLevel}
+                  checked={!subordinationAuto && value === subordinationLevel}
                   hoverIcon={iconActive}
                   onClick={onSubordinationLevelChange}
                 />
@@ -98,6 +115,7 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
+        <MenuDivider />
         <IconButton
           value={!isMeasureOn}
           title={i18n.MEASURE}
@@ -106,7 +124,22 @@ export default class LeftMenu extends React.Component {
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
+        <IconButton
+          title={i18n.MARKER}
+          icon={iconNames.NONE_ICON_DEFAULT}
+          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          checked={marker}
+          onClick={onMarkerChange}
+        />
+        <IconButton
+          title={i18n.TOPOGRAPHIC_OBJECTS}
+          icon={iconNames.NONE_ICON_DEFAULT}
+          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          checked={topographicObjects}
+          onClick={onTopographicObjectsChange}
+        />
         <SelectionButtonsComponent />
+        <FlexGridButtonsComponent />
         <div className="menu-layer-name">{layerName}</div>
       </div>
     )

@@ -1,8 +1,7 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { compose } from 'redux'
 import { DIRECTION_LEFT, DIRECTION_RIGHT } from '../parts/WithLineEnds'
 import {
-  AbstractShapeForm,
   WithColor,
   WithSegment,
   WithLineType,
@@ -12,7 +11,8 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
-} from '../parts/index'
+} from '../parts'
+import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../parts/AbstractShapeForm'
 
 export default class LineForm extends
   compose(
@@ -26,22 +26,11 @@ export default class LineForm extends
     WithColor,
     WithStrokeWidth,
   )(AbstractShapeForm) {
-  static propTypes = {
-    ...AbstractShapeForm.propTypes,
-    ...WithColor.propTypes,
-    ...WithSegment.propTypes,
-    ...WithLineType.propTypes,
-    ...WithLineAmplifiers.propTypes,
-    ...WithLineNodes.propTypes,
-    ...WithLineEnds.propTypes,
-    ...WithCoordinatesArray.propTypes,
-    ...WithSubordinationLevel.propTypes,
-    ...WithStrokeWidth.propTypes,
-  }
+  static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     return (
-      <Fragment>
+      <>
         {this.renderSubordinationLevel()}
         {this.renderColor()}
         {this.renderStrokeWidth()}
@@ -52,7 +41,7 @@ export default class LineForm extends
         {this.renderLineEnds(DIRECTION_LEFT)}
         {this.renderLineEnds(DIRECTION_RIGHT)}
         {this.renderCoordinatesArray()}
-      </Fragment>
+      </>
     )
   }
 }

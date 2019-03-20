@@ -22,7 +22,7 @@ export default class LayersControlsComponent extends React.Component {
       <div className="layers-сontrols-сomponent">
         {this.state.showCloseForm && (<DeleteMapsForm onCancel={this.cancelCloseHandler} onOk={this.okCloseHandler} />)}
         <VisibilityButton
-          title={i18n.LAYERS_VISIBILITY}
+          title={i18n.MAPS_VISIBILITY}
           className="layers-сontrols-control"
           visible={this.props.visible}
           onChange={this.props.onChangeVisibility}
