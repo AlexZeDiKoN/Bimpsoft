@@ -834,6 +834,7 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.remove()
+            layer.pm && layer.pm.disable()
           }
         }
       })
@@ -844,6 +845,7 @@ export default class WebMap extends React.PureComponent {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
           layer.remove()
+          layer.pm && layer.pm.disable()
         }
       }
       objects.forEach((object, id) => {
@@ -860,6 +862,7 @@ export default class WebMap extends React.PureComponent {
         } else {
           setLayerSelected(this.newLayer, false, false)
           this.newLayer.remove()
+          this.newLayer.pm && this.newLayer.pm.disable()
           this.newLayer = null
         }
       }

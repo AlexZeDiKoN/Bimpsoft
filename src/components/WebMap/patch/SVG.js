@@ -245,7 +245,7 @@ export default L.SVG.include({
       layer.options && layer.options.lineNodes,
       bezier,
       locked,
-      bounds
+      bounds,
     )
   },
 

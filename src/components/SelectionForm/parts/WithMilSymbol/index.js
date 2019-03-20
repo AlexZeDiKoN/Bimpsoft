@@ -27,7 +27,7 @@ const UNIT_PATH = [ 'unit' ]
 const ATTRIBUTES_PATH = [ 'attributes' ]
 
 const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Component {
-  propTypes = {
+  static propTypes = {
     orgStructures: PropTypes.shape({
       roots: PropTypes.array,
       byIds: PropTypes.object,
