@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Form, Icon, Input, Button, Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { MARCH_KEYS } from '../../../constants'
+import { MarchKeys } from '../../../constants'
 import './style.css'
 import IconButton from '../../menu/IconButton'
 import Segment from './children/Segment'
@@ -49,6 +49,7 @@ class March extends Component {
       setMarchParams,
     } = this.props
     const { FormRow, IndicatorDataMapping } = components.form
+    const { MARCH_KEYS } = MarchKeys
     return (
       <div className='march_container'>
         <div className='march_title'>
@@ -101,6 +102,7 @@ class March extends Component {
             <Segment
               form={form}
               indicators={indicators}
+              setMarchParams={setMarchParams}
             />
           </div>
           <div className='march_buttonBlock'>
