@@ -4,6 +4,7 @@ import SettingsForm from '../components/SettingsForm'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webMapActions from '../store/actions/webMap'
 import * as paramsActions from '../store/actions/params'
+import * as paramNames from '../constants/params'
 
 const mapStateToProps = (store) => ({
   visible: store.viewModes[viewModesKeys.settings],
@@ -19,6 +20,7 @@ const mapDispatchToProps = (dispatch) => ({
   },
   onChangeCoordinatesType: (coordinatesType) => {
     dispatch(webMapActions.setCoordinatesType(coordinatesType))
+    dispatch(paramsActions.saveParam(paramNames.DEFAULT_COORD_SYSTEM, coordinatesType))
   },
   onChangeShowMiniMap: (showMiniMap) => {
     dispatch(webMapActions.setMiniMap(showMiniMap))
