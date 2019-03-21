@@ -74,8 +74,8 @@ export default class LeftMenu extends React.Component {
       <div className='left-menu' >
         <IconButton
           title={i18n.EDIT_MODE}
-          icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
-          hoverIcon={iconNames.EDIT_HOVER}
+          icon={iconNames.EDIT_DEFAULT}
+          checked={isEditMode}
           onClick={this.clickEditModeHandler}
         />
         <CreateButtonsComponent />
@@ -83,12 +83,7 @@ export default class LeftMenu extends React.Component {
         <MapSourceSelectComponent />
         <IconButton
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
-          icon={
-            isShowSubordinationLevel
-              ? subordinationLevelViewData.iconActive
-              : subordinationLevelViewData.icon
-          }
-          hoverIcon={subordinationLevelViewData.iconActive}
+          icon={subordinationLevelViewData.icon}
           checked={isShowSubordinationLevel || !subordinationAuto}
           onClick={onClickSubordinationLevel}
         >
@@ -120,21 +115,18 @@ export default class LeftMenu extends React.Component {
           value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
-          hoverIcon={iconNames.MENU_RULER_ACTIVE}
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
         <IconButton
           title={i18n.MARKER}
           icon={iconNames.MENU_MARKER_DEFAULT}
-          hoverIcon={iconNames.MENU_MARKER_ACTIVE}
           checked={marker}
           onClick={onMarkerChange}
         />
         <IconButton
           title={i18n.TOPOGRAPHIC_OBJECTS}
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
-          hoverIcon={iconNames.MENU_TOPOGRAPHY_1_ACTIVE}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
         />

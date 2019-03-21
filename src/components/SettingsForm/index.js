@@ -84,7 +84,7 @@ export default class SettingsForm extends React.Component {
       <Wrapper title={i18n.SETTINGS} onClose={onClose}>
         <FocusTrap>
           <HotKeysContainer>
-            <Form className="settings-form-group">
+            <Form className="settings-form-group settings--form">
               <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}>
                 <Select value={coordinatesType} onChange={onChangeCoordinatesType} >
                   {Object.keys(CoordinatesTypes).map((key) => (
