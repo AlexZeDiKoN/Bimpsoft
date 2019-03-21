@@ -3,9 +3,9 @@
   "version": "5.03.273",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^5.3.134",
+    "@DZVIN/CommonComponents": "^5.3.135",
     "@DZVIN/MilSymbolEditor": "^5.3.90",
-    "@DZVIN/milsymbol": ">=0.0.1",
+    "@DZVIN/milsymbol": "^0.0.4",
     "antd": "^3.12.4",
     "babel-polyfill": "^6.26.0",
     "bezier-js": "2.2.18",

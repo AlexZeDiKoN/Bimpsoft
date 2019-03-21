@@ -57,6 +57,6 @@ export const DATE_FORMAT = 'DD.MM.YYYY'
 
 export const DPI_TYPES = [ '150', '200', '300', '600' ]
 
-export const PRINT_PROJECTION_GROUP = [ CoordinatesTypes.UCS_2000, CoordinatesTypes.UTM ]
+export const PRINT_PROJECTION_GROUP = [ CoordinatesTypes.USC_2000, CoordinatesTypes.UTM ]
 
 export const LS_GROUP = 'print'

@@ -59,21 +59,21 @@ export default class SelectionButtons extends React.Component {
         <IconButton
           title={i18n.CUT}
           icon={isSelected ? iconNames.CUT_DEFAULT : iconNames.CUT_DISABLE}
-          hoverIcon={isSelected ? iconNames.CUT_HOVER : null}
+          hoverIcon={isSelected ? iconNames.CUT_HOVER : iconNames.CUT_DISABLE}
           onClick={isSelected ? onCut : null}
         />
         <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
         <IconButton
           title={i18n.COPY}
           icon={isSelected ? iconNames.COPY_DEFAULT : iconNames.COPY_DISABLE}
-          hoverIcon={isSelected ? iconNames.COPY_HOVER : null}
+          hoverIcon={isSelected ? iconNames.COPY_HOVER : iconNames.COPY_DISABLE}
           onClick={isSelected ? onCopy : null}
         />
         <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
         <IconButton
           title={i18n.PASTE}
           icon={isClipboardExist ? iconNames.PASTE_DEFAULT : iconNames.PASTE_DISABLE}
-          hoverIcon={isClipboardExist ? iconNames.PASTE_HOVER : null}
+          hoverIcon={isClipboardExist ? iconNames.PASTE_HOVER : iconNames.PASTE_DISABLE}
           onClick={isClipboardExist ? onPaste : null}
         >
           {isClipboardExist && <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
@@ -84,7 +84,7 @@ export default class SelectionButtons extends React.Component {
         <IconButton
           title={i18n.DELETE}
           icon={isSelected ? iconNames.DELETE_DEFAULT : iconNames.DELETE_DISABLE}
-          hoverIcon={isSelected ? iconNames.DELETE_HOVER : null}
+          hoverIcon={isSelected ? iconNames.DELETE_HOVER : iconNames.DELETE_DISABLE}
           onClick={isSelected ? onDelete : null}
         >
           {showDelForm && (

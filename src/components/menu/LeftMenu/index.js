@@ -119,22 +119,22 @@ export default class LeftMenu extends React.Component {
         <IconButton
           value={!isMeasureOn}
           title={i18n.MEASURE}
-          icon={isMeasureOn ? iconNames.RULLER_HOVER : iconNames.RULLER_ACTIVE}
-          hoverIcon={iconNames.RULLER_HOVER}
+          icon={iconNames.MENU_RULER_DEFAULT}
+          hoverIcon={iconNames.MENU_RULER_ACTIVE}
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
         <IconButton
           title={i18n.MARKER}
-          icon={iconNames.NONE_ICON_DEFAULT}
-          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          icon={iconNames.MENU_MARKER_DEFAULT}
+          hoverIcon={iconNames.MENU_MARKER_ACTIVE}
           checked={marker}
           onClick={onMarkerChange}
         />
         <IconButton
           title={i18n.TOPOGRAPHIC_OBJECTS}
-          icon={iconNames.NONE_ICON_DEFAULT}
-          hoverIcon={iconNames.NONE_ICON_ACTIVE}
+          icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
+          hoverIcon={iconNames.MENU_TOPOGRAPHY_1_ACTIVE}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
         />

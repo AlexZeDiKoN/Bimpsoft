@@ -76,6 +76,7 @@ export const GENERALIZATION = 'Генералізація'
 
 export const WGS_84 = 'WGS-84'
 export const USC_2000 = 'УСК-2000'
+export const SC_42 = 'СК-42'
 export const MGRS = 'MGRS'
 export const UTM = 'UTM'
 
