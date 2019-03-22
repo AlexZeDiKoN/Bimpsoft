@@ -1,5 +1,5 @@
 /* global L */
-import entityKind, { entityKindFillable } from '../entityKind'
+import entityKind, { entityKindNonFillable } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
@@ -79,7 +79,9 @@ L.SVG.include({
       }
     }
 
-    layer.options.fill = entityKindFillable.indexOf(layer.options.tsType) >= 0
+    if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
+      layer.options.fill = false
+    }
     _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)

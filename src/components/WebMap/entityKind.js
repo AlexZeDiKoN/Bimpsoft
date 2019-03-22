@@ -22,3 +22,13 @@ export const entityKindFillable = [
   entityKind.RECTANGLE,
   entityKind.SQUARE,
 ]
+
+export const entityKindNonFillable = [
+  entityKind.POINT,
+  entityKind.SEGMENT,
+  entityKind.CURVE,
+  entityKind.POLYLINE,
+  entityKind.TEXT,
+  entityKind.GROUP,
+  entityKind.FLEXGRID,
+]
