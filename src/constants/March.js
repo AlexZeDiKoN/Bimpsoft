@@ -15,3 +15,17 @@ export const MARCH_SEGMENT_KEYS = {
 }
 
 export const MARCH_INDICATORS_GROUP = 'МШВ'
+
+export const MARCH_TYPES_TEMPLATES = {
+  'Своїм ходом': [
+    {
+      segmentType: 'від місця розташування до вихідного рубежу',
+    },
+    {
+      segmentType: 'до району призначення',
+    },
+  ],
+  'Залізницею': [],
+  'Морем (річкою)': [],
+  'Комбінований': [],
+}

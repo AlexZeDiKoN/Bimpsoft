@@ -7,10 +7,12 @@ const mapStateToProps = (store) => {
   const {
     march: {
       indicators,
+      params,
     },
   } = store
   return {
     indicators,
+    params,
   }
 }
 

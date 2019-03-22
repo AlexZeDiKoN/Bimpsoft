@@ -13,19 +13,27 @@ const iconNames = components.icons.names
 class March extends Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
-    indicators: PropTypes.object.isRequired,
+    indicators: PropTypes.object,
+    params: PropTypes.object,
     setMarchParams: PropTypes.func,
   }
 
-  handleMarchType = (e, key, marchTypeIndicator) => {
+  // indicatorActiveTypeObj = (target, indicator) => {
+  //   const activeItem = indicator.typeValues.filter((item) => item.name === target)
+  //   return {
+  //     indicatorId: indicator.id,
+  //     typeId: activeItem[0].id,
+  //     typeName: activeItem[0].name,
+  //   }
+  // }
+
+  // TODO: old func
+  handleMarchType = (target, key) => {
     const { setMarchParams } = this.props
-    const activeType = marchTypeIndicator.typeValues.filter((item) => item.id === +e)
-    const marchTypeObj = {
-      indicatorId: marchTypeIndicator.id,
-      typeId: activeType[0].id,
-      typeName: activeType[0].name,
-    }
-    setMarchParams({ [key]: marchTypeObj })
+    setMarchParams({
+      [key]: target,
+      segments: MarchKeys.MARCH_TYPES_TEMPLATES[target],
+    })
   }
 
   // handleSubmit = (e) => {
@@ -39,7 +47,7 @@ class March extends Component {
   // }
 
   createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
+    .map((item) => <Select.Option key={item.name}>{item.name}</Select.Option>)
 
   render () {
     const {
@@ -47,6 +55,7 @@ class March extends Component {
       form: { getFieldDecorator },
       indicators,
       setMarchParams,
+      params: { segments },
     } = this.props
     const { FormRow } = components.form
     const { MARCH_KEYS } = MarchKeys
@@ -81,7 +90,7 @@ class March extends Component {
                   )(
                     <Select
                       placeholder={i18n.MARCH_TYPE}
-                      onChange={(e) => this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE, indicators['МШВ001'])}
+                      onChange={(e) => this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)}
                     >
                       {this.createSelectChildren(indicators['МШВ001'].typeValues)}
                     </Select>
@@ -99,11 +108,15 @@ class March extends Component {
             </div>
           </div>
           <div className='march_track'>
-            <Segment
+            {segments.map((item, i) => <Segment
+              key={i}
+              item={item}
+              index={i}
               form={form}
               indicators={indicators}
               setMarchParams={setMarchParams}
-            />
+              segments={segments}
+            />)}
           </div>
           <div className='march_buttonBlock'>
             <Button

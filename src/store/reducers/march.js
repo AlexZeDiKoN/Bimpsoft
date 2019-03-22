@@ -3,7 +3,9 @@ import { march } from '../actions'
 const initState = {
   marchEdit: true,
   indicators: undefined,
-  params: {},
+  params: {
+    segments: [],
+  },
 }
 
 export default function reducer (state = initState, action) {
