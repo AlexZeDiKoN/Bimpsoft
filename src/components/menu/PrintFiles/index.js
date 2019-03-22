@@ -67,8 +67,8 @@ export default class PrintFiles extends PureComponent {
       >
         <IconButton
           title={i18n.FILES_TO_PRINT}
-          icon={this.state.visible ? iconNames.SAVE_ACTIVE : iconNames.SAVE_DEFAULT}
-          hoverIcon={iconNames.SAVE_HOVER}
+          icon={iconNames.SAVE_DEFAULT}
+          checked={this.state.visible}
         />
       </Dropdown>
     )

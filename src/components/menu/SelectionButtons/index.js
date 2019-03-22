@@ -58,34 +58,36 @@ export default class SelectionButtons extends React.Component {
         <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
         <IconButton
           title={i18n.CUT}
-          icon={isSelected ? iconNames.CUT_DEFAULT : iconNames.CUT_DISABLE}
-          hoverIcon={isSelected ? iconNames.CUT_HOVER : null}
-          onClick={isSelected ? onCut : null}
+          icon={iconNames.CUT_DEFAULT}
+          disabled={!isSelected}
+          onClick={onCut}
         />
         <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
         <IconButton
           title={i18n.COPY}
-          icon={isSelected ? iconNames.COPY_DEFAULT : iconNames.COPY_DISABLE}
-          hoverIcon={isSelected ? iconNames.COPY_HOVER : null}
-          onClick={isSelected ? onCopy : null}
+          icon={iconNames.COPY_DEFAULT}
+          disabled={!isSelected}
+          onClick={onCopy}
         />
         <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
         <IconButton
           title={i18n.PASTE}
-          icon={isClipboardExist ? iconNames.PASTE_DEFAULT : iconNames.PASTE_DISABLE}
-          hoverIcon={isClipboardExist ? iconNames.PASTE_HOVER : null}
-          onClick={isClipboardExist ? onPaste : null}
+          icon={iconNames.PASTE_DEFAULT}
+          disabled={!isClipboardExist}
+          onClick={onPaste}
         >
-          {isClipboardExist && <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
-            {clipboardSize}
-          </CountLabel>}
+          {isClipboardExist && (
+            <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
+              {clipboardSize}
+            </CountLabel>
+          )}
         </IconButton>
         <HotKey selector={shortcuts.DELETE} onKey={isSelected ? onDelete : null} />
         <IconButton
           title={i18n.DELETE}
-          icon={isSelected ? iconNames.DELETE_DEFAULT : iconNames.DELETE_DISABLE}
-          hoverIcon={isSelected ? iconNames.DELETE_HOVER : null}
-          onClick={isSelected ? onDelete : null}
+          icon={iconNames.DELETE_DEFAULT}
+          disabled={!isSelected}
+          onClick={onDelete}
         >
           {showDelForm && (
             <DeleteSelectionForm

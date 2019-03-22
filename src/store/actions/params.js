@@ -2,7 +2,7 @@ import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
 import * as paramNames from '../../constants/params'
-import { asyncAction, layers } from './index'
+import { asyncAction, layers, webMap } from './index'
 
 export const actionNames = {
   LOAD_PARAMS: action('LOAD_PARAMS'),
@@ -22,6 +22,9 @@ export const loadAllParams = () =>
     }
     if (payload[paramNames.INACTIVE_LAYERS_OPACITY] !== undefined) {
       dispatch(layers.setHiddenOpacity(Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])))
+    }
+    if (payload[paramNames.DEFAULT_COORD_SYSTEM] !== undefined) {
+      dispatch(webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM]))
     }
   })
 

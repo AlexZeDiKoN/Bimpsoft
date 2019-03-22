@@ -22,15 +22,20 @@ export default class LeftMenu extends React.Component {
     selectionButtonsComponent: PropTypes.any,
     flexGridButtonsComponent: PropTypes.any,
     subordinationLevel: PropTypes.number,
+    subordinationAuto: PropTypes.bool,
+    layerName: PropTypes.string,
+    marker: PropTypes.bool,
+    topographicObjects: PropTypes.bool,
+
     onChangeEditMode: PropTypes.func,
     onClickPointSign: PropTypes.func,
-
     onClickSubordinationLevel: PropTypes.func,
     onSubordinationLevelChange: PropTypes.func,
     onSubordinationLevelClose: PropTypes.func,
+    onSetSubordinationLevelAuto: PropTypes.func,
     onMeasureChange: PropTypes.func,
-    layerName: PropTypes.string,
-
+    onMarkerChange: PropTypes.func,
+    onTopographicObjectsChange: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -46,9 +51,15 @@ export default class LeftMenu extends React.Component {
       isShowSubordinationLevel,
       isMeasureOn,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
+      subordinationAuto,
+      marker,
+      topographicObjects,
       onClickSubordinationLevel,
       onSubordinationLevelChange,
+      onSetSubordinationLevelAuto,
       onMeasureChange,
+      onMarkerChange,
+      onTopographicObjectsChange,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -63,8 +74,8 @@ export default class LeftMenu extends React.Component {
       <div className='left-menu' >
         <IconButton
           title={i18n.EDIT_MODE}
-          icon={isEditMode ? iconNames.EDIT_ACTIVE : iconNames.EDIT_DEFAULT}
-          hoverIcon={iconNames.EDIT_HOVER}
+          icon={iconNames.EDIT_DEFAULT}
+          checked={isEditMode}
           onClick={this.clickEditModeHandler}
         />
         <CreateButtonsComponent />
@@ -72,24 +83,26 @@ export default class LeftMenu extends React.Component {
         <MapSourceSelectComponent />
         <IconButton
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
-          icon={
-            isShowSubordinationLevel
-              ? subordinationLevelViewData.iconActive
-              : subordinationLevelViewData.icon
-          }
-          hoverIcon={subordinationLevelViewData.iconActive}
-          checked={isShowSubordinationLevel}
+          icon={subordinationLevelViewData.icon}
+          checked={isShowSubordinationLevel || !subordinationAuto}
           onClick={onClickSubordinationLevel}
         >
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
+              <ContextMenuItem
+                icon={iconNames.NONE_ICON_DEFAULT}
+                text={i18n.AUTO}
+                checked={subordinationAuto}
+                hoverIcon={iconNames.NONE_ICON_ACTIVE}
+                onClick={onSetSubordinationLevelAuto}
+              />
               {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
                 <ContextMenuItem
                   key={value}
                   value={value}
                   icon={icon}
                   text={title}
-                  checked={value === subordinationLevel}
+                  checked={!subordinationAuto && value === subordinationLevel}
                   hoverIcon={iconActive}
                   onClick={onSubordinationLevelChange}
                 />
@@ -97,13 +110,25 @@ export default class LeftMenu extends React.Component {
             </ContextMenu>
           )}
         </IconButton>
+        <MenuDivider />
         <IconButton
           value={!isMeasureOn}
           title={i18n.MEASURE}
-          icon={isMeasureOn ? iconNames.RULLER_HOVER : iconNames.RULLER_ACTIVE}
-          hoverIcon={iconNames.RULLER_HOVER}
+          icon={iconNames.MENU_RULER_DEFAULT}
           checked={isMeasureOn}
           onClick={onMeasureChange}
+        />
+        <IconButton
+          title={i18n.MARKER}
+          icon={iconNames.MENU_MARKER_DEFAULT}
+          checked={marker}
+          onClick={onMarkerChange}
+        />
+        <IconButton
+          title={i18n.TOPOGRAPHIC_OBJECTS}
+          icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
+          checked={topographicObjects}
+          onClick={onTopographicObjectsChange}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />

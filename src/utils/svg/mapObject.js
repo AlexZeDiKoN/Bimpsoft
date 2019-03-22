@@ -20,9 +20,9 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
   }
   let maskEl = null
   if (maskD) {
-    const maskid = lastMaskId++
-    mask = `url(#maskk-${maskid})`
-    maskEl = <mask id={`maskk-${maskid}`}><path fillRule="nonzero" fill="#ffffff" d={maskD} /></mask>
+    const maskId = lastMaskId++
+    mask = `url(#mask-${maskId})`
+    maskEl = <mask id={`mask-${maskId}`}><path fillRule="nonzero" fill="#ffffff" d={maskD} /></mask>
   }
 
   return <g mask={mask}>

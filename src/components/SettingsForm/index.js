@@ -5,10 +5,11 @@ import { components } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import i18n from '../../i18n'
-import './style.css'
 import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
-import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
+import { CoordinatesTypes, SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
+
+import './style.css'
 
 const { form: { default: Form, FormRow, FormDarkPart }, icons: { Icon } } = components
 const { Option } = Select
@@ -23,7 +24,7 @@ export default class SettingsForm extends React.Component {
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     showAmplifiers: PropTypes.bool,
-    generalization: PropTypes.bool,
+    // generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,
@@ -68,12 +69,12 @@ export default class SettingsForm extends React.Component {
     }
     const {
       wrapper: Wrapper,
-      // coordinatesType = CoordinatesTypes.WGS_84,
+      coordinatesType = CoordinatesTypes.WGS_84,
       showMiniMap,
       showAmplifiers,
       // generalization,
       onClose,
-      // onChangeCoordinatesType,
+      onChangeCoordinatesType,
       onChangeShowMiniMap,
       onChangeShowAmplifier,
       // onChangeGeneralization,
@@ -83,14 +84,14 @@ export default class SettingsForm extends React.Component {
       <Wrapper title={i18n.SETTINGS} onClose={onClose}>
         <FocusTrap>
           <HotKeysContainer>
-            <Form className="settings-form-group">
-              {/* <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}> */}
-              {/* <Select value={coordinatesType} onChange={onChangeCoordinatesType} > */}
-              {/* <Option value={CoordinatesTypes.WGS_84}>{i18n.WGS_84}</Option> */}
-              {/* <Option value={CoordinatesTypes.USC_2000}>{i18n.USC_2000}</Option> */}
-              {/* <Option value={CoordinatesTypes.MGRS}>{i18n.MGRS}</Option> */}
-              {/* </Select> */}
-              {/* </FormRow> */}
+            <Form className="settings-form-group settings--form">
+              <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}>
+                <Select value={coordinatesType} onChange={onChangeCoordinatesType} >
+                  {Object.keys(CoordinatesTypes).map((key) => (
+                    <Option key={key} value={CoordinatesTypes[key]}>{i18n[key]}</Option>
+                  ))}
+                </Select>
+              </FormRow>
               <FormRow label={i18n.MINIMAP}>
                 <Switch checked={showMiniMap} onChange={onChangeShowMiniMap}/>
               </FormRow>

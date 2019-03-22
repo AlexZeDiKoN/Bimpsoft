@@ -32,16 +32,6 @@ export default class SelectionButtons extends React.Component {
     }
 
     const dropHandler = visible ? hideFlexGrid : showFlexGridOptions
-    const calcHandler = visible ? calcFlexGridUnits : null
-    const dropIcon = visible
-      ? iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_ACTIVE
-      : iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_DEFAULT
-    const calcIcon = visible
-      ? iconNames.NONE_ICON_DEFAULT
-      : iconNames.NONE_ICON_DISABLE
-    const calcIconHover = visible
-      ? iconNames.NONE_ICON_HOVER
-      : iconNames.NONE_ICON_DISABLE
 
     return (
       <>
@@ -49,15 +39,15 @@ export default class SelectionButtons extends React.Component {
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={dropHandler} />
         <IconButton
           title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`}
-          icon={dropIcon}
-          hoverIcon={iconNames.UNGROUPING_GRAPHIC_PRIMITIVES_HOVER}
+          icon={iconNames.MENU_OPERATING_AREA_DEFAULT}
+          checked={visible}
           onClick={dropHandler}
         />
         <IconButton
-          title={i18n.CALCULATE}
-          icon={calcIcon}
-          hoverIcon={calcIconHover}
-          onClick={calcHandler}
+          title={i18n.SEND_TO_ICT}
+          icon={iconNames.MENU_CALCULATION_DEFAULT}
+          disabled={!visible}
+          onClick={calcFlexGridUnits}
         />
       </>
     )

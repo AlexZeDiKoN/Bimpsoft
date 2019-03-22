@@ -27,7 +27,7 @@ const UNIT_PATH = [ 'unit' ]
 const ATTRIBUTES_PATH = [ 'attributes' ]
 
 const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Component {
-  propTypes = {
+  static propTypes = {
     orgStructures: PropTypes.shape({
       roots: PropTypes.array,
       byIds: PropTypes.object,
@@ -71,9 +71,10 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         elementsConfigs={elementsConfigs}
         onCodeAndLevelChange={this.codeChangeHandler}
         onAmplifiersChange={this.attributesChangeHandler}
-        onNameChange={this.nameChangeHandler}
+        // onNameChange={this.nameChangeHandler}
         onCoordinatesChange={this.coordinatesChangeHandler}
         onOrgStructureChange={this.unitChangeHandler}
+        onUnitInfo={window.explorerBridge.showUnitInfo}
       />
     )
   }

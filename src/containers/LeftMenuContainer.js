@@ -11,7 +11,13 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
-    webMap: { subordinationLevel, isMeasureOn },
+    webMap: {
+      subordinationLevel,
+      subordinationAuto,
+      isMeasureOn,
+      isMarkersOn: marker,
+      isTopographicObjectsOn: topographicObjects,
+    },
     print: { printFiles },
   } = store
 
@@ -22,6 +28,9 @@ const mapStateToProps = (store) => {
     isShowSubordinationLevel,
     isMeasureOn,
     subordinationLevel,
+    subordinationAuto,
+    marker,
+    topographicObjects,
     layerName,
     printFilesCount: printFiles ? Object.keys(printFiles).length : null,
   }
@@ -29,9 +38,17 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = {
   onChangeEditMode: layers.setEditMode,
   onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
-  onMeasureChange: webMap.setMeasure,
+  onMeasureChange: webMap.toggleMeasure,
+  onMarkerChange: webMap.toggleMarkers,
+  onTopographicObjectsChange: webMap.toggleTopographicObjects,
   onSubordinationLevelClose: () => viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
+  onSetSubordinationLevelAuto: () => batchActions([
+    webMap.setSubordinationLevelAuto(true),
+    webMap.setSubordinationLevelByZoom(),
+    viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
+  ]),
   onSubordinationLevelChange: (subordinationLevel) => batchActions([
+    webMap.setSubordinationLevelAuto(false),
     webMap.setSubordinationLevel(subordinationLevel),
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),

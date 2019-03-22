@@ -14,6 +14,8 @@ const WebMapContainer = connect(
     objects: state.webMap.objects,
     center: state.webMap.center,
     zoom: state.webMap.zoom,
+    isMarkersOn: state.webMap.isMarkersOn,
+    isTopographicObjectsOn: state.webMap.isTopographicObjectsOn,
     edit: canEditSelector(state),
     marker: state.webMap.marker,
     scaleToSelection: state.webMap.scaleToSelection,
@@ -63,7 +65,7 @@ const WebMapContainer = connect(
       return batchActions(batch)
     },
     onDropUnit: selection.newShapeFromUnit,
-    stopMeasuring: () => webMap.setMeasure(false),
+    stopMeasuring: webMap.toggleMeasure,
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,

@@ -233,7 +233,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1) => {
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale) => {
+export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale = 1) => {
   const strokeStep = STROKE_STEP * scale
   const strokeSize = STROKE_SIZE * scale
   const strokes = []

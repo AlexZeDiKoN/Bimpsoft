@@ -11,6 +11,11 @@ import MenuDivider from '../MenuDivider'
 
 const iconNames = components.icons.names
 
+const lineTypes = [
+  SelectionTypes.AREA, SelectionTypes.CURVE, SelectionTypes.POLYGON, SelectionTypes.POLYLINE, SelectionTypes.CIRCLE,
+  SelectionTypes.RECTANGLE, SelectionTypes.SQUARE,
+]
+
 export default class CreateButtons extends React.PureComponent {
   static propTypes = {
     isEditMode: PropTypes.bool,
@@ -52,38 +57,28 @@ export default class CreateButtons extends React.PureComponent {
         <MenuDivider />
         <IconButton
           title={i18n.POINT_SIGN}
-          icon={
-            newShape.type === SelectionTypes.POINT
-              ? iconNames.CONVENTIONAL_SIGN_ACTIVE
-              : iconNames.CONVENTIONAL_SIGN_DEFAULT
-          }
-          hoverIcon={iconNames.CONVENTIONAL_SIGN_HOVER}
+          icon={iconNames.CONVENTIONAL_SIGN_DEFAULT}
+          checked={newShape.type === SelectionTypes.POINT}
           onClick={this.clickPointHandler}
         />
         <IconButton
           title={i18n.LINE_SIGN}
-          icon={
-            isShowLines
-              ? iconNames.GROUPING_GRAPHIC_PRIMITIVES_ACTIVE
-              : iconNames.GROUPING_GRAPHIC_PRIMITIVES_DEFAULT
-          }
-          hoverIcon={iconNames.GROUPING_GRAPHIC_PRIMITIVES_HOVER}
+          icon={iconNames.GROUPING_GRAPHIC_PRIMITIVES_DEFAULT}
+          checked={lineTypes.indexOf(newShape.type) >= 0}
           onClick={onClickLineSign}
         >
-          {isShowLines && (<LinesList
-            onSelect={this.selectLineHandler}
-            shapeType={ newShape.type }
-            ref={this.clickOutsideLinesListRef}
-          />)}
+          {isShowLines && (
+            <LinesList
+              onSelect={this.selectLineHandler}
+              shapeType={newShape.type}
+              ref={this.clickOutsideLinesListRef}
+            />
+          )}
         </IconButton>
         <IconButton
           title={i18n.ADD_TEXT}
-          icon={
-            newShape.type === SelectionTypes.TEXT
-              ? iconNames.TEXT_SIGN_ACTIVE
-              : iconNames.TEXT_SIGN_DEFAULT
-          }
-          hoverIcon={iconNames.TEXT_SIGN_HOVER}
+          icon={iconNames.TEXT_SIGN_DEFAULT}
+          checked={newShape.type === SelectionTypes.TEXT}
           onClick={this.clickTextHandler}
         />
       </>

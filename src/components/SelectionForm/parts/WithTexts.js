@@ -61,21 +61,18 @@ const WithTexts = (Component) => class TextsComponent extends Component {
             value={Align.LEFT}
             checked={totalAlign === Align.LEFT}
             icon={IconNames.TEXT_ALIGN_LEFT_DEFAULT}
-            hoverIcon={IconNames.TEXT_ALIGN_LEFT_HOVER}
             onClick={this.changeTextsAlignHandler}
           />
           <IconButton
             value={Align.CENTER}
             checked={totalAlign === Align.CENTER}
             icon={IconNames.TEXT_ALIGN_CENTER_DEFAULT}
-            hoverIcon={IconNames.TEXT_ALIGN_CENTER_HOVER}
             onClick={this.changeTextsAlignHandler}
           />
           <IconButton
             value={Align.RIGHT}
             checked={totalAlign === Align.RIGHT}
             icon={IconNames.TEXT_ALIGN_RIGHT_DEFAULT}
-            hoverIcon={IconNames.TEXT_ALIGN_RIGHT_HOVER}
             onClick={this.changeTextsAlignHandler}
           />
           <IconHovered

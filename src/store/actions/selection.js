@@ -186,7 +186,7 @@ export const paste = () => withNotification((dispatch, getState) => {
   const {
     selection: { clipboard },
     layers: { selectedId: layer = null },
-  } = state()
+  } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
       for (const clipboardObject of clipboard) {

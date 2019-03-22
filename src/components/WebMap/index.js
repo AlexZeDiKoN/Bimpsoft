@@ -28,7 +28,7 @@ import { validateObject } from '../../utils/validation'
 import coordinates from '../../utils/coordinates'
 import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
 import { flexGridPropTypes } from '../../store/selectors'
-import entityKind from './entityKind'
+import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -107,10 +107,14 @@ const indicateModes = {
 
 const type2mode = (type) => {
   switch (type) {
-    case CoordinatesTypes.UCS_2000:
+    case CoordinatesTypes.SC_42:
+      return indicateModes.SC42
+    case CoordinatesTypes.USC_2000:
       return indicateModes.USC2000
     case CoordinatesTypes.MGRS:
       return indicateModes.MGRS
+    case CoordinatesTypes.UTM:
+      return indicateModes.UTM
     default:
       return indicateModes.WGS
   }
@@ -207,6 +211,8 @@ export default class WebMap extends React.PureComponent {
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
+    isMarkersOn: PropTypes.bool,
+    isTopographicObjectsOn: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -276,6 +282,10 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    window.addEventListener('beforeunload', (e) => {
+      this.onSelectedListChange([])
+    })
+    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -284,8 +294,9 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
-      isMeasureOn, coordinatesType, backOpacity, params, lockedObjects, flexGridVisible, flexGridData,
+      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
+      isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
+      flexGridData,
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -298,7 +309,6 @@ export default class WebMap extends React.PureComponent {
     if (showAmplifiers !== prevProps.showAmplifiers) {
       this.updateShowAmplifiers(showAmplifiers)
     }
-
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
@@ -310,24 +320,26 @@ export default class WebMap extends React.PureComponent {
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
     }
-
     if (
       preview !== prevProps.selection.preview ||
       previewCoordinateIndex !== prevProps.selection.previewCoordinateIndex
     ) {
       this.updateCoordinateIndex(preview, previewCoordinateIndex)
     }
-
     this.updateMarker(prevProps)
-
     if (isMeasureOn !== prevProps.isMeasureOn && isMeasureOn !== this.map.measureControl._measuring) {
+      this.byReact = true
       this.map.measureControl._toggleMeasure()
+      this.byReact = false
     }
-
+    if (isMarkersOn !== prevProps.isMarkersOn) {
+      this.updateMarkersOn(isMarkersOn)
+    }
+    if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
+      this.topoInfoMode = isTopographicObjectsOn
+    }
     this.updateSelection(prevProps)
-
     this.updateActiveObject(prevProps)
-
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType)
     }
@@ -337,23 +349,21 @@ export default class WebMap extends React.PureComponent {
     if (params !== prevProps.params) {
       this.updateScaleOptions(params)
     }
-
     this.updateViewport(prevProps)
-
     if (lockedObjects !== prevProps.lockedObjects) {
       this.updateLockedObjects(lockedObjects)
     }
-
     if (flexGridData !== prevProps.flexGridData) {
       this.updateFlexGrid(flexGridData)
     }
-
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
 
   componentWillUnmount () {
+    delete window.webMap
     this.map.remove()
   }
 
@@ -532,9 +542,20 @@ export default class WebMap extends React.PureComponent {
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (geometryChanged) {
-        updateObjectGeometry(id, getGeometry(layer))
+        return updateObjectGeometry(id, getGeometry(layer))
       } else {
-        tryUnlockObject(id)
+        return tryUnlockObject(id)
+      }
+    }
+  }
+
+  checkSaveEditedObject = async () => {
+    const { edit, selection: { list } } = this.props
+    if (edit && list.length === 1) {
+      const layer = this.findLayerById(list[0])
+      if (layer && layer.object) {
+        await this.checkSaveObject()
+        return layer.object.id
       }
     }
   }
@@ -574,9 +595,42 @@ export default class WebMap extends React.PureComponent {
     onSelectedList(newList)
   }
 
+  updateMarkersOn = (isMarkersOn) => {
+    this.addMarkerMode = isMarkersOn
+    if (!isMarkersOn && this.markers && this.markers.length && this.map) {
+      this.markers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markers
+    } else {
+      this.markers = []
+    }
+  }
+
+  addUserMarker = (point) => {
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+    }
+    let text = 'Орієнтир' // TODO
+    text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    setTimeout(() => {
+      const marker = createSearchMarker(point, text)
+      marker.addTo(this.map)
+      this.markers.push(marker)
+      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+    }, 50)
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
+    }
+    if (!this.props.selection.newShape.type) {
+      if (this.addMarkerMode) {
+        this.addUserMarker(e.latlng)
+      }
+      if (this.topoInfoMode) {
+        // TODO
+      }
     }
   }
 
@@ -643,7 +697,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onStopMeasuring = () => {
-    this.props.stopMeasuring()
+    if (!this.byReact) {
+      this.props.stopMeasuring()
+    }
   }
 
   moveHandler = debounce(() => {
@@ -721,10 +777,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setMapCursor = (edit, type) => {
+  crosshairCursor = (on) => {
     if (this.map) {
-      this.map._container.style.cursor = edit && type ? 'crosshair' : ''
+      this.map._container.style.cursor = on ? 'crosshair' : ''
     }
+  }
+
+  setMapCursor = (edit, type) => {
+    this.crosshairCursor(edit && type)
   }
 
   setMapSource = (newSources) => {
@@ -780,6 +840,7 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.remove()
+            layer.pm && layer.pm.disable()
           }
         }
       })
@@ -790,6 +851,7 @@ export default class WebMap extends React.PureComponent {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
           layer.remove()
+          layer.pm && layer.pm.disable()
         }
       }
       objects.forEach((object, id) => {
@@ -806,6 +868,7 @@ export default class WebMap extends React.PureComponent {
         } else {
           setLayerSelected(this.newLayer, false, false)
           this.newLayer.remove()
+          this.newLayer.pm && this.newLayer.pm.disable()
           this.newLayer = null
         }
       }
@@ -1154,6 +1217,7 @@ export default class WebMap extends React.PureComponent {
   updateCreatePoly = (type) => {
     const layerOptions = {
       tsType: type,
+      fill: entityKindFillable.indexOf(type) >= 0,
     }
     const options = { tooltips: false, templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {
