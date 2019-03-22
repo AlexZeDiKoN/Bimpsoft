@@ -19,31 +19,31 @@ export default class LayersControlsComponent extends React.Component {
 
   render () {
     return (
-      <div className="layers-сontrols-сomponent">
+      <div className="layers-controls-component">
         {this.state.showCloseForm && (<DeleteMapsForm onCancel={this.cancelCloseHandler} onOk={this.okCloseHandler} />)}
         <VisibilityButton
           title={i18n.MAPS_VISIBILITY}
-          className="layers-сontrols-control"
+          className="layers-controls-control"
           visible={this.props.visible}
           onChange={this.props.onChangeVisibility}
         />
         <OpacityControl
           title={i18n.LAYERS_BASEMAP_OPACITY}
-          className="layers-сontrols-control"
+          className="layers-controls-control"
           icon={iconNames.MAP_RIGHT_BAR_LAST_LAYER_DEFAULT}
           opacity={this.props.backOpacity}
           onChange={this.props.onChangeBackOpacity}
         />
         <OpacityControl
           title={i18n.LAYERS_INACTIVE_OPACITY}
-          className="layers-сontrols-control"
+          className="layers-controls-control"
           icon={iconNames.MAP_RIGHT_BAR_FIRST_LAYER_DEFAULT}
           opacity={this.props.hiddenOpacity}
           onChange={this.props.onChangeHiddenOpacity}
         />
         <IconHovered
           title={i18n.LAYERS_CLOSE_ALL_MAPS}
-          className="layers-сontrols-control"
+          className="layers-controls-control"
           icon={iconNames.CLOSE_ROUND_ACTIVE}
           hoverIcon={iconNames.CLOSE_ROUND_HOVER}
           onClick={this.closeHandler}

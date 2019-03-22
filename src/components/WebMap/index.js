@@ -28,7 +28,7 @@ import { validateObject } from '../../utils/validation'
 import coordinates from '../../utils/coordinates'
 import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
 import { flexGridPropTypes } from '../../store/selectors'
-import entityKind from './entityKind'
+import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -624,11 +624,13 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
     }
-    if (this.addMarkerMode) {
-      this.addUserMarker(e.latlng)
-    }
-    if (this.topoInfoMode) {
-      // TODO
+    if (!this.props.selection.newShape.type) {
+      if (this.addMarkerMode) {
+        this.addUserMarker(e.latlng)
+      }
+      if (this.topoInfoMode) {
+        // TODO
+      }
     }
   }
 
@@ -953,6 +955,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
+      this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
@@ -1215,6 +1218,7 @@ export default class WebMap extends React.PureComponent {
   updateCreatePoly = (type) => {
     const layerOptions = {
       tsType: type,
+      fill: entityKindFillable.indexOf(type) >= 0,
     }
     const options = { tooltips: false, templineStyle: layerOptions, pathOptions: layerOptions }
     switch (type) {

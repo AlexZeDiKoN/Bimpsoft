@@ -1,4 +1,4 @@
-export default { // ID в базі даних відповідних типів тактичних знаків
+const entityKind = { // ID в базі даних відповідних типів тактичних знаків
   POINT: 1, // точковий знак (MilSymbol)
   SEGMENT: 2, // знак відрізкового типу
   AREA: 3, // замкнута крива лінія
@@ -12,3 +12,23 @@ export default { // ID в базі даних відповідних типів 
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
 }
+
+export default entityKind
+
+export const entityKindFillable = [
+  entityKind.AREA,
+  entityKind.POLYGON,
+  entityKind.CIRCLE,
+  entityKind.RECTANGLE,
+  entityKind.SQUARE,
+]
+
+export const entityKindNonFillable = [
+  entityKind.POINT,
+  entityKind.SEGMENT,
+  entityKind.CURVE,
+  entityKind.POLYLINE,
+  entityKind.TEXT,
+  entityKind.GROUP,
+  entityKind.FLEXGRID,
+]

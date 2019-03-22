@@ -42,32 +42,32 @@ export default class LayerItemComponent extends React.Component {
     const isSelected = selectedLayerId === layerId
     return (
       <div
-        className={'layer-item-сomponent ' + (isSelected ? 'layer-item-сomponent-selected' : '')}
+        className={'layer-item-component ' + (isSelected ? 'layer-item-component-selected' : '')}
         onClick={this.selectHandler}
       >
         <VisibilityButton
           title={i18n.LAYER_VISIBILITY}
           visible={visible}
           isDark={isSelected}
-          className="layer-item-сomponent-control"
+          className="layer-item-component-control"
           onChange={this.changeVisibilityHandler}
         />
         <Icon
-          className="layer-item-сomponent-control"
+          className="layer-item-component-control"
           icon={getLockIcon(isSelected, readOnly)}
         />
-        <div className="layer-item-сomponent-title">
+        <div className="layer-item-component-title">
           <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker
           title={i18n.LAYERS_HIGHLIGHT_COLOR}
-          className="map-item-сomponent-control"
+          className="map-item-component-control"
           color={color}
           onChange={this.changeColorHandler}
         />
         <IconHovered
-          className="layer-item-сomponent-control"
+          className="layer-item-component-control"
         />
       </div>
     )
