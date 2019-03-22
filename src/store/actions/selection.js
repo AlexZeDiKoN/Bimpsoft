@@ -34,7 +34,6 @@ export const showEditForm = (id, geometry) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
   let object = objects.get(id)
-  console.log(geometry)
   if (geometry) {
     object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
   }
