@@ -64,6 +64,7 @@ const getOrgStructuresTree = (unitsById, relations) => {
 }
 
 const formationsCache = new Map()
+
 const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   let formationInfo = formationsCache.get(formationId)
   if (!formationInfo) {
