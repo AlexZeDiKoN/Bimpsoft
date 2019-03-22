@@ -955,6 +955,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (list.length === 1 && list[0] === object.id) {
+      this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
