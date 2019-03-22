@@ -26,6 +26,10 @@ export default class IconBox extends Component {
     onRetry(fileId, mapName)
   }
 
+  handleTransition = () => {
+    window.open(`${window.location.origin}/explorer/#/_/documents/5c767b4e737a6915a1000001`)
+  }
+
   render () {
     const { message } = this.props
     return (
@@ -36,6 +40,7 @@ export default class IconBox extends Component {
             : <IconButton
               title={i18n.OPEN_FILE}
               icon={iconNames.MAP_DEFAULT}
+              onClick={this.handleTransition}
             />
           : <IconButton
             title={i18n.RETRY_FILE}
