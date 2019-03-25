@@ -2,7 +2,9 @@
 import * as ReactDOM from 'react-dom'
 
 let isTouch = false
+
 const componentsMap = new Map()
+
 const handle = (e) => {
   if (e.type === 'touchend') {
     isTouch = true
@@ -20,7 +22,7 @@ const handle = (e) => {
 document.addEventListener('touchend', handle, true)
 document.addEventListener('click', handle, true)
 
-const getClickOutsideRef = (onClickOutside) => (c, ...args) => {
+const getClickOutsideRef = (onClickOutside) => (c) => {
   const domNode = ReactDOM.findDOMNode(c)
   if (domNode === null) {
     componentsMap.delete(onClickOutside)
@@ -28,4 +30,5 @@ const getClickOutsideRef = (onClickOutside) => (c, ...args) => {
     componentsMap.set(onClickOutside, { domNode, onClickOutside })
   }
 }
+
 export { getClickOutsideRef }
