@@ -93,9 +93,9 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
   const { showAmplifiers, coordToPixels } = commonData
   let { code = '', attributes, point } = data
+  const color = colors.evaluateColor(outlineColor)
   const symbol = new Symbol(code, {
-    outlineWidth: 3,
-    outlineColor: colors.evaluateColor(outlineColor),
+    ...(color ? { outlineWidth: 3, outlineColor: color } : {}),
     ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
   })
   let { x, y } = symbol.getAnchor()
