@@ -4,6 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import IconButton from '../IconButton'
+import { DOC_CLASS_ID } from '../../../constants/Print'
 
 const iconNames = components.icons.names
 
@@ -27,7 +28,7 @@ export default class IconBox extends Component {
   }
 
   handleTransition = () => {
-    window.open(`${window.location.origin}/explorer/#/_/documents/5c767b4e737a6915a1000001`)
+    window.open(`${window.location.origin}/explorer/#/_/documents/${DOC_CLASS_ID}`)
   }
 
   render () {
