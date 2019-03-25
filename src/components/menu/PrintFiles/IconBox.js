@@ -4,6 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import IconButton from '../IconButton'
+import { DOC_CLASS_ID } from '../../../constants/Print'
 
 const iconNames = components.icons.names
 
@@ -26,6 +27,10 @@ export default class IconBox extends Component {
     onRetry(fileId, mapName)
   }
 
+  handleTransition = () => {
+    window.open(`${window.location.origin}/explorer/#/_/documents/${DOC_CLASS_ID}`)
+  }
+
   render () {
     const { message } = this.props
     return (
@@ -36,18 +41,16 @@ export default class IconBox extends Component {
             : <IconButton
               title={i18n.OPEN_FILE}
               icon={iconNames.MAP_DEFAULT}
-              hoverIcon={iconNames.MAP_HOVER}
+              onClick={this.handleTransition}
             />
           : <IconButton
             title={i18n.RETRY_FILE}
             icon={iconNames.REFRESH_DEFAULT}
-            hoverIcon={iconNames.REFRESH_HOVER}
             onClick={this.handleRetry}
           />}
         <IconButton
           title={message === 'done' ? i18n.CLEAN_FILE : i18n.CANCEL_FILE}
           icon={iconNames.CLOSE}
-          hoverIcon={iconNames.CLOSE}
           onClick={this.handleClose}
         />
       </Fragment>

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import IconButton from '../menu/IconButton'
-import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 import i18n from '../../i18n'
 
@@ -29,8 +29,8 @@ export default class MapSourceSelect extends React.Component {
     return (
       <IconButton
         title={i18n.MAP_SOURCE}
-        icon={isShowSources ? iconNames.MAP_ACTIVE : iconNames.MAP_DEFAULT}
-        hoverIcon={iconNames.MAP_HOVER}
+        icon={iconNames.MAP_DEFAULT}
+        checked={isShowSources}
         onClick={onClickMapSource}
       >
         {isShowSources && (<ContextMenu ref={this.clickOutsideRef} >

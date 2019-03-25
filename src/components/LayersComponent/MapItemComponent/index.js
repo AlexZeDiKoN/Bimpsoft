@@ -45,7 +45,7 @@ export default class MapItemComponent extends React.Component {
       tree: { expanded, canExpand, onExpand },
     } = this.props
     return (
-      <div className="map-item-сomponent">
+      <div className="map-item-component">
         {expandIcon(expanded, canExpand, { onClick: onExpand })}
         {showCloseForm && (<DeleteMapForm
           name={breadCrumbs}
@@ -54,28 +54,34 @@ export default class MapItemComponent extends React.Component {
         />)}
         <VisibilityButton
           title={i18n.MAP_VISIBILITY}
-          className="map-item-сomponent-control"
+          className="map-item-component-control"
           visible={visible}
           isDark={true}
           onChange={this.changeMapVisibilityHandler}
         />
-        <span className="map-item-сomponent-title" title={breadCrumbs}>
+        <span className="map-item-component-title" title={breadCrumbs}>
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <ColorPicker
           title={i18n.LAYERS_HIGHLIGHT_COLOR}
-          className="map-item-сomponent-control"
+          className="map-item-component-control"
           color={color}
           onChange={this.changeColorHandler}
         />
         <IconHovered
           title={i18n.LAYERS_CLOSE_CURRENT_MAP}
-          className="map-item-сomponent-control"
+          className="map-item-component-control"
           icon={iconNames.DARK_CLOSE_ROUND_ACTIVE}
           hoverIcon={iconNames.DARK_CLOSE_ROUND_HOVER}
           onClick={this.closeHandler}
         />
-        <button onClick={this.onPrintMapHandler}>p</button>
+        <IconHovered
+          title={i18n.PRINT_BUTTON}
+          className="map-item-component-control"
+          icon={iconNames.NONE_ICON_ACTIVE}
+          hoverIcon={iconNames.NONE_ICON_HOVER}
+          onClick={this.onPrintMapHandler}
+        />
       </div>
     )
   }

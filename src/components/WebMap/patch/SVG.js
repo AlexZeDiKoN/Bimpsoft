@@ -1,5 +1,5 @@
 /* global L */
-import entityKind from '../entityKind'
+import entityKind, { entityKindNonFillable } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
@@ -10,7 +10,7 @@ import { setClassName } from './utils/helpers'
 
 const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
 
-export default L.SVG.include({
+L.SVG.include({
   _initPath: function (layer) {
     layer._outlinePath = L.SVG.create('path')
     L.DomUtil.addClass(layer._outlinePath, 'leaflet-interactive leaflet-interactive-outline')
@@ -79,6 +79,9 @@ export default L.SVG.include({
       }
     }
 
+    if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
+      layer.options.fill = false
+    }
     _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)

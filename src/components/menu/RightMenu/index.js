@@ -64,14 +64,14 @@ export default class RightMenu extends React.Component {
         </div>
         <IconButton
           title={i18n.TOGGLE_SIDEBAR}
-          icon={isSidebarShow ? iconNames.LEFT_MENU_ACTIVE : iconNames.LEFT_MENU_DEFAULT}
-          hoverIcon={iconNames.LEFT_MENU_HOVER}
+          icon={iconNames.LEFT_MENU_DEFAULT}
+          checked={isSidebarShow}
           onClick={onClickSidebar}
         />
         <IconButton
           title={i18n.SETTINGS}
-          icon={isSettingsShow ? iconNames.SETTING_ACTIVE : iconNames.SETTING_DEFAULT}
-          hoverIcon={iconNames.SETTING_HOVER}
+          icon={iconNames.SETTING_DEFAULT}
+          checked={isSettingsShow}
           onClick={onClickSettings}
         />
       </div>

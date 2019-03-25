@@ -60,3 +60,5 @@ export const DPI_TYPES = [ '150', '200', '300', '600' ]
 export const PRINT_PROJECTION_GROUP = [ CoordinatesTypes.UCS_2000, CoordinatesTypes.UTM ]
 
 export const LS_GROUP = 'print'
+
+export const DOC_CLASS_ID = '5c767b4e737a6915a1000001'

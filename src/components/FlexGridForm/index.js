@@ -47,7 +47,7 @@ export default class extends React.PureComponent {
       <Wrapper title={i18n.FLEX_GRID}>
         <FocusTrap>
           <HotKeysContainer>
-            <Form className="settings-form-group">
+            <Form className="settings-form-group flex-grid--form">
               <FormRow label={i18n.DIRECTIONS_AMOUNT}>
                 <input type="number" defaultValue={directions} onChange={this.onDirectionsChange} />
               </FormRow>
