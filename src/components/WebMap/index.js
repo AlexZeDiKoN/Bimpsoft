@@ -931,6 +931,7 @@ export default class WebMap extends React.PureComponent {
 
   onDragendLayer = () => setTimeout(() => {
     this.draggingObject = false
+    this.checkSaveObject()
   }, 0)
 
   clickOnLayer = (event) => {

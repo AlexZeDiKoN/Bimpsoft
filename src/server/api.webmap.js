@@ -19,6 +19,8 @@ export default {
     getDirect(`${webmapUrl}/obj/${id}/lock`, false),
   objUnlock: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/unlock`, false),
+  objStillLocked: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/still`, false),
   placeSearch: (sample) =>
     getDirect(`${webmapUrl}/place?q=${sample}`, false),
   getVersion: () =>
