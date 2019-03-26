@@ -19,6 +19,22 @@ export default class Segment extends Component {
     segments: PropTypes.array,
   }
 
+  indicatorItemObj = (target, indicator) => {
+    const activeItem = indicator.typeValues.filter((item) => item.id === +target)
+    return {
+      indicatorId: indicator.id,
+      id: activeItem[0].id,
+      name: activeItem[0].name,
+    }
+  }
+
+  setIndicatorParam = (data, key, indicator) => {
+    const { segments, index, setMarchParams } = this.props
+    const dataObj = this.indicatorItemObj(data, indicator)
+    segments[index][key] = dataObj
+    setMarchParams({ segments: segments })
+  }
+
   setSegmentParams = (incomeData, key) => {
     const { segments, index, setMarchParams } = this.props
     segments[index][key] = incomeData
@@ -26,15 +42,15 @@ export default class Segment extends Component {
   }
 
   createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option key={item.name ? item.name : item}>{item.name ? item.name : item}</Select.Option>)
+    .map((item) => <Select.Option key={item.id ? item.id : item}>{item.name ? item.name : item}</Select.Option>)
 
   render () {
+    console.log(this.props)
     const {
       form: { getFieldDecorator },
       indicators,
-      setMarchParams,
-      item,
       index,
+      item,
     } = this.props
     const { MARCH_SEGMENT_KEYS } = MarchKeys
     const { FormRow } = components.form
@@ -110,10 +126,12 @@ export default class Segment extends Component {
                 `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${index}`
               )(
                 <Select
-                  placeholder={i18n.MARCH_TYPE}
-                  onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE)}
+                  placeholder={indicators['МШВ002'].typeName}
+                  onChange={(e) => this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators['МШВ002'])}
                 >
-                  {this.createSelectChildren(indicators['МШВ002'].typeValues)}
+                  {this.createSelectChildren(indicators['МШВ002'].typeValues
+                    .filter((elem) => item.proposedSegmentTypes.some((segment) => segment === elem.id))
+                  )}
                 </Select>
               )
             }
@@ -124,8 +142,8 @@ export default class Segment extends Component {
                 `${MARCH_SEGMENT_KEYS.TERRAIN_TYPE}${index}`
               )(
                 <Select
-                  placeholder={i18n.TERRAIN_TYPE}
-                  onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE)}
+                  placeholder={indicators['МШВ007'].typeName}
+                  onChange={(e) => this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators['МШВ007'])}
                 >
                   {this.createSelectChildren(indicators['МШВ007'].typeValues)}
                 </Select>

@@ -17,12 +17,17 @@ export const MARCH_SEGMENT_KEYS = {
 export const MARCH_INDICATORS_GROUP = 'МШВ'
 
 export const MARCH_TYPES_TEMPLATES = {
-  'Своїм ходом': [
+  // Своїм ходом
+  41: [
     {
-      segmentType: 'від місця розташування до вихідного рубежу',
+      proposedSegmentTypes: [ 45 ],
+      adding: true,
+      delete: false,
     },
     {
-      segmentType: 'до району призначення',
+      proposedSegmentTypes: [ 47 ],
+      adding: true,
+      delete: false,
     },
   ],
   'Залізницею': [],

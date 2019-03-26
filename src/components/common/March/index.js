@@ -18,21 +18,22 @@ class March extends Component {
     setMarchParams: PropTypes.func,
   }
 
-  // indicatorActiveTypeObj = (target, indicator) => {
-  //   const activeItem = indicator.typeValues.filter((item) => item.name === target)
-  //   return {
-  //     indicatorId: indicator.id,
-  //     typeId: activeItem[0].id,
-  //     typeName: activeItem[0].name,
-  //   }
-  // }
+  indicatorItemObj = (target, indicator) => {
+    const activeItem = indicator.typeValues.filter((item) => item.id === +target)
+    return {
+      indicatorId: indicator.id,
+      id: activeItem[0].id,
+      name: activeItem[0].name,
+    }
+  }
 
-  // TODO: old func
   handleMarchType = (target, key) => {
-    const { setMarchParams } = this.props
+    const { setMarchParams, indicators } = this.props
+    const template = MarchKeys.MARCH_TYPES_TEMPLATES[target]
+    const targetObj = this.indicatorItemObj(target, indicators['МШВ001'])
     setMarchParams({
-      [key]: target,
-      segments: MarchKeys.MARCH_TYPES_TEMPLATES[target],
+      [key]: targetObj,
+      segments: template,
     })
   }
 
@@ -47,7 +48,7 @@ class March extends Component {
   // }
 
   createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option key={item.name}>{item.name}</Select.Option>)
+    .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
 
   render () {
     const {
@@ -110,8 +111,8 @@ class March extends Component {
           <div className='march_track'>
             {segments.map((item, i) => <Segment
               key={i}
-              item={item}
               index={i}
+              item={item}
               form={form}
               indicators={indicators}
               setMarchParams={setMarchParams}
