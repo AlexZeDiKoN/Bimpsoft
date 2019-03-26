@@ -296,7 +296,14 @@ export const tryLockObject = (objectId) =>
     const { webMap: { lockedObjects } } = getState()
     let lockedBy = lockedObjects.get(objectId)
     let success = false
-    if (!lockedBy) {
+    if (lockedBy) {
+      dispatch(notifications.push({
+        type: 'warning',
+        message: i18n.EDITING,
+        description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
+      }))
+      dispatch(isObjectStillLocked(objectId))
+    } else {
       stopHeartBeat()
       try {
         const result = await objLock(objectId)
@@ -311,11 +318,6 @@ export const tryLockObject = (objectId) =>
         return false
       }
     }
-    lockedBy && dispatch(notifications.push({
-      type: 'warning',
-      message: i18n.EDITING,
-      description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
-    }))
     return success
   })
 
@@ -330,6 +332,17 @@ export const getLockedObjects = () =>
     type: actionNames.GET_LOCKED_OBJECTS,
     payload: await lockedObjects(),
   }))
+
+export const isObjectStillLocked = (objectId) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objStillLocked } }) => {
+    const { still } = await objStillLocked(objectId)
+    if (!still) {
+      return dispatch({
+        type: actionNames.OBJECT_UNLOCKED,
+        payload: { objectId },
+      })
+    }
+  })
 
 export const toggleMeasure = () => ({
   type: actionNames.TOGGLE_MEASURE,
