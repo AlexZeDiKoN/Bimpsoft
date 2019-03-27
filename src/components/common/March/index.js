@@ -6,7 +6,7 @@ import i18n from '../../../i18n'
 import { MarchKeys } from '../../../constants'
 import './style.css'
 import IconButton from '../../menu/IconButton'
-import Segment from './children/Segment'
+import SegmentContainer from './children/Segment'
 
 const iconNames = components.icons.names
 
@@ -109,14 +109,11 @@ class March extends Component {
             </div>
           </div>
           <div className='march_track'>
-            {segments.map((item, i) => <Segment
+            {segments.map((item, i) => <SegmentContainer
               key={i}
               index={i}
-              item={item}
+              template={item}
               form={form}
-              indicators={indicators}
-              setMarchParams={setMarchParams}
-              segments={segments}
             />)}
           </div>
           <div className='march_buttonBlock'>

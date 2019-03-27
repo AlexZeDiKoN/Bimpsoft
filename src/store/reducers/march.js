@@ -21,6 +21,10 @@ export default function reducer (state = initState, action) {
       const params = { ...state.params, ...payload }
       return { ...state, params }
     }
+    case march.ADD_SEGMENT: {
+      console.log(payload)
+      return state
+    }
     default:
       return state
   }

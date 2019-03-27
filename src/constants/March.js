@@ -14,11 +14,14 @@ export const MARCH_SEGMENT_KEYS = {
   LANDMARK_FINISH: 'landmarkFinish',
 }
 
-export const MARCH_INDICATORS_GROUP = 'МШВ'
+export const MARCH_INDICATORS_GROUP = [ 'МШВ001', 'МШВ002', 'МШВ006', 'МШВ007' ]
 
 export const MARCH_TYPES_TEMPLATES = {
   // Своїм ходом
   41: [
+    {
+      startPoint: true,
+    },
     {
       proposedSegmentTypes: [ 45 ],
       adding: true,
