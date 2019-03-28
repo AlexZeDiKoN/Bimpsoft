@@ -98,11 +98,11 @@ export default class Segment extends Component {
           : <Fragment>
             <div className='march_segment-options'>
               <div className='march_segment-adding'>
-                <button
-                  onClick={() => console.log('add segment')}
+                {template.default.adding && <button
+                  onClick={() => addSegment(index === 1 ? index + 1 : index)}
                 >
                   {i18n.ADD_SEGMENT}
-                </button>
+                </button>}
               </div>
               <div className='march_segment-params'>
                 <FormRow>
@@ -134,14 +134,16 @@ export default class Segment extends Component {
                 <FormRow>
                   {
                     getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${index}`,
+                      `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${index}`, {
+                        initialValue: template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE],
+                      }
                     )(
                       <Select
                         placeholder={indicators[ 'МШВ002' ].typeName}
                         onChange={(e) => this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
                       >
-                        {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues,
-                          // .filter((elem) => template.proposedSegmentTypes.some((segment) => segment === elem.id))
+                        {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues
+                          .filter((elem) => template.default.proposedSegmentTypes.some((segment) => segment === elem.id))
                         )}
                       </Select>,
                     )

@@ -17,13 +17,16 @@ export default function reducer (state = initState, action) {
       return { ...state, indicators }
     }
     case march.SET_MARCH_PARAMS: {
-      console.log(payload)
       const params = { ...state.params, ...payload }
       return { ...state, params }
     }
     case march.ADD_SEGMENT: {
-      console.log(payload)
-      return state
+      debugger
+      const { segments } = state.params
+      const template = segments[0].complementarySegment
+      segments[payload] = { default: segments[payload].default }
+      const params = { ...state.params, ...segments.splice(payload, 0, template) }
+      return { ...state, params }
     }
     default:
       return state

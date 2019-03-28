@@ -21,16 +21,28 @@ export const MARCH_TYPES_TEMPLATES = {
   41: [
     {
       startPoint: true,
+      complementarySegment: {
+        default: {
+          proposedSegmentTypes: [ 46 ],
+          adding: true,
+          delete: true,
+        },
+        segmentType: undefined,
+      },
     },
     {
-      proposedSegmentTypes: [ 45 ],
-      adding: true,
-      delete: false,
+      default: {
+        proposedSegmentTypes: [ 45 ],
+        adding: true,
+        delete: false,
+      },
     },
     {
-      proposedSegmentTypes: [ 47 ],
-      adding: true,
-      delete: false,
+      default: {
+        proposedSegmentTypes: [ 47 ],
+        adding: true,
+        delete: false,
+      },
     },
   ],
   'Залізницею': [],
