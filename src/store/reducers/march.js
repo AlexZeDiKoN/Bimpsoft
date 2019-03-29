@@ -21,11 +21,11 @@ export default function reducer (state = initState, action) {
       return { ...state, params }
     }
     case march.ADD_SEGMENT: {
-      debugger
       const { segments } = state.params
-      const template = segments[0].complementarySegment
-      segments[payload] = { default: segments[payload].default }
-      const params = { ...state.params, ...segments.splice(payload, 0, template) }
+      const position = payload === 1 ? payload + 1 : payload
+      const template = { ...segments[0].complementarySegment }
+      segments[payload] = { default: segments[payload].default, id: segments[payload].id }
+      const params = { ...state.params, ...segments.splice(position, 0, template) }
       return { ...state, params }
     }
     default:

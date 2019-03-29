@@ -27,7 +27,6 @@ export const MARCH_TYPES_TEMPLATES = {
           adding: true,
           delete: true,
         },
-        segmentType: undefined,
       },
     },
     {
@@ -45,7 +44,32 @@ export const MARCH_TYPES_TEMPLATES = {
       },
     },
   ],
-  'Залізницею': [],
+  42: [
+    {
+      startPoint: true,
+      complementarySegment: {
+        default: {
+          proposedSegmentTypes: [ 46 ],
+          adding: true,
+          delete: true,
+        },
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 45 ],
+        adding: true,
+        delete: false,
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 47 ],
+        adding: true,
+        delete: false,
+      },
+    },
+  ],
   'Морем (річкою)': [],
   'Комбінований': [],
 }

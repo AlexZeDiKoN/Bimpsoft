@@ -22,18 +22,21 @@ class March extends Component {
     const activeItem = indicator.typeValues.filter((item) => item.id === +target)
     return {
       indicatorId: indicator.id,
-      id: activeItem[0].id,
-      name: activeItem[0].name,
+      id: activeItem[ 0 ].id,
+      name: activeItem[ 0 ].name,
     }
   }
 
   handleMarchType = (target, key) => {
     const { setMarchParams, indicators } = this.props
-    const template = MarchKeys.MARCH_TYPES_TEMPLATES[target]
-    const targetObj = this.indicatorItemObj(target, indicators['МШВ001'])
+    const template = MarchKeys.MARCH_TYPES_TEMPLATES[ target ].map((item) => {
+      const id = this.uuid()
+      return ({ ...item, id })
+    })
+    const targetObj = this.indicatorItemObj(target, indicators[ 'МШВ001' ])
     setMarchParams({
-      [key]: targetObj,
-      segments: template,
+      [ key ]: targetObj,
+      segments: template.slice(),
     })
   }
 
@@ -49,6 +52,18 @@ class March extends Component {
 
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
+
+  setKey = (i) => {
+    const { setMarchParams, params: { segments } } = this.props
+    const id = this.uuid()
+    segments[ i ].id = id
+    setMarchParams({ segments: segments })
+    return id
+  }
+
+  uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11)
+    .replace(/[018]/g,
+      (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[ 0 ] & 15 >> c / 4).toString(16))
 
   render () {
     const {
@@ -68,33 +83,33 @@ class March extends Component {
         {indicators && <Form className='march_form'>
           <div className='march_name'>
             <div className='march_name-indicator'>
-              <Icon type="branches" />
+              <Icon type="branches"/>
             </div>
             <div className='march_name-form'>
               <FormRow>
                 {
                   getFieldDecorator(
-                    MARCH_KEYS.MARCH_NAME
+                    MARCH_KEYS.MARCH_NAME,
                   )(
                     <Input
                       className='march_name-title'
                       placeholder={i18n.MARCH_NAME}
-                      onChange={({ target }) => setMarchParams({ [MARCH_KEYS.MARCH_NAME]: target.value })}
-                    />
+                      onChange={({ target }) => setMarchParams({ [ MARCH_KEYS.MARCH_NAME ]: target.value })}
+                    />,
                   )
                 }
               </FormRow>
               <FormRow>
                 {
                   getFieldDecorator(
-                    MARCH_KEYS.MARCH_TYPE
+                    MARCH_KEYS.MARCH_TYPE,
                   )(
                     <Select
                       placeholder={i18n.MARCH_TYPE}
                       onChange={(e) => this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)}
                     >
-                      {this.createSelectChildren(indicators['МШВ001'].typeValues)}
-                    </Select>
+                      {this.createSelectChildren(indicators[ 'МШВ001' ].typeValues)}
+                    </Select>,
                   )
                 }
               </FormRow>
@@ -110,7 +125,7 @@ class March extends Component {
           </div>
           <div className='march_track'>
             {segments.map((item, i) => <SegmentContainer
-              key={i}
+              key={item.id}
               index={i}
               template={item}
               form={form}

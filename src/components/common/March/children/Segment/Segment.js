@@ -70,7 +70,7 @@ export default class Segment extends Component {
             <FormRow>
               {
                 getFieldDecorator(
-                  `${MARCH_SEGMENT_KEYS.COORDINATE_START}${index}`,
+                  `${MARCH_SEGMENT_KEYS.COORDINATE_START}${template.id}`,
                 )(
                   <Input
                     addonAfter={point}
@@ -83,7 +83,7 @@ export default class Segment extends Component {
             <FormRow>
               {
                 getFieldDecorator(
-                  `${MARCH_SEGMENT_KEYS.LANDMARK_START}${index}`,
+                  `${MARCH_SEGMENT_KEYS.LANDMARK_START}${template.id}`,
                 )(
                   <Select
                     placeholder={i18n.GEOGRAPHICAL_LANDMARK}
@@ -99,7 +99,7 @@ export default class Segment extends Component {
             <div className='march_segment-options'>
               <div className='march_segment-adding'>
                 {template.default.adding && <button
-                  onClick={() => addSegment(index === 1 ? index + 1 : index)}
+                  onClick={() => addSegment(index)}
                 >
                   {i18n.ADD_SEGMENT}
                 </button>}
@@ -108,7 +108,7 @@ export default class Segment extends Component {
                 <FormRow>
                   {
                     getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT}${index}`,
+                      `${MARCH_SEGMENT_KEYS.SEGMENT}${template.id}`,
                     )(
                       <Select
                         placeholder={i18n.CHECK_SEGMENT}
@@ -122,7 +122,7 @@ export default class Segment extends Component {
                 <FormRow>
                   {
                     getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT_NAME}${index}`,
+                      `${MARCH_SEGMENT_KEYS.SEGMENT_NAME}${template.id}`,
                     )(
                       <Input
                         placeholder={i18n.SEGMENT_NAME}
@@ -134,16 +134,20 @@ export default class Segment extends Component {
                 <FormRow>
                   {
                     getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${index}`, {
-                        initialValue: template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE],
+                      `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${template.id}`, {
+                        initialValue: template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE]
+                          ? template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE].name
+                          : undefined,
                       }
                     )(
                       <Select
                         placeholder={indicators[ 'МШВ002' ].typeName}
-                        onChange={(e) => this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
+                        onChange={(e) =>
+                          this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
                       >
                         {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues
-                          .filter((elem) => template.default.proposedSegmentTypes.some((segment) => segment === elem.id))
+                          .filter((elem) => template.default.proposedSegmentTypes
+                            .some((segment) => segment === elem.id))
                         )}
                       </Select>,
                     )
@@ -152,11 +156,12 @@ export default class Segment extends Component {
                 <FormRow>
                   {
                     getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.TERRAIN_TYPE}${index}`,
+                      `${MARCH_SEGMENT_KEYS.TERRAIN_TYPE}${template.id}`,
                     )(
                       <Select
                         placeholder={indicators[ 'МШВ007' ].typeName}
-                        onChange={(e) => this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators[ 'МШВ007' ])}
+                        onChange={(e) =>
+                          this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators[ 'МШВ007' ])}
                       >
                         {this.createSelectChildren(indicators[ 'МШВ007' ].typeValues)}
                       </Select>,
@@ -169,12 +174,13 @@ export default class Segment extends Component {
               <FormRow>
                 {
                   getFieldDecorator(
-                    `${MARCH_SEGMENT_KEYS.COORDINATE_FINISH}${index}`,
+                    `${MARCH_SEGMENT_KEYS.COORDINATE_FINISH}${template.id}`,
                   )(
                     <Input
                       addonAfter={point}
                       placeholder={i18n.COORDINATES}
-                      onChange={({ target }) => this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.COORDINATE_FINISH)}
+                      onChange={({ target }) =>
+                        this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.COORDINATE_FINISH)}
                     />,
                   )
                 }
@@ -182,7 +188,7 @@ export default class Segment extends Component {
               <FormRow>
                 {
                   getFieldDecorator(
-                    `${MARCH_SEGMENT_KEYS.LANDMARK_FINISH}${index}`,
+                    `${MARCH_SEGMENT_KEYS.LANDMARK_FINISH}${template.id}`,
                   )(
                     <Select
                       placeholder={i18n.GEOGRAPHICAL_LANDMARK}
