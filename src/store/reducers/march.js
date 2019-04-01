@@ -24,8 +24,12 @@ export default function reducer (state = initState, action) {
       const { segments } = state.params
       const position = payload === 1 ? payload + 1 : payload
       const template = { ...segments[0].complementarySegment }
-      segments[payload] = { default: segments[payload].default, id: segments[payload].id }
+      // segments[payload] = { default: segments[payload].default, id: segments[payload].id }
+      const defaultSegmentData = { default: segments[payload].default, id: segments[payload].id }
+      segments.splice(payload, 1, defaultSegmentData)
+      // const params = { ...state.params, segments: segments.slice() }
       const params = { ...state.params, ...segments.splice(position, 0, template) }
+
       return { ...state, params }
     }
     default:

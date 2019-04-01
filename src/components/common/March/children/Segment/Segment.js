@@ -132,41 +132,31 @@ export default class Segment extends Component {
                   }
                 </FormRow>
                 <FormRow>
-                  {
-                    getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT_TYPE}${template.id}`, {
-                        initialValue: template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE]
-                          ? template[MARCH_SEGMENT_KEYS.SEGMENT_TYPE].name
-                          : undefined,
-                      }
-                    )(
-                      <Select
-                        placeholder={indicators[ 'МШВ002' ].typeName}
-                        onChange={(e) =>
-                          this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
-                      >
-                        {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues
-                          .filter((elem) => template.default.proposedSegmentTypes
-                            .some((segment) => segment === elem.id))
-                        )}
-                      </Select>,
-                    )
-                  }
+                  <Select
+                    value={template[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ]
+                      ? template[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name
+                      : undefined}
+                    placeholder={indicators[ 'МШВ002' ].typeName}
+                    onChange={(e) =>
+                      this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
+                  >
+                    {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues
+                      .filter((elem) => template.default.proposedSegmentTypes
+                        .some((segment) => segment === elem.id)),
+                    )}
+                  </Select>
                 </FormRow>
                 <FormRow>
-                  {
-                    getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.TERRAIN_TYPE}${template.id}`,
-                    )(
-                      <Select
-                        placeholder={indicators[ 'МШВ007' ].typeName}
-                        onChange={(e) =>
-                          this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators[ 'МШВ007' ])}
-                      >
-                        {this.createSelectChildren(indicators[ 'МШВ007' ].typeValues)}
-                      </Select>,
-                    )
-                  }
+                  <Select
+                    value={template[MARCH_SEGMENT_KEYS.TERRAIN_TYPE]
+                      ? template[MARCH_SEGMENT_KEYS.TERRAIN_TYPE].name
+                      : undefined}
+                    placeholder={indicators[ 'МШВ007' ].typeName}
+                    onChange={(e) =>
+                      this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators[ 'МШВ007' ])}
+                  >
+                    {this.createSelectChildren(indicators[ 'МШВ007' ].typeValues)}
+                  </Select>
                 </FormRow>
               </div>
             </div>
