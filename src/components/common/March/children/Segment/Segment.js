@@ -7,7 +7,7 @@ import { MarchKeys } from '../../../../../constants'
 
 // TODO: test data
 const geographicalLandmark = [ 'landmark one', 'landmark two', 'landmark three' ]
-const segments = [ 'segment one', 'segment two', 'segment three' ]
+const segmentsExmp = [ 'segment one', 'segment two', 'segment three' ]
 
 export default class Segment extends Component {
   static propTypes = {
@@ -16,7 +16,6 @@ export default class Segment extends Component {
     setMarchParams: PropTypes.func,
     addSegment: PropTypes.func,
     index: PropTypes.number,
-    template: PropTypes.object,
     segments: PropTypes.array,
   }
 
@@ -50,11 +49,12 @@ export default class Segment extends Component {
       form: { getFieldDecorator },
       indicators,
       index,
-      template,
       addSegment,
+      segments,
     } = this.props
     const { MARCH_SEGMENT_KEYS } = MarchKeys
     const { FormRow } = components.form
+    const item = segments[index]
 
     const point = <div
       className='segment_point'
@@ -65,14 +65,15 @@ export default class Segment extends Component {
 
     return (
       <div className='march_segment'>
-        {template.startPoint
+        {item.startPoint
           ? <div className='march_segment-point'>
             <FormRow>
               {
                 getFieldDecorator(
-                  `${MARCH_SEGMENT_KEYS.COORDINATE_START}${template.id}`,
+                  `${MARCH_SEGMENT_KEYS.COORDINATE_START}${item.id}`,
                 )(
                   <Input
+                    value={item}
                     addonAfter={point}
                     placeholder={i18n.COORDINATES}
                     onChange={({ target }) => this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.COORDINATE_START)}
@@ -83,7 +84,7 @@ export default class Segment extends Component {
             <FormRow>
               {
                 getFieldDecorator(
-                  `${MARCH_SEGMENT_KEYS.LANDMARK_START}${template.id}`,
+                  `${MARCH_SEGMENT_KEYS.LANDMARK_START}${item.id}`,
                 )(
                   <Select
                     placeholder={i18n.GEOGRAPHICAL_LANDMARK}
@@ -98,7 +99,7 @@ export default class Segment extends Component {
           : <Fragment>
             <div className='march_segment-options'>
               <div className='march_segment-adding'>
-                {template.default.adding && <button
+                {item.default.adding && <button
                   onClick={() => addSegment(index)}
                 >
                   {i18n.ADD_SEGMENT}
@@ -106,50 +107,40 @@ export default class Segment extends Component {
               </div>
               <div className='march_segment-params'>
                 <FormRow>
-                  {
-                    getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT}${template.id}`,
-                    )(
-                      <Select
-                        placeholder={i18n.CHECK_SEGMENT}
-                        onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.SEGMENT)}
-                      >
-                        {this.createSelectChildren(segments)}
-                      </Select>,
-                    )
-                  }
+                  <Select
+                    value={item[ MARCH_SEGMENT_KEYS.SEGMENT ]}
+                    placeholder={i18n.CHECK_SEGMENT}
+                    onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.SEGMENT)}
+                  >
+                    {this.createSelectChildren(segmentsExmp)}
+                  </Select>
                 </FormRow>
                 <FormRow>
-                  {
-                    getFieldDecorator(
-                      `${MARCH_SEGMENT_KEYS.SEGMENT_NAME}${template.id}`,
-                    )(
-                      <Input
-                        placeholder={i18n.SEGMENT_NAME}
-                        onChange={({ target }) => this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.SEGMENT_NAME)}
-                      />,
-                    )
-                  }
+                  <Input
+                    value={item[ MARCH_SEGMENT_KEYS.SEGMENT_NAME ]}
+                    placeholder={i18n.SEGMENT_NAME}
+                    onChange={({ target }) => this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.SEGMENT_NAME)}
+                  />
                 </FormRow>
                 <FormRow>
                   <Select
-                    value={template[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ]
-                      ? template[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name
+                    value={item[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ]
+                      ? item[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name
                       : undefined}
                     placeholder={indicators[ 'МШВ002' ].typeName}
                     onChange={(e) =>
                       this.setIndicatorParam(e, MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators[ 'МШВ002' ])}
                   >
                     {this.createSelectChildren(indicators[ 'МШВ002' ].typeValues
-                      .filter((elem) => template.default.proposedSegmentTypes
+                      .filter((elem) => item.default.proposedSegmentTypes
                         .some((segment) => segment === elem.id)),
                     )}
                   </Select>
                 </FormRow>
                 <FormRow>
                   <Select
-                    value={template[MARCH_SEGMENT_KEYS.TERRAIN_TYPE]
-                      ? template[MARCH_SEGMENT_KEYS.TERRAIN_TYPE].name
+                    value={item[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ]
+                      ? item[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ].name
                       : undefined}
                     placeholder={indicators[ 'МШВ007' ].typeName}
                     onChange={(e) =>
@@ -162,32 +153,22 @@ export default class Segment extends Component {
             </div>
             <div className='march_segment-point'>
               <FormRow>
-                {
-                  getFieldDecorator(
-                    `${MARCH_SEGMENT_KEYS.COORDINATE_FINISH}${template.id}`,
-                  )(
-                    <Input
-                      addonAfter={point}
-                      placeholder={i18n.COORDINATES}
-                      onChange={({ target }) =>
-                        this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.COORDINATE_FINISH)}
-                    />,
-                  )
-                }
+                <Input
+                  value={item[ MARCH_SEGMENT_KEYS.COORDINATE_FINISH ]}
+                  addonAfter={point}
+                  placeholder={i18n.COORDINATES}
+                  onChange={({ target }) =>
+                    this.setSegmentParams(target.value, MARCH_SEGMENT_KEYS.COORDINATE_FINISH)}
+                />
               </FormRow>
               <FormRow>
-                {
-                  getFieldDecorator(
-                    `${MARCH_SEGMENT_KEYS.LANDMARK_FINISH}${template.id}`,
-                  )(
-                    <Select
-                      placeholder={i18n.GEOGRAPHICAL_LANDMARK}
-                      onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.LANDMARK_FINISH)}
-                    >
-                      {this.createSelectChildren(geographicalLandmark)}
-                    </Select>,
-                  )
-                }
+                <Select
+                  value={item[ MARCH_SEGMENT_KEYS.LANDMARK_FINISH ]}
+                  placeholder={i18n.GEOGRAPHICAL_LANDMARK}
+                  onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.LANDMARK_FINISH)}
+                >
+                  {this.createSelectChildren(geographicalLandmark)}
+                </Select>
               </FormRow>
             </div>
           </Fragment>}
