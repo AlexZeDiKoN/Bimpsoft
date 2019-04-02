@@ -50,6 +50,11 @@ export default function reducer (state = initState, action) {
 
       return { ...state, params }
     }
+    case march.DELETE_SEGMENT: {
+      const { segments } = state.params
+      const params = { ...state.params, ...segments.splice(payload, 1) }
+      return { ...state, params }
+    }
     default:
       return state
   }

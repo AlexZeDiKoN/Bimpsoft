@@ -4,6 +4,7 @@ import { MarchKeys } from '../../constants'
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
 export const ADD_SEGMENT = action('ADD_SEGMENT')
+export const DELETE_SEGMENT = action('DELETE_SEGMENT')
 
 export const getIndicator = () =>
   async (dispatch, getState, { indicatorApi: { getTypeKinds } }) => {
@@ -16,6 +17,11 @@ export const getIndicator = () =>
 
 export const addSegment = (index) => ({
   type: ADD_SEGMENT,
+  payload: index,
+})
+
+export const deleteSegment = (index) => ({
+  type: DELETE_SEGMENT,
   payload: index,
 })
 

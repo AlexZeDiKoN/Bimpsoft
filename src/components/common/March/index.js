@@ -37,19 +37,9 @@ class March extends Component {
     })
   }
 
-  // handleSubmit = (e) => {
-  //   e.preventDefault()
-  //   this.props.form.validateFields((err, values) => {
-  //     if (!err) {
-  //       // values.marchType = this.state.marchType
-  //       console.log('Received values of form: ', values)
-  //     }
-  //   })
-  // }
-
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
-  
+
   render () {
     const {
       form,
@@ -126,7 +116,7 @@ class March extends Component {
             <Button
               htmlType="reset"
               className='march_button-cancel'
-              onClick={() => console.log('cancel')}
+              onClick={() => console.info('cancel')}
             >
               Скасувати
             </Button>
