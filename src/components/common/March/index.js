@@ -111,14 +111,14 @@ class March extends Component {
               htmlType="submit"
               className='march_button-submit'
             >
-              Зберегти
+              {i18n.CREATE}
             </Button>
             <Button
               htmlType="reset"
               className='march_button-cancel'
               onClick={() => console.info('cancel')}
             >
-              Скасувати
+              {i18n.CANCEL_FILE}
             </Button>
           </div>
         </Form>}

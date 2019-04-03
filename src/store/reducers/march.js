@@ -38,11 +38,9 @@ export default function reducer (state = initState, action) {
         ...state.params,
         ...segments.splice(position, 0, {
           ...template,
-          ...{
-            id: uuid(),
-            coordinateFinish: segments[ payload ].coordinateFinish,
-            landmarkFinish: segments[ payload ].landmarkFinish,
-          },
+          id: uuid(),
+          coordinateFinish: segments[ payload ].coordinateFinish,
+          landmarkFinish: segments[ payload ].landmarkFinish,
         }),
       }
       const defaultSegmentData = { default: segments[ payload ].default, id: segments[ payload ].id }
