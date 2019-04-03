@@ -1,7 +1,7 @@
 import { march } from '../actions'
 
 const initState = {
-  marchEdit: true,
+  marchEdit: false,
   indicators: undefined,
   params: {
     segments: [],

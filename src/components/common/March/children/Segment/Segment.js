@@ -45,7 +45,6 @@ export default class Segment extends Component {
     .map((item) => <Select.Option key={item.id ? item.id : item}>{item.name ? item.name : item}</Select.Option>)
 
   render () {
-    console.info(this.props)
     const {
       indicators,
       index,

@@ -44,12 +44,69 @@ export const MARCH_TYPES_TEMPLATES = {
       },
     },
   ],
+  // Залізницею
   42: [
+    {
+      startPoint: true,
+      complementarySegment: false,
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 45, 48 ],
+        adding: false,
+        delete: false,
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 50 ],
+        adding: false,
+        delete: false,
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 47, 49 ],
+        adding: false,
+        delete: false,
+      },
+    },
+  ],
+  // Морем
+  43: [
+    {
+      startPoint: true,
+      complementarySegment: false,
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 45, 48 ],
+        adding: false,
+        delete: false,
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 51 ],
+        adding: false,
+        delete: false,
+      },
+    },
+    {
+      default: {
+        proposedSegmentTypes: [ 47, 49 ],
+        adding: false,
+        delete: false,
+      },
+    },
+  ],
+  // Комбінований
+  44: [
     {
       startPoint: true,
       complementarySegment: {
         default: {
-          proposedSegmentTypes: [ 46 ],
+          proposedSegmentTypes: [ 46, 50, 51 ],
           adding: true,
           delete: true,
         },
@@ -57,19 +114,17 @@ export const MARCH_TYPES_TEMPLATES = {
     },
     {
       default: {
-        proposedSegmentTypes: [ 45 ],
+        proposedSegmentTypes: [ 45, 48 ],
         adding: true,
         delete: false,
       },
     },
     {
       default: {
-        proposedSegmentTypes: [ 47 ],
+        proposedSegmentTypes: [ 47, 49 ],
         adding: true,
         delete: false,
       },
     },
   ],
-  'Морем (річкою)': [],
-  'Комбінований': [],
 }
