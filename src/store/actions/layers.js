@@ -41,7 +41,7 @@ export const updateLayers = (layersData) => ({
 })
 
 export const updateLayer = (layerData) =>
-  asyncAction.withNotification(async (dispatch, _, { explorerApi: { layerSetColor } }) => {
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { layerSetColor } }) => {
     dispatch({
       type: UPDATE_LAYER,
       layerData,
@@ -68,7 +68,7 @@ export const updateAllLayers = (layerData) =>
   })
 
 export const updateColorByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, getState, { explorerApi: { layerGetColor } }) => {
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { layerGetColor } }) => {
     if (getState().layers.byId.hasOwnProperty(layerId)) {
       const color = await layerGetColor(layerId)
       const layerData = { layerId, color }

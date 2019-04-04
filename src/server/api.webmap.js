@@ -37,6 +37,12 @@ export default {
     getDirect(`${webmapUrl}/grid/${mapId}/get`, false),
   lockedObjects: () =>
     getDirect(`${webmapUrl}/obj/locked`, false),
+  getMap: (mapId) =>
+    getDirect(`${webmapUrl}/map/${mapId}`, false),
+  layerGetColor: (layerId) =>
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, false),
+  layerSetColor: (layerId, color) =>
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
   getPrintBounds: (data) =>

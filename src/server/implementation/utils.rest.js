@@ -1,5 +1,5 @@
 /* global Headers fetch */
-import { getExplorerApi, getWebmapApi, getNodeApi, getServerUrl } from '../../utils/services'
+import { getExplorerApi, getWebmapApi, getServerUrl } from '../../utils/services'
 import { ERROR_ACCESS_DENIED, SERVER_ERROR, ERROR_OBJ_LOCKED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 
 const absoluteUri = new RegExp('^(http|https)://')
@@ -7,7 +7,6 @@ const absoluteUri = new RegExp('^(http|https)://')
 const serverRootUrl = getServerUrl()
 const explorerApi = serverRootUrl + getExplorerApi()
 const webmapApi = getWebmapApi()
-const nodeApi = getNodeApi()
 
 export const getWebmapURL = () => webmapApi
 
@@ -25,14 +24,8 @@ const setOptionsData = (options, data) => {
   }
 }
 
-export async function get (url, namespace = nodeApi) {
+export async function get (url, namespace) {
   const options = _getOptions('GET')
-  return _createGetRequest(url, options, namespace)
-}
-
-export async function put (url, data, namespace = nodeApi) {
-  const options = _getOptions('PUT')
-  setOptionsData(options, data)
   return _createGetRequest(url, options, namespace)
 }
 
@@ -134,9 +127,10 @@ async function _createRequest (url, option, namespace = explorerApi) {
           return jsonPayload
         }
       }
-      const text = await response.text()
+      // const text = await response.text()
       // console.log(url, text)
-      return text
+      // return text
+      return response.text()
     }
     case 204: // success code of DELETE request
       return null

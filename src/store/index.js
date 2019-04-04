@@ -4,7 +4,6 @@ import { batchDispatchMiddleware } from 'redux-batched-actions'
 import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
-import explorerApi from '../server/api.node'
 import webmapApi from '../server/api.webmap'
 import milOrgApi from '../server/api.server.org'
 import indicatorApi from '../server/api.indicator'
@@ -34,7 +33,6 @@ export default function initStore (options = {}) {
   const middlewares = [
     batchDispatchMiddleware,
     thunk.withExtraArgument({
-      explorerApi,
       webmapApi,
       milOrgApi,
       indicatorApi,
