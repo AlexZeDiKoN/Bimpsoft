@@ -25,8 +25,9 @@
 
     > .tree-component-li {
       list-style-type: none;
-      border-left: 0.15em solid @toolbar-border;
+      border-left: 1px solid #78909c;
       margin-left: 1.1em;
+      padding-left: 0.1rem;
 
       > :first-child {
         padding-left: 0.6em;
@@ -35,17 +36,29 @@
         &:before {
           content: '';
           position: absolute;
-          top: 0;
+          top: -14px;
           left: -0.175em;
           bottom: 46%;
-          width: 0.5em;
-          border: 0.15em solid @toolbar-border;
+          width: 1.1em;
+          border: 1px solid #78909c;
           border-top: 0 none transparent;
           border-right: 0 none transparent;
         }
+        &:after {
+          content: '';
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          position: absolute;
+          background: #78909c;
+          top: 52%;
+          display: block;
+          left: 5%;
+          transform: translate(-50%, -56.5%);
+        }
       }
       &:last-child {
-        border-left: 0.15em solid transparent;
+        border-left: 1px solid transparent;
       }
     }
   }

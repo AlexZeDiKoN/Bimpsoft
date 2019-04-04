@@ -27,7 +27,7 @@ export default class Item extends React.Component {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
     const { shortName, app6Code = null, fullName, id } = data
     const icon = tree.canExpand &&
-      (<Icon type={tree.expanded ? 'minus' : 'plus'} onClick={tree.onExpand} />)
+      (<Icon type={tree.expanded ? 'caret-down' : 'caret-right'} onClick={tree.onExpand} />)
     const isSelected = id === selectedId
     const classes = [ 'org-structure-item' ]
     isSelected && classes.push('org-structure-item-selected')
