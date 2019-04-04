@@ -5,8 +5,6 @@ export const getServerUrl = () => production ? `${window.location.origin}` : (pr
 
 export const getExplorerApi = () => process.env.REACT_APP_EXPLORER_API
 
-export const getNodeApi = () => process.env.REACT_APP_NODE_API
-
 export const getWebmapApi = () => `${production ? dropPort(window.origin) : ''}${process.env.REACT_APP_WEBMAP_API}`
 
 export const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

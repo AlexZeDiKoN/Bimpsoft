@@ -43,11 +43,6 @@ export const REMOVING_SIGNS = 'Видалити знаки?'
 export const CLOSE_MAP = 'Закрити карту?'
 export const CLOSE_MAPS = 'Закриття карт'
 export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
-export const FILES_TO_PRINT = 'Файли на друк'
-export const OPEN_FILE = 'Відкрити файл в провіднику'
-export const CANCEL_FILE = 'Скасувати'
-export const CLEAN_FILE = 'Прибрати зі списку'
-export const RETRY_FILE = 'Спробувати ще раз'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
@@ -214,3 +209,20 @@ export const PUT_IN_QUEUE = 'Поставлено в чергу'
 export const FORMATION_FILE = 'Формування графічного файлу'
 export const FILE_IS_GENERATED = 'Файл сформовано'
 export const ERROR_OCCURRED = 'Виникла помилка'
+
+// лог
+export const FILES_TO_PRINT = 'Файли на друк'
+export const OPEN_FILE = 'Відкрити файл в провіднику'
+export const CANCEL_FILE = 'Скасувати'
+export const CLEAN_FILE = 'Прибрати зі списку'
+export const RETRY_FILE = 'Спробувати ще раз'
+
+// Марш
+export const MARCH_TITLE = 'Маршрут марша'
+export const MARCH_NAME = 'Назва маршрута'
+export const OPEN_MARCH_FILE = 'Вибір існуючого маршрута'
+export const MARCH_TYPE = 'Тип руху за маршрутом'
+export const GEOGRAPHICAL_LANDMARK = 'Географічний орієнтир'
+export const CHECK_SEGMENT = 'Вибір відрізка'
+export const SEGMENT_NAME = 'Назва відрізка'
+export const ADD_SEGMENT = 'Додати пункт маршрута'

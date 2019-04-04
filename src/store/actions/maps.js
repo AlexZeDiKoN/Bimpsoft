@@ -55,7 +55,7 @@ export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
 }
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
-  async (dispatch, _, { explorerApi: { getMap } }) => {
+  async (dispatch, _, { webmapApi: { getMap } }) => {
     const content = await getMap(mapId)
     const {
       layers: entities,
@@ -65,13 +65,13 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
         doc_confirm: docConfirm,
         security_classification: securityClassification,
       },
-      breadcrumbs,
+      // breadcrumbs,
     } = content
 
     await dispatch(maps.updateMap({
       mapId: id,
       name,
-      breadcrumbs,
+      // breadcrumbs,
       docConfirm,
       securityClassification,
     }))
