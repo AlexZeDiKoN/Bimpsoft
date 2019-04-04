@@ -44,13 +44,13 @@ export async function post (url, data = {}, route = '/do', namespace) {
     payload: !data ? null : JSON.stringify(data),
   }
   setOptionsData(options, request)
-  return _createRequest(route, options, namespace ? (serverRootUrl + namespace) : undefined)
+  return _createRequest(route, options, namespace !== undefined ? (serverRootUrl + namespace) : undefined)
 }
 
 export async function getDirect (url, data = {}, namespace) {
   const options = _getOptions(data ? 'POST' : 'GET')
   setOptionsData(options, data)
-  return _createRequest(url, options, namespace ? (serverRootUrl + namespace) : undefined)
+  return _createRequest(url, options, namespace !== undefined ? (serverRootUrl + namespace) : undefined)
 }
 
 function _getOptions (method) {
