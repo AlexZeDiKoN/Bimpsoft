@@ -50,6 +50,7 @@ export const actionNames = {
   TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
+  GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
 }
 
 export const setCoordinatesType = (value) => ({
@@ -355,6 +356,16 @@ export const toggleMarkers = () => ({
 export const toggleTopographicObjects = () => ({
   type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
 })
+
+export const getTopographicObjects = (data) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getTopographicObjects } }) => {
+    dispatch(toggleTopographicObjects())
+    const topographicObject = await getTopographicObjects(data)
+    dispatch({
+      type: actionNames.GET_TOPOGRAPHIC_OBJECTS,
+      payload: topographicObject,
+    })
+  })
 
 // Ініціалізація
 window.addEventListener('beforeunload', () => {

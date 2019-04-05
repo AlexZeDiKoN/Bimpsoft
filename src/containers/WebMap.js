@@ -77,6 +77,7 @@ const WebMapContainer = connect(
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
+    getTopographicObjects: webMap.getTopographicObjects,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

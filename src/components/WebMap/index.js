@@ -262,6 +262,7 @@ export default class WebMap extends React.PureComponent {
     flexGridChanged: PropTypes.func,
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
+    getTopographicObjects: PropTypes.func,
   }
 
   constructor (props) {
@@ -629,7 +630,15 @@ export default class WebMap extends React.PureComponent {
         this.addUserMarker(e.latlng)
       }
       if (this.topoInfoMode) {
-        // TODO
+        const { getTopographicObjects } = this.props
+        const location = {
+          coordinates: {
+            lat: e.latlng.lat.toFixed(6),
+            lng: e.latlng.lng.toFixed(6),
+          },
+          zoom: this.map.getZoom(),
+        }
+        getTopographicObjects(location)
       }
     }
   }
