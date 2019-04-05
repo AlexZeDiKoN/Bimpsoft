@@ -1,10 +1,11 @@
 import React from 'react'
 import './style.css'
-import { Icon, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 const { common: { TreeComponent, HighlightedText } } = components
+const { Icon } = components.icons
 const { TextFilter } = data
 
 export default class Item extends React.Component {
@@ -27,7 +28,14 @@ export default class Item extends React.Component {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
     const { shortName, app6Code = null, fullName, id } = data
     const icon = tree.canExpand &&
-      (<Icon type={tree.expanded ? 'caret-down' : 'caret-right'} onClick={tree.onExpand} />)
+      (<Icon icon={Icon.names.DROP_RIGHT_DEFAULT}
+        className={
+          tree.expanded
+            ? 'org-structure-arrows-bottom org-structure-arrows-right'
+            : 'org-structure-arrows-right'
+        }
+        onClick={tree.onExpand}
+      />)
     const isSelected = id === selectedId
     const classes = [ 'org-structure-item' ]
     isSelected && classes.push('org-structure-item-selected')
