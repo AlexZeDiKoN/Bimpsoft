@@ -25,32 +25,47 @@
 
     > .tree-component-li {
       list-style-type: none;
-      border-left: 0.15em solid @toolbar-border;
+      border-left: 1px solid @toolbar-color;
       margin-left: 1.1em;
+      padding-left: 0.1rem;
 
+      .org-structure-item:not(.org-structure-item-can-expand):after{
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        position: absolute;
+        background: @toolbar-color;
+        top: 52%;
+        display: block;
+        left: 15px;
+        transform: translate(-50%, -56.5%);
+      }
       > :first-child {
-        padding-left: 0.6em;
+        padding-left: 0.2em;
         position: relative;
 
         &:before {
           content: '';
           position: absolute;
-          top: 0;
+          top: -14px;
           left: -0.175em;
           bottom: 46%;
-          width: 0.5em;
-          border: 0.15em solid @toolbar-border;
+          width: 1.2em;
+          border: 1px solid @toolbar-color;
           border-top: 0 none transparent;
           border-right: 0 none transparent;
         }
+        
       }
       &:last-child {
-        border-left: 0.15em solid transparent;
+        border-left: 1px solid transparent;
       }
     }
   }
   .tree-component-ul.tree-component-level-1 > .tree-component-li {
-    margin-left: 0.5em;
+    margin-left: 0.6em;
+    padding-left: 0.5em;
   }
 }
 
