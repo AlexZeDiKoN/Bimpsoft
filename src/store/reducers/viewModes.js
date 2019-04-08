@@ -6,6 +6,7 @@ const initialState = {
   [viewModesKeys.print]: false,
   [viewModesKeys.sidebar]: true,
   [viewModesKeys.mapSourcesList]: false,
+  [viewModesKeys.directionName]: false,
   searchEmpty: false,
   searchOptions: null,
 }
@@ -28,6 +29,10 @@ export default function reducer (state = initialState, action) {
     case actions.VIEW_MODE_DISABLE: {
       const { payload: name } = action
       return { ...state, [name]: false }
+    }
+    case actions.VIEW_MODE_ENABLE: {
+      const { payload: { name, value = true } } = action // @TODO discuss! if no value - set as true
+      return { ...state, [name]: value }
     }
     case actions.SET_SEARCH_OPTIONS: {
       const { payload } = action

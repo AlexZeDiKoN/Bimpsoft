@@ -65,6 +65,14 @@ L.FlexGrid = L.Layer.extend({
       ...commonStyle,
       color: '#000',
     },
+    highlight: {
+      ...commonStyle,
+      stroke: false,
+      fill: true,
+      fillOpacity: 0.4,
+      fillColor: '#ff2',
+      color: '#ff2',
+    },
     shadow: {
       ...commonStyle,
       stroke: false,
@@ -354,6 +362,14 @@ L.FlexGrid = L.Layer.extend({
       }
     }))
     return result
+  },
+
+  tuliakovSelectDirection (directionId) {
+    this.highlightedDirections = [ directionId ]
+    // this.highlightedDirections
+    // ? this.highlightedDirections.push(directionId) : this.highlightedDirections = [ directionId ]
+    // L.setOptions(this, { selectedDirectionIndex: directionId })
+    this._renderer.tuliakovUpdateCell(this)
   },
 
   // @method bringToFront(): this

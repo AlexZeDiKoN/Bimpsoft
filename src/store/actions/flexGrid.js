@@ -16,6 +16,7 @@ export const SET_ZONES = action('SET_ZONES')
 export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
+export const SET_DIR_NAME = action('SET_DIR_NAME')
 
 const getId = ({ id }) => id
 
@@ -30,6 +31,11 @@ const findInCell = (units, testUnit, formationId) => units
 export const setFlexGridDirections = (value) => ({
   type: SET_DIRECTIONS,
   payload: value,
+})
+
+export const setDirectionName = ({ id, name }) => ({
+  type: SET_DIR_NAME,
+  payload: { id, name },
 })
 
 export const setFlexGridZones = (value) => ({

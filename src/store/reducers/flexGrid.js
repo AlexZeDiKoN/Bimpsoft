@@ -16,6 +16,7 @@ const FlexGrid = Record({
   directionSegments: List(),
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
+  directionNames: List(),
   zones: HAS_ZONES,
 })
 
@@ -42,6 +43,11 @@ export default function reducer (state = FlexGridState(), action) {
         directions = DEF_DIRECTIONS
       }
       return update(state, 'flexGrid', merge, { directions })
+    }
+    case actions.SET_DIR_NAME: {
+      const { id, name } = payload
+      return state.setIn([ 'flexGrid', 'directionNames', id ], name)
+      // return update(state, [ 'flexGrid', 'directionNames', id ], name)
     }
     case actions.SET_ZONES: {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
@@ -70,7 +76,7 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones },
+          attributes: { directions, zones, directionNames = [] }, // @TODO: set [] as default at BE
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
         return payload
@@ -84,6 +90,7 @@ export default function reducer (state = FlexGridState(), action) {
             zones,
             eternals: List(eternals),
             directionSegments: List(directionSegments),
+            directionNames: List(directionNames),
             zoneSegments: List(zoneSegments),
           })
           : merge(state, {

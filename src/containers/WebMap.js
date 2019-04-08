@@ -5,8 +5,9 @@ import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
   activeMapSelector, inICTMode,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid } from '../store/actions'
+import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
+import { directionName } from '../constants/viewModesKeys'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -77,6 +78,7 @@ const WebMapContainer = connect(
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
+    showDirectionNameForm: (id) => viewModes.viewModeEnable(directionName, id),
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

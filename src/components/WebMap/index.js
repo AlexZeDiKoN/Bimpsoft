@@ -40,6 +40,7 @@ import {
   createCoordinateMarker,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import DirectionNameForm from './children/DirectionNameForm'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -262,6 +263,7 @@ export default class WebMap extends React.PureComponent {
     flexGridChanged: PropTypes.func,
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
+    showDirectionNameForm: PropTypes.func,
   }
 
   constructor (props) {
@@ -521,6 +523,7 @@ export default class WebMap extends React.PureComponent {
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
+    this.map.on('dblclick', this.tuliakovOnDblClick)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
@@ -955,7 +958,7 @@ export default class WebMap extends React.PureComponent {
     const { target: layer } = event
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
-    if (list.length === 1 && list[0] === object.id) {
+    if (object && list.length === 1 && list[0] === object.id) {
       this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
     } else {
@@ -967,6 +970,18 @@ export default class WebMap extends React.PureComponent {
       }
     }
     L.DomEvent.stopPropagation(event)
+  }
+
+  tuliakovOnDblClick = (event) => {
+    if (this.flexGrid && this.props.flexGridVisible) {
+      const { latlng } = event
+      const cellClick = this.flexGrid.isInsideCell(latlng)
+      const [ direction, zone ] = cellClick
+      // @TODO: delete c.log
+      console.info('direction', direction, 'zone', zone)
+      this.flexGrid.tuliakovSelectDirection(direction)
+      this.props.showDirectionNameForm(direction - 1) // @TODO: set in propType
+    }
   }
 
   selectLayer = (id, exclusive) => {
@@ -1306,6 +1321,7 @@ export default class WebMap extends React.PureComponent {
         <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <DirectionNameForm />
       </div>
     )
   }

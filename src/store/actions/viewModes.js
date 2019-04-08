@@ -17,9 +17,9 @@ export const viewModeDisable = (name) => ({
   payload: name,
 })
 
-export const viewModeEnable = (name) => ({
+export const viewModeEnable = (name, value) => ({
   type: VIEW_MODE_ENABLE,
-  payload: name,
+  payload: { name, value },
 })
 
 export const search = (sample) =>
