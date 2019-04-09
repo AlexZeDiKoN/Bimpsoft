@@ -359,7 +359,6 @@ export const toggleTopographicObjects = () => ({
 
 export const getTopographicObjects = (data) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getTopographicObjects } }) => {
-    dispatch(toggleTopographicObjects())
     const topographicObject = await getTopographicObjects(data)
     dispatch({
       type: actionNames.GET_TOPOGRAPHIC_OBJECTS,

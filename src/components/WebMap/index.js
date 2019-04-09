@@ -150,14 +150,14 @@ const setScaleOptions = (layer, params) => {
   switch (+layer.object.type) {
     case entityKind.POINT:
       layer.setScaleOptions({
-        min: Number(params[paramsNames.POINT_SIZE_MIN]),
-        max: Number(params[paramsNames.POINT_SIZE_MAX]),
+        min: Number(params[ paramsNames.POINT_SIZE_MIN ]),
+        max: Number(params[ paramsNames.POINT_SIZE_MAX ]),
       })
       break
     case entityKind.TEXT:
       layer.setScaleOptions({
-        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+        min: Number(params[ paramsNames.TEXT_SIZE_MIN ]),
+        max: Number(params[ paramsNames.TEXT_SIZE_MAX ]),
       })
       break
     case entityKind.SEGMENT:
@@ -169,8 +169,8 @@ const setScaleOptions = (layer, params) => {
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
       layer.setScaleOptions({
-        min: Number(params[paramsNames.LINE_SIZE_MIN]),
-        max: Number(params[paramsNames.LINE_SIZE_MAX]),
+        min: Number(params[ paramsNames.LINE_SIZE_MIN ]),
+        max: Number(params[ paramsNames.LINE_SIZE_MAX ]),
       })
       break
     default:
@@ -192,7 +192,7 @@ export default class WebMap extends React.PureComponent {
         minZoom: PropTypes.number,
         maxZoom: PropTypes.number,
         tms: PropTypes.bool,
-      })
+      }),
     ),
     layersById: PropTypes.object,
     level: PropTypes.any,
@@ -337,7 +337,7 @@ export default class WebMap extends React.PureComponent {
       this.updateMarkersOn(isMarkersOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
-      this.topoInfoMode = isTopographicObjectsOn
+      this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
@@ -375,10 +375,10 @@ export default class WebMap extends React.PureComponent {
   updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
-    .filter((key) => this.map._layers[key]._locked)
+    .filter((key) => this.map._layers[ key ]._locked)
     .forEach((key) => {
       const { activeObjectId } = this.props
-      const layer = this.map._layers[key]
+      const layer = this.map._layers[ key ]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
         layer.setLocked && layer.setLocked(false)
@@ -453,7 +453,7 @@ export default class WebMap extends React.PureComponent {
         const selectedIdsSet = new Set(selectedIds)
         const points = []
         this.map.eachLayer((layer) =>
-          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry)
+          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry),
         )
         if (points.length > 0) {
           const bounds = L.latLngBounds(points)
@@ -492,7 +492,7 @@ export default class WebMap extends React.PureComponent {
     })
     this.scale._getDisplayUnit = (meters) => {
       const m = meters < 1000
-      const displayUnit = ` ${i18n[m ? 'ABBR_METERS' : 'ABBR_KILOMETERS']}`
+      const displayUnit = ` ${i18n[ m ? 'ABBR_METERS' : 'ABBR_KILOMETERS' ]}`
       return {
         unit: displayUnit,
         amount: m ? meters : meters / 1000,
@@ -528,7 +528,7 @@ export default class WebMap extends React.PureComponent {
 
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
-    const id = list[0]
+    const id = list[ 0 ]
     const layer = this.findLayerById(id)
     if (layer) {
       let checkPoint = null
@@ -553,7 +553,7 @@ export default class WebMap extends React.PureComponent {
   checkSaveEditedObject = async () => {
     const { edit, selection: { list } } = this.props
     if (edit && list.length === 1) {
-      const layer = this.findLayerById(list[0])
+      const layer = this.findLayerById(list[ 0 ])
       if (layer && layer.object) {
         await this.checkSaveObject()
         return layer.object.id
@@ -580,14 +580,14 @@ export default class WebMap extends React.PureComponent {
     }
 
     // save geometry when one selected item lost focus
-    if (list.length === 1 && list[0] !== newList[0] && edit) {
+    if (list.length === 1 && list[ 0 ] !== newList[ 0 ] && edit) {
       this.checkSaveObject()
     }
 
     // get unit from new selection
     let selectedUnit = null
-    if (newList.length === 1 && list[0] !== newList[0]) {
-      const id = newList[0]
+    if (newList.length === 1 && list[ 0 ] !== newList[ 0 ]) {
+      const id = newList[ 0 ]
       const layer = this.findLayerById(id)
       selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
@@ -606,6 +606,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  updateTopographicMarkersOn = (isTopographicMarkersOn) => {
+    this.addTopographicMarkersMode = isTopographicMarkersOn
+    if (!isTopographicMarkersOn && this.topographicMarkers && this.topographicMarkers.length && this.map) {
+      this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.topographicMarkers
+    } else {
+      this.topographicMarkers = []
+    }
+  }
+
   addUserMarker = (point) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
@@ -621,6 +631,15 @@ export default class WebMap extends React.PureComponent {
     }, 50)
   }
 
+  addTopographicMarker = (point) => {
+    this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+    const text = `test`
+    const marker = createSearchMarker(point)
+    marker.addTo(this.map)
+    this.topographicMarkers.push(marker)
+    setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
@@ -629,8 +648,10 @@ export default class WebMap extends React.PureComponent {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
-      if (this.topoInfoMode) {
+      if (this.addTopographicMarkersMode) {
+        console.log(e)
         const { getTopographicObjects } = this.props
+        this.addTopographicMarker(e.latlng)
         const location = {
           coordinates: {
             lat: e.latlng.lat.toFixed(6),
@@ -734,7 +755,7 @@ export default class WebMap extends React.PureComponent {
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
       item.setHidden && item.setHidden(hidden)
-      const color = layer && layersById[layer] ? layersById[layer].color : null
+      const color = layer && layersById[ layer ] ? layersById[ layer ].color : null
       item.setShadowColor && item.setShadowColor(color)
     }
   }
@@ -808,7 +829,7 @@ export default class WebMap extends React.PureComponent {
       newSources.forEach((newSource) => {
         const { source, ...rest } = newSource
         let url = source
-        if (url && url[0] === '/') {
+        if (url && url[ 0 ] === '/') {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
         console.info({
@@ -854,7 +875,7 @@ export default class WebMap extends React.PureComponent {
         }
       })
       for (let i = 0, n = changes.length; i < n; i++) {
-        const { object, layer } = changes[i]
+        const { object, layer } = changes[ i ]
         const newLayer = this.addObject(object, layer)
         if (newLayer !== layer) {
           setLayerSelected(layer, false, false)
@@ -964,7 +985,7 @@ export default class WebMap extends React.PureComponent {
     const { target: layer } = event
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
-    if (list.length === 1 && list[0] === object.id) {
+    if (list.length === 1 && list[ 0 ] === object.id) {
       this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
     } else {
@@ -983,7 +1004,7 @@ export default class WebMap extends React.PureComponent {
     if (id) {
       if (exclusive) {
         this.onSelectedListChange(list.indexOf(id) === -1 ? [ ...list, id ] : list.filter((itemId) => itemId !== id))
-      } else if (list.length !== 1 || list[0] !== id) {
+      } else if (list.length !== 1 || list[ 0 ] !== id) {
         this.onSelectedListChange([ id ])
       }
     } else {
@@ -993,7 +1014,7 @@ export default class WebMap extends React.PureComponent {
 
   findLayerById = (id) => {
     for (const lkey of Object.keys(this.map._layers)) {
-      const layer = this.map._layers[lkey]
+      const layer = this.map._layers[ lkey ]
       if (Number(layer.id) === Number(id)) {
         return layer
       }
@@ -1312,9 +1333,9 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        <MapProvider value={this.map} >{this.props.children}</MapProvider>
-        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
-        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <MapProvider value={this.map}>{this.props.children}</MapProvider>
+        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
+        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
       </div>
     )
   }
