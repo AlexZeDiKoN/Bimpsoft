@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Row, Input, Button } from 'antd'
-import ModalContainer from '../../../common/ModalContainer/index'
+import FocusTrap from 'react-focus-lock'
 // import i18n from "../../../i18n"
 
 export default function DirectionNameForm (props) {
-  const { onClose, onSubmit, id, namesList } = props
+  const { visible, onClose, onSubmit, index, defaultName, wrapper: Wrapper } = props
   const [ directionName, setDirectionName ] = useState('')
-  const hasId = id || id === 0
   useEffect(() => {
-    hasId && setDirectionName(namesList.get(id))
-  }, [ id ])
+    visible && defaultName && setDirectionName(defaultName)
+  }, [ index ])
 
   const handleChange = ({ target: { value } }) => setDirectionName(value)
 
   const handleSubmit = () => {
-    onSubmit({ name: directionName, id })
+    onSubmit(directionName)
     onClose()
   }
 
-  return hasId && (
-    <ModalContainer title={'DIRECTION NAME'} onClose={props.onClose}>
-      <>
+  return visible && (
+    <Wrapper title={'DIRECTION NAME'} onClose={onClose}>
+      <FocusTrap>
         <Row>
           <Input value={directionName} onChange={handleChange} />
         </Row>
@@ -33,14 +32,17 @@ export default function DirectionNameForm (props) {
             SAVE
           </Button>
         </Row>
-      </>
-    </ModalContainer>
+      </FocusTrap>
+    </Wrapper>
   )
 }
 
 DirectionNameForm.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  id: PropTypes.any,
-  namesList: PropTypes.object,
+  index: PropTypes.number,
+  layerId: PropTypes.string,
+  visible: PropTypes.bool.isRequired,
+  defaultName: PropTypes.string,
+  wrapper: PropTypes.any,
 }

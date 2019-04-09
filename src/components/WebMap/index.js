@@ -40,7 +40,6 @@ import {
   createCoordinateMarker,
 } from './Tactical'
 import { MapProvider } from './MapContext'
-import DirectionNameForm from './children/DirectionNameForm'
 
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
@@ -243,6 +242,7 @@ export default class WebMap extends React.PureComponent {
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
+    selectedDirections: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -264,6 +264,7 @@ export default class WebMap extends React.PureComponent {
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
     showDirectionNameForm: PropTypes.func,
+    selectDirection: PropTypes.func,
   }
 
   constructor (props) {
@@ -528,9 +529,12 @@ export default class WebMap extends React.PureComponent {
     this.updater = new UpdateQueue(this.map)
   }
 
+  // @TODO: delete c.logs check this checker when edit names
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
+    console.info(id)
+    console.info(this.props.activeMapId)
     const layer = this.findLayerById(id)
     if (layer) {
       let checkPoint = null
@@ -973,14 +977,18 @@ export default class WebMap extends React.PureComponent {
   }
 
   tuliakovOnDblClick = (event) => {
-    if (this.flexGrid && this.props.flexGridVisible) {
+    const { selectDirection, flexGridVisible, showDirectionNameForm } = this.props
+    if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
-      const [ direction, zone ] = cellClick
-      // @TODO: delete c.log
-      console.info('direction', direction, 'zone', zone)
-      this.flexGrid.tuliakovSelectDirection(direction)
-      this.props.showDirectionNameForm(direction - 1) // @TODO: set in propType
+      if (cellClick) {
+        const [ direction, zone ] = cellClick
+        // @TODO: delete c.log
+        console.info('direction', direction, 'zone', zone)
+        this.flexGrid.tuliakovSelectDirection(direction)
+        selectDirection(direction - 1)
+        showDirectionNameForm() // @TODO: set in propType
+      }
     }
   }
 
@@ -1321,7 +1329,6 @@ export default class WebMap extends React.PureComponent {
         <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <DirectionNameForm />
       </div>
     )
   }

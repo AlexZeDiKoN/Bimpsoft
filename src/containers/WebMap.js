@@ -43,10 +43,12 @@ const WebMapContainer = connect(
     flexGridData: flexGridData(state),
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
+    selectedDirections: state.flexGrid.selectedDirections,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
     updateObjectGeometry: webMap.updateObjectGeometry,
+    updateObjectAttributes: webMap.updateObjectAttributes,
     editObject: selection.showEditForm,
     onSelectedList: (list) => batchActions([
       selection.selectedList(list),
@@ -78,7 +80,8 @@ const WebMapContainer = connect(
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
-    showDirectionNameForm: (id) => viewModes.viewModeEnable(directionName, id),
+    showDirectionNameForm: () => viewModes.viewModeEnable(directionName),
+    selectDirection: flexGrid.selectDirection,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

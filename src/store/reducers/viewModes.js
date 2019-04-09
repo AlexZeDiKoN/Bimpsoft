@@ -31,8 +31,8 @@ export default function reducer (state = initialState, action) {
       return { ...state, [name]: false }
     }
     case actions.VIEW_MODE_ENABLE: {
-      const { payload: { name, value = true } } = action // @TODO discuss! if no value - set as true
-      return { ...state, [name]: value }
+      const { payload: name } = action
+      return { ...state, [name]: true }
     }
     case actions.SET_SEARCH_OPTIONS: {
       const { payload } = action

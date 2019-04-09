@@ -25,6 +25,7 @@ const FlexGridState = Record({
   visible: false,
   vertical: false,
   present: false,
+  selectedDirections: [],
   flexGrid: FlexGrid(),
 })
 
@@ -44,11 +45,12 @@ export default function reducer (state = FlexGridState(), action) {
       }
       return update(state, 'flexGrid', merge, { directions })
     }
-    case actions.SET_DIR_NAME: {
-      const { id, name } = payload
-      return state.setIn([ 'flexGrid', 'directionNames', id ], name)
-      // return update(state, [ 'flexGrid', 'directionNames', id ], name)
-    }
+    // @TODO: check
+    // case actions.SET_DIR_NAME: {
+    //   const { id, name } = payload
+    //   return state.setIn([ 'flexGrid', 'directionNames', id ], name)
+    // return update(state, [ 'flexGrid', 'directionNames', id ], name)
+    // }
     case actions.SET_ZONES: {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
       return update(state, 'flexGrid', merge, { zones })
@@ -105,6 +107,15 @@ export default function reducer (state = FlexGridState(), action) {
           flexGrid: FlexGrid(),
         })
       }
+    }
+    // @TODO: или сделать через сет?
+    case actions.SELECT_DIRECTION: {
+      const { selectedDirections } = state
+      return state.set('selectedDirections', [ payload, ...selectedDirections ])
+    }
+    case actions.DESELECT_DIRECTION: {
+      const newSelectedArray = payload ? state.selectedDirections.filter(payload) : [] /** if u pass an id, then will deselect current direction, in other case will deselect all */
+      return state.set('selectedDirections', newSelectedArray)
     }
     default:
       return state

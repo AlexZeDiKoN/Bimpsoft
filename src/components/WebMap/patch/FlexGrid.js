@@ -113,6 +113,7 @@ L.FlexGrid = L.Layer.extend({
     }
 
     this.id = id
+    this.highlightedDirections = []
     if (geometry) {
       const copyRow = (row) => row.map(L.latLng)
       const copyRing = (ring) => ring.map(copyRow)
@@ -364,12 +365,12 @@ L.FlexGrid = L.Layer.extend({
     return result
   },
 
+  // @TODO: set selectedDirections as highlightedDirections!
   tuliakovSelectDirection (directionId) {
     this.highlightedDirections = [ directionId ]
     // this.highlightedDirections
     // ? this.highlightedDirections.push(directionId) : this.highlightedDirections = [ directionId ]
-    // L.setOptions(this, { selectedDirectionIndex: directionId })
-    this._renderer.tuliakovUpdateCell(this)
+    this._renderer._updateFlexGrid(this)
   },
 
   // @method bringToFront(): this
