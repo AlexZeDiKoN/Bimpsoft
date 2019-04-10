@@ -994,16 +994,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: set method
+  // @TODO: discuss method
   showDirectionTitle = debounce((event) => {
-    const { flexGridVisible } = this.props
+    const { flexGridVisible, flexGridData: { directionNames } } = this.props
     if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        // @TODO: delete c.log
-        console.info('direction', direction, 'zone', zone)
+        const toolTipInfo = `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${directionNames.get(direction - 1) || `№ ${direction}`}"`
+        this.flexGrid.bindTooltip(toolTipInfo).openTooltip(latlng)
       }
     }
   }, 1000)
