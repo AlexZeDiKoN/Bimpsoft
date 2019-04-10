@@ -114,7 +114,7 @@ export default function reducer (state = FlexGridState(), action) {
       return state.set('selectedDirections', [ payload, ...selectedDirections ])
     }
     case actions.DESELECT_DIRECTION: {
-      const newSelectedArray = payload ? state.selectedDirections.filter(payload) : [] /** if u pass an id, then will deselect current direction, in other case will deselect all */
+      const newSelectedArray = payload !== undefined ? state.selectedDirections.filter((i) => i !== payload) : [] /** if u pass an id, then will deselect current direction, in other case will deselect all */
       return state.set('selectedDirections', newSelectedArray)
     }
     default:

@@ -237,6 +237,7 @@ export default class WebMap extends React.PureComponent {
       directions: PropTypes.number,
       zones: PropTypes.number,
       vertical: PropTypes.bool,
+      selectedDirections: PropTypes.array,
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -300,6 +301,7 @@ export default class WebMap extends React.PureComponent {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData,
+      flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -361,6 +363,9 @@ export default class WebMap extends React.PureComponent {
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
+    }
+    if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
+      this.highlightDirections(selectedDirections)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
@@ -529,7 +534,6 @@ export default class WebMap extends React.PureComponent {
     this.updater = new UpdateQueue(this.map)
   }
 
-  // @TODO: delete c.logs check this checker when edit names
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
@@ -985,11 +989,15 @@ export default class WebMap extends React.PureComponent {
         const [ direction, zone ] = cellClick
         // @TODO: delete c.log
         console.info('direction', direction, 'zone', zone)
-        this.flexGrid.tuliakovSelectDirection(direction)
         selectDirection(direction - 1)
         showDirectionNameForm() // @TODO: set in propType
       }
     }
+  }
+
+  highlightDirections = (selectedDirections) => {
+    const { flexGridVisible } = this.props
+    this.flexGrid && flexGridVisible && this.flexGrid.selectDirection(selectedDirections)
   }
 
   selectLayer = (id, exclusive) => {

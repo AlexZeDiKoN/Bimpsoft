@@ -300,7 +300,12 @@ L.SVG.include({
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
-    grid.highlightedDirections.length && grid.highlightedDirections.forEach((index) =>
-      grid._highlighted.setAttribute('d', grid.cellRings[--index].join('')))
+    grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+  },
+
+  _getHighlightDirectionsArea: function (grid) {
+    return grid.highlightedDirections.length
+      ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
+      : ''
   },
 })

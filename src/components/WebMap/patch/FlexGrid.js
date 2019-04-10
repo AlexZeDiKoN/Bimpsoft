@@ -365,11 +365,9 @@ L.FlexGrid = L.Layer.extend({
     return result
   },
 
-  // @TODO: set selectedDirections as highlightedDirections!
-  tuliakovSelectDirection (directionId) {
-    this.highlightedDirections = [ directionId ]
-    // this.highlightedDirections
-    // ? this.highlightedDirections.push(directionId) : this.highlightedDirections = [ directionId ]
+  // @TODO: selectDirection
+  selectDirection (directionId) {
+    this.highlightedDirections = directionId
     this._renderer._updateFlexGrid(this)
   },
 
