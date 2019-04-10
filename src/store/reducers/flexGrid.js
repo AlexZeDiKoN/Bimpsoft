@@ -45,12 +45,6 @@ export default function reducer (state = FlexGridState(), action) {
       }
       return update(state, 'flexGrid', merge, { directions })
     }
-    // @TODO: check
-    // case actions.SET_DIR_NAME: {
-    //   const { id, name } = payload
-    //   return state.setIn([ 'flexGrid', 'directionNames', id ], name)
-    // return update(state, [ 'flexGrid', 'directionNames', id ], name)
-    // }
     case actions.SET_ZONES: {
       const zones = payload ? HAS_ZONES : HASNT_ZONES
       return update(state, 'flexGrid', merge, { zones })
@@ -78,7 +72,7 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones, directionNames = [] }, // @TODO: set [] as default at BE
+          attributes: { directions, zones, directionNames = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
         return payload
@@ -108,7 +102,7 @@ export default function reducer (state = FlexGridState(), action) {
         })
       }
     }
-    // @TODO: или сделать через сет?
+    // @TODO: решить, возможно использовать Set вместо массива
     case actions.SELECT_DIRECTION: {
       const { selectedDirections } = state
       return state.set('selectedDirections', [ payload, ...selectedDirections ])
