@@ -529,7 +529,7 @@ export default class WebMap extends React.PureComponent {
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
-    this.map.on('dblclick', this.tuliakovOnDblClick)
+    this.map.on('dblclick', this.onDblClick)
     this.map.on('mousemove ', this.showDirectionTitle)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
@@ -981,17 +981,15 @@ export default class WebMap extends React.PureComponent {
     L.DomEvent.stopPropagation(event)
   }
 
-  tuliakovOnDblClick = (event) => {
+  onDblClick = (event) => {
     const { selectDirection, flexGridVisible, showDirectionNameForm } = this.props
     if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
-        const [ direction, zone ] = cellClick
-        // @TODO: delete c.log
-        console.info('direction', direction, 'zone', zone)
+        const [ direction ] = cellClick
         selectDirection(direction - 1)
-        showDirectionNameForm() // @TODO: set in propType
+        showDirectionNameForm()
       }
     }
   }
