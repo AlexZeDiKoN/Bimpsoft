@@ -537,8 +537,6 @@ export default class WebMap extends React.PureComponent {
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
-    console.info(id)
-    console.info(this.props.activeMapId)
     const layer = this.findLayerById(id)
     if (layer) {
       let checkPoint = null

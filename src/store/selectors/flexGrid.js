@@ -7,7 +7,7 @@ const visibleFlag = ({ flexGrid }) => flexGrid.visible
 const optionDirections = ({ flexGrid }) => flexGrid.flexGrid.directions
 const optionZones = ({ flexGrid }) => flexGrid.flexGrid.zones
 const optionVertical = ({ flexGrid }) => flexGrid.vertical
-const selectedDirections = ({ flexGrid }) => flexGrid.selectedDirections
+export const selectedDirections = ({ flexGrid }) => flexGrid.selectedDirections.toArray()
 const data = ({ flexGrid: { flexGrid } }) => flexGrid
 
 export const showFlexGridOptions = createSelector(

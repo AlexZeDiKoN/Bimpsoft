@@ -3,10 +3,11 @@ import { directionName } from '../constants/viewModesKeys'
 import { viewModeDisable } from '../store/actions/viewModes'
 import { updateObjectAttributes } from '../store/actions/webMap'
 import { deselectDirection } from '../store/actions/flexGrid'
+import { selectedDirections } from '../store/selectors/flexGrid'
 import DirectionNameForm from '../components/DirectionNameForm'
 
 const mapStateToProps = (store) => {
-  const index = store.flexGrid.selectedDirections[0]
+  const index = selectedDirections(store)[0]
   const namesList = store.flexGrid.flexGrid.directionNames
   return ({
     visible: store.viewModes[directionName],
@@ -27,9 +28,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { updateObjectAttributes, hideModal, deselectDirection } = dispatchProps
 
   return {
-    index,
-    ...restState,
     ...ownProps,
+    ...restState,
     onSubmit: (name) => {
       const directionNames = list.set(index, name).toArray()
       const attributes = { zones, directions, directionNames }

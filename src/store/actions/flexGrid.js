@@ -35,11 +35,6 @@ export const setFlexGridDirections = (value) => ({
   payload: value,
 })
 
-export const setDirectionName = (name) => ({
-  type: SET_DIR_NAME,
-  // payload: { id, name },
-})
-
 export const setFlexGridZones = (value) => ({
   type: SET_ZONES,
   payload: value,

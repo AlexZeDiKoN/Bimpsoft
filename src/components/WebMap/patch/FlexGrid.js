@@ -71,7 +71,6 @@ L.FlexGrid = L.Layer.extend({
       fill: true,
       fillOpacity: 0.4,
       fillColor: '#ff2',
-      color: '#ff2',
     },
     shadow: {
       ...commonStyle,

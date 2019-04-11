@@ -17,18 +17,20 @@ const {
 
 export default function DirectionNameForm (props) {
   const {
-    visible, index, defaultName,
+    visible, defaultName,
     onClose, onSubmit,
     wrapper: Wrapper,
   } = props
 
   const [ name, setName ] = useState(defaultName)
-  useEffect(() => { setName(defaultName || '') }, [ index ])
+  useEffect(() => {
+    visible && setName(defaultName || '')
+  }, [ visible ])
 
   const handleChange = ({ target: { value } }) => setName(value)
 
   const handleSubmit = () => {
-    onSubmit(name)
+    name !== defaultName && onSubmit(name)
     onClose()
   }
 

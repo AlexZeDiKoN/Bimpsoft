@@ -1,4 +1,4 @@
-import { List, Record } from 'immutable'
+import { List, Record, Set } from 'immutable'
 import * as actions from '../actions/flexGrid'
 import { merge, update } from '../../utils/immutable'
 
@@ -25,7 +25,7 @@ const FlexGridState = Record({
   visible: false,
   vertical: false,
   present: false,
-  selectedDirections: [],
+  selectedDirections: Set(),
   flexGrid: FlexGrid(),
 })
 
@@ -102,14 +102,15 @@ export default function reducer (state = FlexGridState(), action) {
         })
       }
     }
-    // @TODO: решить, возможно использовать Set вместо массива
     case actions.SELECT_DIRECTION: {
       const { selectedDirections } = state
-      return state.set('selectedDirections', [ payload, ...selectedDirections ])
+      const newSelected = selectedDirections.add(payload)
+      return update(state, 'selectedDirections', newSelected)
     }
     case actions.DESELECT_DIRECTION: {
-      const newSelectedArray = payload !== undefined ? state.selectedDirections.filter((i) => i !== payload) : [] /** if u pass an id, then will deselect current direction, in other case will deselect all */
-      return state.set('selectedDirections', newSelectedArray)
+      const { selectedDirections } = state
+      const newSelected = payload !== undefined ? selectedDirections.delete(payload) : selectedDirections.clear() /** if u pass an id, then will deselect current direction, in other case will deselect all */
+      return update(state, 'selectedDirections', newSelected)
     }
     default:
       return state
