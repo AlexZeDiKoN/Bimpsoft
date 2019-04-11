@@ -169,6 +169,10 @@ export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
 
+export const FRIENDLY = 'дружня'
+export const HOSTILE = 'ворожа'
+export const ZONE_OF_DIRECTION = 'зона напрямку'
+
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`

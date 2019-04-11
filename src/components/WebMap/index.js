@@ -532,6 +532,7 @@ export default class WebMap extends React.PureComponent {
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.on('dblclick', this.onDblClick)
+    this.map.on('mousemove ', this.showDirectionTitle)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
@@ -992,6 +993,20 @@ export default class WebMap extends React.PureComponent {
       }
     }
   }
+
+  // @TODO: discuss method
+  showDirectionTitle = debounce((event) => {
+    const { flexGridVisible, flexGridData: { directionNames } } = this.props
+    if (this.flexGrid && flexGridVisible) {
+      const { latlng } = event
+      const cellClick = this.flexGrid.isInsideCell(latlng)
+      if (cellClick) {
+        const [ direction, zone ] = cellClick
+        const toolTipInfo = `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${directionNames.get(direction - 1) || `№ ${direction}`}"`
+        this.flexGrid.bindTooltip(toolTipInfo).openTooltip(latlng)
+      }
+    }
+  }, 1000)
 
   highlightDirections = (selectedDirections) => {
     const { flexGridVisible } = this.props
