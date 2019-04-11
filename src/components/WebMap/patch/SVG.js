@@ -304,7 +304,7 @@ L.SVG.include({
   },
 
   _getHighlightDirectionsArea: function (grid) {
-    return grid.highlightedDirections.length
+    return grid.highlightedDirections && grid.highlightedDirections.length
       ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
       : ''
   },
