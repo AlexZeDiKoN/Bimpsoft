@@ -41,6 +41,7 @@ export const actionNames = {
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
+  UPD_ATTR: action('UPD_ATTR'),
   APP_INFO: action('APP_INFO'),
   GET_LOCKED_OBJECTS: action('GET_LOCKED_OBJECTS'),
   OBJECT_LOCKED: action('OBJECT_LOCKED'),
@@ -220,6 +221,18 @@ export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
+
+    payload = fixServerObject(payload)
+
+    return dispatch({
+      type: actionNames.UPD_OBJECT,
+      payload,
+    })
+  })
+
+export const updateObjectAttributes = (id, attributes) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateAttr } }) => {
+    let payload = await objUpdateAttr(id, attributes)
 
     payload = fixServerObject(payload)
 
