@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
@@ -9,6 +8,7 @@ import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
+import ButtonIcon from '../ButtonIcon'
 
 const iconNames = components.icons.names
 
@@ -72,7 +72,7 @@ export default class LeftMenu extends React.Component {
 
     return (
       <div className='left-menu' >
-        <IconButton
+        <ButtonIcon
           title={i18n.EDIT_MODE}
           icon={iconNames.EDIT_DEFAULT}
           checked={isEditMode}
@@ -81,7 +81,7 @@ export default class LeftMenu extends React.Component {
         <CreateButtonsComponent />
         <MenuDivider />
         <MapSourceSelectComponent />
-        <IconButton
+        <ButtonIcon
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
           icon={subordinationLevelViewData.icon}
           checked={isShowSubordinationLevel || !subordinationAuto}
@@ -109,22 +109,22 @@ export default class LeftMenu extends React.Component {
               ))}
             </ContextMenu>
           )}
-        </IconButton>
+        </ButtonIcon>
         <MenuDivider />
-        <IconButton
+        <ButtonIcon
           value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
-        <IconButton
+        <ButtonIcon
           title={i18n.MARKER}
           icon={iconNames.MENU_MARKER_DEFAULT}
           checked={marker}
           onClick={onMarkerChange}
         />
-        <IconButton
+        <ButtonIcon
           title={i18n.TOPOGRAPHIC_OBJECTS}
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
