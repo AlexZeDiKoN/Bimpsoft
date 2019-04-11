@@ -161,12 +161,12 @@ export const fixInstance = (flexGrid) => (_1, _2, extra) => {
 
 // Directions:
 
-export const selectDirection = (index) => ({
+export const selectDirection = ({ index, setAsMain }) => ({
   type: SELECT_DIRECTION,
-  payload: index,
+  payload: { index, setAsMain },
 })
 
-export const deselectDirection = (index) => ({
+export const deselectDirection = ({ index, clearMain }) => ({
   type: DESELECT_DIRECTION,
-  payload: index,
+  payload: { index, clearMain },
 })

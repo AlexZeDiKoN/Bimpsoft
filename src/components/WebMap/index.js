@@ -237,7 +237,10 @@ export default class WebMap extends React.PureComponent {
       directions: PropTypes.number,
       zones: PropTypes.number,
       vertical: PropTypes.bool,
-      selectedDirections: PropTypes.array,
+      selectedDirections: PropTypes.shape({
+        list: PropTypes.array,
+        current: PropTypes.oneOfType([ PropTypes.object, PropTypes.number ]),
+      }),
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -984,7 +987,7 @@ export default class WebMap extends React.PureComponent {
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection(direction - 1)
+        selectDirection({ index: direction - 1, setAsMain: true })
         showDirectionNameForm()
       }
     }
