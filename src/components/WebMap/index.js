@@ -243,7 +243,6 @@ export default class WebMap extends React.PureComponent {
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
-    selectedDirections: PropTypes.any,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
