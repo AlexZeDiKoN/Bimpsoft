@@ -16,7 +16,6 @@ export const SET_ZONES = action('SET_ZONES')
 export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
-export const SET_DIR_NAME = action('SET_DIR_NAME')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
 
