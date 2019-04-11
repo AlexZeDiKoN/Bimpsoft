@@ -232,7 +232,6 @@ export const updateObjectGeometry = (id, geometry) =>
 
 export const updateObjectAttributes = (id, attributes) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateAttr } }) => {
-    stopHeartBeat()
     let payload = await objUpdateAttr(id, attributes)
 
     payload = fixServerObject(payload)
