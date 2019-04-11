@@ -81,7 +81,11 @@ export default class SettingsForm extends React.Component {
     } = this.props
 
     return (
-      <Wrapper title={i18n.SETTINGS} onClose={onClose}>
+      <Wrapper
+        title={i18n.SETTINGS}
+        onClose={onClose}
+        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.05 }}
+      >
         <FocusTrap>
           <HotKeysContainer>
             <Form className="settings-form-group settings--form">

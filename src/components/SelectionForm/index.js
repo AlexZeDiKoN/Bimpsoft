@@ -73,7 +73,11 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (
-      <Wrapper title={title} onClose={onCancel}>
+      <Wrapper
+        title={title}
+        onClose={onCancel}
+        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.02 }}
+      >
         <FocusTrap>
           <HotKeysContainer>
             <Component
