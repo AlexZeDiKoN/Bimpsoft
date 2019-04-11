@@ -364,8 +364,8 @@ L.FlexGrid = L.Layer.extend({
     return result
   },
 
-  selectDirection (directionId) {
-    this.highlightedDirections = directionId
+  selectDirection (directionList) {
+    this.highlightedDirections = directionList
     this._renderer._updateFlexGrid(this)
   },
 
