@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "6.02.286",
+  "version": "6.02.290",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^6.2.156",
@@ -53,7 +53,7 @@
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-standard": "^3.1.0",
-    "node-less-chokidar": "^0.1.2",
+    "node-less-chokidar": "^0.4.1",
     "npm-run-all": "^4.1.3",
     "prop-types": "^15.6.1",
     "reselect": "^3.0.1",

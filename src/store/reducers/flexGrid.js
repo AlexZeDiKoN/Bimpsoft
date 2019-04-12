@@ -1,4 +1,4 @@
-import { List, Record } from 'immutable'
+import { List, Record, Set } from 'immutable'
 import * as actions from '../actions/flexGrid'
 import { merge, update } from '../../utils/immutable'
 
@@ -16,7 +16,13 @@ const FlexGrid = Record({
   directionSegments: List(),
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
+  directionNames: List(),
   zones: HAS_ZONES,
+})
+
+const SelectedDirections = Record({
+  list: Set(),
+  current: null,
 })
 
 const FlexGridState = Record({
@@ -24,6 +30,7 @@ const FlexGridState = Record({
   visible: false,
   vertical: false,
   present: false,
+  selectedDirections: SelectedDirections(),
   flexGrid: FlexGrid(),
 })
 
@@ -70,7 +77,7 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones },
+          attributes: { directions, zones, directionNames = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
         return payload
@@ -84,6 +91,7 @@ export default function reducer (state = FlexGridState(), action) {
             zones,
             eternals: List(eternals),
             directionSegments: List(directionSegments),
+            directionNames: List(directionNames),
             zoneSegments: List(zoneSegments),
           })
           : merge(state, {
@@ -98,6 +106,20 @@ export default function reducer (state = FlexGridState(), action) {
           flexGrid: FlexGrid(),
         })
       }
+    }
+    case actions.SELECT_DIRECTION: {
+      const { selectedDirections: { list, current } } = state
+      const { index, setAsMain } = payload
+      const updaterObj = { list: list.add(index), current: setAsMain ? index : current }
+      return update(state, 'selectedDirections', merge, updaterObj)
+    }
+    case actions.DESELECT_DIRECTION: {
+      const { selectedDirections: { list, current } } = state
+      const { index, clearMain } = payload
+      const updaterObj = payload /** if u pass an id, then will deselect current direction, in other case will deselect all */
+        ? { list: list.delete(index), current: clearMain ? null : current }
+        : { list: list.clear(), current: null }
+      return update(state, 'selectedDirections', merge, updaterObj)
     }
     default:
       return state

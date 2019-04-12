@@ -275,7 +275,8 @@ L.SVG.include({
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
-    grid._pathes = [ grid._zones, grid._directions, grid._boundary, grid._border ]
+    grid._highlighted = L.SVG.create('path')
+    grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
     if (grid.options.interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
@@ -284,6 +285,7 @@ L.SVG.include({
     this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
     this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
     this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
+    this._updateStyle({ _path: grid._highlighted, options: grid.options.highlight })
     group.appendChild(grid._shadow)
     grid._pathes.forEach((path) => group.appendChild(path))
     this._layers[L.Util.stamp(grid)] = grid
@@ -298,5 +300,12 @@ L.SVG.include({
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
+    grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+  },
+
+  _getHighlightDirectionsArea: function (grid) {
+    return grid.highlightedDirections && grid.highlightedDirections.length
+      ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
+      : ''
   },
 })

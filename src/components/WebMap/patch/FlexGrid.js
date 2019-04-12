@@ -65,6 +65,13 @@ L.FlexGrid = L.Layer.extend({
       ...commonStyle,
       color: '#000',
     },
+    highlight: {
+      ...commonStyle,
+      stroke: false,
+      fill: true,
+      fillOpacity: 0.4,
+      fillColor: '#ff2',
+    },
     shadow: {
       ...commonStyle,
       stroke: false,
@@ -105,6 +112,7 @@ L.FlexGrid = L.Layer.extend({
     }
 
     this.id = id
+    this.highlightedDirections = []
     if (geometry) {
       const copyRow = (row) => row.map(L.latLng)
       const copyRing = (ring) => ring.map(copyRow)
@@ -354,6 +362,11 @@ L.FlexGrid = L.Layer.extend({
       }
     }))
     return result
+  },
+
+  selectDirection (directionList) {
+    this.highlightedDirections = directionList
+    this._renderer._updateFlexGrid(this)
   },
 
   // @method bringToFront(): this

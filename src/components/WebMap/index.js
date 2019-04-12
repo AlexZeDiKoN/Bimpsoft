@@ -244,6 +244,10 @@ export default class WebMap extends React.PureComponent {
       directions: PropTypes.number,
       zones: PropTypes.number,
       vertical: PropTypes.bool,
+      selectedDirections: PropTypes.shape({
+        list: PropTypes.array,
+        current: PropTypes.oneOfType([ PropTypes.object, PropTypes.number ]),
+      }),
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -269,6 +273,8 @@ export default class WebMap extends React.PureComponent {
     flexGridChanged: PropTypes.func,
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
+    showDirectionNameForm: PropTypes.func,
+    selectDirection: PropTypes.func,
   }
 
   constructor (props) {
@@ -304,6 +310,7 @@ export default class WebMap extends React.PureComponent {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData,
+      flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
     } = this.props
 
@@ -365,6 +372,9 @@ export default class WebMap extends React.PureComponent {
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
+    }
+    if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
+      this.highlightDirections(selectedDirections)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
@@ -528,6 +538,8 @@ export default class WebMap extends React.PureComponent {
     this.map.on('stop_measuring', this.onStopMeasuring)
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
+    this.map.on('dblclick', this.onDblClick)
+    this.map.on('mousemove ', this.showDirectionTitle)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
@@ -951,7 +963,7 @@ export default class WebMap extends React.PureComponent {
     const { target: layer } = event
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
-    if (list.length === 1 && list[0] === object.id) {
+    if (object && list.length === 1 && list[0] === object.id) {
       this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
     } else {
@@ -963,6 +975,38 @@ export default class WebMap extends React.PureComponent {
       }
     }
     L.DomEvent.stopPropagation(event)
+  }
+
+  onDblClick = (event) => {
+    const { selectDirection, flexGridVisible, showDirectionNameForm } = this.props
+    if (this.flexGrid && flexGridVisible) {
+      const { latlng } = event
+      const cellClick = this.flexGrid.isInsideCell(latlng)
+      if (cellClick) {
+        const [ direction ] = cellClick
+        selectDirection({ index: direction - 1, setAsMain: true })
+        showDirectionNameForm()
+      }
+    }
+  }
+
+  // @TODO: discuss method
+  showDirectionTitle = debounce((event) => {
+    const { flexGridVisible, flexGridData: { directionNames } } = this.props
+    if (this.flexGrid && flexGridVisible) {
+      const { latlng } = event
+      const cellClick = this.flexGrid.isInsideCell(latlng)
+      if (cellClick) {
+        const [ direction, zone ] = cellClick
+        const toolTipInfo = `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${directionNames.get(direction - 1) || `№ ${direction}`}"`
+        this.flexGrid.bindTooltip(toolTipInfo).openTooltip(latlng)
+      }
+    }
+  }, 1000)
+
+  highlightDirections = (selectedDirections) => {
+    const { flexGridVisible } = this.props
+    this.flexGrid && flexGridVisible && this.flexGrid.selectDirection(selectedDirections)
   }
 
   selectLayer = (id, exclusive) => {

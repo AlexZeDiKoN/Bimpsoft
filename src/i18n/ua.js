@@ -114,6 +114,7 @@ export const LINE_STYLE = 'Стиль лінії'
 export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
+export const DIRECTION = 'Напрямок'
 export const NODAL_POINTS = 'Вузлові точки'
 export const SIDE_SIZE = 'Довжина сторони'
 export const RADIUS = 'Радіус'
@@ -162,6 +163,10 @@ export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
 
+export const FRIENDLY = 'дружня'
+export const HOSTILE = 'ворожа'
+export const ZONE_OF_DIRECTION = 'зона напрямку'
+
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
@@ -187,6 +192,7 @@ export const DOCUMENT_SIGNATORIES = `Підпис документа`
 export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
+export const DESIGNATION = `Назва`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`
