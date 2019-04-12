@@ -1,9 +1,11 @@
-import { coordinates } from '../index'
+import { utils } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import { ValidationError } from '../../constants/errors'
 
+const { Coordinates: Coord } = utils
+
 export function validateCoordinate (coordinate) {
-  if (!coordinate || coordinates.isWrong(coordinate)) {
+  if (!Coord.check(coordinate)) {
     throw new ValidationError(i18n.INCORRECT_COORDINATE)
   }
 }

@@ -5,10 +5,8 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
-import { forward } from 'mgrs'
-import { fromLatLon } from 'utm'
-import proj4 from 'proj4'
 import * as debounce from 'debounce'
+import { utils } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -22,11 +20,9 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, CoordinatesTypes } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
-import coordinates from '../../utils/coordinates'
-import { getSC42Projection, getUSC2000Projection } from '../../utils/projection'
 import { flexGridPropTypes } from '../../store/selectors'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -41,11 +37,10 @@ import {
 } from './Tactical'
 import { MapProvider } from './MapContext'
 
+const { Coordinates: Coord } = utils
+
 let MIN_ZOOM = 0
 let MAX_ZOOM = 20
-
-const mgrsAccuracy = 5 // Точність задання координат у системі MGRS, цифр (значення 5 відповідає точності 1 метр)
-const wgsAccuracy = 5 // Точність задання координат у системі WGS-84, десяткових знаків
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -100,31 +95,43 @@ const indicateModes = {
   WGSI: 1,
   MGRS: 2,
   UTM: 3,
-  SC42: 4,
-  USC2000: 5,
+  CS42: 4,
+  UCS2000: 5,
   ALL: 6,
 }
 
-const type2mode = (type) => {
+const type2mode = (type, oldMode) => {
   switch (type) {
-    case CoordinatesTypes.CS_42:
-      return indicateModes.SC42
-    case CoordinatesTypes.UCS_2000:
-      return indicateModes.USC2000
-    case CoordinatesTypes.MGRS:
+    case Coord.types.CS_42:
+      return indicateModes.CS42
+    case Coord.types.UCS_2000:
+      return indicateModes.UCS2000
+    case Coord.types.MGRS:
       return indicateModes.MGRS
-    case CoordinatesTypes.UTM:
+    case Coord.types.UTM:
       return indicateModes.UTM
     default:
-      return indicateModes.WGS
+      return oldMode === indicateModes.WGSI ? indicateModes.WGSI : indicateModes.WGS
   }
 }
 
-const sc42 = (lng, lat) => proj4(getSC42Projection(lng), [ lng, lat ])
-
-const usc2000 = (lng, lat) => proj4(getUSC2000Projection(lng), [ lng, lat ])
+const mode2type = (mode) => {
+  switch (mode) {
+    case indicateModes.CS42:
+      return Coord.types.CS_42
+    case indicateModes.UCS2000:
+      return Coord.types.UCS_2000
+    case indicateModes.MGRS:
+      return Coord.types.MGRS
+    case indicateModes.UTM:
+      return Coord.types.UTM
+    default:
+      return Coord.types.WGS_84
+  }
+}
 
 const z = (v) => `0${v}`.slice(-2)
+
 const toGMS = (value, pos, neg) => {
   const sign = value > 0 ? pos : neg
   value = Math.abs(value)
@@ -134,14 +141,14 @@ const toGMS = (value, pos, neg) => {
   const s = Math.round((value - m) * 60)
   return `${sign} ${g}°${z(m)}'${z(s)}"` // eslint-disable-line no-irregular-whitespace
 }
-const utmLabel = (u) => `${u.zoneLetter}-${u.zoneNum} ${u.easting.toFixed(0)} ${u.northing.toFixed(0)}`
-const scLabel = ([ x, y ]) => `${x.toFixed(0)}\xA0${y.toFixed(0)}`
-const Wgs84 = (lat, lng) => `${i18n.LATITUDE}: ${lat.toFixed(wgsAccuracy)}\xA0\xA0\xA0${i18n.LONGITUDE}: ${lng.toFixed(wgsAccuracy)}`
-const Wgs84I = (lat, lng) => `${toGMS(lat, 'N', 'S')}\xA0\xA0\xA0${toGMS(lng, 'E', 'W')}`
-const Mgrs = (lat, lng) => `MGRS:\xA0${forward([ lng, lat ], mgrsAccuracy)}`
-const Utm = (lat, lng) => `UTM:\xA0${utmLabel(fromLatLon(lat, lng))}`
-const Sc42 = (lat, lng) => `СК-42:\xA0${scLabel(sc42(lng, lat))}`
-const Usc2000 = (lat, lng) => `УСК-2000:\xA0${scLabel(usc2000(lng, lat))}`
+
+const serializeCoordinate = (mode, lat, lng) => {
+  const type = mode2type(mode)
+  const serialized = mode === indicateModes.WGSI
+    ? `${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}`
+    : Coord.stringify({ type, lat, lng })
+  return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
+}
 
 const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
@@ -341,7 +348,7 @@ export default class WebMap extends React.PureComponent {
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
     if (coordinatesType !== prevProps.coordinatesType) {
-      this.indicateMode = type2mode(coordinatesType)
+      this.indicateMode = type2mode(coordinatesType, this.indicateMode)
     }
     if (backOpacity !== prevProps.backOpacity) {
       this.updateBackOpacity(backOpacity)
@@ -394,7 +401,7 @@ export default class WebMap extends React.PureComponent {
       preview !== null &&
       coordinateIndex !== null &&
       preview.geometry.get(coordinateIndex)
-    const coordinateIsCorrect = Boolean(point) && !coordinates.isWrong(point)
+    const coordinateIsCorrect = Boolean(point) && Coord.check(point)
     if (coordinateIsCorrect !== Boolean(this.coordinateMarker)) {
       if (coordinateIsCorrect) {
         this.coordinateMarker = createCoordinateMarker(point)
@@ -752,25 +759,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  showCoordinates = ({ lng, lat }) => {
+  showCoordinates = ({ lat, lng }) => {
     try {
-      switch (this.indicateMode) {
-        case indicateModes.WGSI:
-          return Wgs84I(lat, lng)
-        case indicateModes.MGRS:
-          return Mgrs(lat, lng)
-        case indicateModes.UTM:
-          return Utm(lat, lng)
-        case indicateModes.SC42:
-          return Sc42(lat, lng)
-        case indicateModes.USC2000:
-          return Usc2000(lat, lng)
-        case indicateModes.ALL:
-          return [ Wgs84(lat, lng), Wgs84I(lat, lng), Mgrs(lat, lng), Utm(lat, lng), Sc42(lat, lng), Usc2000(lat, lng) ]
-            .join('<br/>')
-        default: // WGS-84
-          return Wgs84(lat, lng)
-      }
+      return this.indicateMode === indicateModes.ALL
+        ? Object.values(indicateModes)
+          .slice(1, indicateModes.count)
+          .map((mode) => serializeCoordinate(mode, lat, lng))
+          .join('<br/>')
+        : serializeCoordinate(this.indicateMode || indicateModes.WGS, lat, lng)
     } catch (err) {
       console.error(err)
       return '---'

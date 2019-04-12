@@ -1,7 +1,6 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import coordinates from '../../../utils/coordinates'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -27,7 +26,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   }))
 
   coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push(coordinates.parse('')))
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' }))
   )
 
   renderCoordinatesArray () {

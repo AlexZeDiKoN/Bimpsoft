@@ -1,15 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components, utils } from '@DZVIN/CommonComponents'
 import IconButton from '../IconButton'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
-import coordinates from '../../../utils/coordinates'
 import './style.css'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
-const iconNames = components.icons.names
+const {
+  icons: { names: iconNames },
+} = components
+
+const { Coordinates: Coord } = utils
 
 export default class RightMenu extends React.Component {
   static propTypes = {
@@ -29,7 +32,7 @@ export default class RightMenu extends React.Component {
     const { onSearch, onCoordinates } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
-      const parsed = coordinates.parse(query)
+      const parsed = Coord.parse(query)
       if (parsed && parsed.lng !== undefined && parsed.lat !== undefined) {
         onCoordinates(query, parsed)
       } else {

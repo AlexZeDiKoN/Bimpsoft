@@ -1,4 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
+import { utils } from '@DZVIN/CommonComponents'
 import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
@@ -7,6 +8,8 @@ import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
+
+const { settings } = utils
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -52,10 +55,13 @@ export const actionNames = {
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
 }
 
-export const setCoordinatesType = (value) => ({
-  type: actionNames.SET_COORDINATES_TYPE,
-  payload: value,
-})
+export const setCoordinatesType = (value) => {
+  settings.defaultType = value
+  return {
+    type: actionNames.SET_COORDINATES_TYPE,
+    payload: value,
+  }
+}
 
 export const setMarker = (marker) => (dispatch) => {
   const batch = [ {
