@@ -71,7 +71,8 @@ const WebMapState = Record({
   contactId: null,
   scaleToSelection: false,
   marker: null,
-  topographicObjects: {},
+  topographicObjects: {
+  },
 })
 
 const checkLevel = (object) => {
@@ -218,7 +219,12 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {
-      return state.set('topographicObjects', payload)
+      const data = { ...payload, visible: true }
+      return state.set('topographicObjects', data)
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
+      const visible = !state.topographicObjects.visible
+      return state
     }
     default: {
       const f1 = simpleSetField(type)

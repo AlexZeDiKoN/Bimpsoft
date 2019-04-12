@@ -636,7 +636,6 @@ export default class WebMap extends React.PureComponent {
     const marker = createSearchMarker(point)
     marker.addTo(this.map)
     this.topographicMarkers.push(marker)
-    setTimeout(() => console.log('123'), 1000)
   }
 
   onMouseClick = (e) => {
