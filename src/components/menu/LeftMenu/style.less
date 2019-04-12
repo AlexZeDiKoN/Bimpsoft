@@ -16,3 +16,26 @@
   line-height: 1.5em;
   flex: 1 1 auto;
 }
+
+.icon-button {
+  > .icon-hovered{
+    .icon-hovered-on{
+      display: none;
+    }
+    .icon-hovered-off{
+      display: initial;
+    }
+  }
+
+  &.icon-button-checked, &.icon-button-hoverable:hover {
+    background-color: @toolbar-background-selected;
+    > .icon-hovered{
+      .icon-hovered-on{
+        display: initial;
+      }
+      .icon-hovered-off{
+        display: none;
+      }
+    }
+  }
+}

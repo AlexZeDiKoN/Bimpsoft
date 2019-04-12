@@ -2,14 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 import coordinates from '../../../utils/coordinates'
 import './style.css'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class RightMenu extends React.Component {
   static propTypes = {

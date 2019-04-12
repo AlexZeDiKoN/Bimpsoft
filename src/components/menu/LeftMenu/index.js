@@ -8,9 +8,8 @@ import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
-import ButtonIcon from '../ButtonIcon'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -72,7 +71,7 @@ export default class LeftMenu extends React.Component {
 
     return (
       <div className='left-menu' >
-        <ButtonIcon
+        <IconButton
           title={i18n.EDIT_MODE}
           icon={iconNames.EDIT_DEFAULT}
           checked={isEditMode}
@@ -81,7 +80,7 @@ export default class LeftMenu extends React.Component {
         <CreateButtonsComponent />
         <MenuDivider />
         <MapSourceSelectComponent />
-        <ButtonIcon
+        <IconButton
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
           icon={subordinationLevelViewData.icon}
           checked={isShowSubordinationLevel || !subordinationAuto}
@@ -109,22 +108,22 @@ export default class LeftMenu extends React.Component {
               ))}
             </ContextMenu>
           )}
-        </ButtonIcon>
+        </IconButton>
         <MenuDivider />
-        <ButtonIcon
+        <IconButton
           value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
           checked={isMeasureOn}
           onClick={onMeasureChange}
         />
-        <ButtonIcon
+        <IconButton
           title={i18n.MARKER}
           icon={iconNames.MENU_MARKER_DEFAULT}
           checked={marker}
           onClick={onMarkerChange}
         />
-        <ButtonIcon
+        <IconButton
           title={i18n.TOPOGRAPHIC_OBJECTS}
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}

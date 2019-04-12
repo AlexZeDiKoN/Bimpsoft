@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
@@ -9,7 +8,7 @@ import LinesList from '../../LinesList'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 const lineTypes = [
   SelectionTypes.AREA, SelectionTypes.CURVE, SelectionTypes.POLYGON, SelectionTypes.POLYLINE, SelectionTypes.CIRCLE,
