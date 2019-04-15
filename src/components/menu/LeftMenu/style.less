@@ -1,13 +1,8 @@
-@import "../../../assets/styles/_variables.less";
 @import "../../../assets/styles/_mixins.less";
 
 .left-menu{
   .flex;
   align-items: center;
-  flex: 1 1 auto;
-  .icon-button{
-    flex: 0 0 auto;
-  }
 }
 .menu-layer-name {
   font-size: 1.1em;
@@ -15,27 +10,4 @@
   height: 1.5em;
   line-height: 1.5em;
   flex: 1 1 auto;
-}
-
-.icon-button {
-  > .icon-hovered{
-    .icon-hovered-on{
-      display: none;
-    }
-    .icon-hovered-off{
-      display: initial;
-    }
-  }
-
-  &.icon-button-checked, &.icon-button-hoverable:hover {
-    background-color: @toolbar-background-selected;
-    > .icon-hovered{
-      .icon-hovered-on{
-        display: initial;
-      }
-      .icon-hovered-off{
-        display: none;
-      }
-    }
-  }
 }
