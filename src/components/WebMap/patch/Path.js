@@ -1,19 +1,7 @@
 /* global L */
+import { interpolateSize } from './utils/helpers'
 
 const DASH_LENGTH = 6
-
-const MIN_ZOOM = 5
-const MAX_ZOOM = 20
-
-const calcPointSize = (zoom, pointSizes) => {
-  const { min = 1, max = 100 } = pointSizes || {}
-  const result = zoom <= MIN_ZOOM
-    ? min
-    : zoom >= MAX_ZOOM
-      ? max
-      : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + +min
-  return Math.round(result * 10)
-}
 
 const _getEvents = L.Path.prototype.getEvents
 
@@ -147,7 +135,7 @@ export default L.Path.include({
       if (scaleChanged) {
         this.scaleOptionsPrev = scaleOptions
         this.zoomPrev = zoom
-        this.scale = calcPointSize(zoom, scaleOptions)
+        this.scale = interpolateSize(zoom, scaleOptions, 10.0, 5, 20)
       }
       const scale = this.scale ? this.scale / 100 : 1
       const styles = {}

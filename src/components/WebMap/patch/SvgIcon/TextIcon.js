@@ -1,20 +1,8 @@
 /* global L */
 import { renderToStaticMarkup } from 'react-dom/server'
 import { renderTextSymbol } from '../../../../utils'
+import { interpolateSize } from '../utils/helpers'
 import { setActivePointSignColors, getSvgNodeFromString } from './utils'
-
-const MIN_ZOOM = 0
-const MAX_ZOOM = 20
-
-const calcPointSize = (zoom, pointSizes) => {
-  const { min = 1, max = 200 } = pointSizes || {}
-  const result = zoom <= MIN_ZOOM
-    ? min
-    : zoom >= MAX_ZOOM
-      ? max
-      : (1 / (2 - (zoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM) * 1.5) - 0.5) / 1.5 * (max - min) + min
-  return Math.round(result)
-}
 
 const TextIcon = L.Icon.extend({
   options: {
@@ -45,7 +33,7 @@ const TextIcon = L.Icon.extend({
   },
 
   getScale: function (zoom, scaleOptions) {
-    return calcPointSize(zoom, scaleOptions)
+    return interpolateSize(zoom, scaleOptions)
   },
 
   createShadow: () => null,

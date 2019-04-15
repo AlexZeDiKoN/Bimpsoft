@@ -8,6 +8,12 @@ const initialState = {
   [paramsNames.TEXT_SIZE_MAX]: 96,
   [paramsNames.LINE_SIZE_MIN]: 4,
   [paramsNames.LINE_SIZE_MAX]: 96,
+  [paramsNames.NODE_SIZE_MIN]: 10,
+  [paramsNames.NODE_SIZE_MAX]: 10,
+  [paramsNames.WAVE_SIZE_MIN]: 10,
+  [paramsNames.WAVE_SIZE_MAX]: 10,
+  [paramsNames.STROKE_SIZE_MIN]: 10,
+  [paramsNames.STROKE_SIZE_MAX]: 10,
 }
 
 SCALES.forEach((scale) => (initialState[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`] = INIT_VALUES[scale]))

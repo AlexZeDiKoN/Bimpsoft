@@ -122,6 +122,21 @@ export default class SettingsForm extends React.Component {
                     <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MIN)}</FormRow>
                     <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.LINE_SIZE_MAX)}</FormRow>
                   </FormDarkPart>
+                  <FormRow label={i18n.NODE_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.NODE_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.NODE_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
+                  <FormRow label={i18n.WAVE_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.WAVE_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.WAVE_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
+                  <FormRow label={i18n.STROKE_SIGN_SIZE}/>
+                  <FormDarkPart>
+                    <FormRow label={i18n.MIN_ZOOM}>{this.renderScaleControl(paramsNames.STROKE_SIZE_MIN)}</FormRow>
+                    <FormRow label={i18n.MAX_ZOOM}>{this.renderScaleControl(paramsNames.STROKE_SIZE_MAX)}</FormRow>
+                  </FormDarkPart>
                 </Collapse.Panel>
                 <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
                   {SCALES.map((scale) => (
