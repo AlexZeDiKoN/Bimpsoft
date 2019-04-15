@@ -263,6 +263,7 @@ export default class WebMap extends React.PureComponent {
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
     getTopographicObjects: PropTypes.func,
+    toggleTopographicObjModal: PropTypes.func,
   }
 
   constructor (props) {
@@ -635,7 +636,15 @@ export default class WebMap extends React.PureComponent {
     this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
     const marker = createSearchMarker(point)
     marker.addTo(this.map)
+      .on('click', () => console.log('123123'))
+      .on('dblclick', () => this.removeTopographicMarker(marker))
     this.topographicMarkers.push(marker)
+  }
+
+  removeTopographicMarker = (marker) => {
+    const { toggleTopographicObjModal } = this.props
+    marker.removeFrom(this.map)
+    toggleTopographicObjModal()
   }
 
   onMouseClick = (e) => {
@@ -647,7 +656,6 @@ export default class WebMap extends React.PureComponent {
         this.addUserMarker(e.latlng)
       }
       if (this.addTopographicMarkersMode) {
-        console.log(e)
         const { getTopographicObjects } = this.props
         this.addTopographicMarker(e.latlng)
         const location = {

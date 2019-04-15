@@ -7,6 +7,7 @@ import {
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
+import * as topoObj from '../store/actions/webMap'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -78,6 +79,7 @@ const WebMapContainer = connect(
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
     getTopographicObjects: webMap.getTopographicObjects,
+    toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

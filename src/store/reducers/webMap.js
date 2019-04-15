@@ -219,12 +219,15 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {
-      const data = { ...payload, visible: true }
+      const data = { ...payload, visible: true, selectedItem: 0 }
       return state.set('topographicObjects', data)
+    }
+    case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
+      return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
     }
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible
-      return state
+      return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     default: {
       const f1 = simpleSetField(type)

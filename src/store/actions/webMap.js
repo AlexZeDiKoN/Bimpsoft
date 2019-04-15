@@ -52,6 +52,7 @@ export const actionNames = {
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
+  SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM')
 }
 
 export const setCoordinatesType = (value) => ({
@@ -360,6 +361,11 @@ export const toggleTopographicObjects = () => ({
 
 export const toggleTopographicObjModal = () => ({
   type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL,
+})
+
+export const selectTopographicItem = (index) => ({
+  type: actionNames.SELECT_TOPOGRAPHIC_ITEM,
+  payload: index,
 })
 
 export const getTopographicObjects = (data) =>
