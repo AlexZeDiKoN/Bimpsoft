@@ -73,7 +73,7 @@ export default class LeftMenu extends React.Component {
       <div className='left-menu' >
         <IconButton
           title={i18n.EDIT_MODE}
-          icon={iconNames.EDIT_DEFAULT}
+          icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
         />
