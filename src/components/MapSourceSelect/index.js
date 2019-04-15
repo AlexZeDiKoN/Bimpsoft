@@ -1,12 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../menu/IconButton'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 import i18n from '../../i18n'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class MapSourceSelect extends React.Component {
   static propTypes = {

@@ -1,5 +1,7 @@
-import { CoordinatesTypes } from '../constants'
+import { utils } from '@DZVIN/CommonComponents'
 import i18n from '../i18n'
+
+const { Coordinates: Coord } = utils
 
 export const PRINT_PANEL_KEYS = {
   MAP_LABEL: 'mapLabel',
@@ -57,7 +59,7 @@ export const DATE_FORMAT = 'DD.MM.YYYY'
 
 export const DPI_TYPES = [ '150', '200', '300', '600' ]
 
-export const PRINT_PROJECTION_GROUP = [ CoordinatesTypes.UCS_2000, CoordinatesTypes.UTM ]
+export const PRINT_PROJECTION_GROUP = [ Coord.types.UCS_2000, Coord.types.UTM ]
 
 export const LS_GROUP = 'print'
 

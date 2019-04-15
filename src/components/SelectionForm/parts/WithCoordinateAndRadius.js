@@ -1,8 +1,7 @@
 /* global L */
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import coordinates from '../../../utils/coordinates'
 import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -12,12 +11,14 @@ const {
   InputWithSuffix,
 } = components.form
 
+const { Coordinates: Coord } = utils
+
 function getRadiusFromCoordinatesArray (coordinatesArray) {
   const coord1 = coordinatesArray.get(0)
   let radius = 0
-  if (coord1 && !coordinates.isWrong(coord1)) {
+  if (Coord.check(coord1)) {
     const coord2 = coordinatesArray.get(1)
-    if (coord2 && !coordinates.isWrong(coord2)) {
+    if (Coord.check(coord2)) {
       const corner1 = L.latLng(coord1)
       const corner2 = L.latLng(coord2)
       radius = Math.round(corner1.distanceTo(corner2))
@@ -40,10 +41,10 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
       if (Number.isFinite(radius)) {
         const coordinatesArray = result.getIn(COORDINATE_PATH)
         const coord1 = coordinatesArray.get(0)
-        if (coord1 && !coordinates.isWrong(coord1)) {
+        if (Coord.check(coord1)) {
           const { lat, lng } = coord1
           const eastLng = L.latLng({ lat, lng }).toBounds(radius * 2).getEast()
-          const coord2 = coordinates.roundCoordinate({ lat, lng: eastLng })
+          const coord2 = Coord.round({ lat, lng: eastLng })
           result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(1, coord2))
         }
       }

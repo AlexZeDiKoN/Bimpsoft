@@ -1,4 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
+import { utils } from '@DZVIN/CommonComponents'
 import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
@@ -7,6 +8,8 @@ import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
+
+const { settings } = utils
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -41,6 +44,7 @@ export const actionNames = {
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
+  UPD_ATTR: action('UPD_ATTR'),
   APP_INFO: action('APP_INFO'),
   GET_LOCKED_OBJECTS: action('GET_LOCKED_OBJECTS'),
   OBJECT_LOCKED: action('OBJECT_LOCKED'),
@@ -55,10 +59,13 @@ export const actionNames = {
   SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM')
 }
 
-export const setCoordinatesType = (value) => ({
-  type: actionNames.SET_COORDINATES_TYPE,
-  payload: value,
-})
+export const setCoordinatesType = (value) => {
+  settings.defaultType = value
+  return {
+    type: actionNames.SET_COORDINATES_TYPE,
+    payload: value,
+  }
+}
 
 export const setMarker = (marker) => (dispatch) => {
   const batch = [ {
@@ -223,6 +230,18 @@ export const updateObjectGeometry = (id, geometry) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
+
+    payload = fixServerObject(payload)
+
+    return dispatch({
+      type: actionNames.UPD_OBJECT,
+      payload,
+    })
+  })
+
+export const updateObjectAttributes = (id, attributes) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateAttr } }) => {
+    let payload = await objUpdateAttr(id, attributes)
 
     payload = fixServerObject(payload)
 

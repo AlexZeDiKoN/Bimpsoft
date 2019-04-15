@@ -64,17 +64,14 @@ export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (з
 export const POINT_SIGN_SIZE = 'Розмір точкових знаків'
 export const TEXT_SIGN_SIZE = 'Розмір текстових знаків'
 export const LINE_SIGN_SIZE = 'Товщина ліній для лінійних/площадний знаків'
+export const NODE_SIGN_SIZE = 'Розмір знаків у вузлових точках'
+export const WAVE_SIGN_SIZE = 'Розмір елементів хвилястої лінії'
+export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з засічками'
 export const MIN_ZOOM = 'На мінімальному масштабі'
 export const MAX_ZOOM = 'На максимальному масштабі'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
-
-export const WGS_84 = 'WGS-84'
-export const UCS_2000 = 'УСК-2000'
-export const CS_42 = 'СК-42'
-export const MGRS = 'MGRS'
-export const UTM = 'UTM'
 
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
@@ -121,6 +118,7 @@ export const LINE_STYLE = 'Стиль лінії'
 export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
+export const DIRECTION = 'Напрямок'
 export const NODAL_POINTS = 'Вузлові точки'
 export const SIDE_SIZE = 'Довжина сторони'
 export const RADIUS = 'Радіус'
@@ -169,6 +167,10 @@ export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
 
+export const FRIENDLY = 'дружня'
+export const HOSTILE = 'ворожа'
+export const ZONE_OF_DIRECTION = 'зона напрямку'
+
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
@@ -194,6 +196,7 @@ export const DOCUMENT_SIGNATORIES = `Підпис документа`
 export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
+export const DESIGNATION = `Назва`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`

@@ -16,6 +16,7 @@ import {
   CreateButtonsContainer,
   FlexGridButtonsContainer,
   FlexGridOptionsContainer,
+  DirectionNameContainer,
   TopoObjModal,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
@@ -58,6 +59,7 @@ export default class Main extends React.Component {
         <TemplateFormContainer wrapper={ModalContainer} />
         <SettingsFormContainer wrapper={ModalContainer} />
         <FlexGridOptionsContainer wrapper={ModalContainer} />
+        <DirectionNameContainer wrapper={ModalContainer}/>
         <TopoObjModal wrapper={ModalContainer} />
       </HotKeysContainer>
     )

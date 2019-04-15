@@ -15,8 +15,11 @@ const setShadowColor = function (shadowColor) {
 
 const DzvinMarker = L.Marker.extend({
   setOpacity,
+
   setHidden,
+
   setShadowColor,
+
   setSelected: function (selected, inActiveLayer) {
     if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
       this._selected = selected
@@ -27,6 +30,7 @@ const DzvinMarker = L.Marker.extend({
       !selected && setClassName(el, 'dzvin-marker-locked', false)
     }
   },
+
   optimize: function () {
     const { icon } = this.options
     if (icon.shouldRecreate(this.getElement())) {
@@ -36,35 +40,42 @@ const DzvinMarker = L.Marker.extend({
     }
     return false
   },
+
   setScaleOptions: function (scaleOptions) {
     const { icon } = this.options
     icon.options.scaleOptions = scaleOptions
     this.update()
   },
+
   setShowAmplifiers: function (showAmplifiers) {
     const { icon } = this.options
     icon.options.showAmplifiers = showAmplifiers
   },
+
   _animateZoom: function (opt) {
     const { icon } = this.options
     icon.options.zoom = opt.zoom
     parent._animateZoom.call(this, opt)
   },
+
   _initIcon: function () {
     const { icon } = this.options
     icon.options.zoom = this._map.getZoom()
   },
+
   onAdd: function (map) {
     const { icon } = this.options
     icon.options.zoom = map.getZoom()
     parent.onAdd.call(this, map)
   },
+
   _reinitIcon: function () {
     parent._initIcon.call(this)
     const el = this.getElement()
     el.style.willChange = 'transform'
     el.classList.add('dzvin-marker')
   },
+
   _initInteraction: function () {
     if (!this.options.interactive) {
       return
@@ -75,6 +86,7 @@ const DzvinMarker = L.Marker.extend({
       this.addInteractiveTarget(child)
     })
   },
+
   _removeIcon: function () {
     if (this._icon) {
       Array.from(this._icon.children).forEach((child) => {
@@ -83,6 +95,7 @@ const DzvinMarker = L.Marker.extend({
       parent._removeIcon.call(this)
     }
   },
+
   update: function () {
     parent.update.call(this)
     const el = this.getElement()
@@ -100,6 +113,7 @@ const DzvinMarker = L.Marker.extend({
       setClassName(el, 'dzvin-marker-selected-on-active-layer', this._selected && this._inActiveLayer)
     }
   },
+
   setLocked: function (locked) {
     this._locked = locked
     const el = this.getElement()
@@ -114,6 +128,7 @@ const DzvinMarker = L.Marker.extend({
       }
     }
   },
+
   _setPos: function (pos) {
     const el = this.getElement()
     if (el) {
