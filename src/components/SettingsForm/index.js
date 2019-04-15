@@ -1,17 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Switch, Collapse, Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components, utils } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
-import { CoordinatesTypes, SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
+import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
 
 import './style.css'
 
-const { form: { default: Form, FormRow, FormDarkPart }, icons: { Icon } } = components
+const {
+  form: { default: Form, FormRow, FormDarkPart },
+  icons: { Icon },
+} = components
+
+const { Coordinates: Coord } = utils
+
 const { Option } = Select
 
 const formatScale = (scale) => `1 : ${scale.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`
@@ -69,7 +75,7 @@ export default class SettingsForm extends React.Component {
     }
     const {
       wrapper: Wrapper,
-      coordinatesType = CoordinatesTypes.WGS_84,
+      coordinatesType = Coord.types.WGS_84,
       showMiniMap,
       showAmplifiers,
       // generalization,
@@ -87,8 +93,8 @@ export default class SettingsForm extends React.Component {
             <Form className="settings-form-group settings--form">
               <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}>
                 <Select value={coordinatesType} onChange={onChangeCoordinatesType} >
-                  {Object.keys(CoordinatesTypes).map((key) => (
-                    <Option key={key} value={CoordinatesTypes[key]}>{i18n[key]}</Option>
+                  {Object.keys(Coord.types).map((key) => (
+                    <Option key={key} value={Coord.types[key]}>{Coord.names[Coord.types[key]]}</Option>
                   ))}
                 </Select>
               </FormRow>

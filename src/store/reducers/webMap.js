@@ -1,14 +1,17 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
+import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { CoordinatesTypes, MapSources, colors } from '../../constants'
+import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { LINE_WIDTH } from '../../utils/svg/lines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
+
+const { Coordinates: Coord } = utils
 
 const WebMapPoint = Record({
   lat: null,
@@ -54,7 +57,7 @@ export const WebMapObject = Record({
 const WebMapState = Record({
   center: { lat: 48, lng: 35 },
   zoom: 7,
-  coordinatesType: CoordinatesTypes.WGS_84,
+  coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
   // generalization: false,

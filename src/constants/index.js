@@ -1,4 +1,3 @@
-import * as CoordinatesTypes from './CoordinatesTypes'
 import SubordinationLevel from './SubordinationLevel'
 import * as viewModesKeys from './viewModesKeys'
 import MapSources from './MapSources'
@@ -12,7 +11,6 @@ import * as Print from './Print'
 import * as MarchKeys from './March'
 
 export {
-  CoordinatesTypes,
   SubordinationLevel,
   MapSources,
   colors,

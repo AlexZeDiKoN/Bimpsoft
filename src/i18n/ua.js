@@ -69,12 +69,6 @@ export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
-export const WGS_84 = 'WGS-84'
-export const UCS_2000 = 'УСК-2000'
-export const CS_42 = 'СК-42'
-export const MGRS = 'MGRS'
-export const UTM = 'UTM'
-
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'

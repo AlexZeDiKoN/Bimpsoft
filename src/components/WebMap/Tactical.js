@@ -1,8 +1,9 @@
 /* global L */
-
+import { utils } from '@DZVIN/CommonComponents'
 import './patch'
-import coordinates from '../../utils/coordinates'
 import entityKind from './entityKind'
+
+const { Coordinates: Coord } = utils
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -183,7 +184,7 @@ function createRectangle (type, points, layer) {
 
 function createSquare (data, map, layer) {
   let [ point1 = null, point2 = null ] = data.geometry.toJS()
-  if (point1 === null || point2 === null || coordinates.isWrong(point1) || coordinates.isWrong(point2)) {
+  if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
   }
   const bounds = L.latLngBounds(point1, point2)
