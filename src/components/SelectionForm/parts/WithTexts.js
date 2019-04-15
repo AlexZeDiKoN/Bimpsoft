@@ -3,11 +3,10 @@ import { components } from '@DZVIN/CommonComponents'
 import TextSymbol from '../../common/TextSymbol'
 import { Align } from '../../../constants'
 import i18n from '../../../i18n'
-import IconButton from '../../menu/IconButton'
 import TextItem from './TextItem'
 
 const { FormItem, FormDivider } = components.form
-const { icons: { names: IconNames, IconHovered } } = components
+const { names: IconNames, IconHovered, IconButton } = components.icons
 
 const PATH = [ 'attributes', 'texts' ]
 

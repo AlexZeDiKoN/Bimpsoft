@@ -5,10 +5,9 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { MarchKeys } from '../../../constants'
 import './style.css'
-import IconButton from '../../menu/IconButton'
 import SegmentContainer from './children/Segment'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 class March extends Component {
   static propTypes = {

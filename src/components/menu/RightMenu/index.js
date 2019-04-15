@@ -2,14 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components, utils } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 import './style.css'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
 const {
-  icons: { names: iconNames },
+  icons: { names: iconNames, IconButton },
 } = components
 
 const { Coordinates: Coord } = utils

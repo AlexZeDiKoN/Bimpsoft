@@ -2,13 +2,12 @@ import React, { PureComponent } from 'react'
 import { Dropdown, Menu } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
-import IconButton from '../IconButton'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import IconBox from './IconBox'
 import './style.css'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class PrintFiles extends PureComponent {
   static propTypes = {
