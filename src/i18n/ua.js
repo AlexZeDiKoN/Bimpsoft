@@ -5,6 +5,7 @@ export const ADD_TEXT = 'Додати надпис'
 export const PRINT = 'Друк'
 export const TOGGLE_SIDEBAR = 'Відобразити/сховати праву панель'
 export const SETTINGS = 'Налаштування'
+export const TOPOGRAPHIC_OBJECT_CARD = 'Картка топографічного об’єкту'
 export const ERROR = 'Помилка'
 export const COORDINATES_UNDEFINED = 'Координати не задані'
 export const PRINT_ZONE_UNDEFINED = 'Область друку не задана'
@@ -169,6 +170,8 @@ export const MESSAGE = 'Повідомлення'
 export const FRIENDLY = 'дружня'
 export const HOSTILE = 'ворожа'
 export const ZONE_OF_DIRECTION = 'зона напрямку'
+
+export const NO_OBJECTS = 'Топографічних об\'єктів не знайдено'
 
 // Друк карти
 // лейбли

@@ -20,7 +20,11 @@ export default class TemplateForm extends React.Component {
       return null
     }
     return (
-      <Wrapper title={i18n.MIL_TEMPLATE} onClose={this.cancelHandler} >
+      <Wrapper
+        title={i18n.MIL_TEMPLATE}
+        onClose={this.cancelHandler}
+        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.05 }}
+      >
         <SymbolEditorComponent
           elementsConfigs={ {
             ORG_STRUCTURE: { hidden: true },

@@ -1,0 +1,35 @@
+.elementListContainer {
+  display: flex;
+  min-width: 300px;
+  flex-direction: column;
+  cursor: pointer;
+  .element {
+    padding: 3px;
+    border-bottom: 1px solid lightgray;
+  }
+  .element:hover {
+    background: lightgrey;
+  }
+  .element.active {
+    color: #a9b06c;
+  }
+}
+
+.propertiesContainer {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #a9b06c;
+  .mainPropertiesContainer {
+    border-bottom: 1px solid #a9b06c;
+    .mainProperties {
+      text-align: start;
+      padding: 3px;
+    }
+  }
+  .secondaryPropertiesContainer {
+    .secondaryProperties {
+      text-align: start;
+      padding: 3px;
+    }
+  }
+}

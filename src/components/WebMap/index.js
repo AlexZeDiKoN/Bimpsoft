@@ -7,6 +7,7 @@ import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
+import FlexGridToolTip from '../../components/FlexGridTooltip'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -20,7 +21,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, TopoObj } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -244,15 +245,13 @@ export default class WebMap extends React.PureComponent {
       directions: PropTypes.number,
       zones: PropTypes.number,
       vertical: PropTypes.bool,
-      selectedDirections: PropTypes.shape({
-        list: PropTypes.array,
-        current: PropTypes.oneOfType([ PropTypes.object, PropTypes.number ]),
-      }),
+      selectedDirections: PropTypes.array,
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
+    topographicObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -275,6 +274,8 @@ export default class WebMap extends React.PureComponent {
     fixFlexGridInstance: PropTypes.func,
     showDirectionNameForm: PropTypes.func,
     selectDirection: PropTypes.func,
+    getTopographicObjects: PropTypes.func,
+    toggleTopographicObjModal: PropTypes.func,
   }
 
   constructor (props) {
@@ -312,6 +313,7 @@ export default class WebMap extends React.PureComponent {
       flexGridData,
       flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
+      topographicObjects: { selectedItem, features },
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -350,7 +352,7 @@ export default class WebMap extends React.PureComponent {
       this.updateMarkersOn(isMarkersOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
-      this.topoInfoMode = isTopographicObjectsOn
+      this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
@@ -376,6 +378,15 @@ export default class WebMap extends React.PureComponent {
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
     }
+    if (
+      selectedItem !== prevProps.topographicObjects.selectedItem ||
+      features !== prevProps.topographicObjects.features
+    ) {
+      const { selectedItem, features } = this.props.topographicObjects
+      features
+        ? this.backLightingTopographicObject(features[selectedItem])
+        : this.removeBacklightingTopographicObject()
+    }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
 
@@ -391,10 +402,10 @@ export default class WebMap extends React.PureComponent {
   updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
-    .filter((key) => this.map._layers[key]._locked)
+    .filter((key) => this.map._layers[ key ]._locked)
     .forEach((key) => {
       const { activeObjectId } = this.props
-      const layer = this.map._layers[key]
+      const layer = this.map._layers[ key ]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
         layer.setLocked && layer.setLocked(false)
@@ -469,7 +480,7 @@ export default class WebMap extends React.PureComponent {
         const selectedIdsSet = new Set(selectedIds)
         const points = []
         this.map.eachLayer((layer) =>
-          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry)
+          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry),
         )
         if (points.length > 0) {
           const bounds = L.latLngBounds(points)
@@ -539,10 +550,13 @@ export default class WebMap extends React.PureComponent {
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.on('dblclick', this.onDblClick)
-    this.map.on('mousemove ', this.showDirectionTitle)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
+
+  enableLookAfterMouseMove = (func) => this.map && func && this.map.on('mousemove', func)
+
+  disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
@@ -624,6 +638,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  updateTopographicMarkersOn = (isTopographicMarkersOn) => {
+    this.addTopographicMarkersMode = isTopographicMarkersOn
+    if (!isTopographicMarkersOn && this.topographicMarkers && this.topographicMarkers.length && this.map) {
+      this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.topographicMarkers
+    } else {
+      this.topographicMarkers = []
+    }
+  }
+
   addUserMarker = (point) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
@@ -639,6 +663,37 @@ export default class WebMap extends React.PureComponent {
     }, 50)
   }
 
+  addTopographicMarker = (point) => {
+    this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+    const marker = createSearchMarker(point)
+    marker.addTo(this.map)
+      .on('click', () => this.props.toggleTopographicObjModal())
+      .on('dblclick', () => this.removeTopographicMarker(marker))
+    this.topographicMarkers.push(marker)
+  }
+
+  removeTopographicMarker = (marker) => {
+    const { toggleTopographicObjModal } = this.props
+    marker.removeFrom(this.map)
+    toggleTopographicObjModal()
+    this.removeBacklightingTopographicObject()
+  }
+
+  backLightingTopographicObject = (object) => {
+    if (this.backLights) {
+      this.removeBacklightingTopographicObject()
+    } else {
+      this.backLights = []
+    }
+    const backLighting = L.geoJSON(object, TopoObj.BACK_LIGHT_STYLE)
+    backLighting.addTo(this.map)
+    this.backLights.push(backLighting)
+  }
+
+  removeBacklightingTopographicObject = () => {
+    this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
@@ -647,8 +702,17 @@ export default class WebMap extends React.PureComponent {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
-      if (this.topoInfoMode) {
-        // TODO
+      if (this.addTopographicMarkersMode) {
+        const { getTopographicObjects } = this.props
+        this.addTopographicMarker(e.latlng)
+        const location = {
+          coordinates: {
+            lat: e.latlng.lat.toFixed(6),
+            lng: e.latlng.lng.toFixed(6),
+          },
+          zoom: this.map.getZoom(),
+        }
+        getTopographicObjects(location)
       }
     }
   }
@@ -990,19 +1054,17 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: discuss method
-  showDirectionTitle = debounce((event) => {
-    const { flexGridVisible, flexGridData: { directionNames } } = this.props
-    if (this.flexGrid && flexGridVisible) {
+  getCurrentZone = (event) => {
+    if (this.flexGrid && this.props.flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        const toolTipInfo = `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${directionNames.get(direction - 1) || `№ ${direction}`}"`
-        this.flexGrid.bindTooltip(toolTipInfo).openTooltip(latlng)
+        return { direction, zone }
       }
     }
-  }, 1000)
+    return null
+  }
 
   highlightDirections = (selectedDirections) => {
     const { flexGridVisible } = this.props
@@ -1346,6 +1408,14 @@ export default class WebMap extends React.PureComponent {
         <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        { this.props.flexGridVisible && (
+          <FlexGridToolTip
+            startLooking={this.enableLookAfterMouseMove}
+            stopLooking={this.disableLookAfterMouseMove}
+            getCurrentCell={this.getCurrentZone}
+            names={this.props.flexGridData.directionNames}
+          />
+        )}
       </div>
     )
   }

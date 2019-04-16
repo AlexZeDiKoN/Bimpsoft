@@ -7,6 +7,7 @@ import {
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
+import * as topoObj from '../store/actions/webMap'
 import { directionName } from '../constants/viewModesKeys'
 
 const WebMapContainer = connect(
@@ -44,6 +45,7 @@ const WebMapContainer = connect(
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
     selectedDirections: state.flexGrid.selectedDirections,
+    topographicObjects: state.webMap.topographicObjects,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -82,6 +84,8 @@ const WebMapContainer = connect(
     fixFlexGridInstance: flexGrid.fixInstance,
     showDirectionNameForm: () => viewModes.viewModeEnable(directionName),
     selectDirection: flexGrid.selectDirection,
+    getTopographicObjects: webMap.getTopographicObjects,
+    toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

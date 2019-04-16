@@ -9,6 +9,7 @@ import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 import * as Print from './Print'
 import * as MarchKeys from './March'
+import * as TopoObj from './TopoObj'
 
 export {
   SubordinationLevel,
@@ -24,4 +25,5 @@ export {
   FormTypes,
   Print,
   MarchKeys,
+  TopoObj,
 }
