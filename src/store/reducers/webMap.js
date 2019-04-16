@@ -74,8 +74,7 @@ const WebMapState = Record({
   contactId: null,
   scaleToSelection: false,
   marker: null,
-  topographicObjects: {
-  },
+  topographicObjects: {},
 })
 
 const checkLevel = (object) => {
@@ -143,9 +142,6 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
-}, {
-  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
-  field: 'isTopographicObjectsOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -227,6 +223,12 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
       return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS: {
+      // return update(state, 'isTopographicObjectsOn', !state.isTopographicObjectsOn)
+      return state
+        .set('isTopographicObjectsOn', !state.isTopographicObjectsOn)
+        .set('topographicObjects', {})
     }
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible

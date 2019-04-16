@@ -20,7 +20,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, TopoObj } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -253,6 +253,7 @@ export default class WebMap extends React.PureComponent {
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
+    topographicObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -314,6 +315,7 @@ export default class WebMap extends React.PureComponent {
       flexGridData,
       flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
+      topographicObjects: { selectedItem },
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -377,6 +379,12 @@ export default class WebMap extends React.PureComponent {
     }
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
+    }
+    if (selectedItem !== prevProps.topographicObjects.selectedItem) {
+      const { selectedItem, features } = this.props.topographicObjects
+      features
+        ? this.backLightingTopographicObject(features[selectedItem])
+        : this.removeBacklightingTopographicObject()
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
@@ -655,7 +663,7 @@ export default class WebMap extends React.PureComponent {
     this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
     const marker = createSearchMarker(point)
     marker.addTo(this.map)
-      .on('click', () => console.log('123123'))
+      .on('click', () => this.props.toggleTopographicObjModal())
       .on('dblclick', () => this.removeTopographicMarker(marker))
     this.topographicMarkers.push(marker)
   }
@@ -664,6 +672,22 @@ export default class WebMap extends React.PureComponent {
     const { toggleTopographicObjModal } = this.props
     marker.removeFrom(this.map)
     toggleTopographicObjModal()
+    this.removeBacklightingTopographicObject()
+  }
+
+  backLightingTopographicObject = (object) => {
+    if (this.backLights) {
+      this.removeBacklightingTopographicObject()
+    } else {
+      this.backLights = []
+    }
+    const backLighting = L.geoJSON(object, TopoObj.BACK_LIGHT_STYLE)
+    backLighting.addTo(this.map)
+    this.backLights.push(backLighting)
+  }
+
+  removeBacklightingTopographicObject = () => {
+    this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
   }
 
   onMouseClick = (e) => {

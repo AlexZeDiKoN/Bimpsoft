@@ -171,6 +171,8 @@ export const FRIENDLY = 'дружня'
 export const HOSTILE = 'ворожа'
 export const ZONE_OF_DIRECTION = 'зона напрямку'
 
+export const NO_OBJECTS = 'Топографічних об\'єктів не знайдено'
+
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`

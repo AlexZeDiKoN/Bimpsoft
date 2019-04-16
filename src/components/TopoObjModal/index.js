@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
 import i18n from '../../i18n'
-import * as PROPERTIES from '../../constants/TopoObjModal'
+import { TopoObj } from '../../constants'
 import ModalContainer from '../common/ModalContainer'
 
 import './style.css'
@@ -36,7 +36,7 @@ export default class TopoObjModal extends React.Component {
       <Wrapper
         title={i18n.TOPOGRAPHIC_OBJECT_CARD}
         onClose={onClose}
-        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.05 }}
+        defaultPosition={{ x: window.screen.width * 0.76, y: window.screen.height * 0.01 }}
       >
         <FocusTrap>
           {objectsCount
@@ -47,22 +47,22 @@ export default class TopoObjModal extends React.Component {
                   className={`element ${index === selectedItem ? 'active' : ''}`}
                   onClick={() => selectTopographicItem(index)}
                 >
-                  {element.properties[ PROPERTIES.PROPER_NAME ] || element.properties[ PROPERTIES.OBJECT_TYPE ]}
+                  {element.properties[ TopoObj.PROPER_NAME ] || element.properties[ TopoObj.OBJECT_TYPE ]}
                 </div>)}
               </div>
               <div className='propertiesContainer'>
                 <div className='mainPropertiesContainer'>
                   <div
-                    className='mainProperties'>{`${PROPERTIES.OBJECT_TYPE}: ${features[ selectedItem ].properties[ PROPERTIES.OBJECT_TYPE ]}`}</div>
+                    className='mainProperties'>{`${TopoObj.OBJECT_TYPE}: ${features[ selectedItem ].properties[ TopoObj.OBJECT_TYPE ]}`}</div>
                   <div
-                    className='mainProperties'>{`${PROPERTIES.TOPCODE}: ${features[ selectedItem ].properties[ PROPERTIES.TOPCODE ]}`}</div>
+                    className='mainProperties'>{`${TopoObj.TOPCODE}: ${features[ selectedItem ].properties[ TopoObj.TOPCODE ]}`}</div>
                   <div
-                    className='mainProperties'>{`${PROPERTIES.POINT_COORDINATE}: ${location.lat} ${location.lng}`}</div>
+                    className='mainProperties'>{`${TopoObj.POINT_COORDINATE}: ${location.lat} ${location.lng}`}</div>
                 </div>
                 <div className='secondaryPropertiesContainer'>
                   {Object.keys(features[ selectedItem ].properties)
                     .filter((item) =>
-                      item !== PROPERTIES.OBJECT_TYPE && item !== PROPERTIES.TOPCODE)
+                      item !== TopoObj.OBJECT_TYPE && item !== TopoObj.TOPCODE)
                     .map((item, index) =>
                       <div className='secondaryProperties' key={index}>
                         {`${item}: ${features[ selectedItem ].properties[ item ]}`}
@@ -71,7 +71,7 @@ export default class TopoObjModal extends React.Component {
                 </div>
               </div>
             </div>
-            : <div className='elementListContainer'>no objects</div>}
+            : <div className='elementListContainer'>{i18n.NO_OBJECTS}</div>}
         </FocusTrap>
       </Wrapper>
     )
