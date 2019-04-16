@@ -315,7 +315,7 @@ export default class WebMap extends React.PureComponent {
       flexGridData,
       flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
-      topographicObjects: { selectedItem },
+      topographicObjects: { selectedItem, features },
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -380,7 +380,10 @@ export default class WebMap extends React.PureComponent {
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
     }
-    if (selectedItem !== prevProps.topographicObjects.selectedItem) {
+    if (
+      selectedItem !== prevProps.topographicObjects.selectedItem ||
+      features !== prevProps.topographicObjects.features
+    ) {
       const { selectedItem, features } = this.props.topographicObjects
       features
         ? this.backLightingTopographicObject(features[selectedItem])
