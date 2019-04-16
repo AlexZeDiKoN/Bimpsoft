@@ -44,7 +44,10 @@ export default class extends React.PureComponent {
     }
 
     return (
-      <Wrapper title={i18n.FLEX_GRID}>
+      <Wrapper
+        title={i18n.FLEX_GRID}
+        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.05 }}
+      >
         <FocusTrap>
           <HotKeysContainer>
             <Form className="settings-form-group flex-grid--form">
