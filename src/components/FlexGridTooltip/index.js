@@ -25,7 +25,7 @@ class FlexGridToolTip extends Component {
 
   componentWillUnmount () {
     const { stopLooking } = this.props
-    this.stopLookAfterCursor()
+    this.stopGetCursorInfo()
     document.removeEventListener('mousedown', this.hide)
     document.removeEventListener('mouseout', this.stopGetCursorInfo)
     stopLooking && stopLooking(this.getCursorInfo)
