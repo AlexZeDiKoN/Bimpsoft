@@ -991,7 +991,6 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: discuss method
   getCurrentZone = (event) => {
     if (this.flexGrid && this.props.flexGridVisible) {
       const { latlng } = event
