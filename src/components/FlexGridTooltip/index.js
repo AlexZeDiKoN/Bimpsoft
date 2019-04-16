@@ -13,6 +13,7 @@ class FlexGridToolTip extends Component {
     direction: null,
     x: null,
     y: null,
+    visible: false,
   }
 
   componentDidMount () {
