@@ -7,6 +7,7 @@ import './Tactical.css'
 import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
+import FlexGridToolTip from '../../components/FlexGridTooltip'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -244,10 +245,7 @@ export default class WebMap extends React.PureComponent {
       directions: PropTypes.number,
       zones: PropTypes.number,
       vertical: PropTypes.bool,
-      selectedDirections: PropTypes.shape({
-        list: PropTypes.array,
-        current: PropTypes.oneOfType([ PropTypes.object, PropTypes.number ]),
-      }),
+      selectedDirections: PropTypes.array,
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -552,10 +550,13 @@ export default class WebMap extends React.PureComponent {
     this.map.on('boxselectstart', this.onBoxSelectStart)
     this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.on('dblclick', this.onDblClick)
-    this.map.on('mousemove ', this.showDirectionTitle)
     this.map.doubleClickZoom.disable()
     this.updater = new UpdateQueue(this.map)
   }
+
+  enableLookAfterMouseMove = (func) => this.map && func && this.map.on('mousemove', func)
+
+  disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
   checkSaveObject = () => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
@@ -1053,19 +1054,17 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: discuss method
-  showDirectionTitle = debounce((event) => {
-    const { flexGridVisible, flexGridData: { directionNames } } = this.props
-    if (this.flexGrid && flexGridVisible) {
+  getCurrentZone = (event) => {
+    if (this.flexGrid && this.props.flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        const toolTipInfo = `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${directionNames.get(direction - 1) || `№ ${direction}`}"`
-        this.flexGrid.bindTooltip(toolTipInfo).openTooltip(latlng)
+        return { direction, zone }
       }
     }
-  }, 1000)
+    return null
+  }
 
   highlightDirections = (selectedDirections) => {
     const { flexGridVisible } = this.props
@@ -1409,6 +1408,14 @@ export default class WebMap extends React.PureComponent {
         <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        { this.props.flexGridVisible && (
+          <FlexGridToolTip
+            startLooking={this.enableLookAfterMouseMove}
+            stopLooking={this.disableLookAfterMouseMove}
+            getCurrentCell={this.getCurrentZone}
+            names={this.props.flexGridData.directionNames}
+          />
+        )}
       </div>
     )
   }
