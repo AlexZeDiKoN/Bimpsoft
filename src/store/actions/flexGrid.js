@@ -18,6 +18,7 @@ export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
+export const DIVIDE_DIRECTION = action('DIVIDE_DIRECTION')
 
 const getId = ({ id }) => id
 
@@ -169,4 +170,9 @@ export const selectDirection = ({ index, setAsMain }) => ({
 export const deselectDirection = ({ index, clearMain }) => ({
   type: DESELECT_DIRECTION,
   payload: { index, clearMain },
+})
+
+// @TODO: action for deviding
+export const divideDirection = () => ({
+  type: DIVIDE_DIRECTION,
 })

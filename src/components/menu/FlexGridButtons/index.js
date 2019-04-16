@@ -8,13 +8,14 @@ import { HotKey } from '../../common/HotKeys'
 
 const { names: iconNames, IconButton } = components.icons
 
-export default class SelectionButtons extends React.Component {
+export default class FlexGridButtons extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
     visible: PropTypes.bool,
     showFlexGridOptions: PropTypes.func,
     hideFlexGrid: PropTypes.func,
     calcFlexGridUnits: PropTypes.func,
+    showDivideDirForm: PropTypes.func,
   }
 
   render () {
@@ -24,6 +25,7 @@ export default class SelectionButtons extends React.Component {
       showFlexGridOptions,
       hideFlexGrid,
       calcFlexGridUnits,
+      showDivideDirForm,
     } = this.props
 
     if (!isEditMode) {
@@ -32,6 +34,7 @@ export default class SelectionButtons extends React.Component {
 
     const dropHandler = visible ? hideFlexGrid : showFlexGridOptions
 
+    // @TODO: кнопка!
     return (
       <>
         <MenuDivider />
@@ -47,6 +50,12 @@ export default class SelectionButtons extends React.Component {
           icon={iconNames.MENU_CALCULATION_DEFAULT}
           disabled={!visible}
           onClick={calcFlexGridUnits}
+        />
+        <IconButton
+          title={'SEPARATE DIRECTION'}
+          icon={iconNames.FOREGROUND_DEFAULT}
+          disabled={!visible}
+          onClick={showDivideDirForm}
         />
       </>
     )
