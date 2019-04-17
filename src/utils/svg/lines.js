@@ -1,35 +1,34 @@
 import Bezier from 'bezier-js'
 import subordinationLevels from '../../constants/SubordinationLevel'
+import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { extractSubordinationLevelSVG } from './milsymbol'
 
-export const LINE_WIDTH = 2 // (пікселів) товщина ліній
-
-const AMPLIFIERS_STEP = 144 // (пікселів) крок відображення ампліфікаторів на лініях
-const AMPLIFIERS_SIZE = 96 // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
-const AMPLIFIERS_WINDOW_MARGIN = 6 // (пікселів) ширина ободків навкого ампліфікатора
-const AMPLIFIERS_STROKE_WIDTH = 6 // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
-
-const NODES_STROKE_WIDTH = 2 // (пікселів) товщина лінії для зображення вузлових точок
-const NODES_CIRCLE_RADIUS = 12 // (пікселів) радіус перекресленого кола у візлових точках
-const NODES_SQUARE_WIDTH = 24 // (пікселів) сторона квадрата у вузлових точках
-
-// Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
-// була строго кратною WAVE_STEP
-
-const WAVE_STEP = 36 // (пікселів) ширина "хвилі" для хвилястої лінії
-const WAVE_SIZE = 24 // (пікселів) висота "хвилі" для хвилястої лінії
-
-const STROKE_STEP = 18 // (пікселів) відстань між "засічками" для лінії з засічками
-const STROKE_SIZE = 18 // (пікселів) висота "засічки" для лінії з засічками
-
-const NODES_SPACE = 36 // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
-
-// TODO потенційно це місце просадки продуктивності:
-// TODO * при маленьких значеннях будуть рвані лінії
-// TODO * при великих може гальмувати відмальовка
-const LUT_STEPS = 32000 // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення довжин і пропорцій
-
-const DRAW_PARTIAL_WAVES = true
+export const settings = {
+  LINE_WIDTH: 2, // (пікселів) товщина ліній
+  AMPLIFIERS_STEP: 144, // (пікселів) крок відображення ампліфікаторів на лініях
+  AMPLIFIERS_SIZE: 96, // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
+  AMPLIFIERS_WINDOW_MARGIN: 6, // (пікселів) ширина ободків навкого ампліфікатора
+  AMPLIFIERS_STROKE_WIDTH: 6, // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
+  NODES_STROKE_WIDTH: 2, // (пікселів) товщина лінії для зображення вузлових точок
+  NODES_SPACE: 36, // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
+  // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
+  // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
+  NODES_SIZE: { min: 12, max: 120 }, // (пікселів) діаметр перекресленого кола у візлових точках (або сторона квадрата)
+  // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
+  // була строго кратною WAVE_SIZE
+  WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
+  // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
+  STROKE_SIZE: { min: 9, max: 36 }, // (пікселів) відстань між "засічками" для лінії з засічками
+  // STROKE_SIZE: 18, // (пікселів) висота "засічки" для лінії з засічками
+  // TODO потенційно це місце просадки продуктивності:
+  // TODO * при маленьких значеннях будуть рвані лінії
+  // TODO * при великих може гальмувати відмальовка
+  LUT_STEPS: 16000, // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення
+  // довжин і пропорцій
+  DRAW_PARTIAL_WAVES: true,
+  MIN_ZOOM: 0,
+  MAX_ZOOM: 20,
+}
 
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
 const vector = (ps, pf) => ({ x: pf.x - ps.x, y: pf.y - ps.y })
@@ -137,7 +136,7 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, sk
       ? new Bezier(...bezierArray(points, i, locked))
       : new Segment(...lineArray(points, i, locked))
     const length = segment.length()
-    const steps = Math.min(Math.round(length), LUT_STEPS)
+    const steps = Math.min(Math.round(length), settings.LUT_STEPS)
     let lut = null
     if (bezier) {
       lut = segment.getLUT(steps)
@@ -154,7 +153,7 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, sk
         amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180
         amplPoint.i = insideMap(amplPoint)
         amplPoint.o = (i < last - 1 || length - pos > step / 5) &&
-          (!skipNodes || (pos > NODES_SPACE && length - pos > NODES_SPACE))
+          (!skipNodes || (pos > settings.NODES_SPACE && length - pos > settings.NODES_SPACE))
         amplPoints.push(amplPoint)
         pos += step
       }
@@ -173,9 +172,12 @@ const getLineEnd = (lineEnds, end) => {
 }
 const getNodes = (lineNodes) => lineNodes === 'none' ? null : lineNodes
 
-export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1) => {
-  const waveStep = WAVE_STEP * scale
-  const waveSize = WAVE_SIZE * scale
+export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const waveSize = waveStep / 1.5 // settings.WAVE_SIZE * scale
   const insideMap = getBoundsFunc(bounds, waveStep)
   const wavePoints = buildPeriodicPoints(waveStep, -waveStep, points, bezier, locked, insideMap)
   if (!wavePoints.length) {
@@ -199,7 +201,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1) => {
       addWave(wavePoints[i - 1], wavePoints[i])
     }
   }
-  if (DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
+  if (settings.DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
     const p0 = wavePoints[wavePoints.length - 1]
     const p1 = points[points.length - 1]
     const rest = dist(p0, p1)
@@ -233,9 +235,12 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1) => {
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale = 1) => {
-  const strokeStep = STROKE_STEP * scale
-  const strokeSize = STROKE_SIZE * scale
+export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const strokeStep = interpolateSize(zoom, settings.STROKE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const strokeSize = strokeStep // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
   const strokePoints = buildPeriodicPoints(strokeStep, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
@@ -262,11 +267,16 @@ const rotate = ({ x, y }, originX, originY, angle) => {
 
 const getAmpSigns = (scale = 1) => subordinationLevels.list.reduce((res, { value }) => ({
   ...res,
-  [value]: extractSubordinationLevelSVG(value, AMPLIFIERS_SIZE * scale, AMPLIFIERS_WINDOW_MARGIN * scale),
+  [value]: extractSubordinationLevelSVG(value, settings.AMPLIFIERS_SIZE * scale,
+    settings.AMPLIFIERS_WINDOW_MARGIN * scale),
 }), {})
 
-export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale = 1) => {
-  const insideMap = getBoundsFunc(bounds, AMPLIFIERS_SIZE * scale)
+export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale = 1, zoom = -1) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const nodeStep = interpolateSize(zoom, settings.NODES_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
   const amplifiers = {
     maskPath: [],
     group: '',
@@ -274,8 +284,8 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
   if (lineAmpl === 'show-level' && level) {
     const amp = getAmpSigns(scale)[level]
     const amplPoints = buildPeriodicPoints(
-      AMPLIFIERS_STEP * scale,
-      -AMPLIFIERS_STEP / 2 * scale,
+      settings.AMPLIFIERS_STEP * scale,
+      -settings.AMPLIFIERS_STEP / 2 * scale,
       points,
       bezier,
       locked,
@@ -286,29 +296,29 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
       pointsToD(rectToPoints(amp.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true)
     ))
     amplifiers.group += amplPoints.map(({ x, y, r }) =>
-      `<g stroke-width="${AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
+      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
     ).join('')
   }
   switch (lineNodes) {
     case 'cross-circle': {
-      const d = +(NODES_CIRCLE_RADIUS * Math.sqrt(2) / 2 * scale).toFixed(2)
+      const d = Number((nodeStep * Math.sqrt(2) * scale / 4).toFixed(2))
       points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(circleToD(NODES_CIRCLE_RADIUS * scale, x, y))
-        amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${NODES_CIRCLE_RADIUS * scale}" />
+        amplifiers.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
+        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+            <circle cx="0" cy="0" r="${nodeStep * scale / 2}" />
             <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = NODES_SQUARE_WIDTH / 2 * scale
+      const d = nodeStep * scale / 2
       points.filter(insideMap).forEach(({ x, y }) => {
         amplifiers.maskPath.push(pointsToD(
           rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
           true
         ))
-        amplifiers.group += `<g stroke-width="${NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
           </g>`
       })

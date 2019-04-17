@@ -4,8 +4,9 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
-import { LINE_WIDTH } from '../../../utils/svg/lines'
+import { settings } from '../../../utils/svg/lines'
 
+const { LINE_WIDTH } = settings
 const { Option } = Select
 const { icons: { Icon } } = components
 
