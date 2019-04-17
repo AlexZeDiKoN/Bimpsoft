@@ -5,8 +5,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { VisibilityButton, OpacityControl } from '../../common'
 import i18n from '../../../i18n'
 import DeleteMapsForm from './DeleteMapsForm'
-
-const { icons: { IconHovered, names: iconNames } } = components
+const { names: iconNames, IconButton } = components.icons
 
 export default class LayersControlsComponent extends React.Component {
   state = { showCloseForm: false }
@@ -29,7 +28,7 @@ export default class LayersControlsComponent extends React.Component {
         />
         <OpacityControl
           title={i18n.LAYERS_BASEMAP_OPACITY}
-          className="layers-controls-control"
+          className="layers-controls-control layers-controls-control-one"
           icon={iconNames.MAP_RIGHT_BAR_LAST_LAYER_DEFAULT}
           opacity={this.props.backOpacity}
           onChange={this.props.onChangeBackOpacity}
@@ -41,11 +40,10 @@ export default class LayersControlsComponent extends React.Component {
           opacity={this.props.hiddenOpacity}
           onChange={this.props.onChangeHiddenOpacity}
         />
-        <IconHovered
+        <IconButton
           title={i18n.LAYERS_CLOSE_ALL_MAPS}
-          className="layers-controls-control"
+          className="layers-controls-control  layers-item-control-delete"
           icon={iconNames.CLOSE_ROUND_ACTIVE}
-          hoverIcon={iconNames.CLOSE_ROUND_HOVER}
           onClick={this.closeHandler}
         />
       </div>
