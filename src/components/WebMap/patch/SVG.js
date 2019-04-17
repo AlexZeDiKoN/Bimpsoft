@@ -3,8 +3,8 @@ import entityKind, { entityKindNonFillable } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import './SVG.css'
 import { setClassName } from './utils/helpers'
+import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
@@ -210,15 +210,9 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(
-      layer._rings[0],
-      layer.options && layer.options.lineAmpl,
-      layer.object && layer.object.level,
-      layer.options && layer.options.lineNodes,
-      bezier,
-      locked,
-      bounds,
-    )
+    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.lineAmpl,
+      layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
+      bounds, 1.0, layer._map.getZoom())
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
@@ -237,19 +231,14 @@ L.SVG.include({
 
   _buildWaved: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds)
+    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds, 1.0,
+      layer._map.getZoom())
   },
 
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return stroked(
-      layer._rings[0],
-      layer.options && layer.options.lineEnds,
-      layer.options && layer.options.lineNodes,
-      bezier,
-      locked,
-      bounds,
-    )
+    return stroked(layer._rings[0], layer.options && layer.options.lineEnds,
+      layer.options && layer.options.lineNodes, bezier, locked, bounds, 1.0, layer._map.getZoom())
   },
 
   _updateLineEnds: function (layer, bezier) {

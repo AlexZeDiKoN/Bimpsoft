@@ -25,6 +25,7 @@ import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, TopoObj } f
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
+import { settings } from '../../utils/svg/lines'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -39,9 +40,6 @@ import {
 import { MapProvider } from './MapContext'
 
 const { Coordinates: Coord } = utils
-
-let MIN_ZOOM = 0
-let MAX_ZOOM = 20
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -296,6 +294,7 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    this.updateScaleOptions()
     window.addEventListener('beforeunload', (e) => {
       this.onSelectedListChange([])
     })
@@ -363,7 +362,7 @@ export default class WebMap extends React.PureComponent {
       this.updateBackOpacity(backOpacity)
     }
     if (params !== prevProps.params) {
-      this.updateScaleOptions(params)
+      this.updateScaleOptions()
     }
     this.updateViewport(prevProps)
     if (lockedObjects !== prevProps.lockedObjects) {
@@ -819,7 +818,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateScaleOptions = (params) => {
+  updateScaleOptions = () => {
+    const { params } = this.props
+    settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
+    settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
+    settings.STROKE_SIZE.max = params[paramsNames.STROKE_SIZE_MAX]
+    settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
+    settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
+    settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
     if (this.map) {
       this.map.eachLayer((layer) => {
         setScaleOptions(layer, params)
@@ -880,8 +886,8 @@ export default class WebMap extends React.PureComponent {
           'tileLayerURL': url,
         })
         const sourceLayer = new TileLayer(url, rest)
-        MIN_ZOOM = rest.minZoom || MIN_ZOOM
-        MAX_ZOOM = rest.maxZoom || MAX_ZOOM
+        settings.MIN_ZOOM = rest.minZoom || settings.MIN_ZOOM
+        settings.MAX_ZOOM = rest.maxZoom || settings.MAX_ZOOM
         sourceLayer.addTo(this.map)
         this.sources.push(sourceLayer)
         if (!this.mini) {
