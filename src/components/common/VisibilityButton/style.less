@@ -1,3 +1,132 @@
 @import "../../../assets/styles/_variables.less";
 @import "../../../assets/styles/_mixins.less";
 
+.base_style {
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 3px;
+    line-height: 0;
+    .icon {
+      color: @input-background-color;
+      background: transparent;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  }
+  .hover_style {
+    .icon {
+      background: transparent;
+      opacity: 0.54;
+    }
+  }
+  .hover_styleA {
+    .icon {
+      color: @toolbar-color;
+      background: transparent;
+      opacity: 0.54;
+    }
+  }
+  .hover_style_unActive{
+    opacity: 0.54;
+    .icon{
+      color: @input-background-color;
+      background: transparent;
+      opacity: 0.54;
+    }
+  }
+  .hover_style_unClosed{
+    opacity: 0.54;
+    .icon{
+      color: @toolbar-color;
+      background: transparent;
+      opacity: 0.54;
+    }
+  }
+  .active_style {
+    .hover_style();
+    .icon {
+      color: @input-background-color;
+      opacity: 0.84;
+    }
+  }
+  .closed_style{
+    .hover_style();
+    .icon{
+      color: @toolbar-color;
+      opacity: 0.84;
+    }
+  }
+  .unClosed_style{
+    .hover_style_unActive();
+    width: 20px;
+    content: '';
+    height: 1px;
+    position: relative;
+    opacity: 0.84;
+    display: block;
+    background: @toolbar-color;
+    transform: rotate(-45deg);
+    top: -13px;
+    left: 2px;
+  }
+  .unClosedz_style{
+    .icon{
+      color: @toolbar-color;
+      }
+  }
+  .unActive_style{
+    width: 20px;
+    content: '';
+    opacity: 0.84;
+    height: 1px;
+    position: relative;
+    display: block;
+    background: @input-background-color;
+    transform: rotate(-45deg);
+    top: -13px;
+    left: 2px;
+    .icon{
+      color: @input-background-color;
+      }
+  }
+
+  /* MIXINS_END */
+
+  .button_layers {
+    .base_style();
+    &.active {
+      .active_style();
+    }
+    &.closed{
+      .closed_style();
+    }
+    &:not(.disabled):hover {
+      .hover_style()
+    }
+    &.unActive::after{
+      .unActive_style();
+    }
+    &.unActive > &.unActive:hover::after{
+      .hover_style_unActive();
+    }
+    &.unClosed > &.unClosed:hover::after{
+      .hover_style_unClosed();
+    }
+    &.unClosed::after{
+      .unClosed_style();
+    }
+    &.unClosed{
+      .unClosedz_style();
+    }
+    &.unActive:hover{
+      .hover_style_unActive();
+    }
+    &.unClosed:hover{
+      .hover_style_unClosed();
+    }
+    &.closed:hover{
+      .hover_styleA();
+    }
+  }
+

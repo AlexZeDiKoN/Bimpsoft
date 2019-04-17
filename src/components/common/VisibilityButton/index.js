@@ -3,37 +3,29 @@ import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import './style.css'
 
-const { icons: { IconHovered, names: iconNames } } = components
+const { names: iconNames, IconButton } = components.icons
 
-const getIcon = (isDark, visible) =>
-  isDark
-    ? (visible ? iconNames.DARK_EYE_ON_ACTIVE : iconNames.DARK_EYE_OFF_ACTIVE)
-    : (visible ? iconNames.EYE_ON_ACTIVE : iconNames.EYE_OFF_ACTIVE)
+const VisibilityButton = (props) => {
+  const { title, visible, onChange, isDark } = props
 
-const getHoverIcon = (isDark, visible) =>
-  isDark
-    ? (visible ? iconNames.DARK_EYE_ON_HOVER : iconNames.DARK_EYE_OFF_HOVER)
-    : (visible ? iconNames.EYE_ON_HOVER : iconNames.EYE_OFF_HOVER)
-
-export default class VisibilityButton extends React.Component {
-  clickHandler = (e) => {
-    const { onChange, visible } = this.props
-    e.stopPropagation()
+  const clickHandler = () => {
     onChange && onChange(!visible)
   }
 
-  render () {
-    const { visible, title, isDark } = this.props
-    return (
-      <IconHovered
-        title={title}
-        className="visibility-button"
-        onClick={this.clickHandler}
-        icon={getIcon(isDark, visible)}
-        hoverIcon={getHoverIcon(isDark, visible)}
-      />
-    )
-  }
+  const classNames = [ 'button_layers' ]
+
+  isDark
+    ? (visible ? classNames.push('active') : classNames.push('unActive'))
+    : (visible ? classNames.push('closed') : classNames.push('unClosed'))
+
+  return (
+    <IconButton
+      title={title}
+      className={classNames.join(' ')}
+      onClick={clickHandler}
+      icon={iconNames.DARK_EYE_ON_ACTIVE}
+    />
+  )
 }
 
 VisibilityButton.propTypes = {
@@ -42,3 +34,5 @@ VisibilityButton.propTypes = {
   isDark: PropTypes.bool,
   onChange: PropTypes.func,
 }
+
+export default VisibilityButton
