@@ -8,18 +8,38 @@
 .opacity-control-icon {
   flex:0 0 auto;
   margin: auto 3px;
+  &.icon-button{
+    .icon{
+      color: #fff;
+    }
+  }
+  &.icon-button:hover{
+  & .icon{
+    background: transparent;
+    opacity: 1;
+  }
+ }
 }
 .opacity-control-input {
   flex:0 0 auto;
-  width: 45px;
+  width: 58px;
   padding: 0 3px;
-
-  &:hover, &:focus-within{
-    width: 58px;
-    margin-right: -10px;
-    margin-left: -3px;
+  .ant-input-number-handler-wrap{
+    .ant-input-number-handler:hover .ant-input-number-handler-up-inner, .ant-input-number-handler:hover .ant-input-number-handler-down-inner{
+      color: @toolbar-background-selected;
   }
-
+    opacity: 1;
+  }
+  &:hover, &:focus-within{
+    border-color: @toolbar-background-selected;
+    outline-color: @toolbar-background-selected;
+    box-shadow: 0 0 0 2px rgba(159, 166, 89, 0.2)
+  }
+  &:focus{
+    border-color: @toolbar-background-selected;
+    border-right-width: 1px;
+    outline: 0;
+  }
   input{
     outline: none;
     padding: 0 3px;
