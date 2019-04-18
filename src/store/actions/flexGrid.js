@@ -133,13 +133,13 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       })
     }
     if (!invalid.length) {
-      const { directionNames, directions } = state.flexGrid.flexGrid
+      const { directionNames: names, directions } = state.flexGrid.flexGrid
       const units = result.map(({ units, ...rest }) => ({
         units: units.map(({ unit, formation }) => ({ unit, formation })),
         ...rest,
       }))
-      const names = getArrayFromSet(directionNames, directions)
-      window.explorerBridge.variantResult(variantId, { units, names })
+      const directionNames = getArrayFromSet(names, directions)
+      window.explorerBridge.variantResult(variantId, { units, directionNames })
       dispatch(notifications.push({
         type: 'success',
         message: i18n.MESSAGE,
