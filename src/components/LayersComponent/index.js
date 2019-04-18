@@ -102,6 +102,7 @@ export default class LayersComponent extends React.Component {
             onCloseAllMaps={onCloseAllMaps}
           />
           <TreeComponentUncontrolled
+            className="tree-layers"
             byIds={byIds}
             roots={roots}
             commonData={this.getCommonData(selectedLayerId, textFilter)}
