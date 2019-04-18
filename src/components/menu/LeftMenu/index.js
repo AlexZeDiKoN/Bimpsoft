@@ -89,10 +89,10 @@ export default class LeftMenu extends React.Component {
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
               <ContextMenuItem
-                icon={iconNames.NONE_ICON_DEFAULT}
+                icon={iconNames.UNIT_15_ACTIVE}
                 text={i18n.AUTO}
                 checked={subordinationAuto}
-                hoverIcon={iconNames.NONE_ICON_ACTIVE}
+                hoverIcon={iconNames.UNIT_15_ACTIVE}
                 onClick={onSetSubordinationLevelAuto}
               />
               {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
