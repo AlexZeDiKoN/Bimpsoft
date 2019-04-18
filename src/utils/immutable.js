@@ -19,3 +19,7 @@ export const merge = (record, payload) =>
     const newValue = payload[key]
     return oldValue === newValue ? record : record.set(key, newValue)
   }, record)
+
+export const getArrayFromSet = (data, length) => length && data.size
+  ? [ ...Array(length) ].map((_, i) => data.get(i) || ++i)
+  : data.toArray()
