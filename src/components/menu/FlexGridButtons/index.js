@@ -5,6 +5,7 @@ import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
+import DivideDirectionForm from './DivideDirectionForm'
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -16,6 +17,14 @@ export default class FlexGridButtons extends React.Component {
     hideFlexGrid: PropTypes.func,
     calcFlexGridUnits: PropTypes.func,
     showDivideDirForm: PropTypes.func,
+    // @TODO: delete excess
+    onModalCancel: PropTypes.func,
+    selectDirection: PropTypes.func,
+    deselectDirection: PropTypes.func,
+    isShownDivideForm: PropTypes.bool,
+    directions: PropTypes.number,
+    directionNames: PropTypes.object,
+    flexGrid: PropTypes.object,
   }
 
   render () {
@@ -26,6 +35,13 @@ export default class FlexGridButtons extends React.Component {
       hideFlexGrid,
       calcFlexGridUnits,
       showDivideDirForm,
+      isShownDivideForm,
+      onModalCancel,
+      directions,
+      directionNames,
+      selectDirection,
+      deselectDirection,
+      flexGrid,
     } = this.props
 
     if (!isEditMode) {
@@ -56,7 +72,16 @@ export default class FlexGridButtons extends React.Component {
           icon={iconNames.FOREGROUND_DEFAULT}
           disabled={!visible}
           onClick={showDivideDirForm}
-        />
+        >{isShownDivideForm &&
+          <DivideDirectionForm
+            onCancel={onModalCancel}
+            directions={directions}
+            directionNames={directionNames}
+            select={selectDirection}
+            deselect={deselectDirection}
+            flexGrid={flexGrid}
+          />}
+        </IconButton>
       </>
     )
   }
