@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^6.2.165",
-    "@DZVIN/MilSymbolEditor": "^6.2.99",
-    "@DZVIN/milsymbol": "^0.0.4",
+    "@DZVIN/MilSymbolEditor": "^6.2.100",
+    "@DZVIN/milsymbol": "0.0.4",
     "antd": "^3.12.4",
     "babel-polyfill": "^6.26.0",
     "bezier-js": "2.2.18",
