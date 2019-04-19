@@ -19,6 +19,8 @@ export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
 export const DIVIDE_DIRECTION = action('DIVIDE_DIRECTION')
+// @TODO: delete
+export const CHANGE_FG_MANUALLY = action('CHANGE_FG_MANUALLY')
 
 const getId = ({ id }) => id
 
@@ -176,4 +178,10 @@ export const deselectDirection = ({ index, clearMain }) => ({
 export const divideDirection = (index) => ({
   type: DIVIDE_DIRECTION,
   payload: index,
+})
+
+// @TODO: only to check!!! delete method
+export const changeFLEXGRIDManually = (newFlexGrid) => ({
+  type: CHANGE_FG_MANUALLY,
+  payload: newFlexGrid,
 })

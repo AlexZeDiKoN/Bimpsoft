@@ -9,16 +9,11 @@ import * as FormTypes from '../constants/FormTypes'
 // @TODO: FIND NECESSARY ACTIONS & PROPS
 // @TODO: delete excess
 const mapStateToProps = (store) => {
-  const isEditMode = canEditSelector(store)
-  const visible = flexGridVisible(store)
   const { selection: { showForm } } = store
-  const { directions, directionNames } = flexGridData(store)
   return {
-    isEditMode,
-    visible,
+    isEditMode: canEditSelector(store),
+    visible: flexGridVisible(store),
     isShownDivideForm: showForm === FormTypes.DIVIDE_DIR,
-    directions,
-    directionNames,
     flexGrid: flexGridData(store),
   }
 }
@@ -32,6 +27,8 @@ const mapDispatchToProps = {
   onModalCancel: selectionActions.hideForm,
   selectDirection: flexGridActions.selectDirection,
   deselectDirection: flexGridActions.deselectDirection,
+  // @TODO: delete:
+  changeFG: flexGridActions.changeFLEXGRIDManually,
 }
 
 const FlexGridButtonsContainer = connect(

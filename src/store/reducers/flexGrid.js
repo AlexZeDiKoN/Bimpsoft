@@ -126,6 +126,12 @@ export default function reducer (state = FlexGridState(), action) {
       // @TODO: make via update state function
       return state.set('dividingDirection', payload)
     }
+    // @TODO: delete!!
+    case actions.CHANGE_FG_MANUALLY: {
+      console.log('payload', payload)
+      console.log(' Record(payload)()', Record(payload)())
+      return state.set('flexGrid', Record(payload)())
+    }
     default:
       return state
   }

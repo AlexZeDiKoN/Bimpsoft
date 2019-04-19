@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
-// import React, { useEffect, useReducer } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import { Radio } from 'antd'
-import './divideDirectionForm.css'
 import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
+// @TODO: вынести на пару уровней выше
 import { dividingCurrent } from '../../../../utils/flexGridOperations'
+import './divideDirectionForm.css'
 
 const { Group: RGroup } = Radio
 
@@ -21,81 +21,63 @@ const getName = (list, i) => {
   return name ? `№${++i} "${name}"` : `№${++i}`
 }
 // @TODO: ДЕЛАТЬ!!!!!!
-class DivideDirectionForm extends Component {
-  state = {
-    selected: null,
-    list: [],
-  }
 
-  static getDerivedStateFromProps = (props, state) => {
-    const { directions, directionNames } = props
-    if (directions !== state.list.length) {
-      const list = [ ...Array(directions) ].map((_, i) => ({ value: i, name: `${getName(directionNames, i)}` }))
-      return { list }
-    }
-  }
+const DivideDirectionForm = (props) => {
+  const { select, deselect, onCancel, flexGrid, onOk } = props
+  const { directions, directionNames } = flexGrid
+  const list = [ ...Array(directions) ].map((_, i) => ({ value: i, name: `${getName(directionNames, i)}` }))
+  const selected = React.createRef()
 
-  // @TODO: подсвечивать и заносить во внутренний редьюсер
-  handleSelectDirection = (e) => {
-    const { select, deselect } = this.props
-    const selected = e.target.value
+  const handleSelectDirection = ({ target: { value } }) => {
     deselect({})
-    select({ index: selected })
-    this.setState({ selected })
+    select({ index: value })
   }
 
-  handleClose = () => {
-    const { onCancel, deselect } = this.props
+  const handleClose = () => {
     deselect({})
     onCancel()
   }
 
-  handleOkay = () => {
-    const { selected } = this.state
-    if (selected) {
-      const { flexGrid } = this.props
-      dividingCurrent(flexGrid, selected)
+  const handleOkay = () => {
+    if (selected && selected.current) {
+      const { current: { state: { value } } } = selected
+      const newData = dividingCurrent(flexGrid, value)
+      onOk(newData)
     }
-    console.log('handleOkay')
-    this.props.onCancel()
+    onCancel()
   }
 
-  render () {
-    const { selected, list } = this.state
-
-    return (
-      <>
-        <div className="not-clickable-area"/>
-        <FocusTrap className="divide_wrapper">
-          <HotKeysContainer>
-            <Form className="divide_form">
-              <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
-              <div className="divide_form_desc">{i18n.DIVIDE_DIRECTION_DESC}:</div>
-              <FormItem>
-                <RGroup onChange={this.handleSelectDirection} value={selected}>
-                  {directionOptions(list)}
-                </RGroup>
-              </FormItem>
-              <FormItem>
-                {buttonYes(this.handleOkay)}
-                <HotKey selector={shortcuts.ESC} onKey={this.handleClose}/>
-                {buttonCancel(this.handleClose)}
-              </FormItem>
-            </Form>
-          </HotKeysContainer>
-        </FocusTrap>
-      </>
-    )
-  }
+  return (
+    <>
+      <div className="not-clickable-area"/>
+      <FocusTrap className="divide_wrapper">
+        <HotKeysContainer>
+          <Form className="divide_form">
+            <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
+            <div className="divide_form_desc">{i18n.DIVIDE_DIRECTION_DESC}:</div>
+            <FormItem>
+              <RGroup onChange={handleSelectDirection} ref={selected}>
+                {directionOptions(list)}
+              </RGroup>
+            </FormItem>
+            <FormItem>
+              {buttonYes(handleOkay)}
+              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
+              {buttonCancel(handleClose)}
+            </FormItem>
+          </Form>
+        </HotKeysContainer>
+      </FocusTrap>
+    </>
+  )
 }
 
 DivideDirectionForm.propTypes = {
-  directionNames: PropTypes.object.isRequired,
-  directions: PropTypes.number.isRequired,
-  onOk: PropTypes.func,
+  select: PropTypes.func.isRequired,
+  deselect: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  select: PropTypes.func,
-  deselect: PropTypes.func,
+  onOk: PropTypes.func.isRequired,
+  flexGrid: PropTypes.object.isRequired,
 }
 
 export default DivideDirectionForm
