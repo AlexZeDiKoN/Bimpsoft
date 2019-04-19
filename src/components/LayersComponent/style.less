@@ -18,6 +18,16 @@
     width: 1.7em;
     height: 1.7em;
   }
+
+  .tree-layers{
+    // width: 100px;
+    .layer-item-component::before{
+      content: none !important;
+    }
+    .tree-component-li{
+      border-color: transparent;
+    }
+  }
   .tree-component{
     overflow: auto;
   }
