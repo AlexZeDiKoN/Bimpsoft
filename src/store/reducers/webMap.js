@@ -7,11 +7,12 @@ import { actionNames } from '../actions/webMap'
 import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
-import { LINE_WIDTH } from '../../utils/svg/lines'
+import { settings } from '../../utils/svg/lines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
 const { Coordinates: Coord } = utils
+const { LINE_WIDTH } = settings
 
 const WebMapPoint = Record({
   lat: null,
