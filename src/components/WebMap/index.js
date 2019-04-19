@@ -21,7 +21,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, TopoObj } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -38,6 +38,12 @@ import {
   createCoordinateMarker,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import {
+  BACK_LIGHT_STYLE_LINE,
+  BACK_LIGHT_STYLE_POLIGON,
+  LINE_STRING,
+  MULTI_LINE_STRING,
+} from '../../constants/TopoObj'
 
 const { Coordinates: Coord } = utils
 
@@ -684,9 +690,17 @@ export default class WebMap extends React.PureComponent {
     } else {
       this.backLights = []
     }
-    const backLighting = L.geoJSON(object, TopoObj.BACK_LIGHT_STYLE)
+    const backLighting = L.geoJSON(object, this.backLightingStyles(object))
     backLighting.addTo(this.map)
     this.backLights.push(backLighting)
+  }
+
+  backLightingStyles = (object) => {
+    switch (object.geometry.type) {
+      case LINE_STRING: return BACK_LIGHT_STYLE_LINE
+      case MULTI_LINE_STRING: return BACK_LIGHT_STYLE_LINE
+      default: return BACK_LIGHT_STYLE_POLIGON
+    }
   }
 
   removeBacklightingTopographicObject = () => {
