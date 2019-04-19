@@ -6,7 +6,7 @@ const initState = {
   mapName: '',
   printScale: 100000,
   requisites: {
-    dpi: Print.DPI_TYPES[3],
+    dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendTableType: 'left',
   },
