@@ -1,8 +1,16 @@
 import { calcControlPoint, halfPoint } from '../components/WebMap/patch/utils/Bezier'
 
+const pointToArr = ({ lat, lng, x, y }) => [ x || lat, y || lng ]
+const toLatLng = (point) => point.hasOwnProperty('lat') ? point : { lat: point.x, lng: point.y }
+const toXY = (props) => Array.isArray(props)
+  ? { x: props[0], y: props[1] }
+  : props.hasOwnProperty('x')
+    ? props
+    : { x: props.lat, y: props.lng }
+
 export const dividingCurrent = (flexGrid, index) => {
   const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id, deleted } = flexGrid
-  const divPoints = getPointsDivZones(eternals, zoneSegments, index).map((p) => p.x ? { lat: p.x, lng: p.y } : p)
+  const divPoints = getPointsDivZones(eternals, zoneSegments, index).map(toLatLng)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => []))
   const newEternals = eternals.insert(index + 1, divPoints)
@@ -37,9 +45,9 @@ const getPointsDivZones = (eternals, segments, index) => segments.toArray().map(
 
 // Если Внутри zoneSegments нет точек:
 const getHalfEternals = (e1, e2) => {
-  const [ , cp2 ] = calcControlPoint([ e1.lat, e1.lng ], [ e1.lat, e1.lng ], [ e2.lat, e2.lng ])// getting controlPoints
-  const [ cp1 ] = calcControlPoint([ e1.lat, e1.lng ], [ e2.lat, e2.lng ], [ e2.lat, e2.lng ])// getting controlPoints
-  return halfPoint({ x: e1.lat, y: e1.lng }, { x: cp2[0], y: cp2[1] }, { x: cp1[0], y: cp1[1] }, { x: e2.lat, y: e2.lng })
+  const [ , cp2 ] = calcControlPoint(pointToArr(e1), pointToArr(e1), pointToArr(e2))// getting controlPoints
+  const [ cp1 ] = calcControlPoint(pointToArr(e1), pointToArr(e2), pointToArr(e2))// getting controlPoints
+  return halfPoint(toXY(e1), toXY(cp2), toXY(cp1), toXY(e2))
 }
 
 // Если Внутри zoneSegments нечетное количество точек:
@@ -48,18 +56,18 @@ const getMiddleSegment = (segments) => segments[Math.floor(segments.length / 2)]
 // Если Внутри zoneSegments четное количество точек меньше 2х:
 const getPairFewSegment = (segments, e1, e2) => { // e1 - выше, e2 - ниже
   const [ point1, point2 ] = segments
-  const [ , cp2 ] = calcControlPoint([ e1.lat, e1.lng ], [ point1.lat, point1.lng ], [ point2.lat, point2.lng ])// getting controlPoints
-  const [ cp1 ] = calcControlPoint([ point1.lat, point1.lng ], [ point2.lat, point2.lng ], [ e2.lat, e2.lng ])// getting controlPoints
-  return halfPoint({ x: point1.lat, y: point1.lng }, { x: cp2[0], y: cp2[1] }, { x: cp1[0], y: cp1[1] }, { x: point2.lat, y: point2.lng })
+  const [ , cp2 ] = calcControlPoint(pointToArr(e1), pointToArr(point1), pointToArr(point2))// getting controlPoints
+  const [ cp1 ] = calcControlPoint(pointToArr(point1), pointToArr(point2), pointToArr(e2))// getting controlPoints
+  return halfPoint(toXY(point1), toXY(cp2), toXY(cp1), toXY(point2))
 }
 
 // Если Внутри zoneSegments четное количество точек больше 2х:
 const getPairSegment = (p) => {
   const half = p.length / 2
   const n = [ half - 2, half - 1, half, half + 1 ]
-  const [ , cp2 ] = calcControlPoint([ p[n[0]].lat, p[n[0]].lng ], [ p[n[1]].lat, p[n[1]].lng ], [ p[n[2]].lat, p[n[2]].lng ])// getting controlPoints
-  const [ cp1 ] = calcControlPoint([ p[n[1]].lat, p[n[1]].lng ], [ p[n[2]].lat, p[n[2]].lng ], [ p[n[3]].lat, p[n[3]].lng ])// getting controlPoints
-  return halfPoint({ x: p[n[1]].lat, y: p[n[1]].lng }, { x: cp2[0], y: cp2[1] }, { x: cp1[0], y: cp1[1] }, { x: p[n[2]].lat, y: p[n[2]].lng })
+  const [ , cp2 ] = calcControlPoint(pointToArr(p[n[0]]), pointToArr(p[n[1]]), pointToArr(p[n[2]]))// getting controlPoints
+  const [ cp1 ] = calcControlPoint(pointToArr(p[n[1]]), pointToArr(p[n[2]]), pointToArr(p[n[3]]))// getting controlPoints
+  return halfPoint(toXY(p[n[1]]), toXY(cp2), toXY(cp1), toXY(p[n[2]]))
 }
 
 const changeZoneSegments = (segments, index) => segments.map((column) => {
