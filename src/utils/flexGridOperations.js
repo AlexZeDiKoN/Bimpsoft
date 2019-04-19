@@ -16,6 +16,16 @@ export const dividingCurrent = (flexGrid, index) => {
   const newEternals = eternals.insert(index + 1, divPoints)
   const newDirectionNames = directionNames.size > index ? directionNames.insert(index + 1, null) : directionNames
   const newZoneSegments = changeZoneSegments(zoneSegments, index)
+  const geometryProps = [
+    newEternals,
+    newDirectionSegments,
+    newZoneSegments,
+  ]
+  const attrProps = {
+    zones,
+    directions: newDirections,
+    directionNames: newDirectionNames,
+  }
   const newData = {
     id,
     deleted,
@@ -26,7 +36,7 @@ export const dividingCurrent = (flexGrid, index) => {
     directionSegments: newDirectionSegments,
     directionNames: newDirectionNames,
   }
-  return newData
+  return { geometryProps, attrProps, newData }
 }
 
 const getPointsDivZones = (eternals, segments, index) => segments.toArray().map((col, i) => {

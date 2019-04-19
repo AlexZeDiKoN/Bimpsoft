@@ -1256,6 +1256,7 @@ export default class WebMap extends React.PureComponent {
       // @TODO: нормальный метод сделать
       this.dropFlexGrid()
       this.dropFlexGrid(this.props.flexGridVisible)
+      console.info('updating', this.flexGrid.id)
     }
   }
 

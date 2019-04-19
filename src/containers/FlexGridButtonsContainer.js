@@ -3,6 +3,7 @@ import FlexGridButtons from '../components/menu/FlexGridButtons'
 import { canEditSelector, flexGridData, flexGridVisible } from '../store/selectors'
 import * as flexGridActions from '../store/actions/flexGrid'
 import * as selectionActions from '../store/actions/selection'
+import * as webMapActions from '../store/actions/webMap'
 import { catchErrors } from '../store/actions/asyncAction'
 import * as FormTypes from '../constants/FormTypes'
 
@@ -28,7 +29,8 @@ const mapDispatchToProps = {
   selectDirection: flexGridActions.selectDirection,
   deselectDirection: flexGridActions.deselectDirection,
   // @TODO: delete:
-  changeFG: flexGridActions.changeFLEXGRIDManually,
+  updateGeometry: webMapActions.updateObjectGeometry,
+  updateAttributes: webMapActions.updateObjectAttributes,
 }
 
 const FlexGridButtonsContainer = connect(

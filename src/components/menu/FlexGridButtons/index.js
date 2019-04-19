@@ -23,7 +23,9 @@ export default class FlexGridButtons extends React.Component {
     deselectDirection: PropTypes.func,
     isShownDivideForm: PropTypes.bool,
     flexGrid: PropTypes.object,
-    changeFG: PropTypes.func,
+    // @TODO: delete
+    updateGeometry: PropTypes.func,
+    updateAttributes: PropTypes.func,
   }
 
   render () {
@@ -40,7 +42,8 @@ export default class FlexGridButtons extends React.Component {
       deselectDirection,
       flexGrid,
       // @TODO: delete:
-      changeFG,
+      updateGeometry,
+      updateAttributes,
     } = this.props
 
     if (!isEditMode) {
@@ -74,10 +77,11 @@ export default class FlexGridButtons extends React.Component {
         >{isShownDivideForm &&
           <DivideDirectionForm
             onCancel={onModalCancel}
-            onOk={changeFG}
             select={selectDirection}
             deselect={deselectDirection}
             flexGrid={flexGrid}
+            updateGeometry={updateGeometry}
+            updateAttributes={updateAttributes}
           />}
         </IconButton>
       </>
