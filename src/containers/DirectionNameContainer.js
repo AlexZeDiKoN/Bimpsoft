@@ -6,7 +6,7 @@ import { deselectDirection } from '../store/actions/flexGrid'
 import DirectionNameForm from '../components/DirectionNameForm'
 
 const mapStateToProps = (store) => {
-  const index = store.flexGrid.selectedDirections.current
+  const index = store.flexGrid.selectedDirections.main
   const namesList = store.flexGrid.flexGrid.directionNames
   return ({
     visible: store.viewModes[directionName],

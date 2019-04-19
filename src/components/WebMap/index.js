@@ -1252,6 +1252,10 @@ export default class WebMap extends React.PureComponent {
     } else if (actual && !this.flexGrid) {
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
+    } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
+      // @TODO: нормальный метод сделать
+      this.dropFlexGrid()
+      this.dropFlexGrid(this.props.flexGridVisible)
     }
   }
 
