@@ -7,7 +7,7 @@ export const UKR_NAME = 'Українська назва'
 export const LINE_STRING = 'LineString'
 export const MULTI_LINE_STRING = 'MultiLineString'
 
-export const BACK_LIGHT_STYLE_POLIGON = {
+export const BACK_LIGHT_STYLE_POLYGON = {
   color: 'red',
 }
 

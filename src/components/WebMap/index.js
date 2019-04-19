@@ -40,7 +40,7 @@ import {
 import { MapProvider } from './MapContext'
 import {
   BACK_LIGHT_STYLE_LINE,
-  BACK_LIGHT_STYLE_POLIGON,
+  BACK_LIGHT_STYLE_POLYGON,
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
@@ -697,9 +697,11 @@ export default class WebMap extends React.PureComponent {
 
   backLightingStyles = (object) => {
     switch (object.geometry.type) {
-      case LINE_STRING: return BACK_LIGHT_STYLE_LINE
-      case MULTI_LINE_STRING: return BACK_LIGHT_STYLE_LINE
-      default: return BACK_LIGHT_STYLE_POLIGON
+      case LINE_STRING:
+      case MULTI_LINE_STRING:
+        return BACK_LIGHT_STYLE_LINE
+      default:
+        return BACK_LIGHT_STYLE_POLYGON
     }
   }
 
