@@ -47,7 +47,9 @@ export default class TopoObjModal extends React.Component {
                   className={`element ${index === selectedItem ? 'active' : ''}`}
                   onClick={() => selectTopographicItem(index)}
                 >
-                  {element.properties[ TopoObj.PROPER_NAME ] || element.properties[ TopoObj.OBJECT_TYPE ]}
+                  {element.properties[ TopoObj.UKR_NAME ] ||
+                  element.properties[ TopoObj.PROPER_NAME ] ||
+                  element.properties[ TopoObj.OBJECT_TYPE ]}
                 </div>)}
               </div>
               <div className='propertiesContainer'>
