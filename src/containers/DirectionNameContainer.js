@@ -36,7 +36,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
     onClose: () => {
       hideModal(directionName)
-      deselectDirection({ index, clearMain: true })
+      deselectDirection()
     },
   }
 }

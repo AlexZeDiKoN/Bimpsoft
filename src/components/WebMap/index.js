@@ -985,7 +985,7 @@ export default class WebMap extends React.PureComponent {
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection({ index: direction - 1, setAsMain: true })
+        selectDirection({ index: direction - 1 })
         showDirectionNameForm()
       }
     }

@@ -164,15 +164,19 @@ export const fixInstance = (flexGrid) => (_1, _2, extra) => {
 
 // Directions:
 // @TODO: продумать и переделать экшны выделения
-export const selectDirection = ({ index, setAsMain }) => ({
+export const selectDirection = ({ index, isMain = true }) => ({
   type: SELECT_DIRECTION,
-  payload: { index, setAsMain },
+  payload: { index, isMain },
 })
 
-export const deselectDirection = ({ index, clearMain }) => ({
-  type: DESELECT_DIRECTION,
-  payload: { index, clearMain },
-})
+export const deselectDirection = (props) => {
+  const res = { type: DESELECT_DIRECTION }
+  if (props) {
+    const { index, updateMain } = props
+    res.payload = { index, updateMain }
+  }
+  return res
+}
 
 // @TODO: action for deviding
 export const divideDirection = (index) => ({

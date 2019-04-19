@@ -29,12 +29,12 @@ const DivideDirectionForm = (props) => {
   const selected = React.createRef()
 
   const handleSelectDirection = ({ target: { value } }) => {
-    deselect({})
+    deselect()
     select({ index: value })
   }
 
   const handleClose = () => {
-    deselect({})
+    deselect()
     onCancel()
   }
 
@@ -44,7 +44,7 @@ const DivideDirectionForm = (props) => {
       const newData = dividingCurrent(flexGrid, value)
       onOk(newData)
     }
-    onCancel()
+    handleClose()
   }
 
   return (

@@ -110,16 +110,21 @@ export default function reducer (state = FlexGridState(), action) {
     }
     case actions.SELECT_DIRECTION: {
       const { selectedDirections: { list, main } } = state
-      const { index, setAsMain } = payload
-      const updaterObj = { list: list.add(index), main: setAsMain ? index : main }
+      const { index, isMain } = payload
+      const updaterObj = { list: list.add(index), main: isMain ? index : main }
       return update(state, 'selectedDirections', merge, updaterObj)
     }
     case actions.DESELECT_DIRECTION: {
       const { selectedDirections: { list, main } } = state
-      const { index, clearMain } = payload
-      const updaterObj = index || clearMain /** if u pass an id, then will deselect current direction, in other case will deselect all */
-        ? { list: list.delete(index), main: clearMain ? null : main }
-        : { list: list.clear(), main: null }
+      const updaterObj = {}
+      if (payload) {
+        const { index, updateMain } = payload
+        updaterObj.list = list.delete(index)
+        updaterObj.main = updateMain || main
+      } else {
+        updaterObj.list = list.clear()
+        updaterObj.main = null
+      }
       return update(state, 'selectedDirections', merge, updaterObj)
     }
     case actions.DIVIDE_DIRECTION: {
@@ -129,7 +134,6 @@ export default function reducer (state = FlexGridState(), action) {
     // @TODO: delete!!
     case actions.CHANGE_FG_MANUALLY: {
       console.log('payload', payload)
-      console.log(' Record(payload)()', Record(payload)())
       return state.set('flexGrid', Record(payload)())
     }
     default:

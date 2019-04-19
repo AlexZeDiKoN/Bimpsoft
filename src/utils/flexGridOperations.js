@@ -6,7 +6,7 @@ export const dividingCurrent = (flexGrid, index) => {
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => []))
   const newEternals = eternals.insert(index + 1, divPoints)
-  const newDirectionNames = directionNames.insert(index + 1, null)
+  const newDirectionNames = directionNames.size > index ? directionNames.insert(index + 1, null) : directionNames
   const newZoneSegments = changeZoneSegments(zoneSegments, index)
   const newData = {
     id,
