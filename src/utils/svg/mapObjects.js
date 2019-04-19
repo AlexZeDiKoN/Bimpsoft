@@ -2,8 +2,10 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-import { pointsToD, LINE_WIDTH } from '../../utils/svg/lines'
+import { pointsToD, settings } from '../../utils/svg/lines'
 import { getMapObjectSvg } from './mapObject'
+
+const { LINE_WIDTH } = settings
 
 const METERS_PER_INCH = 0.0254
 

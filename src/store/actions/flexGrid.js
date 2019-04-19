@@ -1,4 +1,5 @@
 import { action } from '../../utils/services'
+import { getArrayFromSet } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector, visibleLayersSelector } from '../selectors'
 import i18n from '../../i18n'
@@ -100,12 +101,15 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       .filter(({ layer, type, unit }) => Boolean(layers[layer]) && type === entityKind.POINT && Boolean(unit))
     const result = []
     if (flexGridInstance) {
+      const { directionNames } = state.flexGrid.flexGrid
       const { options: { directions, zones } } = flexGridInstance
+      const names = getArrayFromSet(directionNames, directions)
       for (let i = 1; i <= directions; i++) {
         for (let j = -zones; j <= zones; j++) {
           if (j !== 0) {
             result.push({
               direction: i,
+              directionName: names[i],
               zone: j,
               units: [],
             })

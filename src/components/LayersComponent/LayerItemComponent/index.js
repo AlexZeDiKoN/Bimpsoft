@@ -9,7 +9,7 @@ import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 
 const { TextFilter } = data
-const { icons: { Icon, IconHovered, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
+const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
 
 const getLockIcon = (isDark, locked) =>
   isDark
@@ -52,10 +52,6 @@ export default class LayerItemComponent extends React.Component {
           className="layer-item-component-control"
           onChange={this.changeVisibilityHandler}
         />
-        <Icon
-          className="layer-item-component-control"
-          icon={getLockIcon(isSelected, readOnly)}
-        />
         <div className="layer-item-component-title">
           <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
           <div className="layer-date">{dateString}</div>
@@ -66,8 +62,9 @@ export default class LayerItemComponent extends React.Component {
           color={color}
           onChange={this.changeColorHandler}
         />
-        <IconHovered
+        <Icon
           className="layer-item-component-control"
+          icon={getLockIcon(isSelected, readOnly)}
         />
       </div>
     )
