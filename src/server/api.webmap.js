@@ -66,4 +66,6 @@ export default {
     getDirect(`${webmapUrl}/printToFile/retry`, { id }),
   printFileList: () =>
     getDirect(`${webmapUrl}/printToFile/list`, false),
+  getTopographicObjects: (data) =>
+    getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
 }

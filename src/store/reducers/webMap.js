@@ -7,11 +7,12 @@ import { actionNames } from '../actions/webMap'
 import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
-import { LINE_WIDTH } from '../../utils/svg/lines'
+import { settings } from '../../utils/svg/lines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
 const { Coordinates: Coord } = utils
+const { LINE_WIDTH } = settings
 
 const WebMapPoint = Record({
   lat: null,
@@ -74,6 +75,7 @@ const WebMapState = Record({
   contactId: null,
   scaleToSelection: false,
   marker: null,
+  topographicObjects: {},
 })
 
 const checkLevel = (object) => {
@@ -141,9 +143,6 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
-}, {
-  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
-  field: 'isTopographicObjectsOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -218,6 +217,23 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
+    }
+    case actionNames.GET_TOPOGRAPHIC_OBJECTS: {
+      const data = { ...payload, visible: true, selectedItem: 0 }
+      return state.set('topographicObjects', data)
+    }
+    case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
+      return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS: {
+      // return update(state, 'isTopographicObjectsOn', !state.isTopographicObjectsOn)
+      return state
+        .set('isTopographicObjectsOn', !state.isTopographicObjectsOn)
+        .set('topographicObjects', {})
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
+      const visible = !state.topographicObjects.visible
+      return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     default: {
       const f1 = simpleSetField(type)

@@ -25,6 +25,7 @@ import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../.
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
+import { settings } from '../../utils/svg/lines'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -38,11 +39,14 @@ import {
   formFlexGridGeometry,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import {
+  BACK_LIGHT_STYLE_LINE,
+  BACK_LIGHT_STYLE_POLYGON,
+  LINE_STRING,
+  MULTI_LINE_STRING,
+} from '../../constants/TopoObj'
 
 const { Coordinates: Coord } = utils
-
-let MIN_ZOOM = 0
-let MAX_ZOOM = 20
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -252,6 +256,7 @@ export default class WebMap extends React.PureComponent {
     flexGridData: flexGridPropTypes,
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
+    topographicObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -274,6 +279,8 @@ export default class WebMap extends React.PureComponent {
     fixFlexGridInstance: PropTypes.func,
     showDirectionNameForm: PropTypes.func,
     selectDirection: PropTypes.func,
+    getTopographicObjects: PropTypes.func,
+    toggleTopographicObjModal: PropTypes.func,
   }
 
   constructor (props) {
@@ -294,6 +301,7 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    this.updateScaleOptions()
     window.addEventListener('beforeunload', (e) => {
       this.onSelectedListChange([])
     })
@@ -311,6 +319,7 @@ export default class WebMap extends React.PureComponent {
       flexGridData,
       flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
+      topographicObjects: { selectedItem, features },
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -349,7 +358,7 @@ export default class WebMap extends React.PureComponent {
       this.updateMarkersOn(isMarkersOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
-      this.topoInfoMode = isTopographicObjectsOn
+      this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
     this.updateSelection(prevProps)
     this.updateActiveObject(prevProps)
@@ -360,7 +369,7 @@ export default class WebMap extends React.PureComponent {
       this.updateBackOpacity(backOpacity)
     }
     if (params !== prevProps.params) {
-      this.updateScaleOptions(params)
+      this.updateScaleOptions()
     }
     this.updateViewport(prevProps)
     if (lockedObjects !== prevProps.lockedObjects) {
@@ -374,6 +383,15 @@ export default class WebMap extends React.PureComponent {
     }
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
+    }
+    if (
+      selectedItem !== prevProps.topographicObjects.selectedItem ||
+      features !== prevProps.topographicObjects.features
+    ) {
+      const { selectedItem, features } = this.props.topographicObjects
+      features
+        ? this.backLightingTopographicObject(features[selectedItem])
+        : this.removeBacklightingTopographicObject()
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
@@ -390,10 +408,10 @@ export default class WebMap extends React.PureComponent {
   updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
-    .filter((key) => this.map._layers[key]._locked)
+    .filter((key) => this.map._layers[ key ]._locked)
     .forEach((key) => {
       const { activeObjectId } = this.props
-      const layer = this.map._layers[key]
+      const layer = this.map._layers[ key ]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
         layer.setLocked && layer.setLocked(false)
@@ -468,7 +486,7 @@ export default class WebMap extends React.PureComponent {
         const selectedIdsSet = new Set(selectedIds)
         const points = []
         this.map.eachLayer((layer) =>
-          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry)
+          layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry),
         )
         if (points.length > 0) {
           const bounds = L.latLngBounds(points)
@@ -626,6 +644,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  updateTopographicMarkersOn = (isTopographicMarkersOn) => {
+    this.addTopographicMarkersMode = isTopographicMarkersOn
+    if (!isTopographicMarkersOn && this.topographicMarkers && this.topographicMarkers.length && this.map) {
+      this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+      delete this.topographicMarkers
+    } else {
+      this.topographicMarkers = []
+    }
+  }
+
   addUserMarker = (point) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
@@ -641,6 +669,47 @@ export default class WebMap extends React.PureComponent {
     }, 50)
   }
 
+  addTopographicMarker = (point) => {
+    this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
+    const marker = createSearchMarker(point)
+    marker.addTo(this.map)
+      .on('click', () => this.props.toggleTopographicObjModal())
+      .on('dblclick', () => this.removeTopographicMarker(marker))
+    this.topographicMarkers.push(marker)
+  }
+
+  removeTopographicMarker = (marker) => {
+    const { toggleTopographicObjModal } = this.props
+    marker.removeFrom(this.map)
+    toggleTopographicObjModal()
+    this.removeBacklightingTopographicObject()
+  }
+
+  backLightingTopographicObject = (object) => {
+    if (this.backLights) {
+      this.removeBacklightingTopographicObject()
+    } else {
+      this.backLights = []
+    }
+    const backLighting = L.geoJSON(object, this.backLightingStyles(object))
+    backLighting.addTo(this.map)
+    this.backLights.push(backLighting)
+  }
+
+  backLightingStyles = (object) => {
+    switch (object.geometry.type) {
+      case LINE_STRING:
+      case MULTI_LINE_STRING:
+        return BACK_LIGHT_STYLE_LINE
+      default:
+        return BACK_LIGHT_STYLE_POLYGON
+    }
+  }
+
+  removeBacklightingTopographicObject = () => {
+    this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
+  }
+
   onMouseClick = (e) => {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
@@ -649,8 +718,17 @@ export default class WebMap extends React.PureComponent {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
-      if (this.topoInfoMode) {
-        // TODO
+      if (this.addTopographicMarkersMode) {
+        const { getTopographicObjects } = this.props
+        this.addTopographicMarker(e.latlng)
+        const location = {
+          coordinates: {
+            lat: e.latlng.lat.toFixed(6),
+            lng: e.latlng.lng.toFixed(6),
+          },
+          zoom: this.map.getZoom(),
+        }
+        getTopographicObjects(location)
       }
     }
   }
@@ -757,7 +835,14 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateScaleOptions = (params) => {
+  updateScaleOptions = () => {
+    const { params } = this.props
+    settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
+    settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
+    settings.STROKE_SIZE.max = params[paramsNames.STROKE_SIZE_MAX]
+    settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
+    settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
+    settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
     if (this.map) {
       this.map.eachLayer((layer) => {
         setScaleOptions(layer, params)
@@ -818,8 +903,8 @@ export default class WebMap extends React.PureComponent {
           'tileLayerURL': url,
         })
         const sourceLayer = new TileLayer(url, rest)
-        MIN_ZOOM = rest.minZoom || MIN_ZOOM
-        MAX_ZOOM = rest.maxZoom || MAX_ZOOM
+        settings.MIN_ZOOM = rest.minZoom || settings.MIN_ZOOM
+        settings.MAX_ZOOM = rest.maxZoom || settings.MAX_ZOOM
         sourceLayer.addTo(this.map)
         this.sources.push(sourceLayer)
         if (!this.mini) {

@@ -4,13 +4,25 @@
 .layers-controls-component {
   .flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 5px 22px 5px 20px;
+  padding: 5px 5px 5px 20px;
 }
 
 .layers-controls-control{
   margin: auto 0;
   flex: 0 0 auto;
+  &.icon-button:hover{
+    & .icon{
+      color: @toolbar-header-background;
+      background: transparent;
+    }
+   }
+}
+.layers-item-control-delete{
+  padding-left: 5px;
+}
+
+.layers-controls-control-one{
+  padding-left: 24px;
 }
 
 .confirm-close-maps{

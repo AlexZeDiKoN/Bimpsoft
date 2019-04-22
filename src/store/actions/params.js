@@ -26,6 +26,7 @@ export const loadAllParams = () =>
     if (payload[paramNames.DEFAULT_COORD_SYSTEM] !== undefined) {
       dispatch(webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM]))
     }
+    // TODO
   })
 
 export const loadParam = (name) =>
