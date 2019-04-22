@@ -101,15 +101,12 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       .filter(({ layer, type, unit }) => Boolean(layers[layer]) && type === entityKind.POINT && Boolean(unit))
     const result = []
     if (flexGridInstance) {
-      const { directionNames } = state.flexGrid.flexGrid
       const { options: { directions, zones } } = flexGridInstance
-      const names = getArrayFromSet(directionNames, directions)
       for (let i = 1; i <= directions; i++) {
         for (let j = -zones; j <= zones; j++) {
           if (j !== 0) {
             result.push({
               direction: i,
-              directionName: names[i],
               zone: j,
               units: [],
             })
@@ -136,10 +133,13 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       })
     }
     if (!invalid.length) {
-      window.explorerBridge.variantResult(variantId, result.map(({ units, ...rest }) => ({
+      const { directionNames: names, directions } = state.flexGrid.flexGrid
+      const units = result.map(({ units, ...rest }) => ({
         units: units.map(({ unit, formation }) => ({ unit, formation })),
         ...rest,
-      })))
+      }))
+      const directionNames = getArrayFromSet(names, directions)
+      window.explorerBridge.variantResult(variantId, { units, directionNames })
       dispatch(notifications.push({
         type: 'success',
         message: i18n.MESSAGE,
