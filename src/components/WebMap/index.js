@@ -1368,4 +1368,5 @@ export default class WebMap extends React.PureComponent {
   }
 }
 
+/** Do not delete, please, it is FIX */
 export const buildFlexGridGeometry = formFlexGridGeometry

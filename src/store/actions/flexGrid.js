@@ -19,8 +19,6 @@ export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
 export const DIVIDE_DIRECTION = action('DIVIDE_DIRECTION')
-// @TODO: delete
-export const CHANGE_FG_MANUALLY = action('CHANGE_FG_MANUALLY')
 
 const getId = ({ id }) => id
 
@@ -163,7 +161,6 @@ export const fixInstance = (flexGrid) => (_1, _2, extra) => {
 }
 
 // Directions:
-// @TODO: продумать и переделать экшны выделения
 export const selectDirection = ({ index, isMain = true }) => ({
   type: SELECT_DIRECTION,
   payload: { index, isMain },
@@ -177,15 +174,3 @@ export const deselectDirection = (props) => {
   }
   return res
 }
-
-// @TODO: action for deviding
-export const divideDirection = (index) => ({
-  type: DIVIDE_DIRECTION,
-  payload: index,
-})
-
-// @TODO: only to check!!! delete method
-export const changeFLEXGRIDManually = (newFlexGrid) => ({
-  type: CHANGE_FG_MANUALLY,
-  payload: newFlexGrid,
-})
