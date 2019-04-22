@@ -35,6 +35,7 @@ import {
   isGeometryChanged,
   geomPointEquals,
   createCoordinateMarker,
+  formFlexGridGeometry,
 } from './Tactical'
 import { MapProvider } from './MapContext'
 
@@ -1362,3 +1363,5 @@ export default class WebMap extends React.PureComponent {
     )
   }
 }
+
+export const buildFlexGridGeometry = formFlexGridGeometry

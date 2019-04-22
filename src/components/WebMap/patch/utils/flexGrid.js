@@ -1,4 +1,5 @@
-import { calcControlPoint, halfPoint } from '../components/WebMap/patch/utils/Bezier'
+import { buildFlexGridGeometry } from '../../'
+import { calcControlPoint, halfPoint } from './Bezier'
 
 const pointToArr = ({ lat, lng, x, y }) => [ x || lat, y || lng ]
 const toLatLng = (point) => point.hasOwnProperty('lat') ? point : { lat: point.x, lng: point.y }
@@ -9,34 +10,22 @@ const toXY = (props) => Array.isArray(props)
     : { x: props.lat, y: props.lng }
 
 export const dividingCurrent = (flexGrid, index) => {
-  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id, deleted } = flexGrid
+  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
   const divPoints = getPointsDivZones(eternals, zoneSegments, index).map(toLatLng)
   const newDirections = directions + 1
-  const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => []))
-  const newEternals = eternals.insert(index + 1, divPoints)
-  const newDirectionNames = directionNames.size > index ? directionNames.insert(index + 1, null) : directionNames
-  const newZoneSegments = changeZoneSegments(zoneSegments, index)
-  const geometryProps = [
-    newEternals,
-    newDirectionSegments,
-    newZoneSegments,
-  ]
+  const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
+  const newEternals = eternals.insert(index + 1, divPoints).toArray()
+  const newDirectionNames = directionNames.size > index
+    ? directionNames.insert(index + 1, null).toArray()
+    : directionNames.toArray()
+  const newZoneSegments = changeZoneSegments(zoneSegments, index).toArray()
+  const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
   const attrProps = {
     zones,
     directions: newDirections,
     directionNames: newDirectionNames,
   }
-  const newData = {
-    id,
-    deleted,
-    zones,
-    zoneSegments: newZoneSegments,
-    eternals: newEternals,
-    directions: newDirections,
-    directionSegments: newDirectionSegments,
-    directionNames: newDirectionNames,
-  }
-  return { geometryProps, attrProps, newData }
+  return { geometryProps, attrProps }
 }
 
 const getPointsDivZones = (eternals, segments, index) => segments.toArray().map((col, i) => {

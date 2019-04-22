@@ -17,15 +17,12 @@ export default class FlexGridButtons extends React.Component {
     hideFlexGrid: PropTypes.func,
     calcFlexGridUnits: PropTypes.func,
     showDivideDirForm: PropTypes.func,
-    // @TODO: delete excess
     onModalCancel: PropTypes.func,
     selectDirection: PropTypes.func,
     deselectDirection: PropTypes.func,
     isShownDivideForm: PropTypes.bool,
     flexGrid: PropTypes.object,
-    // @TODO: delete
-    updateGeometry: PropTypes.func,
-    updateAttributes: PropTypes.func,
+    updateFlexGridDirections: PropTypes.func,
   }
 
   render () {
@@ -41,9 +38,7 @@ export default class FlexGridButtons extends React.Component {
       selectDirection,
       deselectDirection,
       flexGrid,
-      // @TODO: delete:
-      updateGeometry,
-      updateAttributes,
+      updateFlexGridDirections,
     } = this.props
 
     if (!isEditMode) {
@@ -52,7 +47,6 @@ export default class FlexGridButtons extends React.Component {
 
     const dropHandler = visible ? hideFlexGrid : showFlexGridOptions
 
-    // @TODO: кнопка!
     return (
       <>
         <MenuDivider />
@@ -70,18 +64,17 @@ export default class FlexGridButtons extends React.Component {
           onClick={calcFlexGridUnits}
         />
         <IconButton
-          title={'SEPARATE DIRECTION'}
+          title={i18n.DIVIDE_DIRECTION}
           icon={iconNames.FOREGROUND_DEFAULT}
           disabled={!visible}
           onClick={showDivideDirForm}
         >{isShownDivideForm &&
           <DivideDirectionForm
             onCancel={onModalCancel}
+            onOk={updateFlexGridDirections}
             select={selectDirection}
             deselect={deselectDirection}
             flexGrid={flexGrid}
-            updateGeometry={updateGeometry}
-            updateAttributes={updateAttributes}
           />}
         </IconButton>
       </>

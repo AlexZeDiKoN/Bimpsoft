@@ -6,8 +6,7 @@ import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
-// @TODO: вынести на пару уровней выше
-import { dividingCurrent } from '../../../../utils/flexGridOperations'
+import { dividingCurrent } from '../../../WebMap/patch/utils/flexGrid'
 import './divideDirectionForm.css'
 
 const { Group: RGroup } = Radio
@@ -21,27 +20,8 @@ const getName = (list, i) => {
   return name ? `№${++i} "${name}"` : `№${++i}`
 }
 
-// @TODO: Не экспортируются
-function calcMiddlePoint (coords) {
-  const zero = { lat: 0, lng: 0 }
-  if (!coords.length) { return zero }
-  const sum = coords.reduce((a, p) => {
-    a.lat += p.lat
-    a.lng += p.lng
-    return a
-  }, zero)
-  return { lat: sum.lat / coords.length, lng: sum.lng / coords.length }
-}
-
-function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
-  return {
-    point: calcMiddlePoint(eternals.reduce((result, item) => result.concat(item), [])),
-    geometry: [ eternals, directionSegments, zoneSegments ],
-  }
-}
-//
 const DivideDirectionForm = (props) => {
-  const { select, deselect, onCancel, flexGrid, updateAttributes, updateGeometry } = props
+  const { select, deselect, onCancel, flexGrid, onOk } = props
   const { directions, directionNames, id } = flexGrid
   const list = [ ...Array(directions) ].map((_, i) => ({ value: i, name: `${getName(directionNames, i)}` }))
   const selected = React.createRef()
@@ -60,9 +40,7 @@ const DivideDirectionForm = (props) => {
     if (selected && selected.current) {
       const { current: { state: { value } } } = selected
       const { attrProps, geometryProps } = dividingCurrent(flexGrid, value)
-      updateAttributes(id, { attributes: attrProps })
-      updateGeometry(id, formFlexGridGeometry(...geometryProps))
-      // onOk(newData)
+      onOk(id, attrProps, geometryProps)
     }
     handleClose()
   }
@@ -96,10 +74,8 @@ DivideDirectionForm.propTypes = {
   select: PropTypes.func.isRequired,
   deselect: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
-  // onOk: PropTypes.func.isRequired,
+  onOk: PropTypes.func.isRequired,
   flexGrid: PropTypes.object.isRequired,
-  updateGeometry: PropTypes.func.isRequired,
-  updateAttributes: PropTypes.func.isRequired,
 }
 
 export default DivideDirectionForm
