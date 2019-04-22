@@ -1254,10 +1254,14 @@ export default class WebMap extends React.PureComponent {
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
     } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
-      // @TODO: нормальный метод сделать
-      this.dropFlexGrid()
-      this.dropFlexGrid(this.props.flexGridVisible)
-      console.info('updating', this.flexGrid.id)
+      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+      const options = { directions }
+      const internalProps = {
+        eternals: eternals.toArray(),
+        directionSegments: directionSegments.toArray(),
+        zoneSegments: zoneSegments.toArray(),
+      }
+      this.flexGrid.updateProps(options, internalProps)
     }
   }
 
