@@ -41,13 +41,13 @@ export const setOrgStructureTree = (byIds, roots) => ({
   roots,
 })
 
-const getOrgStructuresTree = (unitsById, relations) => {
+const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
   const byIds = {}
   const roots = []
   relations.forEach(({ unitID, parentUnitID }) => {
     const unit = unitsById[unitID]
     if (unit) {
-      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
+      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [], commandPosts: [] }
     }
   })
   relations.forEach(({ unitID, parentUnitID }) => {
@@ -60,6 +60,10 @@ const getOrgStructuresTree = (unitsById, relations) => {
       }
     }
   })
+  commandPosts.forEach(({ id, militaryUnitID }) => {
+    const parent = byIds[militaryUnitID]
+    parent && parent.commandPosts.push(id)
+  })
   return { byIds, roots }
 }
 
@@ -71,7 +75,12 @@ const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const formations = await milOrgApi.generalFormation.list()
     const formation = formations.find((formation) => formation.id === formationId)
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-    const tree = getOrgStructuresTree(unitsById, relations)
+    const commandPosts = await milOrgApi.militaryCommandPost.list({ formationID: formationId })
+    console.log(unitsById)
+    console.log(relations)
+    console.log(commandPosts)
+    const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
+    console.log(tree)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
     formationsCache.set(formationId, formationInfo)
