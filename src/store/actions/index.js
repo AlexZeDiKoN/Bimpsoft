@@ -5,6 +5,7 @@ import * as asyncAction from './asyncAction'
 import * as notifications from './notifications'
 import * as orgStructures from './orgStructures'
 import * as selection from './selection'
+import * as catalogs from './catalogs'
 import * as templates from './templates'
 import * as params from './params'
 import * as webMap from './webMap'
@@ -17,6 +18,7 @@ export {
   maps,
   layers,
   templates,
+  catalogs,
   selection,
   notifications,
   orgStructures,
