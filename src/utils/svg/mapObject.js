@@ -81,8 +81,12 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
   const { coordToPixels, bounds, scale } = commonData
   const { attributes, geometry, level } = data
   if (geometry && geometry.size >= minPoints) {
+    const points = geometry.toJS().map((point) => coordToPixels(point))
+    if (bezier) {
+      prepareBezierPath(points, locked)
+    }
     return getLineSvg(
-      geometry.toJS().map((point) => coordToPixels(point)),
+      points,
       { ...attributes.toJS(), level, bounds, scale, bezier, locked },
       layerData,
     )
