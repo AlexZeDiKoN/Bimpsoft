@@ -1,10 +1,10 @@
 {
   "name": "web-map",
-  "version": "6.03.312",
+  "version": "6.03.313",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^6.2.170",
-    "@DZVIN/MilSymbolEditor": "^6.2.106",
+    "@DZVIN/CommonComponents": "^6.3.171",
+    "@DZVIN/MilSymbolEditor": "^6.3.107",
     "@DZVIN/milsymbol": "^0.0.4",
     "antd": "^3.12.4",
     "babel-polyfill": "^6.26.0",
