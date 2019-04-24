@@ -35,6 +35,10 @@ export default function reducer (state = initState, action) {
       const { selectedId } = action
       return { ...state, selectedId }
     }
+    case orgStructures.SET_COMMAND_POSTS: {
+      const { commandPostsById } = action
+      return { ...state, commandPostsById }
+    }
     case orgStructures.EXPAND_ORG_STRUCTURE_ITEM: {
       const { id } = action
       let { expandedIds } = state

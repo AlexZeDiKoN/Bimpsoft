@@ -15,6 +15,7 @@ class TreeComponentUncontrolled extends React.Component {
     filteredIds: PropTypes.object,
     roots: PropTypes.array,
     byIds: PropTypes.object,
+    commandPostsById: PropTypes.object,
     itemTemplate: PropTypes.any,
     expandedKeys: PropTypes.object,
     onExpand: PropTypes.func,
@@ -25,6 +26,7 @@ class TreeComponentUncontrolled extends React.Component {
     const {
       filteredIds = null,
       byIds,
+      commandPostsById,
       itemTemplate: Item,
       commonData,
       expandedKeys,
@@ -36,10 +38,12 @@ class TreeComponentUncontrolled extends React.Component {
           if (filteredIds !== null && !filteredIds.hasOwnProperty(id)) {
             return null
           }
-          const itemData = byIds[id]
+          const itemData = byIds[id] || commandPostsById[id]
 
           const expanded = expandedKeys.hasOwnProperty(id)
-          const canExpand = Array.isArray(itemData.children) && Boolean(itemData.children.length)
+          console.log(expanded)
+          const canExpand = (Array.isArray(itemData.children) && Boolean(itemData.children.length)) ||
+            (Array.isArray(itemData.commandPosts) && Boolean(itemData.commandPosts.length))
 
           return (
             <div className="tree-component-li" key={id}>
@@ -53,6 +57,7 @@ class TreeComponentUncontrolled extends React.Component {
                 { ...commonData }
               />
               {console.log(itemData)}
+              {expanded && this.renderItems(itemData.commandPosts, level + 1)}
               {expanded && this.renderItems(itemData.children, level + 1)}
             </div>
           )
@@ -123,6 +128,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       textFilter = null,
       byIds,
       roots,
+      commandPostsById,
       formation = null,
       onDoubleClick,
       onClick,
@@ -157,6 +163,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
               filteredIds={filteredIds}
               byIds={byIds}
               roots={roots}
+              commandPostsById={commandPostsById}
               itemTemplate={Item}
               commonData={commonData}
               onMouseUp={this.mouseUpHandler}
@@ -173,6 +180,7 @@ OrgStructuresComponent.propTypes = {
   canEdit: PropTypes.bool,
   roots: PropTypes.array.isRequired,
   byIds: PropTypes.object.isRequired,
+  commandPostsById: PropTypes.object,
   formation: PropTypes.object,
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,

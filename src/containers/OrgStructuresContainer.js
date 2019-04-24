@@ -8,8 +8,8 @@ import { catchErrors } from '../store/actions/asyncAction'
 const mapStateToProps = (store) => {
   const { orgStructures } = store
   const canEdit = canEditSelector(store)
-  const { byIds, roots, formation, selectedId, textFilter, expandedIds } = orgStructures
-  return { canEdit, selectedId, textFilter, expandedIds, byIds, roots, formation }
+  const { byIds, roots, formation, selectedId, textFilter, expandedIds, commandPostsById } = orgStructures
+  return { canEdit, selectedId, textFilter, expandedIds, byIds, roots, formation, commandPostsById }
 }
 
 const mapDispatchToProps = {
