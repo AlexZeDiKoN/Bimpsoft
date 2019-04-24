@@ -1,3 +1,5 @@
+import * as R from 'ramda'
+import memoize from 'memoize-one'
 import { buildFlexGridGeometry } from '../../'
 import { calcControlPoint, halfPoint } from './Bezier'
 
@@ -11,7 +13,7 @@ const toXY = (props) => Array.isArray(props)
 
 export const dividingCurrent = (flexGrid, index) => {
   const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
-  const divPoints = getPointsDivZones(eternals, zoneSegments, index).map(toLatLng)
+  const divPoints = getPointsDivZones(eternals, zoneSegments, index)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
   const newEternals = eternals.insert(index + 1, divPoints).toArray()
@@ -28,46 +30,20 @@ export const dividingCurrent = (flexGrid, index) => {
   return { geometryProps, attrProps }
 }
 
-const getPointsDivZones = (eternals, segments, index) => segments.toArray().map((col, i) => {
-  const inflections = col[index]
-  const e1 = eternals.get(index + 1)[i]
-  const e2 = eternals.get(index)[i]
-  const infLen = inflections.length
-  return !infLen
-    ? getHalfEternals(e1, e2)
-    : infLen % 2
-      ? getMiddleSegment(inflections)
-      : infLen === 2
-        ? getPairFewSegment(inflections, e1, e2)
-        : getPairSegment(inflections)
-})
+const getPointsDivZones = (eternals, segments, index) => segments.toArray().map(getMiddlePoint(eternals, index))
 
-// Если Внутри zoneSegments нет точек:
-const getHalfEternals = (e1, e2) => {
-  const [ , cp2 ] = calcControlPoint(pointToArr(e1), pointToArr(e1), pointToArr(e2))// getting controlPoints
-  const [ cp1 ] = calcControlPoint(pointToArr(e1), pointToArr(e2), pointToArr(e2))// getting controlPoints
-  return halfPoint(toXY(e1), toXY(cp2), toXY(cp1), toXY(e2))
-}
-
-// Если Внутри zoneSegments нечетное количество точек:
-const getMiddleSegment = (segment) => segment[Math.floor(segment.length / 2)]
-
-// Если Внутри zoneSegments четное количество точек меньше 3х:
-const getPairFewSegment = (segment, e1, e2) => { // e1 - выше, e2 - ниже
-  const [ point1, point2 ] = segment
-  const [ , cp2 ] = calcControlPoint(pointToArr(e1), pointToArr(point1), pointToArr(point2))// getting controlPoints
-  const [ cp1 ] = calcControlPoint(pointToArr(point1), pointToArr(point2), pointToArr(e2))// getting controlPoints
-  return halfPoint(toXY(point1), toXY(cp2), toXY(cp1), toXY(point2))
-}
-
-// Если Внутри zoneSegments четное количество точек больше 2х:
-const getPairSegment = (p) => {
-  const half = p.length / 2
-  const n = [ half - 2, half - 1, half, half + 1 ]
-  const [ , cp2 ] = calcControlPoint(pointToArr(p[n[0]]), pointToArr(p[n[1]]), pointToArr(p[n[2]]))// getting controlPoints
-  const [ cp1 ] = calcControlPoint(pointToArr(p[n[1]]), pointToArr(p[n[2]]), pointToArr(p[n[3]]))// getting controlPoints
-  return halfPoint(toXY(p[n[1]]), toXY(cp2), toXY(cp1), toXY(p[n[2]]))
-}
+const getMiddlePoint = memoize((eternals, index) =>
+  (segment, i) => {
+    const arr = getRulePoints(eternals, index, segment, i)
+    if (!(arr.length % 2)) { // если в итоговом массиве четное количество точек
+      const points = arr.splice(arr.length / 2 - 2, 4)
+      const [ , cp2 ] = calcControlPoint(pointToArr(points[0]), pointToArr(points[1]), pointToArr(points[2]))// getting controlPoints
+      const [ cp1 ] = calcControlPoint(pointToArr(points[1]), pointToArr(points[2]), pointToArr(points[3]))// getting controlPoints
+      return toLatLng(halfPoint(toXY(points[1]), toXY(cp2), toXY(cp1), toXY(points[2])))
+    }
+    return toLatLng(arr[Math.floor(arr.length / 2)])
+  }
+)
 
 const changeZoneSegments = (segments, index) => segments.map((column) => {
   const newCol = [ ...column ]
@@ -85,6 +61,22 @@ const makeTwoSegmentArrays = (list) => {
     return [ startedArr, lastArr ]
   }
   return [ [], [] ]
+}
+
+const getRulePoints = (eternals, index, segment, i) => {
+  const line1 = eternals.get(index)
+  const line2 = eternals.get(index + 1)
+  const currentSegment = segment[index]
+  const defaultArray = [ line1[i], ...currentSegment, line2[i] ]
+  if (defaultArray.length < 3) {
+    const line0 = eternals.get(index - 1) || line1
+    const line3 = eternals.get(index + 2) || line2
+    const nextSegment = segment[index + 1] || []
+    const prevSegment = segment[index - 1] || []
+    defaultArray.unshift(R.last(prevSegment) || line0[i])
+    defaultArray.push(R.head(nextSegment) || line3[i])
+  }
+  return defaultArray
 }
 
 export const combineDirections = (flexGrid, list) => {
