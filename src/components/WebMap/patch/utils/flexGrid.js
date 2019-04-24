@@ -13,7 +13,7 @@ const toXY = (props) => Array.isArray(props)
 
 export const dividingCurrent = (flexGrid, index) => {
   const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
-  const divPoints = getPointsDivZones(eternals, zoneSegments, index).map(toLatLng)
+  const divPoints = getPointsDivZones(eternals, zoneSegments, index)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
   const newEternals = eternals.insert(index + 1, divPoints).toArray()
@@ -39,9 +39,9 @@ const getMiddlePoint = memoize((eternals, index) =>
       const points = arr.splice(arr.length / 2 - 2, 4)
       const [ , cp2 ] = calcControlPoint(pointToArr(points[0]), pointToArr(points[1]), pointToArr(points[2]))// getting controlPoints
       const [ cp1 ] = calcControlPoint(pointToArr(points[1]), pointToArr(points[2]), pointToArr(points[3]))// getting controlPoints
-      return halfPoint(toXY(points[1]), toXY(cp2), toXY(cp1), toXY(points[2]))
+      return toLatLng(halfPoint(toXY(points[1]), toXY(cp2), toXY(cp1), toXY(points[2])))
     }
-    return arr[Math.floor(arr.length / 2)]
+    return toLatLng(arr[Math.floor(arr.length / 2)])
   }
 )
 
