@@ -15,10 +15,7 @@ const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
 const directionOptions = (list) =>
   list.map(({ value, name }) => <Radio className={'dir_option'} value={value} key={value}>{name}</Radio>)
 
-const getName = (list, i) => {
-  const name = list.get(i)
-  return name ? `№${++i} "${name}"` : `№${++i}`
-}
+const getName = (list, i) => `Напрямок ${++i} ${list.get(i) || ''}`
 
 const DivideDirectionForm = (props) => {
   const { select, deselect, onCancel, flexGrid, onOk } = props

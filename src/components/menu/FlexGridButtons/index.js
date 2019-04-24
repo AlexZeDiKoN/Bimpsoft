@@ -6,9 +6,11 @@ import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
 import DivideDirectionForm from './DivideDirectionForm'
+import CombineDirectionsForm from './CombineDirectionsForm'
 
 const { names: iconNames, IconButton } = components.icons
 
+// @TODO: КНОПКА!!!
 export default class FlexGridButtons extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
@@ -23,6 +25,9 @@ export default class FlexGridButtons extends React.Component {
     isShownDivideForm: PropTypes.bool,
     flexGrid: PropTypes.object,
     updateFlexGridDirections: PropTypes.func,
+    //
+    isShownCombineForm: PropTypes.bool,
+    showCombineDirForm: PropTypes.func,
   }
 
   render () {
@@ -34,6 +39,8 @@ export default class FlexGridButtons extends React.Component {
       calcFlexGridUnits,
       showDivideDirForm,
       isShownDivideForm,
+      isShownCombineForm,
+      showCombineDirForm,
       onModalCancel,
       selectDirection,
       deselectDirection,
@@ -70,6 +77,20 @@ export default class FlexGridButtons extends React.Component {
           onClick={showDivideDirForm}
         >{isShownDivideForm &&
           <DivideDirectionForm
+            onCancel={onModalCancel}
+            onOk={updateFlexGridDirections}
+            select={selectDirection}
+            deselect={deselectDirection}
+            flexGrid={flexGrid}
+          />}
+        </IconButton>
+        <IconButton
+          title={'ОБЪЕДИНИТЬ!!!'}
+          icon={iconNames.COPY_TABLE_DEFAULT}
+          disabled={!visible}
+          onClick={showCombineDirForm}
+        >{isShownCombineForm &&
+          <CombineDirectionsForm
             onCancel={onModalCancel}
             onOk={updateFlexGridDirections}
             select={selectDirection}
