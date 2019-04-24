@@ -26,6 +26,12 @@ import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
 import { settings } from '../../utils/svg/lines'
+import {
+  BACK_LIGHT_STYLE_LINE,
+  BACK_LIGHT_STYLE_POLYGON,
+  LINE_STRING,
+  MULTI_LINE_STRING,
+} from '../../constants/TopoObj'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -39,12 +45,6 @@ import {
   formFlexGridGeometry,
 } from './Tactical'
 import { MapProvider } from './MapContext'
-import {
-  BACK_LIGHT_STYLE_LINE,
-  BACK_LIGHT_STYLE_POLYGON,
-  LINE_STRING,
-  MULTI_LINE_STRING,
-} from '../../constants/TopoObj'
 
 const { Coordinates: Coord } = utils
 
