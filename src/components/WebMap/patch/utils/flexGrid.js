@@ -50,11 +50,11 @@ const getHalfEternals = (e1, e2) => {
 }
 
 // Если Внутри zoneSegments нечетное количество точек:
-const getMiddleSegment = (segments) => segments[Math.floor(segments.length / 2)]
+const getMiddleSegment = (segment) => segment[Math.floor(segment.length / 2)]
 
-// Если Внутри zoneSegments четное количество точек меньше 2х:
-const getPairFewSegment = (segments, e1, e2) => { // e1 - выше, e2 - ниже
-  const [ point1, point2 ] = segments
+// Если Внутри zoneSegments четное количество точек меньше 3х:
+const getPairFewSegment = (segment, e1, e2) => { // e1 - выше, e2 - ниже
+  const [ point1, point2 ] = segment
   const [ , cp2 ] = calcControlPoint(pointToArr(e1), pointToArr(point1), pointToArr(point2))// getting controlPoints
   const [ cp1 ] = calcControlPoint(pointToArr(point1), pointToArr(point2), pointToArr(e2))// getting controlPoints
   return halfPoint(toXY(point1), toXY(cp2), toXY(cp1), toXY(point2))
