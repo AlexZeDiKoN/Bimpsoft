@@ -9,6 +9,9 @@ const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
+const copyRow = (row) => row.map(L.latLng)
+const copyRing = (ring) => ring.map(copyRow)
+
 const zoneCode = (value, zones) => {
   let result = value - zones
   if (result >= 0) {
@@ -114,8 +117,6 @@ L.FlexGrid = L.Layer.extend({
     this.id = id
     this.highlightedDirections = []
     if (geometry) {
-      const copyRow = (row) => row.map(L.latLng)
-      const copyRing = (ring) => ring.map(copyRow)
       this.eternals = geometry.eternals.map(copyRow)
       this.directionSegments = geometry.directionSegments.map(copyRing)
       this.zoneSegments = geometry.zoneSegments.map(copyRing)
@@ -143,6 +144,16 @@ L.FlexGrid = L.Layer.extend({
     this._reset()
     this._renderer._addPath(this)
     this._renderer._bringToFront(this)
+  },
+
+  updateProps (options, props) {
+    const { eternals, directionSegments, zoneSegments } = props
+    L.setOptions(this, options)
+    this.eternals = eternals.map(copyRow)
+    this.directionSegments = directionSegments.map(copyRing)
+    this.zoneSegments = zoneSegments.map(copyRing)
+    this._project()
+    this._update()
   },
 
   onRemove () {

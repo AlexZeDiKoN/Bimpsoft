@@ -5,3 +5,23 @@
 .flex {
   display: flex;
 }
+
+
+@keyframes confirm-delete {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0px);
+
+  }
+}
+
+.not-clickable-area{
+  margin: 0;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  z-index: 1000;
+}

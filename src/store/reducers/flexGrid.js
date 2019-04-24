@@ -22,7 +22,7 @@ const FlexGrid = Record({
 
 const SelectedDirections = Record({
   list: Set(),
-  current: null,
+  main: null,
 })
 
 const FlexGridState = Record({
@@ -31,6 +31,7 @@ const FlexGridState = Record({
   vertical: false,
   present: false,
   selectedDirections: SelectedDirections(),
+  dividingDirection: undefined,
   flexGrid: FlexGrid(),
 })
 
@@ -108,17 +109,22 @@ export default function reducer (state = FlexGridState(), action) {
       }
     }
     case actions.SELECT_DIRECTION: {
-      const { selectedDirections: { list, current } } = state
-      const { index, setAsMain } = payload
-      const updaterObj = { list: list.add(index), current: setAsMain ? index : current }
+      const { selectedDirections: { list, main } } = state
+      const { index, isMain } = payload
+      const updaterObj = { list: list.add(index), main: isMain ? index : main }
       return update(state, 'selectedDirections', merge, updaterObj)
     }
     case actions.DESELECT_DIRECTION: {
-      const { selectedDirections: { list, current } } = state
-      const { index, clearMain } = payload
-      const updaterObj = payload /** if u pass an id, then will deselect current direction, in other case will deselect all */
-        ? { list: list.delete(index), current: clearMain ? null : current }
-        : { list: list.clear(), current: null }
+      const { selectedDirections: { list, main } } = state
+      const updaterObj = {}
+      if (payload) {
+        const { index, updateMain } = payload
+        updaterObj.list = list.delete(index)
+        updaterObj.main = updateMain || main
+      } else {
+        updaterObj.list = list.clear()
+        updaterObj.main = null
+      }
       return update(state, 'selectedDirections', merge, updaterObj)
     }
     default:

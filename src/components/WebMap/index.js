@@ -42,6 +42,7 @@ import {
   isGeometryChanged,
   geomPointEquals,
   createCoordinateMarker,
+  formFlexGridGeometry,
 } from './Tactical'
 import { MapProvider } from './MapContext'
 
@@ -1070,7 +1071,7 @@ export default class WebMap extends React.PureComponent {
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection({ index: direction - 1, setAsMain: true })
+        selectDirection({ index: direction - 1 })
         showDirectionNameForm()
       }
     }
@@ -1337,6 +1338,15 @@ export default class WebMap extends React.PureComponent {
     } else if (actual && !this.flexGrid) {
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
+    } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
+      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+      const options = { directions }
+      const internalProps = {
+        eternals: eternals.toArray(),
+        directionSegments: directionSegments.toArray(),
+        zoneSegments: zoneSegments.toArray(),
+      }
+      this.flexGrid.updateProps(options, internalProps)
     }
   }
 
@@ -1442,3 +1452,6 @@ export default class WebMap extends React.PureComponent {
     )
   }
 }
+
+/** Do not delete, please, it is FIX */
+export const buildFlexGridGeometry = formFlexGridGeometry
