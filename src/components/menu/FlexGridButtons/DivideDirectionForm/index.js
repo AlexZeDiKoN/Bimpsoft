@@ -52,7 +52,7 @@ const DivideDirectionForm = (props) => {
         <HotKeysContainer>
           <Form className="divide_form">
             <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
-            <div className="divide_form_desc">{i18n.DIVIDE_DIRECTION_DESC}:</div>
+            <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
             <FormItem>
               <RGroup onChange={handleSelectDirection} ref={selected}>
                 {directionOptions(list)}
