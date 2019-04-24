@@ -86,3 +86,36 @@ const makeTwoSegmentArrays = (list) => {
   }
   return [ [], [] ]
 }
+
+export const combineDirections = (flexGrid, list) => {
+  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
+  const length = list.length
+  const firstDir = Math.min(...list)
+  const lastDir = Math.max(...list)
+  console.log('length', length)
+  console.log('firstDir', firstDir)
+  console.log('lastDir', lastDir)
+  // @TODO:
+  // @TODO: уменьшать количество {directions} на {length - 1}
+  // @TODO: {eternals} - остаются те, которые с index = {firstDir} и index = {lastDir + 1}
+  // @TODO: {directionSegments} - остаются те, которые с index = {firstDir} и index = {lastDir + 1}
+  // @TODO: {zoneSegments}:
+  // @TODO:         1) Удаляю все
+  // @TODO:         2) {eternals} между firstDir & lastDir + 1 переносятся в соответствующий ряд zoneDirections, а именно: {[eternal[i], zoneSegments[i], eternal[i+1], zoneSegments[i+1], ... ]}
+  // @TODO: {directionNames} - оставляю тот, который есть, или нижайший
+  // const divPoints = getPointsDivZones(eternals, zoneSegments, index).map(toLatLng)
+  // const newDirections = directions + 1
+  // const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
+  // const newEternals = eternals.insert(index + 1, divPoints).toArray()
+  // const newDirectionNames = directionNames.size > index
+  //   ? directionNames.insert(index + 1, null).toArray()
+  //   : directionNames.toArray()
+  // const newZoneSegments = changeZoneSegments(zoneSegments, index).toArray()
+  // const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
+  // const attrProps = {
+  //   zones,
+  //   directions: newDirections,
+  //   directionNames: newDirectionNames,
+  // }
+  // return { geometryProps, attrProps }
+}
