@@ -10,7 +10,6 @@ import CombineDirectionsForm from './CombineDirectionsForm'
 
 const { names: iconNames, IconButton } = components.icons
 
-// @TODO: КНОПКА!!!
 export default class FlexGridButtons extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
@@ -85,9 +84,9 @@ export default class FlexGridButtons extends React.Component {
           />}
         </IconButton>
         <IconButton
-          title={'ОБЪЕДИНИТЬ!!!'}
+          title={i18n.COMBINE_DIRECTIONS}
           icon={iconNames.COPY_TABLE_DEFAULT}
-          disabled={!visible}
+          disabled={!visible || flexGrid.directions < 2}
           onClick={showCombineDirForm}
         >{isShownCombineForm &&
           <CombineDirectionsForm

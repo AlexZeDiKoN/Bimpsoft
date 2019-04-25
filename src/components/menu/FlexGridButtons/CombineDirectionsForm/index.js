@@ -69,8 +69,8 @@ const CombineDirectionsForm = (props) => {
       <FocusTrap className="divide_wrapper">
         <HotKeysContainer>
           <Form className="divide_form">
-            <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
-            <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
+            <div className="divide_form_title">{i18n.COMBINE_DIRECTIONS}</div>
+            <div className="divide_form_desc">{i18n.CHOOSE_DIRECTIONS}:</div>
             <FormItem><CGroup onChange={handleSelect} value={selected.list}>{options}</CGroup></FormItem>
             <FormItem>
               {buttonYes(handleOkay)}
