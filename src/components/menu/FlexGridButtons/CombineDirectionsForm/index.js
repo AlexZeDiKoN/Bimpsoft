@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import * as R from 'ramda'
@@ -15,97 +15,73 @@ const { Group: CGroup } = Checkbox
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
 
-const getName = (list, i) => `Напрямок ${++i} ${list.get(i) || ''}`
-const isDisabled = memoize((len, min, max) => (i) => len && (
-  (i > max || i < min) ||
-  (i < max - 1 && i > min + 1))
+const getList = memoize((length, list) => [ ...Array(length) ]
+  .map((_, i) => ({ value: i, name: `Напрямок ${++i} ${list.get(i) || ''}` }))
 )
 
-// @TODO: хранить начало и конец выборки, чекбоксы вынести из группы, переделать компонент в функциональный с хуком
-class CombineDirectionsForm extends Component {
-  state = {
-    selected: [],
-    disableMin: null,
-    disableMax: null,
-  }
+const isDisabled = memoize((len, min, max) => (i) => len && (
+  (i > max + 1 || i < min - 1) ||
+  (i < max && i > min))
+)
 
-  handleSelectDirection = (selected) => {
-    const { select, deselect } = this.props
-    if (this.state.selected.length < selected.length) {
-      const current = R.last(selected)
+const CombineDirectionsForm = (props) => {
+  const { select, deselect, onCancel, onOk, flexGrid } = props
+  const { directions, directionNames, id } = flexGrid
+  const [ selected, setSelected ] = useState({ list: [], from: null, to: null })
+
+  const handleSelect = (list) => {
+    if (selected.list.length < list.length) {
+      const current = R.last(list)
       select({ index: current })
     } else {
-      const current = R.last(this.state.selected)
+      const current = R.last(selected.list)
       deselect({ index: current })
     }
-    const disableMin = Math.min(...selected) - 1
-    const disableMax = Math.max(...selected) + 1
-    this.setState({ selected, disableMin, disableMax })
+    const from = Math.min(...list)
+    const to = Math.max(...list)
+    setSelected({ list, from, to })
   }
 
-  handleClose = () => {
-    const { deselect, onCancel } = this.props
+  const handleClose = () => {
     deselect()
     onCancel()
   }
 
-  handleOkay = () => {
-    const { selected } = this.state
-    const { onOk, flexGrid } = this.props
-    const { id } = flexGrid
-    console.log('selected', selected)
-    console.log('id', id)
-    if (selected.length) {
-      const { attrProps, geometryProps } = combineDirections(flexGrid, selected)
+  const handleOkay = () => {
+    const { list, from, to } = selected
+    if (list.length > 1) {
+      const { attrProps, geometryProps } = combineDirections(flexGrid, from, to)
       onOk(id, attrProps, geometryProps)
     }
-    this.handleClose()
+    handleClose()
   }
 
-  getList = memoize(() => {
-    const { flexGrid } = this.props
-    const { directions, directionNames } = flexGrid
-    return [ ...Array(directions) ].map((_, i) => ({ value: i, name: `${getName(directionNames, i)}` }))
-  })
+  const disabled = isDisabled(selected.list.length, selected.from, selected.to)
+  const list = getList(directions, directionNames)
 
-  render () {
-    const { disableMin, disableMax, selected } = this.state
-    const list = this.getList()
-    const disabled = isDisabled(selected.length, disableMin, disableMax)
-    return (
-      <>
-        <div className="not-clickable-area"/>
-        <FocusTrap className="divide_wrapper">
-          <HotKeysContainer>
-            <Form className="divide_form">
-              <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
-              <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
-              <FormItem>
-                <CGroup onChange={this.handleSelectDirection} value={selected}>
-                  {
-                    list.map(({ value, name }, i) =>
-                      <Checkbox
-                        className={'dir_option'}
-                        value={value}
-                        key={value}
-                        disabled={disabled(i)}
-                      >
-                        {name}
-                      </Checkbox>)
-                  }
-                </CGroup>
-              </FormItem>
-              <FormItem>
-                {buttonYes(this.handleOkay)}
-                <HotKey selector={shortcuts.ESC} onKey={this.handleClose}/>
-                {buttonCancel(this.handleClose)}
-              </FormItem>
-            </Form>
-          </HotKeysContainer>
-        </FocusTrap>
-      </>
-    )
-  }
+  const options = list.map(({ value, name }) =>
+    <Checkbox className={'dir_option'} value={value} key={value} disabled={disabled(value)}>{name}</Checkbox>
+  )
+
+  return (
+    <>
+      <div className="not-clickable-area"/>
+      <FocusTrap className="divide_wrapper">
+        <HotKeysContainer>
+          <Form className="divide_form">
+            <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
+            <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
+            <FormItem><CGroup onChange={handleSelect} value={selected.list}>{options}</CGroup></FormItem>
+            <FormItem>
+              {buttonYes(handleOkay)}
+              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
+              {buttonCancel(handleClose)}
+            </FormItem>
+          </Form>
+        </HotKeysContainer>
+      </FocusTrap>
+    </>
+  )
 }
 
 CombineDirectionsForm.propTypes = {
