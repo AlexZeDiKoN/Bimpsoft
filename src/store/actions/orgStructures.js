@@ -45,7 +45,7 @@ export const setOrgStructureTree = (byIds, roots) => ({
 
 export const setCommandPosts = (commandPosts) => {
   const commandPostsById = {}
-  commandPosts.forEach((item) => {
+  commandPosts && commandPosts.forEach((item) => {
     commandPostsById[item.id] = item
   })
   return ({
@@ -105,7 +105,7 @@ export const setFormationById = (formationId) =>
       dispatch(batchActions([
         orgStructures.setOrgStructureFormation(null),
         orgStructures.setOrgStructureTree({}, []),
-        orgStructures.setCommandPosts({}),
+        orgStructures.setCommandPosts([]),
       ]))
       // dispatch(orgStructures.setOrgStructureFormation(null))
       // dispatch(orgStructures.setOrgStructureTree({}, []))

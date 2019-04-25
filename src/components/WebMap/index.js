@@ -1399,6 +1399,7 @@ export default class WebMap extends React.PureComponent {
     let data
     try {
       data = JSON.parse(e.dataTransfer.getData('text'))
+      console.log(data)
     } catch (e) {
       return
     }

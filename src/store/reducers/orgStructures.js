@@ -14,6 +14,7 @@ const initState = {
   selectedId: null,
   textFilter: null,
   expandedIds: {},
+  commandPosts: {},
 }
 
 export default function reducer (state = initState, action) {

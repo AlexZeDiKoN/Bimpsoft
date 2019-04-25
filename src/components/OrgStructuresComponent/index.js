@@ -40,10 +40,12 @@ class TreeComponentUncontrolled extends React.Component {
           }
           const itemData = byIds[id] || commandPostsById[id]
 
-          const expanded = expandedKeys.hasOwnProperty(id)
-          console.log(expanded)
+          const expanded = expandedKeys.hasOwnProperty(id) && itemData.itemType !== 'CommandPost'
           const canExpand = (Array.isArray(itemData.children) && Boolean(itemData.children.length)) ||
             (Array.isArray(itemData.commandPosts) && Boolean(itemData.commandPosts.length))
+
+          const itemsArray = expanded ? itemData.commandPosts.concat(itemData.children) : null
+          console.log(commonData)
 
           return (
             <div className="tree-component-li" key={id}>
@@ -56,9 +58,7 @@ class TreeComponentUncontrolled extends React.Component {
                 }}
                 { ...commonData }
               />
-              {console.log(itemData)}
-              {expanded && this.renderItems(itemData.commandPosts, level + 1)}
-              {expanded && this.renderItems(itemData.children, level + 1)}
+              {this.renderItems(itemsArray, level + 1)}
             </div>
           )
         })}
@@ -68,7 +68,17 @@ class TreeComponentUncontrolled extends React.Component {
   }
 
   render () {
-    const { roots, expandedKeys, filteredIds, byIds, itemTemplate, commonData, onExpand, ...otherProps } = this.props
+    const {
+      roots,
+      expandedKeys,
+      filteredIds,
+      byIds,
+      itemTemplate,
+      commonData,
+      onExpand,
+      commandPostsById,
+      ...otherProps
+    } = this.props
     return (
       <div className="tree-component" {...otherProps} >
         {this.renderItems(roots, 0)}
