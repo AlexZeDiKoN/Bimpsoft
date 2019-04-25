@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
-import * as R from 'ramda'
 import { components } from '@DZVIN/CommonComponents'
 import { Checkbox } from 'antd'
 import FocusTrap from 'react-focus-lock'
@@ -9,37 +8,39 @@ import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
 import { combineDirections } from '../../../WebMap/patch/utils/flexGrid'
-import './combineDirectionsForm.css'
-
-const { Group: CGroup } = Checkbox
+import './combineDirectionsForm.scss'
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
 
-const getList = memoize((length, list) => [ ...Array(length) ]
-  .map((_, i) => ({ value: i, name: `Напрямок ${++i} ${list.get(i) || ''}` }))
-)
-
-const isDisabled = memoize((len, min, max) => (i) => len && (
+const isChecked = (val, min, max) => min !== null && max !== null && val >= min && val <= max
+const isDisabled = memoize((min, max) => (i) => min !== null && max !== null && (
   (i > max + 1 || i < min - 1) ||
   (i < max && i > min))
+)
+
+const getList = memoize((length, list) => [ ...Array(length) ]
+  .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${++i} ${list.get(i) || ''}` }))
 )
 
 const CombineDirectionsForm = (props) => {
   const { select, deselect, onCancel, onOk, flexGrid } = props
   const { directions, directionNames, id } = flexGrid
-  const [ selected, setSelected ] = useState({ list: [], from: null, to: null })
+  const [ selected, setSelected ] = useState({ from: null, to: null })
+  const disabled = isDisabled(selected.from, selected.to)
+  const list = getList(directions, directionNames)
 
-  const handleSelect = (list) => {
-    if (selected.list.length < list.length) {
-      const current = R.last(list)
-      select({ index: current })
+  const setFromTo = (from, to) => from > to ? setSelected({ from: null, to: null }) : setSelected({ from, to })
+
+  const handleSelect = ({ target: { value, checked } }) => {
+    const { from, to } = selected
+    checked ? select({ index: value }) : deselect({ index: value })
+    if (from === null) {
+      return setFromTo(value, value)
+    } else if (!checked) {
+      return value === from ? setFromTo(from + 1, to) : setFromTo(from, to - 1)
     } else {
-      const current = R.last(selected.list)
-      deselect({ index: current })
+      return value > to ? setFromTo(from, value) : setFromTo(value, to)
     }
-    const from = Math.min(...list)
-    const to = Math.max(...list)
-    setSelected({ list, from, to })
   }
 
   const handleClose = () => {
@@ -48,19 +49,26 @@ const CombineDirectionsForm = (props) => {
   }
 
   const handleOkay = () => {
-    const { list, from, to } = selected
-    if (list.length > 1) {
+    const { from, to } = selected
+    if (from < to) {
       const { attrProps, geometryProps } = combineDirections(flexGrid, from, to)
       onOk(id, attrProps, geometryProps)
     }
     handleClose()
   }
 
-  const disabled = isDisabled(selected.list.length, selected.from, selected.to)
-  const list = getList(directions, directionNames)
-
   const options = list.map(({ value, name }) =>
-    <Checkbox className={'dir_option'} value={value} key={value} disabled={disabled(value)}>{name}</Checkbox>
+    <div key={value}>
+      <Checkbox
+        className={'dir_option'}
+        value={value}
+        disabled={disabled(value)}
+        checked={isChecked(value, selected.from, selected.to)}
+        onChange={handleSelect}
+      >
+        {name}
+      </Checkbox>
+    </div>
   )
 
   return (
@@ -71,11 +79,11 @@ const CombineDirectionsForm = (props) => {
           <Form className="divide_form">
             <div className="divide_form_title">{i18n.COMBINE_DIRECTIONS}</div>
             <div className="divide_form_desc">{i18n.CHOOSE_DIRECTIONS}:</div>
-            <FormItem><CGroup onChange={handleSelect} value={selected.list}>{options}</CGroup></FormItem>
+            <FormItem><div>{options}</div></FormItem>
             <FormItem>
               {buttonYes(handleOkay)}
-              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
               {buttonCancel(handleClose)}
+              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
             </FormItem>
           </Form>
         </HotKeysContainer>

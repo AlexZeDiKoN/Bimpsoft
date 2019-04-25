@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import memoize from 'memoize-one'
+import FocusTrap from 'react-focus-lock'
 import { components } from '@DZVIN/CommonComponents'
 import { Radio } from 'antd'
-import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
@@ -12,20 +13,21 @@ import './divideDirectionForm.css'
 const { Group: RGroup } = Radio
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
-const directionOptions = (list) =>
-  list.map(({ value, name }) => <Radio className={'dir_option'} value={value} key={value}>{name}</Radio>)
 
-const getName = (list, i) => `Напрямок ${++i} ${list.get(i) || ''}`
+const getList = memoize((length, list) => [ ...Array(length) ]
+  .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${++i} ${list.get(i) || ''}` }))
+)
 
 const DivideDirectionForm = (props) => {
   const { select, deselect, onCancel, flexGrid, onOk } = props
   const { directions, directionNames, id } = flexGrid
-  const list = [ ...Array(directions) ].map((_, i) => ({ value: i, name: `${getName(directionNames, i)}` }))
-  const selected = React.createRef()
+  const list = getList(directions, directionNames)
+  const [ selected, setSelected ] = useState(null)
 
-  const handleSelectDirection = ({ target: { value } }) => {
+  const handleSelect = ({ target: { value } }) => {
     deselect()
     select({ index: value })
+    setSelected(value)
   }
 
   const handleClose = () => {
@@ -34,13 +36,15 @@ const DivideDirectionForm = (props) => {
   }
 
   const handleOkay = () => {
-    if (selected && selected.current) {
-      const { current: { state: { value } } } = selected
-      const { attrProps, geometryProps } = dividingCurrent(flexGrid, value)
+    if (selected !== null) {
+      const { attrProps, geometryProps } = dividingCurrent(flexGrid, selected)
       onOk(id, attrProps, geometryProps)
     }
     handleClose()
   }
+
+  const options = list.map(({ value, name }) =>
+    <Radio className={'dir_option'} value={value} key={value}>{name}</Radio>)
 
   return (
     <>
@@ -51,14 +55,14 @@ const DivideDirectionForm = (props) => {
             <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
             <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
             <FormItem>
-              <RGroup onChange={handleSelectDirection} ref={selected}>
-                {directionOptions(list)}
+              <RGroup onChange={handleSelect}>
+                {options}
               </RGroup>
             </FormItem>
             <FormItem>
               {buttonYes(handleOkay)}
-              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
               {buttonCancel(handleClose)}
+              <HotKey selector={shortcuts.ESC} onKey={handleClose}/>
             </FormItem>
           </Form>
         </HotKeysContainer>
