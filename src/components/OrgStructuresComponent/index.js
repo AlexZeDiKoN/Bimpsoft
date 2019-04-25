@@ -11,7 +11,7 @@ const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
-  (item) => item.shortName + ' ' + item.fullName,
+  (item) => `${item.shortName} ${item.fullName}`,
   (item) => item.id,
   (item) => item.parentUnitID
 )

@@ -65,8 +65,8 @@ export default class TabsPanel extends React.Component {
 
     return (
       <div className="tabs-panel">
-        <div className="tabs-panel-headers" ref={this.titlesRef}/>
-        <div className="tabs-panel-content" ref={this.containersRef}/>
+        <div className="tabs-panel-headers" ref={this.titlesRef} />
+        <div className="tabs-panel-content" ref={this.containersRef} />
         {tabs.map((Panel, index) => {
           const TabPortal = this.TabPortalHOC(
             this.containersRef,
@@ -75,7 +75,12 @@ export default class TabsPanel extends React.Component {
             selectedId,
             this.selectHandler
           )
-          return (<Panel key={index} wrapper={TabPortal}/>)
+          return (
+            <Panel
+              key={index}
+              wrapper={TabPortal}
+            />
+          )
         })}
       </div>
     )

@@ -168,6 +168,7 @@ export const ELEMENT_SCALES = 'Деталізація обстановки'
 export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
+export const CATALOGS = 'Каталоги'
 
 export const FRIENDLY = 'дружня'
 export const HOSTILE = 'ворожа'
