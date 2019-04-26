@@ -5,10 +5,6 @@ import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-// @TODO: отказ от использования
-// import DivideDirectionForm from './DivideDirectionForm'
-// import CombineDirectionsForm from './CombineDirectionsForm'
-// @TODO: отказ от использования
 import formFor from './DirectionForms'
 import Combine from './DirectionForms/Combine'
 import Divide from './DirectionForms/Divide'

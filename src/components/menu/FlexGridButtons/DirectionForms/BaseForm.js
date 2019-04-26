@@ -27,8 +27,8 @@ const BaseForm = (props) => {
     if (computeParams) {
       const { attrProps, geometryProps, id } = changeDirections(...computeParams)
       onOk(id, attrProps, geometryProps)
+      onCancel()
     }
-    onCancel()
   }
 
   const options = list.map(({ name, value }) =>
@@ -48,11 +48,11 @@ const BaseForm = (props) => {
   return (
     <>
       <div className="not-clickable-area"/>
-      <FocusTrap className="divide_wrapper">
+      <FocusTrap className="form-direction_wrapper">
         <HotKeysContainer>
-          <Form className="divide_form">
-            <div className="divide_form_title">{title}</div>
-            <div className="divide_form_desc">{description}:</div>
+          <Form className="form-direction">
+            <div className="form-direction_title">{title}</div>
+            <div className="form-direction_desc">{description}:</div>
             <FormItem><div className={'options_wrapper'}>{options}</div></FormItem>
             <FormItem>
               {buttonYes(handleOkay)}
