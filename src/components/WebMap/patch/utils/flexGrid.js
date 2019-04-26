@@ -11,6 +11,7 @@ const toXY = (props) => Array.isArray(props)
     ? props
     : { x: props.lat, y: props.lng }
 
+/** DIVIDE METHODS */
 const divideDirection = (flexGrid, index) => {
   const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id } = flexGrid
   const divPoints = getPointsDivZones(eternals, zoneSegments, index)
@@ -79,6 +80,7 @@ const getRulePoints = (eternals, index, segment, i) => {
   return defaultArray
 }
 
+/** COMBINE METHODS */
 const combineDirections = (flexGrid, index, lastIndex) => {
   const { zoneSegments, eternals, directions, directionSegments, directionNames, zones, id } = flexGrid
 
@@ -113,6 +115,7 @@ const combineZoneSegments = (segments, eternals, firstDirection, lastDirection) 
     return colAcc
   }, []))
 
+/** SOLUTION TO USE */
 export const changeDirections = (flexGrid, index, lastIndex) => lastIndex
   ? combineDirections(flexGrid, index, lastIndex)
   : divideDirection(flexGrid, index)
