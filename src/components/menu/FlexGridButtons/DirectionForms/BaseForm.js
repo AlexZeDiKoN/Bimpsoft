@@ -62,7 +62,7 @@ const BaseForm = (props) => {
 BaseForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onOk: PropTypes.func.isRequired,
-  option: PropTypes.element.isRequired,
+  option: PropTypes.func.isRequired,
   updateState: PropTypes.func.isRequired,
   updateHighLight: PropTypes.func.isRequired,
   isChecked: PropTypes.oneOfType([ PropTypes.func, PropTypes.bool ]),
@@ -70,7 +70,7 @@ BaseForm.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
   list: PropTypes.array,
-  computeParams: PropTypes.array,
+  computeParams: PropTypes.oneOfType([ PropTypes.array, PropTypes.bool ]),
 }
 
 export default BaseForm
