@@ -7,7 +7,7 @@ import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
-import { combineDirections } from '../../../WebMap/patch/utils/flexGrid'
+import { changeDirections } from '../../../WebMap/patch/utils/flexGrid'
 import './combineDirectionsForm.scss'
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
@@ -22,6 +22,7 @@ const getList = memoize((length, list) => [ ...Array(length) ]
   .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${++i} ${list.get(i) || ''}` }))
 )
 
+// @TODO: отказ от использования
 const CombineDirectionsForm = (props) => {
   const { select, deselect, onCancel, onOk, flexGrid } = props
   const { directions, directionNames, id } = flexGrid
@@ -51,7 +52,7 @@ const CombineDirectionsForm = (props) => {
   const handleOkay = () => {
     const { from, to } = selected
     if (from < to) {
-      const { attrProps, geometryProps } = combineDirections(flexGrid, from, to)
+      const { attrProps, geometryProps } = changeDirections(flexGrid, from, to)
       onOk(id, attrProps, geometryProps)
     }
     handleClose()

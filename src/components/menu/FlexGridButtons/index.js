@@ -5,8 +5,16 @@ import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-import DivideDirectionForm from './DivideDirectionForm'
-import CombineDirectionsForm from './CombineDirectionsForm'
+// @TODO: отказ от использования
+// import DivideDirectionForm from './DivideDirectionForm'
+// import CombineDirectionsForm from './CombineDirectionsForm'
+// @TODO: отказ от использования
+import formFor from './DirectionForms/FormFor'
+import Combine from './DirectionForms/Combine'
+import Divide from './DirectionForms/Divide'
+
+const DivideDirectionForm = formFor(Divide)
+const CombineDirectionsForm = formFor(Combine)
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -24,7 +32,6 @@ export default class FlexGridButtons extends React.Component {
     isShownDivideForm: PropTypes.bool,
     flexGrid: PropTypes.object,
     updateFlexGridDirections: PropTypes.func,
-    //
     isShownCombineForm: PropTypes.bool,
     showCombineDirForm: PropTypes.func,
   }

@@ -11,8 +11,8 @@ const toXY = (props) => Array.isArray(props)
     ? props
     : { x: props.lat, y: props.lng }
 
-export const dividingCurrent = (flexGrid, index) => {
-  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
+const divideDirection = (flexGrid, index) => {
+  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id } = flexGrid
   const divPoints = getPointsDivZones(eternals, zoneSegments, index)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
@@ -27,7 +27,7 @@ export const dividingCurrent = (flexGrid, index) => {
     directions: newDirections,
     directionNames: newDirectionNames,
   }
-  return { geometryProps, attrProps }
+  return { geometryProps, attrProps, id }
 }
 
 const getPointsDivZones = (eternals, segments, index) => segments.toArray().map(getMiddlePoint(eternals, index))
@@ -79,8 +79,8 @@ const getRulePoints = (eternals, index, segment, i) => {
   return defaultArray
 }
 
-export const combineDirections = (flexGrid, index, lastIndex) => {
-  const { zoneSegments, eternals, directions, directionSegments, directionNames, zones } = flexGrid
+const combineDirections = (flexGrid, index, lastIndex) => {
+  const { zoneSegments, eternals, directions, directionSegments, directionNames, zones, id } = flexGrid
 
   const eternalsArray = eternals.toArray()
   const zoneSegmentsArray = zoneSegments.toArray()
@@ -98,7 +98,7 @@ export const combineDirections = (flexGrid, index, lastIndex) => {
     directions: newDirections,
     directionNames: newDirectionNames,
   }
-  return { geometryProps, attrProps }
+  return { geometryProps, attrProps, id }
 }
 
 const combineList = (list, index, lastIndex) => list.filter((_, i) => i > lastIndex || i <= index)
@@ -112,3 +112,7 @@ const combineZoneSegments = (segments, eternals, firstDirection, lastDirection) 
     }
     return colAcc
   }, []))
+
+export const changeDirections = (flexGrid, index, lastIndex) => lastIndex
+  ? combineDirections(flexGrid, index, lastIndex)
+  : divideDirection(flexGrid, index)

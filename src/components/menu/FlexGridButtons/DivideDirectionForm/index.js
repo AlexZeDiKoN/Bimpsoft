@@ -7,10 +7,8 @@ import { Radio } from 'antd'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
-import { dividingCurrent } from '../../../WebMap/patch/utils/flexGrid'
+import { changeDirections } from '../../../WebMap/patch/utils/flexGrid'
 import './divideDirectionForm.css'
-
-const { Group: RGroup } = Radio
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
 
@@ -18,12 +16,13 @@ const getList = memoize((length, list) => [ ...Array(length) ]
   .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${++i} ${list.get(i) || ''}` }))
 )
 
+// @TODO: отказ от использования
 const DivideDirectionForm = (props) => {
   const { select, deselect, onCancel, flexGrid, onOk } = props
   const { directions, directionNames, id } = flexGrid
   const list = getList(directions, directionNames)
   const [ selected, setSelected ] = useState(null)
-
+  const checked = (i) => i === selected
   const handleSelect = ({ target: { value } }) => {
     deselect()
     select({ index: value })
@@ -37,14 +36,24 @@ const DivideDirectionForm = (props) => {
 
   const handleOkay = () => {
     if (selected !== null) {
-      const { attrProps, geometryProps } = dividingCurrent(flexGrid, selected)
+      const { attrProps, geometryProps } = changeDirections(flexGrid, selected)
       onOk(id, attrProps, geometryProps)
     }
     handleClose()
   }
 
   const options = list.map(({ value, name }) =>
-    <Radio className={'dir_option'} value={value} key={value}>{name}</Radio>)
+    <div key={value}>
+      <Radio
+        className={'dir_option'}
+        value={value}
+        checked={checked(value)}
+        onChange={handleSelect}
+      >
+        {name}
+      </Radio>
+    </div>
+  )
 
   return (
     <>
@@ -54,11 +63,7 @@ const DivideDirectionForm = (props) => {
           <Form className="divide_form">
             <div className="divide_form_title">{i18n.DIVIDE_DIRECTION}</div>
             <div className="divide_form_desc">{i18n.CHOOSE_DIRECTION}:</div>
-            <FormItem>
-              <RGroup onChange={handleSelect}>
-                {options}
-              </RGroup>
-            </FormItem>
+            <FormItem><div>{options}</div></FormItem>
             <FormItem>
               {buttonYes(handleOkay)}
               {buttonCancel(handleClose)}
