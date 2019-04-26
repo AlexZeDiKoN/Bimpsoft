@@ -9,7 +9,7 @@ import { HotKey } from '../../common/HotKeys'
 // import DivideDirectionForm from './DivideDirectionForm'
 // import CombineDirectionsForm from './CombineDirectionsForm'
 // @TODO: отказ от использования
-import formFor from './DirectionForms/FormFor'
+import formFor from './DirectionForms'
 import Combine from './DirectionForms/Combine'
 import Divide from './DirectionForms/Divide'
 
