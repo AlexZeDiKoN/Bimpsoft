@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions'
 import { APP6Code } from '@DZVIN/MilSymbolEditor/build/model'
 import { action } from '../../utils/services'
-import { asyncAction, orgStructures } from './index'
+import { asyncAction } from './index'
 
 export const SET_ORG_STRUCTURE_UNITS = action('SET_ORG_STRUCTURE_UNITS')
 export const SET_ORG_STRUCTURE_TREE = action('SET_ORG_STRUCTURE_TREE')
@@ -19,26 +19,32 @@ export const setOrgStructureUnits = (unitsById) => ({
   type: SET_ORG_STRUCTURE_UNITS,
   unitsById,
 })
+
 export const setOrgStructureFormation = (formation) => ({
   type: SET_ORG_STRUCTURE_FORMATION,
   formation,
 })
+
 export const setOrgStructureSelectedId = (selectedId) => ({
   type: SET_ORG_STRUCTURE_SELECTED_ID,
   selectedId,
 })
+
 export const setOrgStructuresFilterText = (filterText) => ({
   type: SET_ORG_STRUCTURE_FILTER_TEXT,
   filterText,
 })
+
 export const expandOrgStructureItem = (id) => ({
   type: EXPAND_ORG_STRUCTURE_ITEM,
   id,
 })
+
 export const expandTreeByOrgStructureItem = (selectedId) => ({
   type: EXPAND_TREE_BY_ORG_STRUCTURE_ITEM,
   selectedId,
 })
+
 export const setOrgStructureTree = (byIds, roots) => ({
   type: SET_ORG_STRUCTURE_TREE,
   byIds,
@@ -109,9 +115,9 @@ export const setFormationById = (formationId) =>
   asyncAction.withNotification(async (dispatch, getState, { milOrgApi }) => {
     if (!formationId) {
       dispatch(batchActions([
-        orgStructures.setOrgStructureFormation(null),
-        orgStructures.setOrgStructureTree({}, []),
-        orgStructures.setCommandPosts([]),
+        setOrgStructureFormation(null),
+        setOrgStructureTree({}, []),
+        setCommandPosts([]),
       ]))
       // dispatch(orgStructures.setOrgStructureFormation(null))
       // dispatch(orgStructures.setOrgStructureTree({}, []))

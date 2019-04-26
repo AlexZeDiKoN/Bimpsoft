@@ -307,7 +307,7 @@ function formGeometry (coords) {
   }
 }
 
-function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
+export function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
   return {
     point: calcMiddlePoint(eternals.reduce((result, item) => result.concat(item), [])),
     geometry: [ eternals, directionSegments, zoneSegments ],

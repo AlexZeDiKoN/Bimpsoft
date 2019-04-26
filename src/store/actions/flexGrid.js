@@ -19,6 +19,7 @@ export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
+export const DIVIDE_DIRECTION = action('DIVIDE_DIRECTION')
 
 const getId = ({ id }) => id
 
@@ -164,13 +165,16 @@ export const fixInstance = (flexGrid) => (_1, _2, extra) => {
 }
 
 // Directions:
-
-export const selectDirection = ({ index, setAsMain }) => ({
+export const selectDirection = ({ index, isMain = true }) => ({
   type: SELECT_DIRECTION,
-  payload: { index, setAsMain },
+  payload: { index, isMain },
 })
 
-export const deselectDirection = ({ index, clearMain }) => ({
-  type: DESELECT_DIRECTION,
-  payload: { index, clearMain },
-})
+export const deselectDirection = (props) => {
+  const res = { type: DESELECT_DIRECTION }
+  if (props) {
+    const { index, updateMain } = props
+    res.payload = { index, updateMain }
+  }
+  return res
+}

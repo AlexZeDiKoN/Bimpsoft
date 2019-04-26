@@ -26,6 +26,12 @@ import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
 import { settings } from '../../utils/svg/lines'
+import {
+  BACK_LIGHT_STYLE_LINE,
+  BACK_LIGHT_STYLE_POLYGON,
+  LINE_STRING,
+  MULTI_LINE_STRING,
+} from '../../constants/TopoObj'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -36,14 +42,9 @@ import {
   isGeometryChanged,
   geomPointEquals,
   createCoordinateMarker,
+  formFlexGridGeometry,
 } from './Tactical'
 import { MapProvider } from './MapContext'
-import {
-  BACK_LIGHT_STYLE_LINE,
-  BACK_LIGHT_STYLE_POLYGON,
-  LINE_STRING,
-  MULTI_LINE_STRING,
-} from '../../constants/TopoObj'
 
 const { Coordinates: Coord } = utils
 
@@ -1070,7 +1071,7 @@ export default class WebMap extends React.PureComponent {
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection({ index: direction - 1, setAsMain: true })
+        selectDirection({ index: direction - 1 })
         showDirectionNameForm()
       }
     }
@@ -1337,6 +1338,15 @@ export default class WebMap extends React.PureComponent {
     } else if (actual && !this.flexGrid) {
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
+    } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
+      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+      const options = { directions }
+      const internalProps = {
+        eternals: eternals.toArray(),
+        directionSegments: directionSegments.toArray(),
+        zoneSegments: zoneSegments.toArray(),
+      }
+      this.flexGrid.updateProps(options, internalProps)
     }
   }
 
@@ -1443,3 +1453,6 @@ export default class WebMap extends React.PureComponent {
     )
   }
 }
+
+/** Do not delete, please, it is FIX */
+export const buildFlexGridGeometry = formFlexGridGeometry

@@ -59,6 +59,12 @@ export default function reducer (state = initState, action) {
     case actions.CLIPBOARD_CLEAR: {
       return { ...state, clipboard: null }
     }
+    case actions.SHOW_DIVIDE_FORM: {
+      return { ...state, showForm: FormTypes.DIVIDE_DIR }
+    }
+    case actions.SHOW_COMBINE_FORM: {
+      return { ...state, showForm: FormTypes.COMBINE_DIR }
+    }
     default:
       return state
   }

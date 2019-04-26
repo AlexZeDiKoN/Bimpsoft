@@ -1,30 +1,26 @@
 @import "../../../../assets/styles/_variables.less";
 @import "../../../../assets/styles/_mixins.less";
 
-.confirm-delete-overflow{
-  align-self: center;
-  overflow: hidden;
+.form-direction_wrapper{
   width: auto;
   height: auto;
+  align-self: center;
+  overflow: hidden;
   background-color: #fff;
   border-radius: 4px;
   box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.18);
   animation: confirm-delete 0.2s 0.01s both;
 }
 
-.confirm-delete {
+.form-direction {
   line-height: 1.3;
-  min-width: 375px;
+  min-width: 350px;
 
-  .confirm-icon-warning {
-    display: none;
+  .divide_form_desc{
+    margin-top: 10px;
   }
 
-  .confirm-modal-window {
-    width: 100%;
-  }
-
-  .confirm-title{
+  &_title {
     font-weight: bold;
     font-size: 1.1em;
     height: 40px;
@@ -32,17 +28,11 @@
     text-align: center;
     padding: 8px 40px 8px 24px;
     color: #ffffff !important;
-
   }
-  .confirm-text{
+
+  .dir_option {
+    display: block;
     text-align: left;
-    padding: 5px 25px;
-  }
-
-  .dzvin-form-item:first-child {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100%;
   }
 
   .dzvin-form-item:nth-child(2) {

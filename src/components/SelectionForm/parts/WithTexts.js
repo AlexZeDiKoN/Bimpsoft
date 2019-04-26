@@ -54,6 +54,7 @@ const WithTexts = (Component) => class TextsComponent extends Component {
         <FormItem className="text-form-preview">
           <TextSymbol texts={texts.map((item) => item.preview ? item.preview : item).toJS()}/>
         </FormItem>
+        <FormDivider />
         {canEdit && (<FormItem className="text-form-controls">
           <label>{i18n.TEXT}</label>
           <IconButton
@@ -80,7 +81,6 @@ const WithTexts = (Component) => class TextsComponent extends Component {
             onClick={this.addTextHandler}
           />
         </FormItem>)}
-        <FormDivider />
         <div className="text-form-scrollable">
           {texts.map((item, index) => (
             <TextItem

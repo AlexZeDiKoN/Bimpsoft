@@ -21,6 +21,8 @@ export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
 export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
 export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
+export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
+export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
 
 const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
@@ -220,4 +222,12 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
 
 export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
+})
+
+export const showDivideForm = () => ({
+  type: SHOW_DIVIDE_FORM,
+})
+
+export const showCombineForm = () => ({
+  type: SHOW_COMBINE_FORM,
 })
