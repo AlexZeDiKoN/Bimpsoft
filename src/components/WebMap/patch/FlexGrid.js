@@ -372,6 +372,19 @@ L.FlexGrid = L.Layer.extend({
         result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
       }
     }))
+    console.log(this.isOnEternal(latLng))
+    return result
+  },
+  // @TODO: метод получения eternal-точки, в которой сейчас находится курсор. в случае, если находится - скрывать тултип и давать право даблкликуть на ней с открытие попапа для перемещения и описания. Или выводить описание ее
+  isOnEternal (latLng) {
+    let result = null
+    const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
+    this.eternalRings.forEach((line, indexLine) => line.forEach((ring, indexRing) => {
+      const xDiff = Math.abs(x - ring.x)
+      const yDiff = Math.abs(y - ring.y)
+      // 7 - радиус желтой точки
+      xDiff <= 7 && yDiff <= 7 && (result = { indexLine, indexRing, coords: [ ring.x, ring.y ] })
+    }))
     return result
   },
 
