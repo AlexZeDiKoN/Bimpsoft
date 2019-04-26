@@ -4,7 +4,6 @@ import { components } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import * as shortcuts from '../../../../constants/shortcuts'
-import { changeDirections } from '../../../WebMap/patch/utils/flexGrid'
 import './baseForm.css'
 
 const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
@@ -23,13 +22,7 @@ const BaseForm = (props) => {
     updateState(value, checked)
   }
 
-  const handleOkay = () => {
-    if (computeParams) {
-      const { attrProps, geometryProps, id } = changeDirections(...computeParams)
-      onOk(id, attrProps, geometryProps)
-      onCancel()
-    }
-  }
+  const handleOkay = () => onOk(computeParams)
 
   const options = list.map(({ name, value }) =>
     <div key={value}>
