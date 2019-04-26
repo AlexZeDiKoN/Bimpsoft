@@ -13,6 +13,7 @@ const mapStateToProps = (store) => {
     isEditMode: canEditSelector(store),
     visible: flexGridVisible(store),
     isShownDivideForm: showForm === FormTypes.DIVIDE_DIR,
+    isShownCombineForm: showForm === FormTypes.COMBINE_DIR,
     flexGrid: flexGridData(store),
   }
 }
@@ -22,6 +23,7 @@ const mapDispatchToProps = {
   hideFlexGrid: flexGridActions.hideFlexGrid,
   calcFlexGridUnits: flexGridActions.calcUnits,
   showDivideDirForm: selectionActions.showDivideForm,
+  showCombineDirForm: selectionActions.showCombineForm,
   onModalCancel: selectionActions.hideForm,
   selectDirection: flexGridActions.selectDirection,
   deselectDirection: flexGridActions.deselectDirection,

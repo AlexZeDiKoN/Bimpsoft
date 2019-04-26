@@ -11,8 +11,9 @@ const toXY = (props) => Array.isArray(props)
     ? props
     : { x: props.lat, y: props.lng }
 
-export const dividingCurrent = (flexGrid, index) => {
-  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames } = flexGrid
+/** DIVIDE METHODS */
+const divideDirection = (flexGrid, index) => {
+  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id } = flexGrid
   const divPoints = getPointsDivZones(eternals, zoneSegments, index)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
@@ -20,14 +21,14 @@ export const dividingCurrent = (flexGrid, index) => {
   const newDirectionNames = directionNames.size > index
     ? directionNames.insert(index + 1, null).toArray()
     : directionNames.toArray()
-  const newZoneSegments = changeZoneSegments(zoneSegments, index).toArray()
+  const newZoneSegments = divideZoneSegments(zoneSegments, index).toArray()
   const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
   const attrProps = {
     zones,
     directions: newDirections,
     directionNames: newDirectionNames,
   }
-  return { geometryProps, attrProps }
+  return { geometryProps, attrProps, id }
 }
 
 const getPointsDivZones = (eternals, segments, index) => segments.toArray().map(getMiddlePoint(eternals, index))
@@ -45,7 +46,7 @@ const getMiddlePoint = memoize((eternals, index) =>
   }
 )
 
-const changeZoneSegments = (segments, index) => segments.map((column) => {
+const divideZoneSegments = (segments, index) => segments.map((column) => {
   const newCol = [ ...column ]
   const newZones = makeTwoSegmentArrays(column[index])
   newCol.splice(index, 1, ...newZones)
@@ -78,3 +79,43 @@ const getRulePoints = (eternals, index, segment, i) => {
   }
   return defaultArray
 }
+
+/** COMBINE METHODS */
+const combineDirections = (flexGrid, index, lastIndex) => {
+  const { zoneSegments, eternals, directions, directionSegments, directionNames, zones, id } = flexGrid
+
+  const eternalsArray = eternals.toArray()
+  const zoneSegmentsArray = zoneSegments.toArray()
+  const directionSegmentsArray = directionSegments.toArray()
+  const directionNamesArray = directionNames.toArray()
+
+  const newDirectionNames = combineList(directionNamesArray, index, lastIndex)
+  const newEternals = combineList(eternalsArray, index, lastIndex)
+  const newDirectionSegments = combineList(directionSegmentsArray, index, lastIndex)
+  const newZoneSegments = combineZoneSegments(zoneSegmentsArray, eternalsArray, index, lastIndex)
+  const newDirections = directions - lastIndex + index
+  const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
+  const attrProps = {
+    zones,
+    directions: newDirections,
+    directionNames: newDirectionNames,
+  }
+  return { geometryProps, attrProps, id }
+}
+
+const combineList = (list, index, lastIndex) => list.filter((_, i) => i > lastIndex || i <= index)
+
+const combineZoneSegments = (segments, eternals, firstDirection, lastDirection) =>
+  segments.map((col, i) => col.reduce((colAcc, dirSegment, j) => {
+    if (j < firstDirection + 1 || j > lastDirection) { /** если направление, в которое входит данный сегмент зоны выше объединяемых направлений или является самым нижним из объединяемых, */
+      colAcc.push(dirSegment.slice()) /** оставляем его нетронутым */
+    } else { /** если направление входит в список объединяемых, и не является самым нижним, */
+      colAcc[firstDirection].push(eternals[j][i], ...dirSegment) /** добавляем в него как точки перегиба бывшие точки границы направления и уже установленные точки перегиба сегмента зоны */
+    }
+    return colAcc
+  }, []))
+
+/** SOLUTION TO USE */
+export const changeDirections = (flexGrid, index, lastIndex) => lastIndex
+  ? combineDirections(flexGrid, index, lastIndex)
+  : divideDirection(flexGrid, index)
