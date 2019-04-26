@@ -1,5 +1,6 @@
-import { action } from '../../utils/services'
 import { batchActions } from 'redux-batched-actions'
+import { APP6Code } from '@DZVIN/MilSymbolEditor/build/model'
+import { action } from '../../utils/services'
 import { asyncAction, orgStructures } from './index'
 
 export const SET_ORG_STRUCTURE_UNITS = action('SET_ORG_STRUCTURE_UNITS')
@@ -12,6 +13,7 @@ export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
 const CACHE_LIFETIME = 60000
+const { setHQ } = APP6Code
 
 export const setOrgStructureUnits = (unitsById) => ({
   type: SET_ORG_STRUCTURE_UNITS,
@@ -73,11 +75,15 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
       }
     }
   })
-  commandPosts.forEach(({ id, militaryUnitID }) => {
+  commandPosts.forEach((commandPost) => {
+    const { id, militaryUnitID, app6Code } = commandPost
     const parent = byIds[militaryUnitID]
+    if (!app6Code && parent) {
+      commandPost.app6Code = setHQ(parent.app6Code, true)
+    }
     parent && parent.commandPosts.push(id)
   })
-  return { byIds, roots }
+  return { byIds, roots, commandPosts }
 }
 
 const formationsCache = new Map()
@@ -91,7 +97,7 @@ const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const commandPosts = await milOrgApi.militaryCommandPost.list({ formationID: formationId })
     const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
-    formationInfo = { formation, relations, commandPosts, tree }
+    formationInfo = { formation, relations, tree }
     formationsCache.set(formationId, formationInfo)
   }
   return formationInfo
@@ -123,7 +129,7 @@ export const setFormationById = (formationId) =>
       } else {
         unitsById = getState().orgStructures.unitsById
       }
-      const { formation, commandPosts, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
+      const { formation, tree, tree: { commandPosts } } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
         setOrgStructureTree(tree.byIds, tree.roots),
