@@ -5,6 +5,8 @@ import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
+const commonPointApp6Code = '10032500001301000000'
+
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons
 const { TextFilter } = data
@@ -27,7 +29,7 @@ export default class Item extends React.Component {
 
   render () {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
-    const { shortName, app6Code = null, fullName, id } = data
+    const { name, app6Code = commonPointApp6Code, id } = data
     const iclasses = [ 'catalog-arrows-right' ]
     if (tree.expanded) {
       iclasses.push('catalog-arrows-bottom')
@@ -45,7 +47,7 @@ export default class Item extends React.Component {
     tree.canExpand && classes.push('catalog-item-can-expand')
     return (
       <Tooltip
-        title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
+        title={(<HighlightedText text={name} textFilter={textFilter} />)}
         placement="topLeft"
         mouseEnterDelay={0.8}
       >
@@ -60,7 +62,7 @@ export default class Item extends React.Component {
           >
             {app6Code !== null && <MilSymbol code={app6Code} />}
             <div className="catalog-item-text">
-              <HighlightedText text={shortName} textFilter={textFilter} />
+              <HighlightedText text={name} textFilter={textFilter} />
             </div>
           </div>
         </div>
@@ -72,7 +74,8 @@ export default class Item extends React.Component {
 Item.propTypes = {
   ...TreeComponent.itemPropTypes,
   data: PropTypes.shape({
-    shortName: PropTypes.string,
+    id: PropTypes.any,
+    name: PropTypes.string,
   }),
   textFilter: PropTypes.instanceOf(TextFilter),
   canEdit: PropTypes.bool,

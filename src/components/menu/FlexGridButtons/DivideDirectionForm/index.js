@@ -7,6 +7,7 @@ import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
 import * as shortcuts from '../../../../constants/shortcuts'
 import { dividingCurrent } from '../../../WebMap/patch/utils/flexGrid'
+
 import './divideDirectionForm.css'
 
 const { Group: RGroup } = Radio
