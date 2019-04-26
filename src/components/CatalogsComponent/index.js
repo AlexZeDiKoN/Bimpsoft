@@ -10,9 +10,9 @@ const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
-  (item) => `${item.shortName} ${item.fullName}`,
+  (item) => item.name,
   (item) => item.id,
-  (item) => item.parentUnitID
+  (item) => item.parent
 )
 
 function scrollParentToChild (parent, child) {
@@ -27,6 +27,11 @@ function scrollParentToChild (parent, child) {
 }
 
 export default class CatalogsComponent extends React.PureComponent {
+  componentDidMount () {
+    const { preloadCatalogList } = this.props
+    preloadCatalogList && preloadCatalogList()
+  }
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevProps.selectedId !== this.props.selectedId) {
       const scrollRef = this.scrollRef && this.scrollRef.current
@@ -74,6 +79,14 @@ export default class CatalogsComponent extends React.PureComponent {
 
     const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
 
+    console.log({
+      expandedKeys,
+      filteredIds,
+      byIds,
+      roots,
+      commonData,
+    })
+
     return (
       <Wrapper title={(<Tooltip title={i18n.CATALOGS}>{i18n.CATALOGS}</Tooltip>)}>
         <div>
@@ -112,4 +125,5 @@ CatalogsComponent.propTypes = {
   selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
+  preloadCatalogList: PropTypes.func,
 }

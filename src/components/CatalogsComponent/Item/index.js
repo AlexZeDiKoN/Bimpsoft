@@ -58,10 +58,8 @@ export default class Item extends React.Component {
             draggable={canEdit}
             className="catalog-item-content"
           >
-            {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
-            <div
-              className="catalog-item-text"
-            >
+            {app6Code !== null && <MilSymbol code={app6Code} />}
+            <div className="catalog-item-text">
               <HighlightedText text={shortName} textFilter={textFilter} />
             </div>
           </div>
