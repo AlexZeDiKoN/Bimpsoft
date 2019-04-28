@@ -8,7 +8,68 @@ import i18n from '../../i18n'
 import Item from './Item'
 
 const { TextFilter } = data
-const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+// const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+
+class TreeComponentUncontrolled extends React.Component {
+  static propTypes = {
+    filteredIds: PropTypes.object,
+    roots: PropTypes.array,
+    byIds: PropTypes.object,
+    itemTemplate: PropTypes.any,
+    expandedKeys: PropTypes.object,
+    onExpand: PropTypes.func,
+    commonData: PropTypes.object,
+  }
+
+  renderItems (ids, level) {
+    const {
+      filteredIds = null,
+      byIds,
+      itemTemplate: Item,
+      commonData,
+      expandedKeys,
+      onExpand,
+    } = this.props
+    return (ids === null || ids === undefined) ? null : (
+      <div className={`tree-component-ul tree-component-level-${level}`}>
+        {ids.map((id) => {
+          if (filteredIds !== null && !filteredIds.hasOwnProperty(id)) {
+            return null
+          }
+          const itemData = byIds[id]
+
+          const expanded = expandedKeys.hasOwnProperty(id)
+          const canExpand = Array.isArray(itemData.children) && Boolean(itemData.children.length)
+
+          return (
+            <div className="tree-component-li" key={id}>
+              <Item
+                data={itemData}
+                tree={{
+                  canExpand,
+                  expanded,
+                  onExpand: () => onExpand(id),
+                }}
+                { ...commonData }
+              />
+              {expanded && this.renderItems(itemData.children, level + 1)}
+            </div>
+          )
+        })}
+      </div>
+
+    )
+  }
+
+  render () {
+    const { roots, expandedKeys, filteredIds, byIds, itemTemplate, commonData, onExpand, ...otherProps } = this.props
+    return (
+      <div className="tree-component" {...otherProps} >
+        {this.renderItems(roots, 0)}
+      </div>
+    )
+  }
+}
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.shortName + ' ' + item.fullName,
@@ -61,7 +122,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
       textFilter = null,
       byIds,
       roots,
-      commandPostsById,
       formation = null,
       onDoubleClick,
       onClick,
@@ -96,7 +156,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
               filteredIds={filteredIds}
               byIds={byIds}
               roots={roots}
-              commandPostsById={commandPostsById}
               itemTemplate={Item}
               commonData={commonData}
               onMouseUp={this.mouseUpHandler}
@@ -113,7 +172,6 @@ OrgStructuresComponent.propTypes = {
   canEdit: PropTypes.bool,
   roots: PropTypes.array.isRequired,
   byIds: PropTypes.object.isRequired,
-  commandPostsById: PropTypes.object,
   formation: PropTypes.object,
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,

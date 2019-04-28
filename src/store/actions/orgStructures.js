@@ -8,7 +8,6 @@ export const SET_ORG_STRUCTURE_TREE = action('SET_ORG_STRUCTURE_TREE')
 export const SET_ORG_STRUCTURE_FORMATION = action('SET_ORG_STRUCTURE_FORMATION')
 export const SET_ORG_STRUCTURE_SELECTED_ID = action('SET_ORG_STRUCTURE_SELECTED_ID')
 export const SET_ORG_STRUCTURE_FILTER_TEXT = action('SET_ORG_STRUCTURE_FILTER_TEXT')
-export const SET_COMMAND_POSTS = action('SET_COMMAND_POSTS')
 export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
@@ -51,24 +50,13 @@ export const setOrgStructureTree = (byIds, roots) => ({
   roots,
 })
 
-export const setCommandPosts = (commandPosts) => {
-  const commandPostsById = {}
-  commandPosts && commandPosts.forEach((item) => {
-    commandPostsById[item.id] = item
-  })
-  return ({
-    type: SET_COMMAND_POSTS,
-    commandPostsById,
-  })
-}
-
 const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
   const byIds = {}
   const roots = []
   relations.forEach(({ unitID, parentUnitID }) => {
     const unit = unitsById[unitID]
     if (unit) {
-      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [], commandPosts: [] }
+      byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
     }
   })
   relations.forEach(({ unitID, parentUnitID }) => {
@@ -87,7 +75,7 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
     if (!app6Code && parent) {
       commandPost.app6Code = setHQ(parent.app6Code, true)
     }
-    parent && parent.commandPosts.push(id)
+    parent && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
   })
   return { byIds, roots, commandPosts }
 }
@@ -100,7 +88,7 @@ const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const formations = await milOrgApi.generalFormation.list()
     const formation = formations.find((formation) => formation.id === formationId)
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-    const commandPosts = await milOrgApi.militaryCommandPost.list({ formationID: formationId })
+    const commandPosts = await milOrgApi.militaryCommandPost.list()
     const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
@@ -117,10 +105,7 @@ export const setFormationById = (formationId) =>
       dispatch(batchActions([
         setOrgStructureFormation(null),
         setOrgStructureTree({}, []),
-        setCommandPosts([]),
       ]))
-      // dispatch(orgStructures.setOrgStructureFormation(null))
-      // dispatch(orgStructures.setOrgStructureTree({}, []))
     } else {
       let unitsById
       if (needReloadUnits) {
@@ -135,13 +120,10 @@ export const setFormationById = (formationId) =>
       } else {
         unitsById = getState().orgStructures.unitsById
       }
-      const { formation, tree, tree: { commandPosts } } = await getFormationInfo(formationId, unitsById, milOrgApi)
+      const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
         setOrgStructureTree(tree.byIds, tree.roots),
-        setCommandPosts(commandPosts),
       ]))
-      // dispatch(setOrgStructureFormation(formation))
-      // dispatch(setOrgStructureTree(tree.byIds, tree.roots))
     }
   })

@@ -40,6 +40,7 @@ export default class Item extends React.Component {
     const classes = [ 'org-structure-item' ]
     isSelected && classes.push('org-structure-item-selected')
     tree.canExpand && classes.push('org-structure-item-can-expand')
+    data.itemType && classes.push('commandPost')
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
