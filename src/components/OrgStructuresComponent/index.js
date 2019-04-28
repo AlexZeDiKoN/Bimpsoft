@@ -8,12 +8,87 @@ import i18n from '../../i18n'
 import Item from './Item'
 
 const { TextFilter } = data
-const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+
+// const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+
+class TreeComponentUncontrolled extends React.Component {
+  static propTypes = {
+    filteredIds: PropTypes.object,
+    roots: PropTypes.array,
+    byIds: PropTypes.object,
+    itemTemplate: PropTypes.any,
+    expandedKeys: PropTypes.object,
+    onExpand: PropTypes.func,
+    commonData: PropTypes.object,
+    extraData: PropTypes.object,
+  }
+
+  renderItems (ids, level) {
+    const {
+      filteredIds = null,
+      byIds,
+      itemTemplate: Item,
+      commonData,
+      expandedKeys,
+      onExpand,
+      extraData,
+    } = this.props
+    return (ids === null || ids === undefined) ? null : (
+      <div className={`tree-component-ul tree-component-level-${level}`}>
+        {ids.map((id) => {
+          if (filteredIds !== null && !filteredIds.hasOwnProperty(id)) {
+            return null
+          }
+          const itemData = byIds[ id ]
+
+          const expanded = expandedKeys.hasOwnProperty(id)
+          const canExpand = Array.isArray(itemData.children) && Boolean(itemData.children.length)
+
+          return (
+            <div className="tree-component-li" key={id}>
+              <Item
+                data={itemData}
+                tree={{
+                  canExpand,
+                  expanded,
+                  onExpand: () => onExpand(id),
+                }}
+                {...commonData}
+                extraData={extraData}
+              />
+              {expanded && this.renderItems(itemData.children, level + 1)}
+            </div>
+          )
+        })}
+      </div>
+
+    )
+  }
+
+  render () {
+    const {
+      roots,
+      expandedKeys,
+      filteredIds,
+      byIds,
+      itemTemplate,
+      commonData,
+      onExpand,
+      extraData,
+      ...otherProps
+    } = this.props
+    return (
+      <div className="tree-component" {...otherProps} >
+        {this.renderItems(roots, 0)}
+      </div>
+    )
+  }
+}
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.shortName + ' ' + item.fullName,
   (item) => item.id,
-  (item) => item.parentUnitID
+  (item) => item.parentUnitID,
 )
 
 function scrollParentToChild (parent, child) {
@@ -69,6 +144,8 @@ export default class OrgStructuresComponent extends React.PureComponent {
       expandedIds,
       onExpand,
       canEdit,
+      selectedLayer,
+      onMapObjects,
     } = this.props
 
     if (formation === null) {
@@ -80,15 +157,17 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
     const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
 
+    const extraData = { selectedLayer, onMapObjects }
+
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
         <div className="org-structures">
           <Input.Search
             ref={this.inputRef}
-            placeholder={ i18n.FILTER }
+            placeholder={i18n.FILTER}
             onChange={this.filterTextChangeHandler}
           />
-          <div className="org-structures-scroll" ref={this.scrollPanelRef} >
+          <div className="org-structures-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
@@ -98,6 +177,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
               itemTemplate={Item}
               commonData={commonData}
               onMouseUp={this.mouseUpHandler}
+              extraData={extraData}
             />
           </div>
         </div>
@@ -119,4 +199,6 @@ OrgStructuresComponent.propTypes = {
   selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
+  selectedLayer: PropTypes.string,
+  onMapObjects: PropTypes.object,
 }

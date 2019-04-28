@@ -24,8 +24,14 @@ export default class Item extends React.Component {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
   }
 
+  count = ({ selectedLayer, onMapObjects }, id) => {
+    let count = 0
+    onMapObjects.toArray().map((item) => (selectedLayer === item.layer && id === item.unit) && count++)
+    return count
+  }
+
   render () {
-    const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
+    const { tree, textFilter, data, scrollRef, selectedId, canEdit, extraData } = this.props
     const { shortName, app6Code = null, fullName, id } = data
     const icon = tree.canExpand &&
       (<Icon icon={Icon.names.DROP_RIGHT_DEFAULT}
@@ -41,6 +47,7 @@ export default class Item extends React.Component {
     isSelected && classes.push('org-structure-item-selected')
     tree.canExpand && classes.push('org-structure-item-can-expand')
     data.itemType && classes.push('commandPost')
+    const num = this.count(extraData, data.id)
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
@@ -61,6 +68,9 @@ export default class Item extends React.Component {
               className="org-structure-item-text"
             >
               <HighlightedText text={shortName} textFilter={textFilter} />
+              {num !== 0 && <div className="org-structure-item-count">
+                {num}
+              </div>}
             </div>
           </div>
         </div>
