@@ -50,7 +50,7 @@ export const setOrgStructureTree = (byIds, roots) => ({
   roots,
 })
 
-const getOrgStructuresTree = (unitsById, relations, commandPosts, selectedLayer, mapObjects) => {
+const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
   const byIds = {}
   const roots = []
   relations.forEach(({ unitID, parentUnitID }) => {
@@ -82,14 +82,14 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts, selectedLayer,
 
 const formationsCache = new Map()
 
-const getFormationInfo = async (formationId, unitsById, milOrgApi, selectedLayer, mapObjects) => {
+const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   let formationInfo = formationsCache.get(formationId)
   if (!formationInfo) {
     const formations = await milOrgApi.generalFormation.list()
     const formation = formations.find((formation) => formation.id === formationId)
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
     const commandPosts = await milOrgApi.militaryCommandPost.list()
-    const tree = getOrgStructuresTree(unitsById, relations, commandPosts, selectedLayer, mapObjects)
+    const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
     formationsCache.set(formationId, formationInfo)
@@ -108,7 +108,6 @@ export const setFormationById = (formationId) =>
       ]))
     } else {
       let unitsById
-      const { layers: { selectedId }, webMap: { objects } } = getState()
       if (needReloadUnits) {
         needReloadUnits = false
         setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
@@ -121,7 +120,7 @@ export const setFormationById = (formationId) =>
       } else {
         unitsById = getState().orgStructures.unitsById
       }
-      const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi, selectedId, objects)
+      const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
         setOrgStructureTree(tree.byIds, tree.roots),
