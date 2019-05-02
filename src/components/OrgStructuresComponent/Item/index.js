@@ -24,11 +24,8 @@ export default class Item extends React.Component {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
   }
 
-  count = ({ selectedLayer, onMapObjects }, id) => {
-    let count = 0
-    onMapObjects.toArray().map((item) => (selectedLayer === item.layer && id === item.unit) && count++)
-    return count
-  }
+  count = ({ selectedLayer, onMapObjects }, id) =>
+    onMapObjects.toArray().filter((item) => selectedLayer === item.layer && id === item.unit).length
 
   render () {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit, extraData } = this.props

@@ -3,7 +3,7 @@
   "version": "6.03.316",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^6.3.179",
+    "@DZVIN/CommonComponents": "^6.3.180",
     "@DZVIN/MilSymbolEditor": "^6.2.111",
     "@DZVIN/milsymbol": "^0.0.4",
     "antd": "^3.12.4",
