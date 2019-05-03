@@ -1,3 +1,5 @@
+import { batchActions } from 'redux-batched-actions'
+import { APP6Code } from '@DZVIN/MilSymbolEditor/build/model'
 import { action } from '../../utils/services'
 import { asyncAction } from './index'
 
@@ -10,6 +12,7 @@ export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
 const CACHE_LIFETIME = 60000
+const { setHQ } = APP6Code
 
 export const setOrgStructureUnits = (unitsById) => ({
   type: SET_ORG_STRUCTURE_UNITS,
@@ -47,7 +50,7 @@ export const setOrgStructureTree = (byIds, roots) => ({
   roots,
 })
 
-const getOrgStructuresTree = (unitsById, relations) => {
+const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
   const byIds = {}
   const roots = []
   relations.forEach(({ unitID, parentUnitID }) => {
@@ -66,7 +69,15 @@ const getOrgStructuresTree = (unitsById, relations) => {
       }
     }
   })
-  return { byIds, roots }
+  commandPosts.forEach((commandPost) => {
+    const { id, militaryUnitID, app6Code } = commandPost
+    const parent = byIds[militaryUnitID]
+    if (!app6Code && parent) {
+      commandPost.app6Code = setHQ(parent.app6Code, true)
+    }
+    parent && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
+  })
+  return { byIds, roots, commandPosts }
 }
 
 const formationsCache = new Map()
@@ -77,7 +88,8 @@ const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const formations = await milOrgApi.generalFormation.list()
     const formation = formations.find((formation) => formation.id === formationId)
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-    const tree = getOrgStructuresTree(unitsById, relations)
+    const commandPosts = await milOrgApi.militaryCommandPost.list()
+    const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
     formationsCache.set(formationId, formationInfo)
@@ -90,8 +102,10 @@ let needReloadUnits = true
 export const setFormationById = (formationId) =>
   asyncAction.withNotification(async (dispatch, getState, { milOrgApi }) => {
     if (!formationId) {
-      dispatch(setOrgStructureFormation(null))
-      dispatch(setOrgStructureTree({}, []))
+      dispatch(batchActions([
+        setOrgStructureFormation(null),
+        setOrgStructureTree({}, []),
+      ]))
     } else {
       let unitsById
       if (needReloadUnits) {
@@ -107,8 +121,9 @@ export const setFormationById = (formationId) =>
         unitsById = getState().orgStructures.unitsById
       }
       const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
-
-      dispatch(setOrgStructureFormation(formation))
-      dispatch(setOrgStructureTree(tree.byIds, tree.roots))
+      dispatch(batchActions([
+        setOrgStructureFormation(formation),
+        setOrgStructureTree(tree.byIds, tree.roots),
+      ]))
     }
   })
