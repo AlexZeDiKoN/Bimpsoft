@@ -54,8 +54,8 @@ export default class CatalogsComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit) => (
-    { textFilter, onClick, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
+  getCommonData = memoizeOne((textFilter, onClick, onChange, onDoubleClick, selectedId, canEdit) => (
+    { textFilter, onClick, onChange, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
   ))
 
   getFilteredIds = memoizeOne(getFilteredIds)
@@ -67,6 +67,7 @@ export default class CatalogsComponent extends React.PureComponent {
       roots,
       onDoubleClick,
       onClick,
+      onShow,
       wrapper: Wrapper = Fragment,
       selectedId = null,
       expandedIds,
@@ -77,23 +78,16 @@ export default class CatalogsComponent extends React.PureComponent {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
-    const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
-
-    console.log({
-      expandedKeys,
-      filteredIds,
-      byIds,
-      roots,
-      commonData,
-    })
+    const commonData = this.getCommonData(textFilter, onClick, onShow, onDoubleClick, selectedId, canEdit)
 
     return (
       <Wrapper title={(<Tooltip title={i18n.CATALOGS}>{i18n.CATALOGS}</Tooltip>)}>
-        <div>
+        <div style={{ width: `100%` }}>
           <Input.Search
             ref={this.inputRef}
             placeholder={i18n.FILTER}
             onChange={this.filterTextChangeHandler}
+            style={{ padding: '5px' }}
           />
           <div className="catalog-scroll" ref={this.scrollPanelRef} >
             <TreeComponentUncontrolled
@@ -121,6 +115,7 @@ CatalogsComponent.propTypes = {
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,
+  onShow: PropTypes.func,
   onFilterTextChange: PropTypes.func,
   selectedId: PropTypes.number,
   onClick: PropTypes.func,

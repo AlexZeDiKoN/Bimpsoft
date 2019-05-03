@@ -1,4 +1,7 @@
+import { data } from '@DZVIN/CommonComponents'
 import { catalogs } from '../actions'
+
+const { TextFilter } = data
 
 const catalogRoot = 35
 
@@ -8,6 +11,7 @@ const initState = {
   selectedId: null,
   textFilter: null,
   expandedIds: {},
+  shownIds: {},
 }
 
 export default function reducer (state = initState, action) {
@@ -34,6 +38,37 @@ export default function reducer (state = initState, action) {
         roots = byIds[roots[0]].children
       }
       return { ...state, byIds, roots }
+    }
+    case catalogs.CATALOG_EXPAND_ITEM: {
+      const { itemId } = action
+      let { expandedIds } = state
+      expandedIds = { ...expandedIds }
+      if (expandedIds.hasOwnProperty(itemId)) {
+        delete expandedIds[itemId]
+      } else {
+        expandedIds[itemId] = true
+      }
+      return { ...state, expandedIds }
+    }
+    case catalogs.CATALOG_SHOW_ITEM: {
+      const { itemId } = action
+      let { shownIds } = state
+      shownIds = { ...shownIds }
+      if (shownIds.hasOwnProperty(itemId)) {
+        delete shownIds[itemId]
+      } else {
+        shownIds[itemId] = true
+      }
+      return { ...state, shownIds }
+    }
+    case catalogs.CATALOG_FILTER_TEXT: {
+      const { filterText } = action
+      const textFilter = TextFilter.create(filterText)
+      return { ...state, textFilter }
+    }
+    case catalogs.CATALOG_SELECT_ITEM: {
+      const { selectedId } = action
+      return { ...state, selectedId }
     }
     default:
       return state

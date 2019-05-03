@@ -7,6 +7,7 @@ const mapStateToProps = ({ catalogs }) => catalogs
 
 const mapDispatchToProps = {
   onExpand: catalogs.expandItem,
+  onShow: catalogs.showItem,
   onFilterTextChange: catalogs.setFilterText,
   onClick: catalogs.setSelectedId,
   preloadCatalogList: catalogs.getTree,
