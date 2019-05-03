@@ -278,7 +278,7 @@ export default class WebMap extends React.PureComponent {
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
     showDirectionNameForm: PropTypes.func,
-    selectDirection: PropTypes.func,
+    showEternalDescriptionForm: PropTypes.func,
     getTopographicObjects: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
   }
@@ -710,11 +710,18 @@ export default class WebMap extends React.PureComponent {
     this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
   }
 
+  // @TODO: при даблКлике воспринимается как 2 одиночных клика. Почему??
   onMouseClick = (e) => {
+    console.log('clicknull', e)
+    const { selection: { list, newShape }, flexGridData: { id }, flexGridVisible } = this.props
+    if (this.flexGrid && flexGridVisible && list.includes(id) && this.flexGrid.isOnEternal(e.latlng)) { // если на точку клик-плик-флик..
+      console.log('isOnEternal', e.latlng)
+      return
+    }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
     }
-    if (!this.props.selection.newShape.type) {
+    if (!newShape.type) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
@@ -1029,6 +1036,7 @@ export default class WebMap extends React.PureComponent {
     this.checkSaveObject()
   }, 0)
 
+  // @TODO: почему не отлавливает клик по точке редактирования Оперативной зоны?!
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
@@ -1046,10 +1054,12 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  // @TODO: почему не отлавливает клик по точке редактирования Оперативной зоны?!
   dblClickOnLayer = (event) => {
     const { target: layer } = event
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
+    console.log('dblClickOnLayer')
     if (object && list.length === 1 && list[0] === object.id) {
       this.checkSaveObject(false)
       editObject(object.id, getGeometry(layer))
@@ -1065,14 +1075,21 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDblClick = (event) => {
-    const { selectDirection, flexGridVisible, showDirectionNameForm } = this.props
+    console.log('onDblClick', event)
+    const { flexGridVisible, flexGridData: { id }, showDirectionNameForm, showEternalDescriptionForm, selection: { list } } = this.props
+    // @TODO: ну переделать
     if (this.flexGrid && flexGridVisible) {
+      if (list.includes(id)) {
+        const eternalProps = this.flexGrid.isOnEternal(event.latlng)
+        if (eternalProps) {
+          return showEternalDescriptionForm(eternalProps)
+        }
+      }
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection({ index: direction - 1 })
-        showDirectionNameForm()
+        showDirectionNameForm({ index: direction - 1 })
       }
     }
   }

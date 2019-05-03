@@ -368,7 +368,7 @@ L.FlexGrid = L.Layer.extend({
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
     const { zones } = this.options
     this.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-      if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+      if (!result && pointInSvgPolygon.isInside([ x, y ], cell)) {
         result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
       }
     }))
@@ -380,17 +380,19 @@ L.FlexGrid = L.Layer.extend({
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
     this.eternalRings.forEach((line, indexLine) => line.forEach((ring, indexRing) => {
-      const xDiff = Math.abs(x - ring.x)
-      const yDiff = Math.abs(y - ring.y)
       // 7 - радиус желтой точки
-      xDiff <= 7 && yDiff <= 7 && (result = { indexLine, indexRing, coords: [ ring.x, ring.y ] })
+      const xDiff = Math.abs(x - ring.x) <= 7
+      const yDiff = Math.abs(y - ring.y) <= 7
+      if (xDiff && yDiff) {
+        result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
+      }
     }))
     return result
   },
 
   selectDirection (directionList) {
     this.highlightedDirections = directionList
-    this._renderer._updateFlexGrid(this)
+    this._update()
   },
 
   // @method bringToFront(): this
