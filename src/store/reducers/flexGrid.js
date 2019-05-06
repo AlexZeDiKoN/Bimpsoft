@@ -17,7 +17,7 @@ const FlexGrid = Record({
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
   directionNames: List(),
-  eternalsDescription: List(),
+  eternalDescriptions: List(),
   zones: HAS_ZONES,
 })
 
@@ -27,8 +27,8 @@ const SelectedDirections = Record({
 })
 
 const SelectedEternal = Record({
-  position: null,
-  coordinates: null,
+  position: undefined,
+  coordinates: undefined,
 })
 
 const FlexGridState = Record({
@@ -38,7 +38,6 @@ const FlexGridState = Record({
   present: false,
   selectedDirections: SelectedDirections(),
   selectedEternal: SelectedEternal(),
-  dividingDirection: undefined,
   flexGrid: FlexGrid(),
 })
 
@@ -85,7 +84,7 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones, directionNames = [], eternalsDescription = [] },
+          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
         return payload
@@ -100,7 +99,7 @@ export default function reducer (state = FlexGridState(), action) {
             eternals: List(eternals),
             directionSegments: List(directionSegments),
             directionNames: List(directionNames),
-            eternalsDescription: List(eternalsDescription),
+            eternalDescriptions: List(eternalDescriptions),
             zoneSegments: List(zoneSegments),
           })
           : merge(state, {

@@ -372,7 +372,6 @@ L.FlexGrid = L.Layer.extend({
         result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
       }
     }))
-    console.log(this.isOnEternal(latLng))
     return result
   },
   // @TODO: метод получения eternal-точки, в которой сейчас находится курсор. в случае, если находится - скрывать тултип и давать право даблкликуть на ней с открытие попапа для перемещения и описания. Или выводить описание ее
@@ -388,6 +387,12 @@ L.FlexGrid = L.Layer.extend({
       }
     }))
     return result
+  },
+
+  changePointCoords (position, coords) {
+    console.log('this.eternals: ', this.eternals)
+    console.log('position', position)
+    console.log('new coords', coords)
   },
 
   selectDirection (directionList) {

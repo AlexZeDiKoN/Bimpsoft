@@ -30,7 +30,7 @@ export default function DirectionNameForm (props) {
   const handleChange = ({ target: { value } }) => setName(value)
 
   const handleSubmit = () => {
-    name !== defaultName && onSubmit(name)
+    onSubmit(name)
     onClose()
   }
 

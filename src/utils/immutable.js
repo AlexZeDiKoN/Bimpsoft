@@ -1,3 +1,4 @@
+import { List } from 'immutable'
 const eq = (oldValue, newValue) => newValue === oldValue || (newValue && newValue.equals && newValue.equals(oldValue))
 
 export const update = (record, propName, updater, payload) => {
@@ -23,3 +24,8 @@ export const merge = (record, payload) =>
 export const getArrayFromSet = (data, length) => length && data.size
   ? [ ...Array(length) ].map((_, i) => data.get(i) || ++i)
   : data.toArray()
+
+export const useArraysIn = (obj) => Object.keys(obj).reduce((acc, key) => {
+  List.isList(obj[key]) && (acc[key] = obj[key].toArray())
+  return acc
+}, { ...obj })

@@ -203,6 +203,7 @@ export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
+export const DESCRIPTION = `Опис`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`

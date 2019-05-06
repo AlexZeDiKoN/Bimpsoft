@@ -7,6 +7,8 @@ const visibleFlag = ({ flexGrid }) => flexGrid.visible
 const optionDirections = ({ flexGrid }) => flexGrid.flexGrid.directions
 const optionZones = ({ flexGrid }) => flexGrid.flexGrid.zones
 const optionVertical = ({ flexGrid }) => flexGrid.vertical
+const directionNames = ({ flexGrid }) => flexGrid.flexGrid.directionNames
+const eternalDescriptions = ({ flexGrid }) => flexGrid.flexGrid.eternalDescriptions
 export const selectedDirections = ({ flexGrid }) => flexGrid.selectedDirections.list.toArray()
 const data = ({ flexGrid: { flexGrid } }) => flexGrid
 
@@ -45,6 +47,12 @@ export const geoPointPropTypes = PropTypes.shape({
   lng: PropTypes.number,
 })
 
+export const flexGridAttributes = createSelector(
+  [ optionZones, optionDirections, directionNames, eternalDescriptions ],
+  (zones, directions, directionNames, eternalDescriptions) =>
+    ({ zones, directions, directionNames, eternalDescriptions })
+)
+
 export const flexGridPropTypes = PropTypes.shape({
   id: PropTypes.string,
   deleted: PropTypes.any,
@@ -52,5 +60,7 @@ export const flexGridPropTypes = PropTypes.shape({
   zones: PropTypes.number,
   eternals: PropTypes.any,
   directionSegments: PropTypes.any,
+  eternalDescriptions: PropTypes.any,
+  directionNames: PropTypes.any,
   zoneSegments: PropTypes.any,
 })
