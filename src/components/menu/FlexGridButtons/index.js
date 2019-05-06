@@ -74,7 +74,7 @@ export default class FlexGridButtons extends React.Component {
         />
         <IconButton
           title={i18n.DIVIDE_DIRECTION}
-          icon={iconNames.FOREGROUND_DEFAULT}
+          icon={iconNames.MENU_DIVISION_DEFAULT}
           disabled={!visible}
           onClick={showDivideDirForm}
         >{isShownDivideForm &&
@@ -88,7 +88,7 @@ export default class FlexGridButtons extends React.Component {
         </IconButton>
         <IconButton
           title={i18n.COMBINE_DIRECTIONS}
-          icon={iconNames.COPY_TABLE_DEFAULT}
+          icon={iconNames.MENU_UNION_DEFAULT}
           disabled={!visible || flexGrid.directions < 2}
           onClick={showCombineDirForm}
         >{isShownCombineForm &&
