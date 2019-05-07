@@ -4,12 +4,14 @@ import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
+import { VisibilityButton } from '../../common'
 import { signCodes } from '../../../constants/catalogs'
+import i18n from '../../../i18n'
 
 const commonPointApp6Code = '10032500001301000000'
 
 const { common: { TreeComponent, HighlightedText } } = components
-const { Icon, IconButton } = components.icons
+const { Icon } = components.icons
 const { TextFilter } = data
 
 export default class Item extends React.Component {
@@ -35,7 +37,7 @@ export default class Item extends React.Component {
 
   render () {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
-    const { name, id } = data
+    const { name, id, shown } = data
     let app6Code = commonPointApp6Code
     let amplifiers = {}
     const signCode = signCodes[id]
@@ -53,9 +55,11 @@ export default class Item extends React.Component {
       iclasses.push('catalog-arrows-bottom')
     }
     const indicator = (
-      <IconButton
-        icon={Icon.names.EYE_OFF_ACTIVE}
-        onClick={this.clickItem}
+      <VisibilityButton
+        title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
+        visible={shown}
+        className="layer-item-component-control"
+        onChange={this.clickItem}
       />
     )
     const icon = tree.canExpand && (

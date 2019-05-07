@@ -64,6 +64,7 @@ export default class CatalogsComponent extends React.PureComponent {
     const {
       textFilter = null,
       byIds,
+      shownIds,
       roots,
       onDoubleClick,
       onClick,
@@ -75,6 +76,7 @@ export default class CatalogsComponent extends React.PureComponent {
       canEdit,
     } = this.props
 
+    Object.entries(byIds).forEach(([ key, value ]) => (value.shown = shownIds.hasOwnProperty(key)))
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
@@ -112,6 +114,7 @@ CatalogsComponent.propTypes = {
   canEdit: PropTypes.bool,
   roots: PropTypes.array.isRequired,
   byIds: PropTypes.object.isRequired,
+  shownIds: PropTypes.object.isRequired,
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,
