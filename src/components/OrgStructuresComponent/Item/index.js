@@ -48,8 +48,8 @@ export default class Item extends React.Component {
     return (
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
-        placement="topLeft"
-        mouseEnterDelay={0.8}
+        placement="left"
+        mouseEnterDelay={1.2}
       >
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
           {icon}
@@ -65,10 +65,10 @@ export default class Item extends React.Component {
               className="org-structure-item-text"
             >
               <HighlightedText text={shortName} textFilter={textFilter} />
-              {onMapCount !== 0 && <div className="org-structure-item-count">
-                {onMapCount}
-              </div>}
             </div>
+            {onMapCount !== 0 && <div className="org-structure-item-count">
+              {onMapCount}
+            </div>}
           </div>
         </div>
       </Tooltip>
