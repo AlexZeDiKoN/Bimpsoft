@@ -22,6 +22,7 @@ export const CLIPBOARD_SET = action('CLIPBOARD_SET')
 export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
 export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
 export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
+export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
 
 const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
@@ -128,9 +129,10 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
 
 export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {
   const {
-    orgStructures: { unitsById: { [unitID]: unit = {} } },
+    orgStructures,
     layers: { selectedId: layer },
   } = getState()
+  const unit = orgStructures.byIds[unitID] || {}
   const { app6Code: code, id, symbolData, natoLevelID } = unit
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
@@ -223,4 +225,8 @@ export const showDeleteForm = () => ({
 
 export const showDivideForm = () => ({
   type: SHOW_DIVIDE_FORM,
+})
+
+export const showCombineForm = () => ({
+  type: SHOW_COMBINE_FORM,
 })
