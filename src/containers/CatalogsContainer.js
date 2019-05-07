@@ -3,12 +3,14 @@ import CatalogsComponent from '../components/CatalogsComponent'
 import { catalogs } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = (store) => store.catalogs
+const mapStateToProps = ({ catalogs }) => catalogs
 
 const mapDispatchToProps = {
   onExpand: catalogs.expandItem,
+  onShow: catalogs.showItem,
   onFilterTextChange: catalogs.setFilterText,
   onClick: catalogs.setSelectedId,
+  preloadCatalogList: catalogs.getTree,
 }
 
 const CatalogsContainer = connect(
