@@ -87,26 +87,20 @@ export default function reducer (state = FlexGridState(), action) {
           attributes: { directions, zones, directionNames = [], eternalDescriptions = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
-        return payload
-          ? update(merge(state, {
-            present: !deleted,
-            visible: (showFlexGrid || state.visible) && !deleted,
-          }), 'flexGrid', merge, {
-            id,
-            deleted,
-            directions,
-            zones,
-            eternals: List(eternals),
-            directionSegments: List(directionSegments),
-            directionNames: List(directionNames),
-            eternalDescriptions: List(eternalDescriptions),
-            zoneSegments: List(zoneSegments),
-          })
-          : merge(state, {
-            visible: false,
-            present: false,
-            flexGrid: FlexGrid(),
-          })
+        return update(merge(state, {
+          present: !deleted,
+          visible: (showFlexGrid || state.visible) && !deleted,
+        }), 'flexGrid', merge, {
+          id,
+          deleted,
+          directions,
+          zones,
+          eternals: List(eternals),
+          directionSegments: List(directionSegments),
+          directionNames: List(directionNames),
+          eternalDescriptions: List(eternalDescriptions),
+          zoneSegments: List(zoneSegments),
+        })
       } else {
         return merge(state, {
           visible: false,

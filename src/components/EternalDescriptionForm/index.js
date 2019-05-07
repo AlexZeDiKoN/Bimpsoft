@@ -67,7 +67,7 @@ export default function EternalDescriptionForm (props) {
 
 EternalDescriptionForm.propTypes = {
   description: PropTypes.string,
-  position: PropTypes.arrayOf(PropTypes.number).isRequired,
+  position: PropTypes.arrayOf(PropTypes.number),
   index: PropTypes.number,
   visible: PropTypes.bool.isRequired,
   wrapper: PropTypes.any,

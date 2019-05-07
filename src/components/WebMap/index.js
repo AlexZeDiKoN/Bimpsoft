@@ -376,6 +376,12 @@ export default class WebMap extends React.PureComponent {
       this.updateLockedObjects(lockedObjects)
     }
     if (flexGridData !== prevProps.flexGridData) {
+      console.log('flexGridData !== prevProps.flexGridData')
+      console.log('flexGridData.eternals', flexGridData.eternals)
+      console.log('prevProps.flexGridData.eternals', prevProps.flexGridData.eternals)
+      const updateEternal = prevProps.flexGridData.eternals !== flexGridData.eternals
+      console.log('updateEternal', updateEternal)
+      // @TODO: отслеживать если изменили этэрнал
       this.updateFlexGrid(flexGridData)
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
@@ -565,6 +571,7 @@ export default class WebMap extends React.PureComponent {
   disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
   checkSaveObject = () => {
+    console.log('checkSaveObject')
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
@@ -1061,7 +1068,7 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list }, editObject } = this.props
     console.log('dblClickOnLayer')
     if (object && list.length === 1 && list[0] === object.id) {
-      this.checkSaveObject(false)
+      this.checkSaveObject()
       editObject(object.id, getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
@@ -1079,6 +1086,7 @@ export default class WebMap extends React.PureComponent {
     const { flexGridVisible, flexGridData: { id }, showDirectionNameForm, showEternalDescriptionForm, selection: { list } } = this.props
     // @TODO: ну переделать
     if (this.flexGrid && flexGridVisible) {
+      console.log('list', list)
       if (list.includes(id)) {
         const eternalProps = this.flexGrid.isOnEternal(event.latlng)
         if (eternalProps) {
@@ -1349,13 +1357,16 @@ export default class WebMap extends React.PureComponent {
     } = this.props
     const actual = flexGridData.id && !flexGridData.deleted
     if (!actual && this.flexGrid) {
+      console.log('1')
       this.flexGrid.removeFrom(this.map)
       delete this.flexGrid
       fixFlexGridInstance && fixFlexGridInstance(null)
     } else if (actual && !this.flexGrid) {
+      console.log('2')
       const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
     } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
+      console.log('3')
       const { directions, eternals, directionSegments, zoneSegments } = flexGridData
       const options = { directions }
       const internalProps = {
@@ -1365,6 +1376,7 @@ export default class WebMap extends React.PureComponent {
       }
       this.flexGrid.updateProps(options, internalProps)
     }
+    console.log('4')
   }
 
   updateCreatePoly = (type) => {

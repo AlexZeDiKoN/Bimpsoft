@@ -42,9 +42,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
         console.log('new coordinates', coords)
         console.log('______________')
         console.log('eternals', eternals)
-        const eternalLine = [ ...eternals.get(position[0]) ]
-        eternalLine.splice(position[1], 1, coords)
-        const newEternals = eternals.set(position[0], eternalLine)
+        const line = [ ...eternals.get(position[0], []) ]
+        line[position[1]] = coords
+        const newEternals = eternals.set(position[0], line)
         console.log('newEternals', newEternals)
         geometry = buildFlexGridGeometry(newEternals.toArray(), directionSegments.toArray(), zoneSegments.toArray())
         console.log('geometry', geometry)
@@ -52,17 +52,17 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
       if (!(!desc === !description)) {
         console.log('old description', description)
         console.log('new description', desc)
-        const descriptionLine = [ ...eternalDescriptions.get(position[0]) ]
-        descriptionLine.splice(position[1], 1, desc)
+        const line = [ ...eternalDescriptions.get(position[0], []) ]
+        line[position[1]] = desc
         // @TODO: придмать, как хранить список поясниловок для точек. Заоплнять и отправлять на БЭ. Менять координаты по изменении в окошечке
-        const newEternalDesc = eternalDescriptions.set(position[0], descriptionLine)
+        const newEternalDesc = eternalDescriptions.set(position[0], line)
         console.log('eternalDescriptions', eternalDescriptions)
         console.log('newEternalDesc', newEternalDesc)
-        attributes.eternalDescriptions = newEternalDesc
+        attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
       // const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
       console.log('____SUBMITTED____', id)
-      // updateObjPartially()
+      updateObjPartially(id, attrs, geometry)
     },
     onClose: () => {
       hideModal(eternalPoint)

@@ -148,7 +148,9 @@ L.FlexGrid = L.Layer.extend({
 
   updateProps (options, props) {
     const { eternals, directionSegments, zoneSegments } = props
-    L.setOptions(this, options)
+    options && L.setOptions(this, options)
+    // @TODO: позволить апдейтить только опшн или только пропсы
+    // Object.keys(props).forEach((key) => this[key] = props[key].map(copyRow))
     this.eternals = eternals.map(copyRow)
     this.directionSegments = directionSegments.map(copyRing)
     this.zoneSegments = zoneSegments.map(copyRing)
