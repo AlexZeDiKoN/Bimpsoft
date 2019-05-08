@@ -37,6 +37,24 @@ const objChecker = (a, b) => Object.keys(a).length === Object.keys(b).length
   ? Object.keys(a).every((key) => b.hasOwnProperty(key) ? eq(a[key], b[key]) : false)
   : false
 
+const getBSize = (realA, realB, flipped) => {
+  const a = flipped ? realB : realA
+  const b = flipped ? realA : realB
+  let allEqual = true
+  const size = b.__iterate(function (v, k) {
+    const notEqual = !isAssociative(a)
+      ? !a.has(v)
+      : flipped
+        ? !eq(v, a.get(k, {}))
+        : !eq(a.get(k, {}), v)
+    if (notEqual) {
+      allEqual = false
+      return false // останавливаем подсчет
+    }
+  })
+  return allEqual ? size : null
+}
+
 const eq = (a, b) => {
   if (a === b) {
     return true
@@ -60,43 +78,21 @@ const eq = (a, b) => {
         return true
       }
 
-      const notAssociative = !isAssociative(a)
-
       if (isOrdered(a)) {
         const entries = a.entries()
         return b.every(function (v, k) {
           const entry = entries.next().value
-          return entry && eq(entry[1], v) && (notAssociative || eq(entry[0], k))
+          return entry && eq(entry[1], v) && (!isAssociative(a) || eq(entry[0], k))
         }) && entries.next().done
       }
 
-      let flipped = false // переданные аргументы поменялись значениями
-
-      if (a.size === undefined) {
-        if (b.size === undefined) {
-          typeof a.cacheResult === 'function' && a.cacheResult()
-        } else {
-          flipped = true
-          const _ = a
-          a = b
-          b = _
-        }
+      if (a.size === undefined && b.size === undefined) {
+        typeof a.cacheResult === 'function' && a.cacheResult()
       }
 
-      let allEqual = true
-      const bSize = b.__iterate(function (v, k) {
-        const notEqual = notAssociative
-          ? !a.has(v)
-          : flipped
-            ? !eq(v, a.get(k, {}))
-            : !eq(a.get(k, {}), v)
-        if (notEqual) {
-          allEqual = false
-          return false // останавливаем подсчет
-        }
-      })
-
-      return allEqual && a.size === bSize
+      const flipped = a.size === undefined && b.size !== undefined // меняем значения переданных аргументов
+      const bSize = getBSize(a, b, flipped)
+      return bSize !== null && a.size === bSize
     }
     return !isIterable(b) && objChecker(a, b)
   }
