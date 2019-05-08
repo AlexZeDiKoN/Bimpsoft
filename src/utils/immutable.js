@@ -1,7 +1,4 @@
 import { List, Iterable } from 'immutable'
-const eq = (oldValue, newValue) =>
-  newValue === oldValue ||
-  (isIterable(newValue) && isIterable(oldValue) && is(oldValue, newValue))
 
 export const update = (record, propName, updater, payload) => {
   const oldValue = record.get(propName)
@@ -32,69 +29,76 @@ export const useArraysIn = (obj) => Object.keys(obj).reduce((acc, key) => {
   return acc
 }, { ...obj })
 
-// @TODO: Patching of immutable's method is
-const { isIterable, isOrdered, isAssociative } = Iterable
-const is = (a, b) => {
-  // вложенные структуры в коллекцию immutable
-  if (isObject(a) && isObject(b) && !isIterable(a) && !isIterable(b)) {
-    return objChecker(a, b)
-  }
+// @TODO: eq is patched immutable's method is
+const { isIterable, isOrdered, isKeyed, isIndexed, isAssociative } = Iterable
+const isObject = (o) => typeof o === 'object' && o !== null
 
-  if (a.size === 0 && b.size === 0) {
+const objChecker = (a, b) => Object.keys(a).length === Object.keys(b).length
+  ? Object.keys(a).every((key) => b.hasOwnProperty(key) ? eq(a[key], b[key]) : false)
+  : false
+
+const eq = (a, b) => {
+  if (a === b) {
     return true
   }
 
-  const notAssociative = !isAssociative(a)
-
-  if (isOrdered(a)) {
-    const entries = a.entries()
-    return b.every(function (v, k) {
-      const entry = entries.next().value
-      return entry && is(entry[1], v) && (notAssociative || is(entry[0], k))
-    }) && entries.next().done
-  }
-
-  let flipped = false
-
-  if (a.size === undefined) {
-    if (b.size === undefined) {
-      if (typeof a.cacheResult === 'function') {
-        a.cacheResult()
+  // вложенные структуры в коллекцию immutable
+  if (isObject(a) && isObject(b)) {
+    if (isIterable(a)) { // если а - представитель коллекции immutable
+      if (
+        !isIterable(b) || // если b - не представитель коллекции immutable
+        (a.size !== undefined && b.size !== undefined && a.size !== b.size) ||
+        (a.__hash !== undefined && b.__hash !== undefined && a.__hash !== b.__hash) ||
+        isKeyed(a) !== isKeyed(b) ||
+        isIndexed(a) !== isIndexed(b) ||
+        isOrdered(a) !== isOrdered(b)
+      ) {
+        return false
       }
-    } else {
-      flipped = true
-      const _ = a
-      a = b
-      b = _
-    }
-  }
 
-  let allEqual = true
-  const bSize = b.__iterate(function (v, k) {
-    if (notAssociative ? !a.has(v)
-      : flipped ? !is(v, a.get(k, {})) : !is(a.get(k, {}), v)) {
-      allEqual = false
-      return false
-    }
-  })
+      if (a.size === 0 && b.size === 0) {
+        return true
+      }
 
-  return allEqual && a.size === bSize
-}
+      const notAssociative = !isAssociative(a)
 
-const isObject = (o) => typeof o === 'object' && o !== null
-const objChecker = (a, b) => {
-  if (Object.keys(a).length === Object.keys(b).length) {
-    return Object.keys(a).every((key) => {
-      if (b.hasOwnProperty(key)) {
-        if (a[key] === b[key]) {
-          return true
-        }
-        if (isObject(a[key]) && isObject(b[key])) {
-          return isIterable(a[key]) ? is(a[key], b[key]) : objChecker(a[key], b[key])
+      if (isOrdered(a)) {
+        const entries = a.entries()
+        return b.every(function (v, k) {
+          const entry = entries.next().value
+          return entry && eq(entry[1], v) && (notAssociative || eq(entry[0], k))
+        }) && entries.next().done
+      }
+
+      let flipped = false // переданные аргументы поменялись значениями
+
+      if (a.size === undefined) {
+        if (b.size === undefined) {
+          typeof a.cacheResult === 'function' && a.cacheResult()
+        } else {
+          flipped = true
+          const _ = a
+          a = b
+          b = _
         }
       }
-      return false
-    })
+
+      let allEqual = true
+      const bSize = b.__iterate(function (v, k) {
+        const notEqual = notAssociative
+          ? !a.has(v)
+          : flipped
+            ? !eq(v, a.get(k, {}))
+            : !eq(a.get(k, {}), v)
+        if (notEqual) {
+          allEqual = false
+          return false // останавливаем подсчет
+        }
+      })
+
+      return allEqual && a.size === bSize
+    }
+    return !isIterable(b) && objChecker(a, b)
   }
   return false
 }
