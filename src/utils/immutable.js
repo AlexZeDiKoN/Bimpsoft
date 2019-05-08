@@ -59,8 +59,7 @@ const eq = (a, b) => {
   if (a === b) {
     return true
   }
-
-  // вложенные структуры в коллекцию immutable
+  // вложенные структуры в коллекцию immutable могут быть не только представиетлями immutable
   if (isObject(a) && isObject(b)) {
     if (isIterable(a)) { // если а - представитель коллекции immutable
       if (
