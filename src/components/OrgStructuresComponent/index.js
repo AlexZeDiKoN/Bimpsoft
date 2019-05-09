@@ -9,7 +9,10 @@ import Item from './Item'
 
 const { TextFilter } = data
 
-const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+const {
+  common: { TreeComponent: { TreeComponentUncontrolled } },
+  icons: { names: iconNames, IconButton },
+} = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.shortName + ' ' + item.fullName,
@@ -57,6 +60,12 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
   getFilteredIds = memoizeOne(getFilteredIds)
 
+  selectUnboundObjects = () => {
+    const { onMapObjects, selectList } = this.props
+    const unboundObjects = onMapObjects.toArray().filter((item) => item.type === 1 && !item.unit).map((item) => item.id)
+    selectList(unboundObjects)
+  }
+
   render () {
     const {
       textFilter = null,
@@ -88,11 +97,19 @@ export default class OrgStructuresComponent extends React.PureComponent {
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
         <div className="org-structures">
-          <Input.Search
-            ref={this.inputRef}
-            placeholder={i18n.FILTER}
-            onChange={this.filterTextChangeHandler}
-          />
+          <div className='org-structures-searchBlock'>
+            <Input.Search
+              ref={this.inputRef}
+              placeholder={i18n.FILTER}
+              onChange={this.filterTextChangeHandler}
+            />
+            <IconButton
+              title={i18n.EDIT_MODE}
+              icon={iconNames.EDIT_ACTIVE}
+              // checked={isEditMode}
+              onClick={this.selectUnboundObjects}
+            />
+          </div>
           <div className="org-structures-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
@@ -127,4 +144,5 @@ OrgStructuresComponent.propTypes = {
   onDoubleClick: PropTypes.func,
   selectedLayer: PropTypes.string,
   onMapObjects: PropTypes.object,
+  selectList: PropTypes.func,
 }
