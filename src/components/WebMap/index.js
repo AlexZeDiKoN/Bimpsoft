@@ -282,6 +282,7 @@ export default class WebMap extends React.PureComponent {
     selectDirection: PropTypes.func,
     getTopographicObjects: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
+    disableDrawUnit: PropTypes.func,
   }
 
   constructor (props) {
@@ -1385,8 +1386,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   createNewShape = (e) => {
-    console.log('create')
-    console.log(e)
     const { layer } = e
     layer.removeFrom(this.map)
     const geometry = getGeometry(layer)
@@ -1423,11 +1422,19 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  disableDrawLineSquareMark = () => {
+    const { selection: { newShape }, disableDrawUnit } = this.props
+    if (newShape.type) {
+      this.map.pm.disableDraw()
+      disableDrawUnit()
+    }
+  }
+
   escapeHandler = () => {
     if (this.searchMarker) {
       this.props.onRemoveMarker()
     }
-    this.map.pm.disableDraw()
+    this.disableDrawLineSquareMark()
   }
 
   spaceHandler = () => {
@@ -1435,9 +1442,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   enterHandler = () => {
-    console.log('enter')
-    console.log(this.map.pm)
-    console.log(this.props.selection.newShape)
     const { type } = this.props.selection.newShape
     if (type === SelectionTypes.CURVE || type === SelectionTypes.POLYLINE) {
       this.map.fire('pm:create', {

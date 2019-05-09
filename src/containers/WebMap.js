@@ -86,6 +86,7 @@ const WebMapContainer = connect(
     selectDirection: flexGrid.selectDirection,
     getTopographicObjects: webMap.getTopographicObjects,
     toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
+    disableDrawUnit: selection.disableDrawUnit,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
