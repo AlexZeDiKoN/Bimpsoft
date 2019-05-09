@@ -1361,7 +1361,6 @@ export default class WebMap extends React.PureComponent {
     switch (type) {
       case entityKind.POLYLINE:
       case entityKind.CURVE:
-        console.log('Line')
         this.map.pm.enableDraw('Line', { ...options, hintlineStyle })
         break
       case entityKind.POLYGON:
