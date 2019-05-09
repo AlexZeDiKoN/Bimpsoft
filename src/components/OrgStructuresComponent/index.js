@@ -5,13 +5,13 @@ import { Input, Tooltip } from 'antd'
 import { data, components } from '@DZVIN/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
-import Item from './Item'
+import Item from './children/Item'
+import OrgStructureMenu from './children/OrgStructureMenu'
 
 const { TextFilter } = data
 
 const {
   common: { TreeComponent: { TreeComponentUncontrolled } },
-  icons: { names: iconNames, IconButton },
 } = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
@@ -60,12 +60,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
   getFilteredIds = memoizeOne(getFilteredIds)
 
-  selectUnboundObjects = () => {
-    const { onMapObjects, selectList } = this.props
-    const unboundObjects = onMapObjects.toArray().filter((item) => item.type === 1 && !item.unit).map((item) => item.id)
-    selectList(unboundObjects)
-  }
-
   render () {
     const {
       textFilter = null,
@@ -81,6 +75,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       canEdit,
       selectedLayer,
       onMapObjects,
+      selectList,
     } = this.props
 
     if (formation === null) {
@@ -103,11 +98,9 @@ export default class OrgStructuresComponent extends React.PureComponent {
               placeholder={i18n.FILTER}
               onChange={this.filterTextChangeHandler}
             />
-            <IconButton
-              title={i18n.EDIT_MODE}
-              icon={iconNames.EDIT_ACTIVE}
-              // checked={isEditMode}
-              onClick={this.selectUnboundObjects}
+            <OrgStructureMenu
+              onMapObjects={onMapObjects}
+              selectList={selectList}
             />
           </div>
           <div className="org-structures-scroll" ref={this.scrollPanelRef}>
