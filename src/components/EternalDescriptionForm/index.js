@@ -7,10 +7,9 @@ import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import * as shortcuts from '../../constants/shortcuts'
 import i18n from '../../i18n'
 
-const formatter = (string) => typeof string === 'number' ? string : string.replace(/[^0-9.]/g, '')
-
 const {
   default: Form,
+  Coordinates: CoordinatesField,
   FormItem,
   FormRow,
   buttonSave,
@@ -27,13 +26,12 @@ export default function EternalDescriptionForm (props) {
     wrapper: Wrapper,
   } = props
 
-  const latRef = React.createRef()
-  const lngRef = React.createRef()
+  const coordRef = React.createRef()
   const descRef = React.createRef()
 
+  // @TODO: при сабмите вызывать метод из вебмапы  для апдейта
   const handleSubmit = () => {
-    const lat = +latRef.current.inputNumberRef.input.value
-    const lng = +lngRef.current.inputNumberRef.input.value
+    const { lat, lng } = coordRef.current.finalResult
     const desc = descRef.current.textAreaRef.value
     onSubmit({ lat, lng }, desc)
   }
@@ -47,11 +45,10 @@ export default function EternalDescriptionForm (props) {
         <HotKeysContainer>
           <Form className="direction_name--form">
             <FormRow label={`Координати`}>
-              <InputNumber defaultValue={coordinates.lat} formatter={formatter} ref={latRef}/>
-              <InputNumber defaultValue={coordinates.lng} formatter={formatter} ref={lngRef}/>
+              <CoordinatesField coordinates={coordinates} ref={coordRef}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
-              <TextArea defaultValue={description} onChange={console.log} ref={descRef}/>
+              <TextArea defaultValue={description} ref={descRef}/>
             </FormRow>
             <FormItem>
               {buttonSave(handleSubmit)}

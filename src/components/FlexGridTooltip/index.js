@@ -5,12 +5,15 @@ import i18n from '../../i18n'
 
 import './flexGridTooltip.css'
 
-const getTitle = (zone, dir, list) => `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${list.get(dir - 1) || `№ ${dir}`}"`
+const getZoneDescription = (zone, dir, list) => `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${list.get(dir - 1) || `№ ${dir}`}"`
 
 class FlexGridToolTip extends Component {
   state = {
+    type: null,
     zone: null,
     direction: null,
+    position: null,
+    coordinates: null,
     x: null,
     y: null,
     visible: false,
@@ -30,6 +33,8 @@ class FlexGridToolTip extends Component {
     document.removeEventListener('mouseout', this.stopGetCursorInfo)
     stopLooking && stopLooking(this.getCursorInfo)
   }
+// @TODO: всю необходимость вынести в этот объект - дальше отображать в зависимости от типа
+  additional = {}
 
   hide = () => this.state.visible && this.setState({ visible: false })
 
@@ -49,7 +54,7 @@ class FlexGridToolTip extends Component {
     const { className, names } = this.props
     const { y, x, visible, zone, direction } = this.state
     if (visible) {
-      const content = getTitle(zone, direction, names)
+      const content = getZoneDescription(zone, direction, names)
       const style = {
         position: 'fixed',
         left: `${x}px`,

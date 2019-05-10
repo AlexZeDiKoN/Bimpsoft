@@ -146,16 +146,15 @@ L.FlexGrid = L.Layer.extend({
     this._renderer._bringToFront(this)
   },
 
+  // @TODO: позволить апдейтить только опшн или только пропсы
   updateProps (options, props) {
     const { eternals, directionSegments, zoneSegments } = props
     options && L.setOptions(this, options)
-    // @TODO: позволить апдейтить только опшн или только пропсы
-    // Object.keys(props).forEach((key) => this[key] = props[key].map(copyRow))
-    this.eternals = eternals.map(copyRow)
-    this.directionSegments = directionSegments.map(copyRing)
-    this.zoneSegments = zoneSegments.map(copyRing)
-    this._project()
-    this._update()
+    eternals && (this.eternals = eternals.map(copyRow))
+    directionSegments && (this.directionSegments = directionSegments.map(copyRing))
+    zoneSegments && (this.zoneSegments = zoneSegments.map(copyRing))
+    this.redraw()
+    this.pm._enabled && this.pm._updateMainMarkersPos()
   },
 
   onRemove () {
@@ -378,23 +377,21 @@ L.FlexGrid = L.Layer.extend({
   },
   // @TODO: метод получения eternal-точки, в которой сейчас находится курсор. в случае, если находится - скрывать тултип и давать право даблкликуть на ней с открытие попапа для перемещения и описания. Или выводить описание ее
   isOnEternal (latLng) {
+    console.log('isOnEternal')
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
-    this.eternalRings.forEach((line, indexLine) => line.forEach((ring, indexRing) => {
-      // 7 - радиус желтой точки
-      const xDiff = Math.abs(x - ring.x) <= 7
-      const yDiff = Math.abs(y - ring.y) <= 7
-      if (xDiff && yDiff) {
-        result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
+    // @TODO: останавливать при нахождении
+    this.eternalRings.forEach((line, indexLine) => !result && line.forEach((ring, indexRing) => {
+      if (!result) {
+        // 7 - радиус желтой точки
+        const xDiff = Math.abs(x - ring.x) <= 7
+        const yDiff = Math.abs(y - ring.y) <= 7
+        if (xDiff && yDiff) {
+          result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
+        }
       }
     }))
     return result
-  },
-
-  changePointCoords (position, coords) {
-    console.log('this.eternals: ', this.eternals)
-    console.log('position', position)
-    console.log('new coords', coords)
   },
 
   selectDirection (directionList) {

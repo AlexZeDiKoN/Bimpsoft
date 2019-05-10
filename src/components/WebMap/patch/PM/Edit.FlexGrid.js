@@ -284,11 +284,19 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     marker.on('dragstart', this._onMarkerDragStart, this)
     marker.on('move', this._onMarkerDrag, this)
     marker.on('dragend', this._onMarkerDragEnd, this)
+    // @TODO: отлавливать маркер ивенты здесь
+    marker.on('dblclick', this._onMarkerDblClick, this)
     if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
     }
     this._markerGroup.addLayer(marker)
     return marker
+  },
+
+  _onMarkerDblClick (e) {
+    if (this._enabled) {
+      this._layer.fire('pm:eternaldblclick', this._layer.isOnEternal(e.latlng))
+    }
   },
 
   _createResizeMarker (latlng, className = '', dir) {
@@ -400,6 +408,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
+    console.log('_________updateGridCoordsFromMarkerDrag_______')
     const latLng = marker.getLatLng()
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     if (eternal) {

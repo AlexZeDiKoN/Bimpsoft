@@ -382,7 +382,7 @@ export default class WebMap extends React.PureComponent {
       const updateEternal = prevProps.flexGridData.eternals !== flexGridData.eternals
       console.log('updateEternal', updateEternal)
       // @TODO: отслеживать если изменили этэрнал
-      this.updateFlexGrid(flexGridData)
+      this.updateFlexGrid(flexGridData, updateEternal)
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
@@ -717,18 +717,20 @@ export default class WebMap extends React.PureComponent {
     this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
   }
 
+  isFlexGridEditingMode = () =>
+    this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
+
   // @TODO: при даблКлике воспринимается как 2 одиночных клика. Почему??
-  onMouseClick = (e) => {
+  onMouseClick = debounce((e) => {
     console.log('clicknull', e)
-    const { selection: { list, newShape }, flexGridData: { id }, flexGridVisible } = this.props
-    if (this.flexGrid && flexGridVisible && list.includes(id) && this.flexGrid.isOnEternal(e.latlng)) { // если на точку клик-плик-флик..
-      console.log('isOnEternal', e.latlng)
+    const { originalEvent: { detail } } = e
+    if (detail > 1 || (this.flexGrid && this.isFlexGridEditingMode() && this.flexGrid.isOnEternal(e.latlng))) { // если на точку клик-плик-флик..
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
     }
-    if (!newShape.type) {
+    if (!this.props.selection.newShape.type) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
@@ -745,7 +747,7 @@ export default class WebMap extends React.PureComponent {
         getTopographicObjects(location)
       }
     }
-  }
+  }, 200)
 
   onBoxSelectStart = () => {
     this.isBoxSelection = true
@@ -1061,12 +1063,10 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: почему не отлавливает клик по точке редактирования Оперативной зоны?!
   dblClickOnLayer = (event) => {
     const { target: layer } = event
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
-    console.log('dblClickOnLayer')
     if (object && list.length === 1 && list[0] === object.id) {
       this.checkSaveObject()
       editObject(object.id, getGeometry(layer))
@@ -1082,17 +1082,8 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDblClick = (event) => {
-    console.log('onDblClick', event)
-    const { flexGridVisible, flexGridData: { id }, showDirectionNameForm, showEternalDescriptionForm, selection: { list } } = this.props
-    // @TODO: ну переделать
+    const { flexGridVisible, showDirectionNameForm } = this.props
     if (this.flexGrid && flexGridVisible) {
-      console.log('list', list)
-      if (list.includes(id)) {
-        const eternalProps = this.flexGrid.isOnEternal(event.latlng)
-        if (eternalProps) {
-          return showEternalDescriptionForm(eternalProps)
-        }
-      }
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
@@ -1102,13 +1093,20 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  getCurrentZone = (event) => {
+  // @TODO: set type as constant
+  getCursorDescription = (event) => {
     if (this.flexGrid && this.props.flexGridVisible) {
       const { latlng } = event
+      if (this.isFlexGridEditingMode()) {
+        const eternalProps = this.flexGrid.isOnEternal(latlng)
+        if (eternalProps) {
+          return { type: 'eternal', ...eternalProps }
+        }
+      }
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        return { direction, zone }
+        return { type: 'zone', direction, zone }
       }
     }
     return null
@@ -1336,6 +1334,8 @@ export default class WebMap extends React.PureComponent {
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
+    // @TODO: писать нормально
+    layer.on('pm:eternaldblclick', this.onDoubleClickEternal)
     if (show && id) {
       layer.addTo(this.map)
     }
@@ -1351,7 +1351,8 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateFlexGrid = (flexGridData) => {
+  // @TODO: удалить вторую пропсу
+  updateFlexGrid = (flexGridData, updateEternal) => {
     const {
       fixFlexGridInstance,
     } = this.props
@@ -1375,9 +1376,19 @@ export default class WebMap extends React.PureComponent {
         zoneSegments: zoneSegments.toArray(),
       }
       this.flexGrid.updateProps(options, internalProps)
+    } else if (actual && this.flexGrid && updateEternal) {
+      const { eternals } = flexGridData
+      const internalProps = {
+        eternals: eternals.toArray(),
+      }
+      console.log('this.flexGrid.pm.updateGridCoordsFromMarkerDrag', this.flexGrid.pm.updateGridCoordsFromMarkerDrag)
+      // this.flexGrid.updateProps(null, internalProps)
     }
     console.log('4')
   }
+
+  // @TODO: метод, вызывающий открытие модалки узловой точки
+  onDoubleClickEternal = (eternalProps) => eternalProps && this.props.showEternalDescriptionForm(eternalProps)
 
   updateCreatePoly = (type) => {
     const layerOptions = {
@@ -1473,7 +1484,7 @@ export default class WebMap extends React.PureComponent {
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}
             stopLooking={this.disableLookAfterMouseMove}
-            getCurrentCell={this.getCurrentZone}
+            getCurrentCell={this.getCursorDescription}
             names={this.props.flexGridData.directionNames}
           />
         )}
