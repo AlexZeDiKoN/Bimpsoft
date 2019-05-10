@@ -1443,9 +1443,8 @@ export default class WebMap extends React.PureComponent {
   enterHandler = () => {
     const { type } = this.props.selection.newShape
     if (type === SelectionTypes.CURVE || type === SelectionTypes.POLYLINE) {
-      this.map.fire('pm:create', {
-        shape: 'line',
-        layer: this.map.pm.Draw.Line._layer })
+      const activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+      this.createNewShape({ layer: activeLayer })
       this.map.pm.disableDraw()
     }
   }
