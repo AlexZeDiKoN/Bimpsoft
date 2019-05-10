@@ -78,8 +78,8 @@ export default class Item extends React.Component {
         title={(
           <HighlightedText text={name} textFilter={textFilter} />
         )}
-        placement="topLeft"
-        mouseEnterDelay={0.8}
+        placement="left"
+        mouseEnterDelay={1.2}
       >
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
           {indicator}
