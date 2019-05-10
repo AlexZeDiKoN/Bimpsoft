@@ -26,6 +26,7 @@ const mapStateToProps = (store) => {
 }
 
 const mapDispatchToProps = {
+  selectList: selection.selectedList,
   onExpand: (key) => orgStructures.expandOrgStructureItem(key),
   onFilterTextChange: (filterText) => orgStructures.setOrgStructuresFilterText(filterText),
   onClick: (unitID) => orgStructures.setOrgStructureSelectedId(unitID),
