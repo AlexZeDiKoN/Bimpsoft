@@ -5,27 +5,24 @@
   .flex;
   align-items: center;
   padding: 3px 0;
+  .button_layers{
+    width: 1.7em;
+    height: 1.7em;
+  }
   .milsymbol{
     width: 2em;
     height: 2em;
     margin-right: 0.5em;
     flex: 0 0 auto;
   }
-  .ant-tooltip{
-    .highlight{
-      color: #fff;
-    }
-    .obscure{
-      color: #888;
-    }
-  }
+
   /* &:not(.catalog-item-can-expand) .catalog-item-content{
     margin-left: 2.48em;
   } */
 }
 
 .catalog-item-selected {
-  .catalog-item-text {
+  .catalog-item-content {
     background: @toolbar-background-selected;
     color: @toolbar-color-selected;
   }
@@ -46,6 +43,7 @@
   text-align: left;
   padding: 0 0.3em;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 

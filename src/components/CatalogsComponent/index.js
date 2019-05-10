@@ -91,7 +91,7 @@ export default class CatalogsComponent extends React.PureComponent {
             onChange={this.filterTextChangeHandler}
             style={{ padding: '5px' }}
           />
-          <div className="catalog-scroll" ref={this.scrollPanelRef} >
+          <div className="catalog-scroll" style={{ overflowY: 'scroll', height: '89%', paddingBottom: 10 }} ref={this.scrollPanelRef} >
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
