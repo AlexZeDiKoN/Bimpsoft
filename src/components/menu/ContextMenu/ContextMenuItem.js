@@ -17,9 +17,9 @@ export default class ContextMenuItem extends React.Component {
 
   render () {
     const { icon, text, checked } = this.props
-    let className = 'context-menu-item'
+    let className = 'context-Index-item'
     if (checked) {
-      className += ' context-menu-item-checked'
+      className += ' context-Index-item-checked'
     }
     return (
       <div className={className} onClick={this.clickHandler}>
