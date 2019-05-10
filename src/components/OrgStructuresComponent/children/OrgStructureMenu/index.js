@@ -41,8 +41,9 @@ export default class Index extends React.Component {
         trigger={[ 'click' ]}
       >
         <IconButton
+          className={'moreButton'}
           title={i18n.EXTRA_FUNCTIONS}
-          icon={iconNames.MORE_GREEN_DEFAULT}
+          icon={iconNames.MORE_WHITE_DEFAULT}
         />
       </Dropdown>
     )
