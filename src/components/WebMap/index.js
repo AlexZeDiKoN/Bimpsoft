@@ -32,6 +32,7 @@ import {
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
+import SelectionTypes from '../../constants/SelectionTypes'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -281,6 +282,7 @@ export default class WebMap extends React.PureComponent {
     selectDirection: PropTypes.func,
     getTopographicObjects: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
+    disableDrawUnit: PropTypes.func,
   }
 
   constructor (props) {
@@ -1419,14 +1421,32 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  disableDrawLineSquareMark = () => {
+    const { selection: { newShape }, disableDrawUnit } = this.props
+    if (newShape.type) {
+      this.map.pm.disableDraw()
+      disableDrawUnit()
+    }
+  }
+
   escapeHandler = () => {
     if (this.searchMarker) {
       this.props.onRemoveMarker()
     }
+    this.disableDrawLineSquareMark()
   }
 
   spaceHandler = () => {
     this.onSelectedListChange([])
+  }
+
+  enterHandler = () => {
+    const { type } = this.props.selection.newShape
+    if (type === SelectionTypes.CURVE || type === SelectionTypes.POLYLINE) {
+      const activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+      this.createNewShape({ layer: activeLayer })
+      this.map.pm.disableDraw()
+    }
   }
 
   render () {
@@ -1440,6 +1460,7 @@ export default class WebMap extends React.PureComponent {
         <MapProvider value={this.map} >{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
+        <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
         { this.props.flexGridVisible && (
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}
