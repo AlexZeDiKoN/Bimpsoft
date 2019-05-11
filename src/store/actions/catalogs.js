@@ -2,6 +2,7 @@ import { action } from '../../utils/services'
 import { asyncAction } from './index'
 
 export const CATALOG_SET_TREE = action('CATALOG_SET_TREE')
+export const CATALOG_SET_LIST = action('CATALOG_SET_LIST')
 export const CATALOG_SELECT_ITEM = action('CATALOG_SELECT_ITEM')
 export const CATALOG_EXPAND_ITEM = action('CATALOG_EXPAND_ITEM')
 export const CATALOG_SHOW_ITEM = action('CATALOG_SHOW_ITEM')
@@ -12,8 +13,18 @@ export const setTree = (payload) => ({
   payload,
 })
 
+export const setList = (catalogId, list) => ({
+  type: CATALOG_SET_LIST,
+  payload: { catalogId, list },
+})
+
 export const getTree = () =>
-  asyncAction.withNotification(async (dispatch, _, { catalogApi }) => dispatch(setTree(await catalogApi.getTree())))
+  asyncAction.withNotification(async (dispatch, _, { catalogApi }) =>
+    dispatch(setTree(await catalogApi.getTree())))
+
+export const getList = (catalogId) =>
+  asyncAction.withNotification(async (dispatch, _, { catalogApi }) =>
+    dispatch(setList(catalogId, await catalogApi.getList(catalogId))))
 
 export const setSelectedId = (selectedId) => ({
   type: CATALOG_SELECT_ITEM,

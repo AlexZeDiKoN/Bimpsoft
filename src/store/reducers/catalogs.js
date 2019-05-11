@@ -39,6 +39,9 @@ export default function reducer (state = initState, action) {
       }
       return { ...state, byIds, roots }
     }
+    case catalogs.CATALOG_SET_LIST: {
+      return state
+    }
     case catalogs.CATALOG_EXPAND_ITEM: {
       const { itemId } = action
       let { expandedIds } = state
