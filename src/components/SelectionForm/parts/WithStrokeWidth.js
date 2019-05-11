@@ -3,6 +3,7 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { typeDiv, typeOption } from './render'
+const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 const VALUES = [ 1, 2, 3, 4, 5, 7, 9, 10, 12, 14, 16 ]
@@ -18,9 +19,15 @@ const WithStrokeWidth = (Component) => class LineTypeComponent extends Component
 
     const value = canEdit
       ? (
-        <Select value={ strokeWidth } onChange={this.strokeWidthChangeHandler}>
+        <>
+        <Select value={ strokeWidth } showArrow={false} onChange={this.strokeWidthChangeHandler}>
           { VALUES.map((value) => typeOption(value, 'solid', value, null, value)) }
         </Select>
+        <IconButton
+          className="icon-button-more"
+          icon={iconNames.MORE_WHITE_DEFAULT}
+        />
+        </>
       )
       : typeDiv('solid', strokeWidth, null, strokeWidth)
 
