@@ -408,7 +408,6 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
-    console.log('_________updateGridCoordsFromMarkerDrag_______')
     const latLng = marker.getLatLng()
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     if (eternal) {

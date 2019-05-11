@@ -1,12 +1,19 @@
 import { connect } from 'react-redux'
 import { eternalPoint } from '../constants/viewModesKeys'
 import { viewModeDisable } from '../store/actions/viewModes'
-import { updateObjPartially, updateObjectAttributes, updateObjectGeometry } from '../store/actions/webMap'
+import { updateObjPartially } from '../store/actions/webMap'
 import EternalDescriptionForm from '../components/EternalDescriptionForm'
-import {flexGridAttributes, flexGridData} from '../store/selectors'
+import { flexGridAttributes, flexGridData } from '../store/selectors'
 import { buildFlexGridGeometry } from '../components/WebMap'
 
 // @TODO: проверить идущие пропсы
+const getNewData = (init, position, val) => {
+  const temp = init.get(position[0])
+  const line = temp ? [ ...temp ] : []
+  line[position[1]] = val
+  return init.set(position[0], line)
+}
+
 const mapStateToProps = (store) => {
   const { position, coordinates } = store.flexGrid.selectedEternal
   return ({
@@ -17,6 +24,7 @@ const mapStateToProps = (store) => {
     position,
   })
 }
+
 const mapDispatchToProps = {
   hideModal: viewModeDisable,
   updateObjPartially,
@@ -27,42 +35,26 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { position, coordinates = {}, attributes, flexGrid, ...restState } = stateProps
   const { eternalDescriptions } = attributes || {}
   const { directionSegments, zoneSegments, eternals, id } = flexGrid
-  const description = position && eternalDescriptions ? eternalDescriptions.getIn(position) : ''
+  const descriptionLine = position && eternalDescriptions && eternalDescriptions.get(position[0])
+  const description = (descriptionLine && descriptionLine[position[1]]) || ''
   return {
     coordinates,
     description,
     ...ownProps,
     ...restState,
     onSubmit: (coords, desc) => {
-      let geometry = null
+      let geom = {}
       let attrs = null
       if (!coordinates.equals(coords)) {
-        console.log('position', position)
-        console.log('old coordinates', coordinates)
-        console.log('new coordinates', coords)
-        console.log('______________')
-        console.log('eternals', eternals)
-        const line = [ ...eternals.get(position[0], []) ]
-        line[position[1]] = coords
-        const newEternals = eternals.set(position[0], line)
-        console.log('newEternals', newEternals)
-        geometry = buildFlexGridGeometry(newEternals.toArray(), directionSegments.toArray(), zoneSegments.toArray())
-        console.log('geometry', geometry)
+        const newEternals = getNewData(eternals, position, coords)
+        geom = buildFlexGridGeometry(newEternals.toArray(), directionSegments.toArray(), zoneSegments.toArray())
       }
       if (!(!desc === !description)) {
-        console.log('old description', description)
-        console.log('new description', desc)
-        const line = [ ...eternalDescriptions.get(position[0], []) ]
-        line[position[1]] = desc
-        // @TODO: придмать, как хранить список поясниловок для точек. Заоплнять и отправлять на БЭ. Менять координаты по изменении в окошечке
-        const newEternalDesc = eternalDescriptions.set(position[0], line)
-        console.log('eternalDescriptions', eternalDescriptions)
-        console.log('newEternalDesc', newEternalDesc)
+        const newEternalDesc = getNewData(eternalDescriptions, position, desc)
         attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
-      // const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
-      console.log('____SUBMITTED____', id)
-      updateObjPartially(id, attrs, geometry)
+      updateObjPartially(id, attrs, geom)
+      hideModal(eternalPoint)
     },
     onClose: () => {
       hideModal(eternalPoint)

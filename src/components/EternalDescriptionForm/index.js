@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Input, InputNumber } from 'antd'
+import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
@@ -26,18 +26,24 @@ export default function EternalDescriptionForm (props) {
     wrapper: Wrapper,
   } = props
 
-  const coordRef = React.createRef()
+  const [ coord, setCoord ] = useState(null)
+
+  useEffect(() => {
+    setCoord(coordinates)
+  }, [ coordinates ])
+
   const descRef = React.createRef()
 
   // @TODO: при сабмите вызывать метод из вебмапы  для апдейта
   const handleSubmit = () => {
-    const { lat, lng } = coordRef.current.finalResult
+    const { lat, lng } = coord
     const desc = descRef.current.textAreaRef.value
     onSubmit({ lat, lng }, desc)
   }
 
   console.log('description', description)
   console.log('coordinates', coordinates)
+  console.log('coord', coord)
 
   return visible && (
     <Wrapper title={'Узловая точка'} onClose={onClose}>
@@ -45,7 +51,7 @@ export default function EternalDescriptionForm (props) {
         <HotKeysContainer>
           <Form className="direction_name--form">
             <FormRow label={`Координати`}>
-              <CoordinatesField coordinates={coordinates} ref={coordRef}/>
+              <CoordinatesField coordinates={coord} onChange={setCoord}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
               <TextArea defaultValue={description} ref={descRef}/>

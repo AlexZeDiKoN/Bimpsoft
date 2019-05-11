@@ -32,6 +32,7 @@ import {
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
+import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -722,9 +723,11 @@ export default class WebMap extends React.PureComponent {
 
   // @TODO: при даблКлике воспринимается как 2 одиночных клика. Почему??
   onMouseClick = debounce((e) => {
-    console.log('clicknull', e)
     const { originalEvent: { detail } } = e
     if (detail > 1 || (this.flexGrid && this.isFlexGridEditingMode() && this.flexGrid.isOnEternal(e.latlng))) { // если на точку клик-плик-флик..
+      console.log('detail', detail)
+      console.log('this.flexGrid.isOnEternal(e.latlng)', this.flexGrid.isOnEternal(e.latlng))
+      console.log('this.isFlexGridEditingMode()', this.isFlexGridEditingMode())
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
@@ -1093,20 +1096,25 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // @TODO: set type as constant
   getCursorDescription = (event) => {
-    if (this.flexGrid && this.props.flexGridVisible) {
+    const { flexGridVisible, flexGridData: { eternalDescriptions, directionNames } } = this.props
+    if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
       if (this.isFlexGridEditingMode()) {
         const eternalProps = this.flexGrid.isOnEternal(latlng)
         if (eternalProps) {
-          return { type: 'eternal', ...eternalProps }
+          const { position, coordinates } = eternalProps
+          const eternalDescription = eternalDescriptions.get(position[0])
+          const description = eternalDescription && eternalDescription[position[1]]
+          return { type: ETERNAL, coordinates, description }
         }
       }
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        return { type: 'zone', direction, zone }
+        const directionName = directionNames.get(direction - 1)
+        const name = `${directionName ? `"${directionName}"` : `№ ${direction}`}`
+        return { type: ZONE, name, zone }
       }
     }
     return null
@@ -1382,7 +1390,8 @@ export default class WebMap extends React.PureComponent {
         eternals: eternals.toArray(),
       }
       console.log('this.flexGrid.pm.updateGridCoordsFromMarkerDrag', this.flexGrid.pm.updateGridCoordsFromMarkerDrag)
-      // this.flexGrid.updateProps(null, internalProps)
+      // this.checkSaveObject()
+      this.flexGrid.updateProps(null, internalProps)
     }
     console.log('4')
   }

@@ -1,22 +1,32 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { debounce } from 'lodash/function'
+import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import i18n from '../../i18n'
 
 import './flexGridTooltip.css'
 
-const getZoneDescription = (zone, dir, list) => `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} "${list.get(dir - 1) || `№ ${dir}`}"`
-
+const getZoneDescription = ({ zone, name }) => `${Math.abs(zone)} ${zone > 0 ? i18n.FRIENDLY : i18n.HOSTILE} ${i18n.ZONE_OF_DIRECTION} ${name}`
+const getTT = (type, info) => {
+  switch (type) {
+    case ETERNAL:
+      return info.description
+    case ZONE:
+      return getZoneDescription(info)
+    default:
+      return ''
+  }
+}
 class FlexGridToolTip extends Component {
-  state = {
-    type: null,
-    zone: null,
-    direction: null,
-    position: null,
-    coordinates: null,
-    x: null,
-    y: null,
-    visible: false,
+  constructor (props) {
+    super(props)
+    this.state = {
+      type: null,
+      x: null,
+      y: null,
+      visible: false,
+    }
+    this.additional = {}
   }
 
   componentDidMount () {
@@ -33,16 +43,19 @@ class FlexGridToolTip extends Component {
     document.removeEventListener('mouseout', this.stopGetCursorInfo)
     stopLooking && stopLooking(this.getCursorInfo)
   }
-// @TODO: всю необходимость вынести в этот объект - дальше отображать в зависимости от типа
-  additional = {}
 
   hide = () => this.state.visible && this.setState({ visible: false })
 
   getCursorInfo = debounce((e) => {
     const { getCurrentCell } = this.props
-    const { containerPoint } = e
     const current = getCurrentCell(e)
-    current ? this.setState({ visible: true, ...current, ...containerPoint }) : this.hide()
+    if (current) {
+      const { type, ...rest } = current
+      const { containerPoint } = e
+      this.additional = rest
+      return this.setState({ visible: true, type, ...containerPoint })
+    }
+    return this.hide()
   }, 1000)
 
   stopGetCursorInfo = () => {
@@ -51,10 +64,10 @@ class FlexGridToolTip extends Component {
   }
 
   render () {
-    const { className, names } = this.props
-    const { y, x, visible, zone, direction } = this.state
-    if (visible) {
-      const content = getZoneDescription(zone, direction, names)
+    const { className } = this.props
+    const { y, x, visible, type } = this.state
+    const content = visible && getTT(type, this.additional)
+    if (content) {
       const style = {
         position: 'fixed',
         left: `${x}px`,
