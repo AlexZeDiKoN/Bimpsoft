@@ -1,5 +1,5 @@
-import React from 'react'
 import { compose } from 'redux'
+import React from 'react'
 import { DIRECTION_LEFT, DIRECTION_RIGHT } from '../../parts/WithLineEnds'
 import {
   WithColor,

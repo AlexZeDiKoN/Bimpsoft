@@ -6,13 +6,15 @@ import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
-import MilSymbolForm from './forms/MilSymbolForm'
-import LineForm from './forms/lineForm/LineForm.js'
-import AreaForm from './forms/AreaForm/AreaForm.js'
-import RectangleForm from './forms/RectangleForm/RectangleForm.js'
-import SquareForm from './forms/SquareForm/SquareForm.js'
-import CircleForm from './forms/CircleForm/CircleForm.js'
-import TextForm from './forms/TextForm'
+import {
+  AreaForm,
+  CircleForm,
+  LineForm,
+  MilSymbolForm,
+  RectangleForm,
+  SquareForm,
+  TextForm,
+} from './forms'
 
 const forms = {
   [SelectionTypes.POINT]: {
