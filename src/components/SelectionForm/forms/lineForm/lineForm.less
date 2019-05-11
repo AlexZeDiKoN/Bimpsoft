@@ -1,0 +1,29 @@
+.line-container{
+    &__item{
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      .dzvin-form-row{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        .dzvin-form-input{
+            margin: auto;
+            // position: relative;
+        }
+        label{
+          margin-bottom: 0.35em;
+          margin-left: 0.5em;
+          font-size: 12px;
+          display: block;
+          white-space: nowrap;
+          overflow: hidden;
+          margin-right: 0;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    &__itemWidth{
+        width: 50%;
+    }
+}

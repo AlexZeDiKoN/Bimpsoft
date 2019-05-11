@@ -4,6 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import i18n from '../../../i18n'
 import { colorDiv, colorOption } from './render'
+const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 
@@ -16,7 +17,8 @@ const WithFill = (Component) => class FillComponent extends Component {
     const fill = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
     const value = canEdit ? (
-      <Select value={fill} onChange={this.fillChangeHandler}>
+      <>
+      <Select value={fill} showArrow={false} onChange={this.fillChangeHandler}>
         {colorOption(colors.TRANSPARENT)}
         {colorOption(colors.BLUE)}
         {colorOption(colors.RED)}
@@ -25,6 +27,11 @@ const WithFill = (Component) => class FillComponent extends Component {
         {colorOption(colors.YELLOW)}
         {colorOption(colors.WHITE)}
       </Select>
+      <IconButton
+        className="icon-button-more"
+        icon={iconNames.MORE_WHITE_DEFAULT}
+      />
+      </>
     ) : colorDiv(fill)
 
     return (

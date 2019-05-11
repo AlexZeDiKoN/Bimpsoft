@@ -2,6 +2,7 @@ import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
+const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 
@@ -22,6 +23,10 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
           readOnly={!canEdit}
           value={subordinationLevel}
           onChange={this.changeSubordinationLevel}
+        />
+        <IconButton
+          className="icon-button-more"
+          icon={iconNames.MORE_WHITE_DEFAULT}
         />
       </FormRow>
     )
