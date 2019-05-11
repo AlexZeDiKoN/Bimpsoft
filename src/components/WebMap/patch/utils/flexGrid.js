@@ -119,12 +119,3 @@ const combineZoneSegments = (segments, eternals, firstDirection, lastDirection) 
 export const changeDirections = (flexGrid, index, lastIndex) => lastIndex
   ? combineDirections(flexGrid, index, lastIndex)
   : divideDirection(flexGrid, index)
-
-export const recountSegmentsAroundEternal = (pointPos, newCoords, flexOptions) => {
-  const [ line, col ] = pointPos
-  const { directionSegments, zoneSegments, eternals } = flexOptions
-
-  const newDirSegments = []
-  const newZoneSegments = []
-  const newEternals = []
-}
