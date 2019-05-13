@@ -35,7 +35,10 @@ export default function DirectionNameForm (props) {
   }
 
   return visible && (
-    <Wrapper title={i18n.DIRECTION} onClose={onClose}>
+    <Wrapper
+      title={i18n.DIRECTION}
+      onClose={onClose}
+      defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.02 }}>
       <FocusTrap>
         <HotKeysContainer>
           <Form className="direction_name--form">
