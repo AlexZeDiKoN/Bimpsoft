@@ -446,29 +446,45 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  createSearchMarkerText = (point, text) => {
+    let coordinates = this.showCoordinates(point)
+    if (Array.isArray(coordinates)) {
+      coordinates = coordinates.join(`<br/>`)
+    }
+    if (coordinates !== text) {
+      return `<strong>${text}</strong><br/><br/>${coordinates}`
+    }
+    return ''
+  }
+
   updateMarker = (prevProps) => {
-    const { marker } = this.props
+    const { marker, isMarkersOn } = this.props
     if (marker !== prevProps.marker) {
-      if (marker) {
-        this.searchMarker && this.searchMarker.removeFrom(this.map)
-        let { point, text } = marker
-        let coordinates = this.showCoordinates(point)
-        if (Array.isArray(coordinates)) {
-          coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+      if (!isMarkersOn) {
+        if (marker) {
+          this.markers && this.markers.removeFrom(this.map)
+          let { point, text } = marker
+          text = this.createSearchMarkerText(point, text)
+          setTimeout(() => {
+            this.markers = createSearchMarker(point, text)
+            this.markers.addTo(this.map)
+            setTimeout(() => this.markers && this.markers.bindPopup(text).openPopup(), 1000)
+          }, 500)
+        } else {
+          if (this.markers) {
+            this.markers.removeFrom(this.map)
+            delete this.markers
+          }
         }
-        if (coordinates !== text) {
-          text = `<strong>${text}</strong><br/><br/>${coordinates}`
-        }
-        setTimeout(() => {
-          this.searchMarker = createSearchMarker(point, text)
-          this.searchMarker.addTo(this.map)
-          setTimeout(() => this.searchMarker && this.searchMarker.bindPopup(text).openPopup(), 1000)
-        }, 500)
       } else {
-        if (this.searchMarker) {
-          this.searchMarker.removeFrom(this.map)
-          delete this.searchMarker
-        }
+        let { point, text } = marker
+        text = this.createSearchMarkerText(point, text)
+        setTimeout(() => {
+          const searchMarker = createSearchMarker(point, text)
+          searchMarker.addTo(this.map)
+          this.markers.push(searchMarker)
+          setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
+        }, 1000)
       }
     }
   }
@@ -642,7 +658,9 @@ export default class WebMap extends React.PureComponent {
       this.markers.forEach((marker) => marker.removeFrom(this.map))
       delete this.markers
     } else {
+      const { marker, onRemoveMarker } = this.props
       this.markers = []
+      marker && onRemoveMarker()
     }
   }
 
@@ -656,13 +674,17 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  addUserMarker = (point) => {
+  createUserMarkerText = (point) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
-      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+      coordinates = coordinates.join(`<br/>`)
     }
-    let text = 'Орієнтир' // TODO
-    text = `<strong>${text}</strong><br/><br/>${coordinates}`
+    const text = 'Орієнтир' // TODO
+    return `<strong>${text}</strong><br/><br/>${coordinates}`
+  }
+
+  addUserMarker = (point) => {
+    const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point, text)
       marker.addTo(this.map)
@@ -672,12 +694,15 @@ export default class WebMap extends React.PureComponent {
   }
 
   addTopographicMarker = (point) => {
+    const { isMarkersOn } = this.props
     this.topographicMarkers.forEach((marker) => marker.removeFrom(this.map))
-    const marker = createSearchMarker(point)
-    marker.addTo(this.map)
-      .on('click', () => this.props.toggleTopographicObjModal())
-      .on('dblclick', () => this.removeTopographicMarker(marker))
-    this.topographicMarkers.push(marker)
+    if (!isMarkersOn) {
+      const marker = createSearchMarker(point)
+      marker.addTo(this.map)
+        .on('click', () => this.props.toggleTopographicObjModal())
+        .on('dblclick', () => this.removeTopographicMarker(marker))
+      this.topographicMarkers.push(marker)
+    }
   }
 
   removeTopographicMarker = (marker) => {
@@ -1430,7 +1455,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   escapeHandler = () => {
-    if (this.searchMarker) {
+    if (this.markers) {
       this.props.onRemoveMarker()
     }
     this.disableDrawLineSquareMark()
