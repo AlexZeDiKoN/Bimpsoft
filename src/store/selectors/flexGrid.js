@@ -10,6 +10,7 @@ const optionVertical = ({ flexGrid }) => flexGrid.vertical
 const directionNames = ({ flexGrid }) => flexGrid.flexGrid.directionNames
 const eternalDescriptions = ({ flexGrid }) => flexGrid.flexGrid.eternalDescriptions
 export const selectedDirections = ({ flexGrid }) => flexGrid.selectedDirections.list.toArray()
+export const selectedEternal = ({ flexGrid }) => flexGrid.selectedEternal
 const data = ({ flexGrid: { flexGrid } }) => flexGrid
 
 export const showFlexGridOptions = createSelector(
@@ -34,7 +35,9 @@ export const flexGridParams = createSelector(
   optionZones,
   optionVertical,
   selectedDirections,
-  (directions, zones, vertical, selectedDirections) => ({ directions, zones, vertical, selectedDirections })
+  selectedEternal,
+  (directions, zones, vertical, selectedDirections, selectedEternal) =>
+    ({ directions, zones, vertical, selectedDirections, selectedEternal })
 )
 
 export const flexGridData = createSelector(

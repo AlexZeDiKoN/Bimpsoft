@@ -1,7 +1,9 @@
 import { connect } from 'react-redux'
+import { batchActions } from 'redux-batched-actions'
 import { eternalPoint } from '../constants/viewModesKeys'
 import { viewModeDisable } from '../store/actions/viewModes'
 import { updateObjPartially } from '../store/actions/webMap'
+import { selectEternal } from '../store/actions/flexGrid'
 import EternalDescriptionForm from '../components/EternalDescriptionForm'
 import { flexGridAttributes, flexGridData } from '../store/selectors'
 import { buildFlexGridGeometry } from '../components/WebMap'
@@ -25,39 +27,43 @@ const mapStateToProps = (store) => {
   })
 }
 
+// @TODO: отлавливать закрытие!!!! Правильное закрытие
 const mapDispatchToProps = {
-  hideModal: viewModeDisable,
+  onClose: () => console.log('onClose') || batchActions([
+    viewModeDisable(eternalPoint),
+    selectEternal(),
+  ]),
   updateObjPartially,
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { hideModal, updateObjPartially } = dispatchProps
+  const { onClose, updateObjPartially } = dispatchProps
   const { position, coordinates = {}, attributes, flexGrid, ...restState } = stateProps
-  const { eternalDescriptions } = attributes || {}
   const { directionSegments, zoneSegments, eternals, id } = flexGrid
+
+  const { eternalDescriptions } = attributes || {}
   const descriptionLine = position && eternalDescriptions && eternalDescriptions.get(position[0])
   const description = (descriptionLine && descriptionLine[position[1]]) || ''
+
   return {
     coordinates,
     description,
+    onClose,
     ...ownProps,
     ...restState,
-    onSubmit: (coords, desc) => {
-      let geom = {}
-      let attrs = null
+    onSubmit: async (coords, desc) => {
+      let geom, attrs
       if (!coordinates.equals(coords)) {
         const newEternals = getNewData(eternals, position, coords)
         geom = buildFlexGridGeometry(newEternals.toArray(), directionSegments.toArray(), zoneSegments.toArray())
       }
-      if (!(!desc === !description)) {
+      if (desc !== description) {
         const newEternalDesc = getNewData(eternalDescriptions, position, desc)
         attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
-      updateObjPartially(id, attrs, geom)
-      hideModal(eternalPoint)
-    },
-    onClose: () => {
-      hideModal(eternalPoint)
+      (geom || attrs) && await updateObjPartially(id, attrs, geom)
+      // @TODO: Закрывать модалку
+      // onClose()
     },
   }
 }

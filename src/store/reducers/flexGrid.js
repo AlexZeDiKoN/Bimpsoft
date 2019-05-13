@@ -129,7 +129,9 @@ export default function reducer (state = FlexGridState(), action) {
       return update(state, 'selectedDirections', merge, updaterObj)
     }
     case actions.SET_SELECT_ETERNAL: {
-      return update(state, 'selectedEternal', payload || { position: null, coordinates: null })
+      // @TODO: ЭТА ШТУКА ПРИХОДИТ ПОЗЖЕ НО ОТРАБАТЫВАЕТ РАНЬШЕ. ЧО?!?!?!?!?
+      console.log('____ SET_SELECT_ETERNAL ____')
+      return update(state, 'selectedEternal', payload || { position: undefined, coordinates: undefined })
     }
     default:
       return state

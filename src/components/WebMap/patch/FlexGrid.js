@@ -148,13 +148,16 @@ L.FlexGrid = L.Layer.extend({
 
   // @TODO: позволить апдейтить только опшн или только пропсы
   updateProps (options, props) {
-    const { eternals, directionSegments, zoneSegments } = props
+    const { eternals, directionSegments, zoneSegments } = props || {}
     options && L.setOptions(this, options)
     eternals && (this.eternals = eternals.map(copyRow))
     directionSegments && (this.directionSegments = directionSegments.map(copyRing))
     zoneSegments && (this.zoneSegments = zoneSegments.map(copyRing))
     this.redraw()
-    this.pm._enabled && this.pm._updateMainMarkersPos()
+    if (this.pm._enabled) {
+      this.pm._updateMainMarkersPos()
+      this.pm._updateResizeMarkersPos()
+    }
   },
 
   onRemove () {
@@ -377,10 +380,8 @@ L.FlexGrid = L.Layer.extend({
   },
   // @TODO: метод получения eternal-точки, в которой сейчас находится курсор. в случае, если находится - скрывать тултип и давать право даблкликуть на ней с открытие попапа для перемещения и описания. Или выводить описание ее
   isOnEternal (latLng) {
-    console.log('isOnEternal')
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
-    // @TODO: останавливать при нахождении
     this.eternalRings.forEach((line, indexLine) => !result && line.forEach((ring, indexRing) => {
       if (!result) {
         // 7 - радиус желтой точки

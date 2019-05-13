@@ -252,12 +252,10 @@ export const updateObjectAttributes = (id, attributes) =>
     })
   })
 
-export const updateObjPartially = (id, attributes, geometry) =>
+export const updateObjPartially = (id, attributes, geometry = {}) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdatePartially } }) => {
     let payload = await objUpdatePartially(id, { attributes, ...geometry })
-
     payload = fixServerObject(payload)
-
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,

@@ -252,6 +252,10 @@ export default class WebMap extends React.PureComponent {
       zones: PropTypes.number,
       vertical: PropTypes.bool,
       selectedDirections: PropTypes.array,
+      selectedEternal: PropTypes.shape({
+        coordinates: PropTypes.object,
+        position: PropTypes.array,
+      }),
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -318,7 +322,7 @@ export default class WebMap extends React.PureComponent {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData,
-      flexGridParams: { selectedDirections },
+      flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex },
       topographicObjects: { selectedItem, features },
     } = this.props
@@ -377,19 +381,29 @@ export default class WebMap extends React.PureComponent {
       this.updateLockedObjects(lockedObjects)
     }
     if (flexGridData !== prevProps.flexGridData) {
-      console.log('flexGridData !== prevProps.flexGridData')
-      console.log('flexGridData.eternals', flexGridData.eternals)
-      console.log('prevProps.flexGridData.eternals', prevProps.flexGridData.eternals)
+      // @TODO: Отлавливает изменения узловых точек
       const updateEternal = prevProps.flexGridData.eternals !== flexGridData.eternals
-      console.log('updateEternal', updateEternal)
+      console.log('Менятется точка єтернал')
+      console.log('flexGridData.eternals', flexGridData.eternals)
+      console.log('Текущая выделенная:', selectedEternal)
+      console.log('Предідущая віделенная: ', prevProps.flexGridParams.selectedEternal)
       // @TODO: отслеживать если изменили этэрнал
-      this.updateFlexGrid(flexGridData, updateEternal)
+      this.updateFlexGrid(flexGridData)
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
+    }
+    if (selectedEternal.position !== prevProps.flexGridParams.selectedEternal.position) {
+      // @TODO: Отлавливает изменения узловых точек
+
+      console.log('Менятется selectedEternal')
+      console.log('Текущая выделенная:', selectedEternal)
+      console.log('Предідущая віделенная: ', prevProps.flexGridParams.selectedEternal)
+      console.log('Текущие координаты', flexGridData.eternals)
+      this.checkAndUpdateFlexGridManually(prevProps.flexGridParams)
     }
     if (
       selectedItem !== prevProps.topographicObjects.selectedItem ||
@@ -723,11 +737,8 @@ export default class WebMap extends React.PureComponent {
 
   // @TODO: при даблКлике воспринимается как 2 одиночных клика. Почему??
   onMouseClick = debounce((e) => {
-    const { originalEvent: { detail } } = e
-    if (detail > 1 || (this.flexGrid && this.isFlexGridEditingMode() && this.flexGrid.isOnEternal(e.latlng))) { // если на точку клик-плик-флик..
-      console.log('detail', detail)
-      console.log('this.flexGrid.isOnEternal(e.latlng)', this.flexGrid.isOnEternal(e.latlng))
-      console.log('this.isFlexGridEditingMode()', this.isFlexGridEditingMode())
+    const { originalEvent: { detail }, target: { _eternal: isEternal } } = e
+    if (detail > 1 || (this.flexGrid && this.isFlexGridEditingMode() && isEternal)) { // если на точку клик-плик-флик..
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
@@ -1096,20 +1107,19 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  getCursorDescription = (event) => {
+  getCursorDescription = (e) => {
     const { flexGridVisible, flexGridData: { eternalDescriptions, directionNames } } = this.props
     if (this.flexGrid && flexGridVisible) {
-      const { latlng } = event
       if (this.isFlexGridEditingMode()) {
-        const eternalProps = this.flexGrid.isOnEternal(latlng)
+        const eternalProps = this.flexGrid.isOnEternal(e.latlng)
         if (eternalProps) {
-          const { position, coordinates } = eternalProps
+          const { position } = eternalProps
           const eternalDescription = eternalDescriptions.get(position[0])
           const description = eternalDescription && eternalDescription[position[1]]
-          return { type: ETERNAL, coordinates, description }
+          return { type: ETERNAL, description }
         }
       }
-      const cellClick = this.flexGrid.isInsideCell(latlng)
+      const cellClick = this.flexGrid.isInsideCell(e.latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
         const directionName = directionNames.get(direction - 1)
@@ -1360,7 +1370,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   // @TODO: удалить вторую пропсу
-  updateFlexGrid = (flexGridData, updateEternal) => {
+  updateFlexGrid = (flexGridData) => {
     const {
       fixFlexGridInstance,
     } = this.props
@@ -1384,16 +1394,34 @@ export default class WebMap extends React.PureComponent {
         zoneSegments: zoneSegments.toArray(),
       }
       this.flexGrid.updateProps(options, internalProps)
-    } else if (actual && this.flexGrid && updateEternal) {
+      // @TODO: (actual && this.flexGrid && false) <- false
+    } else if (actual && this.flexGrid && false) {
       const { eternals } = flexGridData
       const internalProps = {
         eternals: eternals.toArray(),
       }
-      console.log('this.flexGrid.pm.updateGridCoordsFromMarkerDrag', this.flexGrid.pm.updateGridCoordsFromMarkerDrag)
+      console.log('updateEternal')
+      // console.log('flexGridData', flexGridData)
+      // console.log('flexGridParams', flexGridParams)
+      // console.log('this.flexGrid.pm.updateGridCoordsFromMarkerDrag', this.flexGrid.pm.updateGridCoordsFromMarkerDrag)
       // this.checkSaveObject()
-      this.flexGrid.updateProps(null, internalProps)
+      // this.flexGrid.updateProps(null, internalProps)
     }
     console.log('4')
+  }
+
+  checkAndUpdateFlexGridManually = (prevFlexGridParams) => {
+    console.log('checkAndUpdateFlexGridManually')
+    const { flexGridData, flexGridParams } = this.props
+    const { id, deleted, eternals } = flexGridData
+    const { position } = prevFlexGridParams.selectedEternal
+    const actual = id && !deleted
+    const { selectedEternal } = flexGridParams
+    if (actual && this.flexGrid && position && !selectedEternal.position) {
+      const eternalLine = eternals.get(position[0])
+      const latLng = eternalLine[position[1]]
+      this.flexGrid.pm.updateEternalManually(...position, latLng)
+    }
   }
 
   // @TODO: метод, вызывающий открытие модалки узловой точки

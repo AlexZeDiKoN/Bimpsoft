@@ -26,32 +26,31 @@ export default function EternalDescriptionForm (props) {
     wrapper: Wrapper,
   } = props
 
-  const [ coord, setCoord ] = useState(null)
+  const descRef = React.createRef()
+  const [ coords, setCoords ] = useState(null)
 
   useEffect(() => {
-    setCoord(coordinates)
+    setCoords(coordinates)
   }, [ coordinates ])
-
-  const descRef = React.createRef()
 
   // @TODO: при сабмите вызывать метод из вебмапы  для апдейта
   const handleSubmit = () => {
-    const { lat, lng } = coord
+    const { lat, lng } = coords
     const desc = descRef.current.textAreaRef.value
     onSubmit({ lat, lng }, desc)
   }
 
-  console.log('description', description)
-  console.log('coordinates', coordinates)
-  console.log('coord', coord)
+  // console.log('description', description)
+  // console.log('coordinates', coordinates)
+  // console.log('coord', coord)
 
-  return visible && (
-    <Wrapper title={'Узловая точка'} onClose={onClose}>
+  return visible && coords && (
+    <Wrapper title={i18n.LINE_NODES} onClose={onClose}>
       <FocusTrap>
         <HotKeysContainer>
           <Form className="direction_name--form">
-            <FormRow label={`Координати`}>
-              <CoordinatesField coordinates={coord} onChange={setCoord}/>
+            <FormRow label={i18n.COORDINATES}>
+              <CoordinatesField coordinates={coords} onChange={setCoords}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
               <TextArea defaultValue={description} ref={descRef}/>

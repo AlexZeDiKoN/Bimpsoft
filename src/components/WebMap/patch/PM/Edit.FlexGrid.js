@@ -295,7 +295,14 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
 
   _onMarkerDblClick (e) {
     if (this._enabled) {
-      this._layer.fire('pm:eternaldblclick', this._layer.isOnEternal(e.latlng))
+      const isEternal = e.target._eternal
+      if (isEternal) {
+        const position = [ e.target._dirIdx, e.target._zoneIdx ]
+        const coordinates = e.target._latlng
+        // @TODO: выделять точку цветом и мотом снимать выделение точки
+        e.target._icon.classList.add('super')
+        this._layer.fire('pm:eternaldblclick', { position, coordinates })
+      }
     }
   },
 
@@ -408,6 +415,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
+    console.log('marker', marker)
     const latLng = marker.getLatLng()
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     if (eternal) {
@@ -425,6 +433,14 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     }
     this._layer.redraw()
     this._updateResizeMarkersPos()
+  },
+
+  updateEternalManually (dirIdx, zoneIdx, latLng) {
+    const prev = this._layer.eternals[dirIdx][zoneIdx]
+    if (latLng && !prev.equals(latLng)) {
+      this._layer.eternals[dirIdx][zoneIdx] = L.latLng(latLng)
+      this._layer.updateProps()
+    }
   },
 
   _getMiddleMarkerPos (middle) {
