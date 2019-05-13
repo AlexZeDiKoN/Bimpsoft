@@ -449,7 +449,7 @@ export default class WebMap extends React.PureComponent {
   createSearchMarkerText = (point, text) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
-      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+      coordinates = coordinates.join(`<br/>`)
     }
     if (coordinates !== text) {
       return `<strong>${text}</strong><br/><br/>${coordinates}`
@@ -677,7 +677,7 @@ export default class WebMap extends React.PureComponent {
   createUserMarkerText = (point) => {
     let coordinates = this.showCoordinates(point)
     if (Array.isArray(coordinates)) {
-      coordinates = coordinates.reduce((res, item) => `${res}<br/>${item}`, '')
+      coordinates = coordinates.join(`<br/>`)
     }
     const text = 'Орієнтир' // TODO
     return `<strong>${text}</strong><br/><br/>${coordinates}`
