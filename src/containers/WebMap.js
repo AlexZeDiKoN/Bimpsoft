@@ -46,6 +46,7 @@ const WebMapContainer = connect(
     inICTMode: inICTMode(state),
     selectedDirections: state.flexGrid.selectedDirections,
     topographicObjects: state.webMap.topographicObjects,
+    catalogObjects: state.catalogs.objects,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,

@@ -11,7 +11,7 @@ const initState = {
   selectedId: null,
   textFilter: null,
   expandedIds: {},
-  shownIds: {},
+  objects: {},
 }
 
 export default function reducer (state = initState, action) {
@@ -39,6 +39,25 @@ export default function reducer (state = initState, action) {
       }
       return { ...state, byIds, roots }
     }
+    case catalogs.CATALOG_SET_LIST: {
+      const { catalogId, list } = payload
+      return {
+        ...state,
+        objects: {
+          ...state.objects,
+          [catalogId]: list,
+        },
+      }
+    }
+    case catalogs.CATALOG_DROP_LIST: {
+      const {
+        objects: { [payload]: _, ...objects },
+      } = state
+      return {
+        ...state,
+        objects,
+      }
+    }
     case catalogs.CATALOG_EXPAND_ITEM: {
       const { itemId } = action
       let { expandedIds } = state
@@ -49,17 +68,6 @@ export default function reducer (state = initState, action) {
         expandedIds[itemId] = true
       }
       return { ...state, expandedIds }
-    }
-    case catalogs.CATALOG_SHOW_ITEM: {
-      const { itemId } = action
-      let { shownIds } = state
-      shownIds = { ...shownIds }
-      if (shownIds.hasOwnProperty(itemId)) {
-        delete shownIds[itemId]
-      } else {
-        shownIds[itemId] = true
-      }
-      return { ...state, shownIds }
     }
     case catalogs.CATALOG_FILTER_TEXT: {
       const { filterText } = action

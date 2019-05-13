@@ -66,9 +66,11 @@ export default class Item extends React.Component {
             >
               <HighlightedText text={shortName} textFilter={textFilter} />
             </div>
-            {onMapCount !== 0 && <div className="org-structure-item-count">
-              {onMapCount}
-            </div>}
+            {onMapCount !== 0 && (
+              <div className="org-structure-item-count">
+                {onMapCount}
+              </div>
+            )}
           </div>
         </div>
       </Tooltip>

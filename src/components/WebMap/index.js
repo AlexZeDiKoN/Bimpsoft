@@ -33,10 +33,12 @@ import {
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
 import SelectionTypes from '../../constants/SelectionTypes'
+import { catalogSign } from '../CatalogsComponent/Item'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
+  createCatalogIcon,
   getGeometry,
   createSearchMarker,
   setLayerSelected,
@@ -161,7 +163,7 @@ const setScaleOptions = (layer, params) => {
   if (!layer.object || !layer.object.type) {
     return
   }
-  switch (+layer.object.type) {
+  switch (Number(layer.object.type)) {
     case entityKind.POINT:
       layer.setScaleOptions({
         min: Number(params[paramsNames.POINT_SIZE_MIN]),
@@ -258,6 +260,7 @@ export default class WebMap extends React.PureComponent {
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
     topographicObjects: PropTypes.object,
+    catalogObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -303,8 +306,9 @@ export default class WebMap extends React.PureComponent {
     await requestMaSources()
     await getLockedObjects()
     this.initObjects()
+    this.initCatalogObjects()
     this.updateScaleOptions()
-    window.addEventListener('beforeunload', (e) => {
+    window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
     window.webMap = this
@@ -318,7 +322,7 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData,
+      flexGridData, catalogObjects,
       flexGridParams: { selectedDirections },
       selection: { newShape, preview, previewCoordinateIndex },
       topographicObjects: { selectedItem, features },
@@ -394,6 +398,9 @@ export default class WebMap extends React.PureComponent {
       features
         ? this.backLightingTopographicObject(features[selectedItem])
         : this.removeBacklightingTopographicObject()
+    }
+    if (catalogObjects !== prevProps.catalogObjects) {
+      this.updateCatalogObjects(catalogObjects)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
   }
@@ -843,7 +850,7 @@ export default class WebMap extends React.PureComponent {
     if (item.id && item.object) {
       const { layer, level } = item.object
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const hidden = itemLevel < levelEdge || !layer || !layersById.hasOwnProperty(layer)
+      const hidden = itemLevel < levelEdge || ((!layer || !layersById.hasOwnProperty(layer)) && !item.catalogId)
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? 1000000000 : 0
@@ -947,6 +954,10 @@ export default class WebMap extends React.PureComponent {
     this.updateObjects(this.props.objects)
   }
 
+  initCatalogObjects = () => {
+    this.updateCatalogObjects(this.props.catalogObjects)
+  }
+
   updateObjects = (objects, preview) => {
     if (this.map) {
       const existsIds = new Set()
@@ -966,7 +977,7 @@ export default class WebMap extends React.PureComponent {
           }
         }
       })
-      for (let i = 0, n = changes.length; i < n; i++) {
+      for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addObject(object, layer)
         if (newLayer !== layer) {
@@ -994,6 +1005,44 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = null
         }
       }
+    }
+  }
+
+  updateCatalogObjects = (catalogObjects) => {
+    if (this.map) {
+      const existsIds = new Set()
+      const changes = []
+      this.map.eachLayer((layer) => {
+        const { id, catalogId } = layer
+        if (id && catalogId) {
+          const catalog = catalogObjects[Number(catalogId)]
+          const object = catalog && catalog.find(({ id: objId }) => objId === id)
+          if (object) {
+            existsIds.add(id)
+            if (layer.catalogObject !== object) {
+              changes.push({ object, layer })
+            }
+          } else {
+            layer.remove()
+            // layer.pm && layer.pm.disable()
+          }
+        }
+      })
+      for (let i = 0; i < changes.length; i++) {
+        const { object, layer } = changes[i]
+        const newLayer = this.addCatalogObject(object, layer)
+        if (newLayer !== layer) {
+          layer.remove()
+          // layer.pm && layer.pm.disable()
+        }
+      }
+      Object.values(catalogObjects).forEach((objects) => {
+        objects && objects.forEach((object) => {
+          if (!existsIds.has(object.id)) {
+            this.addCatalogObject(object)
+          }
+        })
+      })
     }
   }
 
@@ -1043,6 +1092,31 @@ export default class WebMap extends React.PureComponent {
       setScaleOptions(layer, params)
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+    }
+    return layer
+  }
+
+  addCatalogObject = (object, prevLayer) => {
+    const { id, location, catalogId } = object
+    const [ app6Code, amplifiers ] = catalogSign(catalogId) // TODO: amplifiers
+    const layer = createCatalogIcon(app6Code, amplifiers, location, prevLayer)
+    if (layer) {
+      layer.id = id
+      layer.object = object
+      // layer.object.level = catalogLevel(catalogId)
+      layer.catalogId = catalogId
+      // layer.on('click', this.clickOnLayer)
+      // layer.on('dblclick', this.dblClickOnLayer)
+      // layer.on('pm:markerdragstart', this.onDragstartLayer)
+      // layer.on('pm:markerdragend', this.onDragendLayer)
+      // TODO: events
+
+      layer === prevLayer
+        ? layer.update && layer.update()
+        : layer.addTo(this.map)
+
+      const { params } = this.props
+      setScaleOptions(layer, params)
     }
     return layer
   }

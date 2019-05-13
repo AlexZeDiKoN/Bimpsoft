@@ -10,6 +10,24 @@ import i18n from '../../../i18n'
 
 const commonPointApp6Code = '10032500001301000000'
 
+export const catalogSign = (catalogId) => {
+  let app6Code = commonPointApp6Code
+  let amplifiers = {}
+  const signCode = signCodes[catalogId]
+  if (signCode) {
+    if (typeof signCode === 'object') {
+      const { code, ...rest } = signCode
+      app6Code = code || app6Code
+      amplifiers = { ...amplifiers, ...rest }
+    } else {
+      app6Code = signCode || app6Code
+    }
+  }
+  return [ app6Code, amplifiers ]
+}
+
+// export const catalogLevel = () => SubordinationLevel.COMMAND
+
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons
 const { TextFilter } = data
@@ -31,25 +49,17 @@ export default class Item extends React.Component {
   }
 
   clickItem = () => {
-    const { data: { id }, onChange } = this.props
-    onChange && onChange(id)
+    const {
+      data: { id, shown },
+      onChange,
+    } = this.props
+    onChange && onChange(id, shown)
   }
 
   render () {
     const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
     const { name, id, shown } = data
-    let app6Code = commonPointApp6Code
-    let amplifiers = {}
-    const signCode = signCodes[id]
-    if (signCode) {
-      if (typeof signCode === 'object') {
-        const { code, ...rest } = signCode
-        app6Code = code || app6Code
-        amplifiers = { ...amplifiers, ...rest }
-      } else {
-        app6Code = signCode || app6Code
-      }
-    }
+    const [ app6Code, amplifiers ] = catalogSign(id)
     const iclasses = [ 'catalog-arrows-right' ]
     if (tree.expanded) {
       iclasses.push('catalog-arrows-bottom')

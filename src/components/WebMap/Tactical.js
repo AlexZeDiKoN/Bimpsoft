@@ -69,7 +69,7 @@ export const setLayerSelected = (layer, selected, active, activeLayer) => {
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
 export function createTacticalSign (data, map, prevLayer) {
   const { type } = data
-  switch (+type) {
+  switch (Number(type)) {
     case entityKind.POINT:
       return createPoint(data, prevLayer)
     case entityKind.TEXT:
@@ -115,6 +115,13 @@ function createMarker (point, icon, layer) {
   return layer
 }
 
+export function createCatalogIcon (code, amplifiers, point, layer) {
+  const icon = new L.PointIcon({ data: { code, amplifiers } })
+  const marker = createMarker(point, icon, layer)
+  marker.options.tsType = entityKind.POINT
+  return marker
+}
+
 function createPoint (data, layer) {
   const { point } = data
   const icon = new L.PointIcon({ data })
@@ -131,7 +138,7 @@ function createText (data, layer) {
   return layer
 }
 
-function createSegment (data, prevLayer) {
+function createSegment (data) {
   const { geometry, attributes } = data
   const points = geometry.toJS()
   const { template, color } = attributes
@@ -161,7 +168,7 @@ function createPolyline (type, data, layer) {
   return layer
 }
 
-function createCircle (data, map, prevLayer) {
+function createCircle (data, map) {
   const [ point1, point2 ] = data.geometry.toJS()
   if (!point1 || !point2) {
     console.error('createCircle: немає координат для круга')

@@ -60,6 +60,18 @@ export default class CatalogsComponent extends React.PureComponent {
 
   getFilteredIds = memoizeOne(getFilteredIds)
 
+  toggleItem = (itemId, visible) => {
+    const {
+      onShow,
+      onHide,
+    } = this.props
+    if (visible) {
+      onHide(itemId)
+    } else {
+      onShow(itemId)
+    }
+  }
+
   render () {
     const {
       textFilter = null,
@@ -68,7 +80,6 @@ export default class CatalogsComponent extends React.PureComponent {
       roots,
       onDoubleClick,
       onClick,
-      onShow,
       wrapper: Wrapper = Fragment,
       selectedId = null,
       expandedIds,
@@ -80,7 +91,7 @@ export default class CatalogsComponent extends React.PureComponent {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
-    const commonData = this.getCommonData(textFilter, onClick, onShow, onDoubleClick, selectedId, canEdit)
+    const commonData = this.getCommonData(textFilter, onClick, this.toggleItem, onDoubleClick, selectedId, canEdit)
 
     return (
       <Wrapper title={(<Tooltip title={i18n.CATALOGS}>{i18n.CATALOGS}</Tooltip>)}>
@@ -119,6 +130,7 @@ CatalogsComponent.propTypes = {
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,
   onShow: PropTypes.func,
+  onHide: PropTypes.func,
   onFilterTextChange: PropTypes.func,
   selectedId: PropTypes.number,
   onClick: PropTypes.func,
