@@ -136,10 +136,13 @@ export const NORTH_WEST = 'Північний захід'
 export const SOUTH_EAST = 'Південний схід'
 export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
+export const YES = 'Так'
 export const EDIT = 'Редагувати'
 export const EDITING = 'Редагується'
 export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз редагується користувачем'
 export const REMOVE = 'Видалити'
+export const DIVIDE = 'Розділити'
+export const COMBINE = 'Об\'єднати'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`

@@ -4,14 +4,15 @@ import { components } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import * as shortcuts from '../../../../constants/shortcuts'
+import { YES } from '../../../../i18n/ua'
 import './baseForm.css'
 
-const { default: Form, buttonCancel, buttonYes, FormItem } = components.form
+const { default: Form, buttonCancel, Button, FormItem } = components.form
 
 const BaseForm = (props) => {
   const {
     onCancel, onOk,
-    title, description,
+    title, description, okBtnText,
     list, option: Option,
     isChecked, isDisabled,
     updateState, updateHighLight, computeParams,
@@ -48,7 +49,7 @@ const BaseForm = (props) => {
             <div className="form-direction_desc">{description}:</div>
             <FormItem><div className={'options_wrapper'}>{options}</div></FormItem>
             <FormItem>
-              {buttonYes(handleOkay)}
+              <Button onClick={handleOkay} text={okBtnText || YES}/>
               {buttonCancel(onCancel)}
               <HotKey selector={shortcuts.ESC} onKey={onCancel}/>
             </FormItem>
@@ -68,6 +69,7 @@ BaseForm.propTypes = {
   isChecked: PropTypes.oneOfType([ PropTypes.func, PropTypes.bool ]),
   isDisabled: PropTypes.oneOfType([ PropTypes.func, PropTypes.bool ]),
   title: PropTypes.string,
+  okBtnText: PropTypes.string,
   description: PropTypes.string,
   list: PropTypes.array,
   computeParams: PropTypes.oneOfType([ PropTypes.array, PropTypes.bool ]),
