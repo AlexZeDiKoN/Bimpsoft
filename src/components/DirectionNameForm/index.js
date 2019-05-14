@@ -46,8 +46,8 @@ export default function DirectionNameForm (props) {
               <Input value={name} onChange={handleChange} />
             </FormRow>
             <FormItem>
-              {buttonCancel(onClose)}
               {buttonSave(handleSubmit)}
+              {buttonCancel(onClose)}
             </FormItem>
           </Form>
           <HotKey onKey={onClose} selector={shortcuts.ESC}/>
