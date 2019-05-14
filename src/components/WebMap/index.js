@@ -1141,7 +1141,10 @@ export default class WebMap extends React.PureComponent {
       <u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>
       <u>${i18n.STATE}:</u>&nbsp;${state}
     `
-    layer.bindPopup(text).openPopup()
+    new L.Popup()
+      .setLatLng(layer.getLatLng())
+      .setContent(text)
+      .openOn(layer._map)
   }
 
   dblClickOnCatalogLayer = (event) => {

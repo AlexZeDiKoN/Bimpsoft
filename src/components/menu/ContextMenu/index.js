@@ -1,11 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import './style.css'
 import ContextMenuItem from './ContextMenuItem'
+
+import './style.css'
 
 export default class ContextMenu extends React.Component {
   static propTypes = {
-    children: PropTypes.oneOfType([ PropTypes.node, PropTypes.arrayOf(PropTypes.node) ]),
+    children: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.arrayOf(PropTypes.node),
+    ]),
   }
 
   render () {
