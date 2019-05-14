@@ -6,11 +6,11 @@ import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import * as shortcuts from '../../constants/shortcuts'
 import i18n from '../../i18n'
+import './eternalDescriptionForm.css'
 
 const {
   default: Form,
   Coordinates: CoordinatesField,
-  FormItem,
   FormRow,
   buttonSave,
   buttonCancel,
@@ -43,17 +43,17 @@ export default function EternalDescriptionForm (props) {
     <Wrapper title={i18n.LINE_NODES} onClose={onClose}>
       <FocusTrap>
         <HotKeysContainer>
-          <Form className="direction_name--form">
+          <Form className="et_description--form">
             <FormRow label={i18n.COORDINATES}>
               <CoordinatesField coordinates={coords} onChange={setCoords}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
-              <TextArea defaultValue={description} ref={descRef}/>
+              <TextArea className="et_description--desc_input" defaultValue={description} ref={descRef}/>
             </FormRow>
-            <FormItem>
+            <FormRow>
               {buttonSave(handleSubmit)}
               {buttonCancel(onClose)}
-            </FormItem>
+            </FormRow>
           </Form>
           <HotKey onKey={onClose} selector={shortcuts.ESC}/>
         </HotKeysContainer>
