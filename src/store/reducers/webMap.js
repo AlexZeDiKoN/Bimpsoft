@@ -173,10 +173,9 @@ export default function webMapReducer (state = WebMapState(), action) {
         .set('sources', payload.sources)
         .set('source', payload.source)
     }
-    // @TODO: ЭТА ШТУКА ПРИХОДИТ РАНЬШЕ НО ОТРАБАТЫВАЕТ ПОЗЖЕ. ЧО?!?!?!?!?
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
-      return console.log('____ UPD_OBJECT ____') || update(state, 'objects', (map) => updateObject(map, payload))
+      return update(state, 'objects', (map) => updateObject(map, payload))
     case actionNames.DEL_OBJECT:
       return payload ? state.deleteIn([ 'objects', payload ]) : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {

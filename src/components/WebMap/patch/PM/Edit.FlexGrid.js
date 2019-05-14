@@ -10,6 +10,7 @@ const POS = [ 'prev', 'next' ]
 const DELTA = 16
 
 const markerIcon = (className = '') => L.divIcon({ className: `marker-icon ${className}` })
+const markerEditingState = 'marker_editing'
 
 const bezierMiddleMarkerCoords = (map, ring, leftIdx, rightIdx) => {
   const p1 = ring[leftIdx]
@@ -68,6 +69,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   initialize (layer) {
     this._layer = layer
     this._enabled = false
+    this.selectedEternal = undefined
   },
 
   toggleEdit (options) {
@@ -284,7 +286,6 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     marker.on('dragstart', this._onMarkerDragStart, this)
     marker.on('move', this._onMarkerDrag, this)
     marker.on('dragend', this._onMarkerDragEnd, this)
-    // @TODO: отлавливать маркер ивенты здесь
     marker.on('dblclick', this._onMarkerDblClick, this)
     if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
@@ -299,8 +300,6 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
       if (isEternal) {
         const position = [ e.target._dirIdx, e.target._zoneIdx ]
         const coordinates = e.target._latlng
-        // @TODO: выделять точку цветом и мотом снимать выделение точки
-        e.target._icon.classList.add('super')
         this._layer.fire('pm:eternaldblclick', { position, coordinates })
       }
     }
@@ -415,7 +414,6 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   },
 
   updateGridCoordsFromMarkerDrag (marker) {
-    console.log('marker', marker)
     const latLng = marker.getLatLng()
     const { _dirIdx: dirIdx, _zoneIdx: zoneIdx, _segIdx: segIdx, _code: code, _eternal: eternal } = marker
     if (eternal) {
@@ -435,11 +433,24 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._updateResizeMarkersPos()
   },
 
-  updateEternalManually (dirIdx, zoneIdx, latLng) {
-    const prev = this._layer.eternals[dirIdx][zoneIdx]
-    if (latLng && !prev.equals(latLng)) {
-      this._layer.eternals[dirIdx][zoneIdx] = L.latLng(latLng)
-      this._layer.updateProps()
+  selectEternal (position) {
+    const [ dirIdx, zoneIdx ] = position || this.selectedEternal
+    this.selectedEternal = position
+    const { _icon: icon } = (this._eternalMarkers[dirIdx] && this._eternalMarkers[dirIdx][zoneIdx]) || {}
+    if (icon) {
+      position ? icon.classList.add(markerEditingState) : icon.classList.remove(markerEditingState)
+    }
+  },
+
+  updateEternalManually (eternalList) {
+    if (this.selectedEternal && eternalList) {
+      const [ dirIdx, zoneIdx ] = this.selectedEternal
+      const prev = this._layer.eternals[dirIdx] && this._layer.eternals[dirIdx][zoneIdx]
+      const curr = eternalList.get(dirIdx, [])[zoneIdx]
+      if (curr && prev && !prev.equals(curr)) {
+        this._layer.eternals[dirIdx][zoneIdx] = L.latLng(curr)
+        this._layer.updateProps()
+      }
     }
   },
 

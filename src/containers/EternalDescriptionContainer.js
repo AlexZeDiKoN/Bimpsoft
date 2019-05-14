@@ -8,7 +8,6 @@ import EternalDescriptionForm from '../components/EternalDescriptionForm'
 import { flexGridAttributes, flexGridData } from '../store/selectors'
 import { buildFlexGridGeometry } from '../components/WebMap'
 
-// @TODO: проверить идущие пропсы
 const getNewData = (init, position, val) => {
   const temp = init.get(position[0])
   const line = temp ? [ ...temp ] : []
@@ -27,17 +26,17 @@ const mapStateToProps = (store) => {
   })
 }
 
-// @TODO: отлавливать закрытие!!!! Правильное закрытие
 const mapDispatchToProps = {
-  onClose: () => console.log('onClose') || batchActions([
+  onClose: () => batchActions([ // Если закрываем нативным способом, то сразу снимаем выделение с точки
     viewModeDisable(eternalPoint),
     selectEternal(),
   ]),
+  hide: () => viewModeDisable(eternalPoint), // В противном случае снимаем выделение с точки только, когда изменяются ее координаты
   updateObjPartially,
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { onClose, updateObjPartially } = dispatchProps
+  const { onClose, updateObjPartially, hide } = dispatchProps
   const { position, coordinates = {}, attributes, flexGrid, ...restState } = stateProps
   const { directionSegments, zoneSegments, eternals, id } = flexGrid
 
@@ -62,8 +61,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
         attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
       (geom || attrs) && await updateObjPartially(id, attrs, geom)
-      // @TODO: Закрывать модалку
-      // onClose()
+      hide()
     },
   }
 }

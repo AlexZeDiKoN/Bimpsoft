@@ -17,7 +17,7 @@ const {
 } = components.form
 
 const { TextArea } = Input
-// @TODO: сделать форму
+
 export default function EternalDescriptionForm (props) {
   const {
     visible,
@@ -33,16 +33,11 @@ export default function EternalDescriptionForm (props) {
     setCoords(coordinates)
   }, [ coordinates ])
 
-  // @TODO: при сабмите вызывать метод из вебмапы  для апдейта
   const handleSubmit = () => {
     const { lat, lng } = coords
     const desc = descRef.current.textAreaRef.value
     onSubmit({ lat, lng }, desc)
   }
-
-  // console.log('description', description)
-  // console.log('coordinates', coordinates)
-  // console.log('coord', coord)
 
   return visible && coords && (
     <Wrapper title={i18n.LINE_NODES} onClose={onClose}>

@@ -89,6 +89,7 @@ const WebMapContainer = connect(
       flexGrid.selectEternal(props),
       viewModes.viewModeEnable(eternalPoint),
     ]),
+    selectEternal: flexGrid.selectEternal,
     getTopographicObjects: webMap.getTopographicObjects,
     toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
   }),

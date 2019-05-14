@@ -4,6 +4,7 @@ import pointInSvgPolygon from 'point-in-svg-polygon'
 import entityKind from '../entityKind'
 import { prepareBezierPath } from './utils/Bezier'
 
+const FG_MARKER_RADIUS = 7
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
@@ -146,7 +147,6 @@ L.FlexGrid = L.Layer.extend({
     this._renderer._bringToFront(this)
   },
 
-  // @TODO: позволить апдейтить только опшн или только пропсы
   updateProps (options, props) {
     const { eternals, directionSegments, zoneSegments } = props || {}
     options && L.setOptions(this, options)
@@ -378,15 +378,15 @@ L.FlexGrid = L.Layer.extend({
     }))
     return result
   },
-  // @TODO: метод получения eternal-точки, в которой сейчас находится курсор. в случае, если находится - скрывать тултип и давать право даблкликуть на ней с открытие попапа для перемещения и описания. Или выводить описание ее
+
   isOnEternal (latLng) {
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
     this.eternalRings.forEach((line, indexLine) => !result && line.forEach((ring, indexRing) => {
       if (!result) {
-        // 7 - радиус желтой точки
-        const xDiff = Math.abs(x - ring.x) <= 7
-        const yDiff = Math.abs(y - ring.y) <= 7
+        // FG_MARKER_RADIUS - радиус желтой точки
+        const xDiff = Math.abs(x - ring.x) <= FG_MARKER_RADIUS
+        const yDiff = Math.abs(y - ring.y) <= FG_MARKER_RADIUS
         if (xDiff && yDiff) {
           result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
         }
