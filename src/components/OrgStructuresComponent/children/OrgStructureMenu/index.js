@@ -11,7 +11,7 @@ const {
 } = components
 
 export default class Index extends React.Component {
-  propTypes = {
+  static propTypes = {
     onMapObjects: PropTypes.object,
     selectList: PropTypes.func,
   }

@@ -110,7 +110,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
               value={width}
               onChange={canEdit ? this.widthChangeHandler : null }
               suffix={i18n.ABBR_METERS}
-              isWrong={widthIsWrong}
+              error={widthIsWrong}
               onBlur={this.widthBlurHandler}
             />
           </FormRow>

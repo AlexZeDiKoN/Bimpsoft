@@ -261,6 +261,7 @@ export default class WebMap extends React.PureComponent {
     inICTMode: PropTypes.any,
     topographicObjects: PropTypes.object,
     catalogObjects: PropTypes.object,
+    catalogs: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -1105,8 +1106,8 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       // layer.object.level = catalogLevel(catalogId)
       layer.catalogId = catalogId
-      // layer.on('click', this.clickOnLayer)
-      // layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('click', this.clickOnCatalogLayer)
+      layer.on('dblclick', this.dblClickOnCatalogLayer)
       // layer.on('pm:markerdragstart', this.onDragstartLayer)
       // layer.on('pm:markerdragend', this.onDragendLayer)
       // TODO: events
@@ -1130,6 +1131,25 @@ export default class WebMap extends React.PureComponent {
     this.checkSaveObject()
   }, 0)
 
+  clickOnCatalogLayer = (event) => {
+    L.DomEvent.stopPropagation(event)
+    const { target: layer, target: { object: { name, state, catalogId } } } = event
+    const { catalogs } = this.props
+    const catalogName = catalogs[catalogId].name
+    const text = `
+      <strong>${catalogName}</strong><br/>
+      <u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>
+      <u>${i18n.STATE}:</u>&nbsp;${state}
+    `
+    layer.bindPopup(text).openPopup()
+  }
+
+  dblClickOnCatalogLayer = (event) => {
+    L.DomEvent.stopPropagation(event)
+    const { target: { object: { id, catalogId } } } = event
+    window.explorerBridge.showCatalogObject(catalogId, id)
+  }
+
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
@@ -1150,10 +1170,12 @@ export default class WebMap extends React.PureComponent {
   dblClickOnLayer = (event) => {
     const { target: layer } = event
     const { id, object } = layer
-    const { selection: { list }, editObject } = this.props
+    const { selection: { list }, editObject, objects } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
       this.checkSaveObject(false)
-      editObject(object.id, getGeometry(layer))
+      const obj = objects.get(object.id).toJS()
+      const { geometry, point } = obj
+      editObject(object.id, { geometry, point } || getGeometry(layer))
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {

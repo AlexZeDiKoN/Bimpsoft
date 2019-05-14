@@ -94,7 +94,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
               onChange={canEdit ? this.radiusChangeHandler : null }
               onBlur={canEdit ? this.radiusBlurHandler : null}
               suffix={i18n.ABBR_METERS}
-              isWrong={radiusIsWrong}
+              error={radiusIsWrong}
             />
           </FormRow>
         </div>
