@@ -13,7 +13,7 @@ import {
   WithStrokeWidth,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
-import './lineForm.css'
+import './LineForm.css'
 
 export default class LineForm extends
   compose(
