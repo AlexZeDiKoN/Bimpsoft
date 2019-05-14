@@ -12,6 +12,7 @@ import { webMap } from './'
 export const SHOW_CREATE_FORM = action('SHOW_CREATE_FORM')
 export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
 export const HIDE_FORM = action('HIDE_FORM')
+export const DISABLE_DRAW = action('DISABLE_DRAW')
 export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
@@ -44,6 +45,10 @@ export const showEditForm = (id, geometry) => (dispatch, getState) => {
 
 export const hideForm = () => ({
   type: HIDE_FORM,
+})
+
+export const disableDrawUnit = () => ({
+  type: DISABLE_DRAW,
 })
 
 export const setPreview = (preview) => ({
@@ -125,6 +130,7 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     default:
       break
   }
+  dispatch(disableDrawUnit())
 })
 
 export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {

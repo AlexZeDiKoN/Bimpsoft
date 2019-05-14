@@ -26,6 +26,8 @@ export const MIL_TEMPLATE = 'Шаблон умовного знаку'
 export const MIL_SYMBOL = 'Умовний знак'
 export const HIDE_MINIMAP = 'Приховати міні-карту'
 export const SHOW_MINIMAP = 'Показати міні-карту'
+export const HIDE_CATALOG = 'Приховати об\'єкти каталогу'
+export const SHOW_CATALOG = 'Показати об\'єкти каталогу'
 export const ZOOM_IN = 'Збільшити'
 export const ZOOM_OUT = 'Зменшити'
 export const ABBR_METERS = 'м'
@@ -52,6 +54,8 @@ export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
+export const SHOW_UNBOUND_OBJECTS = 'Показати неприв\'язані об\'єкти'
+export const EXTRA_FUNCTIONS = 'Додаткові функції'
 
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
@@ -170,6 +174,8 @@ export const ELEMENT_SCALES = 'Деталізація обстановки'
 export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
+export const CATALOGS = 'Каталоги'
+export const STATE = 'Стан'
 
 export const FRIENDLY = 'дружня'
 export const HOSTILE = 'ворожа'

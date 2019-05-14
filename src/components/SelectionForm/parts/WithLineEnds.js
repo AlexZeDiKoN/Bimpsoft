@@ -3,6 +3,7 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { endsDiv, endsOption } from './render'
+const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 
@@ -51,7 +52,8 @@ const WithLineEnds = (Component) => class LineEndsComponent extends Component {
 
     const value = canEdit
       ? (
-        <Select value={lineEnds} onChange={this.lineEndsChangeHandlers[direction]}>
+        <>
+        <Select value={lineEnds} showArrow={false} onChange={this.lineEndsChangeHandlers[direction]}>
           {endsOption(types[ENDS_NONE], direction)}
           {endsOption(types[ENDS_ARROW1], direction)}
           {endsOption(types[ENDS_ARROW2], direction)}
@@ -63,6 +65,11 @@ const WithLineEnds = (Component) => class LineEndsComponent extends Component {
           {endsOption(types[ENDS_FORK], direction)}
           {endsOption(types[ENDS_CROSS], direction)}
         </Select>
+        <IconButton
+          className="icon-button-more"
+          icon={iconNames.MORE_WHITE_DEFAULT}
+        />
+        </>
       )
       : endsDiv(typeInfo, direction)
 

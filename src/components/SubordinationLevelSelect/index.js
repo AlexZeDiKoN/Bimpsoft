@@ -19,7 +19,7 @@ export default class SubordinationLevelSelect extends React.Component {
       return (<Input value={levelInfo ? levelInfo.title : null} readOnly={true} />)
     } else {
       return (
-        <Select value={ value } onChange={onChange}>
+        <Select value={ value } showArrow={false} onChange={onChange}>
           {SubordinationLevel.list.map(({ value, title }) => (
             <Option key={value} value={value}>{title}</Option>
           ))}

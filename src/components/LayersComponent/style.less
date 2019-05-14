@@ -19,14 +19,18 @@
     height: 1.7em;
   }
 
-  .tree-layers{
-    .layer-item-component::before{
-      content: none !important;
+  .tree-layers-container{
+    overflow-y: scroll;
+    height: 100%;
+    .tree-layers{
+      .layer-item-component::before{
+        content: none !important;
+      }
+      .tree-component-li{
+        border-color: transparent;
+      }
     }
-    .tree-component-li{
-      border-color: transparent;
-    }
-  }
+
   .tree-component{
     overflow: auto;
   }
@@ -38,6 +42,7 @@
     padding: 5px;
     flex: 0 0 auto;
   }
+ }
 }
 
 @keyframes layers-list_show {

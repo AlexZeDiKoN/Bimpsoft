@@ -4,10 +4,19 @@
 .shape-form{
   min-width: 23em;
   .dzvin-form-row{
-    .ant-select{
-      width: 12em;
+    .dzvin-form-input{
+      position: relative;
+      .ant-select{
+        width: 12em;
+      }
+      .icon-button-more{
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: rotate(90deg);
+        pointer-events: none;
+      }
     }
-
   }
 }
 .text-form-preview {
@@ -27,6 +36,7 @@
   .flex;
   align-items: center;
   margin-right: 4px;
+  padding-right: 4px;
   .icon-rect{
     width: 24px;
     height: 24px;

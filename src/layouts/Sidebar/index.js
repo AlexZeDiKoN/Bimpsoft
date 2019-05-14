@@ -2,8 +2,9 @@ import React from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
-import { LayersContainer, OrgStructuresContainer, MarchContainer } from '../../containers'
+import { LayersContainer, OrgStructuresContainer, MarchContainer, CatalogsContainer } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
+
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 100
 
@@ -39,7 +40,12 @@ export default class Sidebar extends React.Component {
       return (
         <>
           <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight }}>
-            <TabsPanel tabs={[ OrgStructuresContainer ]} />
+            <TabsPanel
+              tabs={[
+                OrgStructuresContainer,
+                CatalogsContainer,
+              ]}
+            />
           </div>
           <ValueSwiper
             value={this.state.topPanelHeight}
@@ -48,7 +54,11 @@ export default class Sidebar extends React.Component {
             }}
           />
           <div className="sidebar-panel2">
-            <TabsPanel tabs={[ LayersContainer ]} />
+            <TabsPanel
+              tabs={[
+                LayersContainer,
+              ]}
+            />
           </div>
         </>
       )

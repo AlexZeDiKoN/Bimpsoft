@@ -6,4 +6,6 @@ const catalogUrl = getCatalogURL()
 export default {
   getTree: () =>
     getDirect(`${catalogUrl}/catalogCategory`, false),
+  getList: (catalogId) =>
+    getDirect(`${catalogUrl}/catalogCategoryObjects/?catalogId=${catalogId}`, false),
 }

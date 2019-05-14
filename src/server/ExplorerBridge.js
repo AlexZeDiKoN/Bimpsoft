@@ -15,6 +15,7 @@ const ACTION_CLOSE_VARIANT = 'close variant'
 const ACTION_VARIANT_RESULT = 'variant result'
 const ACTION_CLOSE = 'close'
 const ACTION_SHOW_UNIT = 'show unit'
+const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -90,4 +91,7 @@ export default class ExplorerBridge {
 
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
     window.open(`/explorer/#/_/military-organization/units/${unitId}`, `explorer`, '', true)
+
+  showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
+    window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)
 }

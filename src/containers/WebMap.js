@@ -45,6 +45,8 @@ const WebMapContainer = connect(
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
+    catalogObjects: state.catalogs.objects,
+    catalogs: state.catalogs.byIds,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -92,6 +94,7 @@ const WebMapContainer = connect(
     selectEternal: flexGrid.selectEternal,
     getTopographicObjects: webMap.getTopographicObjects,
     toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
+    disableDrawUnit: selection.disableDrawUnit,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
