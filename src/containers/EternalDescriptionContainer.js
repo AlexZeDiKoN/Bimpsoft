@@ -60,8 +60,10 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
         const newEternalDesc = getNewData(eternalDescriptions, position, desc)
         attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
-      (geom || attrs) && await updateObjPartially(id, attrs, geom)
-      hide()
+      if (geom || attrs) {
+        await updateObjPartially(id, attrs, geom)
+        hide()
+      }
     },
   }
 }
