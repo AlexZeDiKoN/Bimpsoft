@@ -29,7 +29,7 @@ export const useArraysIn = (obj) => Object.keys(obj).reduce((acc, key) => {
   return acc
 }, { ...obj })
 
-// @TODO: eq is patched immutable's method is
+/** STaRT METHOD EQ */
 const { isIterable, isOrdered, isKeyed, isIndexed, isAssociative } = Iterable
 const isObject = (o) => typeof o === 'object' && o !== null
 
@@ -55,6 +55,7 @@ const getBSize = (realA, realB, flipped) => {
   return allEqual ? size : null
 }
 
+/** eq is patched immutable's method is */
 const eq = (a, b) => {
   if (a === b) {
     return true
@@ -97,3 +98,4 @@ const eq = (a, b) => {
   }
   return false
 }
+/** End METHOD EQ */
