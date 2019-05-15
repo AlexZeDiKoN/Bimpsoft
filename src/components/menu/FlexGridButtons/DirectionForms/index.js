@@ -5,7 +5,7 @@ import i18n from '../../../../i18n'
 import { changeDirections } from '../../../WebMap/patch/utils/flexGrid'
 
 const getList = memoize((length, list) => [ ...Array(length) ]
-  .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${++i} ${list.get(i) || ''}` }))
+  .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${list.get(i) || ++i}` }))
 )
 const formFor = (Children) => {
   const child = (props) => {

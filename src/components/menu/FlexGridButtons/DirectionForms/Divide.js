@@ -24,6 +24,7 @@ const Divide = (props) => {
       isChecked={checked}
       updateState={setSelected}
       updateHighLight={updateHighLight}
+      okBtnText={i18n.DIVIDE}
       {...rest}
     />
   )

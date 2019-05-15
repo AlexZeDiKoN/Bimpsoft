@@ -9,8 +9,8 @@ export default {
     getDirect(`${webmapUrl}/obj/set`, { id, ...data }),
   objUpdateGeometry: (id, data) =>
     getDirect(`${webmapUrl}/obj/geom`, { id, ...data }),
-  objUpdateAttr: (id, data) =>
-    getDirect(`${webmapUrl}/obj/attr`, { id, ...data }),
+  objUpdateAttr: (id, attributes) =>
+    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }),
   objUpdatePartially: (id, data) =>
     getDirect(`${webmapUrl}/obj/upd`, { id, ...data }),
   objInsert: (data) =>
