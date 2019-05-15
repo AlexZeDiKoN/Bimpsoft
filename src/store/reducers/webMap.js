@@ -8,6 +8,7 @@ import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
+import { LS } from '../../utils'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -56,8 +57,8 @@ export const WebMapObject = Record({
 })
 
 const WebMapState = Record({
-  center: { lat: 48, lng: 35 },
-  zoom: 7,
+  center: LS.get('view', 'center') || { lat: 48, lng: 35 },
+  zoom: LS.get('view', 'zoom') || 7,
   coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
@@ -193,9 +194,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       let result = state
       if (center) {
         result = result.set('center', center)
+        LS.set('view', 'center', center)
       }
       if (zoom) {
         result = result.set('zoom', zoom)
+        LS.set('view', 'zoom', center)
       }
       return result
     }
