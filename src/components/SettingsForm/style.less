@@ -2,17 +2,121 @@
 @import "../../assets/styles/_mixins.less";
 
 .settings-form-group{
-  &.dzvin-form{
-    width: 400px;
+  .settings-form-system{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #9fa659;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-bottom: 8px;
+    .coordinateContainer{
+      display: flex;
+      .dzvin-form-row{
+        flex-direction: column;
+        align-items: flex-start;
+        label{
+          white-space: nowrap;
+          font-size: 12px;
+          line-height: 1.9em;
+        }
+        .dzvin-form-input{
+          position: relative;
+          .ant-select{
+            width: 216px;
+          }
+        }
+      }
+    }
+    .checkedContainer{
+      display: flex;
+      flex-direction: column;
+      .dzvin-form-row{
+        flex-direction: row-reverse;
+        label{
+          font-size: 12px;
+        }
+        .ant-checkbox, .ant-checkbox-checked .ant-checkbox-inner{
+          background: #a9b06c;
+          border-color: #a9b06c;
+        }
+        .ant-checkbox-wrapper:hover, .ant-checkbox-inner, .ant-checkbox:hover, .ant-checkbox-input:focus{
+          border-color: #a9b06c;
+        }
+      }
+    }
+  }
+  .pointTitle{
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+    padding-left: 10px;
+    padding-right: 15px;
+    font-size: 12px;
+  }
+  .containerSign{
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    justify-content: space-between;
+    .dzvin-form-row{
+      padding-top: 0;
+      font-size: 12px;
+      padding-bottom: 0;
+      align-items: center;
+    }
+    .dzvin-form-dark-part{
+      background: transparent;
+      flex-direction: row;
+      .scale-control-input{
+        width: 60px;
+        height: 32px;
+      }
+    }
+  }
+  .ant-collapse-content-box{
+    padding: 0;
+  }
+  .containerScales{
+    display: flex;
+    flex-wrap: wrap;
+    width: 500px;
+    margin: auto;
+    justify-content: center;
+    .containerForm{
+      .dzvin-form-row{
+        flex-direction: column;
+        align-items: flex-start;
+        label{
+          font-size: 12px;
+          margin-left: 8px;
+          margin-bottom: 6px;
+        }
+        .dzvin-form-input{
+          position: relative;
+          .ant-select{
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+  .moreButtonSettins{
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: rotate(90deg);
+    pointer-events: none;
+    .icon-button {
+      .icon:hover{
+        display: none;
+      }
+    }
   }
 }
 
 .select-level {
   width: 216px;
-}
-
-.text-level {
-  padding-left: 8px;
 }
 
 .icon-level {
@@ -21,8 +125,14 @@
 
 .flex-level {
   display: flex;
+  .text-level{
+    font-size: 13px;
+    line-height: 2.2em;
+    padding-left: 8px;
+  }
 }
 
 .settings--form {
-  height: 660px;
+  height: 580px;
+  min-width: 510px;
 }
