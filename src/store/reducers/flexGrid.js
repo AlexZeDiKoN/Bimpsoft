@@ -131,6 +131,14 @@ export default function reducer (state = FlexGridState(), action) {
     case actions.SET_SELECT_ETERNAL: {
       return update(state, 'selectedEternal', payload || { position: undefined, coordinates: undefined })
     }
+    case actions.CHANGE_ETERNAL: {
+      const { eternals } = state.flexGrid
+      const { position, latlng } = payload
+      const [ dIndex, zIndex ] = position
+      const line = [ ...eternals.get(dIndex, []) ]
+      line[zIndex] = latlng
+      return update(state, 'flexGrid', merge, { eternals: update(eternals, dIndex, line) })
+    }
     default:
       return state
   }

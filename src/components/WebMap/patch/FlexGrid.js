@@ -1,10 +1,11 @@
 /* global L */
 
 import pointInSvgPolygon from 'point-in-svg-polygon'
+import * as R from 'ramda'
 import entityKind from '../entityKind'
 import { prepareBezierPath } from './utils/Bezier'
 
-const FG_MARKER_RADIUS = 7
+const FG_MARKER_RADIUS = 7 // radius of the edit-marker of the radius WAS COPIED FROM leaflet.pm!
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
@@ -382,17 +383,25 @@ L.FlexGrid = L.Layer.extend({
   isOnEternal (latLng) {
     let result = null
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
+    const radius = this._getEternalMarkerRadius()
     this.eternalRings.forEach((line, indexLine) => !result && line.forEach((ring, indexRing) => {
       if (!result) {
-        // FG_MARKER_RADIUS - радиус желтой точки
-        const xDiff = Math.abs(x - ring.x) <= FG_MARKER_RADIUS
-        const yDiff = Math.abs(y - ring.y) <= FG_MARKER_RADIUS
+        const xDiff = Math.abs(x - ring.x) <= radius
+        const yDiff = Math.abs(y - ring.y) <= radius
         if (xDiff && yDiff) {
           result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
         }
       }
     }))
     return result
+  },
+
+  _getEternalMarkerRadius () {
+    if (!this.eternalMarkerRadius) {
+      const icon = R.pathOr(null, [ '_eternalMarkers', 0, 0, '_icon' ], this.pm)
+      this.eternalMarkerRadius = icon ? icon.getBoundingClientRect().width / 2 : FG_MARKER_RADIUS // FG_MARKER_RADIUS - radius of yellow dots
+    }
+    return this.eternalMarkerRadius
   },
 
   selectDirection (directionList) {

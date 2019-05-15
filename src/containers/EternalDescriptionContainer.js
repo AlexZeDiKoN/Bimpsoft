@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions'
 import { eternalPoint } from '../constants/viewModesKeys'
 import { viewModeDisable } from '../store/actions/viewModes'
 import { updateObjPartially } from '../store/actions/webMap'
-import { selectEternal } from '../store/actions/flexGrid'
+import { selectEternal, changeEternal } from '../store/actions/flexGrid'
 import EternalDescriptionForm from '../components/EternalDescriptionForm'
 import { flexGridAttributes, flexGridData } from '../store/selectors'
 import { buildFlexGridGeometry } from '../components/WebMap'
@@ -27,16 +27,16 @@ const mapStateToProps = (store) => {
 }
 
 const mapDispatchToProps = {
-  onClose: () => batchActions([ // Если закрываем нативным способом, то сразу снимаем выделение с точки
+  onClose: () => batchActions([
     viewModeDisable(eternalPoint),
     selectEternal(),
   ]),
-  hide: () => viewModeDisable(eternalPoint), // В противном случае снимаем выделение с точки только, когда изменяются ее координаты
   updateObjPartially,
+  changeEternal,
 }
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { onClose, updateObjPartially, hide } = dispatchProps
+  const { onClose, updateObjPartially, changeEternal } = dispatchProps
   const { position, coordinates = {}, attributes, flexGrid, ...restState } = stateProps
   const { directionSegments, zoneSegments, eternals, id } = flexGrid
 
@@ -60,10 +60,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
         const newEternalDesc = getNewData(eternalDescriptions, position, desc)
         attrs = { ...attributes, eternalDescriptions: newEternalDesc }
       }
-      if (geom || attrs) {
-        await updateObjPartially(id, attrs, geom)
-        hide()
-      }
+      (geom || attrs) && await updateObjPartially(id, attrs, geom)
+      geom && await changeEternal(position, coords)
+      onClose()
     },
   }
 }

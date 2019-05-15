@@ -398,7 +398,7 @@ export default class WebMap extends React.PureComponent {
       this.highlightDirections(selectedDirections)
     }
     if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
-      this.highlightEternal(selectedEternal.position)
+      this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
     }
     if (
       selectedItem !== prevProps.topographicObjects.selectedItem ||
@@ -758,8 +758,8 @@ export default class WebMap extends React.PureComponent {
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
   onMouseClick = debounce((e) => {
-    const { originalEvent: { detail }, target: { _eternal: isEternal } } = e
-    if (detail > 1 || (this.isFlexGridEditingMode() && isEternal)) { // если на точку клик-плик-флик..
+    const { originalEvent: { detail }, target: { _eternal: isEternal } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
+    if (detail > 1 || (this.isFlexGridEditingMode() && isEternal)) { // если это дабл/трипл/etc. клик или клик по узловой точке (отлавливается самим маркером)
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
@@ -1245,8 +1245,13 @@ export default class WebMap extends React.PureComponent {
     this.flexGrid && flexGridVisible && this.flexGrid.selectDirection(selectedDirections)
   }
 
-  highlightEternal = (position) => {
-    const { flexGridVisible } = this.props
+  highlightEternal = (position, prevPosition) => {
+    const { flexGridVisible, flexGridData } = this.props
+    if (prevPosition) {
+      const { eternals } = flexGridData
+      const latLng = eternals.get(prevPosition[0], [])[prevPosition[1]]
+      latLng && this.flexGrid.pm.updateEternalManually(latLng)
+    }
     this.flexGrid && flexGridVisible && this.flexGrid.pm.selectEternal(position)
   }
 
@@ -1484,7 +1489,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateFlexGrid = (flexGridData, prevData) => {
-    const { fixFlexGridInstance, flexGridVisible, flexGridParams, selectEternal } = this.props
+    const { fixFlexGridInstance, flexGridVisible } = this.props
     const actual = flexGridData.id && !flexGridData.deleted
     if (!actual && this.flexGrid) {
       this.flexGrid.removeFrom(this.map)
@@ -1492,27 +1497,15 @@ export default class WebMap extends React.PureComponent {
       fixFlexGridInstance && fixFlexGridInstance(null)
     } else if (actual && !this.flexGrid) {
       this.dropFlexGrid(flexGridVisible)
-    } else if (actual && this.flexGrid && flexGridVisible) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
-      const { position } = flexGridParams.selectedEternal
-      switch (true) {
-        case flexGridData.directions !== prevData.directions: {
-          const { directions, eternals, directionSegments, zoneSegments } = flexGridData
-          const options = { directions }
-          const internalProps = {
-            eternals: eternals.toArray(),
-            directionSegments: directionSegments.toArray(),
-            zoneSegments: zoneSegments.toArray(),
-          }
-          this.flexGrid.updateProps(options, internalProps)
-          return
-        }
-        case prevData.eternals !== flexGridData.eternals && !!position: {
-          this.flexGrid.pm.updateEternalManually(flexGridData.eternals)
-          return selectEternal()
-        }
-        default:
-          break
+    } else if (actual && this.flexGrid && flexGridVisible && flexGridData.directions !== prevData.directions) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
+      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+      const options = { directions }
+      const internalProps = {
+        eternals: eternals.toArray(),
+        directionSegments: directionSegments.toArray(),
+        zoneSegments: zoneSegments.toArray(),
       }
+      this.flexGrid.updateProps(options, internalProps)
     }
   }
 

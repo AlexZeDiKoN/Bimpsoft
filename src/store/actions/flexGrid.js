@@ -20,6 +20,7 @@ export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
 export const SET_SELECT_ETERNAL = action('SET_SELECT_ETERNAL')
+export const CHANGE_ETERNAL = action('CHANGE_ETERNAL')
 
 const getId = ({ id }) => id
 
@@ -187,3 +188,8 @@ export const selectEternal = (props) => {
   }
   return res
 }
+
+export const changeEternal = (position, latlng) => ({
+  type: CHANGE_ETERNAL,
+  payload: { position, latlng },
+})

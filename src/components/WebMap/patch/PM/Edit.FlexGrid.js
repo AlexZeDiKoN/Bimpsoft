@@ -442,13 +442,12 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     }
   },
 
-  updateEternalManually (eternalList) {
-    if (this.selectedEternal && eternalList) {
+  updateEternalManually (latLng) {
+    if (this.selectedEternal && latLng) {
       const [ dirIdx, zoneIdx ] = this.selectedEternal
       const prev = this._layer.eternals[dirIdx] && this._layer.eternals[dirIdx][zoneIdx]
-      const curr = eternalList.get(dirIdx, [])[zoneIdx]
-      if (curr && prev && !prev.equals(curr)) {
-        this._layer.eternals[dirIdx][zoneIdx] = L.latLng(curr)
+      if (prev && !prev.equals(latLng)) {
+        this._layer.eternals[dirIdx][zoneIdx] = L.latLng(latLng)
         this._layer.updateProps()
       }
     }
