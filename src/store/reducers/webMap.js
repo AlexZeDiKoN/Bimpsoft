@@ -56,9 +56,12 @@ export const WebMapObject = Record({
   attributes: WebMapAttributes(),
 })
 
+const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
+const zoom = Number(LS.get('view', 'zoom')) || 7
+
 const WebMapState = Record({
-  center: LS.get('view', 'center') || { lat: 48, lng: 35 },
-  zoom: LS.get('view', 'zoom') || 7,
+  center,
+  zoom,
   coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
@@ -198,7 +201,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       }
       if (zoom) {
         result = result.set('zoom', zoom)
-        LS.set('view', 'zoom', center)
+        LS.set('view', 'zoom', zoom)
       }
       return result
     }
