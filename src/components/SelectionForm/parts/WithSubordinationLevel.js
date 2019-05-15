@@ -13,6 +13,7 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
     this.setResult((result) => result.setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel))
 
   renderSubordinationLevel () {
+    console.log(this.props)
     const subordinationLevel = this.getResult().getIn(SUBORDINATION_LEVEL_PATH)
 
     const canEdit = this.isCanEdit()

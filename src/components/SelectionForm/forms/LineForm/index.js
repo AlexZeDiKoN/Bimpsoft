@@ -11,6 +11,7 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
+  UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './LineForm.css'
@@ -26,6 +27,7 @@ export default class LineForm extends
     WithSegment,
     WithColor,
     WithStrokeWidth,
+    UnitSelect,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -35,6 +37,7 @@ export default class LineForm extends
         <div className="line-container__item">
           <div className="line-container__itemWidth">
             {this.renderSubordinationLevel()}
+            {this.renderOrgStructureSelect()}
             {this.renderColor()}
             {this.renderStrokeWidth()}
             {this.renderSegment()}
