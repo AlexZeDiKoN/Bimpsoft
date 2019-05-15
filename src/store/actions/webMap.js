@@ -78,12 +78,12 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setAmplifiers = (value) => ({
   type: actionNames.SET_AMPLIFIERS,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setGeneralization = (value) => ({
