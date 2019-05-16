@@ -7,6 +7,7 @@ import {
   WithTwoCoordinates,
   WithSubordinationLevel,
   WithStrokeWidth,
+  UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './RectangleForm.css'
@@ -18,7 +19,8 @@ export default class RectangleForm extends
     WithColor,
     WithFill,
     WithLineType,
-    WithStrokeWidth
+    WithStrokeWidth,
+    UnitSelect,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -28,10 +30,11 @@ export default class RectangleForm extends
         <div className="rectangle-container__item">
           <div className="rectangle-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderColor()}
+            {this.renderOrgStructureSelect()}
             {this.renderStrokeWidth()}
           </div>
           <div className="rectangle-container__itemWidth">
+            {this.renderColor()}
             {this.renderFill()}
             {this.renderLineType(true)}
           </div>

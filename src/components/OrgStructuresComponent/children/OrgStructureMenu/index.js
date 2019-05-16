@@ -4,7 +4,6 @@ import { Menu, Dropdown } from 'antd'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../../i18n'
-import entityKind from '../../../../constants/SelectionTypes'
 
 const {
   icons: { names: iconNames, IconButton },
@@ -19,7 +18,7 @@ export default class Index extends React.Component {
   selectUnboundObjects = () => {
     const { onMapObjects, selectList } = this.props
     const unboundObjects = onMapObjects.toArray()
-      .filter((item) => item.type === entityKind.POINT && !item.unit)
+      .filter((item) => !item.unit)
       .map((item) => item.id)
     selectList(unboundObjects)
   }

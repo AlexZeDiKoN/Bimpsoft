@@ -80,6 +80,7 @@ export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
+export const UNIT = 'Підрозділ'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'
