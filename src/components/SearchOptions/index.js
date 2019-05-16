@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 
 export default class SearchOptionsComponent extends React.PureComponent {
@@ -14,7 +14,11 @@ export default class SearchOptionsComponent extends React.PureComponent {
     onClose: PropTypes.func,
   }
 
-  clickOutsideRef = getClickOutsideRef(() => this.props.onClose())
+  clickOutsideRef = getClickOutsideRef(() => {
+    const { onClose } = this.props
+
+    onClose && onClose()
+  })
 
   clickHandler = (value) => {
     this.props.onSelect(value)

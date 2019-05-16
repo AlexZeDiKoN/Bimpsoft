@@ -19,7 +19,8 @@ export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
 export const SELECT_DIRECTION = action('SELECT_DIRECTION')
 export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
-export const DIVIDE_DIRECTION = action('DIVIDE_DIRECTION')
+export const SET_SELECT_ETERNAL = action('SET_SELECT_ETERNAL')
+export const CHANGE_ETERNAL = action('CHANGE_ETERNAL')
 
 const getId = ({ id }) => id
 
@@ -178,3 +179,17 @@ export const deselectDirection = (props) => {
   }
   return res
 }
+
+export const selectEternal = (props) => {
+  const res = { type: SET_SELECT_ETERNAL }
+  if (props) {
+    const { position, coordinates } = props
+    res.payload = { position, coordinates }
+  }
+  return res
+}
+
+export const changeEternal = (position, latlng) => ({
+  type: CHANGE_ETERNAL,
+  payload: { position, latlng },
+})

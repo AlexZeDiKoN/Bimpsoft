@@ -43,6 +43,7 @@ const Combine = (props) => {
       option={Checkbox}
       updateState={updateState}
       updateHighLight={updateHighLight}
+      okBtnText={i18n.COMBINE}
       {...rest}
     />
   )

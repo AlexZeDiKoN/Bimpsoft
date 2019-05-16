@@ -4,6 +4,7 @@ import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
+import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
@@ -78,12 +79,12 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setAmplifiers = (value) => ({
   type: actionNames.SET_AMPLIFIERS,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setGeneralization = (value) => ({
@@ -241,7 +242,7 @@ export const updateObjectGeometry = (id, geometry) =>
 
 export const updateObjectAttributes = (id, attributes) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateAttr } }) => {
-    let payload = await objUpdateAttr(id, attributes)
+    let payload = await objUpdateAttr(id, useArraysIn(attributes))
 
     payload = fixServerObject(payload)
 
@@ -251,12 +252,10 @@ export const updateObjectAttributes = (id, attributes) =>
     })
   })
 
-export const updateObjPartially = (id, attributes, geometry) =>
+export const updateObjPartially = (id, attributes, geometry = {}) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdatePartially } }) => {
     let payload = await objUpdatePartially(id, { attributes, ...geometry })
-
     payload = fixServerObject(payload)
-
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,

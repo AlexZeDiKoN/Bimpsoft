@@ -2,3 +2,16 @@
   border: 2px dotted #0a0;
   background: rgba(232,255,232,0.5);
 }
+
+.leaflet-marker-icon {
+  &.marker-icon.protected {
+    &.leaflet-zoom-animated {
+      &.leaflet-interactive {
+        &.marker_editing {
+          background: red;
+          border: 1px solid #000;
+        }
+      }
+    }
+  }
+}

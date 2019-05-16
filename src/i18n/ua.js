@@ -69,14 +69,13 @@ export const SHAPE_TEXT = 'Текстова мітка'
 export const UNDEFINED = 'Не вказано'
 
 export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (за замовчуванням)'
+export const POINT_SIGN_SIZE_TITLE = '(min | max) px'
 export const POINT_SIGN_SIZE = 'Розмір точкових знаків'
 export const TEXT_SIGN_SIZE = 'Розмір текстових знаків'
-export const LINE_SIGN_SIZE = 'Товщина ліній для лінійних/площадний знаків'
+export const LINE_SIGN_SIZE = 'Товщин для лінійних/площадних знаків'
 export const NODE_SIGN_SIZE = 'Розмір знаків у вузлових точках'
 export const WAVE_SIGN_SIZE = 'Розмір елементів хвилястої лінії'
 export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з засічками'
-export const MIN_ZOOM = 'На мінімальному масштабі'
-export const MAX_ZOOM = 'На максимальному масштабі'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
@@ -137,10 +136,13 @@ export const NORTH_WEST = 'Північний захід'
 export const SOUTH_EAST = 'Південний схід'
 export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
+export const YES = 'Так'
 export const EDIT = 'Редагувати'
 export const EDITING = 'Редагується'
 export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз редагується користувачем'
 export const REMOVE = 'Видалити'
+export const DIVIDE = 'Розділити'
+export const COMBINE = 'Об\'єднати'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
@@ -210,6 +212,7 @@ export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
+export const DESCRIPTION = `Опис`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`

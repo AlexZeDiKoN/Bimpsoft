@@ -17,6 +17,7 @@ const FlexGrid = Record({
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
   directionNames: List(),
+  eternalDescriptions: List(),
   zones: HAS_ZONES,
 })
 
@@ -25,13 +26,18 @@ const SelectedDirections = Record({
   main: null,
 })
 
+const SelectedEternal = Record({
+  position: undefined,
+  coordinates: undefined,
+})
+
 const FlexGridState = Record({
   options: false,
   visible: false,
   vertical: false,
   present: false,
   selectedDirections: SelectedDirections(),
-  dividingDirection: undefined,
+  selectedEternal: SelectedEternal(),
   flexGrid: FlexGrid(),
 })
 
@@ -78,10 +84,10 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones, directionNames = [] },
+          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
-        return /* payload ? */ update(merge(state, {
+        return update(merge(state, {
           present: !deleted,
           visible: (showFlexGrid || state.visible) && !deleted,
         }), 'flexGrid', merge, {
@@ -92,13 +98,9 @@ export default function reducer (state = FlexGridState(), action) {
           eternals: List(eternals),
           directionSegments: List(directionSegments),
           directionNames: List(directionNames),
+          eternalDescriptions: List(eternalDescriptions),
           zoneSegments: List(zoneSegments),
         })
-        /* : merge(state, {
-          visible: false,
-          present: false,
-          flexGrid: FlexGrid(),
-        }) */
       } else {
         return merge(state, {
           visible: false,
@@ -125,6 +127,17 @@ export default function reducer (state = FlexGridState(), action) {
         updaterObj.main = null
       }
       return update(state, 'selectedDirections', merge, updaterObj)
+    }
+    case actions.SET_SELECT_ETERNAL: {
+      return update(state, 'selectedEternal', payload || { position: undefined, coordinates: undefined })
+    }
+    case actions.CHANGE_ETERNAL: {
+      const { eternals } = state.flexGrid
+      const { position, latlng } = payload
+      const [ dIndex, zIndex ] = position
+      const line = [ ...eternals.get(dIndex, []) ]
+      line[zIndex] = latlng
+      return update(state, 'flexGrid', merge, { eternals: update(eternals, dIndex, line) })
     }
     default:
       return state
