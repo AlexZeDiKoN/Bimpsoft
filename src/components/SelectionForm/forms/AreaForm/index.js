@@ -37,13 +37,13 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
         <div className="area-container__item">
           <div className="area-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderSegment()}
+            {this.renderOrgStructureSelect()}
             {this.renderColor()}
             {this.renderStrokeWidth()}
             {this.renderFill()}
           </div>
           <div className="area-container__itemWidth">
-            {this.renderOrgStructureSelect()}
+            {this.renderSegment()}
             {this.renderLineType()}
             {this.renderLineAmplifiers()}
             {this.renderLineNodes()}

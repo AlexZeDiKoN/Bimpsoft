@@ -30,11 +30,11 @@ export default class RectangleForm extends
         <div className="rectangle-container__item">
           <div className="rectangle-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderColor()}
+            {this.renderOrgStructureSelect()}
             {this.renderStrokeWidth()}
           </div>
           <div className="rectangle-container__itemWidth">
-            {this.renderOrgStructureSelect()}
+            {this.renderColor()}
             {this.renderFill()}
             {this.renderLineType(true)}
           </div>
