@@ -4,7 +4,6 @@ import { Menu, Dropdown } from 'antd'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../../i18n'
-import entityKind from '../../../../constants/SelectionTypes'
 
 const {
   icons: { names: iconNames, IconButton },
