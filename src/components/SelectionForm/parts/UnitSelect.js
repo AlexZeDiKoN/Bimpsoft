@@ -10,7 +10,7 @@ const UNIT_PATH = [ 'unit' ]
 
 const UnitSelect = (Component) => class UnitSelectComponent extends Component {
   static propTypes = {
-    orgStructures: PropTypes,
+    orgStructures: PropTypes.object,
     elementsConfigs: PropTypes.object,
     canEdit: PropTypes.bool,
     data: PropTypes.object,
