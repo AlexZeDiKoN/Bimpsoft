@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import placeSearch from '../../../server/places'
 
 const {
   form: { Coordinates, FormRow },
@@ -45,6 +46,7 @@ export default class CoordinateRow extends React.Component {
           onChange={this.changeHandler}
           onExit={this.onBlurHandler}
           onEnter={this.onFocusHandler}
+          onSearch={placeSearch}
         />
       </FormRow>
     )
