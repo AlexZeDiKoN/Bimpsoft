@@ -10,6 +10,7 @@ import {
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithStrokeWidth,
+  UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './areaForm.css'
@@ -24,6 +25,7 @@ const Extenders = compose(
   WithFill,
   WithColor,
   WithStrokeWidth,
+  UnitSelect,
 )
 
 export default class AreaForm extends Extenders(AbstractShapeForm) {
@@ -35,6 +37,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
         <div className="area-container__item">
           <div className="area-container__itemWidth">
             {this.renderSubordinationLevel()}
+            {this.renderOrgStructureSelect()}
             {this.renderColor()}
             {this.renderStrokeWidth()}
             {this.renderFill()}

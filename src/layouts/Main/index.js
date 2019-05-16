@@ -18,6 +18,7 @@ import {
   FlexGridOptionsContainer,
   DirectionNameContainer,
   TopoObjModal,
+  EternalDescriptionContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -60,6 +61,7 @@ export default class Main extends React.Component {
         <SettingsFormContainer wrapper={ModalContainer} />
         <FlexGridOptionsContainer wrapper={ModalContainer} />
         <DirectionNameContainer wrapper={ModalContainer}/>
+        <EternalDescriptionContainer wrapper={ModalContainer}/>
         <TopoObjModal wrapper={ModalContainer} />
       </HotKeysContainer>
     )

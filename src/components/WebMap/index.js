@@ -32,6 +32,7 @@ import {
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
+import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../CatalogsComponent/Item'
 import entityKind, { entityKindFillable } from './entityKind'
@@ -254,6 +255,10 @@ export default class WebMap extends React.PureComponent {
       zones: PropTypes.number,
       vertical: PropTypes.bool,
       selectedDirections: PropTypes.array,
+      selectedEternal: PropTypes.shape({
+        coordinates: PropTypes.object,
+        position: PropTypes.array,
+      }),
     }),
     flexGridVisible: PropTypes.bool,
     flexGridData: flexGridPropTypes,
@@ -283,9 +288,10 @@ export default class WebMap extends React.PureComponent {
     flexGridDeleted: PropTypes.func,
     fixFlexGridInstance: PropTypes.func,
     showDirectionNameForm: PropTypes.func,
-    selectDirection: PropTypes.func,
+    showEternalDescriptionForm: PropTypes.func,
     getTopographicObjects: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
+    selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
   }
 
@@ -324,7 +330,7 @@ export default class WebMap extends React.PureComponent {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects,
-      flexGridParams: { selectedDirections },
+      flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex },
       topographicObjects: { selectedItem, features },
     } = this.props
@@ -383,13 +389,16 @@ export default class WebMap extends React.PureComponent {
       this.updateLockedObjects(lockedObjects)
     }
     if (flexGridData !== prevProps.flexGridData) {
-      this.updateFlexGrid(flexGridData)
+      this.updateFlexGrid(flexGridData, prevProps.flexGridData)
     }
     if (flexGridVisible !== prevProps.flexGridVisible) {
       this.showFlexGrid(flexGridVisible)
     }
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
+    }
+    if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
+      this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
     }
     if (
       selectedItem !== prevProps.topographicObjects.selectedItem ||
@@ -748,7 +757,14 @@ export default class WebMap extends React.PureComponent {
     this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
   }
 
-  onMouseClick = (e) => {
+  isFlexGridEditingMode = () =>
+    this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
+
+  onMouseClick = debounce((e) => {
+    const { originalEvent: { detail }, target: { _eternal: isEternal } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
+    if (detail > 1 || (this.isFlexGridEditingMode() && isEternal)) { // если это дабл/трипл/etc. клик или клик по узловой точке (отлавливается самим маркером)
+      return
+    }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       this.onSelectedListChange([])
     }
@@ -769,7 +785,7 @@ export default class WebMap extends React.PureComponent {
         getTopographicObjects(location)
       }
     }
-  }
+  }, 200)
 
   onBoxSelectStart = () => {
     this.isBoxSelection = true
@@ -1168,7 +1184,6 @@ export default class WebMap extends React.PureComponent {
     }
     if (doActivate) {
       this.selectLayer(id, event.originalEvent.ctrlKey)
-
       event.target._map._container.focus()
     }
   }
@@ -1178,7 +1193,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject, objects } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
-      this.checkSaveObject(false)
+      this.checkSaveObject()
       const obj = objects.get(object.id).toJS()
       const { geometry, point } = obj
       editObject(object.id, { geometry, point } || getGeometry(layer))
@@ -1194,25 +1209,35 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDblClick = (event) => {
-    const { selectDirection, flexGridVisible, showDirectionNameForm } = this.props
+    const { flexGridVisible, showDirectionNameForm } = this.props
     if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
         const [ direction ] = cellClick
-        selectDirection({ index: direction - 1 })
-        showDirectionNameForm()
+        showDirectionNameForm({ index: direction - 1 })
       }
     }
   }
 
-  getCurrentZone = (event) => {
-    if (this.flexGrid && this.props.flexGridVisible) {
-      const { latlng } = event
-      const cellClick = this.flexGrid.isInsideCell(latlng)
+  getCursorDescription = (e) => {
+    const { flexGridVisible, flexGridData: { eternalDescriptions, directionNames } } = this.props
+    if (this.flexGrid && flexGridVisible) {
+      if (this.isFlexGridEditingMode()) {
+        const eternalProps = this.flexGrid.isOnEternal(e.latlng)
+        if (eternalProps) {
+          const { position } = eternalProps
+          const eternalDescription = eternalDescriptions.get(position[0])
+          const description = eternalDescription && eternalDescription[position[1]]
+          return { type: ETERNAL, description }
+        }
+      }
+      const cellClick = this.flexGrid.isInsideCell(e.latlng)
       if (cellClick) {
         const [ direction, zone ] = cellClick
-        return { direction, zone }
+        const directionName = directionNames.get(direction - 1)
+        const name = `${directionName ? `"${directionName}"` : `№ ${direction}`}`
+        return { type: ZONE, name, zone }
       }
     }
     return null
@@ -1221,6 +1246,16 @@ export default class WebMap extends React.PureComponent {
   highlightDirections = (selectedDirections) => {
     const { flexGridVisible } = this.props
     this.flexGrid && flexGridVisible && this.flexGrid.selectDirection(selectedDirections)
+  }
+
+  highlightEternal = (position, prevPosition) => {
+    const { flexGridVisible, flexGridData } = this.props
+    if (prevPosition) {
+      const { eternals } = flexGridData
+      const latLng = eternals.get(prevPosition[0], [])[prevPosition[1]]
+      latLng && this.flexGrid.pm.updateEternalManually(latLng)
+    }
+    this.flexGrid && flexGridVisible && this.flexGrid.pm.selectEternal(position)
   }
 
   selectLayer = (id, exclusive) => {
@@ -1440,6 +1475,7 @@ export default class WebMap extends React.PureComponent {
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onDragstartLayer)
     layer.on('pm:markerdragend', this.onDragendLayer)
+    layer.on('pm:eternaldblclick', this.onDoubleClickEternal)
     if (show && id) {
       layer.addTo(this.map)
     }
@@ -1455,19 +1491,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateFlexGrid = (flexGridData) => {
-    const {
-      fixFlexGridInstance,
-    } = this.props
+  updateFlexGrid = (flexGridData, prevData) => {
+    const { fixFlexGridInstance, flexGridVisible } = this.props
     const actual = flexGridData.id && !flexGridData.deleted
     if (!actual && this.flexGrid) {
       this.flexGrid.removeFrom(this.map)
       delete this.flexGrid
       fixFlexGridInstance && fixFlexGridInstance(null)
     } else if (actual && !this.flexGrid) {
-      const { flexGridVisible } = this.props
       this.dropFlexGrid(flexGridVisible)
-    } else if (actual && this.flexGrid && flexGridData.directions !== this.flexGrid.options.directions) {
+    } else if (actual && this.flexGrid && flexGridVisible && flexGridData.directions !== prevData.directions) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
       const { directions, eternals, directionSegments, zoneSegments } = flexGridData
       const options = { directions }
       const internalProps = {
@@ -1478,6 +1511,8 @@ export default class WebMap extends React.PureComponent {
       this.flexGrid.updateProps(options, internalProps)
     }
   }
+
+  onDoubleClickEternal = (eternalProps) => eternalProps && this.props.showEternalDescriptionForm(eternalProps)
 
   updateCreatePoly = (type) => {
     const layerOptions = {
@@ -1592,7 +1627,7 @@ export default class WebMap extends React.PureComponent {
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}
             stopLooking={this.disableLookAfterMouseMove}
-            getCurrentCell={this.getCurrentZone}
+            getCurrentCell={this.getCursorDescription}
             names={this.props.flexGridData.directionNames}
           />
         )}

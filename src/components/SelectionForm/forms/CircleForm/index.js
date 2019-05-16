@@ -7,6 +7,7 @@ import {
   WithSubordinationLevel,
   WithLineType,
   WithStrokeWidth,
+  UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './CircleForm.css'
@@ -18,7 +19,8 @@ export default class SquareForm extends
     WithColor,
     WithFill,
     WithLineType,
-    WithStrokeWidth
+    WithStrokeWidth,
+    UnitSelect,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -28,10 +30,11 @@ export default class SquareForm extends
         <div className="circle-container__item">
           <div className="circle-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderColor()}
+            {this.renderOrgStructureSelect()}
             {this.renderStrokeWidth()}
           </div>
           <div className="circle-container__itemWidth">
+            {this.renderColor()}
             {this.renderFill()}
             {this.renderLineType(true)}
           </div>

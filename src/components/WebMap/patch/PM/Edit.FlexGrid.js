@@ -10,6 +10,7 @@ const POS = [ 'prev', 'next' ]
 const DELTA = 16
 
 const markerIcon = (className = '') => L.divIcon({ className: `marker-icon ${className}` })
+const markerEditingState = 'marker_editing'
 
 const bezierMiddleMarkerCoords = (map, ring, leftIdx, rightIdx) => {
   const p1 = ring[leftIdx]
@@ -68,6 +69,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
   initialize (layer) {
     this._layer = layer
     this._enabled = false
+    this.selectedEternal = undefined
   },
 
   toggleEdit (options) {
@@ -284,11 +286,23 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     marker.on('dragstart', this._onMarkerDragStart, this)
     marker.on('move', this._onMarkerDrag, this)
     marker.on('dragend', this._onMarkerDragEnd, this)
+    marker.on('dblclick', this._onMarkerDblClick, this)
     if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
     }
     this._markerGroup.addLayer(marker)
     return marker
+  },
+
+  _onMarkerDblClick (e) {
+    if (this._enabled) {
+      const isEternal = e.target._eternal
+      if (isEternal) {
+        const position = [ e.target._dirIdx, e.target._zoneIdx ]
+        const coordinates = e.target._latlng
+        this._layer.fire('pm:eternaldblclick', { position, coordinates })
+      }
+    }
   },
 
   _createResizeMarker (latlng, className = '', dir) {
@@ -417,6 +431,26 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     }
     this._layer.redraw()
     this._updateResizeMarkersPos()
+  },
+
+  selectEternal (position) {
+    const [ dirIdx, zoneIdx ] = position || this.selectedEternal
+    this.selectedEternal = position
+    const { _icon: icon } = (this._eternalMarkers[dirIdx] && this._eternalMarkers[dirIdx][zoneIdx]) || {}
+    if (icon) {
+      position ? icon.classList.add(markerEditingState) : icon.classList.remove(markerEditingState)
+    }
+  },
+
+  updateEternalManually (latLng) {
+    if (this.selectedEternal && latLng) {
+      const [ dirIdx, zoneIdx ] = this.selectedEternal
+      const prev = this._layer.eternals[dirIdx] && this._layer.eternals[dirIdx][zoneIdx]
+      if (prev && !prev.equals(latLng)) {
+        this._layer.eternals[dirIdx][zoneIdx] = L.latLng(latLng)
+        this._layer.updateProps()
+      }
+    }
   },
 
   _getMiddleMarkerPos (middle) {
