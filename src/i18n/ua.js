@@ -54,7 +54,7 @@ export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
-export const SHOW_UNBOUND_OBJECTS = 'Показати неприв\'язані об\'єкти'
+export const SHOW_UNBOUND_OBJECTS = 'Показати не прив\'язані об\'єкти'
 export const EXTRA_FUNCTIONS = 'Додаткові функції'
 
 export const SHAPE_POLYLINE = 'Ломана лінія'
@@ -81,6 +81,7 @@ export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
+export const UNIT = 'Підрозділ'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'

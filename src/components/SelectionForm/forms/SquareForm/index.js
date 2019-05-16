@@ -7,6 +7,7 @@ import {
   WithSubordinationLevel,
   WithLineType,
   WithStrokeWidth,
+  UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SquareForm.css'
@@ -18,7 +19,8 @@ export default class SquareForm extends
     WithColor,
     WithFill,
     WithLineType,
-    WithStrokeWidth
+    WithStrokeWidth,
+    UnitSelect,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -32,6 +34,7 @@ export default class SquareForm extends
             {this.renderStrokeWidth()}
           </div>
           <div className="square-container__itemWidth">
+            {this.renderOrgStructureSelect()}
             {this.renderFill()}
             {this.renderLineType(true)}
           </div>
