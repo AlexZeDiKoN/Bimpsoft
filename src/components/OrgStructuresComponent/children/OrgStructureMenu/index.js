@@ -19,7 +19,7 @@ export default class Index extends React.Component {
   selectUnboundObjects = () => {
     const { onMapObjects, selectList } = this.props
     const unboundObjects = onMapObjects.toArray()
-      .filter((item) => item.type === entityKind.POINT && !item.unit)
+      .filter((item) => !item.unit)
       .map((item) => item.id)
     selectList(unboundObjects)
   }
