@@ -28,7 +28,7 @@ export default class LayersControlsComponent extends React.Component {
         />
         <OpacityControl
           title={i18n.LAYERS_BASEMAP_OPACITY}
-          className="layers-controls-control layers-controls-control-one"
+          className="layers-controls-control"
           icon={iconNames.MAP_RIGHT_BAR_LAST_LAYER_DEFAULT}
           opacity={this.props.backOpacity}
           onChange={this.props.onChangeBackOpacity}
