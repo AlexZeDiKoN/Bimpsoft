@@ -65,6 +65,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
         doc_confirm: docConfirm,
         security_classification: securityClassification,
       },
+      approversData,
       // breadcrumbs,
     } = content
 
@@ -73,6 +74,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       name,
       // breadcrumbs,
       docConfirm,
+      approversData,
       securityClassification,
     }))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase

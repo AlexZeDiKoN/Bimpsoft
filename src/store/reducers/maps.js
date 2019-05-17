@@ -13,9 +13,9 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case maps.UPDATE_MAP: {
       const { mapData } = action
-      const { mapId, name, breadcrumbs, docConfirm, securityClassification } = mapData
+      const { mapId, name, breadcrumbs, docConfirm, securityClassification, approversData } = mapData
       let item = byId.hasOwnProperty(mapId) ? byId[mapId] : defItem
-      item = { ...item, mapId, name, breadcrumbs, docConfirm, securityClassification }
+      item = { ...item, mapId, name, breadcrumbs, docConfirm, securityClassification, approversData }
       byId = { ...byId, [mapId]: item }
       return { ...state, byId }
     }
