@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components, utils } from '@DZVIN/CommonComponents'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
-import './style.css'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
+
+import './style.css'
 
 const {
   icons: { names: iconNames, IconButton },
@@ -63,7 +64,7 @@ export default class RightMenu extends React.Component {
           onChange={this.searchClearError}
           className={searchFailed ? 'search-failed' : ''}
         />
-        <div className="search-options-sub-panel">
+        <div className="search-options-sub-panel search-options-sub-panel-right">
           <SearchOptions />
         </div>
         <IconButton
