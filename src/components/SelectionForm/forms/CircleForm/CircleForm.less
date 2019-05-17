@@ -1,3 +1,5 @@
+@import "../../../../assets/styles/_variables.less";
+
 .circle-container{
     &__item{
         display: flex;
@@ -24,6 +26,32 @@
     }
     &__itemWidth{
         width: 50%;
+        .org-structures-select{
+          height: 2.216em;
+          input{
+            display: block;
+            box-sizing: border-box;
+            background-color: @input-background-color;
+            border: 1px solid @select-border-color;
+            border-top-width: 1.02px;
+            border-radius: 4px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            height: 30px;
+            width: 168px;
+            padding-left: 11px;
+            padding-right: 22px;
+            user-select: none;
+            &:focus, &:hover{
+              outline-color: @select-outline-color;
+              box-shadow: 0 0 0 2px @select-box-shadow-color;
+              border-color: @select-outline-color;
+            }
+          }
+          .filter-tree-select-values-container{
+            position: fixed;
+          }
+        }
     }
     .dzvin-form-dark-part{
       .shape-form-scrollable{
