@@ -608,8 +608,11 @@ export default class WebMap extends React.PureComponent {
       let checkGeometry
       if (layer.object) {
         const { point, geometry } = layer.object
-        checkPoint = point.toJS()
-        checkGeometry = geometry.toArray()
+        if (!point || !point.toJS || !geometry || !geometry.toArray) {
+          console.warn(`layer.object`, layer.object)
+        }
+        checkPoint = point && point.toJS && point.toJS()
+        checkGeometry = geometry && geometry.toArray && geometry.toArray()
       } else if (layer === this.flexGrid) {
         const { eternals, directionSegments, zoneSegments } = flexGridData
         checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]

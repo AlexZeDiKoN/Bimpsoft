@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
+import { components } from '@DZVIN/CommonComponents'
 import { getClickOutsideRef } from '../../utils/clickOutside'
+
+const { ContextMenu } = components.common
 
 export default class SearchOptionsComponent extends React.PureComponent {
   static propTypes = {
@@ -30,11 +32,11 @@ export default class SearchOptionsComponent extends React.PureComponent {
       return null
     }
     return (
-      <ContextMenu ref={this.clickOutsideRef} >
+      <ContextMenu ref={this.clickOutsideRef}>
         {options.map((option, index) => {
           const { text } = option
           return (
-            <ContextMenuItem
+            <ContextMenu.Item
               key={index}
               text={text}
               value={index}

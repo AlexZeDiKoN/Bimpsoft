@@ -1,9 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { SymbolEditorComponentStateless } from '@DZVIN/MilSymbolEditor'
-import './style.css'
 import { SUBORDINATION_LEVEL_PATH } from '../WithSubordinationLevel'
 import { COORDINATE_PATH } from '../CoordinatesMixin'
+import placeSearch from '../../../../server/places'
+
+import './style.css'
 
 const elementsConfigsEditable = {
   ADD_TO_TEMPLATE: { hidden: true }, // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
@@ -76,6 +78,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onCoordinatesChange={this.coordinatesChangeHandler}
         onOrgStructureChange={this.unitChangeHandler}
         onUnitInfo={window.explorerBridge.showUnitInfo}
+        onSearch={placeSearch}
       />
     )
   }

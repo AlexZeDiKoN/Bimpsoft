@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { OrgStructureSelect } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 
@@ -27,6 +28,10 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
           onChange={this.unitChangeHandler}
           id={unit}
           readOnly={!canEdit}
+        />
+        <IconButton
+          className="icon-button-more"
+          icon={iconNames.MORE_WHITE_DEFAULT}
         />
       </FormRow>
     )

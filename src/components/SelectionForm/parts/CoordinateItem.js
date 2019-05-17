@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
+import placeSearch from '../../../server/places'
 
 const {
   icons: { IconHovered, names: IconNames },
@@ -49,6 +50,7 @@ export default class CoordinateItem extends React.Component {
           onChange={this.changeHandler}
           onEnter={this.onFocusHandler}
           onExit={this.onBlurHandler}
+          onSearch={placeSearch}
         />
         {!readOnly && (<IconHovered
           icon={canRemove ? IconNames.DELETE_24_DEFAULT : IconNames.DELETE_24_DISABLE}

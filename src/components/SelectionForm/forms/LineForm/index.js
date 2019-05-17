@@ -37,13 +37,13 @@ export default class LineForm extends
         <div className="line-container__item">
           <div className="line-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
+            {this.renderColor()}
             {this.renderStrokeWidth()}
             {this.renderSegment()}
             {this.renderLineType()}
           </div>
           <div className="line-container__itemWidth">
-            {this.renderColor()}
+            {this.renderOrgStructureSelect()}
             {this.renderLineAmplifiers()}
             {this.renderLineNodes()}
             {this.renderLineEnds(DIRECTION_LEFT)}
