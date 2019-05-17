@@ -30,11 +30,11 @@ export default class SquareForm extends
         <div className="circle-container__item">
           <div className="circle-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
+            {this.renderColor()}
             {this.renderStrokeWidth()}
           </div>
           <div className="circle-container__itemWidth">
-            {this.renderColor()}
+            {this.renderOrgStructureSelect()}
             {this.renderFill()}
             {this.renderLineType(true)}
           </div>
