@@ -36,6 +36,10 @@ export const PRINT_SELECTS_KEYS = {
   PROJECTION_GROUP: 'projectionGroup',
 }
 
+export const PRINT_SIGNATORIES = {
+  SIGNATORIES: 'signatories',
+}
+
 export const PRINT_STEPS = {
   SENT: 'sent',
   RECEIVED: 'received',

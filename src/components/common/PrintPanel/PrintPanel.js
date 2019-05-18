@@ -8,13 +8,6 @@ import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import './style.css'
 
-// TODO: заменить реальными данными
-// const signatories = [
-//   { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
-//   { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
-// ]
-// const confirmDate = `22.12.18`
-
 class PrintPanel extends React.Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
@@ -41,7 +34,6 @@ class PrintPanel extends React.Component {
       },
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
-      signatories: [],
     }
   }
 
@@ -81,7 +73,8 @@ class PrintPanel extends React.Component {
   }
 
   formatApprovers = () => {
-    const { approversData, docConfirm: { signers, approver } } = this.props
+    const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
+    const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
     const signatories = []
     signers.push(approver)
     signers.forEach((signer) => {
@@ -89,7 +82,7 @@ class PrintPanel extends React.Component {
       const { name, patronymic, surname, position, role } = approversData.filter((item) => +item.id === userId)[0] || {}
       signatories.push({ position, role, name: this.formatContactName(name, patronymic, surname), date })
     })
-    this.setState({ signatories })
+    setPrintRequisites({ [SIGNATORIES]: signatories })
   }
 
   formatContactName = (name, patronymic, surname) => {
@@ -141,7 +134,7 @@ class PrintPanel extends React.Component {
       docConfirm: { approver },
       requisites,
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, signatories } = this.state
+    const { setRequisitesFunc, colors, legendTableType } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -481,8 +474,7 @@ class PrintPanel extends React.Component {
                 {i18n.FULL_NAME}
               </Col>
             </Row>
-            {console.log(signatories)}
-            {signatories.map((rowData) => {
+            {requisites.signatories && requisites.signatories.map((rowData) => {
               const { position, role, name, date } = rowData
               return (
                 <Row key={date}>

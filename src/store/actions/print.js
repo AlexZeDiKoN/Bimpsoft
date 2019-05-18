@@ -98,13 +98,6 @@ export const printFileRetry = (id, name) =>
     )
   }
 
-// TODO: заменить реальными данными
-const signatories = [
-  { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
-  { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
-]
-const confirmDate = `22.12.18`
-
 export const createPrintFile = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
     const state = getState()
@@ -129,17 +122,6 @@ export const createPrintFile = () =>
         projectionGroup,
       })
 
-      // const printBounds = {
-      //   parts: [
-      //     {
-      //       srid: 5563,
-      //       extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
-      //       angle: 2,
-      //     },
-      //   ],
-      //   size: [ 500, 500 ],
-      // }
-
       const { parts, size: [ width, height ] } = printBounds
       const partsSvgs = parts.map((part) => getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
 
@@ -148,8 +130,6 @@ export const createPrintFile = () =>
         heightMM: height,
         dpi,
         requisites,
-        signatories,
-        confirmDate,
         printScale,
       })
 
