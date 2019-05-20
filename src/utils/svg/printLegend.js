@@ -263,7 +263,7 @@ class Renderer {
 }
 
 export const printLegend = (params) => {
-  const { widthMM, heightMM, requisites, signatories, confirmDate, printScale, classified } = params
+  const { widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified } = params
   const h = getH(6)
 
   const renderer = new Renderer(widthMM, heightMM, h)

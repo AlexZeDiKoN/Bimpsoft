@@ -8,19 +8,13 @@ import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import './style.css'
 
-// TODO: заменить реальными данными
-const signatories = [
-  { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
-  { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
-]
-const confirmDate = `22.12.18`
-
 class PrintPanel extends React.Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
     setPrintScale: PropTypes.func,
     printScale: PropTypes.number,
-    docConfirm: PropTypes.array,
+    docConfirm: PropTypes.object,
+    approversData: PropTypes.array,
     securityClassification: PropTypes.object,
     setPrintRequisites: PropTypes.func,
     clearPrintRequisites: PropTypes.func,
@@ -43,8 +37,10 @@ class PrintPanel extends React.Component {
     }
   }
 
-  componentDidMount () {
-    this.createSetFunctions()
+  async componentDidMount () {
+    await this.createSetFunctions()
+    this.formatApprovers()
+    this.addConstParametrs()
   }
 
   createSetFunctions = () => {
@@ -75,6 +71,39 @@ class PrintPanel extends React.Component {
         }), {}),
     )
     this.setState({ setRequisitesFunc: Obj })
+  }
+
+  formatApprovers = () => {
+    const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
+    const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
+    signers.push(approver)
+    const signatories = signers.map((signer) => {
+      const { id_user: userId, date } = signer
+      const { name, patronymic, surname, position, role } = approversData.filter((item) =>
+        Number(item.id) === userId)[0] || {}
+      return { position, role, name: this.formatContactName(name, patronymic, surname), date }
+    })
+    setPrintRequisites({ [SIGNATORIES]: signatories })
+  }
+
+  formatContactName = (name, patronymic, surname) => {
+    let result = surname
+    name && (result = `${result} ${name.slice(0, 1)}.`)
+    patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
+    return result
+  }
+
+  addConstParametrs = () => {
+    const {
+      securityClassification: { classified },
+      docConfirm: { approver: { date } },
+      setPrintRequisites,
+    } = this.props
+    const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
+    setPrintRequisites({
+      [MAP_LABEL]: classified,
+      [CONFIRM_DATE]: moment(date).format(DATE_FORMAT),
+    })
   }
 
   setScale = (value) => {
@@ -458,7 +487,7 @@ class PrintPanel extends React.Component {
                 {i18n.FULL_NAME}
               </Col>
             </Row>
-            {signatories.map((rowData) => {
+            {requisites.signatories && requisites.signatories.map((rowData) => {
               const { position, role, name, date } = rowData
               return (
                 <Row key={date}>
@@ -479,11 +508,12 @@ class PrintPanel extends React.Component {
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
-                  initialValue: confirmDate,
+                  initialValue: requisites.confirmDate,
                 },
               )(
                 <Input
                   disabled
+                  onChange={setRequisitesFunc.CONFIRM_DATE}
                 />,
               )
             }
