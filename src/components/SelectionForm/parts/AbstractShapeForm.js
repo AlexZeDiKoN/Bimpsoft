@@ -19,6 +19,7 @@ export const propTypes = {
   onChange: PropTypes.func,
   onClose: PropTypes.func,
   onError: PropTypes.func,
+  orgStructures: PropTypes.object,
 }
 
 export default class AbstractShapeForm extends React.Component {
@@ -33,6 +34,10 @@ export default class AbstractShapeForm extends React.Component {
 
   getResult () {
     return this.props.data
+  }
+
+  getOrgStructures () {
+    return this.props.orgStructures
   }
 
   renderContent () {
