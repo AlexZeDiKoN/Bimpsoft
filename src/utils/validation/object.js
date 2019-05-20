@@ -6,7 +6,7 @@ import { validateTexts } from './texts'
 import { validateMilsymbol } from './milsymbol'
 
 export function validateObject (object) {
-  if (!object.type) {
+  if (!object || !object.type) {
     throw new ValidationError(i18n.ERROR_UNDEFINET_OBJECT_TYPE)
   }
   validateCoordinate(object.point)
