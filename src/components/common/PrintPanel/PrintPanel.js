@@ -144,7 +144,6 @@ class PrintPanel extends React.Component {
       form: { getFieldDecorator },
       printScale,
       securityClassification: { classified },
-      docConfirm: { approver },
       requisites,
     } = this.props
     const { setRequisitesFunc, colors, legendTableType } = this.state
