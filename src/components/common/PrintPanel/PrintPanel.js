@@ -79,7 +79,8 @@ class PrintPanel extends React.Component {
     signers.push(approver)
     const signatories = signers.map((signer) => {
       const { id_user: userId, date } = signer
-      const { name, patronymic, surname, position, role } = approversData.filter((item) => +item.id === userId)[0] || {}
+      const { name, patronymic, surname, position, role } = approversData.filter((item) =>
+        Number(item.id) === userId)[0] || {}
       return { position, role, name: this.formatContactName(name, patronymic, surname), date }
     })
     setPrintRequisites({ [SIGNATORIES]: signatories })
