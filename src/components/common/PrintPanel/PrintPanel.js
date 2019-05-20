@@ -13,7 +13,7 @@ class PrintPanel extends React.Component {
     form: PropTypes.object.isRequired,
     setPrintScale: PropTypes.func,
     printScale: PropTypes.number,
-    docConfirm: PropTypes.array,
+    docConfirm: PropTypes.object,
     approversData: PropTypes.array,
     securityClassification: PropTypes.object,
     setPrintRequisites: PropTypes.func,
@@ -37,9 +37,10 @@ class PrintPanel extends React.Component {
     }
   }
 
-  componentDidMount () {
-    this.createSetFunctions()
+  async componentDidMount () {
+    await this.createSetFunctions()
     this.formatApprovers()
+    this.addConstParametrs()
   }
 
   createSetFunctions = () => {
@@ -75,12 +76,11 @@ class PrintPanel extends React.Component {
   formatApprovers = () => {
     const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
     const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
-    const signatories = []
     signers.push(approver)
-    signers.forEach((signer) => {
+    const signatories = signers.map((signer) => {
       const { id_user: userId, date } = signer
       const { name, patronymic, surname, position, role } = approversData.filter((item) => +item.id === userId)[0] || {}
-      signatories.push({ position, role, name: this.formatContactName(name, patronymic, surname), date })
+      return { position, role, name: this.formatContactName(name, patronymic, surname), date }
     })
     setPrintRequisites({ [SIGNATORIES]: signatories })
   }
@@ -90,6 +90,19 @@ class PrintPanel extends React.Component {
     name && (result = `${result} ${name.slice(0, 1)}.`)
     patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
     return result
+  }
+
+  addConstParametrs = () => {
+    const {
+      securityClassification: { classified },
+      docConfirm: { approver: { date } },
+      setPrintRequisites,
+    } = this.props
+    const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
+    setPrintRequisites({
+      [MAP_LABEL]: classified,
+      [CONFIRM_DATE]: moment(date).format(DATE_FORMAT),
+    })
   }
 
   setScale = (value) => {
@@ -495,11 +508,12 @@ class PrintPanel extends React.Component {
             {
               getFieldDecorator(
                 PRINT_PANEL_KEYS.CONFIRM_DATE, {
-                  initialValue: approver.date,
+                  initialValue: requisites.confirmDate,
                 },
               )(
                 <Input
                   disabled
+                  onChange={setRequisitesFunc.CONFIRM_DATE}
                 />,
               )
             }
