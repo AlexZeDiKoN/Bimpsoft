@@ -1,14 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import placeSearch from '../../../server/places'
 
 const {
   form: { Coordinates, FormRow },
 } = components
-
-const { Coordinates: Coord } = utils
 
 export default class CoordinateRow extends React.Component {
   static propTypes = {
@@ -23,7 +21,7 @@ export default class CoordinateRow extends React.Component {
 
   changeHandler = (value) => {
     const { onChange, index } = this.props
-    onChange && onChange(index, Coord.parse(value))
+    onChange && onChange(index, value)
   }
 
   onBlurHandler = () => {

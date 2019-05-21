@@ -31,8 +31,9 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
   state = { radiusText: null }
 
   coordinateChangeHandler = (index, newCoord) => {
+    this.index = index
+    this.newCoord = newCoord
     this.setState({ radiusText: null })
-    this.setResult((result) => result.setIn([ ...COORDINATE_PATH, index ], newCoord))
   }
 
   radiusChangeHandler = (radiusText) => {
