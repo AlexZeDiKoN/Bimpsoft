@@ -64,7 +64,6 @@ export default class Item extends React.Component {
     if (tree.expanded) {
       iclasses.push('catalog-arrows-bottom')
     }
-    console.log(shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG)
     const indicator = (
       <VisibilityButton
         title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
@@ -87,12 +86,12 @@ export default class Item extends React.Component {
     return (
       <Tooltip
         title={(
-          <HighlightedText text={name} textFilter={textFilter} />
+          <HighlightedText text={name} textFilter={textFilter}/>
         )}
         placement="left"
         mouseEnterDelay={1.2}
       >
-        <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
+        <div ref={isSelected ? scrollRef : null} className={classes.join(' ')}>
           {indicator}
           {icon}
           <div
@@ -109,7 +108,7 @@ export default class Item extends React.Component {
               />
             )}
             <div className="catalog-item-text">
-              <HighlightedText text={name} textFilter={textFilter} />
+              <HighlightedText text={name} textFilter={textFilter}/>
             </div>
           </div>
         </div>
