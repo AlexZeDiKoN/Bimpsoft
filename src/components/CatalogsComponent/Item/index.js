@@ -64,6 +64,7 @@ export default class Item extends React.Component {
     if (tree.expanded) {
       iclasses.push('catalog-arrows-bottom')
     }
+    console.log(shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG)
     const indicator = (
       <VisibilityButton
         title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
