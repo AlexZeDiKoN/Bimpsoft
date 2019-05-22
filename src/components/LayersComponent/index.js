@@ -21,7 +21,7 @@ ItemTemplate.propTypes = {
 }
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
-  (item) => item.breadCrumbs.length !== 0 ? item.breadCrumbs : item.name,
+  (item) => item.name,
   (item) => item.id,
   (item) => item.parentId
 )
@@ -80,6 +80,7 @@ export default class LayersComponent extends React.Component {
     } = this.props
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
+    console.log(byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
     return (
