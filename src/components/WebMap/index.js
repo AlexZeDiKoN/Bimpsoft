@@ -489,7 +489,7 @@ export default class WebMap extends React.PureComponent {
           }, 500)
         } else {
           if (this.markers) {
-            this.markers.removeFrom(this.map)
+            this.markers && this.markers.removeFrom(this.map)
             delete this.markers
           }
         }
