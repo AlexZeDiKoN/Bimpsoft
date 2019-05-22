@@ -766,7 +766,11 @@ export default class WebMap extends React.PureComponent {
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
-      this.onSelectedListChange([])
+      if (this.boxSelected) {
+        delete this.boxSelected
+      } else {
+        this.onSelectedListChange([])
+      }
     }
     if (!this.props.selection.newShape.type) {
       if (this.addMarkerMode) {
@@ -805,6 +809,7 @@ export default class WebMap extends React.PureComponent {
       }
     })
     this.onSelectedListChange(selectedIds)
+    this.boxSelected = true
   }
 
   updateSelection = (prevProps) => {
