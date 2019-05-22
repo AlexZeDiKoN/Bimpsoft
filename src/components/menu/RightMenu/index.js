@@ -51,7 +51,7 @@ export default class RightMenu extends React.Component {
 
   searchBlur = () => {
     const { onCloseSearch } = this.props
-    onCloseSearch && onCloseSearch()
+    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
   }
 
   render () {
