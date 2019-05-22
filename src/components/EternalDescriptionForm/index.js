@@ -4,6 +4,7 @@ import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
+import placeSearch from '../../server/places'
 import * as shortcuts from '../../constants/shortcuts'
 import i18n from '../../i18n'
 import './eternalDescriptionForm.css'
@@ -40,12 +41,15 @@ export default function EternalDescriptionForm (props) {
   }
 
   return visible && coords && (
-    <Wrapper title={i18n.LINE_NODES} onClose={onClose}>
+    <Wrapper
+      title={i18n.LINE_NODES}
+      onClose={onClose}
+      defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.02 }}>
       <FocusTrap>
         <HotKeysContainer>
           <Form className="et_description--form">
             <FormRow label={i18n.COORDINATES}>
-              <CoordinatesField coordinates={coords} onChange={setCoords}/>
+              <CoordinatesField coordinates={coords} onChange={setCoords} onSearch={placeSearch}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
               <TextArea className="et_description--desc_input" defaultValue={description} ref={descRef}/>

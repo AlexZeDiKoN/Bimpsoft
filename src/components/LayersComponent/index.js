@@ -21,7 +21,7 @@ ItemTemplate.propTypes = {
 }
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
-  (item) => item.breadCrumbs,
+  (item) => item.name,
   (item) => item.id,
   (item) => item.parentId
 )

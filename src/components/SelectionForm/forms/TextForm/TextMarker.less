@@ -1,0 +1,32 @@
+@import '../../../../assets/styles/_variables.less';
+
+.textMarker-container{
+  &__item{
+    .dzvin-form-input{
+      position: relative;
+      .ant-select-selection__rendered{
+        margin-right: 22px;
+      }
+    }
+    .dzvin-form-row{
+      .dzvin-form-input{
+        .org-structures-select{
+          width: 168px;
+          input{
+            padding: 0.294em 1.5em 0.294em 0.8em;
+            border-color: @select-border-color;
+            transition: 0.5s;
+          }
+          input:hover{
+            outline-color: @select-outline-color;
+            box-shadow: 0 0 0 2px @select-box-shadow-color;
+            border-color: @select-outline-color;
+          }
+          .filter-tree-select-values-container{
+            position: fixed;
+          }
+        }
+      }
+    }
+  }
+}
