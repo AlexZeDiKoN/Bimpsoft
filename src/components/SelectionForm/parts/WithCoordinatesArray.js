@@ -31,7 +31,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
 
   renderCoordinatesArray () {
     const { editCoordinates } = this.state
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit()
     return (
       <FormDarkPart>
@@ -42,7 +42,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
             onClick={this.coordinatesEditClickHandler}
           />)}
         </FormRow>
-        <FormDivider />
+        <FormDivider/>
         <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && editCoordinates && (<IconHovered
             icon={iconNames.MAP_SCALE_PLUS_DEFAULT}

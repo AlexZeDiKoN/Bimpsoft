@@ -33,13 +33,10 @@ export const selectedList = (list) => ({
   list,
 })
 
-export const showEditForm = (id, geometry) => (dispatch, getState) => {
+export const showEditForm = (id) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
-  let object = objects.get(id)
-  if (geometry) {
-    object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
-  }
+  const object = objects.get(id)
   dispatch(setPreview(object))
 }
 

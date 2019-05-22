@@ -55,8 +55,8 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   renderMilSymbol () {
     const result = this.getResult()
     const code = result.getIn(CODE_PATH)
-    const coordinatesArray = result.getIn(COORDINATE_PATH)
-    const coordinates = coordinatesArray.get(0)
+    const coordinatesArray = result.getIn(COORDINATE_PATH).toJS()
+    const coordinates = coordinatesArray[0]
     const unit = result.getIn(UNIT_PATH)
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
