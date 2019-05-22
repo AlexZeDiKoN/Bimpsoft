@@ -25,6 +25,7 @@ export default class RightMenu extends React.Component {
     onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
+    onCloseSearch: PropTypes.func,
     printFiles: PropTypes.object,
   }
 
@@ -48,6 +49,11 @@ export default class RightMenu extends React.Component {
     }
   }
 
+  searchBlur = () => {
+    const { onCloseSearch } = this.props
+    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
+  }
+
   render () {
     const {
       isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles,
@@ -60,6 +66,7 @@ export default class RightMenu extends React.Component {
         <Input.Search
           placeholder={i18n.SEARCH}
           style={{ width: 200 }}
+          onBlur={this.searchBlur}
           onSearch={this.search}
           onChange={this.searchClearError}
           className={searchFailed ? 'search-failed' : ''}
