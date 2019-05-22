@@ -32,7 +32,6 @@ const webMapAttributesInitValues = {
   lineNodes: 'none',
   texts: List(),
   z: null,
-  reversed: false,
 }
 
 for (const key of Object.keys(symbolOptions)) {

@@ -22,7 +22,6 @@ const PATH_LINETYPE = [ 'attributes', 'lineType' ]
 const PATH_GEOMETRY = [ 'geometry' ]
 const PATH_LEFT = [ 'attributes', 'left' ]
 const PATH_RIGHT = [ 'attributes', 'right' ]
-const PATH_REVERSED = [ 'attributes', 'reversed' ]
 
 const WithLineType = (Component) => class LineTypeComponent extends Component {
   lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH_LINETYPE, lineType))
@@ -31,8 +30,7 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     const geometry = result.getIn(PATH_GEOMETRY, []).reverse()
     const right = result.getIn(PATH_LEFT, null)
     const left = result.getIn(PATH_RIGHT, null)
-    const reversed = !result.getIn(PATH_REVERSED, null)
-    const newObject = result.setIn(PATH_GEOMETRY, geometry).setIn(PATH_REVERSED, reversed)
+    const newObject = result.setIn(PATH_GEOMETRY, geometry)
     return (right || left)
       ? newObject.setIn(PATH_RIGHT, right).setIn(PATH_LEFT, left)
       : newObject
@@ -40,7 +38,6 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
 
   renderLineType (simple = false) {
     const lineType = this.getResult().getIn(PATH_LINETYPE)
-    const isReversed = this.getResult().getIn(PATH_REVERSED)
     const typeInfo = types[lineType]
     const canEdit = this.isCanEdit()
     const value = canEdit
@@ -60,7 +57,6 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
             className="icon-button-reverse_line"
             icon={iconNames.REFRESH_DEFAULT}
             onClick={this.lineReverseHandler}
-            checked={isReversed}
           />}
         </>
       )
