@@ -14,6 +14,7 @@ export default class CoordinateRow extends React.Component {
     label: PropTypes.string,
     coordinate: PropTypes.object,
     onChange: PropTypes.func,
+    onExitWithChange: PropTypes.func,
     onBlur: PropTypes.func,
     onFocus: PropTypes.func,
     readOnly: PropTypes.bool,
@@ -22,6 +23,11 @@ export default class CoordinateRow extends React.Component {
   changeHandler = (value) => {
     const { onChange, index } = this.props
     onChange && onChange(index, value)
+  }
+
+  onExitWithChangeHandler = (value) => {
+    const { onExitWithChange, index } = this.props
+    onExitWithChange && onExitWithChange(index, value)
   }
 
   onBlurHandler = () => {
@@ -42,7 +48,8 @@ export default class CoordinateRow extends React.Component {
           coordinates={coordinate}
           readOnly={readOnly}
           onChange={this.changeHandler}
-          onExit={this.onBlurHandler}
+          onBlur={this.onBlurHandler}
+          onExitWithChange={this.onExitWithChangeHandler}
           onEnter={this.onFocusHandler}
           onSearch={placeSearch}
         />

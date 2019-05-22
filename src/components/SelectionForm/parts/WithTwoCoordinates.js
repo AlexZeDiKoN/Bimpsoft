@@ -23,7 +23,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
             readOnly={readOnly}
             coordinate={coordinatesArray.get(0)}
             index={0}
-            onChange={this.coordinateChangeHandler}
+            onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
           />
@@ -31,7 +31,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
             readOnly={readOnly}
             coordinate={coordinatesArray.get(1)}
             index={1}
-            onChange={this.coordinateChangeHandler}
+            onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
           />

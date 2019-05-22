@@ -30,11 +30,7 @@ function getRadiusFromCoordinatesArray (coordinatesArray) {
 const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponent extends CoordinatesMixin(Component) {
   state = { radiusText: null }
 
-  coordinateChangeHandler = (index, newCoord) => {
-    this.index = index
-    this.newCoord = newCoord
-    this.setState({ radiusText: null })
-  }
+  coordinateChangeHandler = () => this.setState({ radiusText: null })
 
   radiusChangeHandler = (radiusText) => {
     this.setResult((result) => {
@@ -76,6 +72,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             index={0}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
+            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
@@ -85,6 +82,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             index={1}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
+            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />

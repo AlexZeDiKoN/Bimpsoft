@@ -58,7 +58,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
               index={index}
               readOnly={!canEdit || !editCoordinates}
               canRemove={coordinatesArray.size > 2}
-              onChange={this.coordinateChangeHandler}
+              onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
               onRemove={this.coordinateRemoveHandler}
               onFocus={this.onCoordinateFocusHandler}
               onBlur={this.onCoordinateBlurHandler}

@@ -32,11 +32,7 @@ function getWidthFromCoordinatesArray (coordinatesArray) {
 const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent extends CoordinatesMixin(Component) {
   state = { widthText: null }
 
-  coordinateChangeHandler = (index, newCoord) => {
-    this.index = index
-    this.newCoord = newCoord
-    this.setState({ widthText: null })
-  }
+  coordinateChangeHandler = () => this.setState({ widthText: null })
 
   onCoordinateBlurHandler = (index) => {
     this.coordinateFocusChange(index, false)
@@ -93,6 +89,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             index={0}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
+            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
@@ -102,6 +99,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             index={1}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
+            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
