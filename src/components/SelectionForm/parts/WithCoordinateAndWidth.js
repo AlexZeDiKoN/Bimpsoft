@@ -33,8 +33,9 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
   state = { widthText: null }
 
   coordinateChangeHandler = (index, newCoord) => {
+    this.index = index
+    this.newCoord = newCoord
     this.setState({ widthText: null })
-    this.setResult((result) => result.setIn([ ...COORDINATE_PATH, index ], newCoord))
   }
 
   onCoordinateBlurHandler = (index) => {
