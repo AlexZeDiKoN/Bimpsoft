@@ -6,6 +6,7 @@ import {
   UnitSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
+import './TextMarker.css'
 
 export default class TextForm extends
   compose(
@@ -17,11 +18,13 @@ export default class TextForm extends
 
     renderContent () {
       return (
-        <>
-          {this.renderSubordinationLevel()}
-          {this.renderOrgStructureSelect()}
+        <div className="textMarker-container">
+          <div className="textMarker-container__item">
+            {this.renderSubordinationLevel()}
+            {this.renderOrgStructureSelect()}
+          </div>
           {this.renderTexts()}
-        </>
+        </div>
       )
     }
 }
