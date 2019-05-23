@@ -143,6 +143,7 @@ export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз 
 export const REMOVE = 'Видалити'
 export const DIVIDE = 'Розділити'
 export const COMBINE = 'Об\'єднати'
+export const MIRROR_IMAGE = 'Дзеркально відобразити'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`

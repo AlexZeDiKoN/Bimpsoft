@@ -233,3 +233,13 @@ export const showDivideForm = () => ({
 export const showCombineForm = () => ({
   type: SHOW_COMBINE_FORM,
 })
+
+export const mirrorImage = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const { selection: { list }, webMap: { objects } } = state
+  const id = list[0]
+  const obj = objects.get(id)
+  const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
+  const point = obj.point.toObject()
+  dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
+})
