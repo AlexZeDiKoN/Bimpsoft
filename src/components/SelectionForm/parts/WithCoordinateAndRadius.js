@@ -14,10 +14,10 @@ const {
 const { Coordinates: Coord } = utils
 
 function getRadiusFromCoordinatesArray (coordinatesArray) {
-  const coord1 = coordinatesArray.get(0)
+  const coord1 = coordinatesArray[0]
   let radius = 0
   if (Coord.check(coord1)) {
-    const coord2 = coordinatesArray.get(1)
+    const coord2 = coordinatesArray[1]
     if (Coord.check(coord2)) {
       const corner1 = L.latLng(coord1)
       const corner2 = L.latLng(coord2)
@@ -53,7 +53,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
   radiusBlurHandler = () => this.setState({ radiusText: null })
 
   renderCoordinateAndRadius () {
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const { radiusText = null } = this.state
 
     const radius = radiusText !== null ? radiusText : getRadiusFromCoordinatesArray(coordinatesArray)
@@ -68,7 +68,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
         <div className="shape-form-scrollable">
           <CoordinateRow
             label={i18n.CENTER}
-            coordinate={coordinatesArray.get(0)}
+            coordinate={coordinatesArray[0]}
             index={0}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
@@ -78,7 +78,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
           />
           <CoordinateRow
             label={i18n.BOUND}
-            coordinate={coordinatesArray.get(1)}
+            coordinate={coordinatesArray[1]}
             index={1}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
