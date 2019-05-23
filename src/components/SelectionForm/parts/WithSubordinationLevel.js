@@ -25,7 +25,7 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
 
   renderSubordinationLevel () {
     const canEdit = this.isCanEdit()
-    const subordinationLevel = this.getResult().getIn(SUBORDINATION_LEVEL_PATH)
+    const subordinationLevel = this.getResult()[SUBORDINATION_LEVEL_PATH]
 
     return (
       <FormRow label={i18n.SUBORDINATION_LEVEL}>
