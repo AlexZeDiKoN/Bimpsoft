@@ -49,7 +49,7 @@ export default class MapItemComponent extends React.Component {
       <div className="map-item-component">
         {expandIcon(expanded, canExpand, { onClick: onExpand })}
         {showCloseForm && (<DeleteMapForm
-          name={breadCrumbs}
+          name={name}
           onCancel={this.cancelCloseHandler}
           onOk={this.okCloseHandler}
         />)}
