@@ -76,7 +76,10 @@ class PrintPanel extends React.Component {
   formatApprovers = () => {
     const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
     const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
-    signers.push(approver)
+    if (!signers) {
+      return setPrintRequisites({ [SIGNATORIES]: [] })
+    }
+    approver && signers.push(approver)
     const signatories = signers.map((signer) => {
       const { id_user: userId, date } = signer
       const { name, patronymic, surname, position, role } = approversData.filter((item) =>
@@ -96,13 +99,13 @@ class PrintPanel extends React.Component {
   addConstParametrs = () => {
     const {
       securityClassification: { classified },
-      docConfirm: { approver: { date } },
+      docConfirm: { approver },
       setPrintRequisites,
     } = this.props
     const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
     setPrintRequisites({
       [MAP_LABEL]: classified,
-      [CONFIRM_DATE]: moment(date).format(DATE_FORMAT),
+      [CONFIRM_DATE]: approver ? moment(approver.date).format(DATE_FORMAT) : '',
     })
   }
 
