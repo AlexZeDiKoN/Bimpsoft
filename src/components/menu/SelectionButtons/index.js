@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { debounce } from 'lodash/function'
 import { components } from '@DZVIN/CommonComponents'
 import './style.css'
 import i18n from '../../../i18n'
@@ -24,6 +25,7 @@ export default class SelectionButtons extends React.Component {
     onDelete: PropTypes.func,
     onDeleteOk: PropTypes.func,
     onDeleteCancel: PropTypes.func,
+    onMirrorImage: PropTypes.func,
   }
 
   render () {
@@ -39,6 +41,7 @@ export default class SelectionButtons extends React.Component {
       onDelete,
       onDeleteOk,
       onDeleteCancel,
+      onMirrorImage,
     } = this.props
 
     if (!isEditMode) {
@@ -97,6 +100,12 @@ export default class SelectionButtons extends React.Component {
             />
           )}
         </IconButton>
+        <IconButton
+          title={i18n.MIRROR_IMAGE}
+          icon={iconNames.MENU_MIRROR_DEFAULT}
+          disabled={!isSelected || nSelected > 1}
+          onClick={debounce(onMirrorImage, 350)}
+        />
       </>
     )
   }
