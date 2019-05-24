@@ -11,6 +11,8 @@ import selection from './selection'
 import params from './params'
 import print from './print'
 import flexGrid from './flexGrid'
+import march from './march'
+import catalogs from './catalogs'
 
 export default combineReducers({
   viewModes,
@@ -25,4 +27,6 @@ export default combineReducers({
   params,
   print,
   flexGrid,
+  march,
+  catalogs,
 })

@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import placeSearch from '../../../server/places'
 
-const { InputWithSuffix, FormRow } = components.form
-const { Coordinates } = utils
+const {
+  form: { Coordinates, FormRow },
+} = components
 
 export default class CoordinateRow extends React.Component {
   static propTypes = {
@@ -12,6 +14,7 @@ export default class CoordinateRow extends React.Component {
     label: PropTypes.string,
     coordinate: PropTypes.object,
     onChange: PropTypes.func,
+    onExitWithChange: PropTypes.func,
     onBlur: PropTypes.func,
     onFocus: PropTypes.func,
     readOnly: PropTypes.bool,
@@ -19,7 +22,12 @@ export default class CoordinateRow extends React.Component {
 
   changeHandler = (value) => {
     const { onChange, index } = this.props
-    onChange && onChange(index, Coordinates.parse(value))
+    onChange && onChange(index, value)
+  }
+
+  onExitWithChangeHandler = (value) => {
+    const { onExitWithChange, index } = this.props
+    onExitWithChange && onExitWithChange(index, value)
   }
 
   onBlurHandler = () => {
@@ -34,18 +42,16 @@ export default class CoordinateRow extends React.Component {
 
   render () {
     const { coordinate = {}, index, label, readOnly } = this.props
-    const isWrong = Coordinates.isWrong(coordinate)
-    const suffix = isWrong ? i18n.ERROR : Coordinates.getName(coordinate)
     return (
       <FormRow label={label || i18n.NODAL_POINT_INDEX(index + 1)}>
-        <InputWithSuffix
-          value={Coordinates.stringify(coordinate)}
-          onChange={this.changeHandler}
-          isWrong={isWrong}
-          suffix={suffix}
-          onBlur={this.onBlurHandler}
-          onFocus={this.onFocusHandler}
+        <Coordinates
+          coordinates={coordinate}
           readOnly={readOnly}
+          onChange={this.changeHandler}
+          onBlur={this.onBlurHandler}
+          onExitWithChange={this.onExitWithChangeHandler}
+          onEnter={this.onFocusHandler}
+          onSearch={placeSearch}
         />
       </FormRow>
     )

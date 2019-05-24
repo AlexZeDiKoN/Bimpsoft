@@ -61,7 +61,7 @@ function prepareCurve (ring, locked, skipStart, skipEnd, skipMove) {
   return result
 }
 
-function calcControlPoint (pp, pc, pn) {
+export function calcControlPoint (pp, pc, pn) {
   const eq = (a, b) => Math.abs(a[0] - b[0]) < epsilon && Math.abs(a[1] - b[1]) < epsilon // a[0] === b[0] && a[1] === b[1]
   const sub = (a, b) => [ b[0] - a[0], b[1] - a[1] ]
   const mul = (p, f) => [ p[0] * f, p[1] * f ]

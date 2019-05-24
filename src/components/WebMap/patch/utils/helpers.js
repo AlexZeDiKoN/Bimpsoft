@@ -3,6 +3,10 @@
 import { halfPoint } from './Bezier'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
+export const MIN_ZOOM = 0
+export const MAX_ZOOM = 20
+export const DEF_MIN_SIZE = 4
+export const DEF_MAX_SIZE = 96
 
 export const setOpacity = function (opacity) {
   this._opacity = opacity
@@ -67,4 +71,17 @@ export function setClassName (el, name, enable) {
       enable ? el.classList.add(name) : el.classList.remove(name)
     }
   }
+}
+
+export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = MIN_ZOOM, maxZoom = MAX_ZOOM) {
+  const {
+    min = DEF_MIN_SIZE,
+    max = DEF_MAX_SIZE,
+  } = sizes || {}
+  const result = zoom <= minZoom
+    ? min
+    : zoom >= maxZoom
+      ? max
+      : (1 / (2 - (zoom - minZoom) / (maxZoom - minZoom) * 1.5) - 0.5) / 1.5 * (max - min) + +min
+  return Math.round(result * factor)
 }

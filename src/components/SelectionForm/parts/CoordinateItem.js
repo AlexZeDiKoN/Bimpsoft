@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, utils } from '@DZVIN/CommonComponents'
-import i18n from '../../../i18n'
+import { components } from '@DZVIN/CommonComponents'
+import placeSearch from '../../../server/places'
 
-const { IconHovered, names: IconNames } = components.icons
-const { InputWithSuffix, FormItem } = components.form
-const { Coordinates } = utils
+const {
+  icons: { IconHovered, names: IconNames },
+  form: { Coordinates, FormItem },
+} = components
 
 export default class CoordinateItem extends React.Component {
   static propTypes = {
@@ -14,6 +15,7 @@ export default class CoordinateItem extends React.Component {
     canRemove: PropTypes.bool,
     readOnly: PropTypes.bool,
     onChange: PropTypes.func,
+    onExitWithChange: PropTypes.func,
     onRemove: PropTypes.func,
     onBlur: PropTypes.func,
     onFocus: PropTypes.func,
@@ -21,12 +23,17 @@ export default class CoordinateItem extends React.Component {
 
   changeHandler = (value) => {
     const { onChange, index } = this.props
-    onChange(index, Coordinates.parse(value))
+    onChange && onChange(index, value)
   }
 
   removeClickHandler = () => {
     const { onRemove, index } = this.props
-    onRemove(index)
+    onRemove && onRemove(index)
+  }
+
+  onExitWithChangeHandler = (value) => {
+    const { onExitWithChange, index } = this.props
+    onExitWithChange && onExitWithChange(index, value)
   }
 
   onBlurHandler = () => {
@@ -41,18 +48,16 @@ export default class CoordinateItem extends React.Component {
 
   render () {
     const { coordinate = {}, canRemove, readOnly } = this.props
-    const isWrong = Coordinates.isWrong(coordinate)
-    const suffix = isWrong ? i18n.ERROR : Coordinates.getName(coordinate)
     return (
       <FormItem>
-        <InputWithSuffix
-          readOnly={readOnly}
-          value={Coordinates.stringify(coordinate)}
+        <Coordinates
+          isReadOnly={readOnly}
+          coordinates={coordinate}
           onChange={this.changeHandler}
-          isWrong={isWrong}
-          suffix={suffix}
+          onEnter={this.onFocusHandler}
           onBlur={this.onBlurHandler}
-          onFocus={this.onFocusHandler}
+          onExitWithChange={this.onExitWithChangeHandler}
+          onSearch={placeSearch}
         />
         {!readOnly && (<IconHovered
           icon={canRemove ? IconNames.DELETE_24_DEFAULT : IconNames.DELETE_24_DISABLE}

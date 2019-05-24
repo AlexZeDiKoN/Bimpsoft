@@ -7,9 +7,9 @@ const CoordinatesMixin = (Component) => class CoordinatesComponent extends Compo
     onCoordinateFocusChange: PropTypes.func,
   }
 
-  coordinateChangeHandler = (index, item) => this.setResult((result) =>
-    result.setIn([ ...COORDINATE_PATH, index ], item)
-  )
+  onCoordinateExitWithChangeHandler = (index, value) => {
+    this.setResult((result) => result.setIn([ ...COORDINATE_PATH, index ], value))
+  }
 
   coordinateFocusChange (isActive, index) {
     const { onCoordinateFocusChange } = this.props

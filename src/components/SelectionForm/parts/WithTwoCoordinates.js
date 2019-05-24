@@ -11,7 +11,7 @@ const {
 
 const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends CoordinatesMixin(Component) {
   renderTwoCoordinates () {
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
 
     const readOnly = !this.isCanEdit()
 
@@ -21,17 +21,17 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
         <div className="shape-form-scrollable">
           <CoordinateRow
             readOnly={readOnly}
-            coordinate={coordinatesArray.get(0)}
+            coordinate={coordinatesArray[0]}
             index={0}
-            onChange={this.coordinateChangeHandler}
+            onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
           />
           <CoordinateRow
             readOnly={readOnly}
-            coordinate={coordinatesArray.get(1)}
+            coordinate={coordinatesArray[1]}
             index={1}
-            onChange={this.coordinateChangeHandler}
+            onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
           />

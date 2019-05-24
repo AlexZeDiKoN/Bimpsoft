@@ -5,8 +5,10 @@ import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
   activeMapSelector, inICTMode,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid } from '../store/actions'
+import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
+import * as topoObj from '../store/actions/webMap'
+import { directionName, eternalPoint } from '../constants/viewModesKeys'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -42,10 +44,14 @@ const WebMapContainer = connect(
     flexGridData: flexGridData(state),
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
+    topographicObjects: state.webMap.topographicObjects,
+    catalogObjects: state.catalogs.objects,
+    catalogs: state.catalogs.byIds,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
     updateObjectGeometry: webMap.updateObjectGeometry,
+    updateObjectAttributes: webMap.updateObjectAttributes,
     editObject: selection.showEditForm,
     onSelectedList: (list) => batchActions([
       selection.selectedList(list),
@@ -77,6 +83,18 @@ const WebMapContainer = connect(
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
+    showDirectionNameForm: (props) => batchActions([
+      flexGrid.selectDirection(props),
+      viewModes.viewModeEnable(directionName),
+    ]),
+    showEternalDescriptionForm: (props) => batchActions([
+      flexGrid.selectEternal(props),
+      viewModes.viewModeEnable(eternalPoint),
+    ]),
+    selectEternal: flexGrid.selectEternal,
+    getTopographicObjects: webMap.getTopographicObjects,
+    toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
+    disableDrawUnit: selection.disableDrawUnit,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

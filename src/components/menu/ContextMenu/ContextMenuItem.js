@@ -13,17 +13,25 @@ export default class ContextMenuItem extends React.Component {
     onClick: PropTypes.func,
   }
 
-  clickHandler = () => this.props.onClick(this.props.value)
+  clickHandler = () => {
+    const { value, onClick } = this.props
+
+    onClick && onClick(value)
+  }
 
   render () {
-    const { icon, hoverIcon, text, checked } = this.props
-    let className = 'context-menu-item'
+    const { icon, text, checked } = this.props
+
+    let className = 'context-Index-item'
     if (checked) {
-      className += ' context-menu-item-checked'
+      className += ' context-Index-item-checked'
     }
+
     return (
       <div className={className} onClick={this.clickHandler}>
-        {icon && (<IconHovered icon={icon} hoverIcon={hoverIcon} />)}
+        {icon && (
+          <IconHovered icon={icon}/>
+        )}
         <div className="context-menu-item-text">{text}</div>
       </div>
     )

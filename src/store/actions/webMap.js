@@ -1,12 +1,16 @@
 import { batchActions } from 'redux-batched-actions'
+import { utils } from '@DZVIN/CommonComponents'
 import { MapSources, ZOOMS, paramsNames } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
+import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
+
+const { settings } = utils
 
 const lockHeartBeatInterval = 10 // (секунд) Інтервал heart-beat запитів на сервер для утримання локу об'єкта
 let lockHeartBeat = null
@@ -41,6 +45,7 @@ export const actionNames = {
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
   UPD_OBJECT: action('UPD_OBJECT'),
+  UPD_ATTR: action('UPD_ATTR'),
   APP_INFO: action('APP_INFO'),
   GET_LOCKED_OBJECTS: action('GET_LOCKED_OBJECTS'),
   OBJECT_LOCKED: action('OBJECT_LOCKED'),
@@ -50,12 +55,18 @@ export const actionNames = {
   TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
+  GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
+  TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
+  SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM'),
 }
 
-export const setCoordinatesType = (value) => ({
-  type: actionNames.SET_COORDINATES_TYPE,
-  payload: value,
-})
+export const setCoordinatesType = (value) => {
+  settings.defaultType = value
+  return {
+    type: actionNames.SET_COORDINATES_TYPE,
+    payload: value,
+  }
+}
 
 export const setMarker = (marker) => (dispatch) => {
   const batch = [ {
@@ -68,12 +79,12 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setAmplifiers = (value) => ({
   type: actionNames.SET_AMPLIFIERS,
-  payload: value,
+  payload: value.target.checked,
 })
 
 export const setGeneralization = (value) => ({
@@ -229,6 +240,28 @@ export const updateObjectGeometry = (id, geometry) =>
     })
   })
 
+export const updateObjectAttributes = (id, attributes) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateAttr } }) => {
+    let payload = await objUpdateAttr(id, useArraysIn(attributes))
+
+    payload = fixServerObject(payload)
+
+    return dispatch({
+      type: actionNames.UPD_OBJECT,
+      payload,
+    })
+  })
+
+export const updateObjPartially = (id, attributes, geometry = {}) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdatePartially } }) => {
+    let payload = await objUpdatePartially(id, { attributes, ...geometry })
+    payload = fixServerObject(payload)
+    return dispatch({
+      type: actionNames.UPD_OBJECT,
+      payload,
+    })
+  })
+
 export const getAppInfo = () =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getVersion, getContactId } }) => {
     const [ version, contactId ] = await Promise.all([ getVersion(), getContactId() ])
@@ -296,7 +329,14 @@ export const tryLockObject = (objectId) =>
     const { webMap: { lockedObjects } } = getState()
     let lockedBy = lockedObjects.get(objectId)
     let success = false
-    if (!lockedBy) {
+    if (lockedBy) {
+      dispatch(notifications.push({
+        type: 'warning',
+        message: i18n.EDITING,
+        description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
+      }))
+      dispatch(isObjectStillLocked(objectId))
+    } else {
       stopHeartBeat()
       try {
         const result = await objLock(objectId)
@@ -311,11 +351,6 @@ export const tryLockObject = (objectId) =>
         return false
       }
     }
-    lockedBy && dispatch(notifications.push({
-      type: 'warning',
-      message: i18n.EDITING,
-      description: `${i18n.OBJECT_EDITING_BY} ${lockedBy}`,
-    }))
     return success
   })
 
@@ -331,6 +366,17 @@ export const getLockedObjects = () =>
     payload: await lockedObjects(),
   }))
 
+export const isObjectStillLocked = (objectId) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objStillLocked } }) => {
+    const { still } = await objStillLocked(objectId)
+    if (!still) {
+      return dispatch({
+        type: actionNames.OBJECT_UNLOCKED,
+        payload: { objectId },
+      })
+    }
+  })
+
 export const toggleMeasure = () => ({
   type: actionNames.TOGGLE_MEASURE,
 })
@@ -342,6 +388,24 @@ export const toggleMarkers = () => ({
 export const toggleTopographicObjects = () => ({
   type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
 })
+
+export const toggleTopographicObjModal = () => ({
+  type: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL,
+})
+
+export const selectTopographicItem = (index) => ({
+  type: actionNames.SELECT_TOPOGRAPHIC_ITEM,
+  payload: index,
+})
+
+export const getTopographicObjects = (data) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getTopographicObjects } }) => {
+    const topographicObject = await getTopographicObjects(data)
+    dispatch({
+      type: actionNames.GET_TOPOGRAPHIC_OBJECTS,
+      payload: topographicObject,
+    })
+  })
 
 // Ініціалізація
 window.addEventListener('beforeunload', () => {

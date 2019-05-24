@@ -1,4 +1,5 @@
 import { action } from '../../utils/services'
+import { getArrayFromSet } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector, visibleLayersSelector } from '../selectors'
 import i18n from '../../i18n'
@@ -16,6 +17,10 @@ export const SET_ZONES = action('SET_ZONES')
 export const CLOSE_FLEX_GRID_FORM = action('CLOSE_FLEX_GRID_FORM')
 export const FLEX_GRID_DELETED = action('FLEX_GRID_DELETED')
 export const GET_FLEXGRID = action('GET_FLEXGRID')
+export const SELECT_DIRECTION = action('SELECT_DIRECTION')
+export const DESELECT_DIRECTION = action('DESELECT_DIRECTION')
+export const SET_SELECT_ETERNAL = action('SET_SELECT_ETERNAL')
+export const CHANGE_ETERNAL = action('CHANGE_ETERNAL')
 
 const getId = ({ id }) => id
 
@@ -130,10 +135,13 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       })
     }
     if (!invalid.length) {
-      window.explorerBridge.variantResult(variantId, result.map(({ units, ...rest }) => ({
+      const { directionNames: names, directions } = state.flexGrid.flexGrid
+      const units = result.map(({ units, ...rest }) => ({
         units: units.map(({ unit, formation }) => ({ unit, formation })),
         ...rest,
-      })))
+      }))
+      const directionNames = getArrayFromSet(names, directions)
+      window.explorerBridge.variantResult(variantId, { units, directionNames })
       dispatch(notifications.push({
         type: 'success',
         message: i18n.MESSAGE,
@@ -156,3 +164,32 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
 export const fixInstance = (flexGrid) => (_1, _2, extra) => {
   extra.flexGridInstance = flexGrid
 }
+
+// Directions:
+export const selectDirection = ({ index, isMain = true }) => ({
+  type: SELECT_DIRECTION,
+  payload: { index, isMain },
+})
+
+export const deselectDirection = (props) => {
+  const res = { type: DESELECT_DIRECTION }
+  if (props) {
+    const { index, updateMain } = props
+    res.payload = { index, updateMain }
+  }
+  return res
+}
+
+export const selectEternal = (props) => {
+  const res = { type: SET_SELECT_ETERNAL }
+  if (props) {
+    const { position, coordinates } = props
+    res.payload = { position, coordinates }
+  }
+  return res
+}
+
+export const changeEternal = (position, latlng) => ({
+  type: CHANGE_ETERNAL,
+  payload: { position, latlng },
+})

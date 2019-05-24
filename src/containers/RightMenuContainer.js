@@ -33,7 +33,8 @@ const mapDispatchToProps = (dispatch) => ({
   onSearch: (sample) => dispatch(viewModes.search(sample)),
   onCoordinates: (text, point) => dispatch(webMap.setMarker({ text, point })),
   onSelectSearchOption: (index) => dispatch(viewModes.searchSelectOption(index)),
-  onClearSearchError: () => dispatch(viewModes.searchClearError()),
+  onClearSearchError: () => dispatch(viewModes.searchClearError),
+  onCloseSearch: () => dispatch(viewModes.searchCloseList),
 })
 
 const RightMenuContainer = connect(

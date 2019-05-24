@@ -4,16 +4,16 @@ import { batchDispatchMiddleware } from 'redux-batched-actions'
 import isPlainObject from 'lodash/isPlainObject'
 import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
-import explorerApi from '../server/api.node'
 import webmapApi from '../server/api.webmap'
 import milOrgApi from '../server/api.server.org'
 import indicatorApi from '../server/api.indicator'
+import catalogApi from '../server/api.catalog'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
 import initNavigationConnection from './initNavigationConnection'
 import { catchError } from './actions/asyncAction'
-import { print } from './actions'
+import { print, march } from './actions'
 // import { setVariant } from './actions/maps'
 
 let store = null
@@ -34,10 +34,10 @@ export default function initStore (options = {}) {
   const middlewares = [
     batchDispatchMiddleware,
     thunk.withExtraArgument({
-      explorerApi,
       webmapApi,
       milOrgApi,
       indicatorApi,
+      catalogApi,
     }),
   ]
 
@@ -53,6 +53,7 @@ export default function initStore (options = {}) {
   initSocketEvents(store.dispatch, store.getState)
   catchError(loadAllParams)()(store.dispatch)
   catchError(print.printFileList)()(store.dispatch)
+  catchError(march.getIndicator)()(store.dispatch)
 
   /* setTimeout(() => {
     store.dispatch(setVariant('5c110ade6de3ac15a1000002', 555))

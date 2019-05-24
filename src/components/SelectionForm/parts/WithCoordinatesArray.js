@@ -1,7 +1,6 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import coordinates from '../../../utils/coordinates'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -27,12 +26,12 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   }))
 
   coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push(coordinates.parse('')))
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' }))
   )
 
   renderCoordinatesArray () {
     const { editCoordinates } = this.state
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit()
     return (
       <FormDarkPart>
@@ -43,7 +42,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
             onClick={this.coordinatesEditClickHandler}
           />)}
         </FormRow>
-        <FormDivider />
+        <FormDivider/>
         <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && editCoordinates && (<IconHovered
             icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
@@ -59,7 +58,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
               index={index}
               readOnly={!canEdit || !editCoordinates}
               canRemove={coordinatesArray.size > 2}
-              onChange={this.coordinateChangeHandler}
+              onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
               onRemove={this.coordinateRemoveHandler}
               onFocus={this.onCoordinateFocusHandler}
               onBlur={this.onCoordinateBlurHandler}

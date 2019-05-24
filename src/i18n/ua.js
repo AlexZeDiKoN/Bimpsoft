@@ -5,6 +5,7 @@ export const ADD_TEXT = 'Додати надпис'
 export const PRINT = 'Друк'
 export const TOGGLE_SIDEBAR = 'Відобразити/сховати праву панель'
 export const SETTINGS = 'Налаштування'
+export const TOPOGRAPHIC_OBJECT_CARD = 'Картка топографічного об’єкту'
 export const ERROR = 'Помилка'
 export const COORDINATES_UNDEFINED = 'Координати не задані'
 export const PRINT_ZONE_UNDEFINED = 'Область друку не задана'
@@ -25,6 +26,8 @@ export const MIL_TEMPLATE = 'Шаблон умовного знаку'
 export const MIL_SYMBOL = 'Умовний знак'
 export const HIDE_MINIMAP = 'Приховати міні-карту'
 export const SHOW_MINIMAP = 'Показати міні-карту'
+export const HIDE_CATALOG = 'Приховати об\'єкти каталогу'
+export const SHOW_CATALOG = 'Показати об\'єкти каталогу'
 export const ZOOM_IN = 'Збільшити'
 export const ZOOM_OUT = 'Зменшити'
 export const ABBR_METERS = 'м'
@@ -40,18 +43,19 @@ export const COPY = 'Копіювати (Ctrl+C)'
 export const PASTE = 'Вставити (Ctrl+V)'
 export const DELETE = 'Видалити  (Delete)'
 export const REMOVING_SIGNS = 'Видалити знаки?'
+export const DIVIDE_DIRECTION = 'Розділити напрямок'
+export const COMBINE_DIRECTIONS = 'Об\'єднати напрямки'
+export const CHOOSE_DIRECTION = 'Оберіть напрямок'
+export const CHOOSE_DIRECTIONS = 'Оберіть напрямки'
 export const CLOSE_MAP = 'Закрити карту?'
 export const CLOSE_MAPS = 'Закриття карт'
 export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
-export const FILES_TO_PRINT = 'Файли на друк'
-export const OPEN_FILE = 'Відкрити файл в провіднику'
-export const CANCEL_FILE = 'Скасувати'
-export const CLEAN_FILE = 'Прибрати зі списку'
-export const RETRY_FILE = 'Спробувати ще раз'
 export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
+export const SHOW_UNBOUND_OBJECTS = 'Показати неприв\'язані об\'єкти'
+export const EXTRA_FUNCTIONS = 'Додаткові функції'
 
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
@@ -65,21 +69,18 @@ export const SHAPE_TEXT = 'Текстова мітка'
 export const UNDEFINED = 'Не вказано'
 
 export const DEFAULT_COORDINATES_SYSTEM = 'Система координат (за замовчуванням)'
+export const POINT_SIGN_SIZE_TITLE = '(min | max) px'
 export const POINT_SIGN_SIZE = 'Розмір точкових знаків'
 export const TEXT_SIGN_SIZE = 'Розмір текстових знаків'
-export const LINE_SIGN_SIZE = 'Товщина ліній для лінійних/площадний знаків'
-export const MIN_ZOOM = 'Мін. масштаб'
-export const MAX_ZOOM = 'Макс. масштаб'
+export const LINE_SIGN_SIZE = 'Товщин для лінійних/площадних знаків'
+export const NODE_SIGN_SIZE = 'Розмір знаків у вузлових точках'
+export const WAVE_SIGN_SIZE = 'Розмір елементів хвилястої лінії'
+export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з засічками'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
 
-export const WGS_84 = 'WGS-84'
-export const UCS_2000 = 'УСК-2000'
-export const CS_42 = 'СК-42'
-export const MGRS = 'MGRS'
-export const UTM = 'UTM'
-
+export const UNIT = 'Підрозділ'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'
@@ -125,6 +126,7 @@ export const LINE_STYLE = 'Стиль лінії'
 export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
+export const DIRECTION = 'Напрямок'
 export const NODAL_POINTS = 'Вузлові точки'
 export const SIDE_SIZE = 'Довжина сторони'
 export const RADIUS = 'Радіус'
@@ -134,10 +136,14 @@ export const NORTH_WEST = 'Північний захід'
 export const SOUTH_EAST = 'Південний схід'
 export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
+export const YES = 'Так'
 export const EDIT = 'Редагувати'
 export const EDITING = 'Редагується'
 export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз редагується користувачем'
 export const REMOVE = 'Видалити'
+export const DIVIDE = 'Розділити'
+export const COMBINE = 'Об\'єднати'
+export const MIRROR_IMAGE = 'Дзеркально відобразити'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
@@ -172,6 +178,14 @@ export const ELEMENT_SCALES = 'Деталізація обстановки'
 export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
+export const CATALOGS = 'Каталоги'
+export const STATE = 'Стан'
+
+export const FRIENDLY = 'дружня'
+export const HOSTILE = 'ворожа'
+export const ZONE_OF_DIRECTION = 'зона напрямку'
+
+export const NO_OBJECTS = 'Топографічних об\'єктів не знайдено'
 
 // Друк карти
 // лейбли
@@ -198,6 +212,8 @@ export const DOCUMENT_SIGNATORIES = `Підпис документа`
 export const POSITION = `Посада`
 export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
+export const DESIGNATION = `Назва`
+export const DESCRIPTION = `Опис`
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`
@@ -214,3 +230,20 @@ export const PUT_IN_QUEUE = 'Поставлено в чергу'
 export const FORMATION_FILE = 'Формування графічного файлу'
 export const FILE_IS_GENERATED = 'Файл сформовано'
 export const ERROR_OCCURRED = 'Виникла помилка'
+
+// лог
+export const FILES_TO_PRINT = 'Файли на друк'
+export const OPEN_FILE = 'Відкрити файл в провіднику'
+export const CANCEL_FILE = 'Скасувати'
+export const CLEAN_FILE = 'Прибрати зі списку'
+export const RETRY_FILE = 'Спробувати ще раз'
+
+// Марш
+export const MARCH_TITLE = 'Маршрут марша'
+export const MARCH_NAME = 'Назва маршрута'
+export const OPEN_MARCH_FILE = 'Вибір існуючого маршрута'
+export const MARCH_TYPE = 'Тип руху за маршрутом'
+export const GEOGRAPHICAL_LANDMARK = 'Географічний орієнтир'
+export const CHECK_SEGMENT = 'Вибір відрізка'
+export const SEGMENT_NAME = 'Назва відрізка'
+export const ADD_SEGMENT = 'Додати пункт маршрута'

@@ -9,6 +9,10 @@ export default {
     getDirect(`${webmapUrl}/obj/set`, { id, ...data }),
   objUpdateGeometry: (id, data) =>
     getDirect(`${webmapUrl}/obj/geom`, { id, ...data }),
+  objUpdateAttr: (id, attributes) =>
+    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }),
+  objUpdatePartially: (id, data) =>
+    getDirect(`${webmapUrl}/obj/upd`, { id, ...data }),
   objInsert: (data) =>
     getDirect(`${webmapUrl}/obj/add`, data),
   objDelete: (id = 0) =>
@@ -19,6 +23,8 @@ export default {
     getDirect(`${webmapUrl}/obj/${id}/lock`, false),
   objUnlock: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/unlock`, false),
+  objStillLocked: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/still`, false),
   placeSearch: (sample) =>
     getDirect(`${webmapUrl}/place?q=${sample}`, false),
   getVersion: () =>
@@ -35,6 +41,12 @@ export default {
     getDirect(`${webmapUrl}/grid/${mapId}/get`, false),
   lockedObjects: () =>
     getDirect(`${webmapUrl}/obj/locked`, false),
+  getMap: (mapId) =>
+    getDirect(`${webmapUrl}/map/${mapId}`, false),
+  layerGetColor: (layerId) =>
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, false),
+  layerSetColor: (layerId, color) =>
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }),
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
   getPrintBounds: (data) =>
@@ -54,4 +66,6 @@ export default {
     getDirect(`${webmapUrl}/printToFile/retry`, { id }),
   printFileList: () =>
     getDirect(`${webmapUrl}/printToFile/list`, false),
+  getTopographicObjects: (data) =>
+    getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
 }

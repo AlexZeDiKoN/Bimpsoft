@@ -6,13 +6,15 @@ import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import ModalContainer from '../common/ModalContainer'
-import MilSymbolForm from './forms/MilSymbolForm'
-import LineForm from './forms/LineForm'
-import AreaForm from './forms/AreaForm'
-import RectangleForm from './forms/RectangleForm'
-import SquareForm from './forms/SquareForm'
-import CircleForm from './forms/CircleForm'
-import TextForm from './forms/TextForm'
+import {
+  AreaForm,
+  CircleForm,
+  LineForm,
+  MilSymbolForm,
+  RectangleForm,
+  SquareForm,
+  TextForm,
+} from './forms'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -73,7 +75,11 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (
-      <Wrapper title={title} onClose={onCancel}>
+      <Wrapper
+        title={title}
+        onClose={onCancel}
+        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.02 }}
+      >
         <FocusTrap>
           <HotKeysContainer>
             <Component

@@ -3,8 +3,8 @@ import entityKind, { entityKindNonFillable } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import './SVG.css'
 import { setClassName } from './utils/helpers'
+import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
@@ -210,15 +210,9 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(
-      layer._rings[0],
-      layer.options && layer.options.lineAmpl,
-      layer.object && layer.object.level,
-      layer.options && layer.options.lineNodes,
-      bezier,
-      locked,
-      bounds,
-    )
+    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.lineAmpl,
+      layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
+      bounds, 1.0, layer._map.getZoom())
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
@@ -237,19 +231,14 @@ L.SVG.include({
 
   _buildWaved: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds)
+    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds, 1.0,
+      layer._map.getZoom())
   },
 
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return stroked(
-      layer._rings[0],
-      layer.options && layer.options.lineEnds,
-      layer.options && layer.options.lineNodes,
-      bezier,
-      locked,
-      bounds,
-    )
+    return stroked(layer._rings[0], layer.options && layer.options.lineEnds,
+      layer.options && layer.options.lineNodes, bezier, locked, bounds, 1.0, layer._map.getZoom())
   },
 
   _updateLineEnds: function (layer, bezier) {
@@ -275,7 +264,8 @@ L.SVG.include({
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
-    grid._pathes = [ grid._zones, grid._directions, grid._boundary, grid._border ]
+    grid._highlighted = L.SVG.create('path')
+    grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
     if (grid.options.interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
@@ -284,6 +274,7 @@ L.SVG.include({
     this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
     this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
     this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
+    this._updateStyle({ _path: grid._highlighted, options: grid.options.highlight })
     group.appendChild(grid._shadow)
     grid._pathes.forEach((path) => group.appendChild(path))
     this._layers[L.Util.stamp(grid)] = grid
@@ -298,5 +289,12 @@ L.SVG.include({
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
+    grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+  },
+
+  _getHighlightDirectionsArea: function (grid) {
+    return grid.highlightedDirections && grid.highlightedDirections.length
+      ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
+      : ''
   },
 })

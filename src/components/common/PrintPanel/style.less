@@ -39,6 +39,12 @@
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     padding: 8px 0;
+    > .dzvin-form-row{
+      > .dzvin-form-input{
+        width: 140px;
+        padding-right: 5px;
+      }
+    }
   }
 
   .printPanelSecurity {
@@ -71,11 +77,12 @@
   }
 
   .printPanel_indicators {
+    .dzvin-form-row{
+      padding: 1px 15px;
+    }
     .dzvin-form-input {
-      border-bottom: 1px solid lightgray;
       input {
-        border-radius: 0;
-        border: 0;
+        border-radius: 5px;
       }
     }
     .dzvin-form-row:last-child {

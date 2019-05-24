@@ -1,15 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
+import { components, utils } from '@DZVIN/CommonComponents'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
-import coordinates from '../../../utils/coordinates'
-import './style.css'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
-const iconNames = components.icons.names
+import './style.css'
+
+const {
+  icons: { names: iconNames, IconButton },
+} = components
+
+const { Coordinates: Coord } = utils
 
 export default class RightMenu extends React.Component {
   static propTypes = {
@@ -22,6 +25,7 @@ export default class RightMenu extends React.Component {
     onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
+    onCloseSearch: PropTypes.func,
     printFiles: PropTypes.object,
   }
 
@@ -29,7 +33,7 @@ export default class RightMenu extends React.Component {
     const { onSearch, onCoordinates } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
-      const parsed = coordinates.parse(query)
+      const parsed = Coord.parse(query)
       if (parsed && parsed.lng !== undefined && parsed.lat !== undefined) {
         onCoordinates(query, parsed)
       } else {
@@ -45,21 +49,29 @@ export default class RightMenu extends React.Component {
     }
   }
 
+  searchBlur = () => {
+    const { onCloseSearch } = this.props
+    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
+  }
+
   render () {
     const {
       isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles,
     } = this.props
     return (
       <div className='left-menu'>
-        {(Object.keys(printFiles).length !== 0) && <PrintFilesContainer/>}
+        {Object.keys(printFiles).length !== 0 && (
+          <PrintFilesContainer/>
+        )}
         <Input.Search
           placeholder={i18n.SEARCH}
           style={{ width: 200 }}
+          onBlur={this.searchBlur}
           onSearch={this.search}
           onChange={this.searchClearError}
           className={searchFailed ? 'search-failed' : ''}
         />
-        <div className="search-options-sub-panel">
+        <div className="search-options-sub-panel search-options-sub-panel-right">
           <SearchOptions />
         </div>
         <IconButton

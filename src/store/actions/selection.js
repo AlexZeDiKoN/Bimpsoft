@@ -12,6 +12,7 @@ import { webMap } from './'
 export const SHOW_CREATE_FORM = action('SHOW_CREATE_FORM')
 export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
 export const HIDE_FORM = action('HIDE_FORM')
+export const DISABLE_DRAW = action('DISABLE_DRAW')
 export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
@@ -21,6 +22,8 @@ export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
 export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
 export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
+export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
+export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
 
 const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
@@ -30,18 +33,19 @@ export const selectedList = (list) => ({
   list,
 })
 
-export const showEditForm = (id, geometry) => (dispatch, getState) => {
+export const showEditForm = (id) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
-  let object = objects.get(id)
-  if (geometry) {
-    object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
-  }
+  const object = objects.get(id)
   dispatch(setPreview(object))
 }
 
 export const hideForm = () => ({
   type: HIDE_FORM,
+})
+
+export const disableDrawUnit = () => ({
+  type: DISABLE_DRAW,
 })
 
 export const setPreview = (preview) => ({
@@ -123,13 +127,15 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     default:
       break
   }
+  dispatch(disableDrawUnit())
 })
 
 export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {
   const {
-    orgStructures: { unitsById: { [unitID]: unit = {} } },
+    orgStructures,
     layers: { selectedId: layer },
   } = getState()
+  const unit = orgStructures.byIds[unitID] || {}
   const { app6Code: code, id, symbolData, natoLevelID } = unit
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
@@ -218,4 +224,22 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
 
 export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
+})
+
+export const showDivideForm = () => ({
+  type: SHOW_DIVIDE_FORM,
+})
+
+export const showCombineForm = () => ({
+  type: SHOW_COMBINE_FORM,
+})
+
+export const mirrorImage = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const { selection: { list }, webMap: { objects } } = state
+  const id = list[0]
+  const obj = objects.get(id)
+  const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
+  const point = obj.point.toObject()
+  dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
 })

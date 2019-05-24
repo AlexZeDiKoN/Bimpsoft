@@ -5,15 +5,19 @@ import { Input, Tooltip } from 'antd'
 import { data, components } from '@DZVIN/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
-import Item from './Item'
+import Item from './children/Item'
+import OrgStructureMenu from './children/OrgStructureMenu'
 
 const { TextFilter } = data
-const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
+
+const {
+  common: { TreeComponent: { TreeComponentUncontrolled } },
+} = components
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.shortName + ' ' + item.fullName,
   (item) => item.id,
-  (item) => item.parentUnitID
+  (item) => item.parentUnitID,
 )
 
 function scrollParentToChild (parent, child) {
@@ -69,6 +73,9 @@ export default class OrgStructuresComponent extends React.PureComponent {
       expandedIds,
       onExpand,
       canEdit,
+      selectedLayer,
+      onMapObjects,
+      selectList,
     } = this.props
 
     if (formation === null) {
@@ -80,15 +87,23 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
     const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
 
+    const extraData = { selectedLayer, onMapObjects }
+
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
         <div className="org-structures">
-          <Input.Search
-            ref={this.inputRef}
-            placeholder={ i18n.FILTER }
-            onChange={this.filterTextChangeHandler}
-          />
-          <div className="org-structures-scroll" ref={this.scrollPanelRef} >
+          <div className='org-structures-searchBlock'>
+            <Input.Search
+              ref={this.inputRef}
+              placeholder={i18n.FILTER}
+              onChange={this.filterTextChangeHandler}
+            />
+            <OrgStructureMenu
+              onMapObjects={onMapObjects}
+              selectList={selectList}
+            />
+          </div>
+          <div className="org-structures-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
@@ -98,6 +113,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
               itemTemplate={Item}
               commonData={commonData}
               onMouseUp={this.mouseUpHandler}
+              extraData={extraData}
             />
           </div>
         </div>
@@ -119,4 +135,7 @@ OrgStructuresComponent.propTypes = {
   selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
+  selectedLayer: PropTypes.string,
+  onMapObjects: PropTypes.object,
+  selectList: PropTypes.func,
 }

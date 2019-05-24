@@ -1,13 +1,18 @@
 /* global L */
 
 import pointInSvgPolygon from 'point-in-svg-polygon'
+import * as R from 'ramda'
 import entityKind from '../entityKind'
 import { prepareBezierPath } from './utils/Bezier'
 
+const FG_MARKER_RADIUS = 7 // radius of the edit-marker of the radius WAS COPIED FROM leaflet.pm!
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
 const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
+
+const copyRow = (row) => row.map(L.latLng)
+const copyRing = (ring) => ring.map(copyRow)
 
 const zoneCode = (value, zones) => {
   let result = value - zones
@@ -65,6 +70,13 @@ L.FlexGrid = L.Layer.extend({
       ...commonStyle,
       color: '#000',
     },
+    highlight: {
+      ...commonStyle,
+      stroke: false,
+      fill: true,
+      fillOpacity: 0.4,
+      fillColor: '#ff2',
+    },
     shadow: {
       ...commonStyle,
       stroke: false,
@@ -105,9 +117,8 @@ L.FlexGrid = L.Layer.extend({
     }
 
     this.id = id
+    this.highlightedDirections = []
     if (geometry) {
-      const copyRow = (row) => row.map(L.latLng)
-      const copyRing = (ring) => ring.map(copyRow)
       this.eternals = geometry.eternals.map(copyRow)
       this.directionSegments = geometry.directionSegments.map(copyRing)
       this.zoneSegments = geometry.zoneSegments.map(copyRing)
@@ -135,6 +146,19 @@ L.FlexGrid = L.Layer.extend({
     this._reset()
     this._renderer._addPath(this)
     this._renderer._bringToFront(this)
+  },
+
+  updateProps (options, props) {
+    const { eternals, directionSegments, zoneSegments } = props || {}
+    options && L.setOptions(this, options)
+    eternals && (this.eternals = eternals.map(copyRow))
+    directionSegments && (this.directionSegments = directionSegments.map(copyRing))
+    zoneSegments && (this.zoneSegments = zoneSegments.map(copyRing))
+    this.redraw()
+    if (this.pm._enabled) {
+      this.pm._updateMainMarkersPos()
+      this.pm._updateResizeMarkersPos()
+    }
   },
 
   onRemove () {
@@ -349,11 +373,40 @@ L.FlexGrid = L.Layer.extend({
     const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
     const { zones } = this.options
     this.cellSegments.forEach((row, dirIdx) => row.forEach((cell, zoneIdx) => {
-      if (pointInSvgPolygon.isInside([ x, y ], cell)) {
+      if (!result && pointInSvgPolygon.isInside([ x, y ], cell)) {
         result = [ dirIdx + 1, zoneCode(zoneIdx, zones) ]
       }
     }))
     return result
+  },
+
+  isOnEternal (latLng) {
+    let result = null
+    const { x, y } = this._map.latLngToLayerPoint(L.latLng(latLng))
+    const radius = this._getEternalMarkerRadius()
+    this.eternalRings.forEach((line, indexLine) => !result && line.forEach((ring, indexRing) => {
+      if (!result) {
+        const xDiff = Math.abs(x - ring.x) <= radius
+        const yDiff = Math.abs(y - ring.y) <= radius
+        if (xDiff && yDiff) {
+          result = { position: [ indexLine, indexRing ], coordinates: this.eternals[indexLine][indexRing] }
+        }
+      }
+    }))
+    return result
+  },
+
+  _getEternalMarkerRadius () {
+    if (!this.eternalMarkerRadius) {
+      const icon = R.pathOr(null, [ '_eternalMarkers', 0, 0, '_icon' ], this.pm)
+      this.eternalMarkerRadius = icon ? icon.getBoundingClientRect().width / 2 : FG_MARKER_RADIUS // FG_MARKER_RADIUS - radius of yellow dots
+    }
+    return this.eternalMarkerRadius
+  },
+
+  selectDirection (directionList) {
+    this.highlightedDirections = directionList
+    this._update()
   },
 
   // @method bringToFront(): this

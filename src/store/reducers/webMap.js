@@ -1,14 +1,19 @@
 import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
+import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { CoordinatesTypes, MapSources, colors } from '../../constants'
+import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
-import { LINE_WIDTH } from '../../utils/svg/lines'
+import { settings } from '../../utils/svg/lines'
+import { LS } from '../../utils'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
+
+const { Coordinates: Coord } = utils
+const { LINE_WIDTH } = settings
 
 const WebMapPoint = Record({
   lat: null,
@@ -51,10 +56,13 @@ export const WebMapObject = Record({
   attributes: WebMapAttributes(),
 })
 
+const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
+const zoom = Number(LS.get('view', 'zoom')) || 7
+
 const WebMapState = Record({
-  center: { lat: 48, lng: 35 },
-  zoom: 7,
-  coordinatesType: CoordinatesTypes.WGS_84,
+  center,
+  zoom,
+  coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
   // generalization: false,
@@ -71,6 +79,7 @@ const WebMapState = Record({
   contactId: null,
   scaleToSelection: false,
   marker: null,
+  topographicObjects: {},
 })
 
 const checkLevel = (object) => {
@@ -138,9 +147,6 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
-}, {
-  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
-  field: 'isTopographicObjectsOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -191,9 +197,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       let result = state
       if (center) {
         result = result.set('center', center)
+        LS.set('view', 'center', center)
       }
       if (zoom) {
         result = result.set('zoom', zoom)
+        LS.set('view', 'zoom', zoom)
       }
       return result
     }
@@ -215,6 +223,23 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.OBJECT_UNLOCKED: {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
+    }
+    case actionNames.GET_TOPOGRAPHIC_OBJECTS: {
+      const data = { ...payload, visible: true, selectedItem: 0 }
+      return state.set('topographicObjects', data)
+    }
+    case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
+      return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS: {
+      // return update(state, 'isTopographicObjectsOn', !state.isTopographicObjectsOn)
+      return state
+        .set('isTopographicObjectsOn', !state.isTopographicObjectsOn)
+        .set('topographicObjects', {})
+    }
+    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
+      const visible = !state.topographicObjects.visible
+      return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     default: {
       const f1 = simpleSetField(type)

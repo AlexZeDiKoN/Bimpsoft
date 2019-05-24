@@ -20,7 +20,7 @@ export default class ScaleControl extends React.Component {
           min="0"
           value={value}
           onChange={this.changeHandler}
-        /> %
+        />
       </>
     )
   }

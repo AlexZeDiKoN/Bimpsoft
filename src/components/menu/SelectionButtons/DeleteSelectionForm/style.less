@@ -2,7 +2,6 @@
 @import "../../../../assets/styles/_mixins.less";
 
 .confirm-delete-overflow{
-  width: 450px;
   align-self: center;
   overflow: hidden;
   width: auto;
@@ -15,7 +14,7 @@
 
 .confirm-delete {
   line-height: 1.3;
-  min-width: 450px;
+  min-width: 375px;
 
   .confirm-icon-warning {
     display: none;
@@ -37,11 +36,12 @@
   }
   .confirm-text{
     text-align: left;
-    padding: 16px 24px;
+    padding: 5px 25px;
   }
 
   .dzvin-form-item:first-child {
-    margin: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     width: 100%;
   }
 
@@ -61,22 +61,4 @@
     }
   }
 
-}
-.not-clickable-area{
-  margin: 0;
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  z-index: 1000;
-}
-
-@keyframes confirm-delete {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0px);
-
-  }
 }

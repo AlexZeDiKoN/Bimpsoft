@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import './style.css'
 import i18n from '../../../i18n'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
@@ -10,7 +9,7 @@ import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -74,7 +73,7 @@ export default class LeftMenu extends React.Component {
       <div className='left-menu' >
         <IconButton
           title={i18n.EDIT_MODE}
-          icon={iconNames.EDIT_DEFAULT}
+          icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
         />
@@ -90,10 +89,10 @@ export default class LeftMenu extends React.Component {
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
               <ContextMenuItem
-                icon={iconNames.NONE_ICON_DEFAULT}
+                icon={iconNames.UNIT_15_ACTIVE}
                 text={i18n.AUTO}
                 checked={subordinationAuto}
-                hoverIcon={iconNames.NONE_ICON_ACTIVE}
+                hoverIcon={iconNames.UNIT_15_ACTIVE}
                 onClick={onSetSubordinationLevelAuto}
               />
               {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (

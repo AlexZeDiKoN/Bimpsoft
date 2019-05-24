@@ -1,4 +1,4 @@
-import { List, Record } from 'immutable'
+import { List, Record, Set } from 'immutable'
 import * as actions from '../actions/flexGrid'
 import { merge, update } from '../../utils/immutable'
 
@@ -16,7 +16,19 @@ const FlexGrid = Record({
   directionSegments: List(),
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
+  directionNames: List(),
+  eternalDescriptions: List(),
   zones: HAS_ZONES,
+})
+
+const SelectedDirections = Record({
+  list: Set(),
+  main: null,
+})
+
+const SelectedEternal = Record({
+  position: undefined,
+  coordinates: undefined,
 })
 
 const FlexGridState = Record({
@@ -24,6 +36,8 @@ const FlexGridState = Record({
   visible: false,
   vertical: false,
   present: false,
+  selectedDirections: SelectedDirections(),
+  selectedEternal: SelectedEternal(),
   flexGrid: FlexGrid(),
 })
 
@@ -70,27 +84,23 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones },
+          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] },
           geometry: [ eternals, directionSegments, zoneSegments ],
         } = payload
-        return payload
-          ? update(merge(state, {
-            present: !deleted,
-            visible: (showFlexGrid || state.visible) && !deleted,
-          }), 'flexGrid', merge, {
-            id,
-            deleted,
-            directions,
-            zones,
-            eternals: List(eternals),
-            directionSegments: List(directionSegments),
-            zoneSegments: List(zoneSegments),
-          })
-          : merge(state, {
-            visible: false,
-            present: false,
-            flexGrid: FlexGrid(),
-          })
+        return update(merge(state, {
+          present: !deleted,
+          visible: (showFlexGrid || state.visible) && !deleted,
+        }), 'flexGrid', merge, {
+          id,
+          deleted,
+          directions,
+          zones,
+          eternals: List(eternals),
+          directionSegments: List(directionSegments),
+          directionNames: List(directionNames),
+          eternalDescriptions: List(eternalDescriptions),
+          zoneSegments: List(zoneSegments),
+        })
       } else {
         return merge(state, {
           visible: false,
@@ -98,6 +108,36 @@ export default function reducer (state = FlexGridState(), action) {
           flexGrid: FlexGrid(),
         })
       }
+    }
+    case actions.SELECT_DIRECTION: {
+      const { selectedDirections: { list, main } } = state
+      const { index, isMain } = payload
+      const updaterObj = { list: list.add(index), main: isMain ? index : main }
+      return update(state, 'selectedDirections', merge, updaterObj)
+    }
+    case actions.DESELECT_DIRECTION: {
+      const { selectedDirections: { list, main } } = state
+      const updaterObj = {}
+      if (payload) {
+        const { index, updateMain } = payload
+        updaterObj.list = list.delete(index)
+        updaterObj.main = updateMain || main
+      } else {
+        updaterObj.list = list.clear()
+        updaterObj.main = null
+      }
+      return update(state, 'selectedDirections', merge, updaterObj)
+    }
+    case actions.SET_SELECT_ETERNAL: {
+      return update(state, 'selectedEternal', payload || { position: undefined, coordinates: undefined })
+    }
+    case actions.CHANGE_ETERNAL: {
+      const { eternals } = state.flexGrid
+      const { position, latlng } = payload
+      const [ dIndex, zIndex ] = position
+      const line = [ ...eternals.get(dIndex, []) ]
+      line[zIndex] = latlng
+      return update(state, 'flexGrid', merge, { eternals: update(eternals, dIndex, line) })
     }
     default:
       return state

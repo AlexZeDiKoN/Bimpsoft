@@ -1,8 +1,9 @@
 /* global L */
-
+import { utils } from '@DZVIN/CommonComponents'
 import './patch'
-import coordinates from '../../utils/coordinates'
 import entityKind from './entityKind'
+
+const { Coordinates: Coord } = utils
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -68,7 +69,7 @@ export const setLayerSelected = (layer, selected, active, activeLayer) => {
 // ------------------------ Функції створення тактичних знаків відповідного типу ---------------------------------------
 export function createTacticalSign (data, map, prevLayer) {
   const { type } = data
-  switch (+type) {
+  switch (Number(type)) {
     case entityKind.POINT:
       return createPoint(data, prevLayer)
     case entityKind.TEXT:
@@ -114,6 +115,13 @@ function createMarker (point, icon, layer) {
   return layer
 }
 
+export function createCatalogIcon (code, amplifiers, point, layer) {
+  const icon = new L.PointIcon({ data: { code, amplifiers } })
+  const marker = createMarker(point, icon, layer)
+  marker.options.tsType = entityKind.POINT
+  return marker
+}
+
 function createPoint (data, layer) {
   const { point } = data
   const icon = new L.PointIcon({ data })
@@ -130,7 +138,7 @@ function createText (data, layer) {
   return layer
 }
 
-function createSegment (data, prevLayer) {
+function createSegment (data) {
   const { geometry, attributes } = data
   const points = geometry.toJS()
   const { template, color } = attributes
@@ -160,7 +168,7 @@ function createPolyline (type, data, layer) {
   return layer
 }
 
-function createCircle (data, map, prevLayer) {
+function createCircle (data, map) {
   const [ point1, point2 ] = data.geometry.toJS()
   if (!point1 || !point2) {
     console.error('createCircle: немає координат для круга')
@@ -183,7 +191,7 @@ function createRectangle (type, points, layer) {
 
 function createSquare (data, map, layer) {
   let [ point1 = null, point2 = null ] = data.geometry.toJS()
-  if (point1 === null || point2 === null || coordinates.isWrong(point1) || coordinates.isWrong(point2)) {
+  if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
   }
   const bounds = L.latLngBounds(point1, point2)
@@ -306,7 +314,7 @@ function formGeometry (coords) {
   }
 }
 
-function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
+export function formFlexGridGeometry (eternals, directionSegments, zoneSegments) {
   return {
     point: calcMiddlePoint(eternals.reduce((result, item) => result.concat(item), [])),
     geometry: [ eternals, directionSegments, zoneSegments ],

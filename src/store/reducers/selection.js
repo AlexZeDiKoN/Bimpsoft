@@ -32,6 +32,9 @@ export default function reducer (state = initState, action) {
     case actions.HIDE_FORM: {
       return { ...state, showForm: null, newShape: EMPTY_OBJECT }
     }
+    case actions.DISABLE_DRAW: {
+      return { ...state, newShape: EMPTY_OBJECT }
+    }
     case actions.SET_NEW_SHAPE: {
       const { newShape } = action
       return { ...state, newShape, showForm: null }
@@ -58,6 +61,12 @@ export default function reducer (state = initState, action) {
     }
     case actions.CLIPBOARD_CLEAR: {
       return { ...state, clipboard: null }
+    }
+    case actions.SHOW_DIVIDE_FORM: {
+      return { ...state, showForm: FormTypes.DIVIDE_DIR }
+    }
+    case actions.SHOW_COMBINE_FORM: {
+      return { ...state, showForm: FormTypes.COMBINE_DIR }
     }
     default:
       return state

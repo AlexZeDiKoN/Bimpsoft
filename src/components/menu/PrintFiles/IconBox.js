@@ -3,10 +3,9 @@ import { Icon } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
-import IconButton from '../IconButton'
 import { DOC_CLASS_ID } from '../../../constants/Print'
 
-const iconNames = components.icons.names
+const { names: iconNames, IconButton } = components.icons
 
 export default class IconBox extends Component {
   static propTypes = {

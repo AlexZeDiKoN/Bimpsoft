@@ -1,21 +1,35 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import IconButton from '../IconButton'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
+import formFor from './DirectionForms'
+import Combine from './DirectionForms/Combine'
+import Divide from './DirectionForms/Divide'
 
-const iconNames = components.icons.names
+const DivideDirectionForm = formFor(Divide)
+const CombineDirectionsForm = formFor(Combine)
 
-export default class SelectionButtons extends React.Component {
+const { names: iconNames, IconButton } = components.icons
+
+export default class FlexGridButtons extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
     visible: PropTypes.bool,
     showFlexGridOptions: PropTypes.func,
     hideFlexGrid: PropTypes.func,
     calcFlexGridUnits: PropTypes.func,
+    showDivideDirForm: PropTypes.func,
+    onModalCancel: PropTypes.func,
+    selectDirection: PropTypes.func,
+    deselectDirection: PropTypes.func,
+    isShownDivideForm: PropTypes.bool,
+    flexGrid: PropTypes.object,
+    updateFlexGridDirections: PropTypes.func,
+    isShownCombineForm: PropTypes.bool,
+    showCombineDirForm: PropTypes.func,
   }
 
   render () {
@@ -25,6 +39,15 @@ export default class SelectionButtons extends React.Component {
       showFlexGridOptions,
       hideFlexGrid,
       calcFlexGridUnits,
+      showDivideDirForm,
+      isShownDivideForm,
+      isShownCombineForm,
+      showCombineDirForm,
+      onModalCancel,
+      selectDirection,
+      deselectDirection,
+      flexGrid,
+      updateFlexGridDirections,
     } = this.props
 
     if (!isEditMode) {
@@ -49,6 +72,34 @@ export default class SelectionButtons extends React.Component {
           disabled={!visible}
           onClick={calcFlexGridUnits}
         />
+        <IconButton
+          title={i18n.DIVIDE_DIRECTION}
+          icon={iconNames.MENU_DIVISION_DEFAULT}
+          disabled={!visible}
+          onClick={showDivideDirForm}
+        >{isShownDivideForm &&
+          <DivideDirectionForm
+            onCancel={onModalCancel}
+            onOk={updateFlexGridDirections}
+            select={selectDirection}
+            deselect={deselectDirection}
+            flexGrid={flexGrid}
+          />}
+        </IconButton>
+        <IconButton
+          title={i18n.COMBINE_DIRECTIONS}
+          icon={iconNames.MENU_UNION_DEFAULT}
+          disabled={!visible || flexGrid.directions < 2}
+          onClick={showCombineDirForm}
+        >{isShownCombineForm &&
+          <CombineDirectionsForm
+            onCancel={onModalCancel}
+            onOk={updateFlexGridDirections}
+            select={selectDirection}
+            deselect={deselectDirection}
+            flexGrid={flexGrid}
+          />}
+        </IconButton>
       </>
     )
   }

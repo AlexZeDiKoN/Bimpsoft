@@ -56,7 +56,12 @@ export const searchSelectOption = (index) => (dispatch, getState) => {
   }
 }
 
-export const searchClearError = () => ({
+export const searchClearError = ({
   type: SET_SEARCH_EMPTY,
   payload: false,
+})
+
+export const searchCloseList = ({
+  type: SET_SEARCH_OPTIONS,
+  payload: null,
 })

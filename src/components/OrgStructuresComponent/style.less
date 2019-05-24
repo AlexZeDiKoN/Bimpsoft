@@ -6,51 +6,22 @@
   flex-direction: column;
   flex: 1 1 auto;
 
+  .org-structures-searchBlock {
+    display: flex;
+    align-items: center;
+    .ant-input-affix-wrapper {
+      width: 85%;
+    }
+  }
+
   .ant-input-search{
     padding: 5px;
     flex: 0 0 auto;
   }
   .org-structures-scroll{
     flex: 1 1 auto;
-    // overflow-y: scroll;
+    overflow-y: scroll;
     padding: 0 8px;
-  }
-
-
-  .tree-component-ul:not(.tree-component-level-0) {
-    padding: 0;
-    margin: 0;
-    list-style-type: none;
-    position: relative;
-
-    > .tree-component-li {
-      list-style-type: none;
-      border-left: 0.15em solid @toolbar-border;
-      margin-left: 1.1em;
-
-      > :first-child {
-        padding-left: 0.6em;
-        position: relative;
-
-        &:before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -0.175em;
-          bottom: 46%;
-          width: 0.5em;
-          border: 0.15em solid @toolbar-border;
-          border-top: 0 none transparent;
-          border-right: 0 none transparent;
-        }
-      }
-      &:last-child {
-        border-left: 0.15em solid transparent;
-      }
-    }
-  }
-  .tree-component-ul.tree-component-level-1 > .tree-component-li {
-    margin-left: 0.5em;
   }
 }
 
