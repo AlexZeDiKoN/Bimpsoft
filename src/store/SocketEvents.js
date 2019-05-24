@@ -28,6 +28,7 @@ const updateObject = (dispatch) => ({ id }) =>
   catchError(webMapActions.refreshObject)(id)(dispatch)
 
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
+  // console.log(`lockObject`, getState().webMap.contactId, contactId)
   if (String(getState().webMap.contactId) !== String(contactId)) {
     catchError(webMapActions.objectLocked)(objectId, contactName)(dispatch)
   }
