@@ -61,18 +61,21 @@ export default class FlexGridButtons extends React.Component {
         <MenuDivider />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={dropHandler} />
         <IconButton
+          placement={'bottomLeft'}
           title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`}
           icon={iconNames.MENU_OPERATING_AREA_DEFAULT}
           checked={visible}
           onClick={dropHandler}
         />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.SEND_TO_ICT}
           icon={iconNames.MENU_CALCULATION_DEFAULT}
           disabled={!visible}
           onClick={calcFlexGridUnits}
         />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.DIVIDE_DIRECTION}
           icon={iconNames.MENU_DIVISION_DEFAULT}
           disabled={!visible}
@@ -87,6 +90,7 @@ export default class FlexGridButtons extends React.Component {
           />}
         </IconButton>
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.COMBINE_DIRECTIONS}
           icon={iconNames.MENU_UNION_DEFAULT}
           disabled={!visible || flexGrid.directions < 2}

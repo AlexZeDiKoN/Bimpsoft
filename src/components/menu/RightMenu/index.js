@@ -75,12 +75,14 @@ export default class RightMenu extends React.Component {
           <SearchOptions />
         </div>
         <IconButton
+          placement={'bottomRight'}
           title={i18n.TOGGLE_SIDEBAR}
           icon={iconNames.LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
         />
         <IconButton
+          placement={'bottomRight'}
           title={i18n.SETTINGS}
           icon={iconNames.SETTING_DEFAULT}
           checked={isSettingsShow}
