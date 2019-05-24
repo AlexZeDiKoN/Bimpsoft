@@ -7,10 +7,16 @@
   justify-content: space-between;
   padding: 5px 5px 5px 6px;
   background: @toolbar-header-background;
-  color: #fff;
-  --dzvin-expand-icon-color: #fff;
+  color: @input-background-color;
+  --dzvin-expand-icon-color: @input-background-color;
   .dzvin-expand-icon {
     font-size: 0.9em;
+  }
+  .icon{
+    color: @input-background-color;
+  }
+  .icon-button:hover{
+    background: transparent;
   }
 }
 .map-item-component-title{
@@ -26,7 +32,7 @@
   margin: auto 1px;
   flex: 0 0 auto;
   &.icon-button .icon{
-      color: #fff;
+      color: @input-background-color;
     }
   &.icon-button:hover{
     & .icon{

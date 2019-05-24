@@ -19,12 +19,11 @@ const VisibilityButton = (props) => {
     : (visible ? classNames.push('closed') : classNames.push('unClosed'))
 
   return (
-    <IconButton
-      title={title}
-      className={classNames.join(' ')}
-      onClick={clickHandler}
-      icon={iconNames.DARK_EYE_ON_ACTIVE}
-    />
+    <div className={classNames.join(' ')} title={title} onClick={clickHandler}>
+      <IconButton
+        icon={iconNames.DARK_EYE_ON_ACTIVE}
+      />
+    </div>
   )
 }
 
