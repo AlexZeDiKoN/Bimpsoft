@@ -55,12 +55,14 @@ export default class CreateButtons extends React.PureComponent {
       <>
         <MenuDivider />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.POINT_SIGN}
           icon={iconNames.CONVENTIONAL_SIGN_DEFAULT}
           checked={newShape.type === SelectionTypes.POINT}
           onClick={this.clickPointHandler}
         />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.LINE_SIGN}
           icon={iconNames.GROUPING_GRAPHIC_PRIMITIVES_DEFAULT}
           checked={lineTypes.indexOf(newShape.type) >= 0}
@@ -75,6 +77,7 @@ export default class CreateButtons extends React.PureComponent {
           )}
         </IconButton>
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.ADD_TEXT}
           icon={iconNames.TEXT_SIGN_DEFAULT}
           checked={newShape.type === SelectionTypes.TEXT}

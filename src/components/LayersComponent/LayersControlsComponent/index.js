@@ -41,6 +41,7 @@ export default class LayersControlsComponent extends React.Component {
           onChange={this.props.onChangeHiddenOpacity}
         />
         <IconButton
+          placement={'topRight'}
           title={i18n.LAYERS_CLOSE_ALL_MAPS}
           className="layers-controls-control"
           icon={iconNames.CLOSE_ROUND_ACTIVE}

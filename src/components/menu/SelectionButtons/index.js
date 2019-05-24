@@ -59,6 +59,7 @@ export default class SelectionButtons extends React.Component {
         {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
         <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.CUT}
           icon={iconNames.CUT_DEFAULT}
           disabled={!isSelected}
@@ -66,6 +67,7 @@ export default class SelectionButtons extends React.Component {
         />
         <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.COPY}
           icon={iconNames.COPY_DEFAULT}
           disabled={!isSelected}
@@ -73,6 +75,7 @@ export default class SelectionButtons extends React.Component {
         />
         <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.PASTE}
           icon={iconNames.PASTE_DEFAULT}
           disabled={!isClipboardExist}
@@ -86,6 +89,7 @@ export default class SelectionButtons extends React.Component {
         </IconButton>
         <HotKey selector={shortcuts.DELETE} onKey={isSelected ? onDelete : null} />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.DELETE}
           icon={iconNames.DELETE_DEFAULT}
           disabled={!isSelected}
@@ -101,6 +105,7 @@ export default class SelectionButtons extends React.Component {
           )}
         </IconButton>
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.MIRROR_IMAGE}
           icon={iconNames.MENU_MIRROR_DEFAULT}
           disabled={!isSelected || nSelected > 1}
