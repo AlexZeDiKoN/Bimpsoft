@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
-import placeSearch from '../../../server/places'
+import placeSearch from '../../../../server/places'
+import './style.css'
 
 const {
   icons: { IconHovered, names: IconNames },
@@ -49,7 +50,7 @@ export default class CoordinateItem extends React.Component {
   render () {
     const { coordinate = {}, canRemove, readOnly } = this.props
     return (
-      <FormItem>
+      <FormItem className="coordinatesModal">
         <Coordinates
           isReadOnly={readOnly}
           coordinates={coordinate}
