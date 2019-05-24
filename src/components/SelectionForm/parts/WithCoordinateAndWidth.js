@@ -13,10 +13,10 @@ const {
 const { Coordinates: Coord } = utils
 
 function getWidthFromCoordinatesArray (coordinatesArray) {
-  const coord1 = coordinatesArray.get(0)
+  const coord1 = coordinatesArray[0]
   let width = 0
   if (Coord.check(coord1)) {
-    const coord2 = coordinatesArray.get(1)
+    const coord2 = coordinatesArray[1]
     if (Coord.check(coord2)) {
       const corner1 = L.latLng(coord1)
       const corner2 = L.latLng(coord2)
@@ -70,7 +70,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
   widthBlurHandler = () => this.setState({ widthText: null })
 
   renderCoordinateAndWidth () {
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH)
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const { widthText = null } = this.state
 
     const width = widthText !== null ? widthText : getWidthFromCoordinatesArray(coordinatesArray)
@@ -85,7 +85,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
         <div className="shape-form-scrollable">
           <CoordinateRow
             label={i18n.NORTH_WEST}
-            coordinate={coordinatesArray.get(0)}
+            coordinate={coordinatesArray[0]}
             index={0}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }
@@ -95,7 +95,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
           />
           <CoordinateRow
             label={i18n.SOUTH_EAST}
-            coordinate={coordinatesArray.get(1)}
+            coordinate={coordinatesArray[1]}
             index={1}
             readOnly={!canEdit}
             onChange={canEdit ? this.coordinateChangeHandler : null }

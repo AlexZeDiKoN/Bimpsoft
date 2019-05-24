@@ -33,13 +33,10 @@ export const selectedList = (list) => ({
   list,
 })
 
-export const showEditForm = (id, geometry) => (dispatch, getState) => {
+export const showEditForm = (id) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
-  let object = objects.get(id)
-  if (geometry) {
-    object = object.set('point', geometry.point).set('geometry', List(geometry.geometry))
-  }
+  const object = objects.get(id)
   dispatch(setPreview(object))
 }
 
@@ -235,4 +232,14 @@ export const showDivideForm = () => ({
 
 export const showCombineForm = () => ({
   type: SHOW_COMBINE_FORM,
+})
+
+export const mirrorImage = () => withNotification((dispatch, getState) => {
+  const state = getState()
+  const { selection: { list }, webMap: { objects } } = state
+  const id = list[0]
+  const obj = objects.get(id)
+  const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
+  const point = obj.point.toObject()
+  dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
 })

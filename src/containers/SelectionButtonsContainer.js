@@ -25,6 +25,7 @@ const mapDispatchToProps = {
   onDelete: selectionActions.showDeleteForm,
   onDeleteOk: selectionActions.deleteSelected,
   onDeleteCancel: selectionActions.hideForm,
+  onMirrorImage: selectionActions.mirrorImage,
 }
 
 const SelectionButtonsContainer = connect(
