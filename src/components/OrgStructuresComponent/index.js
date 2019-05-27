@@ -54,8 +54,8 @@ export default class OrgStructuresComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit) => (
-    { textFilter, onClick, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
+  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects) => (
+    { textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects, scrollRef: this.scrollRef }
   ))
 
   getFilteredIds = memoizeOne(getFilteredIds)
@@ -85,9 +85,15 @@ export default class OrgStructuresComponent extends React.PureComponent {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
-    const commonData = this.getCommonData(textFilter, onClick, onDoubleClick, selectedId, canEdit)
-
-    const extraData = { selectedLayer, onMapObjects }
+    const commonData = this.getCommonData(
+      textFilter,
+      onClick,
+      onDoubleClick,
+      selectedId,
+      canEdit,
+      selectedLayer,
+      onMapObjects,
+    )
 
     return (
       <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
@@ -113,7 +119,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
               itemTemplate={Item}
               commonData={commonData}
               onMouseUp={this.mouseUpHandler}
-              extraData={extraData}
             />
           </div>
         </div>
