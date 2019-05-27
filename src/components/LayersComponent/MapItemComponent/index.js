@@ -76,6 +76,7 @@ export default class MapItemComponent extends React.Component {
           onChange={this.changeColorHandler}
         />
         <IconButton
+          placement={'topRight'}
           title={i18n.LAYERS_CLOSE_CURRENT_MAP}
           className="map-item-component-control"
           icon={iconNames.DARK_CLOSE_ROUND_ACTIVE}

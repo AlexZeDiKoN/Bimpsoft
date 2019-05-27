@@ -40,6 +40,7 @@ export default class Index extends React.Component {
         trigger={[ 'click' ]}
       >
         <IconButton
+          placement={'topRight'}
           className={'moreButton'}
           title={i18n.EXTRA_FUNCTIONS}
           icon={iconNames.MORE_WHITE_DEFAULT}
