@@ -116,10 +116,12 @@ function createMarker (point, icon, layer) {
 }
 
 export function createCatalogIcon (code, amplifiers, point, layer) {
-  const icon = new L.PointIcon({ data: { code, amplifiers } })
-  const marker = createMarker(point, icon, layer)
-  marker.options.tsType = entityKind.POINT
-  return marker
+  if (point) {
+    const icon = new L.PointIcon({ data: { code, amplifiers } })
+    const marker = createMarker(point, icon, layer)
+    marker.options.tsType = entityKind.POINT
+    return marker
+  }
 }
 
 function createPoint (data, layer) {
