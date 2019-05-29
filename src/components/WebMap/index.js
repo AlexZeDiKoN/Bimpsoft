@@ -185,6 +185,7 @@ const setScaleOptions = (layer, params) => {
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
+    case entityKind.CONTOUR:
       layer.setScaleOptions({
         min: Number(params[paramsNames.LINE_SIZE_MIN]),
         max: Number(params[paramsNames.LINE_SIZE_MAX]),
@@ -1200,7 +1201,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
-      this.checkSaveObject(false)
+      // this.checkSaveObject(false)
       editObject(object.id)
     } else {
       const targetLayer = object && object.layer
@@ -1505,15 +1506,17 @@ export default class WebMap extends React.PureComponent {
       fixFlexGridInstance && fixFlexGridInstance(null)
     } else if (actual && !this.flexGrid) {
       this.dropFlexGrid(flexGridVisible)
-    } else if (actual && this.flexGrid && flexGridVisible && flexGridData.directions !== prevData.directions) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
-      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
-      const options = { directions }
-      const internalProps = {
-        eternals: eternals.toArray(),
-        directionSegments: directionSegments.toArray(),
-        zoneSegments: zoneSegments.toArray(),
+    } else if (actual && this.flexGrid) {
+      if (flexGridVisible /* && flexGridData.directions !== prevData.directions */) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
+        const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+        const options = { directions }
+        const internalProps = {
+          eternals: eternals.toArray(),
+          directionSegments: directionSegments.toArray(),
+          zoneSegments: zoneSegments.toArray(),
+        }
+        this.flexGrid.updateProps(options, internalProps)
       }
-      this.flexGrid.updateProps(options, internalProps)
     }
   }
 

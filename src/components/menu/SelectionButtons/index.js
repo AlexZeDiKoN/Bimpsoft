@@ -2,13 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { debounce } from 'lodash/function'
 import { components } from '@DZVIN/CommonComponents'
-import './style.css'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
+import entityKind, { entityKindOutlinable } from '../../WebMap/entityKind'
 import DeleteSelectionForm from './DeleteSelectionForm'
+
+import './style.css'
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -19,6 +21,9 @@ export default class SelectionButtons extends React.Component {
     layerName: PropTypes.string,
     list: PropTypes.array,
     clipboard: PropTypes.array,
+    selectedTypes: PropTypes.arrayOf(
+      PropTypes.number
+    ),
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
     onPaste: PropTypes.func,
@@ -26,6 +31,8 @@ export default class SelectionButtons extends React.Component {
     onDeleteOk: PropTypes.func,
     onDeleteCancel: PropTypes.func,
     onMirrorImage: PropTypes.func,
+    onContour: PropTypes.func,
+    onDecontour: PropTypes.func,
   }
 
   render () {
@@ -35,6 +42,7 @@ export default class SelectionButtons extends React.Component {
       list,
       clipboard,
       layerName,
+      selectedTypes,
       onCopy,
       onCut,
       onPaste,
@@ -42,6 +50,8 @@ export default class SelectionButtons extends React.Component {
       onDeleteOk,
       onDeleteCancel,
       onMirrorImage,
+      onContour,
+      onDecontour,
     } = this.props
 
     if (!isEditMode) {
@@ -52,6 +62,9 @@ export default class SelectionButtons extends React.Component {
     const isSelected = Boolean(nSelected)
     const clipboardSize = clipboard ? clipboard.length : 0
     const isClipboardExist = Boolean(clipboardSize)
+    const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
+    const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
+    // console.log({ selectedTypes, canContour, canDecontour })
 
     return (
       <>
@@ -104,12 +117,20 @@ export default class SelectionButtons extends React.Component {
             />
           )}
         </IconButton>
+        <MenuDivider />
         <IconButton
           placement={'bottomLeft'}
           title={i18n.MIRROR_IMAGE}
           icon={iconNames.MENU_MIRROR_DEFAULT}
           disabled={!isSelected || nSelected > 1}
           onClick={debounce(onMirrorImage, 350)}
+        />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.CONTOUR}
+          icon={iconNames.MENU_CONTOUR_DEFAULT}
+          disabled={!canContour && !canDecontour}
+          onClick={canContour ? onContour : onDecontour}
         />
       </>
     )

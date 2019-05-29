@@ -1,20 +1,26 @@
 import { connect } from 'react-redux'
 import SelectionButtons from '../components/menu/SelectionButtons'
 import { FormTypes } from '../constants'
-import { canEditSelector, layerNameSelector } from '../store/selectors'
+import { canEditSelector, layerNameSelector, selectedTypes } from '../store/selectors'
 import * as selectionActions from '../store/actions/selection'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
-  const { selection: { showForm, list, clipboard } } = store
-  const isEditMode = canEditSelector(store)
-  const layerName = layerNameSelector(store)
+  const {
+    selection: {
+      showForm,
+      list,
+      clipboard,
+    },
+  } = store
+
   return {
-    isEditMode,
-    layerName,
+    isEditMode: canEditSelector(store),
+    layerName: layerNameSelector(store),
     showDelForm: showForm === FormTypes.DEL,
     list,
     clipboard,
+    selectedTypes: selectedTypes(store),
   }
 }
 
@@ -26,6 +32,8 @@ const mapDispatchToProps = {
   onDeleteOk: selectionActions.deleteSelected,
   onDeleteCancel: selectionActions.hideForm,
   onMirrorImage: selectionActions.mirrorImage,
+  onContour: selectionActions.createContour,
+  onDecontour: selectionActions.dropContour,
 }
 
 const SelectionButtonsContainer = connect(

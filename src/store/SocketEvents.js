@@ -24,8 +24,10 @@ const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
   layerData: { layerId, color },
 })
 
-const updateObject = (dispatch) => ({ id }) =>
-  catchError(webMapActions.refreshObject)(id)(dispatch)
+const updateObject = (dispatch) => ({ id, type, layer }) => {
+  // console.log('socket.io: update object', { id, type, layer })
+  catchError(webMapActions.refreshObject)(id, type, layer)(dispatch)
+}
 
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
   // console.log(`lockObject`, getState().webMap.contactId, contactId)

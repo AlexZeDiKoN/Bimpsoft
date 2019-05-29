@@ -243,3 +243,11 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   const point = obj.point.toObject()
   dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
 })
+
+export const createContour = () => withNotification((dispatch, getState, { webmapApi }) => {
+
+})
+
+export const dropContour = () => withNotification((dispatch, getState, { webmapApi }) => {
+
+})

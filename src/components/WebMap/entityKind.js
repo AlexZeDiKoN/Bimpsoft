@@ -9,6 +9,7 @@ const entityKind = { // ID в базі даних відповідних тип�
   RECTANGLE: 8, // прямокутник
   SQUARE: 9, // квадрат
   TEXT: 10, // текстова мітка
+  CONTOUR: 11, // контур
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
 }
@@ -21,6 +22,7 @@ export const entityKindFillable = [
   entityKind.CIRCLE,
   entityKind.RECTANGLE,
   entityKind.SQUARE,
+  entityKind.CONTOUR,
 ]
 
 export const entityKindNonFillable = [
@@ -31,4 +33,12 @@ export const entityKindNonFillable = [
   entityKind.TEXT,
   entityKind.GROUP,
   entityKind.FLEXGRID,
+]
+
+export const entityKindOutlinable = [
+  entityKind.POLYGON,
+  entityKind.CIRCLE,
+  entityKind.RECTANGLE,
+  entityKind.SQUARE,
+  entityKind.CONTOUR,
 ]
