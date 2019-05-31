@@ -28,6 +28,7 @@ export const merge = (record, payload) =>
   Object.keys(payload).reduce((record, key) => {
     const oldValue = record.get(key)
     const newValue = payload[key]
+    // console.log({ oldValue, newValue, eq: eq(oldValue, newValue) })
     return eq(oldValue, newValue)
       ? record
       : record.set(key, newValue)
@@ -75,6 +76,7 @@ const getBSize = (realA, realB, flipped) => {
 /** eq is patched immutable's method is */
 const eq = (a, b) => {
   if (a === b) {
+    // console.log(`eq1`)
     return true
   }
   // вложенные структуры в коллекцию immutable могут быть не только представиетлями immutable
@@ -88,15 +90,18 @@ const eq = (a, b) => {
         isIndexed(a) !== isIndexed(b) ||
         isOrdered(a) !== isOrdered(b)
       ) {
+        // console.log(`eq2`)
         return false
       }
 
       if (a.size === 0 && b.size === 0) {
+        // console.log(`eq3`)
         return true
       }
 
       if (isOrdered(a)) {
         const entries = a.entries()
+        // console.log(`eq4`)
         return b.every(function (v, k) {
           const entry = entries.next().value
           return entry && eq(entry[1], v) && (!isAssociative(a) || eq(entry[0], k))
@@ -109,10 +114,13 @@ const eq = (a, b) => {
 
       const flipped = a.size === undefined && b.size !== undefined // меняем значения переданных аргументов
       const bSize = getBSize(a, b, flipped)
+      // console.log(`eq5`)
       return bSize !== null && a.size === bSize
     }
+    // console.log(`eq6`)
     return !isIterable(b) && objChecker(a, b)
   }
+  // console.log(`eq7`)
   return false
 }
 /* end eq */

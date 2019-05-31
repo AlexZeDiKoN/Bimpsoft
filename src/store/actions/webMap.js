@@ -131,7 +131,7 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
-const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
+export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   ...rest,
   unit: unit !== null ? Number(unit) : null,
   type: type !== null ? Number(type) : null,
@@ -161,35 +161,40 @@ export const deleteObject = (id) =>
     })
   })
 
-export const refreshObject = (id) =>
+export const refreshObject = (id, type, layer) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
     const state = getState()
-    const { layers: { byId }, webMap: { objects }, flexGrid: { flexGrid: currentGrid } } = state
+    const {
+      layers: { byId },
+      flexGrid: { flexGrid: currentGrid },
+    } = state
+
     if (currentGrid && currentGrid.id === id) {
       const mapId = activeMapSelector(state)
       mapId && await dispatch(flexGrid.getFlexGrid(mapId))
       return
     }
-    if (!objects.get(id)) {
+
+    if (!byId.hasOwnProperty(layer)) {
+      return // Об'єкт не належить жодному з відкритих шарів
+    }
+
+    const object = await objRefresh(id)
+    if (!object) {
       return
     }
-    let object = await objRefresh(id)
-    if (Number(object.type) === entityKind.FLEXGRID) {
+
+    if (Number(type) === entityKind.FLEXGRID) {
       dispatch({
         type: flexGrid.GET_FLEXGRID,
         payload: object,
       })
     } else if (object.id) {
-      const layerId = object.layer
-      if (!byId.hasOwnProperty(layerId)) {
-        return
-      }
-      object = fixServerObject(object)
+      dispatch({
+        type: actionNames.REFRESH_OBJECT,
+        payload: { id, object: fixServerObject(object) },
+      })
     }
-    dispatch({
-      type: actionNames.REFRESH_OBJECT,
-      payload: { id, object },
-    })
   })
 
 export const updateObject = ({ id, ...object }) =>

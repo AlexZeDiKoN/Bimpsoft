@@ -185,6 +185,7 @@ const setScaleOptions = (layer, params) => {
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
+    case entityKind.CONTOUR:
       layer.setScaleOptions({
         min: Number(params[paramsNames.LINE_SIZE_MIN]),
         max: Number(params[paramsNames.LINE_SIZE_MAX]),
@@ -378,14 +379,13 @@ export default class WebMap extends React.PureComponent {
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType, this.indicateMode)
     }
-    if (backOpacity !== prevProps.backOpacity) {
-      this.updateBackOpacity(backOpacity)
-    }
+    this.updateBackOpacity(backOpacity)
     if (params !== prevProps.params) {
       this.updateScaleOptions()
     }
     this.updateViewport(prevProps)
     if (lockedObjects !== prevProps.lockedObjects) {
+      // console.log(`lockedObjects`, lockedObjects)
       this.updateLockedObjects(lockedObjects)
     }
     if (flexGridData !== prevProps.flexGridData) {
@@ -599,7 +599,7 @@ export default class WebMap extends React.PureComponent {
 
   disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
-  checkSaveObject = () => {
+  checkSaveObject = (leaving) => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
@@ -620,7 +620,8 @@ export default class WebMap extends React.PureComponent {
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (geometryChanged) {
         return updateObjectGeometry(id, getGeometry(layer))
-      } else {
+      } else if (leaving) {
+        // try { throw new Error() } catch (e) { console.log(e.stack )}
         return tryUnlockObject(id)
       }
     }
@@ -631,7 +632,7 @@ export default class WebMap extends React.PureComponent {
     if (edit && list.length === 1) {
       const layer = this.findLayerById(list[0])
       if (layer && layer.object) {
-        await this.checkSaveObject()
+        await this.checkSaveObject(false)
         return layer.object.id
       }
     }
@@ -640,7 +641,7 @@ export default class WebMap extends React.PureComponent {
   adjustEditMode = (edit, { type }) => {
     const { selection: { list } } = this.props
     if (!edit && list.length === 1) {
-      this.checkSaveObject()
+      this.checkSaveObject(false)
     }
     this.setMapCursor(edit, type)
     this.updateCreatePoly(edit && type)
@@ -657,7 +658,7 @@ export default class WebMap extends React.PureComponent {
 
     // save geometry when one selected item lost focus
     if (list.length === 1 && list[0] !== newList[0] && edit) {
-      this.checkSaveObject()
+      this.checkSaveObject(true)
     }
 
     // get unit from new selection
@@ -772,7 +773,8 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    if (!this.props.selection.newShape.type) {
+    const { selection: { newShape, preview }, printStatus } = this.props
+    if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
@@ -997,7 +999,7 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
+            layer.catalogId || layer.remove()
             layer.pm && layer.pm.disable()
           }
         }
@@ -1152,7 +1154,7 @@ export default class WebMap extends React.PureComponent {
 
   onDragendLayer = () => setTimeout(() => {
     this.draggingObject = false
-    this.checkSaveObject()
+    this.checkSaveObject(false)
   }, 0)
 
   clickOnCatalogLayer = (event) => {
@@ -1198,7 +1200,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
-      this.checkSaveObject()
+      // this.checkSaveObject(false)
       editObject(object.id)
     } else {
       const targetLayer = object && object.layer
@@ -1503,15 +1505,17 @@ export default class WebMap extends React.PureComponent {
       fixFlexGridInstance && fixFlexGridInstance(null)
     } else if (actual && !this.flexGrid) {
       this.dropFlexGrid(flexGridVisible)
-    } else if (actual && this.flexGrid && flexGridVisible && flexGridData.directions !== prevData.directions) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
-      const { directions, eternals, directionSegments, zoneSegments } = flexGridData
-      const options = { directions }
-      const internalProps = {
-        eternals: eternals.toArray(),
-        directionSegments: directionSegments.toArray(),
-        zoneSegments: zoneSegments.toArray(),
+    } else if (actual && this.flexGrid) {
+      if (flexGridVisible /* && flexGridData.directions !== prevData.directions */) { // срабатывает в случаях ненативного изменения ОЗ (изменения через модальные окна деления/переноса через координаты, etc.)
+        const { directions, eternals, directionSegments, zoneSegments } = flexGridData
+        const options = { directions }
+        const internalProps = {
+          eternals: eternals.toArray(),
+          directionSegments: directionSegments.toArray(),
+          zoneSegments: zoneSegments.toArray(),
+        }
+        this.flexGrid.updateProps(options, internalProps)
       }
-      this.flexGrid.updateProps(options, internalProps)
     }
   }
 
@@ -1641,3 +1645,5 @@ export default class WebMap extends React.PureComponent {
 
 /** Do not delete, please, it is FIX */
 export const buildFlexGridGeometry = formFlexGridGeometry
+
+// try { throw new Error() } catch (e) { console.log(e.stack )}

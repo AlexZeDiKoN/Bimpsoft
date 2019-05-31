@@ -26,16 +26,24 @@ export default class RightMenu extends React.Component {
     onSelectSearchOption: PropTypes.func,
     onClearSearchError: PropTypes.func,
     onCloseSearch: PropTypes.func,
+    onManyCoords: PropTypes.func,
     printFiles: PropTypes.object,
   }
 
   search = (sample) => {
-    const { onSearch, onCoordinates } = this.props
+    const { onSearch, onCoordinates, onManyCoords } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
       const parsed = Coord.parse(query)
-      if (parsed && parsed.lng !== undefined && parsed.lat !== undefined) {
-        onCoordinates(query, parsed)
+      if (parsed && (parsed.length > 1 || (parsed.lng !== undefined && parsed.lat !== undefined))) {
+        if (parsed.length > 1) {
+          onManyCoords(parsed.map(({ lng, lat, type }) => ({
+            point: { lng, lat },
+            text: `${query} (${Coord.names[type]})`,
+          })))
+        } else {
+          onCoordinates(query, parsed)
+        }
       } else {
         onSearch(query)
       }
@@ -75,12 +83,14 @@ export default class RightMenu extends React.Component {
           <SearchOptions />
         </div>
         <IconButton
+          placement={'bottomRight'}
           title={i18n.TOGGLE_SIDEBAR}
           icon={iconNames.LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
         />
         <IconButton
+          placement={'bottomRight'}
           title={i18n.SETTINGS}
           icon={iconNames.SETTING_DEFAULT}
           checked={isSettingsShow}

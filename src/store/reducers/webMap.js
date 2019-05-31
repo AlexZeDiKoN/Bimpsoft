@@ -207,9 +207,10 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.APP_INFO: {
       const { version, contactId } = payload
+      console.info(`My contactID: ${contactId}`)
       return state
         .set('version', version)
-        .set('contactId', +contactId)
+        .set('contactId', Number(contactId))
     }
     case actionNames.GET_LOCKED_OBJECTS: {
       const myContactId = state.get('contactId')
@@ -219,9 +220,11 @@ export default function webMapReducer (state = WebMapState(), action) {
         .reduce(lockObject, map))
     }
     case actionNames.OBJECT_LOCKED: {
+      // console.log(`OBJECT_LOCKED`, payload)
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
     }
     case actionNames.OBJECT_UNLOCKED: {
+      // console.log(`OBJECT_UNLOCKED`, payload)
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {

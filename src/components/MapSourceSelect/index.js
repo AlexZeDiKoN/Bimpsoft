@@ -27,6 +27,7 @@ export default class MapSourceSelect extends React.Component {
     const { isShowSources, sources, source, onClickMapSource } = this.props
     return (
       <IconButton
+        placement={'bottomLeft'}
         title={i18n.MAP_SOURCE}
         icon={iconNames.MAP_DEFAULT}
         checked={isShowSources}

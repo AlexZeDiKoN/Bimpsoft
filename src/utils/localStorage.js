@@ -1,4 +1,6 @@
 export const LS = {
+  clear: () => window.localStorage.clear(),
+
   set: (group, key, data) => {
     const type = typeof data
     window.localStorage.setItem(`${group}::${key}::type`, type)
@@ -11,6 +13,7 @@ export const LS = {
     }
     window.localStorage.setItem(`${group}::${key}::data`, data)
   },
+
   get: (group, key) => {
     const type = window.localStorage.getItem(`${group}::${key}::type`)
     const data = window.localStorage.getItem(`${group}::${key}::data`)
@@ -22,5 +25,4 @@ export const LS = {
         return data
     }
   },
-  clear: () => window.localStorage.clear(),
 }

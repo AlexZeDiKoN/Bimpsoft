@@ -1,11 +1,12 @@
 {
   "name": "web-map",
-  "version": "7.02.363",
+  "version": "7.03.371",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^7.2.203",
-    "@DZVIN/MilSymbolEditor": "^7.2.127",
+    "@DZVIN/CommonComponents": "^7.3.215",
+    "@DZVIN/MilSymbolEditor": "^7.2.129",
     "@DZVIN/milsymbol": "^0.0.4",
+    "@unitybase/ub-pub": "^5.3.1",
     "antd": "^3.12.4",
     "babel-polyfill": "^6.26.0",
     "bezier-js": "2.2.18",

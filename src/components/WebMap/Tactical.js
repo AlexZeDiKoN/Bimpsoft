@@ -27,23 +27,26 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  const draggable = layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT
-  layer.pm.enable()
-  draggable && layer.pm.enableLayerDrag()
-  layer.on('pm:dragstart', () => {
-    const { _markerGroup, _helperLayers } = layer.pm
-    _markerGroup && _markerGroup.clearLayers()
-    _helperLayers && _helperLayers.clearLayers()
-  })
-  layer.on('pm:dragend', () => {
-    layer.pm._initMarkers()
-  })
-  const click = layer.fire.bind(layer, 'click')
-  const dblclick = layer.fire.bind(layer, 'dblclick')
-  recursiveForEach(getMarkers(layer), (marker) => {
-    marker.on('click', click)
-    marker.on('dblclick', dblclick)
-  })
+  if (layer.options.tsType !== entityKind.CONTOUR) {
+    if (layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT) {
+      layer.pm.enableLayerDrag()
+      layer.on('pm:dragstart', () => {
+        const { _markerGroup, _helperLayers } = layer.pm
+        _markerGroup && _markerGroup.clearLayers()
+        _helperLayers && _helperLayers.clearLayers()
+      })
+      layer.on('pm:dragend', () => {
+        layer.pm._initMarkers()
+      })
+    }
+    layer.pm.enable()
+    const click = layer.fire.bind(layer, 'click')
+    const dblclick = layer.fire.bind(layer, 'dblclick')
+    recursiveForEach(getMarkers(layer), (marker) => {
+      marker.on('click', click)
+      marker.on('dblclick', dblclick)
+    })
+  }
 }
 
 export const disableEdit = (layer) => {
@@ -90,6 +93,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createRectangle(type, data.geometry.toJS(), prevLayer)
     case entityKind.SQUARE:
       return createSquare(data, map, prevLayer)
+    case entityKind.CONTOUR:
+      return createContour(data)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -116,10 +121,12 @@ function createMarker (point, icon, layer) {
 }
 
 export function createCatalogIcon (code, amplifiers, point, layer) {
-  const icon = new L.PointIcon({ data: { code, amplifiers } })
-  const marker = createMarker(point, icon, layer)
-  marker.options.tsType = entityKind.POINT
-  return marker
+  if (point) {
+    const icon = new L.PointIcon({ data: { code, amplifiers } })
+    const marker = createMarker(point, icon, layer)
+    marker.options.tsType = entityKind.POINT
+    return marker
+  }
 }
 
 function createPoint (data, layer) {
@@ -177,6 +184,11 @@ function createCircle (data, map) {
   const options = prepareOptions(entityKind.CIRCLE)
   options.radius = map.distance(point1, point2)
   return L.circle(point1, options)
+}
+
+function createContour (data) {
+  const options = prepareOptions(entityKind.CONTOUR)
+  return L.geoJSON(data, options)
 }
 
 function createRectangle (type, points, layer) {

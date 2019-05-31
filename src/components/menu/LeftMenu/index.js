@@ -72,6 +72,7 @@ export default class LeftMenu extends React.Component {
     return (
       <div className='left-menu' >
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.EDIT_MODE}
           icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
@@ -81,6 +82,7 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <MapSourceSelectComponent />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
           icon={subordinationLevelViewData.icon}
           checked={isShowSubordinationLevel || !subordinationAuto}
@@ -111,6 +113,7 @@ export default class LeftMenu extends React.Component {
         </IconButton>
         <MenuDivider />
         <IconButton
+          placement={'topLeft'}
           value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
@@ -118,12 +121,14 @@ export default class LeftMenu extends React.Component {
           onClick={onMeasureChange}
         />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.MARKER}
           icon={iconNames.MENU_MARKER_DEFAULT}
           checked={marker}
           onClick={onMarkerChange}
         />
         <IconButton
+          placement={'bottomLeft'}
           title={i18n.TOPOGRAPHIC_OBJECTS}
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
