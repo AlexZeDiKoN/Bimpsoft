@@ -773,7 +773,8 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    if (!this.props.selection.newShape.type && !this.props.selection.preview && !this.props.printStatus) {
+    const { selection: { newShape, preview }, printStatus } = this.props
+    if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
