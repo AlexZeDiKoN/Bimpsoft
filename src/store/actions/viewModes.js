@@ -40,7 +40,6 @@ export const search = (sample) =>
           type: SET_SEARCH_OPTIONS,
           payload: searchOptions,
         })
-        break
     }
   })
 
