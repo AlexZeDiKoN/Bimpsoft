@@ -379,9 +379,7 @@ export default class WebMap extends React.PureComponent {
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType, this.indicateMode)
     }
-    if (backOpacity !== prevProps.backOpacity) {
-      this.updateBackOpacity(backOpacity)
-    }
+    this.updateBackOpacity(backOpacity)
     if (params !== prevProps.params) {
       this.updateScaleOptions()
     }
@@ -775,7 +773,8 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    if (!this.props.selection.newShape.type) {
+    const { selection: { newShape, preview }, printStatus } = this.props
+    if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
       }
@@ -1000,7 +999,7 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
+            layer.catalogId || layer.remove()
             layer.pm && layer.pm.disable()
           }
         }
