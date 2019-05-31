@@ -1,5 +1,6 @@
 import { actionNames } from '../actions/params'
 import { paramsNames, SCALES, INIT_VALUES } from '../../constants'
+import * as paramNames from '../../constants/params'
 
 const initialState = {
   [paramsNames.POINT_SIZE_MIN]: 4,
