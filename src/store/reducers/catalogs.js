@@ -4,6 +4,7 @@ import { catalogs } from '../actions'
 const { TextFilter } = data
 
 const catalogRoot = 35
+const KOATUU = 37
 
 const initState = {
   byIds: {},
@@ -28,11 +29,11 @@ export default function reducer (state = initState, action) {
           geo: Boolean(attributes.find((attr) => attr.typeOfInput === 'geometry')),
         }))
         .filter(({ id, geo }) =>
-          Number(id) !== catalogRoot &&
+          ![ catalogRoot, KOATUU ].includes(id) &&
           (geo || payload.find(({ parent_id: parent }) => Number(parent) === id))
         )
       tree.forEach((item) => (byIds[item.id] = { ...item, children: [] }))
-      tree.forEach(({ id, parent }) => ((parent && byIds[parent].children) || roots).push(id))
+      tree.forEach(({ id, parent }) => ((parent && byIds[parent] && byIds[parent].children) || roots).push(id))
       roots = roots.filter((id) => byIds[id].children.length)
       if (roots.length === 1) {
         roots = byIds[roots[0]].children
