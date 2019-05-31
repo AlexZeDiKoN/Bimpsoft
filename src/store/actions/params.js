@@ -1,3 +1,4 @@
+import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
@@ -13,19 +14,21 @@ export const actionNames = {
 export const loadAllParams = () =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
     const payload = await webmapApi.paramGetAll()
-    dispatch({
-      type: actionNames.LOAD_PARAMS,
-      payload,
-    })
     if (payload[paramNames.MAP_BASE_OPACITY] !== undefined) {
-      dispatch(layers.setBackOpacity(Number(payload[paramNames.MAP_BASE_OPACITY])))
+      payload[paramNames.MAP_BASE_OPACITY] = Number(payload[paramNames.MAP_BASE_OPACITY])
     }
     if (payload[paramNames.INACTIVE_LAYERS_OPACITY] !== undefined) {
-      dispatch(layers.setHiddenOpacity(Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])))
+      payload[paramNames.INACTIVE_LAYERS_OPACITY] = Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])
     }
-    if (payload[paramNames.DEFAULT_COORD_SYSTEM] !== undefined) {
-      dispatch(webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM]))
-    }
+    dispatch(batchActions([
+      {
+        type: actionNames.LOAD_PARAMS,
+        payload,
+      },
+      layers.setBackOpacity(payload[paramNames.MAP_BASE_OPACITY]),
+      layers.setHiddenOpacity(payload[paramNames.INACTIVE_LAYERS_OPACITY]),
+      webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM]),
+    ]))
     // TODO
   })
 
