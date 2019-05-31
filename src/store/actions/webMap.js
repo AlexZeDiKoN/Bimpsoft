@@ -131,7 +131,7 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
-const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
+export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   ...rest,
   unit: unit !== null ? Number(unit) : null,
   type: type !== null ? Number(type) : null,

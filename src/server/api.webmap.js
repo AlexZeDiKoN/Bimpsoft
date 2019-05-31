@@ -68,4 +68,8 @@ export default {
     getDirect(`${webmapUrl}/printToFile/list`, false),
   getTopographicObjects: (data) =>
     getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
+  contourCreate: (layer, objects) =>
+    getDirect(`${webmapUrl}/contour/create`, { layer, objects }),
+  contourDelete: (layer, contour) =>
+    getDirect(`${webmapUrl}/contour/drop`, { layer, contour }),
 }
