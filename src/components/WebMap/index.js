@@ -999,7 +999,7 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
+            layer.catalogId || layer.remove()
             layer.pm && layer.pm.disable()
           }
         }
