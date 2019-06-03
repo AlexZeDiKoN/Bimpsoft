@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
+import i18n from '../../i18n'
 
 import './ICTInfo.css'
 
@@ -25,7 +26,7 @@ export default class extends React.PureComponent {
         <Draggable bounds="parent">
           <div className="non-blocking-popup">
             <p>
-              Розташуйте підрозділи на карті та визначте операційну зону
+              {i18n.CREATE_FLEX_GRID_HINT}
               <br />
               <span onClick={this.closeCalc} className="__mini-button">
                 Скасувати

@@ -248,3 +248,7 @@ export const GEOGRAPHICAL_LANDMARK = 'Географічний орієнтир'
 export const CHECK_SEGMENT = 'Вибір відрізка'
 export const SEGMENT_NAME = 'Назва відрізка'
 export const ADD_SEGMENT = 'Додати пункт маршрута'
+
+export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
+export const PERIOD_FROM = 'Період з'
+export const PERIOD_TO = 'до'
