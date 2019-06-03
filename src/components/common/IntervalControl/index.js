@@ -12,6 +12,7 @@ export default class IntervalControl extends React.Component {
         <span className="interval-control-label">Період з</span>
         <DatePicker
           value={this.props.from}
+          style={{ width: 'auto' }}
           showTime={{ format: TIME_FORMAT }}
           format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeFrom}
@@ -20,6 +21,7 @@ export default class IntervalControl extends React.Component {
         <span className="interval-control-label">до</span>
         <DatePicker
           value={this.props.to}
+          style={{ width: 'auto' }}
           showTime={{ format: TIME_FORMAT }}
           format={DATE_TIME_FORMAT}
           onChange={this.props.onChangeTo}
