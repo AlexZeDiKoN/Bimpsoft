@@ -54,6 +54,14 @@ export const setPreview = (preview) => ({
   preview,
 })
 
+export const checkDuplication = (object) => (dispatch, getState) => {
+  const { code, unit } = object
+  console.log(object)
+  const { webMap: { objects }, layers: { selectedId } } = getState()
+  console.log(objects.filter((i) => i.code === code && i.unit === unit && i.layer === selectedId).size !== 0)
+  return objects.filter((i) => i.code === code && i.unit === unit && i.layer === selectedId).size !== 0
+}
+
 export const savePreview = () => withNotification(async (dispatch, getState) => {
   const { selection: { preview } } = getState()
   if (preview) {
