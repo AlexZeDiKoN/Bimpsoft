@@ -1,15 +1,16 @@
 import React from 'react'
 import { DatePicker } from 'antd'
 import PropTypes from 'prop-types'
-import './style.css'
 import { TIME_FORMAT, DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
+
+import './style.css'
 
 export default class IntervalControl extends React.Component {
   render () {
     return (
       <div className="interval-control">
-        <span className="interval-control-label">Період з</span>
+        <span className="interval-control-label">{i18n.PERIOD_FROM}</span>
         <DatePicker
           value={this.props.from}
           style={{ width: 'auto' }}
@@ -18,7 +19,7 @@ export default class IntervalControl extends React.Component {
           onChange={this.props.onChangeFrom}
           placeholder={i18n.DATE}
         />
-        <span className="interval-control-label">до</span>
+        <span className="interval-control-label">{i18n.PERIOD_TO}</span>
         <DatePicker
           value={this.props.to}
           style={{ width: 'auto' }}
