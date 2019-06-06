@@ -762,8 +762,8 @@ export default class WebMap extends React.PureComponent {
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
   onMouseClick = debounce((e) => {
-    const { originalEvent: { detail }, target: { _eternal: isEternal } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
-    if (detail > 1 || (this.isFlexGridEditingMode() && isEternal)) { // если это дабл/трипл/etc. клик или клик по узловой точке (отлавливается самим маркером)
+    const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
+    if (detail > 1) { // если это дабл/трипл/etc. клик
       return
     }
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
@@ -1155,7 +1155,7 @@ export default class WebMap extends React.PureComponent {
   onDragendLayer = () => setTimeout(() => {
     this.draggingObject = false
     this.checkSaveObject(false)
-  }, 0)
+  }, 210)
 
   clickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
