@@ -5,6 +5,11 @@ import entityKind from './entityKind'
 
 const { Coordinates: Coord } = utils
 
+const latLng2peerArr = (data) =>
+  data && Array.isArray(data)
+    ? data.map(latLng2peerArr)
+    : [ data.lat, data.lng ]
+
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
 const recursiveForEach = (markers, func) => {
@@ -94,7 +99,7 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.SQUARE:
       return createSquare(data, map, prevLayer)
     case entityKind.CONTOUR:
-      return createContour(data)
+      return createContour(data.geometry.toJS())
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -188,7 +193,23 @@ function createCircle (data, map) {
 
 function createContour (data) {
   const options = prepareOptions(entityKind.CONTOUR)
-  return L.geoJSON(data, options)
+  // console.log(data)
+  return L.geoJSON({
+    type: 'FeatureCollection',
+    features: [ {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: latLng2peerArr(data),
+      },
+    } ],
+  }, {
+    ...options,
+    style: {
+      weight: 3,
+      fillOpacity: 0.1,
+    },
+  })
 }
 
 function createRectangle (type, points, layer) {

@@ -185,7 +185,7 @@ const setScaleOptions = (layer, params) => {
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
-    case entityKind.CONTOUR:
+    // case entityKind.CONTOUR:
       layer.setScaleOptions({
         min: Number(params[paramsNames.LINE_SIZE_MIN]),
         max: Number(params[paramsNames.LINE_SIZE_MAX]),
