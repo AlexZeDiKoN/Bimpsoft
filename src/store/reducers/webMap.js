@@ -87,6 +87,10 @@ const checkLevel = (object) => {
   object.level = Number(level || (code && getAmplifier(code)))
 }
 
+const pointTree = (item) => Array.isArray(item)
+  ? List(item.map(pointTree))
+  : WebMapPoint(item)
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
     checkLevel(rest)
@@ -98,7 +102,7 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
-    obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
+    obj = update(obj, 'geometry', comparator, pointTree(geometry || []))
     return merge(obj, rest)
   })
 
