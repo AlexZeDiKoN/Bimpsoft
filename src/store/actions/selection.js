@@ -1,5 +1,7 @@
 import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
+import * as R from 'ramda'
+import { CRS, latLng } from 'leaflet'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -184,6 +186,28 @@ export const cut = () => withNotification((dispatch) => {
   dispatch(deleteSelected())
 })
 
+// @TODO: getShift
+const getShift = (objectsList, currentObject, layerID, zoom) => {
+  const layerObjects = objectsList.filter((obj) => obj.get('layer') === layerID)
+  // let shift = 0 // @TODO: высчитывает сколько надо раз сместить
+  if (layerObjects.size) {
+    const { geometry: g } = currentObject
+    const copy = layerObjects.find((obj) => {
+      const geometry = obj.get('geometry').toJS()
+      return geometry.length === g.length && R.equals(geometry, g)
+    })
+    if (copy) {
+      return g.map((point) => {
+        const latlng = latLng(point)
+        const currentFlat = CRS.Simple.latLngToPoint(latlng, zoom)
+        const x = currentFlat.x + 6
+        const y = currentFlat.y + 6
+        return CRS.Simple.pointToLatLng({ x, y }, zoom)
+      })
+    }
+  }
+}
+
 export const paste = () => withNotification((dispatch, getState) => {
   const state = getState()
   const canEdit = canEditSelector(state)
@@ -192,11 +216,14 @@ export const paste = () => withNotification((dispatch, getState) => {
   }
   const {
     selection: { clipboard },
+    webMap: { objects, zoom },
     layers: { selectedId: layer = null },
   } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
       for (const clipboardObject of clipboard) {
+        const shiftedGeometry = getShift(objects, clipboardObject, layer, zoom)
+        shiftedGeometry && (clipboardObject.geometry = shiftedGeometry)
         clipboardObject.layer = layer
         dispatch(webMap.addObject(clipboardObject))
       }

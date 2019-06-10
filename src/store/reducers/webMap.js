@@ -87,6 +87,23 @@ const checkLevel = (object) => {
   object.level = Number(level || (code && getAmplifier(code)))
 }
 
+// @TODO: getShift
+const makeHash = (geometry) => {
+  const { length } = geometry
+  const def = { sumLat: 0, sumLng: 0, hash: 0 }
+  const data = geometry.reduce((acc, point) => {
+    const lat = Math.trunc(point.lat * 10000)
+    const lng = Math.trunc(point.lng * 10000)
+    const sumLat = acc.sumLat + lat
+    const sumLng = acc.sumLng + lng
+    const hash = acc.hash + lat + lng
+    return { sumLat, sumLng, hash }
+  }, def)
+  const { sumLat, sumLng, hash } = data
+  const weightPoint = { x: Math.trunc(sumLat / length / length), y: Math.trunc(sumLng / length / length) }
+  return Number(`${length}${hash}${weightPoint.x}${weightPoint.y}`)
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
     checkLevel(rest)
@@ -99,6 +116,8 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
     obj = update(obj, 'geometry', comparator, List((geometry || []).map(WebMapPoint)))
+    const hash = makeHash(geometry)
+    obj = update(obj, 'hash', comparator, hash)
     return merge(obj, rest)
   })
 
