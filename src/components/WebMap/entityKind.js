@@ -40,5 +40,4 @@ export const entityKindOutlinable = [
   entityKind.CIRCLE,
   entityKind.RECTANGLE,
   entityKind.SQUARE,
-  entityKind.CONTOUR,
 ]
