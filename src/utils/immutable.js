@@ -74,7 +74,7 @@ const getBSize = (realA, realB, flipped) => {
 }
 
 /** eq is patched immutable's method is */
-const eq = (a, b) => {
+export const eq = (a, b) => {
   if (a === b) {
     return true
   }

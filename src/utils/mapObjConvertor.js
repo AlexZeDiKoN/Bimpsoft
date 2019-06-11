@@ -1,4 +1,5 @@
 import { ApiError } from '../constants/errors'
+import { CRS, latLng } from 'leaflet'
 import i18n from '../i18n'
 
 // todo: try do not use these converting
@@ -54,4 +55,37 @@ export const fromSelection = (data) => {
     object.id = id
   }
   return object
+}
+
+export const makeHash = (geometry) => {
+  const { length } = geometry
+  const def = { sumLat: 0, sumLng: 0, hash: 0 }
+  const data = geometry.reduce((acc, point) => {
+    const lat = Math.trunc(point.lat * 10000)
+    const lng = Math.trunc(point.lng * 10000)
+    const sumLat = acc.sumLat + lat
+    const sumLng = acc.sumLng + lng
+    const hash = acc.hash + lat + lng
+    return { sumLat, sumLng, hash }
+  }, def)
+  const { sumLat, sumLng, hash } = data
+  const weightPoint = { x: Math.trunc(sumLat / length / length), y: Math.trunc(sumLng / length / length) }
+  return Number(`${length}${hash}${weightPoint.x}${weightPoint.y}`)
+}
+
+export const getShift = (hashList, geometry, zoom) => {
+  const checkHash = (g) => {
+    const hash = makeHash(g)
+    if (hashList.includes(hash)) {
+      const newGeometry = g.map((point) => {
+        const currentFlat = CRS.Simple.latLngToPoint(latLng(point), zoom)
+        const x = currentFlat.x + 6
+        const y = currentFlat.y + 6
+        return CRS.Simple.pointToLatLng({ x, y }, zoom)
+      })
+      return checkHash(newGeometry)
+    }
+    return g
+  }
+  return hashList.length ? checkHash(geometry) : geometry
 }

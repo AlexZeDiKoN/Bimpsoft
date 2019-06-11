@@ -1,9 +1,8 @@
 import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
-import * as R from 'ramda'
-import { CRS, latLng } from 'leaflet'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
+import { getShift } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
@@ -186,28 +185,6 @@ export const cut = () => withNotification((dispatch) => {
   dispatch(deleteSelected())
 })
 
-// @TODO: getShift
-const getShift = (objectsList, currentObject, layerID, zoom) => {
-  const layerObjects = objectsList.filter((obj) => obj.get('layer') === layerID)
-  // let shift = 0 // @TODO: высчитывает сколько надо раз сместить
-  if (layerObjects.size) {
-    const { geometry: g } = currentObject
-    const copy = layerObjects.find((obj) => {
-      const geometry = obj.get('geometry').toJS()
-      return geometry.length === g.length && R.equals(geometry, g)
-    })
-    if (copy) {
-      return g.map((point) => {
-        const latlng = latLng(point)
-        const currentFlat = CRS.Simple.latLngToPoint(latlng, zoom)
-        const x = currentFlat.x + 6
-        const y = currentFlat.y + 6
-        return CRS.Simple.pointToLatLng({ x, y }, zoom)
-      })
-    }
-  }
-}
-
 export const paste = () => withNotification((dispatch, getState) => {
   const state = getState()
   const canEdit = canEditSelector(state)
@@ -221,11 +198,15 @@ export const paste = () => withNotification((dispatch, getState) => {
   } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
+      const hashList = objects.reduce((acc, obj) => {
+        obj.get('layer') === layer && acc.push(obj.get('hash', null))
+        return acc
+      }, [])
       for (const clipboardObject of clipboard) {
-        const shiftedGeometry = getShift(objects, clipboardObject, layer, zoom)
-        shiftedGeometry && (clipboardObject.geometry = shiftedGeometry)
-        clipboardObject.layer = layer
-        dispatch(webMap.addObject(clipboardObject))
+        const { geometry: g } = clipboardObject
+        const geometry = getShift(hashList, g, zoom)
+        const copy = Object.assign({}, clipboardObject, { layer, geometry })
+        dispatch(webMap.addObject(copy))
       }
     }
   }
