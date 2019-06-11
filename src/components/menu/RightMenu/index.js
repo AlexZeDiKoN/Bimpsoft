@@ -85,7 +85,7 @@ export default class RightMenu extends React.Component {
         <IconButton
           placement={'bottomRight'}
           title={i18n.TOGGLE_SIDEBAR}
-          icon={iconNames.LEFT_MENU_DEFAULT}
+          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
         />
