@@ -23,6 +23,8 @@ export function validateObject (object) {
     case SelectionTypes.AREA:
       validateCoordinates(object.geometry, 3)
       break
+    case SelectionTypes.CONTOUR:
+      break
     default:
       validateCoordinates(object.geometry, 2)
   }

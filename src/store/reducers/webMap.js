@@ -89,10 +89,14 @@ const checkLevel = (object) => {
   object.level = Number(level || (code && getAmplifier(code)))
 }
 
+const pointTree = (item) => Array.isArray(item)
+  ? List(item.map(pointTree))
+  : WebMapPoint(item)
+
 // У випадку, якщо змінюється геометрія об'єкту, оновлюємо значення хеш-ключа
 export const updateGeometry = (obj, geometry) => {
   const oldValue = obj.get('geometry')
-  const newValue = List((geometry || []).map(WebMapPoint))
+  const newValue = pointTree(geometry || [])
   return eq(newValue, oldValue)
     ? obj
     : obj.set('geometry', newValue).set('hash', makeHash(geometry))

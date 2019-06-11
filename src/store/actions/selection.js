@@ -266,6 +266,7 @@ export const createContour = () => withNotification(async (dispatch, getState, {
     selection: { list },
     layers: { selectedId: layer },
   } = getState()
+  // console.log(`createContour`, layer, list)
   const contour = await webmapApi.contourCreate(layer, list)
   if (contour) {
     return dispatch(batchActions([
@@ -280,6 +281,7 @@ export const dropContour = () => withNotification(async (dispatch, getState, { w
     selection: { list: [ contour ] },
     layers: { selectedId: layer },
   } = getState()
+  // console.log(`dropContour`, layer, contour)
   const objects = await webmapApi.contourDelete(layer, contour)
   if (objects) {
     return dispatch(batchActions([

@@ -185,14 +185,19 @@ export const refreshObject = (id, type, layer) =>
     }
 
     if (Number(type) === entityKind.FLEXGRID) {
-      dispatch({
+      return dispatch({
         type: flexGrid.GET_FLEXGRID,
         payload: object,
       })
     } else if (object.id) {
-      dispatch({
+      return dispatch({
         type: actionNames.REFRESH_OBJECT,
         payload: { id, object: fixServerObject(object) },
+      })
+    } else {
+      return dispatch({
+        type: actionNames.DEL_OBJECT,
+        payload: id,
       })
     }
   })
