@@ -25,30 +25,34 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
     maskEl = <mask id={`mask-${maskId}`}><path fillRule="nonzero" fill="#ffffff" d={maskD} /></mask>
   }
 
-  return <g mask={mask}>
-    {maskEl}
-    <path
-      fill={colors.evaluateColor(fill)}
-      fillOpacity="0.2"
-      d={d}
-    />
-    {Boolean(outlineColor) && <path
-      stroke={outlineColor}
-      strokeWidth={strokeWidth * scale * 2}
-      fill="none"
-      d={d}
-    />}
-    <path
-      stroke={colors.evaluateColor(color)}
-      strokeWidth={strokeWidth * scale}
-      strokeDasharray={strokeDasharray}
-      fill="none"
-      d={d}
-    />
-  </g>
+  return (
+    <g mask={mask}>
+      {maskEl}
+      <path
+        fill={colors.evaluateColor(fill)}
+        fillOpacity="0.2"
+        d={d}
+      />
+      {Boolean(outlineColor) && <path
+        stroke={outlineColor}
+        strokeWidth={strokeWidth * scale * 2}
+        fill="none"
+        d={d}
+      />}
+      <path
+        stroke={colors.evaluateColor(color)}
+        strokeWidth={strokeWidth * scale}
+        strokeDasharray={strokeDasharray}
+        fill="none"
+        d={d}
+      />
+    </g>
+  )
 }
 
-const svgToG = (svg) => svg.replace(/^(\r|\n|.)*?<svg\b/i, '<g ').replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
+const svgToG = (svg) => svg
+  .replace(/^(\r|\n|.)*?<svg\b/i, '<g ')
+  .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
 
 const getLineSvg = (points, attributes, layerData) => {
   const {
@@ -68,13 +72,17 @@ const getLineSvg = (points, attributes, layerData) => {
   const amplifiers = getAmplifiers(points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale)
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
 
-  return <>
-    {Boolean(amplifiers.group) && <g
-      stroke={colors.evaluateColor(color)}
-      dangerouslySetInnerHTML={{ __html: amplifiers.group }}
-    />}
-    {getSvgPath(d, attributes, layerData, scale, mask)}
-  </>
+  return (
+    <>
+      {Boolean(amplifiers.group) && (
+        <g
+          stroke={colors.evaluateColor(color)}
+          dangerouslySetInnerHTML={{ __html: amplifiers.group }}
+        />
+      )}
+      {getSvgPath(d, attributes, layerData, scale, mask)}
+    </>
+  )
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerData) => {
@@ -101,6 +109,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const symbol = new Symbol(code, {
     ...(color ? { outlineWidth: 3, outlineColor: color } : {}),
     ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
+    size: 18,
   })
   let { x, y } = symbol.getAnchor()
   const { bbox } = symbol
@@ -109,10 +118,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   x += bbox.x1 - marginX
   y += bbox.y1 - marginY
   point = coordToPixels(point)
-  return <g
-    transform={`translate(${Math.round(point.x - x)},${Math.round(point.y - y)})`}
-    dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG()) }}
-  />
+  return (
+    <g
+      transform={`translate(${Math.round(point.x - x)},${Math.round(point.y - y)})`}
+      dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG()) }}
+    />
+  )
 })
 
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
@@ -120,9 +131,11 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
   const { attributes, point } = data
   const { x, y } = coordToPixels(point)
-  return <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
-    {renderTextSymbol({ ...attributes.toJS(), outlineColor }, 10 * scale)}
-  </g>
+  return (
+    <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
+      {renderTextSymbol({ ...attributes.toJS(), outlineColor }, 10 * scale)}
+    </g>
+  )
 })
 mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
@@ -180,5 +193,9 @@ export const getMapObjectSvg = (commonData) => (object) => {
     return null
   }
   const layerData = layersById[layer]
-  return mapObjectBuilder && <Fragment key={id}>{mapObjectBuilder(commonData, object, layerData)}</Fragment>
+  return mapObjectBuilder && (
+    <Fragment key={id}>
+      {mapObjectBuilder(commonData, object, layerData)}
+    </Fragment>
+  )
 }
