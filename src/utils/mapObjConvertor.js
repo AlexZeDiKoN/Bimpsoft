@@ -1,6 +1,7 @@
-import { ApiError } from '../constants/errors'
 import { CRS, latLng } from 'leaflet'
+import { ApiError } from '../constants/errors'
 import i18n from '../i18n'
+import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
 // todo: try do not use these converting
 
@@ -79,8 +80,8 @@ export const getShift = (hashList, geometry, zoom) => {
     if (hashList.includes(hash)) {
       const newGeometry = g.map((point) => {
         const currentFlat = CRS.Simple.latLngToPoint(latLng(point), zoom)
-        const x = currentFlat.x + 6
-        const y = currentFlat.y + 6
+        const x = currentFlat.x + SHIFT_PASTE_LAT
+        const y = currentFlat.y + SHIFT_PASTE_LNG
         return CRS.Simple.pointToLatLng({ x, y }, zoom)
       })
       return checkHash(newGeometry)
