@@ -2,12 +2,13 @@ import PropTypes from 'prop-types'
 import { Record, List, Map } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
-import { update, comparator, filter, merge } from '../../utils/immutable'
+import { update, comparator, filter, merge, eq } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { MapSources, colors } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
+import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
@@ -54,6 +55,7 @@ export const WebMapObject = Record({
   layer: null,
   parent: null,
   attributes: WebMapAttributes(),
+  hash: null,
 })
 
 const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
@@ -91,6 +93,15 @@ const pointTree = (item) => Array.isArray(item)
   ? List(item.map(pointTree))
   : WebMapPoint(item)
 
+// У випадку, якщо змінюється геометрія об'єкту, оновлюємо значення хеш-ключа
+export const updateGeometry = (obj, geometry) => {
+  const oldValue = obj.get('geometry')
+  const newValue = pointTree(geometry || [])
+  return eq(newValue, oldValue)
+    ? obj
+    : obj.set('geometry', newValue).set('hash', makeHash(geometry))
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
     checkLevel(rest)
@@ -102,7 +113,7 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
-    obj = update(obj, 'geometry', comparator, pointTree(geometry || []))
+    obj = updateGeometry(obj, geometry)
     return merge(obj, rest)
   })
 

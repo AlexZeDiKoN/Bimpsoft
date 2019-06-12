@@ -2,6 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
+import { getShift } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
@@ -192,13 +193,20 @@ export const paste = () => withNotification((dispatch, getState) => {
   }
   const {
     selection: { clipboard },
+    webMap: { objects, zoom },
     layers: { selectedId: layer = null },
   } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
+      const hashList = objects.reduce((acc, obj) => {
+        obj.get('layer') === layer && acc.push(obj.get('hash', null))
+        return acc
+      }, [])
       for (const clipboardObject of clipboard) {
-        clipboardObject.layer = layer
-        dispatch(webMap.addObject(clipboardObject))
+        const { geometry: g } = clipboardObject
+        const geometry = getShift(hashList, g, zoom)
+        const copy = Object.assign({}, clipboardObject, { layer, geometry })
+        dispatch(webMap.addObject(copy))
       }
     }
   }
