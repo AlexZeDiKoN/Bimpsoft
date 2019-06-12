@@ -80,8 +80,8 @@ export const getShift = (hashList, geometry, zoom) => {
     if (hashList.includes(hash)) {
       const newGeometry = g.map((point) => {
         const currentFlat = CRS.Simple.latLngToPoint(latLng(point), zoom)
-        const x = currentFlat.x + SHIFT_PASTE_LAT
-        const y = currentFlat.y + SHIFT_PASTE_LNG
+        const x = currentFlat.x + SHIFT_PASTE_LNG
+        const y = currentFlat.y + SHIFT_PASTE_LAT
         return CRS.Simple.pointToLatLng({ x, y }, zoom)
       })
       return checkHash(newGeometry)
