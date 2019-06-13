@@ -43,9 +43,9 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
 
-  coordinatesChangeHandler = (coordinate) => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
-      .set('point', coordinate)
+  coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
+    .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
+    .set('point', coordinate)
   )
 
   attributesChangeHandler = (newAttributes) => this.setResult((result) =>

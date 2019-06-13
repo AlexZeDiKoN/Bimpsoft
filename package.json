@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^7.3.225",
-    "@DZVIN/MilSymbolEditor": "^7.3.132",
+    "@DZVIN/MilSymbolEditor": "^7.3.133",
     "@DZVIN/milsymbol": "^0.0.4",
     "@unitybase/ub-pub": "^5.3.1",
     "antd": "^3.12.4",
