@@ -60,11 +60,11 @@ export const savePreview = () => withNotification(async (dispatch, getState) => 
     const data = preview.toJS()
     if (data.id) {
       await dispatch(webMap.updateObject(data))
-      dispatch(batchActions([ setPreview(null, []) ]))
+      dispatch(setPreview(null))
     } else {
       const id = await dispatch(webMap.addObject(data))
       await dispatch(batchActions([
-        setPreview(null, []),
+        setPreview(null),
         selectedList([ id ]),
         webMap.setScaleToSelection(false),
       ]))
@@ -72,7 +72,10 @@ export const savePreview = () => withNotification(async (dispatch, getState) => 
   }
 })
 
-export const clearPreview = () => batchActions([ hideForm(), setPreview(null, []) ])
+export const clearPreview = () => batchActions([
+  hideForm(),
+  setPreview(null),
+])
 
 export const setPreviewCoordinate = (index, isActive) => ({
   type: SET_PREVIEW_COORDINATE,
@@ -106,7 +109,12 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
       await dispatch(batchActions([
         setNewShape({}),
         setPreview(object.updateIn([ 'attributes', 'texts' ], (texts) =>
-          texts.push({ text: '', underline: true, align: Align.CENTER, size: 16 })
+          texts.push({
+            text: '',
+            underline: true,
+            align: Align.CENTER,
+            size: 16,
+          })
         )),
       ]))
       break
