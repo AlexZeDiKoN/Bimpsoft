@@ -332,7 +332,7 @@ export default class WebMap extends React.PureComponent {
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects,
       flexGridParams: { selectedDirections, selectedEternal },
-      selection: { newShape, preview, previewCoordinateIndex },
+      selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
     } = this.props
 
@@ -349,9 +349,9 @@ export default class WebMap extends React.PureComponent {
       this.setMapSource(sources)
     }
     if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
-      layer !== prevProps.layer
+      layer !== prevProps.layer || list !== prevProps.selection.list
     ) {
-      this.updateShowLayers(level, layersById, hiddenOpacity, layer)
+      this.updateShowLayers(level, layersById, hiddenOpacity, layer, list)
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
@@ -873,11 +873,15 @@ export default class WebMap extends React.PureComponent {
     }
   }, 500)
 
-  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item) => {
+  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
     if (item.id && item.object) {
       const { layer, level } = item.object
+
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const hidden = itemLevel < levelEdge || ((!layer || !layersById.hasOwnProperty(layer)) && !item.catalogId)
+      const isSelectedItem = list.includes(item.id)
+      const hidden = !isSelectedItem &&
+        (itemLevel < levelEdge || ((!layer || !layersById.hasOwnProperty(layer)) && !item.catalogId))
+
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? 1000000000 : 0
@@ -890,9 +894,10 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId) => {
+  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
     if (this.map) {
-      this.map.eachLayer((item) => this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item))
+      this.map.eachLayer((item) =>
+        this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
     }
   }
 
@@ -1100,7 +1105,7 @@ export default class WebMap extends React.PureComponent {
       layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
 
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
-      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer)
+      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
 
       if (color !== null && color !== '') {

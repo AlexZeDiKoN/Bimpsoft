@@ -112,7 +112,13 @@ export function createSearchMarker (point) {
 }
 
 export function createCoordinateMarker (point) {
-  return L.marker(point, { icon: L.divIcon({ className: 'marker-icon' }), keyboard: false, draggable: false })
+  return L.marker(point, {
+    icon: L.divIcon({
+      className: 'marker-icon',
+    }),
+    keyboard: false,
+    draggable: false,
+  })
 }
 
 function createMarker (point, icon, layer) {

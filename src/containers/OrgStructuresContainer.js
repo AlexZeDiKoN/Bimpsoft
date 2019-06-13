@@ -34,14 +34,17 @@ const mapDispatchToProps = {
     const state = getState()
     const {
       webMap: { center, objects, subordinationLevel },
+      selection: { preview },
     } = state
     const canEdit = canEditSelector(state)
     const unitObjects = objects.filter((object) => object.unit === unitID)
     if (unitObjects.size) {
-      const batch = [
-        selection.selectedList([ ...unitObjects.keys() ]),
-        webMap.setScaleToSelection(true),
-      ]
+      const batch = preview
+        ? [
+          selection.selectedList([ ...unitObjects.keys() ]),
+          webMap.setScaleToSelection(true),
+        ]
+        : []
       const minLevel = unitObjects.reduce((minLevel, { level }) => Math.min(minLevel, level), subordinationLevel)
       if (minLevel !== subordinationLevel) {
         batch.push(webMap.setSubordinationLevel(minLevel))
