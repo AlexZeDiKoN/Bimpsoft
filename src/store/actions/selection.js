@@ -2,6 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
+import { getShift } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
@@ -68,11 +69,11 @@ export const savePreview = () => withNotification(async (dispatch, getState) => 
     const data = preview.toJS()
     if (data.id) {
       await dispatch(webMap.updateObject(data))
-      dispatch(batchActions([ setPreview(null, []) ]))
+      dispatch(setPreview(null))
     } else {
       const id = await dispatch(webMap.addObject(data))
       await dispatch(batchActions([
-        setPreview(null, []),
+        setPreview(null),
         selectedList([ id ]),
         webMap.setScaleToSelection(false),
       ]))
@@ -80,7 +81,10 @@ export const savePreview = () => withNotification(async (dispatch, getState) => 
   }
 })
 
-export const clearPreview = () => batchActions([ hideForm(), setPreview(null, []) ])
+export const clearPreview = () => batchActions([
+  hideForm(),
+  setPreview(null),
+])
 
 export const setPreviewCoordinate = (index, isActive) => ({
   type: SET_PREVIEW_COORDINATE,
@@ -114,7 +118,12 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
       await dispatch(batchActions([
         setNewShape({}),
         setPreview(object.updateIn([ 'attributes', 'texts' ], (texts) =>
-          texts.push({ text: '', underline: true, align: Align.CENTER, size: 16 })
+          texts.push({
+            text: '',
+            underline: true,
+            align: Align.CENTER,
+            size: 16,
+          })
         )),
       ]))
       break
@@ -200,13 +209,20 @@ export const paste = () => withNotification((dispatch, getState) => {
   }
   const {
     selection: { clipboard },
+    webMap: { objects, zoom },
     layers: { selectedId: layer = null },
   } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
+      const hashList = objects.reduce((acc, obj) => {
+        obj.get('layer') === layer && acc.push(obj.get('hash', null))
+        return acc
+      }, [])
       for (const clipboardObject of clipboard) {
-        clipboardObject.layer = layer
-        dispatch(webMap.addObject(clipboardObject))
+        const { geometry: g } = clipboardObject
+        const geometry = getShift(hashList, g, zoom)
+        const copy = Object.assign({}, clipboardObject, { layer, geometry })
+        dispatch(webMap.addObject(copy))
       }
     }
   }

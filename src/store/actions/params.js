@@ -1,9 +1,12 @@
 import { batchActions } from 'redux-batched-actions'
+import { utils } from '@DZVIN/CommonComponents'
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
 import * as paramNames from '../../constants/params'
 import { asyncAction, layers, webMap } from './index'
+
+const { Coordinates: Coord } = utils
 
 export const actionNames = {
   LOAD_PARAMS: action('LOAD_PARAMS'),
@@ -27,7 +30,7 @@ export const loadAllParams = () =>
       },
       layers.setBackOpacity(payload[paramNames.MAP_BASE_OPACITY]),
       layers.setHiddenOpacity(payload[paramNames.INACTIVE_LAYERS_OPACITY]),
-      webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM]),
+      webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM] || Coord.types.WGS_84),
     ]))
     // TODO
   })

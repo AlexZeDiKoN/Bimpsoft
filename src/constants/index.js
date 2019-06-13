@@ -10,6 +10,7 @@ import * as paramsNames from './params'
 import * as Print from './Print'
 import * as MarchKeys from './March'
 import * as TopoObj from './TopoObj'
+import * as utils from './utils'
 
 export {
   SubordinationLevel,
@@ -26,4 +27,5 @@ export {
   Print,
   MarchKeys,
   TopoObj,
+  utils,
 }

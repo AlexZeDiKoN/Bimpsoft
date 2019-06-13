@@ -41,7 +41,14 @@ export default function reducer (state = initState, action) {
     }
     case actions.SET_DATA_PREVIEW: {
       const { preview } = action
-      return { ...state, preview }
+      const res = {
+        ...state,
+        preview,
+      }
+      if (preview) {
+        res.list = [ preview.id || null ]
+      }
+      return res
     }
     case actions.SET_PREVIEW_COORDINATE: {
       const { index, isActive } = action

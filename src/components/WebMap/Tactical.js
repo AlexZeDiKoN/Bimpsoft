@@ -112,7 +112,13 @@ export function createSearchMarker (point) {
 }
 
 export function createCoordinateMarker (point) {
-  return L.marker(point, { icon: L.divIcon({ className: 'marker-icon' }), keyboard: false, draggable: false })
+  return L.marker(point, {
+    icon: L.divIcon({
+      className: 'marker-icon',
+    }),
+    keyboard: false,
+    draggable: false,
+  })
 }
 
 function createMarker (point, icon, layer) {
@@ -191,25 +197,32 @@ function createCircle (data, map) {
   return L.circle(point1, options)
 }
 
-function createContour (data) {
-  const options = prepareOptions(entityKind.CONTOUR)
-  // console.log(data)
-  return L.geoJSON({
-    type: 'FeatureCollection',
-    features: [ {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: latLng2peerArr(data),
-      },
-    } ],
-  }, {
-    ...options,
-    style: {
-      weight: 3,
-      fillOpacity: 0.1,
+const geoJSONLayer = (coordinates, type) => L.geoJSON({
+  type: 'FeatureCollection',
+  features: [ {
+    type: 'Feature',
+    geometry: {
+      type,
+      coordinates,
     },
-  })
+  } ],
+}, {
+  ...prepareOptions(entityKind.CONTOUR),
+  style: {
+    weight: 3,
+    fillOpacity: 0.1,
+  },
+})
+
+function createContour (data) {
+  const coordinates = latLng2peerArr(data)
+  let layer
+  try {
+    layer = geoJSONLayer(coordinates, 'Polygon')
+  } catch (err) {
+    layer = geoJSONLayer(coordinates, 'MultiPolygon')
+  }
+  return layer
 }
 
 function createRectangle (type, points, layer) {
