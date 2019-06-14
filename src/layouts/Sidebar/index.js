@@ -6,7 +6,8 @@ import { LayersContainer, OrgStructuresContainer, MarchContainer, CatalogsContai
 import { TabsPanel, PrintPanel } from '../../components/common'
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
-const SIDEBAR_PANEL_SIZE_MIN = 100
+const SIDEBAR_PANEL_SIZE_MIN = 210
+const SIDEBAR_PANEL_SIZE_MAX = 650
 
 const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 300
@@ -39,7 +40,7 @@ export default class Sidebar extends React.Component {
     } else {
       return (
         <>
-          <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight }}>
+          <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight > 650 ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
             <TabsPanel
               tabs={[
                 OrgStructuresContainer,
