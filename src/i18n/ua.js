@@ -163,7 +163,8 @@ export const ERROR_EMPTY_MILSYMBOL_CODE = 'Код знаку не задано'
 
 export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути режим редагування'
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
-export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару ${name} тільки на перегляд`
+export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
+export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
 
 export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'

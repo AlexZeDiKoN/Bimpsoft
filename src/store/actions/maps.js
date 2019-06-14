@@ -62,6 +62,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       map: {
         id,
         name,
+        signed,
         doc_confirm: docConfirm,
         security_classification: securityClassification,
       },
@@ -72,6 +73,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
     await dispatch(maps.updateMap({
       mapId: id,
       name,
+      signed,
       // breadcrumbs,
       docConfirm,
       approversData,
