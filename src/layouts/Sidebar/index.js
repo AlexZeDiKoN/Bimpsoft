@@ -40,7 +40,7 @@ export default class Sidebar extends React.Component {
     } else {
       return (
         <>
-          <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight > 650 ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
+          <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
             <TabsPanel
               tabs={[
                 OrgStructuresContainer,
