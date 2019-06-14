@@ -608,7 +608,7 @@ export default class WebMap extends React.PureComponent {
       let checkGeometry
       if (layer.object) {
         const { point, geometry } = layer.object
-        if (!point || !point.toJS || !geometry || !geometry.toArray) {
+        if (id !== null && (!point || !point.toJS || !geometry || !geometry.toArray)) {
           console.warn(`layer.object`, layer.object)
         }
         checkPoint = point && point.toJS && point.toJS()
@@ -618,11 +618,13 @@ export default class WebMap extends React.PureComponent {
         checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
-      if (geometryChanged) {
-        return updateObjectGeometry(id, getGeometry(layer))
-      } else if (leaving) {
-        // try { throw new Error() } catch (e) { console.log(e.stack )}
-        return tryUnlockObject(id)
+      if (id !== null) {
+        if (geometryChanged) {
+          return updateObjectGeometry(id, getGeometry(layer))
+        } else if (leaving) {
+          // try { throw new Error() } catch (e) { console.log(e.stack )}
+          return tryUnlockObject(id)
+        }
       }
     }
   }
