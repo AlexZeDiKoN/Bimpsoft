@@ -29,9 +29,24 @@
   .tree-layers-container{
     overflow-y: scroll;
     height: 100%;
+    padding-top: 20px;
     .tree-layers{
       .layer-item-component::before{
         content: none !important;
+      }
+      & > .tree-component-ul{
+        :first-child {
+          div.map-item-component {
+            .color-picker-popup {
+              margin: -3px -5px -5px -186px;
+              transform: scale(1, -1);
+
+              input {
+                transform: scale(1, -1);
+              }
+            }
+          }
+        }
       }
       .tree-component-li{
         border-color: transparent;
@@ -43,7 +58,6 @@
   }
   .tree-component-ul{
     animation: layers-list_show 1s 0.1s both;
-    overflow: hidden;
   }
   .ant-input-search{
     padding: 5px;
