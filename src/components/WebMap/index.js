@@ -1103,6 +1103,7 @@ export default class WebMap extends React.PureComponent {
       layer.on('dblclick', this.dblClickOnLayer)
       layer.on('pm:markerdragstart', this.onDragstartLayer)
       layer.on('pm:markerdragend', this.onDragendLayer)
+      layer.on('pm:dragend', this.onDragged)
 
       layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
 
@@ -1163,6 +1164,10 @@ export default class WebMap extends React.PureComponent {
     this.draggingObject = false
     this.checkSaveObject(false)
   }, 210)
+
+  onDragged = () => {
+    this.checkSaveObject(false)
+  }
 
   clickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
