@@ -7,12 +7,6 @@
     }
   }
 
-  .PrintPanel_colorPicker {
-    .color-picker-popup {
-      left: 190px !important;
-    }
-  }
-
   .printPanel_indicators {
     .dzvin-form-row {
       margin-top: 0;
@@ -23,15 +17,6 @@
           padding: 0;
         }
       }
-    }
-  }
-
-  .printPanelSign_row {
-    .ant-col-6 {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 32px;
     }
   }
 
@@ -72,6 +57,38 @@
       display: flex;
       .right {
         order: 1;
+      }
+    }
+    .printPanelSign_row {
+      .ant-col-6 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 32px;
+      }
+      .PrintPanel_colorPicker {
+        .color-picker-popup {
+          margin-left: -6px;
+          .color-picker-controls{
+            transform: scale(-1, 1);
+            input{
+              transform: scale(-1, 1);
+            }
+          }
+        }
+      }
+      .right{
+        .PrintPanel_colorPicker {
+          .color-picker-popup {
+            margin-left: -185px;
+            .color-picker-controls{
+              transform: scale(1, 1);
+              input{
+                transform: scale(1, 1);
+              }
+            }
+          }
+        }
       }
     }
   }
