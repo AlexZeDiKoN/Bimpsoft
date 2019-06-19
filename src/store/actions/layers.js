@@ -3,7 +3,7 @@ import { layerNameSelector, mapNameSelector } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
-import { asyncAction, orgStructures, webMap } from './index'
+import { asyncAction, orgStructures, webMap, selection } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -51,23 +51,24 @@ export const updateLayers = (layersData) => ({
 
 export const updateLayer = (layerData) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { layerSetColor } }) => {
-    dispatch({
+    await dispatch({
       type: UPDATE_LAYER,
       layerData,
     })
     if (layerData.hasOwnProperty('color')) {
       await layerSetColor(layerData.layerId, layerData.color)
     }
+    if (layerData.hasOwnProperty('visible') && !layerData.visible) {
+      dispatch(selection.clearByLayerId(layerData.layerId))
+    }
   })
 
 export const updateLayersByMapId = (mapId, layerData) =>
-  asyncAction.withNotification(async (dispatch, getState) => {
-    for (const layer of Object.values(getState().layers.byId)) {
-      if (layer.mapId === mapId) {
-        dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))
-      }
-    }
-  })
+  asyncAction.withNotification((dispatch, getState) => Promise.all(
+    Object.values(getState().layers.byId)
+      .filter((layer) => layer.mapId === mapId)
+      .map((layer) => dispatch(updateLayer({ ...layerData, layerId: layer.layerId })))
+  ))
 
 export const updateAllLayers = (layerData) =>
   asyncAction.withNotification(async (dispatch, getState) => {
