@@ -476,7 +476,7 @@ export default class WebMap extends React.PureComponent {
 
   updateMarker = (prevProps) => {
     const { marker, isMarkersOn } = this.props
-    if (marker !== prevProps.marker && marker !== null) {
+    if (marker !== prevProps.marker /* && marker !== null */) {
       if (!isMarkersOn) {
         if (marker) {
           this.markers && this.markers[0].removeFrom(this.map)
@@ -489,7 +489,7 @@ export default class WebMap extends React.PureComponent {
           }, 500)
         } else {
           if (this.markers) {
-            this.markers && this.markers.removeFrom(this.map)
+            this.markers && this.markers[0] && this.markers[0].removeFrom(this.map)
             delete this.markers
           }
         }
@@ -1637,7 +1637,7 @@ export default class WebMap extends React.PureComponent {
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
-        { this.props.flexGridVisible && (
+        {this.props.flexGridVisible && (
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}
             stopLooking={this.disableLookAfterMouseMove}
