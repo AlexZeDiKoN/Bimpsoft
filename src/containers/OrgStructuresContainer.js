@@ -27,9 +27,9 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = {
   selectList: selection.selectedList,
-  onExpand: (key) => orgStructures.expandOrgStructureItem(key),
-  onFilterTextChange: (filterText) => orgStructures.setOrgStructuresFilterText(filterText),
-  onClick: (unitID) => orgStructures.setOrgStructureSelectedId(unitID),
+  onExpand: orgStructures.expandOrgStructureItem,
+  onFilterTextChange: orgStructures.setOrgStructuresFilterText,
+  onClick: orgStructures.setOrgStructureSelectedId,
   onDoubleClick: (unitID) => (dispatch, getState) => {
     const state = getState()
     const {
@@ -39,12 +39,13 @@ const mapDispatchToProps = {
     const canEdit = canEditSelector(state)
     const unitObjects = objects.filter((object) => object.unit === unitID)
     if (unitObjects.size) {
+      const selList = [ ...unitObjects.keys() ]
       const batch = preview
-        ? [
-          selection.selectedList([ ...unitObjects.keys() ]),
+        ? []
+        : [
+          selection.selectedList(selList),
           webMap.setScaleToSelection(true),
         ]
-        : []
       const minLevel = unitObjects.reduce((minLevel, { level }) => Math.min(minLevel, level), subordinationLevel)
       if (minLevel !== subordinationLevel) {
         batch.push(webMap.setSubordinationLevel(minLevel))
