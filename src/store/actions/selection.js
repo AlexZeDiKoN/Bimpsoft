@@ -26,6 +26,7 @@ export const CLIPBOARD_CLEAR = action('CLIPBOARD_CLEAR')
 export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
 export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
 export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
+export const CLEAR_BY_LAYER_ID = action('CLEAR_BY_LAYER_ID')
 
 const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
@@ -33,6 +34,11 @@ const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000
 export const selectedList = (list) => ({
   type: SELECTED_LIST,
   list,
+})
+
+export const clearByLayerId = (layerId) => ({
+  type: CLEAR_BY_LAYER_ID,
+  layerId,
 })
 
 export const showEditForm = (id) => (dispatch, getState) => {

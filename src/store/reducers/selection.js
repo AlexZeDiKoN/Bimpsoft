@@ -20,6 +20,13 @@ export default function reducer (state = initState, action) {
       const { list } = action
       return { ...state, list }
     }
+    case actions.CLEAR_BY_LAYER_ID: {
+      const { layerId } = action
+      const list = state.list.filter(({ layer }) => layer === layerId)
+      return list.length === state.list.length
+        ? state
+        : { ...state, list }
+    }
     case actions.SHOW_CREATE_FORM: {
       return { ...state, showForm: FormTypes.CREATE }
     }
