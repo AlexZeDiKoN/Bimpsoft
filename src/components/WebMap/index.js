@@ -494,14 +494,16 @@ export default class WebMap extends React.PureComponent {
           }
         }
       } else {
-        let { point, text } = marker
-        text = this.createSearchMarkerText(point, text)
-        setTimeout(() => {
-          const searchMarker = createSearchMarker(point, text)
-          searchMarker.addTo(this.map)
-          this.markers.push(searchMarker)
-          setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
-        }, 1000)
+        if (marker) {
+          let { point, text } = marker
+          text = this.createSearchMarkerText(point, text)
+          setTimeout(() => {
+            const searchMarker = createSearchMarker(point, text)
+            searchMarker.addTo(this.map)
+            this.markers.push(searchMarker)
+            setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
+          }, 1000)
+        }
       }
     }
   }

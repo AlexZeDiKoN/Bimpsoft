@@ -54,7 +54,7 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
   const byIds = {}
   const roots = []
   relations.forEach(({ unitID, parentUnitID }) => {
-    const unit = unitsById[unitID]
+    const unit = unitsById && unitsById[unitID]
     if (unit) {
       byIds[unitID] = { ...unitsById[unitID], parentUnitID, children: [] }
     }

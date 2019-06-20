@@ -3,6 +3,9 @@ import { date } from '../../utils'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
+const selectedLayerId = (state) => state.layers.selectedId
+const layersById = (state) => state.layers.byId
+const mapsById = (state) => state.maps.byId
 
 export const canEditSelector = createSelector(
   layersSelector,
@@ -12,6 +15,16 @@ export const canEditSelector = createSelector(
     }
     const { readOnly, visible, dateFor } = byId[selectedId]
     return !readOnly && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
+  }
+)
+
+export const signedMap = createSelector(
+  layersById,
+  mapsById,
+  selectedLayerId,
+  (layers, maps, index) => {
+    const mapId = layers && index && layers[index] && layers[index].mapId
+    return mapId && maps && maps[mapId] && maps[mapId].signed
   }
 )
 

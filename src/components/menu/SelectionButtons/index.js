@@ -54,10 +54,6 @@ export default class SelectionButtons extends React.Component {
       onDecontour,
     } = this.props
 
-    if (!isEditMode) {
-      return null
-    }
-
     const nSelected = list.length
     const isSelected = Boolean(nSelected)
     const clipboardSize = clipboard ? clipboard.length : 0
@@ -70,14 +66,16 @@ export default class SelectionButtons extends React.Component {
       <>
         <MenuDivider />
         {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
-        <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.CUT}
-          icon={iconNames.CUT_DEFAULT}
-          disabled={!isSelected}
-          onClick={onCut}
-        />
+        {isEditMode && (<>
+          <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.CUT}
+            icon={iconNames.CUT_DEFAULT}
+            disabled={!isSelected}
+            onClick={onCut}
+          />
+        </>)}
         <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
         <IconButton
           placement={'bottomLeft'}
@@ -86,52 +84,58 @@ export default class SelectionButtons extends React.Component {
           disabled={!isSelected}
           onClick={onCopy}
         />
-        <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.PASTE}
-          icon={iconNames.PASTE_DEFAULT}
-          disabled={!isClipboardExist}
-          onClick={onPaste}
-        >
-          {isClipboardExist && (
-            <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
-              {clipboardSize}
-            </CountLabel>
-          )}
-        </IconButton>
-        <HotKey selector={shortcuts.DELETE} onKey={isSelected ? onDelete : null} />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.DELETE}
-          icon={iconNames.DELETE_DEFAULT}
-          disabled={!isSelected}
-          onClick={onDelete}
-        >
-          {showDelForm && (
-            <DeleteSelectionForm
-              layerName={layerName}
-              list={list}
-              onOk={onDeleteOk}
-              onCancel={onDeleteCancel}
-            />
-          )}
-        </IconButton>
-        <MenuDivider />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.MIRROR_IMAGE}
-          icon={iconNames.MENU_MIRROR_DEFAULT}
-          disabled={!isSelected || nSelected > 1}
-          onClick={debounce(onMirrorImage, 350)}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.CONTOUR}
-          icon={iconNames.MENU_CONTOUR_DEFAULT}
-          disabled={!canContour && !canDecontour}
-          onClick={canContour ? onContour : onDecontour}
-        />
+        {isEditMode && (<>
+          <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.PASTE}
+            icon={iconNames.PASTE_DEFAULT}
+            disabled={!isClipboardExist}
+            onClick={onPaste}
+          >
+            {isClipboardExist && (
+              <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
+                {clipboardSize}
+              </CountLabel>
+            )}
+          </IconButton>
+        </>)}
+        {isEditMode && (<>
+          <HotKey selector={shortcuts.DELETE} onKey={isSelected ? onDelete : null} />
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.DELETE}
+            icon={iconNames.DELETE_DEFAULT}
+            disabled={!isSelected}
+            onClick={onDelete}
+          >
+            {showDelForm && (
+              <DeleteSelectionForm
+                layerName={layerName}
+                list={list}
+                onOk={onDeleteOk}
+                onCancel={onDeleteCancel}
+              />
+            )}
+          </IconButton>
+        </>)}
+        {isEditMode && (<>
+          <MenuDivider />
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.MIRROR_IMAGE}
+            icon={iconNames.MENU_MIRROR_DEFAULT}
+            disabled={!isSelected || nSelected > 1}
+            onClick={debounce(onMirrorImage, 350)}
+          />
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.CONTOUR}
+            icon={iconNames.MENU_CONTOUR_DEFAULT}
+            disabled={!canContour && !canDecontour}
+            onClick={canContour ? onContour : onDecontour}
+          />
+        </>)}
       </>
     )
   }
