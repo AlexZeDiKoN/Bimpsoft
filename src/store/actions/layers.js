@@ -1,5 +1,5 @@
 import { action } from '../../utils/services'
-import { layerNameSelector, mapNameSelector } from '../selectors'
+import { layerNameSelector, mapNameSelector, signedMap } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
@@ -21,19 +21,13 @@ export const setEditMode = (editMode) =>
   asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
     const { byId, selectedId } = state.layers
-    const { byId: mapsById } = state.maps
-
-    const signedMap = () => {
-      const mapId = byId && selectedId && byId[selectedId] && byId[selectedId].mapId
-      return mapId && mapsById && mapsById[mapId] && mapsById[mapId].signed
-    }
 
     if (!byId.hasOwnProperty(selectedId)) {
       throw new ApiError(i18n.NO_ACTIVE_LAYER, i18n.CANNOT_ENABLE_EDIT_MODE, true)
     } else if (byId[selectedId].readOnly) {
       const layerName = layerNameSelector(state)
       throw new ApiError(i18n.READ_ONLY_LAYER_ACCESS(layerName), i18n.CANNOT_ENABLE_EDIT_MODE, true)
-    } else if (signedMap()) {
+    } else if (signedMap(state)) {
       const mapName = mapNameSelector(state)
       throw new ApiError(i18n.CANNOT_EDIT_SIGNED_MAP(mapName), i18n.CANNOT_ENABLE_EDIT_MODE, true)
     } else {
@@ -92,7 +86,7 @@ export const updateColorByLayerId = (layerId) =>
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
-    const { layers: { selectedId, byId } } = state
+    const { layers: { selectedId, byId, editMode } } = state
     if (selectedId === layerId) {
       return
     }
@@ -113,6 +107,14 @@ export const selectLayer = (layerId) =>
         throw Error('org structure id is undefined')
       }
       await dispatch(orgStructures.setFormationById(formationId))
+
+      if (layer.readOnly || signedMap(state)) {
+        editMode && dispatch({
+          type: SET_EDIT_MODE,
+          editMode: false,
+        })
+      }
+
     } else {
       await dispatch(orgStructures.setFormationById(null))
     }
