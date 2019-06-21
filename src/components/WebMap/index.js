@@ -385,7 +385,6 @@ export default class WebMap extends React.PureComponent {
     }
     this.updateViewport(prevProps)
     if (lockedObjects !== prevProps.lockedObjects) {
-      // console.log(`lockedObjects`, lockedObjects)
       this.updateLockedObjects(lockedObjects)
     }
     if (flexGridData !== prevProps.flexGridData) {
@@ -624,7 +623,6 @@ export default class WebMap extends React.PureComponent {
         if (geometryChanged) {
           return updateObjectGeometry(id, getGeometry(layer))
         } else if (leaving) {
-          // try { throw new Error() } catch (e) { console.log(e.stack )}
           return tryUnlockObject(id)
         }
       }
@@ -1106,6 +1104,13 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:markerdragstart', this.onDragstartLayer)
       layer.on('pm:markerdragend', this.onDragendLayer)
       layer.on('pm:dragend', this.onDragged)
+      layer.on('pm:vertexremoved', this.onDragged)
+      layer.on('pm:vertexadded', ({ workingLayer, marker }) => {
+        marker.on('dblclick', (event) => {
+          event.target = workingLayer
+          this.dblClickOnLayer(event)
+        })
+      })
 
       layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
 
@@ -1660,4 +1665,4 @@ export default class WebMap extends React.PureComponent {
 /** Do not delete, please, it is FIX */
 export const buildFlexGridGeometry = formFlexGridGeometry
 
-// try { throw new Error() } catch (e) { console.log(e.stack )}
+// try { throw new Error() } catch (e) { console.log(e.stack) }

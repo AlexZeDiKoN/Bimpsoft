@@ -337,7 +337,7 @@ const drawLineEnd = (type, { x, y }, angle) => {
   let res = `<g stroke-width="3" transform="translate(${x},${y - 6}) rotate(${angle},0,6)">`
   switch (type) {
     case 'arrow1':
-      res += `<path fill="none" d="M8,-2 -8,8 8,8"/>`
+      res += `<path fill="none" d="M8,-2 l-8,8 8,8"/>`
       break
     case 'arrow2':
       res += `<path d="M12,0 l-12,6 l12,6 z"/>`

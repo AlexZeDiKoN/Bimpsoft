@@ -86,7 +86,23 @@ export const updateColorByLayerId = (layerId) =>
 export const selectLayer = (layerId) =>
   asyncAction.withNotification(async (dispatch, getState) => {
     const state = getState()
-    const { layers: { selectedId, byId, editMode } } = state
+
+    const {
+      layers: {
+        selectedId,
+        byId,
+        editMode,
+      },
+      maps: {
+        byId: mapsById,
+      },
+    } = state
+
+    const isSignedMapLayer = (layerId) => {
+      const mapId = byId && layerId && byId[layerId] && byId[layerId].mapId
+      return mapId && mapsById && mapsById[mapId] && mapsById[mapId].signed
+    }
+
     if (selectedId === layerId) {
       return
     }
@@ -97,8 +113,12 @@ export const selectLayer = (layerId) =>
     })
 
     const layer = layerId ? byId[layerId] : null
+
     if (layer) {
-      const { formationId = null, mapId } = layer
+      const {
+        formationId = null,
+        mapId,
+      } = layer
 
       await dispatch(expandMap(mapId, true))
 
@@ -106,15 +126,15 @@ export const selectLayer = (layerId) =>
         await dispatch(orgStructures.setFormationById(null))
         throw Error('org structure id is undefined')
       }
+
       await dispatch(orgStructures.setFormationById(formationId))
 
-      if (layer.readOnly || signedMap(state)) {
+      if (layer.readOnly || isSignedMapLayer(layerId)) {
         editMode && dispatch({
           type: SET_EDIT_MODE,
           editMode: false,
         })
       }
-
     } else {
       await dispatch(orgStructures.setFormationById(null))
     }
@@ -180,6 +200,7 @@ export const setHiddenOpacity = (opacity) => ({
   type: SET_HIDDEN_OPACITY,
   opacity,
 })
+
 export const setFilterText = (filterText) => ({
   type: SET_LAYERS_FILTER_TEXT,
   filterText,
