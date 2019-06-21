@@ -8,7 +8,6 @@ import { canEditSelector } from '../selectors'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
-import { fixServerObject, actionNames } from './webMap'
 import { webMap } from './'
 
 export const SHOW_CREATE_FORM = action('SHOW_CREATE_FORM')
@@ -272,27 +271,22 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
 })
 
-const refreshObject = async (webmapApi, objectId) => ({
+/* const refreshObject = async (webmapApi, objectId) => ({
   type: actionNames.REFRESH_OBJECT,
   payload: {
     id: objectId,
     object: fixServerObject(await webmapApi.objRefresh(objectId)),
   },
-})
+}) */
 
 export const createContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
   const {
     selection: { list },
     layers: { selectedId: layer },
   } = getState()
-  // console.log(`createContour`, layer, list)
+
   const contour = await webmapApi.contourCreate(layer, list)
-  if (contour) {
-    return dispatch(batchActions([
-      refreshObject(webmapApi, contour),
-      ...list.map((object) => refreshObject(webmapApi, object)),
-    ]))
-  }
+  contour && dispatch(selectedList([ contour.id ]))
 })
 
 export const dropContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
@@ -300,12 +294,10 @@ export const dropContour = () => withNotification(async (dispatch, getState, { w
     selection: { list: [ contour ] },
     layers: { selectedId: layer },
   } = getState()
-  // console.log(`dropContour`, layer, contour)
+
   const objects = await webmapApi.contourDelete(layer, contour)
-  if (objects) {
-    return dispatch(batchActions([
-      refreshObject(webmapApi, contour),
-      ...objects.map((object) => refreshObject(webmapApi, object)),
-    ]))
-  }
+  objects && dispatch(batchActions([
+    webMap.tryUnlockObject(contour),
+    selectedList(objects),
+  ]))
 })
