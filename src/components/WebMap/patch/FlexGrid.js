@@ -126,8 +126,8 @@ L.FlexGrid = L.Layer.extend({
       this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
         /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
           Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
-        const x = nBox.right - i * step.x
-        const y = nBox.bottom - j * step.y
+        const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
+        const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
         return vertical ? L.latLng(y, x) : L.latLng(x, y)
       }))
       this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))

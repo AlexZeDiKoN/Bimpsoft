@@ -149,10 +149,15 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
 export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {
   const {
     orgStructures,
-    layers: { selectedId: layer },
+    layers: {
+      selectedId: layer,
+    },
   } = getState()
+
   const unit = orgStructures.byIds[unitID] || {}
+
   const { app6Code: code, id, symbolData, natoLevelID } = unit
+
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
     code,
