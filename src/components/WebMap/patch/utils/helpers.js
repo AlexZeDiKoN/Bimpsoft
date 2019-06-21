@@ -10,7 +10,7 @@ export const DEF_MAX_SIZE = 96
 
 export const setOpacity = function (opacity) {
   this._opacity = opacity
-  const el = this.getElement()
+  const el = this.getElement && this.getElement()
   if (el) {
     el.style.opacity = this._opacity
   }
@@ -18,9 +18,17 @@ export const setOpacity = function (opacity) {
 
 export const setHidden = function (hidden) {
   this._hidden = hidden
-  const el = this.getElement()
+  const el = this.getElement && this.getElement()
   if (el) {
     el.style.display = this._hidden ? 'none' : ''
+  }
+}
+
+export const setShadowColor = function (shadowColor) {
+  this._shadowColor = shadowColor
+  const el = this.getElement && this.getElement()
+  if (el) {
+    el.style.setProperty('--outline-color', this._shadowColor || 'none')
   }
 }
 
@@ -65,7 +73,7 @@ export function adjustSquareCorner (map, point, opposite) {
 }
 
 export function setClassName (el, name, enable) {
-  if (el) {
+  if (el && el.classList && el.classList.contains) {
     const hasClass = el.classList.contains(name)
     if (hasClass !== enable) {
       enable ? el.classList.add(name) : el.classList.remove(name)

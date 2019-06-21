@@ -1,17 +1,9 @@
 /* global L */
 
-import { setOpacity, setHidden, setClassName } from './utils/helpers'
+import { setOpacity, setHidden, setClassName, setShadowColor } from './utils/helpers'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
-
-const setShadowColor = function (shadowColor) {
-  this._shadowColor = shadowColor
-  const el = this.getElement()
-  if (el) {
-    el.style.setProperty('--outline-color', this._shadowColor || 'none')
-  }
-}
 
 const DzvinMarker = L.Marker.extend({
   setOpacity,
