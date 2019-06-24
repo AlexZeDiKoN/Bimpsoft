@@ -1,7 +1,11 @@
 @import '../../../../assets/styles/_variables.less';
 
 .textMarker-container{
+  min-width: 715px;
+  max-width: 920px;
+  margin: auto;
   &__item{
+    display: flex;
     .dzvin-form-input{
       position: relative;
       .ant-select-selection__rendered{
@@ -9,9 +13,16 @@
       }
     }
     .dzvin-form-row{
+      width: 50%;
+      padding-top: 5px;
+      padding-left: 25px;
+      padding-right: 25px;
+      label{
+        flex: 0 0 auto;
+      }
       .dzvin-form-input{
+        flex: 1 1 auto;
         .org-structures-select{
-          width: 168px;
           input{
             padding: 0.294em 1.5em 0.294em 0.8em;
             border-color: @select-border-color;
@@ -27,6 +38,11 @@
           }
         }
       }
+    }
+  }
+  .text-form-scrollable{
+    .dzvin-form-item{
+      padding: 0 25px 0 25px;
     }
   }
 }
