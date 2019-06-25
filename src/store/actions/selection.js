@@ -2,9 +2,10 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
-import { getShift, calcMiddlePoint } from '../../utils/mapObjConvertor'
+import { sub, getShift, calcMiddlePoint, makeHash } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
+import entityKind from '../../components/WebMap/entityKind'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
@@ -27,7 +28,14 @@ export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
 export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
 export const CLEAR_BY_LAYER_ID = action('CLEAR_BY_LAYER_ID')
 
-const { APP6Code: { setIdentity2, setSymbol, setStatus } } = model
+const {
+  APP6Code: {
+    setIdentity2,
+    setSymbol,
+    setStatus,
+  },
+} = model
+
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({
@@ -181,7 +189,9 @@ export const copy = () => withNotification((dispatch, getState) => {
       const obj = objects.get(id)
       if (obj) {
         const clipboardObject = obj.toJS()
-        delete clipboardObject.id
+        if (clipboardObject.type !== entityKind.CONTOUR) {
+          delete clipboardObject.id
+        }
         clipboardObjects.push(clipboardObject)
       }
     }
@@ -198,7 +208,7 @@ export const cut = () => withNotification((dispatch) => {
   dispatch(deleteSelected())
 })
 
-export const paste = () => withNotification((dispatch, getState) => {
+export const paste = () => withNotification((dispatch, getState, { webmapApi: { contourCopy } }) => {
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -215,9 +225,29 @@ export const paste = () => withNotification((dispatch, getState) => {
         .filter((obj) => obj.layer === layer)
         .map((obj) => obj.hash || null)
         .toArray()
-      for (const clipboardObject of clipboard) {
+      dispatch(batchActions(clipboard.map((clipboardObject) => {
+        const { id, type, geometry: g } = clipboardObject
+        let geometry, action
+        if (type === entityKind.CONTOUR) {
+          const cp1 = calcMiddlePoint(g)
+          geometry = getShift(hashList, type, g, zoom)
+          const cp2 = calcMiddlePoint(geometry)
+          action = contourCopy(id, layer, sub(cp2, cp1))
+        } else {
+          geometry = getShift(hashList, type, g, zoom)
+          action = webMap.addObject({
+            ...clipboardObject,
+            layer,
+            geometry,
+            point: calcMiddlePoint(geometry),
+          })
+        }
+        hashList.push(makeHash(type, geometry))
+        return action
+      })))
+      /* for (const clipboardObject of clipboard) {
         const { geometry: g } = clipboardObject
-        const geometry = getShift(hashList, g, zoom)
+        const geometry = getShift(hashList, type, g, zoom)
         const copy = {
           ...clipboardObject,
           layer,
@@ -225,7 +255,7 @@ export const paste = () => withNotification((dispatch, getState) => {
           point: calcMiddlePoint(geometry),
         }
         dispatch(webMap.addObject(copy))
-      }
+      } */
     }
   }
 })

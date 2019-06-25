@@ -183,13 +183,11 @@ export default class SettingsForm extends React.Component {
                 <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
                   <div className="containerScales">
                     {SCALES.map((scale) => (
-                    <>
-                    <div className="containerForm">
-                      <FormRow key={scale} label={formatScale(scale)}>
-                        {this.renderLevelControl(`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`)}
-                      </FormRow>
-                    </div>
-                    </>
+                      <div key={scale} className="containerForm">
+                        <FormRow label={formatScale(scale)}>
+                          {this.renderLevelControl(`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`)}
+                        </FormRow>
+                      </div>
                     ))}
                   </div>
                 </Collapse.Panel>

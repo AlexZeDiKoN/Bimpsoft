@@ -1,4 +1,5 @@
 import { CRS, latLng } from 'leaflet'
+import { sha256 } from 'js-sha256'
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
 const shiftOne = (p, z) => {
@@ -12,24 +13,16 @@ const shift = (g, z) => Array.isArray(g)
   ? g.map((item) => shift(item, z))
   : shiftOne(g, z)
 
-export const makeHash = (geometry) => {
-  const { length } = geometry
-  const def = { sumLat: 0, sumLng: 0, hash: 0 }
-  const data = geometry.flat(3).reduce((acc, point) => {
-    const lat = Math.trunc(point.lat * 10000)
-    const lng = Math.trunc(point.lng * 10000)
-    const sumLat = acc.sumLat + lat
-    const sumLng = acc.sumLng + lng
-    const hash = acc.hash + lat + lng
-    return { sumLat, sumLng, hash }
-  }, def)
-  const { sumLat, sumLng, hash } = data
-  const weightPoint = { x: Math.trunc(sumLat / length / length), y: Math.trunc(sumLng / length / length) }
-  return Number(`${length}${hash}${weightPoint.x}${weightPoint.y}`)
-}
+export const makeHash = (type, geometry) => sha256(JSON.stringify({
+  type,
+  geometry: geometry && [ ...geometry ].flat(4).map(({ lng, lat }) => ({
+    lng: Math.trunc(lng * 10000),
+    lat: Math.trunc(lat * 10000),
+  })),
+}))
 
-export const getShift = (hashList, geometry, zoom) => {
-  const checkHash = (g) => hashList.includes(makeHash(g))
+export const getShift = (hashList, type, geometry, zoom) => {
+  const checkHash = (g) => hashList.includes(makeHash(type, g))
     ? checkHash(shift(g, zoom))
     : g
   return hashList.length
@@ -45,7 +38,7 @@ export function calcMiddlePoint (coords) {
   if (!coords.length) {
     return zero
   }
-  const sum = coords.reduce((a, p) => {
+  const sum = coords.flat(3).reduce((a, p) => {
     a.lat += p.lat
     a.lng += p.lng
     return a
@@ -55,3 +48,8 @@ export function calcMiddlePoint (coords) {
     lng: sum.lng / coords.length,
   }
 }
+
+export const sub = ({ lat: lat1, lng: lng1 }, { lat: lat2, lng: lng2 }) => ({
+  lat: lat2 - lat1,
+  lng: lng2 - lng1,
+})
