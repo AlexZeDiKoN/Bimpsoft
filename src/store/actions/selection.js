@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
-import { getShift } from '../../utils/mapObjConvertor'
+import { getShift, calcMiddlePoint } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
@@ -170,22 +170,17 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
 })
 
 export const copy = () => withNotification((dispatch, getState) => {
-  const state = getState()
-  const canEdit = canEditSelector(state)
-  if (!canEdit) {
-    return
-  }
   const {
     selection: { list = null },
     webMap: { objects },
-  } = state
+  } = getState()
 
   const clipboardObjects = []
   if (Array.isArray(list)) {
     for (const id of list) {
       const obj = objects.get(id)
       if (obj) {
-        const clipboardObject = { ...obj.toJS() }
+        const clipboardObject = obj.toJS()
         delete clipboardObject.id
         clipboardObjects.push(clipboardObject)
       }
@@ -216,14 +211,19 @@ export const paste = () => withNotification((dispatch, getState) => {
   } = state
   if (layer !== null) {
     if (Array.isArray(clipboard)) {
-      const hashList = objects.reduce((acc, obj) => {
-        obj.get('layer') === layer && acc.push(obj.get('hash', null))
-        return acc
-      }, [])
+      const hashList = objects
+        .filter((obj) => obj.layer === layer)
+        .map((obj) => obj.hash || null)
+        .toArray()
       for (const clipboardObject of clipboard) {
         const { geometry: g } = clipboardObject
         const geometry = getShift(hashList, g, zoom)
-        const copy = Object.assign({}, clipboardObject, { layer, geometry })
+        const copy = {
+          ...clipboardObject,
+          layer,
+          geometry,
+          point: calcMiddlePoint(geometry),
+        }
         dispatch(webMap.addObject(copy))
       }
     }

@@ -1,5 +1,6 @@
 /* global L */
 import { utils } from '@DZVIN/CommonComponents'
+import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind from './entityKind'
 
@@ -8,7 +9,7 @@ const { Coordinates: Coord } = utils
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
     ? data.map(latLng2peerArr)
-    : [ data.lat, data.lng ]
+    : [ data.lng, data.lat ]
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -222,6 +223,7 @@ function createContour (data) {
   } catch (err) {
     layer = geoJSONLayer(coordinates, 'MultiPolygon')
   }
+  layer._data = data
   return layer
 }
 
@@ -297,6 +299,8 @@ export function getGeometry (layer) {
       return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
+    case entityKind.CONTOUR:
+      return layer._data ? { geometry: layer._data } : {}
     case entityKind.FLEXGRID:
       return formFlexGridGeometry(layer.eternals, layer.directionSegments, layer.zoneSegments)
     default:
@@ -381,15 +385,4 @@ function formCircleGeometry (point, radius) {
     point,
     geometry: [ point, { lat: point.lat, lng } ],
   }
-}
-
-export function calcMiddlePoint (coords) {
-  const zero = { lat: 0, lng: 0 }
-  if (!coords.length) { return zero }
-  const sum = coords.reduce((a, p) => {
-    a.lat += p.lat
-    a.lng += p.lng
-    return a
-  }, zero)
-  return { lat: sum.lat / coords.length, lng: sum.lng / coords.length }
 }
