@@ -152,6 +152,12 @@ export const addObject = (object) =>
     return payload.id
   })
 
+export const copyContour = (id, layer, shift) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourCopy } }) => dispatch({
+    type: actionNames.ADD_OBJECT,
+    payload: fixServerObject(await contourCopy(id, layer, shift)),
+  }))
+
 export const deleteObject = (id) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDelete } }) => {
     await objDelete(id)

@@ -9,6 +9,16 @@ const shiftOne = (p, z) => {
   return CRS.EPSG4326.pointToLatLng({ x, y }, z)
 }
 
+const EQUATOR = 40075016.6855784
+
+export const calcShiftWM = (latLng, zoom) => { // WM - Web Mercator (EPSG-3857)
+  const scale = EQUATOR / CRS.EPSG3857.scale(zoom) // meter per pixel
+  return {
+    x: scale * SHIFT_PASTE_LNG,
+    y: -scale * SHIFT_PASTE_LAT,
+  }
+}
+
 const shift = (g, z) => Array.isArray(g)
   ? g.map((item) => shift(item, z))
   : shiftOne(g, z)
@@ -35,21 +45,17 @@ export function calcMiddlePoint (coords) {
     lat: 0,
     lng: 0,
   }
-  if (!coords.length) {
+  const arr = coords.flat(3)
+  if (!arr.length) {
     return zero
   }
-  const sum = coords.flat(3).reduce((a, p) => {
+  const sum = arr.reduce((a, p) => {
     a.lat += p.lat
     a.lng += p.lng
     return a
   }, zero)
   return {
-    lat: sum.lat / coords.length,
-    lng: sum.lng / coords.length,
+    lat: sum.lat / arr.length,
+    lng: sum.lng / arr.length,
   }
 }
-
-export const sub = ({ lat: lat1, lng: lng1 }, { lat: lat2, lng: lng2 }) => ({
-  lat: lat2 - lat1,
-  lng: lng2 - lng1,
-})

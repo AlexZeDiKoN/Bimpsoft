@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
-import { sub, getShift, calcMiddlePoint, makeHash } from '../../utils/mapObjConvertor'
+import { getShift, calcMiddlePoint, makeHash, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import entityKind from '../../components/WebMap/entityKind'
@@ -208,7 +208,7 @@ export const cut = () => withNotification((dispatch) => {
   dispatch(deleteSelected())
 })
 
-export const paste = () => withNotification((dispatch, getState, { webmapApi: { contourCopy } }) => {
+export const paste = () => withNotification((dispatch, getState) => {
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -229,10 +229,8 @@ export const paste = () => withNotification((dispatch, getState, { webmapApi: { 
         const { id, type, geometry: g } = clipboardObject
         let geometry, action
         if (type === entityKind.CONTOUR) {
-          const cp1 = calcMiddlePoint(g)
           geometry = getShift(hashList, type, g, zoom)
-          const cp2 = calcMiddlePoint(geometry)
-          action = contourCopy(id, layer, sub(cp2, cp1))
+          action = webMap.copyContour(id, layer, calcShiftWM(calcMiddlePoint(geometry), zoom))
         } else {
           geometry = getShift(hashList, type, g, zoom)
           action = webMap.addObject({
@@ -245,17 +243,6 @@ export const paste = () => withNotification((dispatch, getState, { webmapApi: { 
         hashList.push(makeHash(type, geometry))
         return action
       })))
-      /* for (const clipboardObject of clipboard) {
-        const { geometry: g } = clipboardObject
-        const geometry = getShift(hashList, type, g, zoom)
-        const copy = {
-          ...clipboardObject,
-          layer,
-          geometry,
-          point: calcMiddlePoint(geometry),
-        }
-        dispatch(webMap.addObject(copy))
-      } */
     }
   }
 })
