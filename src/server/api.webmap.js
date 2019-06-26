@@ -72,4 +72,6 @@ export default {
     getDirect(`${webmapUrl}/contour/create`, { layer, objects }),
   contourDelete: (layer, contour) =>
     getDirect(`${webmapUrl}/contour/drop`, { layer, contour }),
+  contourCopy: (id, layer, shift) =>
+    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }),
 }

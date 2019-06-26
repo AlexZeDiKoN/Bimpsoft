@@ -64,7 +64,14 @@ const switchScaleOptions = {
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
 }
 
-const isLayerInBounds = (layer, bounds) => bounds.contains(L.latLngBounds(getGeometry(layer).geometry))
+const isLayerInBounds = (layer, bounds) => {
+  let { geometry } = getGeometry(layer)
+  if (Array.isArray(geometry)) {
+    geometry = geometry.flat(3)
+  }
+  const rect = geometry && L.latLngBounds(geometry)
+  return rect && bounds.contains(rect)
+}
 
 // const tmp = `<svg
 //   width="480" height="480"
@@ -185,7 +192,7 @@ const setScaleOptions = (layer, params) => {
     case entityKind.CIRCLE:
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
-    // case entityKind.CONTOUR:
+    /* case entityKind.CONTOUR: */
       layer.setScaleOptions({
         min: Number(params[paramsNames.LINE_SIZE_MIN]),
         max: Number(params[paramsNames.LINE_SIZE_MAX]),
@@ -308,6 +315,8 @@ export default class WebMap extends React.PureComponent {
   async componentDidMount () {
     const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
 
+    window.webMap = this
+
     await requestAppInfo()
     this.setMapView()
     this.setMapSource(sources)
@@ -319,7 +328,6 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
-    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -1112,7 +1120,9 @@ export default class WebMap extends React.PureComponent {
         })
       })
 
-      layer === prevLayer ? (layer.update && layer.update()) : layer.addTo(this.map)
+      layer === prevLayer
+        ? layer.update && layer.update()
+        : layer.addTo(this.map)
 
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)

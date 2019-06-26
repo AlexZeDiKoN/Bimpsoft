@@ -29,9 +29,9 @@ class March extends Component {
   handleMarchType = (target, key) => {
     const { setMarchParams, indicators } = this.props
     const template = MarchKeys.MARCH_TYPES_TEMPLATES[ target ]
-    const targetObj = this.indicatorItemObj(target, indicators[ 'МШВ001' ])
+    const targetObj = this.indicatorItemObj(target, indicators['МШВ001'])
     setMarchParams({
-      [ key ]: targetObj,
+      [key]: targetObj,
       template,
     })
   }
@@ -68,7 +68,7 @@ class March extends Component {
                     <Input
                       className='march_name-title'
                       placeholder={i18n.MARCH_NAME}
-                      onChange={({ target }) => setMarchParams({ [ MARCH_KEYS.MARCH_NAME ]: target.value })}
+                      onChange={({ target }) => setMarchParams({ [MARCH_KEYS.MARCH_NAME]: target.value })}
                     />,
                   )
                 }

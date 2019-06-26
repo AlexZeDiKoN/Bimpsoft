@@ -61,10 +61,10 @@ class PrintPanel extends React.Component {
         .reduce((prev, current) => ({
           ...prev,
           [ current ]: (color) => {
-            setPrintRequisites({ [ COLOR_PICKER_KEYS[current] ]: color })
+            setPrintRequisites({ [COLOR_PICKER_KEYS[current]]: color })
             this.setState((prevState) => (
               {
-                colors: { ...prevState.colors, [ COLOR_PICKER_KEYS[current] ]: color },
+                colors: { ...prevState.colors, [COLOR_PICKER_KEYS[current]]: color },
               }
             ))
           },

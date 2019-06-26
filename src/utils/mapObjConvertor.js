@@ -1,92 +1,68 @@
-import { CRS, latLng } from 'leaflet'
-import { ApiError } from '../constants/errors'
-import i18n from '../i18n'
+import { CRS, latLng, point } from 'leaflet'
+import { sha256 } from 'js-sha256'
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
-// todo: try do not use these converting
+const shiftOne = (p, z) => {
+  const f = window.webMap.map.project(latLng(p))
+  // const f = CRS.EPSG4326.latLngToPoint(latLng(p), z)
+  const x = f.x + SHIFT_PASTE_LNG
+  const y = f.y + SHIFT_PASTE_LAT
+  return window.webMap.map.unproject(point({ x, y }))
+  // return CRS.EPSG4326.pointToLatLng({ x, y }, z)
+}
 
-export const toSelection = (object) => {
-  const { id, layer, type, code, attributes, affiliation, unit, level, geometry } = object
-  const coordinatesArray = geometry.toJS().map(({ lat, lng }) => ({ lng, lat }))
+const EQUATOR = 40075016.6855784
+
+export const calcShiftWM = (latLng, zoom) => { // WM - Web Mercator (EPSG-3857)
+  const scale = EQUATOR / CRS.EPSG3857.scale(zoom) // meter per pixel
   return {
-    id: +id,
-    type: +type,
-    layer,
-    code,
-    amplifiers: attributes ? attributes.toJS() : attributes,
-    affiliation,
-    orgStructureId: unit,
-    subordinationLevel: +level,
-    coordinatesArray,
+    x: scale * SHIFT_PASTE_LNG,
+    y: -scale * SHIFT_PASTE_LAT,
   }
 }
 
-const filterObj = (data) => {
-  for (const key of Object.keys(data)) {
-    if (data[key] === '') {
-      delete data[key]
-    }
-  }
-  return Object.keys(data).length ? data : null
-}
+const shift = (g, z) => Array.isArray(g)
+  ? g.map((item) => shift(item, z))
+  : shiftOne(g, z)
 
-export const fromSelection = (data) => {
-  const { id, layer, type, code, amplifiers, orgStructureId, subordinationLevel, coordinates, coordinatesArray } = data
-  let point = coordinates || (coordinatesArray && coordinatesArray[0])
-  if (!point) {
-    throw new ApiError(i18n.COORDINATES_UNDEFINED, i18n.ERROR)
-  }
-  point = { lng: parseFloat(point.lng), lat: parseFloat(point.lat) }
-  const geometry = coordinatesArray
-    ? coordinatesArray.map(({ lng, lat }) => ({ lng: parseFloat(lng), lat: parseFloat(lat) }))
-    : [ point ]
-
-  const object = {
+export const makeHash = (type, geometry, label) => {
+  const data = JSON.stringify({
     type,
-    point,
-    geometry,
-    code,
-    attributes: filterObj(amplifiers),
-    level: subordinationLevel || 0,
-    unit: orgStructureId || null,
-    layer,
-    affiliation: (code && Number(code.slice(3, 4))) || 0,
-  }
-  if (id) {
-    object.id = id
-  }
-  return object
+    geometry: geometry && [ ...geometry ].flat(4).map(({ lng, lat }) => ({
+      lng: Math.trunc(lng * 10000),
+      lat: Math.trunc(lat * 10000),
+    })),
+  })
+  const result = sha256(data)
+  // !!! // console.log({ label, data, result })
+  return result
 }
 
-export const makeHash = (geometry) => {
-  const { length } = geometry
-  const def = { sumLat: 0, sumLng: 0, hash: 0 }
-  const data = geometry.reduce((acc, point) => {
-    const lat = Math.trunc(point.lat * 10000)
-    const lng = Math.trunc(point.lng * 10000)
-    const sumLat = acc.sumLat + lat
-    const sumLng = acc.sumLng + lng
-    const hash = acc.hash + lat + lng
-    return { sumLat, sumLng, hash }
-  }, def)
-  const { sumLat, sumLng, hash } = data
-  const weightPoint = { x: Math.trunc(sumLat / length / length), y: Math.trunc(sumLng / length / length) }
-  return Number(`${length}${hash}${weightPoint.x}${weightPoint.y}`)
+export const getShift = (hashList, type, geometry, zoom) => {
+  const checkHash = (g) => hashList.includes(makeHash(type, g, `getShift`))
+    ? checkHash(shift(g, zoom))
+    : g
+  return hashList.length
+    ? checkHash(geometry)
+    : geometry
 }
 
-export const getShift = (hashList, geometry, zoom) => {
-  const checkHash = (g) => {
-    const hash = makeHash(g)
-    if (hashList.includes(hash)) {
-      const newGeometry = g.map((point) => {
-        const currentFlat = CRS.Simple.latLngToPoint(latLng(point), zoom)
-        const x = currentFlat.x + SHIFT_PASTE_LNG
-        const y = currentFlat.y + SHIFT_PASTE_LAT
-        return CRS.Simple.pointToLatLng({ x, y }, zoom)
-      })
-      return checkHash(newGeometry)
-    }
-    return g
+export function calcMiddlePoint (coords) {
+  const zero = {
+    lat: 0,
+    lng: 0,
   }
-  return hashList.length ? checkHash(geometry) : geometry
+  const arr = coords.flat(3)
+  if (!arr.length) {
+    return zero
+  }
+  const sum = arr.reduce((a, p) => {
+    a.lat += p.lat
+    a.lng += p.lng
+    return a
+  }, zero)
+  return {
+    lat: sum.lat / arr.length,
+    lng: sum.lng / arr.length,
+  }
 }
