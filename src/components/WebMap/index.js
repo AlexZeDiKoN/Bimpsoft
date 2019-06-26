@@ -315,6 +315,8 @@ export default class WebMap extends React.PureComponent {
   async componentDidMount () {
     const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
 
+    window.webMap = this
+
     await requestAppInfo()
     this.setMapView()
     this.setMapSource(sources)
@@ -326,7 +328,6 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
-    window.webMap = this
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {

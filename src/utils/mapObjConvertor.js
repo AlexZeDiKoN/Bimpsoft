@@ -1,12 +1,14 @@
-import { CRS, latLng } from 'leaflet'
+import { CRS, latLng, point } from 'leaflet'
 import { sha256 } from 'js-sha256'
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
 const shiftOne = (p, z) => {
-  const f = CRS.EPSG4326.latLngToPoint(latLng(p), z)
+  const f = window.webMap.map.project(latLng(p))
+  // const f = CRS.EPSG4326.latLngToPoint(latLng(p), z)
   const x = f.x + SHIFT_PASTE_LNG
   const y = f.y + SHIFT_PASTE_LAT
-  return CRS.EPSG4326.pointToLatLng({ x, y }, z)
+  return window.webMap.map.unproject(point({ x, y }))
+  // return CRS.EPSG4326.pointToLatLng({ x, y }, z)
 }
 
 const EQUATOR = 40075016.6855784
@@ -23,16 +25,21 @@ const shift = (g, z) => Array.isArray(g)
   ? g.map((item) => shift(item, z))
   : shiftOne(g, z)
 
-export const makeHash = (type, geometry) => sha256(JSON.stringify({
-  type,
-  geometry: geometry && [ ...geometry ].flat(4).map(({ lng, lat }) => ({
-    lng: Math.trunc(lng * 10000),
-    lat: Math.trunc(lat * 10000),
-  })),
-}))
+export const makeHash = (type, geometry, label) => {
+  const data = JSON.stringify({
+    type,
+    geometry: geometry && [ ...geometry ].flat(4).map(({ lng, lat }) => ({
+      lng: Math.trunc(lng * 10000),
+      lat: Math.trunc(lat * 10000),
+    })),
+  })
+  const result = sha256(data)
+  // !!! // console.log({ label, data, result })
+  return result
+}
 
 export const getShift = (hashList, type, geometry, zoom) => {
-  const checkHash = (g) => hashList.includes(makeHash(type, g))
+  const checkHash = (g) => hashList.includes(makeHash(type, g, `getShift`))
     ? checkHash(shift(g, zoom))
     : g
   return hashList.length

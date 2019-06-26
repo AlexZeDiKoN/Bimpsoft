@@ -240,7 +240,7 @@ export const paste = () => withNotification((dispatch, getState) => {
             point: calcMiddlePoint(geometry),
           })
         }
-        hashList.push(makeHash(type, geometry))
+        hashList.push(makeHash(type, geometry, `paste`))
         return action
       })))
     }
