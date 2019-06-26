@@ -3,6 +3,8 @@
 
 .shape-form{
   min-width: 23em;
+  justify-content: space-between;
+  height: 100%;
   .dzvin-form-row{
     .dzvin-form-input{
       // position: relative;
@@ -17,6 +19,9 @@
         pointer-events: none;
       }
     }
+  }
+  .ant-select-selection--single{
+    height: 32px;
   }
 }
 .text-form-preview {
@@ -54,7 +59,7 @@
 .shape-form-scrollable{
   .flex;
   flex-direction: column;
-  max-height: 14em;
+  height: 130px;
   overflow: auto;
   > div {
     flex: 0 0 auto;
