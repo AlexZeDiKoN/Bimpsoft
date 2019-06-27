@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
-import { getShift, calcMiddlePoint, makeHash, calcShiftWM } from '../../utils/mapObjConvertor'
+import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector } from '../selectors'
 import entityKind from '../../components/WebMap/entityKind'
@@ -227,21 +227,20 @@ export const paste = () => withNotification((dispatch, getState) => {
         .toArray()
       dispatch(batchActions(clipboard.map((clipboardObject) => {
         const { id, type, geometry: g } = clipboardObject
-        let geometry, action
-        if (type === entityKind.CONTOUR) {
-          geometry = getShift(hashList, type, g, zoom)
-          action = webMap.copyContour(id, layer, calcShiftWM(calcMiddlePoint(geometry), zoom))
-        } else {
-          geometry = getShift(hashList, type, g, zoom)
-          action = webMap.addObject({
+        const [ geometry, steps ] = getShift(hashList, type, g, zoom)
+        const point = calcMiddlePoint(geometry)
+        return type === entityKind.CONTOUR
+          ? webMap.copyContour(
+            id,
+            layer,
+            calcShiftWM(point, zoom, steps),
+          )
+          : webMap.addObject({
             ...clipboardObject,
             layer,
             geometry,
-            point: calcMiddlePoint(geometry),
+            point,
           })
-        }
-        hashList.push(makeHash(type, geometry, `paste`))
-        return action
       })))
     }
   }

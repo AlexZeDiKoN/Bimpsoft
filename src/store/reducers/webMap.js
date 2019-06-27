@@ -99,7 +99,9 @@ export const updateGeometry = (obj, geometry) => {
   const newValue = pointTree(geometry || [])
   return eq(newValue, oldValue)
     ? obj
-    : obj.set('geometry', newValue).set('hash', makeHash(obj.get('type'), geometry, `updateGeometry`))
+    : obj
+      .set('geometry', newValue)
+      .set('hash', makeHash(obj.get('type'), geometry))
 }
 
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
