@@ -1,10 +1,9 @@
-/* global L */
 import React from 'react'
 import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
@@ -35,6 +34,7 @@ import {
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../CatalogsComponent/Item'
+import { calcMoveWM } from '../../utils/mapObjConvertor'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -301,6 +301,7 @@ export default class WebMap extends React.PureComponent {
     toggleTopographicObjModal: PropTypes.func,
     selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
+    onMoveContour: PropTypes.func,
   }
 
   constructor (props) {
@@ -618,7 +619,7 @@ export default class WebMap extends React.PureComponent {
       if (layer.object) {
         const { point, geometry } = layer.object
         if (id !== null && (!point || !point.toJS || !geometry || !geometry.toArray)) {
-          console.warn(`layer.object`, layer.object)
+          console.warn(`layer.object`, layer.object) // такої ситуації не мало би виникати
         }
         checkPoint = point && point.toJS && point.toJS()
         checkGeometry = geometry && geometry.toArray && geometry.toArray()
@@ -1111,14 +1112,9 @@ export default class WebMap extends React.PureComponent {
       layer.on('dblclick', this.dblClickOnLayer)
       layer.on('pm:markerdragstart', this.onDragstartLayer)
       layer.on('pm:markerdragend', this.onDragendLayer)
-      layer.on('pm:dragend', this.onDragged)
-      layer.on('pm:vertexremoved', this.onDragged)
-      layer.on('pm:vertexadded', ({ workingLayer, marker }) => {
-        marker.on('dblclick', (event) => {
-          event.target = workingLayer
-          this.dblClickOnLayer(event)
-        })
-      })
+      layer.on('pm:dragend', this.onDragEnded)
+      layer.on('pm:vertexremoved', this.onVertexRemoved)
+      layer.on('pm:vertexadded', this.onVertexAdded)
 
       layer === prevLayer
         ? layer.update && layer.update()
@@ -1182,8 +1178,25 @@ export default class WebMap extends React.PureComponent {
     this.checkSaveObject(false)
   }, 210)
 
-  onDragged = () => {
+  onDragEnded = ({ target: layer }) => {
+    if (layer.options.tsType === entityKind.CONTOUR) {
+      const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+      this.props.onMoveContour(layer.id, shift)
+    } else {
+      this.checkSaveObject(false)
+    }
+  }
+
+  onVertexRemoved = () => {
     this.checkSaveObject(false)
+  }
+
+  onVertexAdded = (event) => {
+    const { layer, workingLayer, marker } = event
+    marker.on('dblclick', (event) => {
+      event.target = workingLayer || layer
+      this.dblClickOnLayer(event)
+    })
   }
 
   clickOnCatalogLayer = (event) => {

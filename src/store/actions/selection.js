@@ -228,18 +228,17 @@ export const paste = () => withNotification((dispatch, getState) => {
       dispatch(batchActions(clipboard.map((clipboardObject) => {
         const { id, type, geometry: g } = clipboardObject
         const [ geometry, steps ] = getShift(hashList, type, g, zoom)
-        const point = calcMiddlePoint(geometry)
         return type === entityKind.CONTOUR
           ? webMap.copyContour(
             id,
             layer,
-            calcShiftWM(point, zoom, steps),
+            calcShiftWM(zoom, steps),
           )
           : webMap.addObject({
             ...clipboardObject,
             layer,
             geometry,
-            point,
+            point: calcMiddlePoint(geometry),
           })
       })))
     }

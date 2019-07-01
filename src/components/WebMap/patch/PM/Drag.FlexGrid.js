@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 const { enableLayerDrag, _dragMixinOnMouseMove, _dragMixinOnMouseUp } = L.PM.Edit.prototype
 
