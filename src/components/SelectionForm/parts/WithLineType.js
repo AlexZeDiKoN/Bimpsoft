@@ -9,6 +9,8 @@ const { FormRow } = components.form
 const TYPE_SOLID = 'solid'
 const TYPE_DASHED = 'dashed'
 const TYPE_WAVED = 'waved'
+// @TODO: make truly second wawed type
+const TYPE_WAVED2 = 'waved2'
 const TYPE_STROKED = 'stroked'
 
 const types = {
@@ -23,9 +25,14 @@ const PATH = [ 'attributes', 'lineType' ]
 const WithLineType = (Component) => class LineTypeComponent extends Component {
   lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH, lineType))
 
+  // @TODO: make truly second waved lineType
   renderLineType (simple = false) {
     const lineType = this.getResult().getIn(PATH)
     const typeInfo = types[lineType]
+    console.log('this.getResult()', this.getResult())
+    console.log('lineType', lineType)
+    console.log('types', types)
+    console.log('typeInfo', typeInfo)
     const canEdit = this.isCanEdit()
     const value = canEdit
       ? (
@@ -34,6 +41,7 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
             {typeOption(TYPE_SOLID, 'solid', i18n.SOLID)}
             {typeOption(TYPE_DASHED, 'dashed', i18n.DASHED)}
             {!simple && typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
+            {!simple && typeOption(TYPE_WAVED2, 'waved2', i18n.WAVED2)}
             {!simple && typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
           </Select>
           <IconButton

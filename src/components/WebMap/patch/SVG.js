@@ -1,6 +1,6 @@
 /* global L */
 import entityKind, { entityKindNonFillable } from '../entityKind'
-import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
+import { getAmplifiers, stroked, waved, getLineEnds, waved2 } from '../../../utils/svg/lines'
 import { prepareLinePath } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName } from './utils/helpers'
@@ -134,6 +134,7 @@ L.SVG.include({
     layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
+  // @TODO: make real diff between waved & waved2 types
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     const lineType = layer.lineType || 'solid'
@@ -145,6 +146,12 @@ L.SVG.include({
     const fullPolyline = kind === entityKind.POLYLINE && length >= 2
     const fullArea = kind === entityKind.AREA && length >= 3
     const fullCurve = kind === entityKind.CURVE && length >= 2
+    // console.log('!!!!_updatePoly!!!!!')
+    // console.log(' lineType', lineType)
+    // console.log(' fullPolygon', fullPolygon)
+    // console.log(' fullPolyline', fullPolyline)
+    // console.log(' fullArea', fullArea)
+    // console.log(' fullCurve', fullCurve)
     if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
@@ -166,6 +173,19 @@ L.SVG.include({
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, false, false)
+          break
+        case 'waved2':
+          // @TODO: make function buildWawed work with this type
+          console.log('WAVED2!')
+          result = waved2(
+            layer._rings[0],
+            layer.options && layer.options.lineEnds,
+            false,
+            false,
+            layer._map._renderer._bounds, 1.0,
+            layer._map.getZoom()
+          )
+          // result = this._buildWaved(layer, false, false)
           break
         case 'stroked':
           result += this._buildStroked(layer, false, false)
@@ -197,6 +217,19 @@ L.SVG.include({
           break
         case 'stroked':
           result += this._buildStroked(layer, true, false)
+          break
+        case 'waved2':
+          // @TODO: make function buildWawed work with this type
+          console.log('WAVED2!')
+          result = waved2(
+            layer._rings[0],
+            layer.options && layer.options.lineEnds,
+            false,
+            false,
+            layer._map._renderer._bounds, 1.0,
+            layer._map.getZoom()
+          )
+          // result = this._buildWaved(layer, false, false)
           break
         default:
           break
