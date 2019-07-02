@@ -14,6 +14,7 @@ import {
   RectangleForm,
   SquareForm,
   TextForm,
+  ContourForm,
 } from './forms'
 
 const forms = {
@@ -52,6 +53,10 @@ const forms = {
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
     component: TextForm,
+  },
+  [SelectionTypes.CONTOUR]: {
+    title: i18n.CONTOUR,
+    component: ContourForm,
   },
 }
 

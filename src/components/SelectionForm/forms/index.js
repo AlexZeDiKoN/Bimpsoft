@@ -5,6 +5,7 @@ import MilSymbolForms from './MilSymbolForm'
 import RectangleForms from './RectangleForm'
 import SquareForms from './SquareForm'
 import TextForms from './TextForm'
+import ContourForms from './ContourForm'
 
 export const AreaForm = AreaForms
 export const CircleForm = CircleForms
@@ -13,3 +14,4 @@ export const MilSymbolForm = MilSymbolForms
 export const RectangleForm = RectangleForms
 export const SquareForm = SquareForms
 export const TextForm = TextForms
+export const ContourForm = ContourForms
