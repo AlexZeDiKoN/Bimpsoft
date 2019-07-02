@@ -2,22 +2,28 @@ import { CRS, latLng, point } from 'leaflet'
 import { sha256 } from 'js-sha256'
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
-const shiftOne = (p, z) => {
+const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
-  // const f = CRS.EPSG4326.latLngToPoint(latLng(p), z)
   const x = f.x + SHIFT_PASTE_LNG
   const y = f.y + SHIFT_PASTE_LAT
   return window.webMap.map.unproject(point({ x, y }))
-  // return CRS.EPSG4326.pointToLatLng({ x, y }, z)
 }
 
 const EQUATOR = 40075016.6855784
 
-export const calcShiftWM = (latLng, zoom, steps) => { // WM - Web Mercator (EPSG-3857)
+export const calcShiftWM = (zoom, steps) => { // WM - Web Mercator (EPSG-3857)
   const scale = EQUATOR / CRS.EPSG3857.scale(zoom) // meter per pixel
   return {
     x: scale * SHIFT_PASTE_LNG * steps,
     y: -scale * SHIFT_PASTE_LAT * steps,
+  }
+}
+
+export const calcMoveWM = (pxDelta, zoom) => { // WM - Web Mercator (EPSG-3857)
+  const scale = EQUATOR / CRS.EPSG3857.scale(zoom) // meter per pixel
+  return {
+    x: scale * pxDelta.x,
+    y: -scale * pxDelta.y,
   }
 }
 

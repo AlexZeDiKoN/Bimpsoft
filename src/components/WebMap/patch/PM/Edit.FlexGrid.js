@@ -1,8 +1,6 @@
-/* global L */
-
+import L from 'leaflet'
 import { halfPoint, prepareBezierPath } from '../utils/Bezier'
-import StretchMixin from './Mixins/Stretch'
-import RotateMixin from './Mixins/Rotate'
+
 import './Edit.FlexGrid.css'
 
 const CODE = [ 'dir', 'zone' ]
@@ -64,8 +62,6 @@ const rotate = (center, { sin, cos }, point) => ({
 })
 
 L.PM.Edit.FlexGrid = L.PM.Edit.extend({
-  includes: [ StretchMixin, RotateMixin ],
-
   initialize (layer) {
     this._layer = layer
     this._enabled = false

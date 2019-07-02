@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 export default L.GeoJSON.include({
   setHidden: function (hidden) {

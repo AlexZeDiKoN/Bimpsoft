@@ -74,4 +74,6 @@ export default {
     getDirect(`${webmapUrl}/contour/drop`, { layer, contour }),
   contourCopy: (id, layer, shift) =>
     getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }),
+  contourMove: (id, shift) =>
+    getDirect(`${webmapUrl}/contour/move`, { id, shift }),
 }

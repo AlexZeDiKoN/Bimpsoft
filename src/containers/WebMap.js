@@ -95,6 +95,7 @@ const WebMapContainer = connect(
     getTopographicObjects: webMap.getTopographicObjects,
     toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
     disableDrawUnit: selection.disableDrawUnit,
+    onMoveContour: webMap.moveContour,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

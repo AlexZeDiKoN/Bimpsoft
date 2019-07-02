@@ -1,5 +1,5 @@
-/* global L */
 import { utils } from '@DZVIN/CommonComponents'
+import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind from './entityKind'
@@ -33,7 +33,9 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  if (layer.options.tsType !== entityKind.CONTOUR) {
+  if (layer.options.tsType === entityKind.CONTOUR) {
+    layer.pm.enable()
+  } else {
     if (layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT) {
       layer.pm.enableLayerDrag()
       layer.on('pm:dragstart', () => {
@@ -257,7 +259,7 @@ function prepareOptions (signType, color, js) {
     tsType: signType,
     tsTemplate: js,
     noClip: true,
-    draggable: false,
+    draggable: signType === entityKind.CONTOUR,
     // renderer: new L.SVG(),
   }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {
