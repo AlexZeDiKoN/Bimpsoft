@@ -147,7 +147,7 @@ L.SVG.include({
     const fullArea = kind === entityKind.AREA && length >= 3
     const fullCurve = kind === entityKind.CURVE && length >= 2
     // console.log('!!!!_updatePoly!!!!!')
-    // console.log(' lineType', lineType)
+    console.log(' lineType', lineType)
     // console.log(' fullPolygon', fullPolygon)
     // console.log(' fullPolyline', fullPolyline)
     // console.log(' fullArea', fullArea)
@@ -224,7 +224,7 @@ L.SVG.include({
           result = waved2(
             layer._rings[0],
             layer.options && layer.options.lineEnds,
-            false,
+            true,
             false,
             layer._map._renderer._bounds, 1.0,
             layer._map.getZoom()

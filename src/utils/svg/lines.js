@@ -235,14 +235,68 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-const buildPeriodicPoints2 = (step, offset, points, bezier, locked, insideMap, skipNodes = false) => {
+const getLineFromSection = (start, end) => {
+  const a = start.y - end.y
+  const b = end.x - start.x
+  const c = -a * start.x - b * start.y
+  const normalizer = Math.hypot(a, b)
+  return { a: a / normalizer, b: b / normalizer, c: c / normalizer }
+}
+
+const getCrossPoint = (aLine, bLine) => {
+  const { a: a1, b: b1, c: c1 } = aLine
+  const { a: a2, b: b2, c: c2 } = bLine
+
+  const x = -1 * (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1)
+  const y = -1 * (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1)
+  return { x, y }
+}
+
+const shiftPoint = (offset, point, prevPoint, nextPoint) => {
+  if (prevPoint && nextPoint) {
+    const v1 = vector(prevPoint, point)
+    const v2 = vector(point, nextPoint)
+    const n1 = setLength(normal(v1), offset)
+    const n2 = setLength(normal(v2), offset)
+    const aPointStart = { x: prevPoint.x - n1.x, y: prevPoint.y - n1.y }
+    const aPointEnd = { x: point.x - n1.x, y: point.y - n1.y }
+    const bPointStart = { x: point.x - n2.x, y: point.y - n2.y }
+    const bPointEnd = { x: nextPoint.x - n2.x, y: nextPoint.y - n2.y }
+
+    const aLine = getLineFromSection(aPointStart, aPointEnd)
+    const bLine = getLineFromSection(bPointStart, bPointEnd)
+    return getCrossPoint(aLine, bLine)
+  }
+  const prev = prevPoint || point
+  const next = nextPoint || point
+  const v = vector(prev, next)
+  const n = setLength(normal(v), offset)
+  const { x, y } = point
+  return { x: x - n.x, y: y - n.y }
+}
+
+const getShiftedPoints = (points, offset, locked) => {
+  const l = points.length - 1
+  return points.map((point, index) => {
+    const prev = index
+      ? points[index - 1]
+      : locked
+        ? points[l]
+        : null
+    const next = index !== l
+      ? points[index + 1]
+      : locked
+        ? points[0]
+        : null
+    return shiftPoint(offset, point, prev, next)
+  })
+}
+
+const buildPeriodicPoints2 = (size, step, offset, points, bezier, locked, insideMap, skipNodes = false) => {
+  const newPoints = bezier ? points : getShiftedPoints(points, size, locked)
   // @TODO: make buildPeriodicPoints work with waved2 type
   const amplPoints = []
-  const last = points.length - Number(!locked)
-  for (let i = 0; i < last; i++) {
-    const segment = bezier
-      ? new Bezier(...bezierArray(points, i, locked))
-      : new Segment(...lineArray(points, i, locked))
+  const makePointsArray = (segment, i) => {
     const length = segment.length()
     const steps = Math.min(Math.round(length), settings.LUT_STEPS)
     let lut = null
@@ -257,7 +311,6 @@ const buildPeriodicPoints2 = (step, offset, points, bezier, locked, insideMap, s
           ? getPart(steps, lut, pos)
           : pos / length
         const amplPoint = segment.get(part)
-        console.log('amplPoint', amplPoint)
         amplPoint.n = segment.normal(part)
         amplPoint.r = (Math.atan2(amplPoint.n.y, amplPoint.n.x) / Math.PI + 0.5) * 180
         amplPoint.i = insideMap(amplPoint)
@@ -269,56 +322,65 @@ const buildPeriodicPoints2 = (step, offset, points, bezier, locked, insideMap, s
       offset = pos - step - length
     }
   }
+  const last = points.length - Number(!locked)
+  for (let i = 0; i < last; i++) {
+    if (bezier) {
+      const segment = new Bezier(...bezierArray(newPoints, i, locked)).offset(size)
+      segment.forEach((part) => makePointsArray(part, i))
+    } else {
+      const segment = new Segment(...lineArray(newPoints, i, locked))
+      makePointsArray(segment, i)
+    }
+  }
   return amplPoints
 }
 
-// @TODO: вынести addHalfWave в отдельный метод
 export const waved2 = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  console.log('__________WAVED--2_____________')
   const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const waveSize = waveStep / 1.5 // settings.WAVE_SIZE * scale
   const insideMap = getBoundsFunc(bounds, waveStep)
-  const wavePoints = buildPeriodicPoints2(waveStep, -waveStep, points, bezier, locked, insideMap)
-  console.log('wavePoints', wavePoints)
-  console.log('points', points)
+  const wavePoints = buildPeriodicPoints2(waveSize * 0.75, waveStep, -waveStep, points, bezier, locked, insideMap)
   if (!wavePoints.length) {
     return 'M0 0'
   }
-  const v = vector(wavePoints[0], wavePoints[1])
-  const n = setLength(normal(v), waveSize * 0.75)
-
-  let waves = getLineEnd(lineEnds, 'left') ? `M${wavePoints[0].x} ${wavePoints[0].y}` : `M${wavePoints[0].x - n.x} ${wavePoints[0].y - n.y}`
+  let waves = ''
+  if (getLineEnd(lineEnds, 'left')) {
+    const v = vector(wavePoints[0], wavePoints[1])
+    const n = setLength(normal(v), waveSize * 0.75)
+    waves = `M${wavePoints[0].x + n.x} ${wavePoints[0].y + n.y}`
+  } else {
+    waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
+  }
+  // let waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
   const addLineTo = ({ x, y }) => {
     waves += ` L${x} ${y}`
   }
-  console.log('waveStep', waveStep)
-  const addWave = (p1, p2) => {
+  const addWave = (p1, p2, addSize = false) => {
     const v = vector(p1, p2)
-    length(v) < waveStep && console.log(`${length(v)} is LESS: `, p1, p2)
-    length(v) > waveStep && console.log(`${length(v)} is MORE: `, p1, p2)
-    const n = setLength(normal(v), waveSize * 0.75)
-    const pp2 = { x: p2.x - n.x, y: p2.y - n.y }
-    waves += ` C${p1.x + n.x / 3} ${p1.y + n.y / 3} ${p2.x + n.x / 3} ${p2.y + n.y / 3} ${pp2.x} ${pp2.y}`
+    const n = setLength(normal(v), waveSize + (addSize ? waveStep - length(v) : 0))
+    const cp1 = apply(p1, n)
+    const cp2 = apply(p2, n)
+    waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
+  }
+  const addHalfWave = (p1, p2, part, addLine = false, addSize = false) => {
+    const v = vector(p1, p2)
+    const n = setLength(normal(v), waveSize + (addSize ? waveStep - length(v) : 0))
+    const cp1 = apply(p1, n)
+    const cp2 = apply(p2, n)
+
+    const b = new Bezier([ p1.x, p1.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+    const p = b.split(0.5)[part].points
+    addLine && addLineTo(p[0])
+    waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
   }
   for (let i = 1; i < wavePoints.length; i++) {
     if (i === wavePoints.length - 1 && getLineEnd(lineEnds, 'right')) {
-      const p2 = {
-        x: wavePoints[i - 1].x + (wavePoints[i].x - wavePoints[i - 1].x) * 2,
-        y: wavePoints[i - 1].y + (wavePoints[i].y - wavePoints[i - 1].y) * 2,
-      }
-      const b = new Bezier([ wavePoints[i - 1].x, wavePoints[i - 1].y, wavePoints[i - 1].x, wavePoints[i - 1].y, p2.x, p2.y, p2.x, p2.y ])
-      const p = b.split(0.5).left.points
-      waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+      addHalfWave(wavePoints[i - 1], wavePoints[i], 'left')
     } else if (i === 1 && getLineEnd(lineEnds, 'left')) {
-      const v = vector(wavePoints[0], wavePoints[1])
-      const n = setLength(normal(v), waveSize * 0.75)
-      const b = new Bezier([ wavePoints[0].x - n.x, wavePoints[0].y - n.y, wavePoints[0].x + n.x / 3, wavePoints[0].y + n.y / 3, wavePoints[1].x + n.x / 3, wavePoints[1].y + n.y / 3, wavePoints[1].x - n.x, wavePoints[1].y - n.y ])
-      const p = b.split(0.5).right.points
-      addLineTo(p[0])
-      waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+      addHalfWave(wavePoints[i - 1], wavePoints[i], 'right', true)
     } else if (!wavePoints[i].i) {
       addLineTo(wavePoints[i])
     } else {
@@ -328,7 +390,8 @@ export const waved2 = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom
   if (settings.DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
     const p0 = wavePoints[wavePoints.length - 1]
     const p1 = points[points.length - 1]
-    const rest = dist(p0, p1)
+    const pp1 = shiftPoint(waveSize * 0.75, p1, points[points.length - 2])
+    const rest = dist(p0, pp1)
     if (rest >= 1) {
       if (locked) {
         addWave(p0, points[0], false)
@@ -336,15 +399,33 @@ export const waved2 = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom
         if (getLineEnd(lineEnds, 'right')) {
           waves += ` L${p1.x} ${p1.y}`
         } else {
-          const v = vector(p0, p1)
-          const n = setLength(normal(v), waveSize * 0.75)
           const p2 = {
-            x: p0.x + (p1.x - p0.x) / rest * waveStep,
-            y: p0.y + (p1.y - p0.y) / rest * waveStep,
+            x: p0.x + (pp1.x - p0.x) / rest * waveStep,
+            y: p0.y + (pp1.y - p0.y) / rest * waveStep,
           }
-          const b = new Bezier([ p0.x - n.x, p0.y - n.y, p0.x + n.x / 3, p0.y + n.y / 3, p2.x + n.x / 3, p2.y + n.y / 3, p2.x - n.x, p2.y - n.y ])
+          const l = Math.hypot(p0.n.x, p0.n.y)
+          const cp1 = {
+            x: p0.x - p0.n.x / l * (waveSize),
+            y: p0.y - p0.n.y / l * (waveSize),
+          }
+          const cp2 = {
+            x: p2.x + cp1.x - p0.x,
+            y: p2.y + cp1.y - p0.y,
+          }
+          const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
           const p = b.split(rest / waveStep).left.points
           waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+          // @TODO: another variant:
+          // const p2 = {
+          //   x: p0.x + (pp1.x - p0.x) / rest * waveStep,
+          //   y: p0.y + (pp1.y - p0.y) / rest * waveStep,
+          // }
+          // const v = vector(p0, p2)
+          // const n = setLength(normal(v), waveSize)
+          //
+          // const b = new Bezier([ p0.x, p0.y, p0.x + n.x, p0.y + n.y, p2.x + n.x, p2.y + n.y, p2.x, p2.y ])
+          // const p = b.split(rest / waveStep).left.points
+          // waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
         }
       }
     }
