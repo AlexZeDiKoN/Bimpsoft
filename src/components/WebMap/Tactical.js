@@ -66,13 +66,21 @@ export const disableEdit = (layer) => {
   layer.pm.disable()
 }
 
-export const setLayerSelected = (layer, selected, active, activeLayer) => {
+export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
   if (layer.pm && layer.pm.enabled() !== active) {
     if (active) {
       enableEdit(layer)
     } else {
       disableEdit(layer)
+    }
+  }
+  if (isDraggable !== undefined && isDraggable !== layer.options.draggable) {
+    layer.options.draggable = isDraggable
+    if (isDraggable) {
+      layer.pm.enableLayerDrag()
+    } else {
+      layer.pm.disableLayerDrag()
     }
   }
 }
@@ -98,11 +106,11 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.CIRCLE:
       return createCircle(data, map, prevLayer)
     case entityKind.RECTANGLE:
-      return createRectangle(type, data.geometry.toJS(), prevLayer)
+      return createRectangle(data, prevLayer)
     case entityKind.SQUARE:
       return createSquare(data, map, prevLayer)
     case entityKind.CONTOUR:
-      return createContour(data.geometry.toJS())
+      return createContour(data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -129,8 +137,14 @@ function createMarker (point, icon, layer) {
     layer.setIcon(icon)
     layer.setLatLng(point)
   } else {
-    layer = new L.DzvinMarker(point, { icon, keyboard: false, draggable: false, pane: 'overlayPane' })
+    layer = new L.DzvinMarker(point, {
+      icon,
+      keyboard: false,
+      draggable: false,
+      pane: 'overlayPane',
+    })
   }
+  layer._bounds = L.latLngBounds([ point ])
   return layer
 }
 
@@ -217,24 +231,34 @@ const geoJSONLayer = (coordinates, type) => L.geoJSON({
   },
 })
 
-function createContour (data) {
-  const coordinates = latLng2peerArr(data)
-  let layer
+function createContour (data, layer) {
+  if (layer && layer._checkData === data) {
+    return layer
+  }
+  const points = data.geometry.toJS()
+  const coordinates = latLng2peerArr(points)
+  // if (layer && (layer instanceof L.GeoJSON)) {
+  // TODO: не перестворювати об'єкт L.GeoJSON, змінювати властивості
+  // } else {
   try {
     layer = geoJSONLayer(coordinates, 'Polygon')
   } catch (err) {
     layer = geoJSONLayer(coordinates, 'MultiPolygon')
   }
-  layer._data = data
+  // }
+  layer._data = points
+  layer._checkData = data
+  layer._bounds = L.latLngBounds(points.flat(4))
   return layer
 }
 
-function createRectangle (type, points, layer) {
+function createRectangle (data, layer) {
+  const bounds = Array.isArray(data) ? data : data.geometry.toJS()
   if (layer && (layer instanceof L.Rectangle)) {
-    layer.setBounds(points)
+    layer.setBounds(bounds)
   } else {
-    const options = prepareOptions(type)
-    layer = L.rectangle(points, options)
+    const options = prepareOptions(entityKind.RECTANGLE)
+    layer = L.rectangle(bounds, options)
   }
   return layer
 }
@@ -251,7 +275,7 @@ function createSquare (data, map, layer) {
   const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
   const size = Math.max(width, height)
   point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
-  return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
+  return createRectangle([ point1, point2 ], layer)
 }
 
 function prepareOptions (signType, color, js) {
@@ -259,7 +283,7 @@ function prepareOptions (signType, color, js) {
     tsType: signType,
     tsTemplate: js,
     noClip: true,
-    draggable: signType === entityKind.CONTOUR,
+    draggable: false, // signType === entityKind.CONTOUR,
     // renderer: new L.SVG(),
   }
   if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$) {

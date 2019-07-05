@@ -1,9 +1,73 @@
-/* global L */
-
+import L, { Draggable, DomUtil } from 'leaflet'
 import { setOpacity, setHidden, setClassName, setShadowColor } from './utils/helpers'
 
-const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon } = L.Marker.prototype
-const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon }
+const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng } = L.Marker.prototype
+const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng }
+
+const MarkerDrag = L.Handler.extend({
+  initialize: function (marker) {
+    this._marker = marker
+  },
+
+  addHooks: function () {
+    var icon = this._marker._icon
+    if (!this._draggable) {
+      this._draggable = new Draggable(icon, icon, true)
+    }
+    this._draggable.on({
+      dragstart: this._onDragStart,
+      drag: this._onDrag,
+      dragend: this._onDragEnd,
+    }, this)
+      .enable()
+    DomUtil.addClass(icon, 'leaflet-marker-draggable')
+  },
+
+  removeHooks: function () {
+    this._draggable.off({
+      dragstart: this._onDragStart,
+      drag: this._onDrag,
+      dragend: this._onDragEnd,
+    }, this)
+      .disable()
+    if (this._marker._icon) {
+      DomUtil.removeClass(this._marker._icon, 'leaflet-marker-draggable')
+    }
+  },
+
+  moved: function () {
+    return this._draggable && this._draggable._moved
+  },
+
+  _onDragStart: function () {
+    this._oldLatLng = this._marker.getLatLng()
+    this._oldPx = this._marker._map.latLngToContainerPoint(this._oldLatLng)
+    this._marker
+      .closePopup()
+      .fire('movestart')
+      .fire('dragstart')
+      .fire('pm:dragstart')
+  },
+
+  _onDrag: function (e) {
+    const latlng = this._marker._map.containerPointToLatLng(this._oldPx.add(this._draggable._newPos))
+    this._marker.setLatLng(latlng)
+    e.latlng = latlng
+    e.oldLatLng = this._oldLatLng
+    this._marker
+      .fire('move', e)
+      .fire('drag', e)
+      .fire('pm:drag', e)
+  },
+
+  _onDragEnd: function (e) {
+    delete this._oldLatLng
+    this._marker
+      .fire('moveend')
+      .fire('dragend', e)
+      .fire('pm:dragend', e)
+  },
+})
 
 const DzvinMarker = L.Marker.extend({
   setOpacity,
@@ -77,6 +141,16 @@ const DzvinMarker = L.Marker.extend({
       L.DomUtil.addClass(child, 'leaflet-interactive')
       this.addInteractiveTarget(child)
     })
+
+    let draggable = this.options.draggable
+    if (this.dragging) {
+      draggable = this.dragging.enabled()
+      this.dragging.disable()
+    }
+    this.dragging = new MarkerDrag(this)
+    if (draggable) {
+      this.dragging.enable()
+    }
   },
 
   _removeIcon: function () {
@@ -139,11 +213,19 @@ const DzvinMarker = L.Marker.extend({
         const { anchor, scale: iconScale } = el.state
         const currentScale = icon.getScale(this._map.getZoom(), scaleOptions)
         const scale = currentScale / iconScale
-        L.DomUtil.setTransform(el, { x: Math.round(x - anchor.x * scale), y: Math.round(y - anchor.y * scale) }, scale)
+        L.DomUtil.setTransform(el, {
+          x: Math.round(x - anchor.x * scale),
+          y: Math.round(y - anchor.y * scale),
+        }, scale)
         this._zIndex = y + this.options.zIndexOffset
         this._resetZIndex()
       }
     }
+  },
+
+  setLatLng: function (latLng) {
+    parent.setLatLng.call(this, latLng)
+    this._bounds = L.latLngBounds([ latLng ])
   },
 })
 

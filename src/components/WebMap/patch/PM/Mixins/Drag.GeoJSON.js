@@ -82,26 +82,7 @@ const DragMixin = {
       x: containerPoint.x - this._tempDragPoint.x,
       y: containerPoint.y - this._tempDragPoint.y,
     }
-    this._layer.eachLayer((layer) => {
-      const shiftOne = (latLng) => {
-        const f = this._layer._map.project(latLng)
-        const x = f.x + delta.x
-        const y = f.y + delta.y
-        return this._layer._map.unproject(point({ x, y }))
-      }
-      const shift = (coords) => Array.isArray(coords)
-        ? coords.map(shift)
-        : shiftOne(coords)
-      if (layer.getLatLngs && layer.setLatLngs) {
-        const shifted = shift(layer.getLatLngs())
-        layer.setLatLngs(shifted).redraw()
-      } else if (layer.getLatLng && layer.setLatLng) {
-        const shifted = shift(layer.getLatLng())
-        layer.setLatLng(shifted).redraw()
-      } else {
-        console.warn(layer)
-      }
-    })
+    this._layer._shiftPx(delta)
     this._tempDragPoint = containerPoint
     this._dragEndPoint = containerPoint
     this._layer.fire('pm:drag')
