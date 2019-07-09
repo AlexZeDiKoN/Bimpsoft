@@ -139,17 +139,20 @@ const getLineFromSection = (start, end) => {
   const a = start.y - end.y
   const b = end.x - start.x
   const c = -a * start.x - b * start.y
-  const normalizer = Math.hypot(a, b)
+  const normalizer = Math.hypot(a, b) || 1
   return { a: a / normalizer, b: b / normalizer, c: c / normalizer }
 }
 
 const getCrossPoint = (aLine, bLine) => {
   const { a: a1, b: b1, c: c1 } = aLine
   const { a: a2, b: b2, c: c2 } = bLine
-
-  const x = -1 * (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1)
-  const y = -1 * (a1 * c2 - a2 * c1) / (a1 * b2 - a2 * b1)
-  return { x, y }
+  const denominator = a1 * b2 - a2 * b1
+  if (denominator) {
+    const x = -1 * (c1 * b2 - c2 * b1) / denominator
+    const y = -1 * (a1 * c2 - a2 * c1) / denominator
+    return { x, y }
+  }
+  throw new RangeError('Got zero while counting cross point of two vectors')
 }
 
 const shiftPoint = (offset, point, prevPoint, nextPoint) => {
@@ -258,7 +261,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const waveSize = waveStep / 1.5 // settings.WAVE_SIZE * scale
   const insideMap = getBoundsFunc(bounds, waveStep)
-  const verticalOffset = inverse ? waveSize * 0.75 : 0 // @TODO: make constant
+  const verticalOffset = inverse ? waveSize * 0.8 : 0 // @TODO: make constant
   const wavePoints = buildPeriodicPoints(waveStep, verticalOffset, -waveStep, points, bezier, locked, insideMap)
   if (!wavePoints.length) {
     return 'M0 0'
