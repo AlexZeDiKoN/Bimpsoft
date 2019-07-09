@@ -298,7 +298,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   if (settings.DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
     const p0 = wavePoints[wavePoints.length - 1]
     const p1 = inverse
-      ? shiftPoint(waveSize * 0.75, points[points.length - 1], points[points.length - 2])
+      ? shiftPoint(verticalOffset, points[points.length - 1], points[points.length - 2])
       : points[points.length - 1]
     const rest = dist(p0, p1)
     if (rest >= 0.5) {

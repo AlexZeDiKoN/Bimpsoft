@@ -134,7 +134,6 @@ L.SVG.include({
     layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
-  // @TODO: make real diff between waved & waved2 types
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     const lineType = layer.lineType || 'solid'
