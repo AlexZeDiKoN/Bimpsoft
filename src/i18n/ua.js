@@ -107,7 +107,6 @@ export const LINE_WIDTH = 'Товщина лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
 export const WAVED = 'Хвиляста'
-// @TODO: noraml name
 export const WAVED2 = 'Хвиляста2'
 export const STROKED = 'З засічками'
 

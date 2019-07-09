@@ -87,8 +87,6 @@ const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
           </>
         )
       case 'waved2':
-        // @TODO: in types array add this type
-        console.log('selected waved2')
         return optionsSvg(
           <>
             <path
