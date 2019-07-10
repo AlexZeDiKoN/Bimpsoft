@@ -152,7 +152,7 @@ const getCrossPoint = (aLine, bLine) => {
     const y = -1 * (a1 * c2 - a2 * c1) / denominator
     return { x, y }
   }
-  throw new RangeError('Got zero while counting cross point of two vectors')
+  throw new RangeError('Unexpectedly parallel vectors')
 }
 
 const shiftPoint = (offset, point, prevPoint, nextPoint) => {
