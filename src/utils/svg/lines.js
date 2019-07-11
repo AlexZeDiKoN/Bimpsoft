@@ -195,6 +195,19 @@ const getShiftedPoints = (points, offset, locked) => {
   })
 }
 
+const fixSegments = (segments) => segments.reduce((acc, curr, i) => { // Bezier.js` method offset might lose internal parts of curves. We substitute them with the lines
+  if (i) {
+    const { x: x1, y: y1 } = curr.points[0]
+    const { x: x0, y: y0 } = segments[i - 1].points[3]
+    if (x1.toFixed(4) !== x0.toFixed(4) || y1.toFixed(4) !== y0.toFixed(4)) {
+      const additional = new Bezier(x0, y0, x0, y0, x1, y1, x1, y1)
+      acc.push(additional)
+    }
+  }
+  acc.push(curr)
+  return acc
+}, [])
+
 const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
   const makePointsArray = (segment, i) => {
@@ -227,14 +240,9 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
   const carcassPoints = !verticalOffset || bezier ? points : getShiftedPoints(points, verticalOffset, locked)
 
   for (let i = 0; i < last; i++) {
-    if (verticalOffset) {
-      if (bezier) {
-        const segment = new Bezier(...bezierArray(carcassPoints, i, locked, verticalOffset)).offset(verticalOffset)
-        segment.forEach((part) => makePointsArray(part, i))
-      } else {
-        const segment = new Segment(...lineArray(carcassPoints, i, locked))
-        makePointsArray(segment, i)
-      }
+    if (verticalOffset && bezier) {
+      const segments = new Bezier(...bezierArray(carcassPoints, i, locked, verticalOffset)).offset(verticalOffset)
+      fixSegments(segments).forEach((part) => makePointsArray(part, i))
     } else {
       const segment = bezier
         ? new Bezier(...bezierArray(carcassPoints, i, locked))
