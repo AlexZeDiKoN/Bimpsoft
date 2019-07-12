@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, control } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, control, point } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
@@ -302,6 +302,7 @@ export default class WebMap extends React.PureComponent {
     selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
     onMoveContour: PropTypes.func,
+    onMoveObjList: PropTypes.func,
   }
 
   constructor (props) {
@@ -826,7 +827,13 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateSelection = (prevProps) => {
-    const { objects, layer: layerId, edit, selection: { list: selectedIds, preview } } = this.props
+    const {
+      objects,
+      layer: layerId,
+      edit,
+      selection: { list: selectedIds, preview },
+    } = this.props
+
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
@@ -835,7 +842,8 @@ export default class WebMap extends React.PureComponent {
       preview !== prevProps.selection.preview
     ) {
       const selectedIdsSet = new Set(selectedIds)
-      const canEditLayer = selectedIds.length === 1 && edit
+      const canEditLayer = edit && (selectedIds.length === 1)
+      const canDrag = edit && (selectedIds.length > 1)
       this.map.eachLayer((layer) => {
         if (layer.options.tsType) {
           const { id } = layer
@@ -843,7 +851,9 @@ export default class WebMap extends React.PureComponent {
           const isActiveLayer = (layer.options && layer.options.tsType === entityKind.FLEXGRID) ||
             (layer.object && layer.object.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
-          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer)
+          const isDraggable = canDrag && isSelected && isActiveLayer
+          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
+            isDraggable)
           if (isActive) {
             this.activeLayer = layer
           }
@@ -1110,8 +1120,10 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('pm:markerdragstart', this.onDragstartLayer)
-      layer.on('pm:markerdragend', this.onDragendLayer)
+      layer.on('pm:markerdragstart', this.onMarkerDragStart)
+      layer.on('pm:markerdragend', this.onMarkerDragEnd)
+      layer.on('pm:dragstart', this.onDragStarted)
+      layer.on('pm:drag', this.onDragged)
       layer.on('pm:dragend', this.onDragEnded)
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
@@ -1155,8 +1167,8 @@ export default class WebMap extends React.PureComponent {
       layer.catalogId = catalogId
       layer.on('click', this.clickOnCatalogLayer)
       layer.on('dblclick', this.dblClickOnCatalogLayer)
-      // layer.on('pm:markerdragstart', this.onDragstartLayer)
-      // layer.on('pm:markerdragend', this.onDragendLayer)
+      // layer.on('pm:markerdragstart', this.onMarkerDragStart)
+      // layer.on('pm:markerdragend', this.onMarkerDragEnd)
       // TODO: events
 
       layer === prevLayer
@@ -1169,21 +1181,85 @@ export default class WebMap extends React.PureComponent {
     return layer
   }
 
-  onDragstartLayer = () => {
+  onMarkerDragStart = () => {
     this.draggingObject = true
   }
 
-  onDragendLayer = () => setTimeout(() => {
+  onMarkerDragEnd = () => setTimeout(() => {
     this.draggingObject = false
     this.checkSaveObject(false)
   }, 210)
 
+  moveListByOne = (layer) => {
+    // console.log(layer)
+    const { selection: { list } } = this.props
+    if (list.length > 1) {
+      this._dragEndPx = this.map.project(layer._bounds._northEast)
+      const delta = {
+        x: this._dragEndPx.x - this._dragStartPx.x,
+        y: this._dragEndPx.y - this._dragStartPx.y,
+      }
+      const objects = list.filter((id) => id !== layer.id)
+      // console.log({ id: layer.id, bounds: layer._bounds, delta })
+      this.map.eachLayer((item) => {
+        if (item.id && objects.includes(item.id)) {
+          // console.log(item.id)
+          const shiftOne = (latLng) => {
+            const f = this.map.project(latLng)
+            return this.map.unproject(point({
+              x: f.x + delta.x,
+              y: f.y + delta.y,
+            }))
+          }
+          const shift = (coords) => Array.isArray(coords)
+            ? coords.map(shift)
+            : shiftOne(coords)
+          if (item.getLatLngs && item.setLatLngs) {
+            const shifted = shift(item.getLatLngs())
+            item.setLatLngs(shifted).redraw()
+          } else if (item.getLatLng && item.setLatLng) {
+            const shifted = shift(item.getLatLng())
+            item.setLatLng(shifted) // .redraw()
+          } else if (item instanceof L.GeoJSON) {
+            item._shiftPx(delta)
+          } else {
+            console.warn(item)
+          }
+        }
+      })
+      this._dragStartPx = this._dragEndPx
+    }
+  }
+
+  onDragStarted = ({ target: layer }) => {
+    // console.log(layer)
+    const { selection: { list } } = this.props
+    if (list.length > 1) {
+      this._dragStartPx = this.map.project(layer._bounds._northEast)
+      this._savedDragStartPx = this._dragStartPx
+    }
+  }
+
+  onDragged = ({ target: layer }) => {
+    this.moveListByOne(layer)
+  }
+
   onDragEnded = ({ target: layer }) => {
-    if (layer.options.tsType === entityKind.CONTOUR) {
-      const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
-      this.props.onMoveContour(layer.id, shift)
+    this.moveListByOne(layer)
+    const { selection: { list } } = this.props
+    if (list.length > 1) {
+      const delta = calcMoveWM({
+        x: this._dragEndPx.x - this._savedDragStartPx.x,
+        y: this._dragEndPx.y - this._savedDragStartPx.y,
+      }, this.map.getZoom())
+      this.props.onMoveObjList(list, delta)
     } else {
-      this.checkSaveObject(false)
+      if (layer.options.tsType === entityKind.CONTOUR) {
+        const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+        this.props.onMoveContour(layer.id, shift)
+      } else {
+        this.checkSaveObject(false)
+      }
     }
   }
 
@@ -1520,8 +1596,8 @@ export default class WebMap extends React.PureComponent {
     )
     layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
-    layer.on('pm:markerdragstart', this.onDragstartLayer)
-    layer.on('pm:markerdragend', this.onDragendLayer)
+    layer.on('pm:markerdragstart', this.onMarkerDragStart)
+    layer.on('pm:markerdragend', this.onMarkerDragEnd)
     layer.on('pm:eternaldblclick', this.onDoubleClickEternal)
     if (show && id) {
       layer.addTo(this.map)

@@ -1,4 +1,4 @@
-import L from 'leaflet'
+import L, { point } from 'leaflet'
 import { interpolateSize } from './utils/helpers'
 
 const { getEvents } = L.GeoJSON.prototype
@@ -85,5 +85,30 @@ export default L.GeoJSON.include({
       }
       hasStyles && this.setStyle(styles)
     }
+  },
+
+  _shiftPx: function (delta) {
+    const shiftOne = (latLng) => {
+      const f = this._map.project(latLng)
+      const x = f.x + delta.x
+      const y = f.y + delta.y
+      return this._map.unproject(point({ x, y }))
+    }
+    const shift = (coords) => Array.isArray(coords)
+      ? coords.map(shift)
+      : shiftOne(coords)
+    this.eachLayer((layer) => {
+      if (layer.getLatLngs && layer.setLatLngs) {
+        const shifted = shift(layer.getLatLngs())
+        layer.setLatLngs(shifted).redraw()
+      } else if (layer.getLatLng && layer.setLatLng) {
+        const shifted = shift(layer.getLatLng())
+        layer.setLatLng(shifted).redraw()
+      }
+    })
+    this._bounds = L.latLngBounds([
+      shiftOne(this._bounds._northEast),
+      shiftOne(this._bounds._southWest),
+    ])
   },
 })

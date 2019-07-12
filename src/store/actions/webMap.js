@@ -58,6 +58,7 @@ export const actionNames = {
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
   SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM'),
+  MOVE_OBJECTS: action(`MOVE_OBJECTS`),
 }
 
 export const setCoordinatesType = (value) => {
@@ -162,6 +163,12 @@ export const moveContour = (id, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => dispatch({
     type: actionNames.ADD_OBJECT,
     payload: fixServerObject(await contourMove(id, shift)),
+  }))
+
+export const moveObjList = (ids, shift) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => dispatch({
+    type: actionNames.MOVE_OBJECTS,
+    payload: await objListMove(ids, shift),
   }))
 
 export const deleteObject = (id) =>
