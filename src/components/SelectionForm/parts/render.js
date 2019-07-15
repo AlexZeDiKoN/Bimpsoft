@@ -86,6 +86,17 @@ const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
             />
           </>
         )
+      case 'waved2':
+        return optionsSvg(
+          <>
+            <path
+              stroke="rgba(0,0,0,0.65)"
+              strokeWidth={strokeWidth}
+              fill="none"
+              d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7 L0,7"
+            />
+          </>
+        )
       case 'stroked':
         return optionsSvg(
           <>
