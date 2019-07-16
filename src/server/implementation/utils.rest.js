@@ -29,12 +29,6 @@ export async function get (url, namespace) {
   return _createGetRequest(url, options, namespace)
 }
 
-export async function ovtPost (apiNamespace, objectNamespace, action, data = {}) {
-  const options = _getOptions('POST')
-  options.body = JSON.stringify(data)
-  return _createRequestOvt(serverRootUrl + apiNamespace + objectNamespace, options, action)
-}
-
 /**
  * async function post
  * @param {string} url
@@ -65,29 +59,6 @@ function _getOptions (method) {
     credentials: 'include',
     method,
     headers: new Headers(),
-  }
-}
-
-/**
- * function _createRequestOvt
- * @param {string} apiPath
- * @param {Object} option
- * @param {string} action
- * @private
- */
-async function _createRequestOvt (apiPath, option, action = '') {
-  const serviceUrl = apiPath + '_' + action
-  const response = await window.fetch(serviceUrl, option).catch((e) => console.info(e))
-  switch (response.status) {
-    case 200: {
-      return response.json()
-    }
-    case 204: // success code of DELETE request
-      return null
-    case 401:
-      throw new Error('Доступ заборонено')
-    default:
-      throw new Error(`Сервер недоступний (${response.status}) (URL: ${serviceUrl})`)
   }
 }
 
@@ -147,16 +118,16 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 200: {
       const contentType = response.headers.get('content-type') || ''
       if (contentType.slice(0, 16) === 'application/json') {
-        const jsonPayload = await response.json()
-        if (jsonPayload.payload) {
-          return JSON.parse(jsonPayload.payload)
-        } else {
-          return jsonPayload
+        let jsonPayload = await response.json()
+        try {
+          if (jsonPayload.payload) {
+            jsonPayload = JSON.parse(jsonPayload.payload)
+          }
+        } catch (err) {
+          console.warn(err)
         }
+        return jsonPayload
       }
-      // const text = await response.text()
-      // console.log(url, text)
-      // return text
       return response.text()
     }
     case 204: // success code of DELETE request
