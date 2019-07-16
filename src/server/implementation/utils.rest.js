@@ -29,6 +29,12 @@ export async function get (url, namespace) {
   return _createGetRequest(url, options, namespace)
 }
 
+export async function ovtPost (apiNamespace, objectNamespace, action, data = {}) {
+  const options = _getOptions('POST')
+  options.body = JSON.stringify(data)
+  return _createRequestOvt(serverRootUrl + apiNamespace + objectNamespace, options, action)
+}
+
 /**
  * async function post
  * @param {string} url
@@ -63,6 +69,29 @@ function _getOptions (method) {
 }
 
 /**
+ * function _createRequestOvt
+ * @param {string} apiPath
+ * @param {Object} option
+ * @param {string} action
+ * @private
+ */
+async function _createRequestOvt (apiPath, option, action = '') {
+  const serviceUrl = apiPath + '_' + action
+  const response = await window.fetch(serviceUrl, option).catch((e) => console.info(e))
+  switch (response.status) {
+    case 200: {
+      return response.json()
+    }
+    case 204: // success code of DELETE request
+      return null
+    case 401:
+      throw new Error('Доступ заборонено')
+    default:
+      throw new Error(`Сервер недоступний (${response.status}) (URL: ${serviceUrl})`)
+  }
+}
+
+/**
  * function _createGetRequest
  * @param {string} url
  * @param {Object} options
@@ -75,8 +104,6 @@ function _createGetRequest (url, options, namespace) {
     const namespaceAbsolute = absoluteUri.test(namespace)
     const prefix = namespaceAbsolute ? namespace : `${serverRootUrl}${namespace}`
     const serviceUrl = `${prefix}${url}`
-    // console.log({ namespace, namespaceAbsolute, prefix, serviceUrl })
-
     fetch(serviceUrl, options)
       .then((resp) => {
         const { status } = resp

@@ -12,6 +12,7 @@ import * as webMap from './webMap'
 import * as print from './print'
 import * as flexGrid from './flexGrid'
 import * as march from './march'
+import * as ovt from './ovt'
 
 export {
   viewModes,
@@ -28,4 +29,5 @@ export {
   print,
   flexGrid,
   march,
+  ovt,
 }
