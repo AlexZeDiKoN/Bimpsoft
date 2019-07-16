@@ -167,6 +167,9 @@ L.SVG.include({
         case 'waved':
           result = this._buildWaved(layer, false, false)
           break
+        case 'waved2':
+          result = this._buildWaved(layer, false, false, true)
+          break
         case 'stroked':
           result += this._buildStroked(layer, false, false)
           break
@@ -194,6 +197,9 @@ L.SVG.include({
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, true, false)
+          break
+        case 'waved2':
+          result = this._buildWaved(layer, true, false, true)
           break
         case 'stroked':
           result += this._buildStroked(layer, true, false)
@@ -229,10 +235,10 @@ L.SVG.include({
     }
   },
 
-  _buildWaved: function (layer, bezier, locked) {
+  _buildWaved: function (layer, bezier, locked, inverse) {
     const bounds = layer._map._renderer._bounds
     return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds, 1.0,
-      layer._map.getZoom())
+      layer._map.getZoom(), inverse)
   },
 
   _buildStroked: function (layer, bezier, locked) {
