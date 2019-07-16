@@ -6,11 +6,6 @@ import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../.
 export default class MilSymbolForm extends WithMilSymbol(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
-  constructor (props) {
-    super(props)
-    !props.ovtLoaded && props.getOvtList()
-  }
-
   renderContent () {
     return this.renderMilSymbol()
   }
