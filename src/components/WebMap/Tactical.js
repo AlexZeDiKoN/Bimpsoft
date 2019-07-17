@@ -1,4 +1,5 @@
 import { utils } from '@DZVIN/CommonComponents'
+import { model } from '@DZVIN/MilSymbolEditor'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
@@ -150,6 +151,9 @@ function createMarker (point, icon, layer) {
 
 export function createCatalogIcon (code, amplifiers, point, layer) {
   if (point) {
+    if (amplifiers.affiliation !== undefined) {
+      code = model.APP6Code.setIdentity2(code, amplifiers.affiliation)
+    }
     const icon = new L.PointIcon({ data: { code, amplifiers } })
     const marker = createMarker(point, icon, layer)
     marker.options.tsType = entityKind.POINT

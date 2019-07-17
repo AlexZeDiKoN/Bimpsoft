@@ -6,6 +6,7 @@ import './Tactical.css'
 import L, { Map, TileLayer, Control, DomEvent, control, point } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
+import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
 import i18n from '../../i18n'
 import { version } from '../../version'
@@ -1159,6 +1160,10 @@ export default class WebMap extends React.PureComponent {
   addCatalogObject = (object, prevLayer) => {
     const { id, location, catalogId } = object
     const [ app6Code, amplifiers ] = catalogSign(catalogId) // TODO: amplifiers
+    const affiliation = model.app6Data.identities.find(({ title }) => title === object.affiliation) || null
+    if (affiliation) {
+      amplifiers.affiliation = affiliation.id
+    }
     const layer = createCatalogIcon(app6Code, amplifiers, location, prevLayer)
     if (layer) {
       layer.id = id
