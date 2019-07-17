@@ -4,10 +4,10 @@
 import { action } from '../../utils/services'
 import { asyncAction } from './index'
 
-export const GET_OVT_LIST_SUCCESS = action('GET_OVT_LIST_SUCCESS')
+export const GET_OVT_LIST = action('GET_OVT_LIST')
 
 const setOvt = (payload) => ({
-  type: GET_OVT_LIST_SUCCESS,
+  type: GET_OVT_LIST,
   payload,
 })
 
