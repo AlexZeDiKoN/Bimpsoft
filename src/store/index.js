@@ -8,6 +8,7 @@ import webmapApi from '../server/api.webmap'
 import milOrgApi from '../server/api.server.org'
 import indicatorApi from '../server/api.indicator'
 import catalogApi from '../server/api.catalog'
+import ovtApi from '../server/api.ovt'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import { loadAllParams } from './actions/params'
@@ -38,6 +39,7 @@ export default function initStore (options = {}) {
       milOrgApi,
       indicatorApi,
       catalogApi,
+      ovtApi,
     }),
   ]
 
