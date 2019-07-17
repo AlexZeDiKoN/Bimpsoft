@@ -120,7 +120,7 @@ async function _createRequest (url, option, namespace = explorerApi) {
       if (contentType.slice(0, 16) === 'application/json') {
         let jsonPayload = await response.json()
         try {
-          if (jsonPayload.payload) {
+          if (jsonPayload.payload && typeof jsonPayload.payload === 'string') {
             jsonPayload = JSON.parse(jsonPayload.payload)
           }
         } catch (err) {
