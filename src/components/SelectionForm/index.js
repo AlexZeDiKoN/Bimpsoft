@@ -61,6 +61,10 @@ const forms = {
 }
 
 export default class SelectionForm extends React.Component {
+  componentDidMount () {
+    !this.props.ovtLoaded && this.props.getOvtList()
+  }
+
   changeHandler = (data) => {
     if (this.props.canEdit) {
       this.props.onChange(data)
@@ -72,7 +76,10 @@ export default class SelectionForm extends React.Component {
   }
 
   render () {
-    const { data, orgStructures, canEdit, onCancel, onOk, onCoordinateFocusChange } = this.props
+    const {
+      data, orgStructures, canEdit, onCancel, onOk, onCoordinateFocusChange,
+      ovtData,
+    } = this.props
     if (data === null || !forms.hasOwnProperty(data.type)) {
       return null
     }
@@ -96,6 +103,7 @@ export default class SelectionForm extends React.Component {
               onClose={onCancel}
               onAddToTemplates={this.addToTemplateHandler}
               onCoordinateFocusChange={onCoordinateFocusChange}
+              ovtData={ovtData}
             />
             <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
           </HotKeysContainer>
@@ -117,4 +125,7 @@ SelectionForm.propTypes = {
   onCoordinateFocusChange: PropTypes.func,
   wrapper: PropTypes.oneOf([ ModalContainer ]),
   orgStructures: PropTypes.object,
+  ovtData: PropTypes.object,
+  ovtLoaded: PropTypes.bool,
+  getOvtList: PropTypes.func,
 }
