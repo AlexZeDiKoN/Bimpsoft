@@ -45,19 +45,26 @@ const nextIndex = (points, index, locked) => locked && index === points.length -
 const bezierArray = (points, index, locked, size) => {
   const next = nextIndex(points, index, locked)
   const cp2 = { ...points[index].cp2 }
-  if (size && points[index].cp2.x === points[index].x && points[index].cp2.y === points[index].y) {
+  const cp1 = { ...points[next].cp1 }
+  if (size && points[index].cp2 && points[index].cp2.x === points[index].x && points[index].cp2.y === points[index].y) {
     const v = vector(points[index], points[next])
     const n = setLength(v, size)
     cp2.x = points[index].cp2.x + n.x
     cp2.y = points[index].cp2.y + n.y
+  }
+  if (size && points[next].cp1 && points[next].cp1.x === points[next].x && points[next].cp1.y === points[next].y) {
+    const v = vector(points[index], points[next])
+    const n = setLength(v, size)
+    cp1.x = points[next].cp1.x - n.x
+    cp1.y = points[next].cp1.y - n.y
   }
   return [
     points[index].x,
     points[index].y,
     cp2.x,
     cp2.y,
-    points[next].cp1.x,
-    points[next].cp1.y,
+    cp1.x,
+    cp1.y,
     points[next].x,
     points[next].y,
   ]
@@ -155,15 +162,31 @@ const getCrossPoint = (aLine, bLine) => {
   throw new RangeError('Unexpectedly parallel vectors')
 }
 
-const shiftPoint = (offset, point, prevPoint, nextPoint) => {
+const getAngleBetween = (v1, v2) => {
+  const angle = Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x)
+  return angle < 0 // normalize to [ 0; 2PI ]
+    ? angle + 2 * Math.PI
+    : angle
+}
+
+const shiftPoint = (offset, point, prevPoint, nextPoint, isCurve = false) => {
   if (prevPoint && nextPoint) {
     const v1 = vector(prevPoint, point)
     const v2 = vector(point, nextPoint)
     const n1 = setLength(normal(v1), offset)
     const n2 = setLength(normal(v2), offset)
-    const aPointStart = { x: prevPoint.x - n1.x, y: prevPoint.y - n1.y }
     const aPointEnd = { x: point.x - n1.x, y: point.y - n1.y }
     const bPointStart = { x: point.x - n2.x, y: point.y - n2.y }
+
+    if (!isCurve) {
+      const angle = getAngleBetween(v1, v2)
+      if (angle > 3 && angle < 4) { // !!! if angle is bigger than 3rad and lower than 4rad we can get number next to infinity !!!
+        // so we get two points which are nearest to the marked one instead of getting crossPoint of two lines
+        return [ aPointEnd, bPointStart ]
+      }
+    }
+
+    const aPointStart = { x: prevPoint.x - n1.x, y: prevPoint.y - n1.y }
     const bPointEnd = { x: nextPoint.x - n2.x, y: nextPoint.y - n2.y }
 
     const aLine = getLineFromSection(aPointStart, aPointEnd)
@@ -180,7 +203,8 @@ const shiftPoint = (offset, point, prevPoint, nextPoint) => {
 
 const getShiftedPoints = (points, offset, locked) => {
   const l = points.length - 1
-  return points.map((point, index) => {
+  const shiftedPoints = []
+  points.forEach((point, index) => {
     const prev = index
       ? points[index - 1]
       : locked
@@ -191,22 +215,11 @@ const getShiftedPoints = (points, offset, locked) => {
       : locked
         ? points[0]
         : null
-    return shiftPoint(offset, point, prev, next)
+    const shifted = shiftPoint(offset, point, prev, next)
+    Array.isArray(shifted) ? shiftedPoints.push(...shifted) : shiftedPoints.push(shifted)
   })
+  return shiftedPoints
 }
-
-const fixSegments = (segments) => segments.reduce((acc, curr, i) => { // Bezier.js` method offset might lose internal parts of curves. We substitute them with the lines
-  if (i) {
-    const { x: x1, y: y1 } = curr.points[0]
-    const { x: x0, y: y0 } = segments[i - 1].points[3]
-    if (x1.toFixed(4) !== x0.toFixed(4) || y1.toFixed(4) !== y0.toFixed(4)) {
-      const additional = new Bezier(x0, y0, x0, y0, x1, y1, x1, y1)
-      acc.push(additional)
-    }
-  }
-  acc.push(curr)
-  return acc
-}, [])
 
 const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
@@ -236,21 +249,33 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
       offset = pos - step - length
     }
   }
-  const last = points.length - Number(!locked)
   const carcassPoints = !verticalOffset || bezier ? points : getShiftedPoints(points, verticalOffset, locked)
+  const last = carcassPoints.length - Number(!locked)
 
   for (let i = 0; i < last; i++) {
-    if (verticalOffset && bezier) {
-      const segments = new Bezier(...bezierArray(carcassPoints, i, locked, verticalOffset)).offset(verticalOffset)
-      fixSegments(segments).forEach((part) => makePointsArray(part, i))
-    } else {
-      const segment = bezier
-        ? new Bezier(...bezierArray(carcassPoints, i, locked))
-        : new Segment(...lineArray(carcassPoints, i, locked))
-      makePointsArray(segment, i)
-    }
+    const segment = bezier
+      ? verticalOffset
+        ? new Bezier(...offsetCurve(bezierArray(carcassPoints, i, locked, verticalOffset), verticalOffset))
+        : new Bezier(...bezierArray(carcassPoints, i, locked))
+      : new Segment(...lineArray(carcassPoints, i, locked))
+    makePointsArray(segment, i)
   }
   return amplPoints
+}
+
+const offsetCurve = (cPoints, offset) => {
+  const [ p1x, p1y, cp1x, cp1y, cp2x, cp2y, p2x, p2y ] = cPoints
+  const p1 = { x: p1x, y: p1y }
+  const cp1 = { x: cp1x, y: cp1y }
+  const cp2 = { x: cp2x, y: cp2y }
+  const p2 = { x: p2x, y: p2y }
+
+  const o1 = shiftPoint(offset, p1, null, cp1, true)
+  const o2 = shiftPoint(offset, cp1, p1, cp2, true)
+  const o3 = shiftPoint(offset, cp2, cp1, p2, true)
+  const o4 = shiftPoint(offset, p2, cp2, null, true)
+
+  return [ o1.x, o1.y, o2.x, o2.y, o3.x, o3.y, o4.x, o4.y ]
 }
 
 const getBoundsFunc = ({ min, max }, step) =>
