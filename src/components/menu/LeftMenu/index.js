@@ -14,6 +14,7 @@ const { names: iconNames, IconButton } = components.icons
 export default class LeftMenu extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
+    targetingMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
@@ -35,6 +36,7 @@ export default class LeftMenu extends React.Component {
     onMeasureChange: PropTypes.func,
     onMarkerChange: PropTypes.func,
     onTopographicObjectsChange: PropTypes.func,
+    onToggleTargetingMode: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -44,9 +46,15 @@ export default class LeftMenu extends React.Component {
     onChangeEditMode(!isEditMode)
   }
 
+  clickTargetingModeHandler = () => {
+    const { onToggleTargetingMode } = this.props
+    onToggleTargetingMode && onToggleTargetingMode()
+  }
+
   render () {
     const {
       isEditMode,
+      targetingMode,
       isShowSubordinationLevel,
       isMeasureOn,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
@@ -77,6 +85,13 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
+        />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.TARGETING}
+          icon={iconNames.NONE_ICON_DEFAULT}
+          checked={targetingMode}
+          onClick={this.clickTargetingModeHandler}
         />
         <CreateButtonsComponent />
         <MenuDivider />
