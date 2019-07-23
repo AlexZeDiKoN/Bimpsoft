@@ -42,29 +42,15 @@ export const roundXY = ({ x, y }) => ({ x: Math.round(x), y: Math.round(y) })
 
 const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
 
-const bezierArray = (points, index, locked, size) => {
+const bezierArray = (points, index, locked) => {
   const next = nextIndex(points, index, locked)
-  const cp2 = { ...points[index].cp2 }
-  const cp1 = { ...points[next].cp1 }
-  if (size && points[index].cp2 && points[index].cp2.x === points[index].x && points[index].cp2.y === points[index].y) {
-    const v = vector(points[index], points[next])
-    const n = setLength(v, size)
-    cp2.x = points[index].cp2.x + n.x
-    cp2.y = points[index].cp2.y + n.y
-  }
-  if (size && points[next].cp1 && points[next].cp1.x === points[next].x && points[next].cp1.y === points[next].y) {
-    const v = vector(points[index], points[next])
-    const n = setLength(v, size)
-    cp1.x = points[next].cp1.x - n.x
-    cp1.y = points[next].cp1.y - n.y
-  }
   return [
     points[index].x,
     points[index].y,
-    cp2.x,
-    cp2.y,
-    cp1.x,
-    cp1.y,
+    points[index].cp2.x,
+    points[index].cp2.y,
+    points[next].cp1.x,
+    points[next].cp1.y,
     points[next].x,
     points[next].y,
   ]
@@ -255,7 +241,7 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
   for (let i = 0; i < last; i++) {
     const segment = bezier
       ? verticalOffset
-        ? new Bezier(...offsetCurve(bezierArray(carcassPoints, i, locked, verticalOffset), verticalOffset))
+        ? new Bezier(...offsetCurve(bezierArray(carcassPoints, i, locked), verticalOffset))
         : new Bezier(...bezierArray(carcassPoints, i, locked))
       : new Segment(...lineArray(carcassPoints, i, locked))
     makePointsArray(segment, i)
@@ -265,17 +251,15 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
 
 const offsetCurve = (cPoints, offset) => {
   const [ p1x, p1y, cp1x, cp1y, cp2x, cp2y, p2x, p2y ] = cPoints
-  const p1 = { x: p1x, y: p1y }
-  const cp1 = { x: cp1x, y: cp1y }
-  const cp2 = { x: cp2x, y: cp2y }
-  const p2 = { x: p2x, y: p2y }
-
-  const o1 = shiftPoint(offset, p1, null, cp1, true)
-  const o2 = shiftPoint(offset, cp1, p1, cp2, true)
-  const o3 = shiftPoint(offset, cp2, cp1, p2, true)
-  const o4 = shiftPoint(offset, p2, cp2, null, true)
-
-  return [ o1.x, o1.y, o2.x, o2.y, o3.x, o3.y, o4.x, o4.y ]
+  const points = [ { x: p1x, y: p1y } ]
+  // get rid of control points, which are located at the same place where the main ones are
+  !(p1x === cp1x && p1y === cp1y) && points.push({ x: cp1x, y: cp1y })
+  !(p2x === cp2x && p2y === cp2y) && points.push({ x: cp2x, y: cp2y })
+  points.push({ x: p2x, y: p2y })
+  return points.reduce((acc, p, i) => {
+    acc.push(shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true))
+    return acc
+  }, [])
 }
 
 const getBoundsFunc = ({ min, max }, step) =>
