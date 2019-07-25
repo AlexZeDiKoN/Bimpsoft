@@ -209,6 +209,7 @@ const getShiftedPoints = (points, offset, locked) => {
 
 const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
+  bezier = bezier && points.length > 2
   const makePointsArray = (segment, i) => {
     const length = segment.length()
     const steps = Math.min(Math.round(length), settings.LUT_STEPS) || 1
@@ -237,7 +238,6 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
   }
   const carcassPoints = !verticalOffset || bezier ? points : getShiftedPoints(points, verticalOffset, locked)
   const last = carcassPoints.length - Number(!locked)
-
   for (let i = 0; i < last; i++) {
     const segment = bezier
       ? verticalOffset
@@ -257,7 +257,8 @@ const offsetCurve = (cPoints, offset) => {
   !(p2x === cp2x && p2y === cp2y) && points.push({ x: cp2x, y: cp2y })
   points.push({ x: p2x, y: p2y })
   return points.reduce((acc, p, i) => {
-    acc.push(shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true))
+    const shifted = shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true)
+    acc.push(shifted.x, shifted.y)
     return acc
   }, [])
 }
