@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode,
+  activeMapSelector, inICTMode, targetingObjects,
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
@@ -47,6 +47,7 @@ const WebMapContainer = connect(
     topographicObjects: state.webMap.topographicObjects,
     catalogObjects: state.catalogs.objects,
     catalogs: state.catalogs.byIds,
+    targetingObjects: targetingObjects(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,

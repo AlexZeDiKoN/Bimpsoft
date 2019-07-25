@@ -21,16 +21,21 @@ export const canEditSelector = createSelector(
   }
 )
 
-export const mapId = createSelector(
+export const selectedLayer = createSelector(
   layersById,
   selectedLayerId,
-  (layers, id) => id && layers[id] && layers[id].mapId
+  (layers, id) => id && layers[id]
+)
+
+export const mapId = createSelector(
+  selectedLayer,
+  (layer) => layer && layer.mapId
 )
 
 export const signedMap = createSelector(
   mapsById,
   mapId,
-  (maps, id) => index && maps && maps[id] && maps[id].signed
+  (maps, id) => id && maps && maps[id] && maps[id].signed
 )
 
 export const activeMapSelector = createSelector(

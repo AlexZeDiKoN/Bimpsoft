@@ -1749,7 +1749,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        <MapProvider value={this.map} >{this.props.children}</MapProvider>
+        <MapProvider value={this.map}>{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
