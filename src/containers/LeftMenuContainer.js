@@ -10,6 +10,7 @@ const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
+      [viewModesKeys.volumeMap]: is3DMapMode,
     },
     webMap: {
       subordinationLevel,
@@ -24,6 +25,7 @@ const mapStateToProps = (store) => {
   const layerName = layerNameSelector(store)
   const isEditMode = canEditSelector(store)
   return {
+    is3DMapMode,
     isEditMode,
     isShowSubordinationLevel,
     isMeasureOn,

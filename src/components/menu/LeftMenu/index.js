@@ -14,6 +14,7 @@ const { names: iconNames, IconButton } = components.icons
 export default class LeftMenu extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
+    is3DMapMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
@@ -49,6 +50,7 @@ export default class LeftMenu extends React.Component {
       isEditMode,
       isShowSubordinationLevel,
       isMeasureOn,
+      is3DMapMode,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       subordinationAuto,
       marker,
@@ -77,6 +79,7 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
+          disabled={is3DMapMode}
         />
         <CreateButtonsComponent />
         <MenuDivider />

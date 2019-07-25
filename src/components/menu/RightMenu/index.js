@@ -18,9 +18,11 @@ export default class RightMenu extends React.Component {
   static propTypes = {
     isSettingsShow: PropTypes.bool,
     isSidebarShow: PropTypes.bool,
+    isVolumeMap: PropTypes.bool,
     searchFailed: PropTypes.bool,
     onClickSettings: PropTypes.func,
     onClickSidebar: PropTypes.func,
+    onClick3D: PropTypes.func,
     onSearch: PropTypes.func,
     onCoordinates: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
@@ -64,10 +66,17 @@ export default class RightMenu extends React.Component {
 
   render () {
     const {
-      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles,
+      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles, isVolumeMap, onClick3D,
     } = this.props
     return (
       <div className='left-menu'>
+        <IconButton
+          placement={'bottomRight'}
+          title={'3D View'}
+          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
+          checked={isVolumeMap}
+          onClick={onClick3D}
+        />
         {Object.keys(printFiles).length !== 0 && (
           <PrintFilesContainer/>
         )}
@@ -78,6 +87,8 @@ export default class RightMenu extends React.Component {
           onSearch={this.search}
           onChange={this.searchClearError}
           className={searchFailed ? 'search-failed' : ''}
+          disabled={isVolumeMap}
+
         />
         <div className="search-options-sub-panel search-options-sub-panel-right">
           <SearchOptions />
@@ -88,6 +99,8 @@ export default class RightMenu extends React.Component {
           icon={iconNames.MENU_LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
+          disabled={isVolumeMap}
+
         />
         <IconButton
           placement={'bottomRight'}
@@ -95,6 +108,8 @@ export default class RightMenu extends React.Component {
           icon={iconNames.SETTING_DEFAULT}
           checked={isSettingsShow}
           onClick={onClickSettings}
+          disabled={isVolumeMap}
+
         />
       </div>
     )
