@@ -4,7 +4,7 @@ import { Viewer, Scene, Globe, Fog, CameraFlyTo, ScreenSpaceCameraController } f
 import PropTypes from "prop-types";
 
 const imageryProvider = new UrlTemplateImageryProvider({
-    url: "http://localhost:8001/bing/{z}/{x}/{y}.webp",
+    url: "http://10.8.26.153:8001/bing/{z}/{x}/{y}.webp",
     hasAlphaChannel: false,
     maximumLevel: 14,
     enablePickFeatures: false,
