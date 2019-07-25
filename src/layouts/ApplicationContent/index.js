@@ -2,10 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { WebMap, PrintGrid, PrintLegendContainer } from '../../containers'
-import { volumeMap as key3D } from '../../constants/viewModesKeys'
+import { volumeMap } from '../../constants/viewModesKeys'
 import { MapConsumer } from '../../components/WebMap/MapContext'
 import WebMap3D from '../../components/WebMap3D'
 
+// @TODO: center and zoom pass to WebMap3D using a real Data & make a webMap3D Container
 class ApplicationContent extends React.PureComponent {
   static propTypes = {
     is3DMapMode: PropTypes.bool.isRequired,
@@ -17,7 +18,10 @@ class ApplicationContent extends React.PureComponent {
       <>
         {
           is3DMapMode
-            ? <WebMap3D />
+            ? <WebMap3D
+              center={{ lat: 48.5, lng: 38 }}
+              zoom={14}
+            />
             : <WebMap
               center={[ 48.5, 38 ]}
               zoom={14}
@@ -33,7 +37,7 @@ class ApplicationContent extends React.PureComponent {
 }
 
 const mapStateToProps = (store) => ({
-  is3DMapMode: store[key3D],
+  is3DMapMode: store.viewModes[volumeMap],
 })
 
 export default connect(mapStateToProps)(ApplicationContent)
