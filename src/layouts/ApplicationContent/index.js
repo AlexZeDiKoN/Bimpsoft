@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { WebMap, PrintGrid, PrintLegendContainer } from '../../containers'
 import { volumeMap } from '../../constants/viewModesKeys'
 import { MapConsumer } from '../../components/WebMap/MapContext'
-import WebMap3D from '../../components/WebMap3D'
+import WebMap3DContainer from '../../containers/WebMap3DContainer'
 
 // @TODO: center and zoom pass to WebMap3D using a real Data & make a webMap3D Container
 class ApplicationContent extends React.PureComponent {
@@ -18,14 +18,8 @@ class ApplicationContent extends React.PureComponent {
       <>
         {
           is3DMapMode
-            ? <WebMap3D
-              center={{ lat: 48.5, lng: 38 }}
-              zoom={14}
-            />
-            : <WebMap
-              center={[ 48.5, 38 ]}
-              zoom={14}
-            >
+            ? <WebMap3DContainer />
+            : <WebMap center={[ 48.5, 38 ]} zoom={14} >
               <MapConsumer>{(map) => map && <PrintGrid map={map} />}</MapConsumer>
               <PrintLegendContainer />
             </WebMap>
