@@ -2,27 +2,26 @@ import { createSelector } from 'reselect'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { mapId, layersById } from './layersSelector'
-import { currentOrgStructure } from './orgStructures'
 
 const targetingMode = (state) => state.targeting.targetingMode
 const unitId = (state) => state.webMap.unitId
 const objects = (state) => state.webMap.objects
+const currentOrgStructure = (state) => state.orgStructures
 
 const myList = (orgStructure, myUnitId) => [
   myUnitId,
-  ...(orgStructure.byIds[myUnitId].children || [])
+  ...((orgStructure.byIds[myUnitId] && orgStructure.byIds[myUnitId].children) || [])
     .map((child) => myList(orgStructure, child)),
-]
-
-const isMeOrMyChild = (object, myUnitId, orgStructure) => object && orgStructure && myUnitId &&
-  myList(orgStructure, myUnitId).includes(Number(object.unit))
+].flat(32)
 
 const currentMapLayers = createSelector(
   mapId,
   layersById,
-  (mapId, layers) => mapId && Object.values(layers)
-    .map(([ key, value ]) => value.mapId === mapId ? key : null)
-    .filter((value) => value !== null)
+  (mapId, layers) => mapId && layers
+    ? Object.entries(layers)
+      .map(([ key, value ]) => value.visible && value.mapId === mapId ? key : null)
+      .filter((value) => value !== null)
+    : []
 )
 
 const currentMapPointLowLevelObjects = createSelector(
@@ -38,6 +37,12 @@ export const targetingObjects = createSelector(
   unitId,
   currentMapPointLowLevelObjects,
   currentOrgStructure,
-  (targetingMode, unitId, objects, orgStructure) => targetingMode && unitId && objects && orgStructure &&
-    objects.filter((object) => isMeOrMyChild(object, unitId, orgStructure))
+  (targetingMode, unitId, objects, orgStructure) => {
+    let predicate = () => false
+    if (targetingMode && unitId && objects && orgStructure) {
+      const list = myList(orgStructure, unitId)
+      predicate = (object) => list.includes(object.unit)
+    }
+    return objects.filter(predicate)
+  }
 )

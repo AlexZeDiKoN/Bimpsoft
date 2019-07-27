@@ -276,6 +276,7 @@ export default class WebMap extends React.PureComponent {
     topographicObjects: PropTypes.object,
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
+    targetingObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -304,6 +305,7 @@ export default class WebMap extends React.PureComponent {
     disableDrawUnit: PropTypes.func,
     onMoveContour: PropTypes.func,
     onMoveObjList: PropTypes.func,
+    getZones: PropTypes.func,
   }
 
   constructor (props) {
@@ -345,6 +347,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
+      targetingObjects,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -423,6 +426,9 @@ export default class WebMap extends React.PureComponent {
       this.updateCatalogObjects(catalogObjects)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    if (targetingObjects !== prevProps.targetingObjects) {
+      this.updateTargetingZones(targetingObjects)
+    }
   }
 
   componentWillUnmount () {
@@ -450,6 +456,20 @@ export default class WebMap extends React.PureComponent {
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
+  updateTargetingZones = async (targetingObjects) => {
+    const objects = targetingObjects.map((object) => object.id).sort().toArray()
+    const hash = JSON.stringify(objects)
+    if (this.targetingZonesHash !== hash) {
+      const { getZones } = this.props
+      const zones = objects.length
+        ? await getZones(objects)
+        : null
+      // TODO
+      console.log(zones)
+      this.targetingZonesHash = hash
+    }
   }
 
   updateCoordinateIndex (preview = null, coordinateIndex = null) {

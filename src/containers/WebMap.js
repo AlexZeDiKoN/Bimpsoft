@@ -5,7 +5,7 @@ import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
   activeMapSelector, inICTMode, targetingObjects,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
+import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import * as topoObj from '../store/actions/webMap'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -98,6 +98,7 @@ const WebMapContainer = connect(
     disableDrawUnit: selection.disableDrawUnit,
     onMoveContour: webMap.moveContour,
     onMoveObjList: webMap.moveObjList,
+    getZones: targeting.getZones,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
