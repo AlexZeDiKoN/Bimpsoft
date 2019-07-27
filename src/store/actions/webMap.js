@@ -40,6 +40,7 @@ export const actionNames = {
   SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
+  RETURN_UNIT_INDICATORS: action('RETURN_UNIT_INDICATORS'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
   SET_MARKER: action('SET_MARKER'),
   ADD_OBJECT: action('ADD_OBJECT'),
@@ -248,6 +249,14 @@ export const updateObjectsByLayerId = (layerId) =>
         layerId,
         objects,
       },
+    })
+  })
+
+export const updateUnitObjectWithIndicators = (indicatorsData) =>
+  asyncAction.withNotification(async (dispatch) => {
+    return dispatch({
+      type: actionNames.RETURN_UNIT_INDICATORS,
+      payload: indicatorsData,
     })
   })
 

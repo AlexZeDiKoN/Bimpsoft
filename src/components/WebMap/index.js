@@ -1101,7 +1101,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   addObject = (object, prevLayer) => {
-    const { id, attributes } = object
+    const { layersByIdFromStore } = this.props
+    const { id, attributes, layer: layerInner, unit } = object
+    const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
     } catch (e) {
@@ -1116,11 +1118,24 @@ export default class WebMap extends React.PureComponent {
         left: attributes.left,
         right: attributes.right,
       }
-
+console.log(Object.values(object))
       layer.id = id
       layer.object = object
+      layer.bindPopup(`<div>
+            ${id}
+           ${layerObject['formationId']}
+           ${unit}
+</div>`)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('mouseover ', (e)=> {
+        window.explorerBridge.getUnitIndicators(unit, layerObject['formationId'])
+        layer.openPopup()
+      })
+      layer.on('mouseout', (e)=> {
+        console.log(e)
+        return layer.closePopup()
+      })
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)

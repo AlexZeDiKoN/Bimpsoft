@@ -189,6 +189,15 @@ export default function webMapReducer (state = WebMapState(), action) {
         return map
       })
     }
+    case actionNames.RETURN_UNIT_INDICATORS: {
+      const { indicatorsData, unitId } = payload
+      const objects = state.get('objects')
+      const currentObject = objects.filter(({ unit }) => unit === unitId)[0]
+      currentObject.set('indicatorsData', indicatorsData)
+      return state
+      .set('objects', objects)
+
+    }
     case actionNames.SET_SOURCES: {
       return state
         .set('sources', payload.sources)

@@ -7,6 +7,8 @@ const selectedLayerId = (state) => state.layers.selectedId
 const layersById = (state) => state.layers.byId
 const mapsById = (state) => state.maps.byId
 
+export const layersByIdFromStore = createSelector(layersById, (byId) => byId)
+
 export const canEditSelector = createSelector(
   layersSelector,
   ({ editMode, byId, selectedId, timelineFrom, timelineTo }) => {
