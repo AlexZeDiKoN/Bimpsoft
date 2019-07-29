@@ -468,7 +468,7 @@ export default class WebMap extends React.PureComponent {
         const object = objects.find((object) => object.id === id)
         return object && object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW
       })
-    const buildingObjects = selectedPoints.length === 1
+    const buildingObjects = targetingObjects.size >= 1 && selectedPoints.length === 1
       ? selectedPoints
       : targetingObjects.map((object) => object.id).sort().toArray()
     const hash = JSON.stringify(buildingObjects)
