@@ -10,6 +10,7 @@ const entityKind = { // ID в базі даних відповідних тип�
   SQUARE: 9, // квадрат
   TEXT: 10, // текстова мітка
   CONTOUR: 11, // контур
+  TARGETING: 12, // зона вогневого ураження
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
 }
@@ -23,6 +24,7 @@ export const entityKindFillable = [
   entityKind.RECTANGLE,
   entityKind.SQUARE,
   entityKind.CONTOUR,
+  entityKind.TARGETING,
 ]
 
 export const entityKindNonFillable = [

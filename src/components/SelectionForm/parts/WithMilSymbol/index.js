@@ -11,18 +11,21 @@ const configs = SymbolEditorComponentStateless.configs
 const readOnly = { readonly: true }
 const hidden = { hidden: true }
 
-const elementsConfigsEditable = {
-  ADD_TO_TEMPLATE: hidden, // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
-  NAME: hidden,
+const elementsConfigs = {
+  [configs.ADD_TO_TEMPLATE]: hidden, // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
+  [configs.NAME]: hidden,
   [configs.commonIdentifier]: readOnly,
 }
 
+const elementsConfigsEditable = {
+  ...elementsConfigs,
+  // TODO
+}
+
 const elementsConfigsReadOnly = {
-  [configs.NAME]: hidden,
-  [configs.ADD_TO_TEMPLATE]: hidden,
+  ...elementsConfigs,
   [configs.BUTTON_OK]: readOnly,
   [configs.BUTTON_CANCEL]: hidden,
-  [configs.commonIdentifier]: readOnly,
   ...Object.values(configs).reduce((acc, key) => {
     acc[key] = readOnly
     return acc

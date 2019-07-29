@@ -3,7 +3,7 @@ import { layerNameSelector, mapNameSelector, signedMap } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
-import { asyncAction, orgStructures, webMap, selection } from './index'
+import { asyncAction, orgStructures, webMap, selection, targeting } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -31,6 +31,12 @@ export const setEditMode = (editMode) =>
       const mapName = mapNameSelector(state)
       throw new ApiError(i18n.CANNOT_EDIT_SIGNED_MAP(mapName), i18n.CANNOT_ENABLE_EDIT_MODE, true)
     } else {
+      if (editMode && state.targeting.targetingMode) {
+        await dispatch({
+          type: targeting.SET_TARGETING_MODE,
+          payload: false,
+        })
+      }
       dispatch({
         type: SET_EDIT_MODE,
         editMode,
