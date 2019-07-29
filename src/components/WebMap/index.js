@@ -49,6 +49,7 @@ import {
   geomPointEquals,
   createCoordinateMarker,
   formFlexGridGeometry,
+  createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
 
@@ -278,6 +279,7 @@ export default class WebMap extends React.PureComponent {
     topographicObjects: PropTypes.object,
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
+    targetingObjects: PropTypes.object,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -306,6 +308,7 @@ export default class WebMap extends React.PureComponent {
     disableDrawUnit: PropTypes.func,
     onMoveContour: PropTypes.func,
     onMoveObjList: PropTypes.func,
+    getZones: PropTypes.func,
   }
 
   constructor (props) {
@@ -347,6 +350,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
+      targetingObjects,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -425,6 +429,9 @@ export default class WebMap extends React.PureComponent {
       this.updateCatalogObjects(catalogObjects)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
+      this.updateTargetingZones(targetingObjects, list, objects)
+    }
   }
 
   componentWillUnmount () {
@@ -452,6 +459,35 @@ export default class WebMap extends React.PureComponent {
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
+  }
+
+  updateTargetingZones = async (targetingObjects, selectedList, objects) => {
+    if (!this.map) {
+      return
+    }
+    const selectedPoints = (selectedList || [])
+      .filter((id) => {
+        const object = objects.find((object) => object.id === id)
+        return object && object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW
+      })
+    const buildingObjects = targetingObjects.size >= 1 && selectedPoints.length === 1
+      ? selectedPoints
+      : targetingObjects.map((object) => object.id).sort().toArray()
+    const hash = JSON.stringify(buildingObjects)
+    if (this.targetingZonesHash !== hash) {
+      const { getZones } = this.props
+      const zones = buildingObjects.length
+        ? await getZones(buildingObjects)
+        : null
+      this.targeting && this.targeting.removeFrom(this.map)
+      if (zones && zones[0] && zones[1]) {
+        this.targeting = createTargeting(zones.map(JSON.parse), this.targeting)
+        this.targeting.addTo(this.map)
+      } else {
+        delete this.targeting
+      }
+      this.targetingZonesHash = hash
+    }
   }
 
   updateCoordinateIndex (preview = null, coordinateIndex = null) {
@@ -1772,7 +1808,7 @@ export default class WebMap extends React.PureComponent {
         ref={(container) => (this.container = container)}
         style={{ height: '100%' }}
       >
-        <MapProvider value={this.map} >{this.props.children}</MapProvider>
+        <MapProvider value={this.map}>{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />

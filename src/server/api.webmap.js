@@ -78,4 +78,6 @@ export default {
     getDirect(`${webmapUrl}/contour/move`, { id, shift }),
   objListMove: (ids, shift) =>
     getDirect(`${webmapUrl}/obj/move`, { ids, shift }),
+  buildZone: (objects) =>
+    getDirect(`${webmapUrl}/zone/build`, { objects }),
 }

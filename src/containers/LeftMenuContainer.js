@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap } from '../store/actions'
+import { viewModes, layers, webMap, targeting } from '../store/actions'
 import { canEditSelector, layerNameSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -11,6 +11,7 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
     },
+    targeting: { targetingMode },
     webMap: {
       subordinationLevel,
       subordinationAuto,
@@ -32,7 +33,10 @@ const mapStateToProps = (store) => {
     marker,
     topographicObjects,
     layerName,
-    printFilesCount: printFiles ? Object.keys(printFiles).length : null,
+    targetingMode,
+    printFilesCount: printFiles
+      ? Object.keys(printFiles).length
+      : null,
   }
 }
 const mapDispatchToProps = {
@@ -52,6 +56,7 @@ const mapDispatchToProps = {
     webMap.setSubordinationLevel(subordinationLevel),
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
+  onToggleTargetingMode: targeting.toggleTargetingMode,
 }
 const LeftMenuContainer = connect(
   mapStateToProps,

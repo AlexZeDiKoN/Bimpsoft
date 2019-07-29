@@ -253,6 +253,7 @@ export const ADD_SEGMENT = 'Додати пункт маршрута'
 export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
 export const PERIOD_FROM = 'Період з'
 export const PERIOD_TO = 'до'
+export const TARGETING = 'Цілевказання'
 
 // показатели подразделения
 export const UNIT_NAME = 'Назва підрозділу'
