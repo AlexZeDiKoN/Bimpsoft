@@ -427,8 +427,8 @@ export default class WebMap extends React.PureComponent {
       this.updateCatalogObjects(catalogObjects)
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
-    if (targetingObjects !== prevProps.targetingObjects) {
-      this.updateTargetingZones(targetingObjects)
+    if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
+      this.updateTargetingZones(targetingObjects, list, objects)
     }
   }
 
@@ -459,16 +459,23 @@ export default class WebMap extends React.PureComponent {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
 
-  updateTargetingZones = async (targetingObjects) => {
+  updateTargetingZones = async (targetingObjects, selectedList, objects) => {
     if (!this.map) {
       return
     }
-    const objects = targetingObjects.map((object) => object.id).sort().toArray()
-    const hash = JSON.stringify(objects)
+    const selectedPoints = (selectedList || [])
+      .filter((id) => {
+        const object = objects.find((object) => object.id === id)
+        return object && object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW
+      })
+    const buildingObjects = selectedPoints.length === 1
+      ? selectedPoints
+      : targetingObjects.map((object) => object.id).sort().toArray()
+    const hash = JSON.stringify(buildingObjects)
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
-      const zones = objects.length
-        ? await getZones(objects)
+      const zones = buildingObjects.length
+        ? await getZones(buildingObjects)
         : null
       this.targeting && this.targeting.removeFrom(this.map)
       if (zones && zones[0] && zones[1]) {
