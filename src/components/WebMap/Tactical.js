@@ -218,43 +218,64 @@ function createCircle (data, map) {
   return L.circle(point1, options)
 }
 
-const geoJSONLayer = (coordinates, type) => L.geoJSON({
-  type: 'FeatureCollection',
-  features: [ {
-    type: 'Feature',
-    geometry: {
-      type,
-      coordinates,
-    },
-  } ],
-}, {
-  ...prepareOptions(entityKind.CONTOUR),
-  style: {
-    weight: 3,
-    fillOpacity: 0.1,
-  },
+const geoJSONLayer = (coordinates, type, tsType, style, geomData) => L.geoJSON(geomData
+  ? {
+    type: 'FeatureCollection',
+    features: geomData.map((geometry) => ({
+      type: 'Feature',
+      geometry,
+    })),
+  } : {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type,
+          coordinates,
+        },
+      },
+    ],
+  }, {
+  ...prepareOptions(tsType),
+  style,
 })
 
-function createContour (data, layer) {
+function createGeoJSONLayer (data, layer, type, style, geometry) {
   if (layer && layer._checkData === data) {
     return layer
   }
-  const points = data.geometry.toJS()
-  const coordinates = latLng2peerArr(points)
   // if (layer && (layer instanceof L.GeoJSON)) {
   // TODO: не перестворювати об'єкт L.GeoJSON, змінювати властивості
   // } else {
-  try {
-    layer = geoJSONLayer(coordinates, 'Polygon')
-  } catch (err) {
-    layer = geoJSONLayer(coordinates, 'MultiPolygon')
+  if (geometry) {
+    layer = geoJSONLayer(null, null, type, style, data)
+    layer._checkData = geometry
+  } else {
+    const points = data.geometry.toJS()
+    const coordinates = latLng2peerArr(points)
+    try {
+      layer = geoJSONLayer(coordinates, 'Polygon', type, style)
+    } catch (err) {
+      layer = geoJSONLayer(coordinates, 'MultiPolygon', type, style)
+    }
+    layer._data = points
+    layer._bounds = L.latLngBounds(points.flat(4))
   }
   // }
-  layer._data = points
   layer._checkData = data
-  layer._bounds = L.latLngBounds(points.flat(4))
   return layer
 }
+
+const createContour = (data, layer) => createGeoJSONLayer(data, layer, entityKind.CONTOUR, {
+  weight: 3,
+  fillOpacity: 0.1,
+}, false)
+
+export const createTargeting = (data, layer) => createGeoJSONLayer(data, layer, entityKind.TARGETING, {
+  weight: 0,
+  fillOpacity: 0.2,
+}, true)
 
 function createRectangle (data, layer) {
   const bounds = Array.isArray(data) ? data : data.geometry.toJS()
@@ -286,6 +307,7 @@ function prepareOptions (signType, color, js) {
   const options = {
     tsType: signType,
     tsTemplate: js,
+    interactive: signType !== entityKind.TARGETING,
     noClip: true,
     draggable: false, // signType === entityKind.CONTOUR,
     // renderer: new L.SVG(),

@@ -48,6 +48,7 @@ import {
   geomPointEquals,
   createCoordinateMarker,
   formFlexGridGeometry,
+  createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
 
@@ -459,6 +460,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateTargetingZones = async (targetingObjects) => {
+    if (!this.map) {
+      return
+    }
     const objects = targetingObjects.map((object) => object.id).sort().toArray()
     const hash = JSON.stringify(objects)
     if (this.targetingZonesHash !== hash) {
@@ -466,8 +470,13 @@ export default class WebMap extends React.PureComponent {
       const zones = objects.length
         ? await getZones(objects)
         : null
-      // TODO
-      console.log(zones)
+      this.targeting && this.targeting.removeFrom(this.map)
+      if (zones && zones[0] && zones[1]) {
+        this.targeting = createTargeting(zones.map(JSON.parse), this.targeting)
+        this.targeting.addTo(this.map)
+      } else {
+        delete this.targeting
+      }
       this.targetingZonesHash = hash
     }
   }
