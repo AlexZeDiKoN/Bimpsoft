@@ -252,11 +252,11 @@ export const updateObjectsByLayerId = (layerId) =>
     })
   })
 
-export const updateUnitObjectWithIndicators = (indicatorsData) =>
+export const updateUnitObjectWithIndicators = (payload) =>
   asyncAction.withNotification(async (dispatch) => {
     return dispatch({
       type: actionNames.RETURN_UNIT_INDICATORS,
-      payload: indicatorsData,
+      payload: payload,
     })
   })
 

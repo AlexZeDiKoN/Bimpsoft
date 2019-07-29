@@ -8,6 +8,7 @@ import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
+import renderIndicators from '../../components/UnitIndicators'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -232,6 +233,7 @@ export default class WebMap extends React.PureComponent {
     }),
     scaleToSelection: PropTypes.bool,
     objects: PropTypes.object,
+    layersByIdFromStore: PropTypes.object,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     coordinatesType: PropTypes.string,
@@ -1100,17 +1102,34 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  getUnitIndicatorsInfoOnHover = (unit, formationId, indicatorsData, layer) => debounce(() => {
+    !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+    setTimeout(() => layer.openPopup(), 500)
+  }, 1500)
+
+  // closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, 1500)
+
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
-    const { id, attributes, layer: layerInner, unit } = object
+    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
     const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
     } catch (e) {
       return null
     }
+
     const layer = createTacticalSign(object, this.map, prevLayer)
+
     if (layer) {
+      const getUnitIndicatorsFunc = this.getUnitIndicatorsInfoOnHover(
+        unit,
+        layerObject['formationId'],
+        indicatorsData,
+        layer,
+      )
+      // const closePopUpFunc = this.closeIndicatorsPopUp(layer)
+      const renderPopUp = renderIndicators(indicatorsData)
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1118,24 +1137,13 @@ export default class WebMap extends React.PureComponent {
         left: attributes.left,
         right: attributes.right,
       }
-console.log(Object.values(object))
       layer.id = id
       layer.object = object
-      layer.bindPopup(`<div>
-            ${id}
-           ${layerObject['formationId']}
-           ${unit}
-</div>`)
+      layer.bindPopup(renderPopUp, { 'maxWidth': '310', 'maxHeight': '310', className: 'sign_Popup' })
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('mouseover ', (e)=> {
-        window.explorerBridge.getUnitIndicators(unit, layerObject['formationId'])
-        layer.openPopup()
-      })
-      layer.on('mouseout', (e)=> {
-        console.log(e)
-        return layer.closePopup()
-      })
+      layer.on('mouseover ', getUnitIndicatorsFunc)
+      // layer.on('mouseout', closePopUpFunc)
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)

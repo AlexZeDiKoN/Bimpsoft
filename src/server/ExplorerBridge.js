@@ -66,8 +66,8 @@ export default class ExplorerBridge {
           break
         }
         case ACTION_RETURN_UNIT_INDICATORS: {
-          const { indicatorsData } = data
-          catchError(webMap.updateUnitObjectWithIndicators)(indicatorsData)(this.store.dispatch)
+          const { indicatorsData, unitId } = data
+          catchError(webMap.updateUnitObjectWithIndicators)({ indicatorsData, unitId })(this.store.dispatch)
           break
         }
         case ACTION_CLOSE: {
@@ -99,8 +99,12 @@ export default class ExplorerBridge {
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
     window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)
 
-  getUnitIndicators = (unitId, formationId) =>
-    this.send(JSON.stringify({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId }))
+  getUnitIndicators = (unitId, formationId) => {
+    const send = this.send
+    return send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId }) ||
+     (window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true) &&
+    setTimeout(send, 3000, { action: ACTION_GET_UNIT_INDICATORS, unitId, formationId }))
+  }
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
     window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)
