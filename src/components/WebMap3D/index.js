@@ -1,71 +1,45 @@
 import React from 'react'
 import {
-  // CesiumTerrainProvider, @TODO: decomment as soon as we have working server for getting terrains
-  Cartesian3, KeyboardEventModifier, HeightReference, VerticalOrigin, CameraEventType, UrlTemplateImageryProvider,
+  CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
+  CameraEventType, UrlTemplateImageryProvider,
 } from 'cesium'
-import { Viewer, Scene, Globe, Fog, CameraFlyTo, ScreenSpaceCameraController, Entity, BillboardGraphics } from 'resium'
+import { Viewer, Scene, Globe, Fog, CameraFlyTo, ScreenSpaceCameraController } from 'resium'
 import PropTypes from 'prop-types'
-import memoize from 'memoize-one'
-import { Symbol } from '@DZVIN/milsymbol'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { zoom2height } from '../../utils/mapObjConvertor'
+import SignsLayer from './SignsLayer'
 
 const imageryProvider = new UrlTemplateImageryProvider({
-  url: 'http://10.8.26.153:8001/bing/{z}/{x}/{y}.webp',
+  url: 'http://10.8.26.153:8000/bing/{z}/{x}/{y}.png',
   hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
 })
 
-// @TODO: decomment as soon as works
-// const terrainProvider = new CesiumTerrainProvider({
-//   url: 'http://10.8.26.153:8000/tilesets/terrain_data/',
-// })
+const terrainProvider = new CesiumTerrainProvider({
+  url: 'http://10.8.26.153:8000/terrain/',
+})
 
-const zoom2height = (zoom) => {
-  const A = 40487.57
-  const B = 0.00007096758
-  const C = 91610.74
-  const D = -40467.74
-  return C * Math.pow((A - D) / (zoom - D) - 1, 1 / B)
-}
-
-const buildSVG = (data) => {
-  const { code = '', attributes } = data
-  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(attributes), size: 18 })
-  return symbol.asSVG()
-}
-
-const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
-  if (o.type === 1) {
-    const { point: { lat, lng }, id } = o
-    const svg = buildSVG(o)
-    const base64 = 'data:image/svg+xml;base64,' + window.btoa(svg)
-    acc.push(<Entity position={Cartesian3.fromDegrees(lng, lat)} key={id}>
-      <BillboardGraphics
-        image={base64}
-        heightReference={HeightReference.CLAMP_TO_GROUND}
-        verticalOrigin={VerticalOrigin.BOTTOM}
-      />
-    </Entity>)
-  }
-  return acc
-}, []))
+const MAX_ZOOM = zoom2height(14)
+const MIN_ZOOM = zoom2height(5)
+const DIV = document.createElement('div')
 
 export default class WebMap3D extends React.PureComponent {
     static propTypes = {
-      children: PropTypes.any,
-      // from Redux store
       center: PropTypes.shape({
         lat: PropTypes.number,
         lng: PropTypes.number,
       }).isRequired,
       zoom: PropTypes.number.isRequired,
       objects: PropTypes.object,
+      setZoom: PropTypes.func.isRequired,
     }
 
+    shouldFly = true
+
+    stopAutoMove = () => (this.shouldFly = false)
+
     render () {
-      const { objects, center, zoom } = this.props
-      const signs = objectsToSvg(objects)
+      const { objects, center, zoom, setZoom } = this.props
       return (
         <Viewer
           animation={false}
@@ -82,27 +56,36 @@ export default class WebMap3D extends React.PureComponent {
           navigationInstructionsInitiallyVisible={false}
           scene3DOnly={true}
           imageryProvider={imageryProvider}
-          // terrainProvider={terrainProvider}
-          creditContainer={document.createElement('div')}
-          creditViewport={document.createElement('div')}
+          terrainProvider={terrainProvider}
+          creditContainer={DIV}
+          creditViewport={DIV}
         >
           <Scene>
             <Fog enabled={false}/>
           </Scene>
           <Globe depthTestAgainstTerrain={false}/>
-          <CameraFlyTo duration={0} destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(zoom))} />
-          {signs}
+          {this.shouldFly &&
+            <CameraFlyTo
+              maximumHeight={MIN_ZOOM}
+              duration={0}
+              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(zoom))}
+              onComplete={this.stopAutoMove}
+            />
+          }
+          <SignsLayer
+            objects={objects}
+            zoom={zoom}
+            setZoom={setZoom}
+          />
           <ScreenSpaceCameraController
-            tiltEventTypes={
-              CameraEventType.RIGHT_DRAG
-            }
+            maximumZoomDistance={MIN_ZOOM}
+            minimumZoomDistance={MAX_ZOOM}
+            tiltEventTypes={CameraEventType.RIGHT_DRAG}
+            rotateEventTypes={CameraEventType.LEFT_DRAG}
             lookEventTypes={[
               CameraEventType.MIDDLE_DRAG,
               { eventType: CameraEventType.LEFT_DRAG, modifier: KeyboardEventModifier.SHIFT },
             ]}
-            rotateEventTypes={
-              CameraEventType.LEFT_DRAG
-            }
             zoomEventTypes={[
               CameraEventType.WHEEL,
               { eventType: CameraEventType.LEFT_DRAG, modifier: KeyboardEventModifier.CTRL },

@@ -1,5 +1,14 @@
+import React from 'react'
 import { CRS, latLng, point } from 'leaflet'
+import { Entity } from 'resium'
+import { Cartesian3, HeightReference, VerticalOrigin } from 'cesium'
+
 import { sha256 } from 'js-sha256'
+import memoize from 'memoize-one'
+
+import { Symbol } from '@DZVIN/milsymbol'
+import { model } from '@DZVIN/MilSymbolEditor'
+
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 
 const shiftOne = (p) => {
@@ -68,3 +77,37 @@ export function calcMiddlePoint (coords) {
     lng: sum.lng / arr.length,
   }
 }
+
+// 3D MAP Methods:
+
+export const zoom2height = (zoom, altitude) => {
+  const A = 40487.57
+  const B = 0.00007096758
+  const C = 91610.74
+  const D = -40467.74
+  return zoom
+    ? C * Math.pow((A - D) / (zoom - D) - 1, 1 / B)
+    : altitude
+      ? D + (A - D) / (1 + Math.pow(altitude / C, B))
+      : 0
+}
+
+export const buildSVG = (data) => {
+  const { code = '', attributes } = data
+  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(attributes), size: 18 })
+  return symbol.asSVG()
+}
+
+const heightReference = HeightReference.CLAMP_TO_GROUND
+const verticalOrigin = VerticalOrigin.BOTTOM
+
+export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
+  if (o.type === 1) {
+    const { point: { lat, lng }, id } = o
+    const svg = buildSVG(o)
+    const image = 'data:image/svg+xml;base64,' + window.btoa(svg)
+    const billboardParams = { image, heightReference, verticalOrigin }
+    acc.push(<Entity position={Cartesian3.fromDegrees(lng, lat)} key={id} billboard={billboardParams}/>)
+  }
+  return acc
+}, []))
