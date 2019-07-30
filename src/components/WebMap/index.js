@@ -1181,6 +1181,7 @@ export default class WebMap extends React.PureComponent {
 
     if (layer) {
       const renderPopUp = renderIndicators(indicatorsData)
+      const isObjectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1190,10 +1191,10 @@ export default class WebMap extends React.PureComponent {
       }
       layer.id = id
       layer.object = object
-      layer.bindPopup(renderPopUp, popupOptionsIndicators)
+      isObjectIsPoint && layer.bindPopup(renderPopUp, popupOptionsIndicators)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+      isObjectIsPoint && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
         unit,
         layer,
@@ -1201,7 +1202,7 @@ export default class WebMap extends React.PureComponent {
         indicatorsData,
       )
       )
-      layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+      isObjectIsPoint && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         unit,
         layer,
