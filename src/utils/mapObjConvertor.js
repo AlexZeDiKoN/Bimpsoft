@@ -11,6 +11,7 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
+import {calcControlPoint} from "../components/WebMap/patch/utils/Bezier"
 
 const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
@@ -102,6 +103,27 @@ export const buildSVG = (data) => {
 const heightReference = HeightReference.CLAMP_TO_GROUND
 const verticalOrigin = VerticalOrigin.BOTTOM
 
+// @TODO: finish method which turns points into curvePoints
+const buldCurve = (points, locked) => {
+  const last = points.length - 1
+  console.log('points', points)
+  points.forEach((p, i) => {
+    const prev = i
+      ? points[i - 1]
+      : locked
+        ? points[last]
+        : p
+    const next = i !== last
+      ? points[i + 1]
+      : locked
+        ? points[0]
+        : p
+    const [ cp1, cp2 ] = calcControlPoint(prev, p, next)
+    console.log('cp1', cp1)
+    console.log('cp2', cp2)
+  })
+}
+
 // @TODO: use constants of types
 export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
   if (o.type === 1) {
@@ -117,7 +139,9 @@ export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
     acc.push(<Entity key={id} polyline={polylineParams}/>)
   } else if (o.type === 4) {
     const { id, geometry } = o
+
     const points = geometry.toArray().reduce((acc, { lat, lng }) => [ ...acc, lat, lng ], [])
+    console.log('points', points)
     const curve = new Bezier(...points)
     const lut = curve.getLUT(geometry.length * 5)
     const positions = lut.map(({ x, y }) => Cartesian3.fromDegrees(y, x))
