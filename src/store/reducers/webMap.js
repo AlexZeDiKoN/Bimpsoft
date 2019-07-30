@@ -195,13 +195,11 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.RETURN_UNIT_INDICATORS: {
       const { indicatorsData, unitId } = payload
       const objects = state.get('objects')
-      const objectsArray = [ ...objects.values() ]
-      const currentObject = objectsArray.find(({ unit }) => {
-        return unit === unitId
+      const currentObject = objects.filter(({ unit }) => unit === unitId).values().next().value
+      const newObjects = currentObject.set('indicatorsData', indicatorsData)
+      return merge(state, {
+        objects: update(objects, currentObject.id, newObjects),
       })
-      const newObjects = objects.setIn([ currentObject.id, 'indicatorsData' ], indicatorsData)
-      return state
-        .set('objects', newObjects)
     }
     case actionNames.SET_SOURCES: {
       return state
