@@ -256,7 +256,7 @@ export const PERIOD_TO = 'до'
 export const TARGETING = 'Цілевказання'
 
 // показатели подразделения
-export const NOT_CALCULATED = 'Данні не розраховано'
+export const NOT_CALCULATED = 'Дані не розраховано'
 export const UNIT_NAME = 'Назва підрозділу'
 export const DATE_FOR = 'Станом на'
 export const BP_001 = 'Штатний БП'
