@@ -8,6 +8,7 @@ import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
+import renderIndicators from '../../components/UnitIndicators'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -58,6 +59,12 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
   color: 'red',
   dashArray: [ 5, 5 ],
 }
+
+const openPopUpInterval = 1000
+const closePopUpInterval = 1500
+// через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
+
+const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup' }
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -233,6 +240,7 @@ export default class WebMap extends React.PureComponent {
     }),
     scaleToSelection: PropTypes.bool,
     objects: PropTypes.object,
+    layersByIdFromStore: PropTypes.object,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     coordinatesType: PropTypes.string,
@@ -1136,15 +1144,28 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  getUnitIndicatorsInfoOnHover = debounce((unit, formationId, indicatorsData, layer) => {
+    !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+    setTimeout(() => layer.openPopup(), openPopUpInterval)
+  }, openPopUpInterval)
+
+  closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, closePopUpInterval)
+
   addObject = (object, prevLayer) => {
-    const { id, attributes } = object
+    const { layersByIdFromStore } = this.props
+    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
+    const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
     } catch (e) {
       return null
     }
+
     const layer = createTacticalSign(object, this.map, prevLayer)
+
     if (layer) {
+      const closePopUpFunc = this.closeIndicatorsPopUp(layer)
+      const renderPopUp = renderIndicators(indicatorsData)
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1152,11 +1173,18 @@ export default class WebMap extends React.PureComponent {
         left: attributes.left,
         right: attributes.right,
       }
-
       layer.id = id
       layer.object = object
+      layer.bindPopup(renderPopUp, popupOptionsIndicators)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('mouseover ', () => this.getUnitIndicatorsInfoOnHover(
+        unit,
+        layerObject.formationId,
+        indicatorsData,
+        layer)
+      )
+      layer.on('mouseout', closePopUpFunc)
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)

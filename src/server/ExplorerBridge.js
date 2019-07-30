@@ -1,4 +1,4 @@
-import { maps } from '../store/actions'
+import { maps, webMap } from '../store/actions'
 import { getExplorerOrigin } from '../utils/services'
 import { catchError } from '../store/actions/asyncAction'
 
@@ -15,6 +15,8 @@ const ACTION_CLOSE_VARIANT = 'close variant'
 const ACTION_VARIANT_RESULT = 'variant result'
 const ACTION_CLOSE = 'close'
 const ACTION_SHOW_UNIT = 'show unit'
+const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
+const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 
 export default class ExplorerBridge {
@@ -63,6 +65,11 @@ export default class ExplorerBridge {
           catchError(maps.openMapFolder)(mapId, layerId)(this.store.dispatch)
           break
         }
+        case ACTION_RETURN_UNIT_INDICATORS: {
+          const { indicatorsData, unitId } = data
+          catchError(webMap.updateUnitObjectWithIndicators)({ indicatorsData, unitId })(this.store.dispatch)
+          break
+        }
         case ACTION_CLOSE: {
           this.abandoned = true
           catchError(maps.clearVariant)(null, true)(this.store.dispatch)
@@ -90,7 +97,9 @@ export default class ExplorerBridge {
   variantResult = (variantId, result) => this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
 
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
-    window.open(`/explorer/#/_/military-organization/units/${unitId}`, `explorer`, '', true)
+    window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)
+
+  getUnitIndicators = (unitId, formationId) => this.send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
     window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)

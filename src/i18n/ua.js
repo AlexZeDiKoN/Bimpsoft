@@ -254,3 +254,16 @@ export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи 
 export const PERIOD_FROM = 'Період з'
 export const PERIOD_TO = 'до'
 export const TARGETING = 'Цілевказання'
+
+// показатели подразделения
+export const NOT_CALCULATED = 'Дані не розраховано'
+export const UNIT_NAME = 'Назва підрозділу'
+export const DATE_FOR = 'Станом на'
+export const BP_001 = 'Штатний БП'
+export const BP_002 = 'Реальний БП'
+export const BP_003 = 'Боєздатність у обороні'
+export const BP_004 = 'Боєздатність у наступі'
+export const BCHS_003 = 'МПС та ФС О/С'
+export const BCHS_004 = 'Підготовленість О/С'
+export const BCHS_005 = 'Укомплектованість О/С'
+export const BCHS_006 = 'Укомплектованість ОВТ'

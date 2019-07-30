@@ -6,6 +6,9 @@ import {
   activeMapSelector, inICTMode, targetingObjects,
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting } from '../store/actions'
+import {
+  layersByIdFromStore,
+} from '../store/selectors/layersSelector'
 import { catchErrors } from '../store/actions/asyncAction'
 import * as topoObj from '../store/actions/webMap'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -24,6 +27,7 @@ const WebMapContainer = connect(
     selection: state.selection,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
+    layersByIdFromStore: layersByIdFromStore(state),
     layersById: visibleLayersSelector(state),
     backOpacity: state.layers.backOpacity,
     hiddenOpacity: state.layers.hiddenOpacity,

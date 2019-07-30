@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import * as R from 'ramda'
 import { date } from '../../utils'
 
 const layersSelector = ({ layers }) => layers
@@ -8,6 +9,8 @@ const mapsById = (state) => state.maps.byId
 const targeting = ({ targeting: { targetingMode } }) => targetingMode
 
 export const layersById = (state) => state.layers.byId
+
+export const layersByIdFromStore = createSelector(layersById, R.identity)
 
 export const canEditSelector = createSelector(
   layersSelector,
