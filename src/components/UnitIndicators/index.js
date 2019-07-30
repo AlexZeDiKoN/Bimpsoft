@@ -18,9 +18,9 @@ renderTag.propTypes = {
   value: PropTypes.string.isRequired,
 }
 
-const renderIndicator = (title, data) => `<span className='unit_indicators_indicator'>
-  <u><span className='unit_indicators_indicator_title'>${title}:</span></u>
-  <span className='unit_indicators_indicator_data'>${data || 'Данні не розраховано'}</span>
+const renderIndicator = (title, data) => `<span class='unit_indicators_indicator'>
+  <span class='unit_indicators_indicator_title'>${title}:</span>
+  <span class='unit_indicators_indicator_data'>${data || 'Данні не розраховано'}</span>
 </span>`
 
 const renderIndicators = (indicatorsData = {}) => {
