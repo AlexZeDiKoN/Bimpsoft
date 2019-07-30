@@ -1,5 +1,6 @@
 import React from 'react'
 import { CRS, latLng, point } from 'leaflet'
+import Bezier from 'bezier-js'
 import { Entity } from 'resium'
 import { Cartesian3, HeightReference, VerticalOrigin } from 'cesium'
 
@@ -101,6 +102,7 @@ export const buildSVG = (data) => {
 const heightReference = HeightReference.CLAMP_TO_GROUND
 const verticalOrigin = VerticalOrigin.BOTTOM
 
+// @TODO: use constants of types
 export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
   if (o.type === 1) {
     const { point: { lat, lng }, id } = o
@@ -108,6 +110,24 @@ export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
     const image = 'data:image/svg+xml;base64,' + window.btoa(svg)
     const billboardParams = { image, heightReference, verticalOrigin }
     acc.push(<Entity position={Cartesian3.fromDegrees(lng, lat)} key={id} billboard={billboardParams}/>)
+  } else if (o.type === 6) {
+    const { id, geometry } = o
+    const positions = geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+    const polylineParams = { positions }
+    acc.push(<Entity key={id} polyline={polylineParams}/>)
+  } else if (o.type === 4) {
+    const { id, geometry } = o
+    const points = geometry.toArray().reduce((acc, { lat, lng }) => [ ...acc, lat, lng ], [])
+    const curve = new Bezier(...points)
+    const lut = curve.getLUT(geometry.length * 5)
+    const positions = lut.map(({ x, y }) => Cartesian3.fromDegrees(y, x))
+    const polylineParams = { positions }
+    acc.push(<Entity key={id} polyline={polylineParams}/>)
+  } else if (o.type === 5) {
+    const { id, geometry } = o
+    const positions = geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+    const polygonParams = { hierarchy: positions, height: 0, outline: true }
+    acc.push(<Entity key={id} polygon={polygonParams}/>)
   }
   return acc
 }, []))
