@@ -16,7 +16,7 @@ const ACTION_VARIANT_RESULT = 'variant result'
 const ACTION_CLOSE = 'close'
 const ACTION_SHOW_UNIT = 'show unit'
 const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
-const ACTION_RETURN_UNIT_INDICATORS = 'give back unit indicators'
+const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 
 export default class ExplorerBridge {
@@ -99,10 +99,7 @@ export default class ExplorerBridge {
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
     window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)
 
-  getUnitIndicators = (unitId, formationId) => {
-    const send = this.send
-    return send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
-  }
+  getUnitIndicators = (unitId, formationId) => this.send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
     window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)

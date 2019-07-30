@@ -252,13 +252,10 @@ export const updateObjectsByLayerId = (layerId) =>
     })
   })
 
-export const updateUnitObjectWithIndicators = (payload) =>
-  asyncAction.withNotification(async (dispatch) => {
-    return dispatch({
-      type: actionNames.RETURN_UNIT_INDICATORS,
-      payload: payload,
-    })
-  })
+export const updateUnitObjectWithIndicators = (payload) => ({
+  type: actionNames.RETURN_UNIT_INDICATORS,
+  payload: payload,
+})
 
 export const allocateObjectsByLayerId = (layerId) => ({
   type: actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID,

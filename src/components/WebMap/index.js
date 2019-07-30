@@ -60,6 +60,12 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
   dashArray: [ 5, 5 ],
 }
 
+const openPopUpInterval = 1000
+const closePopUpInterval = 1500
+// через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
+
+const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup' }
+
 const switchScaleOptions = {
   scales: SCALES,
   splitScale: true,
@@ -1138,20 +1144,12 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  getUnitIndicatorsInfoOnHover = () => {
-    let timer
-    clearTimeout(timer)
-    return debounce((unit, formationId, indicatorsData, layer) => {
-      timer = setTimeout(function () {
-        !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        setTimeout(() => layer.openPopup(), 500)
-      }, 500)
-    }, 500)
-  }
+  getUnitIndicatorsInfoOnHover = debounce((unit, formationId, indicatorsData, layer) => {
+    !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+    setTimeout(() => layer.openPopup(), openPopUpInterval)
+  }, openPopUpInterval)
 
-  closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, 1500)
-
-  getIndicatorsWithTimeout = this.getUnitIndicatorsInfoOnHover()
+  closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, closePopUpInterval)
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
@@ -1177,13 +1175,15 @@ export default class WebMap extends React.PureComponent {
       }
       layer.id = id
       layer.object = object
-      layer.bindPopup(renderPopUp, { 'maxWidth': '310', 'maxHeight': '310', className: 'sign_Popup' })
+      layer.bindPopup(renderPopUp, popupOptionsIndicators)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('mouseover ', () => this.getIndicatorsWithTimeout(unit,
-        layerObject['formationId'],
+      layer.on('mouseover ', () => this.getUnitIndicatorsInfoOnHover(
+        unit,
+        layerObject.formationId,
         indicatorsData,
-        layer))
+        layer)
+      )
       layer.on('mouseout', closePopUpFunc)
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)

@@ -4,6 +4,7 @@
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import i18n from '../../i18n'
+import IndicationCodes from '../../constants/ict'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
 
 import './style.css'
@@ -20,20 +21,20 @@ renderTag.propTypes = {
 
 const renderIndicator = (title, data) => `<span class='unit_indicators_indicator'>
   <span class='unit_indicators_indicator_title'>${title}:</span>
-  <span class='unit_indicators_indicator_data'>${data || 'Данні не розраховано'}</span>
+  <span class='unit_indicators_indicator_data'>${data || i18n.NOT_CALCULATED}</span>
 </span>`
 
 const renderIndicators = (indicatorsData = {}) => {
   const unitShortName = indicatorsData.unit && indicatorsData.unit.shortName
   const dateFor = indicatorsData.dateFor && moment(indicatorsData.dateFor).format(DATE_TIME_FORMAT)
-  const bp001 = indicatorsData['БП001']
-  const bp002 = indicatorsData['БП002']
-  const bp003 = indicatorsData['БП003']
-  const bp004 = indicatorsData['БП004']
-  const bchs003 = indicatorsData['БЧС003']
-  const bchs004 = indicatorsData['БЧС004']
-  const bchs005 = indicatorsData['БЧС005']
-  const bchs006 = indicatorsData['БЧС006']
+  const bp001 = indicatorsData[IndicationCodes.BP001]
+  const bp002 = indicatorsData[IndicationCodes.BP002]
+  const bp003 = indicatorsData[IndicationCodes.BP003]
+  const bp004 = indicatorsData[IndicationCodes.BP004]
+  const bchs003 = indicatorsData[IndicationCodes.BCHS003]
+  const bchs004 = indicatorsData[IndicationCodes.BCHS004]
+  const bchs005 = indicatorsData[IndicationCodes.BCHS005]
+  const bchs006 = indicatorsData[IndicationCodes.BCHS006]
   return (`
     <div class='unit_indicators'>
     ${(unitShortName && renderIndicator(i18n.UNIT_NAME, unitShortName)) || ''}
