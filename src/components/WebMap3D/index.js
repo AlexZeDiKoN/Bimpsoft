@@ -9,14 +9,14 @@ import { zoom2height } from '../../utils/mapObjConvertor'
 import SignsLayer from './SignsLayer'
 
 const imageryProvider = new UrlTemplateImageryProvider({
-  url: 'http://10.8.26.153:8000/bing/{z}/{x}/{y}.png',
+  url: 'http://172.16.97.17/tiles/sat/{z}/{x}/{y}.jpg',
   hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
 })
 
 const terrainProvider = new CesiumTerrainProvider({
-  url: 'http://10.8.26.153:8000/terrain/',
+  url: 'http://172.16.97.17/tiles/terrain/',
 })
 
 const MAX_ZOOM = zoom2height(14)

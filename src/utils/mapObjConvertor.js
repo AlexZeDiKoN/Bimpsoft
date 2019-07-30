@@ -11,7 +11,7 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
-import {calcControlPoint} from "../components/WebMap/patch/utils/Bezier"
+import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
 
 const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
@@ -103,11 +103,27 @@ export const buildSVG = (data) => {
 const heightReference = HeightReference.CLAMP_TO_GROUND
 const verticalOrigin = VerticalOrigin.BOTTOM
 
-// @TODO: finish method which turns points into curvePoints
+// @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
+const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
+const bezierArray = (points, index, locked) => {
+  const next = nextIndex(points, index, locked)
+  return [
+    points[index].x,
+    points[index].y,
+    points[index].cp2.x,
+    points[index].cp2.y,
+    points[next].cp1.x,
+    points[next].cp1.y,
+    points[next].x,
+    points[next].y,
+  ]
+}
+
 const buldCurve = (points, locked) => {
   const last = points.length - 1
-  console.log('points', points)
-  points.forEach((p, i) => {
+  const result = []
+  const withCP = points.map((p, i) => {
+    const { lat, lng } = p
     const prev = i
       ? points[i - 1]
       : locked
@@ -118,10 +134,18 @@ const buldCurve = (points, locked) => {
       : locked
         ? points[0]
         : p
-    const [ cp1, cp2 ] = calcControlPoint(prev, p, next)
-    console.log('cp1', cp1)
-    console.log('cp2', cp2)
+    const [ cp1, cp2 ] = calcControlPoint([ prev.lat, prev.lng ], [ lat, lng ], [ next.lat, next.lng ])
+    return { x: lat, y: lng, cp1: { x: cp1[0], y: cp1[1] }, cp2: { x: cp2[0], y: cp2[1] } }
   })
+
+  for (let i = 0; i < last; i++) {
+    const segment = new Bezier(...bezierArray(withCP, i, locked))
+    const lut = segment.getLUT(15)
+    const positions = lut.map(({ x, y }) => Cartesian3.fromDegrees(y, x))
+    result.push(...positions)
+  }
+
+  return result
 }
 
 // @TODO: use constants of types
@@ -129,7 +153,7 @@ export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
   if (o.type === 1) {
     const { point: { lat, lng }, id } = o
     const svg = buildSVG(o)
-    const image = 'data:image/svg+xml;base64,' + window.btoa(svg)
+    const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
     const billboardParams = { image, heightReference, verticalOrigin }
     acc.push(<Entity position={Cartesian3.fromDegrees(lng, lat)} key={id} billboard={billboardParams}/>)
   } else if (o.type === 6) {
@@ -139,12 +163,7 @@ export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
     acc.push(<Entity key={id} polyline={polylineParams}/>)
   } else if (o.type === 4) {
     const { id, geometry } = o
-
-    const points = geometry.toArray().reduce((acc, { lat, lng }) => [ ...acc, lat, lng ], [])
-    console.log('points', points)
-    const curve = new Bezier(...points)
-    const lut = curve.getLUT(geometry.length * 5)
-    const positions = lut.map(({ x, y }) => Cartesian3.fromDegrees(y, x))
+    const positions = buldCurve(geometry.toArray())
     const polylineParams = { positions }
     acc.push(<Entity key={id} polyline={polylineParams}/>)
   } else if (o.type === 5) {
