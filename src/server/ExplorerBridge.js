@@ -101,9 +101,7 @@ export default class ExplorerBridge {
 
   getUnitIndicators = (unitId, formationId) => {
     const send = this.send
-    return send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId }) ||
-     (window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true) &&
-    setTimeout(send, 3000, { action: ACTION_GET_UNIT_INDICATORS, unitId, formationId }))
+    return send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
   }
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
