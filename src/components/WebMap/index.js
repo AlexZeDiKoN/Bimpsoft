@@ -55,6 +55,19 @@ import { MapProvider } from './MapContext'
 
 const { Coordinates: Coord } = utils
 
+const codeFriends = [
+  '3', // IDENTITY_FRIEND
+  '2', // IDENTITY_ASSUMED_FRIEND
+]
+
+const codeEnemies = [
+  '6', // IDENTITY_HOSTILE_FAKER
+  '5', // IDENTITY_SUSPECT_JOKER
+  '4', // IDENTITY_NEUTRAL
+  '1', // IDENTITY_UNKNOWN
+  '0', // IDENTITY_PENDING
+]
+
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
   dashArray: [ 5, 5 ],
@@ -473,21 +486,38 @@ export default class WebMap extends React.PureComponent {
     }
     const selectedPoints = (selectedList || [])
       .filter((id) => {
-        const object = objects.find((object) => object.id === id)
-        return object && object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW
+        const object = objects.find((object) => object && object.id === id)
+        return object && object.type === entityKind.POINT
       })
-    const buildingObjects = targetingObjects.size >= 1 && selectedPoints.length === 1
-      ? selectedPoints
+    const selectedFriends = selectedPoints
+      .filter((id) => {
+        const object = objects.find((object) => object && object.id === id)
+        return codeFriends.includes(model.APP6Code.getIdentity2(object.code)) &&
+          object.level === SubordinationLevel.TEAM_CREW
+      })
+    const selectedEnemies = selectedPoints
+      .filter((id) => {
+        const object = objects.find((object) => object && object.id === id)
+        return codeEnemies.includes(model.APP6Code.getIdentity2(object.code))
+      })
+    const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
+      ? selectedEnemies[0]
+      : null
+    const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
+      ? selectedFriends[0]
+      : null
+    const buildingObjects = targetingObjects.size >= 1 && friend
+      ? [ friend ]
       : targetingObjects.map((object) => object.id).sort().toArray()
-    const hash = JSON.stringify(buildingObjects)
+    const hash = `${JSON.stringify(buildingObjects)}${enemy}`
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
       const zones = buildingObjects.length
-        ? await getZones(buildingObjects)
+        ? (await getZones(buildingObjects, enemy)).map(JSON.parse).filter(Boolean)
         : null
       this.targeting && this.targeting.removeFrom(this.map)
-      if (zones && zones[0] && zones[1]) {
-        this.targeting = createTargeting(zones.map(JSON.parse), this.targeting)
+      if (zones && zones.length) {
+        this.targeting = createTargeting(zones, this.targeting)
         this.targeting.addTo(this.map)
       } else {
         delete this.targeting
