@@ -41,9 +41,9 @@ const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
 export const roundXY = ({ x, y }) => ({ x: Math.round(x), y: Math.round(y) })
 
 const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
+
 const bezierArray = (points, index, locked) => {
   const next = nextIndex(points, index, locked)
-  // console.log({ points, index, locked, next })
   return [
     points[index].x,
     points[index].y,
@@ -128,15 +128,91 @@ const prepareLUT = (lut) => {
   }
 }
 
-const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, skipNodes = false) => {
+const getLineFromSection = (start, end) => {
+  const a = start.y - end.y
+  const b = end.x - start.x
+  const c = -a * start.x - b * start.y
+  const normalizer = Math.hypot(a, b) || 1
+  return { a: a / normalizer, b: b / normalizer, c: c / normalizer }
+}
+
+const getCrossPoint = (aLine, bLine) => {
+  const { a: a1, b: b1, c: c1 } = aLine
+  const { a: a2, b: b2, c: c2 } = bLine
+  const denominator = a1 * b2 - a2 * b1
+  if (denominator) {
+    const x = -1 * (c1 * b2 - c2 * b1) / denominator
+    const y = -1 * (a1 * c2 - a2 * c1) / denominator
+    return { x, y }
+  }
+  throw new RangeError('Unexpectedly parallel vectors')
+}
+
+const getAngleBetween = (v1, v2) => {
+  const angle = Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x)
+  return angle < 0 // normalize to [ 0; 2PI ]
+    ? angle + 2 * Math.PI
+    : angle
+}
+
+const shiftPoint = (offset, point, prevPoint, nextPoint, isCurve = false) => {
+  if (prevPoint && nextPoint) {
+    const v1 = vector(prevPoint, point)
+    const v2 = vector(point, nextPoint)
+    const n1 = setLength(normal(v1), offset)
+    const n2 = setLength(normal(v2), offset)
+    const aPointEnd = { x: point.x - n1.x, y: point.y - n1.y }
+    const bPointStart = { x: point.x - n2.x, y: point.y - n2.y }
+
+    if (!isCurve) {
+      const angle = getAngleBetween(v1, v2)
+      if (angle > 3 && angle < 4) { // !!! if angle is bigger than 3rad and lower than 4rad we can get number next to infinity !!!
+        // so we get two points which are nearest to the marked one instead of getting crossPoint of two lines
+        return [ aPointEnd, bPointStart ]
+      }
+    }
+
+    const aPointStart = { x: prevPoint.x - n1.x, y: prevPoint.y - n1.y }
+    const bPointEnd = { x: nextPoint.x - n2.x, y: nextPoint.y - n2.y }
+
+    const aLine = getLineFromSection(aPointStart, aPointEnd)
+    const bLine = getLineFromSection(bPointStart, bPointEnd)
+    return getCrossPoint(aLine, bLine)
+  }
+  const prev = prevPoint || point
+  const next = nextPoint || point
+  const v = vector(prev, next)
+  const n = setLength(normal(v), offset)
+  const { x, y } = point
+  return { x: x - n.x, y: y - n.y }
+}
+
+const getShiftedPoints = (points, offset, locked) => {
+  const l = points.length - 1
+  const shiftedPoints = []
+  points.forEach((point, index) => {
+    const prev = index
+      ? points[index - 1]
+      : locked
+        ? points[l]
+        : null
+    const next = index !== l
+      ? points[index + 1]
+      : locked
+        ? points[0]
+        : null
+    const shifted = shiftPoint(offset, point, prev, next)
+    Array.isArray(shifted) ? shiftedPoints.push(...shifted) : shiftedPoints.push(shifted)
+  })
+  return shiftedPoints
+}
+
+const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
-  const last = points.length - Number(!locked)
-  for (let i = 0; i < last; i++) {
-    const segment = bezier
-      ? new Bezier(...bezierArray(points, i, locked))
-      : new Segment(...lineArray(points, i, locked))
+  bezier = bezier && points.length > 2
+  const makePointsArray = (segment, i) => {
     const length = segment.length()
-    const steps = Math.min(Math.round(length), settings.LUT_STEPS)
+    const steps = Math.min(Math.round(length), settings.LUT_STEPS) || 1
     let lut = null
     if (bezier) {
       lut = segment.getLUT(steps)
@@ -160,7 +236,31 @@ const buildPeriodicPoints = (step, offset, points, bezier, locked, insideMap, sk
       offset = pos - step - length
     }
   }
+  const carcassPoints = !verticalOffset || bezier ? points : getShiftedPoints(points, verticalOffset, locked)
+  const last = carcassPoints.length - Number(!locked)
+  for (let i = 0; i < last; i++) {
+    const segment = bezier
+      ? verticalOffset
+        ? new Bezier(...offsetCurve(bezierArray(carcassPoints, i, locked), verticalOffset))
+        : new Bezier(...bezierArray(carcassPoints, i, locked))
+      : new Segment(...lineArray(carcassPoints, i, locked))
+    makePointsArray(segment, i)
+  }
   return amplPoints
+}
+
+const offsetCurve = (cPoints, offset) => {
+  const [ p1x, p1y, cp1x, cp1y, cp2x, cp2y, p2x, p2y ] = cPoints
+  const points = [ { x: p1x, y: p1y } ]
+  // get rid of control points, which are located at the same place where the main ones are
+  !(p1x === cp1x && p1y === cp1y) && points.push({ x: cp1x, y: cp1y })
+  !(p2x === cp2x && p2y === cp2y) && points.push({ x: cp2x, y: cp2y })
+  points.push({ x: p2x, y: p2y })
+  return points.reduce((acc, p, i) => {
+    const shifted = shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true)
+    acc.push(shifted.x, shifted.y)
+    return acc
+  }, [])
 }
 
 const getBoundsFunc = ({ min, max }, step) =>
@@ -172,62 +272,106 @@ const getLineEnd = (lineEnds, end) => {
 }
 const getNodes = (lineNodes) => lineNodes === 'none' ? null : lineNodes
 
-export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1) => {
+const lineLength = (points, locked) => {
+  const last = points.length - 1
+  return points.reduce((acc, p, index) => {
+    const prev = !index
+      ? locked
+        ? points[last]
+        : p
+      : points[index - 1]
+    const l = length(vector(prev, p))
+    return acc + l
+  }, 0)
+}
+
+const addLineTo = ({ x, y }) => ` L${x} ${y}`
+
+const addWave = (
+  inverse, waveSize, waveStep,
+  p1, p2,
+  halfWave = false, part = 'left', addLine = false,
+  addSize = !inverse
+) => {
+  let result = ''
+  const v = vector(p1, p2)
+  const n = setLength(normal(v), waveSize + (addSize ? waveStep - length(v) : 0))
+  const cp1 = apply(p1, n)
+  const cp2 = apply(p2, n)
+  if (halfWave) {
+    const b = new Bezier([ p1.x, p1.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+    const p = b.split(0.5)[part].points
+    addLine && (result = addLineTo(p[0]))
+    result += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+  } else {
+    result = ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
+  }
+  return result
+}
+
+export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
   const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const waveSize = waveStep / 1.5 // settings.WAVE_SIZE * scale
-  const insideMap = getBoundsFunc(bounds, waveStep)
-  const wavePoints = buildPeriodicPoints(waveStep, -waveStep, points, bezier, locked, insideMap)
-  if (!wavePoints.length) {
-    return 'M0 0'
-  }
-  let waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
-  const addLineTo = ({ x, y }) => {
-    waves += ` L${x} ${y}`
-  }
-  const addWave = (p1, p2, addSize = true) => {
-    const v = vector(p1, p2)
-    const n = setLength(normal(v), waveSize + (addSize ? waveStep - length(v) : 0))
-    const cp1 = apply(p1, n)
-    const cp2 = apply(p2, n)
-    waves += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p2.x} ${p2.y}`
-  }
-  for (let i = 1; i < wavePoints.length; i++) {
-    if (!wavePoints[i].i || (i === 1 && getLineEnd(lineEnds, 'left'))) {
-      addLineTo(wavePoints[i])
-    } else {
-      addWave(wavePoints[i - 1], wavePoints[i])
+  const lineLen = lineLength(points, locked)
+  let waves = `M${points[0].x} ${points[0].y}`
+  if (lineLen <= waveStep * 3) { // if we have not default line endings on both sides of the line, we need at least 3 waves to c it correctly
+    points.forEach((p, i) => i && (waves += addLineTo(p)))
+  } else {
+    const waveSize = waveStep / 1.5 // settings.WAVE_SIZE * scale
+    const insideMap = getBoundsFunc(bounds, waveStep)
+    const verticalOffset = inverse ? waveSize * 0.8 : 0 // @TODO: make constant
+    const wavePoints = buildPeriodicPoints(waveStep, verticalOffset, -waveStep, points, bezier, locked, insideMap)
+    if (!wavePoints.length) {
+      return 'M0 0'
     }
-  }
-  if (settings.DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
-    const p0 = wavePoints[wavePoints.length - 1]
-    const p1 = points[points.length - 1]
-    const rest = dist(p0, p1)
-    if (rest >= 1) {
-      if (locked) {
-        addWave(p0, points[0], false)
+    if (!inverse || !getLineEnd(lineEnds, 'left')) {
+      waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
+    }
+    for (let i = 1; i < wavePoints.length; i++) {
+      if (inverse && i === wavePoints.length - 1 && getLineEnd(lineEnds, 'right')) {
+        waves += addWave(inverse, waveSize, waveStep, wavePoints[i - 1], wavePoints[i], true)
+      } else if (i === 1 && getLineEnd(lineEnds, 'left')) {
+        waves += inverse
+          ? addWave(inverse, waveSize, waveStep, wavePoints[0], wavePoints[1], true, 'right', true)
+          : addLineTo(wavePoints[1])
+      } else if (!wavePoints[i].i) {
+        waves += addLineTo(wavePoints[i])
       } else {
-        if (getLineEnd(lineEnds, 'right')) {
-          waves += ` L${p1.x} ${p1.y}`
+        waves += addWave(inverse, waveSize, waveStep, wavePoints[i - 1], wavePoints[i])
+      }
+    }
+    if (settings.DRAW_PARTIAL_WAVES && wavePoints.length > 0) {
+      const p0 = wavePoints[wavePoints.length - 1]
+      const p1 = inverse
+        ? shiftPoint(verticalOffset, points[points.length - 1], points[points.length - 2])
+        : points[points.length - 1]
+      const rest = dist(p0, p1)
+      if (rest >= 1) {
+        if (locked) {
+          waves += addWave(inverse, waveSize, waveStep, p0, points[0], false, false, false, false)
         } else {
-          const p2 = {
-            x: p0.x + (p1.x - p0.x) / rest * waveStep,
-            y: p0.y + (p1.y - p0.y) / rest * waveStep,
+          if (getLineEnd(lineEnds, 'right')) {
+            waves += ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
+          } else {
+            const p2 = {
+              x: p0.x + (p1.x - p0.x) / rest * waveStep,
+              y: p0.y + (p1.y - p0.y) / rest * waveStep,
+            }
+            const l = Math.hypot(p0.n.x, p0.n.y)
+            const cp1 = {
+              x: p0.x - p0.n.x / l * waveSize,
+              y: p0.y - p0.n.y / l * waveSize,
+            }
+            const cp2 = {
+              x: p2.x + cp1.x - p0.x,
+              y: p2.y + cp1.y - p0.y,
+            }
+            const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+            const p = b.split(rest / waveStep).left.points
+            waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
           }
-          const l = Math.hypot(p0.n.x, p0.n.y)
-          const cp1 = {
-            x: p0.x - p0.n.x / l * waveSize,
-            y: p0.y - p0.n.y / l * waveSize,
-          }
-          const cp2 = {
-            x: p2.x + cp1.x - p0.x,
-            y: p2.y + cp1.y - p0.y,
-          }
-          const b = new Bezier([ p0.x, p0.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
-          const p = b.split(rest / waveStep).left.points
-          waves += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
         }
       }
     }
@@ -243,7 +387,7 @@ export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = nu
   const strokeSize = strokeStep // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
-  const strokePoints = buildPeriodicPoints(strokeStep, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
+  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
     points, bezier, locked, insideMap, getNodes(lineNodes)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
@@ -285,6 +429,7 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
     const amp = getAmpSigns(scale)[level]
     const amplPoints = buildPeriodicPoints(
       settings.AMPLIFIERS_STEP * scale,
+      0,
       -settings.AMPLIFIERS_STEP / 2 * scale,
       points,
       bezier,

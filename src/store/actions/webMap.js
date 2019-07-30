@@ -293,10 +293,10 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 
 export const getAppInfo = () =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getVersion, getContactId } }) => {
-    const [ version, contactId ] = await Promise.all([ getVersion(), getContactId() ])
+    const [ version, { contactId, positionContactId, unitId } ] = await Promise.all([ getVersion(), getContactId() ])
     return dispatch({
       type: actionNames.APP_INFO,
-      payload: { version, contactId },
+      payload: { version, contactId, positionContactId, unitId },
     })
   })
 

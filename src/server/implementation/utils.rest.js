@@ -75,8 +75,6 @@ function _createGetRequest (url, options, namespace) {
     const namespaceAbsolute = absoluteUri.test(namespace)
     const prefix = namespaceAbsolute ? namespace : `${serverRootUrl}${namespace}`
     const serviceUrl = `${prefix}${url}`
-    // console.log({ namespace, namespaceAbsolute, prefix, serviceUrl })
-
     fetch(serviceUrl, options)
       .then((resp) => {
         const { status } = resp
@@ -120,16 +118,16 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 200: {
       const contentType = response.headers.get('content-type') || ''
       if (contentType.slice(0, 16) === 'application/json') {
-        const jsonPayload = await response.json()
-        if (jsonPayload.payload) {
-          return JSON.parse(jsonPayload.payload)
-        } else {
-          return jsonPayload
+        let jsonPayload = await response.json()
+        try {
+          if (jsonPayload.payload && typeof jsonPayload.payload === 'string') {
+            jsonPayload = JSON.parse(jsonPayload.payload)
+          }
+        } catch (err) {
+          console.warn(err)
         }
+        return jsonPayload
       }
-      // const text = await response.text()
-      // console.log(url, text)
-      // return text
       return response.text()
     }
     case 204: // success code of DELETE request

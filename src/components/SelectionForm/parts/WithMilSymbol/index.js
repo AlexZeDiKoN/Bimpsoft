@@ -6,22 +6,33 @@ import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
 
 import './style.css'
+const configs = SymbolEditorComponentStateless.configs
 
-const elementsConfigsEditable = {
-  ADD_TO_TEMPLATE: { hidden: true }, // TODO: тимчасово (до 25.08) приховуємо команду "Додати до шаблонів"
-  NAME: { hidden: true },
+const readOnly = { readonly: true }
+const hidden = { hidden: true }
+
+const elementsConfigs = {
+  [configs.ADD_TO_TEMPLATE]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
+  [configs.NAME]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
+  [configs.commonIdentifier]: readOnly,
 }
 
-const elementsConfigsReadOnly = {}
-{
-  const configs = SymbolEditorComponentStateless.configs
-  Object.values(configs).forEach((key) => {
-    elementsConfigsReadOnly[key] = { readonly: true }
-  })
-  elementsConfigsReadOnly[configs.NAME].hidden = true
-  elementsConfigsReadOnly[configs.ADD_TO_TEMPLATE].hidden = true
-  elementsConfigsReadOnly[configs.BUTTON_OK].readonly = false
-  elementsConfigsReadOnly[configs.BUTTON_CANCEL].hidden = true
+const elementsConfigsEditable = {
+  ...elementsConfigs,
+  // TODO
+}
+
+const elementsConfigsReadOnly = {
+  ...elementsConfigs,
+  [configs.BUTTON_OK]: readOnly,
+  [configs.BUTTON_CANCEL]: hidden,
+  ...Object.values(configs).reduce((acc, key) => ({
+    ...acc,
+    [key]: {
+      ...elementsConfigs[key],
+      ...readOnly,
+    },
+  }), {}),
 }
 
 const CODE_PATH = [ 'code' ]
@@ -35,6 +46,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
       byIds: PropTypes.object,
     }),
     elementsConfigs: PropTypes.object,
+    ovtData: PropTypes.object,
   }
 
   codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
@@ -60,9 +72,8 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const unit = result.getIn(UNIT_PATH)
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
-    const { orgStructures } = this.props
+    const { orgStructures, ovtData } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
-
     return (
       <SymbolEditorComponentStateless
         code={code}
@@ -79,6 +90,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onOrgStructureChange={this.unitChangeHandler}
         onUnitInfo={window.explorerBridge.showUnitInfo}
         onSearch={placeSearch}
+        ovtData={ovtData}
       />
     )
   }

@@ -13,6 +13,8 @@ import print from './print'
 import flexGrid from './flexGrid'
 import march from './march'
 import catalogs from './catalogs'
+import ovt from './ovt'
+import targeting from './targeting'
 
 export default combineReducers({
   viewModes,
@@ -29,4 +31,6 @@ export default combineReducers({
   flexGrid,
   march,
   catalogs,
+  ovt,
+  targeting,
 })
