@@ -1138,12 +1138,20 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  getUnitIndicatorsInfoOnHover = (unit, formationId, indicatorsData, layer) => debounce(() => {
-    !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-    setTimeout(() => layer.openPopup(), 500)
-  }, 1500)
+  getUnitIndicatorsInfoOnHover = () => {
+    let timer
+    clearTimeout(timer)
+    return debounce((unit, formationId, indicatorsData, layer) => {
+      timer = setTimeout(function () {
+        !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        setTimeout(() => layer.openPopup(), 500)
+      }, 500)
+    }, 500)
+  }
 
-  // closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, 1500)
+  closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, 1500)
+
+  getIndicatorsWithTimeout = this.getUnitIndicatorsInfoOnHover()
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
@@ -1158,13 +1166,7 @@ export default class WebMap extends React.PureComponent {
     const layer = createTacticalSign(object, this.map, prevLayer)
 
     if (layer) {
-      const getUnitIndicatorsFunc = this.getUnitIndicatorsInfoOnHover(
-        unit,
-        layerObject['formationId'],
-        indicatorsData,
-        layer,
-      )
-      // const closePopUpFunc = this.closeIndicatorsPopUp(layer)
+      const closePopUpFunc = this.closeIndicatorsPopUp(layer)
       const renderPopUp = renderIndicators(indicatorsData)
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
@@ -1178,8 +1180,11 @@ export default class WebMap extends React.PureComponent {
       layer.bindPopup(renderPopUp, { 'maxWidth': '310', 'maxHeight': '310', className: 'sign_Popup' })
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('mouseover ', getUnitIndicatorsFunc)
-      // layer.on('mouseout', closePopUpFunc)
+      layer.on('mouseover ', () => this.getIndicatorsWithTimeout(unit,
+        layerObject['formationId'],
+        indicatorsData,
+        layer))
+      layer.on('mouseout', closePopUpFunc)
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
