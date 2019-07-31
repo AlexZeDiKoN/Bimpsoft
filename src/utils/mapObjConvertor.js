@@ -2,7 +2,7 @@ import React from 'react'
 import { CRS, latLng, point } from 'leaflet'
 import Bezier from 'bezier-js'
 import { Entity } from 'resium'
-import { Cartesian3, HeightReference, VerticalOrigin, Color } from 'cesium'
+import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar } from 'cesium'
 
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
@@ -98,13 +98,13 @@ export const zoom2height = (zoom, altitude) => {
 
 export const buildSVG = (data) => {
   const { code = '', attributes } = data
-  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(attributes), size: 18 })
+  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(attributes) })
   return symbol.asSVG()
 }
 
 const heightReference = HeightReference.NONE
 const verticalOrigin = VerticalOrigin.BOTTOM
-const BILLBOARD_HEIGHT = 100
+const BILLBOARD_HEIGHT = 200
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 const buldCurve = (points, locked) => {
@@ -143,11 +143,20 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
     const { point: { lat, lng }, id } = o
     const svg = buildSVG(o)
     const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-    const billboardParams = { image, heightReference, verticalOrigin }
+    // @TODO: change scale limits (use zoom2height)
+    const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
+    const billboardParams = { image, heightReference, verticalOrigin, scaleByDistance }
     const position = Cartesian3.fromDegrees(lng, lat)
-    acc.push(<Entity position={positionHeightUp(position, BILLBOARD_HEIGHT)} key={id} billboard={billboardParams}
-      polyline={ { positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ] } }
-    />)
+    acc.push(
+      <Entity
+        position={positionHeightUp(position, BILLBOARD_HEIGHT)} key={id}
+        billboard={billboardParams}
+        polyline={ {
+          width: 2,
+          material: Color.RED,
+          positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
+        } }
+      />)
   } else if (o.type === objTypes.POLYLINE) {
     const { id, geometry } = o
     const positions = geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
