@@ -1216,7 +1216,6 @@ export default class WebMap extends React.PureComponent {
 
   getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
 
-
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
     const { id, attributes, layer: layerInner, unit, indicatorsData } = object
