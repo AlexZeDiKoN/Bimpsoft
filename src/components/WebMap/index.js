@@ -1184,7 +1184,7 @@ export default class WebMap extends React.PureComponent {
     return (unitId, indicatorsData, layer) => {
       const unitData = this.getUnitData(unitId)
       const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && layer._latlng && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
+      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
       return indicatorPopup
     }
   }
@@ -1193,17 +1193,15 @@ export default class WebMap extends React.PureComponent {
 
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastLayer
     let lastUnit
     return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, lastLayer)
+      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
       const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
       if (actionType === 'open') {
         clearTimeout(timer)
         lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
         lastUnit = unit
-        lastLayer = layer
         timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
       } else {
         clearTimeout(timer)
