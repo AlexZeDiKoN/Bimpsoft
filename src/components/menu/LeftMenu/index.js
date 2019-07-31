@@ -13,6 +13,7 @@ const { names: iconNames, IconButton } = components.icons
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
+    isMapCOP: PropTypes.bool,
     isEditMode: PropTypes.bool,
     targetingMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
@@ -54,6 +55,7 @@ export default class LeftMenu extends React.Component {
 
   render () {
     const {
+      isMapCOP,
       isEditMode,
       targetingMode,
       isShowSubordinationLevel,
@@ -88,13 +90,15 @@ export default class LeftMenu extends React.Component {
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
         />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.TARGETING}
-          icon={iconNames.NONE_ICON_DEFAULT}
-          checked={targetingMode}
-          onClick={this.clickTargetingModeHandler}
-        />
+        {isMapCOP && (
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.TARGETING}
+            icon={iconNames.NONE_ICON_DEFAULT}
+            checked={targetingMode}
+            onClick={this.clickTargetingModeHandler}
+          />
+        )}
         <CreateButtonsComponent />
         <MenuDivider />
         <MapSourceSelectComponent />
