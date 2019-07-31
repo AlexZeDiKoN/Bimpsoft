@@ -9,7 +9,7 @@ import ModalContainer from '../common/ModalContainer'
 export default class TaskModal extends React.Component {
   static propTypes = {
     contacts: PropTypes.any,
-    localContacts: PropTypes.any,
+    contactsLocal: PropTypes.any,
     priorities: PropTypes.any,
     value: PropTypes.any,
     onClose: PropTypes.func,
@@ -27,7 +27,7 @@ export default class TaskModal extends React.Component {
       wrapper: Wrapper,
       value,
       contacts,
-      localContacts,
+      contactsLocal,
       priorities,
       onClose,
       onSave,
@@ -42,7 +42,7 @@ export default class TaskModal extends React.Component {
           <TaskComponentStatefull
             value={value}
             contacts={contacts}
-            contactsLocal={localContacts}
+            contactsLocal={contactsLocal}
             priorities={priorities}
             onSave={onSave}
             onSend={onSend}
