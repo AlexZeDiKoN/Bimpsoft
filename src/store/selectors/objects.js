@@ -19,5 +19,25 @@ export const activeObjectId = createSelector(
       return null
     }
     return selected
-  }
+  },
+)
+
+export const targetObjects = createSelector(
+  objects,
+  (objects) => {
+    const result = {}
+    objects = objects.values()
+    for (const object of objects) {
+      const { engagementBar } = object.attributes
+      if (engagementBar && engagementBar !== '') {
+        result[object.id] = {
+          id: object.id,
+          name: object.code,
+          code: object.code,
+          attributes: object.attributes,
+        }
+      }
+    }
+    return result
+  },
 )
