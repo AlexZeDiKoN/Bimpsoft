@@ -1239,7 +1239,7 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      isObjectIsPoint && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+      isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
         unit,
         layer,
@@ -1247,7 +1247,7 @@ export default class WebMap extends React.PureComponent {
         indicatorsData,
       )
       )
-      isObjectIsPoint && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+      isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         unit,
         layer,
