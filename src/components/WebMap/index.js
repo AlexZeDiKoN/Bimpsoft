@@ -427,7 +427,7 @@ export default class WebMap extends React.PureComponent {
 
   componentWillUnmount () {
     delete window.webMap
-    this.map.remove()
+    this.map && this.map.remove()
   }
 
   indicateMode = indicateModes.WGS

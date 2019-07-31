@@ -1,12 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
+import { debounce } from 'lodash/function'
 import { components, utils } from '@DZVIN/CommonComponents'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
 import './style.css'
+
+const throttle1000 = (func) => debounce(func, 2000)
 
 const {
   icons: { names: iconNames, IconButton },
@@ -75,7 +78,7 @@ export default class RightMenu extends React.Component {
           title={'3D View'}
           icon={iconNames.MENU_LEFT_MENU_DEFAULT}
           checked={isVolumeMap}
-          onClick={onClick3D}
+          onClick={throttle1000(onClick3D)}
         />
         {Object.keys(printFiles).length !== 0 && (
           <PrintFilesContainer/>

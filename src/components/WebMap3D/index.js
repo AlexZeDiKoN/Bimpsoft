@@ -1,15 +1,17 @@
 import React from 'react'
 import {
   CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
-  CameraEventType, UrlTemplateImageryProvider,
+  CameraEventType, UrlTemplateImageryProvider, TrustedServers,
 } from 'cesium'
 import { Viewer, Scene, Globe, Fog, CameraFlyTo, ScreenSpaceCameraController } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height } from '../../utils/mapObjConvertor'
 import SignsLayer from './SignsLayer'
 
+TrustedServers.add('172.16.97.17', '80')
+
 const imageryProvider = new UrlTemplateImageryProvider({
-  url: 'http://172.16.97.17/tiles/sat/{z}/{x}/{y}.jpg',
+  url: 'http://172.16.97.17/tiles/sat/{z}/{x}/{reverseY}.jpg',
   hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
@@ -32,12 +34,18 @@ export default class WebMap3D extends React.PureComponent {
       zoom: PropTypes.number.isRequired,
       objects: PropTypes.object,
       setZoom: PropTypes.func.isRequired,
+      setSatelliteSource: PropTypes.func.isRequired,
+    }
+
+    componentDidMount () {
+      this.props.setSatelliteSource()
     }
 
     shouldFly = true
 
     stopAutoMove = () => (this.shouldFly = false)
 
+    // @TODO: remove terrainExaggeration after test
     render () {
       const { objects, center, zoom, setZoom } = this.props
       return (
@@ -59,6 +67,7 @@ export default class WebMap3D extends React.PureComponent {
           terrainProvider={terrainProvider}
           creditContainer={DIV}
           creditViewport={DIV}
+          terrainExaggeration={2}
         >
           <Scene>
             <Fog enabled={false}/>

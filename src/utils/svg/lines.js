@@ -43,7 +43,7 @@ export const roundXY = ({ x, y }) => ({ x: Math.round(x), y: Math.round(y) })
 
 const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
 
-const bezierArray = (points, index, locked) => {
+export const bezierArray = (points, index, locked) => {
   const next = nextIndex(points, index, locked)
   return [
     points[index].x,

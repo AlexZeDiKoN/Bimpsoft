@@ -5,23 +5,40 @@ import { setZoom } from '../store/actions/webMap3D'
 import * as webMap from '../store/actions/webMap'
 
 const mapStateToProps = (state) => {
-  const { webMap: { subordinationLevel, objects } } = state
+  const { webMap: { subordinationLevel, objects, sources } } = state
   const filteredObjects = objects.filter((item) => item.level >= subordinationLevel)
   return {
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
     zoom: state.webMap3D.zoom || state.webMap.zoom,
+    volumeSource: sources[1], // Sources[1] is a satellite view
+  }
+}
+
+const mapDispatchToProps = {
+  setZoom: (zoom) => batchActions([
+    setZoom(zoom),
+    webMap.setSubordinationLevelByZoom(),
+  ]),
+  setSource: webMap.setSource,
+}
+
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  const { volumeSource, ...restState } = stateProps
+  const { setSource, ...restDispatch } = dispatchProps
+
+  return {
+    ...ownProps,
+    ...restState,
+    ...restDispatch,
+    setSatelliteSource: () => setSource(volumeSource),
   }
 }
 
 const WebMap3DContainer = connect(
   mapStateToProps,
-  {
-    setZoom: (zoom) => batchActions([
-      setZoom(zoom),
-      webMap.setSubordinationLevelByZoom(),
-    ]),
-  }
+  mapDispatchToProps,
+  mergeProps,
 )(WebMap3DInner)
 WebMap3DContainer.displayName = 'WebMap3D'
 
