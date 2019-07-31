@@ -3,7 +3,7 @@ import {
   CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
   CameraEventType, UrlTemplateImageryProvider, TrustedServers,
 } from 'cesium'
-import { Viewer, Scene, Globe, Fog, CameraFlyTo, ScreenSpaceCameraController } from 'resium'
+import { Viewer, Scene, Fog, CameraFlyTo, ScreenSpaceCameraController } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height } from '../../utils/mapObjConvertor'
 import SignsLayer from './SignsLayer'
@@ -72,7 +72,6 @@ export default class WebMap3D extends React.PureComponent {
           <Scene>
             <Fog enabled={false}/>
           </Scene>
-          <Globe depthTestAgainstTerrain={false}/>
           {this.shouldFly &&
             <CameraFlyTo
               maximumHeight={MIN_ZOOM}

@@ -1,19 +1,19 @@
 [ {
   "title": "ДЗВІН",
   "sources": [ {
-    "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+    "source": "http://172.16.97.17/tiles/dzvin/{z}/{x}/{y}.png",
     "minZoom": 5,
     "maxZoom": 16
   } ]
 }, {
   "title": "Супутник",
   "sources": [ {
-    "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+    "source": "http://172.16.97.17/tiles/sat/{z}/{x}/{y}.jpg",
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true
   }, {
-    "source": "/tiles/labels/{z}/{x}/{y}.png",
+    "source": "http://172.16.97.17/tiles/labels/{z}/{x}/{y}.png",
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true
@@ -21,7 +21,7 @@
 }, {
   "title": "Ландшафт",
   "sources": [ {
-    "source": "/tiles/land/{z}/{x}/{y}.jpg",
+    "source": "http://172.16.97.17/tiles/land/{z}/{x}/{y}.jpg",
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true

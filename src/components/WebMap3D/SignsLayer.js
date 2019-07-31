@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Cartographic } from 'cesium'
-import { Camera } from 'resium'
+import { Cartographic, Cartesian3 } from 'cesium'
+import { Camera, Globe } from 'resium'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 
 export default class SignsLayer extends Component {
@@ -23,13 +23,26 @@ export default class SignsLayer extends Component {
     }
   }
 
+  positionHeightUp = (position, value) => {
+    if (this.globe.current) {
+      const { cesiumElement: globeInstance } = this.globe.current
+      const cartographic = Cartographic.fromCartesian(position)
+      const height = globeInstance.getHeight(cartographic)
+      return Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height + value)
+    }
+    return position
+  }
+
   camera = React.createRef()
+
+  globe = React.createRef()
 
   render () {
     const { objects } = this.props
-    const signs = objectsToSvg(objects)
+    const signs = objectsToSvg(objects, this.positionHeightUp)
     return (
       <>
+        <Globe ref={this.globe} depthTestAgainstTerrain={false}/>
         <Camera ref={this.camera} onMoveEnd={this.checkZoom}/>
         { signs }
       </>

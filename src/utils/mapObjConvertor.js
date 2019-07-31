@@ -102,8 +102,9 @@ export const buildSVG = (data) => {
   return symbol.asSVG()
 }
 
-const heightReference = HeightReference.CLAMP_TO_GROUND
+const heightReference = HeightReference.NONE
 const verticalOrigin = VerticalOrigin.BOTTOM
+const BILLBOARD_HEIGHT = 100
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 const buldCurve = (points, locked) => {
@@ -137,13 +138,16 @@ const buldCurve = (points, locked) => {
 }
 
 // @TODO: reduce number of lines to avoid code duplication
-export const objectsToSvg = memoize((list) => list.reduce((acc, o) => {
+export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc, o) => {
   if (o.type === objTypes.POINT) {
     const { point: { lat, lng }, id } = o
     const svg = buildSVG(o)
     const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
     const billboardParams = { image, heightReference, verticalOrigin }
-    acc.push(<Entity position={Cartesian3.fromDegrees(lng, lat)} key={id} billboard={billboardParams}/>)
+    const position = Cartesian3.fromDegrees(lng, lat)
+    acc.push(<Entity position={positionHeightUp(position, BILLBOARD_HEIGHT)} key={id} billboard={billboardParams}
+      polyline={ { positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ] } }
+    />)
   } else if (o.type === objTypes.POLYLINE) {
     const { id, geometry } = o
     const positions = geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
