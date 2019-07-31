@@ -2,7 +2,7 @@ import { task } from '../actions'
 
 const initState = Object.freeze({
   contacts: null,
-  localContacts: null,
+  contactsLocal: null,
   priorities: null,
   value: null,
 })
@@ -17,8 +17,8 @@ export default function reducer (state = initState, action) {
     case task.CHANGE_VALUE:
       return { ...state, value: payload }
     case task.SET_ADDITION_DATA: {
-      const { contacts, localContacts, priorities } = payload
-      return { ...state, contacts, localContacts, priorities }
+      const { contacts, contactsLocal, priorities } = payload
+      return { ...state, contacts, contactsLocal, priorities }
     }
     default:
       return state
