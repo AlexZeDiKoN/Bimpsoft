@@ -15,6 +15,7 @@ import march from './march'
 import catalogs from './catalogs'
 import ovt from './ovt'
 import targeting from './targeting'
+import task from './task'
 
 export default combineReducers({
   viewModes,
@@ -33,4 +34,5 @@ export default combineReducers({
   catalogs,
   ovt,
   targeting,
+  task,
 })

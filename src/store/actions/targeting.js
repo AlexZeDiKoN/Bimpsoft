@@ -13,5 +13,5 @@ export const toggleTargetingMode = () => ({
   type: TOGGLE_TARGETING_MODE,
 })
 
-export const getZones = (objects) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { buildZone } }) => buildZone(objects))
+export const getZones = (objects, enemy) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { buildZone } }) => buildZone(objects, enemy))

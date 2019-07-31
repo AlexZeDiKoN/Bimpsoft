@@ -19,6 +19,7 @@ import {
   DirectionNameContainer,
   TopoObjModal,
   EternalDescriptionContainer,
+  TaskModalContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -63,6 +64,7 @@ export default class Main extends React.Component {
         <DirectionNameContainer wrapper={ModalContainer}/>
         <EternalDescriptionContainer wrapper={ModalContainer}/>
         <TopoObjModal wrapper={ModalContainer} />
+        <TaskModalContainer wrapper={ModalContainer} />
       </HotKeysContainer>
     )
   }

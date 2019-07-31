@@ -1,4 +1,4 @@
-import { maps, webMap } from '../store/actions'
+import { maps, webMap, task } from '../store/actions'
 import { getExplorerOrigin } from '../utils/services'
 import { catchError } from '../store/actions/asyncAction'
 
@@ -13,6 +13,12 @@ const ACTION_OPEN = 'open'
 const ACTION_OPEN_VARIANT = 'open variant'
 const ACTION_CLOSE_VARIANT = 'close variant'
 const ACTION_VARIANT_RESULT = 'variant result'
+const GET_ADDITION_TASK_DATA = 'get addition task data'
+const GET_ADDITION_TASK_DATA_RESPONSE = 'get addition task data response'
+const SAVE_TASK = 'save task'
+const SAVE_TASK_RESPONSE = 'save task response'
+const SEND_TASK = 'send task'
+const SEND_TASK_RESPONSE = 'send task response'
 const ACTION_CLOSE = 'close'
 const ACTION_SHOW_UNIT = 'show unit'
 const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
@@ -85,6 +91,18 @@ export default class ExplorerBridge {
           catchError(maps.clearVariant)(variantId, true)(this.store.dispatch)
           break
         }
+        case GET_ADDITION_TASK_DATA_RESPONSE: {
+          catchError(task.setAdditionData)(data)(this.store.dispatch)
+          break
+        }
+        case SAVE_TASK_RESPONSE: {
+          catchError(task.saveResponse)(data.errors)(this.store.dispatch)
+          break
+        }
+        case SEND_TASK_RESPONSE: {
+          catchError(task.sendResponse)(data.errors)(this.store.dispatch)
+          break
+        }
         default:
       }
     }
@@ -95,6 +113,12 @@ export default class ExplorerBridge {
   cancelVariant = (variantId = null) => this.send({ action: ACTION_CLOSE_VARIANT, variantId })
 
   variantResult = (variantId, result) => this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
+
+  getAdditionTaskData = () => this.send({ action: GET_ADDITION_TASK_DATA })
+
+  saveTask = (payload) => this.send({ action: SAVE_TASK, payload })
+
+  sendTask = (payload) => this.send({ action: SEND_TASK, payload })
 
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
     window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)
