@@ -73,8 +73,11 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
   dashArray: [ 5, 5 ],
 }
 
-const openPopUpInterval = 1000
-const closePopUpInterval = 1500
+const openingAction = 'open'
+const closingAction = 'close'
+
+const openPopUpInterval = 2000
+
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
 const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup' }
@@ -1174,12 +1177,25 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  getUnitIndicatorsInfoOnHover = debounce((unit, formationId, indicatorsData, layer) => {
-    !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-    setTimeout(() => layer.openPopup(), openPopUpInterval)
-  }, openPopUpInterval)
+  getUnitIndicatorsInfoOnHover = () => {
+    let timer
+    let lastLayer
+    return (actionType, unit, layer, formationId, indicatorsData) => {
+      clearTimeout(timer)
+      if (actionType === 'open') {
+        clearTimeout(timer)
+        lastLayer && lastLayer.closePopup()
+        !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        lastLayer = layer
+        timer = setTimeout(() => lastLayer.openPopup(), openPopUpInterval)
+      } else {
+        clearTimeout(timer)
+        lastLayer && lastLayer.closePopup()
+      }
+    }
+  }
 
-  closeIndicatorsPopUp = (layer) => debounce(layer.closePopup, closePopUpInterval)
+  showUnitIndicatorsHandler = this.getUnitIndicatorsInfoOnHover()
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
@@ -1194,8 +1210,8 @@ export default class WebMap extends React.PureComponent {
     const layer = createTacticalSign(object, this.map, prevLayer)
 
     if (layer) {
-      const closePopUpFunc = this.closeIndicatorsPopUp(layer)
       const renderPopUp = renderIndicators(indicatorsData)
+      const isObjectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1205,16 +1221,22 @@ export default class WebMap extends React.PureComponent {
       }
       layer.id = id
       layer.object = object
-      layer.bindPopup(renderPopUp, popupOptionsIndicators)
+      isObjectIsPoint && layer.bindPopup(renderPopUp, popupOptionsIndicators)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      layer.on('mouseover ', () => this.getUnitIndicatorsInfoOnHover(
+      isObjectIsPoint && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+        openingAction,
         unit,
+        layer,
         layerObject.formationId,
         indicatorsData,
-        layer)
       )
-      layer.on('mouseout', closePopUpFunc)
+      )
+      isObjectIsPoint && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+        closingAction,
+        unit,
+        layer,
+      ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
