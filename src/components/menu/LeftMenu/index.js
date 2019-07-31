@@ -37,6 +37,7 @@ export default class LeftMenu extends React.Component {
     onMarkerChange: PropTypes.func,
     onTopographicObjectsChange: PropTypes.func,
     onToggleTargetingMode: PropTypes.func,
+    onClickTaskCreate: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -67,6 +68,7 @@ export default class LeftMenu extends React.Component {
       onMeasureChange,
       onMarkerChange,
       onTopographicObjectsChange,
+      onClickTaskCreate,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -148,6 +150,12 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
+        />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.CREATE_TASK}
+          icon={iconNames.TASK_DEFAULT}
+          onClick={onClickTaskCreate}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
