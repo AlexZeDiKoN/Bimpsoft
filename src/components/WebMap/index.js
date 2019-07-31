@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, control, point } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, control, point, popup } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
@@ -232,6 +232,7 @@ export default class WebMap extends React.PureComponent {
       })
     ),
     layersById: PropTypes.object,
+    unitsById: PropTypes.object,
     level: PropTypes.any,
     layer: PropTypes.any,
     marker: PropTypes.shape({
@@ -1147,25 +1148,44 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+
+  setPopUp = () => {
+    const indicatorPopup = popup(popupOptionsIndicators)
+    return (unitId, indicatorsData, layer) => {
+      const unitData = this.getUnitData(unitId)
+      const renderPopUp = renderIndicators(indicatorsData, unitData)
+      layer && indicatorPopup
+        .setContent(renderPopUp)
+        .setLatLng(layer._latlng)
+      return indicatorPopup
+    }
+  }
+
+  getPopUpRender = this.setPopUp()
+
   getUnitIndicatorsInfoOnHover = () => {
     let timer
     let lastLayer
     return (actionType, unit, layer, formationId, indicatorsData) => {
+      const popupInner = this.getPopUpRender(unit, indicatorsData, lastLayer)
+      const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
       if (actionType === 'open') {
         clearTimeout(timer)
-        lastLayer && lastLayer.closePopup()
         !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
         lastLayer = layer
-        timer = setTimeout(() => lastLayer.openPopup(), openPopUpInterval)
+        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval)
       } else {
         clearTimeout(timer)
-        lastLayer && lastLayer.closePopup()
+        isPopUpOpen && popupInner._close()
       }
     }
   }
 
   showUnitIndicatorsHandler = this.getUnitIndicatorsInfoOnHover()
+
+  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
+
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
@@ -1176,11 +1196,8 @@ export default class WebMap extends React.PureComponent {
     } catch (e) {
       return null
     }
-
     const layer = createTacticalSign(object, this.map, prevLayer)
-
     if (layer) {
-      const renderPopUp = renderIndicators(indicatorsData)
       const isObjectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
@@ -1191,7 +1208,6 @@ export default class WebMap extends React.PureComponent {
       }
       layer.id = id
       layer.object = object
-      isObjectIsPoint && layer.bindPopup(renderPopUp, popupOptionsIndicators)
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       isObjectIsPoint && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
