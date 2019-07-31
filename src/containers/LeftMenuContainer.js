@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import { viewModes, layers, webMap, targeting, task } from '../store/actions'
-import { canEditSelector, layerNameSelector } from '../store/selectors'
+import { canEditSelector, layerNameSelector, mapCOP } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
@@ -24,7 +24,10 @@ const mapStateToProps = (store) => {
 
   const layerName = layerNameSelector(store)
   const isEditMode = canEditSelector(store)
+  const isMapCOP = mapCOP(store)
+
   return {
+    isMapCOP,
     isEditMode,
     isShowSubordinationLevel,
     isMeasureOn,
