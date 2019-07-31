@@ -1415,6 +1415,7 @@ export default class WebMap extends React.PureComponent {
   dblClickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { object: { id, catalogId } } } = event
+    // todo: move this call outside component (in the actions)
     window.explorerBridge.showCatalogObject(catalogId, id)
   }
 
