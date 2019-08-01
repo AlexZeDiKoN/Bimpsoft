@@ -21,7 +21,7 @@ const terrainProvider = new CesiumTerrainProvider({
   url: 'http://172.16.97.17/tiles/terrain/',
 })
 
-const MAX_ZOOM = zoom2height(14)
+// const MAX_ZOOM = zoom2height(14)
 const MIN_ZOOM = zoom2height(5)
 const DIV = document.createElement('div')
 
@@ -87,7 +87,6 @@ export default class WebMap3D extends React.PureComponent {
           />
           <ScreenSpaceCameraController
             maximumZoomDistance={MIN_ZOOM}
-            minimumZoomDistance={MAX_ZOOM}
             tiltEventTypes={CameraEventType.RIGHT_DRAG}
             rotateEventTypes={CameraEventType.LEFT_DRAG}
             lookEventTypes={[

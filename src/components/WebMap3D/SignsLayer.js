@@ -11,6 +11,10 @@ export default class SignsLayer extends Component {
     setZoom: PropTypes.func.isRequired,
   }
 
+  camera = React.createRef()
+
+  globe = React.createRef()
+
   checkZoom = () => {
     if (this.camera.current) {
       const { zoom, setZoom } = this.props
@@ -27,15 +31,11 @@ export default class SignsLayer extends Component {
     if (this.globe.current) {
       const { cesiumElement: globeInstance } = this.globe.current
       const cartographic = Cartographic.fromCartesian(position)
-      const height = globeInstance.getHeight(cartographic)
+      const height = globeInstance.getHeight(cartographic) || 0
       return Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height + value)
     }
     return position
   }
-
-  camera = React.createRef()
-
-  globe = React.createRef()
 
   render () {
     const { objects } = this.props
