@@ -41,6 +41,12 @@ export const signedMap = createSelector(
   (maps, id) => id && maps && maps[id] && maps[id].signed
 )
 
+export const mapCOP = createSelector(
+  mapsById,
+  mapId,
+  (maps, id) => id && maps && maps[id] && maps[id].isCOP
+)
+
 export const activeMapSelector = createSelector(
   layersSelector,
   (state) => state.print.mapId,

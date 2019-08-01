@@ -21,3 +21,4 @@ export { default as EternalDescriptionContainer } from './EternalDescriptionCont
 export { default as TopoObjModal } from './TopoObjModal'
 export { default as CatalogsContainer } from './CatalogsContainer'
 export { default as TargetCatalogContainer } from './TargetCatalogContainer'
+export { default as TaskModalContainer } from './TaskModalContainer'

@@ -51,6 +51,7 @@ const WebMapContainer = connect(
     topographicObjects: state.webMap.topographicObjects,
     catalogObjects: state.catalogs.objects,
     catalogs: state.catalogs.byIds,
+    unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
   }),
   catchErrors({

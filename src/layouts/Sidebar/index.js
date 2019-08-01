@@ -22,6 +22,7 @@ const SIDEBAR_SIZE_MIN = 250
 
 export default class Sidebar extends React.Component {
   static propTypes = {
+    isMapCOP: PropTypes.bool.isRequired,
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
@@ -38,7 +39,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit } = this.props
+    const { printStatus, marchEdit, isMapCOP } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -52,8 +53,8 @@ export default class Sidebar extends React.Component {
               tabs={[
                 OrgStructuresContainer,
                 CatalogsContainer,
-                TargetCatalogContainer,
-              ]}
+                isMapCOP ? TargetCatalogContainer : null,
+              ].filter(Boolean)}
             />
           </div>
           <ValueSwiper

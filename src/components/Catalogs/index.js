@@ -41,6 +41,16 @@ export default class Catalogs extends React.PureComponent {
     }
   }
 
+  milSymbolRenderer = ({ id }) => {
+    const [ app6Code, amplifiers ] = catalogSign(id)
+    return app6Code !== null && (
+      <MilSymbol
+        code={app6Code}
+        amplifiers={amplifiers}
+      />
+    )
+  }
+
   render () {
     const {
       byIds,
@@ -52,15 +62,7 @@ export default class Catalogs extends React.PureComponent {
         {...this.props}
         title={i18n.CATALOGS}
         onVisibleChange={this.toggleItem}
-        milSymbolRenderer={({ id }) => {
-          const [ app6Code, amplifiers ] = catalogSign(id)
-          return app6Code !== null && (
-            <MilSymbol
-              code={app6Code}
-              amplifiers={amplifiers}
-            />
-          )
-        }}
+        milSymbolRenderer={this.milSymbolRenderer}
       />
     )
   }

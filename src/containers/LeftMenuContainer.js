@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap, targeting } from '../store/actions'
-import { canEditSelector, layerNameSelector } from '../store/selectors'
+import { viewModes, layers, webMap, targeting, task } from '../store/actions'
+import { canEditSelector, layerNameSelector, mapCOP } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
@@ -24,7 +24,10 @@ const mapStateToProps = (store) => {
 
   const layerName = layerNameSelector(store)
   const isEditMode = canEditSelector(store)
+  const isMapCOP = mapCOP(store)
+
   return {
+    isMapCOP,
     isEditMode,
     isShowSubordinationLevel,
     isMeasureOn,
@@ -57,6 +60,7 @@ const mapDispatchToProps = {
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
   onToggleTargetingMode: targeting.toggleTargetingMode,
+  onClickTaskCreate: task.show,
 }
 const LeftMenuContainer = connect(
   mapStateToProps,

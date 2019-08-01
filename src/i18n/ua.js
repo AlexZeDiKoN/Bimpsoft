@@ -268,3 +268,7 @@ export const BCHS_003 = 'МПС та ФС О/С'
 export const BCHS_004 = 'Підготовленість О/С'
 export const BCHS_005 = 'Укомплектованість О/С'
 export const BCHS_006 = 'Укомплектованість ОВТ'
+
+// Завдання
+export const ERROR_SAVE_TASK = 'Помилка при створенні завдання'
+export const CREATE_TASK = 'Створити завдання'
