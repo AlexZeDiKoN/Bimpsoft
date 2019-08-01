@@ -29,7 +29,7 @@ export const targetObjects = createSelector(
     objects = objects.values()
     for (const object of objects) {
       const { engagementBar } = object.attributes
-      if (engagementBar && engagementBar !== '') {
+      if (Boolean(engagementBar)) {
         result[object.id] = {
           id: object.id,
           name: object.code,

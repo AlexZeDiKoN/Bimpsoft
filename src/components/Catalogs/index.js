@@ -5,7 +5,7 @@ import i18n from '../../i18n'
 import { signCodes } from '../../constants/catalogs'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
-const commonPointApp6Code = '10032500001301000000'
+const commonPointApp6Code = '10032500001313000000'
 
 export const catalogSign = (catalogId) => {
   let app6Code = commonPointApp6Code
