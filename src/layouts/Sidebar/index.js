@@ -22,7 +22,7 @@ const SIDEBAR_SIZE_MIN = 250
 
 export default class Sidebar extends React.Component {
   static propTypes = {
-    isMapCOP: PropTypes.bool.isRequired,
+    isMapCOP: PropTypes.bool,
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
