@@ -80,7 +80,7 @@ const openPopUpInterval = 2000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
-const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup' }
+const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false }
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -1184,9 +1184,7 @@ export default class WebMap extends React.PureComponent {
     return (unitId, indicatorsData, layer) => {
       const unitData = this.getUnitData(unitId)
       const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && indicatorPopup
-        .setContent(renderPopUp)
-        .setLatLng(layer._latlng)
+      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
       return indicatorPopup
     }
   }
@@ -1195,16 +1193,16 @@ export default class WebMap extends React.PureComponent {
 
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastLayer
+    let lastUnit
     return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, lastLayer)
+      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
       const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
       if (actionType === 'open') {
         clearTimeout(timer)
-        !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        lastLayer = layer
-        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval)
+        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        lastUnit = unit
+        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
       } else {
         clearTimeout(timer)
         isPopUpOpen && popupInner._close()
