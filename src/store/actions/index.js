@@ -6,6 +6,7 @@ import * as notifications from './notifications'
 import * as orgStructures from './orgStructures'
 import * as selection from './selection'
 import * as catalogs from './catalogs'
+import * as targetCatalog from './targetCatalog'
 import * as templates from './templates'
 import * as params from './params'
 import * as webMap from './webMap'
@@ -33,5 +34,6 @@ export {
   march,
   ovt,
   targeting,
+  targetCatalog,
   task,
 }

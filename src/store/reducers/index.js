@@ -16,6 +16,7 @@ import catalogs from './catalogs'
 import ovt from './ovt'
 import targeting from './targeting'
 import task from './task'
+import targetCatalog from './targetCatalog'
 
 export default combineReducers({
   viewModes,
@@ -35,4 +36,5 @@ export default combineReducers({
   ovt,
   targeting,
   task,
+  targetCatalog,
 })

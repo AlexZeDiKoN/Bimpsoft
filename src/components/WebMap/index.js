@@ -35,7 +35,7 @@ import {
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { catalogSign } from '../CatalogsComponent/Item'
+import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'

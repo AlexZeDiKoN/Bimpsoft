@@ -254,6 +254,7 @@ export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи 
 export const PERIOD_FROM = 'Період з'
 export const PERIOD_TO = 'до'
 export const TARGETING = 'Цілевказання'
+export const TARGETS = 'Цілі'
 
 // показатели подразделения
 export const NOT_CALCULATED = 'Дані не розраховано'
