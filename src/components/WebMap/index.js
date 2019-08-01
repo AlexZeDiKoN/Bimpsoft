@@ -52,21 +52,9 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { isFriend, isEnemy } from '../../utils/affiliations'
 
 const { Coordinates: Coord } = utils
-
-const codeFriends = [
-  '3', // IDENTITY_FRIEND
-  '2', // IDENTITY_ASSUMED_FRIEND
-]
-
-const codeEnemies = [
-  '6', // IDENTITY_HOSTILE_FAKER
-  '5', // IDENTITY_SUSPECT_JOKER
-  '4', // IDENTITY_NEUTRAL
-  '1', // IDENTITY_UNKNOWN
-  '0', // IDENTITY_PENDING
-]
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -496,13 +484,12 @@ export default class WebMap extends React.PureComponent {
     const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeFriends.includes(model.APP6Code.getIdentity2(object.code)) &&
-          object.level === SubordinationLevel.TEAM_CREW
+        return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
       })
     const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeEnemies.includes(model.APP6Code.getIdentity2(object.code))
+        return isEnemy(object.code)
       })
     const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]

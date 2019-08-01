@@ -1,5 +1,7 @@
 import { createSelector } from 'reselect'
-import { canEditSelector } from './layersSelector'
+import { canEditSelector, mapId } from './layersSelector'
+import { currentMapLayers } from './targeting'
+import { IDENTITIES, getIdentity } from '../../utils/affiliations'
 
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
 const activeLayer = ({ layers: { selectedId } }) => selectedId
@@ -24,15 +26,23 @@ export const activeObjectId = createSelector(
 
 export const targetObjects = createSelector(
   objects,
-  (objects) => {
+  currentMapLayers,
+  (objects, layers) => {
     const result = {}
     objects = objects.values()
     for (const object of objects) {
-      const { engagementBar } = object.attributes
-      if (Boolean(engagementBar)) {
+      const { code, layer, attributes: { engagementBar } } = object
+      if (
+        Boolean(engagementBar)
+        && [
+          IDENTITIES.SUSPECT_JOKER,
+          IDENTITIES.HOSTILE_FAKER,
+        ].includes(getIdentity(code)) // is enemy
+        && layers.includes(layer)
+      ) {
         result[object.id] = {
           id: object.id,
-          name: object.code,
+          name: engagementBar,
           code: object.code,
           attributes: object.attributes,
         }
