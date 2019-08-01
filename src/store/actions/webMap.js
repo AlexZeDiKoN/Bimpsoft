@@ -41,6 +41,7 @@ export const actionNames = {
   SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
+  RETURN_UNIT_INDICATORS: action('RETURN_UNIT_INDICATORS'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
   SET_MARKER: action('SET_MARKER'),
   ADD_OBJECT: action('ADD_OBJECT'),
@@ -256,6 +257,11 @@ export const updateObjectsByLayerId = (layerId) =>
     })
   })
 
+export const updateUnitObjectWithIndicators = (payload) => ({
+  type: actionNames.RETURN_UNIT_INDICATORS,
+  payload: payload,
+})
+
 export const allocateObjectsByLayerId = (layerId) => ({
   type: actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID,
   payload: layerId,
@@ -298,10 +304,10 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 
 export const getAppInfo = () =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getVersion, getContactId } }) => {
-    const [ version, contactId ] = await Promise.all([ getVersion(), getContactId() ])
+    const [ version, { contactId, positionContactId, unitId } ] = await Promise.all([ getVersion(), getContactId() ])
     return dispatch({
       type: actionNames.APP_INFO,
-      payload: { version, contactId },
+      payload: { version, contactId, positionContactId, unitId },
     })
   })
 

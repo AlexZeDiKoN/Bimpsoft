@@ -67,12 +67,14 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
         security_classification: securityClassification,
       },
       approversData,
+      isCOP,
       // breadcrumbs,
     } = content
 
     await dispatch(maps.updateMap({
       mapId: id,
       name,
+      isCOP,
       signed,
       // breadcrumbs,
       docConfirm,

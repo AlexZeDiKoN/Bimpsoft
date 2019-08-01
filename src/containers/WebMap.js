@@ -3,9 +3,12 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode,
+  activeMapSelector, inICTMode, targetingObjects,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid, viewModes } from '../store/actions'
+import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting } from '../store/actions'
+import {
+  layersByIdFromStore,
+} from '../store/selectors/layersSelector'
 import { catchErrors } from '../store/actions/asyncAction'
 import * as topoObj from '../store/actions/webMap'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -24,6 +27,7 @@ const WebMapContainer = connect(
     selection: state.selection,
     layer: state.layers.selectedId,
     level: state.webMap.subordinationLevel,
+    layersByIdFromStore: layersByIdFromStore(state),
     layersById: visibleLayersSelector(state),
     backOpacity: state.layers.backOpacity,
     hiddenOpacity: state.layers.hiddenOpacity,
@@ -47,6 +51,8 @@ const WebMapContainer = connect(
     topographicObjects: state.webMap.topographicObjects,
     catalogObjects: state.catalogs.objects,
     catalogs: state.catalogs.byIds,
+    unitsById: state.orgStructures.unitsById,
+    targetingObjects: targetingObjects(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -97,6 +103,7 @@ const WebMapContainer = connect(
     disableDrawUnit: selection.disableDrawUnit,
     onMoveContour: webMap.moveContour,
     onMoveObjList: webMap.moveObjList,
+    getZones: targeting.getZones,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

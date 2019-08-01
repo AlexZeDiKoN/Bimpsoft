@@ -56,6 +56,7 @@ export const WebMapObject = Record({
   parent: null,
   attributes: WebMapAttributes(),
   hash: null,
+  indicatorsData: undefined,
 })
 
 const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
@@ -79,6 +80,8 @@ const WebMapState = Record({
   lockedObjects: Map(),
   version: null,
   contactId: null,
+  positionContactId: null,
+  unitId: null,
   scaleToSelection: false,
   marker: null,
   topographicObjects: {},
@@ -189,6 +192,15 @@ export default function webMapReducer (state = WebMapState(), action) {
         return map
       })
     }
+    case actionNames.RETURN_UNIT_INDICATORS: {
+      const { indicatorsData, unitId } = payload
+      const objects = state.get('objects')
+      const currentObject = objects.filter(({ unit }) => unit === unitId).values().next().value
+      const newObjects = currentObject.set('indicatorsData', indicatorsData)
+      return merge(state, {
+        objects: update(objects, currentObject.id, newObjects),
+      })
+    }
     case actionNames.SET_SOURCES: {
       return state
         .set('sources', payload.sources)
@@ -198,7 +210,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))
     case actionNames.DEL_OBJECT:
-      return payload ? state.deleteIn([ 'objects', payload ]) : state
+      return payload
+        ? state.deleteIn([ 'objects', payload ])
+        : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
       const delLayerId = payload
       return state.set('objects', state.get('objects').filter(({ layer }) => layer !== delLayerId))
@@ -223,11 +237,15 @@ export default function webMapReducer (state = WebMapState(), action) {
       return result
     }
     case actionNames.APP_INFO: {
-      const { version, contactId } = payload
-      console.info(`My contactID: ${contactId}`)
-      return state
-        .set('version', version)
-        .set('contactId', Number(contactId))
+      const { version, contactId, positionContactId, unitId } = payload
+      console.info(`Backend version: ${version}`)
+      console.info(`My IDs: ${JSON.stringify({ contactId, positionContactId, unitId })}`)
+      return merge(state, {
+        version,
+        contactId: Number(contactId),
+        positionContactId: Number(positionContactId),
+        unitId: Number(unitId),
+      })
     }
     case actionNames.GET_LOCKED_OBJECTS: {
       const myContactId = state.get('contactId')
@@ -245,7 +263,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {
-      const data = { ...payload, visible: true, selectedItem: 0 }
+      const data = {
+        ...payload,
+        visible: true,
+        selectedItem: 0,
+      }
       return state.set('topographicObjects', data)
     }
     case actionNames.SELECT_TOPOGRAPHIC_ITEM: {

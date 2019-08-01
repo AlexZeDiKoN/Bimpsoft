@@ -1,31 +1,50 @@
 import { createSelector } from 'reselect'
+import * as R from 'ramda'
 import { date } from '../../utils'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
 const selectedLayerId = (state) => state.layers.selectedId
-const layersById = (state) => state.layers.byId
 const mapsById = (state) => state.maps.byId
+const targeting = ({ targeting: { targetingMode } }) => targetingMode
+
+export const layersById = (state) => state.layers.byId
+
+export const layersByIdFromStore = createSelector(layersById, R.identity)
 
 export const canEditSelector = createSelector(
   layersSelector,
-  ({ editMode, byId, selectedId, timelineFrom, timelineTo }) => {
+  targeting,
+  ({ editMode, byId, selectedId, timelineFrom, timelineTo }, targeting) => {
     if (!editMode || !byId.hasOwnProperty(selectedId)) {
       return false
     }
     const { readOnly, visible, dateFor } = byId[selectedId]
-    return !readOnly && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
+    return !readOnly && !targeting && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
   }
 )
 
-export const signedMap = createSelector(
+export const selectedLayer = createSelector(
   layersById,
-  mapsById,
   selectedLayerId,
-  (layers, maps, index) => {
-    const mapId = layers && index && layers[index] && layers[index].mapId
-    return mapId && maps && maps[mapId] && maps[mapId].signed
-  }
+  (layers, id) => id && layers[id]
+)
+
+export const mapId = createSelector(
+  selectedLayer,
+  (layer) => layer && layer.mapId
+)
+
+export const signedMap = createSelector(
+  mapsById,
+  mapId,
+  (maps, id) => id && maps && maps[id] && maps[id].signed
+)
+
+export const mapCOP = createSelector(
+  mapsById,
+  mapId,
+  (maps, id) => id && maps && maps[id] && maps[id].isCOP
 )
 
 export const activeMapSelector = createSelector(

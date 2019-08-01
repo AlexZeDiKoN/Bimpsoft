@@ -253,3 +253,22 @@ export const ADD_SEGMENT = 'Додати пункт маршрута'
 export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
 export const PERIOD_FROM = 'Період з'
 export const PERIOD_TO = 'до'
+export const TARGETING = 'Цілевказання'
+export const TARGETS = 'Цілі'
+
+// показатели подразделения
+export const NOT_CALCULATED = 'Дані не розраховано'
+export const UNIT_NAME = 'Назва підрозділу'
+export const DATE_FOR = 'Станом на'
+export const BP_001 = 'Штатний БП'
+export const BP_002 = 'Реальний БП'
+export const BP_003 = 'Боєздатність у обороні'
+export const BP_004 = 'Боєздатність у наступі'
+export const BCHS_003 = 'МПС та ФС О/С'
+export const BCHS_004 = 'Підготовленість О/С'
+export const BCHS_005 = 'Укомплектованість О/С'
+export const BCHS_006 = 'Укомплектованість ОВТ'
+
+// Завдання
+export const ERROR_SAVE_TASK = 'Помилка при створенні завдання'
+export const CREATE_TASK = 'Створити завдання'

@@ -13,8 +13,10 @@ const { names: iconNames, IconButton } = components.icons
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
+    isMapCOP: PropTypes.bool,
     isEditMode: PropTypes.bool,
     is3DMapMode: PropTypes.bool,
+    targetingMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
@@ -36,6 +38,8 @@ export default class LeftMenu extends React.Component {
     onMeasureChange: PropTypes.func,
     onMarkerChange: PropTypes.func,
     onTopographicObjectsChange: PropTypes.func,
+    onToggleTargetingMode: PropTypes.func,
+    onClickTaskCreate: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -45,9 +49,16 @@ export default class LeftMenu extends React.Component {
     onChangeEditMode(!isEditMode)
   }
 
+  clickTargetingModeHandler = () => {
+    const { onToggleTargetingMode } = this.props
+    onToggleTargetingMode && onToggleTargetingMode()
+  }
+
   render () {
     const {
+      isMapCOP,
       isEditMode,
+      targetingMode,
       isShowSubordinationLevel,
       isMeasureOn,
       is3DMapMode,
@@ -61,6 +72,7 @@ export default class LeftMenu extends React.Component {
       onMeasureChange,
       onMarkerChange,
       onTopographicObjectsChange,
+      onClickTaskCreate,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -81,6 +93,15 @@ export default class LeftMenu extends React.Component {
           onClick={this.clickEditModeHandler}
           disabled={is3DMapMode}
         />
+        {isMapCOP && (
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.TARGETING}
+            icon={iconNames.NONE_ICON_DEFAULT}
+            checked={targetingMode}
+            onClick={this.clickTargetingModeHandler}
+          />
+        )}
         <CreateButtonsComponent />
         <MenuDivider />
         <MapSourceSelectComponent />
@@ -136,6 +157,12 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
+        />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.CREATE_TASK}
+          icon={iconNames.TASK_DEFAULT}
+          onClick={onClickTaskCreate}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
