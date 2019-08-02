@@ -4,7 +4,7 @@ import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge, eq } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
-import { MapSources, colors } from '../../constants'
+import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
@@ -63,6 +63,7 @@ const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
 const zoom = Number(LS.get('view', 'zoom')) || 7
 
 const WebMapState = Record({
+  mode: MapModes.NONE,
   center,
   zoom,
   coordinatesType: Coord.types.WGS_84,
@@ -205,6 +206,9 @@ export default function webMapReducer (state = WebMapState(), action) {
       return state
         .set('sources', payload.sources)
         .set('source', payload.source)
+    }
+    case actionNames.SET_MAP_MODE: {
+      return state.mode === payload ? state : state.set('mode', payload)
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:

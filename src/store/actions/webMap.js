@@ -31,6 +31,7 @@ const stopHeartBeat = () => {
 }
 
 export const actionNames = {
+  SET_MAP_MODE: action('SET_MAP_MODE'),
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
@@ -70,6 +71,11 @@ export const setCoordinatesType = (value) => {
     payload: value,
   }
 }
+
+export const setMapMode = (payload) => ({
+  type: actionNames.SET_MAP_MODE,
+  payload,
+})
 
 export const setMarker = (marker) => (dispatch) => {
   const batch = [ {

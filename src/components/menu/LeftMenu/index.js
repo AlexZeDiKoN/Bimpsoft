@@ -17,6 +17,7 @@ export default class LeftMenu extends React.Component {
     isEditMode: PropTypes.bool,
     is3DMapMode: PropTypes.bool,
     targetingMode: PropTypes.bool,
+    isTaskMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
@@ -38,8 +39,8 @@ export default class LeftMenu extends React.Component {
     onMeasureChange: PropTypes.func,
     onMarkerChange: PropTypes.func,
     onTopographicObjectsChange: PropTypes.func,
-    onToggleTargetingMode: PropTypes.func,
-    onClickTaskCreate: PropTypes.func,
+    onChangeTargetingMode: PropTypes.func,
+    onChangeTaskMode: PropTypes.func,
     onClick3D: PropTypes.func,
   }
 
@@ -50,9 +51,14 @@ export default class LeftMenu extends React.Component {
     onChangeEditMode(!isEditMode)
   }
 
+  clickTaskModeHandler = () => {
+    const { isTaskMode, onChangeTaskMode } = this.props
+    onChangeTaskMode(!isTaskMode)
+  }
+
   clickTargetingModeHandler = () => {
-    const { onToggleTargetingMode } = this.props
-    onToggleTargetingMode && onToggleTargetingMode()
+    const { targetingMode, onChangeTargetingMode } = this.props
+    onChangeTargetingMode && onChangeTargetingMode(!targetingMode)
   }
 
   render () {
@@ -60,6 +66,7 @@ export default class LeftMenu extends React.Component {
       isMapCOP,
       isEditMode,
       targetingMode,
+      isTaskMode,
       isShowSubordinationLevel,
       isMeasureOn,
       is3DMapMode,
@@ -73,7 +80,6 @@ export default class LeftMenu extends React.Component {
       onMeasureChange,
       onMarkerChange,
       onTopographicObjectsChange,
-      onClickTaskCreate,
       createButtonsComponent: CreateButtonsComponent,
       mapSourceSelectComponent: MapSourceSelectComponent,
       selectionButtonsComponent: SelectionButtonsComponent,
@@ -95,7 +101,7 @@ export default class LeftMenu extends React.Component {
           onClick={this.clickEditModeHandler}
           disabled={is3DMapMode}
         />
-        {isMapCOP && (
+        {isMapCOP && <>
           <IconButton
             placement={'bottomLeft'}
             title={i18n.TARGETING}
@@ -103,7 +109,14 @@ export default class LeftMenu extends React.Component {
             checked={targetingMode}
             onClick={this.clickTargetingModeHandler}
           />
-        )}
+          <IconButton
+            placement={'bottomLeft'}
+            title={i18n.CREATE_TASK}
+            icon={iconNames.TASK_DEFAULT}
+            checked={isTaskMode}
+            onClick={this.clickTaskModeHandler}
+          />
+        </>}
         <CreateButtonsComponent />
         <MenuDivider />
         <IconButton
@@ -166,12 +179,6 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.CREATE_TASK}
-          icon={iconNames.TASK_DEFAULT}
-          onClick={onClickTaskCreate}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
