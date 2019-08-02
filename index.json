@@ -2,28 +2,38 @@
   "title": "ДЗВІН",
   "sources": [ {
     "source": "/tiles/dzvin/{z}/{x}/{y}.png",
+    "isSat": true,
     "minZoom": 5,
     "maxZoom": 16
   } ]
 }, {
   "title": "Супутник",
+  "isSatellite": true,
   "sources": [ {
     "source": "/tiles/sat/{z}/{x}/{y}.jpg",
+    "isSat": true,
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true
   }, {
     "source": "/tiles/labels/{z}/{x}/{y}.png",
+    "isSat": false,
     "minZoom": 5,
     "maxZoom": 16,
     "tms": true
   } ]
 }, {
   "title": "Ландшафт",
-  "sources": [ {
-    "source": "/tiles/land/{z}/{x}/{y}.jpg",
-    "minZoom": 5,
-    "maxZoom": 16,
-    "tms": true
-  } ]
+  "sources": [
+    {
+      "source": "/tiles/land/{z}/{x}/{y}.jpg",
+      "isSat": true,
+      "minZoom": 5,
+      "maxZoom": 16,
+      "tms": true
+    }
+  ]
+}, {
+  "isTerrain": true,
+  "source": "/tiles/terrain/"
 } ]

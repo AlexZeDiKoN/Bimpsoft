@@ -15,6 +15,7 @@ export default class LeftMenu extends React.Component {
   static propTypes = {
     isMapCOP: PropTypes.bool,
     isEditMode: PropTypes.bool,
+    is3DMapMode: PropTypes.bool,
     targetingMode: PropTypes.bool,
     isTaskMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
@@ -40,6 +41,7 @@ export default class LeftMenu extends React.Component {
     onTopographicObjectsChange: PropTypes.func,
     onChangeTargetingMode: PropTypes.func,
     onChangeTaskMode: PropTypes.func,
+    onClick3D: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -67,6 +69,7 @@ export default class LeftMenu extends React.Component {
       isTaskMode,
       isShowSubordinationLevel,
       isMeasureOn,
+      is3DMapMode,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       subordinationAuto,
       marker,
@@ -82,6 +85,7 @@ export default class LeftMenu extends React.Component {
       selectionButtonsComponent: SelectionButtonsComponent,
       flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
+      onClick3D,
     } = this.props
 
     const subordinationLevelViewData =
@@ -95,6 +99,7 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.EDIT_ACTIVE}
           checked={isEditMode}
           onClick={this.clickEditModeHandler}
+          disabled={is3DMapMode}
         />
         {isMapCOP && <>
           <IconButton
@@ -114,6 +119,13 @@ export default class LeftMenu extends React.Component {
         </>}
         <CreateButtonsComponent />
         <MenuDivider />
+        <IconButton
+          placement={'bottomRight'}
+          title={i18n.VOLUME_VIEW}
+          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
+          checked={is3DMapMode}
+          onClick={onClick3D}
+        />
         <MapSourceSelectComponent />
         <IconButton
           placement={'bottomLeft'}

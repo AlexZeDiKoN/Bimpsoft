@@ -11,6 +11,7 @@ const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
+      [viewModesKeys.volumeMap]: is3DMapMode,
     },
     webMap: {
       subordinationLevel,
@@ -30,6 +31,7 @@ const mapStateToProps = (store) => {
 
   return {
     isMapCOP,
+    is3DMapMode,
     isEditMode,
     isTaskMode,
     isShowSubordinationLevel,
@@ -64,6 +66,7 @@ const mapDispatchToProps = {
   ]),
   onChangeTargetingMode: (targetingMode) => webMap.setMapMode(targetingMode ? MapModes.TARGET : MapModes.NONE),
   onChangeTaskMode: (taskMode) => webMap.setMapMode(taskMode ? MapModes.TASK : MapModes.NONE),
+  onClick3D: () => viewModes.viewModeToggle(viewModesKeys.volumeMap),
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
