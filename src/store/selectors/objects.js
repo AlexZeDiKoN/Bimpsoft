@@ -34,11 +34,11 @@ export const targetObjects = createSelector(
       const { code, layer, attributes: { engagementBar } } = object
       if (
         Boolean(engagementBar)
+        && layers.includes(layer)
         && [
           IDENTITIES.SUSPECT_JOKER,
           IDENTITIES.HOSTILE_FAKER,
         ].includes(getIdentity(code)) // is enemy
-        && layers.includes(layer)
       ) {
         result[object.id] = {
           id: object.id,
