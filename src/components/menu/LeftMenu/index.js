@@ -40,6 +40,7 @@ export default class LeftMenu extends React.Component {
     onTopographicObjectsChange: PropTypes.func,
     onToggleTargetingMode: PropTypes.func,
     onClickTaskCreate: PropTypes.func,
+    onClick3D: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -78,6 +79,7 @@ export default class LeftMenu extends React.Component {
       selectionButtonsComponent: SelectionButtonsComponent,
       flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
+      onClick3D,
     } = this.props
 
     const subordinationLevelViewData =
@@ -104,6 +106,13 @@ export default class LeftMenu extends React.Component {
         )}
         <CreateButtonsComponent />
         <MenuDivider />
+        <IconButton
+          placement={'bottomRight'}
+          title={i18n.VOLUME_VIEW}
+          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
+          checked={is3DMapMode}
+          onClick={onClick3D}
+        />
         <MapSourceSelectComponent />
         <IconButton
           placement={'bottomLeft'}

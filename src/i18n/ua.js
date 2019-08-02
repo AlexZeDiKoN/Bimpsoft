@@ -79,6 +79,7 @@ export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з �
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const GENERALIZATION = 'Генералізація'
+export const VOLUME_VIEW = 'Відображення 3D'
 
 export const UNIT = 'Підрозділ'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'

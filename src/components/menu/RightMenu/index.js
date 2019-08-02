@@ -8,9 +8,7 @@ import PrintFilesContainer from '../../../containers/PrintFiles'
 
 import './style.css'
 
-const {
-  icons: { names: iconNames, IconButton },
-} = components
+const { icons: { names: iconNames, IconButton } } = components
 
 const { Coordinates: Coord } = utils
 
@@ -18,7 +16,7 @@ export default class RightMenu extends React.Component {
   static propTypes = {
     isSettingsShow: PropTypes.bool,
     isSidebarShow: PropTypes.bool,
-    isVolumeMap: PropTypes.bool,
+    is3DMapMode: PropTypes.bool,
     searchFailed: PropTypes.bool,
     onClickSettings: PropTypes.func,
     onClickSidebar: PropTypes.func,
@@ -66,17 +64,10 @@ export default class RightMenu extends React.Component {
 
   render () {
     const {
-      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles, isVolumeMap, onClick3D,
+      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles, is3DMapMode,
     } = this.props
     return (
       <div className='left-menu'>
-        <IconButton
-          placement={'bottomRight'}
-          title={'3D View'}
-          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
-          checked={isVolumeMap}
-          onClick={onClick3D}
-        />
         {Object.keys(printFiles).length !== 0 && (
           <PrintFilesContainer/>
         )}
@@ -87,8 +78,7 @@ export default class RightMenu extends React.Component {
           onSearch={this.search}
           onChange={this.searchClearError}
           className={searchFailed ? 'search-failed' : ''}
-          disabled={isVolumeMap}
-
+          disabled={is3DMapMode}
         />
         <div className="search-options-sub-panel search-options-sub-panel-right">
           <SearchOptions />
@@ -99,8 +89,7 @@ export default class RightMenu extends React.Component {
           icon={iconNames.MENU_LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
-          disabled={isVolumeMap}
-
+          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomRight'}
@@ -108,8 +97,7 @@ export default class RightMenu extends React.Component {
           icon={iconNames.SETTING_DEFAULT}
           checked={isSettingsShow}
           onClick={onClickSettings}
-          disabled={isVolumeMap}
-
+          disabled={is3DMapMode}
         />
       </div>
     )

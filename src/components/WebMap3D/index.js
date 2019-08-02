@@ -1,24 +1,22 @@
 import React from 'react'
 import {
   CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
-  CameraEventType, UrlTemplateImageryProvider, TrustedServers,
+  CameraEventType, UrlTemplateImageryProvider,
 } from 'cesium'
 import { Viewer, Scene, Fog, CameraFlyTo, ScreenSpaceCameraController } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height } from '../../utils/mapObjConvertor'
 import SignsLayer from './SignsLayer'
 
-TrustedServers.add('172.16.97.17', '80')
-
 const imageryProvider = new UrlTemplateImageryProvider({
-  url: 'http://172.16.97.17/tiles/sat/{z}/{x}/{reverseY}.jpg',
+  url: '/tiles/sat/{z}/{x}/{reverseY}.jpg',
   hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
 })
 
 const terrainProvider = new CesiumTerrainProvider({
-  url: 'http://172.16.97.17/tiles/terrain/',
+  url: '/tiles/terrain/',
 })
 
 // const MAX_ZOOM = zoom2height(14)

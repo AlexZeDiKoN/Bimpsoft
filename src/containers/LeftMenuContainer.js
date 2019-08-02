@@ -63,6 +63,7 @@ const mapDispatchToProps = {
   ]),
   onToggleTargetingMode: targeting.toggleTargetingMode,
   onClickTaskCreate: task.show,
+  onClick3D: () => viewModes.viewModeToggle(viewModesKeys.volumeMap),
 }
 const LeftMenuContainer = connect(
   mapStateToProps,

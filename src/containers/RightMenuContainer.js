@@ -10,7 +10,7 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.sidebar]: isSidebarShow,
       [viewModesKeys.settings]: isSettingsShow,
-      [viewModesKeys.volumeMap]: isVolumeMap,
+      [viewModesKeys.volumeMap]: is3DMapMode,
       searchEmpty: searchFailed,
     },
     print: {
@@ -20,7 +20,7 @@ const mapStateToProps = (store) => {
   return {
     isSettingsShow,
     isSidebarShow,
-    isVolumeMap,
+    is3DMapMode,
     searchFailed,
     printFiles,
   }
@@ -33,7 +33,6 @@ const mapDispatchToProps = (dispatch) => ({
     return result
   },
   onClickSettings: () => dispatch(viewModes.viewModeToggle(viewModesKeys.settings)),
-  onClick3D: () => dispatch(viewModes.viewModeToggle(viewModesKeys.volumeMap)),
   onSearch: (sample) => dispatch(viewModes.search(sample)),
   onCoordinates: (text, point) => dispatch(webMap.setMarker({ text, point })),
   onSelectSearchOption: (index) => dispatch(viewModes.searchSelectOption(index)),
