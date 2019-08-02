@@ -7,7 +7,6 @@ const {
   default: Form,
   FormItem,
   buttonSave,
-  buttonCancel,
   buttonClose,
 } = components.form
 
@@ -55,7 +54,7 @@ export default class AbstractShapeForm extends React.Component {
       <Form className="shape-form">
         {this.renderContent()}
         <FormItem>
-          {canEdit && buttonCancel(onClose)}
+          {canEdit && buttonClose(onClose)}
           {canEdit && buttonSave(onOk)}
           {!canEdit && buttonClose(onClose)}
         </FormItem>
