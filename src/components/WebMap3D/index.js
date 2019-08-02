@@ -8,18 +8,12 @@ import PropTypes from 'prop-types'
 import { zoom2height } from '../../utils/mapObjConvertor'
 import SignsLayer from './SignsLayer'
 
-const imageryProvider = new UrlTemplateImageryProvider({
-  url: '/tiles/sat/{z}/{x}/{reverseY}.jpg',
+const imageryProviderStableProps = {
   hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
-})
+}
 
-const terrainProvider = new CesiumTerrainProvider({
-  url: '/tiles/terrain/',
-})
-
-// const MAX_ZOOM = zoom2height(14)
 const MIN_ZOOM = zoom2height(5)
 const DIV = document.createElement('div')
 
@@ -31,12 +25,19 @@ export default class WebMap3D extends React.PureComponent {
       }).isRequired,
       zoom: PropTypes.number.isRequired,
       objects: PropTypes.object,
+      sources: PropTypes.array,
+      source: PropTypes.object,
       setZoom: PropTypes.func.isRequired,
-      setSatelliteSource: PropTypes.func.isRequired,
+      setSource: PropTypes.func.isRequired,
     }
 
     componentDidMount () {
-      this.props.setSatelliteSource()
+      const { sources } = this.props
+      const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param istERRAIN set to true
+      const { source: url } = terrainSource || {}
+      url && (this.terrainProvider = new CesiumTerrainProvider({ url }))
+      const defaultSource = sources.find(({ isSatellite }) => isSatellite) || sources[1] // Source with param isSatellite set to true is a satellite view
+      this.props.setSource(defaultSource)
     }
 
     shouldFly = true
@@ -45,7 +46,12 @@ export default class WebMap3D extends React.PureComponent {
 
     // @TODO: remove terrainExaggeration after test
     render () {
-      const { objects, center, zoom, setZoom } = this.props
+      const { objects, center, zoom, setZoom, source } = this.props
+      const { sources = [] } = source || {}
+      const satSource = sources.find(({ isSat }) => isSat)
+      const { tms, source: url = '' } = satSource || {}
+      const sourceURL = tms ? url.replace(/{y}/g, '{reverseY}') : url
+      const imageryProvider = new UrlTemplateImageryProvider({ url: sourceURL, ...imageryProviderStableProps })
       return (
         <Viewer
           animation={false}
@@ -62,7 +68,7 @@ export default class WebMap3D extends React.PureComponent {
           navigationInstructionsInitiallyVisible={false}
           scene3DOnly={true}
           imageryProvider={imageryProvider}
-          terrainProvider={terrainProvider}
+          terrainProvider={this.terrainProvider}
           creditContainer={DIV}
           creditViewport={DIV}
           terrainExaggeration={2}
