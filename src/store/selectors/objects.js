@@ -37,20 +37,23 @@ export const targetObjects = createSelector(
       const { code, attributes: { engagementBar } } = object
       if (currentLayers.includes(object.layer)) {
         const layer = layers[object.layer]
-        if (Boolean(engagementBar) && isEnemy(code)) {
-          result[object.id] = {
-            id: object.id,
-            name: engagementBar,
-            code: object.code,
-            attributes: object.attributes,
+        if (
+          (Boolean(engagementBar) && isEnemy(code)) ||
+          !layer.formationId
+        ) {
+          let name
+          if (engagementBar) {
+            name = engagementBar
+          } else {
+            const isArea = ENTITY.GROUPS.AREAS.includes(object.type)
+            name = isArea ? i18n.AREA : i18n.FRONTIER
           }
-        } else if (!layer.formationId) {
-          const isArea = ENTITY.GROUPS.AREAS.includes(object.type)
           result[object.id] = {
             id: object.id,
-            name: isArea ? i18n.AREA : i18n.FRONTIER,
+            name,
             code: object.code,
             attributes: object.attributes,
+            type: object.type,
           }
         }
       }
