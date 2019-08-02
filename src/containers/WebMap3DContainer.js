@@ -11,7 +11,7 @@ const mapStateToProps = (state) => {
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
     zoom: state.webMap3D.zoom || state.webMap.zoom,
-    volumeSource: sources[1], // Sources[1] is a satellite view
+    volumeSource: sources.find(({ isSatellite }) => isSatellite), // Source with param isSatellite set to true is a satellite view
   }
 }
 
