@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, control, point } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, control, point, popup } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
+import renderIndicators from '../../components/UnitIndicators'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -34,7 +35,7 @@ import {
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { catalogSign } from '../CatalogsComponent/Item'
+import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -54,10 +55,32 @@ import { MapProvider } from './MapContext'
 
 const { Coordinates: Coord } = utils
 
+const codeFriends = [
+  '3', // IDENTITY_FRIEND
+  '2', // IDENTITY_ASSUMED_FRIEND
+]
+
+const codeEnemies = [
+  '6', // IDENTITY_HOSTILE_FAKER
+  '5', // IDENTITY_SUSPECT_JOKER
+  '4', // IDENTITY_NEUTRAL
+  '1', // IDENTITY_UNKNOWN
+  '0', // IDENTITY_PENDING
+]
+
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
   dashArray: [ 5, 5 ],
 }
+
+const openingAction = 'open'
+const closingAction = 'close'
+
+const openPopUpInterval = 2000
+
+// через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
+
+const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false }
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -222,6 +245,7 @@ export default class WebMap extends React.PureComponent {
       })
     ),
     layersById: PropTypes.object,
+    unitsById: PropTypes.object,
     level: PropTypes.any,
     layer: PropTypes.any,
     marker: PropTypes.shape({
@@ -233,6 +257,7 @@ export default class WebMap extends React.PureComponent {
     }),
     scaleToSelection: PropTypes.bool,
     objects: PropTypes.object,
+    layersByIdFromStore: PropTypes.object,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
     coordinatesType: PropTypes.string,
@@ -465,21 +490,38 @@ export default class WebMap extends React.PureComponent {
     }
     const selectedPoints = (selectedList || [])
       .filter((id) => {
-        const object = objects.find((object) => object.id === id)
-        return object && object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW
+        const object = objects.find((object) => object && object.id === id)
+        return object && object.type === entityKind.POINT
       })
-    const buildingObjects = targetingObjects.size >= 1 && selectedPoints.length === 1
-      ? selectedPoints
+    const selectedFriends = selectedPoints
+      .filter((id) => {
+        const object = objects.find((object) => object && object.id === id)
+        return codeFriends.includes(model.APP6Code.getIdentity2(object.code)) &&
+          object.level === SubordinationLevel.TEAM_CREW
+      })
+    const selectedEnemies = selectedPoints
+      .filter((id) => {
+        const object = objects.find((object) => object && object.id === id)
+        return codeEnemies.includes(model.APP6Code.getIdentity2(object.code))
+      })
+    const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
+      ? selectedEnemies[0]
+      : null
+    const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
+      ? selectedFriends[0]
+      : null
+    const buildingObjects = targetingObjects.size >= 1 && friend
+      ? [ friend ]
       : targetingObjects.map((object) => object.id).sort().toArray()
-    const hash = JSON.stringify(buildingObjects)
+    const hash = `${JSON.stringify(buildingObjects)}${enemy}`
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
       const zones = buildingObjects.length
-        ? await getZones(buildingObjects)
+        ? (await getZones(buildingObjects, enemy)).map(JSON.parse).filter(Boolean)
         : null
       this.targeting && this.targeting.removeFrom(this.map)
-      if (zones && zones[0] && zones[1]) {
-        this.targeting = createTargeting(zones.map(JSON.parse), this.targeting)
+      if (zones && zones.length) {
+        this.targeting = createTargeting(zones, this.targeting)
         this.targeting.addTo(this.map)
       } else {
         delete this.targeting
@@ -1136,8 +1178,46 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+
+  setPopUp = () => {
+    const indicatorPopup = popup(popupOptionsIndicators)
+    return (unitId, indicatorsData, layer) => {
+      const unitData = this.getUnitData(unitId)
+      const renderPopUp = renderIndicators(indicatorsData, unitData)
+      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
+      return indicatorPopup
+    }
+  }
+
+  getPopUpRender = this.setPopUp()
+
+  getUnitIndicatorsInfoOnHover = () => {
+    let timer
+    let lastUnit
+    return (actionType, unit, layer, formationId, indicatorsData) => {
+      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
+      const isPopUpOpen = popupInner._close()
+      clearTimeout(timer)
+      if (actionType === 'open') {
+        clearTimeout(timer)
+        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        lastUnit = unit
+        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
+      } else {
+        clearTimeout(timer)
+        isPopUpOpen && popupInner._close()
+      }
+    }
+  }
+
+  showUnitIndicatorsHandler = this.getUnitIndicatorsInfoOnHover()
+
+  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
+
   addObject = (object, prevLayer) => {
-    const { id, attributes } = object
+    const { layersByIdFromStore } = this.props
+    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
+    const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
     } catch (e) {
@@ -1145,6 +1225,7 @@ export default class WebMap extends React.PureComponent {
     }
     const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
+      const isObjectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1152,11 +1233,23 @@ export default class WebMap extends React.PureComponent {
         left: attributes.left,
         right: attributes.right,
       }
-
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
+      isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+        openingAction,
+        unit,
+        layer,
+        layerObject.formationId,
+        indicatorsData,
+      )
+      )
+      isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+        closingAction,
+        unit,
+        layer,
+      ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
@@ -1335,6 +1428,7 @@ export default class WebMap extends React.PureComponent {
   dblClickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { object: { id, catalogId } } } = event
+    // todo: move this call outside component (in the actions)
     window.explorerBridge.showCatalogObject(catalogId, id)
   }
 

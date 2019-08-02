@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
-import { mapId, layersById } from './layersSelector'
+import { mapId, mapCOP, layersById } from './layersSelector'
 
 const targetingMode = (state) => state.targeting.targetingMode
 const unitId = (state) => state.webMap.unitId
@@ -34,12 +34,13 @@ const currentMapPointLowLevelObjects = createSelector(
 
 export const targetingObjects = createSelector(
   targetingMode,
+  mapCOP,
   unitId,
   currentMapPointLowLevelObjects,
   currentOrgStructure,
-  (targetingMode, unitId, objects, orgStructure) => {
+  (targetingMode, mapCOP, unitId, objects, orgStructure) => {
     let predicate = () => false
-    if (targetingMode && unitId && objects && orgStructure) {
+    if (targetingMode && mapCOP && unitId && objects && orgStructure) {
       const list = myList(orgStructure, unitId)
       predicate = (object) => list.includes(object.unit)
     }

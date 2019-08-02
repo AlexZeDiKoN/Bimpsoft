@@ -56,6 +56,7 @@ export const WebMapObject = Record({
   parent: null,
   attributes: WebMapAttributes(),
   hash: null,
+  indicatorsData: undefined,
 })
 
 const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
@@ -189,6 +190,15 @@ export default function webMapReducer (state = WebMapState(), action) {
         map = objects.filter(notFlexGrid).reduce(updateObject, map)
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
+      })
+    }
+    case actionNames.RETURN_UNIT_INDICATORS: {
+      const { indicatorsData, unitId } = payload
+      const objects = state.get('objects')
+      const currentObject = objects.filter(({ unit }) => unit === unitId).values().next().value
+      const newObjects = currentObject.set('indicatorsData', indicatorsData)
+      return merge(state, {
+        objects: update(objects, currentObject.id, newObjects),
       })
     }
     case actionNames.SET_SOURCES: {
