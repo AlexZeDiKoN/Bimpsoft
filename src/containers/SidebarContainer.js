@@ -4,7 +4,7 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import { mapCOP } from '../store/selectors'
 
 const mapStateToProps = (store) => ({
-  visible: store.viewModes[viewModesKeys.sidebar],
+  visible: store.viewModes[viewModesKeys.sidebar] && !store.viewModes[viewModesKeys.volumeMap],
   printStatus: Boolean(store.print.mapId),
   marchEdit: store.march.marchEdit,
   isMapCOP: mapCOP(store),

@@ -1,4 +1,5 @@
 import Bezier from 'bezier-js'
+import * as R from 'ramda'
 import subordinationLevels from '../../constants/SubordinationLevel'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { extractSubordinationLevelSVG } from './milsymbol'
@@ -42,7 +43,7 @@ export const roundXY = ({ x, y }) => ({ x: Math.round(x), y: Math.round(y) })
 
 const nextIndex = (points, index, locked) => locked && index === points.length - 1 ? 0 : index + 1
 
-const bezierArray = (points, index, locked) => {
+export const bezierArray = (points, index, locked) => {
   const next = nextIndex(points, index, locked)
   return [
     points[index].x,
@@ -145,7 +146,8 @@ const getCrossPoint = (aLine, bLine) => {
     const y = -1 * (a1 * c2 - a2 * c1) / denominator
     return { x, y }
   }
-  throw new RangeError('Unexpectedly parallel vectors')
+  console.warn('Unexpectedly parallel vectors ', aLine, ' and ', bLine)
+  return null
 }
 
 const getAngleBetween = (v1, v2) => {
@@ -177,7 +179,7 @@ const shiftPoint = (offset, point, prevPoint, nextPoint, isCurve = false) => {
 
     const aLine = getLineFromSection(aPointStart, aPointEnd)
     const bLine = getLineFromSection(bPointStart, bPointEnd)
-    return getCrossPoint(aLine, bLine)
+    return getCrossPoint(aLine, bLine) || { x: (aPointEnd.x + bPointStart.x) / 2, y: (aPointEnd.y + bPointStart.y) / 2 }
   }
   const prev = prevPoint || point
   const next = nextPoint || point
@@ -249,6 +251,8 @@ const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locke
   return amplPoints
 }
 
+const duplicate = (elem) => [ elem, elem ]
+
 const offsetCurve = (cPoints, offset) => {
   const [ p1x, p1y, cp1x, cp1y, cp2x, cp2y, p2x, p2y ] = cPoints
   const points = [ { x: p1x, y: p1y } ]
@@ -256,11 +260,11 @@ const offsetCurve = (cPoints, offset) => {
   !(p1x === cp1x && p1y === cp1y) && points.push({ x: cp1x, y: cp1y })
   !(p2x === cp2x && p2y === cp2y) && points.push({ x: cp2x, y: cp2y })
   points.push({ x: p2x, y: p2y })
-  return points.reduce((acc, p, i) => {
-    const shifted = shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true)
-    acc.push(shifted.x, shifted.y)
+  const next = points.reduce((acc, p, i) => {
+    acc.push(shiftPoint(offset, p, points[i - 1] || null, points[i + 1] || null, true))
     return acc
   }, [])
+  return next.length < 3 ? R.chain(duplicate, next) : next
 }
 
 const getBoundsFunc = ({ min, max }, step) =>

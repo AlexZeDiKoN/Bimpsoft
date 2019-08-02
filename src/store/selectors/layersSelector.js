@@ -1,12 +1,13 @@
 import { createSelector } from 'reselect'
 import * as R from 'ramda'
 import { date } from '../../utils'
+import { MapModes } from '../../constants'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
 const selectedLayerId = (state) => state.layers.selectedId
 const mapsById = (state) => state.maps.byId
-const targeting = ({ targeting: { targetingMode } }) => targetingMode
+const webMapModeSelector = ({ webMap: { mode } }) => mode
 
 export const layersById = (state) => state.layers.byId
 
@@ -14,13 +15,13 @@ export const layersByIdFromStore = createSelector(layersById, R.identity)
 
 export const canEditSelector = createSelector(
   layersSelector,
-  targeting,
-  ({ editMode, byId, selectedId, timelineFrom, timelineTo }, targeting) => {
-    if (!editMode || !byId.hasOwnProperty(selectedId)) {
+  webMapModeSelector,
+  ({ byId, selectedId, timelineFrom, timelineTo }, webMapMode) => {
+    if (webMapMode !== MapModes.EDIT || !byId.hasOwnProperty(selectedId)) {
       return false
     }
     const { readOnly, visible, dateFor } = byId[selectedId]
-    return !readOnly && !targeting && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
+    return !readOnly && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
   }
 )
 
