@@ -14,7 +14,7 @@ const myList = (orgStructure, myUnitId) => [
     .map((child) => myList(orgStructure, child)),
 ].flat(32)
 
-const currentMapLayers = createSelector(
+export const currentMapLayers = createSelector(
   mapId,
   layersById,
   (mapId, layers) => mapId && layers
