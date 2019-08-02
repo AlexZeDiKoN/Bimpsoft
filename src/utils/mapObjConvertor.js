@@ -1,12 +1,8 @@
-import React from 'react'
 import { CRS, latLng, point } from 'leaflet'
 import Bezier from 'bezier-js'
-import { Entity } from 'resium'
 import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar } from 'cesium'
-
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
-
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
@@ -83,7 +79,7 @@ export function calcMiddlePoint (coords) {
 }
 
 // 3D MAP Methods:
-
+// @TODO: ВЫНЕСТИ КОНСТАНТЫ...
 export const zoom2height = (zoom, altitude) => {
   const A = 40487.57
   const B = 0.00007096758
@@ -155,24 +151,20 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
     const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
     // @TODO: change scale limits (use zoom2height)
     const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
-    const billboardParams = { image, heightReference, verticalOrigin, scaleByDistance }
-    const position = Cartesian3.fromDegrees(lng, lat)
-    acc.push(
-      <Entity
-        position={positionHeightUp(position, BILLBOARD_HEIGHT)} key={id}
-        billboard={billboardParams}
-        polyline={ {
-          width: 2,
-          material: Color.RED,
-          positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
-        } }
-      />)
+    const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
+    const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
+    const polyLine = {
+      width: 2,
+      material: Color.RED,
+      positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
+    }
+    acc.push({ id, position, billboard, polyLine })
   } else if (type === objTypes.POLYLINE || type === objTypes.CURVE || type === objTypes.AREA) {
     const positions = type === objTypes.POLYLINE
       ? geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
       : buldCurve(geometry.toArray(), type === objTypes.AREA)
-    const polylineParams = { positions, clampToGround: true }
-    acc.push(<Entity key={id} polyline={polylineParams}/>)
+    const polyline = { positions, clampToGround: true }
+    acc.push({ id, polyline })
   } else if (type === objTypes.POLYGON || type === objTypes.SQUARE || o.type === objTypes.RECTANGLE) {
     const geometryArray = geometry.toArray()
     let pos = geometryArray
@@ -183,8 +175,8 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
       pos = [ p1, p2, p3, p4 ]
     }
     const positions = pos.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-    const polygonParams = { hierarchy: positions, ...fillableProps }
-    acc.push(<Entity key={id} polygon={polygonParams}/>)
+    const polygon = { hierarchy: positions, ...fillableProps }
+    acc.push({ id, polygon })
   } else if (type === objTypes.CIRCLE) {
     const { lat, lng } = point
     const [ p1, p2 ] = geometry.toArray()
@@ -192,8 +184,8 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
     const pp1 = Cartesian3.fromDegrees(p1.lng, p1.lat)
     const pp2 = Cartesian3.fromDegrees(p2.lng, p2.lat)
     const len = Cartesian3.distance(pp1, pp2)
-    const circleParams = { semiMinorAxis: len, semiMajorAxis: len, ...fillableProps }
-    acc.push(<Entity position={position} key={id} ellipse={circleParams} />)
+    const ellipse = { semiMinorAxis: len, semiMajorAxis: len, ...fillableProps }
+    acc.push({ id, position, ellipse })
   }
   return acc
 }, []))

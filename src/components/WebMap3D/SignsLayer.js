@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import memoize from 'memoize-one'
 import { Cartographic, Cartesian3 } from 'cesium'
-import { Camera, Globe } from 'resium'
+import { Camera, Globe, Entity } from 'resium'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 
 export default class SignsLayer extends Component {
@@ -37,14 +38,17 @@ export default class SignsLayer extends Component {
     return position
   }
 
+  renderEntities = memoize((signs) => signs.map(({ id, ...rest }) => <Entity key={id} { ...rest }/>))
+
   render () {
     const { objects } = this.props
     const signs = objectsToSvg(objects, this.positionHeightUp)
+    const entities = this.renderEntities(signs)
     return (
       <>
         <Globe ref={this.globe} depthTestAgainstTerrain={false}/>
         <Camera ref={this.camera} onMoveEnd={this.checkZoom}/>
-        { signs }
+        { entities }
       </>
     )
   }
