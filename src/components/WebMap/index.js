@@ -37,6 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
+import { isFriend, isEnemy } from '../../utils/affiliations'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -52,7 +53,6 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
-import { isFriend, isEnemy } from '../../utils/affiliations'
 
 const { Coordinates: Coord } = utils
 
@@ -78,7 +78,11 @@ const switchScaleOptions = {
 }
 
 const isLayerInBounds = (layer, bounds) => {
-  let { geometry } = getGeometry(layer)
+  const geometryObj = getGeometry(layer)
+  if (geometryObj === null) {
+    return false
+  }
+  let { geometry } = geometryObj
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
@@ -1164,7 +1168,6 @@ export default class WebMap extends React.PureComponent {
       })
     }
   }
-
 
   setPopUp = () => {
     const indicatorPopup = popup(popupOptionsIndicators)
