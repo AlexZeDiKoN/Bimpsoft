@@ -24,28 +24,28 @@ export default class TabsPanel extends React.Component {
       <div className="tabs-panel">
         <div className="tabs-panel-headers">{
           tabs.map((Panel, index) => this.state.isMounted && (
-              <Panel
-                key={index}
-                wrapper={({ children, title }) => {
-                  const selected = selectedIndex === index
-                  return [
+            <Panel
+              key={index}
+              wrapper={({ children, title }) => {
+                const selected = selectedIndex === index
+                return [
+                  <div
+                    key={index}
+                    className={'tabs-panel-header ' + (selected ? 'tabs-panel-header-selected' : '')}
+                    onClick={this.selectHandler(index)}
+                  >{title}</div>,
+                  ReactDom.createPortal(
                     <div
                       key={index}
-                      className={'tabs-panel-header ' + (selected ? 'tabs-panel-header-selected' : '')}
-                      onClick={this.selectHandler(index)}
-                    >{title}</div>,
-                    ReactDom.createPortal(
-                      <div
-                        key={index}
-                        className='tabs-panel-container'
-                        style={{ display: selected ? '' : 'none' }}
-                      >{children}</div>,
-                      this.containersRef.current,
-                    ),
-                  ]
-                }}
-              />
-            ),
+                      className='tabs-panel-container'
+                      style={{ display: selected ? '' : 'none' }}
+                    >{children}</div>,
+                    this.containersRef.current,
+                  ),
+                ]
+              }}
+            />
+          ),
           )
         }</div>
         <div className="tabs-panel-content" ref={this.containersRef}/>

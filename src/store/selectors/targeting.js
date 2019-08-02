@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
+import { MapModes } from '../../constants'
 import { mapId, mapCOP, layersById } from './layersSelector'
 
-const targetingMode = (state) => state.targeting.targetingMode
+export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
 const objects = (state) => state.webMap.objects
 const currentOrgStructure = (state) => state.orgStructures
@@ -33,7 +34,7 @@ const currentMapPointLowLevelObjects = createSelector(
 )
 
 export const targetingObjects = createSelector(
-  targetingMode,
+  targetingModeSelector,
   mapCOP,
   unitId,
   currentMapPointLowLevelObjects,
