@@ -1,13 +1,13 @@
 {
   "name": "web-map",
-  "version": "8.03.440",
+  "version": "8.03.441",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^5.2.1",
     "@DZVIN/CommonComponents": "^8.3.256",
     "@DZVIN/MilSymbolEditor": "^8.3.154",
     "@DZVIN/components": "^8.3.17",
     "@DZVIN/milsymbol": "^0.0.4",
+    "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",
     "antd": "^3.12.4",
     "babel-polyfill": "^6.26.0",
