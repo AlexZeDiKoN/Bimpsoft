@@ -49,7 +49,15 @@ export default class CatalogsComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onVisibleChange, onDoubleClick, selectedId, canEdit, milSymbolRenderer) => (
+  getCommonData = memoizeOne((
+    textFilter,
+    onClick,
+    onVisibleChange,
+    onDoubleClick,
+    selectedId,
+    canEdit,
+    milSymbolRenderer,
+  ) => (
     {
       textFilter,
       onClick,

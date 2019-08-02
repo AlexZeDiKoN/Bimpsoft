@@ -1,7 +1,9 @@
 import { createSelector } from 'reselect'
-import { canEditSelector } from './layersSelector'
-import { currentMapLayers } from './targeting'
 import { isEnemy } from '../../utils/affiliations'
+import * as i18n from '../../i18n/ua'
+import * as ENTITY from '../../components/WebMap/entityKind'
+import { canEditSelector, layersById } from './layersSelector'
+import { currentMapLayers } from './targeting'
 
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
 const activeLayer = ({ layers: { selectedId } }) => selectedId
@@ -27,21 +29,29 @@ export const activeObjectId = createSelector(
 export const targetObjects = createSelector(
   objects,
   currentMapLayers,
-  (objects, layers) => {
+  layersById,
+  (objects, currentLayers, layers) => {
     const result = {}
     objects = objects.values()
     for (const object of objects) {
-      const { code, layer, attributes: { engagementBar } } = object
-      if (
-        Boolean(engagementBar)
-        && layers.includes(layer)
-        && isEnemy(code)
-      ) {
-        result[object.id] = {
-          id: object.id,
-          name: engagementBar,
-          code: object.code,
-          attributes: object.attributes,
+      const { code, attributes: { engagementBar } } = object
+      if (currentLayers.includes(object.layer)) {
+        const layer = layers[object.layer]
+        if (Boolean(engagementBar) && isEnemy(code)) {
+          result[object.id] = {
+            id: object.id,
+            name: engagementBar,
+            code: object.code,
+            attributes: object.attributes,
+          }
+        } else if (!layer.formationId) {
+          const isArea = ENTITY.GROUPS.AREAS.includes(object.type)
+          result[object.id] = {
+            id: object.id,
+            name: isArea ? i18n.AREA : i18n.FRONTIER,
+            code: object.code,
+            attributes: object.attributes,
+          }
         }
       }
     }
