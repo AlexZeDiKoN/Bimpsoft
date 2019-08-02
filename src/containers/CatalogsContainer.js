@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import CatalogsComponent from '../components/CatalogsComponent'
+import CatalogsComponent from '../components/Catalogs'
 import { catalogs } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -19,7 +19,7 @@ const mapDispatchToProps = {
 
 const CatalogsContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(CatalogsComponent)
 
 export default CatalogsContainer

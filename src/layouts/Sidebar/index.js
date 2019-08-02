@@ -2,7 +2,13 @@ import React from 'react'
 import './style.css'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
-import { LayersContainer, OrgStructuresContainer, MarchContainer, CatalogsContainer } from '../../containers'
+import {
+  LayersContainer,
+  OrgStructuresContainer,
+  MarchContainer,
+  CatalogsContainer,
+  TargetCatalogContainer,
+} from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
@@ -16,6 +22,7 @@ const SIDEBAR_SIZE_MIN = 250
 
 export default class Sidebar extends React.Component {
   static propTypes = {
+    isMapCOP: PropTypes.bool,
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
@@ -32,20 +39,22 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit } = this.props
+    const { printStatus, marchEdit, isMapCOP } = this.props
     if (printStatus) {
-      return <PrintPanel />
+      return <PrintPanel/>
     } else if (marchEdit) {
-      return <MarchContainer />
+      return <MarchContainer/>
     } else {
       return (
         <>
-          <div className="sidebar-panel1" style={{ height: this.state.topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
+          <div className="sidebar-panel1"
+               style={{ height: this.state.topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
             <TabsPanel
               tabs={[
                 OrgStructuresContainer,
                 CatalogsContainer,
-              ]}
+                isMapCOP ? TargetCatalogContainer : null,
+              ].filter(Boolean)}
             />
           </div>
           <ValueSwiper

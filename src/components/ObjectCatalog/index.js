@@ -4,7 +4,7 @@ import { Input, Tooltip } from 'antd'
 import memoizeOne from 'memoize-one'
 import { components, data } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
-import Item from './Item'
+import Item from '../ObjectCatalogItem'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -12,7 +12,7 @@ const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.name,
   (item) => item.id,
-  (item) => item.parent
+  (item) => item.parent,
 )
 
 function scrollParentToChild (parent, child) {
@@ -27,11 +27,6 @@ function scrollParentToChild (parent, child) {
 }
 
 export default class CatalogsComponent extends React.PureComponent {
-  componentDidMount () {
-    const { preloadCatalogList } = this.props
-    preloadCatalogList && preloadCatalogList()
-  }
-
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (prevProps.selectedId !== this.props.selectedId) {
       const scrollRef = this.scrollRef && this.scrollRef.current
@@ -54,29 +49,25 @@ export default class CatalogsComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onChange, onDoubleClick, selectedId, canEdit) => (
-    { textFilter, onClick, onChange, onDoubleClick, selectedId, canEdit, scrollRef: this.scrollRef }
+  getCommonData = memoizeOne((textFilter, onClick, onVisibleChange, onDoubleClick, selectedId, canEdit, milSymbolRenderer) => (
+    {
+      textFilter,
+      onClick,
+      onVisibleChange,
+      onDoubleClick,
+      selectedId,
+      canEdit,
+      scrollRef: this.scrollRef,
+      milSymbolRenderer,
+    }
   ))
 
   getFilteredIds = memoizeOne(getFilteredIds)
-
-  toggleItem = (itemId, visible) => {
-    const {
-      onShow,
-      onHide,
-    } = this.props
-    if (visible) {
-      onHide(itemId)
-    } else {
-      onShow(itemId)
-    }
-  }
 
   render () {
     const {
       textFilter = null,
       byIds,
-      shownIds,
       roots,
       onDoubleClick,
       onClick,
@@ -85,16 +76,25 @@ export default class CatalogsComponent extends React.PureComponent {
       expandedIds,
       onExpand,
       canEdit,
+      milSymbolRenderer,
+      onVisibleChange,
+      title,
     } = this.props
-
-    Object.entries(byIds).forEach(([ key, value ]) => (value.shown = shownIds.hasOwnProperty(key)))
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
 
-    const commonData = this.getCommonData(textFilter, onClick, this.toggleItem, onDoubleClick, selectedId, canEdit)
+    const commonData = this.getCommonData(
+      textFilter,
+      onClick,
+      onVisibleChange,
+      onDoubleClick,
+      selectedId,
+      canEdit,
+      milSymbolRenderer,
+    )
 
     return (
-      <Wrapper title={(<Tooltip title={i18n.CATALOGS}>{i18n.CATALOGS}</Tooltip>)}>
+      <Wrapper title={(<Tooltip title={title}>{title}</Tooltip>)}>
         <div style={{ width: `100%` }}>
           <Input.Search
             ref={this.inputRef}
@@ -102,7 +102,7 @@ export default class CatalogsComponent extends React.PureComponent {
             onChange={this.filterTextChangeHandler}
             style={{ padding: '5px' }}
           />
-          <div className="catalog-scroll" ref={this.scrollPanelRef} >
+          <div className="catalog-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
@@ -122,18 +122,17 @@ export default class CatalogsComponent extends React.PureComponent {
 
 CatalogsComponent.propTypes = {
   wrapper: PropTypes.any,
+  title: PropTypes.string.isRequired,
   canEdit: PropTypes.bool,
   roots: PropTypes.array.isRequired,
   byIds: PropTypes.object.isRequired,
-  shownIds: PropTypes.object.isRequired,
   textFilter: PropTypes.instanceOf(TextFilter),
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,
-  onShow: PropTypes.func,
-  onHide: PropTypes.func,
   onFilterTextChange: PropTypes.func,
   selectedId: PropTypes.number,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
-  preloadCatalogList: PropTypes.func,
+  milSymbolRenderer: PropTypes.func.isRequired,
+  onVisibleChange: PropTypes.func,
 }

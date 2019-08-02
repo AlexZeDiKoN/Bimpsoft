@@ -35,7 +35,7 @@ import {
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { catalogSign } from '../CatalogsComponent/Item'
+import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -52,21 +52,9 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { isFriend, isEnemy } from '../../utils/affiliations'
 
 const { Coordinates: Coord } = utils
-
-const codeFriends = [
-  '3', // IDENTITY_FRIEND
-  '2', // IDENTITY_ASSUMED_FRIEND
-]
-
-const codeEnemies = [
-  '6', // IDENTITY_HOSTILE_FAKER
-  '5', // IDENTITY_SUSPECT_JOKER
-  '4', // IDENTITY_NEUTRAL
-  '1', // IDENTITY_UNKNOWN
-  '0', // IDENTITY_PENDING
-]
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -80,7 +68,7 @@ const openPopUpInterval = 2000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
-const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup' }
+const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false }
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -496,13 +484,12 @@ export default class WebMap extends React.PureComponent {
     const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeFriends.includes(model.APP6Code.getIdentity2(object.code)) &&
-          object.level === SubordinationLevel.TEAM_CREW
+        return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
       })
     const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeEnemies.includes(model.APP6Code.getIdentity2(object.code))
+        return isEnemy(object.code)
       })
     const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
@@ -1184,9 +1171,7 @@ export default class WebMap extends React.PureComponent {
     return (unitId, indicatorsData, layer) => {
       const unitData = this.getUnitData(unitId)
       const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && indicatorPopup
-        .setContent(renderPopUp)
-        .setLatLng(layer._latlng)
+      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
       return indicatorPopup
     }
   }
@@ -1195,16 +1180,16 @@ export default class WebMap extends React.PureComponent {
 
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastLayer
+    let lastUnit
     return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, lastLayer)
+      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
       const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
       if (actionType === 'open') {
         clearTimeout(timer)
-        !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        lastLayer = layer
-        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval)
+        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        lastUnit = unit
+        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
       } else {
         clearTimeout(timer)
         isPopUpOpen && popupInner._close()
