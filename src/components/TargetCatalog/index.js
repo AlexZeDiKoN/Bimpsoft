@@ -7,8 +7,12 @@ import i18n from '../../i18n'
 
 const _expandedIds = {}
 
+const _defaultTargetSymbolCode = '10032500001603000000'
+
 export default class TargetCatalog extends React.PureComponent {
-  milSymbolRenderer = ({ code, attributes }) => <MilSymbol code={code} amplifiers={attributes}/>
+  milSymbolRenderer = ({ code, attributes }) => (
+    <MilSymbol code={code || _defaultTargetSymbolCode} amplifiers={attributes}/>
+  )
 
   handleSelect = (selectedId) => this.props.setSelectedList([ selectedId ])
 
