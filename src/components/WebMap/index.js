@@ -37,6 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
+import { isFriend, isEnemy } from '../../utils/affiliations'
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -54,19 +55,6 @@ import {
 import { MapProvider } from './MapContext'
 
 const { Coordinates: Coord } = utils
-
-const codeFriends = [
-  '3', // IDENTITY_FRIEND
-  '2', // IDENTITY_ASSUMED_FRIEND
-]
-
-const codeEnemies = [
-  '6', // IDENTITY_HOSTILE_FAKER
-  '5', // IDENTITY_SUSPECT_JOKER
-  '4', // IDENTITY_NEUTRAL
-  '1', // IDENTITY_UNKNOWN
-  '0', // IDENTITY_PENDING
-]
 
 const hintlineStyle = { // стиль лінії-підказки при створенні лінійних і площинних тактичних знаків
   color: 'red',
@@ -90,7 +78,11 @@ const switchScaleOptions = {
 }
 
 const isLayerInBounds = (layer, bounds) => {
-  let { geometry } = getGeometry(layer)
+  const geometryObj = getGeometry(layer)
+  if (geometryObj === null) {
+    return false
+  }
+  let { geometry } = geometryObj
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
@@ -227,6 +219,16 @@ const setScaleOptions = (layer, params) => {
   }
 }
 
+const useTry = (func) => () => {
+  try {
+    func()
+  } catch (e) {
+    console.warn('ERROR: cannot execute function ', func, ' because of ', e)
+  }
+}
+
+const useDebounce = (func, time) => debounce(useTry(func), time) // please use this debounce to reduce number of errors related to map`s unmount
+
 export default class WebMap extends React.PureComponent {
   static propTypes = {
     children: PropTypes.any,
@@ -353,7 +355,7 @@ export default class WebMap extends React.PureComponent {
     this.setMapSource(sources)
     await requestMaSources()
     await getLockedObjects()
-    this.initObjects()
+    useTry(this.initObjects)()
     this.initCatalogObjects()
     this.updateScaleOptions()
     window.addEventListener('beforeunload', () => {
@@ -459,7 +461,7 @@ export default class WebMap extends React.PureComponent {
 
   componentWillUnmount () {
     delete window.webMap
-    this.map.remove()
+    this.map && this.map.remove()
   }
 
   indicateMode = indicateModes.WGS
@@ -496,13 +498,12 @@ export default class WebMap extends React.PureComponent {
     const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeFriends.includes(model.APP6Code.getIdentity2(object.code)) &&
-          object.level === SubordinationLevel.TEAM_CREW
+        return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
       })
     const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
-        return codeEnemies.includes(model.APP6Code.getIdentity2(object.code))
+        return isEnemy(object.code)
       })
     const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
@@ -852,7 +853,7 @@ export default class WebMap extends React.PureComponent {
   isFlexGridEditingMode = () =>
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
-  onMouseClick = debounce((e) => {
+  onMouseClick = useDebounce((e) => {
     const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
     if (detail > 1) { // если это дабл/трипл/etc. клик
       return
@@ -962,7 +963,7 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  moveHandler = debounce(() => {
+  moveHandler = useDebounce(() => {
     const center = this.map.getCenter()
     const zoom = this.map.getZoom()
     const isZoomChanged = zoom !== this.view.zoom
@@ -1177,7 +1178,6 @@ export default class WebMap extends React.PureComponent {
       })
     }
   }
-
 
   setPopUp = () => {
     const indicatorPopup = popup(popupOptionsIndicators)

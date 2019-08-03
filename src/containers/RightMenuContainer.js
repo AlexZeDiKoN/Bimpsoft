@@ -10,6 +10,7 @@ const mapStateToProps = (store) => {
     viewModes: {
       [viewModesKeys.sidebar]: isSidebarShow,
       [viewModesKeys.settings]: isSettingsShow,
+      [viewModesKeys.volumeMap]: is3DMapMode,
       searchEmpty: searchFailed,
     },
     print: {
@@ -19,6 +20,7 @@ const mapStateToProps = (store) => {
   return {
     isSettingsShow,
     isSidebarShow,
+    is3DMapMode,
     searchFailed,
     printFiles,
   }
