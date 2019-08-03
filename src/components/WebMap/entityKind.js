@@ -43,3 +43,18 @@ export const entityKindOutlinable = [
   entityKind.RECTANGLE,
   entityKind.SQUARE,
 ]
+
+export const GROUPS = {
+  FRONTIERS: [
+    entityKind.CURVE,
+    entityKind.POLYLINE,
+  ],
+  AREAS: [
+    entityKind.AREA,
+    entityKind.POLYGON,
+    entityKind.CIRCLE,
+    entityKind.RECTANGLE,
+    entityKind.SQUARE,
+    entityKind.CONTOUR,
+  ],
+}

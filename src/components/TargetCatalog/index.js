@@ -1,9 +1,9 @@
 import React from 'react'
 import memoizeOne from 'memoize-one'
 import PropTypes from 'prop-types'
+import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
 import i18n from '../../i18n'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
 const _expandedIds = {}
 
