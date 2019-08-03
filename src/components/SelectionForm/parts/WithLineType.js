@@ -3,7 +3,6 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { typeDiv, typeOption } from './render'
-const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 const TYPE_SOLID = 'solid'
@@ -31,19 +30,13 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     const canEdit = this.isCanEdit()
     const value = canEdit
       ? (
-        <>
-          <Select value={ lineType } showArrow={false} onChange={this.lineTypeChangeHandler}>
-            {typeOption(TYPE_SOLID, 'solid', i18n.SOLID)}
-            {typeOption(TYPE_DASHED, 'dashed', i18n.DASHED)}
-            {!simple && typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
-            {!simple && typeOption(TYPE_WAVED2, 'waved2', `${i18n.WAVED} 2`)}
-            {!simple && typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
-          </Select>
-          <IconButton
-            className="icon-button-more"
-            icon={iconNames.MORE_WHITE_DEFAULT}
-          />
-        </>
+        <Select value={ lineType } onChange={this.lineTypeChangeHandler}>
+          {typeOption(TYPE_SOLID, 'solid', i18n.SOLID)}
+          {typeOption(TYPE_DASHED, 'dashed', i18n.DASHED)}
+          {!simple && typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
+          {!simple && typeOption(TYPE_WAVED2, 'waved2', `${i18n.WAVED} 2`)}
+          {!simple && typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
+        </Select>
       )
       : typeDiv(typeInfo.value, typeInfo.text)
 
