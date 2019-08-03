@@ -5,7 +5,7 @@ import { setZoom } from '../store/actions/webMap3D'
 import * as webMap from '../store/actions/webMap'
 
 const mapStateToProps = (state) => {
-  const { webMap: { subordinationLevel, objects, sources, source } } = state
+  const { webMap: { subordinationLevel, objects, sources, source, mode } } = state
   const filteredObjects = objects.filter((item) => item.level >= subordinationLevel)
   return {
     sources,
@@ -13,6 +13,7 @@ const mapStateToProps = (state) => {
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
     zoom: state.webMap3D.zoom || state.webMap.zoom,
+    mode,
   }
 }
 
@@ -21,6 +22,7 @@ const mapDispatchToProps = {
     setZoom(zoom),
     webMap.setSubordinationLevelByZoom(),
   ]),
+  setMapMode: webMap.setMapMode,
   setSource: webMap.setSource,
 }
 

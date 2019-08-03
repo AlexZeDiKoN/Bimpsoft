@@ -25,6 +25,7 @@ export default class MapSourceSelect extends React.Component {
 
   render () {
     const { isShowSources, sources, source, onClickMapSource } = this.props
+    const filteredSources = sources.filter(({ isTerrain, title }) => !isTerrain && title)
     return (
       <IconButton
         placement={'bottomLeft'}
@@ -34,7 +35,7 @@ export default class MapSourceSelect extends React.Component {
         onClick={onClickMapSource}
       >
         {isShowSources && (<ContextMenu ref={this.clickOutsideRef} >
-          {sources.map((sourceObj, index) => {
+          {filteredSources.map((sourceObj, index) => {
             const { title } = sourceObj
             return (
               <ContextMenuItem
