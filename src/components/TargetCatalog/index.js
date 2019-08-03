@@ -10,9 +10,11 @@ const _expandedIds = {}
 export default class TargetCatalog extends React.PureComponent {
   milSymbolRenderer = ({ code, attributes }) => <MilSymbol code={code} amplifiers={attributes}/>
 
-  handleSelect = (selectedId) => this.props.selectedList([ selectedId ])
+  handleSelect = (selectedId) => this.props.setSelectedList([ selectedId ])
 
   getRoots = memoizeOne((byIds) => Object.keys(byIds))
+
+  handleDoubleClick = () => this.props.setScaleToSelection(true)
 
   render () {
     return (
@@ -25,6 +27,7 @@ export default class TargetCatalog extends React.PureComponent {
         milSymbolRenderer={this.milSymbolRenderer}
         onClick={this.handleSelect}
         onFilterTextChange={this.props.setFilterText}
+        onDoubleClick={this.handleDoubleClick}
       />
     )
   }
@@ -35,7 +38,8 @@ TargetCatalog.propTypes = {
   canEdit: PropTypes.bool,
   byIds: PropTypes.object.isRequired,
   setFilterText: PropTypes.func,
-  selectedId: PropTypes.number,
+  selectedList: PropTypes.array,
   onClick: PropTypes.func,
-  selectedList: PropTypes.func,
+  setSelectedList: PropTypes.func,
+  setScaleToSelection: PropTypes.func,
 }
