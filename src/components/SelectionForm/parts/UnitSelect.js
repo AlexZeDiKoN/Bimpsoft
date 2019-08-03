@@ -2,9 +2,8 @@ import React from 'react'
 import { OrgStructureSelect } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-const { names: iconNames, IconButton } = components.icons
 
-const { FormRow } = components.form
+const { form: { FormRow }, icons: { names: iconNames, IconButton } } = components
 
 const UNIT_PATH = [ 'unit' ]
 
@@ -14,6 +13,7 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
   renderOrgStructureSelect () {
     const canEdit = this.isCanEdit()
     const { unit } = this.getResult()
+    console.log(this.props)
     const orgStructures = this.getOrgStructures()
     return (
       <FormRow label={i18n.UNIT}>
@@ -23,10 +23,13 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
           id={unit}
           readOnly={!canEdit}
         />
+        {canEdit &&
         <IconButton
-          className="icon-button-more"
-          icon={iconNames.MORE_WHITE_DEFAULT}
+          className='orgStructureBottom'
+          icon={iconNames.DROP_DOWN_DEFAULT}
         />
+        }
+
       </FormRow>
     )
   }

@@ -273,5 +273,10 @@ export const BCHS_006 = 'Укомплектованість ОВТ'
 // Завдання
 export const ERROR_SAVE_TASK = 'Помилка при створенні завдання'
 export const CREATE_TASK = 'Створити завдання'
+
+// Цілі
+export const AREA = 'Район'
+export const FRONTIER = 'Рубіж'
+
 export const DESTROY = 'Знищити'
 export const DESTROY_DESCRIPTION = (icon, coordinate) => `Знищити об'єкт ${icon} за координатами ${coordinate}`

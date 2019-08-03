@@ -4,7 +4,6 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { typeDiv, typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
-const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 const AMPL_NONE = 'none'
@@ -29,16 +28,10 @@ const WithLineAmplifiers = (Component) => class LineAmplifiersComponent extends 
 
     const value = canEdit
       ? (
-        <>
-        <Select value={lineAmpl} showArrow={false} onChange={this.lineAmplChangeHandler}>
+        <Select value={lineAmpl} onChange={this.lineAmplChangeHandler}>
           {typeOption(AMPL_NONE, 'solid', types[AMPL_NONE].text)}
           {typeOption(AMPL_SHOW_LEVEL, 'solid', types[AMPL_SHOW_LEVEL].text, subordinationLevel)}
         </Select>
-        <IconButton
-          className="icon-button-more"
-          icon={iconNames.MORE_WHITE_DEFAULT}
-        />
-        </>
       )
       : typeDiv('solid', typeInfo.text, typeInfo.value === AMPL_SHOW_LEVEL ? subordinationLevel : null)
 
