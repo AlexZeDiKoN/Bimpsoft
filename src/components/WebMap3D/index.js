@@ -80,7 +80,7 @@ export default class WebMap3D extends React.PureComponent {
             navigationHelpButton={false}
             navigationInstructionsInitiallyVisible={false}
             scene3DOnly={true}
-            // imageryProvider={imageryProvider}
+            imageryProvider={false}
             terrainProvider={this.terrainProvider}
             creditContainer={DIV}
             creditViewport={DIV}
