@@ -60,6 +60,7 @@ build:
       - ./build/static/css/*.*
       - ./build/static/js/*.*
       - ./build/static/media/*.*
+      - ./build/cesium/*.*
 
 deploy-qa-11:
   stage: deploy
