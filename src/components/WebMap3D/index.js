@@ -7,6 +7,7 @@ import memoize from 'memoize-one'
 import { Viewer, Scene, Fog, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height } from '../../utils/mapObjConvertor'
+import * as MapModes from '../../constants/MapModes'
 import SignsLayer from './SignsLayer'
 
 const imageryProviderStableProps = {
@@ -27,15 +28,18 @@ export default class WebMap3D extends React.PureComponent {
         lng: PropTypes.number,
       }).isRequired,
       zoom: PropTypes.number.isRequired,
+      mode: PropTypes.any,
       objects: PropTypes.object,
       sources: PropTypes.array,
       source: PropTypes.object,
       setZoom: PropTypes.func.isRequired,
       setSource: PropTypes.func.isRequired,
+      setMapMode: PropTypes.func.isRequired,
     }
 
     componentDidMount () {
-      const { sources } = this.props
+      const { sources, mode, setMapMode } = this.props
+      mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
       url && (this.terrainProvider = new CesiumTerrainProvider({ url }))
@@ -80,7 +84,7 @@ export default class WebMap3D extends React.PureComponent {
             navigationHelpButton={false}
             navigationInstructionsInitiallyVisible={false}
             scene3DOnly={true}
-            // imageryProvider={imageryProvider}
+            imageryProvider={false}
             terrainProvider={this.terrainProvider}
             creditContainer={DIV}
             creditViewport={DIV}

@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
 import i18n from '../../i18n'
 import { signCodes } from '../../constants/catalogs'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
 const commonPointApp6Code = '10032500001313000000'
 

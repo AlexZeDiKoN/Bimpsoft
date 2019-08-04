@@ -64,7 +64,7 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 const openingAction = 'open'
 const closingAction = 'close'
 
-const openPopUpInterval = 2000
+const openPopUpInterval = 1000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
@@ -219,9 +219,9 @@ const setScaleOptions = (layer, params) => {
   }
 }
 
-const useTry = (func) => () => {
+const useTry = (func) => (...args) => {
   try {
-    func()
+    func(...args)
   } catch (e) {
     console.warn('ERROR: cannot execute function ', func, ' because of ', e)
   }
@@ -310,6 +310,7 @@ export default class WebMap extends React.PureComponent {
     updateObjectGeometry: PropTypes.func,
     onChangeLayer: PropTypes.func,
     onSelectedList: PropTypes.func,
+    onClick: PropTypes.func,
     onFinishDrawNewShape: PropTypes.func,
     onMove: PropTypes.func,
     onRemoveMarker: PropTypes.func,
@@ -865,7 +866,7 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    const { selection: { newShape, preview }, printStatus } = this.props
+    const { selection: { newShape, preview }, printStatus, onClick } = this.props
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -883,6 +884,8 @@ export default class WebMap extends React.PureComponent {
         getTopographicObjects(location)
       }
     }
+
+    onClick(e.latlng)
   }, 200)
 
   onBoxSelectStart = () => {

@@ -6,7 +6,7 @@ import SelectionTypes from '../../../constants/SelectionTypes'
 import { iconOption, iconDiv } from './render'
 
 const { FormRow } = components.form
-const { names: iconNames, IconButton } = components.icons
+const { names: iconNames } = components.icons
 
 const SEGMENT_ARC = 'arc'
 const SEGMENT_DIRECT = 'direct'
@@ -62,16 +62,10 @@ const WithSegment = (Component) => class SegmentComponent extends Component {
     const canEdit = this.isCanEdit()
 
     const value = canEdit ? (
-      <>
-      <Select value={ segment } showArrow={false} onChange={this.segmentChangeHandler} >
+      <Select value={ segment } onChange={this.segmentChangeHandler} >
         {iconOption(SEGMENT_DIRECT, iconNames.BROKEN_LINE_ACTIVE, i18n.SEGMENT_DIRECT)}
         {iconOption(SEGMENT_ARC, iconNames.CURVE_ACTIVE, i18n.SEGMENT_ARC)}
       </Select>
-      <IconButton
-        className="icon-button-more"
-        icon={iconNames.MORE_WHITE_DEFAULT}
-      />
-      </>
     ) : iconDiv(segmentInfo.icon, segmentInfo.text)
 
     return (

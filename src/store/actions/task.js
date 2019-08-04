@@ -7,61 +7,69 @@ import { withNotification } from './asyncAction'
 
 export const SET_ENEMY_ID = action('TASK_SET_ENEMY_ID')
 export const SET_FRIEND_ID = action('TASK_SET_FRIEND_ID')
-export const SET_ADDITION_DATA = action('TASK_SET_ADDITION_DATA')
-export const CHANGE_VALUE = action('TASK_SET_VALUE')
+export const SET_TASK_MODAL_DATA = action('SET_TASK_MODAL_DATA')
 
-export const setAdditionData = (payload) => ({ type: SET_ADDITION_DATA, payload })
-export const setEnemyObject = (payload) => ({ type: SET_ENEMY_ID, payload })
-export const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
+export const TaskTypes = {
+  TARGET: 'target',
+  REQUEST: 'request',
+  OTHER: 'other',
+}
 
-export const changeValue = (payload) => ({ type: CHANGE_VALUE, payload })
+export const setModalData = (payload) => ({ type: SET_TASK_MODAL_DATA, payload })
+const setEnemyObject = (payload) => ({ type: SET_ENEMY_ID, payload })
+const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
 
 export const addObject = (id) => (dispatch, getState) => {
   const { webMap: { objects }, task: { enemyObjectId, friendObjectId } } = getState()
   const object = objects.get(id)
 
-  const actions = []
   if (isFriend(object.code)) {
-    if (enemyObjectId) {
-      actions.push(show({ friendObjectId: id, enemyObjectId }))
-      actions.push(setEnemyObject(null))
-    } else {
-      actions.push(setFriendObject(id))
-    }
+    dispatch(setFriendObject(id))
+    enemyObjectId && showModalRequest({
+      taskTypes: [ TaskTypes.TARGET ],
+      targetObject: objects.get(enemyObjectId),
+      executorObject: object,
+    })
   } else if (isEnemy(object.code)) {
-    if (friendObjectId) {
-      actions.push(show({ friendObjectId, enemyObjectId: id }))
-      actions.push(setFriendObject(null))
-    } else {
-      actions.push(setEnemyObject(id))
-    }
+    dispatch(setEnemyObject(id))
+    friendObjectId && showModalRequest({
+      taskTypes: [ TaskTypes.TARGET ],
+      targetObject: object,
+      executorObject: objects.get(friendObjectId),
+    })
   }
-  dispatch(batchActions(actions))
 }
 
-const getMilsymbolEl = ({ code, id }) =>
-  `<a href="http://milsymbol/?code=${code}&id=${id}">знак</a>`
-const getCoordinateEl = ({ lng, lat }) =>
-  `<a href="http://coordinate/?lng=${lng}&lat=${lat}">текст2</a>`
+export const showTaskByObject = (id) => (dispatch, getState) => {
+  const { webMap: { objects } } = getState()
+  showModalRequest({ taskTypes: [ TaskTypes.REQUEST, TaskTypes.OTHER ], targetObject: objects.get(id) })
+}
+export const showTaskByCoordinate = (coordinate) => (dispatch, getState) => {
+  showModalRequest({ taskTypes: [ TaskTypes.REQUEST, TaskTypes.OTHER ], coordinate })
+}
 
-export const show = ({ enemyObjectId, friendObjectId }) => withNotification(async (dispatch, getState) => {
-  if (enemyObjectId !== null && friendObjectId !== null) {
-    const { webMap: { objects, contactId } } = getState()
-    const enemyObject = objects.find((object) => object && object.id === enemyObjectId)
-    const friendObject = objects.find((object) => object && object.id === friendObjectId)
-
-    const milSymbolEl = getMilsymbolEl(enemyObject)
-    const coordinateEl = getCoordinateEl(enemyObject.point)
-    await dispatch(changeValue({
-      name: i18n.DESTROY,
-      description: i18n.DESTROY_DESCRIPTION(milSymbolEl, coordinateEl),
-      executor: [ { id_user: friendObject.unit } ],
-      captain: [ { id_user: contactId } ],
-      inspectors: [ { id_user: contactId } ],
-    }))
-    window.explorerBridge.getAdditionTaskData()
+const showModalRequest = ({ taskTypes = [], targetObject = null, executorObject = null, coordinate = null }) => {
+  if (targetObject !== null || coordinate !== null) {
+    window.explorerBridge.showTaskModalRequest({
+      taskTypes,
+      unitId: (executorObject && executorObject.unit) || null,
+      object: targetObject ? { id: targetObject.id, code: targetObject.code } : null,
+      coordinate: coordinate || targetObject.point || null,
+    })
   }
-})
+}
+
+export const showModalResponse = (modalData, errors) => (dispatch, getState) => {
+  if (errors && errors.length) {
+    throw new ApiError(errors)
+  }
+  dispatch(batchActions([
+    setEnemyObject(null),
+    setFriendObject(null),
+    setModalData(modalData),
+  ]))
+}
+
 export const save = (task) => withNotification(async (dispatch, getState) => {
   window.explorerBridge.saveTask(task)
 })
@@ -77,8 +85,8 @@ export const sendResponse = (errors) => withNotification(async (dispatch, getSta
   if (errors && errors.length) {
     throw new ApiError(i18n.ERROR_SAVE_TASK)
   }
-  dispatch(changeValue(null))
+  dispatch(setModalData(null))
 })
 export const close = () => withNotification(async (dispatch, getState) => {
-  dispatch(changeValue(null))
+  dispatch(setModalData(null))
 })

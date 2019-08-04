@@ -25,7 +25,7 @@ export default function DirectionNameForm (props) {
   const [ name, setName ] = useState(defaultName)
   useEffect(() => {
     visible && setName(defaultName || '')
-  }, [ visible ])
+  }, [ visible, defaultName ])
 
   const handleChange = ({ target: { value } }) => setName(value)
 
