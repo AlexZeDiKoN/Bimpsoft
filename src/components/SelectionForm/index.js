@@ -90,7 +90,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
-        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.02 }}
+        defaultPosition={{ x: 100, y: 50 }}
       >
         <FocusTrap>
           <HotKeysContainer>

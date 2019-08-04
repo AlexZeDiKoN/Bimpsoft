@@ -8,6 +8,8 @@ import ModalContainer from '../common/ModalContainer'
 
 export default class TaskModal extends React.Component {
   static propTypes = {
+    tasks: PropTypes.array,
+    executorUnitID: PropTypes.number,
     contacts: PropTypes.any,
     contactsLocal: PropTypes.any,
     priorities: PropTypes.any,
@@ -29,6 +31,8 @@ export default class TaskModal extends React.Component {
       contacts,
       contactsLocal,
       priorities,
+      tasks,
+      executorUnitID,
       onClose,
       onSave,
       onSend,
@@ -41,6 +45,8 @@ export default class TaskModal extends React.Component {
         <FocusTrap>
           <TaskComponentStatefull
             value={value}
+            tasks={tasks}
+            executorUnitID={executorUnitID}
             contacts={contacts}
             contactsLocal={contactsLocal}
             priorities={priorities}

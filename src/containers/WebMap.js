@@ -3,7 +3,7 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector,
+  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector,
 } from '../store/selectors'
 import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task } from '../store/actions'
 import {
@@ -59,6 +59,12 @@ const WebMapContainer = connect(
     updateObjectGeometry: webMap.updateObjectGeometry,
     updateObjectAttributes: webMap.updateObjectAttributes,
     editObject: selection.showEditForm,
+    onClick: (latlng) => (dispatch, getState) => {
+      const state = getState()
+      if (taskModeSelector(state)) {
+        dispatch(task.showTaskByCoordinate(latlng))
+      }
+    },
     onSelectedList: (list) => (dispatch, getState) => {
       const state = getState()
       const actions = []
@@ -67,6 +73,10 @@ const WebMapContainer = connect(
           return
         }
         actions.push(task.addObject(list[0]))
+      } else if (taskModeSelector(state)) {
+        if (list.length === 1) {
+          actions.push(task.showTaskByObject(list[0]))
+        }
       }
       actions.push(webMap.setScaleToSelection(false))
       actions.push(selection.selectedList(list))
