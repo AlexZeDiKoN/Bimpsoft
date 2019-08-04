@@ -119,6 +119,7 @@ deploy-qa-11:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 11 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.11\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
@@ -131,6 +132,7 @@ deploy-self(17):
     - 'echo ========= Deploy: 17 (local) ========='
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json e:\maps
     - echo Done
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
@@ -239,6 +241,7 @@ deploy-qa29:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 29 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.29\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
@@ -251,6 +254,7 @@ deploy-qa43:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 43 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.43\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.43\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
