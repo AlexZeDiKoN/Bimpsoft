@@ -19,7 +19,11 @@ const imageryProviderStableProps = {
 const MIN_ZOOM = zoom2height(5)
 const DIV = document.createElement('div')
 
-const buildImageryProvider = memoize((url) => new UrlTemplateImageryProvider({ url, ...imageryProviderStableProps }))
+const buildImageryProvider = memoize((url) => {
+  const provider = new UrlTemplateImageryProvider({ url, ...imageryProviderStableProps })
+  provider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
+  return provider
+})
 
 export default class WebMap3D extends React.PureComponent {
     static propTypes = {
