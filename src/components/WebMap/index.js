@@ -65,6 +65,7 @@ const openingAction = 'open'
 const closingAction = 'close'
 
 const openPopUpInterval = 1000
+const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
@@ -1182,29 +1183,24 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setPopUp = () => {
-    const indicatorPopup = popup(popupOptionsIndicators)
-    return (unitId, indicatorsData, layer) => {
-      const unitData = this.getUnitData(unitId)
-      const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
-      return indicatorPopup
-    }
-  }
-
-  getPopUpRender = this.setPopUp()
-
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastUnit
-    return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
+    const lastUnits = {}
+    const popupInner = popup(popupOptionsIndicators)
+    return (actionType, layer, formationId, object) => {
       const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
-      if (actionType === 'open' && unit) {
-        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        lastUnit = unit
-        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
+      if (actionType === 'open' && object.unit) {
+        if (!lastUnits[object.unit]) {
+          window.explorerBridge.getUnitIndicators(object.unit, formationId)
+          lastUnits[object.unit] = setTimeout(() =>
+            lastUnits[object.unit] = undefined, clearLastUnitIdToGetNewRequestForIndicators)
+        }
+        const unitData = this.getUnitData(object.unit)
+        const renderPopUp = renderIndicators(object, unitData)
+        layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
+        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval
+        )
       } else {
         isPopUpOpen && popupInner._close()
       }
@@ -1217,7 +1213,7 @@ export default class WebMap extends React.PureComponent {
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
-    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
+    const { id, attributes, layer: layerInner, unit } = object
     const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
@@ -1240,16 +1236,16 @@ export default class WebMap extends React.PureComponent {
       layer.on('dblclick', this.dblClickOnLayer)
       isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
-        unit,
         layer,
         layerObject.formationId,
-        indicatorsData,
+        object,
       )
       )
       isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         unit,
         layer,
+        object,
       ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
