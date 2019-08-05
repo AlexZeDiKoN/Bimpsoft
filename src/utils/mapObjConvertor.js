@@ -153,12 +153,12 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
     const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
     const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
     const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
-    const polyLine = {
+    const polyline = {
       width: 2,
       material: Color.RED,
       positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
     }
-    acc.push({ id, position, billboard, polyLine })
+    acc.push({ id, position, billboard, polyline })
   } else if (type === objTypes.POLYLINE || type === objTypes.CURVE || type === objTypes.AREA) {
     const positions = type === objTypes.POLYLINE
       ? geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
