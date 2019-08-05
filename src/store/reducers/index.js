@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { routerReducer as routing } from 'react-router-redux'
 import viewModes from './viewModes'
 import webMap from './webMap'
+import webMap3D from './webMap3D'
 import maps from './maps'
 import layers from './layers'
 import notifications from './notifications'
@@ -16,6 +17,7 @@ import catalogs from './catalogs'
 import ovt from './ovt'
 import targeting from './targeting'
 import task from './task'
+import targetCatalog from './targetCatalog'
 
 export default combineReducers({
   viewModes,
@@ -32,7 +34,9 @@ export default combineReducers({
   flexGrid,
   march,
   catalogs,
+  webMap3D,
   ovt,
   targeting,
   task,
+  targetCatalog,
 })

@@ -3,9 +3,9 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode, targetingObjects,
+  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting } from '../store/actions'
+import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task } from '../store/actions'
 import {
   layersByIdFromStore,
 } from '../store/selectors/layersSelector'
@@ -59,10 +59,19 @@ const WebMapContainer = connect(
     updateObjectGeometry: webMap.updateObjectGeometry,
     updateObjectAttributes: webMap.updateObjectAttributes,
     editObject: selection.showEditForm,
-    onSelectedList: (list) => batchActions([
-      selection.selectedList(list),
-      webMap.setScaleToSelection(false),
-    ]),
+    onSelectedList: (list) => (dispatch, getState) => {
+      const state = getState()
+      const actions = []
+      if (targetingModeSelector(state)) {
+        if (list.length > 1) {
+          return
+        }
+        actions.push(task.addObject(list[0]))
+      }
+      actions.push(webMap.setScaleToSelection(false))
+      actions.push(selection.selectedList(list))
+      dispatch(batchActions(actions))
+    },
     onSelectUnit: (unitID) => batchActions([
       orgStructures.setOrgStructureSelectedId(unitID),
       orgStructures.expandTreeByOrgStructureItem(unitID),

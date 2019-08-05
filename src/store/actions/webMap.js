@@ -7,6 +7,7 @@ import { validateObject } from '../../utils/validation'
 import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
+import * as viewModesKeys from '../../constants/viewModesKeys'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
 
@@ -30,6 +31,7 @@ const stopHeartBeat = () => {
 }
 
 export const actionNames = {
+  SET_MAP_MODE: action('SET_MAP_MODE'),
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
@@ -70,6 +72,11 @@ export const setCoordinatesType = (value) => {
   }
 }
 
+export const setMapMode = (payload) => ({
+  type: actionNames.SET_MAP_MODE,
+  payload,
+})
+
 export const setMarker = (marker) => (dispatch) => {
   const batch = [ {
     type: actionNames.SET_MARKER,
@@ -104,11 +111,15 @@ export const setSubordinationLevel = (value) => ({
   payload: value,
 })
 
+// @TODO: check is this idea working for us
+// (if 3DMap is opened - then for counting use volumeMapZoom instead of using flatMap zoom)
 export const setSubordinationLevelByZoom = (byZoom = null) => (dispatch, getState) => {
-  const { params, webMap: { subordinationAuto, subordinationLevel, zoom } } = getState()
+  const { params, webMap3D: { zoom: volumeZoom },
+    webMap: { subordinationAuto, subordinationLevel, zoom },
+    viewModes: { [viewModesKeys.volumeMap]: isVolume } } = getState()
   if (subordinationAuto) {
     if (byZoom === null) {
-      byZoom = zoom
+      byZoom = !isVolume ? zoom : volumeZoom
     }
     const scale = ZOOMS[byZoom]
     const newSubordinationLevel = params && Number(params[`${paramsNames.SCALE_VIEW_LEVEL}_${scale}`])

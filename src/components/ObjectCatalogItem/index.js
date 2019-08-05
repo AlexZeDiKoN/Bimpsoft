@@ -3,28 +3,8 @@ import './style.css'
 import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
-import { VisibilityButton } from '../../common'
-import { signCodes } from '../../../constants/catalogs'
-import i18n from '../../../i18n'
-
-const commonPointApp6Code = '10032500001301000000'
-
-export const catalogSign = (catalogId) => {
-  let app6Code = commonPointApp6Code
-  let amplifiers = {}
-  const signCode = signCodes[catalogId]
-  if (signCode) {
-    if (typeof signCode === 'object') {
-      const { code, ...rest } = signCode
-      app6Code = code || app6Code
-      amplifiers = { ...amplifiers, ...rest }
-    } else {
-      app6Code = signCode || app6Code
-    }
-  }
-  return [ app6Code, amplifiers ]
-}
+import { VisibilityButton } from '../common'
+import i18n from '../../i18n'
 
 // export const catalogLevel = () => SubordinationLevel.COMMAND
 
@@ -51,27 +31,26 @@ export default class Item extends React.Component {
   clickItem = () => {
     const {
       data: { id, shown },
-      onChange,
+      onVisibleChange,
     } = this.props
-    onChange && onChange(id, shown)
+    onVisibleChange(id, shown)
   }
 
   render () {
-    const { tree, textFilter, data, scrollRef, selectedId, canEdit } = this.props
+    const { tree, textFilter, data, scrollRef, selectedId, canEdit, milSymbolRenderer, onVisibleChange } = this.props
     const { name, id, shown } = data
-    const [ app6Code, amplifiers ] = catalogSign(id)
     const iclasses = [ 'catalog-arrows-right' ]
     if (tree.expanded) {
       iclasses.push('catalog-arrows-bottom')
     }
-    const indicator = (
+    const indicator = onVisibleChange ? (
       <VisibilityButton
         title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
         visible={shown}
         className="layer-item-component-control"
         onChange={this.clickItem}
       />
-    )
+    ) : null
     const icon = tree.canExpand && (
       <Icon
         icon={Icon.names.DROP_RIGHT_DEFAULT}
@@ -101,12 +80,7 @@ export default class Item extends React.Component {
             draggable={canEdit}
             className="catalog-item-content"
           >
-            {app6Code !== null && (
-              <MilSymbol
-                code={app6Code}
-                amplifiers={amplifiers}
-              />
-            )}
+            {milSymbolRenderer(data)}
             <div className="catalog-item-text">
               <HighlightedText text={name} textFilter={textFilter}/>
             </div>
@@ -126,7 +100,7 @@ Item.propTypes = {
   textFilter: PropTypes.instanceOf(TextFilter),
   canEdit: PropTypes.bool,
   onClick: PropTypes.func,
-  onChange: PropTypes.func,
+  onVisibleChange: PropTypes.func,
   onDoubleClick: PropTypes.func,
   scrollRef: PropTypes.any,
 }

@@ -11,6 +11,7 @@ import * as Print from './Print'
 import * as MarchKeys from './March'
 import * as TopoObj from './TopoObj'
 import * as utils from './utils'
+import * as MapModes from './MapModes'
 
 export {
   SubordinationLevel,
@@ -28,4 +29,5 @@ export {
   MarchKeys,
   TopoObj,
   utils,
+  MapModes,
 }
