@@ -113,7 +113,10 @@ export default class WebMap3D extends React.PureComponent {
             />
             <ScreenSpaceCameraController
               maximumZoomDistance={MIN_ZOOM}
-              tiltEventTypes={CameraEventType.RIGHT_DRAG}
+              tiltEventTypes={[
+                CameraEventType.RIGHT_DRAG,
+                CameraEventType.PINCH,
+              ]}
               rotateEventTypes={CameraEventType.LEFT_DRAG}
               lookEventTypes={[
                 CameraEventType.MIDDLE_DRAG,
@@ -121,6 +124,7 @@ export default class WebMap3D extends React.PureComponent {
               ]}
               zoomEventTypes={[
                 CameraEventType.WHEEL,
+                CameraEventType.PINCH,
                 { eventType: CameraEventType.LEFT_DRAG, modifier: KeyboardEventModifier.CTRL },
               ]}
             />
