@@ -1,18 +1,24 @@
 import React from 'react'
 import memoizeOne from 'memoize-one'
 import PropTypes from 'prop-types'
+import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
 import i18n from '../../i18n'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 
 const _expandedIds = {}
 
-export default class TargetCatalog extends React.PureComponent {
-  milSymbolRenderer = ({ code, attributes }) => <MilSymbol code={code} amplifiers={attributes}/>
+const _defaultTargetSymbolCode = '10032500001603000000'
 
-  handleSelect = (selectedId) => this.props.selectedList([ selectedId ])
+export default class TargetCatalog extends React.PureComponent {
+  milSymbolRenderer = ({ code, attributes }) => (
+    <MilSymbol code={code || _defaultTargetSymbolCode} amplifiers={attributes}/>
+  )
+
+  handleSelect = (selectedId) => this.props.setSelectedList([ selectedId ])
 
   getRoots = memoizeOne((byIds) => Object.keys(byIds))
+
+  handleDoubleClick = () => this.props.setScaleToSelection(true)
 
   render () {
     return (
@@ -25,6 +31,7 @@ export default class TargetCatalog extends React.PureComponent {
         milSymbolRenderer={this.milSymbolRenderer}
         onClick={this.handleSelect}
         onFilterTextChange={this.props.setFilterText}
+        onDoubleClick={this.handleDoubleClick}
       />
     )
   }
@@ -35,7 +42,8 @@ TargetCatalog.propTypes = {
   canEdit: PropTypes.bool,
   byIds: PropTypes.object.isRequired,
   setFilterText: PropTypes.func,
-  selectedId: PropTypes.number,
+  selectedList: PropTypes.array,
   onClick: PropTypes.func,
-  selectedList: PropTypes.func,
+  setSelectedList: PropTypes.func,
+  setScaleToSelection: PropTypes.func,
 }

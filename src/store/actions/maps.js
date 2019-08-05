@@ -1,6 +1,7 @@
+import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { updateColorByLayerId } from './layers'
-import { asyncAction, maps, layers, webMap, flexGrid } from './index'
+import { asyncAction, maps, layers, webMap, flexGrid, selection } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
@@ -52,6 +53,21 @@ export const clearVariant = (variantId = null, fromExplorer = false) => {
 export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
   await dispatch(setVariant(mapId, variantId))
   return dispatch(openMapFolder(mapId, null, true))
+}
+
+export const openMapByCoord = (mapId, coordinate) => async (dispatch) => {
+  await dispatch(batchActions([
+    openMapFolder(mapId),
+    webMap.setCenter(coordinate),
+  ]))
+}
+
+export const openMapByObject = (mapId, object) => async (dispatch) => {
+  await dispatch(openMapFolder(mapId, object.layer))
+  await dispatch(batchActions([
+    webMap.setScaleToSelection(false),
+    selection.selectedList([ object.id ]),
+  ]))
 }
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(

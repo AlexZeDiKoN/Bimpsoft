@@ -1,69 +1,143 @@
 @import "../../../../assets/styles/_variables.less";
 
-.area-container{
+.area-container {
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 590px;
   max-height: 730px;
-    &__item{
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      .dzvin-form-row{
-        display: flex;
-        flex-direction: column;
-        height: 68px;
-        align-items: flex-start;
-        .dzvin-form-input{
-            margin: auto;
-            position: relative;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .dzvin-form-row {
+      display: flex;
+      flex-direction: column;
+      height: 68px;
+      align-items: flex-start;
+
+      .dzvin-form-input {
+        width: 100%;
+        position: relative;
+
+        input[readonly] {
+          background: #f5f5f5;
+          pointer-events: none;
         }
-        label{
-          margin-bottom: 0.35em;
-          margin-left: 0.5em;
-          font-size: 12px;
-          display: block;
-          white-space: nowrap;
-          overflow: hidden;
-          margin-right: 0;
-          text-overflow: ellipsis;
+
+        .ant-select {
+          width: 100%;
+        }
+
+        .icon-button {
+          position: absolute;
+          top: -4px;
+          pointer-events: none;
+          right: -4px;
+          transform: scale(0.6);
         }
       }
+
+      label {
+        margin-bottom: 0.35em;
+        margin-left: 0.5em;
+        font-size: 12px;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        margin-right: 0;
+        text-overflow: ellipsis;
+      }
     }
-    &__itemWidth{
-        width: 50%;
-        .org-structures-select{
-          height: 2.216em;
-          input{
-            display: block;
-            box-sizing: border-box;
-            background-color: @input-background-color;
-            border: 1px solid @select-border-color;
-            border-top-width: 1.02px;
-            border-radius: 4px;
-            outline: none;
-            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-            height: 30px;
-            width: 168px;
-            padding-left: 11px;
-            padding-right: 22px;
-            user-select: none;
-            &:focus, &:hover{
-              outline-color: @select-outline-color;
-              box-shadow: 0 0 0 2px @select-box-shadow-color;
-              border-color: @select-outline-color;
-            }
-          }
-          .filter-tree-select-values-container{
-            position: fixed;
-          }
+  }
+
+  &__itemWidth {
+    width: 50%;
+
+    .org-structures-select {
+      height: 2.3em;
+
+      input {
+        display: block;
+        box-sizing: border-box;
+        background-color: @input-background-color;
+        border: 1px solid @select-border-color;
+        border-top-width: 1.02px;
+        border-radius: 4px;
+        outline: none;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        height: 32px;
+        padding-left: 11px;
+        padding-right: 22px;
+        user-select: none;
+
+        &:focus, &:hover {
+          outline-color: @select-outline-color;
+          box-shadow: 0 0 0 2px @select-box-shadow-color;
+          border-color: @select-outline-color;
         }
+      }
+
+      .filter-tree-select-values-container {
+        position: fixed;
+      }
     }
-  .dzvin-form-dark-part{
+
+    .ant-select-open {
+      .ant-select-arrow {
+        transform: rotate(180deg) scale(0.6);
+      }
+    }
+
+    .ant-select-arrow {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid @toolbar-color;
+      top: 55%;
+      transition: 0.3s;
+      transform: scale(0.6);
+      right: 7px;
+
+      .anticon {
+        display: none;
+      }
+    }
+  }
+
+  .dzvin-form-dark-part {
     min-height: 250px;
     height: 100%;
     margin: 0;
+
+    .shape-form-scrollable {
+      .dzvin-form-item {
+        .ant-select-open {
+          .ant-select-arrow {
+            transform: rotate(180deg) scale(0.6);
+          }
+        }
+
+        .ant-select-arrow {
+          width: 0;
+          height: 0;
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          border-top: 10px solid @toolbar-color;
+          top: 55%;
+          transition: 0.3s;
+          transform: scale(0.6);
+          right: 7px;
+
+          .anticon {
+            display: none;
+          }
+        }
+      }
+    }
   }
 }

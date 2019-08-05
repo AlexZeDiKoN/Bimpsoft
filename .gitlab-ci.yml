@@ -60,6 +60,56 @@ build:
       - ./build/static/css/*.*
       - ./build/static/js/*.*
       - ./build/static/media/*.*
+      - ./build/cesium/*.*
+      - ./build/cesium/Assets/*.*
+      - ./build/cesium/Assets/IAU2006_XYS/*.*
+      - ./build/cesium/Assets/Images/*.*
+      - ./build/cesium/Assets/Textures/*.*
+      - ./build/cesium/Assets/Textures/LensFlare/*.*
+      - ./build/cesium/Assets/Textures/maki/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/4/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/5/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/6/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/7/*.*
+      - ./build/cesium/Assets/Textures/SkyBox/*.*
+      - ./build/cesium/ThirdParty/*.*
+      - ./build/cesium/ThirdParty/Workers/*.*
+      - ./build/cesium/Widgets/*.*
+      - ./build/cesium/Widgets/Animation/*.*
+      - ./build/cesium/Widgets/BaseLayerPicker/*.*
+      - ./build/cesium/Widgets/Cesium3DTilesInspector/*.*
+      - ./build/cesium/Widgets/CesiumInspector/*.*
+      - ./build/cesium/Widgets/CesiumWidget/*.*
+      - ./build/cesium/Widgets/FullscreenButton/*.*
+      - ./build/cesium/Widgets/Geocoder/*.*
+      - ./build/cesium/Widgets/Images/*.*
+      - ./build/cesium/Widgets/Images/ImageryProviders/*.*
+      - ./build/cesium/Widgets/Images/NavigationHelp/*.*
+      - ./build/cesium/Widgets/Images/TerrainProviders/*.*
+      - ./build/cesium/Widgets/InfoBox/*.*
+      - ./build/cesium/Widgets/NavigationHelpButton/*.*
+      - ./build/cesium/Widgets/PerformanceWatchdog/*.*
+      - ./build/cesium/Widgets/ProjectionPicker/*.*
+      - ./build/cesium/Widgets/SceneModePicker/*.*
+      - ./build/cesium/Widgets/SelectionIndicator/*.*
+      - ./build/cesium/Widgets/Timeline/*.*
+      - ./build/cesium/Widgets/Viewer/*.*
+      - ./build/cesium/Widgets/VRButton/*.*
+      - ./build/cesium/Workers/*.*
 
 deploy-qa-11:
   stage: deploy
@@ -69,6 +119,7 @@ deploy-qa-11:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 11 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.11\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.11\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
@@ -81,6 +132,7 @@ deploy-self(17):
     - 'echo ========= Deploy: 17 (local) ========='
     - rmdir /s /q C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json e:\maps
     - echo Done
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
@@ -130,6 +182,56 @@ build-master:
       - ./build/static/css/*.*
       - ./build/static/js/*.*
       - ./build/static/media/*.*
+      - ./build/cesium/*.*
+      - ./build/cesium/Assets/*.*
+      - ./build/cesium/Assets/IAU2006_XYS/*.*
+      - ./build/cesium/Assets/Images/*.*
+      - ./build/cesium/Assets/Textures/*.*
+      - ./build/cesium/Assets/Textures/LensFlare/*.*
+      - ./build/cesium/Assets/Textures/maki/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/4/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/5/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/6/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/7/*.*
+      - ./build/cesium/Assets/Textures/SkyBox/*.*
+      - ./build/cesium/ThirdParty/*.*
+      - ./build/cesium/ThirdParty/Workers/*.*
+      - ./build/cesium/Widgets/*.*
+      - ./build/cesium/Widgets/Animation/*.*
+      - ./build/cesium/Widgets/BaseLayerPicker/*.*
+      - ./build/cesium/Widgets/Cesium3DTilesInspector/*.*
+      - ./build/cesium/Widgets/CesiumInspector/*.*
+      - ./build/cesium/Widgets/CesiumWidget/*.*
+      - ./build/cesium/Widgets/FullscreenButton/*.*
+      - ./build/cesium/Widgets/Geocoder/*.*
+      - ./build/cesium/Widgets/Images/*.*
+      - ./build/cesium/Widgets/Images/ImageryProviders/*.*
+      - ./build/cesium/Widgets/Images/NavigationHelp/*.*
+      - ./build/cesium/Widgets/Images/TerrainProviders/*.*
+      - ./build/cesium/Widgets/InfoBox/*.*
+      - ./build/cesium/Widgets/NavigationHelpButton/*.*
+      - ./build/cesium/Widgets/PerformanceWatchdog/*.*
+      - ./build/cesium/Widgets/ProjectionPicker/*.*
+      - ./build/cesium/Widgets/SceneModePicker/*.*
+      - ./build/cesium/Widgets/SelectionIndicator/*.*
+      - ./build/cesium/Widgets/Timeline/*.*
+      - ./build/cesium/Widgets/Viewer/*.*
+      - ./build/cesium/Widgets/VRButton/*.*
+      - ./build/cesium/Workers/*.*
 
 deploy-qa29:
   stage: deploy
@@ -139,10 +241,11 @@ deploy-qa29:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 29 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.29\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.29\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
-
+#
 deploy-qa43:
   stage: deploy
   <<: *base
@@ -151,6 +254,7 @@ deploy-qa43:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 43 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.97.43\c$\%deployDir%
+    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.43\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
@@ -167,6 +271,7 @@ deploy-zip:
     - echo %pack%
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
+    - copy index.json .\build
     - cd build
     - echo Zipping...
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'

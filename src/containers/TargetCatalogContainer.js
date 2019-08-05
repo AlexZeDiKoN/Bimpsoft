@@ -1,20 +1,19 @@
 import { connect } from 'react-redux'
 import TargetCatalog from '../components/TargetCatalog'
-import { selection, targetCatalog } from '../store/actions'
+import { selection, targetCatalog, webMap } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import { targetObjects } from '../store/selectors'
 
-const mapStateToProps = (state) => {
-  return {
-    byIds: targetObjects(state),
-    selectedList: state.selection.list,
-    textFilter: state.targetCatalog.textFilter,
-  }
-}
+const mapStateToProps = (state) => ({
+  byIds: targetObjects(state),
+  selectedList: state.selection.list,
+  textFilter: state.targetCatalog.textFilter,
+})
 
 const mapDispatchToProps = {
   setFilterText: targetCatalog.setFilterText,
-  selectedList: selection.selectedList,
+  setSelectedList: selection.selectedList,
+  setScaleToSelection: webMap.setScaleToSelection,
 }
 
 const TargetCatalogContainer = connect(

@@ -3,7 +3,6 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { nodesDiv, nodesOption } from './render'
-const { names: iconNames, IconButton } = components.icons
 
 const { FormRow } = components.form
 
@@ -29,17 +28,11 @@ const WithLineNodes = (Component) => class LineNodesComponent extends Component 
 
     const value = canEdit
       ? (
-        <>
-        <Select value={lineNodes} showArrow={false} onChange={this.lineNodesChangeHandler}>
+        <Select value={lineNodes} onChange={this.lineNodesChangeHandler}>
           {nodesOption(types[NODE_NONE])}
           {nodesOption(types[NODE_CROSS_CIRCLE])}
           {nodesOption(types[NODE_SQUARE])}
         </Select>
-        <IconButton
-          className="icon-button-more"
-          icon={iconNames.MORE_WHITE_DEFAULT}
-        />
-        </>
       )
       : nodesDiv(typeInfo)
 

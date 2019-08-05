@@ -13,8 +13,8 @@ const ACTION_OPEN = 'open'
 const ACTION_OPEN_VARIANT = 'open variant'
 const ACTION_CLOSE_VARIANT = 'close variant'
 const ACTION_VARIANT_RESULT = 'variant result'
-const GET_ADDITION_TASK_DATA = 'get addition task data'
-const GET_ADDITION_TASK_DATA_RESPONSE = 'get addition task data response'
+const SHOW_TASK_MODAL_REQUEST = 'show task modal request'
+const SHOW_TASK_MODAL_RESPONSE = 'show task modal response'
 const SAVE_TASK = 'save task'
 const SAVE_TASK_RESPONSE = 'save task response'
 const SEND_TASK = 'send task'
@@ -24,6 +24,8 @@ const ACTION_SHOW_UNIT = 'show unit'
 const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
 const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
+const ACTION_OPEN_COORDINATE = 'open coordinate'
+const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -91,16 +93,26 @@ export default class ExplorerBridge {
           catchError(maps.clearVariant)(variantId, true)(this.store.dispatch)
           break
         }
-        case GET_ADDITION_TASK_DATA_RESPONSE: {
-          catchError(task.setAdditionData)(data)(this.store.dispatch)
+        case SHOW_TASK_MODAL_RESPONSE: {
+          catchError(task.showModalResponse)(data.modalData, data.errors)(this.store.dispatch)
           break
         }
         case SAVE_TASK_RESPONSE: {
-          catchError(task.saveResponse)(data.errors)(this.store.dispatch)
+          catchError(task.saveResponse)(data.errors, data.id)(this.store.dispatch)
           break
         }
         case SEND_TASK_RESPONSE: {
           catchError(task.sendResponse)(data.errors)(this.store.dispatch)
+          break
+        }
+        case ACTION_OPEN_COORDINATE: {
+          const { mapId, coordinate } = data
+          catchError(maps.openMapByCoord)(mapId, coordinate)(this.store.dispatch)
+          break
+        }
+        case ACTION_OPEN_MILSYMBOL: {
+          const { mapId, milSymbol: object } = data
+          catchError(maps.openMapByObject)(mapId, object)(this.store.dispatch)
           break
         }
         default:
@@ -114,7 +126,7 @@ export default class ExplorerBridge {
 
   variantResult = (variantId, result) => this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
 
-  getAdditionTaskData = () => this.send({ action: GET_ADDITION_TASK_DATA })
+  showTaskModalRequest = (payload) => this.send({ action: SHOW_TASK_MODAL_REQUEST, payload })
 
   saveTask = (payload) => this.send({ action: SAVE_TASK, payload })
 
