@@ -24,6 +24,8 @@ const ACTION_SHOW_UNIT = 'show unit'
 const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
 const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
+const ACTION_OPEN_COORDINATE = 'open coordinate'
+const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -96,11 +98,21 @@ export default class ExplorerBridge {
           break
         }
         case SAVE_TASK_RESPONSE: {
-          catchError(task.saveResponse)(data.errors)(this.store.dispatch)
+          catchError(task.saveResponse)(data.errors, data.id)(this.store.dispatch)
           break
         }
         case SEND_TASK_RESPONSE: {
           catchError(task.sendResponse)(data.errors)(this.store.dispatch)
+          break
+        }
+        case ACTION_OPEN_COORDINATE: {
+          const { mapId, coordinate } = data
+          catchError(maps.openMapByCoord)(mapId, coordinate)(this.store.dispatch)
+          break
+        }
+        case ACTION_OPEN_MILSYMBOL: {
+          const { mapId, milSymbol: object } = data
+          catchError(maps.openMapByObject)(mapId, object)(this.store.dispatch)
           break
         }
         default:

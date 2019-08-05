@@ -271,6 +271,7 @@ deploy-zip:
     - echo %pack%
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
+    - copy index.json .\build
     - cd build
     - echo Zipping...
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'

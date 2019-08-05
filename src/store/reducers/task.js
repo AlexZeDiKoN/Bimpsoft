@@ -16,6 +16,16 @@ export default function reducer (state = initState, action) {
     case task.SET_TASK_MODAL_DATA: {
       return { ...state, modalData: payload }
     }
+    case task.SET_TASK_VALUE: {
+      const result = {
+        ...state,
+        modalData: {
+          ...state.modalData,
+          value: { ...(state.modalData && state.modalData.value), ...payload },
+        },
+      }
+      return result
+    }
     default:
       return state
   }
