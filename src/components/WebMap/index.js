@@ -1200,7 +1200,7 @@ export default class WebMap extends React.PureComponent {
       clearTimeout(timer)
       if (actionType === 'open') {
         clearTimeout(timer)
-        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
+        lastUnit !== unit && !indicatorsData.unit && window.explorerBridge.getUnitIndicators(unit, formationId)
         lastUnit = unit
         timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
       } else {
