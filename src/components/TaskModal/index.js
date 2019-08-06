@@ -40,27 +40,28 @@ export default class TaskModal extends React.Component {
       onSend,
     } = this.props
     return (
-      <Wrapper
-        title={i18n.CREATE_TASK}
-        onClose={onClose}
-        className="not-clickable-area"
-      >
-        <FocusTrap>
-          <div tabIndex={0} style={STYLE}>
-            <TaskComponentStatefull
-              value={value}
-              tasks={tasks}
-              executorUnitID={executorUnitID}
-              contacts={contacts}
-              contactsLocal={contactsLocal}
-              priorities={priorities}
-              onSave={onSave}
-              onSend={onSend}
-              onCancel={onClose}
-            />
-          </div>
-        </FocusTrap>
-      </Wrapper>
+      <div className="not-clickable-area">
+        <Wrapper
+          title={i18n.CREATE_TASK}
+          onClose={onClose}
+        >
+          <FocusTrap>
+            <div tabIndex={0} style={STYLE}>
+              <TaskComponentStatefull
+                value={value}
+                tasks={tasks}
+                executorUnitID={executorUnitID}
+                contacts={contacts}
+                contactsLocal={contactsLocal}
+                priorities={priorities}
+                onSave={onSave}
+                onSend={onSend}
+                onCancel={onClose}
+              />
+            </div>
+          </FocusTrap>
+        </Wrapper>
+      </div>
     )
   }
 }
