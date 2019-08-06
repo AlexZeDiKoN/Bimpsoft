@@ -37,7 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
-import { isFriend, isEnemy } from '../../utils/affiliations'
+import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -65,6 +65,7 @@ const openingAction = 'open'
 const closingAction = 'close'
 
 const openPopUpInterval = 1000
+const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
@@ -305,6 +306,7 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
+    targetingMode: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -496,11 +498,11 @@ export default class WebMap extends React.PureComponent {
         const object = objects.find((object) => object && object.id === id)
         return object && object.type === entityKind.POINT
       })
-    const selectedFriends = selectedPoints
+    /* const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
-      })
+      }) */
     const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
@@ -509,12 +511,12 @@ export default class WebMap extends React.PureComponent {
     const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
       : null
-    const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
+    /* const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
       ? selectedFriends[0]
-      : null
-    const buildingObjects = targetingObjects.size >= 1 && friend
+      : null */
+    const buildingObjects = /* targetingObjects.size >= 1 && friend
       ? [ friend ]
-      : targetingObjects.map((object) => object.id).sort().toArray()
+      : */ targetingObjects.map((object) => object.id).sort().toArray()
     const hash = `${JSON.stringify(buildingObjects)}${enemy}`
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
@@ -1182,32 +1184,25 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setPopUp = () => {
-    const indicatorPopup = popup(popupOptionsIndicators)
-    return (unitId, indicatorsData, layer) => {
-      const unitData = this.getUnitData(unitId)
-      const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
-      return indicatorPopup
-    }
-  }
-
-  getPopUpRender = this.setPopUp()
-
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastUnit
-    return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
+    const lastUnits = {}
+    const popupInner = popup(popupOptionsIndicators)
+    return (actionType, layer, formationId, object) => {
       const isPopUpOpen = popupInner._close()
       clearTimeout(timer)
-      if (actionType === 'open') {
-        clearTimeout(timer)
-        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        lastUnit = unit
-        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
+      if (actionType === 'open' && object.unit) {
+        if (!lastUnits[object.unit]) {
+          window.explorerBridge.getUnitIndicators(object.unit, formationId)
+          lastUnits[object.unit] = setTimeout(() =>
+            lastUnits[object.unit] = undefined, clearLastUnitIdToGetNewRequestForIndicators)
+        }
+        const unitData = this.getUnitData(object.unit)
+        const renderPopUp = renderIndicators(object, unitData)
+        layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
+        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval
+        )
       } else {
-        clearTimeout(timer)
         isPopUpOpen && popupInner._close()
       }
     }
@@ -1219,7 +1214,7 @@ export default class WebMap extends React.PureComponent {
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
-    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
+    const { id, attributes, layer: layerInner, unit } = object
     const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
@@ -1242,16 +1237,16 @@ export default class WebMap extends React.PureComponent {
       layer.on('dblclick', this.dblClickOnLayer)
       isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
-        unit,
         layer,
         layerObject.formationId,
-        indicatorsData,
+        object,
       )
       )
       isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         unit,
         layer,
+        object,
       ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
@@ -1438,7 +1433,7 @@ export default class WebMap extends React.PureComponent {
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
+    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100 || this.props.targetingMode
     const targetLayer = object && object.layer
     let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {

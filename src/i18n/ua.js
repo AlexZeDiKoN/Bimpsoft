@@ -272,7 +272,12 @@ export const BCHS_006 = 'Укомплектованість ОВТ'
 
 // Завдання
 export const ERROR_SAVE_TASK = 'Помилка при створенні завдання'
+export const ERROR_SEND_TASK = 'Помилка при відправленні завдання'
 export const CREATE_TASK = 'Створити завдання'
+export const TASK_SAVED = 'Завдання збережене'
+export const TASK_SENT = 'Завдання відправлене'
+export const CREATE_TASK_ERROR = 'Неможливо створити завдання'
+export const CREATE_TASK_ERROR_UNIT_NOT_DEFINED = `Для створення завдання необхідно прив’язати умовний знак до підрозділу`
 
 // Цілі
 export const AREA = 'Район'

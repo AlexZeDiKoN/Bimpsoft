@@ -53,6 +53,7 @@ const WebMapContainer = connect(
     catalogs: state.catalogs.byIds,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
+    targetingMode: targetingModeSelector(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -65,22 +66,24 @@ const WebMapContainer = connect(
         dispatch(task.showTaskByCoordinate(latlng))
       }
     },
-    onSelectedList: (list) => (dispatch, getState) => {
+    onSelectedList: (list) => async (dispatch, getState) => {
       const state = getState()
-      const actions = []
       if (targetingModeSelector(state)) {
         if (list.length > 1) {
           return
         }
-        actions.push(task.addObject(list[0]))
+        if (list.length === 1) {
+          await dispatch(task.addObject(list[ 0 ]))
+        }
       } else if (taskModeSelector(state)) {
         if (list.length === 1) {
-          actions.push(task.showTaskByObject(list[0]))
+          await dispatch(task.showTaskByObject(list[0]))
         }
       }
-      actions.push(webMap.setScaleToSelection(false))
-      actions.push(selection.selectedList(list))
-      dispatch(batchActions(actions))
+      await dispatch(batchActions([
+        webMap.setScaleToSelection(false),
+        selection.selectedList(list),
+      ]))
     },
     onSelectUnit: (unitID) => batchActions([
       orgStructures.setOrgStructureSelectedId(unitID),
