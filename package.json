@@ -3,9 +3,9 @@
   "version": "8.03.456",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^8.3.259",
-    "@DZVIN/MilSymbolEditor": "^8.3.156",
-    "@DZVIN/components": "^8.3.23",
+    "@DZVIN/CommonComponents": "^8.3.260",
+    "@DZVIN/MilSymbolEditor": "^8.3.157",
+    "@DZVIN/components": "^8.3.26",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",

@@ -4,6 +4,7 @@ import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
 import { isFriend, isEnemy } from '../../utils/affiliations'
 import { activeMapSelector } from '../selectors'
+import * as notifications from './notifications'
 import { withNotification } from './asyncAction'
 
 export const SET_ENEMY_ID = action('TASK_SET_ENEMY_ID')
@@ -22,31 +23,31 @@ export const setValue = (payload) => ({ type: SET_TASK_VALUE, payload })
 const setEnemyObject = (payload) => ({ type: SET_ENEMY_ID, payload })
 const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
 
-export const addObject = (id) => (dispatch, getState) => {
+export const addObject = (id) => withNotification(async (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects }, task: { enemyObjectId, friendObjectId } } = state
   const object = objects.get(id)
 
-  if (isFriend(object.code)) {
-    dispatch(setFriendObject(id))
-    enemyObjectId && showModalRequest({
+  if (object && isFriend(object.code)) {
+    await dispatch(setFriendObject(id))
+    enemyObjectId && await showModalRequest({
       mapId: activeMapSelector(state),
       taskTypes: [ TaskTypes.TARGET ],
       targetObject: objects.get(enemyObjectId),
       executorObject: object,
     })
-  } else if (isEnemy(object.code)) {
-    dispatch(setEnemyObject(id))
-    friendObjectId && showModalRequest({
+  } else if (object && isEnemy(object.code)) {
+    await dispatch(setEnemyObject(id))
+    friendObjectId && await showModalRequest({
       mapId: activeMapSelector(state),
       taskTypes: [ TaskTypes.TARGET ],
       targetObject: object,
       executorObject: objects.get(friendObjectId),
     })
   }
-}
+})
 
-export const showTaskByObject = (id) => (dispatch, getState) => {
+export const showTaskByObject = (id) => withNotification(async (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
   showModalRequest({
@@ -54,18 +55,21 @@ export const showTaskByObject = (id) => (dispatch, getState) => {
     taskTypes: [ TaskTypes.REQUEST, TaskTypes.OTHER ],
     targetObject: objects.get(id),
   })
-}
-export const showTaskByCoordinate = (coordinate) => (dispatch, getState) => {
+})
+export const showTaskByCoordinate = (coordinate) => withNotification(async (dispatch, getState) => {
   const state = getState()
   showModalRequest({
     mapId: activeMapSelector(state),
     taskTypes: [ TaskTypes.REQUEST, TaskTypes.OTHER ],
     coordinate,
   })
-}
+})
 
 const showModalRequest = ({ mapId, taskTypes = [], targetObject = null, executorObject = null, coordinate = null }) => {
   if (targetObject !== null || coordinate !== null) {
+    if (executorObject !== null && !executorObject.unit) {
+      throw new ApiError(i18n.CREATE_TASK_ERROR_UNIT_NOT_DEFINED, i18n.CREATE_TASK_ERROR, true)
+    }
     const object = targetObject
       ? { map: mapId, id: targetObject.id, code: targetObject.code, layer: targetObject.layer }
       : null
@@ -85,7 +89,7 @@ const showModalRequest = ({ mapId, taskTypes = [], targetObject = null, executor
 
 export const showModalResponse = (modalData, errors) => withNotification((dispatch, getState) => {
   if (errors && errors.length) {
-    throw new ApiError(errors)
+    throw new ApiError(errors, i18n.CREATE_TASK_ERROR, true)
   }
   dispatch(batchActions([
     setEnemyObject(null),
@@ -102,7 +106,12 @@ export const saveResponse = (errors, id) => withNotification(async (dispatch, ge
   if (errors && errors.length) {
     throw new ApiError(i18n.ERROR_SAVE_TASK)
   }
-  dispatch(setValue({ id }))
+  await dispatch(setValue({ id }))
+  await dispatch(notifications.push({
+    type: 'success',
+    message: i18n.TASK_SENT,
+    description: i18n.TASK_SAVED,
+  }))
 })
 export const send = (task) => withNotification(async (dispatch, getState) => {
   await dispatch(setValue(task))
@@ -110,8 +119,13 @@ export const send = (task) => withNotification(async (dispatch, getState) => {
 })
 export const sendResponse = (errors) => withNotification(async (dispatch, getState) => {
   if (errors && errors.length) {
-    throw new ApiError(i18n.ERROR_SAVE_TASK)
+    throw new ApiError(i18n.ERROR_SEND_TASK)
   }
+  await dispatch(notifications.push({
+    type: 'success',
+    message: i18n.CREATE_TASK,
+    description: i18n.TASK_SENT,
+  }))
   dispatch(setModalData(null))
 })
 export const close = () => withNotification(async (dispatch, getState) => {
