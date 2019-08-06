@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions/lib/index'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap } from '../store/actions'
+import { viewModes, layers, webMap, task, selection } from '../store/actions'
 import { canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 import { MapModes } from '../constants'
@@ -65,7 +65,14 @@ const mapDispatchToProps = {
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
   onChangeTargetingMode: (targetingMode) => webMap.setMapMode(targetingMode ? MapModes.TARGET : MapModes.NONE),
-  onChangeTaskMode: (taskMode) => webMap.setMapMode(taskMode ? MapModes.TASK : MapModes.NONE),
+  onChangeTaskMode: (taskMode) => taskMode
+    ? batchActions([
+      webMap.setMapMode(MapModes.TASK),
+      task.setEnemyObject(null),
+      task.setFriendObject(null),
+      selection.selectedList([]),
+    ])
+    : webMap.setMapMode(MapModes.NONE),
   onClick3D: () => viewModes.viewModeToggle(viewModesKeys.volumeMap),
 }
 const LeftMenuContainer = connect(

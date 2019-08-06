@@ -306,7 +306,6 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
-    targetingMode: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -1433,7 +1432,7 @@ export default class WebMap extends React.PureComponent {
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100 || this.props.targetingMode
+    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
     const targetLayer = object && object.layer
     let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {

@@ -20,8 +20,8 @@ export const TaskTypes = {
 
 export const setModalData = (payload) => ({ type: SET_TASK_MODAL_DATA, payload })
 export const setValue = (payload) => ({ type: SET_TASK_VALUE, payload })
-const setEnemyObject = (payload) => ({ type: SET_ENEMY_ID, payload })
-const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
+export const setEnemyObject = (payload) => ({ type: SET_ENEMY_ID, payload })
+export const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
 
 export const addObject = (id) => withNotification(async (dispatch, getState) => {
   const state = getState()
@@ -98,13 +98,15 @@ export const showModalResponse = (modalData, errors) => withNotification((dispat
   ]))
 })
 
+const messageToText = (message) => (message && message.message) ? message.message : String(message)
+
 export const save = (task) => withNotification(async (dispatch, getState) => {
   await dispatch(setValue(task))
   window.explorerBridge.saveTask(task)
 })
 export const saveResponse = (errors, id) => withNotification(async (dispatch, getState) => {
   if (errors && errors.length) {
-    throw new ApiError(i18n.ERROR_SAVE_TASK)
+    throw new ApiError(errors.map(messageToText).join(), i18n.ERROR_SAVE_TASK)
   }
   await dispatch(setValue({ id }))
   await dispatch(notifications.push({
@@ -119,7 +121,7 @@ export const send = (task) => withNotification(async (dispatch, getState) => {
 })
 export const sendResponse = (errors) => withNotification(async (dispatch, getState) => {
   if (errors && errors.length) {
-    throw new ApiError(i18n.ERROR_SEND_TASK)
+    throw new ApiError(errors.map(messageToText).join(), i18n.ERROR_SEND_TASK)
   }
   await dispatch(notifications.push({
     type: 'success',
