@@ -189,3 +189,6 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
   }
   return acc
 }, []))
+
+export const fixTilesUrl = (url) =>
+  process.env.NODE_ENV === 'development' ? new URL(url, process.env.REACT_APP_TILES).toString() : url

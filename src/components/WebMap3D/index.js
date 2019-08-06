@@ -1,12 +1,12 @@
 import React from 'react'
 import {
   CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
-  CameraEventType, UrlTemplateImageryProvider,
+  CameraEventType, UrlTemplateImageryProvider, TrustedServers,
 } from 'cesium'
 import memoize from 'memoize-one'
 import { Viewer, Scene, Fog, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer } from 'resium'
 import PropTypes from 'prop-types'
-import { zoom2height } from '../../utils/mapObjConvertor'
+import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
 import * as MapModes from '../../constants/MapModes'
 import SignsLayer from './SignsLayer'
 
@@ -42,11 +42,13 @@ export default class WebMap3D extends React.PureComponent {
     }
 
     componentDidMount () {
+      const { protocol, host, port } = new URL(process.env.REACT_APP_TILES)
+      TrustedServers.add(host, port || { 'http:': 80, 'https:': 443 }[protocol])
       const { sources, mode, setMapMode } = this.props
       mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
-      url && (this.terrainProvider = new CesiumTerrainProvider({ url }))
+      url && (this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) }))
       // @TODO: delete sources[1]
       const defaultSource = sources.find(({ isSatellite }) => isSatellite) || sources[1] // Source with param isSatellite set to true is a satellite view
       defaultSource && this.props.setSource(defaultSource)
@@ -62,7 +64,7 @@ export default class WebMap3D extends React.PureComponent {
         const { sources } = this.props.source
         const satSource = sources.find(({ isSat }) => isSat)
         const { tms, source: url = '' } = satSource || {}
-        const sourceURL = tms ? url.replace(/{y}/g, '{reverseY}') : url
+        const sourceURL = fixTilesUrl(tms ? url.replace(/{y}/g, '{reverseY}') : url)
         return buildImageryProvider(sourceURL)
       }
       return false
