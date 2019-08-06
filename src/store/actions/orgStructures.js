@@ -82,7 +82,7 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
 
 const formationsCache = new Map()
 
-const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
+export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   let formationInfo = formationsCache.get(formationId)
   if (!formationInfo) {
     const formations = await milOrgApi.generalFormation.list()
@@ -99,6 +99,23 @@ const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
 
 let needReloadUnits = true
 
+export const reloadUnits = async (dispatch, getState, milOrgApi) => {
+  let unitsById
+  if (needReloadUnits) {
+    needReloadUnits = false
+    setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
+    const units = await milOrgApi.militaryUnit.list()
+    unitsById = {}
+    units.forEach((item) => {
+      unitsById[item.id] = item
+    })
+    await dispatch(setOrgStructureUnits(unitsById))
+  } else {
+    unitsById = getState().orgStructures.unitsById
+  }
+  return unitsById
+}
+
 export const setFormationById = (formationId) =>
   asyncAction.withNotification(async (dispatch, getState, { milOrgApi }) => {
     if (!formationId) {
@@ -107,19 +124,7 @@ export const setFormationById = (formationId) =>
         setOrgStructureTree({}, []),
       ]))
     } else {
-      let unitsById
-      if (needReloadUnits) {
-        needReloadUnits = false
-        setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
-        const units = await milOrgApi.militaryUnit.list()
-        unitsById = {}
-        units.forEach((item) => {
-          unitsById[item.id] = item
-        })
-        dispatch(setOrgStructureUnits(unitsById))
-      } else {
-        unitsById = getState().orgStructures.unitsById
-      }
+      const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
       const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),

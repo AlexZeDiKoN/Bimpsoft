@@ -53,6 +53,7 @@ const WebMapContainer = connect(
     catalogs: state.catalogs.byIds,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
+    targetingMode: targetingModeSelector(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,

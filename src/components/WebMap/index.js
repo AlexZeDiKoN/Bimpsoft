@@ -37,7 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
-import { isFriend, isEnemy } from '../../utils/affiliations'
+import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -306,6 +306,7 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
+    targetingMode: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -497,11 +498,11 @@ export default class WebMap extends React.PureComponent {
         const object = objects.find((object) => object && object.id === id)
         return object && object.type === entityKind.POINT
       })
-    const selectedFriends = selectedPoints
+    /* const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
-      })
+      }) */
     const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
@@ -510,12 +511,12 @@ export default class WebMap extends React.PureComponent {
     const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
       : null
-    const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
+    /* const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
       ? selectedFriends[0]
-      : null
-    const buildingObjects = targetingObjects.size >= 1 && friend
+      : null */
+    const buildingObjects = /* targetingObjects.size >= 1 && friend
       ? [ friend ]
-      : targetingObjects.map((object) => object.id).sort().toArray()
+      : */ targetingObjects.map((object) => object.id).sort().toArray()
     const hash = `${JSON.stringify(buildingObjects)}${enemy}`
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
@@ -1432,7 +1433,7 @@ export default class WebMap extends React.PureComponent {
   clickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
+    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100 || this.props.targetingMode
     const targetLayer = object && object.layer
     let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
