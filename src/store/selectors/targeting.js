@@ -64,12 +64,12 @@ export const targetingObjects = createSelector(
   (targetingMode, mapCOP, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
     let predicate = () => false
     if (targetingMode && mapCOP && unitId && allObjects && pointObjects && orgStructure) {
-      const mySubList = myList(orgStructure.tree, unitId)
+      // const mySubList = myList(orgStructure.tree, unitId)
       const one = selectedOur(allObjects, selectedList)
       const oneSubList = one
         ? myList(orgStructure.tree, one, true)
         : null
-      predicate = (object) => mySubList.includes(object.unit) && (!oneSubList || oneSubList.includes(object.unit))
+      predicate = (object) => /* mySubList.includes(object.unit) && ( */!oneSubList || oneSubList.includes(object.unit)/* ) */
     }
     return pointObjects.filter(predicate)
   }
