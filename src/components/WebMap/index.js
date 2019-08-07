@@ -37,7 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
-import { isEnemy } from '../../utils/affiliations' /* isFriend, */
+// import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -457,7 +457,7 @@ export default class WebMap extends React.PureComponent {
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
-      this.updateTargetingZones(targetingObjects, list, objects)
+      this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
   }
 
@@ -473,10 +473,10 @@ export default class WebMap extends React.PureComponent {
   updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
-    .filter((key) => this.map._layers[ key ]._locked)
+    .filter((key) => this.map._layers[key]._locked)
     .forEach((key) => {
       const { activeObjectId } = this.props
-      const layer = this.map._layers[ key ]
+      const layer = this.map._layers[key]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
         layer.setLocked && layer.setLocked(false)
@@ -488,39 +488,39 @@ export default class WebMap extends React.PureComponent {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
 
-  updateTargetingZones = async (targetingObjects, selectedList, objects) => {
+  updateTargetingZones = async (targetingObjects/*, selectedList, objects */) => {
     if (!this.map) {
       return
     }
-    const selectedPoints = (selectedList || [])
+    /* const selectedPoints = (selectedList || [])
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return object && object.type === entityKind.POINT
-      })
+      }) */
     /* const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
       }) */
-    const selectedEnemies = selectedPoints
+    /* const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isEnemy(object.code)
-      })
-    const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
+      }) */
+    /* const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
-      : null
+      : null */
     /* const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
       ? selectedFriends[0]
       : null */
     const buildingObjects = /* targetingObjects.size >= 1 && friend
       ? [ friend ]
       : */ targetingObjects.map((object) => object.id).sort().toArray()
-    const hash = `${JSON.stringify(buildingObjects)}${enemy}`
+    const hash = `${JSON.stringify(buildingObjects)}` // ${enemy}
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
       const zones = buildingObjects.length
-        ? (await getZones(buildingObjects, enemy)).map(JSON.parse).filter(Boolean)
+        ? (await getZones(buildingObjects, null/* enemy */)).map(JSON.parse).filter(Boolean)
         : null
       this.targeting && this.targeting.removeFrom(this.map)
       if (zones && zones.length) {
@@ -901,7 +901,7 @@ export default class WebMap extends React.PureComponent {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
+        const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         isSelected && selectedIds.push(layer.id)
       }
@@ -984,8 +984,8 @@ export default class WebMap extends React.PureComponent {
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = list.includes(item.id)
-      const hidden = !isSelectedItem &&
-        (itemLevel < levelEdge || ((!layer || !layersById.hasOwnProperty(layer)) && !item.catalogId))
+      const hidden = !isSelectedItem && (itemLevel < levelEdge ||
+        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId))
 
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
@@ -1069,9 +1069,9 @@ export default class WebMap extends React.PureComponent {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
         console.info({
-          'REACT_APP_PREFIX': process.env.REACT_APP_PREFIX,
-          'REACT_APP_TILES': process.env.REACT_APP_TILES,
-          'tileLayerURL': url,
+          REACT_APP_PREFIX: process.env.REACT_APP_PREFIX,
+          REACT_APP_TILES: process.env.REACT_APP_TILES,
+          tileLayerURL: url,
         })
         const sourceLayer = new TileLayer(url, rest)
         settings.MIN_ZOOM = rest.minZoom || settings.MIN_ZOOM
@@ -1193,8 +1193,8 @@ export default class WebMap extends React.PureComponent {
       if (actionType === 'open' && object.unit) {
         if (!lastUnits[object.unit]) {
           window.explorerBridge.getUnitIndicators(object.unit, formationId)
-          lastUnits[object.unit] = setTimeout(() =>
-            lastUnits[object.unit] = undefined, clearLastUnitIdToGetNewRequestForIndicators)
+          lastUnits[object.unit] =
+            setTimeout(() => (lastUnits[object.unit] = undefined), clearLastUnitIdToGetNewRequestForIndicators)
         }
         const unitData = this.getUnitData(object.unit)
         const renderPopUp = renderIndicators(object, unitData)
