@@ -64,6 +64,9 @@ const WebMapContainer = connect(
       if (taskModeSelector(state)) {
         dispatch(task.showTaskByCoordinate(latlng))
       }
+      if (targetingModeSelector(state)) {
+        dispatch(task.setFriendObject(null))
+      }
     },
     onSelectedList: (list) => async (dispatch, getState) => {
       const state = getState()
