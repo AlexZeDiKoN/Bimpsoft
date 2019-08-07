@@ -84,11 +84,11 @@ export const zoom2height = (latitude, zoom, altitude) => {
   const semiMajorAxis = 6378137.0
   const tileSize = 256
   const screenResolution = 96 * window.devicePixelRatio / 0.0254
-  const coef = semiMajorAxis * 2 * Math.PI / tileSize * Math.cos(latitude)
+  const coef = semiMajorAxis * 2 * Math.PI / tileSize * Math.cos(latitude * Math.PI / 180)
   return zoom
     ? coef / 2 ** (zoom + 1) * screenResolution
     : altitude
-      ? Math.round(Math.log2(coef / (altitude / screenResolution)) - 1)
+      ? Math.floor(Math.log2(coef / (altitude / screenResolution)) - 1)
       : 0
 }
 
