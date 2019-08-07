@@ -3,7 +3,7 @@ import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'
 import { isFriend } from '../../utils/affiliations'
-import { mapId, mapCOP, layersById } from './layersSelector'
+import { mapCOP, currentMapLayers } from './layersSelector'
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
@@ -34,16 +34,6 @@ const myList = (orgStructure, myUnitId) => {
   cp && cp.itemType === 'CommandPost' && (myUnitId = cp.militaryUnitID)
   return buildList(orgStructure, myUnitId).flat(32)
 }
-
-export const currentMapLayers = createSelector(
-  mapId,
-  layersById,
-  (mapId, layers) => mapId && layers
-    ? Object.entries(layers)
-      .map(([ key, value ]) => value.visible && value.mapId === mapId ? key : null)
-      .filter((value) => value !== null)
-    : []
-)
 
 const currentMapPointLowLevelObjects = createSelector(
   objects,

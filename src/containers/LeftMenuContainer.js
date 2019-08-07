@@ -68,7 +68,6 @@ const mapDispatchToProps = {
   onChangeTaskMode: (taskMode) => taskMode
     ? batchActions([
       webMap.setMapMode(MapModes.TASK),
-      task.setEnemyObject(null),
       task.setFriendObject(null),
       selection.selectedList([]),
     ])
