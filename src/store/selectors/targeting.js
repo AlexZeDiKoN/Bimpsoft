@@ -29,7 +29,11 @@ const buildList = (orgStructure, myUnitId) => orgStructure.byIds[myUnitId] && or
   ]
   : [ myUnitId ]
 
-const myList = (orgStructure, myUnitId) => buildList(orgStructure, myUnitId).flat(32)
+const myList = (orgStructure, myUnitId) => {
+  const cp = orgStructure.byIds[myUnitId]
+  cp && cp.itemType === 'CommandPost' && (myUnitId = cp.militaryUnitID)
+  return buildList(orgStructure, myUnitId).flat(32)
+}
 
 export const currentMapLayers = createSelector(
   mapId,
