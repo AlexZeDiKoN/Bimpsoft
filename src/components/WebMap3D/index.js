@@ -16,7 +16,7 @@ const imageryProviderStableProps = {
   enablePickFeatures: false,
 }
 
-const MIN_ZOOM = zoom2height(5)
+const MIN_ZOOM = zoom2height(0, 5)
 const DIV = document.createElement('div')
 
 const buildImageryProvider = memoize((url) => {
@@ -104,7 +104,7 @@ export default class WebMap3D extends React.PureComponent {
             <CameraFlyTo
               maximumHeight={MIN_ZOOM}
               duration={0}
-              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(zoom))}
+              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
               onComplete={this.stopAutoMove}
             />
             }

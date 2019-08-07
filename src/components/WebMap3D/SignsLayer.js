@@ -24,8 +24,8 @@ export default class SignsLayer extends Component {
       const { cesiumElement: cameraInstance } = this.camera.current
       const { position } = cameraInstance
       const cartographic = Cartographic.fromCartesian(position)
-      const { height } = cartographic
-      const currentZoom = Math.round(zoom2height(null, height))
+      const { latitude, height } = cartographic
+      const currentZoom = zoom2height(latitude, null, height)
       currentZoom !== zoom && setZoom(currentZoom)
     }
   }
