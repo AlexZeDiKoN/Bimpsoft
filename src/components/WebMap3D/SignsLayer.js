@@ -21,7 +21,7 @@ export default class SignsLayer extends Component {
   scene = React.createRef()
 
   checkZoom = () => {
-    this.fixCameraUndergroud()
+    this.fixCameraUnderground()
     if (!this.scene.current) { return }
     const { zoom, setZoom } = this.props
     const camera = this.scene.current.cesiumElement.camera
@@ -39,7 +39,7 @@ export default class SignsLayer extends Component {
     return Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height + value)
   }
 
-  fixCameraUndergroud = () => {
+  fixCameraUnderground = () => {
     if (!this.scene.current) { return }
     const scene = this.scene.current.cesiumElement
     const camera = scene.camera
@@ -81,7 +81,7 @@ export default class SignsLayer extends Component {
           <Fog enabled={false}/>
         </Scene>
         <Globe depthTestAgainstTerrain={false}/>
-        <Camera onMoveEnd={this.checkZoom} onChange={this.fixCameraUndergroud}/>
+        <Camera onMoveEnd={this.checkZoom} onChange={this.fixCameraUnderground}/>
         { entities }
       </>
     )
