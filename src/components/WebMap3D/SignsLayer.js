@@ -21,6 +21,7 @@ export default class SignsLayer extends Component {
   scene = React.createRef()
 
   checkZoom = () => {
+    this.fixCameraUndergroud()
     if (!this.scene.current) { return }
     const { zoom, setZoom } = this.props
     const camera = this.scene.current.cesiumElement.camera
