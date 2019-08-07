@@ -4,7 +4,7 @@ import {
   CameraEventType, UrlTemplateImageryProvider, TrustedServers,
 } from 'cesium'
 import memoize from 'memoize-one'
-import { Viewer, Scene, Fog, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer } from 'resium'
+import { Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
 import * as MapModes from '../../constants/MapModes'
@@ -16,7 +16,8 @@ const imageryProviderStableProps = {
   enablePickFeatures: false,
 }
 
-const MIN_ZOOM = zoom2height(5)
+const MIN_ZOOM = zoom2height(0, 17)
+const MAX_ZOOM = zoom2height(0, 5)
 const DIV = document.createElement('div')
 
 const buildImageryProvider = memoize((url) => {
@@ -95,14 +96,11 @@ export default class WebMap3D extends React.PureComponent {
             creditViewport={DIV}
           >
             <ImageryLayer imageryProvider={imageryProvider} />
-            <Scene>
-              <Fog enabled={false}/>
-            </Scene>
             {this.shouldFly &&
             <CameraFlyTo
-              maximumHeight={MIN_ZOOM}
+              maximumHeight={MAX_ZOOM}
               duration={0}
-              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(zoom))}
+              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
               onComplete={this.stopAutoMove}
             />
             }
@@ -112,7 +110,8 @@ export default class WebMap3D extends React.PureComponent {
               setZoom={setZoom}
             />
             <ScreenSpaceCameraController
-              maximumZoomDistance={MIN_ZOOM}
+              minimumZoomDistance={MIN_ZOOM}
+              maximumZoomDistance={MAX_ZOOM}
               tiltEventTypes={[
                 CameraEventType.RIGHT_DRAG,
                 CameraEventType.PINCH,

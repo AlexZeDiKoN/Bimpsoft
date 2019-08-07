@@ -81,15 +81,15 @@ export function calcMiddlePoint (coords) {
 
 // 3D MAP Methods:
 // @TODO: ВЫНЕСТИ КОНСТАНТЫ...
-export const zoom2height = (zoom, altitude) => {
-  const A = 40487.57
-  const B = 0.00007096758
-  const C = 91610.74
-  const D = -40467.74
+export const zoom2height = (latitude, zoom, altitude) => {
+  const semiMajorAxis = 6378137.0
+  const tileSize = 256
+  const screenResolution = 96 * window.devicePixelRatio / 0.0254
+  const coef = semiMajorAxis * 2 * Math.PI / tileSize * Math.cos(latitude * Math.PI / 180)
   return zoom
-    ? C * Math.pow((A - D) / (zoom - D) - 1, 1 / B)
+    ? coef / 2 ** (zoom + 1) * screenResolution
     : altitude
-      ? D + (A - D) / (1 + Math.pow(altitude / C, B))
+      ? Math.floor(Math.log2(coef / (altitude / screenResolution)) - 1)
       : 0
 }
 
