@@ -32,11 +32,15 @@ export const settings = {
 }
 
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
-const vector = (ps, pf) => ({ x: pf.x - ps.x, y: pf.y - ps.y })
+export const vector = (ps, pf) => ({ x: pf.x - ps.x, y: pf.y - ps.y })
 const normal = (v) => ({ x: +v.y, y: -v.x })
 const length = (v) => Math.hypot(v.x, v.y)
 const multiply = (v, k) => ({ x: v.x * k, y: v.y * k })
-const setLength = (v, l) => multiply(v, l / length(v))
+export const rotateVector = (v, deg) => ({
+  x: v.x * Math.cos(deg) + v.y * Math.sin(deg),
+  y: v.y * Math.cos(deg) - v.x * Math.sin(deg),
+})
+export const setLength = (v, l) => multiply(v, l / length(v))
 const apply = (p, v) => ({ x: p.x + v.x, y: p.y + v.y })
 const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180
 export const roundXY = ({ x, y }) => ({ x: Math.round(x), y: Math.round(y) })

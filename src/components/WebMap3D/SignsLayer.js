@@ -1,11 +1,40 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
-import { Cartographic, Cartesian3 } from 'cesium'
-import { Camera, Globe, Entity } from 'resium'
+import {
+  Cartographic, Cartesian3, PolygonGeometry,
+  GeometryInstance, ColorGeometryInstanceAttribute, PolygonHierarchy,
+} from 'cesium'
+import { Camera, Globe, Entity, GroundPrimitiveCollection, GroundPrimitive } from 'resium'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
+import objTypes from '../../components/WebMap/entityKind'
 
-const renderEntities = memoize((signs) => signs.map(({ id, ...rest }) => <Entity key={id} { ...rest }/>))
+const renderEntities = memoize((signs) => signs.map(({ type, id, ...rest }) => {
+  if (type === objTypes.POLYGON) {
+    const { fill, positions } = rest
+    // @TODO: make it stop rerendering
+    const polygon = new PolygonGeometry({
+      polygonHierarchy: new PolygonHierarchy(positions),
+    })
+    const fillColor = ColorGeometryInstanceAttribute.fromColor(fill)
+    fillColor.value[3] = 127
+    const instance = new GeometryInstance({
+      geometry: polygon,
+      attributes: {
+        color: fillColor,
+      },
+    })
+
+    return (
+      <GroundPrimitive
+        key={id}
+        geometryInstances={instance}
+      />
+    )
+  } else {
+    return <Entity key={id} { ...rest }/>
+  }
+}))
 
 export default class SignsLayer extends Component {
   static propTypes = {
@@ -48,7 +77,9 @@ export default class SignsLayer extends Component {
       <>
         <Globe ref={this.globe} depthTestAgainstTerrain={false}/>
         <Camera ref={this.camera} onMoveEnd={this.checkZoom}/>
-        { entities }
+        <GroundPrimitiveCollection>
+          { entities }
+        </GroundPrimitiveCollection>
       </>
     )
   }

@@ -49,8 +49,7 @@ export default class WebMap3D extends React.PureComponent {
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
       url && (this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) }))
-      // @TODO: delete sources[1]
-      const defaultSource = sources.find(({ isSatellite }) => isSatellite) || sources[1] // Source with param isSatellite set to true is a satellite view
+      const defaultSource = sources.find(({ isSatellite }) => isSatellite) // Source with param isSatellite set to true is a satellite view
       defaultSource && this.props.setSource(defaultSource)
     }
 
@@ -94,7 +93,6 @@ export default class WebMap3D extends React.PureComponent {
             terrainProvider={this.terrainProvider}
             creditContainer={DIV}
             creditViewport={DIV}
-            terrainExaggeration={2}
           >
             <ImageryLayer imageryProvider={imageryProvider} />
             <Scene>
