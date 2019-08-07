@@ -138,7 +138,7 @@ CatalogsComponent.propTypes = {
   expandedIds: PropTypes.object,
   onExpand: PropTypes.func,
   onFilterTextChange: PropTypes.func,
-  selectedId: PropTypes.number,
+  selectedId: PropTypes.any,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
   milSymbolRenderer: PropTypes.func.isRequired,

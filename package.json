@@ -3,8 +3,8 @@
   "version": "8.03.459",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^8.3.261",
-    "@DZVIN/MilSymbolEditor": "^8.3.159",
+    "@DZVIN/CommonComponents": "^8.3.262",
+    "@DZVIN/MilSymbolEditor": "^8.3.160",
     "@DZVIN/components": "^8.3.27",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",

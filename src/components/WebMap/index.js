@@ -1411,11 +1411,9 @@ export default class WebMap extends React.PureComponent {
     const { target: layer, target: { object: { name, state, catalogId } } } = event
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
-    const text = `
-      <strong>${catalogName}</strong><br/>
-      <u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>
-      <u>${i18n.STATE}:</u>&nbsp;${state}
-    `
+    let text = `<strong>${catalogName}</strong><br/>`
+    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
+    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
     new L.Popup()
       .setLatLng(layer.getLatLng())
       .setContent(text)
