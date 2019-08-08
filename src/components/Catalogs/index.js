@@ -56,10 +56,12 @@ export default class Catalogs extends React.PureComponent {
       byIds,
       shownIds,
     } = this.props
-    Object.entries(byIds).forEach(([ key, value ]) => (value.shown = shownIds.hasOwnProperty(key)))
+
+    Object.entries(byIds)
+      .forEach(([ key, value ]) => (value.shown = Object.prototype.hasOwnProperty.call(shownIds, key)))
     return (
       <ObjectCatalog
-        {...this.props}
+        { ...this.props }
         title={i18n.CATALOGS}
         onVisibleChange={this.toggleItem}
         milSymbolRenderer={this.milSymbolRenderer}
@@ -78,7 +80,7 @@ Catalogs.propTypes = {
   onShow: PropTypes.func,
   onHide: PropTypes.func,
   onFilterTextChange: PropTypes.func,
-  selectedId: PropTypes.number,
+  selectedId: PropTypes.any,
   onClick: PropTypes.func,
   onDoubleClick: PropTypes.func,
   preloadCatalogList: PropTypes.func,

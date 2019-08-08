@@ -13,7 +13,6 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
   renderOrgStructureSelect () {
     const canEdit = this.isCanEdit()
     const { unit } = this.getResult()
-    console.log(this.props)
     const orgStructures = this.getOrgStructures()
     return (
       <FormRow label={i18n.UNIT}>
@@ -23,13 +22,12 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
           id={unit}
           readOnly={!canEdit}
         />
-        {canEdit &&
-        <IconButton
-          className='orgStructureBottom'
-          icon={iconNames.DROP_DOWN_DEFAULT}
-        />
-        }
-
+        {canEdit && (
+          <IconButton
+            className='orgStructureBottom'
+            icon={iconNames.DROP_DOWN_DEFAULT}
+          />
+        )}
       </FormRow>
     )
   }

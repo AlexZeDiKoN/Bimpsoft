@@ -175,6 +175,7 @@ export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків н
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
+export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
@@ -276,7 +277,7 @@ export const ERROR_SEND_TASK = 'Помилка при відправленні �
 export const CREATE_TASK = 'Створити завдання'
 export const TASK_SAVED = 'Завдання збережене'
 export const TASK_SENT = 'Завдання відправлене'
-export const CREATE_TASK_ERROR = 'Немождиво створити завдання'
+export const CREATE_TASK_ERROR = 'Неможливо створити завдання'
 export const CREATE_TASK_ERROR_UNIT_NOT_DEFINED = `Для створення завдання необхідно прив’язати умовний знак до підрозділу`
 
 // Цілі

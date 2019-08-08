@@ -2,8 +2,7 @@ import { createSelector } from 'reselect'
 import { isEnemy } from '../../utils/affiliations'
 import * as i18n from '../../i18n/ua'
 import * as ENTITY from '../../components/WebMap/entityKind'
-import { canEditSelector, layersById } from './layersSelector'
-import { currentMapLayers } from './targeting'
+import { canEditSelector, layersById, currentMapLayers } from './layersSelector'
 
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
 const activeLayer = ({ layers: { selectedId } }) => selectedId

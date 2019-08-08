@@ -30,7 +30,7 @@ const WebMapContainer = connect(
     layersByIdFromStore: layersByIdFromStore(state),
     layersById: visibleLayersSelector(state),
     backOpacity: state.layers.backOpacity,
-    hiddenOpacity: state.layers.hiddenOpacity,
+    hiddenOpacity: targetingModeSelector(state) || taskModeSelector(state) ? 100 : state.layers.hiddenOpacity,
     coordinatesType: state.webMap.coordinatesType,
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
@@ -64,6 +64,9 @@ const WebMapContainer = connect(
       if (taskModeSelector(state)) {
         dispatch(task.showTaskByCoordinate(latlng))
       }
+      if (targetingModeSelector(state)) {
+        dispatch(task.setFriendObject(null))
+      }
     },
     onSelectedList: (list) => async (dispatch, getState) => {
       const state = getState()
@@ -77,6 +80,7 @@ const WebMapContainer = connect(
       } else if (taskModeSelector(state)) {
         if (list.length === 1) {
           await dispatch(task.showTaskByObject(list[0]))
+          list = []
         }
       }
       await dispatch(batchActions([

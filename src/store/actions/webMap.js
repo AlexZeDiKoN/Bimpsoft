@@ -8,6 +8,7 @@ import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
+import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
 
@@ -309,13 +310,17 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
   })
 
 export const getAppInfo = () =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getVersion, getContactId } }) => {
-    const [ version, { contactId, positionContactId, unitId } ] = await Promise.all([ getVersion(), getContactId() ])
-    return dispatch({
-      type: actionNames.APP_INFO,
-      payload: { version, contactId, positionContactId, unitId },
+  asyncAction.withNotification(
+    async (dispatch, getState, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
+      const [ version, { contactId, positionContactId, unitId, countryId, formationId } ] =
+        await Promise.all([ getVersion(), getContactId() ])
+      const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
+      const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
+      return dispatch({
+        type: actionNames.APP_INFO,
+        payload: { version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure },
+      })
     })
-  })
 
 export const getMapSources = () =>
   async (dispatch, _, { webmapApi: { getMapSources } }) => {

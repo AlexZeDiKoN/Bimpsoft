@@ -10,6 +10,7 @@ import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
+import { version as front } from '../../../package.json'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -33,6 +34,7 @@ const webMapAttributesInitValues = {
   lineNodes: 'none',
   texts: List(),
   z: null,
+  taskId: null,
 }
 
 for (const key of Object.keys(symbolOptions)) {
@@ -83,6 +85,9 @@ const WebMapState = Record({
   contactId: null,
   positionContactId: null,
   unitId: null,
+  countryId: null,
+  formationId: null,
+  defOrgStructure: null,
   scaleToSelection: false,
   marker: null,
   topographicObjects: {},
@@ -241,14 +246,18 @@ export default function webMapReducer (state = WebMapState(), action) {
       return result
     }
     case actionNames.APP_INFO: {
-      const { version, contactId, positionContactId, unitId } = payload
-      console.info(`Backend version: ${version}`)
-      console.info(`My IDs: ${JSON.stringify({ contactId, positionContactId, unitId })}`)
+      const { version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure } = payload
+      console.info(`Backend version`, version)
+      console.info(`Frontend version`, front)
+      console.info(`My IDs`, { contactId, positionContactId, unitId, countryId, formationId })
       return merge(state, {
         version,
+        defOrgStructure,
         contactId: Number(contactId),
         positionContactId: Number(positionContactId),
         unitId: Number(unitId),
+        countryId: Number(countryId),
+        formationId: Number(formationId),
       })
     }
     case actionNames.GET_LOCKED_OBJECTS: {

@@ -31,6 +31,36 @@
       "minZoom": 5,
       "maxZoom": 16,
       "tms": true
+  } ]
+}, {
+  "title": "Варіант_1",
+  "sources": [
+    {
+      "source": "/tiles/options_1/{z}/{x}/{y}.png",
+      "isSat": true,
+      "minZoom": 6,
+      "maxZoom": 7,
+      "tms": true
+  } ]
+}, {
+  "title": "Варіант_2",
+  "sources": [
+    {
+      "source": "/tiles/options_2/{z}/{x}/{y}.png",
+      "isSat": true,
+      "minZoom": 6,
+      "maxZoom": 7,
+      "tms": true
+  } ]
+}, {
+  "title": "Варіант_3",
+  "sources": [
+    {
+      "source": "/tiles/options_3/{z}/{x}/{y}.png",
+      "isSat": true,
+      "minZoom": 6,
+      "maxZoom": 7,
+      "tms": true
     }
   ]
 }, {
