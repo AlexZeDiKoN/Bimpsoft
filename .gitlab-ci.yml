@@ -32,7 +32,7 @@ build:
 #    -  call npm i
 #    - call npm install
     - call yarn --network-concurrency 1
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor --network-concurrency 1
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
@@ -162,7 +162,7 @@ build-master:
   script:
     - echo Building project...
     - call yarn --network-concurrency 1
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor --network-concurrency 1
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
