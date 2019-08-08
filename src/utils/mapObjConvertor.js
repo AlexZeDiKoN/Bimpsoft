@@ -1,6 +1,14 @@
 import { CRS, latLng, point } from 'leaflet'
 import Bezier from 'bezier-js'
-import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar, CircleOutlineGeometry } from 'cesium'
+import {
+  Cartesian3,
+  HeightReference,
+  VerticalOrigin,
+  Color,
+  NearFarScalar,
+  CircleOutlineGeometry,
+  GeoJsonDataSource,
+} from 'cesium'
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
 import { chunk } from 'lodash'
@@ -157,69 +165,119 @@ const buildPolyline = (positions, color) => ({
   material: Color.fromCssColorString(mapColors.values[color]),
 })
 
-export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc, o) => {
-  const { type, point, geometry, id, attributes } = o
-  if (type === objTypes.POINT) {
-    const { lat, lng } = point
-    const svg = buildSVG(o)
-    const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-    // @TODO: change scale limits (use zoom2height)
-    const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
-    const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
-    const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
-    const polyline = {
-      width: 2,
-      material: Color.WHITE,
-      positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
-    }
-    acc.push({ id, position, billboard, polyline, type })
-  } else {
-    let color = attributes.get('color')
-    // @TODO: if sign's color is black make it white
-    color === mapColors.BLACK && (color = mapColors.WHITE)
-    const fillColor = attributes.get('fill')
-    const basePoints = geometry.toArray()
-    let positions = []
-    switch (type) {
-      case objTypes.POLYLINE:
-        positions = basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-        break
-      case objTypes.CURVE:
-      case objTypes.AREA:
-        positions = buldCurve(basePoints, type === objTypes.AREA)
-        break
-      case objTypes.POLYGON:
-        positions = [ ...basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)) ]
-        positions.push(Cartesian3.fromDegrees(basePoints[0].lng, basePoints[0].lat))
-        break
-      case objTypes.SQUARE:
-      case objTypes.RECTANGLE: {
-        const [ p1, p3 ] = basePoints
-        const p2 = { lat: p3.lat, lng: p1.lng }
-        const p4 = { lat: p1.lat, lng: p3.lng }
-        positions = [ p1, p2, p3, p4, p1 ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-        break
-      }
-      case objTypes.CIRCLE: {
-        const [ p1, p2 ] = geometry.toArray()
-        positions = buildCircle(p1, p2)
-        break
-      }
-      default:
-        console.warn('Object ', o, 'wasn\'t drawn due to untreated type')
-    }
+// @TODO: в утилиты
+const makeGeoJSON = (coordinates, type) => ({
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type,
+        coordinates,
+      },
+    },
+  ],
+})
 
-    if (positions.length) {
-      const polyline = buildPolyline(positions, color)
-      acc.push({ id, polyline, type: objTypes.POLYLINE })
-    }
-    if (fillColor !== mapColors.TRANSPARENT) {
-      const fill = Color.fromCssColorString(mapColors.values[fillColor])
-      acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
+const latLng2peerArr = (data) =>
+  data && Array.isArray(data)
+    ? data.map(latLng2peerArr)
+    : [ data.lng, data.lat ]
+
+export const objectsToSvg = memoize(async (list, positionHeightUp) => {
+  const acc = []
+  const listArr = list.toArray()
+  for (let i = 0; i < listArr.length; i++) {
+    const o = listArr[i]
+    const { type, point, geometry, id, attributes } = o
+    if (type === objTypes.POINT) {
+      const { lat, lng } = point
+      const svg = buildSVG(o)
+      const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+      // @TODO: change scale limits (use zoom2height)
+      const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
+      const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
+      const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
+      const polyline = {
+        width: 2,
+        material: Color.WHITE,
+        positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
+      }
+      acc.push({ id, position, billboard, polyline, type })
+    } else {
+      let color = attributes.get('color')
+      // @TODO: if sign's color is black make it white
+      color === mapColors.BLACK && (color = mapColors.WHITE)
+      const fillColor = attributes.get('fill')
+      const basePoints = geometry.toArray()
+      let positions = []
+      switch (type) {
+        case objTypes.POLYLINE:
+          positions = basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+          break
+        case objTypes.CURVE:
+        case objTypes.AREA:
+          positions = buldCurve(basePoints, type === objTypes.AREA)
+          break
+        case objTypes.POLYGON:
+          positions = [ ...basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)) ]
+          positions.push(Cartesian3.fromDegrees(basePoints[0].lng, basePoints[0].lat))
+          break
+        case objTypes.SQUARE:
+        case objTypes.RECTANGLE: {
+          const [ p1, p3 ] = basePoints
+          const p2 = { lat: p3.lat, lng: p1.lng }
+          const p4 = { lat: p1.lat, lng: p3.lng }
+          positions = [ p1, p2, p3, p4, p1 ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+          break
+        }
+        case objTypes.CIRCLE: {
+          const [ p1, p2 ] = geometry.toArray()
+          positions = buildCircle(p1, p2)
+          break
+        }
+        case objTypes.CONTOUR: {
+          const points = geometry.toJS()
+          const coordinates = latLng2peerArr(points)
+          let data
+          try {
+            data = makeGeoJSON(coordinates, 'Polygon')
+            await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
+          } catch (err) {
+            data = makeGeoJSON(coordinates, 'MultiPolygon')
+          }
+          const mainColor = fillColor !== mapColors.TRANSPARENT ? fillColor : color
+          // @TODO: осветление в утилиты
+          const fill = Color.fromCssColorString(mapColors.values[mainColor])
+          fill.alpha = 0.5
+          acc.push({
+            id,
+            data,
+            fill,
+            type: objTypes.CONTOUR,
+            // stroke: Color.fromCssColorString(mapColors.values[color]),
+            strokeWidth: 10,
+            // height: 0,
+            clampToGround: true,
+          })
+          break
+        }
+        default:
+          console.warn('Object ', o, 'wasn\'t drawn due to untreated type')
+      }
+
+      if (positions.length) {
+        const polyline = buildPolyline(positions, color)
+        acc.push({ id, polyline, type: objTypes.POLYLINE })
+      }
+      if (fillColor !== mapColors.TRANSPARENT) {
+        const fill = Color.fromCssColorString(mapColors.values[fillColor])
+        acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
+      }
     }
   }
   return acc
-}, []))
+})
 
 export const fixTilesUrl = (url) =>
   process.env.NODE_ENV === 'development' ? new URL(url, process.env.REACT_APP_TILES).toString() : url

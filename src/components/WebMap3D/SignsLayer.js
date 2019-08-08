@@ -5,7 +5,7 @@ import {
   Cartographic, Cartesian3, PolygonGeometry, SceneMode,
   GeometryInstance, ColorGeometryInstanceAttribute, PolygonHierarchy,
 } from 'cesium'
-import { Camera, Globe, Entity, GroundPrimitiveCollection, GroundPrimitive, Scene, Fog } from 'resium'
+import { Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource } from 'resium'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 import objTypes from '../../components/WebMap/entityKind'
 
@@ -16,6 +16,7 @@ const renderEntities = memoize((signs) => signs.map(({ type, id, ...rest }) => {
     const polygon = new PolygonGeometry({
       polygonHierarchy: new PolygonHierarchy(positions),
     })
+    // @TODO: осветление цвета в утилиты!
     const fillColor = ColorGeometryInstanceAttribute.fromColor(fill)
     fillColor.value[3] = 127
     const instance = new GeometryInstance({
@@ -31,6 +32,8 @@ const renderEntities = memoize((signs) => signs.map(({ type, id, ...rest }) => {
         geometryInstances={instance}
       />
     )
+  } else if (type === objTypes.CONTOUR) {
+    return <GeoJsonDataSource key={id} { ...rest }/>
   } else {
     return <Entity key={id} { ...rest }/>
   }
@@ -48,7 +51,28 @@ export default class SignsLayer extends Component {
     setZoom: PropTypes.func.isRequired,
   }
 
+  state = {
+    signs: [],
+  }
+
+  componentDidMount () {
+    const { objects } = this.props
+    objects && objects.size && this.updateSigns(objects)
+  }
+
+  componentDidUpdate (prevProps) {
+    const { objects } = this.props
+    this.updateSigns(objects, prevProps.objects)
+  }
+
   scene = React.createRef()
+
+  updateSigns = async (objects, prevObjects) => {
+    if (objects !== prevObjects) {
+      const signs = await objectsToSvg(objects, this.positionHeightUp)
+      this.setState({ signs })
+    }
+  }
 
   checkZoom = () => {
     this.fixCameraUnderground()
@@ -102,8 +126,7 @@ export default class SignsLayer extends Component {
   }
 
   render () {
-    const { objects } = this.props
-    const signs = objectsToSvg(objects, this.positionHeightUp)
+    const { signs } = this.state
     const entities = renderEntities(signs)
     return (
       <>
@@ -112,9 +135,7 @@ export default class SignsLayer extends Component {
         </Scene>
         <Globe depthTestAgainstTerrain={false}/>
         <Camera onMoveEnd={this.checkZoom} onChange={this.fixCameraUnderground}/>
-        <GroundPrimitiveCollection>
-          { entities }
-        </GroundPrimitiveCollection>
+        { entities }
       </>
     )
   }
