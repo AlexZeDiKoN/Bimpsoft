@@ -1198,16 +1198,9 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          const isCommandPost = object.indicatorsData && object.indicatorsData.commandPost
-          const lat = layer && layer._latlng && layer._latlng.lat
-          const lng = layer && layer._latlng && layer._latlng.lng
-          layer && layer._latlng && popupInner.setLatLng({
-            lat: isCommandPost ? lat + 0.2 : lat,
-            lng: isCommandPost ? lng + 0.2 : lng,
-          })
           const unitData = this.getUnitData(object.unit)
           const renderPopUp = renderIndicators(object, unitData)
-          popupInner.setContent(renderPopUp)
+          layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
           popupInner.openOn(this.map)
         }, openPopUpInterval
 
