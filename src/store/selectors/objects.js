@@ -1,9 +1,8 @@
 import { createSelector } from 'reselect'
-import { isEnemy } from '../../utils/affiliations'
+import { isEnemyObject } from '../../utils/affiliations'
 import * as i18n from '../../i18n/ua'
 import * as ENTITY from '../../components/WebMap/entityKind'
-import { canEditSelector, layersById } from './layersSelector'
-import { currentMapLayers } from './targeting'
+import { canEditSelector, layersById, currentMapLayers } from './layersSelector'
 
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
 const activeLayer = ({ layers: { selectedId } }) => selectedId
@@ -34,11 +33,11 @@ export const targetObjects = createSelector(
     const result = {}
     objects = objects.values()
     for (const object of objects) {
-      const { code, attributes: { engagementBar } } = object
+      const { attributes: { engagementBar } } = object
       if (currentLayers.includes(object.layer)) {
         const layer = layers[object.layer]
         if (
-          (Boolean(engagementBar) && isEnemy(code)) ||
+          (Boolean(engagementBar) && isEnemyObject(object)) ||
           !layer.formationId
         ) {
           let name

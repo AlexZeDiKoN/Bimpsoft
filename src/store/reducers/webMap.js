@@ -34,6 +34,7 @@ const webMapAttributesInitValues = {
   lineNodes: 'none',
   texts: List(),
   z: null,
+  taskId: null,
 }
 
 for (const key of Object.keys(symbolOptions)) {
