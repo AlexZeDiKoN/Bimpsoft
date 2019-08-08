@@ -51,6 +51,7 @@
     "redux-batched-actions": "^0.4.1",
     "redux-thunk": "^2.3.0",
     "requirejs": "^2.3.2",
+    "resium": "^1.7.0",
     "svg-path-bounds": "^1.0.1",
     "utm": "^1.1.1"
   },
