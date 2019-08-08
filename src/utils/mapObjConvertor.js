@@ -138,10 +138,10 @@ const buldCurve = (points, locked) => {
 const buildCircle = (center, first) => {
   const centerCartesian = Cartesian3.fromDegrees(center.lng, center.lat)
   const firstCartesian = Cartesian3.fromDegrees(first.lng, first.lat)
-  const radMet = Cartesian3.distance(centerCartesian, firstCartesian)
+  const radMeters = Cartesian3.distance(centerCartesian, firstCartesian)
   const circle = new CircleOutlineGeometry({
     center: centerCartesian,
-    radius: radMet,
+    radius: radMeters,
   })
   const geom = CircleOutlineGeometry.createGeometry(circle)
   const points = chunk(geom.attributes.position.values, 3)
