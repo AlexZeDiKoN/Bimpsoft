@@ -1,11 +1,11 @@
 {
   "name": "web-map",
-  "version": "8.03.467",
+  "version": "8.03.468",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^8.3.265",
-    "@DZVIN/MilSymbolEditor": "^8.3.160",
-    "@DZVIN/components": "^8.3.28",
+    "@DZVIN/MilSymbolEditor": "^8.3.161",
+    "@DZVIN/components": "^8.3.29",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",
