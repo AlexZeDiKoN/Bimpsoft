@@ -186,37 +186,43 @@ const serializeCoordinate = (mode, lat, lng) => {
 }
 
 const setScaleOptions = (layer, params) => {
-  if (!layer.object || !layer.object.type) {
-    return
-  }
-  switch (Number(layer.object.type)) {
-    case entityKind.POINT:
+  if (layer && layer.object) {
+    if (layer.object.catalogId) {
       layer.setScaleOptions({
         min: Number(params[paramsNames.POINT_SIZE_MIN]),
         max: Number(params[paramsNames.POINT_SIZE_MAX]),
       })
-      break
-    case entityKind.TEXT:
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-      })
-      break
-    case entityKind.SEGMENT:
-    case entityKind.AREA:
-    case entityKind.CURVE:
-    case entityKind.POLYGON:
-    case entityKind.POLYLINE:
-    case entityKind.CIRCLE:
-    case entityKind.RECTANGLE:
-    case entityKind.SQUARE:
-    case entityKind.CONTOUR:
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.LINE_SIZE_MIN]),
-        max: Number(params[paramsNames.LINE_SIZE_MAX]),
-      })
-      break
-    default:
+    } else if (layer.object.type) {
+      switch (Number(layer.object.type)) {
+        case entityKind.POINT:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.POINT_SIZE_MIN]),
+            max: Number(params[paramsNames.POINT_SIZE_MAX]),
+          })
+          break
+        case entityKind.TEXT:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+          })
+          break
+        case entityKind.SEGMENT:
+        case entityKind.AREA:
+        case entityKind.CURVE:
+        case entityKind.POLYGON:
+        case entityKind.POLYLINE:
+        case entityKind.CIRCLE:
+        case entityKind.RECTANGLE:
+        case entityKind.SQUARE:
+        case entityKind.CONTOUR:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.LINE_SIZE_MIN]),
+            max: Number(params[paramsNames.LINE_SIZE_MAX]),
+          })
+          break
+        default:
+      }
+    }
   }
 }
 
@@ -1014,19 +1020,11 @@ export default class WebMap extends React.PureComponent {
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
     settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
-    if (this.map) {
-      this.map.eachLayer((layer) => {
-        setScaleOptions(layer, params)
-      })
-    }
+    this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    if (this.map) {
-      this.map.eachLayer((layer) => {
-        layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
-      })
-    }
+    this.map && this.map.eachLayer((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -1044,9 +1042,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   crosshairCursor = (on) => {
-    if (this.map) {
-      this.map._container.style.cursor = on ? 'crosshair' : ''
-    }
+    this.map && (this.map._container.style.cursor = on ? 'crosshair' : '')
   }
 
   setMapCursor = (edit, type) => {
