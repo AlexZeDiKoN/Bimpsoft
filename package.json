@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "8.03.464",
+  "version": "8.03.466",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^8.3.262",
@@ -10,9 +10,9 @@
     "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",
     "antd": "^3.12.4",
-    "babel-polyfill": "^6.26.0",
     "bezier-js": "2.2.18",
     "cesium": "^1.59.0",
+    "core-js": "^3.1.4",
     "craco-cesium": "^1.1.1",
     "craco-plugin-react-hot-reload": "^0.0.3",
     "debounce": "^1.2.0",
@@ -50,6 +50,7 @@
     "redux": "^4.0.4",
     "redux-batched-actions": "^0.4.1",
     "redux-thunk": "^2.3.0",
+    "regenerator-runtime": "^0.13.3",
     "requirejs": "^2.3.2",
     "resium": "^1.5.0",
     "svg-path-bounds": "^1.0.1",
