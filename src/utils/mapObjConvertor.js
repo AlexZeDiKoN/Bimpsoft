@@ -140,14 +140,13 @@ const findNextPointCircle = (center, point, deg, radius) => {
   const lengthed = setLength(nextV, radius)
   return { x: center.x + lengthed.x, y: center.y + lengthed.y }
 }
-
-const buildCircle = (center, radius, first) => {
-  const partsCount = 40
-  const deg = Math.PI / (partsCount / 4)
+const DEFAULT_CIRCLE_ACCURACY = 32
+const buildCircle = (center, radius, first, accuracy = DEFAULT_CIRCLE_ACCURACY) => {
+  const deg = Math.PI / (accuracy / 2)
   const correctCenter = { x: center.lat, y: center.lng }
   const correctPoint = { x: first.lat, y: first.lng }
   const result = [ correctPoint ]
-  for (let i = 0; i < partsCount; i++) {
+  for (let i = 0; i < accuracy; i++) {
     const nextPoint = findNextPointCircle(correctCenter, result[i], deg, radius)
     result.push(nextPoint)
   }
