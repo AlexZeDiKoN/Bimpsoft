@@ -1,12 +1,13 @@
 import { CRS, latLng, point } from 'leaflet'
 import Bezier from 'bezier-js'
-import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar } from 'cesium'
+import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar, CircleOutlineGeometry } from 'cesium'
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
+import { chunk } from 'lodash'
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
-import { bezierArray, vector, setLength, rotateVector } from '../utils/svg/lines'
+import { bezierArray } from '../utils/svg/lines'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
@@ -134,23 +135,18 @@ const buldCurve = (points, locked) => {
   return result
 }
 
-const findNextPointCircle = (center, point, deg, radius) => {
-  const v = vector(center, point)
-  const nextV = rotateVector(v, deg)
-  const lengthed = setLength(nextV, radius)
-  return { x: center.x + lengthed.x, y: center.y + lengthed.y }
-}
-const DEFAULT_CIRCLE_ACCURACY = 32
-const buildCircle = (center, radius, first, accuracy = DEFAULT_CIRCLE_ACCURACY) => {
-  const deg = Math.PI / (accuracy / 2)
-  const correctCenter = { x: center.lat, y: center.lng }
-  const correctPoint = { x: first.lat, y: first.lng }
-  const result = [ correctPoint ]
-  for (let i = 0; i < accuracy; i++) {
-    const nextPoint = findNextPointCircle(correctCenter, result[i], deg, radius)
-    result.push(nextPoint)
-  }
-  return result.map(({ x, y }) => Cartesian3.fromDegrees(y, x))
+const buildCircle = (center, first) => {
+  const centerCartesian = Cartesian3.fromDegrees(center.lng, center.lat)
+  const firstCartesian = Cartesian3.fromDegrees(first.lng, first.lat)
+  const radMet = Cartesian3.distance(centerCartesian, firstCartesian)
+  const circle = new CircleOutlineGeometry({
+    center: centerCartesian,
+    radius: radMet,
+  })
+  const geom = CircleOutlineGeometry.createGeometry(circle)
+  const points = chunk(geom.attributes.position.values, 3)
+  points.push(points[0])
+  return points.map(([ x, y, z ]) => new Cartesian3(x, y, z))
 }
 
 const buildPolyline = (positions, color) => ({
@@ -206,8 +202,7 @@ export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc
       }
       case objTypes.CIRCLE: {
         const [ p1, p2 ] = geometry.toArray()
-        const len = Math.hypot(p2.lat - p1.lat, p2.lng - p1.lng)
-        positions = buildCircle(point, len, p2)
+        positions = buildCircle(p1, p2)
         break
       }
       default:
