@@ -1184,18 +1184,22 @@ export default class WebMap extends React.PureComponent {
     const lastUnits = {}
     const popupInner = popup(popupOptionsIndicators)
     return (actionType, layer, formationId, object) => {
-      const isPopUpOpen = popupInner._close()
+      const isPopUpOpen = popupInner.isOpen()
       clearTimeout(timer)
-      if (actionType === 'open' && object.unit) {
+      if (actionType === 'open') {
         if (!lastUnits[object.unit]) {
           window.explorerBridge.getUnitIndicators(object.unit, formationId)
-          lastUnits[object.unit] =
-            setTimeout(() => (lastUnits[object.unit] = undefined), clearLastUnitIdToGetNewRequestForIndicators)
+          lastUnits[object.unit] = setTimeout(() => lastUnits[object.unit] = undefined,
+            clearLastUnitIdToGetNewRequestForIndicators)
         }
-        const unitData = this.getUnitData(object.unit)
-        const renderPopUp = renderIndicators(object, unitData)
-        layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
-        timer = setTimeout(() => popupInner.openOn(this.map), openPopUpInterval
+
+        timer = setTimeout(() => {
+          const unitData = this.getUnitData(object.unit)
+          const renderPopUp = renderIndicators(object, unitData)
+          layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
+          popupInner.openOn(this.map)
+        }, openPopUpInterval
+
         )
       } else {
         isPopUpOpen && popupInner._close()
