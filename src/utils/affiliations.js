@@ -28,3 +28,7 @@ export const getIdentity = (objectCode) => model.APP6Code.getIdentity2(objectCod
 export const isEnemy = (objectCode) => ENEMIES.includes(getIdentity(objectCode))
 
 export const isFriend = (objectCode) => FRIENDS.includes(getIdentity(objectCode))
+
+export const isFriendObject = (object) => object && object.code && isFriend(object.code)
+
+export const isEnemyObject = (object) => object && object.code && isEnemy(object.code)

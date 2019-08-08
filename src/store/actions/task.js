@@ -2,7 +2,7 @@ import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { ApiError } from '../../constants/errors'
 import i18n from '../../i18n'
-import { isFriend, isEnemy } from '../../utils/affiliations'
+import { isFriendObject, isEnemyObject } from '../../utils/affiliations'
 import { activeMapSelector, currentMapTargetLayers } from '../selectors'
 import SelectionTypes from '../../constants/SelectionTypes'
 import * as notifications from './notifications'
@@ -49,9 +49,9 @@ export const addObject = (id) => withNotification(async (dispatch, getState) => 
 
   const object = objects.get(id)
 
-  if (object && isFriend(object.code)) {
+  if (object && isFriendObject(object)) {
     await dispatch(setFriendObject(id))
-  } else if (object && isEnemy(object.code)) {
+  } else if (object && isEnemyObject(object)) {
     if (friendObjectId) {
       const [ firstTargetLayer ] = currentMapTargetLayers(state)
       await showModalRequest({

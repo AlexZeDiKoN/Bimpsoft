@@ -102,7 +102,6 @@ let needReloadUnits = true
 export const reloadUnits = async (dispatch, getState, milOrgApi) => {
   let unitsById
   if (needReloadUnits) {
-    needReloadUnits = false
     setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
     const units = await milOrgApi.militaryUnit.list()
     unitsById = {}
@@ -110,6 +109,7 @@ export const reloadUnits = async (dispatch, getState, milOrgApi) => {
       unitsById[item.id] = item
     })
     await dispatch(setOrgStructureUnits(unitsById))
+    needReloadUnits = false
   } else {
     unitsById = getState().orgStructures.unitsById
   }
