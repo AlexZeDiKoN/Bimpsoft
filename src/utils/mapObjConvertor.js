@@ -157,11 +157,11 @@ const buildCircle = (center, first) => {
   return points.map(([ x, y, z ]) => new Cartesian3(x, y, z))
 }
 
-const buildPolyline = (positions, color) => ({
+const buildPolyline = (positions, color, width) => ({
   positions,
+  width,
   clampToGround: true,
   followSurface: true,
-  width: 2,
   material: Color.fromCssColorString(mapColors.values[color]),
 })
 
@@ -179,10 +179,29 @@ const makeGeoJSON = (coordinates, type) => ({
   ],
 })
 
+// @TODO: в утилиты
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
     ? data.map(latLng2peerArr)
     : [ data.lng, data.lat ]
+
+// @TODO: вынести
+const fakeOutlineContour = (data) => {
+  const list = []
+  buildOutlineC(data, list)
+  return list
+}
+
+const buildOutlineC = (data, finalArray) => {
+  if (data && Array.isArray(data)) {
+    if (Array.isArray(data[0])) {
+      data.forEach((child) => buildOutlineC(child, finalArray))
+    } else {
+      const pos = data.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+      finalArray.push(pos)
+    }
+  }
+}
 
 export const objectsToSvg = memoize(async (list, positionHeightUp) => {
   const acc = []
@@ -206,6 +225,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
       acc.push({ id, position, billboard, polyline, type })
     } else {
       let color = attributes.get('color')
+      const width = attributes.get('strokeWidth')
       // @TODO: if sign's color is black make it white
       color === mapColors.BLACK && (color = mapColors.WHITE)
       const fillColor = attributes.get('fill')
@@ -238,28 +258,25 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
         }
         case objTypes.CONTOUR: {
           const points = geometry.toJS()
-          const coordinates = latLng2peerArr(points)
-          let data
-          try {
-            data = makeGeoJSON(coordinates, 'Polygon')
-            await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
-          } catch (err) {
-            data = makeGeoJSON(coordinates, 'MultiPolygon')
-          }
-          const mainColor = fillColor !== mapColors.TRANSPARENT ? fillColor : color
-          // @TODO: осветление в утилиты
-          const fill = Color.fromCssColorString(mapColors.values[mainColor])
-          fill.alpha = 0.5
-          acc.push({
-            id,
-            data,
-            fill,
-            type: objTypes.CONTOUR,
-            // stroke: Color.fromCssColorString(mapColors.values[color]),
-            strokeWidth: 10,
-            // height: 0,
-            clampToGround: true,
+          const lines = fakeOutlineContour(points)
+          lines.forEach((list, i) => {
+            const polyline = buildPolyline(list, color, width)
+            acc.push({ id: `${id}contour${i}`, polyline, type: objTypes.POLYLINE })
           })
+          if (fillColor !== mapColors.TRANSPARENT) {
+            const coordinates = latLng2peerArr(points)
+            let data
+            try {
+              data = makeGeoJSON(coordinates, 'Polygon')
+              await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
+            } catch (err) {
+              data = makeGeoJSON(coordinates, 'MultiPolygon')
+            }
+            // @TODO: осветление в утилиты
+            const fill = Color.fromCssColorString(mapColors.values[fillColor])
+            fill.alpha = 0.5
+            acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
+          }
           break
         }
         default:
@@ -267,7 +284,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
       }
 
       if (positions.length) {
-        const polyline = buildPolyline(positions, color)
+        const polyline = buildPolyline(positions, color, width)
         acc.push({ id, polyline, type: objTypes.POLYLINE })
       }
       if (fillColor !== mapColors.TRANSPARENT) {
