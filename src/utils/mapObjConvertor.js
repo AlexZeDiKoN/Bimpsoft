@@ -109,8 +109,8 @@ export const buildSVG = (data) => {
 }
 
 const heightReference = HeightReference.NONE
-const verticalOrigin = VerticalOrigin.BOTTOM
-const BILLBOARD_HEIGHT = 200
+const verticalOrigin = VerticalOrigin.CENTER
+const BILLBOARD_HEIGHT = 400
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 const buldCurve = (points, locked) => {
@@ -214,15 +214,16 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
       const svg = buildSVG(o)
       const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
       // @TODO: change scale limits (use zoom2height)
-      const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
+      const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
       const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
-      const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
+      const position = Cartesian3.fromDegrees(lng, lat)
+      const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
       const polyline = {
         width: 2,
         material: Color.WHITE,
-        positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
+        positions: [ positionHeightUp(position, 0), billboardPosition ],
       }
-      acc.push({ id, position, billboard, polyline, type })
+      acc.push({ id, position: billboardPosition, billboard, polyline, type })
     } else {
       let color = attributes.get('color')
       const width = attributes.get('strokeWidth')
