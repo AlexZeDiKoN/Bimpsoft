@@ -44,8 +44,10 @@ export default class WebMap3D extends React.PureComponent {
     }
 
     componentDidMount () {
-      const { protocol, host, port } = new URL(process.env.REACT_APP_TILES)
-      TrustedServers.add(host, port || { 'http:': 80, 'https:': 443 }[protocol])
+      if (process.env.REACT_APP_TILES) {
+        const { protocol, host, port } = new URL(process.env.REACT_APP_TILES)
+        TrustedServers.add(host, port || { 'http:': 80, 'https:': 443 }[protocol])
+      }
       const { sources, mode, setMapMode } = this.props
       mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
