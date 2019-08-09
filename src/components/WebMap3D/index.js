@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
 import * as MapModes from '../../constants/MapModes'
 import SignsLayer from './SignsLayer'
+import './webMap3D.css'
 
 const imageryProviderStableProps = {
   hasAlphaChannel: false,
@@ -77,6 +78,7 @@ export default class WebMap3D extends React.PureComponent {
       return imageryProvider
         ? (
           <Viewer
+            className={'volumemap_container'}
             animation={false}
             baseLayerPicker={false}
             fullscreenButton={false}
