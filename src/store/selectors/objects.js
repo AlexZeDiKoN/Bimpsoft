@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 import { isEnemyObject } from '../../utils/affiliations'
 import * as i18n from '../../i18n/ua'
 import * as ENTITY from '../../components/WebMap/entityKind'
+import { DESTROY_COMMAND_SIGN } from '../actions/task'
 import { canEditSelector, layersById, currentMapLayers } from './layersSelector'
 
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
@@ -33,20 +34,18 @@ export const targetObjects = createSelector(
     const result = {}
     objects = objects.values()
     for (const object of objects) {
-      const { attributes: { engagementBar } } = object
+      const { code, attributes: { engagementBar } } = object
       if (currentLayers.includes(object.layer)) {
         const layer = layers[object.layer]
         if (
           (Boolean(engagementBar) && isEnemyObject(object)) ||
-          !layer.formationId
+          (!layer.formationId && code !== DESTROY_COMMAND_SIGN)
         ) {
-          let name
-          if (engagementBar) {
-            name = engagementBar
-          } else {
-            const isArea = ENTITY.GROUPS.AREAS.includes(object.type)
-            name = isArea ? i18n.AREA : i18n.FRONTIER
-          }
+          const name = engagementBar || (ENTITY.GROUPS.AREAS.includes(object.type)
+            ? i18n.AREA
+            : ENTITY.GROUPS.POINTS.includes(object.type)
+              ? i18n.LOCATION
+              : i18n.FRONTIER)
           result[object.id] = {
             id: object.id,
             name,
