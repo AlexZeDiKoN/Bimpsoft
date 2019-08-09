@@ -169,13 +169,13 @@ export const sendResponse = (errors, id, context) => withNotification(async (dis
   }))
   await dispatch(setModalData(null, null))
   if (context && context.newObject) {
-    webMap.addObject({
+    dispatch(webMap.addObject({
       ...context.newObject,
       attributes: {
         ...(context.newObject.attributes || {}),
         taskId: id,
       },
-    })
+    }))
   }
 })
 
