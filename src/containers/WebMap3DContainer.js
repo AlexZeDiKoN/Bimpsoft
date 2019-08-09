@@ -6,13 +6,13 @@ import { setZoom } from '../store/actions/webMap3D'
 import * as webMap from '../store/actions/webMap'
 
 // @TODO: сделать общий метод фильтрации с мемоизацией
-const filterObjects = memoize(
-  (subordinationLevel, objects) => objects.filter((item) => item.level >= subordinationLevel)
+const filterObjects = memoize((subordinationLevel, objects, layers) =>
+  objects.filter((item) => item.level >= subordinationLevel && layers[item.layer].visible)
 )
 
 const mapStateToProps = (state) => {
-  const { webMap: { subordinationLevel, objects, sources, source, mode } } = state
-  const filteredObjects = filterObjects(subordinationLevel, objects)
+  const { webMap: { subordinationLevel, objects, sources, source, mode }, layers: { byId: layers } } = state
+  const filteredObjects = filterObjects(subordinationLevel, objects, layers)
   return {
     sources,
     source,
