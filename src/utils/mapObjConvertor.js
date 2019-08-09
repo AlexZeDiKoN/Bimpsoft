@@ -1,8 +1,17 @@
 import { CRS, latLng, point } from 'leaflet'
 import Bezier from 'bezier-js'
-import { Cartesian3, HeightReference, VerticalOrigin, Color, NearFarScalar } from 'cesium'
+import {
+  Cartesian3,
+  HeightReference,
+  VerticalOrigin,
+  Color,
+  NearFarScalar,
+  CircleOutlineGeometry,
+  GeoJsonDataSource,
+} from 'cesium'
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
+import { chunk } from 'lodash'
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
@@ -10,6 +19,7 @@ import { bezierArray } from '../utils/svg/lines'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
+import * as mapColors from '../constants/colors'
 
 const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
@@ -80,15 +90,15 @@ export function calcMiddlePoint (coords) {
 
 // 3D MAP Methods:
 // @TODO: ВЫНЕСТИ КОНСТАНТЫ...
-export const zoom2height = (zoom, altitude) => {
-  const A = 40487.57
-  const B = 0.00007096758
-  const C = 91610.74
-  const D = -40467.74
+export const zoom2height = (latitude, zoom, altitude) => {
+  const semiMajorAxis = 6378137.0
+  const tileSize = 256
+  const screenResolution = 96 * window.devicePixelRatio / 0.0254
+  const coef = semiMajorAxis * 2 * Math.PI / tileSize * Math.cos(latitude * Math.PI / 180)
   return zoom
-    ? C * Math.pow((A - D) / (zoom - D) - 1, 1 / B)
+    ? coef / 2 ** (zoom + 1) * screenResolution
     : altitude
-      ? D + (A - D) / (1 + Math.pow(altitude / C, B))
+      ? Math.floor(Math.log2(coef / (altitude / screenResolution)) - 1)
       : 0
 }
 
@@ -99,9 +109,8 @@ export const buildSVG = (data) => {
 }
 
 const heightReference = HeightReference.NONE
-// const clampToGround = HeightReference.CLAMP_TO_GROUND
-const verticalOrigin = VerticalOrigin.BOTTOM
-const BILLBOARD_HEIGHT = 200
+const verticalOrigin = VerticalOrigin.CENTER
+const BILLBOARD_HEIGHT = 400
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 const buldCurve = (points, locked) => {
@@ -134,58 +143,158 @@ const buldCurve = (points, locked) => {
   return result
 }
 
-const fillableProps = {
-  height: 0,
-  outline: true,
-  material: Color.TRANSPARENT,
-  outlineColor: Color.WHITE,
-  // heightReference: clampToGround,
+const buildCircle = (center, first) => {
+  const centerCartesian = Cartesian3.fromDegrees(center.lng, center.lat)
+  const firstCartesian = Cartesian3.fromDegrees(first.lng, first.lat)
+  const radMeters = Cartesian3.distance(centerCartesian, firstCartesian)
+  const circle = new CircleOutlineGeometry({
+    center: centerCartesian,
+    radius: radMeters,
+  })
+  const geom = CircleOutlineGeometry.createGeometry(circle)
+  const points = chunk(geom.attributes.position.values, 3)
+  points.push(points[0])
+  return points.map(([ x, y, z ]) => new Cartesian3(x, y, z))
 }
 
-// @TODO: reduce number of lines to avoid code duplication
-export const objectsToSvg = memoize((list, positionHeightUp) => list.reduce((acc, o) => {
-  const { type, point, geometry, id } = o
-  if (type === objTypes.POINT) {
-    const { lat, lng } = point
-    const svg = buildSVG(o)
-    const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-    // @TODO: change scale limits (use zoom2height)
-    const scaleByDistance = new NearFarScalar(100, 0.8, 2000000, 0)
-    const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
-    const position = positionHeightUp(Cartesian3.fromDegrees(lng, lat), BILLBOARD_HEIGHT)
-    const polyline = {
-      width: 2,
-      material: Color.RED,
-      positions: [ positionHeightUp(position, 0), positionHeightUp(position, BILLBOARD_HEIGHT) ],
+const buildPolyline = (positions, color, width) => ({
+  positions,
+  width,
+  clampToGround: true,
+  followSurface: true,
+  material: Color.fromCssColorString(mapColors.values[color]),
+})
+
+// @TODO: в утилиты
+const makeGeoJSON = (coordinates, type) => ({
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      geometry: {
+        type,
+        coordinates,
+      },
+    },
+  ],
+})
+
+// @TODO: в утилиты
+const latLng2peerArr = (data) =>
+  data && Array.isArray(data)
+    ? data.map(latLng2peerArr)
+    : [ data.lng, data.lat ]
+
+// @TODO: вынести
+const fakeOutlineContour = (data) => {
+  const list = []
+  buildOutlineC(data, list)
+  return list
+}
+
+const buildOutlineC = (data, finalArray) => {
+  if (data && Array.isArray(data)) {
+    if (Array.isArray(data[0])) {
+      data.forEach((child) => buildOutlineC(child, finalArray))
+    } else {
+      const pos = data.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+      finalArray.push(pos)
     }
-    acc.push({ id, position, billboard, polyline })
-  } else if (type === objTypes.POLYLINE || type === objTypes.CURVE || type === objTypes.AREA) {
-    const positions = type === objTypes.POLYLINE
-      ? geometry.toArray().map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-      : buldCurve(geometry.toArray(), type === objTypes.AREA)
-    const polyline = { positions, clampToGround: true }
-    acc.push({ id, polyline })
-  } else if (type === objTypes.POLYGON || type === objTypes.SQUARE || o.type === objTypes.RECTANGLE) {
-    const geometryArray = geometry.toArray()
-    let pos = geometryArray
-    if (type !== objTypes.POLYGON) {
-      const [ p1, p3 ] = geometryArray
-      const p2 = { lat: p3.lat, lng: p1.lng }
-      const p4 = { lat: p1.lat, lng: p3.lng }
-      pos = [ p1, p2, p3, p4 ]
+  }
+}
+
+export const objectsToSvg = memoize(async (list, positionHeightUp) => {
+  const acc = []
+  const listArr = list.toArray()
+  for (let i = 0; i < listArr.length; i++) {
+    const { type, point, geometry, id, attributes } = listArr[i]
+    if (type === objTypes.POINT) {
+      const { lat, lng } = point
+      const svg = buildSVG(listArr[i])
+      const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+      // @TODO: change scale limits (use zoom2height)
+      const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
+      const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
+      const position = Cartesian3.fromDegrees(lng, lat)
+      const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
+      const polyline = {
+        width: 2,
+        material: Color.WHITE,
+        positions: [ positionHeightUp(position, 0), billboardPosition ],
+      }
+      acc.push({ id, position: billboardPosition, billboard, polyline, type })
+    } else {
+      let color = attributes.get('color')
+      const width = attributes.get('strokeWidth')
+      // @TODO: if sign's color is black make it white
+      color === mapColors.BLACK && (color = mapColors.WHITE)
+      const fillColor = attributes.get('fill')
+      const basePoints = geometry.toArray()
+      let positions = []
+      switch (type) {
+        case objTypes.POLYLINE:
+          positions = basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+          break
+        case objTypes.CURVE:
+        case objTypes.AREA:
+          positions = buldCurve(basePoints, type === objTypes.AREA)
+          break
+        case objTypes.POLYGON:
+          positions = [ ...basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)) ]
+          positions.push(Cartesian3.fromDegrees(basePoints[0].lng, basePoints[0].lat))
+          break
+        case objTypes.SQUARE:
+        case objTypes.RECTANGLE: {
+          const [ p1, p3 ] = basePoints
+          const p2 = { lat: p3.lat, lng: p1.lng }
+          const p4 = { lat: p1.lat, lng: p3.lng }
+          positions = [ p1, p2, p3, p4, p1 ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+          break
+        }
+        case objTypes.CIRCLE: {
+          const [ p1, p2 ] = geometry.toArray()
+          positions = buildCircle(p1, p2)
+          break
+        }
+        case objTypes.CONTOUR: {
+          const points = geometry.toJS()
+          const lines = fakeOutlineContour(points)
+          lines.forEach((list, i) => {
+            const polyline = buildPolyline(list, color, width)
+            acc.push({ id: `${id}contour${i}`, polyline, type: objTypes.POLYLINE })
+          })
+          if (fillColor !== mapColors.TRANSPARENT) {
+            const coordinates = latLng2peerArr(points)
+            let data
+            try {
+              data = makeGeoJSON(coordinates, 'Polygon')
+              await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
+            } catch (err) {
+              data = makeGeoJSON(coordinates, 'MultiPolygon')
+            }
+            // @TODO: осветление в утилиты
+            const fill = Color.fromCssColorString(mapColors.values[fillColor])
+            fill.alpha = 0.5
+            acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
+          }
+          break
+        }
+        default:
+          console.warn('Object ', listArr[i], 'wasn\'t drawn due to untreated type')
+      }
+
+      if (positions.length) {
+        const polyline = buildPolyline(positions, color, width)
+        acc.push({ id, polyline, type: objTypes.POLYLINE })
+      }
+      if (fillColor !== mapColors.TRANSPARENT) {
+        const fill = Color.fromCssColorString(mapColors.values[fillColor])
+        acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
+      }
     }
-    const positions = pos.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-    const polygon = { hierarchy: positions, ...fillableProps }
-    acc.push({ id, polygon })
-  } else if (type === objTypes.CIRCLE) {
-    const { lat, lng } = point
-    const [ p1, p2 ] = geometry.toArray()
-    const position = Cartesian3.fromDegrees(lng, lat)
-    const pp1 = Cartesian3.fromDegrees(p1.lng, p1.lat)
-    const pp2 = Cartesian3.fromDegrees(p2.lng, p2.lat)
-    const len = Cartesian3.distance(pp1, pp2)
-    const ellipse = { semiMinorAxis: len, semiMajorAxis: len, ...fillableProps }
-    acc.push({ id, position, ellipse })
   }
   return acc
-}, []))
+})
+
+export const fixTilesUrl = (url) =>
+  process.env.NODE_ENV === 'development' ? new URL(url, process.env.REACT_APP_TILES).toString() : url
