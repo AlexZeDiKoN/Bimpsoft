@@ -1,6 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
-import { updateColorByLayerId } from './layers'
+import i18n from '../../i18n'
 import { asyncAction, maps, layers, webMap, flexGrid, selection } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
@@ -56,18 +56,34 @@ export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
 }
 
 export const openMapByCoord = (mapId, coordinate) => async (dispatch) => {
-  await dispatch(batchActions([
-    openMapFolder(mapId),
-    webMap.setCenter(coordinate),
-  ]))
+  const actions = [ openMapFolder(mapId) ]
+  coordinate && actions.push(webMap.setMarker({
+    text: i18n.TASK,
+    point: { lng: parseFloat(coordinate.lng), lat: parseFloat(coordinate.lat) },
+  }))
+  await dispatch(batchActions(actions))
 }
 
-export const openMapByObject = (mapId, object) => async (dispatch) => {
-  await dispatch(openMapFolder(mapId, object.layer))
-  await dispatch(batchActions([
-    webMap.setScaleToSelection(false),
-    selection.selectedList([ object.id ]),
-  ]))
+export const openMapByObject = (mapId, objectData) => async (dispatch, getState) => {
+  if (!objectData) {
+    return
+  }
+  const { id, layer } = objectData
+  layer && await dispatch(openMapFolder(mapId, layer))
+  if (id) {
+    const state = getState()
+    const { webMap: { objects } } = state
+    const object = objects.get(id)
+    if (object) {
+      const actions = [
+        webMap.setScaleToSelection(false),
+        selection.selectedList([ id ]),
+      ]
+      const { point } = object
+      point && actions.push(webMap.setCenter({ lng: parseFloat(point.lng), lat: parseFloat(point.lat) }))
+      await dispatch(batchActions(actions))
+    }
+  }
 }
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
@@ -108,7 +124,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
     await dispatch(layers.updateLayers(layersData))
     for (const { layerId } of layersData) {
       await dispatch(webMap.updateObjectsByLayerId(layerId))
-      await dispatch(updateColorByLayerId(layerId))
+      await dispatch(layers.updateColorByLayerId(layerId))
     }
     if (layersData.length > 0) {
       let selectedLayer
