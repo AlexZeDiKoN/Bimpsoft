@@ -283,6 +283,7 @@ export const CREATE_TASK_ERROR_UNIT_NOT_DEFINED = `Для створення з�
 // Цілі
 export const AREA = 'Район'
 export const FRONTIER = 'Рубіж'
+export const LOCATION = 'Позиція'
 
-export const DESTROY = 'Знищити'
-export const DESTROY_DESCRIPTION = (icon, coordinate) => `Знищити об'єкт ${icon} за координатами ${coordinate}`
+// export const DESTROY = 'Знищити'
+// export const DESTROY_DESCRIPTION = (icon, coordinate) => `Знищити об'єкт ${icon} за координатами ${coordinate}`

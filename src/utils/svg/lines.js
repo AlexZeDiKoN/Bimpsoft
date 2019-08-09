@@ -36,6 +36,10 @@ const vector = (ps, pf) => ({ x: pf.x - ps.x, y: pf.y - ps.y })
 const normal = (v) => ({ x: +v.y, y: -v.x })
 const length = (v) => Math.hypot(v.x, v.y)
 const multiply = (v, k) => ({ x: v.x * k, y: v.y * k })
+export const rotateVector = (v, deg) => ({
+  x: v.x * Math.cos(deg) + v.y * Math.sin(deg),
+  y: v.y * Math.cos(deg) - v.x * Math.sin(deg),
+})
 const setLength = (v, l) => multiply(v, l / length(v))
 const apply = (p, v) => ({ x: p.x + v.x, y: p.y + v.y })
 const angle = (v) => Math.atan2(v.y, v.x) / Math.PI * 180

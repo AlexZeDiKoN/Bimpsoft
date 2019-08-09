@@ -1,11 +1,11 @@
 {
   "name": "web-map",
-  "version": "8.03.468",
+  "version": "8.03.470",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^8.3.265",
-    "@DZVIN/MilSymbolEditor": "^8.3.161",
-    "@DZVIN/components": "^8.3.29",
+    "@DZVIN/CommonComponents": "^8.3.268",
+    "@DZVIN/MilSymbolEditor": "^8.3.162",
+    "@DZVIN/components": "^8.3.30",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",
@@ -52,7 +52,7 @@
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.3",
     "requirejs": "^2.3.2",
-    "resium": "^1.5.0",
+    "resium": "^1.7.0",
     "svg-path-bounds": "^1.0.1",
     "utm": "^1.1.1"
   },
