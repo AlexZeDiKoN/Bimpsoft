@@ -207,11 +207,10 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
   const acc = []
   const listArr = list.toArray()
   for (let i = 0; i < listArr.length; i++) {
-    const o = listArr[i]
-    const { type, point, geometry, id, attributes } = o
+    const { type, point, geometry, id, attributes } = listArr[i]
     if (type === objTypes.POINT) {
       const { lat, lng } = point
-      const svg = buildSVG(o)
+      const svg = buildSVG(listArr[i])
       const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
       // @TODO: change scale limits (use zoom2height)
       const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
@@ -281,7 +280,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
           break
         }
         default:
-          console.warn('Object ', o, 'wasn\'t drawn due to untreated type')
+          console.warn('Object ', listArr[i], 'wasn\'t drawn due to untreated type')
       }
 
       if (positions.length) {
