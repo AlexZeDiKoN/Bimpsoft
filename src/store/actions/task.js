@@ -27,10 +27,11 @@ export const setModalData = (modalData, context) => ({
 export const setValue = (payload) => ({ type: SET_TASK_VALUE, payload })
 export const setContextValue = (payload) => ({ type: SET_TASK_CONTEXT_VALUE, payload })
 export const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })
+export const DESTROY_COMMAND_SIGN = '10032500003409000000'
 
 const getDestroyObject = (sourceObject, layer) => ({
   type: SelectionTypes.POINT,
-  code: 10032500003409000000,
+  code: DESTROY_COMMAND_SIGN,
   point: sourceObject.point,
   geometry: sourceObject.geometry,
   unit: null,
@@ -168,13 +169,13 @@ export const sendResponse = (errors, id, context) => withNotification(async (dis
   }))
   await dispatch(setModalData(null, null))
   if (context && context.newObject) {
-    webMap.addObject({
+    dispatch(webMap.addObject({
       ...context.newObject,
       attributes: {
         ...(context.newObject.attributes || {}),
         taskId: id,
       },
-    })
+    }))
   }
 })
 

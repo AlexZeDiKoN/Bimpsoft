@@ -57,4 +57,8 @@ export const GROUPS = {
     entityKind.SQUARE,
     entityKind.CONTOUR,
   ],
+  POINTS: [
+    entityKind.POINT,
+    entityKind.TEXT,
+  ],
 }

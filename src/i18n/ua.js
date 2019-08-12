@@ -279,10 +279,9 @@ export const TASK_SAVED = 'Завдання збережене'
 export const TASK_SENT = 'Завдання відправлене'
 export const CREATE_TASK_ERROR = 'Неможливо створити завдання'
 export const CREATE_TASK_ERROR_UNIT_NOT_DEFINED = `Для створення завдання необхідно прив’язати умовний знак до підрозділу`
+export const TASK = 'Завдання'
 
 // Цілі
 export const AREA = 'Район'
 export const FRONTIER = 'Рубіж'
-
-export const DESTROY = 'Знищити'
-export const DESTROY_DESCRIPTION = (icon, coordinate) => `Знищити об'єкт ${icon} за координатами ${coordinate}`
+export const LOCATION = 'Позиція'
