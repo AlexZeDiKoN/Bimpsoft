@@ -13,7 +13,7 @@ import { TabsPanel, PrintPanel } from '../../components/common'
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 210
-const SIDEBAR_PANEL_SIZE_MAX = 650
+const SIDEBAR_PANEL_SIZE_MAX = 480
 
 const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 300
