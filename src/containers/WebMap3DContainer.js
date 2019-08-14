@@ -4,6 +4,7 @@ import memoize from 'memoize-one'
 import WebMap3DInner from '../components/WebMap3D'
 import { setZoom } from '../store/actions/webMap3D'
 import * as webMap from '../store/actions/webMap'
+import * as selection from '../store/actions/selection'
 
 // @TODO: сделать общий метод фильтрации с мемоизацией
 const filterObjects = memoize((subordinationLevel, objects, layers) =>
@@ -11,7 +12,11 @@ const filterObjects = memoize((subordinationLevel, objects, layers) =>
 )
 
 const mapStateToProps = (state) => {
-  const { webMap: { subordinationLevel, objects, sources, source, mode }, layers: { byId: layers } } = state
+  const {
+    webMap: { subordinationLevel, objects, sources, source, mode },
+    layers: { byId: layers },
+    selection: { list },
+  } = state
   const filteredObjects = filterObjects(subordinationLevel, objects, layers)
   return {
     sources,
@@ -20,6 +25,7 @@ const mapStateToProps = (state) => {
     center: state.webMap3D.center || state.webMap.center,
     zoom: state.webMap3D.zoom || state.webMap.zoom,
     mode,
+    selected: list,
   }
 }
 
@@ -30,6 +36,7 @@ const mapDispatchToProps = {
   ]),
   setMapMode: webMap.setMapMode,
   setSource: webMap.setSource,
+  editObject: selection.showEditForm,
 }
 
 const WebMap3DContainer = connect(

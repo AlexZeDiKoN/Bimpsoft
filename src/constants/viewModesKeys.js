@@ -8,4 +8,4 @@ export const print = 'print'
 export const settings = 'settings'
 export const directionName = 'directionName'
 export const eternalPoint = 'eternalPoint'
-export const volumeMap = 'volumeMap' // 3D view
+export const map3D = 'map3D'

@@ -5,8 +5,9 @@ import LayersComponent from '../components/LayersComponent'
 import { layers, maps, params, print } from '../store/actions'
 import { layersTree, taskModeSelector, targetingModeSelector } from '../store/selectors'
 import * as paramNames from '../constants/params'
-import { catchErrors } from '../store/actions/asyncAction'
+import * as viewModesKeys from '../constants/viewModesKeys'
 import * as notifications from '../store/actions/notifications'
+import { catchErrors } from '../store/actions/asyncAction'
 import i18n from '../i18n'
 
 export const expandedIdsSelector = createSelector(
@@ -31,6 +32,7 @@ const mapStateToProps = (store) => {
       hiddenOpacity,
       textFilter,
     },
+    viewModes: { [viewModesKeys.map3D]: is3DMapMode },
   } = store
 
   const { byIds, roots, visible } = layersTree(store)
@@ -46,6 +48,7 @@ const mapStateToProps = (store) => {
     timelineTo,
     backOpacity,
     hiddenOpacity: taskModeSelector(store) || targetingModeSelector(store) ? 100 : hiddenOpacity,
+    is3DMapMode,
   }
 }
 
