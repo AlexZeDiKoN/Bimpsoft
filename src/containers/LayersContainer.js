@@ -4,6 +4,7 @@ import LayersComponent from '../components/LayersComponent'
 import { layers, maps, params, print } from '../store/actions'
 import { layersTree } from '../store/selectors'
 import * as paramNames from '../constants/params'
+import * as viewModesKeys from '../constants/viewModesKeys'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
@@ -27,6 +28,7 @@ const mapStateToProps = (store) => {
       hiddenOpacity,
       textFilter,
     },
+    viewModes: { [viewModesKeys.volumeMap]: is3DMapMode },
   } = store
 
   const { byIds, roots, visible } = layersTree(store)
@@ -42,6 +44,7 @@ const mapStateToProps = (store) => {
     timelineTo,
     backOpacity,
     hiddenOpacity,
+    is3DMapMode,
   }
 }
 

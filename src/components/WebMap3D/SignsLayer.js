@@ -9,7 +9,7 @@ import { Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource }
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 import objTypes from '../../components/WebMap/entityKind'
 
-const renderEntities = memoize((signs) => signs.map(({ type, id, ...rest }) => {
+const renderEntities = memoize((signs, edit) => signs.map(({ type, id, ...rest }) => {
   if (type === objTypes.POLYGON) {
     const { fill, positions } = rest
     // @TODO: make it stop rerendering
@@ -35,7 +35,7 @@ const renderEntities = memoize((signs) => signs.map(({ type, id, ...rest }) => {
   } else if (type === objTypes.CONTOUR) {
     return <GeoJsonDataSource key={id} { ...rest }/>
   } else {
-    return <Entity key={id} { ...rest }/>
+    return <Entity key={id} onDoubleClick={edit(id)} { ...rest }/>
   }
 }))
 
@@ -49,6 +49,8 @@ export default class SignsLayer extends Component {
     objects: PropTypes.object,
     zoom: PropTypes.number.isRequired,
     setZoom: PropTypes.func.isRequired,
+    editObject: PropTypes.func.isRequired,
+    selected: PropTypes.array,
   }
 
   state = {
@@ -61,17 +63,21 @@ export default class SignsLayer extends Component {
   }
 
   componentDidUpdate (prevProps) {
-    const { objects } = this.props
-    this.updateSigns(objects, prevProps.objects)
+    const { objects, selected } = this.props
+    if (objects !== prevProps.objects || selected !== prevProps.selected) {
+      // @TODO: show, which objects are selected
+      this.updateSigns(objects, selected)
+    }
   }
+
+  edit = (id) => this.props.editObject.bind(this, id)
 
   scene = React.createRef()
 
-  updateSigns = async (objects, prevObjects) => {
-    if (objects !== prevObjects) {
-      const signs = await objectsToSvg(objects, this.positionHeightUp)
-      this.setState({ signs })
-    }
+  updateSigns = async (objects, selected) => {
+    const signs = await objectsToSvg(objects, this.positionHeightUp)
+    // @TODO: show, which objects are selected
+    this.setState({ signs })
   }
 
   checkZoom = () => {
@@ -127,7 +133,7 @@ export default class SignsLayer extends Component {
 
   render () {
     const { signs } = this.state
-    const entities = renderEntities(signs)
+    const entities = renderEntities(signs, this.edit)
     return (
       <>
         <Scene ref={this.scene}>

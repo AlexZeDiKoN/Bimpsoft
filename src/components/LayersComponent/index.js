@@ -77,6 +77,7 @@ export default class LayersComponent extends React.Component {
       onExpand,
       expandedIds,
       textFilter,
+      is3DMapMode,
     } = this.props
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
@@ -92,15 +93,17 @@ export default class LayersComponent extends React.Component {
             onChangeFrom={onChangeTimeLineFrom}
             onChangeTo={onChangeTimeLineTo}
           />
-          <LayersControlsComponent
-            visible={visible}
-            onChangeVisibility={onChangeVisibility}
-            backOpacity={backOpacity}
-            onChangeBackOpacity={onChangeBackOpacity}
-            hiddenOpacity={hiddenOpacity}
-            onChangeHiddenOpacity={onChangeHiddenOpacity}
-            onCloseAllMaps={onCloseAllMaps}
-          />
+          {!is3DMapMode &&
+            <LayersControlsComponent
+              visible={visible}
+              onChangeVisibility={onChangeVisibility}
+              backOpacity={backOpacity}
+              onChangeBackOpacity={onChangeBackOpacity}
+              hiddenOpacity={hiddenOpacity}
+              onChangeHiddenOpacity={onChangeHiddenOpacity}
+              onCloseAllMaps={onCloseAllMaps}
+            />
+          }
           <div className="tree-layers-container">
             <TreeComponentUncontrolled
               className="tree-layers"
@@ -148,4 +151,5 @@ LayersComponent.propTypes = {
   onChangeHiddenOpacity: PropTypes.func,
   onCloseAllMaps: PropTypes.func,
   onFilterTextChange: PropTypes.func,
+  is3DMapMode: PropTypes.bool.isRequired,
 }

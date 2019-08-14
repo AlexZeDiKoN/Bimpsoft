@@ -1,10 +1,13 @@
 import React from 'react'
 import {
-  CesiumTerrainProvider, Cartesian3, KeyboardEventModifier,
+  CesiumTerrainProvider, Cartesian3, KeyboardEventModifier, ScreenSpaceEventType,
   CameraEventType, UrlTemplateImageryProvider, TrustedServers,
 } from 'cesium'
 import memoize from 'memoize-one'
-import { Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer } from 'resium'
+import {
+  Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer,
+  ScreenSpaceEventHandler, ScreenSpaceEvent,
+} from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
 import * as MapModes from '../../constants/MapModes'
@@ -37,10 +40,12 @@ export default class WebMap3D extends React.PureComponent {
       mode: PropTypes.any,
       objects: PropTypes.object,
       sources: PropTypes.array,
+      selected: PropTypes.array,
       source: PropTypes.object,
       setZoom: PropTypes.func.isRequired,
       setSource: PropTypes.func.isRequired,
       setMapMode: PropTypes.func.isRequired,
+      editObject: PropTypes.func.isRequired,
     }
 
     componentDidMount () {
@@ -75,7 +80,7 @@ export default class WebMap3D extends React.PureComponent {
 
     // @TODO: remove terrainExaggeration after test
     render () {
-      const { objects, center, zoom, setZoom } = this.props
+      const { objects, center, zoom, setZoom, selected, editObject } = this.props
       const imageryProvider = this.getImageryProvider()
       return imageryProvider
         ? (
@@ -112,7 +117,12 @@ export default class WebMap3D extends React.PureComponent {
               objects={objects}
               zoom={zoom}
               setZoom={setZoom}
+              selected={selected}
+              editObject={editObject}
             />
+            <ScreenSpaceEventHandler useDefault={true} >
+              <ScreenSpaceEvent type={ScreenSpaceEventType.LEFT_DOUBLE_CLICK} />
+            </ScreenSpaceEventHandler>
             <ScreenSpaceCameraController
               minimumZoomDistance={MIN_ZOOM}
               maximumZoomDistance={MAX_ZOOM}
