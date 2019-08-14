@@ -8,7 +8,7 @@ const mapStateToProps = (store) => ({
   printStatus: Boolean(store.print.mapId),
   marchEdit: store.march.marchEdit,
   isMapCOP: mapCOP(store),
-  is3DMapMode: store.viewModes[viewModesKeys.volumeMap],
+  is3DMapMode: store.viewModes[viewModesKeys.map3D],
 })
 
 export default connect(

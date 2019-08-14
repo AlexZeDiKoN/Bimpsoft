@@ -109,8 +109,6 @@ export const buildSVG = (data) => {
   return symbol.asSVG()
 }
 
-const isCommandPost = (code) => model.APP6Code.isHQ(code)
-
 const BILLBOARD_HEIGHT = 400
 // @TODO: change scale limits (use zoom2height)
 const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
@@ -223,7 +221,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
       const { lat, lng } = point
       const svg = buildSVG(listArr[i])
       const { code } = listArr[i]
-      const isCP = isCommandPost(code)
+      const isCP = model.APP6Code.isCommandPost(code)
       const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
       const billboard = buildBillboard(image, isCP)
       const position = Cartesian3.fromDegrees(lng, lat)

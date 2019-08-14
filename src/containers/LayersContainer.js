@@ -32,7 +32,7 @@ const mapStateToProps = (store) => {
       hiddenOpacity,
       textFilter,
     },
-    viewModes: { [viewModesKeys.volumeMap]: is3DMapMode },
+    viewModes: { [viewModesKeys.map3D]: is3DMapMode },
   } = store
 
   const { byIds, roots, visible } = layersTree(store)

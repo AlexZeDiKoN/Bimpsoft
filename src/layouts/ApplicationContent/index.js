@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { WebMap, PrintGrid, PrintLegendContainer } from '../../containers'
-import { volumeMap } from '../../constants/viewModesKeys'
+import { map3D } from '../../constants/viewModesKeys'
 import { MapConsumer } from '../../components/WebMap/MapContext'
 import WebMap3DContainer from '../../containers/WebMap3DContainer'
 
@@ -31,7 +31,7 @@ class ApplicationContent extends React.PureComponent {
 }
 
 const mapStateToProps = (store) => ({
-  is3DMapMode: store.viewModes[volumeMap],
+  is3DMapMode: store.viewModes[map3D],
 })
 
 export default connect(mapStateToProps)(ApplicationContent)

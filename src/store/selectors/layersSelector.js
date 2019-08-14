@@ -9,7 +9,7 @@ const calc = (state) => state.maps.calc
 const selectedLayerId = (state) => state.layers.selectedId
 const mapsById = (state) => state.maps.byId
 const webMapModeSelector = ({ webMap: { mode } }) => mode
-const is3DMapMode = ({ viewModes: { [viewModesKeys.volumeMap]: mode } }) => mode
+const is3DMapMode = ({ viewModes: { [viewModesKeys.map3D]: mode } }) => mode
 
 export const layersById = (state) => state.layers.byId
 

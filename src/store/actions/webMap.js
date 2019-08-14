@@ -117,7 +117,7 @@ export const setSubordinationLevel = (value) => ({
 export const setSubordinationLevelByZoom = (byZoom = null) => (dispatch, getState) => {
   const { params, webMap3D: { zoom: volumeZoom },
     webMap: { subordinationAuto, subordinationLevel, zoom },
-    viewModes: { [viewModesKeys.volumeMap]: is3DMapMode } } = getState()
+    viewModes: { [viewModesKeys.map3D]: is3DMapMode } } = getState()
   if (subordinationAuto) {
     if (byZoom === null) {
       byZoom = !is3DMapMode ? zoom : volumeZoom

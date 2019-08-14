@@ -85,7 +85,7 @@ export default class WebMap3D extends React.PureComponent {
       return imageryProvider
         ? (
           <Viewer
-            className={'volumemap_container'}
+            className={'map3D_container'}
             animation={false}
             baseLayerPicker={false}
             fullscreenButton={false}
