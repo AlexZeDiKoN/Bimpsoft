@@ -4,7 +4,7 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector } from '../selectors'
+import { canEditSelector, taskModeSelector, targetingModeSelector } from '../selectors'
 import entityKind from '../../components/WebMap/entityKind'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
@@ -52,7 +52,9 @@ export const showEditForm = (id) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
   const object = objects.get(id)
-  dispatch(setPreview(object))
+  if (!taskModeSelector(state) && !targetingModeSelector(state)) {
+    dispatch(setPreview(object))
+  }
 }
 
 export const hideForm = () => ({

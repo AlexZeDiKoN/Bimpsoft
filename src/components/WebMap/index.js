@@ -37,7 +37,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
-import { isFriend, isEnemy } from '../../utils/affiliations'
+// import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import entityKind, { entityKindFillable } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
@@ -65,6 +65,7 @@ const openingAction = 'open'
 const closingAction = 'close'
 
 const openPopUpInterval = 1000
+const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
@@ -185,37 +186,43 @@ const serializeCoordinate = (mode, lat, lng) => {
 }
 
 const setScaleOptions = (layer, params) => {
-  if (!layer.object || !layer.object.type) {
-    return
-  }
-  switch (Number(layer.object.type)) {
-    case entityKind.POINT:
+  if (layer && layer.object) {
+    if (layer.object.catalogId) {
       layer.setScaleOptions({
         min: Number(params[paramsNames.POINT_SIZE_MIN]),
         max: Number(params[paramsNames.POINT_SIZE_MAX]),
       })
-      break
-    case entityKind.TEXT:
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-      })
-      break
-    case entityKind.SEGMENT:
-    case entityKind.AREA:
-    case entityKind.CURVE:
-    case entityKind.POLYGON:
-    case entityKind.POLYLINE:
-    case entityKind.CIRCLE:
-    case entityKind.RECTANGLE:
-    case entityKind.SQUARE:
-    case entityKind.CONTOUR:
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.LINE_SIZE_MIN]),
-        max: Number(params[paramsNames.LINE_SIZE_MAX]),
-      })
-      break
-    default:
+    } else if (layer.object.type) {
+      switch (Number(layer.object.type)) {
+        case entityKind.POINT:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.POINT_SIZE_MIN]),
+            max: Number(params[paramsNames.POINT_SIZE_MAX]),
+          })
+          break
+        case entityKind.TEXT:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+          })
+          break
+        case entityKind.SEGMENT:
+        case entityKind.AREA:
+        case entityKind.CURVE:
+        case entityKind.POLYGON:
+        case entityKind.POLYLINE:
+        case entityKind.CIRCLE:
+        case entityKind.RECTANGLE:
+        case entityKind.SQUARE:
+        case entityKind.CONTOUR:
+          layer.setScaleOptions({
+            min: Number(params[paramsNames.LINE_SIZE_MIN]),
+            max: Number(params[paramsNames.LINE_SIZE_MAX]),
+          })
+          break
+        default:
+      }
+    }
   }
 }
 
@@ -456,7 +463,7 @@ export default class WebMap extends React.PureComponent {
     }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
-      this.updateTargetingZones(targetingObjects, list, objects)
+      this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
   }
 
@@ -472,10 +479,10 @@ export default class WebMap extends React.PureComponent {
   updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
-    .filter((key) => this.map._layers[ key ]._locked)
+    .filter((key) => this.map._layers[key]._locked)
     .forEach((key) => {
       const { activeObjectId } = this.props
-      const layer = this.map._layers[ key ]
+      const layer = this.map._layers[key]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
         layer.setLocked && layer.setLocked(false)
@@ -487,39 +494,39 @@ export default class WebMap extends React.PureComponent {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
   }
 
-  updateTargetingZones = async (targetingObjects, selectedList, objects) => {
+  updateTargetingZones = async (targetingObjects/*, selectedList, objects */) => {
     if (!this.map) {
       return
     }
-    const selectedPoints = (selectedList || [])
+    /* const selectedPoints = (selectedList || [])
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return object && object.type === entityKind.POINT
-      })
-    const selectedFriends = selectedPoints
+      }) */
+    /* const selectedFriends = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isFriend(object.code) && object.level === SubordinationLevel.TEAM_CREW
-      })
-    const selectedEnemies = selectedPoints
+      }) */
+    /* const selectedEnemies = selectedPoints
       .filter((id) => {
         const object = objects.find((object) => object && object.id === id)
         return isEnemy(object.code)
-      })
-    const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
+      }) */
+    /* const enemy = selectedEnemies && selectedList && selectedEnemies.length === 1 && selectedList.length === 1
       ? selectedEnemies[0]
-      : null
-    const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
+      : null */
+    /* const friend = selectedFriends && selectedList && selectedFriends.length === 1 && selectedList.length === 1
       ? selectedFriends[0]
-      : null
-    const buildingObjects = targetingObjects.size >= 1 && friend
+      : null */
+    const buildingObjects = /* targetingObjects.size >= 1 && friend
       ? [ friend ]
-      : targetingObjects.map((object) => object.id).sort().toArray()
-    const hash = `${JSON.stringify(buildingObjects)}${enemy}`
+      : */ targetingObjects.map((object) => object.id).sort().toArray()
+    const hash = `${JSON.stringify(buildingObjects)}` // ${enemy}
     if (this.targetingZonesHash !== hash) {
       const { getZones } = this.props
       const zones = buildingObjects.length
-        ? (await getZones(buildingObjects, enemy)).map(JSON.parse).filter(Boolean)
+        ? (await getZones(buildingObjects, null/* enemy */)).map(JSON.parse).filter(Boolean)
         : null
       this.targeting && this.targeting.removeFrom(this.map)
       if (zones && zones.length) {
@@ -900,7 +907,7 @@ export default class WebMap extends React.PureComponent {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = layersById.hasOwnProperty(activeLayerId)
+        const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
         const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
         isSelected && selectedIds.push(layer.id)
       }
@@ -983,8 +990,8 @@ export default class WebMap extends React.PureComponent {
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = list.includes(item.id)
-      const hidden = !isSelectedItem &&
-        (itemLevel < levelEdge || ((!layer || !layersById.hasOwnProperty(layer)) && !item.catalogId))
+      const hidden = !isSelectedItem && (itemLevel < levelEdge ||
+        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId))
 
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
@@ -1013,19 +1020,11 @@ export default class WebMap extends React.PureComponent {
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
     settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
-    if (this.map) {
-      this.map.eachLayer((layer) => {
-        setScaleOptions(layer, params)
-      })
-    }
+    this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    if (this.map) {
-      this.map.eachLayer((layer) => {
-        layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
-      })
-    }
+    this.map && this.map.eachLayer((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -1043,9 +1042,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   crosshairCursor = (on) => {
-    if (this.map) {
-      this.map._container.style.cursor = on ? 'crosshair' : ''
-    }
+    this.map && (this.map._container.style.cursor = on ? 'crosshair' : '')
   }
 
   setMapCursor = (edit, type) => {
@@ -1068,9 +1065,9 @@ export default class WebMap extends React.PureComponent {
           url = `${process.env.REACT_APP_TILES}${url}`
         }
         console.info({
-          'REACT_APP_PREFIX': process.env.REACT_APP_PREFIX,
-          'REACT_APP_TILES': process.env.REACT_APP_TILES,
-          'tileLayerURL': url,
+          REACT_APP_PREFIX: process.env.REACT_APP_PREFIX,
+          REACT_APP_TILES: process.env.REACT_APP_TILES,
+          tileLayerURL: url,
         })
         const sourceLayer = new TileLayer(url, rest)
         settings.MIN_ZOOM = rest.minZoom || settings.MIN_ZOOM
@@ -1182,32 +1179,29 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  setPopUp = () => {
-    const indicatorPopup = popup(popupOptionsIndicators)
-    return (unitId, indicatorsData, layer) => {
-      const unitData = this.getUnitData(unitId)
-      const renderPopUp = renderIndicators(indicatorsData, unitData)
-      layer && (indicatorPopup.setLatLng(layer._latlng || {}).setContent(renderPopUp || ''))
-      return indicatorPopup
-    }
-  }
-
-  getPopUpRender = this.setPopUp()
-
   getUnitIndicatorsInfoOnHover = () => {
     let timer
-    let lastUnit
-    return (actionType, unit, layer, formationId, indicatorsData) => {
-      const popupInner = this.getPopUpRender(unit, indicatorsData, layer)
-      const isPopUpOpen = popupInner._close()
+    const lastUnits = {}
+    const popupInner = popup(popupOptionsIndicators)
+    return (actionType, layer, formationId, object) => {
+      const isPopUpOpen = popupInner.isOpen()
       clearTimeout(timer)
       if (actionType === 'open') {
-        clearTimeout(timer)
-        lastUnit !== unit && !indicatorsData && window.explorerBridge.getUnitIndicators(unit, formationId)
-        lastUnit = unit
-        timer = setTimeout(() => layer && layer._latlng && popupInner.openOn(this.map), openPopUpInterval)
+        if (!lastUnits[object.unit]) {
+          window.explorerBridge.getUnitIndicators(object.unit, formationId)
+          lastUnits[object.unit] = setTimeout(() => lastUnits[object.unit] = undefined,
+            clearLastUnitIdToGetNewRequestForIndicators)
+        }
+
+        timer = setTimeout(() => {
+          const unitData = this.getUnitData(object.unit)
+          const renderPopUp = renderIndicators(object, unitData)
+          layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
+          popupInner.openOn(this.map)
+        }, openPopUpInterval
+
+        )
       } else {
-        clearTimeout(timer)
         isPopUpOpen && popupInner._close()
       }
     }
@@ -1219,7 +1213,7 @@ export default class WebMap extends React.PureComponent {
 
   addObject = (object, prevLayer) => {
     const { layersByIdFromStore } = this.props
-    const { id, attributes, layer: layerInner, unit, indicatorsData } = object
+    const { id, attributes, layer: layerInner, unit } = object
     const layerObject = layersByIdFromStore[layerInner]
     try {
       validateObject(object.toJS())
@@ -1242,16 +1236,16 @@ export default class WebMap extends React.PureComponent {
       layer.on('dblclick', this.dblClickOnLayer)
       isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
-        unit,
         layer,
         layerObject.formationId,
-        indicatorsData,
+        object,
       )
       )
       isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         unit,
         layer,
+        object,
       ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
@@ -1417,11 +1411,9 @@ export default class WebMap extends React.PureComponent {
     const { target: layer, target: { object: { name, state, catalogId } } } = event
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
-    const text = `
-      <strong>${catalogName}</strong><br/>
-      <u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>
-      <u>${i18n.STATE}:</u>&nbsp;${state}
-    `
+    let text = `<strong>${catalogName}</strong><br/>`
+    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
+    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
     new L.Popup()
       .setLatLng(layer.getLatLng())
       .setContent(text)

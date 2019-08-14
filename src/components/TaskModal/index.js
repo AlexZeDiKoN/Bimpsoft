@@ -6,6 +6,8 @@ import i18n from '../../i18n'
 
 import ModalContainer from '../common/ModalContainer'
 
+const STYLE = { width: '1000px' }
+
 export default class TaskModal extends React.Component {
   static propTypes = {
     tasks: PropTypes.array,
@@ -38,24 +40,28 @@ export default class TaskModal extends React.Component {
       onSend,
     } = this.props
     return (
-      <Wrapper
-        title={i18n.CREATE_TASK}
-        onClose={onClose}
-      >
-        <FocusTrap>
-          <TaskComponentStatefull
-            value={value}
-            tasks={tasks}
-            executorUnitID={executorUnitID}
-            contacts={contacts}
-            contactsLocal={contactsLocal}
-            priorities={priorities}
-            onSave={onSave}
-            onSend={onSend}
-            onCancel={onClose}
-          />
-        </FocusTrap>
-      </Wrapper>
+      <div className="not-clickable-area">
+        <Wrapper
+          title={i18n.CREATE_TASK}
+          onClose={onClose}
+        >
+          <FocusTrap>
+            <div tabIndex={0} style={STYLE}>
+              <TaskComponentStatefull
+                value={value}
+                tasks={tasks}
+                executorUnitID={executorUnitID}
+                contacts={contacts}
+                contactsLocal={contactsLocal}
+                priorities={priorities}
+                onSave={onSave}
+                onSend={onSend}
+                onCancel={onClose}
+              />
+            </div>
+          </FocusTrap>
+        </Wrapper>
+      </div>
     )
   }
 }

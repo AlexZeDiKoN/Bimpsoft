@@ -24,8 +24,11 @@ const renderIndicator = (title, data) => `<span class='unit_indicators_indicator
   <span class='unit_indicators_indicator_data'>${data || i18n.NOT_CALCULATED}</span>
 </span>`
 
-const renderIndicators = (indicatorsData = {}, unitData) => {
-  const unitShortName = unitData.shortName || unitData.fullName
+const renderIndicators = (object, unitData) => {
+  const indicatorsData = object.indicatorsData || {}
+  const unitShortName = (indicatorsData.unit &&
+    (indicatorsData.unit.shortName || indicatorsData.unit.fullName)) ||
+    unitData.shortName || unitData.fullName
   const dateFor = indicatorsData.dateFor && moment(indicatorsData.dateFor).format(DATE_TIME_FORMAT)
   const bp001 = indicatorsData[IndicationCodes.BP001]
   const bp002 = indicatorsData[IndicationCodes.BP002]

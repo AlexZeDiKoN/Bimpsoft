@@ -138,3 +138,22 @@ export const layersTree = createSelector(
     return { byIds, roots, visible }
   }
 )
+
+export const currentMapLayers = createSelector(
+  mapId,
+  layersById,
+  (mapId, layers) => mapId && layers
+    ? Object.entries(layers)
+      .map(([ key, value ]) => value.visible && value.mapId === mapId ? key : null)
+      .filter((value) => value !== null)
+    : []
+)
+
+export const currentMapTargetLayers = createSelector(
+  currentMapLayers,
+  layersById,
+  (currentMapLayers, layersById) => currentMapLayers.filter((id) => {
+    const layer = layersById[id]
+    return layer && !layer.formationId
+  })
+)

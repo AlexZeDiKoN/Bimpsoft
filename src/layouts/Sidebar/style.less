@@ -1,26 +1,30 @@
 @import "../../assets/styles/_variables.less";
 @import "../../assets/styles/_mixins.less";
 
-.sidebar{
+.sidebar {
   .flex;
   flex-direction: column;
-  height:100%;
+  height: 100%;
   background-color: @toolbar-background;
   user-select: none;
-  > .value-swiper{
+
+  > .value-swiper {
     height: 7px;
     cursor: row-resize;
   }
-}
-.sidebar-panel1{
-  flex: 0 0 auto;
-  overflow: hidden;
-  .flex;
-}
-.sidebar-panel2{
-  flex: 1 1 auto;
-  overflow: hidden;
-  .flex;
+
+  .sidebar-panel1 {
+    flex: 0 0 auto;
+    overflow: hidden;
+    .flex;
+  }
+
+  .sidebar-panel2 {
+    flex: 1 1 auto;
+    overflow: hidden;
+    .flex;
+    height: 100%;
+  }
 }
 
 

@@ -122,7 +122,7 @@ export default class LeftMenu extends React.Component {
         <IconButton
           placement={'bottomRight'}
           title={i18n.VOLUME_VIEW}
-          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
+          icon={iconNames.MAP_3D}
           checked={is3DMapMode}
           onClick={onClick3D}
         />

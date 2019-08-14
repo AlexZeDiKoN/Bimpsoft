@@ -94,15 +94,15 @@ export default class ExplorerBridge {
           break
         }
         case SHOW_TASK_MODAL_RESPONSE: {
-          catchError(task.showModalResponse)(data.modalData, data.errors)(this.store.dispatch)
+          catchError(task.showModalResponse)(data.modalData, data.context, data.errors)(this.store.dispatch)
           break
         }
         case SAVE_TASK_RESPONSE: {
-          catchError(task.saveResponse)(data.errors, data.id)(this.store.dispatch)
+          catchError(task.saveResponse)(data.errors, data.id, data.context)(this.store.dispatch)
           break
         }
         case SEND_TASK_RESPONSE: {
-          catchError(task.sendResponse)(data.errors)(this.store.dispatch)
+          catchError(task.sendResponse)(data.errors, data.id, data.context)(this.store.dispatch)
           break
         }
         case ACTION_OPEN_COORDINATE: {
@@ -126,11 +126,11 @@ export default class ExplorerBridge {
 
   variantResult = (variantId, result) => this.send({ action: ACTION_VARIANT_RESULT, variantId, result })
 
-  showTaskModalRequest = (payload) => this.send({ action: SHOW_TASK_MODAL_REQUEST, payload })
+  showTaskModalRequest = (payload, context) => this.send({ action: SHOW_TASK_MODAL_REQUEST, payload, context })
 
-  saveTask = (payload) => this.send({ action: SAVE_TASK, payload })
+  saveTask = (payload, context) => this.send({ action: SAVE_TASK, payload, context })
 
-  sendTask = (payload) => this.send({ action: SEND_TASK, payload })
+  sendTask = (payload, context) => this.send({ action: SEND_TASK, payload, context })
 
   showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
     window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)

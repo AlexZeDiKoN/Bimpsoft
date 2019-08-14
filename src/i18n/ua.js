@@ -175,6 +175,7 @@ export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків н
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
+export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
@@ -272,11 +273,15 @@ export const BCHS_006 = 'Укомплектованість ОВТ'
 
 // Завдання
 export const ERROR_SAVE_TASK = 'Помилка при створенні завдання'
+export const ERROR_SEND_TASK = 'Помилка при відправленні завдання'
 export const CREATE_TASK = 'Створити завдання'
+export const TASK_SAVED = 'Завдання збережене'
+export const TASK_SENT = 'Завдання відправлене'
+export const CREATE_TASK_ERROR = 'Неможливо створити завдання'
+export const CREATE_TASK_ERROR_UNIT_NOT_DEFINED = `Для створення завдання необхідно прив’язати умовний знак до підрозділу`
+export const TASK = 'Завдання'
 
 // Цілі
 export const AREA = 'Район'
 export const FRONTIER = 'Рубіж'
-
-export const DESTROY = 'Знищити'
-export const DESTROY_DESCRIPTION = (icon, coordinate) => `Знищити об'єкт ${icon} за координатами ${coordinate}`
+export const LOCATION = 'Позиція'

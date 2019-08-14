@@ -1,10 +1,14 @@
 import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
+import { batchActions } from 'redux-batched-actions'
 import LayersComponent from '../components/LayersComponent'
 import { layers, maps, params, print } from '../store/actions'
-import { layersTree } from '../store/selectors'
+import { layersTree, taskModeSelector, targetingModeSelector } from '../store/selectors'
 import * as paramNames from '../constants/params'
 import * as viewModesKeys from '../constants/viewModesKeys'
+import * as notifications from '../store/actions/notifications'
+import { catchErrors } from '../store/actions/asyncAction'
+import i18n from '../i18n'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
@@ -43,36 +47,47 @@ const mapStateToProps = (store) => {
     timelineFrom,
     timelineTo,
     backOpacity,
-    hiddenOpacity,
+    hiddenOpacity: taskModeSelector(store) || targetingModeSelector(store) ? 100 : hiddenOpacity,
     is3DMapMode,
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  onChangeMapVisibility: (mapId, visible) => dispatch(layers.updateLayersByMapId(mapId, { visible })),
-  onChangeMapColor: (mapId, color) => dispatch(layers.updateLayersByMapId(mapId, { color })),
-  onCloseMap: (mapId) => dispatch(maps.deleteMap(mapId)),
-  onPrintMap: (mapId, name) => dispatch(print.print(mapId, name)),
-  onChangeLayerVisibility: (layerId, visible) => dispatch(layers.updateLayer({ layerId, visible })),
-  onChangeLayerColor: (layerId, color) => dispatch(layers.updateLayer({ layerId, color })),
-  onSelectLayer: (layerId) => dispatch(layers.selectLayer(layerId)),
-  onChangeTimeLineFrom: (date) => dispatch(layers.setTimelineFrom(date)),
-  onChangeTimeLineTo: (date) => dispatch(layers.setTimelineTo(date)),
-  onChangeVisibility: (visible) => dispatch(layers.updateAllLayers({ visible })),
-  onChangeBackOpacity: (opacity) => {
-    dispatch(layers.setBackOpacity(opacity))
-    dispatch(params.saveParam(paramNames.MAP_BASE_OPACITY, opacity))
+const mapDispatchToProps = {
+  onChangeMapVisibility: (mapId, visible) => layers.updateLayersByMapId(mapId, { visible }),
+  onChangeMapColor: (mapId, color) => layers.updateLayersByMapId(mapId, { color }),
+  onCloseMap: maps.deleteMap,
+  onPrintMap: print.print,
+  onChangeLayerVisibility: (layerId, visible) => layers.updateLayer({ layerId, visible }),
+  onChangeLayerColor: (layerId, color) => layers.updateLayer({ layerId, color }),
+  onSelectLayer: layers.selectLayer,
+  onChangeTimeLineFrom: layers.setTimelineFrom,
+  onChangeTimeLineTo: layers.setTimelineTo,
+  onChangeVisibility: (visible) => layers.updateAllLayers({ visible }),
+  onChangeBackOpacity: (opacity) => batchActions([
+    layers.setBackOpacity(opacity),
+    params.saveParam(paramNames.MAP_BASE_OPACITY, opacity),
+  ]),
+  onChangeHiddenOpacity: (opacity) => async (dispatch, getState) => {
+    const state = getState()
+    if (taskModeSelector(state) || targetingModeSelector(state)) {
+      await dispatch(notifications.push({
+        type: 'warning',
+        message: i18n.LAYERS_BASEMAP_OPACITY,
+        description: i18n.LAYERS_INACTIVE_OPACITY_FAIL,
+      }))
+    } else {
+      await dispatch(batchActions([
+        layers.setHiddenOpacity(opacity),
+        params.saveParam(paramNames.INACTIVE_LAYERS_OPACITY, opacity),
+      ]))
+    }
   },
-  onChangeHiddenOpacity: (opacity) => {
-    dispatch(layers.setHiddenOpacity(opacity))
-    dispatch(params.saveParam(paramNames.INACTIVE_LAYERS_OPACITY, opacity))
-  },
-  onCloseAllMaps: () => dispatch(maps.deleteAllMaps()),
-  onExpand: (key) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
-  onFilterTextChange: (filterText) => dispatch(layers.setFilterText(filterText)),
-})
+  onCloseAllMaps: maps.deleteAllMaps,
+  onExpand: (key) => (dispatch) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
+  onFilterTextChange: layers.setFilterText,
+}
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  catchErrors(mapDispatchToProps)
 )(LayersComponent)

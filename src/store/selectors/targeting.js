@@ -2,28 +2,38 @@ import { createSelector } from 'reselect'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'
-import { mapId, mapCOP, layersById } from './layersSelector'
+import { isFriendObject } from '../../utils/affiliations'
+import { mapCOP, currentMapLayers } from './layersSelector'
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
 const objects = (state) => state.webMap.objects
-const currentOrgStructure = (state) => state.orgStructures
+// const currentOrgStructure = (state) => state.orgStructures
+const defaultOrgStructure = (state) => state.webMap.defOrgStructure
+const selectedList = (state) => state.selection.list
 
-const myList = (orgStructure, myUnitId) => [
-  myUnitId,
-  ...((orgStructure.byIds[myUnitId] && orgStructure.byIds[myUnitId].children) || [])
-    .map((child) => myList(orgStructure, child)),
-].flat(32)
+const selectedOur = (objects, list) => {
+  if (list && list.length === 1) {
+    const objId = list[0]
+    const object = objects.get(objId)
+    if (object && isFriendObject(object)) {
+      return object.unit
+    }
+  }
+}
 
-export const currentMapLayers = createSelector(
-  mapId,
-  layersById,
-  (mapId, layers) => mapId && layers
-    ? Object.entries(layers)
-      .map(([ key, value ]) => value.visible && value.mapId === mapId ? key : null)
-      .filter((value) => value !== null)
-    : []
-)
+const buildList = (orgStructure, myUnitId) => orgStructure.byIds[myUnitId] && orgStructure.byIds[myUnitId].children
+  ? [
+    myUnitId,
+    ...orgStructure.byIds[myUnitId].children.map((child) => buildList(orgStructure, child)),
+  ]
+  : [ myUnitId ]
+
+const myList = (orgStructure, myUnitId) => {
+  const cp = orgStructure.byIds[myUnitId]
+  cp && cp.itemType === 'CommandPost' && (myUnitId = cp.militaryUnitID)
+  return buildList(orgStructure, myUnitId).flat(32)
+}
 
 const currentMapPointLowLevelObjects = createSelector(
   objects,
@@ -37,14 +47,20 @@ export const targetingObjects = createSelector(
   targetingModeSelector,
   mapCOP,
   unitId,
+  objects,
   currentMapPointLowLevelObjects,
-  currentOrgStructure,
-  (targetingMode, mapCOP, unitId, objects, orgStructure) => {
+  defaultOrgStructure,
+  selectedList,
+  (targetingMode, mapCOP, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
     let predicate = () => false
-    if (targetingMode && mapCOP && unitId && objects && orgStructure) {
-      const list = myList(orgStructure, unitId)
-      predicate = (object) => list.includes(object.unit)
+    if (targetingMode && mapCOP && unitId && allObjects && pointObjects && orgStructure) {
+      // const mySubList = myList(orgStructure.tree, unitId)
+      const one = selectedOur(allObjects, selectedList)
+      const oneSubList = one
+        ? myList(orgStructure.tree, one, true)
+        : null
+      predicate = (object) => /* mySubList.includes(object.unit) && ( */oneSubList && oneSubList.includes(object.unit)/* ) */
     }
-    return objects.filter(predicate)
+    return pointObjects.filter(predicate)
   }
 )
