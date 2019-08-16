@@ -33,13 +33,11 @@ const setOptionsData = (options, data) => {
  * @returns {Promise<*>}
  */
 export async function post (url, data = {}, route = '/do', namespace) {
-  const options = _getOptions('POST')
   const request = {
     operation: url,
     payload: !data ? null : JSON.stringify(data),
   }
-  setOptionsData(options, request)
-  return getDirect(route, options, namespace)
+  return getDirect(route, request, namespace)
 }
 
 export async function getDirect (url, data = {}, namespace) {
