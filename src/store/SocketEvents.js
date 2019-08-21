@@ -1,14 +1,15 @@
-import { getWebmapApi } from '../utils/services'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 import { printFileSet } from './actions/print'
 import { catchError } from './actions/asyncAction'
 
-const loadWebSocketClient = (url) =>
+const server = process.env.REACT_APP_SERVER_URL
+
+const loadWebSocketClient = () =>
   new Promise((resolve, reject) => {
     try {
       const script = document.createElement('script')
-      script.src = url + '/socket.io/socket.io.js'
+      script.src = `${server}/socket.io/socket.io.js`
       script.onload = () => {
         console.info(`socket.io script loaded`)
         resolve(window.io)
@@ -44,9 +45,8 @@ const printGeneratingStatus = (dispatch) => ({ id, message, name }) =>
 
 export const initSocketEvents = async (dispatch, getState) => {
   try {
-    const url = getWebmapApi()
-    const io = await loadWebSocketClient(url)
-    const socket = io(url)
+    const io = await loadWebSocketClient()
+    const socket = io(server)
     socket.on('update layer color', updateLayer(dispatch))
     socket.on('update object', updateObject(dispatch))
     socket.on('lock object', lockObject(dispatch, getState))
