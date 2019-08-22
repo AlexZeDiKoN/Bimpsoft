@@ -5,5 +5,5 @@ const namespace = '/explorer/v2'
 
 export default {
   getTypeKinds: (typeCode = requiredParam('typeCode')) =>
-    getDirect(`/map/GetTypeKinds`, { typeCode }, namespace),
+    getDirect(`${namespace}/map/GetTypeKinds`, { typeCode }),
 }
