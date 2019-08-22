@@ -2,46 +2,35 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^8.3.265", "@DZVIN/CommonComponents@^8.3.268":
-  version "8.3.268"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fCommonComponents/-/CommonComponents-8.3.268.tgz#e6668c2ba0dce0f71bef4d216c70d25ae3849a68"
-  integrity sha512-6mW9ikKW4hmxzj6oDfA2s0lj5+rf3ps54ZZip90KSjUDaMdq6vjEBefP+lqHDLH0ZfNfHCMRkVtIJdD2B29zNA==
+"@DZVIN/CommonComponents@^8.3.276":
+  version "8.3.276"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fCommonComponents/-/CommonComponents-8.3.276.tgz#2d418be1710e25ba62c3fa9f2b8ea0ad68b74ac5"
+  integrity sha512-wrudOcy1MHMasnVxbXXgnkojWj5tHKPvTcnVsHDtGboOeN/lDE/uNoXTF17mUmgpFAzhNtTdZkZqlZCnMqmS9A==
   dependencies:
     is-negative-zero "^2.0.0"
-    memoize-one "^4.0.0"
     mgrs "^1.0.0"
     proj4 "^2.5.0"
-    prop-types "^15.6.2"
     re-resizable "^4.7.1"
     react-color "^2.14.1"
+    react-datetime "^2.16.3"
     react-draggable "^3.0.5"
     react-easy-swipe "0.0.16"
-    react-hot-loader "^4.12.10"
     utm "^1.1.1"
 
-"@DZVIN/MilSymbolEditor@^8.3.161":
-  version "8.3.162"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-8.3.162.tgz#b3c6d27039ae2f7c1650bb65a71f22f0a834d871"
-  integrity sha512-C1UH8ui8JNcnYRPUlgZfWsOMrr0LgNPWnrewq3GoePDEdGRIcn7tfpDobAWw9Ae4cnyUSflAQ/Dae0zgi1ZEnA==
+"@DZVIN/MilSymbolEditor@^8.3.174":
+  version "8.3.174"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-8.3.174.tgz#b01bbe1fe7794c878e10a69f000526534cc395fd"
+  integrity sha512-XZTz2hc3GXPYp3Yur1rZdgbP7BQqgfc5Kn0qwXqWP+/2fm+AVVpT3jC+X51r6/TDq0V+WExVfyN2NJ3MhonWoA==
   dependencies:
-    "@DZVIN/CommonComponents" "^8.3.268"
     "@DZVIN/milsymbol" ">=0.0.4"
-    memoize-one "^4.0.0"
-    prop-types "^15.6.2"
 
-"@DZVIN/components@^8.3.29":
-  version "8.3.29"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fcomponents/-/components-8.3.29.tgz#e73150cc80fc21ab9dfbecdf15a81e311edaf4bf"
-  integrity sha512-rseNLOu/ifmUB59Mdf3elwo9eHTBOGs+F6VbXTfCD/qm2VAO7T0UyPMl6xo94YzumDeYH+nVrXQqLfu8GIzbkw==
+"@DZVIN/components@^8.3.442":
+  version "8.3.442"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fcomponents/-/components-8.3.442.tgz#fa3de745dc55210265548ef2319d71674de4b0f4"
+  integrity sha512-rYwAC9AxiS+EoUAtjqAdGhP5GUWQt6h3YPPlk7r0lujxQF4hmHDTMu4Z0MxEHanpNsKYl1CUs2Dy0klTn2HQnw==
   dependencies:
-    "@DZVIN/CommonComponents" "^8.3.265"
-    "@DZVIN/MilSymbolEditor" "^8.3.161"
     draft-js "^0.11.0"
     draft-js-export-html "^1.3.3"
-    immutable "^3.8.2"
-    moment "^2.24.0"
-    prop-types "^15.7.2"
-    ramda "^0.26.1"
 
 "@DZVIN/milsymbol@>=0.0.4", "@DZVIN/milsymbol@^0.0.4":
   version "0.0.4"
@@ -3171,7 +3160,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.5.3:
+create-react-class@^15.5.2, create-react-class@^15.5.3:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
   integrity sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
@@ -6877,11 +6866,6 @@ memoize-one@^3.1.1:
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-3.1.1.tgz#ef609811e3bc28970eac2884eece64d167830d17"
   integrity sha512-YqVh744GsMlZu6xkhGslPSqSurOv6P+kLN2J3ysBZfagLcL5FdRK/0UpgLoL8hwjjEvvAVkjJZyFP+1T6p1vgA==
 
-memoize-one@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-4.1.0.tgz#a2387c58c03fff27ca390c31b764a79addf3f906"
-  integrity sha512-2GApq0yI/b22J2j9rhbrAlsHb0Qcz+7yWxeLG8h+95sl1XPUgeLimQSOdur4Vw7cUhrBHwaUZxWFZueojqNRzA==
-
 memory-fs@^0.4.0, memory-fs@^0.4.1, memory-fs@~0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/memory-fs/-/memory-fs-0.4.1.tgz#3a9a20b8462523e447cfbc7e8bb80ed667bfc552"
@@ -7473,6 +7457,11 @@ object-assign@4.1.1, object-assign@4.x, object-assign@^4.0.1, object-assign@^4.1
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
+
+object-assign@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-3.0.0.tgz#9bedd5ca0897949bca47e7ff408062d549f587f2"
+  integrity sha1-m+3VygiXlJvKR+f/QIBi1Un1h/I=
 
 object-copy@^0.1.0:
   version "0.1.0"
@@ -8866,11 +8855,6 @@ ramda@^0.25.0:
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
   integrity sha512-GXpfrYVPwx3K7RQ6aYT8KPS8XViSXUVJT1ONhoKPE9VAleW42YE+U+8VEyGWt41EnEQW7gwecYJriTI0pKoecQ==
 
-ramda@^0.26.1:
-  version "0.26.1"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
-  integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
-
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -9383,6 +9367,16 @@ react-color@^2.14.1:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-datetime@^2.16.3:
+  version "2.16.3"
+  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-2.16.3.tgz#7f9ac7d4014a939c11c761d0c22d1fb506cb505e"
+  integrity sha512-amWfb5iGEiyqjLmqCLlPpu2oN415jK8wX1qoTq7qn6EYiU7qQgbNHglww014PT4O/3G5eo/3kbJu/M/IxxTyGw==
+  dependencies:
+    create-react-class "^15.5.2"
+    object-assign "^3.0.0"
+    prop-types "^15.5.7"
+    react-onclickoutside "^6.5.0"
+
 react-dev-utils@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-9.0.1.tgz#5c03d85a0b2537d0c46af7165c24a7dfb274bef2"
@@ -9487,6 +9481,11 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-onclickoutside@^6.5.0:
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.9.0.tgz#a54bc317ae8cf6131a5d78acea55a11067f37a1f"
+  integrity sha512-8ltIY3bC7oGhj2nPAvWOGi+xGFybPNhJM0V1H8hY/whNcXgmDeaeoCMPPd8VatrpTsUWjb/vGzrmu6SrXVty3A==
 
 react-redux@^7.1.0:
   version "7.1.0"
