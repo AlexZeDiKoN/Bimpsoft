@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
-import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import SelectionTypes from '../../constants/SelectionTypes'
 
 const { names: icons } = components.icons
