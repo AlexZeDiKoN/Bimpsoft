@@ -627,7 +627,7 @@ export default class WebMap extends React.PureComponent {
           if (bounds.isValid() && !this.map.getBounds().contains(bounds)) {
             const center = bounds.getCenter()
             const zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
-            setTimeout(() => this.props.onMove(center.wrap(), zoom), 0)
+            setTimeout(() => this.props.onMove(center.wrap(), zoom), 0) // eslint-disable-line react/prop-types
           }
         }
       }
@@ -1189,7 +1189,7 @@ export default class WebMap extends React.PureComponent {
       if (actionType === 'open') {
         if (!lastUnits[object.unit]) {
           window.explorerBridge.getUnitIndicators(object.unit, formationId)
-          lastUnits[object.unit] = setTimeout(() => lastUnits[object.unit] = undefined,
+          lastUnits[object.unit] = setTimeout(() => (lastUnits[object.unit] = undefined),
             clearLastUnitIdToGetNewRequestForIndicators)
         }
 
