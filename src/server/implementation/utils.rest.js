@@ -21,15 +21,16 @@ const setOptionsData = (options, data) => {
  * async function post
  * @param {string} url
  * @param {Object} data
+ * @param {string} operation
  * @param {string} route
  * @returns {Promise<*>}
  */
-export async function post (url, data = {}, route = '/do') {
+export async function post (url, data = {}, operation, route = '/do') {
   const request = {
-    operation: url,
+    operation,
     payload: !data ? null : JSON.stringify(data),
   }
-  return getDirect(route, request)
+  return getDirect(`${url}${route}`, request)
 }
 
 export async function getDirect (url, data = {}) {

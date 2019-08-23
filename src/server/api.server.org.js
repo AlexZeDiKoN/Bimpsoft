@@ -1,7 +1,7 @@
 import { post } from './implementation/utils.rest'
 import { requiredParam } from './requiredParam'
 
-const namespace = '/org/v1'
+const namespace = '/explorer/org/v1'
 
 const gfUrl = '/generalformation'
 
@@ -78,31 +78,31 @@ export default ServerApiOrg
 
 function doList (url) {
   return function (filter) {
-    return post(`${namespace}${url}List`, filter)
+    return post(`${namespace}${url}`, filter, 'List')
   }
 }
 
 function doCreate (url) {
   return function (item) {
-    return post(`${namespace}${url}Create`, item)
+    return post(`${namespace}${url}`, item, 'Create')
   }
 }
 
 function doUpdate (url) {
   return function (item) {
-    return post(`${namespace}${url}Update`, item)
+    return post(`${namespace}${url}`, item, 'Update')
   }
 }
 
 function doDelete (url) {
   return function (id = requiredParam('id')) {
-    return post(`${namespace}${url}Delete`, id)
+    return post(`${namespace}${url}`, id, 'Delete')
   }
 }
 
 function doUpdateMany (url) {
   return function (item) {
-    return post(`${namespace}${url}UpdateMany`, item)
+    return post(`${namespace}${url}`, item, 'UpdateMany')
   }
 }
 
@@ -113,5 +113,5 @@ function doUpdateMany (url) {
 // }
 
 function allDc () {
-  return post(`${namespace}${dcUrl}All`, {})
+  return post(`${namespace}${dcUrl}`, {}, 'All')
 }
