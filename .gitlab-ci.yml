@@ -273,7 +273,7 @@ deploy-qa43:
 
 deploy-gap1:
   stage: deploy
-  <<: *bbase_phys
+  <<: *base_phys
   cache: {}
   script:
     - echo Deploying to QA environment...
