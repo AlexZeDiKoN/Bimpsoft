@@ -290,7 +290,7 @@ deploy-gap2:
     - 'call net use f: \\10.8.26.42\c$ /user:Dzvin-gap2\Administrator & exit 0 | echo'
     - xcopy /E /C /I /Q /H /R /Y build f:\%deployDirPhys%
 
-deploy-gap1:
+deploy-gap3:
   stage: deploy
   <<: *base_auth
   cache: {}
@@ -300,7 +300,7 @@ deploy-gap1:
     - 'call net use g: \\10.8.26.67\c$ /user:Dzvin-gap3\Administrator & exit 0 | echo'
     - xcopy /E /C /I /Q /H /R /Y build g:\%deployDirPhys%
     
-deploy-gap1:
+deploy-gap4:
   stage: deploy
   <<: *base_auth
   cache: {}
