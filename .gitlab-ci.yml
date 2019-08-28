@@ -4,6 +4,7 @@ variables:
   deployDir: 'MAKET\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
   push_version: 'gitlab.intecracy.com/DZVIN/install_update.git'
+  deployDirPhys: 'Dzvin\SpaceHub\WebMap'
 
 stages:
   - build
@@ -21,6 +22,18 @@ stages:
     - master
   tags:
     - webmap-dev
+
+.base: &base_auth
+  only:
+    - Auth
+  tags:
+    - webmap-dev
+
+.base: &base_phys
+  only:
+    - master
+  tags:
+    - webmap-phys
 
 build:
   stage: build
@@ -258,6 +271,45 @@ deploy-qa43:
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirPhys%
+
+deploy-gap2:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use f: \\10.8.26.42\c$ /user:Dzvin-gap2\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build f:\%deployDirPhys%
+
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use g: \\10.8.26.67\c$ /user:Dzvin-gap3\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build g:\%deployDirPhys%
+    
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use h: \\10.8.26.76\c$ /user:Dzvin-gap4\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build h:\%deployDirPhys%
+
 deploy-zip:
   stage: deploy
   <<: *base
@@ -294,3 +346,97 @@ Increment_dzvin:
     - git commit -a -m "autocommit"
     - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
   dependencies: []
+
+################### AUTH #######################
+build-41:
+  stage: build
+  <<: *base_auth
+  before_script:
+    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text="Pipe Start %CI_PROJECT_NAME% with %CI_COMMIT_MESSAGE% by %GITLAB_USER_LOGIN% on %CI_COMMIT_REF_NAME%"
+  script:
+    - echo Building project...
+    - call yarn --network-concurrency 1
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
+    - copy .env .env.backup
+    - copy .env.production .env
+    - call npm run-script build
+    - rmdir /s /q build\explorerLite
+    - copy .env.backup .env
+    - del .env.backup
+    - echo Done
+  after_script:
+    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
+      - ./build/cesium/*.*
+      - ./build/cesium/Assets/*.*
+      - ./build/cesium/Assets/IAU2006_XYS/*.*
+      - ./build/cesium/Assets/Images/*.*
+      - ./build/cesium/Assets/Textures/*.*
+      - ./build/cesium/Assets/Textures/LensFlare/*.*
+      - ./build/cesium/Assets/Textures/maki/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/0/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/1/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/0/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/1/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/2/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/3/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/4/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/5/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/6/*.*
+      - ./build/cesium/Assets/Textures/NaturalEarthII/2/7/*.*
+      - ./build/cesium/Assets/Textures/SkyBox/*.*
+      - ./build/cesium/ThirdParty/*.*
+      - ./build/cesium/ThirdParty/Workers/*.*
+      - ./build/cesium/Widgets/*.*
+      - ./build/cesium/Widgets/Animation/*.*
+      - ./build/cesium/Widgets/BaseLayerPicker/*.*
+      - ./build/cesium/Widgets/Cesium3DTilesInspector/*.*
+      - ./build/cesium/Widgets/CesiumInspector/*.*
+      - ./build/cesium/Widgets/CesiumWidget/*.*
+      - ./build/cesium/Widgets/FullscreenButton/*.*
+      - ./build/cesium/Widgets/Geocoder/*.*
+      - ./build/cesium/Widgets/Images/*.*
+      - ./build/cesium/Widgets/Images/ImageryProviders/*.*
+      - ./build/cesium/Widgets/Images/NavigationHelp/*.*
+      - ./build/cesium/Widgets/Images/TerrainProviders/*.*
+      - ./build/cesium/Widgets/InfoBox/*.*
+      - ./build/cesium/Widgets/NavigationHelpButton/*.*
+      - ./build/cesium/Widgets/PerformanceWatchdog/*.*
+      - ./build/cesium/Widgets/ProjectionPicker/*.*
+      - ./build/cesium/Widgets/SceneModePicker/*.*
+      - ./build/cesium/Widgets/SelectionIndicator/*.*
+      - ./build/cesium/Widgets/Timeline/*.*
+      - ./build/cesium/Widgets/Viewer/*.*
+      - ./build/cesium/Widgets/VRButton/*.*
+      - ./build/cesium/Workers/*.*
+
+deploy-qa-41:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use y: \\172.16.97.41\c$ /user:Dzvin_TestInst\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build y:\%deployDir%
+  after_script:
+    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
