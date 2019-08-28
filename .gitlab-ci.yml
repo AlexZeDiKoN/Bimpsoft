@@ -273,7 +273,7 @@ deploy-qa43:
 
 deploy-gap1:
   stage: deploy
-  <<: *base_auth
+  <<: *bbase_phys
   cache: {}
   script:
     - echo Deploying to QA environment...
@@ -282,7 +282,7 @@ deploy-gap1:
 
 deploy-gap2:
   stage: deploy
-  <<: *base_auth
+  <<: *base_phys
   cache: {}
   script:
     - echo Deploying to QA environment...
@@ -292,7 +292,7 @@ deploy-gap2:
 
 deploy-gap3:
   stage: deploy
-  <<: *base_auth
+  <<: *base_phys
   cache: {}
   script:
     - echo Deploying to QA environment...
@@ -302,7 +302,7 @@ deploy-gap3:
     
 deploy-gap4:
   stage: deploy
-  <<: *base_auth
+  <<: *base_phys
   cache: {}
   script:
     - echo Deploying to QA environment...
