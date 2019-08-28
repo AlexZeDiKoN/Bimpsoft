@@ -50,6 +50,23 @@ export default function reducer (state = initState, action) {
         },
       }
     }
+    case catalogs.UPDATE_CATALOG_LIST_ITEM: {
+      const { catalogId, item } = payload
+      const updatedCatalog = state.objects[catalogId].map((cItem) => {
+        if (item.id === cItem.id) {
+          return item
+        } else {
+          return cItem
+        }
+      })
+      return {
+        ...state,
+        objects: {
+          ...state.objects,
+          [catalogId]: updatedCatalog,
+        },
+      }
+    }
     case catalogs.CATALOG_DROP_LIST: {
       const {
         objects: { [payload]: _, ...objects },

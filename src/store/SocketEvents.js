@@ -1,8 +1,9 @@
-import { getWebmapApi } from '../utils/services'
+import { getWebmapApi, getCatalogURL } from '../utils/services'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 import { printFileSet } from './actions/print'
 import { catchError } from './actions/asyncAction'
+import * as catalogActions from './actions/catalogs'
 
 const loadWebSocketClient = (url) =>
   new Promise((resolve, reject) => {
@@ -23,6 +24,11 @@ const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
   type: UPDATE_LAYER,
   layerData: { layerId, color },
 })
+
+const updateCatalogObject = (dispatch) => ({ itemId, catalogId }) => {
+  // console.log('socket.io: update object', { id, type, layer })
+  catchError(catalogActions.updateCatalogObject)(itemId, catalogId)(dispatch)
+}
 
 const updateObject = (dispatch) => ({ id, type, layer }) => {
   // console.log('socket.io: update object', { id, type, layer })
@@ -45,7 +51,11 @@ const printGeneratingStatus = (dispatch) => ({ id, message, name }) =>
 export const initSocketEvents = async (dispatch, getState) => {
   try {
     const url = getWebmapApi()
+    const catalogUrl = getCatalogURL()
     const io = await loadWebSocketClient(url)
+    const ioOfCatalog = await loadWebSocketClient(catalogUrl)
+    const socketOfCatalog = ioOfCatalog(catalogUrl)
+    socketOfCatalog.on('createOrUpdateCriticalObjectItem', updateCatalogObject(dispatch))
     const socket = io(url)
     socket.on('update layer color', updateLayer(dispatch))
     socket.on('update object', updateObject(dispatch))
