@@ -8,4 +8,5 @@ export default {
     getDirect(`${catalogUrl}/catalogCategory`, false),
   getList: (catalogId) =>
     getDirect(`${catalogUrl}/catalogCategoryObjects/?catalogId=${catalogId}`, false),
+  getCatalogItem: (itemId) => getDirect(`${catalogUrl}/catalogCategoryObjects/${itemId}`, false),
 }
