@@ -4,6 +4,7 @@ variables:
   deployDir: 'MAKET\SpaceHub\WebMap'
   gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
   push_version: 'gitlab.intecracy.com/DZVIN/install_update.git'
+  deployDirPhys: 'Dzvin\SpaceHub\WebMap'
 
 stages:
   - build
@@ -27,6 +28,12 @@ stages:
     - Auth
   tags:
     - webmap-dev
+
+.base: &base_phys
+  only:
+    - master
+  tags:
+    - webmap-phys
 
 build:
   stage: build
@@ -263,6 +270,45 @@ deploy-qa43:
     - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.97.43\e$\maps
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
+
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDirPhys%
+
+deploy-gap2:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use f: \\10.8.26.42\c$ /user:Dzvin-gap2\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build f:\%deployDirPhys%
+
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use g: \\10.8.26.67\c$ /user:Dzvin-gap3\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build g:\%deployDirPhys%
+    
+deploy-gap1:
+  stage: deploy
+  <<: *base_auth
+  cache: {}
+  script:
+    - echo Deploying to QA environment...
+    - 'echo ========= Deploy: 11 (remote) ========='
+    - 'call net use h: \\10.8.26.76\c$ /user:Dzvin-gap4\Administrator & exit 0 | echo'
+    - xcopy /E /C /I /Q /H /R /Y build h:\%deployDirPhys%
 
 deploy-zip:
   stage: deploy
