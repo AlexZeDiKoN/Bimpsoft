@@ -69,7 +69,9 @@ const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
 // через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
 
-const popupOptionsIndicators = { maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false }
+const popupOptionsIndicators = {
+  maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false, closeButton: false,
+}
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -1243,8 +1245,8 @@ export default class WebMap extends React.PureComponent {
       )
       isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
-        unit,
         layer,
+        layerObject.formationId,
         object,
       ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
