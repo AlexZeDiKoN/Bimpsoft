@@ -1243,8 +1243,8 @@ export default class WebMap extends React.PureComponent {
       )
       isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
-        unit,
         layer,
+        layerObject.formationId,
         object,
       ))
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
