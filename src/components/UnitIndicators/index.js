@@ -9,6 +9,8 @@ import { DATE_TIME_FORMAT } from '../../constants/formats'
 
 import './style.css'
 
+const percentIndicator = true
+
 const renderTag = ({ color = 'black', value = '' }) => `<span 
   class='indicators_tag' 
   style="background-color:${color}"
@@ -21,7 +23,9 @@ renderTag.propTypes = {
 
 const renderIndicator = (title, data, isPercent) => `<span class='unit_indicators_indicator'>
   <span class='unit_indicators_indicator_title'>${title}:</span>
-  <span class='unit_indicators_indicator_data'>${data ? isPercent ? (parseInt(data) || 0) + '%' : data : i18n.NOT_CALCULATED}</span>
+  <span class='unit_indicators_indicator_data'>${data ? isPercent
+    ? ((typeof data === 'number' && data * 100) || 0) + '%'
+    : data : i18n.NOT_CALCULATED}</span>
 </span>`
 
 const renderIndicators = (object, unitData) => {
@@ -46,8 +50,8 @@ const renderIndicators = (object, unitData) => {
     ${renderIndicator(i18n.BP_001, bp001)}
     ${renderIndicator(i18n.BP_003, bp003 && renderTag(bp003))}
     ${renderIndicator(i18n.BP_004, bp004 && renderTag(bp004))}
-    ${renderIndicator(i18n.BCHS_005, bchs005) || ''}
-    ${renderIndicator(i18n.BCHS_006, bchs006) || ''}
+    ${renderIndicator(i18n.BCHS_005, bchs005, percentIndicator) || ''}
+    ${renderIndicator(i18n.BCHS_006, bchs006, percentIndicator) || ''}
     ${renderIndicator(i18n.BCHS_003, bchs003 && renderTag(bchs003))}
     ${renderIndicator(i18n.BCHS_004, bchs004 && renderTag(bchs004))}
   </div>
