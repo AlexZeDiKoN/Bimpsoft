@@ -19,9 +19,9 @@ renderTag.propTypes = {
   value: PropTypes.string.isRequired,
 }
 
-const renderIndicator = (title, data) => `<span class='unit_indicators_indicator'>
+const renderIndicator = (title, data, isPercent) => `<span class='unit_indicators_indicator'>
   <span class='unit_indicators_indicator_title'>${title}:</span>
-  <span class='unit_indicators_indicator_data'>${data || i18n.NOT_CALCULATED}</span>
+  <span class='unit_indicators_indicator_data'>${data ? isPercent ? (parseInt(data) || 0) + '%' : data : i18n.NOT_CALCULATED}</span>
 </span>`
 
 const renderIndicators = (object, unitData) => {
