@@ -2,6 +2,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { LocaleProvider } from 'antd'
+import { AuthForm } from '@DZVIN/components'
 import { createBrowserHistory as createHistory } from 'history'
 import ukUA from 'antd/lib/locale-provider/uk_UA'
 import moment from 'moment'
@@ -30,10 +31,12 @@ class App extends React.Component {
         <LocaleProvider locale={ukUA}>
           <Provider store={store}>
             <ErrorBoundary>
-              <Router>
-                <Main/>
-              </Router>
-              <ICTInfoPopup />
+              <AuthForm>
+                <Router>
+                  <Main/>
+                </Router>
+                <ICTInfoPopup/>
+              </AuthForm>
             </ErrorBoundary>
           </Provider>
         </LocaleProvider>
