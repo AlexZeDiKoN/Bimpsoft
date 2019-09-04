@@ -1224,24 +1224,34 @@ export default class WebMap extends React.PureComponent {
             const getCoordinates = (point) => this.map.unproject(point, this.map.getZoom())
             popupInner.setContent(renderPopUp)
             const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
-            if (dir === 's') {
-              const point = L.point(pointCoord.x, pointCoord.y + yBound)
-              popupInner.setLatLng(getCoordinates(point))
-            } else if (dir === 'se') {
-              const point = L.point(pointCoord.x + xBound, pointCoord.y + yBound)
-              popupInner.setLatLng(getCoordinates(point))
-            } else if (dir === 'sw') {
-              const point = L.point(pointCoord.x - xBound, pointCoord.y + yBound)
-              popupInner.setLatLng(getCoordinates(point))
-            } else if (dir === 'ne') {
-              const point = L.point(pointCoord.x + xBound, pointCoord.y)
-              popupInner.setLatLng(getCoordinates(point))
-            } else if (dir === 'nw') {
-              const point = L.point(pointCoord.x - xBound, pointCoord.y)
-              popupInner.setLatLng(getCoordinates(point))
-            } else {
-              popupInner.setLatLng(layer._latlng)
+            let newCoordinates
+            switch (dir) {
+              case 's': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x, pointCoord.y + yBound))
+                break
+              }
+              case 'se': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y + yBound))
+                break
+              }
+              case 'sw': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y + yBound))
+                break
+              }
+              case 'ne': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y))
+                break
+              }
+              case 'nw': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y))
+                break
+              }
+              default: {
+                newCoordinates = layer._latlng
+                break
+              }
             }
+            popupInner.setLatLng(newCoordinates)
             popupInner.openOn(this.map)
           }
         }, openPopUpInterval
