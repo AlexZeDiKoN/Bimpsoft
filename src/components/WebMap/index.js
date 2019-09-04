@@ -1221,23 +1221,24 @@ export default class WebMap extends React.PureComponent {
             const unitData = this.getUnitData(object.unit)
             const renderPopUp = renderIndicators(object, unitData)
             const dir = this.findLayerDirection(this.map, layer)
+            const getCoordinates = (point) => this.map.unproject(point, this.map.getZoom())
             popupInner.setContent(renderPopUp)
             const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
             if (dir === 's') {
               const point = L.point(pointCoord.x, pointCoord.y + yBound)
-              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+              popupInner.setLatLng(getCoordinates(point))
             } else if (dir === 'se') {
               const point = L.point(pointCoord.x + xBound, pointCoord.y + yBound)
-              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+              popupInner.setLatLng(getCoordinates(point))
             } else if (dir === 'sw') {
               const point = L.point(pointCoord.x - xBound, pointCoord.y + yBound)
-              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+              popupInner.setLatLng(getCoordinates(point))
             } else if (dir === 'ne') {
               const point = L.point(pointCoord.x + xBound, pointCoord.y)
-              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+              popupInner.setLatLng(getCoordinates(point))
             } else if (dir === 'nw') {
               const point = L.point(pointCoord.x - xBound, pointCoord.y)
-              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+              popupInner.setLatLng(getCoordinates(point))
             } else {
               popupInner.setLatLng(layer._latlng)
             }
