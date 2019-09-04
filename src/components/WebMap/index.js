@@ -63,7 +63,8 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 
 const openingAction = 'open'
 const closingAction = 'close'
-
+const xBound = 160
+const yBound = 320
 const openPopUpInterval = 1000
 const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
@@ -1181,6 +1182,26 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  findLayerDirection = (map, layer) => {
+    const pointLocation = map.latLngToContainerPoint(layer._latlng)
+    const mapSize = map.getSize()
+    let newPosition = 'n'
+    const yDiff = yBound - pointLocation.y
+    if (yDiff > 0) {
+      newPosition = 's'
+    }
+    let xDiff = pointLocation.x - (mapSize.x - xBound)
+    if (xDiff > 0) {
+      newPosition += 'w'
+    } else {
+      xDiff = xBound - pointLocation.x
+      if (xDiff > 0) {
+        newPosition += 'e'
+      }
+    }
+    return newPosition
+  }
+
   getUnitIndicatorsInfoOnHover = () => {
     let timer
     const lastUnits = {}
@@ -1196,12 +1217,33 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          const unitData = this.getUnitData(object.unit)
-          const renderPopUp = renderIndicators(object, unitData)
-          layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
-          popupInner.openOn(this.map)
+          if (layer && layer._latlng) {
+            const unitData = this.getUnitData(object.unit)
+            const renderPopUp = renderIndicators(object, unitData)
+            const dir = this.findLayerDirection(this.map, layer)
+            popupInner.setContent(renderPopUp)
+            const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
+            if (dir === 's') {
+              const point = L.point(pointCoord.x, pointCoord.y + yBound)
+              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+            } else if (dir === 'se') {
+              const point = L.point(pointCoord.x + xBound, pointCoord.y + yBound)
+              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+            } else if (dir === 'sw') {
+              const point = L.point(pointCoord.x - xBound, pointCoord.y + yBound)
+              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+            } else if (dir === 'ne') {
+              const point = L.point(pointCoord.x + xBound, pointCoord.y)
+              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+            } else if (dir === 'nw') {
+              const point = L.point(pointCoord.x - xBound, pointCoord.y)
+              popupInner.setLatLng(this.map.unproject(point, this.map.getZoom()))
+            } else {
+              popupInner.setLatLng(layer._latlng)
+            }
+            popupInner.openOn(this.map)
+          }
         }, openPopUpInterval
-
         )
       } else {
         isPopUpOpen && popupInner._close()

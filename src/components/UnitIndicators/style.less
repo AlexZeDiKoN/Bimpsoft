@@ -6,8 +6,13 @@
 
 .sign_Popup{
   pointer-events: none;
+  padding: 5px;
   .leaflet-popup-content-wrapper{
     background: lemonchiffon;
+  }
+  .leaflet-popup-tip {
+    width: 0;
+    height: 0;
   }
 }
 
@@ -16,9 +21,8 @@
 .unit_indicators{
   .flex;
   flex-direction: column;
-  width: 300px;
-  height: 250px;
   min-height: min-content;
+  min-width: min-content;
   overflow: hidden;
 }
 
