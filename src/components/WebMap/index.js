@@ -63,7 +63,8 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 
 const openingAction = 'open'
 const closingAction = 'close'
-
+const xBound = 160
+const yBound = 320
 const openPopUpInterval = 1000
 const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
@@ -1181,6 +1182,26 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  findLayerDirection = (map, layer) => {
+    const pointLocation = map.latLngToContainerPoint(layer._latlng)
+    const mapSize = map.getSize()
+    let newPosition = 'n'
+    const yDiff = yBound - pointLocation.y
+    if (yDiff > 0) {
+      newPosition = 's'
+    }
+    let xDiff = pointLocation.x - (mapSize.x - xBound)
+    if (xDiff > 0) {
+      newPosition += 'w'
+    } else {
+      xDiff = xBound - pointLocation.x
+      if (xDiff > 0) {
+        newPosition += 'e'
+      }
+    }
+    return newPosition
+  }
+
   getUnitIndicatorsInfoOnHover = () => {
     let timer
     const lastUnits = {}
@@ -1196,12 +1217,44 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          const unitData = this.getUnitData(object.unit)
-          const renderPopUp = renderIndicators(object, unitData)
-          layer && layer._latlng && popupInner.setContent(renderPopUp).setLatLng(layer._latlng)
-          popupInner.openOn(this.map)
+          if (layer && layer._latlng) {
+            const unitData = this.getUnitData(object.unit)
+            const renderPopUp = renderIndicators(object, unitData)
+            const dir = this.findLayerDirection(this.map, layer)
+            const getCoordinates = (point) => this.map.unproject(point, this.map.getZoom())
+            popupInner.setContent(renderPopUp)
+            const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
+            let newCoordinates
+            switch (dir) {
+              case 's': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x, pointCoord.y + yBound))
+                break
+              }
+              case 'se': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y + yBound))
+                break
+              }
+              case 'sw': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y + yBound))
+                break
+              }
+              case 'ne': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y))
+                break
+              }
+              case 'nw': {
+                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y))
+                break
+              }
+              default: {
+                newCoordinates = layer._latlng
+                break
+              }
+            }
+            popupInner.setLatLng(newCoordinates)
+            popupInner.openOn(this.map)
+          }
         }, openPopUpInterval
-
         )
       } else {
         isPopUpOpen && popupInner._close()
