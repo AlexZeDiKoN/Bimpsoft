@@ -8,7 +8,7 @@ import ukUA from 'antd/lib/locale-provider/uk_UA'
 import moment from 'moment'
 import { ErrorBoundary } from './components'
 import { Main } from './layouts'
-import { ICTInfoPopup } from './containers'
+import { ICTInfoPopup, RootContainer } from './containers'
 import initStore from './store'
 import 'moment/locale/uk'
 import './App.css'
@@ -33,7 +33,9 @@ class App extends React.Component {
             <ErrorBoundary>
               <AuthForm>
                 <Router>
-                  <Main/>
+                  <RootContainer>
+                    <Main/>
+                  </RootContainer>
                 </Router>
                 <ICTInfoPopup/>
               </AuthForm>

@@ -53,9 +53,6 @@ export default function initStore (options = {}) {
   initNavigationConnection(store, history)
 
   initSocketEvents(store.dispatch, store.getState)
-  catchError(loadAllParams)()(store.dispatch)
-  catchError(print.printFileList)()(store.dispatch)
-  catchError(march.getIndicator)()(store.dispatch)
 
   /* setTimeout(() => {
     store.dispatch(setVariant('5c110ade6de3ac15a1000002', 555))

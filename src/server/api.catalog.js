@@ -1,7 +1,6 @@
-import { getCatalogURL } from '../utils/services'
 import { getDirect } from './implementation/utils.rest'
 
-const catalogUrl = getCatalogURL()
+const catalogUrl = '/catalog'
 
 export default {
   getTree: () =>

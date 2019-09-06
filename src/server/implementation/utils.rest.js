@@ -1,14 +1,7 @@
-import { getExplorerApi, getWebmapApi, getServerUrl } from '../../utils/services'
 import { ERROR_ACCESS_DENIED, ERROR_OBJ_LOCKED, ERROR_NO_CONNECTION } from '../../i18n/ua'
 import SERVERS from '../../constants/servers'
 
-const absoluteUri = new RegExp('^(http|https)://')
-
-const serverRootUrl = getServerUrl()
-const explorerApi = serverRootUrl + getExplorerApi()
-const webmapApi = getWebmapApi()
-
-export const getWebmapURL = () => webmapApi
+const base = process.env.REACT_APP_SERVER_URL
 
 const setOptionsData = (options, data) => {
   if (data) {
@@ -28,30 +21,37 @@ const setOptionsData = (options, data) => {
  * async function post
  * @param {string} url
  * @param {Object} data
+ * @param {string} operation
  * @param {string} route
- * @param namespace
  * @returns {Promise<*>}
  */
-export async function post (url, data = {}, route = '/do', namespace) {
+export async function post (url, data = {}, operation, route = '/do') {
   const request = {
-    operation: url,
+    operation,
     payload: !data ? null : JSON.stringify(data),
   }
-  return getDirect(route, request, namespace)
+  return getDirect(`${url}${route}`, request)
 }
 
-export async function getDirect (url, data = {}, namespace) {
+export async function getDirect (url, data = {}) {
   const options = _getOptions(data ? 'POST' : 'GET')
   setOptionsData(options, data)
-  return _createRequest(url, options, namespace !== undefined ? (serverRootUrl + namespace) : undefined)
+  return _createRequest(url, options)
 }
 
 function _getOptions (method) {
+  const auth = window.session
+    ? window.session.authHeader()
+    : null
+  const headers = new Headers()
+  if (auth) {
+    headers.append('Authorization', auth)
+  }
   return {
     mode: 'cors',
     credentials: 'include',
     method,
-    headers: new Headers(),
+    headers,
   }
 }
 
@@ -89,17 +89,16 @@ const _getConnectionErrorMessage = (url, status) => {
  * function _createRequest
  * @param {string} url
  * @param option
- * @param namespace
  * @returns {Promise<*>}
  * @private
  */
-async function _createRequest (url, option, namespace = explorerApi) {
-  const serviceUrl = absoluteUri.test(url) ? url : `${namespace}${url}`
+async function _createRequest (url, option) {
+  url = `${base}${url}`
   let response
   try {
-    response = await fetch(serviceUrl, option)
+    response = await fetch(url, option)
   } catch (err) {
-    throw new Error(_getConnectionErrorMessage(serviceUrl))
+    throw new Error(_getConnectionErrorMessage(url))
   }
   switch (response.status) {
     case 200: {
@@ -126,7 +125,7 @@ async function _createRequest (url, option, namespace = explorerApi) {
     case 409:
       throw new Error(ERROR_OBJ_LOCKED)
     default: {
-      throw new Error(_getConnectionErrorMessage(serviceUrl, response.status))
+      throw new Error(_getConnectionErrorMessage(url, response.status))
     }
   }
 }

@@ -1,3 +1,4 @@
+export { default as RootContainer } from './RootContainer'
 export { default as LeftMenuContainer } from './LeftMenuContainer'
 export { default as CreateButtonsContainer } from './CreateButtonsContainer'
 export { default as RightMenuContainer } from './RightMenuContainer'

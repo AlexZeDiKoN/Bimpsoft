@@ -1,8 +1,10 @@
 import { post } from './implementation/utils.rest'
 import { requiredParam } from './requiredParam'
 
-const namespace = '/org/v1'
+const namespace = '/explorer/org/v1'
+
 const gfUrl = '/generalformation'
+
 const generalFormation = {
   list: doList(gfUrl),
   create: doCreate(gfUrl),
@@ -76,31 +78,31 @@ export default ServerApiOrg
 
 function doList (url) {
   return function (filter) {
-    return post('List', filter, undefined, namespace + url)
+    return post(`${namespace}${url}`, filter, 'List')
   }
 }
 
 function doCreate (url) {
   return function (item) {
-    return post('Create', item, undefined, namespace + url)
+    return post(`${namespace}${url}`, item, 'Create')
   }
 }
 
 function doUpdate (url) {
   return function (item) {
-    return post('Update', item, undefined, namespace + url)
+    return post(`${namespace}${url}`, item, 'Update')
   }
 }
 
 function doDelete (url) {
   return function (id = requiredParam('id')) {
-    return post('Delete', id, undefined, namespace + url)
+    return post(`${namespace}${url}`, id, 'Delete')
   }
 }
 
 function doUpdateMany (url) {
   return function (item) {
-    return post('UpdateMany', item, undefined, namespace + url)
+    return post(`${namespace}${url}`, item, 'UpdateMany')
   }
 }
 
@@ -111,5 +113,5 @@ function doUpdateMany (url) {
 // }
 
 function allDc () {
-  return post('All', {}, undefined, namespace + dcUrl)
+  return post(`${namespace}${dcUrl}`, {}, 'All')
 }
