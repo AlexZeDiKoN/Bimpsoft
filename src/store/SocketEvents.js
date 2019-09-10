@@ -59,6 +59,7 @@ export const initSocketEvents = async (dispatch, getState) => {
     socket.on('unlock object', unlockObject(dispatch))
     socket.on('printStatus', printGeneratingStatus(dispatch))
     console.info('Підключено до вебсокет-серверу')
+    window.socket = socket
   } catch (err) {
     console.warn('Вебсокет-сервер недоступний')
   }

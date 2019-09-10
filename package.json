@@ -1,10 +1,6 @@
 {
   "name": "web-map",
-<<<<<<< HEAD
-  "version": "8.03.485",
-=======
-  "version": "9.01.482",
->>>>>>> 635b5f6701a096bf1a746ca407ba574886363448
+  "version": "8.03.487",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^9.1.285",
