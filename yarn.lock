@@ -1484,27 +1484,6 @@
     lodash.unescape "4.0.1"
     semver "5.5.0"
 
-"@unitybase/cryptojs@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.unitybase.info:443/@unitybase%2fcryptojs/-/cryptojs-1.0.14.tgz#12e7022ec54322efaa97184d7391f17f5e65d3d3"
-  integrity sha512-yYCM5P0iH+si37bYQ9aw6/Fr5dQmyRNR22cRWLRf2mPa3vgZNIHS7JInBwQ15qDyFsCaCw89Mo4J2UZ6LG4Szg==
-
-"@unitybase/cs-shared@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.unitybase.info:443/@unitybase%2fcs-shared/-/cs-shared-5.1.5.tgz#9cd8d36d0e86426031226b7bf8d9d996616ce5a3"
-  integrity sha512-+MN9+3czC9XMEmKyH5sHmvhznVpx46Ip8fQPIZ3X8uuAWBAhgyLKqORxWIMlnqEinjfmolLy8sxOeW8EN/lZ9A==
-  dependencies:
-    lodash "^4"
-
-"@unitybase/ub-pub@^5.3.1":
-  version "5.3.9"
-  resolved "https://registry.unitybase.info:443/@unitybase%2fub-pub/-/ub-pub-5.3.9.tgz#e78ebab52e2bc0490e1b37d0d2809384a2281c3d"
-  integrity sha512-XHYYkiDKDYxCkwK0DOaFZ09EyEkxWOSuhuZA0lZfah0m2DDOQMTdo7eY6xFAKfLrA1uHpp4qwXLqltYdqKJyQQ==
-  dependencies:
-    "@unitybase/cryptojs" "^1.0.14"
-    "@unitybase/cs-shared" "^5.1.5"
-    lodash "^4"
-
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
@@ -6729,7 +6708,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-"lodash@>=3.5 <5", lodash@^4, lodash@^4.0.1, lodash@^4.16.5, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.4, lodash@^4.17.5:
+"lodash@>=3.5 <5", lodash@^4.0.1, lodash@^4.16.5, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.15"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==

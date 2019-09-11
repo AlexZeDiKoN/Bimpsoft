@@ -11,11 +11,7 @@ import catalogApi from '../server/api.catalog'
 import ovtApi from '../server/api.ovt'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
-import { loadAllParams } from './actions/params'
 import initNavigationConnection from './initNavigationConnection'
-import { catchError } from './actions/asyncAction'
-import { print, march } from './actions'
-// import { setVariant } from './actions/maps'
 
 let store = null
 
