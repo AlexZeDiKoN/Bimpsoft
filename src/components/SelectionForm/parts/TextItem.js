@@ -17,6 +17,7 @@ export default class TextItem extends React.Component {
       bold: PropTypes.bool,
       size: PropTypes.number,
       align: PropTypes.string,
+      preview: PropTypes.object,
     }),
     canRemove: PropTypes.bool,
     onChange: PropTypes.func,

@@ -2,12 +2,14 @@ import { createSelector } from 'reselect'
 import * as R from 'ramda'
 import { date } from '../../utils'
 import { MapModes } from '../../constants'
+import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
 const selectedLayerId = (state) => state.layers.selectedId
 const mapsById = (state) => state.maps.byId
 const webMapModeSelector = ({ webMap: { mode } }) => mode
+const is3DMapMode = ({ viewModes: { [viewModesKeys.map3D]: mode } }) => mode
 
 export const layersById = (state) => state.layers.byId
 
@@ -16,8 +18,9 @@ export const layersByIdFromStore = createSelector(layersById, R.identity)
 export const canEditSelector = createSelector(
   layersSelector,
   webMapModeSelector,
-  ({ byId, selectedId, timelineFrom, timelineTo }, webMapMode) => {
-    if (webMapMode !== MapModes.EDIT || !byId.hasOwnProperty(selectedId)) {
+  is3DMapMode,
+  ({ byId, selectedId, timelineFrom, timelineTo }, webMapMode, is3DMapMode) => {
+    if (webMapMode !== MapModes.EDIT || !byId.hasOwnProperty(selectedId) || is3DMapMode) {
       return false
     }
     const { readOnly, visible, dateFor } = byId[selectedId]

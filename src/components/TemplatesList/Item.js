@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import { Dropdown, Tooltip } from 'antd'
-import { default as ContextMenu, ContextMenuItem } from '../menu/ContextMenu'
+import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import i18n from '../../i18n'
 
 const { names } = components.icons

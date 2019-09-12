@@ -89,7 +89,6 @@ export default class RightMenu extends React.Component {
           icon={iconNames.MENU_LEFT_MENU_DEFAULT}
           checked={isSidebarShow}
           onClick={onClickSidebar}
-          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomRight'}

@@ -23,6 +23,7 @@ const SIDEBAR_SIZE_MIN = 250
 export default class Sidebar extends React.Component {
   static propTypes = {
     isMapCOP: PropTypes.bool,
+    is3DMapMode: PropTypes.bool,
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
@@ -39,7 +40,8 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP } = this.props
+    const { printStatus, marchEdit, isMapCOP, is3DMapMode } = this.props
+    const { topPanelHeight } = this.state
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -47,12 +49,14 @@ export default class Sidebar extends React.Component {
     } else {
       return (
         <>
-          <div className="sidebar-panel1"
-               style={{ height: this.state.topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : this.state.topPanelHeight }}>
+          <div
+            className="sidebar-panel1"
+            style={{ height: topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : topPanelHeight }}
+          >
             <TabsPanel
               tabs={[
                 OrgStructuresContainer,
-                CatalogsContainer,
+                !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
               ].filter(Boolean)}
             />

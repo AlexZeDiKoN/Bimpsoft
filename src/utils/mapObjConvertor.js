@@ -4,6 +4,7 @@ import {
   Cartesian3,
   HeightReference,
   VerticalOrigin,
+  HorizontalOrigin,
   Color,
   NearFarScalar,
   CircleOutlineGeometry,
@@ -108,9 +109,9 @@ export const buildSVG = (data) => {
   return symbol.asSVG()
 }
 
-const heightReference = HeightReference.NONE
-const verticalOrigin = VerticalOrigin.CENTER
 const BILLBOARD_HEIGHT = 400
+// @TODO: change scale limits (use zoom2height)
+const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 const buldCurve = (points, locked) => {
@@ -165,6 +166,14 @@ const buildPolyline = (positions, color, width) => ({
   material: Color.fromCssColorString(mapColors.values[color]),
 })
 
+const buildBillboard = (image, isCP) => ({
+  image,
+  scaleByDistance,
+  heightReference: HeightReference[isCP ? 'CLAMP_TO_GROUND' : 'NONE'],
+  verticalOrigin: VerticalOrigin[isCP ? 'BOTTOM' : 'CENTER'],
+  horizontalOrigin: HorizontalOrigin[isCP ? 'LEFT' : 'CENTER'],
+})
+
 // @TODO: в утилиты
 const makeGeoJSON = (coordinates, type) => ({
   type: 'FeatureCollection',
@@ -211,18 +220,23 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
     if (type === objTypes.POINT) {
       const { lat, lng } = point
       const svg = buildSVG(listArr[i])
+      const { code } = listArr[i]
+      const isCP = model.APP6Code.isCommandPost(code)
       const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-      // @TODO: change scale limits (use zoom2height)
-      const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
-      const billboard = { image, heightReference, verticalOrigin, scaleByDistance }
+      const billboard = buildBillboard(image, isCP)
       const position = Cartesian3.fromDegrees(lng, lat)
-      const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
-      const polyline = {
-        width: 2,
-        material: Color.WHITE,
-        positions: [ positionHeightUp(position, 0), billboardPosition ],
+      const sign = { id, billboard, type, position }
+      if (!isCP) {
+        const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
+        const polyline = {
+          width: 2,
+          material: Color.WHITE,
+          positions: [ positionHeightUp(position, 0), billboardPosition ],
+        }
+        sign.position = billboardPosition
+        sign.polyline = polyline
       }
-      acc.push({ id, position: billboardPosition, billboard, polyline, type })
+      acc.push(sign)
     } else {
       let color = attributes.get('color')
       const width = attributes.get('strokeWidth')

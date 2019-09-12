@@ -8,7 +8,7 @@ const initialState = {
   [viewModesKeys.mapSourcesList]: false,
   [viewModesKeys.directionName]: false,
   [viewModesKeys.eternalPoint]: false,
-  [viewModesKeys.volumeMap]: false,
+  [viewModesKeys.map3D]: false,
   searchEmpty: false,
   searchOptions: null,
 }

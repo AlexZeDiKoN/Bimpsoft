@@ -1,6 +1,6 @@
-/* global Headers fetch */
 import { getExplorerApi, getWebmapApi, getServerUrl } from '../../utils/services'
-import { ERROR_ACCESS_DENIED, SERVER_ERROR, ERROR_OBJ_LOCKED, ERROR_NO_CONNECTION } from '../../i18n/ua'
+import { ERROR_ACCESS_DENIED, ERROR_OBJ_LOCKED, ERROR_NO_CONNECTION } from '../../i18n/ua'
+import SERVERS from '../../constants/servers'
 
 const absoluteUri = new RegExp('^(http|https)://')
 
@@ -24,27 +24,20 @@ const setOptionsData = (options, data) => {
   }
 }
 
-export async function get (url, namespace) {
-  const options = _getOptions('GET')
-  return _createGetRequest(url, options, namespace)
-}
-
 /**
  * async function post
  * @param {string} url
  * @param {Object} data
  * @param {string} route
  * @param namespace
- * @returns {Promise<any>}
+ * @returns {Promise<*>}
  */
 export async function post (url, data = {}, route = '/do', namespace) {
-  const options = _getOptions('POST')
   const request = {
     operation: url,
     payload: !data ? null : JSON.stringify(data),
   }
-  setOptionsData(options, request)
-  return _createRequest(route, options, namespace !== undefined ? (serverRootUrl + namespace) : undefined)
+  return getDirect(route, request, namespace)
 }
 
 export async function getDirect (url, data = {}, namespace) {
@@ -62,40 +55,34 @@ function _getOptions (method) {
   }
 }
 
-/**
- * function _createGetRequest
- * @param {string} url
- * @param {Object} options
- * @param {string} [namespace]
- * @returns {Promise<any>}
- * @private
- */
-function _createGetRequest (url, options, namespace) {
-  return new Promise((resolve, reject) => {
-    const namespaceAbsolute = absoluteUri.test(namespace)
-    const prefix = namespaceAbsolute ? namespace : `${serverRootUrl}${namespace}`
-    const serviceUrl = `${prefix}${url}`
-    fetch(serviceUrl, options)
-      .then((resp) => {
-        const { status } = resp
-        if (status === 200) {
-          return resp.json()
-        } else if (status === 204) {
-          // success code of DELETE request
-          return null
-        } else if ([ 401, 403, 404 ].indexOf(status) >= 0) {
-          reject(new Error(ERROR_ACCESS_DENIED))
-        } else if (status === 409) {
-          reject(new Error(ERROR_OBJ_LOCKED))
-        } else if (status === 500) {
-          reject(new Error(SERVER_ERROR))
-        } else {
-          reject(new Error(ERROR_NO_CONNECTION))
-        }
-      })
-      .then(resolve)
-      .catch((error) => reject(new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${error.message})`)))
+const _getServerName = (url) => {
+  url = new URL(url)
+  const route = url.pathname.slice(1).split('/')[0]
+  const server = SERVERS.find((server) => {
+    if (url.port) {
+      if (server.port && url.port === server.port) {
+        // -
+      } else {
+        return false
+      }
+    }
+    return server.routes ? server.routes.includes(route) : true
   })
+  return server && server.name
+}
+
+const _getConnectionErrorMessage = (url, status) => {
+  let serverName = _getServerName(url)
+  serverName = serverName ? `[ ${serverName} ]` : ''
+  status = status ? `(${status})` : ''
+  return [
+    ERROR_NO_CONNECTION,
+    serverName,
+    status,
+    `URL: ${url}`,
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 
 /**
@@ -112,7 +99,7 @@ async function _createRequest (url, option, namespace = explorerApi) {
   try {
     response = await fetch(serviceUrl, option)
   } catch (err) {
-    throw new Error(`${ERROR_NO_CONNECTION}: ${serviceUrl} (${err.message})`)
+    throw new Error(_getConnectionErrorMessage(serviceUrl))
   }
   switch (response.status) {
     case 200: {
@@ -138,7 +125,8 @@ async function _createRequest (url, option, namespace = explorerApi) {
       throw new Error(ERROR_ACCESS_DENIED)
     case 409:
       throw new Error(ERROR_OBJ_LOCKED)
-    default:
-      throw new Error(`${ERROR_NO_CONNECTION} (${response.status}) (URL: ${serviceUrl})`)
+    default: {
+      throw new Error(_getConnectionErrorMessage(serviceUrl, response.status))
+    }
   }
 }

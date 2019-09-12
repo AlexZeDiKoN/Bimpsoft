@@ -1,2 +1,3 @@
 node_modules/**/*.*
 src/registerServiceWorker.js
+src/services/ubAuth/eusign.js
