@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "8.03.494",
+  "version": "8.03.495",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^9.1.285",
@@ -44,7 +44,7 @@
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "react-router-redux": "^4.0.8",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^2.1.8",
     "recompose": "^0.30.0",
     "redux": "^4.0.4",
     "redux-batched-actions": "^0.4.1",
