@@ -9,7 +9,7 @@ import registerServiceWorker from './registerServiceWorker'
 import './index.css'
 import './assets/fonts/qwe-icon.css'
 import './assets/styles/rewrites.css'
-import * as i18n from './i18n'
+import i18n from './i18n'
 
 window.onerror = null
 window.addEventListener('unhandledrejection', (event) => {
