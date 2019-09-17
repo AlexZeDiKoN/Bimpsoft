@@ -1,7 +1,7 @@
 import { post } from './implementation/utils.rest'
 import { requiredParam } from './requiredParam'
 
-const namespace = '/explorer/org/v1'
+const namespace = '/hub/org/v1'
 
 const gfUrl = '/generalformation'
 

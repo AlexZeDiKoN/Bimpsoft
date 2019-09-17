@@ -3,7 +3,7 @@
  */
 import { getDirect } from './implementation/utils.rest'
 
-const namespace = '/explorer/explorer/v2/ovt'
+const namespace = '/hub/explorer/v2/ovt'
 
 export default {
   getOvtList: () => getDirect(`${namespace}/OvtInfo_List`, {}),
