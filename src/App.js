@@ -20,18 +20,22 @@ moment.locale('uk')
 // for react-redux-router middleware
 const store = initStore({ history: createHistory() })
 window.explorerBridge = new ExplorerBridge(store)
-window.explorerBridge.init()
+window.explorerBridge.init(false)
 
 createNotificator(store)
 
 class App extends React.Component {
+  authorized = () => {
+    window.explorerBridge.init(true)
+  }
+
   render () {
     return (
       <div id="app" className="app">
         <LocaleProvider locale={ukUA}>
           <Provider store={store}>
             <ErrorBoundary>
-              <AuthForm>
+              <AuthForm onSuccess={this.authorized}>
                 <Router>
                   <RootContainer>
                     <Main/>
