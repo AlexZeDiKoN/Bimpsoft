@@ -3,9 +3,9 @@ import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
-import ModalContainer from '../common/ModalContainer'
 import {
   AreaForm,
   CircleForm,
@@ -90,7 +90,6 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
-        defaultPosition={{ x: 100, y: 10 }}
       >
         <FocusTrap>
           <HotKeysContainer>
@@ -123,7 +122,7 @@ SelectionForm.propTypes = {
   onError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   onCoordinateFocusChange: PropTypes.func,
-  wrapper: PropTypes.oneOf([ ModalContainer ]),
+  wrapper: PropTypes.oneOf([ MovablePanel ]),
   orgStructures: PropTypes.object,
   ovtData: PropTypes.object,
   ovtLoaded: PropTypes.bool,

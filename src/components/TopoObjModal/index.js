@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
 import i18n from '../../i18n'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { TopoObj } from '../../constants'
-import ModalContainer from '../common/ModalContainer'
 
 import './style.css'
 
 export default class TopoObjModal extends React.Component {
   static propTypes = {
-    wrapper: PropTypes.oneOf([ ModalContainer ]),
+    wrapper: PropTypes.oneOf([ MovablePanel ]),
     topographicObjects: PropTypes.object,
     onClose: PropTypes.func,
     selectTopographicItem: PropTypes.func,
