@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
 import i18n from '../i18n'
-import ModalContainer from './common/ModalContainer'
 
 export default class TemplateForm extends React.Component {
   changeHandler = (data) => {
@@ -45,5 +45,5 @@ TemplateForm.propTypes = {
   templateForm: PropTypes.object,
   onChange: PropTypes.func,
   onCancel: PropTypes.func,
-  wrapper: PropTypes.oneOf([ ModalContainer ]),
+  wrapper: PropTypes.oneOf([ MovablePanel ]),
 }

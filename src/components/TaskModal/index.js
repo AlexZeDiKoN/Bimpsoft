@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { TaskComponentStatefull } from '@DZVIN/components'
 import i18n from '../../i18n'
-
-import ModalContainer from '../common/ModalContainer'
 
 const STYLE = { width: '1000px' }
 
@@ -19,7 +18,7 @@ export default class TaskModal extends React.Component {
     onClose: PropTypes.func,
     onSave: PropTypes.func,
     onSend: PropTypes.func,
-    wrapper: PropTypes.oneOf([ ModalContainer ]),
+    wrapper: PropTypes.oneOf([ MovablePanel ]),
   }
 
   render () {

@@ -21,10 +21,10 @@ import {
   EternalDescriptionContainer,
   TaskModalContainer,
 } from '../../containers'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
-import ModalContainer from '../../components/common/ModalContainer'
 import { HotKeysContainer } from '../../components/common/HotKeys'
 
 export default class Main extends React.Component {
@@ -57,14 +57,14 @@ export default class Main extends React.Component {
           </div>
           <SidebarContainer />
         </div>
-        <SelectionFormContainer wrapper={ModalContainer} />
-        <TemplateFormContainer wrapper={ModalContainer} />
-        <SettingsFormContainer wrapper={ModalContainer} />
-        <FlexGridOptionsContainer wrapper={ModalContainer} />
-        <DirectionNameContainer wrapper={ModalContainer}/>
-        <EternalDescriptionContainer wrapper={ModalContainer}/>
-        <TopoObjModal wrapper={ModalContainer} />
-        <TaskModalContainer wrapper={ModalContainer} />
+        <SelectionFormContainer wrapper={MovablePanel} />
+        <TemplateFormContainer wrapper={MovablePanel} />
+        <SettingsFormContainer wrapper={MovablePanel} />
+        <FlexGridOptionsContainer wrapper={MovablePanel} />
+        <DirectionNameContainer wrapper={MovablePanel}/>
+        <EternalDescriptionContainer wrapper={MovablePanel}/>
+        <TopoObjModal wrapper={MovablePanel} />
+        <TaskModalContainer wrapper={MovablePanel} />
       </HotKeysContainer>
     )
   }

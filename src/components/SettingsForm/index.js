@@ -1,11 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Checkbox, Collapse, Select } from 'antd'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components, utils, MovablePanel } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import i18n from '../../i18n'
-import ModalContainer from '../common/ModalContainer'
 import ScaleControl from '../common/ScaleControl'
 import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
 
@@ -26,7 +25,7 @@ const formatScale = (scale) => `1 : ${scale.toString().replace(/\B(?=(\d{3})+(?!
 export default class SettingsForm extends React.Component {
   static propTypes = {
     visible: PropTypes.bool,
-    wrapper: PropTypes.oneOf([ ModalContainer ]),
+    wrapper: PropTypes.oneOf([ MovablePanel ]),
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
