@@ -85,18 +85,30 @@ const _getConnectionErrorMessage = (url, status) => {
     .join(' ')
 }
 
+const _getAuthHeader = async () => {
+  if (window.ubConnection) {
+    const session = await window.ubConnection.authorize()
+    return session.authHeader()
+  }
+  return null
+}
+
 /**
  * function _createRequest
  * @param {string} url
- * @param option
+ * @param options
  * @returns {Promise<*>}
  * @private
  */
-async function _createRequest (url, option) {
+async function _createRequest (url, options) {
   url = `${base}${url}`
   let response
   try {
-    response = await fetch(url, option)
+    const authHeader = await _getAuthHeader()
+    if (authHeader) {
+      options.headers.append('ub-authorization', authHeader)
+    }
+    response = await fetch(url, options)
   } catch (err) {
     throw new Error(_getConnectionErrorMessage(url))
   }
