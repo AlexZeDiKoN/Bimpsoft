@@ -5,7 +5,7 @@
   "dependencies": {
     "@DZVIN/CommonComponents": "^9.2.298",
     "@DZVIN/MilSymbolEditor": "^9.2.197",
-    "@DZVIN/components": "^9.2.476",
+    "@DZVIN/components": "^9.2.479",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
     "@unitybase/ub-pub": "^5.3.1",
