@@ -2,11 +2,16 @@ import { useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 const RootComponent = (props) => {
+  const {
+    loadAllParams,
+    printFileList,
+    getIndicator,
+  } = props
   useEffect(() => {
-    props.loadAllParams()
-    props.printFileList()
-    props.getIndicator()
-  }, [])
+    loadAllParams()
+    printFileList()
+    getIndicator()
+  }, [ loadAllParams, printFileList, getIndicator ])
   return props.children
 }
 
