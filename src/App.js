@@ -2,12 +2,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { LocaleProvider } from 'antd'
+import { AuthForm } from '@DZVIN/components'
 import { createBrowserHistory as createHistory } from 'history'
 import ukUA from 'antd/lib/locale-provider/uk_UA'
 import moment from 'moment'
 import { ErrorBoundary } from './components'
 import { Main } from './layouts'
-import { ICTInfoPopup } from './containers'
+import { ICTInfoPopup, RootContainer } from './containers'
 import initStore from './store'
 import 'moment/locale/uk'
 import './App.css'
@@ -19,21 +20,29 @@ moment.locale('uk')
 // for react-redux-router middleware
 const store = initStore({ history: createHistory() })
 window.explorerBridge = new ExplorerBridge(store)
-window.explorerBridge.init()
+window.explorerBridge.init(false)
 
 createNotificator(store)
 
 class App extends React.Component {
+  authorized = () => {
+    window.explorerBridge.init(true)
+  }
+
   render () {
     return (
       <div id="app" className="app">
         <LocaleProvider locale={ukUA}>
           <Provider store={store}>
             <ErrorBoundary>
-              <Router>
-                <Main/>
-              </Router>
-              <ICTInfoPopup />
+              <AuthForm onSuccess={this.authorized}>
+                <Router>
+                  <RootContainer>
+                    <Main/>
+                  </RootContainer>
+                </Router>
+                <ICTInfoPopup/>
+              </AuthForm>
             </ErrorBoundary>
           </Provider>
         </LocaleProvider>
