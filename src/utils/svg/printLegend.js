@@ -109,7 +109,7 @@ class Renderer {
     </>
   }
 
-  signs (...signs) {
+  signs (legendType, ...signs) {
     signs = signs.filter(({ text, color }) => Boolean(text) || Boolean(color))
 
     if (signs.length === 0) {
@@ -117,7 +117,8 @@ class Renderer {
     }
 
     const signsFrameY = this.bottom - SIGN_HEIGHT
-    const signsFrameX = this.width - SIGN_MARGING_LEFT - SIGN_DESCR_ROW_WIDTH - SIGN_COLOR_ROW_WIDTH
+    const signsFrameX = (legendType === 'right')
+      ? this.width - SIGN_MARGING_LEFT - SIGN_DESCR_ROW_WIDTH - SIGN_COLOR_ROW_WIDTH : SIGN_MARGING_LEFT
 
     const titleFontSize = SIZE_2 * this.h
     const title = renderText(
@@ -297,6 +298,7 @@ export const printLegend = (params) => {
       {renderer.bottomText(position, 10, SIZE_5, TextAnchors.START, maxWidth)}
     </Fragment>)}
     {renderer.signs(
+      requisites.legendTableType,
       {
         text: requisites[PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT],
         color: requisites[COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR],
