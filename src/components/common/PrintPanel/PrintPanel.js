@@ -366,10 +366,7 @@ class PrintPanel extends React.Component {
           </Row>
           <div className='printPanelSign_block'>
             <Row className='printPanelSignTitle_row'>
-              <Col
-                span={6}
-                className={legendTableType !== 'left' ? 'right' : ''}
-              >
+              <Col span={6}>
                 {i18n.SIGN}
               </Col>
               <Col span={18}>
@@ -377,10 +374,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col
-                span={6}
-                className={legendTableType === 'left' ? '' : 'right'}
-              >
+              <Col span={6}>
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR ]}
                   className='PrintPanel_colorPicker'
@@ -402,10 +396,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col
-                span={6}
-                className={legendTableType === 'left' ? '' : 'right'}
-              >
+              <Col span={6}>
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR ]}
                   className='PrintPanel_colorPicker'
@@ -427,10 +418,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col
-                span={6}
-                className={legendTableType === 'left' ? '' : 'right'}
-              >
+              <Col span={6}>
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR ]}
                   className='PrintPanel_colorPicker'
@@ -452,10 +440,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col
-                span={6}
-                className={legendTableType === 'left' ? '' : 'right'}
-              >
+              <Col span={6}>
                 <ColorPicker
                   color={colors[ COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR ]}
                   className='PrintPanel_colorPicker'
