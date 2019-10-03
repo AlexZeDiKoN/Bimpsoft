@@ -213,12 +213,15 @@ class Renderer {
       (v, { lines, fontHeight }) => v + lines.length * fontHeight + (lines.length - 1) * wrapHeight,
       0
     )
-    const margin = (INDICATORS_HEIGHT - INDICATORS_PADDING * 2 - fillHeight) / texts.length
+    const height = Math.min(fillHeight + INDICATORS_PADDING * 2 + (texts.length - 1) * wrapHeight * 2,
+      INDICATORS_HEIGHT)
+    const margin = height !== INDICATORS_HEIGHT
+      ? wrapHeight * 2 : (INDICATORS_HEIGHT - INDICATORS_PADDING * 2 - fillHeight) / texts.length
     let y = this.top + INDICATORS_PADDING + margin / 2.0
 
     this.d.push(pointsToD(rectToPoints({
       width: INDICATORS_WIDTH,
-      height: INDICATORS_HEIGHT,
+      height: height,
       x: (this.width - INDICATORS_WIDTH) / 2,
       y: indicatorsFrameY,
     }), true))
