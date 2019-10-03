@@ -279,7 +279,7 @@ export const printLegend = (params) => {
   maxWidth = Math.max(maxWidth, renderer.getTextWidth(confirmDate, SIZE_4))
 
   return <>
-    {renderer.topRightTexts([ i18n.MAP_LABEL, classified, i18n.MAP_COPY ])}
+    {renderer.topRightTexts([ classified, i18n.MAP_COPY ])}
     {renderer.topText(requisites[PRINT_PANEL_KEYS.FIRST_ROW], 80, SIZE_1, TextAnchors.MIDDLE)}
     {renderer.topText(requisites[PRINT_PANEL_KEYS.SECOND_ROW], 25, SIZE_2, TextAnchors.MIDDLE)}
     {renderer.topText(requisites[PRINT_PANEL_KEYS.THIRD_ROW], 20, SIZE_2, TextAnchors.MIDDLE)}
