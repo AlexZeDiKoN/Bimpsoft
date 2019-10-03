@@ -295,7 +295,7 @@ export const printLegend = (params) => {
       requisites[PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW],
       requisites[PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW],
     )}
-    {renderer.bottomText(`${i18n.SCALE.toUpperCase()} 1:${printScale}`, 50, SIZE_4, TextAnchors.MIDDLE, maxWidth)}
+    {renderer.bottomText(`${i18n.SCALE.toUpperCase()} 1:${printScale}`, 50, SIZE_4, TextAnchors.MIDDLE)}
     {renderer.bottomText(confirmDate, 10, SIZE_4, TextAnchors.START, maxWidth)}
     {signatories.map(({ role, name, position }, i) => <Fragment key={i}>
       {renderer.bottomText(role, 10, SIZE_6, TextAnchors.START, maxWidth)}
