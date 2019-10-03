@@ -26,6 +26,7 @@ const INDICATORS_HEIGHT = 200
 const INDICATORS_PADDING = 15
 
 const SIGN_MARGING_LEFT = 200
+const SIGN_WIDTH = 300
 const SIGN_HEIGHT = 200
 const SIGN_COLOR_ROW_WIDTH = 80
 const SIGN_DESCR_ROW_WIDTH = 220
@@ -116,7 +117,14 @@ class Renderer {
       return null
     }
 
-    const signsFrameY = this.bottom - SIGN_HEIGHT
+    const cellMerging = 10
+    const wrapHeight = 5
+    const rowHeight = SIGN_HEIGHT / 5
+    const colorRectSize = rowHeight / 2
+    const width = SIGN_WIDTH
+    const height = rowHeight * ++signs.length
+
+    const signsFrameY = this.bottom - height
     const signsFrameX = (legendType === 'right')
       ? this.width - SIGN_MARGING_LEFT - SIGN_DESCR_ROW_WIDTH - SIGN_COLOR_ROW_WIDTH : SIGN_MARGING_LEFT
 
@@ -131,14 +139,8 @@ class Renderer {
 
     this.bottom = signsFrameY - 10
 
-    const cellMerging = 10
-    const wrapHeight = 5
-    const width = INDICATORS_WIDTH
-    const height = INDICATORS_HEIGHT
     const x = signsFrameX
     let y = signsFrameY
-    const rowHeight = height / 5
-    const colorRectSize = rowHeight / 2
 
     // frame
     this.d.push(pointsToD(rectToPoints({ x, y, width, height }), true))
