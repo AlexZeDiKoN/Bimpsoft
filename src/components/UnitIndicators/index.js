@@ -21,12 +21,12 @@ renderTag.propTypes = {
   value: PropTypes.string.isRequired,
 }
 
-const renderIndicator = (title, data, isPercent) => `<span class='unit_indicators_indicator'>
-  <span class='unit_indicators_indicator_title'>${title}:</span>
-  <span class='unit_indicators_indicator_data'>${data ? isPercent
-    ? ((typeof data === 'number' && data * 100) || 0) + '%'
-    : data : i18n.NOT_CALCULATED}</span>
-</span>`
+const renderIndicator = (title, data, isPercent) => `<div class='unit_indicators_indicator'>
+    <div class='unit_indicators_indicator_title'>${title}:</div>
+    <div class='unit_indicators_indicator_data'>${data ? isPercent
+      ? ((typeof data === 'number' && data * 100) || 0) + '%'
+      : data : i18n.NOT_CALCULATED}</div>
+</div>`
 
 const renderIndicators = (object, unitData) => {
   const indicatorsData = object.indicatorsData || {}

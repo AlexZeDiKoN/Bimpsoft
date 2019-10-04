@@ -12,7 +12,7 @@
     background: lemonchiffon;
 
     .leaflet-popup-content {
-      min-width: 280px;
+      min-width: max-content;
 
       .unit_indicators {
         .flex;
@@ -29,6 +29,11 @@
 
           .unit_indicators_indicator_title {
             text-decoration: underline;
+            white-space: nowrap;
+          }
+
+          .unit_indicators_indicator_data{
+            margin-left: 15px;
           }
 
           .indicators_tag {
