@@ -110,7 +110,7 @@ export const getMapSvg = (
   >
     <mask id={`extents`}><path fillRule="nonzero" fill="#ffffff" d={pointsToD(edgePoints, true)} /></mask>
     <g mask="url(#extents)">
-      {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)})
+      {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)}
     </g>
   </svg>)
 }
