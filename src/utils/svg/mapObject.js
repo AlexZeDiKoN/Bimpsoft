@@ -101,6 +101,17 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
   }
 }
 
+const getContourBuilder = () => (commonData, data, layerData) => {
+  const { coordToPixels, scale } = commonData
+  const { attributes, geometry } = data
+  if (geometry) {
+    const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
+    return fixedGeometry.map((coords) =>
+      getSvgPath(pointsToD(coords[0].map((point) => coordToPixels(point)), true), attributes, layerData, scale)
+    )
+  }
+}
+
 mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
   const { showAmplifiers, coordToPixels } = commonData
@@ -184,6 +195,7 @@ mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))
 mapObjectBuilders.set(SelectionTypes.POLYGON, getLineBuilder(false, true, 3))
 mapObjectBuilders.set(SelectionTypes.CURVE, getLineBuilder(true, false, 2))
 mapObjectBuilders.set(SelectionTypes.AREA, getLineBuilder(true, true, 3))
+mapObjectBuilders.set(SelectionTypes.CONTOUR, getContourBuilder())
 
 export const getMapObjectSvg = (commonData) => (object) => {
   const { id, type, layer } = object
