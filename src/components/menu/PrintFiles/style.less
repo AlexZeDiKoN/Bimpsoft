@@ -2,18 +2,24 @@
   border: 1px solid grey;
   background-color: #ededed;
   min-width: 400px;
+  max-width: 480px;
   .fileBox_unit {
     display: flex;
     height: 38px;
     .fileBox_mapName {
-      display: flex;
-      flex-basis: 25%;
+      width: 33.3%;
+      margin: 4px;
       justify-content: center;
       align-items: center;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: block;
     }
     .fileBox_status {
       display: flex;
-      flex-basis: 50%;
+      flex-basis: 30%;
+      margin: 6px;
       justify-content: center;
       align-items: center;
     }
@@ -21,6 +27,8 @@
       display: flex;
       justify-content: space-around;
       align-items: center;
+      flex-basis: 30%;
+      margin: 6px;
       .loader-icon {
         display: flex;
         align-items: center;
