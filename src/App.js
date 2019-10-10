@@ -1,8 +1,8 @@
 import React from 'react'
-import { Provider } from 'react-redux'
+import { Provider, connect } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
 import { LocaleProvider } from 'antd'
-import { AuthForm } from '@DZVIN/components'
+import { createAuthForm } from '@DZVIN/components'
 import { createBrowserHistory as createHistory } from 'history'
 import ukUA from 'antd/lib/locale-provider/uk_UA'
 import moment from 'moment'
@@ -21,6 +21,8 @@ moment.locale('uk')
 const store = initStore({ history: createHistory() })
 window.explorerBridge = new ExplorerBridge(store)
 window.explorerBridge.init(false)
+
+const AuthForm = createAuthForm(connect)
 
 createNotificator(store)
 

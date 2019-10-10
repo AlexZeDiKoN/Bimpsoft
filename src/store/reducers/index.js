@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import { authReducer } from '@DZVIN/components'
 import { routerReducer as routing } from 'react-router-redux'
 import viewModes from './viewModes'
 import webMap from './webMap'
@@ -39,4 +40,5 @@ export default combineReducers({
   targeting,
   task,
   targetCatalog,
+  auth: authReducer,
 })
