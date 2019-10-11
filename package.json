@@ -3,9 +3,9 @@
   "version": "9.03.502",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^9.3.310",
+    "@DZVIN/CommonComponents": "^9.3.311",
     "@DZVIN/MilSymbolEditor": "^9.3.209",
-    "@DZVIN/components": "^9.3.493",
+    "@DZVIN/components": "^9.3.495",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
     "antd": "^3.12.4",
