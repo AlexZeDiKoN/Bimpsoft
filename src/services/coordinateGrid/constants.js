@@ -16,8 +16,19 @@ export const CELL_SIZES = {
     lat: 4 / 12,
     lng: 6 / 12,
   },
+  50000: {
+    lat: 4 / 12 / 2,
+    lng: 6 / 12 / 2,
+  },
+  25000: {
+    lat: 4 / 12 / 2 / 2,
+    lng: 6 / 12 / 2 / 2,
+  },
 }
+
 export const MIN_ZOOM = {
+  25000: 10,
+  50000: 9,
   100000: 8,
   200000: 7,
   500000: 6,
@@ -35,15 +46,6 @@ export const SELECTED_CELL_OPTIONS = {
 export const GRID_CELLS_STRUCTURE = {
   row_length: 0,
   column_length: 0,
-}
-export const ITEM_NUMBER = {
-  '1M': [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'Z',
-  ],
-  '500K': [
-    'А', 'Б', 'В', 'Г',
-  ],
-  '200K': { X: 10, IX: 9, V: 5, IV: 4, I: 1 },
 }
 export const LAT = 0
 export const LNG = 1
