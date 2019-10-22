@@ -2,12 +2,13 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-import { pointsToD, settings } from '../../utils/svg/lines'
+import { pointsToD } from '../../utils/svg/lines'
 import { getMapObjectSvg } from './mapObject'
 
-const { LINE_WIDTH } = settings
-
 const METERS_PER_INCH = 0.0254
+const SEMI_MAJOR_AXIS = 6378245
+const TILE_SIZE = 256
+const DEG_TO_RAD = Math.PI / 180
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
 const multiply = ({ x, y }, dx, dy) => ({ x: x * dx, y: y * dy })
@@ -94,11 +95,13 @@ export const getMapSvg = (
   })
   const bounds = { min, max }
 
-  const lineWidthMM = 0.75
-  const lineWidthPX = lineWidthMM * dpi / (METERS_PER_INCH * 1000)
-  const scale = lineWidthPX / LINE_WIDTH
+  const midLat = (northEastLat + southWestLat) / 2
+  const zoom = Math.round(Math.log2(
+    SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi
+  ))
+  const scale = dpi / 96
 
-  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers }
+  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers, zoom }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
   return ReactDOMServer.renderToStaticMarkup(<svg
@@ -110,7 +113,7 @@ export const getMapSvg = (
   >
     <mask id={`extents`}><path fillRule="nonzero" fill="#ffffff" d={pointsToD(edgePoints, true)} /></mask>
     <g mask="url(#extents)">
-      {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)})
+      {objects.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)}
     </g>
   </svg>)
 }

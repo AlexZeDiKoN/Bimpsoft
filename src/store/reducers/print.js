@@ -4,10 +4,11 @@ import { Print } from '../../constants'
 const initState = {
   mapId: null,
   mapName: '',
-  printScale: Print.PRINT_SCALES[2],
+  printScale: Print.PRINT_SCALES[0],
   requisites: {
     dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
+    legendEnabled: true,
     legendTableType: 'left',
   },
   selectedZone: null,

@@ -33,12 +33,15 @@ export default class ExplorerBridge {
     this.abandoned = false
   }
 
-  init = () => {
-    window.addEventListener('message', this.onMessage)
-    window.addEventListener('beforeunload', this.onUnload)
-    const isExplorerOpened = window.opener && !window.opener.closed
-    if (isExplorerOpened) {
-      this.send({ action: ACTION_READY })
+  init = (authorized = false) => {
+    if (!authorized) {
+      window.addEventListener('message', this.onMessage)
+      window.addEventListener('beforeunload', this.onUnload)
+    } else {
+      const isExplorerOpened = window.opener && !window.opener.closed
+      if (isExplorerOpened) {
+        this.send({ action: ACTION_READY })
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Dropdown, Menu } from 'antd'
+import { Dropdown, Menu, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
@@ -33,12 +33,14 @@ export default class PrintFiles extends PureComponent {
           const { name, message } = printFiles[fileId]
           return (
             <Menu.Item key={fileId} className='fileBox_unit'>
-              <div className='fileBox_mapName'>
-                {name}
-              </div>
-              <div className='fileBox_status'>
-                {Print.PRINT_STEPS_KEYS[message]}
-              </div>
+              <Tooltip title={name}>
+                <div className='fileBox_mapName'>
+                  {name}
+                </div>
+              </Tooltip>
+                <div className='fileBox_status'>
+                  {Print.PRINT_STEPS_KEYS[message]}
+                </div>
               <div className='fileBox_control'>
                 <IconBox
                   message={message}

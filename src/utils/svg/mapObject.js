@@ -54,7 +54,7 @@ const svgToG = (svg) => svg
   .replace(/^(\r|\n|.)*?<svg\b/i, '<g ')
   .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
 
-const getLineSvg = (points, attributes, layerData) => {
+const getLineSvg = (points, attributes, layerData, zoom) => {
   const {
     lineEnds, lineType, lineNodes, lineAmpl, skipStart, skipEnd,
     color, level, bounds,
@@ -62,14 +62,14 @@ const getLineSvg = (points, attributes, layerData) => {
   } = attributes
   let d
   if (lineType === 'waved') {
-    d = waved(points, lineEnds, bezier, locked, bounds, scale)
+    d = waved(points, lineEnds, bezier, locked, bounds, scale, zoom)
   } else {
     d = bezier ? prepareBezierPath(points, locked, skipStart, skipEnd) : pointsToD(points, locked)
     if (lineType === 'stroked') {
-      d += stroked(points, lineEnds, lineNodes, bezier, locked, bounds, scale)
+      d += stroked(points, lineEnds, lineNodes, bezier, locked, bounds, scale, zoom)
     }
   }
-  const amplifiers = getAmplifiers(points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale)
+  const amplifiers = getAmplifiers(points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale, zoom)
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
 
   return (
@@ -86,7 +86,7 @@ const getLineSvg = (points, attributes, layerData) => {
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerData) => {
-  const { coordToPixels, bounds, scale } = commonData
+  const { coordToPixels, bounds, scale, zoom } = commonData
   const { attributes, geometry, level } = data
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -97,6 +97,18 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
       points,
       { ...attributes.toJS(), level, bounds, scale, bezier, locked },
       layerData,
+      zoom
+    )
+  }
+}
+
+const getContourBuilder = () => (commonData, data, layerData) => {
+  const { coordToPixels, scale } = commonData
+  const { attributes, geometry } = data
+  if (geometry) {
+    const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
+    return fixedGeometry.map((coords) =>
+      getSvgPath(pointsToD(coords[0].map((point) => coordToPixels(point)), true), attributes, layerData, scale)
     )
   }
 }
@@ -184,6 +196,7 @@ mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))
 mapObjectBuilders.set(SelectionTypes.POLYGON, getLineBuilder(false, true, 3))
 mapObjectBuilders.set(SelectionTypes.CURVE, getLineBuilder(true, false, 2))
 mapObjectBuilders.set(SelectionTypes.AREA, getLineBuilder(true, true, 3))
+mapObjectBuilders.set(SelectionTypes.CONTOUR, getContourBuilder())
 
 export const getMapObjectSvg = (commonData) => (object) => {
   const { id, type, layer } = object

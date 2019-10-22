@@ -1,5 +1,5 @@
 // import { debounce } from 'debounce'
-import webmapApi from '../server/api.webmap'
+import webmapApi from './api.webmap'
 
 const search = (sample) => webmapApi.placeSearch(sample)
 

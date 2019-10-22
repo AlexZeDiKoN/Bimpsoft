@@ -1,6 +1,6 @@
-import { getWebmapURL, getDirect } from './implementation/utils.rest'
+import { getDirect } from './implementation/utils.rest'
 
-const webmapUrl = getWebmapURL()
+const webmapUrl = '/map'
 
 export default {
   objGetList: (layer = null) =>
