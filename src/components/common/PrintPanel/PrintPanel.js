@@ -34,13 +34,14 @@ class PrintPanel extends React.Component {
       },
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
+      changed: true,
     }
   }
 
   async componentDidMount () {
     await this.createSetFunctions()
     this.formatApprovers()
-    this.addConstParametrs()
+    this.addConstParameters()
   }
 
   createSetFunctions = () => {
@@ -51,22 +52,26 @@ class PrintPanel extends React.Component {
         .reduce((prev, current) => (
           {
             ...prev,
-            [ current ]:
-              ({ target }, dateString) => target
-                ? setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: target.value })
-                : setPrintRequisites({ [ PRINT_PANEL_KEYS[current] ]: dateString }),
+            [current]: ({ target }, dateString) => {
+              target
+                ? setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: target.value })
+                : setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: dateString })
+              this.setState({ changed: true })
+            },
           }
         ), {}),
       Object.keys(COLOR_PICKER_KEYS)
         .reduce((prev, current) => ({
           ...prev,
-          [ current ]: (color) => {
+          [current]: (color) => {
             setPrintRequisites({ [COLOR_PICKER_KEYS[current]]: color })
-            this.setState((prevState) => (
-              {
-                colors: { ...prevState.colors, [COLOR_PICKER_KEYS[current]]: color },
-              }
-            ))
+            this.setState((prevState) => ({
+              changed: true,
+              colors: {
+                ...prevState.colors,
+                [COLOR_PICKER_KEYS[current]]: color,
+              },
+            }))
           },
         }), {}),
     )
@@ -96,7 +101,7 @@ class PrintPanel extends React.Component {
     return result
   }
 
-  addConstParametrs = () => {
+  addConstParameters = () => {
     const {
       securityClassification: { classified },
       docConfirm: { approver },
@@ -112,11 +117,13 @@ class PrintPanel extends React.Component {
   setScale = (value) => {
     const { setPrintScale } = this.props
     setPrintScale(value)
+    this.setState({ changed: true })
   }
 
   setPrintParameters = (value, key) => {
     const { setPrintRequisites } = this.props
-    setPrintRequisites({ [ key ]: value })
+    setPrintRequisites({ [key]: value })
+    this.setState({ changed: true })
   }
 
   changeLegendTableType = (newType) => {
@@ -124,7 +131,10 @@ class PrintPanel extends React.Component {
     const { setPrintRequisites } = this.props
     const { LEGEND_TABLE_TYPE } = Print.PRINT_PANEL_KEYS
     if (legendTableType !== newType) {
-      this.setState({ legendTableType: newType })
+      this.setState({
+        legendTableType: newType,
+        changed: true,
+      })
       setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType })
     }
   }
@@ -137,7 +147,7 @@ class PrintPanel extends React.Component {
 
   createPrintFile = () => {
     const { createPrintFile } = this.props
-    createPrintFile()
+    this.setState({ changed: false }, createPrintFile)
   }
 
   createSelectChildren = (incomeData) => incomeData
@@ -150,7 +160,7 @@ class PrintPanel extends React.Component {
       securityClassification: { classified },
       requisites,
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType } = this.state
+    const { setRequisitesFunc, colors, legendTableType, changed } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -376,7 +386,7 @@ class PrintPanel extends React.Component {
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR ]}
+                  color={colors[COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
                 />
@@ -398,7 +408,7 @@ class PrintPanel extends React.Component {
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={colors[ COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR ]}
+                  color={colors[COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
                 />
@@ -420,7 +430,7 @@ class PrintPanel extends React.Component {
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={colors[ COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR ]}
+                  color={colors[COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
                 />
@@ -442,7 +452,7 @@ class PrintPanel extends React.Component {
             <Row className='printPanelSign_row'>
               <Col span={6}>
                 <ColorPicker
-                  color={colors[ COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR ]}
+                  color={colors[COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
                 />
@@ -512,7 +522,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              <ButtonSave onClick={this.createPrintFile}/>
+              <ButtonSave onClick={this.createPrintFile} disabled={!changed}/>
             </Col>
           </Row>
         </Form>
