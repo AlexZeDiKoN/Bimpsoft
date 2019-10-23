@@ -33,7 +33,8 @@ const renderIndicators = (object, unitData) => {
   const unitShortName = (indicatorsData.unit &&
     (indicatorsData.unit.shortName || indicatorsData.unit.fullName)) ||
     unitData.shortName || unitData.fullName
-  const dateFor = indicatorsData.dateFor && moment(indicatorsData.dateFor).format(DATE_TIME_FORMAT)
+  const dateFor = (indicatorsData.dateFor && moment(indicatorsData.dateFor).format(DATE_TIME_FORMAT))
+      || moment().format(DATE_TIME_FORMAT)
   const bp001 = indicatorsData[IndicationCodes.BP001]
   const bp002 = indicatorsData[IndicationCodes.BP002]
   const bp003 = indicatorsData[IndicationCodes.BP003]
@@ -45,7 +46,7 @@ const renderIndicators = (object, unitData) => {
   return (`
     <div class='unit_indicators'>
     ${renderIndicator(i18n.UNIT_NAME, unitShortName)}
-    ${(dateFor && renderIndicator(i18n.DATE_FOR, dateFor)) || ''}
+    ${renderIndicator(i18n.DATE_FOR, dateFor)}
     ${renderIndicator(i18n.BP_002, bp002)}
     ${renderIndicator(i18n.BP_001, bp001)}
     ${renderIndicator(i18n.BP_003, bp003 && renderTag(bp003))}
