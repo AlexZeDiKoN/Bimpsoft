@@ -15,7 +15,11 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
     const { unit } = this.getResult()
     const { byIds } = this.getOrgStructures()
     if (unit && (prevProps.data.unit !== unit)) {
-      this.changeSubordinationLevel(byIds[unit].natoLevelID)
+      let unitData = byIds[unit]
+      if (unitData.itemType === 'CommandPost') {
+        unitData = byIds[unitData.militaryUnitID]
+      }
+      this.changeSubordinationLevel(unitData.natoLevelID)
     }
   }
 

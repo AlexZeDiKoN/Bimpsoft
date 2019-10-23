@@ -21,6 +21,7 @@ let dropLock = null
 const heartBeat = (objLock, objUnlock, objectId) => {
   dropLock = () => objUnlock(objectId)
   return () => objLock(objectId)
+    .catch(console.error)
 }
 
 const stopHeartBeat = () => {
