@@ -8,9 +8,9 @@ import { mapCOP, currentMapLayers } from './layersSelector'
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
 const objects = (state) => state.webMap.objects
-// const currentOrgStructure = (state) => state.orgStructures
 const defaultOrgStructure = (state) => state.webMap.defOrgStructure
 const selectedList = (state) => state.selection.list
+export const allUnits = (state) => state.orgStructures.unitsById
 
 const selectedOur = (objects, list) => {
   if (list && list.length === 1) {
