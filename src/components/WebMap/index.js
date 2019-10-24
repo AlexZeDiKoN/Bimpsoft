@@ -34,11 +34,10 @@ import {
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
-import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
-import entityKind, { entityKindFillable } from './entityKind'
+import entityKind, { entityKindFillable, entityKindMultipointCurves, entityKindMultipointAreas } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -1894,7 +1893,11 @@ export default class WebMap extends React.PureComponent {
   }
 
   disableDrawLineSquareMark = () => {
-    const { selection: { newShape }, disableDrawUnit } = this.props
+    const {
+      selection: { newShape },
+      disableDrawUnit,
+    } = this.props
+
     if (newShape.type) {
       this.map.pm.disableDraw()
       disableDrawUnit()
@@ -1914,8 +1917,13 @@ export default class WebMap extends React.PureComponent {
 
   enterHandler = () => {
     const { type } = this.props.selection.newShape
-    if (type === SelectionTypes.CURVE || type === SelectionTypes.POLYLINE) {
-      const activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+    let activeLayer
+    if (entityKindMultipointCurves.includes(type)) {
+      activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+    } else if (entityKindMultipointAreas.includes(type)) {
+      activeLayer = this.map.pm.Draw && this.map.pm.Draw.Polygon._layer
+    }
+    if (activeLayer) {
       this.createNewShape({ layer: activeLayer })
       this.map.pm.disableDraw()
     }
