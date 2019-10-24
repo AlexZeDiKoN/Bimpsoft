@@ -62,10 +62,12 @@ export default class LayerItemComponent extends React.Component {
           color={color}
           onChange={this.changeColorHandler}
         />
-        <Icon
-          className="layer-item-component-control"
-          icon={getLockIcon(isSelected, readOnly)}
-        />
+        <div title={readOnly ? i18n.ACCESS_READONLY : i18n.ACCESS_FULL}>
+          <Icon
+            className="layer-item-component-control"
+            icon={getLockIcon(isSelected, readOnly)}
+          />
+        </div>
       </div>
     )
   }
