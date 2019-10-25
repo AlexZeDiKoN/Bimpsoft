@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Select, Input } from 'antd'
 import { SubordinationLevel } from '../../constants'
+import * as i18n from '../../i18n/ua'
 
 const Option = Select.Option
 
@@ -20,6 +21,7 @@ export default class SubordinationLevelSelect extends React.Component {
     } else {
       return (
         <Select value={ value } onChange={onChange}>
+          <Option value={SubordinationLevel.UNDEFINED}>{i18n.UNDEFINED}</Option>
           {SubordinationLevel.list.map(({ value, title }) => (
             <Option key={value} value={value}>{title}</Option>
           ))}
