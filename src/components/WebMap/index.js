@@ -749,7 +749,7 @@ export default class WebMap extends React.PureComponent {
     this.updateCreatePoly(edit && type)
   }
 
-  onSelectedListChange (newList) {
+  async onSelectedListChange (newList) {
     const {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
@@ -760,7 +760,7 @@ export default class WebMap extends React.PureComponent {
 
     // save geometry when one selected item lost focus
     if (list.length === 1 && list[0] !== newList[0] && edit) {
-      this.checkSaveObject(true)
+      await this.checkSaveObject(true)
     }
 
     // get unit from new selection
@@ -770,9 +770,9 @@ export default class WebMap extends React.PureComponent {
       const layer = this.findLayerById(id)
       selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
-    onSelectUnit(selectedUnit)
+    await onSelectUnit(selectedUnit)
 
-    onSelectedList(newList)
+    return onSelectedList(newList)
   }
 
   updateMarkersOn = (isMarkersOn) => {
