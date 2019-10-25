@@ -3,6 +3,8 @@ import SERVERS from '../../constants/servers'
 
 const base = process.env.REACT_APP_SERVER_URL
 
+export const getAuthToken = () => getDirect('/secret', null)
+
 const setOptionsData = (options, data) => {
   if (data) {
     const isString = (typeof data === 'string')
