@@ -9,7 +9,7 @@ const initState = {
     dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendEnabled: true,
-    legendTableType: 'left',
+    legendTableType: 'right',
   },
   selectedZone: null,
   printFiles: {},
