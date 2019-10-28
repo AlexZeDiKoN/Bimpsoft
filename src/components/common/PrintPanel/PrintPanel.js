@@ -172,7 +172,7 @@ class PrintPanel extends React.Component {
       securityClassification: { classified },
       requisites,
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, changed } = this.state
+    const { setRequisitesFunc, colors, legendTableType, changed, legendEnabled } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -229,7 +229,7 @@ class PrintPanel extends React.Component {
             }
           </Row>
           <FormRow label={i18n.PRINT_REQUISITES}>
-            <Checkbox checked={this.state.legendEnabled} onChange={this.changeLegendEnabled}/>
+            <Checkbox checked={legendEnabled} onChange={this.changeLegendEnabled}/>
           </FormRow>
           <Row className='printPanelSecurity'>
             <Col span={5}>
@@ -250,7 +250,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.FIRST_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -264,7 +264,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.SECOND_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -278,7 +278,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.THIRD_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -292,7 +292,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.FOURTH_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -306,7 +306,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.FIFTH_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -316,7 +316,7 @@ class PrintPanel extends React.Component {
                 format={DATE_FORMAT}
                 defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.START}
-                disabled={!this.state.legendEnabled}
+                disabled={!legendEnabled}
               />
             </FormRow>
             <FormRow label={i18n.FINISH}>
@@ -324,7 +324,7 @@ class PrintPanel extends React.Component {
                 format={DATE_FORMAT}
                 defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
                 onChange={setRequisitesFunc.FINISH}
-                disabled={!this.state.legendEnabled}
+                disabled={!legendEnabled}
               />
             </FormRow>
           </div>
@@ -339,7 +339,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.INDICATOR_FIRST_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -353,7 +353,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.INDICATOR_SECOND_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -367,7 +367,7 @@ class PrintPanel extends React.Component {
                 )(
                   <Input
                     onChange={setRequisitesFunc.INDICATOR_THIRD_ROW}
-                    disabled={!this.state.legendEnabled}
+                    disabled={!legendEnabled}
                   />
                 )
               }
@@ -388,7 +388,7 @@ class PrintPanel extends React.Component {
                 size='small'
                 className={legendTableType !== 'left' ? '' : 'active'}
                 onClick={() => this.changeLegendTableType('left')}
-                disabled={!this.state.legendEnabled}
+                disabled={!legendEnabled}
               />
               <Button
                 htmlType='button'
@@ -397,7 +397,7 @@ class PrintPanel extends React.Component {
                 size='small'
                 className={legendTableType === 'left' ? '' : 'active'}
                 onClick={() => this.changeLegendTableType('right')}
-                disabled={!this.state.legendEnabled}
+                disabled={!legendEnabled}
               />
             </Col>
           </Row>
@@ -416,7 +416,7 @@ class PrintPanel extends React.Component {
                   color={colors[COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
-                  disabled={!this.state.legendEnabled}
+                  disabled={!legendEnabled}
                 />
               </Col>
               <Col span={18}>
@@ -428,7 +428,7 @@ class PrintPanel extends React.Component {
                   )(
                     <Input
                       onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
-                      disabled={!this.state.legendEnabled}
+                      disabled={!legendEnabled}
                     />
                   )
                 }
@@ -440,7 +440,7 @@ class PrintPanel extends React.Component {
                   color={colors[COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
-                  disabled={!this.state.legendEnabled}
+                  disabled={!legendEnabled}
                 />
               </Col>
               <Col span={18}>
@@ -452,7 +452,7 @@ class PrintPanel extends React.Component {
                   )(
                     <Input
                       onChange={setRequisitesFunc.LEGEND_SECOND_CONTENT}
-                      disabled={!this.state.legendEnabled}
+                      disabled={!legendEnabled}
                     />
                   )
                 }
@@ -464,7 +464,7 @@ class PrintPanel extends React.Component {
                   color={colors[COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
-                  disabled={!this.state.legendEnabled}
+                  disabled={!legendEnabled}
                 />
               </Col>
               <Col span={18}>
@@ -476,7 +476,7 @@ class PrintPanel extends React.Component {
                   )(
                     <Input
                       onChange={setRequisitesFunc.LEGEND_THIRD_CONTENT}
-                      disabled={!this.state.legendEnabled}
+                      disabled={!legendEnabled}
                     />
                   )
                 }
@@ -488,7 +488,7 @@ class PrintPanel extends React.Component {
                   color={colors[COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR]}
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
-                  disabled={!this.state.legendEnabled}
+                  disabled={!legendEnabled}
                 />
               </Col>
               <Col span={18}>
@@ -500,7 +500,7 @@ class PrintPanel extends React.Component {
                   )(
                     <Input
                       onChange={setRequisitesFunc.LEGEND_FOURTH_CONTENT}
-                      disabled={!this.state.legendEnabled}
+                      disabled={!legendEnabled}
                     />
                   )
                 }

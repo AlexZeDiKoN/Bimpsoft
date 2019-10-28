@@ -22,12 +22,10 @@ export const print = (mapId = null, name = '') =>
     if (getState().print.mapId === null) {
       const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
       const requisites = Object.keys(Object.assign(PRINT_PANEL_KEYS, COLOR_PICKER_KEYS))
-        .reduce((prev, current) => (
-          {
-            ...prev,
-            [PRINT_PANEL_KEYS[current]]: LS.get(Print.LS_GROUP, PRINT_PANEL_KEYS[current]),
-          }
-        ), {})
+        .reduce((prev, current) => {
+          const value = LS.get(Print.LS_GROUP, PRINT_PANEL_KEYS[current])
+          return value === null ? prev : {...prev, [PRINT_PANEL_KEYS[current]]: value}
+        }, {})
       dispatch(
         setPrintRequisites(requisites)
       )
