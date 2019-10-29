@@ -270,7 +270,7 @@ class Renderer {
 
 export const printLegend = (params) => {
   const { widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified } = params
-  if (!requisites.legendChecked) { return }
+  if (!requisites.legendAvailable || !requisites.legendChecked) { return }
   const h = getH(6)
 
   const renderer = new Renderer(widthMM, heightMM, h)

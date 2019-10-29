@@ -1,5 +1,5 @@
 import { latLngBounds } from 'leaflet'
-import { INIT_GRID_OPTIONS, SELECTED_CELL_OPTIONS } from '../constants'
+import { INIT_GRID_OPTIONS, SELECTED_CELL_OPTIONS, CELL_SIZES } from '../constants'
 import {
   addLayerToCurrentGrid,
   addLayerToSelectedLayers,
@@ -95,13 +95,18 @@ const prepareSelectedZone = (layer, point, selectedZone) => {
   }
 }
 
-export const selectLayer = (event, currentGrid, selectedLayers, selectedZone, setSelectedZone) => {
+export const selectLayer = (event, currentGrid, selectedLayers, selectedZone, setSelectedZone, printScale) => {
   const newSelectedZone = prepareSelectedZone(event.target, event.latlng, selectedZone)
+  const cellSize = CELL_SIZES[printScale]
   listVerification(newSelectedZone, currentGrid, selectedLayers)
   // рахуємо кількість виділених листів, або видаляємо зону при їх відсутності
   const northEast = { lat: newSelectedZone._northEast.lat, lng: newSelectedZone._northEast.lng }
   const southWest = { lat: newSelectedZone._southWest.lat, lng: newSelectedZone._southWest.lng }
+  const lists = {
+    X: Math.round((northEast.lng - southWest.lng) / cellSize.lng),
+    Y: Math.round((northEast.lat - southWest.lat) / cellSize.lat)
+  }
   selectedLayers.getLayers().length
-    ? setSelectedZone({ northEast: northEast, southWest: southWest })
+    ? setSelectedZone({ northEast, southWest, lists })
     : setSelectedZone(null)
 }

@@ -9,6 +9,7 @@ const initState = {
     dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendChecked: true,
+    legendAvailable: false,
     legendTableType: 'right',
   },
   selectedZone: null,
@@ -34,7 +35,10 @@ export default function reducer (state = initState, action) {
       return { ...state, requisites }
     }
     case print.SELECTED_ZONE: {
-      return { ...state, selectedZone: action.selectedZone }
+      const legendAvailable = action.selectedZone && action.selectedZone.lists.X >=  Print.PRINT_LEGEND_MIN_LISTS.X &&
+        action.selectedZone.lists.Y >=  Print.PRINT_LEGEND_MIN_LISTS.Y
+      const requisites = { ...state.requisites, legendAvailable }
+      return { ...state, requisites, selectedZone: action.selectedZone }
     }
     case print.PRINT_FILE_SET: {
       const { id, message } = payload
