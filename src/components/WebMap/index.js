@@ -1159,6 +1159,9 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.remove()
+            if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
+              this.catalogsPopup.remove()
+            }
             // layer.pm && layer.pm.disable()
           }
         }
@@ -1168,6 +1171,9 @@ export default class WebMap extends React.PureComponent {
         const newLayer = this.addCatalogObject(object, layer)
         if (newLayer !== layer) {
           layer.remove()
+          if (this.catalogsPopup && this.catalogsPopup.isOpen && this.catalogsPopup._openOver === layer) {
+            this.catalogsPopup.remove()
+          }
           // layer.pm && layer.pm.disable()
         }
       }
@@ -1468,7 +1474,11 @@ export default class WebMap extends React.PureComponent {
     let text = `<strong>${catalogName}</strong><br/>`
     name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
-    new L.Popup()
+    if (!this.catalogsPopup) {
+      this.catalogsPopup = L.popup()
+    }
+    this.catalogsPopup._openOver = layer
+    this.catalogsPopup
       .setLatLng(layer.getLatLng())
       .setContent(text)
       .openOn(layer._map)
