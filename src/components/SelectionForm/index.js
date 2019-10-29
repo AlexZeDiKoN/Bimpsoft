@@ -90,6 +90,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
+        minWidth={title === i18n.MIL_SYMBOL ? 825 : 410}
       >
         <FocusTrap>
           <HotKeysContainer>
