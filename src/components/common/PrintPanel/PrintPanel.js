@@ -53,10 +53,9 @@ class PrintPanel extends React.Component {
         .reduce((prev, current) => (
           {
             ...prev,
-            [current]: ({ target }, dateString) => {
-              target
-                ? setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: target.value })
-                : setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: dateString })
+            [current]: (e, dateString) => {
+              const value = dateString || (e && e.target ? e.target.value : null)
+              setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: value })
               this.setState({ changed: true })
             },
           }
