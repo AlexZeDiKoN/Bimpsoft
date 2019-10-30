@@ -9,7 +9,9 @@
   .catalog-item{
     .flex;
     align-items: center;
-    padding: 3px 0;
+    height: 32px;
+    background: @sidebar-item-background-color;
+    border-top: 1px solid @sidebar-item-border-color;
     .button_layers{
       width: 1.7em;
       height: 1.7em;
@@ -19,8 +21,8 @@
       }
     }
     .milsymbol{
-      width: 2em;
-      height: 2em;
+      width: 26px;
+      height: 22px;
       margin-right: 0.5em;
       flex: 0 0 auto;
     }
@@ -28,6 +30,11 @@
     /* &:not(.catalog-item-can-expand) .catalog-item-content{
       margin-left: 2.48em;
     } */
+  }
+
+  .catalog-item-shown{
+    background: #f7f7f7;
+    border-top: 1px solid @sidebar-item-border-color;
   }
 
   .catalog-item-selected {
@@ -51,6 +58,8 @@
     width: 10px;
     text-align: left;
     padding: 0 0.3em;
+    font-size: 13px;
+    font-family: @sidebar-font;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

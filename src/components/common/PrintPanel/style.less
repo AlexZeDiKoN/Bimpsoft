@@ -1,5 +1,10 @@
+@import "../../../assets/styles/_variables.less";
+
 .printPanelFormInner {
   overflow-y: scroll;
+
+  .ant-form {
+    position: relative;
 
   .dzvin-form-row {
     label {
@@ -24,8 +29,8 @@
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     padding: 8px 0;
-    > .dzvin-form-row{
-      > .dzvin-form-input{
+    > .dzvin-form-row {
+      > .dzvin-form-input {
         width: 140px;
         padding-right: 5px;
       }
@@ -50,9 +55,9 @@
       display: flex;
       border-bottom: 1px solid grey;
     }
-      .right {
-        order: 1;
-      }
+    .right {
+      order: 1;
+    }
     .printPanelSign_row {
       display: flex;
       .right {
@@ -69,21 +74,21 @@
       .PrintPanel_colorPicker {
         .color-picker-popup {
           margin-left: -6px;
-          .color-picker-controls{
+          .color-picker-controls {
             transform: scale(-1, 1);
-            input{
+            input {
               transform: scale(-1, 1);
             }
           }
         }
       }
-      .right{
+      .right {
         .PrintPanel_colorPicker {
           .color-picker-popup {
             margin-left: -185px;
-            .color-picker-controls{
+            .color-picker-controls {
               transform: scale(1, 1);
-              input{
+              input {
                 transform: scale(1, 1);
               }
             }
@@ -94,14 +99,16 @@
   }
 
   .printPanel_indicators {
-    .dzvin-form-row{
+    .dzvin-form-row {
       padding: 1px 15px;
     }
+
     .dzvin-form-input {
       input {
         border-radius: 5px;
       }
     }
+
     .dzvin-form-row:last-child {
       .dzvin-form-input {
         border: 0;
@@ -112,6 +119,7 @@
   .printPanel_legend {
     display: flex;
     align-items: center;
+
     .printPanel_legendControl {
       button {
         height: 20px;
@@ -119,12 +127,14 @@
         font-size: 10px;
         padding: 0 !important;
       }
+
       button:hover {
         color: #fff !important;
         border-color: #b0b37d !important;
         background-color: #b0b37d;
         cursor: pointer;
       }
+
       button.active {
         color: #fff !important;
         border-color: #b0b37d !important;
@@ -135,12 +145,14 @@
 
   .printPanel_signatories {
     margin-bottom: 15px;
+
     .ant-row {
       border: 1px solid grey;
       border-top: 0;
       max-height: 19px;
       overflow: hidden;
       font-size: 12px;
+
       div {
         border-right: 1px solid grey;
         max-height: 19px;
@@ -148,17 +160,22 @@
         white-space: nowrap;
         text-overflow: ellipsis;
       }
+
       div:last-child {
         border: 0;
       }
     }
+
     .ant-row:first-child {
       border-top: 1px solid grey;
     }
   }
 
   .printPanel_buttonBlock {
-    margin: 25px 0 25px;
+    position: sticky;
+    bottom: 0;
+    background: @toolbar-color-selected;
+    border-top: 1px solid @sidebar-item-border-color;
   }
 
   .invisible {
@@ -168,4 +185,5 @@
     width: 0 !important;
     height: 0 !important;
   }
+ }
 }
