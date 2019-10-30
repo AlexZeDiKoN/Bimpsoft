@@ -495,10 +495,7 @@ class PrintPanel extends React.Component {
                   initialValue: requisites.confirmDate,
                 },
               )(
-                <Input
-                  disabled
-                  onChange={setRequisitesFunc.CONFIRM_DATE}
-                />,
+                <Input disabled onChange={setRequisitesFunc.CONFIRM_DATE}/>,
               )
             }
           </FormRow>
