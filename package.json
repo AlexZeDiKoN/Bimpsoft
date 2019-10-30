@@ -1,9 +1,13 @@
 {
   "name": "web-map",
-  "version": "10.1.530",
+  "version": "10.1.533",
   "private": true,
   "dependencies": {
+<<<<<<< HEAD
     "@DZVIN/CommonComponents": "^10.1.323",
+=======
+    "@DZVIN/CommonComponents": "^10.1.322",
+>>>>>>> 77531b48876a29b8c70deead0c5b3566fd2ecf0d
     "@DZVIN/MilSymbolEditor": "^10.1.220",
     "@DZVIN/components": "^10.1.512",
     "@DZVIN/milsymbol": "^0.0.4",

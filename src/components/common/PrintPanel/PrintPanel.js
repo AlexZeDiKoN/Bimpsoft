@@ -117,13 +117,11 @@ class PrintPanel extends React.Component {
   setScale = (value) => {
     const { setPrintScale } = this.props
     setPrintScale(value)
-    this.setState({ changed: true })
   }
 
   setPrintParameters = (value, key) => {
     const { setPrintRequisites } = this.props
     setPrintRequisites({ [key]: value })
-    this.setState({ changed: true })
   }
 
   changeLegendChecked = (value) => {

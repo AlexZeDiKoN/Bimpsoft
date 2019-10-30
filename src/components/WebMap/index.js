@@ -1507,18 +1507,19 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  dblClickOnLayer = (event) => {
+  dblClickOnLayer = async (event) => {
     const { target: layer } = event
     const { id, object } = layer
-    const { selection: { list }, editObject } = this.props
+    const { selection: { list }, editObject, onSelectUnit } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
       // this.checkSaveObject(false)
       editObject(object.id)
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
-        this.props.onChangeLayer(targetLayer)
-        this.selectLayer(id)
+        await this.selectLayer(id)
+        await this.props.onChangeLayer(targetLayer)
+        await onSelectUnit((layer && layer.object && layer.object.unit) || null)
         layer._map._container.focus()
       }
     }
@@ -1579,12 +1580,14 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list } } = this.props
     if (id) {
       if (exclusive) {
-        this.onSelectedListChange(list.indexOf(id) === -1 ? [ ...list, id ] : list.filter((itemId) => itemId !== id))
+        return this.onSelectedListChange(list.indexOf(id) === -1
+          ? [ ...list, id ]
+          : list.filter((itemId) => itemId !== id))
       } else if (list.length !== 1 || list[0] !== id) {
-        this.onSelectedListChange([ id ])
+        return this.onSelectedListChange([ id ])
       }
     } else {
-      this.onSelectedListChange([])
+      return this.onSelectedListChange([])
     }
   }
 

@@ -24,11 +24,9 @@ export const print = (mapId = null, name = '') =>
       const requisites = Object.keys(Object.assign(PRINT_PANEL_KEYS, COLOR_PICKER_KEYS))
         .reduce((prev, current) => {
           const value = LS.get(Print.LS_GROUP, PRINT_PANEL_KEYS[current])
-          return value === null ? prev : {...prev, [PRINT_PANEL_KEYS[current]]: value}
+          return value === null ? prev : { ...prev, [PRINT_PANEL_KEYS[current]]: value }
         }, {})
-      dispatch(
-        setPrintRequisites(requisites)
-      )
+      dispatch(setPrintRequisites(requisites))
     }
     dispatch({
       type: PRINT,
@@ -91,12 +89,10 @@ export const printFileCancel = (id) =>
 export const printFileRetry = (id, name) =>
   (dispatch, getState, { webmapApi: { printFileRetry } }) => {
     printFileRetry(id)
-    dispatch(
-      printFileSet(id, Print.PRINT_STEPS.SENT, name)
-    )
+    dispatch(printFileSet(id, Print.PRINT_STEPS.SENT, name))
   }
 
-export const createPrintFile = () =>
+export const createPrintFile = (onError = null) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
     const state = getState()
     const {
@@ -141,6 +137,7 @@ export const createPrintFile = () =>
         clearPrintRequisites(),
       ]))
     } else {
+      if (onError) { onError() }
       throw new Error(PRINT_ZONE_UNDEFINED)
     }
   })
