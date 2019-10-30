@@ -293,22 +293,24 @@ class PrintPanel extends React.Component {
                 )
               }
             </FormColumn>
-            <FormRow label={i18n.START}>
-              <DatePicker
-                format={DATE_FORMAT}
-                defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
-                onChange={setRequisitesFunc.START}
-                disabled={!legendEnabled}
-              />
-            </FormRow>
-            <FormRow label={i18n.FINISH}>
-              <DatePicker
-                format={DATE_FORMAT}
-                defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
-                onChange={setRequisitesFunc.FINISH}
-                disabled={!legendEnabled}
-              />
-            </FormRow>
+            <div className='printData'>
+              <FormRow label={i18n.START}>
+                <DatePicker
+                  format={DATE_FORMAT}
+                  defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
+                  onChange={setRequisitesFunc.START}
+                  disabled={!legendEnabled}
+                />
+              </FormRow>
+              <FormRow label={i18n.FINISH}>
+                <DatePicker
+                  format={DATE_FORMAT}
+                  defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
+                  onChange={setRequisitesFunc.FINISH}
+                  disabled={!legendEnabled}
+                />
+              </FormRow>
+            </div>
           </div>
           <h5>{i18n.MAIN_INDICATORS}</h5>
           <div className='printPanel_indicators'>
