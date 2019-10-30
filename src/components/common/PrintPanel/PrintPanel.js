@@ -126,8 +126,7 @@ class PrintPanel extends React.Component {
     this.setState({ changed: true })
   }
 
-  changeLegendChecked = (event) => {
-    const value = event.target.checked
+  changeLegendChecked = (value) => {
     const { setPrintRequisites } = this.props
     const { LEGEND_CHECKED } = Print.PRINT_PANEL_KEYS
     this.setState(
@@ -180,6 +179,7 @@ class PrintPanel extends React.Component {
     } = Print
     const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
     const legendEnabled = requisites.legendAvailable && legendChecked
+    if (!legendEnabled && legendChecked) { this.changeLegendChecked(false) }
     return (
       <div className='printPanelFormInner'>
         <Form>
@@ -227,7 +227,7 @@ class PrintPanel extends React.Component {
           <FormRow label={i18n.PRINT_REQUISITES}>
             <Checkbox
               checked={legendChecked}
-              onChange={this.changeLegendChecked}
+              onChange={(e) => this.changeLegendChecked(e.target.checked)}
               disabled={!requisites.legendAvailable}
             />
           </FormRow>
