@@ -7,6 +7,7 @@ import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
+import { Tooltip } from 'antd'
 
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
@@ -48,7 +49,9 @@ export default class LayerItemComponent extends React.Component {
           onChange={this.changeVisibilityHandler}
         />
         <div className="layer-item-component-title">
-          <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
+          <Tooltip title={breadCrumbs} placement='topLeft'>
+            <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
+          </Tooltip>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker

@@ -105,7 +105,7 @@ export default class LeftMenu extends React.Component {
           <IconButton
             placement={'bottomLeft'}
             title={i18n.TARGETING}
-            icon={iconNames.NONE_ICON_DEFAULT}
+            icon={iconNames.AIM}
             checked={targetingMode}
             onClick={this.clickTargetingModeHandler}
           />

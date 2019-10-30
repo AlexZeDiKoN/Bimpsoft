@@ -2,13 +2,22 @@
 
 .printPanelFormInner {
   overflow-y: scroll;
+  font-family: @sidebar-font;
 
   .ant-form {
     position: relative;
+    margin-top: 15px;
 
   .dzvin-form-row {
+    padding: 2px 15px;
     label {
       font-size: 12px;
+      font-weight: 500;
+      color: rgba(0,0,0,0.85);
+    }
+    > .dzvin-form-input {
+      width: 140px;
+      padding-right: 5px;
     }
   }
 
@@ -29,23 +38,31 @@
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     padding: 8px 0;
-    > .dzvin-form-row {
-      > .dzvin-form-input {
-        width: 140px;
-        padding-right: 5px;
-      }
+    .dzvin-form-column{
+      margin: 5px 10px;
+    }
+  }
+
+  .printData{
+    label{
+      font-weight: 400;
     }
   }
 
   .printPanelSecurity {
     margin: 8px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
     div:last-child {
-      font-weight: bold;
+      font-weight: 400;
+      font-size: 11px;
     }
   }
 
   h5 {
     margin: 8px 0;
+    font-size: 12px;
   }
 
   .printPanelSign_block {
@@ -54,6 +71,7 @@
     .printPanelSignTitle_row {
       display: flex;
       border-bottom: 1px solid grey;
+      font-size: 12px;
     }
     .right {
       order: 1;
@@ -100,7 +118,7 @@
 
   .printPanel_indicators {
     .dzvin-form-row {
-      padding: 1px 15px;
+      padding: 1px 10px;
     }
 
     .dzvin-form-input {
@@ -144,7 +162,7 @@
   }
 
   .printPanel_signatories {
-    margin-bottom: 15px;
+    margin: 0 15px 15px 15px;
 
     .ant-row {
       border: 1px solid grey;
@@ -173,9 +191,11 @@
 
   .printPanel_buttonBlock {
     position: sticky;
-    bottom: 0;
+    bottom: -1px;
+    margin-top: 20px;
+    padding: 8px 0px;
+    z-index: 1001;
     background: @toolbar-color-selected;
-    border-top: 1px solid @sidebar-item-border-color;
   }
 
   .invisible {
