@@ -289,7 +289,7 @@ class PrintPanel extends React.Component {
                     initialValue: requisites.fifthRow,
                   },
                 )(
-                  <Input onChange={setRequisitesFunc.FIFTH_ROW} disabled={!legendEnabled}/>
+                  <Input onChange={setRequisitesFunc.FIFTH_ROW} disabled={!legendEnabled}/>,
                 )
               }
             </FormColumn>
@@ -401,10 +401,7 @@ class PrintPanel extends React.Component {
                       initialValue: requisites.legendFirstContent,
                     },
                   )(
-                    <Input
-                      onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT}
-                      disabled={!legendEnabled}
-                    />
+                    <Input onChange={setRequisitesFunc.LEGEND_FIRST_CONTENT} disabled={!legendEnabled}/>,
                   )
                 }
               </Col>
