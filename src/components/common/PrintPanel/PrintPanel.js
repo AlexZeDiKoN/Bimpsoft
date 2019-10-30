@@ -35,7 +35,6 @@ class PrintPanel extends React.Component {
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
       legendChecked: props.requisites.legendChecked,
-      changed: true,
     }
   }
 
@@ -56,7 +55,6 @@ class PrintPanel extends React.Component {
             [current]: (e, dateString) => {
               const value = dateString || (e && e.target ? e.target.value : null)
               setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: value })
-              this.setState({ changed: true })
             },
           }
         ), {}),
@@ -66,7 +64,6 @@ class PrintPanel extends React.Component {
           [current]: (color) => {
             setPrintRequisites({ [COLOR_PICKER_KEYS[current]]: color })
             this.setState((prevState) => ({
-              changed: true,
               colors: {
                 ...prevState.colors,
                 [COLOR_PICKER_KEYS[current]]: color,
@@ -117,20 +114,18 @@ class PrintPanel extends React.Component {
   setScale = (value) => {
     const { setPrintScale } = this.props
     setPrintScale(value)
-    this.setState({ changed: true })
   }
 
   setPrintParameters = (value, key) => {
     const { setPrintRequisites } = this.props
     setPrintRequisites({ [key]: value })
-    this.setState({ changed: true })
   }
 
   changeLegendChecked = (value) => {
     const { setPrintRequisites } = this.props
     const { LEGEND_CHECKED } = Print.PRINT_PANEL_KEYS
     this.setState(
-      { legendChecked: value, changed: true },
+      { legendChecked: value },
       () => setPrintRequisites({ [LEGEND_CHECKED]: value }),
     )
   }
@@ -140,10 +135,7 @@ class PrintPanel extends React.Component {
     const { setPrintRequisites } = this.props
     const { LEGEND_TABLE_TYPE } = Print.PRINT_PANEL_KEYS
     if (legendTableType !== newType) {
-      this.setState({
-        legendTableType: newType,
-        changed: true,
-      })
+      this.setState({ legendTableType: newType })
       setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType })
     }
   }
@@ -156,7 +148,7 @@ class PrintPanel extends React.Component {
 
   createPrintFile = () => {
     const { createPrintFile } = this.props
-    this.setState({ changed: false }, createPrintFile)
+    createPrintFile()
   }
 
   createSelectChildren = (incomeData) => incomeData
@@ -169,7 +161,7 @@ class PrintPanel extends React.Component {
       securityClassification: { classified },
       requisites,
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, changed, legendChecked } = this.state
+    const { setRequisitesFunc, colors, legendTableType, legendChecked } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -506,7 +498,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              <ButtonSave onClick={this.createPrintFile} disabled={!changed}/>
+              <ButtonSave onClick={this.createPrintFile}/>
             </Col>
           </Row>
         </Form>
