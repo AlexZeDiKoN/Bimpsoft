@@ -8,13 +8,13 @@
   padding: 5px 5px 4px 20px;
   line-height: 1.2em;
   position: relative;
+  background: @toolbar-light-background;
   &:not(:last-child) {
     border-bottom: 1px solid @toolbar-border;
   }
 }
 .layer-item-component-selected {
   background: @toolbar-background-selected;
-  color: @toolbar-color-selected;
 }
 
 .layer-item-component-title{
@@ -27,13 +27,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    font-family: @sidebar-font;
+    font-size: 13px;
+    color: @toolbar-color;
   }
   .layer-date{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
-    font-size: 0.8em;
+    font-size: 10px;
+    font-family: @sidebar-font;
+    color: #5e62697d;
   }
 }
 .layer-item-component-selected {

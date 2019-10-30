@@ -13,6 +13,36 @@
     cursor: row-resize;
   }
 
+  .ant-input-affix-wrapper{
+    border-bottom: 2px solid @select-color;
+    padding: 0;
+    &:focus {
+      outline: none;
+    }
+    &:hover {
+      .ant-input:not(.ant-input-disabled){
+        box-shadow: none;
+        border: none;
+        outline: none;
+      }
+    }
+    .ant-input{
+      padding-left: 30px;
+      background: transparent;
+      border: none;
+      &:focus{
+        box-shadow: none;
+      }
+      > div{
+        color: @toolbar-color;
+      }
+    }
+    .ant-input-suffix{
+      left: 12px;
+      pointer-events: none;
+    }
+  }
+
   .sidebar-panel1 {
     flex: 0 0 auto;
     overflow: hidden;

@@ -6,20 +6,23 @@
   align-items: center;
   justify-content: space-between;
   padding: 5px 5px 5px 6px;
-  background: @toolbar-header-background;
-  color: @input-background-color;
+  background: @sidebar-item-background-color;
+  color: @toolbar-color;
+  font-family: @sidebar-font;
   --dzvin-expand-icon-color: @input-background-color;
+  border-top: 1px solid @sidebar-item-border-color;
   position: relative;
+  border-bottom: 1px solid @sidebar-item-border-color;
   .dzvin-expand-icon {
     font-size: 0.9em;
     margin-bottom: 5px;
     &::after{
-      border-left: 10px solid @input-background-color;
+      border-left: 10px solid @toolbar-color;
       opacity: 0.84;
     }
   }
   .icon{
-    color: @input-background-color;
+    color: @toolbar-color;
   }
   .icon-button:hover{
     background: transparent;

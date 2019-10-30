@@ -41,9 +41,9 @@ export default class Index extends React.Component {
       >
         <IconButton
           placement={'topRight'}
-          className={'moreButton'}
+          className={'settingsButton'}
           title={i18n.EXTRA_FUNCTIONS}
-          icon={iconNames.MORE_WHITE_DEFAULT}
+          icon={iconNames.TABLE_SETING_DEFAULT}
         />
       </Dropdown>
     )
