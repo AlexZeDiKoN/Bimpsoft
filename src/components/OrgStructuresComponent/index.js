@@ -64,9 +64,26 @@ export default class OrgStructuresComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects) => (
-    { textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects, scrollRef: this.scrollRef }
-  ))
+  getCommonData = memoizeOne((
+    textFilter,
+    onClick,
+    onDoubleClick,
+    selectedId,
+    canEdit,
+    selectedLayer,
+    onMapObjects,
+    onLayersById,
+  ) => ({
+    textFilter,
+    onClick,
+    onDoubleClick,
+    selectedId,
+    canEdit,
+    selectedLayer,
+    onMapObjects,
+    onLayersById,
+    scrollRef: this.scrollRef,
+  }))
 
   getFilteredIds = memoizeOne(getFilteredIds)
 
@@ -85,6 +102,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       canEdit,
       selectedLayer,
       onMapObjects,
+      onLayersById,
       selectList,
     } = this.props
 
@@ -103,6 +121,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       canEdit,
       selectedLayer,
       onMapObjects,
+      onLayersById,
     )
 
     return (
@@ -116,6 +135,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
             />
             <OrgStructureMenu
               onMapObjects={onMapObjects}
+              onLayersById={onLayersById}
               selectList={selectList}
             />
           </div>
@@ -152,5 +172,6 @@ OrgStructuresComponent.propTypes = {
   onDoubleClick: PropTypes.func,
   selectedLayer: PropTypes.string,
   onMapObjects: PropTypes.object,
+  onLayersById: PropTypes.object,
   selectList: PropTypes.func,
 }
