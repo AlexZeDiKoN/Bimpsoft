@@ -35,7 +35,7 @@ class PrintPanel extends React.Component {
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
       legendChecked: props.requisites.legendChecked,
-      disableSaveButton: false,
+      saveButtonEnabled: true,
     }
   }
 
@@ -147,9 +147,16 @@ class PrintPanel extends React.Component {
     clearPrintRequisites()
   }
 
+  enableSaveButton = (enable = true) => {
+    this.setState({ saveButtonEnabled: enable })
+  }
+
   createPrintFile = () => {
     const { createPrintFile } = this.props
-    this.setState({ disableSaveButton: true }, createPrintFile)
+    this.setState(
+      { saveButtonEnabled: false },
+      () => { createPrintFile(this.enableSaveButton) },
+    )
   }
 
   createSelectChildren = (incomeData) => incomeData
@@ -162,7 +169,7 @@ class PrintPanel extends React.Component {
       securityClassification: { classified },
       requisites,
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, legendChecked, disableSaveButton } = this.state
+    const { setRequisitesFunc, colors, legendTableType, legendChecked, saveButtonEnabled } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -496,7 +503,7 @@ class PrintPanel extends React.Component {
               <ButtonCancel onClick={this.cancelPrint} />
             </Col>
             <Col span={12}>
-              <ButtonSave onClick={this.createPrintFile} disabled={disableSaveButton}/>
+              <ButtonSave onClick={this.createPrintFile} disabled={!saveButtonEnabled}/>
             </Col>
           </Row>
         </Form>
