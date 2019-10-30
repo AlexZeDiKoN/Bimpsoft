@@ -8,7 +8,7 @@ const initState = {
   requisites: {
     dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
-    legendChecked: true,
+    legendChecked: false,
     legendAvailable: false,
     legendTableType: 'right',
   },
