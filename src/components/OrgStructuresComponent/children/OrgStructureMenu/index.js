@@ -12,13 +12,15 @@ const {
 export default class Index extends React.Component {
   static propTypes = {
     onMapObjects: PropTypes.object,
+    onLayersById: PropTypes.object,
     selectList: PropTypes.func,
   }
 
   selectUnboundObjects = () => {
-    const { onMapObjects, selectList } = this.props
+    const { onMapObjects, onLayersById, selectList } = this.props
     const unboundObjects = onMapObjects.toArray()
       .filter((item) => !item.unit)
+      .filter((item) => item.layer && Object.prototype.hasOwnProperty.call(onLayersById, item.layer))
       .map((item) => item.id)
     selectList(unboundObjects)
   }
