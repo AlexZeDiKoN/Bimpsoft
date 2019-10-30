@@ -11,11 +11,6 @@ import i18n from '../../../i18n'
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
 
-const getLockIcon = (isDark, locked) =>
-  isDark
-    ? (locked ? iconNames.DARK_LOCK_ACTIVE : iconNames.DARK_UNLOCK_ACTIVE)
-    : (locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE)
-
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
     const { onSelectLayer, data: { layerId } } = this.props
@@ -65,7 +60,7 @@ export default class LayerItemComponent extends React.Component {
         <div title={readOnly ? i18n.ACCESS_READONLY : i18n.ACCESS_FULL}>
           <Icon
             className="layer-item-component-control"
-            icon={getLockIcon(isSelected, readOnly)}
+            icon={readOnly ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE}
           />
         </div>
       </div>
