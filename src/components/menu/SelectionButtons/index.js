@@ -72,7 +72,6 @@ export default class SelectionButtons extends React.Component {
     const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GROUPED.includes(selectedTypes[0])
-    // console.log({ selectedTypes, canContour, canDecontour })
     const deleteHandler = () => {
       if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
         onDelete()
@@ -156,7 +155,7 @@ export default class SelectionButtons extends React.Component {
             placement={'bottomLeft'}
             title={i18n.GROUPPING}
             icon={iconNames.MAP_GROUP}
-            disable={!canGroup && !canUngroup}
+            disabled={!canGroup && !canUngroup}
             onClick={canGroup ? onGroup : onUngroup}
           />
         </>)}
