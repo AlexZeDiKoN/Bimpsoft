@@ -3,14 +3,12 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector,
+  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
 } from '../store/selectors'
-import { webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task } from '../store/actions'
 import {
-  layersByIdFromStore,
-} from '../store/selectors/layersSelector'
+  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups,
+} from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
-import * as topoObj from '../store/actions/webMap'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
 
 const WebMapContainer = connect(
@@ -124,11 +122,13 @@ const WebMapContainer = connect(
     ]),
     selectEternal: flexGrid.selectEternal,
     getTopographicObjects: webMap.getTopographicObjects,
-    toggleTopographicObjModal: topoObj.toggleTopographicObjModal,
+    toggleTopographicObjModal: webMap.toggleTopographicObjModal,
     disableDrawUnit: selection.disableDrawUnit,
     onMoveContour: webMap.moveContour,
     onMoveObjList: webMap.moveObjList,
     getZones: targeting.getZones,
+    createGroup: groups.createGroup,
+    dropGroup: groups.dropGroup,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

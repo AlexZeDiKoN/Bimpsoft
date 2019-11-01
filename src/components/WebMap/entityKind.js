@@ -73,4 +73,8 @@ export const GROUPS = {
     entityKind.POINT,
     entityKind.TEXT,
   ],
+  GROUPED: [
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
 }

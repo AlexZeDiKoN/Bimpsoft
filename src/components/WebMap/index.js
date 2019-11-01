@@ -197,6 +197,8 @@ const setScaleOptions = (layer, params) => {
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
+        case entityKind.GROUPED_HEAD:
+        case entityKind.GROUPED_LAND:
           layer.setScaleOptions({
             min: Number(params[paramsNames.POINT_SIZE_MIN]),
             max: Number(params[paramsNames.POINT_SIZE_MAX]),
@@ -344,6 +346,8 @@ export default class WebMap extends React.PureComponent {
     onMoveContour: PropTypes.func,
     onMoveObjList: PropTypes.func,
     getZones: PropTypes.func,
+    createGroup: PropTypes.func,
+    dropGroup: PropTypes.func,
   }
 
   constructor (props) {

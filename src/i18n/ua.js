@@ -289,3 +289,4 @@ export const LOCATION = 'Позиція'
 
 export const ACCESS_FULL = 'Повний доступ'
 export const ACCESS_READONLY = 'Лише перегляд'
+export const GROUPPING = 'Групувати'

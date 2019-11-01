@@ -11,6 +11,7 @@ export const SET_ORG_STRUCTURE_FILTER_TEXT = action('SET_ORG_STRUCTURE_FILTER_TE
 export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
+const STATUS_OPERATING = 1
 const CACHE_LIFETIME = 60000
 const { setHQ } = APP6Code
 
@@ -88,7 +89,9 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const formations = await milOrgApi.generalFormation.list()
     const formation = formations.find((formation) => formation.id === formationId)
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-    const commandPosts = await milOrgApi.militaryCommandPost.list()
+    const commandPosts = (await milOrgApi.militaryCommandPost.list())
+      .filter(({ state }) => state === STATUS_OPERATING)
+    // console.log(commandPosts)
     const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
