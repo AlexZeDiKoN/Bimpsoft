@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect'
 import entityKind from '../../components/WebMap/entityKind'
 
-export const selectedList = ({ selection: { list } }) => list
 const objects = ({ webMap: { objects } }) => objects
+export const selectedList = ({ selection: { list } }) => list
 
 export const selectedTypes = createSelector(
   objects,
@@ -18,6 +18,6 @@ export const selectedPoints = createSelector(
   (objects, list) => list
     ? list
       .map((id) => objects.get(id).toJS())
-      .filter(({ type }) => type === entityKind.POINT)
+      .filter(({ type, parent }) => type === entityKind.POINT && !parent)
     : []
 )

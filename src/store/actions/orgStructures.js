@@ -76,7 +76,7 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
     if (!app6Code && parent) {
       commandPost.app6Code = setHQ(parent.app6Code, true)
     }
-    parent && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
+    parent && parent.children && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
   })
   return { byIds, roots, commandPosts }
 }
