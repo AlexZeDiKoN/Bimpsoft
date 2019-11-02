@@ -487,34 +487,34 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
 }
 
 const drawLineEnd = (type, { x, y }, angle, scale) => {
-  let res = `<g stroke-width="3" transform="translate(${x},${y - scale * 6}) rotate(${angle},0,6) scale(${scale})">`
+  let res = `<g stroke-width="3" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
     case 'arrow1':
-      res += `<path fill="none" d="M6,-2 l-8,8 8,8"/>`
+      res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
       break
     case 'arrow2':
-      res += `<path d="M9,0 l-12,6 l12,6 Z"/>`
+      res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
       break
     case 'arrow3':
-      res += `<path fill="none" stroke-width="2" d="M8,-4 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
+      res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
       break
     case 'arrow4':
-      res += `<path fill="none" stroke-width="2" d="M6,-2 l-8,8 8,8 M6,-6 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+      res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
       break
     case 'stroke1':
-      res += `<path d="M0,-2 v16"/>`
+      res += `<path d="M0,-8 v16"/>`
       break
     case 'stroke2':
-      res += `<path d="M-4,0 l6,12"/>`
+      res += `<path d="M-4,-6 l6,12"/>`
       break
     case 'stroke3':
-      res += `<path d="M2,0 l-6,12"/>`
+      res += `<path d="M2,-6 l-6,12"/>`
       break
     case 'fork':
-      res += `<path fill="none" d="M-8,-2 l8,8 -8,8"/>`
+      res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
       break
     case 'cross':
-      res += `<path fill="none" stroke-width="2" d="M-6,-6 l12,24 m-12,0 l12,-24"/>`
+      res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
       break
     default:
       break
