@@ -84,4 +84,8 @@ export default {
     getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }),
   groupDrop: (group, layer) =>
     getDirect(`${webmapUrl}/group/drop`, { group, layer }),
+  groupCopy: (id, layer, shift) =>
+    getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }),
+  groupMove: (id, shift) =>
+    getDirect(`${webmapUrl}/group/move`, { id, shift }),
 }

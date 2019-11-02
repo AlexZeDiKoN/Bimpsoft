@@ -112,6 +112,10 @@ export function createTacticalSign (data, map, prevLayer) {
       return createSquare(data, map, prevLayer)
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
+    case entityKind.GROUPED_HEAD:
+      return null
+    case entityKind.GROUPED_LAND:
+      return null
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null

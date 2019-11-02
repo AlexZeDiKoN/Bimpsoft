@@ -77,4 +77,9 @@ export const GROUPS = {
     entityKind.GROUPED_HEAD,
     entityKind.GROUPED_LAND,
   ],
+  COMBINED: [
+    entityKind.CONTOUR,
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
 }

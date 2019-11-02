@@ -126,6 +126,7 @@ const WebMapContainer = connect(
     disableDrawUnit: selection.disableDrawUnit,
     onMoveContour: webMap.moveContour,
     onMoveObjList: webMap.moveObjList,
+    onMoveGroup: webMap.moveGroup,
     getZones: targeting.getZones,
     createGroup: groups.createGroup,
     dropGroup: groups.dropGroup,

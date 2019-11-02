@@ -345,6 +345,7 @@ export default class WebMap extends React.PureComponent {
     disableDrawUnit: PropTypes.func,
     onMoveContour: PropTypes.func,
     onMoveObjList: PropTypes.func,
+    onMoveGroup: PropTypes.func,
     getZones: PropTypes.func,
     createGroup: PropTypes.func,
     dropGroup: PropTypes.func,
@@ -1286,7 +1287,7 @@ export default class WebMap extends React.PureComponent {
     }
     const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
-      const isObjectIsPoint = object.type === entityKind.POINT
+      const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1298,14 +1299,13 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+      objectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
         layer,
         layerObject.formationId,
         object,
-      )
-      )
-      isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+      ))
+      objectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         layer,
         layerObject.formationId,
@@ -1449,11 +1449,15 @@ export default class WebMap extends React.PureComponent {
       }, this.map.getZoom())
       this.props.onMoveObjList(list, delta)
     } else {
-      if (layer.options.tsType === entityKind.CONTOUR) {
-        const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
-        this.props.onMoveContour(layer.id, shift)
-      } else {
-        this.checkSaveObject(false)
+      const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+      switch (layer.options.tsType) {
+        case entityKind.CONTOUR:
+          return this.props.onMoveContour(layer.id, shift)
+        case entityKind.GROUPED_HEAD:
+        case entityKind.GROUPED_LAND:
+          return this.props.onMoveGroup(layer.id, shift)
+        default:
+          return this.checkSaveObject(false)
       }
     }
   }
