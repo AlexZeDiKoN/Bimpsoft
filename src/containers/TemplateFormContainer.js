@@ -36,6 +36,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(templatesActions.setForm(null))
   },
 })
+
 const SelectionFormContainer = connect(
   mapStateToProps,
   mapDispatchToProps

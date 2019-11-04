@@ -1,9 +1,23 @@
+@import "../../../assets/styles/_variables.less";
+
 .printPanelFormInner {
   overflow-y: scroll;
+  font-family: @sidebar-font;
+
+  .ant-form {
+    position: relative;
+    margin-top: 15px;
 
   .dzvin-form-row {
+    padding: 2px 15px;
     label {
       font-size: 12px;
+      font-weight: 500;
+      color: rgba(0,0,0,0.85);
+    }
+    > .dzvin-form-input {
+      width: 140px;
+      padding-right: 5px;
     }
   }
 
@@ -24,23 +38,31 @@
     border-top: 1px solid grey;
     border-bottom: 1px solid grey;
     padding: 8px 0;
-    > .dzvin-form-row{
-      > .dzvin-form-input{
-        width: 140px;
-        padding-right: 5px;
-      }
+    .dzvin-form-column{
+      margin: 5px 10px;
+    }
+  }
+
+  .printData{
+    label{
+      font-weight: 400;
     }
   }
 
   .printPanelSecurity {
     margin: 8px 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.85);
     div:last-child {
-      font-weight: bold;
+      font-weight: 400;
+      font-size: 11px;
     }
   }
 
   h5 {
     margin: 8px 0;
+    font-size: 12px;
   }
 
   .printPanelSign_block {
@@ -49,10 +71,11 @@
     .printPanelSignTitle_row {
       display: flex;
       border-bottom: 1px solid grey;
+      font-size: 12px;
     }
-      .right {
-        order: 1;
-      }
+    .right {
+      order: 1;
+    }
     .printPanelSign_row {
       display: flex;
       .right {
@@ -69,21 +92,21 @@
       .PrintPanel_colorPicker {
         .color-picker-popup {
           margin-left: -6px;
-          .color-picker-controls{
+          .color-picker-controls {
             transform: scale(-1, 1);
-            input{
+            input {
               transform: scale(-1, 1);
             }
           }
         }
       }
-      .right{
+      .right {
         .PrintPanel_colorPicker {
           .color-picker-popup {
             margin-left: -185px;
-            .color-picker-controls{
+            .color-picker-controls {
               transform: scale(1, 1);
-              input{
+              input {
                 transform: scale(1, 1);
               }
             }
@@ -94,14 +117,16 @@
   }
 
   .printPanel_indicators {
-    .dzvin-form-row{
-      padding: 1px 15px;
+    .dzvin-form-row {
+      padding: 1px 10px;
     }
+
     .dzvin-form-input {
       input {
         border-radius: 5px;
       }
     }
+
     .dzvin-form-row:last-child {
       .dzvin-form-input {
         border: 0;
@@ -112,6 +137,7 @@
   .printPanel_legend {
     display: flex;
     align-items: center;
+
     .printPanel_legendControl {
       button {
         height: 20px;
@@ -119,12 +145,14 @@
         font-size: 10px;
         padding: 0 !important;
       }
+
       button:hover {
         color: #fff !important;
         border-color: #b0b37d !important;
         background-color: #b0b37d;
         cursor: pointer;
       }
+
       button.active {
         color: #fff !important;
         border-color: #b0b37d !important;
@@ -134,13 +162,15 @@
   }
 
   .printPanel_signatories {
-    margin-bottom: 15px;
+    margin: 0 15px 15px 15px;
+
     .ant-row {
       border: 1px solid grey;
       border-top: 0;
       max-height: 19px;
       overflow: hidden;
       font-size: 12px;
+
       div {
         border-right: 1px solid grey;
         max-height: 19px;
@@ -148,17 +178,24 @@
         white-space: nowrap;
         text-overflow: ellipsis;
       }
+
       div:last-child {
         border: 0;
       }
     }
+
     .ant-row:first-child {
       border-top: 1px solid grey;
     }
   }
 
   .printPanel_buttonBlock {
-    margin: 25px 0 25px;
+    position: sticky;
+    bottom: -1px;
+    margin-top: 20px;
+    padding: 8px 0px;
+    z-index: 1001;
+    background: @toolbar-color-selected;
   }
 
   .invisible {
@@ -168,4 +205,5 @@
     width: 0 !important;
     height: 0 !important;
   }
+ }
 }

@@ -49,7 +49,7 @@ export default function EternalDescriptionForm (props) {
         <HotKeysContainer>
           <Form className="et_description--form">
             <FormRow label={i18n.COORDINATES}>
-              <CoordinatesField coordinates={coords} onChange={setCoords} onSearch={placeSearch}/>
+              <CoordinatesField coordinates={coords} onExitWithChange={setCoords} onSearch={placeSearch}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
               <TextArea className="et_description--desc_input" defaultValue={description} ref={descRef}/>

@@ -44,6 +44,16 @@ export const entityKindOutlinable = [
   entityKind.SQUARE,
 ]
 
+export const entityKindMultipointCurves = [
+  entityKind.POLYLINE,
+  entityKind.CURVE,
+]
+
+export const entityKindMultipointAreas = [
+  entityKind.POLYGON,
+  entityKind.AREA,
+]
+
 export const GROUPS = {
   FRONTIERS: [
     entityKind.CURVE,

@@ -60,7 +60,7 @@ export default class Item extends React.Component {
             draggable={canEdit}
             className="org-structure-item-content"
           >
-            {(app6Code !== null) && (<MilSymbol code={app6Code} />)}
+            {app6Code ? <MilSymbol code={app6Code} /> : null}
             <div
               className="org-structure-item-text"
             >

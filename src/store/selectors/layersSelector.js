@@ -126,7 +126,7 @@ export const layersTree = createSelector(
         roots.push(mapId)
       }
       map.children.push(layerId)
-      byIds[layerId] = { ...layer, id: layerId, parentId: mapId, breadCrumbs: map.breadCrumbs + ' / ' + name }
+      byIds[layerId] = { ...layer, id: layerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
       if (layer.visible) {
         map.visible = true
         visible = true

@@ -21,6 +21,8 @@ export const LS = {
       case 'object': {
         return JSON.parse(data)
       }
+      case 'boolean':
+        return data === 'true'
       default:
         return data
     }

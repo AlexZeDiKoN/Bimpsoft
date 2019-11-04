@@ -4,7 +4,7 @@ import { orgStructures } from '../actions'
 const { TextFilter } = data
 const { getPathFunc } = utils.collection
 
-const getPath = getPathFunc((item) => item.id, (item) => item.id, (item) => item.parentUnitID)
+const getPath = getPathFunc((item) => item.id, (item) => item.id, (item) => item.parentUnitID || item.militaryUnitID)
 
 const initState = {
   unitsById: null,

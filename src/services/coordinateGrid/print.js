@@ -85,6 +85,7 @@ export default class PrintInner extends React.Component {
     const rectangles = concat(...coordinatesMatrix)
       .map((coordinates) => this.createGridRectangle(coordinates))
     const currentGrid = layerGroup(rectangles)
+    const { printScale } = this.props
     rectangles.map((rectangle) => rectangle
       .on('click', (e) => selectLayer(
         e,
@@ -92,6 +93,7 @@ export default class PrintInner extends React.Component {
         selectedLayers,
         this.props.selectedZone,
         this.props.setSelectedZone,
+        printScale,
       )))
     return currentGrid
   }
@@ -119,6 +121,7 @@ export default class PrintInner extends React.Component {
           selectedLayers,
           this.props.selectedZone,
           this.props.setSelectedZone,
+          printScale,
         ))
         currentGrid.addLayer(newLayer)
       }
