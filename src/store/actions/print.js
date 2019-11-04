@@ -67,9 +67,9 @@ export const setSelectedZone = (selectedZone) => ({
   selectedZone,
 })
 
-export const printFileSet = (id, message, name) => ({
+export const printFileSet = (id, message, name, documentPath) => ({
   type: PRINT_FILE_SET,
-  payload: { id, message, name },
+  payload: { id, message, name, documentPath },
 })
 
 export const printFileList = () =>

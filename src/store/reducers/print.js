@@ -47,8 +47,13 @@ export default function reducer (state = initState, action) {
     }
     case print.PRINT_FILE_LOG: {
       const printFiles = {}
-      action.filesList.forEach(({ file_id: id, status: message, map_name: name }) => {
-        printFiles[id] = { id, message, name }
+      action.filesList.forEach(({
+        file_id: id,
+        status: message,
+        map_name: name,
+        document_path: documentPath,
+      }) => {
+        printFiles[id] = { id, message, name, documentPath }
       })
       return { ...state, printFiles }
     }
