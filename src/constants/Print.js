@@ -69,4 +69,4 @@ export const LS_GROUP = 'print'
 
 export const DOC_CLASS_ID = '5c767b4e737a6915a1000001'
 
-export const PRINT_LEGEND_MIN_LISTS = { X: 2, Y: 2}
+export const PRINT_LEGEND_MIN_LISTS = { X: 2, Y: 2 }
