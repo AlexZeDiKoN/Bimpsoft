@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import i18n from '../../i18n'
 import { MovablePanel } from '@DZVIN/CommonComponents'
+import i18n from '../../i18n'
 import { TopoObj } from '../../constants'
 
 import './style.css'

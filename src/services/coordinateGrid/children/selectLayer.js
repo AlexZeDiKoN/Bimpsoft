@@ -104,7 +104,7 @@ export const selectLayer = (event, currentGrid, selectedLayers, selectedZone, se
   const southWest = { lat: newSelectedZone._southWest.lat, lng: newSelectedZone._southWest.lng }
   const lists = {
     X: Math.round((northEast.lng - southWest.lng) / cellSize.lng),
-    Y: Math.round((northEast.lat - southWest.lat) / cellSize.lat)
+    Y: Math.round((northEast.lat - southWest.lat) / cellSize.lat),
   }
   selectedLayers.getLayers().length
     ? setSelectedZone({ northEast, southWest, lists })

@@ -38,9 +38,9 @@ export default class PrintFiles extends PureComponent {
                   {name}
                 </div>
               </Tooltip>
-                <div className='fileBox_status'>
-                  {Print.PRINT_STEPS_KEYS[message]}
-                </div>
+              <div className='fileBox_status'>
+                {Print.PRINT_STEPS_KEYS[message]}
+              </div>
               <div className='fileBox_control'>
                 <IconBox
                   message={message}

@@ -3,6 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import {
   LeftMenuContainer,
   RightMenuContainer,
@@ -21,7 +22,6 @@ import {
   EternalDescriptionContainer,
   TaskModalContainer,
 } from '../../containers'
-import { MovablePanel } from '@DZVIN/CommonComponents'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
