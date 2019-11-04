@@ -108,7 +108,6 @@ export default class CatalogsComponent extends React.PureComponent {
             ref={this.inputRef}
             placeholder={i18n.FILTER}
             onChange={this.filterTextChangeHandler}
-            style={{ padding: '5px' }}
           />
           <div className="catalog-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled

@@ -7,6 +7,7 @@ import './GeoJSON'
 import './SVG'
 import './Map.BoxSelect'
 import './Marker.Bounce'
+import './utils/Radius'
 import { TextIcon, PointIcon } from './SvgIcon'
 import DzvinMarker from './DzvinMarker'
 

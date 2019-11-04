@@ -61,6 +61,11 @@ export default class SelectionButtons extends React.Component {
     const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
     // console.log({ selectedTypes, canContour, canDecontour })
+    const deleteHandler = () => {
+      if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
+        onDelete()
+      }
+    }
 
     return (
       <>
@@ -101,7 +106,7 @@ export default class SelectionButtons extends React.Component {
           </IconButton>
         </>)}
         {isEditMode && (<>
-          <HotKey selector={shortcuts.DELETE} onKey={isSelected ? onDelete : null} />
+          <HotKey selector={shortcuts.DELETE} onKey={isSelected ? deleteHandler : null} />
           <IconButton
             placement={'bottomLeft'}
             title={i18n.DELETE}

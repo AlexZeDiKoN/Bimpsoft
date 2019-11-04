@@ -61,6 +61,7 @@ export default class Item extends React.Component {
     const isSelected = id === selectedId
     const classes = [ 'catalog-item' ]
     isSelected && classes.push('catalog-item-selected')
+    shown && classes.push('catalog-item-shown')
     tree.canExpand && classes.push('catalog-item-can-expand')
     return (
       <Tooltip

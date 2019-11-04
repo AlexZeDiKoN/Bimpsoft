@@ -34,11 +34,10 @@ import {
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
-import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor'
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
-import entityKind, { entityKindFillable } from './entityKind'
+import entityKind, { entityKindFillable, entityKindMultipointCurves, entityKindMultipointAreas } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -750,7 +749,7 @@ export default class WebMap extends React.PureComponent {
     this.updateCreatePoly(edit && type)
   }
 
-  onSelectedListChange (newList) {
+  async onSelectedListChange (newList) {
     const {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
@@ -761,7 +760,7 @@ export default class WebMap extends React.PureComponent {
 
     // save geometry when one selected item lost focus
     if (list.length === 1 && list[0] !== newList[0] && edit) {
-      this.checkSaveObject(true)
+      await this.checkSaveObject(true)
     }
 
     // get unit from new selection
@@ -771,9 +770,9 @@ export default class WebMap extends React.PureComponent {
       const layer = this.findLayerById(id)
       selectedUnit = (layer && layer.object && layer.object.unit) || null
     }
-    onSelectUnit(selectedUnit)
+    await onSelectUnit(selectedUnit)
 
-    onSelectedList(newList)
+    return onSelectedList(newList)
   }
 
   updateMarkersOn = (isMarkersOn) => {
@@ -1160,6 +1159,9 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.remove()
+            if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
+              this.catalogsPopup.remove()
+            }
             // layer.pm && layer.pm.disable()
           }
         }
@@ -1169,6 +1171,9 @@ export default class WebMap extends React.PureComponent {
         const newLayer = this.addCatalogObject(object, layer)
         if (newLayer !== layer) {
           layer.remove()
+          if (this.catalogsPopup && this.catalogsPopup.isOpen && this.catalogsPopup._openOver === layer) {
+            this.catalogsPopup.remove()
+          }
           // layer.pm && layer.pm.disable()
         }
       }
@@ -1469,7 +1474,11 @@ export default class WebMap extends React.PureComponent {
     let text = `<strong>${catalogName}</strong><br/>`
     name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
-    new L.Popup()
+    if (!this.catalogsPopup) {
+      this.catalogsPopup = L.popup()
+    }
+    this.catalogsPopup._openOver = layer
+    this.catalogsPopup
       .setLatLng(layer.getLatLng())
       .setContent(text)
       .openOn(layer._map)
@@ -1498,18 +1507,19 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  dblClickOnLayer = (event) => {
+  dblClickOnLayer = async (event) => {
     const { target: layer } = event
     const { id, object } = layer
-    const { selection: { list }, editObject } = this.props
+    const { selection: { list }, editObject, onSelectUnit } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
       // this.checkSaveObject(false)
       editObject(object.id)
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
-        this.props.onChangeLayer(targetLayer)
-        this.selectLayer(id)
+        await this.selectLayer(id)
+        await this.props.onChangeLayer(targetLayer)
+        await onSelectUnit((layer && layer.object && layer.object.unit) || null)
         layer._map._container.focus()
       }
     }
@@ -1570,12 +1580,14 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list } } = this.props
     if (id) {
       if (exclusive) {
-        this.onSelectedListChange(list.indexOf(id) === -1 ? [ ...list, id ] : list.filter((itemId) => itemId !== id))
+        return this.onSelectedListChange(list.indexOf(id) === -1
+          ? [ ...list, id ]
+          : list.filter((itemId) => itemId !== id))
       } else if (list.length !== 1 || list[0] !== id) {
-        this.onSelectedListChange([ id ])
+        return this.onSelectedListChange([ id ])
       }
     } else {
-      this.onSelectedListChange([])
+      return this.onSelectedListChange([])
     }
   }
 
@@ -1894,7 +1906,11 @@ export default class WebMap extends React.PureComponent {
   }
 
   disableDrawLineSquareMark = () => {
-    const { selection: { newShape }, disableDrawUnit } = this.props
+    const {
+      selection: { newShape },
+      disableDrawUnit,
+    } = this.props
+
     if (newShape.type) {
       this.map.pm.disableDraw()
       disableDrawUnit()
@@ -1914,8 +1930,13 @@ export default class WebMap extends React.PureComponent {
 
   enterHandler = () => {
     const { type } = this.props.selection.newShape
-    if (type === SelectionTypes.CURVE || type === SelectionTypes.POLYLINE) {
-      const activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+    let activeLayer
+    if (entityKindMultipointCurves.includes(type)) {
+      activeLayer = this.map.pm.Draw && this.map.pm.Draw.Line._layer
+    } else if (entityKindMultipointAreas.includes(type)) {
+      activeLayer = this.map.pm.Draw && this.map.pm.Draw.Polygon._layer
+    }
+    if (activeLayer) {
       this.createNewShape({ layer: activeLayer })
       this.map.pm.disableDraw()
     }

@@ -14,6 +14,7 @@ export default class IconBox extends Component {
     onClose: PropTypes.func,
     onRetry: PropTypes.func,
     message: PropTypes.string,
+    documentPath: PropTypes.string,
   }
 
   handleClose = () => {
@@ -27,7 +28,10 @@ export default class IconBox extends Component {
   }
 
   handleTransition = () => {
-    window.open(`${window.location.origin}/explorer/#/_/documents/${DOC_CLASS_ID}`)
+    const url = this.props.documentPath
+      ? `${window.location.origin}/explorer/#/_/${this.props.documentPath}`
+      : `${window.location.origin}/explorer/#/_/documents/${DOC_CLASS_ID}`
+    window.open(url)
   }
 
   render () {

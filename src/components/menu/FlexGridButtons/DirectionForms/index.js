@@ -7,6 +7,7 @@ import { changeDirections } from '../../../WebMap/patch/utils/flexGrid'
 const getList = memoize((length, list) => [ ...Array(length) ]
   .map((_, i) => ({ value: i, name: `${i18n.DIRECTION} ${list.get(i) || ++i}` }))
 )
+
 const formFor = (Children) => {
   const child = (props) => {
     const { deselect, onCancel, onOk, flexGrid, ...rest } = props

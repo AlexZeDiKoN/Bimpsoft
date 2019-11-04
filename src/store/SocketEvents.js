@@ -1,3 +1,4 @@
+import { getAuthToken } from '../server/implementation/utils.rest'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 import { printFileSet } from './actions/print'
@@ -46,21 +47,24 @@ const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }
 const unlockObject = (dispatch) => ({ objectId }) =>
   catchError(webMapActions.objectUnlocked)(objectId)(dispatch)
 
-const printGeneratingStatus = (dispatch) => ({ id, message, name }) =>
-  catchError(printFileSet)(id, message, name)(dispatch)
+const printGeneratingStatus = (dispatch) => ({ id, message, name, documentPath }) =>
+  catchError(printFileSet)(id, message, name, documentPath)(dispatch)
 
 export const initSocketEvents = async (dispatch, getState) => {
   try {
     const io = await loadWebSocketClient()
     const socket = io(server)
+    socket.on('connect', async () => {
+      window.socket = socket
+      console.info('Підключено до вебсокет-серверу')
+      socket.emit('authorization', await getAuthToken())
+    })
     socket.on('map:update layer color', updateLayer(dispatch))
     socket.on('map:update object', updateObject(dispatch))
     socket.on('map:lock object', lockObject(dispatch, getState))
     socket.on('map:unlock object', unlockObject(dispatch))
     socket.on('map:printStatus', printGeneratingStatus(dispatch))
     socket.on('catalog:createOrUpdateCriticalObjectItem', updateCatalogObject(dispatch))
-    console.info('Підключено до вебсокет-серверу')
-    window.socket = socket
   } catch (err) {
     console.warn('Вебсокет-сервер недоступний')
   }

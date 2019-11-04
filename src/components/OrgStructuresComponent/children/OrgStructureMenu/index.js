@@ -12,13 +12,15 @@ const {
 export default class Index extends React.Component {
   static propTypes = {
     onMapObjects: PropTypes.object,
+    onLayersById: PropTypes.object,
     selectList: PropTypes.func,
   }
 
   selectUnboundObjects = () => {
-    const { onMapObjects, selectList } = this.props
+    const { onMapObjects, onLayersById, selectList } = this.props
     const unboundObjects = onMapObjects.toArray()
       .filter((item) => !item.unit)
+      .filter((item) => item.layer && Object.prototype.hasOwnProperty.call(onLayersById, item.layer))
       .map((item) => item.id)
     selectList(unboundObjects)
   }
@@ -41,9 +43,9 @@ export default class Index extends React.Component {
       >
         <IconButton
           placement={'topRight'}
-          className={'moreButton'}
+          className={'settingsButton'}
           title={i18n.EXTRA_FUNCTIONS}
-          icon={iconNames.MORE_WHITE_DEFAULT}
+          icon={iconNames.TABLE_SETING_DEFAULT}
         />
       </Dropdown>
     )

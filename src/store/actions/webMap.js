@@ -21,6 +21,7 @@ let dropLock = null
 const heartBeat = (objLock, objUnlock, objectId) => {
   dropLock = () => objUnlock(objectId)
   return () => objLock(objectId)
+    .catch(console.error)
 }
 
 const stopHeartBeat = () => {
@@ -301,6 +302,7 @@ export const updateObjectAttributes = (id, attributes) =>
 
 export const updateObjPartially = (id, attributes, geometry = {}) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdatePartially } }) => {
+    await window.webMap.onSelectedListChange([])
     let payload = await objUpdatePartially(id, { attributes, ...geometry })
     payload = fixServerObject(payload)
     return dispatch({

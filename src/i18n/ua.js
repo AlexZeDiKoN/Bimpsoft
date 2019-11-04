@@ -286,3 +286,6 @@ export const TASK = 'Завдання'
 export const AREA = 'Район'
 export const FRONTIER = 'Рубіж'
 export const LOCATION = 'Позиція'
+
+export const ACCESS_FULL = 'Повний доступ'
+export const ACCESS_READONLY = 'Лише перегляд'

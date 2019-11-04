@@ -2,15 +2,16 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import OrgStructuresComponent from '../components/OrgStructuresComponent'
 import { selection, orgStructures, webMap } from '../store/actions'
-import { canEditSelector } from '../store/selectors'
+import { canEditSelector, visibleLayersSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = (store) => {
-  const { orgStructures, layers, webMap } = store
-  const canEdit = canEditSelector(store)
+const mapStateToProps = (state) => {
+  const { orgStructures, layers, webMap } = state
+  const canEdit = canEditSelector(state)
   const { byIds, roots, formation, selectedId, textFilter, expandedIds, commandPostsById } = orgStructures
   const selectedLayer = layers.selectedId
   const onMapObjects = webMap.objects
+  const onLayersById = visibleLayersSelector(state)
   return {
     canEdit,
     selectedId,
@@ -22,6 +23,7 @@ const mapStateToProps = (store) => {
     commandPostsById,
     selectedLayer,
     onMapObjects,
+    onLayersById,
   }
 }
 

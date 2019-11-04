@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import moment from 'moment'
+import { Tooltip } from 'antd'
 import { components, data } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
@@ -10,11 +11,6 @@ import i18n from '../../../i18n'
 
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
-
-const getLockIcon = (isDark, locked) =>
-  isDark
-    ? (locked ? iconNames.DARK_LOCK_ACTIVE : iconNames.DARK_UNLOCK_ACTIVE)
-    : (locked ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE)
 
 export default class LayerItemComponent extends React.Component {
   selectHandler = () => {
@@ -53,7 +49,9 @@ export default class LayerItemComponent extends React.Component {
           onChange={this.changeVisibilityHandler}
         />
         <div className="layer-item-component-title">
-          <div className="layer-name" title={breadCrumbs}><HighlightedText text={name} textFilter={textFilter} /></div>
+          <Tooltip title={breadCrumbs} placement='topLeft'>
+            <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
+          </Tooltip>
           <div className="layer-date">{dateString}</div>
         </div>
         <ColorPicker
@@ -62,10 +60,12 @@ export default class LayerItemComponent extends React.Component {
           color={color}
           onChange={this.changeColorHandler}
         />
-        <Icon
-          className="layer-item-component-control"
-          icon={getLockIcon(isSelected, readOnly)}
-        />
+        <div title={readOnly ? i18n.ACCESS_READONLY : i18n.ACCESS_FULL}>
+          <Icon
+            className="layer-item-component-control"
+            icon={readOnly ? iconNames.LOCK_ACTIVE : iconNames.UNLOCK_ACTIVE}
+          />
+        </div>
       </div>
     )
   }

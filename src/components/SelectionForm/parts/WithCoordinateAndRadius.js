@@ -30,7 +30,10 @@ function getRadiusFromCoordinatesArray (coordinatesArray) {
 const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponent extends CoordinatesMixin(Component) {
   state = { radiusText: null }
 
-  coordinateChangeHandler = () => this.setState({ radiusText: null })
+  coordinateChangeHandler = async (index, value) => {
+    await this.onCoordinateExitWithChangeHandler(index, value)
+    this.setState({ radiusText: null })
+  }
 
   radiusChangeHandler = (radiusText) => {
     this.setResult((result) => {
@@ -39,9 +42,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
         const coordinatesArray = result.getIn(COORDINATE_PATH)
         const coord1 = coordinatesArray.get(0)
         if (Coord.check(coord1)) {
-          const { lat, lng } = coord1
-          const eastLng = L.latLng({ lat, lng }).toBounds(radius * 2).getEast()
-          const coord2 = Coord.round({ lat, lng: eastLng })
+          const coord2 = L.CRS.Earth.calcPairRight(coord1, radius)
           result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(1, coord2))
         }
       }
@@ -71,8 +72,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             coordinate={coordinatesArray[0]}
             index={0}
             readOnly={!canEdit}
-            onChange={canEdit ? this.coordinateChangeHandler : null }
-            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+            onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
@@ -81,8 +81,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             coordinate={coordinatesArray[1]}
             index={1}
             readOnly={!canEdit}
-            onChange={canEdit ? this.coordinateChangeHandler : null }
-            onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+            onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />

@@ -30,7 +30,7 @@ export default class PrintFiles extends PureComponent {
     return (
       <Menu className='fileBox'>
         {files.map((fileId) => {
-          const { name, message } = printFiles[fileId]
+          const { name, message, documentPath } = printFiles[fileId]
           return (
             <Menu.Item key={fileId} className='fileBox_unit'>
               <Tooltip title={name}>
@@ -38,13 +38,14 @@ export default class PrintFiles extends PureComponent {
                   {name}
                 </div>
               </Tooltip>
-                <div className='fileBox_status'>
-                  {Print.PRINT_STEPS_KEYS[message]}
-                </div>
+              <div className='fileBox_status'>
+                {Print.PRINT_STEPS_KEYS[message]}
+              </div>
               <div className='fileBox_control'>
                 <IconBox
                   message={message}
                   fileId={fileId}
+                  documentPath={documentPath}
                   mapName={name}
                   onClose={printFileCancel}
                   onRetry={printFileRetry}

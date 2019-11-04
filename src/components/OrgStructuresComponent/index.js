@@ -20,6 +20,14 @@ const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.parentUnitID,
 )
 
+const notSameProps = (obj1, obj2, props) => {
+  for (const prop of props) {
+    if (obj1[prop] !== obj2[prop]) {
+      return true
+    }
+  }
+}
+
 function scrollParentToChild (parent, child) {
   const parentRect = parent.getBoundingClientRect()
   const childRect = child.getBoundingClientRect()
@@ -33,7 +41,9 @@ function scrollParentToChild (parent, child) {
 
 export default class OrgStructuresComponent extends React.PureComponent {
   componentDidUpdate (prevProps, prevState, snapshot) {
-    if (prevProps.selectedId !== this.props.selectedId) {
+    if (notSameProps(prevProps, this.props,
+      [ 'selectedId', 'textFilter', 'byIds', 'roots', 'formation', 'expandedIds' ])
+    ) {
       const scrollRef = this.scrollRef && this.scrollRef.current
       scrollRef && scrollParentToChild(this.scrollPanelRef.current, scrollRef)
     }
@@ -54,9 +64,26 @@ export default class OrgStructuresComponent extends React.PureComponent {
     this.props.onFilterTextChange(value.trim())
   }
 
-  getCommonData = memoizeOne((textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects) => (
-    { textFilter, onClick, onDoubleClick, selectedId, canEdit, selectedLayer, onMapObjects, scrollRef: this.scrollRef }
-  ))
+  getCommonData = memoizeOne((
+    textFilter,
+    onClick,
+    onDoubleClick,
+    selectedId,
+    canEdit,
+    selectedLayer,
+    onMapObjects,
+    onLayersById,
+  ) => ({
+    textFilter,
+    onClick,
+    onDoubleClick,
+    selectedId,
+    canEdit,
+    selectedLayer,
+    onMapObjects,
+    onLayersById,
+    scrollRef: this.scrollRef,
+  }))
 
   getFilteredIds = memoizeOne(getFilteredIds)
 
@@ -75,6 +102,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       canEdit,
       selectedLayer,
       onMapObjects,
+      onLayersById,
       selectList,
     } = this.props
 
@@ -93,6 +121,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       canEdit,
       selectedLayer,
       onMapObjects,
+      onLayersById,
     )
 
     return (
@@ -106,6 +135,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
             />
             <OrgStructureMenu
               onMapObjects={onMapObjects}
+              onLayersById={onLayersById}
               selectList={selectList}
             />
           </div>
@@ -142,5 +172,6 @@ OrgStructuresComponent.propTypes = {
   onDoubleClick: PropTypes.func,
   selectedLayer: PropTypes.string,
   onMapObjects: PropTypes.object,
+  onLayersById: PropTypes.object,
   selectList: PropTypes.func,
 }

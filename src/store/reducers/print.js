@@ -8,8 +8,9 @@ const initState = {
   requisites: {
     dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
-    legendEnabled: true,
-    legendTableType: 'left',
+    legendChecked: false,
+    legendAvailable: false,
+    legendTableType: 'right',
   },
   selectedZone: null,
   printFiles: {},
@@ -34,7 +35,10 @@ export default function reducer (state = initState, action) {
       return { ...state, requisites }
     }
     case print.SELECTED_ZONE: {
-      return { ...state, selectedZone: action.selectedZone }
+      const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
+        action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
+      const requisites = { ...state.requisites, legendAvailable }
+      return { ...state, requisites, selectedZone: action.selectedZone }
     }
     case print.PRINT_FILE_SET: {
       const { id, message } = payload
@@ -48,8 +52,13 @@ export default function reducer (state = initState, action) {
     }
     case print.PRINT_FILE_LOG: {
       const printFiles = {}
-      action.filesList.forEach(({ file_id: id, status: message, map_name: name }) => {
-        printFiles[id] = { id, message, name }
+      action.filesList.forEach(({
+        file_id: id,
+        status: message,
+        map_name: name,
+        document_path: documentPath,
+      }) => {
+        printFiles[id] = { id, message, name, documentPath }
       })
       return { ...state, printFiles }
     }

@@ -344,8 +344,13 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
-    case entityKind.AREA:
-      return formGeometry(layer.getLatLngs()[0])
+    case entityKind.AREA: {
+      const coords = layer.getLatLngs()
+      const result = Array.isArray(coords[0])
+        ? coords[0]
+        : coords
+      return formGeometry(result)
+    }
     case entityKind.RECTANGLE:
     case entityKind.SQUARE:
       return formRectGeometry(layer.getLatLngs()[0])

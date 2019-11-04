@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
-import { MovablePanel } from '@DZVIN/CommonComponents'
 import SelectionTypes from '../../constants/SelectionTypes'
 import i18n from '../../i18n'
 import {
@@ -90,6 +90,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
+        minWidth={title === i18n.MIL_SYMBOL ? 825 : 410}
       >
         <FocusTrap>
           <HotKeysContainer>
