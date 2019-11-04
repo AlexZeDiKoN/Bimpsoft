@@ -47,8 +47,8 @@ const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }
 const unlockObject = (dispatch) => ({ objectId }) =>
   catchError(webMapActions.objectUnlocked)(objectId)(dispatch)
 
-const printGeneratingStatus = (dispatch) => ({ id, message, name }) =>
-  catchError(printFileSet)(id, message, name)(dispatch)
+const printGeneratingStatus = (dispatch) => ({ id, message, name, documentPath }) =>
+  catchError(printFileSet)(id, message, name, documentPath)(dispatch)
 
 export const initSocketEvents = async (dispatch, getState) => {
   try {
