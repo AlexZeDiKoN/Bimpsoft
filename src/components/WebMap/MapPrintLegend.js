@@ -41,7 +41,7 @@ const getDimension = (printScale, selectedZone, zoom, animZoom, offset, animOffs
 
   const widthMM = crs.distance(
     { lat: northEast.lat, lng: northEast.lng },
-    { lat: northEast.lat, lng: southWest.lng }
+    { lat: northEast.lat, lng: southWest.lng },
   ) / printScale * 1000
 
   const heightMM = height * widthMM / width

@@ -134,7 +134,7 @@ class Renderer {
       signsFrameX + (SIGN_DESCR_ROW_WIDTH + SIGN_COLOR_ROW_WIDTH) / 2,
       signsFrameY - 10,
       titleFontSize,
-      TextAnchors.MIDDLE
+      TextAnchors.MIDDLE,
     )
 
     this.bottom = signsFrameY - 10
@@ -153,14 +153,14 @@ class Renderer {
       signsFrameX + SIGN_COLOR_ROW_WIDTH / 2,
       y + (rowHeight - titleFontSize) / 2,
       titleFontSize,
-      TextAnchors.MIDDLE
+      TextAnchors.MIDDLE,
     )
     const descrTitle = renderText(
       i18n.SIGN_CONTENT,
       signsFrameX + SIGN_COLOR_ROW_WIDTH + SIGN_DESCR_ROW_WIDTH / 2,
       y + (rowHeight - titleFontSize) / 2,
       titleFontSize,
-      TextAnchors.MIDDLE
+      TextAnchors.MIDDLE,
     )
 
     // line under title
@@ -211,7 +211,7 @@ class Renderer {
     texts = texts.map((text) => this.textToLines(text, SIZE_3, TextAnchors.START, textWidth))
     const fillHeight = texts.reduce(
       (v, { lines, fontHeight }) => v + lines.length * fontHeight + (lines.length - 1) * wrapHeight,
-      0
+      0,
     )
     const height = Math.min(fillHeight + INDICATORS_PADDING * 2 + (texts.length - 1) * wrapHeight * 2,
       INDICATORS_HEIGHT)
@@ -253,7 +253,7 @@ class Renderer {
     const maxWidth = texts.reduce((width, text) => Math.max(width, this.getTextWidth(text, SIZE_5)), 0)
     const x = this.width - maxWidth - marging
     return texts.map((text, i) =>
-      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i)
+      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i),
     )
   }
 
@@ -278,7 +278,7 @@ export const printLegend = (params) => {
   let maxWidth = signatories.reduce((width, { role, name, position }) => Math.max(
     width,
     renderer.getTextWidth(role, SIZE_6) + 30 + renderer.getTextWidth(name, SIZE_4),
-    renderer.getTextWidth(position, SIZE_5)
+    renderer.getTextWidth(position, SIZE_5),
   ), 0)
   maxWidth = Math.max(maxWidth, renderer.getTextWidth(confirmDate, SIZE_4))
 

@@ -21,7 +21,7 @@ export const deleteMap = (mapId) => asyncAction.withNotification(
       mapId,
     })
     dispatch(layers.deleteLayersByMapId(mapId))
-  }
+  },
 )
 
 export const deleteAllMaps = () => asyncAction.withNotification(
@@ -30,7 +30,7 @@ export const deleteAllMaps = () => asyncAction.withNotification(
       type: DELETE_ALL_MAPS,
     })
     dispatch(layers.deleteAllLayers())
-  }
+  },
 )
 
 export const setVariant = (mapId, variantId) => ({
@@ -138,7 +138,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       }
     }
     await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))
-  }
+  },
 )
 
 export const expandMap = (id, expand) => ({
@@ -147,5 +147,5 @@ export const expandMap = (id, expand) => ({
   expand,
 })
 
-export const toggleExpandMap = (id) =>
-  (dispatch, getState) => dispatch(expandMap(id, !getState().maps.expandedIds.hasOwnProperty(id)))
+export const toggleExpandMap = (id) => (dispatch, getState) =>
+  dispatch(expandMap(id, !Object.prototype.hasOwnProperty.call(getState().maps.expandedIds, id)))

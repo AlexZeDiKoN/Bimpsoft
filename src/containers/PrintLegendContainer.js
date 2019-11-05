@@ -15,7 +15,7 @@ const PrintLegendContainer = connect(
   },
   {
     setSelectedZone,
-  }
+  },
 )(MapPrintLegend)
 
 export default PrintLegendContainer
