@@ -299,7 +299,7 @@ deploy-gap3:
     - 'echo ========= Deploy: 11 (remote) ========='
     - 'call net use g: \\10.8.26.67\c$ /user:Dzvin-gap3\Administrator & exit 0 | echo'
     - xcopy /E /C /I /Q /H /R /Y build g:\%deployDirPhys%
-    
+
 deploy-gap4:
   stage: deploy
   <<: *base_phys
