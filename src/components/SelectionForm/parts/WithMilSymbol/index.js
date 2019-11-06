@@ -49,10 +49,11 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     ovtData: PropTypes.object,
   }
 
-  codeChangeHandler = (code, subordinationLevel) =>this.setResult((result) => result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+  codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
+      result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
   )
 
-  unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit), true)
+  unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
     .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
