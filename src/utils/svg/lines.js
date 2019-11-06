@@ -299,7 +299,7 @@ const addWave = (
   inverse, waveSize, waveStep,
   p1, p2,
   halfWave = false, part = 'left', addLine = false,
-  addSize = !inverse
+  addSize = !inverse,
 ) => {
   let result = ''
   const v = vector(p1, p2)
@@ -443,13 +443,13 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
       bezier,
       locked,
       insideMap,
-      getNodes(lineNodes)).filter(({ i, o }) => i && o
+      getNodes(lineNodes)).filter(({ i, o }) => i && o,
     )
     amplifiers.maskPath.push(...amplPoints.map(({ x, y, r }) =>
-      pointsToD(rectToPoints(amp.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true)
+      pointsToD(rectToPoints(amp.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
     ))
     amplifiers.group += amplPoints.map(({ x, y, r }) =>
-      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`
+      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`,
     ).join('')
   }
   switch (lineNodes) {
@@ -469,7 +469,7 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
       points.filter(insideMap).forEach(({ x, y }) => {
         amplifiers.maskPath.push(pointsToD(
           rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
-          true
+          true,
         ))
         amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
@@ -486,35 +486,35 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
   return amplifiers
 }
 
-const drawLineEnd = (type, { x, y }, angle) => {
-  let res = `<g stroke-width="3" transform="translate(${x},${y - 6}) rotate(${angle},0,6)">`
+const drawLineEnd = (type, { x, y }, angle, scale) => {
+  let res = `<g stroke-width="3" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
     case 'arrow1':
-      res += `<path fill="none" d="M8,-2 l-8,8 8,8"/>`
+      res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
       break
     case 'arrow2':
-      res += `<path d="M12,0 l-12,6 l12,6 z"/>`
+      res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
       break
     case 'arrow3':
-      res += `<path fill="none" stroke-width="2" d="M10,-4 l-10,10 10,10 0,5 -15,-15 15,-15 0,5"/>`
+      res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
       break
     case 'arrow4':
-      res += `<path fill="none" stroke-width="2" d="M8,-2 l-8,8 8,8 M8,-6 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+      res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
       break
     case 'stroke1':
-      res += `<path d="M0,-2 v16"/>`
+      res += `<path d="M0,-8 v16"/>`
       break
     case 'stroke2':
-      res += `<path d="M-3,0 l6,12"/>`
+      res += `<path d="M-4,-6 l6,12"/>`
       break
     case 'stroke3':
-      res += `<path d="M3,0 l-6,12"/>`
+      res += `<path d="M2,-6 l-6,12"/>`
       break
     case 'fork':
-      res += `<path fill="none" d="M-8,-2 l8,8 -8,8"/>`
+      res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
       break
     case 'cross':
-      res += `<path fill="none" stroke-width="2" d="M-6,-6 l12,24 m-12,0 l12,-24"/>`
+      res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
       break
     default:
       break
@@ -522,7 +522,7 @@ const drawLineEnd = (type, { x, y }, angle) => {
   return `${res}</g>`
 }
 
-export const getLineEnds = (points, lineEnds, bezier) => {
+export const getLineEnds = (points, lineEnds, bezier, scale) => {
   const result = { left: null, right: null }
   const leftEndType = getLineEnd(lineEnds, 'left')
   const rightEndType = getLineEnd(lineEnds, 'right')
@@ -542,7 +542,17 @@ export const getLineEnds = (points, lineEnds, bezier) => {
     rightMinus = br.get(pr)
   }
   return {
-    left: drawLineEnd(leftEndType, points[0], angle(vector(points[0], leftPlus))),
-    right: drawLineEnd(rightEndType, points[points.length - 1], angle(vector(points[points.length - 1], rightMinus))),
+    left: drawLineEnd(
+      leftEndType,
+      points[0],
+      angle(vector(points[0], leftPlus)),
+      scale,
+    ),
+    right: drawLineEnd(
+      rightEndType,
+      points[points.length - 1],
+      angle(vector(points[points.length - 1], rightMinus)),
+      scale,
+    ),
   }
 }

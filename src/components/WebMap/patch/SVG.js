@@ -256,10 +256,13 @@ L.SVG.include({
   },
 
   _updateLineEnds: function (layer, bezier) {
+    const { options: { weight }, strokeWidth } = layer
+    const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
     const { left, right } = getLineEnds(
       layer._rings[0],
       layer.options && layer.options.lineEnds,
       bezier,
+      scale,
     )
     if (!left && !right) {
       return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()

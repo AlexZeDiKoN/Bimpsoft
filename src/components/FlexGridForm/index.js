@@ -1,7 +1,7 @@
 import React from 'react'
 import FocusTrap from 'react-focus-lock'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { components, Input } from '@DZVIN/CommonComponents'
 import { Switch, Button } from 'antd'
 import i18n from '../../i18n'
 import * as shortcuts from '../../constants/shortcuts'
@@ -52,7 +52,7 @@ export default class extends React.PureComponent {
           <HotKeysContainer>
             <Form className="settings-form-group flex-grid--form">
               <FormRow label={i18n.DIRECTIONS_AMOUNT}>
-                <input type="number" defaultValue={directions} onChange={this.onDirectionsChange} />
+                <Input type="number" defaultValue={directions} onChange={this.onDirectionsChange} />
               </FormRow>
               <FormRow label={i18n.DIRECTION_ZONES}>
                 <Switch defaultChecked={zones} onChange={setZones}/>

@@ -2,12 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import moment from 'moment'
+import { Tooltip } from 'antd'
 import { components, data } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
-import { Tooltip } from 'antd'
 
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components

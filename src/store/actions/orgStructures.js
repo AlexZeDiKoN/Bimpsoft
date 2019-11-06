@@ -96,6 +96,9 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
             .filter(({ state }) => state === STATUS_OPERATING)
           // console.log(commandPosts)
           const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
+          for (const [ , value ] of Object.entries(tree.byIds)) {
+            value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+          }
           setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
           const formationInfo = { formation, relations, tree }
           formationsCache.set(formationId, formationInfo)
