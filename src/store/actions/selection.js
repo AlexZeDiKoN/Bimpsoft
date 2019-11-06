@@ -175,7 +175,7 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
     level: natoLevelID,
     geometry: List([ point ]),
     point: point,
-    attributes: WebMapAttributes(JSON.parse(symbolData || '{}')),
+    attributes: WebMapAttributes(symbolData || {}),
   })))
 })
 
