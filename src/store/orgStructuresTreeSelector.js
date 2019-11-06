@@ -22,7 +22,6 @@ const orgStructuresTreeSelector = createSelector(
         }
       }
     })
-
     return { byIds, roots, formation }
   }
 )

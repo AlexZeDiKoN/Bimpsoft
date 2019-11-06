@@ -50,7 +50,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   }
 
   codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
-      result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+    result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
   )
 
   unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
