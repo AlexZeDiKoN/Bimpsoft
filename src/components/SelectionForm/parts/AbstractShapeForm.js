@@ -27,7 +27,6 @@ export default class AbstractShapeForm extends React.Component {
   setResult (resultFunc) {
     const data = resultFunc(this.props.data)
     if (data && this.props.data !== data) {
-      console.log('data', this.props.data)
       this.props.onChange(data)
     }
   }

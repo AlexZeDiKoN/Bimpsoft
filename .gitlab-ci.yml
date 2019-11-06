@@ -436,7 +436,7 @@ deploy-qa-41:
   script:
     - echo Deploying to QA environment...
     - 'echo ========= Deploy: 11 (remote) ========='
-    - 'call net use y: \\172.16.97.17\c$ /user:Dzvin_TestInst\Administrator & exit 0 | echo'
+    - 'call net use y: \\172.16.97.41\c$ /user:Dzvin_TestInst\Administrator & exit 0 | echo'
     - xcopy /E /C /I /Q /H /R /Y build y:\%deployDir%
   after_script:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"

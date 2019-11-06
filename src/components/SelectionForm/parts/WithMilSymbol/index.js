@@ -49,13 +49,10 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     ovtData: PropTypes.object,
   }
 
-  codeChangeHandler = (code, subordinationLevel) => {
-    this.setResult((result) => result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
-  )}
+  codeChangeHandler = (code, subordinationLevel) =>this.setResult((result) => result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+  )
 
-  unitChangeHandler = (unit) => {
-    this.setResult((result) => result.setIn(UNIT_PATH, unit), true)
-  }
+  unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit), true)
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
     .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
@@ -68,7 +65,6 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   renderMilSymbol () {
     const result = this.getResult()
-    console.log('result',result)
     const code = result.getIn(CODE_PATH)
     const coordinatesArray = result.getIn(COORDINATE_PATH).toJS()
     const coordinates = coordinatesArray[0]
@@ -76,7 +72,6 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
     const { orgStructures, ovtData } = this.props
-    console.log(orgStructures.byIds)
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
     return (
       <SymbolEditorComponentStateless
