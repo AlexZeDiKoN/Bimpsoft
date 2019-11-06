@@ -86,38 +86,41 @@ class PrintPanel extends React.Component {
   }
 
   formatApprovers = () => {
-    const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
+    const { approversData, docConfirm: { signers }, setPrintRequisites } = this.props
     const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
     if (!signers) {
       return setPrintRequisites({ [SIGNATORIES]: [] })
     }
-    approver && signers.push(approver)
     const signatories = signers.map((signer) => {
-      const { id_user: userId, date } = signer
+      const { who, date, status } = signer
+      if (status !== 'accepted') {
+        return null
+      }
       const { name, patronymic, surname, position, role } = approversData.filter((item) =>
-        Number(item.id) === userId)[0] || {}
-      return { position, role, name: this.formatContactName(name, patronymic, surname), date }
-    })
+        Number(item.id) === who)[0] || {}
+      return { position, role, name: this.formatContactName(surname, name, patronymic), date }
+    }).filter((item) => Boolean(item))
     setPrintRequisites({ [SIGNATORIES]: signatories })
   }
 
-  formatContactName = (name, patronymic, surname) => {
-    let result = surname
-    name && (result = `${result} ${name.slice(0, 1)}.`)
+  formatContactName = (surname, name, patronymic) => {
+    let result
+    name && (result = `${name.slice(0, 1)}.`)
     patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
-    return result
+    return `${result} ${surname}`
   }
 
   addConstParameters = () => {
     const {
       securityClassification: { classified },
-      docConfirm: { approver },
+      docConfirm: { signers },
       setPrintRequisites,
     } = this.props
+    const date = Math.max.apply(null, signers.map((value) => new Date(value.date)))
     const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
     setPrintRequisites({
       [MAP_LABEL]: classified,
-      [CONFIRM_DATE]: approver ? moment(approver.date).format(DATE_FORMAT) : '',
+      [CONFIRM_DATE]: (date && isFinite(date)) ? moment(date).format(DATE_FORMAT) : '',
     })
   }
 

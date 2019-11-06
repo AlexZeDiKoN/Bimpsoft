@@ -125,6 +125,7 @@ export const createPrintFile = (onError = null) =>
         dpi,
         requisites,
         printScale,
+        selectedZone,
       })
 
       const result = await printFileCreate({
