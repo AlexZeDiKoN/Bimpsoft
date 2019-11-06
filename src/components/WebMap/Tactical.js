@@ -3,7 +3,7 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
-import entityKind from './entityKind'
+import entityKind, { GROUPS } from './entityKind'
 
 const { Coordinates: Coord } = utils
 
@@ -34,7 +34,7 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  if (layer.options.tsType === entityKind.CONTOUR) {
+  if (GROUPS.COMBINED.includes(layer.options.tsType)) {
     layer.pm.enable()
   } else {
     if (layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT) {
@@ -113,9 +113,9 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
     case entityKind.GROUPED_HEAD:
-      return null
+      return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
-      return null
+      return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -186,6 +186,15 @@ function createSegment (data) {
   const points = geometry.toJS()
   const { template, color } = attributes
   const options = prepareOptions(entityKind.SEGMENT, color, template)
+  return L.polyline(points, options)
+}
+
+function createGroup (kind, data) {
+  const { geometry, attributes } = data
+  const points = geometry.toJS()
+  const { scale } = attributes
+  const options = prepareOptions(kind)
+  options.tsScale = scale
   return L.polyline(points, options)
 }
 
@@ -346,6 +355,8 @@ export function getGeometry (layer) {
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA: {
@@ -400,6 +411,8 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:
     case entityKind.AREA:

@@ -37,6 +37,8 @@ export const entityKindNonFillable = [
   entityKind.TEXT,
   entityKind.GROUP,
   entityKind.FLEXGRID,
+  entityKind.GROUPED_HEAD,
+  entityKind.GROUPED_LAND,
 ]
 
 export const entityKindOutlinable = [
@@ -79,6 +81,17 @@ export const GROUPS = {
   ],
   COMBINED: [
     entityKind.CONTOUR,
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
+  BEZIER: [
+    entityKind.CURVE,
+    entityKind.AREA,
+  ],
+  STATIC: [
+    entityKind.SEGMENT,
+    entityKind.RECTANGLE,
+    entityKind.SQUARE,
     entityKind.GROUPED_HEAD,
     entityKind.GROUPED_LAND,
   ],
