@@ -97,7 +97,6 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
     formationInfo = { formation, relations, tree }
     formationsCache.set(formationId, formationInfo)
-    console.log(formationInfo)
   }
   return formationInfo
 }
