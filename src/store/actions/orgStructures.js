@@ -90,7 +90,7 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
     const commandPosts = await milOrgApi.militaryCommandPost.list()
     const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
-    for (const [_, value] of Object.entries(tree.byIds)) {
+    for (const [ , value ] of Object.entries(tree.byIds)) {
       value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
     }
     setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
