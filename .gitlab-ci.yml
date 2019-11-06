@@ -44,8 +44,8 @@ build:
     - echo Building project...
 #    -  call npm i
 #    - call npm install
-    - call yarn --network-concurrency 1
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
+    - call yarn 
+    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components 
     - copy .env .env.backup
     - copy .env.production .env
     - call npm run-script build
@@ -174,7 +174,7 @@ build-master:
     - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text="Pipe Start %CI_PROJECT_NAME% with %CI_COMMIT_MESSAGE% by %GITLAB_USER_LOGIN% on %CI_COMMIT_REF_NAME%"
   script:
     - echo Building project...
-    - call yarn --network-concurrency 1
+    - call yarn 
     - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
     - copy .env .env.backup
     - copy .env.production .env
