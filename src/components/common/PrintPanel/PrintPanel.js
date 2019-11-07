@@ -99,7 +99,7 @@ class PrintPanel extends React.Component {
       const { name, patronymic, surname, position, role } = approversData.filter((item) =>
         Number(item.id) === who)[0] || {}
       return { position, role, name: this.formatContactName(surname, name, patronymic), date }
-    }).filter((item) => Boolean(item))
+    }).filter((item) => Boolean(item)).sort((a, b) => new Date(a.date) - new Date(b.date))
     setPrintRequisites({ [SIGNATORIES]: signatories })
   }
 
