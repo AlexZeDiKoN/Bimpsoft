@@ -151,13 +151,13 @@ export default class SelectionButtons extends React.Component {
             disabled={!canContour && !canDecontour}
             onClick={canContour ? onContour : onDecontour}
           />
-          <IconButton
+          {/* <IconButton
             placement={'bottomLeft'}
             title={i18n.GROUPPING}
             icon={iconNames.MAP_GROUP}
             disabled={!canGroup && !canUngroup}
             onClick={canGroup ? onGroup : onUngroup}
-          />
+          /> */}
         </>)}
       </>
     )
