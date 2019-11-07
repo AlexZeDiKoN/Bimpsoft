@@ -17,7 +17,9 @@ export const selectedPoints = createSelector(
   selectedList,
   (objects, list) => list
     ? list
-      .map((id) => objects.get(id).toJS())
+      .map((id) => objects.get(id))
+      .filter(Boolean)
+      .map((item) => item.toJS())
       .filter(({ type, parent }) => type === entityKind.POINT && !parent)
     : []
 )
