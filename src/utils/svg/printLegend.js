@@ -40,6 +40,7 @@ const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
     fill="none"
     fontSize={fontHeight}
     fontFamily={FONT_FAMILY}
+    // fontWeight="bold"
     x={x}
     y={y + fontHeight * 0.77}
     textAnchor={align}
@@ -48,6 +49,7 @@ const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
     fill="#000"
     fontSize={fontHeight}
     fontFamily={FONT_FAMILY}
+    // fontWeight="bold"
     x={x}
     y={y + fontHeight * 0.77}
     textAnchor={align}
@@ -101,7 +103,7 @@ class Renderer {
     const { fontHeight, lines, x } = this.textToLines(text, scale, align, width)
 
     return <>
-      {lines.map(({ text }, i) => {
+      {lines.reverse().map(({ text }, i) => {
         const y = this.bottom - margin
         margin = 5
         this.bottom = y - fontHeight
@@ -117,8 +119,8 @@ class Renderer {
       return null
     }
 
-    const cellMerging = 10
-    const wrapHeight = 5
+    const titleFontSize = SIZE_3 * this.h
+
     const rowHeight = SIGN_HEIGHT / 5
     const colorRectSize = rowHeight / 2
     const width = SIGN_WIDTH
@@ -128,16 +130,15 @@ class Renderer {
     const signsFrameX = (legendType === 'right')
       ? this.width - SIGN_MARGING_LEFT - SIGN_DESCR_ROW_WIDTH - SIGN_COLOR_ROW_WIDTH : SIGN_MARGING_LEFT
 
-    const titleFontSize = SIZE_2 * this.h
     const title = renderText(
       i18n.LEGEND.toUpperCase(),
       signsFrameX + (SIGN_DESCR_ROW_WIDTH + SIGN_COLOR_ROW_WIDTH) / 2,
-      signsFrameY - 10,
+      signsFrameY - titleFontSize,
       titleFontSize,
-      TextAnchors.MIDDLE
+      TextAnchors.MIDDLE,
     )
 
-    this.bottom = signsFrameY - 10
+    this.bottom = signsFrameY - titleFontSize
 
     const x = signsFrameX
     let y = signsFrameY
@@ -148,19 +149,21 @@ class Renderer {
     // vertical line
     this.d.push(pointsToD([ { x: x + SIGN_COLOR_ROW_WIDTH, y }, { x: x + SIGN_COLOR_ROW_WIDTH, y: y + height } ]))
 
+    const headerFontSize = SIZE_2 * 15
+
     const signTitle = renderText(
       i18n.SIGN,
       signsFrameX + SIGN_COLOR_ROW_WIDTH / 2,
-      y + (rowHeight - titleFontSize) / 2,
-      titleFontSize,
-      TextAnchors.MIDDLE
+      y + (rowHeight - headerFontSize) / 2,
+      headerFontSize,
+      TextAnchors.MIDDLE,
     )
     const descrTitle = renderText(
       i18n.SIGN_CONTENT,
       signsFrameX + SIGN_COLOR_ROW_WIDTH + SIGN_DESCR_ROW_WIDTH / 2,
-      y + (rowHeight - titleFontSize) / 2,
-      titleFontSize,
-      TextAnchors.MIDDLE
+      y + (rowHeight - headerFontSize) / 2,
+      headerFontSize,
+      TextAnchors.MIDDLE,
     )
 
     // line under title
@@ -170,13 +173,13 @@ class Renderer {
     const els = []
     signs.forEach(({ text, color }, rowI) => {
       if (text) {
-        const xDescr = signsFrameX + SIGN_COLOR_ROW_WIDTH + cellMerging
+        const xDescr = signsFrameX + SIGN_COLOR_ROW_WIDTH + titleFontSize
         const { fontHeight, lines, align } =
-          this.textToLines(text, SIZE_2, TextAnchors.START, SIGN_DESCR_ROW_WIDTH - cellMerging * 2)
-        let yDescr = y + (rowHeight - fontHeight * lines.length - wrapHeight * (lines.length - 1)) / 2
+          this.textToLines(text, SIZE_3 / this.h * 15, TextAnchors.START, SIGN_DESCR_ROW_WIDTH - titleFontSize * 2)
+        let yDescr = y + (rowHeight - fontHeight * lines.length - titleFontSize / 2 * (lines.length - 1)) / 2
         lines.forEach(({ text }, lineI) => {
           els.push(renderText(text, xDescr, yDescr, fontHeight, align, `${rowI}-${lineI}`))
-          yDescr += wrapHeight + fontHeight
+          yDescr += titleFontSize / 2 + fontHeight
         })
       }
       if (color) {
@@ -208,10 +211,10 @@ class Renderer {
 
     const wrapHeight = 5
     const textWidth = INDICATORS_WIDTH - INDICATORS_PADDING * 2
-    texts = texts.map((text) => this.textToLines(text, SIZE_3, TextAnchors.START, textWidth))
+    texts = texts.map((text) => this.textToLines(text, SIZE_2 / this.h * 15, TextAnchors.START, textWidth))
     const fillHeight = texts.reduce(
       (v, { lines, fontHeight }) => v + lines.length * fontHeight + (lines.length - 1) * wrapHeight,
-      0
+      0,
     )
     const height = Math.min(fillHeight + INDICATORS_PADDING * 2 + (texts.length - 1) * wrapHeight * 2,
       INDICATORS_HEIGHT)
@@ -253,7 +256,7 @@ class Renderer {
     const maxWidth = texts.reduce((width, text) => Math.max(width, this.getTextWidth(text, SIZE_5)), 0)
     const x = this.width - maxWidth - marging
     return texts.map((text, i) =>
-      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i)
+      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i),
     )
   }
 
@@ -264,23 +267,30 @@ class Renderer {
 
   frames () {
     return Boolean(this.d.length) &&
-      <path key='indicatorFrame' fill='none' stroke='#000000' strokeWidth={this.h / 10} d={this.d.join(' ')} />
+      <path key='indicatorFrame' fill='none' stroke='#000000' strokeWidth={this.h / 30 + 1} d={this.d.join(' ')} />
   }
 }
 
 export const printLegend = (params) => {
-  const { widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified } = params
-  if (!requisites.legendAvailable || !requisites.legendChecked) { return }
-  const h = getH(6)
+  const {
+    widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified, selectedZone,
+  } = params
+  if (!requisites.legendAvailable || !requisites.legendEnabled) { return }
+  const h = getH(selectedZone.lists.X * selectedZone.lists.Y)
 
   const renderer = new Renderer(widthMM, heightMM, h)
 
   let maxWidth = signatories.reduce((width, { role, name, position }) => Math.max(
     width,
     renderer.getTextWidth(role, SIZE_6) + 30 + renderer.getTextWidth(name, SIZE_4),
-    renderer.getTextWidth(position, SIZE_5)
+    Math.min(renderer.getTextWidth(position, SIZE_5), widthMM * 0.5),
   ), 0)
   maxWidth = Math.max(maxWidth, renderer.getTextWidth(confirmDate, SIZE_4))
+
+  const dateFormat = (date, label) => {
+    if (!date) { return }
+    return label + ' ' + date
+  }
 
   return <>
     {renderer.topRightTexts([ classified, i18n.MAP_COPY ])}
@@ -289,19 +299,23 @@ export const printLegend = (params) => {
     {renderer.topText(requisites[PRINT_PANEL_KEYS.THIRD_ROW], 20, SIZE_2, TextAnchors.MIDDLE)}
     {renderer.topText(requisites[PRINT_PANEL_KEYS.FOURTH_ROW], 20, SIZE_2, TextAnchors.MIDDLE)}
     {renderer.topText(requisites[PRINT_PANEL_KEYS.FIFTH_ROW], 20, SIZE_3, TextAnchors.MIDDLE)}
-    {renderer.topText(requisites[PRINT_PANEL_KEYS.START], 20, SIZE_3, TextAnchors.MIDDLE)}
-    {renderer.topText(requisites[PRINT_PANEL_KEYS.FINISH], 20, SIZE_3, TextAnchors.MIDDLE)}
+    {renderer.topText(
+      dateFormat(requisites[PRINT_PANEL_KEYS.START], i18n.START + ':'), 20, SIZE_3, TextAnchors.MIDDLE,
+    )}
+    {renderer.topText(
+      dateFormat(requisites[PRINT_PANEL_KEYS.FINISH], i18n.FINISH + ':'), 20, SIZE_3, TextAnchors.MIDDLE,
+    )}
     {renderer.indicators(
       requisites[PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW],
       requisites[PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW],
       requisites[PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW],
     )}
     {renderer.bottomText(`${i18n.SCALE.toUpperCase()} 1:${printScale}`, 50, SIZE_4, TextAnchors.MIDDLE)}
-    {renderer.bottomText(confirmDate, 10, SIZE_4, TextAnchors.START, maxWidth)}
-    {signatories.map(({ role, name, position }, i) => <Fragment key={i}>
+    {renderer.bottomText(confirmDate, 10, SIZE_5, TextAnchors.START, maxWidth)}
+    {[ ...signatories ].reverse().map(({ role, name, position }, i) => <Fragment key={i}>
       {renderer.bottomText(role, 10, SIZE_6, TextAnchors.START, maxWidth)}
-      {renderer.bottomText(name, -h * SIZE_6, SIZE_4, TextAnchors.END, maxWidth)}
-      {renderer.bottomText(position, 10, SIZE_5, TextAnchors.START, maxWidth)}
+      {renderer.bottomText(name, -h * SIZE_6 / 2, SIZE_4, TextAnchors.END, maxWidth)}
+      {renderer.bottomText(position, 5, SIZE_5, TextAnchors.START, maxWidth)}
     </Fragment>)}
     {renderer.signs(
       requisites.legendTableType,

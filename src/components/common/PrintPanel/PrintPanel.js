@@ -34,7 +34,6 @@ class PrintPanel extends React.Component {
       },
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
-      legendChecked: props.requisites.legendChecked,
       saveButtonEnabled: true,
     }
   }
@@ -43,6 +42,16 @@ class PrintPanel extends React.Component {
     await this.createSetFunctions()
     this.formatApprovers()
     this.addConstParameters()
+  }
+
+  shouldComponentUpdate (nextProps, nextState, nextContext) {
+    if (!nextProps.requisites.legendAvailable && nextProps.requisites.legendEnabled) {
+      const { setPrintRequisites } = nextProps
+      const { LEGEND_ENABLED } = Print.PRINT_PANEL_KEYS
+      setPrintRequisites({ [LEGEND_ENABLED]: false })
+      return false
+    }
+    return true
   }
 
   createSetFunctions = () => {
@@ -54,7 +63,7 @@ class PrintPanel extends React.Component {
           {
             ...prev,
             [current]: (e, dateString) => {
-              const value = dateString || (e && e.target ? e.target.value : null)
+              const value = dateString || (e && e.target ? e.target.value || e.target.checked : null)
               setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: value })
             },
           }
@@ -77,38 +86,41 @@ class PrintPanel extends React.Component {
   }
 
   formatApprovers = () => {
-    const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
+    const { approversData, docConfirm: { signers }, setPrintRequisites } = this.props
     const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
     if (!signers) {
       return setPrintRequisites({ [SIGNATORIES]: [] })
     }
-    approver && signers.push(approver)
     const signatories = signers.map((signer) => {
-      const { id_user: userId, date } = signer
+      const { who, date, status } = signer
+      if (status !== 'accepted') {
+        return null
+      }
       const { name, patronymic, surname, position, role } = approversData.filter((item) =>
-        Number(item.id) === userId)[0] || {}
-      return { position, role, name: this.formatContactName(name, patronymic, surname), date }
-    })
+        Number(item.id) === who)[0] || {}
+      return { position, role, name: this.formatContactName(surname, name, patronymic), date }
+    }).filter((item) => Boolean(item)).sort((a, b) => new Date(a.date) - new Date(b.date))
     setPrintRequisites({ [SIGNATORIES]: signatories })
   }
 
-  formatContactName = (name, patronymic, surname) => {
-    let result = surname
-    name && (result = `${result} ${name.slice(0, 1)}.`)
+  formatContactName = (surname, name, patronymic) => {
+    let result
+    name && (result = `${name.slice(0, 1)}.`)
     patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
-    return result
+    return `${result} ${surname}`
   }
 
   addConstParameters = () => {
     const {
       securityClassification: { classified },
-      docConfirm: { approver },
+      docConfirm: { signers },
       setPrintRequisites,
     } = this.props
+    const date = Math.max.apply(null, signers.map((value) => new Date(value.date)))
     const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
     setPrintRequisites({
       [MAP_LABEL]: classified,
-      [CONFIRM_DATE]: approver ? moment(approver.date).format(DATE_FORMAT) : '',
+      [CONFIRM_DATE]: (date && isFinite(date)) ? moment(date).format(DATE_FORMAT) : '',
     })
   }
 
@@ -122,22 +134,15 @@ class PrintPanel extends React.Component {
     setPrintRequisites({ [key]: value })
   }
 
-  changeLegendChecked = (value) => {
-    const { setPrintRequisites } = this.props
-    const { LEGEND_CHECKED } = Print.PRINT_PANEL_KEYS
-    this.setState(
-      { legendChecked: value },
-      () => setPrintRequisites({ [LEGEND_CHECKED]: value }),
-    )
-  }
-
   changeLegendTableType = (newType) => {
     const { legendTableType } = this.state
     const { setPrintRequisites } = this.props
     const { LEGEND_TABLE_TYPE } = Print.PRINT_PANEL_KEYS
     if (legendTableType !== newType) {
-      this.setState({ legendTableType: newType })
-      setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType })
+      this.setState(
+        { legendTableType: newType },
+        () => setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType }),
+      )
     }
   }
 
@@ -168,15 +173,14 @@ class PrintPanel extends React.Component {
       printScale,
       securityClassification: { classified },
       requisites,
+      requisites: { legendEnabled },
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, legendChecked, saveButtonEnabled } = this.state
+    const { setRequisitesFunc, colors, legendTableType, saveButtonEnabled } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
     } = Print
     const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
-    const legendEnabled = requisites.legendAvailable && legendChecked
-    if (!legendEnabled && legendChecked) { this.changeLegendChecked(false) }
     return (
       <div className='printPanelFormInner'>
         <Form>
@@ -223,8 +227,8 @@ class PrintPanel extends React.Component {
           </Row>
           <FormRow label={i18n.PRINT_REQUISITES}>
             <Checkbox
-              checked={legendChecked}
-              onChange={(e) => this.changeLegendChecked(e.target.checked)}
+              checked={legendEnabled}
+              onChange={setRequisitesFunc.LEGEND_ENABLED}
               disabled={!requisites.legendAvailable}
             />
           </FormRow>

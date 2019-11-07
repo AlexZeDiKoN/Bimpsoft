@@ -5,13 +5,6 @@ import memoizeOne from 'memoize-one'
 import { printLegend } from '../../utils'
 import { MapPortal, renderZoomable } from './MapContext'
 
-// TODO: заменить реальными данными
-const signatories = [
-  { position: `Начальник штабу`, role: `полковник`, name: `О.С. Харченко`, date: `21.12.18` },
-  { position: `Начальник оперативного управління`, role: `полковник`, name: `І.І. Панас`, date: `22.12.18` },
-]
-const confirmDate = `22.12.18`
-
 const crs = leaflet.CRS.EPSG3857
 
 const getBounds = (southWest, northEast, zoom, offset) => {
@@ -41,7 +34,7 @@ const getDimension = (printScale, selectedZone, zoom, animZoom, offset, animOffs
 
   const widthMM = crs.distance(
     { lat: northEast.lat, lng: northEast.lng },
-    { lat: northEast.lat, lng: southWest.lng }
+    { lat: northEast.lat, lng: southWest.lng },
   ) / printScale * 1000
 
   const heightMM = height * widthMM / width
@@ -71,7 +64,7 @@ export default class MapPrintLegend extends React.Component {
       style={{ pointerEvents: 'none', width, height, transform: `translate(${tx}px,${ty}px) scale(${scale})` }}
       viewBox={`0 0 ${widthMM} ${heightMM}`}
     >
-      {printLegend({ widthMM, heightMM, dpi, requisites, signatories, confirmDate, printScale, classified })}
+      {printLegend({ widthMM, heightMM, dpi, requisites, printScale, classified, selectedZone })}
     </svg>
   }
 
