@@ -1,6 +1,6 @@
 /* global L */
 
-import entityKind from '../../entityKind'
+import entityKind, { GROUPS } from '../../entityKind'
 import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
 
 const { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag } = L.PM.Edit.Line.prototype
@@ -36,11 +36,11 @@ L.PM.Edit.Line.include({
     const kind = this._layer.options.tsType
     let marker
     // для певних типів знаків забороняємо створення додаткових вершин
-    if (kind !== entityKind.SEGMENT && kind !== entityKind.RECTANGLE && kind !== entityKind.SQUARE) {
+    if (!GROUPS.STATIC.includes(kind)) {
       marker = parent._createMiddleMarker.call(this, leftM, rightM)
     }
     if (marker) {
-      if (kind === entityKind.AREA || kind === entityKind.CURVE) {
+      if (GROUPS.BEZIER.includes(kind)) {
         setBezierMiddleMarkerCoords(this, marker, leftM, rightM)
       }
     }
@@ -55,6 +55,8 @@ L.PM.Edit.Line.include({
       case entityKind.CIRCLE:
       case entityKind.RECTANGLE:
       case entityKind.SQUARE:
+      case entityKind.GROUPED_HEAD:
+      case entityKind.GROUPED_LAND:
         break // для певних типів знаків заброняємо видалення вершин
       case entityKind.AREA: // для площинних знаків
         if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
@@ -95,7 +97,7 @@ L.PM.Edit.Line.include({
     parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType
-    if ((kind === entityKind.AREA || kind === entityKind.CURVE) && marker._index >= 0) {
+    if (GROUPS.BEZIER.includes(kind) && marker._index >= 0) {
       const len = this._getMarkersCount()
       const markerArray = this._getMarkersArray()
       const nextMarkerIndex = (marker._index + 1) % len

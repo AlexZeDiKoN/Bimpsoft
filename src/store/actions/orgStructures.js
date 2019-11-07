@@ -11,6 +11,7 @@ export const SET_ORG_STRUCTURE_FILTER_TEXT = action('SET_ORG_STRUCTURE_FILTER_TE
 export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
+const STATUS_OPERATING = 1
 const CACHE_LIFETIME = 60000
 const { setHQ } = APP6Code
 
@@ -75,48 +76,60 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
     if (!app6Code && parent) {
       commandPost.app6Code = setHQ(parent.app6Code, true)
     }
-    parent && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
+    parent && parent.children && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
   })
   return { byIds, roots, commandPosts }
 }
 
 const formationsCache = new Map()
+let promiseFormation
 
 export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
-  let formationInfo = formationsCache.get(formationId)
+  const formationInfo = formationsCache.get(formationId)
   if (!formationInfo) {
-    const formations = await milOrgApi.generalFormation.list()
-    const formation = formations.find((formation) => formation.id === formationId)
-    const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-    const commandPosts = await milOrgApi.militaryCommandPost.list()
-    const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
-    for (const [ , value ] of Object.entries(tree.byIds)) {
-      value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+    if (!promiseFormation) {
+      promiseFormation = milOrgApi.generalFormation.list()
+        .then(async (formations) => {
+          const formation = formations.find((formation) => formation.id === formationId)
+          const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
+          const commandPosts = (await milOrgApi.militaryCommandPost.list())
+            .filter(({ state }) => state === STATUS_OPERATING)
+          // console.log(commandPosts)
+          const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
+          for (const [ , value ] of Object.entries(tree.byIds)) {
+            value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+          }
+          setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
+          const formationInfo = { formation, relations, tree }
+          formationsCache.set(formationId, formationInfo)
+          promiseFormation = undefined
+          return formationInfo
+        })
     }
-    setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
-    formationInfo = { formation, relations, tree }
-    formationsCache.set(formationId, formationInfo)
+    return promiseFormation
   }
   return formationInfo
 }
 
 let needReloadUnits = true
+let promiseUnits
 
 export const reloadUnits = async (dispatch, getState, milOrgApi) => {
-  let unitsById
   if (needReloadUnits) {
-    setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
-    const units = await milOrgApi.militaryUnit.list()
-    unitsById = {}
-    units.forEach((item) => {
-      unitsById[item.id] = item
-    })
-    await dispatch(setOrgStructureUnits(unitsById))
-    needReloadUnits = false
+    if (!promiseUnits) {
+      promiseUnits = milOrgApi.militaryUnit.list()
+        .then((units) => dispatch(setOrgStructureUnits(units.reduce((acc, item) => (acc[item.id] = item), {}))))
+        .then((result) => {
+          promiseUnits = undefined
+          needReloadUnits = false
+          setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
+          return result
+        })
+    }
+    return promiseUnits
   } else {
-    unitsById = getState().orgStructures.unitsById
+    return getState().orgStructures.unitsById
   }
-  return unitsById
 }
 
 export const setFormationById = (formationId) =>

@@ -6,12 +6,12 @@ import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
-const selectedLayerId = (state) => state.layers.selectedId
 const mapsById = (state) => state.maps.byId
 const webMapModeSelector = ({ webMap: { mode } }) => mode
 const is3DMapMode = ({ viewModes: { [viewModesKeys.map3D]: mode } }) => mode
 
 export const layersById = (state) => state.layers.byId
+export const selectedLayerId = (state) => state.layers.selectedId
 
 export const layersByIdFromStore = createSelector(layersById, R.identity)
 

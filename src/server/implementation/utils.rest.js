@@ -27,7 +27,7 @@ const setOptionsData = (options, data) => {
  * @param {string} route
  * @returns {Promise<*>}
  */
-export async function post (url, data = {}, operation, route = '/do') {
+export function post (url, data = {}, operation, route = '/do') {
   const request = {
     operation,
     payload: !data ? null : JSON.stringify(data),
@@ -35,7 +35,7 @@ export async function post (url, data = {}, operation, route = '/do') {
   return getDirect(`${url}${route}`, request)
 }
 
-export async function getDirect (url, data = {}) {
+export function getDirect (url, data = {}) {
   const options = _getOptions(data ? 'POST' : 'GET')
   setOptionsData(options, data)
   return _createRequest(url, options)

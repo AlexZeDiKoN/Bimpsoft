@@ -1,7 +1,7 @@
 /* global L */
-import entityKind, { entityKindNonFillable } from '../entityKind'
+import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
-import { prepareLinePath } from './utils/SVG'
+import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName } from './utils/helpers'
 import './SVG.css'
@@ -150,6 +150,14 @@ L.SVG.include({
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
+    } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
+      const parts = []
+      const line = layer._rings[0]
+      result = parts.length === 0
+        ? ''
+        : kind === entityKind.GROUPED_HEAD
+          ? makeHeadGroup(line, parts)
+          : makeLandGroup(line, parts)
     } else if (fullPolygon) {
       switch (lineType) {
         case 'waved':

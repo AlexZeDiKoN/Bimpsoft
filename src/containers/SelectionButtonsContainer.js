@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 import SelectionButtons from '../components/menu/SelectionButtons'
 import { FormTypes } from '../constants'
-import { canEditSelector, layerNameSelector, selectedTypes } from '../store/selectors'
-import * as selectionActions from '../store/actions/selection'
+import { canEditSelector, layerNameSelector, selectedTypes, selectedPoints } from '../store/selectors'
+import { selection as selectionActions, groups as groupsActions } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
@@ -21,6 +21,7 @@ const mapStateToProps = (store) => {
     list,
     clipboard,
     selectedTypes: selectedTypes(store),
+    selectedPoints: selectedPoints(store),
   }
 }
 
@@ -34,6 +35,8 @@ const mapDispatchToProps = {
   onMirrorImage: selectionActions.mirrorImage,
   onContour: selectionActions.createContour,
   onDecontour: selectionActions.dropContour,
+  onGroup: groupsActions.createGroup,
+  onUngroup: groupsActions.dropGroup,
 }
 
 const SelectionButtonsContainer = connect(
