@@ -306,13 +306,8 @@ function createSquare (data, map, layer) {
   if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
   }
-  const bounds = L.latLngBounds(point1, point2)
-  point1 = bounds.getNorthWest()
-  point2 = bounds.getSouthEast()
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
-  const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
-  const size = Math.max(width, height)
-  point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
+  point2 = L.CRS.Earth.calcPairRightDown(point1, width)
   return createRectangle([ point1, point2 ], layer)
 }
 

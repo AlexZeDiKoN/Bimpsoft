@@ -1449,7 +1449,9 @@ export default class WebMap extends React.PureComponent {
       }, this.map.getZoom())
       this.props.onMoveObjList(list, delta)
     } else {
-      const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+      const shift = layer._dragDeltaPx
+        ? calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+        : { x: 0, y: 0 }
       switch (layer.options.tsType) {
         case entityKind.CONTOUR:
           return this.props.onMoveContour(layer.id, shift)

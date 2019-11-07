@@ -13,8 +13,9 @@ L.CRS.Earth = L.Util.extend(L.CRS.Earth, {
     })
   },
   calcPairDown: function (latLng, distance) {
+    const rad = Math.PI / 180
     return L.latLng({
-      lat: latLng.lat - distance / this.R,
+      lat: latLng.lat - distance / this.R / rad,
       lng: latLng.lng,
     })
   },
