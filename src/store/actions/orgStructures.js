@@ -12,7 +12,7 @@ export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
 
 const STATUS_OPERATING = 1
-const CACHE_LIFETIME = 60000
+const CACHE_LIFETIME = 120
 const { setHQ } = APP6Code
 
 export const setOrgStructureUnits = (unitsById) => ({
@@ -94,12 +94,11 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
           const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
           const commandPosts = (await milOrgApi.militaryCommandPost.list())
             .filter(({ state }) => state === STATUS_OPERATING)
-          // console.log(commandPosts)
           const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
           for (const [ , value ] of Object.entries(tree.byIds)) {
             value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
           }
-          setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME)
+          setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME * 1000)
           const formationInfo = { formation, relations, tree }
           formationsCache.set(formationId, formationInfo)
           promiseFormation = undefined
@@ -114,19 +113,26 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
 let needReloadUnits = true
 let promiseUnits
 
-export const reloadUnits = async (dispatch, getState, milOrgApi) => {
+export const reloadUnits = (dispatch, getState, milOrgApi) => {
   if (needReloadUnits) {
     if (!promiseUnits) {
       promiseUnits = milOrgApi.militaryUnit.list()
-        .then((units) => dispatch(setOrgStructureUnits(units.reduce((acc, item) => (acc[item.id] = item), {}))))
+        .then(async (units) => {
+          const result = units.reduce((acc, item) => {
+            acc[item.id] = item
+            return acc
+          }, {})
+          await dispatch(setOrgStructureUnits(result))
+          return result
+        })
         .then((result) => {
           promiseUnits = undefined
           needReloadUnits = false
-          setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME)
+          setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME * 1000)
           return result
         })
     }
-    return promiseUnits
+    return getState().orgStructures.unitsById || promiseUnits
   } else {
     return getState().orgStructures.unitsById
   }
