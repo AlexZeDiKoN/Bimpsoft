@@ -312,7 +312,7 @@ export const printLegend = (params) => {
     )}
     {renderer.bottomText(`${i18n.SCALE.toUpperCase()} 1:${printScale}`, 50, SIZE_4, TextAnchors.MIDDLE)}
     {renderer.bottomText(confirmDate, 10, SIZE_5, TextAnchors.START, maxWidth)}
-    {signatories.reverse().map(({ role, name, position }, i) => <Fragment key={i}>
+    {[ ...signatories ].reverse().map(({ role, name, position }, i) => <Fragment key={i}>
       {renderer.bottomText(role, 10, SIZE_6, TextAnchors.START, maxWidth)}
       {renderer.bottomText(name, -h * SIZE_6 / 2, SIZE_4, TextAnchors.END, maxWidth)}
       {renderer.bottomText(position, 5, SIZE_5, TextAnchors.START, maxWidth)}
