@@ -1,4 +1,5 @@
 import { data } from '@DZVIN/CommonComponents'
+import * as R from 'ramda'
 import { layers } from '../actions'
 
 const { TextFilter } = data
@@ -22,13 +23,14 @@ export default function reducer (state = initState, action) {
       return { ...state, selectedId: layerId }
     }
     case layers.UPDATE_LAYER: {
-      let { byId } = state
+      const { byId } = state
       const { layerData } = action
       const { layerId } = layerData
-      let item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
-      item = { ...item, ...layerData }
-      byId = { ...byId, [layerId]: item }
-      return { ...state, byId }
+
+      const prevLayerData = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
+      const nextLayerData = { ...prevLayerData, ...layerData }
+
+      return R.assocPath([ 'byId', layerId ], nextLayerData, state)
     }
     case layers.UPDATE_LAYERS: {
       let { byId } = state
@@ -42,13 +44,8 @@ export default function reducer (state = initState, action) {
       return { ...state, byId }
     }
     case layers.DELETE_LAYERS: {
-      let { byId } = state
-      const { layersIds } = action
-      byId = { ...byId }
-      layersIds.forEach((layerId) => {
-        delete byId[layerId]
-      })
-      return { ...state, byId }
+      const { layersIds: layersIdsToDelete } = action
+      return R.evolve({ byId: R.omit(layersIdsToDelete) }, state)
     }
     case layers.DELETE_ALL_LAYERS: {
       return { ...state, byId: {} }
