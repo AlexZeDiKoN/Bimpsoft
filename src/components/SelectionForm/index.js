@@ -85,12 +85,24 @@ export default class SelectionForm extends React.Component {
     }
     const { title, component: Component } = forms[data.type]
 
+    const modalsMinHeight = {
+      [i18n.MIL_SYMBOL]: 825,
+      [i18n.SHAPE_POLYGON]: 685,
+      [i18n.SHAPE_POLYLINE]: 685,
+      [i18n.SHAPE_CURVE]: 685,
+      [i18n.SHAPE_AREA]: 685,
+      [i18n.SHAPE_SQUARE]: 550,
+      [i18n.SHAPE_RECTANGLE]: 490,
+      [i18n.SHAPE_TEXT]: 330,
+      [i18n.CONTOUR]: 310,
+    }
     const { wrapper: Wrapper } = this.props
     return (
       <Wrapper
         title={title}
         onClose={onCancel}
         minWidth={title === i18n.MIL_SYMBOL ? 825 : 410}
+        minHeight={modalsMinHeight[title]}
       >
         <FocusTrap>
           <HotKeysContainer>
