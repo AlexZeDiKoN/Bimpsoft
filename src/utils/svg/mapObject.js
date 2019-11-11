@@ -97,7 +97,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
       points,
       { ...attributes.toJS(), level, bounds, scale, bezier, locked },
       layerData,
-      zoom
+      zoom,
     )
   }
 }
@@ -108,7 +108,7 @@ const getContourBuilder = () => (commonData, data, layerData) => {
   if (geometry) {
     const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
     return fixedGeometry.map((coords) =>
-      getSvgPath(pointsToD(coords[0].map((point) => coordToPixels(point)), true), attributes, layerData, scale)
+      getSvgPath(pointsToD(coords[0].map((point) => coordToPixels(point)), true), attributes, layerData, scale),
     )
   }
 }
@@ -202,7 +202,7 @@ export const getMapObjectSvg = (commonData) => (object) => {
   const { id, type, layer } = object
   const mapObjectBuilder = mapObjectBuilders.get(type)
   const { layersById } = commonData
-  if (!mapObjectBuilder || !id || !layersById.hasOwnProperty(layer)) {
+  if (!mapObjectBuilder || !id || !Object.prototype.hasOwnProperty.call(layersById, layer)) {
     return null
   }
   const layerData = layersById[layer]

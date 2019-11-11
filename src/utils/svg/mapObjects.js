@@ -42,7 +42,7 @@ const getCoordToPixels = (projection, dpi, scale, angle, { min, max }) => {
 
 export const getMapSvg = (
   { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ], angle },
-  { objects, dpi, printScale, layersById, showAmplifiers }
+  { objects, dpi, printScale, layersById, showAmplifiers },
 ) => {
   const projection = `EPSG:${srid}`
   const [ lngSW, latSW ] = proj4(projection, [ southWestLng, southWestLat ])
@@ -97,7 +97,7 @@ export const getMapSvg = (
 
   const midLat = (northEastLat + southWestLat) / 2
   const zoom = Math.round(Math.log2(
-    SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi
+    SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
   const scale = dpi / 96
 
