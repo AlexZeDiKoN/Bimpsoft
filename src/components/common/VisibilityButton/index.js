@@ -8,8 +8,10 @@ const { names: iconNames, IconButton } = components.icons
 const VisibilityButton = (props) => {
   const { title, visible, onChange, isDark } = props
 
-  const clickHandler = () => {
-    onChange && onChange(!visible)
+  const clickHandler = (event) => {
+    // Prevent event from triggering in other wrappers
+    event.stopPropagation()
+    onChange(!visible)
   }
 
   const classNames = [ 'button_layers' ]
@@ -32,6 +34,10 @@ VisibilityButton.propTypes = {
   visible: PropTypes.bool,
   isDark: PropTypes.bool,
   onChange: PropTypes.func,
+}
+
+VisibilityButton.defaultProps = {
+  onChange: () => {},
 }
 
 export default VisibilityButton
