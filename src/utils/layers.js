@@ -5,29 +5,34 @@ import getLoopOrderStartingFromNextValue from './getLoopOrderStartingFromNextVal
  * Layer type
  *
  * @typedef {{}} Layer
- * @property {string} layerId Layer id
- * @property {string} mapId Map id
+ * @property {String} layerId Layer id
+ * @property {String} mapId Map id
  */
 
 /**
  * Get next available layer only in currently selected map
  *
- * @param {Layer[]} allLayers All layers
- * @param {string} currentSelectedLayer Currently selected layer
- * @param {Function} isLayerToInclude Predicate to test if layer should be included
+ * @param {Object<String, Layer>} allLayersById All layers by id
+ * @param {String} currentSelectedLayerId Currently selected layer id
+ * @param {Function} [isLayerToExclude=R.F] Predicate to test if layer should be excluded
  *
- * @returns {string|null} Returns next layer id if it is exist and available otherwise returns null
+ * @returns {String|null} Returns next layer id if it is exist and available otherwise returns null
  */
-export function getNextLayerIdInSelectedMap (allLayers, currentSelectedLayer, isLayerToInclude) {
-  const selectedMapId = currentSelectedLayer && currentSelectedLayer.mapId
-  const selectedLayerId = currentSelectedLayer && currentSelectedLayer.layerId
+export function getNextLayerIdInSelectedMap (allLayersById, currentSelectedLayerId, isLayerToExclude = R.F) {
+  const currentSelectedLayer = currentSelectedLayerId && allLayersById[currentSelectedLayerId]
+  const allLayers = Object.values(allLayersById)
 
-  const currentMapLayers = allLayers.filter((layer) => layer.mapId === selectedMapId)
+  if (R.isNil(currentSelectedLayer)) {
+    return null
+  }
+
+  const currentMapLayers = allLayers.filter((layer) => layer.mapId === currentSelectedLayer.mapId)
   const currentMapLayersInLoopOrder = getLoopOrderStartingFromNextValue(
-    (layer) => layer.layerId === selectedLayerId,
+    (layer) => layer.layerId === currentSelectedLayer.layerId,
     currentMapLayers,
   )
 
+  const isLayerToInclude = R.complement(isLayerToExclude)
   const filteredCurrentMapLayersInLoopOrder = currentMapLayersInLoopOrder.filter(isLayerToInclude)
   if (!R.isEmpty(filteredCurrentMapLayersInLoopOrder)) {
     return filteredCurrentMapLayersInLoopOrder[0].layerId
@@ -39,24 +44,31 @@ export function getNextLayerIdInSelectedMap (allLayers, currentSelectedLayer, is
 /**
  * Get next available layer in other than selected maps
  *
- * @param {Layer[]} allLayers All layers
- * @param {string} currentSelectedLayer Currently selected layer
- * @param {Function} isLayerToInclude Predicate to test if layer should be included
+ * @param {Object<String, Layer>} allLayersById All layers by id
+ * @param {String} currentSelectedLayerId Currently selected layer id
+ * @param {Function} [isLayerToExclude=R.F] Predicate to test if layer should be excluded
  *
- * @returns {string|null} Returns next layer id if it is exist and available otherwise returns null
+ * @returns {String|null} Returns next layer id if it is exist and available otherwise returns null
  */
-export function getNextLayerIdInNextMap (allLayers, currentSelectedLayer, isLayerToInclude) {
+export function getNextLayerIdInNextMap (allLayersById, currentSelectedLayerId, isLayerToExclude = R.F) {
+  const currentSelectedLayer = currentSelectedLayerId && allLayersById[currentSelectedLayerId]
+  const allLayers = Object.values(allLayersById)
+
   const allMapsIds = R.compose(
     R.uniq,
     R.map(R.prop('mapId')),
   )(allLayers)
 
-  const selectedMapId = currentSelectedLayer && currentSelectedLayer.mapId
-  const mapsIdsInLoopOrder = getLoopOrderStartingFromNextValue(selectedMapId, allMapsIds)
+  const mapsIdsInLoopOrder = currentSelectedLayer
+    ? getLoopOrderStartingFromNextValue(currentSelectedLayer.mapId, allMapsIds)
+    : allMapsIds
 
-  const nextMapsLayersInLoopOrder = mapsIdsInLoopOrder
-    .flatMap((mapId) => allLayers.filter((layer) => layer.mapId === mapId))
+  const nextMapsLayersInLoopOrder = R.compose(
+    R.flatten,
+    R.map((mapId) => allLayers.filter((layer) => layer.mapId === mapId)),
+  )(mapsIdsInLoopOrder)
 
+  const isLayerToInclude = R.complement(isLayerToExclude)
   const filteredLayersInLoopOrder = nextMapsLayersInLoopOrder.filter(isLayerToInclude)
   if (!R.isEmpty(filteredLayersInLoopOrder)) {
     return filteredLayersInLoopOrder[0].layerId
@@ -68,21 +80,18 @@ export function getNextLayerIdInNextMap (allLayers, currentSelectedLayer, isLaye
 /**
  * Get next layer after currently selected
  *
- * @param {object} allLayersById Layers dictionary
- * @param {string} currentSelectedLayerId Currently selected layer id
- * @param {function} [isLayerToExclude=() => false] Predicate to test if layer should be excluded
+ * @param {Object<String, Layer>} allLayersById Layers dictionary
+ * @param {String} currentSelectedLayerId Currently selected layer id
+ * @param {Function} [isLayerToExclude] Predicate to test if layer should be excluded
  *
- * @returns {string|null} Returns next layer id if it is exist and available otherwise returns null
+ * @returns {String|null} Returns next layer id if it is exist and available otherwise returns null
  */
-export function getNextLayerId (allLayersById, currentSelectedLayerId, isLayerToExclude = () => false) {
-  const currentSelectedLayer = currentSelectedLayerId && allLayersById[currentSelectedLayerId]
-  const allLayers = Object.values(allLayersById)
-  const isLayerToInclude = R.complement(isLayerToExclude)
+export function getNextLayerId (allLayersById, currentSelectedLayerId, isLayerToExclude) {
+  const nextLayerInSelectedMap = getNextLayerIdInSelectedMap(allLayersById, currentSelectedLayerId, isLayerToExclude)
 
-  const nextLayerInSelectedMap = getNextLayerIdInSelectedMap(allLayers, currentSelectedLayer, isLayerToInclude)
   if (nextLayerInSelectedMap) {
     return nextLayerInSelectedMap
   }
 
-  return getNextLayerIdInNextMap(allLayers, currentSelectedLayer, isLayerToInclude)
+  return getNextLayerIdInNextMap(allLayersById, currentSelectedLayerId, isLayerToExclude)
 }

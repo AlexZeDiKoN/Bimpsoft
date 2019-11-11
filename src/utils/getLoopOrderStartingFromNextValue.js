@@ -5,7 +5,7 @@
  * with saving order of those two parts
  *
  * @template T
- * @param {T|Function} value Value to start
+ * @param {T|Function} value Value to start or custom predicate
  * @param {Array<T>} array Original array
  *
  * @returns {Array<T>}
