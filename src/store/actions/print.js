@@ -126,6 +126,7 @@ export const createPrintFile = (onError = null) =>
         requisites,
         printScale,
         selectedZone,
+        strokeScale: 1, // необходимо для создания обводки текста в Qgis
       })
 
       const result = await printFileCreate({
