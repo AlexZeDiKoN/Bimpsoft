@@ -60,6 +60,18 @@ const forms = {
   },
 }
 
+const modalsMinHeight = {
+  [i18n.MIL_SYMBOL]: 825,
+  [i18n.SHAPE_POLYGON]: 685,
+  [i18n.SHAPE_POLYLINE]: 685,
+  [i18n.SHAPE_CURVE]: 685,
+  [i18n.SHAPE_AREA]: 685,
+  [i18n.SHAPE_SQUARE]: 550,
+  [i18n.SHAPE_RECTANGLE]: 490,
+  [i18n.SHAPE_TEXT]: 330,
+  [i18n.CONTOUR]: 310,
+}
+
 export default class SelectionForm extends React.Component {
   componentDidMount () {
     !this.props.ovtLoaded && this.props.getOvtList()
@@ -91,6 +103,7 @@ export default class SelectionForm extends React.Component {
         title={title}
         onClose={onCancel}
         minWidth={title === i18n.MIL_SYMBOL ? 825 : 410}
+        minHeight={modalsMinHeight[title]}
       >
         <FocusTrap>
           <HotKeysContainer>

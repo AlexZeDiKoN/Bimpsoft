@@ -3,7 +3,7 @@ import { OrgStructureSelect } from '@DZVIN/MilSymbolEditor'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 
-const { form: { FormRow }, icons: { names: iconNames, IconButton } } = components
+const { form: { FormRow } } = components
 
 const UNIT_PATH = [ 'unit' ]
 
@@ -22,12 +22,6 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
           id={unit}
           readOnly={!canEdit}
         />
-        {canEdit && (
-          <IconButton
-            className='orgStructureBottom'
-            icon={iconNames.DROP_DOWN_DEFAULT}
-          />
-        )}
       </FormRow>
     )
   }
