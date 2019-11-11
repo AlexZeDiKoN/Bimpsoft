@@ -5,7 +5,7 @@ import { filterSet } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
-import { circleToD, getAmplifiers, pointsToD, rectToPoints, stroked, waved } from './lines'
+import { circleToD, getAmplifiers, pointsToD, rectToPoints, stroked, waved, getLineEnds } from './lines'
 import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
@@ -56,10 +56,12 @@ const svgToG = (svg) => svg
 
 const getLineSvg = (points, attributes, layerData, zoom) => {
   const {
-    lineEnds, lineType, lineNodes, lineAmpl, skipStart, skipEnd,
+    lineType, lineNodes, lineAmpl, skipStart, skipEnd,
     color, level, bounds,
     bezier, locked, scale,
+    left, right,
   } = attributes
+  const lineEnds = { left, right }
   let d
   if (lineType === 'waved') {
     d = waved(points, lineEnds, bezier, locked, bounds, scale, zoom)
@@ -71,13 +73,19 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
   }
   const amplifiers = getAmplifiers(points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale, zoom)
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
-
+  const { left: leftSvg, right: rightSvg } = getLineEnds(points, lineEnds, bezier, scale * 2)
   return (
     <>
       {Boolean(amplifiers.group) && (
         <g
           stroke={colors.evaluateColor(color)}
           dangerouslySetInnerHTML={{ __html: amplifiers.group }}
+        />
+      )}
+      {(Boolean(leftSvg) || Boolean(rightSvg)) && (
+        <g
+          stroke={colors.evaluateColor(color)}
+          dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
       {getSvgPath(d, attributes, layerData, scale, mask)}
