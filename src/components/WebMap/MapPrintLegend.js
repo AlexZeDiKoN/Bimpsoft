@@ -55,16 +55,14 @@ export default class MapPrintLegend extends React.Component {
 
   renderByZoom = ({ zoom, animZoom, offset, animOffset }) => {
     const { selectedZone, requisites, printScale, securityClassification: { classified } } = this.props
-    const { dpi } = requisites
     const { width, height, tx, ty, scale, widthMM, heightMM } =
       this.getDimension(printScale, selectedZone, zoom, animZoom, offset, animOffset)
-
     return <svg
       className="leaflet-zoom-animated"
       style={{ pointerEvents: 'none', width, height, transform: `translate(${tx}px,${ty}px) scale(${scale})` }}
       viewBox={`0 0 ${widthMM} ${heightMM}`}
     >
-      {printLegend({ widthMM, heightMM, dpi, requisites, printScale, classified, selectedZone })}
+      {printLegend({ widthMM, heightMM, requisites, printScale, classified, selectedZone })}
     </svg>
   }
 

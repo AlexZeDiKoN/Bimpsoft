@@ -102,7 +102,6 @@ class Renderer {
       return null
     }
     const { fontHeight, lines, x } = this.textToLines(text, scale, align, width)
-
     return <>
       {lines.reverse().map(({ text }, i) => {
         const y = this.bottom - margin
@@ -137,7 +136,7 @@ class Renderer {
       signsFrameY - titleFontSize,
       titleFontSize,
       TextAnchors.MIDDLE,
-      null,
+      'title',
       this.strokeScale,
     )
 
@@ -160,7 +159,7 @@ class Renderer {
       y + (rowHeight - headerFontSize) / 2,
       headerFontSize,
       TextAnchors.MIDDLE,
-      null,
+      'sign-title',
       this.strokeScale,
     )
     const descrTitle = renderText(
@@ -169,7 +168,7 @@ class Renderer {
       y + (rowHeight - headerFontSize) / 2,
       headerFontSize,
       TextAnchors.MIDDLE,
-      null,
+      'descr-title',
       this.strokeScale,
     )
 
