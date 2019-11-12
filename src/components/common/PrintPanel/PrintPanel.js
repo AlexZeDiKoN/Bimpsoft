@@ -56,15 +56,29 @@ class PrintPanel extends React.Component {
 
   createSetFunctions = () => {
     const { setPrintRequisites } = this.props
-    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
+    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS, DATE_FORMAT, PRINT_DATE_KEYS } = Print
     const Obj = Object.assign(
       Object.keys(PRINT_PANEL_KEYS)
         .reduce((prev, current) => (
           {
             ...prev,
             [current]: (e, dateString) => {
-              const value = dateString || (e && e.target ? e.target.value || e.target.checked : null)
-              setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: value })
+              let req
+              if (PRINT_DATE_KEYS.includes(current)) {
+                const { requisites: { start, finish } } = this.props
+                const dates = { START: start, FINISH: finish, [current]: dateString || null }
+                // swap dates
+                if (dates.START && dates.FINISH &&
+                  moment(dates.START, DATE_FORMAT) > moment(dates.FINISH, DATE_FORMAT)) {
+                  [ dates.START, dates.FINISH ] = [ dates.FINISH, dates.START ]
+                }
+                req = PRINT_DATE_KEYS.reduce(
+                  (obj, key) => ({ ...obj, [PRINT_PANEL_KEYS[key]]: dates[key] }), {},
+                )
+              } else {
+                req = { [PRINT_PANEL_KEYS[current]]: e && e.target ? e.target.value || e.target.checked : null }
+              }
+              setPrintRequisites(req)
             },
           }
         ), {}),
@@ -116,7 +130,7 @@ class PrintPanel extends React.Component {
       docConfirm: { signers },
       setPrintRequisites,
     } = this.props
-    const date = Math.max.apply(null, signers.map((value) => new Date(value.date)))
+    const date = signers && Math.max.apply(null, signers.map((value) => new Date(value.date)))
     const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
     setPrintRequisites({
       [MAP_LABEL]: classified,
@@ -301,7 +315,7 @@ class PrintPanel extends React.Component {
               <FormRow label={i18n.START}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
+                  value={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.START}
                   disabled={!legendEnabled}
                 />
@@ -309,7 +323,7 @@ class PrintPanel extends React.Component {
               <FormRow label={i18n.FINISH}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
+                  value={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.FINISH}
                   disabled={!legendEnabled}
                 />

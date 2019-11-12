@@ -24,6 +24,8 @@ export const PRINT_PANEL_KEYS = {
   CONFIRM_DATE: `confirmDate`,
 }
 
+export const PRINT_DATE_KEYS = [ 'START', 'FINISH' ]
+
 export const COLOR_PICKER_KEYS = {
   LEGEND_FIRST_COLOR: 'legendFirstColor',
   LEGEND_SECOND_COLOR: 'legendSecondColor',
