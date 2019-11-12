@@ -245,6 +245,7 @@ export const RETRY_FILE = 'Спробувати ще раз'
 
 // Марш
 export const MARCH_TITLE = 'Маршрут марша'
+export const MARCH_LINK = 'Варіант маршу'
 export const MARCH_NAME = 'Назва маршрута'
 export const OPEN_MARCH_FILE = 'Вибір існуючого маршрута'
 export const MARCH_TYPE = 'Тип руху за маршрутом'

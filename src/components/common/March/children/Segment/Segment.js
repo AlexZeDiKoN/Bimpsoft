@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react'
-import { Input, Icon, Select } from 'antd'
+import { Input, Icon, Select, AutoComplete } from 'antd'
 import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../../../i18n'
@@ -7,7 +7,7 @@ import { MarchKeys } from '../../../../../constants'
 
 // TODO: test data
 const geographicalLandmark = [ 'landmark one', 'landmark two', 'landmark three' ]
-const segmentsExmp = [ 'segment one', 'segment two', 'segment three' ]
+const segmentsExmp = [ 'Створити вручну', 'segment one', 'segment two', 'segment three' ]
 
 export default class Segment extends Component {
   static propTypes = {
@@ -76,23 +76,16 @@ export default class Segment extends Component {
               />
             </FormRow>
             <FormRow>
-              <Select
+              <AutoComplete
                 value={item[ MARCH_SEGMENT_KEYS.LANDMARK_START ]}
                 placeholder={i18n.GEOGRAPHICAL_LANDMARK}
                 onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.LANDMARK_START)}
               >
                 {this.createSelectChildren(geographicalLandmark)}
-              </Select>
+              </AutoComplete>
             </FormRow>
           </div>
           : <Fragment>
-            {item.default.delete && <div className='march_segment-delete'>
-              <button
-                onClick={() => deleteSegment(index)}
-              >
-                <Icon type="delete" theme="filled" />
-              </button>
-            </div>}
             <div className='march_segment-options'>
               {item.default.adding && <div className='march_segment-adding'>
                 <button
@@ -102,6 +95,16 @@ export default class Segment extends Component {
                 </button>
               </div>}
               <div className='march_segment-params'>
+                <div className="march_segment-header">
+                  <span className="march_distance">0 км</span>
+                  {item.default.delete && <div className='march_segment-delete'>
+                    <button
+                      onClick={() => deleteSegment(index)}
+                    >
+                      <Icon type="delete" theme="filled" />
+                    </button>
+                  </div>}
+                </div>
                 <FormRow>
                   <Select
                     value={item[ MARCH_SEGMENT_KEYS.SEGMENT ]}
@@ -158,13 +161,13 @@ export default class Segment extends Component {
                 />
               </FormRow>
               <FormRow>
-                <Select
+                <AutoComplete
                   value={item[ MARCH_SEGMENT_KEYS.LANDMARK_FINISH ]}
                   placeholder={i18n.GEOGRAPHICAL_LANDMARK}
                   onChange={(e) => this.setSegmentParams(e, MARCH_SEGMENT_KEYS.LANDMARK_FINISH)}
                 >
                   {this.createSelectChildren(geographicalLandmark)}
-                </Select>
+                </AutoComplete>
               </FormRow>
             </div>
           </Fragment>}

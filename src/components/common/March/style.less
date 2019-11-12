@@ -21,6 +21,7 @@
     }
   }
   .march_segment {
+    text-align: end;
     .segment_point {
       display: flex;
       justify-content: center;
@@ -32,7 +33,7 @@
     .march_segment-delete {
       display: flex;
       justify-content: flex-end;
-      padding: 5px 30px;
+      padding: 5px 0px;
       button {
         border: none;
         background: transparent;
@@ -91,5 +92,25 @@
       border-color: #b0b37d !important;
       background-color: #fff;
     }
+  }
+}
+
+.march_link-bl {
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: start;
+  & > a {
+    text-decoration: underline;
+  }
+}
+
+.march_segment-header {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  & > .march_distance {
+    margin: 0 auto;
   }
 }
