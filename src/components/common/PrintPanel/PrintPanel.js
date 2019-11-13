@@ -35,6 +35,8 @@ class PrintPanel extends React.Component {
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
       saveButtonEnabled: true,
+      start: props.requisites.start,
+      finish: props.requisites.finish,
     }
   }
 
@@ -56,7 +58,7 @@ class PrintPanel extends React.Component {
 
   createSetFunctions = () => {
     const { setPrintRequisites } = this.props
-    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS, DATE_FORMAT, PRINT_DATE_KEYS } = Print
+    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS, PRINT_DATE_KEYS } = Print
     const Obj = Object.assign(
       Object.keys(PRINT_PANEL_KEYS)
         .reduce((prev, current) => (
@@ -65,16 +67,20 @@ class PrintPanel extends React.Component {
             [current]: (e, dateString) => {
               let req
               if (PRINT_DATE_KEYS.includes(current)) {
-                const { requisites: { start, finish } } = this.props
-                const dates = { START: start, FINISH: finish, [current]: dateString || null }
+                const { start, finish } = this.state
+                const dates = { START: start, FINISH: finish, [current]: dateString }
+
                 // swap dates
-                if (dates.START && dates.FINISH &&
-                  moment(dates.START, DATE_FORMAT) > moment(dates.FINISH, DATE_FORMAT)) {
-                  [ dates.START, dates.FINISH ] = [ dates.FINISH, dates.START ]
-                }
+                // uncomment lines when remove disabledDate from DatePicker
+                // if (dates.START && dates.FINISH &&
+                //   moment(dates.START, DATE_FORMAT) > moment(dates.FINISH, DATE_FORMAT)) {
+                //   [ dates.START, dates.FINISH ] = [ dates.FINISH, dates.START ]
+                // }
+
                 req = PRINT_DATE_KEYS.reduce(
                   (obj, key) => ({ ...obj, [PRINT_PANEL_KEYS[key]]: dates[key] }), {},
                 )
+                this.setState(req)
               } else {
                 req = { [PRINT_PANEL_KEYS[current]]: e && e.target ? e.target.value || e.target.checked : null }
               }
@@ -181,6 +187,16 @@ class PrintPanel extends React.Component {
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
+  disabledDate = (field) => (value) => {
+    const { DATE_FORMAT } = Print
+    const { start, finish } = this.state
+    const dates = { start, finish, [field]: value }
+    if (!dates.start || !dates.finish) {
+      return false
+    }
+    return moment(dates.start, DATE_FORMAT) > moment(dates.finish, DATE_FORMAT)
+  }
+
   render () {
     const {
       form: { getFieldDecorator },
@@ -189,7 +205,7 @@ class PrintPanel extends React.Component {
       requisites,
       requisites: { legendEnabled },
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, saveButtonEnabled } = this.state
+    const { setRequisitesFunc, colors, legendTableType, saveButtonEnabled, start, finish } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
@@ -315,17 +331,19 @@ class PrintPanel extends React.Component {
               <FormRow label={i18n.START}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  value={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
+                  value={start ? moment(start, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.START}
                   disabled={!legendEnabled}
+                  disabledDate={this.disabledDate('start')}
                 />
               </FormRow>
               <FormRow label={i18n.FINISH}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  value={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
+                  value={finish ? moment(finish, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.FINISH}
                   disabled={!legendEnabled}
+                  disabledDate={this.disabledDate('finish')}
                 />
               </FormRow>
             </div>
