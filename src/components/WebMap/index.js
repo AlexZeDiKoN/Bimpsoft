@@ -255,7 +255,7 @@ export default class WebMap extends React.PureComponent {
         minZoom: PropTypes.number,
         maxZoom: PropTypes.number,
         tms: PropTypes.bool,
-      })
+      }),
     ),
     layersById: PropTypes.object,
     unitsById: PropTypes.object,
@@ -1264,7 +1264,7 @@ export default class WebMap extends React.PureComponent {
             popupInner.setLatLng(newCoordinates)
             popupInner.openOn(this.map)
           }
-        }, openPopUpInterval
+        }, openPopUpInterval,
         )
       } else {
         isPopUpOpen && popupInner._close()
