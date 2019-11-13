@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { getMapSvg } from '../../utils/svg/mapObjects'
@@ -106,9 +107,7 @@ export const createPrintFile = (onError = null) =>
       },
     } = state
 
-    // filter visible layers by current mapId
-    const layersById = Object.values(visibleLayersSelector(state)).reduce((layers, layer) =>
-      (layer.mapId === mapId) ? { ...layers, [layer.layerId]: layer } : layers, {})
+    const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
 
     if (selectedZone) {
       const { dpi, projectionGroup } = requisites
