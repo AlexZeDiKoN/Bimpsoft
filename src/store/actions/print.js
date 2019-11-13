@@ -105,7 +105,11 @@ export const createPrintFile = (onError = null) =>
         mapId,
       },
     } = state
-    const layersById = visibleLayersSelector(state)
+
+    // filter visible layers by current mapId
+    const layersById = Object.values(visibleLayersSelector(state)).reduce((layers, layer) =>
+      (layer.mapId === mapId) ? { ...layers, [layer.layerId]: layer } : layers, {})
+
     if (selectedZone) {
       const { dpi, projectionGroup } = requisites
       const { southWest, northEast } = selectedZone
