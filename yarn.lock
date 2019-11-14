@@ -22,10 +22,10 @@
   resolved "http://172.16.97.47:4873/@DZVIN%2fEuSign/-/EuSign-0.0.2.tgz#48a82a28bc6a6d5012ddf96cee5e0846cd9b0c7d"
   integrity sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
 
-"@DZVIN/MilSymbolEditor@^10.2.225":
-  version "10.2.225"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-10.2.225.tgz#40102edaa9a51d7341f8ac5307b8e1568e151883"
-  integrity sha512-DHzk8VEw/mBUFNKjtAoU5mrjhWHR/9lNEHyOL+zUkjK8rpPdfRi2hbPcxJaSMBSfggBc58neFN39b3mGKpGzuA==
+"@DZVIN/MilSymbolEditor@^10.2.226":
+  version "10.2.226"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-10.2.226.tgz#0995009c17efc53be50a4cfab9f8c749a3e02550"
+  integrity sha512-+VFekhE9Ow17WiACrDBUUfyG5k3xyTK5IQkLDmbkRLd7knaLTjsWDHGT8tKhy74md9DBCY823t/hs97698XvAA==
   dependencies:
     "@DZVIN/milsymbol" ">=0.0.4"
 
