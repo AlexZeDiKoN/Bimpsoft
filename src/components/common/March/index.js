@@ -50,80 +50,83 @@ class March extends Component {
       const { FormRow } = components.form
       const { MARCH_KEYS } = MarchKeys
       return (
-        <div className='march_container'>
-          <div className='march_title'>
-            {i18n.MARCH_TITLE}
-          </div>
+        <div className="march_container">
+          <div className="march_title">{i18n.MARCH_TITLE}</div>
           <div className="march_link-bl">
-            <a href="#/" title="Варіант маршруту">{i18n.MARCH_LINK} - </a>
+            <a href="#/" title="Варіант маршруту">
+              {i18n.MARCH_LINK} -{' '}
+            </a>
           </div>
-          {indicators && <Form className='march_form'>
-            <div className='march_name'>
-              <div className='march_name-indicator'>
-                <Icon type="branches"/>
-              </div>
-              <div className='march_name-form'>
-                <FormRow>
-                  {
-                    getFieldDecorator(
-                      MARCH_KEYS.MARCH_NAME,
-                    )(
+          {indicators && (
+            <Form
+              className="march_form"
+            >
+              <div className="march_name">
+                <div className="march_name-indicator">
+                  <Icon type="branches" />
+                </div>
+                <div className="march_name-form">
+                  <FormRow>
+                    {getFieldDecorator(MARCH_KEYS.MARCH_NAME)(
                       <Input
-                        className='march_name-title'
+                        className="march_name-title"
                         placeholder={i18n.MARCH_NAME}
-                        onChange={({ target }) => setMarchParams({ [MARCH_KEYS.MARCH_NAME]: target.value })}
-                      />,
-                    )
-                  }
-                </FormRow>
-                <FormRow>
-                  {
-                    getFieldDecorator(
-                      MARCH_KEYS.MARCH_TYPE,
-                    )(
+                        onChange={({ target }) =>
+                          setMarchParams({
+                            [MARCH_KEYS.MARCH_NAME]: target.value,
+                          })
+                        }
+                      />
+                    )}
+                  </FormRow>
+                  <FormRow>
+                    {getFieldDecorator(MARCH_KEYS.MARCH_TYPE)(
                       <Select
                         placeholder={i18n.MARCH_TYPE}
-                        onChange={(e) => this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)}
+                        onChange={(e) =>
+                          this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)
+                        }
                       >
-                        {this.createSelectChildren(indicators[ 'МШВ001' ].typeValues)}
-                      </Select>,
-                    )
-                  }
-                </FormRow>
+                        {this.createSelectChildren(
+                          indicators['МШВ001'].typeValues
+                        )}
+                      </Select>
+                    )}
+                  </FormRow>
+                </div>
+                <div className="march_name-load">
+                  <IconButton
+                    title={i18n.OPEN_MARCH_FILE}
+                    icon={iconNames.PACK_DEFAULT}
+                    hoverIcon={iconNames.PACK_HOVER}
+                    onClick={() => console.info('open file')}
+                  />
+                </div>
               </div>
-              <div className='march_name-load'>
-                <IconButton
-                  title={i18n.OPEN_MARCH_FILE}
-                  icon={iconNames.PACK_DEFAULT}
-                  hoverIcon={iconNames.PACK_HOVER}
-                  onClick={() => console.info('open file')}
-                />
+              <div className="march_track">
+                {segments.map((item, i) => (
+                  <SegmentContainer key={item.id} index={i} form={form} />
+                ))}
               </div>
-            </div>
-            <div className='march_track'>
-              {segments.map((item, i) => <SegmentContainer
-                key={item.id}
-                index={i}
-                form={form}
-              />)}
-            </div>
-            <div className='march_buttonBlock'>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className='march_button-submit'
-              >
-                {i18n.CREATE}
-              </Button>
-              <Button
-                htmlType="reset"
-                className='march_button-cancel'
-                onClick={() => console.info('cancel')}
-              >
-                {i18n.CANCEL_FILE}
-              </Button>
-            </div>
-          </Form>}
+              <div className="march_total_distance">{i18n.MARCH_DISTANCE}: {0} км</div>
+              <div className="march_buttonBlock">
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="march_button-submit"
+                >
+                  {i18n.CREATE_BTN_TITLE}
+                </Button>
+                <Button
+                  htmlType="reset"
+                  className="march_button-cancel"
+                  onClick={() => console.info('cancel')}
+                >
+                  {i18n.CANCEL_BTN_TITLE}
+                </Button>
+              </div>
+            </Form>
+          )}
         </div>
       )
     }

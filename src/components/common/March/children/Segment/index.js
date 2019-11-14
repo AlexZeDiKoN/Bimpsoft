@@ -18,7 +18,8 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = {
   setMarchParams: march.setMarchParams,
-  addSegment: march.addSegment,
+  addPoint: march.addPoint,
+  deletePoint: march.deletePoint,
   deleteSegment: march.deleteSegment,
 }
 

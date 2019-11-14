@@ -245,6 +245,7 @@ export const RETRY_FILE = 'Спробувати ще раз'
 
 // Марш
 export const MARCH_TITLE = 'Маршрут марша'
+export const MARCH_DISTANCE = 'Довжина маршруту'
 export const MARCH_LINK = 'Варіант маршу'
 export const MARCH_NAME = 'Назва маршрута'
 export const OPEN_MARCH_FILE = 'Вибір існуючого маршрута'
@@ -253,6 +254,8 @@ export const GEOGRAPHICAL_LANDMARK = 'Географічний орієнтир'
 export const CHECK_SEGMENT = 'Вибір відрізка'
 export const SEGMENT_NAME = 'Назва відрізка'
 export const ADD_SEGMENT = 'Додати пункт маршрута'
+export const CREATE_BTN_TITLE = 'Зберегти'
+export const CANCEL_BTN_TITLE = 'Скасувати'
 
 export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
 export const PERIOD_FROM = 'Період з'

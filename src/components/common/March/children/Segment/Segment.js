@@ -14,7 +14,8 @@ export default class Segment extends Component {
     form: PropTypes.object.isRequired,
     indicators: PropTypes.object.isRequired,
     setMarchParams: PropTypes.func,
-    addSegment: PropTypes.func,
+    addPoint: PropTypes.func,
+    deletePoint: PropTypes.func,
     deleteSegment: PropTypes.func,
     index: PropTypes.number,
     segments: PropTypes.array,
@@ -48,7 +49,8 @@ export default class Segment extends Component {
     const {
       indicators,
       index,
-      addSegment,
+      addPoint,
+      deletePoint,
       deleteSegment,
       segments,
     } = this.props
@@ -89,7 +91,7 @@ export default class Segment extends Component {
             <div className='march_segment-options'>
               {item.default.adding && <div className='march_segment-adding'>
                 <button
-                  onClick={() => addSegment(index)}
+                  onClick={() => addPoint(index)}
                 >
                   {i18n.ADD_SEGMENT}
                 </button>
@@ -151,6 +153,13 @@ export default class Segment extends Component {
               </div>
             </div>
             <div className='march_segment-point'>
+              {item.default.delete && <div className='march_segment-delete'>
+                <button
+                  onClick={() => deletePoint(index)}
+                >
+                  <Icon type="delete" theme="filled" />
+                </button>
+              </div>}
               <FormRow>
                 <Input
                   value={item[ MARCH_SEGMENT_KEYS.COORDINATE_FINISH ]}

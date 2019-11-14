@@ -1,3 +1,4 @@
+import { omit, remove, update, insert, compose } from 'ramda'
 import { march } from '../actions'
 
 const initState = {
@@ -30,27 +31,40 @@ export default function reducer (state = initState, action) {
         return { ...state, params }
       }
     }
-    case march.ADD_SEGMENT: {
+    case march.ADD_POINT: {
       const { segments } = state.params
       const position = payload === 1 ? payload + 1 : payload
       const template = { ...segments[ 0 ].complementarySegment }
+      const updatedSegments = insert(position, {
+        ...template,
+        id: uuid(),
+        coordinateFinish: segments[ payload ].coordinateFinish,
+        landmarkFinish: segments[ payload ].landmarkFinish,
+      }, segments)
+
+      const defaultSegmentData = { default: updatedSegments[ payload ].default, id: updatedSegments[ payload ].id }
+      updatedSegments.splice(payload, 1, defaultSegmentData)
+
       const params = {
         ...state.params,
-        ...segments.splice(position, 0, {
-          ...template,
-          id: uuid(),
-          coordinateFinish: segments[ payload ].coordinateFinish,
-          landmarkFinish: segments[ payload ].landmarkFinish,
-        }),
+        segments: updatedSegments,
       }
-      const defaultSegmentData = { default: segments[ payload ].default, id: segments[ payload ].id }
-      segments.splice(payload, 1, defaultSegmentData)
 
+      return { ...state, params }
+    }
+    case march.DELETE_POINT: {
+      const { segments } = state.params
+      const nextSegmentIndex = payload + 1
+      const nextSegment = omit([ 'segment', 'segmentName', 'segmentType' ], segments[nextSegmentIndex])
+      const updatedSegments = compose(remove(payload, 1), update(nextSegmentIndex, nextSegment))(segments)
+      const params = { ...state.params, segments: updatedSegments }
       return { ...state, params }
     }
     case march.DELETE_SEGMENT: {
       const { segments } = state.params
-      const params = { ...state.params, ...segments.splice(payload, 1) }
+      const updatedSegment = omit([ 'segment', 'segmentName' ], segments[payload])
+      const updatedSegments = update(payload, updatedSegment, segments)
+      const params = { ...state.params, segments: updatedSegments }
       return { ...state, params }
     }
     default:

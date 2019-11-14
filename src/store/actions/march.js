@@ -3,7 +3,8 @@ import { MarchKeys } from '../../constants'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
-export const ADD_SEGMENT = action('ADD_SEGMENT')
+export const ADD_POINT = action('ADD_POINT')
+export const DELETE_POINT = action('DELETE_POINT')
 export const DELETE_SEGMENT = action('DELETE_SEGMENT')
 
 export const getIndicator = () =>
@@ -15,8 +16,13 @@ export const getIndicator = () =>
     })
   }
 
-export const addSegment = (index) => ({
-  type: ADD_SEGMENT,
+export const addPoint = (index) => ({
+  type: ADD_POINT,
+  payload: index,
+})
+
+export const deletePoint = (index) => ({
+  type: DELETE_POINT,
   payload: index,
 })
 
