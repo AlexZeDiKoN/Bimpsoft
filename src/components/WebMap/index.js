@@ -1478,12 +1478,14 @@ export default class WebMap extends React.PureComponent {
 
   clickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: layer, target: { object: { name, state, catalogId } } } = event
+    const { target: layer, target: { object: { name, state, catalogId, country, affiliation } } } = event
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
     let text = `<strong>${catalogName}</strong><br/>`
     name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
-    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
+    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
+    country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
+    affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
     if (!this.catalogsPopup) {
       this.catalogsPopup = L.popup()
     }
