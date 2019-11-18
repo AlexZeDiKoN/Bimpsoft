@@ -14,6 +14,7 @@ import 'moment/locale/uk'
 import './App.css'
 import ExplorerBridge from './server/ExplorerBridge'
 import { createNotificator } from './utils'
+import { getAuthToken } from './server/implementation/utils.rest'
 
 moment.locale('uk')
 // Init store and create a history of your choosing (we're using a browser history in this case)
@@ -29,6 +30,9 @@ createNotificator(store)
 class App extends React.Component {
   authorized = () => {
     window.explorerBridge.init(true)
+    window.socket.then(async (socket) => {
+      socket.emit('authorization', await getAuthToken())
+    })
   }
 
   render () {

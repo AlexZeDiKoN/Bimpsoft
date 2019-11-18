@@ -33,10 +33,10 @@ const SIGN_DESCR_ROW_WIDTH = 220
 
 const getH = (n) => n <= 6 ? 15 : n <= 10 ? 30 : n <= 20 ? 40 : n <= 30 ? 50 : 60
 
-const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
+const renderText = (text, x, y, fontHeight, align, key, strokeScale = 0.2) => <Fragment key={key}>
   <text
     stroke="#fff"
-    strokeWidth={fontHeight / 5}
+    strokeWidth={fontHeight * strokeScale}
     fill="none"
     fontSize={fontHeight}
     fontFamily={FONT_FAMILY}
@@ -61,13 +61,14 @@ const renderText = (text, x, y, fontHeight, align, key) => <Fragment key={key}>
  * It have any context values that not needed outside Component.render
  */
 class Renderer {
-  constructor (width, height, h) {
+  constructor (width, height, h, strokeScale = 0.2) {
     this.width = width
     this.height = height
     this.h = h
     this.top = 0
     this.bottom = height
     this.d = []
+    this.strokeScale = strokeScale
   }
 
   textToLines (text, scale, align, width) {
@@ -91,7 +92,7 @@ class Renderer {
         const y = this.top + margin
         margin = 5
         this.top = y + fontHeight
-        return renderText(text, x, y, fontHeight, align, i)
+        return renderText(text, x, y, fontHeight, align, i, this.strokeScale)
       })}
     </>
   }
@@ -101,13 +102,12 @@ class Renderer {
       return null
     }
     const { fontHeight, lines, x } = this.textToLines(text, scale, align, width)
-
     return <>
       {lines.reverse().map(({ text }, i) => {
         const y = this.bottom - margin
         margin = 5
         this.bottom = y - fontHeight
-        return renderText(text, x, y, fontHeight, align, i)
+        return renderText(text, x, y, fontHeight, align, i, this.strokeScale)
       })}
     </>
   }
@@ -136,6 +136,8 @@ class Renderer {
       signsFrameY - titleFontSize,
       titleFontSize,
       TextAnchors.MIDDLE,
+      'title',
+      this.strokeScale,
     )
 
     this.bottom = signsFrameY - titleFontSize
@@ -157,6 +159,8 @@ class Renderer {
       y + (rowHeight - headerFontSize) / 2,
       headerFontSize,
       TextAnchors.MIDDLE,
+      'sign-title',
+      this.strokeScale,
     )
     const descrTitle = renderText(
       i18n.SIGN_CONTENT,
@@ -164,6 +168,8 @@ class Renderer {
       y + (rowHeight - headerFontSize) / 2,
       headerFontSize,
       TextAnchors.MIDDLE,
+      'descr-title',
+      this.strokeScale,
     )
 
     // line under title
@@ -178,7 +184,7 @@ class Renderer {
           this.textToLines(text, SIZE_3 / this.h * 15, TextAnchors.START, SIGN_DESCR_ROW_WIDTH - titleFontSize * 2)
         let yDescr = y + (rowHeight - fontHeight * lines.length - titleFontSize / 2 * (lines.length - 1)) / 2
         lines.forEach(({ text }, lineI) => {
-          els.push(renderText(text, xDescr, yDescr, fontHeight, align, `${rowI}-${lineI}`))
+          els.push(renderText(text, xDescr, yDescr, fontHeight, align, `${rowI}-${lineI}`, this.strokeScale))
           yDescr += titleFontSize / 2 + fontHeight
         })
       }
@@ -239,7 +245,7 @@ class Renderer {
           if (j > 0) {
             y += wrapHeight
           }
-          const el = renderText(text, x, y, fontHeight, TextAnchors.START, `${i}-${j}`)
+          const el = renderText(text, x, y, fontHeight, TextAnchors.START, `${i}-${j}`, this.strokeScale)
           y += fontHeight
           return el
         })
@@ -256,7 +262,7 @@ class Renderer {
     const maxWidth = texts.reduce((width, text) => Math.max(width, this.getTextWidth(text, SIZE_5)), 0)
     const x = this.width - maxWidth - marging
     return texts.map((text, i) =>
-      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i),
+      renderText(text, x, y + (lineSpace + fontHeight) * i, fontHeight, TextAnchors.START, i, this.strokeScale),
     )
   }
 
@@ -272,13 +278,12 @@ class Renderer {
 }
 
 export const printLegend = (params) => {
-  const {
-    widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified, selectedZone,
-  } = params
+  const { widthMM, heightMM, requisites, requisites: { signatories, confirmDate }, printScale, classified,
+    selectedZone, strokeScale } = params
   if (!requisites.legendAvailable || !requisites.legendEnabled) { return }
   const h = getH(selectedZone.lists.X * selectedZone.lists.Y)
 
-  const renderer = new Renderer(widthMM, heightMM, h)
+  const renderer = new Renderer(widthMM, heightMM, h, strokeScale)
 
   let maxWidth = signatories.reduce((width, { role, name, position }) => Math.max(
     width,

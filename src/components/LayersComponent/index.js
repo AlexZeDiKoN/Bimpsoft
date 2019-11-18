@@ -23,7 +23,7 @@ ItemTemplate.propTypes = {
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.name,
   (item) => item.id,
-  (item) => item.parentId
+  (item) => item.parentId,
 )
 
 export default class LayersComponent extends React.Component {

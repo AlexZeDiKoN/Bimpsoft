@@ -1,3 +1,4 @@
+import * as R from 'ramda'
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { getMapSvg } from '../../utils/svg/mapObjects'
@@ -105,7 +106,9 @@ export const createPrintFile = (onError = null) =>
         mapId,
       },
     } = state
-    const layersById = visibleLayersSelector(state)
+
+    const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
+
     if (selectedZone) {
       const { dpi, projectionGroup } = requisites
       const { southWest, northEast } = selectedZone
@@ -126,6 +129,7 @@ export const createPrintFile = (onError = null) =>
         requisites,
         printScale,
         selectedZone,
+        strokeScale: 1, // необходимо для создания обводки текста в Qgis
       })
 
       const result = await printFileCreate({
