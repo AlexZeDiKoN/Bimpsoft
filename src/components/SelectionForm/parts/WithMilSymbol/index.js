@@ -6,6 +6,7 @@ import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
 
 import './style.css'
+
 const configs = SymbolEditorComponentStateless.configs
 
 const readOnly = { readonly: true }
@@ -50,19 +51,24 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   }
 
   codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
-    result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+    result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel),
   )
 
   unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
     .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
-    .set('point', coordinate)
+    .set('point', coordinate),
   )
 
   attributesChangeHandler = (newAttributes) => this.setResult((result) =>
-    result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes))
+    result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes)),
   )
+
+  handlerUnitInfo = (unitId) => {
+    const { itemType } = this.props.orgStructures.byIds[unitId]
+    window.explorerBridge.showUnitInfo(itemType, unitId)
+  }
 
   renderMilSymbol () {
     const result = this.getResult()
@@ -88,7 +94,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         // onNameChange={this.nameChangeHandler}
         onCoordinatesChange={this.coordinatesChangeHandler}
         onOrgStructureChange={this.unitChangeHandler}
-        onUnitInfo={window.explorerBridge.showUnitInfo}
+        onUnitInfo={this.handlerUnitInfo}
         onSearch={placeSearch}
         ovtData={ovtData}
       />

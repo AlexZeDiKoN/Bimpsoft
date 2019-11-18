@@ -5,6 +5,13 @@ const namespace = '/hub/org/v1'
 
 const gfUrl = '/generalformation'
 
+const doList = (url) => (filter) => post(`${namespace}${url}`, filter, 'List')
+const doCreate = (url) => (item) => post(`${namespace}${url}`, item, 'Create')
+const doUpdate = (url) => (item) => post(`${namespace}${url}`, item, 'Update')
+const doDelete = (url) => (id = requiredParam('id')) => post(`${namespace}${url}`, id, 'Delete')
+const doUpdateMany = (url) => (item) => post(`${namespace}${url}`, item, 'UpdateMany')
+const allDc = () => post(`${namespace}${dcUrl}`, {}, 'All')
+
 const generalFormation = {
   list: doList(gfUrl),
   create: doCreate(gfUrl),
@@ -75,43 +82,3 @@ const ServerApiOrg = {
 }
 
 export default ServerApiOrg
-
-function doList (url) {
-  return function (filter) {
-    return post(`${namespace}${url}`, filter, 'List')
-  }
-}
-
-function doCreate (url) {
-  return function (item) {
-    return post(`${namespace}${url}`, item, 'Create')
-  }
-}
-
-function doUpdate (url) {
-  return function (item) {
-    return post(`${namespace}${url}`, item, 'Update')
-  }
-}
-
-function doDelete (url) {
-  return function (id = requiredParam('id')) {
-    return post(`${namespace}${url}`, id, 'Delete')
-  }
-}
-
-function doUpdateMany (url) {
-  return function (item) {
-    return post(`${namespace}${url}`, item, 'UpdateMany')
-  }
-}
-
-// function getDc (code) {
-//   return function () {
-//     return post('List', { code }, undefined, namespace + dcUrl)
-//   }
-// }
-
-function allDc () {
-  return post(`${namespace}${dcUrl}`, {}, 'All')
-}

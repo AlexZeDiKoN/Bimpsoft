@@ -1,4 +1,4 @@
-import { getAuthToken } from '../server/implementation/utils.rest'
+import { Deferred } from '../utils/helpers'
 import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 import { printFileSet } from './actions/print'
@@ -50,14 +50,17 @@ const unlockObject = (dispatch) => ({ objectId }) =>
 const printGeneratingStatus = (dispatch) => ({ id, message, name, documentPath }) =>
   catchError(printFileSet)(id, message, name, documentPath)(dispatch)
 
+const deferredSocket = new Deferred()
+
+window.socket = deferredSocket.promise
+
 export const initSocketEvents = async (dispatch, getState) => {
   try {
     const io = await loadWebSocketClient()
     const socket = io(server)
-    socket.on('connect', async () => {
-      window.socket = socket
+    socket.on('connect', () => {
+      deferredSocket.resolve(socket)
       console.info('Підключено до вебсокет-серверу')
-      socket.emit('authorization', await getAuthToken())
     })
     socket.on('map:update layer color', updateLayer(dispatch))
     socket.on('map:update object', updateObject(dispatch))

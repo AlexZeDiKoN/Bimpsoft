@@ -21,7 +21,7 @@ const mapDispatchToProps = {
 
 const PrintFilesContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(PrintFiles)
 
 export default PrintFilesContainer

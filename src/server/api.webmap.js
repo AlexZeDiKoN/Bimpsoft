@@ -80,4 +80,12 @@ export default {
     getDirect(`${webmapUrl}/obj/move`, { ids, shift }),
   buildZone: (objects, enemy) =>
     getDirect(`${webmapUrl}/zone/build`, { objects, enemy }),
+  groupCreate: (type, objects, layer, scale) =>
+    getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }),
+  groupDrop: (group, layer) =>
+    getDirect(`${webmapUrl}/group/drop`, { group, layer }),
+  groupCopy: (id, layer, shift) =>
+    getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }),
+  groupMove: (id, shift) =>
+    getDirect(`${webmapUrl}/group/move`, { id, shift }),
 }

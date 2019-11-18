@@ -34,8 +34,9 @@ class PrintPanel extends React.Component {
       },
       setRequisitesFunc: {},
       legendTableType: props.requisites.legendTableType,
-      legendChecked: props.requisites.legendChecked,
       saveButtonEnabled: true,
+      start: props.requisites.start,
+      finish: props.requisites.finish,
     }
   }
 
@@ -45,17 +46,45 @@ class PrintPanel extends React.Component {
     this.addConstParameters()
   }
 
+  shouldComponentUpdate (nextProps, nextState, nextContext) {
+    if (!nextProps.requisites.legendAvailable && nextProps.requisites.legendEnabled) {
+      const { setPrintRequisites } = nextProps
+      const { LEGEND_ENABLED } = Print.PRINT_PANEL_KEYS
+      setPrintRequisites({ [LEGEND_ENABLED]: false })
+      return false
+    }
+    return true
+  }
+
   createSetFunctions = () => {
     const { setPrintRequisites } = this.props
-    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS } = Print
+    const { PRINT_PANEL_KEYS, COLOR_PICKER_KEYS, PRINT_DATE_KEYS } = Print
     const Obj = Object.assign(
       Object.keys(PRINT_PANEL_KEYS)
         .reduce((prev, current) => (
           {
             ...prev,
             [current]: (e, dateString) => {
-              const value = dateString || (e && e.target ? e.target.value : null)
-              setPrintRequisites({ [PRINT_PANEL_KEYS[current]]: value })
+              let req
+              if (PRINT_DATE_KEYS.includes(current)) {
+                const { start, finish } = this.state
+                const dates = { START: start, FINISH: finish, [current]: dateString }
+
+                // swap dates
+                // uncomment lines when remove disabledDate from DatePicker
+                // if (dates.START && dates.FINISH &&
+                //   moment(dates.START, DATE_FORMAT) > moment(dates.FINISH, DATE_FORMAT)) {
+                //   [ dates.START, dates.FINISH ] = [ dates.FINISH, dates.START ]
+                // }
+
+                req = PRINT_DATE_KEYS.reduce(
+                  (obj, key) => ({ ...obj, [PRINT_PANEL_KEYS[key]]: dates[key] }), {},
+                )
+                this.setState(req)
+              } else {
+                req = { [PRINT_PANEL_KEYS[current]]: e && e.target ? e.target.value || e.target.checked : null }
+              }
+              setPrintRequisites(req)
             },
           }
         ), {}),
@@ -77,38 +106,41 @@ class PrintPanel extends React.Component {
   }
 
   formatApprovers = () => {
-    const { approversData, docConfirm: { signers, approver }, setPrintRequisites } = this.props
+    const { approversData, docConfirm: { signers }, setPrintRequisites } = this.props
     const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
     if (!signers) {
       return setPrintRequisites({ [SIGNATORIES]: [] })
     }
-    approver && signers.push(approver)
     const signatories = signers.map((signer) => {
-      const { id_user: userId, date } = signer
+      const { who, date, status } = signer
+      if (status !== 'accepted') {
+        return null
+      }
       const { name, patronymic, surname, position, role } = approversData.filter((item) =>
-        Number(item.id) === userId)[0] || {}
-      return { position, role, name: this.formatContactName(name, patronymic, surname), date }
-    })
+        Number(item.id) === who)[0] || {}
+      return { position, role, name: this.formatContactName(surname, name, patronymic), date }
+    }).filter((item) => Boolean(item)).sort((a, b) => new Date(a.date) - new Date(b.date))
     setPrintRequisites({ [SIGNATORIES]: signatories })
   }
 
-  formatContactName = (name, patronymic, surname) => {
-    let result = surname
-    name && (result = `${result} ${name.slice(0, 1)}.`)
+  formatContactName = (surname, name, patronymic) => {
+    let result
+    name && (result = `${name.slice(0, 1)}.`)
     patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
-    return result
+    return `${result} ${surname}`
   }
 
   addConstParameters = () => {
     const {
       securityClassification: { classified },
-      docConfirm: { approver },
+      docConfirm: { signers },
       setPrintRequisites,
     } = this.props
+    const date = signers && Math.max.apply(null, signers.map((value) => new Date(value.date)))
     const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
     setPrintRequisites({
       [MAP_LABEL]: classified,
-      [CONFIRM_DATE]: approver ? moment(approver.date).format(DATE_FORMAT) : '',
+      [CONFIRM_DATE]: (date && isFinite(date)) ? moment(date).format(DATE_FORMAT) : '',
     })
   }
 
@@ -122,22 +154,15 @@ class PrintPanel extends React.Component {
     setPrintRequisites({ [key]: value })
   }
 
-  changeLegendChecked = (value) => {
-    const { setPrintRequisites } = this.props
-    const { LEGEND_CHECKED } = Print.PRINT_PANEL_KEYS
-    this.setState(
-      { legendChecked: value },
-      () => setPrintRequisites({ [LEGEND_CHECKED]: value }),
-    )
-  }
-
   changeLegendTableType = (newType) => {
     const { legendTableType } = this.state
     const { setPrintRequisites } = this.props
     const { LEGEND_TABLE_TYPE } = Print.PRINT_PANEL_KEYS
     if (legendTableType !== newType) {
-      this.setState({ legendTableType: newType })
-      setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType })
+      this.setState(
+        { legendTableType: newType },
+        () => setPrintRequisites({ [LEGEND_TABLE_TYPE]: newType }),
+      )
     }
   }
 
@@ -162,21 +187,30 @@ class PrintPanel extends React.Component {
   createSelectChildren = (incomeData) => incomeData
     .map((item) => <Select.Option key={item}>{item}</Select.Option>)
 
+  disabledDate = (field) => (value) => {
+    const { DATE_FORMAT } = Print
+    const { start, finish } = this.state
+    const dates = { start, finish, [field]: value }
+    if (!dates.start || !dates.finish) {
+      return false
+    }
+    return moment(dates.start, DATE_FORMAT) > moment(dates.finish, DATE_FORMAT)
+  }
+
   render () {
     const {
       form: { getFieldDecorator },
       printScale,
       securityClassification: { classified },
       requisites,
+      requisites: { legendEnabled },
     } = this.props
-    const { setRequisitesFunc, colors, legendTableType, legendChecked, saveButtonEnabled } = this.state
+    const { setRequisitesFunc, colors, legendTableType, saveButtonEnabled, start, finish } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
     } = Print
     const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
-    const legendEnabled = requisites.legendAvailable && legendChecked
-    if (!legendEnabled && legendChecked) { this.changeLegendChecked(false) }
     return (
       <div className='printPanelFormInner'>
         <Form>
@@ -223,8 +257,8 @@ class PrintPanel extends React.Component {
           </Row>
           <FormRow label={i18n.PRINT_REQUISITES}>
             <Checkbox
-              checked={legendChecked}
-              onChange={(e) => this.changeLegendChecked(e.target.checked)}
+              checked={legendEnabled}
+              onChange={setRequisitesFunc.LEGEND_ENABLED}
               disabled={!requisites.legendAvailable}
             />
           </FormRow>
@@ -297,17 +331,19 @@ class PrintPanel extends React.Component {
               <FormRow label={i18n.START}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  defaultValue={requisites.start ? moment(requisites.start, DATE_FORMAT) : null}
+                  value={start ? moment(start, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.START}
                   disabled={!legendEnabled}
+                  disabledDate={this.disabledDate('start')}
                 />
               </FormRow>
               <FormRow label={i18n.FINISH}>
                 <DatePicker
                   format={DATE_FORMAT}
-                  defaultValue={requisites.finish ? moment(requisites.finish, DATE_FORMAT) : null}
+                  value={finish ? moment(finish, DATE_FORMAT) : null}
                   onChange={setRequisitesFunc.FINISH}
                   disabled={!legendEnabled}
+                  disabledDate={this.disabledDate('finish')}
                 />
               </FormRow>
             </div>

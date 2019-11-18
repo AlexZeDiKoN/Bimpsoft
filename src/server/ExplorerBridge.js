@@ -135,8 +135,7 @@ export default class ExplorerBridge {
 
   sendTask = (payload, context) => this.send({ action: SEND_TASK, payload, context })
 
-  showUnitInfo = (unitId) => this.send({ action: ACTION_SHOW_UNIT, unitId }) ||
-    window.open(`/explorer/#/_/military-organization/units/unit/${unitId}`, `explorer`, '', true)
+  showUnitInfo = (type, unitId) => this.send({ action: ACTION_SHOW_UNIT, type, unitId })
 
   getUnitIndicators = (unitId, formationId) => this.send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
 

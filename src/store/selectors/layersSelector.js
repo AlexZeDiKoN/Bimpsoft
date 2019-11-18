@@ -6,12 +6,12 @@ import * as viewModesKeys from '../../constants/viewModesKeys'
 
 const layersSelector = ({ layers }) => layers
 const calc = (state) => state.maps.calc
-const selectedLayerId = (state) => state.layers.selectedId
 const mapsById = (state) => state.maps.byId
 const webMapModeSelector = ({ webMap: { mode } }) => mode
 const is3DMapMode = ({ viewModes: { [viewModesKeys.map3D]: mode } }) => mode
 
 export const layersById = (state) => state.layers.byId
+export const selectedLayerId = (state) => state.layers.selectedId
 
 export const layersByIdFromStore = createSelector(layersById, R.identity)
 
@@ -25,42 +25,42 @@ export const canEditSelector = createSelector(
     }
     const { readOnly, visible, dateFor } = byId[selectedId]
     return !readOnly && visible && date.inDateRange(dateFor, timelineFrom, timelineTo)
-  }
+  },
 )
 
 export const selectedLayer = createSelector(
   layersById,
   selectedLayerId,
-  (layers, id) => id && layers[id]
+  (layers, id) => id && layers[id],
 )
 
 export const mapId = createSelector(
   selectedLayer,
-  (layer) => layer && layer.mapId
+  (layer) => layer && layer.mapId,
 )
 
 export const signedMap = createSelector(
   mapsById,
   mapId,
-  (maps, id) => id && maps && maps[id] && maps[id].signed
+  (maps, id) => id && maps && maps[id] && maps[id].signed,
 )
 
 export const mapCOP = createSelector(
   mapsById,
   mapId,
-  (maps, id) => id && maps && maps[id] && maps[id].isCOP
+  (maps, id) => id && maps && maps[id] && maps[id].isCOP,
 )
 
 export const activeMapSelector = createSelector(
   layersSelector,
   (state) => state.print.mapId,
-  ({ byId, selectedId }, printMapId) => printMapId || (selectedId && byId[selectedId] && byId[selectedId].mapId)
+  ({ byId, selectedId }, printMapId) => printMapId || (selectedId && byId[selectedId] && byId[selectedId].mapId),
 )
 
 export const inICTMode = createSelector(
   activeMapSelector,
   calc,
-  (activeMapId, calc) => activeMapId && calc && calc[activeMapId]
+  (activeMapId, calc) => activeMapId && calc && calc[activeMapId],
 )
 
 export const inTimeRangeLayers = createSelector(
@@ -76,7 +76,7 @@ export const inTimeRangeLayers = createSelector(
       }
     }
     return result
-  }
+  },
 )
 
 export const visibleLayersSelector = createSelector(
@@ -92,7 +92,7 @@ export const visibleLayersSelector = createSelector(
       }
     }
     return result
-  }
+  },
 )
 
 export const layersTree = createSelector(
@@ -136,7 +136,7 @@ export const layersTree = createSelector(
       }
     })
     return { byIds, roots, visible }
-  }
+  },
 )
 
 export const currentMapLayers = createSelector(
@@ -146,7 +146,7 @@ export const currentMapLayers = createSelector(
     ? Object.entries(layers)
       .map(([ key, value ]) => value.visible && value.mapId === mapId ? key : null)
       .filter((value) => value !== null)
-    : []
+    : [],
 )
 
 export const currentMapTargetLayers = createSelector(
@@ -155,5 +155,5 @@ export const currentMapTargetLayers = createSelector(
   (currentMapLayers, layersById) => currentMapLayers.filter((id) => {
     const layer = layersById[id]
     return layer && !layer.formationId
-  })
+  }),
 )

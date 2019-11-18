@@ -5,7 +5,7 @@ const { Coordinates: Coord } = utils
 
 export const PRINT_PANEL_KEYS = {
   MAP_LABEL: 'mapLabel',
-  LEGEND_CHECKED: 'legendChecked',
+  LEGEND_ENABLED: 'legendEnabled',
   FIRST_ROW: 'firstRow',
   SECOND_ROW: 'secondRow',
   THIRD_ROW: 'thirdRow',
@@ -23,6 +23,8 @@ export const PRINT_PANEL_KEYS = {
   LEGEND_FOURTH_CONTENT: 'legendFourthContent',
   CONFIRM_DATE: `confirmDate`,
 }
+
+export const PRINT_DATE_KEYS = [ 'START', 'FINISH' ]
 
 export const COLOR_PICKER_KEYS = {
   LEGEND_FIRST_COLOR: 'legendFirstColor',

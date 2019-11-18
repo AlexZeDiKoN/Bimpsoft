@@ -197,6 +197,8 @@ const setScaleOptions = (layer, params) => {
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
+        case entityKind.GROUPED_HEAD:
+        case entityKind.GROUPED_LAND:
           layer.setScaleOptions({
             min: Number(params[paramsNames.POINT_SIZE_MIN]),
             max: Number(params[paramsNames.POINT_SIZE_MAX]),
@@ -253,7 +255,7 @@ export default class WebMap extends React.PureComponent {
         minZoom: PropTypes.number,
         maxZoom: PropTypes.number,
         tms: PropTypes.bool,
-      })
+      }),
     ),
     layersById: PropTypes.object,
     unitsById: PropTypes.object,
@@ -343,7 +345,10 @@ export default class WebMap extends React.PureComponent {
     disableDrawUnit: PropTypes.func,
     onMoveContour: PropTypes.func,
     onMoveObjList: PropTypes.func,
+    onMoveGroup: PropTypes.func,
     getZones: PropTypes.func,
+    createGroup: PropTypes.func,
+    dropGroup: PropTypes.func,
   }
 
   constructor (props) {
@@ -1259,7 +1264,7 @@ export default class WebMap extends React.PureComponent {
             popupInner.setLatLng(newCoordinates)
             popupInner.openOn(this.map)
           }
-        }, openPopUpInterval
+        }, openPopUpInterval,
         )
       } else {
         isPopUpOpen && popupInner._close()
@@ -1282,7 +1287,7 @@ export default class WebMap extends React.PureComponent {
     }
     const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
-      const isObjectIsPoint = object.type === entityKind.POINT
+      const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.lineAmpl = attributes.lineAmpl
       layer.options.lineNodes = attributes.lineNodes
@@ -1294,14 +1299,13 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      isObjectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+      objectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
         openingAction,
         layer,
         layerObject.formationId,
         object,
-      )
-      )
-      isObjectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+      ))
+      objectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
         closingAction,
         layer,
         layerObject.formationId,
@@ -1445,11 +1449,17 @@ export default class WebMap extends React.PureComponent {
       }, this.map.getZoom())
       this.props.onMoveObjList(list, delta)
     } else {
-      if (layer.options.tsType === entityKind.CONTOUR) {
-        const shift = calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
-        this.props.onMoveContour(layer.id, shift)
-      } else {
-        this.checkSaveObject(false)
+      const shift = layer._dragDeltaPx
+        ? calcMoveWM(layer._dragDeltaPx, layer._map.getZoom())
+        : { x: 0, y: 0 }
+      switch (layer.options.tsType) {
+        case entityKind.CONTOUR:
+          return this.props.onMoveContour(layer.id, shift)
+        case entityKind.GROUPED_HEAD:
+        case entityKind.GROUPED_LAND:
+          return this.props.onMoveGroup(layer.id, shift)
+        default:
+          return this.checkSaveObject(false)
       }
     }
   }
@@ -1468,12 +1478,14 @@ export default class WebMap extends React.PureComponent {
 
   clickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: layer, target: { object: { name, state, catalogId } } } = event
+    const { target: layer, target: { object: { name, state, catalogId, country, affiliation } } } = event
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
     let text = `<strong>${catalogName}</strong><br/>`
     name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
-    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}`)
+    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
+    country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
+    affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
     if (!this.catalogsPopup) {
       this.catalogsPopup = L.popup()
     }

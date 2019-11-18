@@ -13,7 +13,7 @@ const PrintPanel = connect(
     return {
       docConfirm: (printMap && printMap.docConfirm[0]) || {},
       securityClassification: (printMap && printMap.securityClassification) || {},
-      approversData: (printMap && printMap.approversData) || {},
+      approversData: (printMap && printMap.approversData) || [],
       printScale,
       requisites,
     }

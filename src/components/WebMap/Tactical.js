@@ -3,7 +3,7 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
-import entityKind from './entityKind'
+import entityKind, { GROUPS } from './entityKind'
 
 const { Coordinates: Coord } = utils
 
@@ -34,7 +34,7 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
-  if (layer.options.tsType === entityKind.CONTOUR) {
+  if (GROUPS.COMBINED.includes(layer.options.tsType)) {
     layer.pm.enable()
   } else {
     if (layer.options.tsType !== entityKind.POINT && layer.options.tsType !== entityKind.TEXT) {
@@ -112,6 +112,10 @@ export function createTacticalSign (data, map, prevLayer) {
       return createSquare(data, map, prevLayer)
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
+    case entityKind.GROUPED_HEAD:
+      return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
+    case entityKind.GROUPED_LAND:
+      return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -182,6 +186,15 @@ function createSegment (data) {
   const points = geometry.toJS()
   const { template, color } = attributes
   const options = prepareOptions(entityKind.SEGMENT, color, template)
+  return L.polyline(points, options)
+}
+
+function createGroup (kind, data) {
+  const { geometry, attributes } = data
+  const points = geometry.toJS()
+  const { scale } = attributes
+  const options = prepareOptions(kind)
+  options.tsScale = scale
   return L.polyline(points, options)
 }
 
@@ -293,13 +306,8 @@ function createSquare (data, map, layer) {
   if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
   }
-  const bounds = L.latLngBounds(point1, point2)
-  point1 = bounds.getNorthWest()
-  point2 = bounds.getSouthEast()
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
-  const height = map.distance(point1, { lat: point2.lat, lng: point1.lng })
-  const size = Math.max(width, height)
-  point2 = L.latLng(point1).toBounds(size * 2).getSouthEast()
+  point2 = L.CRS.Earth.calcPairRightDown(point1, width)
   return createRectangle([ point1, point2 ], layer)
 }
 
@@ -342,6 +350,8 @@ export function getGeometry (layer) {
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA: {
@@ -396,6 +406,8 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:
     case entityKind.AREA:

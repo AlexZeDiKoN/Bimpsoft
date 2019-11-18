@@ -185,7 +185,9 @@ export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
 export const CATALOGS = 'Каталоги'
 export const STATE = 'Стан'
+export const COUNTRY = 'Країна'
 
+export const IDENTITY = 'Приналежність'
 export const FRIENDLY = 'дружня'
 export const HOSTILE = 'ворожа'
 export const ZONE_OF_DIRECTION = 'зона напрямку'
@@ -199,13 +201,13 @@ export const DPI = 'Роздільна здатність (DPI)'
 export const COORDINATES_TYPE = 'Система координат'
 export const MAP_LABEL = `Гриф`
 export const MAP_COPY = 'Прим. № __'
-export const FIRST_ROW = `Рядок 1 (h)`
-export const SECOND_ROW = `Рядок 2 (2/3h)`
-export const THIRD_ROW = `Рядок 3 (2/3h)`
-export const FOURTH_ROW = `Рядок 4 (2/3h)`
-export const FIFTH_ROW = `Рядок 5 (1/2h)`
-export const START = `Почата (1/2h)`
-export const FINISH = `Закінчена (1/2h)`
+export const FIRST_ROW = `Рядок 1`
+export const SECOND_ROW = `Рядок 2`
+export const THIRD_ROW = `Рядок 3`
+export const FOURTH_ROW = `Рядок 4`
+export const FIFTH_ROW = `Рядок 5`
+export const START = `Почата`
+export const FINISH = `Закінчена`
 export const CONFIRM_DATE = `Дата підпису`
 // заголовки
 export const DOC_HEADER = `Заголовок документа`
@@ -289,3 +291,4 @@ export const LOCATION = 'Позиція'
 
 export const ACCESS_FULL = 'Повний доступ'
 export const ACCESS_READONLY = 'Лише перегляд'
+export const GROUPPING = 'Групувати'

@@ -11,6 +11,8 @@ const entityKind = { // ID в базі даних відповідних тип�
   TEXT: 10, // текстова мітка
   CONTOUR: 11, // контур
   TARGETING: 12, // зона вогневого ураження
+  GROUPED_HEAD: 13, // згрупований знак пунктів управління
+  GROUPED_LAND: 14, // згрупований знак сухопутних об'єктів
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
 }
@@ -35,6 +37,8 @@ export const entityKindNonFillable = [
   entityKind.TEXT,
   entityKind.GROUP,
   entityKind.FLEXGRID,
+  entityKind.GROUPED_HEAD,
+  entityKind.GROUPED_LAND,
 ]
 
 export const entityKindOutlinable = [
@@ -70,5 +74,25 @@ export const GROUPS = {
   POINTS: [
     entityKind.POINT,
     entityKind.TEXT,
+  ],
+  GROUPED: [
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
+  COMBINED: [
+    entityKind.CONTOUR,
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
+  BEZIER: [
+    entityKind.CURVE,
+    entityKind.AREA,
+  ],
+  STATIC: [
+    entityKind.SEGMENT,
+    entityKind.RECTANGLE,
+    entityKind.SQUARE,
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
   ],
 }

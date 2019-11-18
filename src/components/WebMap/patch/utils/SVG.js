@@ -237,6 +237,14 @@ export function prepareLinePath (js, d, rings) {
   return wrapSvgPath(decodedPath)
 }
 
+export function makeHeadGroup (line, parts) {
+  // TODO 5235
+}
+
+export function makeLandGroup (line, parts) {
+  // TODO 5235
+}
+
 /* function getCentralPoint (js) {
   const result = { x: 0, y: 0 }
   if (js.svg.$.width && js.svg.$.height) {

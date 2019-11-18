@@ -1,6 +1,8 @@
+import * as R from 'ramda'
 import { MapModes } from '../../constants'
 import { action } from '../../utils/services'
-import { layerNameSelector, mapNameSelector, signedMap } from '../selectors'
+import { getNextLayerId } from '../../utils/layers'
+import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLayerId } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
@@ -42,11 +44,29 @@ export const updateLayers = (layersData) => ({
 })
 
 export const updateLayer = (layerData) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { layerSetColor } }) => {
+  asyncAction.withNotification(async (dispatch, getStore, { webmapApi: { layerSetColor } }) => {
+    const store = getStore()
+    const allLayersById = layersById(store)
+    const currentlySelectedLayerId = selectedLayerId(store)
+
+    if (
+      currentlySelectedLayerId === layerData.layerId &&
+      R.has('visible', layerData) &&
+      !layerData.visible
+    ) {
+      const nextLayerIdToSelect = getNextLayerId(
+        allLayersById,
+        currentlySelectedLayerId,
+        (layer) => !layer.visible,
+      )
+      dispatch(selectLayer(nextLayerIdToSelect))
+    }
+
     await dispatch({
       type: UPDATE_LAYER,
       layerData,
     })
+
     if (layerData.hasOwnProperty('color')) {
       await layerSetColor(layerData.layerId, layerData.color)
     }
@@ -59,7 +79,7 @@ export const updateLayersByMapId = (mapId, layerData) =>
   asyncAction.withNotification((dispatch, getState) => Promise.all(
     Object.values(getState().layers.byId)
       .filter((layer) => layer.mapId === mapId)
-      .map((layer) => dispatch(updateLayer({ ...layerData, layerId: layer.layerId })))
+      .map((layer) => dispatch(updateLayer({ ...layerData, layerId: layer.layerId }))),
   ))
 
 export const updateAllLayers = (layerData) =>
@@ -145,21 +165,27 @@ export const deleteLayersByMapId = (mapId) =>
     dispatch(deleteLayers(layersIds))
   })
 
-export const deleteLayers = (layersIds) =>
-  asyncAction.withNotification(async (dispatch, getState) => {
-    const state = getState()
-    const { selectedId } = state.layers
+export const deleteLayers = (layersIdsToDelete) =>
+  asyncAction.withNotification(async (dispatch, getStore) => {
+    const store = getStore()
+    const allLayersById = layersById(store)
+    const currentlySelectedLayerId = selectedLayerId(store)
+
+    if (layersIdsToDelete.includes(currentlySelectedLayerId)) {
+      const nextLayerIdToSelect = getNextLayerId(
+        allLayersById,
+        currentlySelectedLayerId,
+        (layer) => !layer.visible || layersIdsToDelete.includes(layer.layerId),
+      )
+      dispatch(selectLayer(nextLayerIdToSelect))
+    }
 
     dispatch({
       type: DELETE_LAYERS,
-      layersIds,
+      layersIds: layersIdsToDelete,
     })
 
-    if (layersIds.includes(selectedId)) {
-      dispatch(selectLayer(null))
-    }
-
-    for (const layerId of layersIds) {
+    for (const layerId of layersIdsToDelete) {
       dispatch(webMap.allocateObjectsByLayerId(layerId))
     }
   })

@@ -173,10 +173,22 @@ export const copyContour = (id, layer, shift) =>
     payload: fixServerObject(await contourCopy(id, layer, shift)),
   }))
 
+export const copyGroup = (id, layer, shift) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupCopy } }) => dispatch({
+    type: actionNames.ADD_OBJECT,
+    payload: fixServerObject(await groupCopy(id, layer, shift)),
+  }))
+
 export const moveContour = (id, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => dispatch({
     type: actionNames.ADD_OBJECT,
     payload: fixServerObject(await contourMove(id, shift)),
+  }))
+
+export const moveGroup = (id, shift) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupMove } }) => dispatch({
+    type: actionNames.ADD_OBJECT,
+    payload: fixServerObject(await groupMove(id, shift)),
   }))
 
 export const moveObjList = (ids, shift) =>

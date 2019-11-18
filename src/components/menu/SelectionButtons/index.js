@@ -7,7 +7,8 @@ import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-import entityKind, { entityKindOutlinable } from '../../WebMap/entityKind'
+import entityKind, { entityKindOutlinable /*, GROUPS */ } from '../../WebMap/entityKind'
+// import { determineGroupType } from '../../../store/utils'
 import DeleteSelectionForm from './DeleteSelectionForm'
 
 import './style.css'
@@ -22,7 +23,10 @@ export default class SelectionButtons extends React.Component {
     list: PropTypes.array,
     clipboard: PropTypes.array,
     selectedTypes: PropTypes.arrayOf(
-      PropTypes.number
+      PropTypes.number,
+    ),
+    selectedPoints: PropTypes.arrayOf(
+      PropTypes.object,
     ),
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
@@ -33,6 +37,8 @@ export default class SelectionButtons extends React.Component {
     onMirrorImage: PropTypes.func,
     onContour: PropTypes.func,
     onDecontour: PropTypes.func,
+    onGroup: PropTypes.func,
+    onUngroup: PropTypes.func,
   }
 
   render () {
@@ -43,6 +49,7 @@ export default class SelectionButtons extends React.Component {
       clipboard,
       layerName,
       selectedTypes,
+      // selectedPoints,
       onCopy,
       onCut,
       onPaste,
@@ -52,6 +59,8 @@ export default class SelectionButtons extends React.Component {
       onMirrorImage,
       onContour,
       onDecontour,
+      // onGroup,
+      // onUngroup,
     } = this.props
 
     const nSelected = list.length
@@ -60,7 +69,9 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
     const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
-    // console.log({ selectedTypes, canContour, canDecontour })
+    /* const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
+      determineGroupType(selectedPoints)
+    const canUngroup = selectedTypes.length === 1 && GROUPS.GROUPED.includes(selectedTypes[0]) */
     const deleteHandler = () => {
       if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
         onDelete()
@@ -140,6 +151,13 @@ export default class SelectionButtons extends React.Component {
             disabled={!canContour && !canDecontour}
             onClick={canContour ? onContour : onDecontour}
           />
+          {/* <IconButton
+            placement={'bottomLeft'}
+            title={i18n.GROUPPING}
+            icon={iconNames.MAP_GROUP}
+            disabled={!canGroup && !canUngroup}
+            onClick={canGroup ? onGroup : onUngroup}
+          /> */}
         </>)}
       </>
     )

@@ -19,7 +19,7 @@ export const expandedIdsSelector = createSelector(
       expandedIds[`m${key}`] = true
     })
     return expandedIds
-  }
+  },
 )
 
 const mapStateToProps = (store) => {
@@ -89,5 +89,5 @@ const mapDispatchToProps = {
 
 export default connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(LayersComponent)

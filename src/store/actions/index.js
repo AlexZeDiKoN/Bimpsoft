@@ -15,6 +15,7 @@ import * as flexGrid from './flexGrid'
 import * as march from './march'
 import * as ovt from './ovt'
 import * as targeting from './targeting'
+import * as groups from './groups'
 import * as task from './task'
 
 export {
@@ -34,6 +35,7 @@ export {
   march,
   ovt,
   targeting,
+  groups,
   targetCatalog,
   task,
 }

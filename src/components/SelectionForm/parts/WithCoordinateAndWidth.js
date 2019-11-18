@@ -19,11 +19,8 @@ function getWidthFromCoordinatesArray (coordinatesArray) {
     const coord2 = coordinatesArray[1]
     if (Coord.check(coord2)) {
       const corner1 = L.latLng(coord1)
-      const corner2 = L.latLng(coord2)
-      const bounds = L.latLngBounds(corner1, corner2)
-      const northWest = bounds.getNorthWest()
-      width = northWest.distanceTo(bounds.getNorthEast())
-      width = Math.round(width)
+      const corner2 = L.latLng({ lng: coord2.lng, lat: coord1.lat })
+      width = Math.round(corner1.distanceTo(corner2))
     }
   }
   return width
@@ -37,35 +34,23 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
     this.setState({ widthText: null })
   }
 
-  onCoordinateBlurHandler = (index) => {
-    this.coordinateFocusChange(index, false)
-    this.setResult((result) => {
-      const coordinatesArray = result.getIn(COORDINATE_PATH)
-      const coord1 = coordinatesArray.get(0)
-      const coord2 = coordinatesArray.get(1)
-      if (Coord.check(coord1) && Coord.check(coord2)) {
-        const bounds = L.latLngBounds(coord1, coord2)
-        const northWest = bounds.getNorthWest()
-        const southEast = bounds.getSouthEast()
-        return result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, northWest).set(1, southEast))
-      }
-    })
-  }
-
   widthChangeHandler = (widthText) => {
     this.setResult((result) => {
       const width = Number(widthText)
       if (Number.isFinite(width)) {
         const coordinatesArray = result.getIn(COORDINATE_PATH)
-        const coord1 = coordinatesArray.get(0)
-        if (Coord.check(coord1)) {
-          const coord2 = L.CRS.Earth.calcPairRightDown(coord1, width)
-          result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(1, coord2))
+        const calculatedWidth = getWidthFromCoordinatesArray(coordinatesArray)
+        if (widthText !== calculatedWidth) {
+          const coord1 = coordinatesArray.get(0)
+          if (Coord.check(coord1)) {
+            const coord2 = L.CRS.Earth.calcPairRightDown(coord1, width)
+            result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(1, coord2))
+          }
+          this.setState({ widthText })
         }
       }
       return result
     })
-    this.setState({ widthText })
   }
 
   widthBlurHandler = () => this.setState({ widthText: null })

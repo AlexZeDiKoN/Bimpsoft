@@ -5,7 +5,7 @@ import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector, taskModeSelector, targetingModeSelector } from '../selectors'
-import entityKind from '../../components/WebMap/entityKind'
+import entityKind, { GROUPS } from '../../components/WebMap/entityKind'
 import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
@@ -191,7 +191,7 @@ export const copy = () => withNotification((dispatch, getState) => {
       const obj = objects.get(id)
       if (obj) {
         const clipboardObject = obj.toJS()
-        if (clipboardObject.type !== entityKind.CONTOUR) {
+        if (!GROUPS.COMBINED.includes(clipboardObject.type)) {
           delete clipboardObject.id
         }
         clipboardObjects.push(clipboardObject)
@@ -230,18 +230,28 @@ export const paste = () => withNotification((dispatch, getState) => {
       dispatch(batchActions(clipboard.map((clipboardObject) => {
         const { id, type, geometry: g } = clipboardObject
         const [ geometry, steps ] = getShift(hashList, type, g, zoom)
-        return type === entityKind.CONTOUR
-          ? webMap.copyContour(
-            id,
-            layer,
-            calcShiftWM(zoom, steps),
-          )
-          : webMap.addObject({
-            ...clipboardObject,
-            layer,
-            geometry,
-            point: calcMiddlePoint(geometry),
-          })
+        switch (type) {
+          case entityKind.CONTOUR:
+            return webMap.copyContour(
+              id,
+              layer,
+              calcShiftWM(zoom, steps),
+            )
+          case entityKind.GROUPED_HEAD:
+          case entityKind.GROUPED_LAND:
+            return webMap.copyGroup(
+              id,
+              layer,
+              calcShiftWM(zoom, steps),
+            )
+          default:
+            return webMap.addObject({
+              ...clipboardObject,
+              layer,
+              geometry,
+              point: calcMiddlePoint(geometry),
+            })
+        }
       })))
     }
   }
