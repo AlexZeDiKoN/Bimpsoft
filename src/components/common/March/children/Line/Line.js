@@ -6,7 +6,7 @@ import i18n from '../../../../../i18n'
 import { MarchKeys } from '../../../../../constants'
 
 const { FormRow } = components.form
-const { MARCH_SEGMENT_KEYS, MARCH_TEMPLATES } = MarchKeys
+const { MARCH_SEGMENT_KEYS, MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
 
 // TODO: test data
 const segmentsExmp = [ 'Створити вручну', 'segment one', 'segment two', 'segment three' ]
@@ -35,6 +35,9 @@ class Line extends Component {
         indicators,
       } = this.props
       const isVisibleAddBtn = MARCH_TEMPLATES[id] && MARCH_TEMPLATES[id].hasOptional
+      const indicatorSegment = indicators[MARCH_INDICATORS_GROUP.segmentType]
+      const indicatorTerrain = indicators[MARCH_INDICATORS_GROUP.terrainType]
+
       return (
         <div className='march_segment-options'>
           {isVisibleAddBtn && index > 1 && <div className='march_segment-adding'>
@@ -77,10 +80,10 @@ class Line extends Component {
                 value={line[MARCH_SEGMENT_KEYS.SEGMENT_TYPE]
                   ? line[MARCH_SEGMENT_KEYS.SEGMENT_TYPE].name
                   : undefined}
-                placeholder={indicators['МШВ002'].typeName}
-                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicators['МШВ002'])}
+                placeholder={indicatorSegment.typeName}
+                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicatorSegment)}
               >
-                {createChildren(indicators['МШВ002'].typeValues
+                {createChildren(indicatorSegment.typeValues
                   .filter((elem) => line.possibleTypes
                     .some((segment) => segment === elem.id)),
                 )}
@@ -91,10 +94,10 @@ class Line extends Component {
                 value={line[MARCH_SEGMENT_KEYS.TERRAIN_TYPE]
                   ? line[MARCH_SEGMENT_KEYS.TERRAIN_TYPE].name
                   : undefined}
-                placeholder={indicators['МШВ007'].typeName}
-                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicators['МШВ007'])}
+                placeholder={indicatorTerrain.typeName}
+                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicatorTerrain)}
               >
-                {createChildren(indicators['МШВ007'].typeValues)}
+                {createChildren(indicatorTerrain.typeValues)}
               </Select>
             </FormRow>
           </div>

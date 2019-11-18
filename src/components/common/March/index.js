@@ -28,8 +28,9 @@ class March extends Component {
 
     handleMarchType = (target, key) => {
       const { setMarchParams, indicators } = this.props
-      const template = MarchKeys.MARCH_TEMPLATES[ target ].required
-      const targetObj = this.indicatorItemObj(target, indicators['МШВ001'])
+      const { MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
+      const template = MARCH_TEMPLATES[ target ].required
+      const targetObj = this.indicatorItemObj(target, indicators[MARCH_INDICATORS_GROUP.movementType])
       setMarchParams({
         [key]: targetObj,
         template,
@@ -48,7 +49,7 @@ class March extends Component {
         params: { segments },
       } = this.props
       const { FormRow } = components.form
-      const { MARCH_KEYS } = MarchKeys
+      const { MARCH_KEYS, MARCH_INDICATORS_GROUP } = MarchKeys
       return (
         <div className="march_container">
           <div className="march_title">{i18n.MARCH_TITLE}</div>
@@ -88,7 +89,7 @@ class March extends Component {
                         }
                       >
                         {this.createSelectChildren(
-                          indicators['МШВ001'].typeValues,
+                          indicators[MARCH_INDICATORS_GROUP.movementType].typeValues,
                         )}
                       </Select>,
                     )}

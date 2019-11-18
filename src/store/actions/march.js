@@ -9,7 +9,7 @@ export const DELETE_SEGMENT = action('DELETE_SEGMENT')
 
 export const getIndicator = () =>
   async (dispatch, getState, { indicatorApi: { getTypeKinds } }) => {
-    const indicators = await getTypeKinds(MarchKeys.MARCH_INDICATORS_GROUP)
+    const indicators = await getTypeKinds(Object.values(MarchKeys.MARCH_INDICATORS_GROUP))
     dispatch({
       type: GET_TYPE_KINDS,
       payload: indicators,

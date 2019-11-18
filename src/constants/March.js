@@ -12,7 +12,12 @@ export const MARCH_SEGMENT_KEYS = {
   TERRAIN_TYPE: 'terrain',
 }
 
-export const MARCH_INDICATORS_GROUP = [ 'МШВ001', 'МШВ002', 'МШВ006', 'МШВ007' ]
+export const MARCH_INDICATORS_GROUP = {
+  movementType: 'МШВ001',
+  segmentType: 'МШВ002',
+  segmentLength: 'МШВ006',
+  terrainType: 'МШВ007',
+}
 
 const MARCH_TYPES = {
   OWN_RESOURCES: 41,
