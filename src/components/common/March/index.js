@@ -28,7 +28,7 @@ class March extends Component {
 
     handleMarchType = (target, key) => {
       const { setMarchParams, indicators } = this.props
-      const template = MarchKeys.MARCH_TYPES_TEMPLATES[ target ]
+      const template = MarchKeys.MARCH_TEMPLATES[ target ].required
       const targetObj = this.indicatorItemObj(target, indicators['МШВ001'])
       setMarchParams({
         [key]: targetObj,
@@ -76,7 +76,7 @@ class March extends Component {
                             [MARCH_KEYS.MARCH_NAME]: target.value,
                           })
                         }
-                      />
+                      />,
                     )}
                   </FormRow>
                   <FormRow>
@@ -88,9 +88,9 @@ class March extends Component {
                         }
                       >
                         {this.createSelectChildren(
-                          indicators['МШВ001'].typeValues
+                          indicators['МШВ001'].typeValues,
                         )}
-                      </Select>
+                      </Select>,
                     )}
                   </FormRow>
                 </div>

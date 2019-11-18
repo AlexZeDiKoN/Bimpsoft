@@ -18,9 +18,6 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = {
   setMarchParams: march.setMarchParams,
-  addPoint: march.addPoint,
-  deletePoint: march.deletePoint,
-  deleteSegment: march.deleteSegment,
 }
 
 const SegmentContainer = connect(
