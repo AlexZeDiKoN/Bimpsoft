@@ -15,7 +15,7 @@ export default class Segment extends Component {
     }
 
     indicatorItemObj = (target, indicator) => {
-      const activeItem = indicator.typeValues.filter((item) => item.id === +target)
+      const activeItem = indicator.typeValues.filter((item) => item.id === Number(target))
       return {
         indicatorId: indicator.id,
         id: activeItem[0].id,
