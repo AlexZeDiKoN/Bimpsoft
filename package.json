@@ -1,10 +1,10 @@
 {
   "name": "web-map",
-  "version": "10.02.553",
+  "version": "10.02.554",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^10.2.327",
-    "@DZVIN/MilSymbolEditor": "^10.2.228",
+    "@DZVIN/CommonComponents": "^10.2.329",
+    "@DZVIN/MilSymbolEditor": "^10.2.230",
     "@DZVIN/components": "^10.2.517",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
