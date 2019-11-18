@@ -16,9 +16,9 @@ export const getIndicator = () =>
     })
   }
 
-export const addPoint = (index) => ({
+export const addPoint = (index, optional) => ({
   type: ADD_POINT,
-  payload: index,
+  payload: { index, optional },
 })
 
 export const deletePoint = (index) => ({
