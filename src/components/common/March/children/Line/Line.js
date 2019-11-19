@@ -9,105 +9,126 @@ const { FormRow } = components.form
 const { MARCH_SEGMENT_KEYS, MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
 
 // TODO: test data
-const segmentsExmp = [ 'Створити вручну', 'segment one', 'segment two', 'segment three' ]
+const segmentsExmp = [
+  'Створити вручну', 'segment one', 'segment two', 'segment three',
+]
 
 class Line extends Component {
-    handleAddPoint = () => {
-      const { marchType: { id }, addPoint, index } = this.props
-      addPoint(index, MARCH_TEMPLATES[id].optional)
-    }
+  handleAddPoint = () => {
+    const { marchType: { id }, addPoint, index } = this.props
+    addPoint(index, MARCH_TEMPLATES[ id ].optional)
+  }
 
-    handleDeleteSegment = () => {
-      const { index, deleteSegment } = this.props
-      deleteSegment(index)
-    }
+  handleDeleteSegment = () => {
+    const { index, deleteSegment } = this.props
+    deleteSegment(index)
+  }
 
-    handleChangeIndicator = (key, indicator) =>
-      (e) => this.props.setIndicator(e, key, indicator)
+  handleChangeIndicator = (key, indicator) =>
+    (e) => this.props.setIndicator(e, key, indicator)
 
-    render () {
-      const {
-        marchType: { id },
-        index,
-        line,
-        createChildren,
-        onChange,
-        indicators,
-      } = this.props
-      const isVisibleAddBtn = MARCH_TEMPLATES[id] && MARCH_TEMPLATES[id].hasOptional
-      const indicatorSegment = indicators[MARCH_INDICATORS_GROUP.segmentType]
-      const indicatorTerrain = indicators[MARCH_INDICATORS_GROUP.terrainType]
+  render () {
+    const {
+      marchType: { id },
+      index,
+      line,
+      createChildren,
+      onChange,
+      indicators,
+      form: { getFieldDecorator },
+    } = this.props
+    const isVisibleAddBtn = MARCH_TEMPLATES[ id ] && MARCH_TEMPLATES[ id ].hasOptional
+    const indicatorSegment = indicators[ MARCH_INDICATORS_GROUP.segmentType ]
+    const indicatorTerrain = indicators[ MARCH_INDICATORS_GROUP.terrainType ]
 
-      return (
-        <div className='march_segment-options'>
-          {isVisibleAddBtn && index > 1 && <div className='march_segment-adding'>
-            <button
-              onClick={this.handleAddPoint}
-            >
-              {i18n.ADD_SEGMENT}
-            </button>
-          </div>}
-          <div className='march_segment-params'>
-            <div className="march_segment-header">
-              <span className="march_distance">0 км</span>
-              <div className='march_segment-delete'>
-                <button
-                  onClick={this.handleDeleteSegment}
-                >
-                  <Icon type="delete" theme="filled"/>
-                </button>
-              </div>
+    return (
+      <div className='march_segment-options'>
+        {isVisibleAddBtn && index > 1 && <div className='march_segment-adding'>
+          <button
+            onClick={this.handleAddPoint}
+            type="button"
+          >
+            {i18n.ADD_SEGMENT}
+          </button>
+        </div>}
+        <div className='march_segment-params'>
+          <div className="march_segment-header">
+            <span className="march_distance">0 км</span>
+            <div className='march_segment-delete'>
+              <button
+                onClick={this.handleDeleteSegment}
+                type="button"
+              >
+                <Icon type="delete" theme="filled"/>
+              </button>
             </div>
-            <FormRow>
-              <Select
-                value={line[MARCH_SEGMENT_KEYS.SEGMENT]}
-                placeholder={i18n.CHECK_SEGMENT}
-                onChange={(e) => onChange(e, MARCH_SEGMENT_KEYS.SEGMENT)}
-              >
-                {createChildren(segmentsExmp)}
-              </Select>
-            </FormRow>
-            <FormRow>
-              <Input
-                value={line[MARCH_SEGMENT_KEYS.SEGMENT_NAME]}
-                placeholder={i18n.SEGMENT_NAME}
-                onChange={({ target }) =>
-                  onChange(target.value, MARCH_SEGMENT_KEYS.SEGMENT_NAME)}
-              />
-            </FormRow>
-            <FormRow>
-              <Select
-                value={line[MARCH_SEGMENT_KEYS.SEGMENT_TYPE]
-                  ? line[MARCH_SEGMENT_KEYS.SEGMENT_TYPE].name
-                  : undefined}
-                placeholder={indicatorSegment.typeName}
-                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicatorSegment)}
-              >
-                {createChildren(indicatorSegment.typeValues
-                  .filter((elem) => line.possibleTypes
-                    .some((segment) => segment === elem.id)),
-                )}
-              </Select>
-            </FormRow>
-            <FormRow>
-              <Select
-                value={line[MARCH_SEGMENT_KEYS.TERRAIN_TYPE]
-                  ? line[MARCH_SEGMENT_KEYS.TERRAIN_TYPE].name
-                  : undefined}
-                placeholder={indicatorTerrain.typeName}
-                onChange={this.handleChangeIndicator(MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicatorTerrain)}
-              >
-                {createChildren(indicatorTerrain.typeValues)}
-              </Select>
-            </FormRow>
           </div>
+          <FormRow>
+            {getFieldDecorator(`${MARCH_SEGMENT_KEYS.SEGMENT}:${line.id}`,
+              {
+                rules: [ { required: true } ],
+                initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT ],
+              },
+            )(<Select
+              placeholder={i18n.CHECK_SEGMENT}
+              onChange={(e) => onChange(e, MARCH_SEGMENT_KEYS.SEGMENT)}
+            >
+              {createChildren(segmentsExmp)}
+            </Select>)}
+          </FormRow>
+          <FormRow>
+            {getFieldDecorator(`${MARCH_SEGMENT_KEYS.SEGMENT_NAME}:${line.id}`,
+              {
+                rules: [ { required: true } ],
+                initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT_NAME ],
+              },
+            )(<Input
+              placeholder={i18n.SEGMENT_NAME}
+              onChange={({ target }) => {
+                onChange(target.value, MARCH_SEGMENT_KEYS.SEGMENT_NAME)
+              }
+              }
+            />)}
+          </FormRow>
+          <FormRow>
+            {getFieldDecorator(
+              `${MARCH_INDICATORS_GROUP.segmentType}:${line.id}`, {
+                rules: [ { required: true } ],
+                initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ] && line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name,
+              },
+            )(<Select
+              placeholder={indicatorSegment.typeName}
+              onChange={this.handleChangeIndicator(
+                MARCH_SEGMENT_KEYS.SEGMENT_TYPE, indicatorSegment)}
+            >
+              {createChildren(indicatorSegment.typeValues
+                .filter((elem) => line.possibleTypes
+                  .some((segment) => segment === elem.id)),
+              )}
+            </Select>)}
+          </FormRow>
+          <FormRow>
+            {getFieldDecorator(
+              `${MARCH_INDICATORS_GROUP.terrainType}:${line.id}`, {
+                rules: [ { required: true } ],
+                initialValue: line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ] && line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ].name,
+              })(<Select
+              placeholder={indicatorTerrain.typeName}
+              onChange={this.handleChangeIndicator(
+                MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicatorTerrain)}
+            >
+              {createChildren(indicatorTerrain.typeValues)}
+            </Select>)}
+          </FormRow>
         </div>
-      )
-    }
+      </div>
+    )
+  }
 }
 
 Line.propTypes = {
   line: PropTypes.object,
+  form: PropTypes.object,
   index: PropTypes.number,
   marchType: PropTypes.object,
   indicators: PropTypes.object,

@@ -38,7 +38,7 @@ export default class Segment extends Component {
       .map((item) => <Select.Option key={item.id ? item.id : item}>{item.name ? item.name : item}</Select.Option>)
 
     renderSegments = () => {
-      const { index, segments } = this.props
+      const { index, segments, form } = this.props
       const { FIELDS_TYPE } = MarchKeys
       const item = segments[index]
 
@@ -48,10 +48,12 @@ export default class Segment extends Component {
           index={index}
           onChange={this.setSegmentParams}
           createChildren={this.createSelectChildren}
+          form={form}
         />
         : <Line
           line={item}
           index={index}
+          form={form}
           onChange={this.setSegmentParams}
           createChildren={this.createSelectChildren}
           setIndicator={this.setIndicatorParam}/>

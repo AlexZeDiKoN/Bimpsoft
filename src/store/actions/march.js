@@ -6,6 +6,7 @@ export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
 export const ADD_POINT = action('ADD_POINT')
 export const DELETE_POINT = action('DELETE_POINT')
 export const DELETE_SEGMENT = action('DELETE_SEGMENT')
+export const SET_INTEGRITY = action('SET_INTEGRITY')
 
 export const getIndicator = () =>
   async (dispatch, getState, { indicatorApi: { getTypeKinds } }) => {
@@ -33,5 +34,10 @@ export const deleteSegment = (index) => ({
 
 export const setMarchParams = (data) => ({
   type: SET_MARCH_PARAMS,
+  payload: data,
+})
+
+export const setIntegrity = (data) => ({
+  type: SET_INTEGRITY,
   payload: data,
 })

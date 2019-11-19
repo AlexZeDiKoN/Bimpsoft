@@ -12,7 +12,7 @@ const { FormRow } = components.form
 // TODO: test data
 const geographicalLandmark = [ 'landmark one', 'landmark two', 'landmark three' ]
 
-const Point = ({ point, index, onChange, deletePoint, createChildren }) => {
+const Point = ({ point, index, onChange, deletePoint, createChildren, form: { getFieldDecorator } }) => {
   const handleDelete = () => deletePoint(index)
   const handleChangeInput = ({ target }) => onChange(target.value, MARCH_SEGMENT_KEYS.COORDINATE)
   const handleChangeSelect = (e) => onChange(e, MARCH_SEGMENT_KEYS.LANDMARK)
@@ -22,13 +22,15 @@ const Point = ({ point, index, onChange, deletePoint, createChildren }) => {
       {!point.required && <div className='march_segment-delete march_segment-point-delete'>
         <button
           onClick={handleDelete}
+          type="button"
         >
           <Icon type="delete" theme="filled"/>
         </button>
       </div>}
       <FormRow>
-        <Input
-          value={point[MARCH_SEGMENT_KEYS.COORDINATE]}
+        {getFieldDecorator(`${MARCH_SEGMENT_KEYS.COORDINATE}:${point.id}`,
+          { rules: [ { required: true } ], initialValue: point[MARCH_SEGMENT_KEYS.COORDINATE] },
+        )(<Input
           addonAfter={<div
             className='segment_point'
             onClick={() => {
@@ -38,16 +40,17 @@ const Point = ({ point, index, onChange, deletePoint, createChildren }) => {
           </div>}
           placeholder={i18n.COORDINATES}
           onChange={handleChangeInput}
-        />
+        />)}
       </FormRow>
       <FormRow>
-        <AutoComplete
-          value={point[MARCH_SEGMENT_KEYS.LANDMARK]}
+        {getFieldDecorator(`${MARCH_SEGMENT_KEYS.LANDMARK}:${point.id}`,
+          { rules: [ { required: true } ], initialValue: point[MARCH_SEGMENT_KEYS.LANDMARK] },
+        )(<AutoComplete
           placeholder={i18n.GEOGRAPHICAL_LANDMARK}
           onChange={handleChangeSelect}
         >
           {createChildren(geographicalLandmark)}
-        </AutoComplete>
+        </AutoComplete>)}
       </FormRow>
     </div>
   )
@@ -59,6 +62,7 @@ Point.propTypes = {
   onChange: PropTypes.func,
   deletePoint: PropTypes.func,
   createChildren: PropTypes.func,
+  form: PropTypes.object,
 }
 
 export default Point

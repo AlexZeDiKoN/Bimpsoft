@@ -14,7 +14,9 @@ class March extends Component {
       form: PropTypes.object.isRequired,
       indicators: PropTypes.object,
       params: PropTypes.object,
+      integrity: PropTypes.bool,
       setMarchParams: PropTypes.func,
+      setIntegrity: PropTypes.func,
     }
 
     indicatorItemObj = (target, indicator) => {
@@ -40,6 +42,11 @@ class March extends Component {
     createSelectChildren = (incomeData) => incomeData
       .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
 
+    checkIntegrityOfMarch = () => {
+      const { form, setIntegrity } = this.props
+      form.validateFields((err) => setIntegrity(!err))
+    }
+
     render () {
       const {
         form,
@@ -47,6 +54,7 @@ class March extends Component {
         indicators,
         setMarchParams,
         params: { segments },
+        integrity,
       } = this.props
       const { FormRow } = components.form
       const { MARCH_KEYS, MARCH_INDICATORS_GROUP } = MarchKeys
@@ -61,10 +69,11 @@ class March extends Component {
           {indicators && (
             <Form
               className="march_form"
+              onBlur={this.checkIntegrityOfMarch}
             >
               <div className="march_name">
                 <div className="march_name-indicator">
-                  <Icon type="branches" />
+                  <Icon type="branches" className={`march_icon-${integrity ? 'success' : 'error'}`} />
                 </div>
                 <div className="march_name-form">
                   <FormRow>
@@ -106,7 +115,7 @@ class March extends Component {
               </div>
               <div className="march_track">
                 {segments.map((item, i) => (
-                  <SegmentContainer key={item.id} index={i} form={form} />
+                  <SegmentContainer key={item.id || i} index={i} form={form} />
                 ))}
               </div>
               <div className="march_total_distance">{i18n.MARCH_DISTANCE}: {0} км</div>
