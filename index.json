@@ -16,6 +16,12 @@
     "maxZoom": 16,
     "tms": true
   }, {
+    "source": "/tiles/sat_overlay/{z}/{x}/{y}.png",
+    "isSat": true,
+    "minZoom": 5,
+    "maxZoom": 18,
+    "tms": true
+  }, {
     "source": "/tiles/labels/{z}/{x}/{y}.png",
     "isSat": false,
     "minZoom": 5,
