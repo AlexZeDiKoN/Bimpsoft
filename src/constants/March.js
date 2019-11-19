@@ -4,17 +4,20 @@ export const MARCH_KEYS = {
 }
 
 export const MARCH_SEGMENT_KEYS = {
-  COORDINATE_START: 'coordinateStart',
-  LANDMARK_START: 'landmarkStart',
+  COORDINATE: 'coordinate',
+  LANDMARK: 'landmark',
   SEGMENT: 'segment',
-  SEGMENT_NAME: 'segmentName',
-  SEGMENT_TYPE: 'segmentType',
-  TERRAIN_TYPE: 'terrainType',
-  COORDINATE_FINISH: 'coordinateFinish',
-  LANDMARK_FINISH: 'landmarkFinish',
+  SEGMENT_NAME: 'name',
+  SEGMENT_TYPE: 'type',
+  TERRAIN_TYPE: 'terrain',
 }
 
-export const MARCH_INDICATORS_GROUP = [ 'МШВ001', 'МШВ002', 'МШВ006', 'МШВ007' ]
+export const MARCH_INDICATORS_GROUP = {
+  movementType: 'МШВ001',
+  segmentType: 'МШВ002',
+  segmentLength: 'МШВ006',
+  terrainType: 'МШВ007',
+}
 
 const MARCH_TYPES = {
   OWN_RESOURCES: 41,
@@ -33,137 +36,151 @@ const SEGMENT_TYPES = {
   SEA: 51,
 }
 
-export const MARCH_TYPES_TEMPLATES = {
+export const FIELDS_TYPE = {
+  POINT: 'point',
+  SEGMENT: 'segment',
+}
+
+export const MARCH_TEMPLATES = {
   // Своїм ходом
-  [MARCH_TYPES.OWN_RESOURCES]: [
-    {
-      startPoint: true,
-      complementarySegment: {
-        default: {
-          proposedSegmentTypes: [ SEGMENT_TYPES.INTERMEDIATE ],
-          adding: true,
-          delete: true,
-        },
+  [MARCH_TYPES.OWN_RESOURCES]: {
+    required: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [ SEGMENT_TYPES.TO_STARTING_POINT ],
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [ SEGMENT_TYPES.TO_STARTING_POINT ],
-        adding: true,
-        delete: false,
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [ SEGMENT_TYPES.TO_DESTINATION_POINT ],
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [ SEGMENT_TYPES.TO_DESTINATION_POINT ],
-        adding: true,
-        delete: false,
+      { type: FIELDS_TYPE.POINT, required: true },
+    ],
+    optional: [
+      {
+        possibleTypes: [ SEGMENT_TYPES.INTERMEDIATE ],
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-  ],
+      { type: FIELDS_TYPE.POINT },
+    ],
+    hasOptional: true,
+  },
+
   // Залізницею
-  [MARCH_TYPES.BY_RAILROAD]: [
-    {
-      startPoint: true,
-      complementarySegment: false,
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
+  [MARCH_TYPES.BY_RAILROAD]: {
+    required: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_STARTING_POINT,
           SEGMENT_TYPES.TO_BOOT_STATION,
         ],
-        adding: false,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [ SEGMENT_TYPES.RAILROAD ],
-        adding: false,
-        delete: false,
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
+          SEGMENT_TYPES.RAILROAD,
+        ],
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_DESTINATION_POINT,
           SEGMENT_TYPES.FROM_UNLOADING_STATION,
         ],
-        adding: false,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-  ],
+      { type: FIELDS_TYPE.POINT, required: true },
+    ],
+  },
   // Морем
-  [MARCH_TYPES.BY_SHIPS]: [
-    {
-      startPoint: true,
-      complementarySegment: false,
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
-          SEGMENT_TYPES.TO_STARTING_POINT,
+  [MARCH_TYPES.BY_SHIPS]: {
+    required: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_BOOT_STATION,
+          SEGMENT_TYPES.TO_STARTING_POINT,
         ],
-        adding: false,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [ SEGMENT_TYPES.SEA ],
-        adding: false,
-        delete: false,
+      { type: FIELDS_TYPE.POINT, required: true },
+
+      {
+        possibleTypes: [
+          SEGMENT_TYPES.SEA,
+        ],
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_DESTINATION_POINT,
           SEGMENT_TYPES.FROM_UNLOADING_STATION,
         ],
-        adding: false,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-  ],
+      { type: FIELDS_TYPE.POINT, required: true },
+    ],
+  },
   // Комбінований
-  [MARCH_TYPES.COMBINED]: [
-    {
-      startPoint: true,
-      complementarySegment: {
-        default: {
-          proposedSegmentTypes: [
-            SEGMENT_TYPES.INTERMEDIATE,
-            SEGMENT_TYPES.RAILROAD,
-            SEGMENT_TYPES.SEA,
-          ],
-          adding: true,
-          delete: true,
-        },
-      },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
-          SEGMENT_TYPES.TO_STARTING_POINT,
+  [MARCH_TYPES.COMBINED]: {
+    required: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_BOOT_STATION,
+          SEGMENT_TYPES.TO_STARTING_POINT,
         ],
-        adding: true,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-    {
-      default: {
-        proposedSegmentTypes: [
+      { type: FIELDS_TYPE.POINT, required: true },
+      {
+        possibleTypes: [
           SEGMENT_TYPES.TO_DESTINATION_POINT,
           SEGMENT_TYPES.FROM_UNLOADING_STATION,
         ],
-        adding: true,
-        delete: false,
+        required: true,
+        coordStart: '',
+        coordEnd: '',
       },
-    },
-  ],
+      { type: FIELDS_TYPE.POINT, required: true },
+
+    ],
+    optional: [
+      {
+        possibleTypes: [
+          SEGMENT_TYPES.INTERMEDIATE,
+          SEGMENT_TYPES.RAILROAD,
+          SEGMENT_TYPES.SEA,
+        ],
+        coordStart: '',
+        coordEnd: '',
+      },
+      { type: FIELDS_TYPE.POINT },
+    ],
+    hasOptional: true,
+  },
 }

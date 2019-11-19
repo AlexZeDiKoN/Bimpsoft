@@ -3,6 +3,7 @@
 import './FlexGrid'
 import './PM'
 import './Path'
+import './Polyline'
 import './GeoJSON'
 import './SVG'
 import './Map.BoxSelect'
