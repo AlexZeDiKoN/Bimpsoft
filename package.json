@@ -71,7 +71,7 @@
   },
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
-    "start-dev": "set NODE_ENV=development && npm run build-css && run-p -ncr watch-css start-js",
+    "start-dev": "set NODE_ENV=development&&npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "set PORT=3001 && craco start",
     "build": "run-s -n inc-version build-css build-js",
     "build-js": "craco build",
