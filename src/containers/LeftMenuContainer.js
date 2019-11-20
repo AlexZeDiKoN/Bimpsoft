@@ -76,7 +76,7 @@ const mapDispatchToProps = {
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(LeftMenu)
 
 export default LeftMenuContainer
