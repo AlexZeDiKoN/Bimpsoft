@@ -33,6 +33,7 @@ const getImageryLayers = memoize((sources) => {
       hasAlphaChannel,
       ...imageryProviderStableProps,
     })
+    provider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
     return <ImageryLayer key={idx} imageryProvider={provider}/>
   })
 })
@@ -64,7 +65,10 @@ export default class WebMap3D extends React.PureComponent {
       mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
-      url && (this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) }))
+      if (url) {
+        this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) })
+        this.terrainProvider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
+      }
       const defaultSource = sources.find(({ isSatellite }) => isSatellite) // Source with param isSatellite set to true is a satellite view
       defaultSource && this.props.setSource(defaultSource)
     }
