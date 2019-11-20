@@ -6,7 +6,7 @@ import {
 import memoize from 'memoize-one'
 import {
   Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer,
-  ScreenSpaceEventHandler, ScreenSpaceEvent,
+  ScreenSpaceEventHandler, ScreenSpaceEvent, ImageryLayerCollection,
 } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
@@ -15,7 +15,6 @@ import SignsLayer from './SignsLayer'
 import './webMap3D.css'
 
 const imageryProviderStableProps = {
-  hasAlphaChannel: false,
   maximumLevel: 14,
   enablePickFeatures: false,
 }
@@ -24,10 +23,19 @@ const MIN_ZOOM = zoom2height(0, 17)
 const MAX_ZOOM = zoom2height(0, 5)
 const DIV = document.createElement('div')
 
-const buildImageryProvider = memoize((url) => {
-  const provider = new UrlTemplateImageryProvider({ url, ...imageryProviderStableProps })
-  provider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
-  return provider
+const getImageryLayers = memoize((sources) => {
+  if (!sources) { return }
+  return sources.filter(({ isSat }) => isSat).map((value, idx) => {
+    const { tms, source: url = '' } = value || {}
+    const hasAlphaChannel = idx > 0
+    const provider = new UrlTemplateImageryProvider({
+      url: fixTilesUrl(tms ? url.replace(/{y}/g, '{reverseY}') : url),
+      hasAlphaChannel,
+      ...imageryProviderStableProps,
+    })
+    provider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
+    return <ImageryLayer key={idx} imageryProvider={provider}/>
+  })
 })
 
 export default class WebMap3D extends React.PureComponent {
@@ -57,7 +65,10 @@ export default class WebMap3D extends React.PureComponent {
       mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
-      url && (this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) }))
+      if (url) {
+        this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) })
+        this.terrainProvider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
+      }
       const defaultSource = sources.find(({ isSatellite }) => isSatellite) // Source with param isSatellite set to true is a satellite view
       defaultSource && this.props.setSource(defaultSource)
     }
@@ -66,23 +77,11 @@ export default class WebMap3D extends React.PureComponent {
 
     stopAutoMove = () => (this.shouldFly = false)
 
-    getImageryProvider = () => {
-      const { source } = this.props
-      if (source && source.sources) {
-        const { sources } = this.props.source
-        const satSource = sources.find(({ isSat }) => isSat)
-        const { tms, source: url = '' } = satSource || {}
-        const sourceURL = fixTilesUrl(tms ? url.replace(/{y}/g, '{reverseY}') : url)
-        return buildImageryProvider(sourceURL)
-      }
-      return false
-    }
-
     // @TODO: remove terrainExaggeration after test
     render () {
-      const { objects, center, zoom, setZoom, selected, editObject } = this.props
-      const imageryProvider = this.getImageryProvider()
-      return imageryProvider
+      const { objects, center, zoom, setZoom, selected, editObject, source: { sources } } = this.props
+      const imageryLayers = getImageryLayers(sources)
+      return imageryLayers
         ? (
           <Viewer
             className={'map3D_container'}
@@ -104,7 +103,9 @@ export default class WebMap3D extends React.PureComponent {
             creditContainer={DIV}
             creditViewport={DIV}
           >
-            <ImageryLayer imageryProvider={imageryProvider} />
+            <ImageryLayerCollection>
+              {imageryLayers}
+            </ImageryLayerCollection>
             {this.shouldFly &&
             <CameraFlyTo
               maximumHeight={MAX_ZOOM}
