@@ -13,6 +13,8 @@ const segmentsExmp = [
   'Створити вручну', 'segment one', 'segment two', 'segment three',
 ]
 
+let FORM_DECORATOR_ID = 0
+
 class Line extends Component {
   handleAddPoint = () => {
     const { marchType: { id }, addPoint, index } = this.props
@@ -58,13 +60,14 @@ class Line extends Component {
               <button
                 onClick={this.handleDeleteSegment}
                 type="button"
+                onFocus={(e) => e.preventDefault()}
               >
                 <Icon type="delete" theme="filled"/>
               </button>
             </div>
           </div>
           <FormRow>
-            {getFieldDecorator(`${MARCH_SEGMENT_KEYS.SEGMENT}:${line.id}`,
+            {getFieldDecorator(`Line${FORM_DECORATOR_ID++}`,
               {
                 rules: [ { required: true } ],
                 initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT ],
@@ -77,7 +80,7 @@ class Line extends Component {
             </Select>)}
           </FormRow>
           <FormRow>
-            {getFieldDecorator(`${MARCH_SEGMENT_KEYS.SEGMENT_NAME}:${line.id}`,
+            {getFieldDecorator(`Line${FORM_DECORATOR_ID++}`,
               {
                 rules: [ { required: true } ],
                 initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT_NAME ],
@@ -91,11 +94,10 @@ class Line extends Component {
             />)}
           </FormRow>
           <FormRow>
-            {getFieldDecorator(
-              `${MARCH_INDICATORS_GROUP.segmentType}:${line.id}`, {
-                rules: [ { required: true } ],
-                initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ] && line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name,
-              },
+            {getFieldDecorator(`Line${FORM_DECORATOR_ID++}`, {
+              rules: [ { required: true } ],
+              initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ] && line[ MARCH_SEGMENT_KEYS.SEGMENT_TYPE ].name,
+            },
             )(<Select
               placeholder={indicatorSegment.typeName}
               onChange={this.handleChangeIndicator(
@@ -108,11 +110,10 @@ class Line extends Component {
             </Select>)}
           </FormRow>
           <FormRow>
-            {getFieldDecorator(
-              `${MARCH_INDICATORS_GROUP.terrainType}:${line.id}`, {
-                rules: [ { required: true } ],
-                initialValue: line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ] && line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ].name,
-              })(<Select
+            {getFieldDecorator(`Line${FORM_DECORATOR_ID++}`, {
+              rules: [ { required: true } ],
+              initialValue: line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ] && line[ MARCH_SEGMENT_KEYS.TERRAIN_TYPE ].name,
+            })(<Select
               placeholder={indicatorTerrain.typeName}
               onChange={this.handleChangeIndicator(
                 MARCH_SEGMENT_KEYS.TERRAIN_TYPE, indicatorTerrain)}

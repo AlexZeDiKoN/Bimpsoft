@@ -9,17 +9,21 @@ const { MARCH_SEGMENT_KEYS } = MarchKeys
 
 const { FormRow } = components.form
 
+let FORM_DECORATOR_ID = 0
+
 // TODO: test data
 const geographicalLandmark = [ 'landmark one', 'landmark two', 'landmark three' ]
 
 const Point = ({ point, index, onChange, deletePoint, createChildren, form: { getFieldDecorator } }) => {
   const handleDelete = () => deletePoint(index)
-  const handleChangeInput = ({ target }) => onChange(target.value, MARCH_SEGMENT_KEYS.COORDINATE)
+  const handleChangeInput = ({ target }) => onChange(target.value,
+    MARCH_SEGMENT_KEYS.COORDINATE)
   const handleChangeSelect = (e) => onChange(e, MARCH_SEGMENT_KEYS.LANDMARK)
 
   return (
     <div className='march_segment-point'>
-      {!point.required && <div className='march_segment-delete march_segment-point-delete'>
+      {!point.required &&
+      <div className='march_segment-delete march_segment-point-delete'>
         <button
           onClick={handleDelete}
           type="button"
@@ -28,8 +32,11 @@ const Point = ({ point, index, onChange, deletePoint, createChildren, form: { ge
         </button>
       </div>}
       <FormRow>
-        {getFieldDecorator(`${MARCH_SEGMENT_KEYS.COORDINATE}:${point.id}`,
-          { rules: [ { required: true } ], initialValue: point[MARCH_SEGMENT_KEYS.COORDINATE] },
+        {getFieldDecorator(`Point${FORM_DECORATOR_ID++}`,
+          {
+            rules: [ { required: true } ],
+            initialValue: point[ MARCH_SEGMENT_KEYS.COORDINATE ],
+          },
         )(<Input
           addonAfter={<div
             className='segment_point'
@@ -43,8 +50,11 @@ const Point = ({ point, index, onChange, deletePoint, createChildren, form: { ge
         />)}
       </FormRow>
       <FormRow>
-        {getFieldDecorator(`${MARCH_SEGMENT_KEYS.LANDMARK}:${point.id}`,
-          { rules: [ { required: true } ], initialValue: point[MARCH_SEGMENT_KEYS.LANDMARK] },
+        {getFieldDecorator(`Point${FORM_DECORATOR_ID++}`,
+          {
+            rules: [ { required: true } ],
+            initialValue: point[ MARCH_SEGMENT_KEYS.LANDMARK ],
+          },
         )(<AutoComplete
           placeholder={i18n.GEOGRAPHICAL_LANDMARK}
           onChange={handleChangeSelect}
