@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^10.2.330",
-    "@DZVIN/MilSymbolEditor": "^10.2.231",
+    "@DZVIN/MilSymbolEditor": "^10.2.232",
     "@DZVIN/components": "^10.2.517",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
