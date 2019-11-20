@@ -89,23 +89,22 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   if (!formationInfo) {
     if (!promiseFormation) {
       promiseFormation = milOrgApi.generalFormation.list()
-        .then(async (formations) => {
-          const formation = formations.find((formation) => formation.id === formationId)
-          const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-          const commandPosts = (await milOrgApi.militaryCommandPost.list())
-            .filter(({ state }) => state === STATUS_OPERATING)
-          const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
-          for (const [ , value ] of Object.entries(tree.byIds)) {
-            value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
-          }
-          setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME * 1000)
-          const formationInfo = { formation, relations, tree }
-          formationsCache.set(formationId, formationInfo)
-          promiseFormation = undefined
-          return formationInfo
-        })
     }
-    return promiseFormation
+    return promiseFormation.then(async (formations) => {
+      const formation = formations.find((formation) => formation.id === formationId)
+      const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
+      const commandPosts = (await milOrgApi.militaryCommandPost.list())
+        .filter(({ state }) => state === STATUS_OPERATING)
+      const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
+      for (const [ , value ] of Object.entries(tree.byIds)) {
+        value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+      }
+      setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME * 1000)
+      const formationInfo = { formation, relations, tree }
+      formationsCache.set(formationId, formationInfo)
+      promiseFormation = undefined
+      return formationInfo
+    })
   }
   return formationInfo
 }

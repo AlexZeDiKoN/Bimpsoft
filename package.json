@@ -1,10 +1,10 @@
 {
   "name": "web-map",
-  "version": "10.02.555",
+  "version": "10.02.557",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^10.2.329",
-    "@DZVIN/MilSymbolEditor": "^10.2.230",
+    "@DZVIN/CommonComponents": "^10.2.330",
+    "@DZVIN/MilSymbolEditor": "^10.2.231",
     "@DZVIN/components": "^10.2.517",
     "@DZVIN/milsymbol": "^0.0.4",
     "@craco/craco": "^5.2.1",
@@ -71,7 +71,7 @@
   },
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
-    "start-dev": "set NODE_ENV=development && npm run build-css && run-p -ncr watch-css start-js",
+    "start-dev": "set NODE_ENV=development&&npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "set PORT=3001 && craco start",
     "build": "run-s -n inc-version build-css build-js",
     "build-js": "craco build",
