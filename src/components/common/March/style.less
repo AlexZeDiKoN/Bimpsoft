@@ -27,7 +27,7 @@
   .march_track {
     display: flex;
     flex-direction: column;
-    max-width: 627px;
+    width: 570px;
     margin: 0 auto;
   }
 
@@ -55,6 +55,18 @@
       display: flex;
       align-items: center;
       width: 100%;
+      position: relative;
+
+      &::after {
+        position: absolute;
+        display: block;
+        right: 0;
+        bottom: -25%;
+        content: "";
+        width: 227px;
+        border-bottom: 1px solid lightgray;
+      }
+
       .march_segment-params {
         margin-left: auto;
       }
@@ -153,5 +165,71 @@
     right: 0;
     top: 50%;
     transform: translateY(-50%);
+  }
+}
+
+.march_icon {
+  &-error {
+    color: red;
+  }
+  &-success {
+    color: green;
+  }
+}
+
+.march_path-indicator {
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  transform: translateY(-50%);
+  & > span {
+    display: block;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid yellow;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: yellow;
+      transform: translateX(-50%) translateY(-50%);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      display: block;
+      height: 300px;
+      border: 2px dashed lightgray;
+      transform: translateY(300px) translateX(6px);
+    }
+  }
+
+  &--start {
+    & > span {
+      border-color: green;
+      &::before {
+        background-color: green;
+      }
+    }
+  }
+
+  &--end {
+    position: absolute;
+    top: 50%;
+    right: -40px;
+    width: 40px;
+    height: 40px;
+    transform: translateY(-50%);
+    color: red;
   }
 }
