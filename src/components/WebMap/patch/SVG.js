@@ -63,7 +63,7 @@ L.SVG.include({
     } = layer
 
     if (_shadowPath) {
-      layer.options.fill = layer.options.tsType && !shadowColor
+      layer.options.fill = layer.options.fill || (layer.options.tsType && !shadowColor)
       if (shadowColor) {
         _shadowPath.removeAttribute('display')
         _shadowPath.setAttribute('stroke', shadowColor)
