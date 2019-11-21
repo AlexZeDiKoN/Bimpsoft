@@ -6529,9 +6529,9 @@ leaflet-graphicscale@0.0.2:
   resolved "https://registry.yarnpkg.com/leaflet-graphicscale/-/leaflet-graphicscale-0.0.2.tgz#ab620d289e9a7044c2f5107c83be17843aec5303"
   integrity sha1-q2INKJ6acETC9RB8g74XhDrsUwM=
 
-"leaflet-measure-custom@github:tumick/leaflet.measure":
-  version "0.0.1"
-  resolved "https://codeload.github.com/tumick/leaflet.measure/tar.gz/788e4f80dfdd1745ab72ded3feb9e01d7d22a0b7"
+"leaflet-measure-custom@github:tumick/leaflet.measure#b729ae1":
+  version "0.0.2"
+  resolved "https://codeload.github.com/tumick/leaflet.measure/tar.gz/b729ae1cedc85b3426e33dbc766bc7838255d2fd"
 
 leaflet-minimap@^3.6.1:
   version "3.6.1"
