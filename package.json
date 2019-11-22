@@ -6,7 +6,7 @@
     "@DZVIN/CommonComponents": "^10.2.333",
     "@DZVIN/MilSymbolEditor": "^10.2.236",
     "@DZVIN/components": "^10.2.522",
-    "@DZVIN/milsymbol": "^0.0.4",
+    "@DZVIN/milsymbol": "^0.0.5",
     "@craco/craco": "^5.2.1",
     "antd": "^3.12.4",
     "bezier-js": "2.2.18",
