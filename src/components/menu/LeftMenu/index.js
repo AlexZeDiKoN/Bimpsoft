@@ -61,6 +61,17 @@ export default class LeftMenu extends React.Component {
     onChangeTargetingMode && onChangeTargetingMode(!targetingMode)
   }
 
+  clickMap3D = () => {
+    const { onClick3D, is3DMapMode, isMeasureOn, onMeasureChange, marker, onMarkerChange, topographicObjects,
+      onTopographicObjectsChange } = this.props
+    if (!is3DMapMode) {
+      isMeasureOn && onMeasureChange()
+      marker && onMarkerChange()
+      topographicObjects && onTopographicObjectsChange()
+    }
+    onClick3D()
+  }
+
   render () {
     const {
       isMapCOP,
@@ -85,7 +96,6 @@ export default class LeftMenu extends React.Component {
       selectionButtonsComponent: SelectionButtonsComponent,
       flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
-      onClick3D,
     } = this.props
 
     const subordinationLevelViewData =
@@ -124,7 +134,7 @@ export default class LeftMenu extends React.Component {
           title={i18n.VOLUME_VIEW}
           icon={iconNames.MAP_3D}
           checked={is3DMapMode}
-          onClick={onClick3D}
+          onClick={this.clickMap3D}
         />
         <MapSourceSelectComponent />
         <IconButton
@@ -160,11 +170,11 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <IconButton
           placement={'topLeft'}
-          value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
           checked={isMeasureOn}
           onClick={onMeasureChange}
+          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomLeft'}
@@ -172,6 +182,7 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_MARKER_DEFAULT}
           checked={marker}
           onClick={onMarkerChange}
+          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomLeft'}
@@ -179,6 +190,7 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
+          disabled={is3DMapMode}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
