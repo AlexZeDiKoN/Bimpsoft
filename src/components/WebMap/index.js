@@ -483,7 +483,9 @@ export default class WebMap extends React.PureComponent {
 
   sources = []
 
-  updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
+  updateMinimap = (showMiniMap) => showMiniMap
+    ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
     .filter((key) => this.map._layers[key]._locked)
