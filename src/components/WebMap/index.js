@@ -1388,9 +1388,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onMarkerDragEnd = () => setTimeout(() => {
-    this.draggingObject = false
     this.checkSaveObject(false)
-  }, 210)
+    this.draggingObject = false
+  }, 250)
 
   moveListByOne = (layer) => {
     // console.log(layer)
