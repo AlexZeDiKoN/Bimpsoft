@@ -19,6 +19,8 @@ export const MARCH_INDICATORS_GROUP = {
   terrainType: 'МШВ007',
 }
 
+export const DEFAULT_SEGMENT_NAME = 'Створити вручну'
+
 const MARCH_TYPES = {
   OWN_RESOURCES: 41,
   BY_RAILROAD: 42,

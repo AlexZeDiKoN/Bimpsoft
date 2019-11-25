@@ -11,7 +11,15 @@ export default {
     const segments = localStorage.getItem('march:segments')
     const timeout = setTimeout(() => {
       clearTimeout(timeout)
-      resolve(JSON.parse(segments))
+      resolve(JSON.parse(segments) || [])
+    }, 300)
+  }),
+  // TODO: fetch landmarks from server
+  getLandmarks: (coords) => new Promise((resolve) => {
+    const landmarks = localStorage.getItem('march:landmarks')
+    const timeout = setTimeout(() => {
+      clearTimeout(timeout)
+      resolve(JSON.parse(landmarks) || [])
     }, 300)
   }),
 }
