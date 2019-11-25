@@ -12,15 +12,14 @@ const { Icon, names } = components.icons
 
 let FORM_DECORATOR_ID = 0
 
-// TODO: test data
-const geographicalLandmark = [ 'landmark one', 'landmark two', 'landmark three' ]
-
 const Point = ({
   point,
+  landmarks,
   index,
   segmentsLength,
   onChange,
   deletePoint,
+  getLandmarks,
   createChildren,
   form: { getFieldDecorator },
 }) => {
@@ -31,6 +30,7 @@ const Point = ({
   const handleChangeInput = ({ target }) => onChange(target.value,
     MARCH_SEGMENT_KEYS.COORDINATE)
   const handleChangeSelect = (e) => onChange(e, MARCH_SEGMENT_KEYS.LANDMARK)
+  const fetchLandmarks = () => getLandmarks(point[MARCH_SEGMENT_KEYS.COORDINATE])
 
   const pathPoint = (
     IS_LAST_SEGMENT
@@ -80,8 +80,9 @@ const Point = ({
         )(<AutoComplete
           placeholder={i18n.GEOGRAPHICAL_LANDMARK}
           onChange={handleChangeSelect}
+          onFocus={fetchLandmarks}
         >
-          {createChildren(geographicalLandmark)}
+          {createChildren(landmarks)}
         </AutoComplete>)}
       </FormRow>
     </div>
@@ -90,9 +91,11 @@ const Point = ({
 
 Point.propTypes = {
   point: PropTypes.object,
+  landmarks: PropTypes.array,
   index: PropTypes.number,
   onChange: PropTypes.func,
   deletePoint: PropTypes.func,
+  getLandmarks: PropTypes.func,
   createChildren: PropTypes.func,
   form: PropTypes.object,
   segmentsLength: PropTypes.number,
