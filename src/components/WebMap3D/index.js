@@ -61,7 +61,7 @@ export default class WebMap3D extends React.PureComponent {
         const { protocol, host, port } = new URL(process.env.REACT_APP_TILES)
         TrustedServers.add(host, port || { 'http:': 80, 'https:': 443 }[protocol])
       }
-      const { sources, mode, setMapMode } = this.props
+      const { source, sources, mode, setMapMode } = this.props
       mode && setMapMode(MapModes.NONE)
       const terrainSource = sources.find(({ isTerrain }) => isTerrain) // Source with param isTerrain set to true
       const { source: url } = terrainSource || {}
@@ -69,7 +69,9 @@ export default class WebMap3D extends React.PureComponent {
         this.terrainProvider = new CesiumTerrainProvider({ url: fixTilesUrl(url) })
         this.terrainProvider.errorEvent.addEventListener(() => {}) // Remove console log on missing tile
       }
-      const defaultSource = sources.find(({ isSatellite }) => isSatellite) // Source with param isSatellite set to true is a satellite view
+      const { isSatellite } = sources.find(({ title }) => title === source.title)
+      const defaultSource = isSatellite ? source
+        : sources.find(({ isSatellite }) => isSatellite) // Source with param isSatellite set to true is a satellite view
       defaultSource && this.props.setSource(defaultSource)
     }
 

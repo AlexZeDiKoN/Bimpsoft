@@ -483,7 +483,9 @@ export default class WebMap extends React.PureComponent {
 
   sources = []
 
-  updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
+  updateMinimap = (showMiniMap) => showMiniMap
+    ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
     .filter((key) => this.map._layers[key]._locked)
@@ -653,10 +655,15 @@ export default class WebMap extends React.PureComponent {
     this.mini = undefined
     this.map = new Map(this.container, {
       zoomControl: false,
-      measureControl: true,
+      measureControl: {
+        button: null,
+        formatDistance: (val) => Math.round((val / 1000) * 10) / 10 + ' ' + i18n.ABBR_KILOMETERS,
+        // Format distance for meters and kilometers
+        // formatDistance: (val) => val < 1000
+        //   ? Math.round(val) + ' ' + i18n.ABBR_METERS
+        //   : Math.round((val / 1000) * 100) / 100 + ' ' + i18n.ABBR_KILOMETERS,
+      },
     })
-    this.map.removeControl(this.map.measureControl)
-    this.map.measureControl._map = this.map
     control.zoom({
       zoomInTitle: i18n.ZOOM_IN,
       zoomOutTitle: i18n.ZOOM_OUT,
@@ -1381,9 +1388,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onMarkerDragEnd = () => setTimeout(() => {
-    this.draggingObject = false
     this.checkSaveObject(false)
-  }, 210)
+    this.draggingObject = false
+  }, 250)
 
   moveListByOne = (layer) => {
     // console.log(layer)

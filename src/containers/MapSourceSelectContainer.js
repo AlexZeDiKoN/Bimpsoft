@@ -17,12 +17,12 @@ const mapDispatchToProps = {
     dispatch(webMapActions.setSource(source))
     dispatch(viewModesActions.viewModeDisable(viewModesKeys.mapSourcesList))
   },
-  onClose: (source) => viewModesActions.viewModeDisable(viewModesKeys.mapSourcesList),
+  onClose: () => viewModesActions.viewModeDisable(viewModesKeys.mapSourcesList),
 }
 
 const MapSourceSelectContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(MapSourceSelect)
 
 export default MapSourceSelectContainer

@@ -17,7 +17,11 @@ const {
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => `${item.shortName} ${item.fullName}`,
   (item) => item.id,
-  (item) => item.parentUnitID,
+  (item) => (
+    item.itemType === 'CommandPost'
+      ? item.militaryUnitID
+      : item.parentUnitID
+  ),
 )
 
 const notSameProps = (obj1, obj2, props) => {

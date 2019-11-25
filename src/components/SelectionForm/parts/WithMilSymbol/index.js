@@ -66,6 +66,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   )
 
   handlerUnitInfo = (unitId) => {
+    if (!unitId) { return }
     const { itemType } = this.props.orgStructures.byIds[unitId]
     window.explorerBridge.showUnitInfo(itemType, unitId)
   }
