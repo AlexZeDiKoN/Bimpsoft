@@ -6,7 +6,7 @@ import thunk from 'redux-thunk'
 import { error } from '../utils/devLoggers'
 import webmapApi from '../server/api.webmap'
 import milOrgApi from '../server/api.server.org'
-import indicatorApi from '../server/api.indicator'
+import marchApi from '../server/api.march'
 import catalogApi from '../server/api.catalog'
 import ovtApi from '../server/api.ovt'
 import rootReducer from './reducers'
@@ -33,7 +33,7 @@ export default function initStore (options = {}) {
     thunk.withExtraArgument({
       webmapApi,
       milOrgApi,
-      indicatorApi,
+      marchApi,
       catalogApi,
       ovtApi,
     }),
