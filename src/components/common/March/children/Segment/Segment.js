@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import { MarchKeys } from '../../../../../constants'
 import Point from '../Point'
 import Line from '../Line'
-import { DEFAULT_SEGMENT_NAME } from '../../../../../constants/March'
 
 export default class Segment extends Component {
   static propTypes = {
@@ -35,7 +34,7 @@ export default class Segment extends Component {
     if (key) {
       newData = { ...segments[index], [key]: data }
     } else {
-      newData = data.name === DEFAULT_SEGMENT_NAME ? pick(
+      newData = data.id === MarchKeys.DEFAULT_SEGMENT_ID ? pick(
         [ 'possibleTypes', 'required', 'id' ], segments[index]) : data
     }
     const segmentsWithUpdatedParams = update(index, newData, segments)
