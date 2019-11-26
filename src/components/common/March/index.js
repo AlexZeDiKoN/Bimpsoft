@@ -56,7 +56,6 @@ class March extends Component {
         const segments = this.setSegmentCoords()
         // TODO: send request to server, delete localStorage
         localStorage.setItem('march:storage', JSON.stringify({ ...params, segments }))
-        localStorage.setItem('march:segments', JSON.stringify(segments))
       }
     })
   }

@@ -8,10 +8,10 @@ export default {
     getDirect(`${namespace}/map/GetTypeKinds`, { typeCode }),
   // TODO: fetch segments from server
   getSegments: (startCoord, possibleTypes) => new Promise((resolve) => {
-    const segments = localStorage.getItem('march:segments')
+    const march = localStorage.getItem('march:storage')
     const timeout = setTimeout(() => {
       clearTimeout(timeout)
-      resolve(JSON.parse(segments) || [])
+      resolve(JSON.parse(march).segments || [])
     }, 300)
   }),
   // TODO: fetch landmarks from server
