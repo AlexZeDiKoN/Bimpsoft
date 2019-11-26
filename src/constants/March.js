@@ -3,6 +3,8 @@ export const MARCH_KEYS = {
   MARCH_TYPE: 'marchType',
 }
 
+export const DEFAULT_SEGMENT_ID = 0
+
 export const MARCH_SEGMENT_KEYS = {
   COORDINATE: 'coordinate',
   LANDMARK: 'landmark',
@@ -18,8 +20,6 @@ export const MARCH_INDICATORS_GROUP = {
   segmentLength: 'МШВ006',
   terrainType: 'МШВ007',
 }
-
-export const DEFAULT_SEGMENT_NAME = 'Створити вручну'
 
 const MARCH_TYPES = {
   OWN_RESOURCES: 41,

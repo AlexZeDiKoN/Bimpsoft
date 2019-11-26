@@ -2,9 +2,10 @@ import { omit, remove, update, insert, flatten, pick, assoc, compose } from 'ram
 import { march } from '../actions'
 import {
   MARCH_SEGMENT_KEYS,
-  DEFAULT_SEGMENT_NAME,
   FIELDS_TYPE,
+  DEFAULT_SEGMENT_ID,
 } from '../../constants/March'
+import i18n from '../../i18n'
 
 const initState = {
   marchEdit: false,
@@ -87,7 +88,6 @@ export default function reducer (state = initState, action) {
       return { ...state, integrity: payload }
     }
     case march.GET_EXISTING_SEGMENTS: {
-      const id = uuid()
       const byId = payload
         .filter((item) => item.type !== FIELDS_TYPE.POINT)
         .reduce(
@@ -95,7 +95,7 @@ export default function reducer (state = initState, action) {
       return {
         ...state,
         existingSegmentsById: {
-          [id]: { id, name: DEFAULT_SEGMENT_NAME }, ...byId,
+          [DEFAULT_SEGMENT_ID]: { id: DEFAULT_SEGMENT_ID, name: i18n.DEFAULT_SEGMENT_NAME }, ...byId,
         },
       }
     }
