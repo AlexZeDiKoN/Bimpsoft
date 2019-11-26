@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { update, merge } from 'ramda'
+import { update, pick } from 'ramda'
 import { Select } from 'antd'
 import PropTypes from 'prop-types'
 import { MarchKeys } from '../../../../../constants'
 import Point from '../Point'
 import Line from '../Line'
+import { DEFAULT_SEGMENT_NAME } from '../../../../../constants/March'
 
 export default class Segment extends Component {
   static propTypes = {
@@ -18,8 +19,8 @@ export default class Segment extends Component {
     const activeItem = indicator.typeValues.filter((item) => item.id === Number(target))
     return {
       indicatorId: indicator.id,
-      id: activeItem[ 0 ].id,
-      name: activeItem[ 0 ].name,
+      id: activeItem[0].id,
+      name: activeItem[0].name,
     }
   }
 
@@ -30,14 +31,22 @@ export default class Segment extends Component {
 
   setSegmentParams = (data, key) => {
     const { segments, index, setMarchParams } = this.props
-    const segmentsWithUpdatedParams = update(index,
-      merge(segments[ index ], { [ key ]: data }), segments)
+    let newData
+    if (key) {
+      newData = { ...segments[index], [key]: data }
+    } else {
+      newData = data.name === DEFAULT_SEGMENT_NAME ? pick(
+        [ 'possibleTypes', 'required', 'id' ], segments[index]) : data
+    }
+    const segmentsWithUpdatedParams = update(index, newData, segments)
     setMarchParams({ segments: segmentsWithUpdatedParams })
   }
 
-  createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option
-      key={item.id ? item.id : item}>{item.name ? item.name : item}</Select.Option>)
+  createSelectChildren = (incomeData) => incomeData.map((item) => {
+    const value = typeof item === 'object' ? item.id : item
+    return (<Select.Option
+      key={value} value={value}>{item.name ? item.name : item}</Select.Option>)
+  })
 
   renderSegments = () => {
     const { index, segments, form } = this.props

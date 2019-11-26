@@ -8,26 +8,30 @@ import { MarchKeys } from '../../../../../constants'
 const { FormRow } = components.form
 const { MARCH_SEGMENT_KEYS, MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
 
-// TODO: test data
-const segmentsExmp = [
-  'Створити вручну', 'segment one', 'segment two', 'segment three',
-]
-
 let FORM_DECORATOR_ID = 0
 
 class Line extends Component {
+  fieldId = FORM_DECORATOR_ID++
+
   handleAddPoint = () => {
     const { marchType: { id }, addPoint, index } = this.props
-    addPoint(index, MARCH_TEMPLATES[ id ].optional)
+    addPoint(index, MARCH_TEMPLATES[id].optional)
+  }
+
+  handleChangeIndicator = (key, indicator) =>
+    (e) => this.props.setIndicator(e, key, indicator)
+
+  requestSegments = () => {
+    const { getExistingSegments, index, segments } = this.props
+    const { coordinate } = segments[index - 1]
+    const { possibleTypes } = segments[index]
+    getExistingSegments(coordinate, possibleTypes)
   }
 
   handleDeleteSegment = () => {
     const { index, deleteSegment } = this.props
     deleteSegment(index)
   }
-
-  handleChangeIndicator = (key, indicator) =>
-    (e) => this.props.setIndicator(e, key, indicator)
 
   render () {
     const {
@@ -37,11 +41,12 @@ class Line extends Component {
       createChildren,
       onChange,
       indicators,
+      existingSegmentsById,
       form: { getFieldDecorator },
     } = this.props
-    const isVisibleAddBtn = MARCH_TEMPLATES[ id ] && MARCH_TEMPLATES[ id ].hasOptional
-    const indicatorSegment = indicators[ MARCH_INDICATORS_GROUP.segmentType ]
-    const indicatorTerrain = indicators[ MARCH_INDICATORS_GROUP.terrainType ]
+    const isVisibleAddBtn = MARCH_TEMPLATES[id] && MARCH_TEMPLATES[id].hasOptional
+    const indicatorSegment = indicators[MARCH_INDICATORS_GROUP.segmentType]
+    const indicatorTerrain = indicators[MARCH_INDICATORS_GROUP.terrainType]
 
     return (
       <div className='march_segment-options'>
@@ -60,23 +65,23 @@ class Line extends Component {
               <button
                 onClick={this.handleDeleteSegment}
                 type="button"
-                onFocus={(e) => e.preventDefault()}
               >
                 <Icon type="delete" theme="filled"/>
               </button>
             </div>
           </div>
           <FormRow>
-            {getFieldDecorator(`Line${FORM_DECORATOR_ID++}`,
+            {getFieldDecorator(`Line${this.fieldId}`,
               {
                 rules: [ { required: true } ],
-                initialValue: line[ MARCH_SEGMENT_KEYS.SEGMENT ],
+                initialValue: existingSegmentsById[line.id] && existingSegmentsById[line.id].name,
               },
             )(<Select
               placeholder={i18n.CHECK_SEGMENT}
-              onChange={(e) => onChange(e, MARCH_SEGMENT_KEYS.SEGMENT)}
+              onChange={(id) => onChange(existingSegmentsById[id])}
+              onFocus={this.requestSegments}
             >
-              {createChildren(segmentsExmp)}
+              {createChildren(Object.values(existingSegmentsById))}
             </Select>)}
           </FormRow>
           <FormRow>
@@ -87,9 +92,8 @@ class Line extends Component {
               },
             )(<Input
               placeholder={i18n.SEGMENT_NAME}
-              onChange={({ target }) => {
-                onChange(target.value, MARCH_SEGMENT_KEYS.SEGMENT_NAME)
-              }
+              onChange={({ target }) => onChange(target.value,
+                MARCH_SEGMENT_KEYS.SEGMENT_NAME)
               }
             />)}
           </FormRow>
@@ -129,6 +133,9 @@ class Line extends Component {
 
 Line.propTypes = {
   line: PropTypes.object,
+  existingSegmentsById: PropTypes.object,
+  existingSegmentNames: PropTypes.array,
+  segments: PropTypes.array,
   form: PropTypes.object,
   index: PropTypes.number,
   marchType: PropTypes.object,
@@ -138,6 +145,7 @@ Line.propTypes = {
   setIndicator: PropTypes.func,
   addPoint: PropTypes.func,
   deleteSegment: PropTypes.func,
+  getExistingSegments: PropTypes.func,
 }
 
 export default Line

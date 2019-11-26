@@ -1,6 +1,11 @@
-import { omit, remove, update, insert, flatten, pick, compose } from 'ramda'
+import { omit, remove, update, insert, flatten, pick, assoc, compose } from 'ramda'
 import { march } from '../actions'
-import { MARCH_SEGMENT_KEYS } from '../../constants/March'
+import {
+  MARCH_SEGMENT_KEYS,
+  FIELDS_TYPE,
+  DEFAULT_SEGMENT_ID,
+} from '../../constants/March'
+import i18n from '../../i18n'
 
 const initState = {
   marchEdit: false,
@@ -9,12 +14,14 @@ const initState = {
   params: {
     segments: [],
   },
+  existingSegmentsById: {},
+  landmarks: [],
 }
 
 // eslint-disable-next-line
-const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[ 0 ] & 15 >> c / 4).toString(16))
+const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
 
-const resetSegment = (segment) => pick([ 'required', 'possibleTypes', 'id' ], segment)
+const resetSegment = (segment) => assoc('id', uuid(), pick([ 'required', 'possibleTypes', 'id' ], segment))
 
 export default function reducer (state = initState, action) {
   const { type, payload } = action
@@ -22,7 +29,7 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case march.GET_TYPE_KINDS: {
       const indicators = payload.reduce(
-        (prev, current) => ({ ...prev, [ current.typeCode ]: current }), {})
+        (prev, current) => ({ ...prev, [current.typeCode]: current }), {})
       return { ...state, indicators }
     }
     case march.SET_MARCH_PARAMS: {
@@ -69,9 +76,9 @@ export default function reducer (state = initState, action) {
     }
     case march.DELETE_SEGMENT: {
       const { segments } = state.params
-      const updatedSegment = omit(
+      const updatedSegment = assoc('id', uuid(), omit(
         [ MARCH_SEGMENT_KEYS.SEGMENT, MARCH_SEGMENT_KEYS.SEGMENT_NAME ],
-        segments[ payload ])
+        segments[ payload ]))
 
       const updatedSegments = update(payload, updatedSegment, segments)
       const params = { ...state.params, segments: updatedSegments }
@@ -79,6 +86,21 @@ export default function reducer (state = initState, action) {
     }
     case march.SET_INTEGRITY: {
       return { ...state, integrity: payload }
+    }
+    case march.GET_EXISTING_SEGMENTS: {
+      const byId = payload
+        .filter((item) => item.type !== FIELDS_TYPE.POINT)
+        .reduce(
+          (acc, curr) => ({ ...acc, [curr.id]: curr }), {})
+      return {
+        ...state,
+        existingSegmentsById: {
+          [DEFAULT_SEGMENT_ID]: { id: DEFAULT_SEGMENT_ID, name: i18n.DEFAULT_SEGMENT_NAME }, ...byId,
+        },
+      }
+    }
+    case march.GET_LANDMARKS: {
+      return { ...state, landmarks: payload }
     }
     default:
       return state

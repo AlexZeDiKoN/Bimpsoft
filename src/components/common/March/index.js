@@ -48,6 +48,31 @@ class March extends Component {
     form.validateFields((err) => setIntegrity(!err))
   }
 
+  handleSubmitForm = (event) => {
+    event.preventDefault()
+    const { form, params } = this.props
+    form.validateFields((err) => {
+      if (!err) {
+        const segments = this.setSegmentCoords()
+        // TODO: send request to server, delete localStorage
+        localStorage.setItem('march:storage', JSON.stringify({ ...params, segments }))
+      }
+    })
+  }
+
+  setSegmentCoords = () => {
+    const { params: { segments } } = this.props
+    const { FIELDS_TYPE } = MarchKeys
+    return segments.reduce((acc, curr, i, seg) => {
+      if (curr.type !== FIELDS_TYPE.POINT) {
+        const { coordinate: coordStart } = seg[i - 1]
+        const { coordinate: coordEnd } = seg[i + 1]
+        return [ ...acc, { ...curr, coordStart, coordEnd } ]
+      }
+      return [ ...acc, curr ]
+    }, [])
+  }
+
   render () {
     const {
       form,
@@ -71,6 +96,7 @@ class March extends Component {
           <Form
             className="march_form"
             onBlur={this.checkIntegrityOfMarch}
+            onSubmit={this.handleSubmitForm}
           >
             <div className="march_name">
               <div className="march_name-indicator">
@@ -119,7 +145,7 @@ class March extends Component {
             </div>
             <div className="march_track">
               {segments.map((item, i) => (
-                <SegmentContainer key={item.id || i} index={i} form={form}/>
+                <SegmentContainer key={item.id} index={i} form={form}/>
               ))}
             </div>
             <div className="march_total_distance">{i18n.MARCH_DISTANCE}: {0} км</div>
