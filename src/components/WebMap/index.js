@@ -1489,7 +1489,7 @@ export default class WebMap extends React.PureComponent {
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
     let text = `<strong>${catalogName}</strong><br/>`
-    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
+    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;<span class="nameValue">${name}</span><br/>`)
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
     country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
     affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
@@ -1967,7 +1967,7 @@ export default class WebMap extends React.PureComponent {
         onDragOver={this.dragOverHandler}
         onDrop={this.dropHandler}
         ref={(container) => (this.container = container)}
-        style={{ height: '100%' }}
+        className='catalog-leaflet-popup'
       >
         <MapProvider value={this.map}>{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
