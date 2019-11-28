@@ -1968,7 +1968,6 @@ export default class WebMap extends React.PureComponent {
         onDrop={this.dropHandler}
         ref={(container) => (this.container = container)}
         className='catalog-leaflet-popup'
-        // style={{ height: '100%' }}
       >
         <MapProvider value={this.map}>{this.props.children}</MapProvider>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
