@@ -8,16 +8,19 @@ const mapStateToProps = (store) => {
     march: {
       indicators,
       params,
+      integrity,
     },
   } = store
   return {
     indicators,
     params,
+    integrity,
   }
 }
 
 const mapDispatchToProps = {
   setMarchParams: march.setMarchParams,
+  setIntegrity: march.setIntegrity,
 }
 
 const MarchContainer = connect(

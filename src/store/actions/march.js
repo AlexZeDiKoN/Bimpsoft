@@ -6,9 +6,12 @@ export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
 export const ADD_POINT = action('ADD_POINT')
 export const DELETE_POINT = action('DELETE_POINT')
 export const DELETE_SEGMENT = action('DELETE_SEGMENT')
+export const SET_INTEGRITY = action('SET_INTEGRITY')
+export const GET_EXISTING_SEGMENTS = action('GET_EXISTING_SEGMENTS')
+export const GET_LANDMARKS = action('GET_LANDMARKS')
 
 export const getIndicator = () =>
-  async (dispatch, getState, { indicatorApi: { getTypeKinds } }) => {
+  async (dispatch, getState, { marchApi: { getTypeKinds } }) => {
     const indicators = await getTypeKinds(Object.values(MarchKeys.MARCH_INDICATORS_GROUP))
     dispatch({
       type: GET_TYPE_KINDS,
@@ -35,3 +38,26 @@ export const setMarchParams = (data) => ({
   type: SET_MARCH_PARAMS,
   payload: data,
 })
+
+export const setIntegrity = (data) => ({
+  type: SET_INTEGRITY,
+  payload: data,
+})
+
+export const getExistingSegments = (startCoord, possibleTypes) =>
+  async (dispatch, _, { marchApi: { getSegments } }) => {
+    const segments = await getSegments(startCoord, possibleTypes)
+    dispatch({
+      type: GET_EXISTING_SEGMENTS,
+      payload: segments,
+    })
+  }
+
+export const getLandmarks = (coords) =>
+  async (dispatch, _, { marchApi: { getLandmarks } }) => {
+    const landmarks = await getLandmarks(coords)
+    dispatch({
+      type: GET_LANDMARKS,
+      payload: landmarks,
+    })
+  }

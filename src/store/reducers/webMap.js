@@ -173,6 +173,9 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
+}, {
+  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+  field: 'isTopographicObjectsOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -293,28 +296,23 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
       return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
     }
-    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS: {
-      // return update(state, 'isTopographicObjectsOn', !state.isTopographicObjectsOn)
-      return state
-        .set('isTopographicObjectsOn', !state.isTopographicObjectsOn)
-        .set('topographicObjects', {})
-    }
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     default: {
-      const f1 = simpleSetField(type)
-      if (f1) {
-        return state.set(f1, payload)
+      const setField = simpleSetField(type)
+      if (setField) {
+        return state.set(setField, payload)
       }
-      const f2 = simpleToggleField(type)
-      if (f2) {
+      const toggleField = simpleToggleField(type)
+      if (toggleField) {
         return toggleSetFields
           .map(({ field }) => field)
-          .filter((field) => field !== f2)
+          .filter((field) => field !== toggleField)
           .reduce((current, field) => current.set(field, false), state)
-          .set(f2, !state.get(f2))
+          .set(toggleField, !state.get(toggleField))
+          .set('topographicObjects', {})
       }
       return state
     }

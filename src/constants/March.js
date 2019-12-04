@@ -3,6 +3,8 @@ export const MARCH_KEYS = {
   MARCH_TYPE: 'marchType',
 }
 
+export const DEFAULT_SEGMENT_ID = 0
+
 export const MARCH_SEGMENT_KEYS = {
   COORDINATE: 'coordinate',
   LANDMARK: 'landmark',

@@ -258,6 +258,7 @@ export const SEGMENT_NAME = 'Назва відрізка'
 export const ADD_SEGMENT = 'Додати пункт маршрута'
 export const CREATE_BTN_TITLE = 'Зберегти'
 export const CANCEL_BTN_TITLE = 'Скасувати'
+export const DEFAULT_SEGMENT_NAME = 'Створити вручну'
 
 export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
 export const PERIOD_FROM = 'Період з'

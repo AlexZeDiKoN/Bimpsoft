@@ -7,18 +7,22 @@ const mapStateToProps = (store) => {
   const {
     march: {
       indicators,
-      params: { marchType },
+      existingSegmentsById,
+      params: { marchType, segments },
     },
   } = store
   return {
     indicators,
     marchType,
+    segments,
+    existingSegmentsById,
   }
 }
 
 const mapDispatchToProps = {
   addPoint: march.addPoint,
   deleteSegment: march.deleteSegment,
+  getExistingSegments: march.getExistingSegments,
 }
 
 const LineContainer = connect(

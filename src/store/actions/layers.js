@@ -6,7 +6,7 @@ import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLaye
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
-import { asyncAction, orgStructures, webMap, selection } from './index'
+import { asyncAction, orgStructures, webMap, selection, flexGrid } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -111,15 +111,7 @@ export const selectLayer = (layerId) =>
         byId,
       },
       webMap: { mode },
-      maps: {
-        byId: mapsById,
-      },
     } = state
-
-    const isSignedMapLayer = (layerId) => {
-      const mapId = byId && layerId && byId[layerId] && byId[layerId].mapId
-      return mapId && mapsById && mapsById[mapId] && mapsById[mapId].signed
-    }
 
     if (selectedId === layerId) {
       return
@@ -138,6 +130,10 @@ export const selectLayer = (layerId) =>
         mapId,
       } = layer
 
+      if (state.flexGrid.visible) {
+        await dispatch(flexGrid.getFlexGrid(mapId))
+      }
+
       await dispatch(expandMap(mapId, true))
 
       if (formationId === null) {
@@ -147,8 +143,8 @@ export const selectLayer = (layerId) =>
 
       await dispatch(orgStructures.setFormationById(formationId))
 
-      if (layer.readOnly || isSignedMapLayer(layerId)) {
-        (mode === MapModes.EDIT) && dispatch(webMap.setMapMode(MapModes.NONE))
+      if (layer.readOnly && mode === MapModes.EDIT) {
+        dispatch(webMap.setMapMode(MapModes.NONE))
       }
     } else {
       await dispatch(orgStructures.setFormationById(null))
