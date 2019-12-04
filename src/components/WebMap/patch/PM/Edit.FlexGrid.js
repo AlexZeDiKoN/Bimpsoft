@@ -691,7 +691,6 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._map._customDrag = true
     const dir = marker._dir
     /* if (!L.DomUtil.hasClass(marker._cursorClass)) {
-      console.log(`addClass`, marker._cursorClass)
       L.DomUtil.addClass(this._map._container, marker._cursorClass)
     } */
     const point = this._map.project(marker.getLatLng())
@@ -710,8 +709,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     if (this._updatingResizeMarkers) {
       return
     }
-    /* console.log(`removeClass`, marker._cursorClass)
-    L.DomUtil.removeClass(this._map._container, marker._cursorClass) */
+    /* L.DomUtil.removeClass(this._map._container, marker._cursorClass) */
     const dropPoint = (point) => {
       delete point.orig
     }

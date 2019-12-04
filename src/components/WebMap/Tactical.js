@@ -183,7 +183,7 @@ function createText (data, layer) {
 
 function createSegment (data) {
   const { geometry, attributes } = data
-  const points = geometry.toJS()
+  const points = geometry && geometry.toJS ? geometry.toJS() : geometry
   const { template, color } = attributes
   const options = prepareOptions(entityKind.SEGMENT, color, template)
   return L.polyline(points, options)

@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+// import { parseStringPromise } from 'xml2js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -35,7 +36,7 @@ import {
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import { catalogSign } from '../Catalogs'
-import { calcMoveWM } from '../../utils/mapObjConvertor'
+import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import entityKind, { entityKindFillable, entityKindMultipointCurves, entityKindMultipointAreas } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
@@ -93,29 +94,28 @@ const isLayerInBounds = (layer, bounds) => {
   return rect && bounds.contains(rect)
 }
 
-// const tmp = `<svg
-//   width="480" height="480"
-//   line-point-1="24,240"
-//   line-point-2="456,240"
-// >
-//   <path
-//     fill="none"
-//     stroke="red" stroke-width="3" stroke-linecap="square"
-//     d="M8,240
-//        a16,16 0 0,1 16,-16
-//        h80
-//        l15,-23 15,23 -15,23 -15,-23
-//        m30,0 h106
-//        v-65 l-4,6 4,-15 4,15 -4,-6 v35
-//        l-20,0 40,0 -20,0 v15
-//        l-20,0 40,0 -20,0 v15
-//        h106
-//        l15,-23 15,23 -15,23 -15,-23
-//        m30,0 h80
-//        a16,16 0 0,1 16,16"
-//   />
-// </svg>`
-// TODO: end
+/* const tmp = `<svg
+  width="480" height="480"
+  line-point-1="24,240"
+  line-point-2="456,240"
+>
+  <path
+    fill="none"
+    stroke="red" stroke-width="3" stroke-linecap="square"
+    d="M8,240
+       a16,16 0 0,1 16,-16
+       h80
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h106
+       v-65 l-4,6 4,-15 4,15 -4,-6 v35
+       l-20,0 40,0 -20,0 v15
+       l-20,0 40,0 -20,0 v15
+       h106
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h80
+       a16,16 0 0,1 16,16"
+  />
+</svg>` */
 
 const miniMapOptions = {
   width: 200,
@@ -1281,8 +1281,9 @@ export default class WebMap extends React.PureComponent {
     const { id, attributes, layer: layerInner, unit } = object
     const layerObject = layersByIdFromStore[layerInner]
     try {
-      validateObject(object.toJS())
+      validateObject(object && object.toJS ? object.toJS() : object)
     } catch (e) {
+      console.error(e)
       return null
     }
     const layer = createTacticalSign(object, this.map, prevLayer)
@@ -1386,7 +1387,6 @@ export default class WebMap extends React.PureComponent {
   }, 210)
 
   moveListByOne = (layer) => {
-    // console.log(layer)
     const { selection: { list } } = this.props
     if (list.length > 1) {
       this._dragEndPx = this.map.project(layer._bounds._northEast)
@@ -1395,10 +1395,8 @@ export default class WebMap extends React.PureComponent {
         y: this._dragEndPx.y - this._dragStartPx.y,
       }
       const objects = list.filter((id) => id !== layer.id)
-      // console.log({ id: layer.id, bounds: layer._bounds, delta })
       this.map.eachLayer((item) => {
         if (item.id && objects.includes(item.id)) {
-          // console.log(item.id)
           const shiftOne = (latLng) => {
             const f = this.map.project(latLng)
             return this.map.unproject(point({
@@ -1427,7 +1425,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    // console.log(layer)
     const { selection: { list } } = this.props
     if (list.length > 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
@@ -1612,136 +1609,27 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // // TODO: пибрати це після тестування
-  // handleShortcuts = async (action) => {
-  //   const { addObject } = this.props
-  //   const bounds = this.map.getBounds()
-  //   const center = bounds.getCenter()
-  //   const width = bounds.getEast() - bounds.getWest()
-  //   const height = bounds.getNorth() - bounds.getSouth()
-  //   let created
-  //   switch (action) {
-  //     case ADD_POINT:
-  //       console.info('ADD_POINT')
-  //       break
-  //     case ADD_SEGMENT: {
-  //       console.info('ADD_SEGMENT')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.SEGMENT,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //         attributes: {
-  //           template: tmp,
-  //           color: 'red',
-  //         },
-  //       })
-  //       break
-  //     }
-  //     case ADD_AREA: {
-  //       console.info('ADD_AREA')
-  //       const geometry = [
-  //         { lat: center.lat - height / 10, lng: center.lng },
-  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.AREA,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_CURVE: {
-  //       console.info('ADD_CURVE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.CURVE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_POLYGON: {
-  //       console.info('ADD_POLYGON')
-  //       const geometry = [
-  //         { lat: center.lat - height / 10, lng: center.lng },
-  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.POLYGON,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_POLYLINE: {
-  //       console.info('ADD_POLYLINE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.POLYLINE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_CIRCLE: {
-  //       console.info('ADD_CIRCLE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.CIRCLE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_RECTANGLE: {
-  //       console.info('ADD_RECTANGLE')
-  //       const geometry = [
-  //         { lat: center.lat - width / 15, lng: center.lng - width / 10 },
-  //         { lat: center.lat + width / 15, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.RECTANGLE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_SQUARE: {
-  //       console.info('ADD_SQUARE')
-  //       const geometry = [
-  //         { lat: center.lat - width / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + width / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.SQUARE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_TEXT:
-  //       console.info('ADD_TEXT')
-  //       break
-  //     default:
-  //       console.error(`Unknown action: ${action}`)
-  //   }
-  //   this.activateCreated(created)
-  // }
+  /* // TODO: пибрати це після тестування
+  handleAddSegment = async () => {
+    const bounds = this.map.getBounds()
+    const center = bounds.getCenter()
+    const width = bounds.getEast() - bounds.getWest()
+    // const height = bounds.getNorth() - bounds.getSouth()
+    const geometry = [
+      { lat: center.lat, lng: center.lng - width / 10 },
+      { lat: center.lat, lng: center.lng + width / 10 },
+    ]
+    const created = await this.addObject({
+      type: entityKind.SEGMENT,
+      point: calcMiddlePoint(geometry),
+      geometry,
+      attributes: {
+        template: await parseStringPromise(tmp),
+        color: 'red',
+      },
+    }, null)
+    setLayerSelected(created, true, true)
+  } */
 
   showFlexGrid = (show) => {
     if (!this.map) {
@@ -1966,6 +1854,7 @@ export default class WebMap extends React.PureComponent {
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
+        {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
         {this.props.flexGridVisible && (
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}

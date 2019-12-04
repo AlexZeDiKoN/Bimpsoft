@@ -56,7 +56,6 @@ export default class UpdateQueue {
 
   setTimeout (timeout) {
     if (this.timeout !== timeout) {
-      // console.log(`UpdateQueue: setTimeout ${timeout}`)
       this.timeout = timeout
       if (!this.isPaused) {
         if (this.intervalId) {
@@ -69,7 +68,6 @@ export default class UpdateQueue {
 
   pause () {
     this.isPaused = true
-    // console.log('UpdateQueue: pause')
     if (this.intervalId) {
       clearInterval(this.intervalId)
       this.intervalId = null
@@ -77,7 +75,6 @@ export default class UpdateQueue {
   }
 
   resume () {
-    // console.log('UpdateQueue: resume')
     this.isPaused = false
     if (!this.intervalId) {
       this.intervalId = setInterval(this.processUpdateQueue.bind(this), this.timeout)

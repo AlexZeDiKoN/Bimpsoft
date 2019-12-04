@@ -28,7 +28,6 @@ export const merge = (record, payload) =>
   Object.keys(payload).reduce((record, key) => {
     const oldValue = record.get(key)
     const newValue = payload[key]
-    // console.log({ oldValue, newValue, eq: eq(oldValue, newValue) })
     return eq(oldValue, newValue)
       ? record
       : record.set(key, newValue)

@@ -25,10 +25,8 @@ export default (mapStateToProps, onHistoryChange) => (store, history) => {
     const newUri = `#/?${fullUri}`
     if (push !== pushUri) {
       push = pushUri
-      // console.log(`history.push: "${fullUri}"`)
       history.push(newUri)
     } else if (uri !== fullUri) {
-      // console.log(`history.replace: "${fullUri}"`)
       history.replace(newUri)
     }
     uri = fullUri
@@ -36,7 +34,6 @@ export default (mapStateToProps, onHistoryChange) => (store, history) => {
 
   const locationChangeHandler = () => {
     const nextUri = history.location.hash.slice(3)
-    // console.log(`switch: "${nextUri}"`)
     onHistoryChange(fromURI(uri), fromURI(nextUri), store.dispatch)
     uri = nextUri
   }
