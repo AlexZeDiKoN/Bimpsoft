@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^10.3.339":
-  version "10.3.339"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fCommonComponents/-/CommonComponents-10.3.339.tgz#4070de23da12fc267c6d4f49ad84f85c7f712ab6"
-  integrity sha512-4U06oJ4Oj8SJ9+TRH5ZarJRNT41w7ZKKwAJgNxH8zq0riASsGk2sl+gH+TzH3P0fOTeYDfD8aNetMXyEBCk5wg==
+"@DZVIN/CommonComponents@^10.3.340":
+  version "10.3.340"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fCommonComponents/-/CommonComponents-10.3.340.tgz#d7543ff08ae50852df2a81063e087a3d7fdfd9d4"
+  integrity sha512-CxMPJZCrduVrOi79F/1l//z/Ji0s7XjwAf7MMUG3KxAhuOTUvzNUl7UZTMj2+XcOz5/LvW2U1pX41JsJeIP/0Q==
   dependencies:
     is-negative-zero "^2.0.0"
     mgrs "^1.0.0"
@@ -22,10 +22,10 @@
   resolved "http://172.16.97.47:4873/@DZVIN%2fEuSign/-/EuSign-0.0.2.tgz#48a82a28bc6a6d5012ddf96cee5e0846cd9b0c7d"
   integrity sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
 
-"@DZVIN/MilSymbolEditor@^10.2.242":
-  version "10.2.242"
-  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-10.2.242.tgz#bdad2ce974822e906b29d13fb0ed6842aa24695d"
-  integrity sha512-y10Pln7Tap+5OeCTAYdZQp1O9BK40ItNL1LnZljDBYzyYXYNO6v6vwL8Ukp23OLFW06S8OS9djDpo7HGUb8Ang==
+"@DZVIN/MilSymbolEditor@^10.3.245":
+  version "10.3.245"
+  resolved "http://172.16.97.47:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-10.3.245.tgz#0b43f2e90c0eeea76a87a0d4357e212256299dd9"
+  integrity sha512-x72OWKJ2f8uqEHuzkApqA/ofyi/CNHUDfeQUt/XalPmsm5HArejH2Q+ZYcHsmsss0osbXR60AGBmrbpoktcawQ==
   dependencies:
     "@DZVIN/milsymbol" ">=0.0.5"
 
