@@ -1,11 +1,11 @@
 {
   "name": "web-map",
-  "version": "10.03.571",
+  "version": "10.03.572",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^10.3.345",
-    "@DZVIN/MilSymbolEditor": "^10.3.245",
-    "@DZVIN/components": "^10.3.529",
+    "@DZVIN/MilSymbolEditor": "^10.3.247",
+    "@DZVIN/components": "^10.3.531",
     "@DZVIN/milsymbol": "^0.0.5",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
