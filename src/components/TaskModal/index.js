@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel } from '@DZVIN/CommonComponents'
+import { MovablePanel, ResizeEnable } from '@DZVIN/CommonComponents'
 import { TaskComponentStatefull } from '@DZVIN/components'
 import i18n from '../../i18n'
 import './style.css'
@@ -44,6 +44,7 @@ export default class TaskModal extends React.Component {
           onClose={onClose}
           minWidth={1000}
           minHeight={350}
+          resizeEnable={ResizeEnable.ALL_DISABLED}
         >
           <FocusTrap>
             <div tabIndex={0} className='taskModal'>
