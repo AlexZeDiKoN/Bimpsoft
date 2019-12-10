@@ -102,7 +102,7 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
-        minWidth={title === i18n.MIL_SYMBOL ? 825 : 410}
+        minWidth={title === i18n.MIL_SYMBOL ? 825 : title === i18n.SHAPE_TEXT ? 735 : 410}
         minHeight={modalsMinHeight[title]}
       >
         <FocusTrap>
