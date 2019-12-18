@@ -664,10 +664,6 @@ export default class WebMap extends React.PureComponent {
         //   : Math.round((val / 1000) * 100) / 100 + ' ' + i18n.ABBR_KILOMETERS,
       },
     })
-    control.zoom({
-      zoomInTitle: i18n.ZOOM_IN,
-      zoomOutTitle: i18n.ZOOM_OUT,
-    }).addTo(this.map)
     this.scale = control.graphicScale({
       fill: 'hollow',
     })
@@ -689,12 +685,27 @@ export default class WebMap extends React.PureComponent {
     const scale = new L.Control.SwitchScaleControl(switchScaleOptions)
     this.map.addControl(scale)
     scale._container.style.left = '20px'
+    scale.text.style.width = '100%'
+    const graphicStyle = this.scale._container.style
+    graphicStyle.background = '#fff'
+    graphicStyle.padding = '5px 15px 5px 0px'
+    graphicStyle.height = '45px'
+    graphicStyle.borderRadius = '20px'
+
+    this.control = control.zoom({
+      zoomInTitle: i18n.ZOOM_IN,
+      zoomOutTitle: i18n.ZOOM_OUT,
+      position: 'bottomleft'
+    }).addTo(this.map)
+    this.control._container.style.left = '15px'
     DomEvent.addListener(this.coordinates._container, 'click', () => {
       this.toggleIndicateMode()
       this.coordinates._update({ latlng: this.coordinates._currentPos })
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
-    this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
+    if (process.env.NODE_ENV === 'development') {
+      this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
+    }
     this.map.on('moveend', this.moveHandler)
     this.map.on('zoomend', this.moveHandler)
     this.map.on('pm:create', this.createNewShape)
