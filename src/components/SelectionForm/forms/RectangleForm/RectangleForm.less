@@ -44,6 +44,7 @@
         margin-left: 0.5em;
         font-size: 12px;
         display: block;
+        flex: 0 0 auto;
         white-space: nowrap;
         overflow: hidden;
         margin-right: 0;
@@ -54,55 +55,11 @@
 
   &__itemWidth {
     width: 50%;
+    margin-top: 10px;
 
-    .org-structures-select {
-      height: 2.3em;
-
-      input {
-        display: block;
-        box-sizing: border-box;
-        background-color: @input-background-color;
-        border: 1px solid @select-border-color;
-        border-top-width: 1.02px;
-        border-radius: 4px;
-        outline: none;
-        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-        height: 32px;
-        padding-left: 11px;
-        padding-right: 22px;
-        user-select: none;
-
-        &:focus, &:hover {
-          outline-color: @select-outline-color;
-          box-shadow: 0 0 0 2px @select-box-shadow-color;
-          border-color: @select-outline-color;
-        }
-      }
-
-      .filter-tree-select-values-container {
-        position: fixed;
-      }
-    }
-
-    .ant-select-open {
-      .ant-select-arrow {
-        transform: rotate(180deg) scale(0.6);
-      }
-    }
-
-    .ant-select-arrow {
-      width: 0;
-      height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 10px solid @toolbar-color;
-      top: 55%;
-      transition: 0.3s;
-      transform: scale(0.6);
-      right: 7px;
-
-      .anticon {
-        display: none;
+    .hideArrow{
+      .dzvin-input-after{
+        opacity: 0;
       }
     }
   }
@@ -115,7 +72,6 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        margin: 0;
 
         .dzvin-form-input {
           width: 100%;
