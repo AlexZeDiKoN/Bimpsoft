@@ -62,14 +62,41 @@ const forms = {
 
 const modalsMinHeight = {
   [i18n.MIL_SYMBOL]: 825,
-  [i18n.SHAPE_POLYGON]: 685,
-  [i18n.SHAPE_POLYLINE]: 685,
-  [i18n.SHAPE_CURVE]: 685,
-  [i18n.SHAPE_AREA]: 685,
+  [i18n.SHAPE_POLYGON]: 750,
+  [i18n.SHAPE_POLYLINE]: 750,
+  [i18n.SHAPE_CURVE]: 750,
+  [i18n.SHAPE_AREA]: 750,
+  [i18n.SHAPE_CIRCLE]: 575,
   [i18n.SHAPE_SQUARE]: 550,
   [i18n.SHAPE_RECTANGLE]: 490,
   [i18n.SHAPE_TEXT]: 330,
-  [i18n.CONTOUR]: 310,
+  [i18n.CONTOUR]: 330,
+}
+
+const modalsMinWidth = {
+  [i18n.MIL_SYMBOL]: 825,
+  [i18n.SHAPE_POLYGON]: 415,
+  [i18n.SHAPE_POLYLINE]: 415,
+  [i18n.SHAPE_CURVE]: 415,
+  [i18n.SHAPE_AREA]: 415,
+  [i18n.SHAPE_CIRCLE]: 415,
+  [i18n.SHAPE_SQUARE]: 415,
+  [i18n.SHAPE_RECTANGLE]: 415,
+  [i18n.SHAPE_TEXT]: 735,
+  [i18n.CONTOUR]: 415,
+}
+
+const modalsMaxHeight = {
+  [i18n.MIL_SYMBOL]: 825,
+  [i18n.SHAPE_POLYGON]: 750,
+  [i18n.SHAPE_POLYLINE]: 750,
+  [i18n.SHAPE_CURVE]: 750,
+  [i18n.SHAPE_AREA]: 750,
+  [i18n.SHAPE_CIRCLE]: 575,
+  [i18n.SHAPE_SQUARE]: 550,
+  [i18n.SHAPE_RECTANGLE]: 490,
+  [i18n.SHAPE_TEXT]: 750,
+  [i18n.CONTOUR]: 330,
 }
 
 export default class SelectionForm extends React.Component {
@@ -102,7 +129,8 @@ export default class SelectionForm extends React.Component {
       <Wrapper
         title={title}
         onClose={onCancel}
-        minWidth={title === i18n.MIL_SYMBOL ? 825 : title === i18n.SHAPE_TEXT ? 735 : 410}
+        minWidth={modalsMinWidth[title]}
+        maxHeight={modalsMaxHeight[title]}
         minHeight={modalsMinHeight[title]}
       >
         <FocusTrap>
