@@ -3,9 +3,9 @@
   "version": "11.01.573",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^10.3.346",
-    "@DZVIN/MilSymbolEditor": "^10.3.248",
-    "@DZVIN/components": "^10.3.532",
+    "@DZVIN/CommonComponents": "^11.1.355",
+    "@DZVIN/MilSymbolEditor": "^11.1.254",
+    "@DZVIN/components": "^11.1.545",
     "@DZVIN/milsymbol": "^0.0.5",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
