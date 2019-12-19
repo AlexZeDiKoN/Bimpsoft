@@ -15,14 +15,16 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
     const { unit } = this.getResult()
     const orgStructures = this.getOrgStructures()
     return (
-      <FormRow label={i18n.UNIT}>
-        <OrgStructureSelect
-          values={orgStructures}
-          onChange={this.unitChangeHandler}
-          id={unit}
-          readOnly={!canEdit}
-        />
-      </FormRow>
+      <div className={!canEdit ? 'hideArrow' : ''}>
+        <FormRow label={i18n.UNIT}>
+          <OrgStructureSelect
+            values={orgStructures}
+            onChange={this.unitChangeHandler}
+            id={unit}
+            readOnly={!canEdit}
+          />
+        </FormRow>
+      </div>
     )
   }
 }

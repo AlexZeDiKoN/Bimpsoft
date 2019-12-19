@@ -46,7 +46,7 @@ export default class CoordinateRow extends React.Component {
       <FormRow label={label || i18n.NODAL_POINT_INDEX(index + 1)}>
         <Coordinates
           coordinates={coordinate}
-          readOnly={readOnly}
+          isReadOnly={readOnly}
           onChange={this.changeHandler}
           onBlur={this.onBlurHandler}
           onExitWithChange={this.onExitWithChangeHandler}
