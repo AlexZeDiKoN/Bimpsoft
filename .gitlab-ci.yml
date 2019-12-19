@@ -44,6 +44,7 @@ build:
     - echo Building project...
 #    -  call npm i
 #    - call npm install
+    - del yarn.lock
     - call yarn install --mutex network --network-concurrency 1
     - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network --network-concurrency 1 
     - copy .env .env.backup
