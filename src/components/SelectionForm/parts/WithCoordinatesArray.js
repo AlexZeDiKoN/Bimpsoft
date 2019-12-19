@@ -33,7 +33,6 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const { editCoordinates } = this.state
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit()
-    console.log(canEdit)
     return (
       <FormDarkPart>
         <FormRow label={i18n.COORDINATES}>
