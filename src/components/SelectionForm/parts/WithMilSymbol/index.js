@@ -90,7 +90,6 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
     const { orgStructures, ovtData } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
-    console.log(result)
     return (
       <SymbolEditorComponentStateless
         code={code}
