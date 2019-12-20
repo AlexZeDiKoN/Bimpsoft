@@ -56,7 +56,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   unitChangeHandler = (unit) => this.setResult((result) => {
     const { orgStructures: { byIds} } = this.props
-    const { symbolData, natoLevelID, app6Code } = byIds[unit] ? byIds[unit] : { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
+    const { symbolData, natoLevelID, app6Code } = byIds[unit] || { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
     const uniqueDesignation = symbolData && (symbolData.uniqueDesignation || null)
     const higherFormation = symbolData && (symbolData.higherFormation || null)
     return result.setIn(UNIT_PATH, unit)
