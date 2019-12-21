@@ -62,7 +62,7 @@ build:
 #  after_script:
 #    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
   artifacts:
-    expire_in: 1 hour
+    expire_in: 7 day
     paths:
       - ./build/index.html
       - ./build/manifest.json
