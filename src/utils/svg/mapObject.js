@@ -56,7 +56,7 @@ const svgToG = (svg) => svg
 
 const getLineSvg = (points, attributes, layerData, zoom) => {
   const {
-    lineType, lineNodes, lineAmpl, skipStart, skipEnd,
+    lineType, lineNodes, pointAmplifierType, skipStart, skipEnd,
     color, level, bounds,
     bezier, locked, scale,
     left, right,
@@ -71,7 +71,7 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
       d += stroked(points, lineEnds, lineNodes, bezier, locked, bounds, scale, zoom)
     }
   }
-  const amplifiers = getAmplifiers(points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale, zoom)
+  const amplifiers = getAmplifiers(points, pointAmplifierType, level, lineNodes, bezier, locked, bounds, scale, zoom)
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, lineEnds, bezier, scale * 2)
   return (

@@ -20,7 +20,7 @@ const ENDS_STROKE3 = 'stroke3'
 export const DIRECTION_LEFT = 'left'
 export const DIRECTION_RIGHT = 'right'
 
-const types = {
+export const types = {
   [ENDS_NONE]: { text: i18n.REGULAR, value: ENDS_NONE },
   [ENDS_ARROW1]: { text: `${i18n.ARROW} 1`, value: ENDS_ARROW1 },
   [ENDS_ARROW2]: { text: `${i18n.ARROW} 2`, value: ENDS_ARROW2 },
@@ -33,19 +33,19 @@ const types = {
   [ENDS_CROSS]: { text: i18n.CROSS, value: ENDS_CROSS },
 }
 
-const PATHES = {
+export const PATHS = {
   [DIRECTION_LEFT]: [ 'attributes', DIRECTION_LEFT ],
   [DIRECTION_RIGHT]: [ 'attributes', DIRECTION_RIGHT ],
 }
 
 const WithLineEnds = (Component) => class LineEndsComponent extends Component {
   lineEndsChangeHandlers = {
-    [DIRECTION_LEFT]: (lineEnds) => this.setResult((result) => result.setIn(PATHES[DIRECTION_LEFT], lineEnds)),
-    [DIRECTION_RIGHT]: (lineEnds) => this.setResult((result) => result.setIn(PATHES[DIRECTION_RIGHT], lineEnds)),
+    [DIRECTION_LEFT]: (lineEnds) => this.setResult((result) => result.setIn(PATHS[DIRECTION_LEFT], lineEnds)),
+    [DIRECTION_RIGHT]: (lineEnds) => this.setResult((result) => result.setIn(PATHS[DIRECTION_RIGHT], lineEnds)),
   }
 
   renderLineEnds (direction) {
-    const lineEnds = this.getResult().getIn(PATHES[direction])
+    const lineEnds = this.getResult().getIn(PATHS[direction])
     const typeInfo = types[lineEnds]
     const canEdit = this.isCanEdit()
 

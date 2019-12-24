@@ -21,26 +21,35 @@ const forms = {
   [SelectionTypes.POINT]: {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
+    minHeight: 825,
+    minWidth: 825,
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
     component: LineForm,
+    minHeight: 685,
+    minWidth: 900,
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
+    minHeight: 685,
+    minWidth: 900,
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
     component: AreaForm,
+    minHeight: 685,
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
     component: AreaForm,
+    minHeight: 685,
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
     component: RectangleForm,
+    minHeight: 490,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
@@ -49,27 +58,19 @@ const forms = {
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
     component: SquareForm,
+    minHeight: 550,
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
     component: TextForm,
+    minHeight: 330,
+    minWidth: 735,
   },
   [SelectionTypes.CONTOUR]: {
     title: i18n.CONTOUR,
     component: ContourForm,
+    minHeight: 310,
   },
-}
-
-const modalsMinHeight = {
-  [i18n.MIL_SYMBOL]: 825,
-  [i18n.SHAPE_POLYGON]: 685,
-  [i18n.SHAPE_POLYLINE]: 685,
-  [i18n.SHAPE_CURVE]: 685,
-  [i18n.SHAPE_AREA]: 685,
-  [i18n.SHAPE_SQUARE]: 550,
-  [i18n.SHAPE_RECTANGLE]: 490,
-  [i18n.SHAPE_TEXT]: 330,
-  [i18n.CONTOUR]: 310,
 }
 
 export default class SelectionForm extends React.Component {
@@ -89,21 +90,31 @@ export default class SelectionForm extends React.Component {
 
   render () {
     const {
-      data, orgStructures, canEdit, onCancel, onOk, onCoordinateFocusChange,
+      data,
+      onOk,
       ovtData,
+      canEdit,
+      onCancel,
+      orgStructures,
+      onCoordinateFocusChange,
     } = this.props
-    if (data === null || !forms.hasOwnProperty(data.type)) {
+    if (data === null || !forms[data.type]) {
       return null
     }
-    const { title, component: Component } = forms[data.type]
+    const {
+      title,
+      minHeight,
+      minWidth = 410,
+      component: Component,
+    } = forms[data.type]
 
     const { wrapper: Wrapper } = this.props
     return (
       <Wrapper
         title={title}
         onClose={onCancel}
-        minWidth={title === i18n.MIL_SYMBOL ? 825 : title === i18n.SHAPE_TEXT ? 735 : 410}
-        minHeight={modalsMinHeight[title]}
+        minWidth={minWidth}
+        minHeight={minHeight}
       >
         <FocusTrap>
           <HotKeysContainer>

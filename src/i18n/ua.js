@@ -79,12 +79,14 @@ export const WAVE_SIGN_SIZE = 'Розмір елементів хвилясто�
 export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з засічками'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
+export const AMPLIFIER = 'Ампліфікатор'
 export const GENERALIZATION = 'Генералізація'
 export const VOLUME_VIEW = 'Відображення 3D'
 
 export const UNIT = 'Підрозділ'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
+export const TEXT_2 = 'Текст'
 export const TRANSPARENT_BACKGROUND = 'Непрозорий фон'
 export const DISPLAY_ANCHOR_LINE = 'Відображати лінію прив\'язки'
 export const ANCHOR_LINE_WITH_ARROW = 'Лінія прив\'язки зі стрілкою'
@@ -297,3 +299,25 @@ export const LOCATION = 'Позиція'
 export const ACCESS_FULL = 'Повний доступ'
 export const ACCESS_READONLY = 'Лише перегляд'
 export const GROUPPING = 'Групувати'
+
+export const NATO_CLASSIFIER = 'Класифікація НАТО'
+export const DIVIDING_LINE = 'Розмежувальна лінія'
+
+// affiliations
+export const AFFILIATIONS = {
+  FRIEND: 'Дружні',
+  ASSUMED_FRIEND: 'Очікувано дружні',
+  HOSTILE_FAKER: 'Ворожі',
+  SUSPECT_JOKER: 'Підозрілі',
+  NEUTRAL: 'Нейтральні',
+  UNKNOWN: 'Невідомі',
+  PENDING: 'Невизначені',
+}
+
+// statuses
+
+export const STATUS = 'Стан'
+export const EXISTING = 'Існуючий'
+export const PLANNED = 'Плановий'
+export const EXPECTED = 'Очікуваний'
+export const PROBABLE = 'Ймовірний'

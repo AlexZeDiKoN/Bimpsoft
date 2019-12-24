@@ -35,7 +35,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const canEdit = this.isCanEdit()
     return (
       <FormDarkPart>
-        <FormRow label={i18n.COORDINATES}>
+        <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && (<IconHovered
             icon={editCoordinates ? iconNames.BAR_2_EDIT_ACTIVE : iconNames.BAR_2_EDIT_DEFAULT}
             hoverIcon={iconNames.BAR_2_EDIT_HOVER}
@@ -43,7 +43,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
           />)}
         </FormRow>
         <FormDivider/>
-        <FormRow label={i18n.NODAL_POINTS}>
+        <FormRow label={i18n.COORDINATES}>
           {canEdit && editCoordinates && (<IconHovered
             icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
             hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}

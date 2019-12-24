@@ -7,7 +7,7 @@ import { colorOption, colorDiv } from './render'
 
 const { FormRow } = components.form
 
-const PATH = [ 'attributes', 'color' ]
+export const PATH = [ 'attributes', 'color' ]
 
 const WithColor = (Component) => class ColorComponent extends Component {
   colorChangeHandler = (color) => this.setResult((result) => result.setIn(PATH, color))
