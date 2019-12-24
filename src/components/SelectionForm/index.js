@@ -21,55 +21,72 @@ const forms = {
   [SelectionTypes.POINT]: {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
-    minHeight: 825,
     minWidth: 825,
+    minHeight: 825,
+    maxHeight: 825,
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
     component: LineForm,
     minHeight: 685,
     minWidth: 900,
+    maxHeight: 750,
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
-    minHeight: 685,
+    minHeight: 750,
+    maxHeight: 750,
     minWidth: 900,
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
     component: AreaForm,
-    minHeight: 685,
+    minHeight: 750,
+    maxHeight: 750,
+    minWidth: 415,
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
     component: AreaForm,
-    minHeight: 685,
+    minHeight: 750,
+    maxHeight: 750,
+    minWidth: 415,
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
     component: RectangleForm,
     minHeight: 490,
+    maxHeight: 490,
+    minWidth: 415,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
     component: CircleForm,
+    minHeight: 575,
+    maxHeight: 575,
+    minWidth: 415,
   },
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
     component: SquareForm,
     minHeight: 550,
+    maxHeight: 550,
+    minWidth: 415,
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
     component: TextForm,
     minHeight: 330,
     minWidth: 735,
+    maxHeight: 750,
   },
   [SelectionTypes.CONTOUR]: {
     title: i18n.CONTOUR,
     component: ContourForm,
-    minHeight: 310,
+    minHeight: 330,
+    maxHeight: 330,
+    minWidth: 415,
   },
 }
 
@@ -104,7 +121,8 @@ export default class SelectionForm extends React.Component {
     const {
       title,
       minHeight,
-      minWidth = 410,
+      maxHeight,
+      minWidth,
       component: Component,
     } = forms[data.type]
 
@@ -114,6 +132,7 @@ export default class SelectionForm extends React.Component {
         title={title}
         onClose={onCancel}
         minWidth={minWidth}
+        maxHeight={maxHeight}
         minHeight={minHeight}
       >
         <FocusTrap>

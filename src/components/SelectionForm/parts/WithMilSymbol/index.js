@@ -54,7 +54,16 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel),
   )
 
-  unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
+  unitChangeHandler = (unit) => this.setResult((result) => {
+    const { orgStructures: { byIds} } = this.props
+    const { symbolData, natoLevelID, app6Code } = byIds[unit] || { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
+    const uniqueDesignation = symbolData && (symbolData.uniqueDesignation || null)
+    const higherFormation = symbolData && (symbolData.higherFormation || null)
+    return result.setIn(UNIT_PATH, unit)
+    .setIn(CODE_PATH, app6Code)
+    .setIn(SUBORDINATION_LEVEL_PATH, natoLevelID)
+    .updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge({uniqueDesignation, higherFormation}))
+  })
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
     .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
