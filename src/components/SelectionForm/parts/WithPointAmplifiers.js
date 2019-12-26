@@ -6,9 +6,9 @@ import i18n from '../../../i18n'
 const { FormRow } = components.form
 
 const PAIRS = {
-  TOP: { id: 'top', name: `${i18n.AMPLIFIER} "T"` },
-  MIDDLE: { id: 'middle', name: `${i18n.AMPLIFIER} "N"` },
-  BOTTOM: { id: 'bottom', name: `${i18n.AMPLIFIER} "W"` },
+  TOP: { id: 'top', name: 'T' },
+  MIDDLE: { id: 'middle', name: 'N' },
+  BOTTOM: { id: 'bottom', name: 'W' },
 }
 
 const PATH = [ 'attributes', 'pointAmplifiers' ]
@@ -27,7 +27,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
       <div className="line-container__item">
         {Object.values(PAIRS).map(({ id, name }) => (
           <div className="line-container__itemWidth" key={id}>
-            <FormRow label={name}>
+            <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
               <Input
                 value={currentValue[id]}
                 onChange={this.createPointAmplifierHandler(id)}

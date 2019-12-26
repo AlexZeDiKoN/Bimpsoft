@@ -1308,7 +1308,7 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
-      layer.options.lineAmpl = attributes.lineAmpl
+      layer.options.intermediateAmplifierType = attributes.intermediateAmplifierType
       layer.options.lineNodes = attributes.lineNodes
       layer.options.lineEnds = {
         left: attributes.left,

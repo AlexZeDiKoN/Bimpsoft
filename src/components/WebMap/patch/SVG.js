@@ -224,7 +224,7 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.lineAmpl,
+    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.intermediateAmplifierType,
       layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
       bounds, 1.0, layer._map.getZoom())
     if (amplifiers.maskPath.length) {

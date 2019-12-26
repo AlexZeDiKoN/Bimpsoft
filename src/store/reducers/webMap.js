@@ -130,8 +130,18 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     if (attributes) {
-      const { texts, ...otherAttrs } = attributes
-      obj = update(obj, 'attributes', comparator, WebMapAttributes({ texts: List(texts), ...otherAttrs }))
+      const {
+        texts,
+        intermediateAmplifiers,
+        pointAmplifiers,
+        ...otherAttrs
+      } = attributes
+      obj = update(obj, 'attributes', comparator, WebMapAttributes({
+        texts: List(texts),
+        intermediateAmplifiers: LineAmplifier(intermediateAmplifiers),
+        pointAmplifiers: LineAmplifier(pointAmplifiers),
+        ...otherAttrs,
+      }))
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }

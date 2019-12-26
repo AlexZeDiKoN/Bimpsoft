@@ -423,7 +423,7 @@ const getAmpSigns = (scale = 1) => subordinationLevels.list.reduce((res, { value
     settings.AMPLIFIERS_WINDOW_MARGIN * scale),
 }), {})
 
-export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale = 1, zoom = -1) => {
+export const getAmplifiers = (points, intermediateAmplifierType, level, lineNodes, bezier, locked, bounds, scale = 1, zoom = -1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -433,7 +433,7 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
     maskPath: [],
     group: '',
   }
-  if (lineAmpl === 'show-level' && level) {
+  if (intermediateAmplifierType === 'level' && level) {
     const amp = getAmpSigns(scale)[level]
     const amplPoints = buildPeriodicPoints(
       settings.AMPLIFIERS_STEP * scale,

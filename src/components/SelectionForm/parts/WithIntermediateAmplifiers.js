@@ -8,14 +8,16 @@ import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 const { FormRow } = components.form
 
 const PAIRS = {
-  TOP: { id: 'top', name: `${i18n.AMPLIFIER} "H1"` },
-  MIDDLE: { id: 'middle', name: `${i18n.AMPLIFIER} "B"` },
-  BOTTOM: { id: 'bottom', name: `${i18n.AMPLIFIER} "H2"` },
+  TOP: { id: 'top', name: 'H1' },
+  MIDDLE: { id: 'middle', name: 'B' },
+  BOTTOM: { id: 'bottom', name: 'H2' },
 }
+
+export const NAME_OF_AMPLIFIERS = `${PAIRS.TOP.name}/${PAIRS.MIDDLE.name}/${PAIRS.BOTTOM.name}`
 
 const TYPES = {
   NONE: 'none',
-  LEVEL: 'show-level',
+  LEVEL: 'level',
   TEXT: 'text',
 }
 
@@ -25,25 +27,32 @@ const TYPE_LIST = [
   { id: '2', text: i18n.SHOW_LEVEL, value: TYPES.LEVEL },
 ]
 
-const PATH = [ 'attributes', 'intermediateAmplifiers' ]
-const PATH_TO_TYPE = [ ...PATH, 'type' ]
+export const PATH = [ 'attributes', 'intermediateAmplifiers' ]
+export const TYPE_PATH = [ 'attributes', 'intermediateAmplifierType' ]
+
+export const INTERMEDIATE_AMPLIFIER_TYPES = TYPES
+export const INTERMEDIATE_AMPLIFIER_PATH = PATH
+export const INTERMEDIATE_AMPLIFIER_TYPE_PATH = TYPE_PATH
 
 const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersComponent extends Component {
-  intermediateAmplifierTypeHandler = (id) => this.setResult((result) => result.setIn(PATH_TO_TYPE, id))
+  intermediateAmplifierTypeHandler = (type) => (
+    this.setResult((result) => result.setIn(INTERMEDIATE_AMPLIFIER_TYPE_PATH, type))
+  )
 
   createIntermediateAmplifierHandler = (id) => (event) => (
-    this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
+    this.setResult((result) => result.setIn([ ...INTERMEDIATE_AMPLIFIER_PATH, id ], event.target.value))
   )
 
   renderIntermediateAmplifiers () {
     const state = this.getResult()
-    const currentValue = state.getIn(PATH)
+    const currentValue = state.getIn(INTERMEDIATE_AMPLIFIER_PATH)
+    const type = state.getIn(INTERMEDIATE_AMPLIFIER_TYPE_PATH)
     const subordinationLevel = state.getIn(SUBORDINATION_LEVEL_PATH)
     const canEdit = this.isCanEdit()
 
     const renderAmplifierInput = ({ id, name }) => (
       <div className="line-container__itemWidth" key={id}>
-        <FormRow label={name}>
+        <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
           <Input
             value={currentValue[id]}
             onChange={this.createIntermediateAmplifierHandler(id)}
@@ -57,9 +66,9 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
       <div className="line-container__item">
         <div className="line-container__itemWidth">
           <div className="line-container__item">
-            <FormRow label={PAIRS.MIDDLE.name}>
+            <FormRow label={`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
               <Select
-                value={currentValue.type}
+                value={type}
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
               >{TYPE_LIST.map(({ text, value }) => {
@@ -67,7 +76,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                   return typeOption(value, 'solid', text, level)
                 })}
               </Select>
-              {currentValue.type === TYPES.TEXT
+              {type === TYPES.TEXT
                 ? <Input
                   value={currentValue[PAIRS.MIDDLE.id]}
                   onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}

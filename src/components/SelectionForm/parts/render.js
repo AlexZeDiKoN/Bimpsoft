@@ -47,7 +47,7 @@ const optionsSvg = (children) => (
   </svg>
 )
 
-const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
+export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   let amp
   const dash = {}
   if (level) {

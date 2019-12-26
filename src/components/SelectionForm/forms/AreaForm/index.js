@@ -8,6 +8,7 @@ import {
   WithNodalPointType,
   WithCoordinatesArray,
   WithSubordinationLevel,
+  WithIntermediateAmplifiers,
   WithStrokeWidth,
   UnitSelect,
 } from '../../parts'
@@ -23,6 +24,7 @@ const Extenders = compose(
   WithFill,
   WithColor,
   WithStrokeWidth,
+  WithIntermediateAmplifiers,
   UnitSelect,
 )
 
@@ -46,6 +48,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
             {this.renderNodalPointType()}
           </div>
         </div>
+        {this.renderIntermediateAmplifiers()}
         {this.renderCoordinatesArray()}
       </div>
     )
