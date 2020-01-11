@@ -4,13 +4,11 @@ import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
-import { renderStyledLine } from './render'
+import { renderNodes } from './render'
 import {
-  SUBORDINATION_LEVEL_PATH,
-} from './WithSubordinationLevel'
+  NODAL_POINT_TYPE_PATH,
+} from './WithNodalPointType'
 import {
-  INTERMEDIATE_AMPLIFIER_TYPES,
-  INTERMEDIATE_AMPLIFIER_TYPE_PATH,
   NAME_OF_AMPLIFIERS,
 } from './WithIntermediateAmplifiers'
 
@@ -22,8 +20,16 @@ const {
 
 const { icons: { IconHovered, names: iconNames } } = components
 
+const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
+
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
   state = { editCoordinates: false }
+
+  createIntermediateAmplifierShowerHandler = (index) => () => this.setResult((result) =>
+    result.updateIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, (showedSet) =>
+      showedSet.has(index) ? showedSet.delete(index) : showedSet.add(index),
+    ),
+  )
 
   coordinateRemoveHandler = (index) => this.setResult((result) =>
     result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
@@ -42,12 +48,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   renderCoordinatesArray () {
     const { editCoordinates } = this.state
     const formStore = this.getResult()
+    const shownAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
-    const subordinationLevel = formStore.getIn(SUBORDINATION_LEVEL_PATH)
-    const currentAmplifierType = formStore.getIn(INTERMEDIATE_AMPLIFIER_TYPE_PATH)
+    const nodalPointType = formStore.getIn(NODAL_POINT_TYPE_PATH)
     const canEdit = this.isCanEdit()
-    const level = currentAmplifierType === INTERMEDIATE_AMPLIFIER_TYPES.LEVEL ? subordinationLevel : null
-    const amplifierTypePreview = renderStyledLine('solid', level)
+    const nodalPointTypePreview = renderNodes(nodalPointType)
     const coordinatesLength = coordinatesArray.length
     return (
       <FormDarkPart>
@@ -80,8 +85,10 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                 <tr>
                   <td>
                     <div className="icon-option">
-                      <Checkbox disabled={!canEdit}/>
-                      {amplifierTypePreview}
+                      <Checkbox
+                        disabled={!canEdit}
+                      />
+                      {nodalPointTypePreview}
                     </div>
                   </td>
                   <td>
@@ -100,7 +107,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                 </tr>
                 {index !== coordinatesLength - 1 ? (
                   <tr>
-                    <td><Checkbox disabled={!canEdit}/> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
+                    <td><Checkbox
+                      disabled={!canEdit}
+                      onChange={this.createIntermediateAmplifierShowerHandler(index)}
+                      checked={shownAmplifiersSet.has(index)}
+                    /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
                   </tr>
                 ) : null}
               </>

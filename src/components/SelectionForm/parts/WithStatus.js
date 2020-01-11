@@ -5,7 +5,6 @@ import i18n from '../../../i18n'
 
 const { FormRow } = components.form
 
-// TODO: save field to database
 export const PATH = [ 'attributes', 'status' ]
 
 export const STATUS_LIST = [

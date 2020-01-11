@@ -224,9 +224,19 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.intermediateAmplifierType,
-      layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
-      bounds, 1.0, layer._map.getZoom())
+    const amplifiers = getAmplifiers(
+      layer._rings[0],
+      layer.options && layer.options.intermediateAmplifierType,
+      layer.options && layer.options.intermediateAmplifier,
+      layer.options && layer.options.shownIntermediateAmplifiers,
+      layer.object && layer.object.level,
+      layer.options && layer.options.nodalPointType,
+      bezier,
+      locked,
+      bounds,
+      1.0,
+      layer._map.getZoom(),
+    )
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
@@ -251,8 +261,16 @@ L.SVG.include({
 
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return stroked(layer._rings[0], layer.options && layer.options.lineEnds,
-      layer.options && layer.options.lineNodes, bezier, locked, bounds, 1.0, layer._map.getZoom())
+    return stroked(
+      layer._rings[0],
+      layer.options && layer.options.lineEnds,
+      layer.options && layer.options.nodalPointType,
+      bezier,
+      locked,
+      bounds,
+      1.0,
+      layer._map.getZoom(),
+    )
   },
 
   _updateLineEnds: function (layer, bezier) {

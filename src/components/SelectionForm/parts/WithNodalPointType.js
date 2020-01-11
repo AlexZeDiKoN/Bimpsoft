@@ -7,18 +7,20 @@ import { nodesDiv, nodesOption } from './render'
 const { FormRow } = components.form
 
 export const types = {
-  none: { text: i18n.NO_ONE, value: 'none' },
-  crossCircle: { text: i18n.SHAPE_CIRCLE, value: 'cross-circle' },
-  square: { text: i18n.SHAPE_SQUARE, value: 'square' },
+  'none': { text: i18n.NO_ONE, value: 'none' },
+  'cross-circle': { text: i18n.SHAPE_CIRCLE, value: 'cross-circle' },
+  'square': { text: i18n.SHAPE_SQUARE, value: 'square' },
 }
 
-export const PATH = [ 'attributes', 'nodalPointType' ]
+export const NODAL_POINT_TYPE_PATH = [ 'attributes', 'nodalPointType' ]
 
 const WithNodalPointType = (Component) => class NodalPointTypeComponent extends Component {
-  nodalPointTypeHandler = (lineNodes) => this.setResult((result) => result.setIn(PATH, lineNodes))
+  nodalPointTypeHandler = (nodalPointType) => (
+    this.setResult((result) => result.setIn(NODAL_POINT_TYPE_PATH, nodalPointType))
+  )
 
   renderNodalPointType () {
-    const currentValue = this.getResult().getIn(PATH)
+    const currentValue = this.getResult().getIn(NODAL_POINT_TYPE_PATH)
     const typeInfo = types[currentValue]
     const canEdit = this.isCanEdit()
 

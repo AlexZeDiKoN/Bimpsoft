@@ -60,8 +60,8 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
     return optionsSvg(
       <>
         <mask id="sign">
-          <rect fill="white" x="0" y="0" width="100%" height="100%" />
-          <g dangerouslySetInnerHTML={{ __html: amp.mask }} />
+          <rect fill="white" x="0" y="0" width="100%" height="100%"/>
+          <g dangerouslySetInnerHTML={{ __html: amp.mask }}/>
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
         <g
@@ -71,7 +71,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
           transform={`translate(28,10)`}
           dangerouslySetInnerHTML={{ __html: amp.sign }}
         />
-      </>
+      </>,
     )
   } else {
     switch (borderStyle) {
@@ -84,7 +84,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               fill="none"
               d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7"
             />
-          </>
+          </>,
         )
       case 'waved2':
         return optionsSvg(
@@ -95,7 +95,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               fill="none"
               d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7 L0,7"
             />
-          </>
+          </>,
         )
       case 'stroked':
         return optionsSvg(
@@ -106,7 +106,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               fill="none"
               d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
             />
-          </>
+          </>,
         )
       default:
         return (
@@ -261,7 +261,7 @@ const renderLineEnds = (type, direction) => {
   return optionsSvg(picture)
 }
 
-const renderNodes = (type) => {
+export const renderNodes = (type) => {
   let picture = null
   switch (type) {
     case 'none':
@@ -277,16 +277,16 @@ const renderNodes = (type) => {
     case 'cross-circle':
       picture = (
         <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
-          <path d="M0,10 h20 M36,10 h20 M22.34,4.34 l11.31,11.31 M22.34,15.66 l11.31,-11.31" />
-          <circle cx="28" cy="10" r="8" />
+          <path d="M0,10 h20 M36,10 h20 M22.34,4.34 l11.31,11.31 M22.34,15.66 l11.31,-11.31"/>
+          <circle cx="28" cy="10" r="8"/>
         </g>
       )
       break
     case 'square':
       picture = (
         <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
-          <path d="M0,10 h20 M36,10 h20" />
-          <rect x="20" y="2" width="16" height="16" />
+          <path d="M0,10 h20 M36,10 h20"/>
+          <rect x="20" y="2" width="16" height="16"/>
         </g>
       )
       break

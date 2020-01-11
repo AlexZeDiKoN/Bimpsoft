@@ -100,7 +100,7 @@ export const renderTextSymbol = ({
         {text}
       </text>
       {lineD && outlineColor && <path d={lineD} {...outlineProps}/>}
-      {lineD && <path fill="#000" d={lineD} />}
+      {lineD && <path fill="#000" d={lineD}/>}
     </Fragment>
   })
 
@@ -111,4 +111,16 @@ export const renderTextSymbol = ({
       viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg"
     >{textsEls}</svg>
     : textsEls
+}
+
+export const extractTextSVG = (text, margin, scale, fontSize) => {
+  const width = getTextWidth(text, getFont(fontSize, false))
+  const lineHeight = fontSize * 1.2
+  const left = (-width) / 2 - margin
+  const top = (-lineHeight) / 2 - margin
+  return {
+    sign: `<text fill="black" stroke="none" transform="translate(${-width / 2},${lineHeight / 4})" font-size=${fontSize}>${text}</text>`,
+    mask: `<rect fill="black" x="${left}" y="${top}" width="${width + 2 * margin}" height="${lineHeight + 2 * margin}" />`,
+    maskRect: { x: left, y: top, width: width + 2 * margin, height: lineHeight + 2 * margin },
+  }
 }

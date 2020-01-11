@@ -27,7 +27,7 @@ const TYPE_LIST = [
   { id: '2', text: i18n.SHOW_LEVEL, value: TYPES.LEVEL },
 ]
 
-export const PATH = [ 'attributes', 'intermediateAmplifiers' ]
+export const PATH = [ 'attributes', 'intermediateAmplifier' ]
 export const TYPE_PATH = [ 'attributes', 'intermediateAmplifierType' ]
 
 export const INTERMEDIATE_AMPLIFIER_TYPES = TYPES

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { Record, List, Map } from 'immutable'
+import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge, eq } from '../../utils/immutable'
@@ -36,7 +36,8 @@ const webMapAttributesInitValues = {
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
   intermediateAmplifierType: 'none',
-  intermediateAmplifiers: LineAmplifier(),
+  intermediateAmplifier: LineAmplifier(),
+  shownIntermediateAmplifiers: Set(),
   pointAmplifiers: LineAmplifier(),
   left: 'none',
   right: 'none',
@@ -132,13 +133,15 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     if (attributes) {
       const {
         texts,
-        intermediateAmplifiers,
         pointAmplifiers,
+        intermediateAmplifier,
+        shownIntermediateAmplifiers,
         ...otherAttrs
       } = attributes
       obj = update(obj, 'attributes', comparator, WebMapAttributes({
         texts: List(texts),
-        intermediateAmplifiers: LineAmplifier(intermediateAmplifiers),
+        intermediateAmplifier: LineAmplifier(intermediateAmplifier),
+        shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
         pointAmplifiers: LineAmplifier(pointAmplifiers),
         ...otherAttrs,
       }))

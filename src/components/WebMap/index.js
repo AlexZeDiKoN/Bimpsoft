@@ -484,7 +484,8 @@ export default class WebMap extends React.PureComponent {
   sources = []
 
   updateMinimap = (showMiniMap) => showMiniMap
-    ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    ? this.mini.addTo(this.map) &&
+    this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
     : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
@@ -695,7 +696,7 @@ export default class WebMap extends React.PureComponent {
     this.control = control.zoom({
       zoomInTitle: i18n.ZOOM_IN,
       zoomOutTitle: i18n.ZOOM_OUT,
-      position: 'bottomleft'
+      position: 'bottomleft',
     }).addTo(this.map)
     this.control._container.style.left = '15px'
     DomEvent.addListener(this.coordinates._container, 'click', () => {
@@ -1245,44 +1246,44 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          if (layer && layer._latlng) {
-            const unitData = this.getUnitData(object.unit)
-            const renderPopUp = renderIndicators(object, unitData)
-            const dir = this.findLayerDirection(this.map, layer)
-            const getCoordinates = (point) => this.map.unproject(point, this.map.getZoom())
-            popupInner.setContent(renderPopUp)
-            const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
-            let newCoordinates
-            switch (dir) {
-              case 's': {
-                newCoordinates = getCoordinates(L.point(pointCoord.x, pointCoord.y + yBound))
-                break
+            if (layer && layer._latlng) {
+              const unitData = this.getUnitData(object.unit)
+              const renderPopUp = renderIndicators(object, unitData)
+              const dir = this.findLayerDirection(this.map, layer)
+              const getCoordinates = (point) => this.map.unproject(point, this.map.getZoom())
+              popupInner.setContent(renderPopUp)
+              const pointCoord = this.map.project(layer._latlng, this.map.getZoom())
+              let newCoordinates
+              switch (dir) {
+                case 's': {
+                  newCoordinates = getCoordinates(L.point(pointCoord.x, pointCoord.y + yBound))
+                  break
+                }
+                case 'se': {
+                  newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y + yBound))
+                  break
+                }
+                case 'sw': {
+                  newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y + yBound))
+                  break
+                }
+                case 'ne': {
+                  newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y))
+                  break
+                }
+                case 'nw': {
+                  newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y))
+                  break
+                }
+                default: {
+                  newCoordinates = layer._latlng
+                  break
+                }
               }
-              case 'se': {
-                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y + yBound))
-                break
-              }
-              case 'sw': {
-                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y + yBound))
-                break
-              }
-              case 'ne': {
-                newCoordinates = getCoordinates(L.point(pointCoord.x + xBound, pointCoord.y))
-                break
-              }
-              case 'nw': {
-                newCoordinates = getCoordinates(L.point(pointCoord.x - xBound, pointCoord.y))
-                break
-              }
-              default: {
-                newCoordinates = layer._latlng
-                break
-              }
+              popupInner.setLatLng(newCoordinates)
+              popupInner.openOn(this.map)
             }
-            popupInner.setLatLng(newCoordinates)
-            popupInner.openOn(this.map)
-          }
-        }, openPopUpInterval,
+          }, openPopUpInterval,
         )
       } else {
         isPopUpOpen && popupInner._close()
@@ -1309,7 +1310,9 @@ export default class WebMap extends React.PureComponent {
       const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.options.intermediateAmplifierType = attributes.intermediateAmplifierType
-      layer.options.lineNodes = attributes.lineNodes
+      layer.options.intermediateAmplifier = attributes.intermediateAmplifier
+      layer.options.shownIntermediateAmplifiers = attributes.shownIntermediateAmplifiers
+      layer.options.nodalPointType = attributes.nodalPointType
       layer.options.lineEnds = {
         left: attributes.left,
         right: attributes.right,
@@ -1869,9 +1872,9 @@ export default class WebMap extends React.PureComponent {
         className='catalog-leaflet-popup'
       >
         <MapProvider value={this.map}>{this.props.children}</MapProvider>
-        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
-        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
+        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
+        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
+        <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler}/>
         {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
         {this.props.flexGridVisible && (
           <FlexGridToolTip

@@ -22,7 +22,9 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
   if (maskD) {
     const maskId = lastMaskId++
     mask = `url(#mask-${maskId})`
-    maskEl = <mask id={`mask-${maskId}`}><path fillRule="nonzero" fill="#ffffff" d={maskD} /></mask>
+    maskEl = <mask id={`mask-${maskId}`}>
+      <path fillRule="nonzero" fill="#ffffff" d={maskD}/>
+    </mask>
   }
 
   return (
@@ -56,10 +58,21 @@ const svgToG = (svg) => svg
 
 const getLineSvg = (points, attributes, layerData, zoom) => {
   const {
-    lineType, lineNodes, intermediateAmplifierType, skipStart, skipEnd,
-    color, level, bounds,
-    bezier, locked, scale,
-    left, right,
+    lineType,
+    nodalPointType,
+    intermediateAmplifierType,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    skipStart,
+    skipEnd,
+    color,
+    level,
+    bounds,
+    bezier,
+    locked,
+    scale,
+    left,
+    right,
   } = attributes
   const lineEnds = { left, right }
   let d
@@ -68,10 +81,22 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
   } else {
     d = bezier ? prepareBezierPath(points, locked, skipStart, skipEnd) : pointsToD(points, locked)
     if (lineType === 'stroked') {
-      d += stroked(points, lineEnds, lineNodes, bezier, locked, bounds, scale, zoom)
+      d += stroked(points, lineEnds, nodalPointType, bezier, locked, bounds, scale, zoom)
     }
   }
-  const amplifiers = getAmplifiers(points, intermediateAmplifierType, level, lineNodes, bezier, locked, bounds, scale, zoom)
+  const amplifiers = getAmplifiers(
+    points,
+    intermediateAmplifierType,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    level,
+    nodalPointType,
+    bezier,
+    locked,
+    bounds,
+    scale,
+    zoom,
+  )
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, lineEnds, bezier, scale * 2)
   return (
