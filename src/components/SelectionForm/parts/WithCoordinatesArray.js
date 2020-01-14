@@ -7,6 +7,7 @@ import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 import { renderNodes } from './render'
 import {
   NODAL_POINT_TYPE_PATH,
+  NODAL_POINT_TYPES,
 } from './WithNodalPointType'
 import {
   NAME_OF_AMPLIFIERS,
@@ -21,12 +22,13 @@ const {
 const { icons: { IconHovered, names: iconNames } } = components
 
 const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
+const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
   state = { editCoordinates: false }
 
-  createIntermediateAmplifierShowerHandler = (index) => () => this.setResult((result) =>
-    result.updateIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, (showedSet) =>
+  createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
+    result.updateIn(path, (showedSet) =>
       showedSet.has(index) ? showedSet.delete(index) : showedSet.add(index),
     ),
   )
@@ -48,12 +50,16 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   renderCoordinatesArray () {
     const { editCoordinates } = this.state
     const formStore = this.getResult()
-    const shownAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
+
+    const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
+    const shownNodalPointAmplifiersSet = formStore.getIn(SHOWN_NODAL_POINT_AMPLIFIERS_PATH)
+
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const nodalPointType = formStore.getIn(NODAL_POINT_TYPE_PATH)
     const canEdit = this.isCanEdit()
     const nodalPointTypePreview = renderNodes(nodalPointType)
     const coordinatesLength = coordinatesArray.length
+    const noNodalPointAmplifier = nodalPointType === NODAL_POINT_TYPES.none.value
     return (
       <FormDarkPart>
         <FormRow label={i18n.NODAL_POINTS}>
@@ -86,7 +92,9 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   <td>
                     <div className="icon-option">
                       <Checkbox
-                        disabled={!canEdit}
+                        disabled={!canEdit || noNodalPointAmplifier}
+                        checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
+                        onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
                       />
                       {nodalPointTypePreview}
                     </div>
@@ -109,8 +117,8 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   <tr>
                     <td><Checkbox
                       disabled={!canEdit}
-                      onChange={this.createIntermediateAmplifierShowerHandler(index)}
-                      checked={shownAmplifiersSet.has(index)}
+                      onChange={this.createAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
+                      checked={shownIntermediateAmplifiersSet.has(index)}
                     /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
                   </tr>
                 ) : null}

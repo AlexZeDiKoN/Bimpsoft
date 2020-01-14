@@ -63,6 +63,7 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
     intermediateAmplifierType,
     intermediateAmplifier,
     shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
     skipStart,
     skipEnd,
     color,
@@ -84,11 +85,12 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
       d += stroked(points, lineEnds, nodalPointType, bezier, locked, bounds, scale, zoom)
     }
   }
-  const amplifiers = getAmplifiers(
+  const amplifiers = getAmplifiers({
     points,
     intermediateAmplifierType,
     intermediateAmplifier,
     shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
     level,
     nodalPointType,
     bezier,
@@ -96,7 +98,7 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
     bounds,
     scale,
     zoom,
-  )
+  })
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, lineEnds, bezier, scale * 2)
   return (

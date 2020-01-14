@@ -224,19 +224,20 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(
-      layer._rings[0],
-      layer.options && layer.options.intermediateAmplifierType,
-      layer.options && layer.options.intermediateAmplifier,
-      layer.options && layer.options.shownIntermediateAmplifiers,
-      layer.object && layer.object.level,
-      layer.options && layer.options.nodalPointType,
+    const amplifiers = getAmplifiers({
+      points: layer._rings[0],
+      intermediateAmplifierType: layer.options && layer.options.intermediateAmplifierType,
+      intermediateAmplifier: layer.options && layer.options.intermediateAmplifier,
+      shownIntermediateAmplifiers: layer.options && layer.options.shownIntermediateAmplifiers,
+      shownNodalPointAmplifiers: layer.options && layer.options.shownNodalPointAmplifiers,
+      level: layer.object && layer.object.level,
+      nodalPointType: layer.options && layer.options.nodalPointType,
       bezier,
       locked,
       bounds,
-      1.0,
-      layer._map.getZoom(),
-    )
+      scale: 1.0,
+      zoom: layer._map.getZoom(),
+    })
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)

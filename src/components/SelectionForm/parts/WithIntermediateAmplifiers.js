@@ -30,33 +30,30 @@ const TYPE_LIST = [
 export const PATH = [ 'attributes', 'intermediateAmplifier' ]
 export const TYPE_PATH = [ 'attributes', 'intermediateAmplifierType' ]
 
-export const INTERMEDIATE_AMPLIFIER_TYPES = TYPES
-export const INTERMEDIATE_AMPLIFIER_PATH = PATH
-export const INTERMEDIATE_AMPLIFIER_TYPE_PATH = TYPE_PATH
-
 const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersComponent extends Component {
   intermediateAmplifierTypeHandler = (type) => (
-    this.setResult((result) => result.setIn(INTERMEDIATE_AMPLIFIER_TYPE_PATH, type))
+    this.setResult((result) => result.setIn(TYPE_PATH, type))
   )
 
   createIntermediateAmplifierHandler = (id) => (event) => (
-    this.setResult((result) => result.setIn([ ...INTERMEDIATE_AMPLIFIER_PATH, id ], event.target.value))
+    this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
   )
 
   renderIntermediateAmplifiers () {
     const state = this.getResult()
-    const currentValue = state.getIn(INTERMEDIATE_AMPLIFIER_PATH)
-    const type = state.getIn(INTERMEDIATE_AMPLIFIER_TYPE_PATH)
+    const currentValue = state.getIn(PATH)
+    const type = state.getIn(TYPE_PATH)
     const subordinationLevel = state.getIn(SUBORDINATION_LEVEL_PATH)
     const canEdit = this.isCanEdit()
 
     const renderAmplifierInput = ({ id, name }) => (
       <div className="line-container__itemWidth" key={id}>
         <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
-          <Input
+          <Input.TextArea
             value={currentValue[id]}
             onChange={this.createIntermediateAmplifierHandler(id)}
             disabled={!canEdit}
+            rows={1}
           />
         </FormRow>
       </div>
@@ -78,6 +75,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
               </Select>
               {type === TYPES.TEXT
                 ? <Input
+                  disabled={!canEdit}
                   value={currentValue[PAIRS.MIDDLE.id]}
                   onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
                 /> : null}

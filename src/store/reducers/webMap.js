@@ -38,6 +38,7 @@ const webMapAttributesInitValues = {
   intermediateAmplifierType: 'none',
   intermediateAmplifier: LineAmplifier(),
   shownIntermediateAmplifiers: Set(),
+  shownNodalPointAmplifiers: Set(),
   pointAmplifiers: LineAmplifier(),
   left: 'none',
   right: 'none',
@@ -136,12 +137,14 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
         pointAmplifiers,
         intermediateAmplifier,
         shownIntermediateAmplifiers,
+        shownNodalPointAmplifiers,
         ...otherAttrs
       } = attributes
       obj = update(obj, 'attributes', comparator, WebMapAttributes({
         texts: List(texts),
         intermediateAmplifier: LineAmplifier(intermediateAmplifier),
         shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
+        shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
         pointAmplifiers: LineAmplifier(pointAmplifiers),
         ...otherAttrs,
       }))

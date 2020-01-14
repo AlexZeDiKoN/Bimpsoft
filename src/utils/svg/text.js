@@ -113,14 +113,37 @@ export const renderTextSymbol = ({
     : textsEls
 }
 
-export const extractTextSVG = (text, margin, scale, fontSize) => {
-  const width = getTextWidth(text, getFont(fontSize, false))
-  const lineHeight = fontSize * 1.2
-  const left = (-width) / 2 - margin
-  const top = (-lineHeight) / 2 - margin
-  return {
-    sign: `<text fill="black" stroke="none" transform="translate(${-width / 2},${lineHeight / 4})" font-size=${fontSize}>${text}</text>`,
-    mask: `<rect fill="black" x="${left}" y="${top}" width="${width + 2 * margin}" height="${lineHeight + 2 * margin}" />`,
-    maskRect: { x: left, y: top, width: width + 2 * margin, height: lineHeight + 2 * margin },
-  }
+export const extractTextSVG = ({
+  string,
+  fontSize,
+  margin,
+  scale,
+  getOffsetTop,
+}) => {
+  const lines = string.split('\n')
+  const numberOfLines = lines.length
+  return lines.map((line, index) => {
+    const width = getTextWidth(line, getFont(fontSize, false))
+    const height = fontSize * 1.2
+
+    const top = getOffsetTop ? getOffsetTop(height, numberOfLines) : 0
+    const left = -width / 2
+
+    return {
+      // 'dy' for top vertical align
+      sign: `<text
+        font-family=${FONT_FAMILY}
+        stroke="none"
+        transform="translate(${left}, ${top + height * index})"
+        font-size=${fontSize}
+        dy="${fontSize * 0.95}"
+      >${line}</text>`,
+      maskRect: {
+        x: left - margin,
+        y: top,
+        width: width + 2 * margin,
+        height: height,
+      },
+    }
+  })
 }

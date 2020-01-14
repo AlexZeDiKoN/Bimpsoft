@@ -436,11 +436,12 @@ const rotate = ({ x, y }, originX, originY, angle) => {
   }
 }
 
-export const getAmplifiers = (
+export const getAmplifiers = ({
   points,
   intermediateAmplifierType,
   intermediateAmplifier,
   shownIntermediateAmplifiers,
+  shownNodalPointAmplifiers,
   level,
   nodalPointType,
   bezier,
@@ -448,52 +449,85 @@ export const getAmplifiers = (
   bounds,
   scale = 1,
   zoom = -1,
-) => {
+}) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
   const nodeStep = interpolateSize(zoom, settings.NODES_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const fontSize = interpolateSize(zoom, settings.LINE_AMPLIFIER_TEXT_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
-  const amplifiers = {
+  const result = {
     maskPath: [],
     group: '',
   }
-  if (intermediateAmplifierType !== 'none') {
-    let amplifier
-    if (intermediateAmplifierType === 'level' && level) {
-      amplifier = extractSubordinationLevelSVG(
-        level,
-        settings.AMPLIFIERS_SIZE * scale,
-        settings.AMPLIFIERS_WINDOW_MARGIN * scale,
-      )
-    } else if (intermediateAmplifierType === 'text' && intermediateAmplifier.middle) {
-      amplifier = extractTextSVG(
-        intermediateAmplifier.middle,
-        settings.AMPLIFIERS_WINDOW_MARGIN * scale,
-        scale,
+  if (intermediateAmplifierType && intermediateAmplifierType !== 'none') {
+    const amplifiers = []
+    const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale;
+    [ ...intermediateAmplifier.entries() ].forEach(([ type, value ]) => {
+      if (type === 'middle' && intermediateAmplifierType === 'level' && level) {
+        amplifiers.push(extractSubordinationLevelSVG(
+          level,
+          settings.AMPLIFIERS_SIZE * scale,
+          settings.AMPLIFIERS_WINDOW_MARGIN * scale,
+        ))
+        return
+      }
+
+      if (!value) {
+        return null // canceling render of a text amplifier
+      }
+
+      const lineOffsetResolver = (lineHeight, numberOfLines) => {
+        switch (type) {
+          case 'top':
+            return -lineHeight * numberOfLines - lineHeight
+          case 'middle':
+            return -lineHeight / 2
+          case 'bottom':
+            return lineHeight
+          default:
+            return 0
+        }
+      }
+
+      amplifiers.push(...extractTextSVG({
+        string: value,
         fontSize,
-      )
-    }
+        margin: amplifierMargin,
+        scale,
+        getOffsetTop: lineOffsetResolver,
+      }))
+    })
+
     const amplifierPoints = buildMidpoints(
       points,
       bezier,
       insideMap,
       locked,
     ).filter((point, index) => point.i && shownIntermediateAmplifiers.has(index))
-    amplifiers.maskPath.push(...amplifierPoints.map(({ x, y, r }) =>
-      pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
+
+    amplifierPoints.forEach(({ x, y, r }) => (
+      amplifiers.forEach((amplifier) => {
+        result.maskPath.push(
+          pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
+        )
+        result.group += `<g
+          stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
+          transform="translate(${x},${y})
+          rotate(${r})"
+       >${amplifier.sign}</g>`
+      })
     ))
-    amplifiers.group += amplifierPoints.map(({ x, y, r }) =>
-      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amplifier.sign}</g>`,
-    ).join('')
   }
+
+  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers.has(index))
+
   switch (nodalPointType) {
     case 'cross-circle': {
       const d = Number((nodeStep * Math.sqrt(2) * scale / 4).toFixed(2))
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
+        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
             <circle cx="0" cy="0" r="${nodeStep * scale / 2}" />
             <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
           </g>`
@@ -502,12 +536,12 @@ export const getAmplifiers = (
     }
     case 'square': {
       const d = nodeStep * scale / 2
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(pointsToD(
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(pointsToD(
           rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
           true,
         ))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
           </g>`
       })
@@ -516,10 +550,10 @@ export const getAmplifiers = (
     default:
       break
   }
-  if (amplifiers.maskPath.length) {
-    amplifiers.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
+  if (result.maskPath.length) {
+    result.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
   }
-  return amplifiers
+  return result
 }
 
 const drawLineEnd = (type, { x, y }, angle, scale) => {

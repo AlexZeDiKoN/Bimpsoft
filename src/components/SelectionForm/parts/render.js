@@ -61,7 +61,13 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
       <>
         <mask id="sign">
           <rect fill="white" x="0" y="0" width="100%" height="100%"/>
-          <g dangerouslySetInnerHTML={{ __html: amp.mask }}/>
+          <rect
+            fill="black"
+            x={amp.maskRect.x}
+            y={amp.maskRect.y}
+            width={amp.maskRect.width}
+            height={amp.maskRect.height}
+          />
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
         <g
