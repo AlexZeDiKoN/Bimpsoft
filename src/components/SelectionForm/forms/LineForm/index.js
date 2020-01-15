@@ -1,5 +1,6 @@
 import { compose } from 'redux'
 import React from 'react'
+import { Scrollbar } from '@DZVIN/CommonComponents'
 import { DIRECTION_LEFT, DIRECTION_RIGHT } from '../../parts/WithLineEnds'
 import {
   WithColor,
@@ -40,37 +41,39 @@ export default class LineForm extends compose(
 
   renderContent () {
     return (
-      <div className="line-container">
-        <div className="line-container__item">
-          {/* TODO: Add line preview */}
-          <div className="line-container__itemWidth"/>
-          <div className="line-container__itemWidth">
-            {this.renderLineClassifier()}
-            {this.renderOrgStructureSelect()}
-            {this.renderSubordinationLevel()}
-            {this.renderAffiliation()}
-            {this.renderStatus()}
+      <Scrollbar>
+        <div className="line-container">
+          <div className="line-container__item">
+            {/* TODO: Add line preview */}
+            <div className="line-container__itemWidth"/>
+            <div className="line-container__itemWidth">
+              {this.renderLineClassifier()}
+              {this.renderOrgStructureSelect()}
+              {this.renderSubordinationLevel()}
+              {this.renderAffiliation()}
+              {this.renderStatus()}
+            </div>
           </div>
+          <div className="line-container__item">
+            <div className="line-container__itemWidth">
+              {this.renderSegment()}
+              {this.renderLineType()}
+              {this.renderNodalPointType()}
+            </div>
+            <div className="line-container__itemWidth">
+              {this.renderColor()}
+              {this.renderStrokeWidth()}
+            </div>
+            <div className="line-container__itemWidth">
+              {this.renderLineEnds(DIRECTION_LEFT)}
+              {this.renderLineEnds(DIRECTION_RIGHT)}
+            </div>
+          </div>
+          {this.renderIntermediateAmplifiers()}
+          {this.renderPointAmplifiers()}
+          {this.renderCoordinatesArray()}
         </div>
-        <div className="line-container__item">
-          <div className="line-container__itemWidth">
-            {this.renderSegment()}
-            {this.renderLineType()}
-            {this.renderNodalPointType()}
-          </div>
-          <div className="line-container__itemWidth">
-            {this.renderColor()}
-            {this.renderStrokeWidth()}
-          </div>
-          <div className="line-container__itemWidth">
-            {this.renderLineEnds(DIRECTION_LEFT)}
-            {this.renderLineEnds(DIRECTION_RIGHT)}
-          </div>
-        </div>
-        {this.renderIntermediateAmplifiers()}
-        {this.renderPointAmplifiers()}
-        {this.renderCoordinatesArray()}
-      </div>
+      </Scrollbar>
     )
   }
 }

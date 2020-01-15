@@ -27,7 +27,7 @@ const WithNodalPointType = (Component) => class NodalPointTypeComponent extends 
     const value = canEdit
       ? (
         <Select value={currentValue} onChange={this.nodalPointTypeHandler}>
-          {Object.values(NODAL_POINT_TYPES).map((type) => nodesOption(type))}
+          {Object.values(NODAL_POINT_TYPES).map(nodesOption)}
         </Select>
       )
       : nodesDiv(typeInfo)

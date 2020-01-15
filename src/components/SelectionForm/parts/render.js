@@ -337,7 +337,7 @@ export const nodesDiv = ({ value, text }) => ( // eslint-disable-line react/prop
 )
 
 export const nodesOption = (nodesInfo) => (
-  <Option value={nodesInfo.value}>
+  <Option value={nodesInfo.value} key={nodesInfo.value}>
     {nodesDiv(nodesInfo)}
   </Option>
 )
