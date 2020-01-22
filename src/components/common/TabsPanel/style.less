@@ -4,29 +4,31 @@
 .tabs-panel {
   .flex;
   flex: 1 1 auto;
-  flex-direction: column;
+  flex-direction: row;
 }
 .tabs-panel-headers{
   .flex;
-  height: 40px;
-  background-color: @toolbar-header-background;
+  height: fit-content;
+  width: fit-content;
   flex: 0 0 auto;
+  flex-direction: column;
 }
 .tabs-panel-header {
   color: @toolbar-header-text;
   font-size: 16px;
-  border-bottom: 3px solid @toolbar-header-background;
-  margin: 10px 5px 0 5px;
-  padding: 0 5px;
-  width: 33.3%;
+  background-color: @toolbar-header-background;
+  margin: 0 5px 0 5px;
+  padding: 10px 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
   font-family: @sidebar-font;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
 }
 .tabs-panel-header-selected{
-  border-bottom: 3px solid #9fa659;
+  background-color: @toolbar-border-selected;
 }
 
 .tabs-panel-content{

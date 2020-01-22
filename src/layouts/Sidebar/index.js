@@ -51,29 +51,29 @@ export default class Sidebar extends React.Component {
         <>
           <div
             className="sidebar-panel1"
-            style={{ height: topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : topPanelHeight }}
           >
             <TabsPanel
               tabs={[
                 OrgStructuresContainer,
                 !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
+                LayersContainer,
               ].filter(Boolean)}
             />
           </div>
-          <ValueSwiper
-            value={this.state.topPanelHeight}
-            onChange={(startValue, pos) => {
-              this.setState({ topPanelHeight: Math.max(SIDEBAR_PANEL_SIZE_MIN, startValue + pos.y) })
-            }}
-          />
-          <div className="sidebar-panel2">
-            <TabsPanel
-              tabs={[
-                LayersContainer,
-              ]}
-            />
-          </div>
+          {/*<ValueSwiper*/}
+          {/*  value={this.state.topPanelHeight}*/}
+          {/*  onChange={(startValue, pos) => {*/}
+          {/*    this.setState({ topPanelHeight: Math.max(SIDEBAR_PANEL_SIZE_MIN, startValue + pos.y) })*/}
+          {/*  }}*/}
+          {/*/>*/}
+          {/*<div className="sidebar-panel2">*/}
+          {/*  <TabsPanel*/}
+          {/*    tabs={[*/}
+          {/*      LayersContainer,*/}
+          {/*    ]}*/}
+          {/*  />*/}
+          {/*</div>*/}
         </>
       )
     }

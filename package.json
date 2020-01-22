@@ -10,7 +10,7 @@
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
     "@craco/craco": "^5.2.1",
-    "antd": "^3.12.4",
+    "antd": "3.12.4",
     "bezier-js": "2.2.18",
     "cesium": "^1.59.0",
     "core-js": "^3.1.4",
@@ -53,7 +53,7 @@
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.3",
     "requirejs": "^2.3.2",
-    "resium": "^1.7.0",
+    "resium": "1.7.0",
     "svg-path-bounds": "^1.0.1",
     "utm": "^1.1.1"
   },
@@ -73,7 +73,7 @@
   },
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
-    "start-dev": "set NODE_ENV=development&&npm run build-css && run-p -ncr watch-css start-js",
+    "start-dev": "set NODE_ENV=development && npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "craco start",
     "build": "run-s -n inc-version build-css build-js",
     "build-js": "craco build",
