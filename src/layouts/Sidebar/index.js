@@ -10,6 +10,7 @@ import {
   TargetCatalogContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
+import SymbolsTab from "../../components/Symbols";
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 const SIDEBAR_PANEL_SIZE_MIN = 210
@@ -58,6 +59,7 @@ export default class Sidebar extends React.Component {
                 !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
                 LayersContainer,
+                SymbolsTab,
               ].filter(Boolean)}
             />
           </div>

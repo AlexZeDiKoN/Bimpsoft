@@ -1,0 +1,29 @@
+@import "/../../assets/styles/_variables.less";
+@import "/../../assets/styles/_mixins.less";
+
+.parts-container{
+  .flex;
+  flex-direction: column;
+
+  .symbol-container {
+    .flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-content: space-evenly;
+    height: 100%;
+
+    .symbol {
+      width: 60px;
+      height: 60px;
+      border: 2px outset #000000;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      svg {
+        width: 55px;
+        height: 55px;
+      }
+    }
+  }
+
+}
