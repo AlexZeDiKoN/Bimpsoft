@@ -11,7 +11,7 @@ const PAIRS = {
   BOTTOM: { id: 'bottom', name: 'W' },
 }
 
-const PATH = [ 'attributes', 'pointAmplifiers' ]
+const PATH = [ 'attributes', 'pointAmplifier' ]
 
 const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extends Component {
   createPointAmplifierHandler = (id) => (event) => (

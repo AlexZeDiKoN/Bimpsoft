@@ -230,6 +230,7 @@ L.SVG.include({
       intermediateAmplifier: layer.options && layer.options.intermediateAmplifier,
       shownIntermediateAmplifiers: layer.options && layer.options.shownIntermediateAmplifiers,
       shownNodalPointAmplifiers: layer.options && layer.options.shownNodalPointAmplifiers,
+      pointAmplifier: layer.options && layer.options.pointAmplifier,
       level: layer.object && layer.object.level,
       nodalPointType: layer.options && layer.options.nodalPointType,
       bezier,

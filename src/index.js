@@ -10,6 +10,7 @@ import './index.css'
 import './assets/fonts/qwe-icon.css'
 import './assets/styles/rewrites.css'
 import i18n from './i18n'
+import './bezierPatch'
 
 window.onerror = null
 window.addEventListener('unhandledrejection', (event) => {
@@ -21,5 +22,5 @@ window.addEventListener('unhandledrejection', (event) => {
   })
 })
 
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App/>, document.getElementById('root'))
 registerServiceWorker()

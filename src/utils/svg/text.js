@@ -118,7 +118,7 @@ export const extractTextSVG = ({
   fontSize,
   margin,
   scale,
-  getOffsetTop,
+  getOffset,
 }) => {
   const lines = string.split('\n')
   const numberOfLines = lines.length
@@ -126,8 +126,10 @@ export const extractTextSVG = ({
     const width = getTextWidth(line, getFont(fontSize, false))
     const height = fontSize * 1.2
 
-    const top = getOffsetTop ? getOffsetTop(height, numberOfLines) : 0
-    const left = -width / 2
+    const offset = getOffset ? getOffset(width, height, numberOfLines) : { x: 0, y: 0 }
+
+    const top = offset.y
+    const left = offset.x
 
     return {
       // 'dy' for top vertical align

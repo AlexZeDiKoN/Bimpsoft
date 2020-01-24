@@ -1312,7 +1312,7 @@ export default class WebMap extends React.PureComponent {
       layer.options.intermediateAmplifierType = attributes.intermediateAmplifierType
       layer.options.intermediateAmplifier = attributes.intermediateAmplifier
       layer.options.shownIntermediateAmplifiers = attributes.shownIntermediateAmplifiers
-      layer.options.shownNodalPointAmplifiers = attributes.shownNodalPointAmplifiers
+      layer.options.pointAmplifier = attributes.pointAmplifier
       layer.options.nodalPointType = attributes.nodalPointType
       layer.options.lineEnds = {
         left: attributes.left,
