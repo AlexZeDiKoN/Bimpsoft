@@ -42,7 +42,7 @@ const webMapAttributesInitValues = {
   pointAmplifier: LineAmplifier(),
   left: 'none',
   right: 'none',
-  nodalPointType: 'none',
+  nodalPointIcon: 'none',
   texts: List(),
   z: null,
   taskId: null,

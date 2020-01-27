@@ -232,7 +232,7 @@ L.SVG.include({
       shownNodalPointAmplifiers: layer.options && layer.options.shownNodalPointAmplifiers,
       pointAmplifier: layer.options && layer.options.pointAmplifier,
       level: layer.object && layer.object.level,
-      nodalPointType: layer.options && layer.options.nodalPointType,
+      nodalPointIcon: layer.options && layer.options.nodalPointIcon,
       bezier,
       locked,
       bounds,
@@ -266,7 +266,7 @@ L.SVG.include({
     return stroked(
       layer._rings[0],
       layer.options && layer.options.lineEnds,
-      layer.options && layer.options.nodalPointType,
+      layer.options && layer.options.nodalPointIcon,
       bezier,
       locked,
       bounds,

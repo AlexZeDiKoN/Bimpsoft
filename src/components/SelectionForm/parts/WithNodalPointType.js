@@ -12,21 +12,21 @@ export const NODAL_POINT_TYPES = {
   'square': { text: i18n.SHAPE_SQUARE, value: 'square' },
 }
 
-export const NODAL_POINT_TYPE_PATH = [ 'attributes', 'nodalPointType' ]
+export const NODAL_POINT_ICON_PATH = [ 'attributes', 'nodalPointIcon' ]
 
 const WithNodalPointType = (Component) => class NodalPointTypeComponent extends Component {
-  nodalPointTypeHandler = (nodalPointType) => (
-    this.setResult((result) => result.setIn(NODAL_POINT_TYPE_PATH, nodalPointType))
+  nodalPointIconHandler = (nodalPointIcon) => (
+    this.setResult((result) => result.setIn(NODAL_POINT_ICON_PATH, nodalPointIcon))
   )
 
   renderNodalPointType () {
-    const currentValue = this.getResult().getIn(NODAL_POINT_TYPE_PATH)
+    const currentValue = this.getResult().getIn(NODAL_POINT_ICON_PATH)
     const typeInfo = NODAL_POINT_TYPES[currentValue]
     const canEdit = this.isCanEdit()
 
     const value = canEdit
       ? (
-        <Select value={currentValue} onChange={this.nodalPointTypeHandler}>
+        <Select value={currentValue} onChange={this.nodalPointIconHandler}>
           {Object.values(NODAL_POINT_TYPES).map(nodesOption)}
         </Select>
       )

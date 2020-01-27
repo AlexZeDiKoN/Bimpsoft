@@ -6,7 +6,7 @@ import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 import { renderNodes } from './render'
 import {
-  NODAL_POINT_TYPE_PATH,
+  NODAL_POINT_ICON_PATH,
   NODAL_POINT_TYPES,
 } from './WithNodalPointType'
 import {
@@ -55,11 +55,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const shownNodalPointAmplifiersSet = formStore.getIn(SHOWN_NODAL_POINT_AMPLIFIERS_PATH)
 
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
-    const nodalPointType = formStore.getIn(NODAL_POINT_TYPE_PATH)
+    const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
-    const nodalPointTypePreview = renderNodes(nodalPointType)
+    const nodalPointIconPreview = renderNodes(nodalPointIcon)
     const coordinatesLength = coordinatesArray.length
-    const noNodalPointAmplifier = nodalPointType === NODAL_POINT_TYPES.none.value
+    const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_TYPES.none.value
     return (
       <FormDarkPart>
         <FormRow label={i18n.NODAL_POINTS}>
@@ -97,7 +97,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                           checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
                           onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
                         />
-                        {nodalPointTypePreview}
+                        {nodalPointIconPreview}
                       </div>
                     </td>
                     <td>

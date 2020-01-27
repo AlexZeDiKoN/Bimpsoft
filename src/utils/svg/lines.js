@@ -295,7 +295,7 @@ const getLineEnd = (lineEnds, end) => {
   const res = lineEnds && lineEnds[end]
   return res === 'none' ? null : res
 }
-const getNodes = (nodalPointType) => nodalPointType === 'none' ? null : nodalPointType
+const getNodes = (nodalPointIcon) => nodalPointIcon === 'none' ? null : nodalPointIcon
 
 const lineLength = (points, locked) => {
   const last = points.length - 1
@@ -404,7 +404,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, nodalPointType, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -413,7 +413,7 @@ export const stroked = (points, lineEnds, nodalPointType, bezier, locked, bounds
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
   const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
-    points, bezier, locked, insideMap, getNodes(nodalPointType)).filter(({ i, o }) => i && o)
+    points, bezier, locked, insideMap, getNodes(nodalPointIcon)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
     if (i < strokePoints.length - 1 ||
@@ -481,7 +481,7 @@ const getTextAmplifiers = ({
 
     amplifiers.forEach(([ type, amplifiers ]) => {
       amplifiers.forEach((amplifier) => {
-        let { x, y, r, t, n } = point
+        let { x, y, r } = point
         if (Math.abs(r) > 90) {
           r -= 180
         }
@@ -500,6 +500,43 @@ const getTextAmplifiers = ({
   return result
 }
 
+const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
+  switch (type) {
+    case 'top':
+      return { y: -lineHeight * numberOfLines - lineHeight / 2 }
+    case 'middle':
+      return { y: -lineHeight * numberOfLines / 2 }
+    case 'bottom':
+      return { y: lineHeight / 2 }
+    default:
+      break
+  }
+}
+
+const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines) {
+  let t = point.t === 0 ? -1 : 1
+  if (Math.abs(point.r) > 90) {
+    t = -t
+  }
+  const half = lineWidth / 2
+  const offsetObject = getOffsetForIntermediateAmplifier(...arguments)
+  switch (type) {
+    case 'top':
+      offsetObject.x = half * t
+      break
+    case 'middle': {
+      offsetObject.x = -(half + lineHeight / 3) * t
+      break
+    }
+    case 'bottom':
+      offsetObject.x = half * t
+      break
+    default:
+      break
+  }
+  return offsetObject
+}
+
 export const getAmplifiers = ({
   points,
   intermediateAmplifierType,
@@ -508,7 +545,7 @@ export const getAmplifiers = ({
   shownNodalPointAmplifiers,
   pointAmplifier,
   level,
-  nodalPointType,
+  nodalPointIcon,
   bezier,
   locked,
   bounds,
@@ -518,7 +555,7 @@ export const getAmplifiers = ({
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const nodeStep = interpolateSize(zoom, settings.NODES_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const interpolatedNodeSize = interpolateSize(zoom, settings.NODES_SIZE, scale)
   const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
   const result = {
     maskPath: [],
@@ -540,18 +577,8 @@ export const getAmplifiers = ({
         bezier,
         insideMap,
         locked,
-      ).filter((point, index) => point.i && shownIntermediateAmplifiers && shownIntermediateAmplifiers.has(index)),
-      getOffset: (type, t, lineWidth, lineHeight, numberOfLines) => {
-        const x = -lineWidth / 2
-        switch (type) {
-          case 'top':
-            return { y: -lineHeight * numberOfLines - lineHeight, x }
-          case 'middle':
-            return { y: -lineHeight / 2, x }
-          case 'bottom':
-            return { y: lineHeight, x }
-        }
-      },
+      ).filter((point, index) => point.i && shownIntermediateAmplifiers?.has(index)),
+      getOffset: getOffsetForIntermediateAmplifier,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -572,21 +599,7 @@ export const getAmplifiers = ({
         insideMap,
         locked,
       ).filter((point) => point.i),
-      getOffset: (type, point, lineWidth, lineHeight, numberOfLines) => {
-        let t = point.t // 0 or 1
-        if (Math.abs(point.r) > 90) {
-          t = Number(!t)
-        }
-        switch (type) {
-          case 'top':
-            return { y: -lineHeight * numberOfLines - lineHeight, x: lineWidth * (t - 1) }
-          case 'middle': {
-            return { y: -lineHeight / 2, x: lineWidth * (0 - t) }
-          }
-          case 'bottom':
-            return { y: lineHeight, x: lineWidth * (t - 1) }
-        }
-      },
+      getOffset: getOffsetForNodalPointAmplifier,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -594,20 +607,20 @@ export const getAmplifiers = ({
 
   points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers?.has(index))
 
-  switch (nodalPointType) {
+  switch (nodalPointIcon) {
     case 'cross-circle': {
-      const d = Number((nodeStep * Math.sqrt(2) * scale / 4).toFixed(2))
+      const d = Number((interpolatedNodeSize * Math.sqrt(2) * scale / 4).toFixed(2))
       points.forEach(({ x, y }) => {
-        result.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
+        result.maskPath.push(circleToD(interpolatedNodeSize * scale / 2, x, y))
         result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${nodeStep * scale / 2}" />
+            <circle cx="0" cy="0" r="${interpolatedNodeSize * scale / 2}" />
             <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = nodeStep * scale / 2
+      const d = interpolatedNodeSize * scale / 2
       points.forEach(({ x, y }) => {
         result.maskPath.push(pointsToD(
           rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),

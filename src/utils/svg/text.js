@@ -4,7 +4,7 @@ import { Align } from '../../constants'
 import { pointsToD, rectToPoints } from './lines'
 
 export const FONT_FAMILY = 'Arial'
-const lineCoef = 1.2
+const LINE_COEFFICIENT = 1.2
 
 let ctx = null
 
@@ -65,7 +65,7 @@ export const renderTextSymbol = ({
     if (width > maxWidth) {
       maxWidth = width
     }
-    fullHeight += lineCoef * fontSize
+    fullHeight += LINE_COEFFICIENT * fontSize
 
     const y = fullHeight
     const lineSpace = underline ? 20 * scale / 100 : 0
@@ -124,26 +124,25 @@ export const extractTextSVG = ({
   const numberOfLines = lines.length
   return lines.map((line, index) => {
     const width = getTextWidth(line, getFont(fontSize, false))
-    const height = fontSize * 1.2
+    const widthWithMargin = width + 2 * margin
+    const height = fontSize * LINE_COEFFICIENT
 
-    const offset = getOffset ? getOffset(width, height, numberOfLines) : { x: 0, y: 0 }
-
-    const top = offset.y
-    const left = offset.x
+    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : {}
+    const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
 
     return {
       // 'dy' for top vertical align
       sign: `<text
         font-family=${FONT_FAMILY}
         stroke="none"
-        transform="translate(${left}, ${top + height * index})"
+        transform="translate(${left}, ${y + height * index}) translate(${x})"
         font-size=${fontSize}
         dy="${fontSize * 0.95}"
       >${line}</text>`,
       maskRect: {
-        x: left - margin,
-        y: top,
-        width: width + 2 * margin,
+        x: left - margin + x,
+        y: y,
+        width: widthWithMargin,
         height: height,
       },
     }
