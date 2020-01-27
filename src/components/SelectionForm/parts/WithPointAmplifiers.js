@@ -11,6 +11,8 @@ const PAIRS = {
   BOTTOM: { id: 'bottom', name: 'W' },
 }
 
+const PAIR_LIST = Object.values(PAIRS)
+
 const PATH = [ 'attributes', 'pointAmplifier' ]
 
 const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extends Component {
@@ -19,17 +21,16 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
   )
 
   renderPointAmplifiers () {
-    const state = this.getResult()
-    const currentValue = state.getIn(PATH)
+    const currentValue =  this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
 
     return (
       <div className="line-container__item">
-        {Object.values(PAIRS).map(({ id, name }) => (
+        {PAIR_LIST.map(({ id, name }) => (
           <div className="line-container__itemWidth" key={id}>
             <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
               <Input.TextArea
-                value={currentValue[id]}
+                value={currentValue[id] ?? ''}
                 onChange={this.createPointAmplifierHandler(id)}
                 disabled={!canEdit}
                 rows={1}

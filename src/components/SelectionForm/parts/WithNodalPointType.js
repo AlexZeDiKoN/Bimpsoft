@@ -14,6 +14,8 @@ export const NODAL_POINT_TYPES = {
 
 export const NODAL_POINT_ICON_PATH = [ 'attributes', 'nodalPointIcon' ]
 
+const NODAL_POINT_ICON_OPTION_JSX = Object.values(NODAL_POINT_TYPES).map(nodesOption)
+
 const WithNodalPointType = (Component) => class NodalPointTypeComponent extends Component {
   nodalPointIconHandler = (nodalPointIcon) => (
     this.setResult((result) => result.setIn(NODAL_POINT_ICON_PATH, nodalPointIcon))
@@ -27,7 +29,7 @@ const WithNodalPointType = (Component) => class NodalPointTypeComponent extends 
     const value = canEdit
       ? (
         <Select value={currentValue} onChange={this.nodalPointIconHandler}>
-          {Object.values(NODAL_POINT_TYPES).map(nodesOption)}
+          {NODAL_POINT_ICON_OPTION_JSX}
         </Select>
       )
       : nodesDiv(typeInfo)

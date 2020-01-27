@@ -7,9 +7,14 @@ const { FormRow } = components.form
 
 export const PATH = [ 'attributes', 'status' ]
 
+export const STATUSES = {
+  EXISTING: '0',
+  PLANNED: '1',
+}
+
 export const STATUS_LIST = [
-  { id: '0', text: i18n.EXISTING },
-  { id: '1', text: `${i18n.PLANNED}/${i18n.EXPECTED}/${i18n.PROBABLE}` },
+  { id: STATUSES.EXISTING, text: i18n.EXISTING },
+  { id: STATUSES.PLANNED, text: `${i18n.PLANNED}/${i18n.EXPECTED}/${i18n.PROBABLE}` },
 ]
 
 const WithStatus = (Component) => class StatusComponent extends Component {

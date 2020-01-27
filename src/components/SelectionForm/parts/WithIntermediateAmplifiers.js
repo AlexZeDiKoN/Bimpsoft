@@ -50,7 +50,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
       <div className="line-container__itemWidth" key={id}>
         <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
           <Input.TextArea
-            value={currentValue[id]}
+            value={currentValue[id] ?? ''}
             onChange={this.createIntermediateAmplifierHandler(id)}
             disabled={!canEdit}
             rows={1}
@@ -76,7 +76,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
               {type === TYPES.TEXT
                 ? <Input
                   disabled={!canEdit}
-                  value={currentValue[PAIRS.MIDDLE.id]}
+                  value={currentValue[PAIRS.MIDDLE.id] ?? ''}
                   onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
                 /> : null}
             </FormRow>

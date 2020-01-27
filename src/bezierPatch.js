@@ -4,6 +4,7 @@ const EPSILON = 1e-12
 
 const isZero = (val) => val >= -EPSILON && val <= EPSILON
 
+// TODO: breaks the work of a quadratic bezier curve. Need to fix
 Bezier.prototype.derivative = function (t) {
   // Do not produce results if parameter is out of range or invalid.
   if (t == null || t < 0 || t > 1) {

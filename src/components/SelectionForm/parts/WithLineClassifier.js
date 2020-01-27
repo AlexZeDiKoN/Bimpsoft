@@ -9,14 +9,16 @@ import * as WithLineEnds from './WithLineEnds'
 
 const { FormRow } = components.form
 
-const CLASSIFIERS = {
+export const UNDEFINED_CLASSIFIER = '0'
+
+export const CLASSIFIERS = {
   0: {
-    id: 0,
+    id: '0',
     text: i18n.UNDEFINED,
     attributes: [],
   },
   1: {
-    id: 1,
+    id: '1',
     text: i18n.DIVIDING_LINE,
     attributes: [
       { path: WithLineType.PATH, value: WithLineType.types.solid.value },
@@ -26,6 +28,10 @@ const CLASSIFIERS = {
     ],
   },
 }
+
+const CLASSIFIER_OPTION_LIST_JSX = Object.values(CLASSIFIERS).map(({ id, text }) => (
+  <Select.Option key={id} value={id}>{text}</Select.Option>
+))
 
 export const PATH = [ 'attributes', 'lineClassifier' ]
 
@@ -43,9 +49,7 @@ const WithLineClassifier = (Component) => class LineClassifierComponent extends 
     return (
       <FormRow label={i18n.NATO_CLASSIFIER}>
         <Select value={currentClassifier} onChange={this.lineClassifierHandler} disabled={!canEdit}>
-          {Object.values(CLASSIFIERS).map(({ id, text }) => (
-            <Select.Option key={id} value={id}>{text}</Select.Option>
-          ))}
+          {CLASSIFIER_OPTION_LIST_JSX}
         </Select>
       </FormRow>
     )

@@ -315,7 +315,6 @@ export const AFFILIATIONS = {
 }
 
 // statuses
-
 export const STATUS = 'Стан'
 export const EXISTING = 'Існуючий'
 export const PLANNED = 'Плановий'

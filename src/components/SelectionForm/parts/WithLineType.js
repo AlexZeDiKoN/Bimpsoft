@@ -14,6 +14,8 @@ export const types = {
   stroked: { text: i18n.STROKED, value: 'stroked', simple: false },
 }
 
+const TYPE_LIST = Object.values(types)
+
 export const PATH = [ 'attributes', 'lineType' ]
 
 const WithLineType = (Component) => class LineTypeComponent extends Component {
@@ -26,7 +28,7 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     const value = canEdit
       ? (
         <Select value={lineType} onChange={this.lineTypeChangeHandler}>
-          {Object.values(types).map((type) => {
+          {TYPE_LIST.map((type) => {
             if (type.simple || !simple) {
               return typeOption(type.value, type.value, type.text)
             } else {

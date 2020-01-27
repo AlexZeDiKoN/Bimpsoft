@@ -7,6 +7,8 @@ import { actionNames } from '../actions/webMap'
 import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import { IDENTITIES } from '../../utils/affiliations'
+import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
+import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
@@ -24,9 +26,9 @@ const WebMapPoint = Record({
 })
 
 const LineAmplifier = Record({
-  top: '',
-  middle: '',
-  bottom: '',
+  top: null,
+  middle: null,
+  bottom: null,
 })
 
 const webMapAttributesInitValues = {
@@ -46,8 +48,8 @@ const webMapAttributesInitValues = {
   texts: List(),
   z: null,
   taskId: null,
-  lineClassifier: '0',
-  status: '0',
+  lineClassifier: UNDEFINED_CLASSIFIER,
+  status: STATUSES.EXISTING,
 }
 
 for (const key of Object.keys(symbolOptions)) {
