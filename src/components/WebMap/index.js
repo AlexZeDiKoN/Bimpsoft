@@ -349,6 +349,7 @@ export default class WebMap extends React.PureComponent {
     getZones: PropTypes.func,
     createGroup: PropTypes.func,
     dropGroup: PropTypes.func,
+    newShapeFromSymbol: PropTypes.func,
   }
 
   constructor (props) {
@@ -1820,6 +1821,11 @@ export default class WebMap extends React.PureComponent {
       const point = this.map.mouseEventToLatLng(e)
       const { lat, lng } = point
       this.props.onDropUnit(data.id, { lat, lng })
+    }
+    if (data.type === 'symbol') {
+      const point = this.map.mouseEventToLatLng(e)
+      const { lat, lng } = point
+      this.props.newShapeFromSymbol(data, { lat, lng })
     }
   }
 

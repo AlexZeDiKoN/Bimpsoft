@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
 import { Tooltip } from 'antd'
+import PropTypes from 'prop-types'
 import { CollapseSection, Scrollbar } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
-import { symbols, amps } from '../../constants/symbols'
+import { symbols } from '../../constants/symbols'
 import './style.css'
 import spriteUrl from './sprite.svg'
 
@@ -15,27 +16,37 @@ const SymbolSvg = (props) => {
   )
 }
 
+// Для того, что бы работали иконки запустите команду npm run svg-sprite2
 export default function SymbolsTab (props) {
-  const { wrapper: Wrapper = Fragment } = props
+  const { wrapper: Wrapper = Fragment, canEdit } = props
+
+  const dragStartHandler = (e, symbol) => {
+    e.dataTransfer.setData('text', JSON.stringify({ type: 'symbol', ...symbol }))
+  }
+
   const partsJSX = symbols.map((part) => {
     const symbolJSX = part.children.map((symbol) => {
       const { hint, code, amp } = symbol
-      const elemToRender = (hint && code && !(amp.isSvg || amp[amps.N] || amp[amps.T]))
-        ? <MilSymbol
-          code={code}
-          amplifiers={amp}
-          className={'symbol'}
-        />
-        : (code && amp.isSvg)
-          ? <div className={'symbol'}><SymbolSvg
-            name={`${code}`}
-          /></div>
-          : <div
-            style={ { backgroundColor: 'blue' } }
+
+      const elemToRender = (!amp.isSvg)
+        ? <div
+          onDragStart={canEdit ? (e) => dragStartHandler(e, symbol) : null}
+          draggable={canEdit}
+        >
+          <MilSymbol
+            code={code}
+            amplifiers={amp}
             className={'symbol'}
-          >
-          Тут буде лінія
-          </div>
+          />
+        </div>
+        : <div
+          className={'symbol'}
+          draggable={canEdit}
+        >
+          <SymbolSvg
+            name={`${code}`}
+          />
+        </div>
 
       return <Tooltip
         key={`${hint}${code}`}
@@ -63,4 +74,13 @@ export default function SymbolsTab (props) {
       {partsJSX}
     </Scrollbar>
   </Wrapper>
+}
+
+SymbolsTab.propTypes = {
+  canEdit: PropTypes.bool,
+  wrapper: PropTypes.any,
+}
+
+SymbolSvg.propTypes = {
+  name: PropTypes.string.isRequired,
 }
