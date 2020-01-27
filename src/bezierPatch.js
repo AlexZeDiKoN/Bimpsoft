@@ -2,7 +2,7 @@ import Bezier from 'bezier-js'
 
 const EPSILON = 1e-12
 
-const isZero = (val) => val >= -EPSILON && val <= EPSILON
+const isZero = (val) => Math.abs(val) <= EPSILON
 
 // TODO: breaks the work of a quadratic bezier curve. Need to fix
 Bezier.prototype.derivative = function (t) {

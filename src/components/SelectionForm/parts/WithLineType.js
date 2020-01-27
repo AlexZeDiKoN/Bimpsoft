@@ -31,8 +31,6 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
           {TYPE_LIST.map((type) => {
             if (type.simple || !simple) {
               return typeOption(type.value, type.value, type.text)
-            } else {
-              return null
             }
           }).filter(Boolean)}
         </Select>
