@@ -1132,6 +1132,7 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.catalogId || layer.remove()
+            // eslint-disable-next-line no-unused-expressions
             layer.pm?.disable()
           }
         }
@@ -1143,6 +1144,7 @@ export default class WebMap extends React.PureComponent {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
           layer.remove()
+          // eslint-disable-next-line no-unused-expressions
           layer.pm?.disable()
         }
       }

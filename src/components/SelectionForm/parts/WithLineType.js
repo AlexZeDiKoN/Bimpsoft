@@ -29,9 +29,9 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
       ? (
         <Select value={lineType} onChange={this.lineTypeChangeHandler}>
           {TYPE_LIST.map((type) => {
-            if (type.simple || !simple) {
-              return typeOption(type.value, type.value, type.text)
-            }
+            return type.simple || !simple
+              ? typeOption(type.value, type.value, type.text)
+              : null
           }).filter(Boolean)}
         </Select>
       )
