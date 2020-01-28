@@ -10,7 +10,7 @@
     "lines-between-class-members": [ "error", "always" ],
     "object-curly-spacing": [ "error", "always" ],
     "curly": [ "error", "all" ],
-    "arrow-body-style": [ "error", "as-needed" ],
+    "arrow-body-style": 0,
     "arrow-parens": [ "error", "always" ],
     "array-bracket-spacing": [ "error", "always" ],
     "no-console": [ "error", { "allow": [ "warn", "error", "info" ] } ],

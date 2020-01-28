@@ -52,13 +52,23 @@ export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth =
     extendRect(b, [ x - r, y - r, x + r, y + r ])
   })
   const scale = maxWidth / 200
+
   const width = (b[2] - b[0]) * scale
   const height = (b[3] - b[1]) * scale
+
   const left = (boxWidth - width) / 2 - margin
   const top = (boxHeight - height) / 2 - margin
+
   return {
-    sign: `<g transform="translate(${-width / 2},${-height / 2}) scale(${scale}) translate(${-b[0]},${-b[1]})">${signText}</g>`,
-    mask: `<rect fill="black" x="${left}" y="${top}" width="${width + 2 * margin}" height="${height + 2 * margin}" />`,
-    maskRect: { x: left, y: top, width: width + 2 * margin, height: height + 2 * margin },
+    sign: `<g
+      fill="none"
+      transform="translate(${-width / 2},${-height / 2}) scale(${scale}) translate(${-b[0]},${-b[1]})"
+    >${signText}</g>`,
+    maskRect: {
+      x: left,
+      y: top,
+      width: width + 2 * margin,
+      height: height + 2 * margin,
+    },
   }
 }

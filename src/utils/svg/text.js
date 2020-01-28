@@ -4,7 +4,7 @@ import { Align } from '../../constants'
 import { pointsToD, rectToPoints } from './lines'
 
 export const FONT_FAMILY = 'Arial'
-const lineCoef = 1.2
+const LINE_COEFFICIENT = 1.2
 
 let ctx = null
 
@@ -65,7 +65,7 @@ export const renderTextSymbol = ({
     if (width > maxWidth) {
       maxWidth = width
     }
-    fullHeight += lineCoef * fontSize
+    fullHeight += LINE_COEFFICIENT * fontSize
 
     const y = fullHeight
     const lineSpace = underline ? 20 * scale / 100 : 0
@@ -100,7 +100,7 @@ export const renderTextSymbol = ({
         {text}
       </text>
       {lineD && outlineColor && <path d={lineD} {...outlineProps}/>}
-      {lineD && <path fill="#000" d={lineD} />}
+      {lineD && <path fill="#000" d={lineD}/>}
     </Fragment>
   })
 
@@ -111,4 +111,40 @@ export const renderTextSymbol = ({
       viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg"
     >{textsEls}</svg>
     : textsEls
+}
+
+export const extractTextSVG = ({
+  string,
+  fontSize,
+  margin,
+  scale,
+  getOffset,
+}) => {
+  const lines = string.split('\n')
+  const numberOfLines = lines.length
+  return lines.map((line, index) => {
+    const width = getTextWidth(line, getFont(fontSize, false))
+    const widthWithMargin = width + 2 * margin
+    const height = fontSize * LINE_COEFFICIENT
+
+    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : {}
+    const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
+
+    return {
+      // 'dy' for top vertical align
+      sign: `<text
+        font-family=${FONT_FAMILY}
+        stroke="none"
+        transform="translate(${left}, ${y + height * index}) translate(${x})"
+        font-size=${fontSize}
+        dy="${fontSize * 0.95}"
+      >${line}</text>`,
+      maskRect: {
+        x: left - margin + x,
+        y: y,
+        width: widthWithMargin,
+        height: height,
+      },
+    }
+  })
 }

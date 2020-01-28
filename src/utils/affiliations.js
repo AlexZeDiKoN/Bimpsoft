@@ -10,6 +10,8 @@ export const IDENTITIES = {
   HOSTILE_FAKER: '6',
 }
 
+export const IDENTITY_LIST = model.app6Data.identities
+
 export const FRIENDS = [
   IDENTITIES.FRIEND,
   IDENTITIES.ASSUMED_FRIEND,

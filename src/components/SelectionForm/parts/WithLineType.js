@@ -5,21 +5,18 @@ import i18n from '../../../i18n'
 import { typeDiv, typeOption } from './render'
 
 const { FormRow } = components.form
-const TYPE_SOLID = 'solid'
-const TYPE_DASHED = 'dashed'
-const TYPE_WAVED = 'waved'
-const TYPE_WAVED2 = 'waved2'
-const TYPE_STROKED = 'stroked'
 
-const types = {
-  [TYPE_SOLID]: { text: i18n.SOLID, value: 'solid' },
-  [TYPE_DASHED]: { text: i18n.DASHED, value: 'dashed' },
-  [TYPE_WAVED]: { text: i18n.WAVED, value: 'waved' },
-  [TYPE_WAVED2]: { text: `${i18n.WAVED} 2`, value: 'waved2' },
-  [TYPE_STROKED]: { text: i18n.STROKED, value: 'stroked' },
+export const types = {
+  solid: { text: i18n.SOLID, value: 'solid', simple: true },
+  dashed: { text: i18n.DASHED, value: 'dashed', simple: true },
+  waved: { text: i18n.WAVED, value: 'waved', simple: false },
+  waved2: { text: `${i18n.WAVED} 2`, value: 'waved2', simple: false },
+  stroked: { text: i18n.STROKED, value: 'stroked', simple: false },
 }
 
-const PATH = [ 'attributes', 'lineType' ]
+const TYPE_LIST = Object.values(types)
+
+export const PATH = [ 'attributes', 'lineType' ]
 
 const WithLineType = (Component) => class LineTypeComponent extends Component {
   lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH, lineType))
@@ -30,12 +27,12 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     const canEdit = this.isCanEdit()
     const value = canEdit
       ? (
-        <Select value={ lineType } onChange={this.lineTypeChangeHandler}>
-          {typeOption(TYPE_SOLID, 'solid', i18n.SOLID)}
-          {typeOption(TYPE_DASHED, 'dashed', i18n.DASHED)}
-          {!simple && typeOption(TYPE_WAVED, 'waved', i18n.WAVED)}
-          {!simple && typeOption(TYPE_WAVED2, 'waved2', `${i18n.WAVED} 2`)}
-          {!simple && typeOption(TYPE_STROKED, 'stroked', i18n.STROKED)}
+        <Select value={lineType} onChange={this.lineTypeChangeHandler}>
+          {TYPE_LIST.map((type) => {
+            if (type.simple || !simple) {
+              return typeOption(type.value, type.value, type.text)
+            }
+          }).filter(Boolean)}
         </Select>
       )
       : typeDiv(typeInfo.value, typeInfo.text)

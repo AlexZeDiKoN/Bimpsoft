@@ -1,8 +1,8 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
-import subordinationLevels from '../../constants/SubordinationLevel'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { extractSubordinationLevelSVG } from './milsymbol'
+import { extractTextSVG } from './text'
 
 export const settings = {
   LINE_WIDTH: 2, // (пікселів) товщина ліній
@@ -18,6 +18,7 @@ export const settings = {
   // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
   // була строго кратною WAVE_SIZE
   WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
+  LINE_AMPLIFIER_TEXT_SIZE: { min: 6, max: 70 },
   // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
   STROKE_SIZE: { min: 9, max: 36 }, // (пікселів) відстань між "засічками" для лінії з засічками
   // STROKE_SIZE: 18, // (пікселів) висота "засічки" для лінії з засічками
@@ -29,6 +30,28 @@ export const settings = {
   DRAW_PARTIAL_WAVES: true,
   MIN_ZOOM: 0,
   MAX_ZOOM: 20,
+}
+
+class Segment {
+  constructor (start, finish) {
+    this.start = start
+    this.vector = {
+      x: finish.x - start.x,
+      y: finish.y - start.y,
+    }
+  }
+
+  length = () => Math.hypot(this.vector.x, this.vector.y)
+
+  get = (part) => ({
+    x: this.start.x + this.vector.x * part,
+    y: this.start.y + this.vector.y * part,
+  })
+
+  normal = () => ({
+    x: -this.vector.y,
+    y: +this.vector.x,
+  })
 }
 
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
@@ -79,28 +102,6 @@ export const circleToD = (r, dx, dy) => `
 export const pointsToD = (points, locked) => {
   points = points.map(({ x, y }) => `${Math.round(x)} ${Math.round(y)}`)
   return `M${points.join('L')}${locked ? 'z' : ''}`
-}
-
-class Segment {
-  constructor (start, finish) {
-    this.start = start
-    this.vector = {
-      x: finish.x - start.x,
-      y: finish.y - start.y,
-    }
-  }
-
-  length = () => Math.hypot(this.vector.x, this.vector.y)
-
-  get = (part) => ({
-    x: this.start.x + this.vector.x * part,
-    y: this.start.y + this.vector.y * part,
-  })
-
-  normal = () => ({
-    x: -this.vector.y,
-    y: +this.vector.x,
-  })
 }
 
 const getPart = (steps, lut, pos, start = 0, finish = 0) => {
@@ -213,6 +214,21 @@ const getShiftedPoints = (points, offset, locked) => {
   return shiftedPoints
 }
 
+const buildPoints = (points, segments, pointLocationResolver, bezier, insideMap, locked) => {
+  return segments.map((index) => {
+    const segment = bezier
+      ? new Bezier(...bezierArray(points, index, locked))
+      : new Segment(...lineArray(points, index, locked))
+    const t = pointLocationResolver(index)
+    const point = segment.get(t)
+    point.n = segment.normal(t)
+    point.t = t
+    point.r = (Math.atan2(point.n.y, point.n.x) / Math.PI + 0.5) * 180
+    point.i = insideMap(point)
+    return point
+  })
+}
+
 const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
   bezier = bezier && points.length > 2
@@ -278,7 +294,7 @@ const getLineEnd = (lineEnds, end) => {
   const res = lineEnds && lineEnds[end]
   return res === 'none' ? null : res
 }
-const getNodes = (lineNodes) => lineNodes === 'none' ? null : lineNodes
+const getNodes = (nodalPointIcon) => nodalPointIcon === 'none' ? null : nodalPointIcon
 
 const lineLength = (points, locked) => {
   const last = points.length - 1
@@ -387,7 +403,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -396,7 +412,7 @@ export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = nu
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
   const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
-    points, bezier, locked, insideMap, getNodes(lineNodes)).filter(({ i, o }) => i && o)
+    points, bezier, locked, insideMap, getNodes(nodalPointIcon)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
     if (i < strokePoints.length - 1 ||
@@ -417,61 +433,199 @@ const rotate = ({ x, y }, originX, originY, angle) => {
   }
 }
 
-const getAmpSigns = (scale = 1) => subordinationLevels.list.reduce((res, { value }) => ({
-  ...res,
-  [value]: extractSubordinationLevelSVG(value, settings.AMPLIFIERS_SIZE * scale,
-    settings.AMPLIFIERS_WINDOW_MARGIN * scale),
-}), {})
-
-export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale = 1, zoom = -1) => {
-  if (zoom < 0) {
-    zoom = settings.MAX_ZOOM
-  }
-  const nodeStep = interpolateSize(zoom, settings.NODES_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
-  const amplifiers = {
+const getTextAmplifiers = ({
+  points,
+  amplifier,
+  amplifierType,
+  getOffset,
+  level,
+  scale,
+  zoom,
+}) => {
+  const fontSize = interpolateSize(zoom, settings.LINE_AMPLIFIER_TEXT_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
+  const result = {
     maskPath: [],
     group: '',
   }
-  if (lineAmpl === 'show-level' && level) {
-    const amp = getAmpSigns(scale)[level]
-    const amplPoints = buildPeriodicPoints(
-      settings.AMPLIFIERS_STEP * scale,
-      0,
-      -settings.AMPLIFIERS_STEP / 2 * scale,
-      points,
-      bezier,
-      locked,
-      insideMap,
-      getNodes(lineNodes)).filter(({ i, o }) => i && o,
-    )
-    amplifiers.maskPath.push(...amplPoints.map(({ x, y, r }) =>
-      pointsToD(rectToPoints(amp.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
-    ))
-    amplifiers.group += amplPoints.map(({ x, y, r }) =>
-      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`,
-    ).join('')
+
+  if (!amplifier) {
+    return result
   }
-  switch (lineNodes) {
+
+  points.forEach((point, index) => {
+    // const isLast = points[index] === points.length - 1
+
+    const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
+      if (type === 'middle' && amplifierType === 'level' && level) {
+        return [ type, [ extractSubordinationLevelSVG(
+          level,
+          settings.AMPLIFIERS_SIZE * scale,
+          settings.AMPLIFIERS_WINDOW_MARGIN * scale,
+        ) ] ]
+      }
+
+      if (!value) {
+        return null // canceling render of a text amplifier
+      }
+
+      return [ type, extractTextSVG({
+        string: value,
+        fontSize,
+        margin: amplifierMargin,
+        scale,
+        getOffset: getOffset.bind(null, type, point),
+      }) ]
+    }).filter(Boolean)
+
+    amplifiers.forEach(([ type, amplifiers ]) => {
+      amplifiers.forEach((amplifier) => {
+        let { x, y, r } = point
+        if (Math.abs(r) > 90) {
+          r -= 180
+        }
+        result.maskPath.push(
+          pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
+        )
+        result.group += `<g
+          stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
+          transform="translate(${x},${y})
+          rotate(${r})"
+       >${amplifier.sign}</g>`
+      })
+    })
+  })
+
+  return result
+}
+
+const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
+  switch (type) {
+    case 'top':
+      return { y: -lineHeight * numberOfLines - lineHeight / 2 }
+    case 'middle':
+      return { y: -lineHeight * numberOfLines / 2 }
+    case 'bottom':
+      return { y: lineHeight / 2 }
+    default:
+      break
+  }
+}
+
+const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines) {
+  let t = point.t === 0 ? -1 : 1
+  if (Math.abs(point.r) > 90) {
+    t = -t
+  }
+  const half = lineWidth / 2
+  const offsetObject = getOffsetForIntermediateAmplifier(...arguments)
+  switch (type) {
+    case 'top':
+      offsetObject.x = half * t
+      break
+    case 'middle': {
+      offsetObject.x = -(half + lineHeight / 3) * t
+      break
+    }
+    case 'bottom':
+      offsetObject.x = half * t
+      break
+    default:
+      break
+  }
+  return offsetObject
+}
+
+export const getAmplifiers = ({
+  points,
+  intermediateAmplifierType,
+  intermediateAmplifier,
+  shownIntermediateAmplifiers,
+  shownNodalPointAmplifiers,
+  pointAmplifier,
+  level,
+  nodalPointIcon,
+  bezier,
+  locked,
+  bounds,
+  scale = 1,
+  zoom = -1,
+}) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const interpolatedNodeSize = interpolateSize(zoom, settings.NODES_SIZE, scale)
+  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
+  const result = {
+    maskPath: [],
+    group: '',
+  }
+
+  {
+    const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
+    const { maskPath, group } = getTextAmplifiers({
+      level,
+      scale,
+      zoom,
+      amplifier: intermediateAmplifier,
+      amplifierType: intermediateAmplifierType,
+      points: buildPoints(
+        points,
+        segments,
+        () => 0.5,
+        bezier,
+        insideMap,
+        locked,
+      ).filter((point, index) => point.i && shownIntermediateAmplifiers?.has(index)),
+      getOffset: getOffsetForIntermediateAmplifier,
+    })
+    result.maskPath.push(...maskPath)
+    result.group += group
+  }
+
+  {
+    const segments = [ 0, points.length - Number(!locked) - 1 ]
+    const { maskPath, group } = getTextAmplifiers({
+      level,
+      scale,
+      zoom,
+      amplifier: pointAmplifier,
+      points: buildPoints(
+        points,
+        segments,
+        (index) => index === 0 ? 0 : 1,
+        bezier,
+        insideMap,
+        locked,
+      ).filter((point) => point.i),
+      getOffset: getOffsetForNodalPointAmplifier,
+    })
+    result.maskPath.push(...maskPath)
+    result.group += group
+  }
+
+  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers?.has(index))
+
+  switch (nodalPointIcon) {
     case 'cross-circle': {
-      const d = Number((nodeStep * Math.sqrt(2) * scale / 4).toFixed(2))
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${nodeStep * scale / 2}" />
+      const d = Number((interpolatedNodeSize * Math.sqrt(2) * scale / 4).toFixed(2))
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(circleToD(interpolatedNodeSize * scale / 2, x, y))
+        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+            <circle cx="0" cy="0" r="${interpolatedNodeSize * scale / 2}" />
             <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = nodeStep * scale / 2
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(pointsToD(
+      const d = interpolatedNodeSize * scale / 2
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(pointsToD(
           rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
           true,
         ))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
           </g>`
       })
@@ -480,10 +634,10 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
     default:
       break
   }
-  if (amplifiers.maskPath.length) {
-    amplifiers.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
+  if (result.maskPath.length) {
+    result.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
   }
-  return amplifiers
+  return result
 }
 
 const drawLineEnd = (type, { x, y }, angle, scale) => {
