@@ -48,11 +48,10 @@ class Segment {
     y: this.start.y + this.vector.y * part,
   })
 
-  normal = () => {
-    const { x, y } = this.vector
-    const q = Math.sqrt(x * x + y * y)
-    return { x: -y / q, y: x / q }
-  }
+  normal = () => ({
+    x: -this.vector.y,
+    y: +this.vector.x,
+  })
 }
 
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)

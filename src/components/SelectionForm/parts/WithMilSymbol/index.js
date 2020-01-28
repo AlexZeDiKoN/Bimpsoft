@@ -55,14 +55,18 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   )
 
   unitChangeHandler = (unit) => this.setResult((result) => {
-    const { orgStructures: { byIds} } = this.props
-    const { symbolData, natoLevelID, app6Code } = byIds[unit] || { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
-    const uniqueDesignation = symbolData && (symbolData.uniqueDesignation || null)
-    const higherFormation = symbolData && (symbolData.higherFormation || null)
+    const { orgStructures: { byIds } } = this.props
+    const {
+      symbolData,
+      natoLevelID,
+      app6Code,
+    } = byIds[unit] ?? { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
+    const uniqueDesignation = symbolData?.uniqueDesignation ?? null
+    const higherFormation = symbolData?.higherFormation ?? null
     return result.setIn(UNIT_PATH, unit)
-    .setIn(CODE_PATH, app6Code)
-    .setIn(SUBORDINATION_LEVEL_PATH, natoLevelID)
-    .updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge({uniqueDesignation, higherFormation}))
+      .setIn(CODE_PATH, app6Code)
+      .setIn(SUBORDINATION_LEVEL_PATH, natoLevelID)
+      .updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge({ uniqueDesignation, higherFormation }))
   })
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
@@ -75,7 +79,9 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   )
 
   handlerUnitInfo = (unitId) => {
-    if (!unitId) { return }
+    if (!unitId) {
+      return
+    }
     const { itemType } = this.props.orgStructures.byIds[unitId]
     window.explorerBridge.showUnitInfo(itemType, unitId)
   }

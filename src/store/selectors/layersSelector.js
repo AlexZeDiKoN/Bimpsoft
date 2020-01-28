@@ -36,7 +36,7 @@ export const selectedLayer = createSelector(
 
 export const mapId = createSelector(
   selectedLayer,
-  (layer) => layer && layer.mapId,
+  (layer) => layer?.mapId,
 )
 
 export const signedMap = createSelector(

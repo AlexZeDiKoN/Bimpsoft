@@ -1,5 +1,4 @@
 import { model } from '@DZVIN/MilSymbolEditor'
-import i18n from '../i18n'
 
 export const IDENTITIES = {
   PENDING: '0',
@@ -11,15 +10,7 @@ export const IDENTITIES = {
   HOSTILE_FAKER: '6',
 }
 
-export const IDENTITY_LIST = [
-  { id: IDENTITIES.PENDING, text: i18n.AFFILIATIONS.PENDING },
-  { id: IDENTITIES.UNKNOWN, text: i18n.AFFILIATIONS.UNKNOWN },
-  { id: IDENTITIES.ASSUMED_FRIEND, text: i18n.AFFILIATIONS.ASSUMED_FRIEND },
-  { id: IDENTITIES.FRIEND, text: i18n.AFFILIATIONS.FRIEND },
-  { id: IDENTITIES.NEUTRAL, text: i18n.AFFILIATIONS.NEUTRAL },
-  { id: IDENTITIES.SUSPECT_JOKER, text: i18n.AFFILIATIONS.SUSPECT_JOKER },
-  { id: IDENTITIES.HOSTILE_FAKER, text: i18n.AFFILIATIONS.HOSTILE_FAKER },
-]
+export const IDENTITY_LIST = model.app6Data.identities
 
 export const FRIENDS = [
   IDENTITIES.FRIEND,

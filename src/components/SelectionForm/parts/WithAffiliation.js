@@ -16,8 +16,8 @@ const WithAffiliation = (Component) => class AffiliationComponent extends Compon
     return (
       <FormRow label={i18n.IDENTITY}>
         <Select value={currentAffiliation} onChange={this.affiliationHandler} disabled={!canEdit}>
-          {IDENTITY_LIST.map(({ id, text }) => (
-            <Select.Option key={id} value={id}>{text}</Select.Option>
+          {IDENTITY_LIST.map(({ id, title }) => (
+            <Select.Option key={id} value={id}>{title}</Select.Option>
           ))}
         </Select>
       </FormRow>

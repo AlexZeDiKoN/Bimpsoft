@@ -6,15 +6,21 @@ import { nodesDiv, nodesOption } from './render'
 
 const { FormRow } = components.form
 
-export const NODAL_POINT_TYPES = {
-  'none': { text: i18n.NO_ONE, value: 'none' },
-  'cross-circle': { text: i18n.SHAPE_CIRCLE, value: 'cross-circle' },
-  'square': { text: i18n.SHAPE_SQUARE, value: 'square' },
+export const NODAL_POINT_ICONS = {
+  NONE: 'none',
+  CROSS_CIRCLE: 'cross-circle',
+  SQUARE: 'square',
+}
+
+const NODAL_POINT_ICON_DICTIONARY = {
+  [NODAL_POINT_ICONS.NONE]: { text: i18n.NO_ONE, value: NODAL_POINT_ICONS.NONE },
+  [NODAL_POINT_ICONS.CROSS_CIRCLE]: { text: i18n.SHAPE_CIRCLE, value: NODAL_POINT_ICONS.CROSS_CIRCLE },
+  [NODAL_POINT_ICONS.SQUARE]: { text: i18n.SHAPE_SQUARE, value: NODAL_POINT_ICONS.SQUARE }
 }
 
 export const NODAL_POINT_ICON_PATH = [ 'attributes', 'nodalPointIcon' ]
 
-const NODAL_POINT_ICON_OPTION_JSX = Object.values(NODAL_POINT_TYPES).map(nodesOption)
+const NODAL_POINT_ICON_OPTION_JSX = Object.values(NODAL_POINT_ICON_DICTIONARY).map(nodesOption)
 
 const WithNodalPointType = (Component) => class NodalPointTypeComponent extends Component {
   nodalPointIconHandler = (nodalPointIcon) => (
@@ -23,7 +29,7 @@ const WithNodalPointType = (Component) => class NodalPointTypeComponent extends 
 
   renderNodalPointType () {
     const currentValue = this.getResult().getIn(NODAL_POINT_ICON_PATH)
-    const typeInfo = NODAL_POINT_TYPES[currentValue]
+    const typeInfo = NODAL_POINT_ICON_DICTIONARY[currentValue]
     const canEdit = this.isCanEdit()
 
     const value = canEdit

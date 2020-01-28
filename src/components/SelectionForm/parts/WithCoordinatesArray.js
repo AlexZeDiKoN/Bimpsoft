@@ -7,7 +7,7 @@ import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 import { renderNodes } from './render'
 import {
   NODAL_POINT_ICON_PATH,
-  NODAL_POINT_TYPES,
+  NODAL_POINT_ICONS,
 } from './WithNodalPointType'
 import {
   NAME_OF_AMPLIFIERS,
@@ -59,7 +59,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const canEdit = this.isCanEdit()
     const nodalPointIconPreview = renderNodes(nodalPointIcon)
     const coordinatesLength = coordinatesArray.length
-    const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_TYPES.none.value
+    const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_ICONS.NONE
     return (
       <FormDarkPart>
         <FormRow label={i18n.NODAL_POINTS}>

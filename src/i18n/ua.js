@@ -303,17 +303,6 @@ export const GROUPPING = 'Групувати'
 export const NATO_CLASSIFIER = 'Класифікація НАТО'
 export const DIVIDING_LINE = 'Розмежувальна лінія'
 
-// affiliations
-export const AFFILIATIONS = {
-  FRIEND: 'Дружні',
-  ASSUMED_FRIEND: 'Очікувано дружні',
-  HOSTILE_FAKER: 'Ворожі',
-  SUSPECT_JOKER: 'Підозрілі',
-  NEUTRAL: 'Нейтральні',
-  UNKNOWN: 'Невідомі',
-  PENDING: 'Невизначені',
-}
-
 // statuses
 export const STATUS = 'Стан'
 export const EXISTING = 'Існуючий'

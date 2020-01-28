@@ -188,7 +188,7 @@ const serializeCoordinate = (mode, lat, lng) => {
 }
 
 const setScaleOptions = (layer, params) => {
-  if (layer && layer.object) {
+  if (layer?.object) {
     if (layer.object.catalogId) {
       layer.setScaleOptions({
         min: Number(params[paramsNames.POINT_SIZE_MIN]),
@@ -495,7 +495,7 @@ export default class WebMap extends React.PureComponent {
       const layer = this.map._layers[key]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
-        layer.setLocked && layer.setLocked(false)
+        layer.setLocked(false)
         layer.id === activeObjectId && this.onSelectedListChange([])
       }
     })
@@ -757,7 +757,7 @@ export default class WebMap extends React.PureComponent {
     const { edit, selection: { list } } = this.props
     if (edit && list.length === 1) {
       const layer = this.findLayerById(list[0])
-      if (layer && layer.object) {
+      if (layer?.object) {
         await this.checkSaveObject(false)
         return layer.object.id
       }
@@ -792,7 +792,7 @@ export default class WebMap extends React.PureComponent {
     if (newList.length === 1 && list[0] !== newList[0]) {
       const id = newList[0]
       const layer = this.findLayerById(id)
-      selectedUnit = (layer && layer.object && layer.object.unit) || null
+      selectedUnit = (layer?.object?.unit) || null
     }
     await onSelectUnit(selectedUnit)
 
@@ -964,8 +964,8 @@ export default class WebMap extends React.PureComponent {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = (layer.options && layer.options.tsType === entityKind.FLEXGRID) ||
-            (layer.object && layer.object.layer === layerId)
+          const isActiveLayer = (layer.options?.tsType === entityKind.FLEXGRID) ||
+            (layer.object?.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
           const isDraggable = canDrag && isSelected && isActiveLayer
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
@@ -1132,7 +1132,7 @@ export default class WebMap extends React.PureComponent {
             }
           } else {
             layer.catalogId || layer.remove()
-            layer.pm && layer.pm.disable()
+            layer.pm?.disable()
           }
         }
       })
@@ -1143,7 +1143,7 @@ export default class WebMap extends React.PureComponent {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
           layer.remove()
-          layer.pm && layer.pm.disable()
+          layer.pm?.disable()
         }
       }
       objects.forEach((object, id) => {
@@ -1246,7 +1246,7 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          if (layer && layer._latlng) {
+          if (layer?._latlng) {
             const unitData = this.getUnitData(object.unit)
             const renderPopUp = renderIndicators(object, unitData)
             const dir = this.findLayerDirection(this.map, layer)
@@ -1551,7 +1551,7 @@ export default class WebMap extends React.PureComponent {
       if (targetLayer && targetLayer !== this.props.layer) {
         await this.selectLayer(id)
         await this.props.onChangeLayer(targetLayer)
-        await onSelectUnit((layer && layer.object && layer.object.unit) || null)
+        await onSelectUnit(layer?.object?.unit ?? null)
         layer._map._container.focus()
       }
     }
