@@ -56,7 +56,7 @@ export default function SymbolsTab (props) {
       </Tooltip>
     })
 
-    return <div key={part.name}>
+    return <div key={part.name} className={'collapseSection'}>
       <CollapseSection
         label={part.name}
       >

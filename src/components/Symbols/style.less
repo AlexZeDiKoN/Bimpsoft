@@ -4,26 +4,32 @@
 .parts-container{
   .flex;
   flex-direction: column;
-
+  .collapseSection{
+    border-bottom: 2px solid #f5f5f5;
+    label{
+      font-size: 12px;
+    }
   .symbol-container {
     .flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    margin: 0 8%;
     align-content: space-evenly;
     height: 100%;
 
     .symbol {
       width: 60px;
       height: 60px;
-      border: 2px outset #000000;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      padding: 1px;
+      border: 1px solid #3333;
+      margin: 5px 5px;
       svg {
         width: 55px;
         height: 55px;
       }
-    }
+     }
   }
+  }
+
 
 }
