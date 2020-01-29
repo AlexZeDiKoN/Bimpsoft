@@ -137,10 +137,10 @@ L.SVG.include({
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     const lineType = layer.lineType || 'solid'
-    const skipStart = layer.options && layer.options.skipStart
-    const skipEnd = layer.options && layer.options.skipEnd
-    const kind = layer.options && layer.options.tsType
-    const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+    const skipStart = layer.options?.skipStart
+    const skipEnd = layer.options?.skipEnd
+    const kind = layer.options?.tsType
+    const length = layer._rings?.length === 1 && layer._rings[0].length
     const fullPolygon = kind === entityKind.POLYGON && length >= 3
     const fullPolyline = kind === entityKind.POLYLINE && length >= 2
     const fullArea = kind === entityKind.AREA && length >= 3
@@ -224,9 +224,21 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.lineAmpl,
-      layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
-      bounds, 1.0, layer._map.getZoom())
+    const amplifiers = getAmplifiers({
+      points: layer._rings[0],
+      intermediateAmplifierType: layer.options?.intermediateAmplifierType,
+      intermediateAmplifier: layer.options?.intermediateAmplifier,
+      shownIntermediateAmplifiers: layer.options?.shownIntermediateAmplifiers,
+      shownNodalPointAmplifiers: layer.options?.shownNodalPointAmplifiers,
+      pointAmplifier: layer.options?.pointAmplifier,
+      level: layer.object?.level,
+      nodalPointIcon: layer.options?.nodalPointIcon,
+      bezier,
+      locked,
+      bounds,
+      scale: 1.0,
+      zoom: layer._map.getZoom(),
+    })
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
@@ -245,14 +257,22 @@ L.SVG.include({
 
   _buildWaved: function (layer, bezier, locked, inverse) {
     const bounds = layer._map._renderer._bounds
-    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds, 1.0,
+    return waved(layer._rings[0], layer.options?.lineEnds, bezier, locked, bounds, 1.0,
       layer._map.getZoom(), inverse)
   },
 
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return stroked(layer._rings[0], layer.options && layer.options.lineEnds,
-      layer.options && layer.options.lineNodes, bezier, locked, bounds, 1.0, layer._map.getZoom())
+    return stroked(
+      layer._rings[0],
+      layer.options?.lineEnds,
+      layer.options?.nodalPointIcon,
+      bezier,
+      locked,
+      bounds,
+      1.0,
+      layer._map.getZoom(),
+    )
   },
 
   _updateLineEnds: function (layer, bezier) {
@@ -260,7 +280,7 @@ L.SVG.include({
     const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
     const { left, right } = getLineEnds(
       layer._rings[0],
-      layer.options && layer.options.lineEnds,
+      layer.options?.lineEnds,
       bezier,
       scale,
     )

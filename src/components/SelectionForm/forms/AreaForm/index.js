@@ -5,10 +5,10 @@ import {
   WithFill,
   WithSegment,
   WithLineType,
-  WithLineAmplifiers,
-  WithLineNodes,
+  WithNodalPointType,
   WithCoordinatesArray,
   WithSubordinationLevel,
+  WithIntermediateAmplifiers,
   WithStrokeWidth,
   UnitSelect,
 } from '../../parts'
@@ -19,12 +19,12 @@ const Extenders = compose(
   WithSubordinationLevel,
   WithCoordinatesArray,
   WithLineType,
-  WithLineAmplifiers,
-  WithLineNodes,
+  WithNodalPointType,
   WithSegment,
   WithFill,
   WithColor,
   WithStrokeWidth,
+  WithIntermediateAmplifiers,
   UnitSelect,
 )
 
@@ -45,10 +45,10 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
             {this.renderOrgStructureSelect()}
             {this.renderSegment()}
             {this.renderLineType()}
-            {this.renderLineAmplifiers()}
-            {this.renderLineNodes()}
+            {this.renderNodalPointType()}
           </div>
         </div>
+        {this.renderIntermediateAmplifiers()}
         {this.renderCoordinatesArray()}
       </div>
     )

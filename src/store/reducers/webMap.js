@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types'
-import { Record, List, Map } from 'immutable'
+import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge, eq } from '../../utils/immutable'
 import { actionNames } from '../actions/webMap'
 import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+import { IDENTITIES } from '../../utils/affiliations'
+import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
+import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import entityKind from '../../components/WebMap/entityKind'
 import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
@@ -22,19 +25,31 @@ const WebMapPoint = Record({
   lng: null,
 })
 
+const LineAmplifier = Record({
+  top: null,
+  middle: null,
+  bottom: null,
+})
+
 const webMapAttributesInitValues = {
   template: '',
   color: colors.BLACK,
   fill: colors.TRANSPARENT,
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
-  lineAmpl: 'none',
+  intermediateAmplifierType: 'none',
+  intermediateAmplifier: LineAmplifier(),
+  shownIntermediateAmplifiers: Set(),
+  shownNodalPointAmplifiers: Set(),
+  pointAmplifier: LineAmplifier(),
   left: 'none',
   right: 'none',
-  lineNodes: 'none',
+  nodalPointIcon: 'none',
   texts: List(),
   z: null,
   taskId: null,
+  lineClassifier: UNDEFINED_CLASSIFIER,
+  status: STATUSES.EXISTING,
 }
 
 for (const key of Object.keys(symbolOptions)) {
@@ -53,7 +68,7 @@ export const WebMapObject = Record({
   geometry: List(),
   unit: null,
   level: null,
-  affiliation: null,
+  affiliation: IDENTITIES.FRIEND,
   layer: null,
   parent: null,
   attributes: WebMapAttributes(),
@@ -119,8 +134,22 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     if (attributes) {
-      const { texts, ...otherAttrs } = attributes
-      obj = update(obj, 'attributes', comparator, WebMapAttributes({ texts: List(texts), ...otherAttrs }))
+      const {
+        texts,
+        pointAmplifier,
+        intermediateAmplifier,
+        shownIntermediateAmplifiers,
+        shownNodalPointAmplifiers,
+        ...otherAttrs
+      } = attributes
+      obj = update(obj, 'attributes', comparator, WebMapAttributes({
+        texts: List(texts),
+        intermediateAmplifier: LineAmplifier(intermediateAmplifier),
+        shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
+        shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
+        pointAmplifier: LineAmplifier(pointAmplifier),
+        ...otherAttrs,
+      }))
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }

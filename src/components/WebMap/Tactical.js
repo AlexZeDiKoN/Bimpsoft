@@ -69,7 +69,7 @@ export const disableEdit = (layer) => {
 
 export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
-  if (layer.pm && layer.pm.enabled() !== active) {
+  if (layer.pm?.enabled() !== active) {
     if (active) {
       enableEdit(layer)
     } else {
@@ -255,7 +255,7 @@ const geoJSONLayer = (coordinates, type, tsType, style, geomData) => L.geoJSON(g
 })
 
 function createGeoJSONLayer (data, layer, type, style, geometry) {
-  if (layer && layer._checkData === data) {
+  if (layer?._checkData === data) {
     return layer
   }
   // if (layer && (layer instanceof L.GeoJSON)) {
