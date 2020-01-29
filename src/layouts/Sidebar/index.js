@@ -8,12 +8,11 @@ import {
   MarchContainer,
   CatalogsContainer,
   TargetCatalogContainer,
+  SymbolsContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
-const SIDEBAR_PANEL_SIZE_MIN = 210
-const SIDEBAR_PANEL_SIZE_MAX = 480
 
 const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 300
@@ -41,7 +40,6 @@ export default class Sidebar extends React.Component {
 
   changeSidebarPanels = () => {
     const { printStatus, marchEdit, isMapCOP, is3DMapMode } = this.props
-    const { topPanelHeight } = this.state
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -51,27 +49,15 @@ export default class Sidebar extends React.Component {
         <>
           <div
             className="sidebar-panel1"
-            style={{ height: topPanelHeight > SIDEBAR_PANEL_SIZE_MAX ? SIDEBAR_PANEL_SIZE_MAX : topPanelHeight }}
           >
             <TabsPanel
               tabs={[
+                SymbolsContainer,
                 OrgStructuresContainer,
                 !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
-              ].filter(Boolean)}
-            />
-          </div>
-          <ValueSwiper
-            value={this.state.topPanelHeight}
-            onChange={(startValue, pos) => {
-              this.setState({ topPanelHeight: Math.max(SIDEBAR_PANEL_SIZE_MIN, startValue + pos.y) })
-            }}
-          />
-          <div className="sidebar-panel2">
-            <TabsPanel
-              tabs={[
                 LayersContainer,
-              ]}
+              ].filter(Boolean)}
             />
           </div>
         </>

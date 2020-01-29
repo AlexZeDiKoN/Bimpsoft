@@ -179,6 +179,26 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
   })))
 })
 
+export const newShapeFromSymbol = (data, point) => withNotification((dispatch, getState) => {
+  const {
+    layers: {
+      selectedId: layer,
+    },
+  } = getState()
+
+  const { code, amp } = data
+
+  dispatch(setPreview(WebMapObject({
+    type: SelectionTypes.POINT,
+    code,
+    layer,
+    geometry: List([ point ]),
+    point: point,
+    attributes: WebMapAttributes(amp || {}),
+  }),
+  ))
+})
+
 export const copy = () => withNotification((dispatch, getState) => {
   const {
     selection: { list = null },
