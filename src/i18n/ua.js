@@ -223,6 +223,7 @@ export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
+export const SYMBOLS = 'Умовні Знаки'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати листи карти`
 export const FLEX_GRID = `Операційна зона`

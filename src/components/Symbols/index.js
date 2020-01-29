@@ -5,6 +5,7 @@ import { CollapseSection, Scrollbar } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
+import { SYMBOLS } from '../../i18n/ua'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -68,7 +69,7 @@ export default function SymbolsTab (props) {
   })
 
   return <Wrapper
-    title={'Умовні Знаки'}
+    title={SYMBOLS}
   >
     <Scrollbar className={'parts-container'}>
       {partsJSX}
