@@ -37,7 +37,7 @@ gulp.task('svg-sprite2', () => gulp
     inlineSvg: true,
   }))
   .pipe(rename('sprite.svg'))
-  .pipe(gulp.dest('./src/components/symbols/')))
+  .pipe(gulp.dest('./src/components/Symbols/')))
 
 // Создаем список имен иконок
 gulp.task('svg-list2', () => gulp
