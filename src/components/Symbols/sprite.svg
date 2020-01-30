@@ -1,0 +1,6 @@
+<!--
+To get the svg sprite you need to run the `npm run svg-sprite2` command
+-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="0" viewBox="0 0 10 10"/>
+</svg>
