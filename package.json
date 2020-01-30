@@ -78,7 +78,7 @@
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "craco start",
-    "build": "run-s -n svg-sprite2 inc-version build-css build-js",
+    "build": "run-s -n inc-version build-css build-js",
     "build-js": "craco build",
     "test": "run-s -n build-css test-js",
     "test-js": "craco test --env=jsdom",
