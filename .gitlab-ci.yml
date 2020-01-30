@@ -49,7 +49,7 @@ build:
         sed -i "s/${old}/${CURRENT_VERSION}.${updated}/g" package.json;
         echo "Version  $CURRENT_VERSION.$updated"
     # - rm pnpm-lock.yaml    
-    - pnpm i 
+    - yarn
 #    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
     - cp .env .env.backup
     - rm .env 
