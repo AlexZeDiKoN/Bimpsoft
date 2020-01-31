@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react'
-import { Tooltip } from 'antd'
+import React, { Fragment, useState } from 'react'
+import { Tooltip, Input } from 'antd'
 import PropTypes from 'prop-types'
-import { Collapse, Scrollbar, useToggleGroup  } from '@DZVIN/CommonComponents'
+import { Collapse, Scrollbar, useToggleGroup } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
-import { SYMBOLS } from '../../i18n/ua'
+import i18n from '../../i18n'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -20,14 +20,22 @@ const SymbolSvg = (props) => {
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 export default function SymbolsTab (props) {
   const { wrapper: Wrapper = Fragment, canEdit } = props
+  const [ search, onChange ] = useState('')
   const sections = useToggleGroup()
 
   const dragStartHandler = (e, symbol) => {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'symbol', ...symbol }))
   }
 
+  const onChangeSearch = ({ target: { value } }) => {
+    onChange(value)
+  }
+
   const partsJSX = symbols.map((part, index) => {
-    const symbolJSX = part.children.map((symbol) => {
+    const sortedPart = (search !== '')
+      ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
+      : part.children
+    const symbolJSX = sortedPart.map((symbol) => {
       const { hint, code, amp } = symbol
 
       const elemToRender = (!amp.isSvg)
@@ -58,9 +66,13 @@ export default function SymbolsTab (props) {
       </Tooltip>
     })
 
-    return <div key={part.name} className={'collapseSection'}>
-      <Collapse {...sections(index)}
+    const value = (search !== '') ? { value: true } : {}
+
+    return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
+      <Collapse
+        {...sections(index)}
         label={part.name}
+        { ...value }
       >
         <Scrollbar className={'symbol-container'}>
           { symbolJSX }
@@ -70,11 +82,18 @@ export default function SymbolsTab (props) {
   })
 
   return <Wrapper
-    title={SYMBOLS}
+    title={i18n.SYMBOLS}
   >
-    <Scrollbar className={'parts-container'}>
-      {partsJSX}
-    </Scrollbar>
+    <div className={'symbols-wrapper'}>
+      <Input.Search
+        placeholder={i18n.FILTER}
+        onChange={onChangeSearch}
+        value={search}
+      />
+      <Scrollbar className={'parts-container'}>
+        {partsJSX}
+      </Scrollbar>
+    </div>
   </Wrapper>
 }
 
