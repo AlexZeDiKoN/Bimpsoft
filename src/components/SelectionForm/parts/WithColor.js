@@ -1,11 +1,7 @@
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
-import i18n from '../../../i18n'
 import { colorDiv } from './render'
-
-const { FormRow } = components.form
 
 export const PATH = [ 'attributes', 'color' ]
 
