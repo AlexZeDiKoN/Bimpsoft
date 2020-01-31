@@ -43,6 +43,7 @@ export default class TaskModal extends React.Component {
           title={i18n.CREATE_TASK}
           onClose={onClose}
           minWidth={1000}
+          maxWidth={1000}
           minHeight={350}
           resizeEnable={ResizeEnable.ALL_DISABLED}
         >

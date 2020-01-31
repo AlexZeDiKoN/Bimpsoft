@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import { Tooltip, Input } from 'antd'
 import PropTypes from 'prop-types'
-import { CollapseSection, Scrollbar } from '@DZVIN/CommonComponents'
+import { Collapse, Scrollbar, useToggleGroup } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
@@ -21,6 +21,7 @@ const SymbolSvg = (props) => {
 export default function SymbolsTab (props) {
   const { wrapper: Wrapper = Fragment, canEdit } = props
   const [ search, onChange ] = useState('')
+  const sections = useToggleGroup()
 
   const dragStartHandler = (e, symbol) => {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'symbol', ...symbol }))
@@ -30,7 +31,7 @@ export default function SymbolsTab (props) {
     onChange(value)
   }
 
-  const partsJSX = symbols.map((part) => {
+  const partsJSX = symbols.map((part, index) => {
     const sortedPart = (search !== '')
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
       : part.children
@@ -66,14 +67,14 @@ export default function SymbolsTab (props) {
     })
 
     return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
-      <CollapseSection
+      <Collapse {...sections(index)}
         label={part.name}
-        defaultExpanded={search !== ''}
+        value={search !== ''}
       >
         <Scrollbar className={'symbol-container'}>
           { symbolJSX }
         </Scrollbar>
-      </CollapseSection>
+      </Collapse>
     </div>
   })
 
