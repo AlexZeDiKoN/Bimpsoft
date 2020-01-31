@@ -9,14 +9,13 @@ export const WHITE = 'app6_white'
 export const TRANSPARENT = 'app6_transparent'
 
 export const values = {
-  [TRANSPARENT]: 'none',
+  [TRANSPARENT]: 'transparent',
   [BLUE]: '#3366ff',
   [RED]: '#ff0000',
   [BLACK]: '#000000',
   [GREEN]: '#339966',
   [YELLOW]: '#ffff00',
   [WHITE]: '#ffffff',
-
 }
 export const titles = {
   [TRANSPARENT]: i18n.TRANSPARENT,

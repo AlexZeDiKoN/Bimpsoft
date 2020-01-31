@@ -54,6 +54,7 @@ build:
     - cp .env .env.backup
     - rm .env 
     - cp .env.production .env
+    - yarn run svg-sprite2
     - yarn run build
     - rm .env
     - cp .env.backup .env

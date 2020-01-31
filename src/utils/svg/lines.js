@@ -438,6 +438,7 @@ const getTextAmplifiers = ({
   amplifier,
   amplifierType,
   getOffset,
+  getRotate,
   level,
   scale,
   zoom,
@@ -481,16 +482,14 @@ const getTextAmplifiers = ({
     amplifiers.forEach(([ type, amplifiers ]) => {
       amplifiers.forEach((amplifier) => {
         let { x, y, r } = point
-        if (Math.abs(r) > 90) {
-          r -= 180
-        }
+        r = getRotate?.(type, r) ?? r
         result.maskPath.push(
           pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
         )
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
-          transform="translate(${x},${y})
-          rotate(${r})"
+          transform="translate(${x},${y}) rotate(${r})"
+          font-weight="bold"
        >${amplifier.sign}</g>`
       })
     })
@@ -536,6 +535,12 @@ const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHe
   return offsetObject
 }
 
+const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
 export const getAmplifiers = ({
   points,
   intermediateAmplifierType,
@@ -578,6 +583,7 @@ export const getAmplifiers = ({
         locked,
       ).filter((point, index) => point.i && shownIntermediateAmplifiers?.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
+      getRotate: getRotateForLineAmplifier,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -599,6 +605,11 @@ export const getAmplifiers = ({
         locked,
       ).filter((point) => point.i),
       getOffset: getOffsetForNodalPointAmplifier,
+      getRotate: (amplifierType, pointRotate) => {
+        return amplifierType !== 'middle'
+          ? getRotateForLineAmplifier(amplifierType, pointRotate)
+          : 0
+      },
     })
     result.maskPath.push(...maskPath)
     result.group += group

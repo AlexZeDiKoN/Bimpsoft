@@ -31,9 +31,13 @@ export const PATH = [ 'attributes', 'intermediateAmplifier' ]
 export const TYPE_PATH = [ 'attributes', 'intermediateAmplifierType' ]
 
 const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersComponent extends Component {
-  intermediateAmplifierTypeHandler = (type) => (
-    this.setResult((result) => result.setIn(TYPE_PATH, type))
-  )
+  intermediateAmplifierTypeHandler = (type) => {
+    this.setResult((result) => {
+      return result
+        .setIn(TYPE_PATH, type)
+        .setIn([ ...PATH, PAIRS.MIDDLE.id ], null)
+    })
+  }
 
   createIntermediateAmplifierHandler = (id) => (event) => (
     this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
@@ -69,16 +73,15 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
               >{TYPE_LIST.map(({ text, value }) => {
-                  const level = value === TYPES.LEVEL ? subordinationLevel : null
-                  return typeOption(value, 'solid', text, level)
-                })}
+                const level = value === TYPES.LEVEL ? subordinationLevel : null
+                return typeOption(value, 'solid', text, level)
+              })}
               </Select>
-              {type === TYPES.TEXT
-                ? <Input
-                  disabled={!canEdit}
-                  value={currentValue[PAIRS.MIDDLE.id] ?? ''}
-                  onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
-                /> : null}
+              <Input
+                disabled={!canEdit || type !== TYPES.TEXT}
+                value={currentValue[PAIRS.MIDDLE.id] ?? ''}
+                onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
+              />
             </FormRow>
           </div>
         </div>
