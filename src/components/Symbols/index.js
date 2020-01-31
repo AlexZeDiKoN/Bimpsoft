@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { CollapseSection, Scrollbar } from '@DZVIN/CommonComponents'
+import { Collapse, Scrollbar, useToggleGroup  } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
@@ -20,12 +20,13 @@ const SymbolSvg = (props) => {
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 export default function SymbolsTab (props) {
   const { wrapper: Wrapper = Fragment, canEdit } = props
+  const sections = useToggleGroup()
 
   const dragStartHandler = (e, symbol) => {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'symbol', ...symbol }))
   }
 
-  const partsJSX = symbols.map((part) => {
+  const partsJSX = symbols.map((part, index) => {
     const symbolJSX = part.children.map((symbol) => {
       const { hint, code, amp } = symbol
 
@@ -58,13 +59,13 @@ export default function SymbolsTab (props) {
     })
 
     return <div key={part.name} className={'collapseSection'}>
-      <CollapseSection
+      <Collapse {...sections(index)}
         label={part.name}
       >
         <Scrollbar className={'symbol-container'}>
           { symbolJSX }
         </Scrollbar>
-      </CollapseSection>
+      </Collapse>
     </div>
   })
 
