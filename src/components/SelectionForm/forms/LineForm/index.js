@@ -43,31 +43,39 @@ export default class LineForm extends compose(
     return (
       <Scrollbar>
         <div className="line-container">
-          <div className="line-container__item">
-            <div className="line-container__itemWidth">
+          <div className="line-container__item--firstSection">
+            <div className="line-container__itemWidth-left">
               <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
             </div>
-            <div className="line-container__itemWidth">
+            <div className="line-container__itemWidth-right">
               {this.renderLineClassifier()}
-              {this.renderOrgStructureSelect()}
-              {this.renderSubordinationLevel()}
-              {this.renderAffiliation()}
-              {this.renderStatus()}
+              <div className='line-container__itemWidth--section1'>
+                <div>
+                  {this.renderOrgStructureSelect()}
+                  {this.renderSubordinationLevel()}
+                </div>
+                <div>
+                  {this.renderAffiliation()}
+                  {this.renderStatus()}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="line-container__item">
+          <div className="line-container__item--secondSection">
             <div className="line-container__itemWidth">
-              {this.renderSegment()}
-              {this.renderLineType()}
-              {this.renderNodalPointType()}
-            </div>
-            <div className="line-container__itemWidth">
-              {this.renderColor()}
-              {this.renderStrokeWidth()}
-            </div>
-            <div className="line-container__itemWidth">
-              {this.renderLineEnds(DIRECTION_LEFT)}
-              {this.renderLineEnds(DIRECTION_RIGHT)}
+              <div>
+                {this.renderSegment()}
+                {this.renderLineEnds(DIRECTION_LEFT)}
+                {this.renderNodalPointType()}
+              </div>
+              <div>
+                <div className='containerTypeColor'>
+                  {this.renderLineType()}
+                  {this.renderColor()}
+                </div>
+                {this.renderStrokeWidth()}
+                {this.renderLineEnds(DIRECTION_RIGHT)}
+              </div>
             </div>
           </div>
           {this.renderIntermediateAmplifiers()}
