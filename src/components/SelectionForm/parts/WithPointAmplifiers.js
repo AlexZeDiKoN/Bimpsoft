@@ -21,7 +21,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
   )
 
   renderPointAmplifiers () {
-    const currentValue =  this.getResult().getIn(PATH)
+    const currentValue = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
 
     return (

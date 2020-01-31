@@ -8,6 +8,8 @@ import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import './style.css'
 
+const COLOR_PICKER_Z_INDEX = 2000
+
 class PrintPanel extends React.Component {
   static propTypes = {
     form: PropTypes.object.isRequired,
@@ -428,6 +430,7 @@ class PrintPanel extends React.Component {
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FIRST_COLOR}
                   disabled={!legendEnabled}
+                  zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
               <Col span={18}>
@@ -449,6 +452,7 @@ class PrintPanel extends React.Component {
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_SECOND_COLOR}
                   disabled={!legendEnabled}
+                  zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
               <Col span={18}>
@@ -470,6 +474,7 @@ class PrintPanel extends React.Component {
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_THIRD_COLOR}
                   disabled={!legendEnabled}
+                  zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
               <Col span={18}>
@@ -491,6 +496,7 @@ class PrintPanel extends React.Component {
                   className='PrintPanel_colorPicker'
                   onChange={setRequisitesFunc.LEGEND_FOURTH_COLOR}
                   disabled={!legendEnabled}
+                  zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
               <Col span={18}>

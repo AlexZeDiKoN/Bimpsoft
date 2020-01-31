@@ -44,8 +44,9 @@ export default class LineForm extends compose(
       <Scrollbar>
         <div className="line-container">
           <div className="line-container__item">
-            {/* TODO: Add line preview */}
-            <div className="line-container__itemWidth"/>
+            <div className="line-container__itemWidth">
+              <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
+            </div>
             <div className="line-container__itemWidth">
               {this.renderLineClassifier()}
               {this.renderOrgStructureSelect()}

@@ -129,19 +129,19 @@ export const extractTextSVG = ({
 
     const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : {}
     const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
-
+    const top = height * index + y
     return {
       // 'dy' for top vertical align
       sign: `<text
         font-family=${FONT_FAMILY}
         stroke="none"
-        transform="translate(${left}, ${y + height * index}) translate(${x})"
+        transform="translate(${left}, ${top}) translate(${x})"
         font-size=${fontSize}
         dy="${fontSize * 0.95}"
       >${line}</text>`,
       maskRect: {
         x: left - margin + x,
-        y: y,
+        y: top,
         width: widthWithMargin,
         height: height,
       },
