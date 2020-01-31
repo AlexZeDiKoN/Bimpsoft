@@ -35,7 +35,7 @@ const forms = {
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
-    minHeight: 750,
+    minHeight: 670,
     maxHeight: 750,
     minWidth: 900,
   },

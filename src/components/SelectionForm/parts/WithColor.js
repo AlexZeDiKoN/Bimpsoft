@@ -28,9 +28,9 @@ const WithColor = (Component) => class ColorComponent extends Component {
     ) : colorDiv(color)
 
     return (
-      <FormRow label={i18n.COLOR}>
+      <div className={'container-color-picker'}>
         {value}
-      </FormRow>
+      </div>
     )
   }
 }

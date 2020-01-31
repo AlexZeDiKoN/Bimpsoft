@@ -1,10 +1,28 @@
 @import "../../../../assets/styles/_variables.less";
 
 .line-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 570px;
   justify-content: space-between;
+
+  .dzvin-form-row{
+    display: flex;
+    flex-direction: column;
+    height: 48px;
+    align-items: flex-start;
+    label{
+      margin-bottom: 0.35em;
+      margin-left: 0.5em;
+      font-size: 12px;
+      flex: 0 0 auto;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      margin-right: 0;
+      text-overflow: ellipsis;
+    }
+  }
 
   &__item {
     display: flex;
@@ -14,7 +32,6 @@
     .dzvin-form-row {
       display: flex;
       flex-direction: column;
-      height: 68px;
       align-items: flex-start;
 
       .dzvin-form-input {
@@ -57,15 +74,113 @@
         text-overflow: ellipsis;
       }
     }
+
+    &--firstSection {
+      display: flex;
+      margin-top: 10px;
+      border-bottom: 2px solid rgba(159,166,89,.54);
+
+      .line-container__itemWidth-left {
+        width: 50%;
+        border: 7px solid #eaeaea;
+        margin: 12px;
+        height: 153px;
+
+        img {
+          height: 156px;
+          transform: scale(1.8);
+        }
+      }
+
+      .line-container__itemWidth-right {
+        width: 50%;
+        .dzvin-form-input {
+          width: 100%;
+          .ant-select{
+            width: 100%;
+          }
+        }
+        .line-container__itemWidth--section1 {
+          display: flex;
+          .dzvin-input{
+            input{
+              width: 139px;
+            }
+          }
+
+          & > div {
+            width: 50%;
+          }
+
+          & > div:first-child {
+            width: 49%;
+          }
+        }
+      }
+    }
+
+    &--secondSection{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+      padding: 0 0.3em;
+      border-bottom: 2px solid rgba(159, 166, 89, 0.54);
+
+      .line-container__itemWidth {
+        width: 100%;
+
+        .containerTypeColor{
+          display: flex;
+          align-items: center;
+          width: 100%;
+          margin-right: 2em;
+          .container-color-picker{
+            height: 48px;
+            display: flex;
+            align-items: flex-end;
+          }
+        }
+
+        & > div {
+          display: flex;
+          width: 100%;
+          justify-content: space-between;
+
+          .dzvin-form-row {
+            flex: 1 1 auto;
+            width: 100%;
+
+            .dzvin-form-input {
+              width: 100%;
+
+              .ant-select {
+                width: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 
   &__itemWidth {
     width: 50%;
-    margin-top: 10px;
 
     .hideArrow{
       .dzvin-input-after{
         opacity: 0;
+      }
+    }
+  }
+
+  &__item-amplifier{
+    .dzvin-form-input{
+      display: flex;
+      flex-direction: row;
+      input{
+        margin-left: 15px;
       }
     }
   }
@@ -78,10 +193,18 @@
     .dzvin-form-row{
       padding: 5px 10px;
       flex: 0 0 auto;
+      height: fit-content;
+      justify-content: space-between;
+      flex-direction: row;
+    }
+
+    .dzvin-form-divider{
+      margin: 0 0 10px;
     }
 
     .shape-form-scrollable {
       height: 185px;
+      padding-left: 1.1em;
       .coordinatesModal{
         margin-bottom: 5px;
       }
