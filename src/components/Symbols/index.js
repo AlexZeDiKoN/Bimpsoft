@@ -66,10 +66,13 @@ export default function SymbolsTab (props) {
       </Tooltip>
     })
 
+    const value = (search !== '') ? { value: true } : {}
+
     return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
-      <Collapse {...sections(index)}
+      <Collapse
+        {...sections(index)}
         label={part.name}
-        value={search !== ''}
+        { ...value }
       >
         <Scrollbar className={'symbol-container'}>
           { symbolJSX }
