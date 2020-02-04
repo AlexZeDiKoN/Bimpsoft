@@ -240,6 +240,8 @@ export const PUT_IN_QUEUE = 'Поставлено в чергу'
 export const FORMATION_FILE = 'Формування графічного файлу'
 export const FILE_IS_GENERATED = 'Файл сформовано'
 export const ERROR_OCCURRED = 'Виникла помилка'
+export const NO_ORG_STRUCTURE = 'Орг. структура відсутня'
+export const ORG_STRUCTURE_SHORT = 'Орг. структура'
 
 // лог
 export const FILES_TO_PRINT = 'Файли на друк'
