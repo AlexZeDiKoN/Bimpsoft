@@ -13,6 +13,17 @@ export default class TabsPanel extends React.Component {
     this.setState({ isMounted: true })
   }
 
+  componentDidUpdate (prevProps) {
+    const { state, props } = this
+    const { selectedIndex } = state
+    if (prevProps.tabs.length !== props.tabs.length && !props.tabs[selectedIndex]) {
+      this.setState({ selectedIndex: props.tabs.length - 1 })
+    } else if (props.tabs[selectedIndex].displayName !== prevProps.tabs[selectedIndex].displayName) {
+      const newIndex = props.tabs.findIndex((it) => it.displayName === prevProps.tabs[selectedIndex].displayName)
+      this.setState({ selectedIndex: newIndex })
+    }
+  }
+
   containersRef = React.createRef()
 
   selectHandler = (selectedIndex) => () => this.setState({ selectedIndex })

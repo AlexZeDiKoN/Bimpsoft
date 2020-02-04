@@ -111,7 +111,18 @@ export default class OrgStructuresComponent extends React.PureComponent {
     } = this.props
 
     if (formation === null) {
-      return null
+      return <Wrapper title={(<Tooltip title={i18n.NO_ORG_STRUCTURE}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
+        <div className="org-structures">
+          <div className='org-structures-searchBlock'>
+            <Input.Search
+              ref={this.inputRef}
+              placeholder={i18n.FILTER}
+              disabled
+            />
+          </div>
+          <b>{i18n.NO_ORG_STRUCTURE}</b>
+        </div>
+      </Wrapper>
     }
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
@@ -129,7 +140,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
     )
 
     return (
-      <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
+      <Wrapper title={(<Tooltip title={formation.fullName}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
         <div className="org-structures">
           <div className='org-structures-searchBlock'>
             <Input.Search
@@ -144,6 +155,9 @@ export default class OrgStructuresComponent extends React.PureComponent {
             />
           </div>
           <div className="org-structures-scroll" ref={this.scrollPanelRef}>
+            <div>
+              <b>{formation.fullName}</b>
+            </div>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
