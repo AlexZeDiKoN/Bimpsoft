@@ -1,6 +1,7 @@
 /* global L */
 
 import './FlexGrid'
+import './Sophisticated'
 import './PM'
 import './Path'
 import './Polyline'

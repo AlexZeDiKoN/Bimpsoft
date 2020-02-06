@@ -116,6 +116,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
+    case entityKind.SOPHISTICATED:
+      return createSophisticated(data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -163,6 +165,16 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
     marker.options.tsType = entityKind.POINT
     return marker
   }
+}
+
+function createSophisticated (data, layer) {
+  if (layer && (layer instanceof L.Polyline)) {
+    layer.setLatLngs(data.geometry.toJS())
+  } else {
+    const options = prepareOptions(entityKind.SOPHISTICATED)
+    layer = new L.Sophisticated(options, data.code, data.geometry.toJS())
+  }
+  return layer
 }
 
 function createPoint (data, layer) {
