@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel } from '@DZVIN/CommonComponents'
+import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -35,7 +35,7 @@ const forms = {
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
-    minHeight: 750,
+    minHeight: 670,
     maxHeight: 750,
     minWidth: 900,
   },
@@ -128,6 +128,8 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (
+      <>
+      <NotClickableArea/>
       <Wrapper
         title={title}
         onClose={onCancel}
@@ -152,6 +154,7 @@ export default class SelectionForm extends React.Component {
           </HotKeysContainer>
         </FocusTrap>
       </Wrapper>
+    </>
     )
   }
 }

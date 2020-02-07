@@ -66,7 +66,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     return (
       <div className="line-container__item">
         <div className="line-container__itemWidth">
-          <div className="line-container__item">
+          <div className="line-container__item-amplifier">
             <FormRow label={`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
               <Select
                 value={type}
