@@ -6,7 +6,7 @@ import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConver
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector, taskModeSelector, targetingModeSelector } from '../selectors'
 import entityKind, { GROUPS } from '../../components/WebMap/entityKind'
-import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
+import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
@@ -130,7 +130,7 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
             underline: true,
             align: Align.CENTER,
             size: 16,
-          })
+          }),
         )),
       ]))
       break
@@ -195,6 +195,26 @@ export const newShapeFromSymbol = (data, point) => withNotification((dispatch, g
     geometry: List([ point ]),
     point: point,
     attributes: WebMapAttributes(amp || {}),
+  }),
+  ))
+})
+
+export const newShapeFromLine = (data, point, geometry) => withNotification((dispatch, getState) => {
+  const {
+    layers: {
+      selectedId: layer,
+    },
+  } = getState()
+
+  const { code, amp } = data
+
+  dispatch(setPreview(WebMapObject({
+    type: amp.type,
+    code,
+    layer,
+    geometry: List(geometry),
+    point: point,
+    attributes: createObjectRecord(amp || {}),
   }),
   ))
 })

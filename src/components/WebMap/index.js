@@ -350,6 +350,7 @@ export default class WebMap extends React.PureComponent {
     createGroup: PropTypes.func,
     dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
+    newShapeFromLine: PropTypes.func,
   }
 
   constructor (props) {
@@ -1833,6 +1834,34 @@ export default class WebMap extends React.PureComponent {
       const point = this.map.mouseEventToLatLng(e)
       const { lat, lng } = point
       this.props.newShapeFromSymbol(data, { lat, lng })
+    }
+    if (data.type === 'line') {
+      const point = this.map.mouseEventToLatLng(e)
+      const { lat, lng } = point
+      const { amp } = data
+      if (amp.type !== 'special') {
+        const bounds = this.map.getBounds()
+        const x = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
+        const y = (bounds.getEast() - bounds.getWest()) / 4
+        let geometry = []
+        if (amp.type === 6 || amp.type === 4 || amp.type === 3) {
+          const p0 = { lat, lng: lng + y }
+          const p1 = { lat: lat - x, lng: lng - y }
+          const p2 = { lat: lat + x, lng: lng - y }
+          geometry = [ p0, p1, p2 ]
+        }
+        if (amp.type === 8 || amp.type === 9) {
+          const p0 = { lat: lat + x, lng: lng + y }
+          const p1 = { lat: lat - x, lng: lng - y }
+          geometry = [ p0, p1 ]
+        }
+        if (amp.type === 7) {
+          const p0 = { lat, lng }
+          const p1 = { lat: lat + x, lng: lng + y }
+          geometry = [ p0, p1 ]
+        }
+        this.props.newShapeFromLine(data, { lat, lng }, geometry)
+      }
     }
   }
 
