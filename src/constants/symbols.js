@@ -1,7 +1,7 @@
 // Условные знаки для новой вкладки
 // формат: [ { name: '', children: [ { hint: '', code: '<Number>', amp: '' }, ..., {} ] }, ..., {} ]
 
-import { Set } from 'immutable'
+// import { Set } from 'immutable'
 import { NODAL_POINT_ICONS } from '../components/SelectionForm/parts/WithNodalPointType'
 import { types } from '../components/SelectionForm/parts/WithLineType'
 import { ENDS_ARROW1, ENDS_ARROW2, ENDS_STROKE1 } from '../components/SelectionForm/parts/WithLineEnds'
