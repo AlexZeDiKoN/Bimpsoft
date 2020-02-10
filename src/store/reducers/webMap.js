@@ -128,28 +128,32 @@ export const updateGeometry = (obj, geometry) => {
       .set('hash', makeHash(obj.get('type'), geometry))
 }
 
+export const createObjectRecord = (attributes) => {
+  const {
+    texts,
+    pointAmplifier,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
+    ...otherAttrs
+  } = attributes
+  return WebMapAttributes({
+    texts: List(texts),
+    intermediateAmplifier: LineAmplifier(intermediateAmplifier),
+    shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
+    shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
+    pointAmplifier: LineAmplifier(pointAmplifier),
+    ...otherAttrs,
+  })
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
     checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     if (attributes) {
-      const {
-        texts,
-        pointAmplifier,
-        intermediateAmplifier,
-        shownIntermediateAmplifiers,
-        shownNodalPointAmplifiers,
-        ...otherAttrs
-      } = attributes
-      obj = update(obj, 'attributes', comparator, WebMapAttributes({
-        texts: List(texts),
-        intermediateAmplifier: LineAmplifier(intermediateAmplifier),
-        shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
-        shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
-        pointAmplifier: LineAmplifier(pointAmplifier),
-        ...otherAttrs,
-      }))
+      obj = update(obj, 'attributes', comparator, createObjectRecord(attributes))
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
