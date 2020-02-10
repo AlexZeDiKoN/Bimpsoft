@@ -131,6 +131,7 @@ const WebMapContainer = connect(
     createGroup: groups.createGroup,
     dropGroup: groups.dropGroup,
     newShapeFromSymbol: selection.newShapeFromSymbol,
+    newShapeFromLine: selection.newShapeFromLine,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

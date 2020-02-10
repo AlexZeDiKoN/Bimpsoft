@@ -23,8 +23,8 @@ export default function SymbolsTab (props) {
   const [ search, onChange ] = useState('')
   const sections = useToggleGroup()
 
-  const dragStartHandler = (e, symbol) => {
-    e.dataTransfer.setData('text', JSON.stringify({ type: 'symbol', ...symbol }))
+  const dragStartHandler = (e, symbol, type) => {
+    e.dataTransfer.setData('text', JSON.stringify({ type, ...symbol }))
   }
 
   const onChangeSearch = ({ target: { value } }) => {
@@ -40,7 +40,7 @@ export default function SymbolsTab (props) {
 
       const elemToRender = (!amp.isSvg)
         ? <div
-          onDragStart={canEdit ? (e) => dragStartHandler(e, symbol) : null}
+          onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'symbol') : null}
           draggable={canEdit}
         >
           <MilSymbol
@@ -52,6 +52,7 @@ export default function SymbolsTab (props) {
         : <div
           className={'symbol'}
           draggable={canEdit}
+          onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'line') : null}
         >
           <SymbolSvg
             name={`${code}`}
