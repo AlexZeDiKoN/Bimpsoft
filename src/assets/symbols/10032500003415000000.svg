@@ -1,11 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-    <path d="M5 25C6.47 29.72 11.74 36.18 20.5 36.25C29.26 36.32 36.81 29.5 36.75 20C36.69 10.5 28.59 3.74 20.5 3.75C14.4 3.76 6.19 7.72 4.47 17.5" id="aPiNm3cXs" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M10.43 28.35L4.74 24.38L3.55 31.35" id="g61luhdivv" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M26.13 35.02L22.27 29.48L20.12 35.97" id="b4vo9PtaDG" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M17.75 4.14L20.7 10.21L23.83 4.13" id="b25Gw6eC8Z" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M7.03 11.07L13.47 13.09L11.2 6.64" id="aUBBtOxVc" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M34.19 11.73L27.75 13.75L30.03 7.3" id="cc5HW7ijf" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M34.65 27.65L28.09 26.03L30.75 32.33" id="b4eZYYvfn" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M36.2 16.42L30.25 19.61L36.44 22.5" id="b1fIhu5jBs" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M9 31.11L14.92 27.87L13.96 34.63" id="bNh7Ie0v" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.8910065 -0.4539905 0.4539905 0.8910065 14.93555 651.4409)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(-0.4067366 0.9135455 -0.9135455 -0.4067366 355.4355 286.8403)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(-0.9945219 0.1045285 -0.1045285 -0.9945219 633.3496 261.4956)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(-0.6156614 -0.7880108 0.7880108 -0.6156614 788.3516 477.2407)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(0.1908091 -0.9816272 0.9816272 0.1908091 715.7031 706.7314)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(0.8910065 -0.4539905 0.4539905 0.8910065 503.4463 786.7773)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 183.183L116.844 0L190.227 208.049" transform="matrix(0.8829476 0.4694716 -0.4694716 0.8829476 283.2793 660.9395)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 330.759C0 330.759 99.0091 -0.0240271 435.001 0.000105174C770.993 0.0242374 883.205 279.778 883.002 447.674C882.8 615.57 771.333 895.921 435.001 895.348C98.6694 894.775 0.500001 562.591 0.500001 562.591" transform="translate(76.82227 64.453)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

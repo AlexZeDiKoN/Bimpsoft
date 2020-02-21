@@ -1,17 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-  <path d="M3.75 16.5C4.52 14.38 5.85 12.71 7.72 11.5C9.6 10.29 12.02 9.53 15 9.22" id="cGp2SxSWx" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M4 23.72C4.77 25.84 6.1 27.51 7.97 28.72C9.85 29.93 12.27 30.69 15.25 31" id="a116b0VaGs" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M14.38 13.06L14.38 9.35" id="b2jIbOWNrX" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M12.19 13.69L11.06 10.16" id="dOFjnq8kx" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M9.61 14.94L7.28 12.05" id="a33hAjkqAb" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M7.81 16.81L4.69 15.25" id="bjVMZhCNF" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M14.38 26.91L14.38 30.63" id="a3aZpu40md" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M12.19 26.29L11.06 29.81" id="aWsG7bOkK" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M9.61 25.04L7.28 27.92" id="a2GsMqpIRd" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M7.81 23.16L4.69 24.73" id="a3FqzcGDa9" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M15.5 16.5L13 19.5L15.5 22.5" id="a2eHJOGt" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M19.75 19.5L13.39 19.5" id="bfeEQs9Ew" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <path d="M36.25 19.5L39 19.5" id="b136CL2f0T" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
-  <text x="3" y="22.5" text-anchor="middle" font-size="8" font-family="Arial" font-weight="bold" stroke-width="1" stroke="none" fill="black">C</text>
-  <text x="28" y="22.3" text-anchor="middle" font-size="7" font-family="Arial" font-weight="bold" stroke-width="1" stroke="none" fill="black">ANY</text>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M208 0.727539L0 0" transform="translate(352 511.9998)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M88 0.272461L0 0" transform="translate(912 511.7275)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 200L1 0" transform="translate(453 72)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(572 419.9998)">
+      <path d="M-0.234375 149.305L43.75 34.7734L60.0781 34.7734L106.953 149.305L89.6875 149.305L76.3281 114.617L28.4375 114.617L15.8594 149.305L-0.234375 149.305ZM118.906 149.305L118.906 34.7734L134.453 34.7734L194.609 124.695L194.609 34.7734L209.141 34.7734L209.141 149.305L193.594 149.305L133.438 59.3047L133.438 149.305L118.906 149.305ZM266.875 100.789L266.875 149.305L282.031 149.305L282.031 100.789L327.734 34.7734L310.078 34.7734L287.891 68.4453Q280.547 79.6953 275.391 88.6797Q270 78.9922 263.75 69.3047L241.172 34.7734L222.734 34.7734L266.875 100.789ZM32.8125 102.273L71.6406 102.273L59.6875 70.5547Q54.2188 56.1016 51.5625 46.8047Q49.375 57.8203 45.3906 68.6797L32.8125 102.273Z" />
+    </g>
+    <path d="M0 96.8964L68.3195 0L111.227 110.049" transform="matrix(-0.1218693 0.9925461 0.9925461 0.1218693 342 444.1909)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0.00390621 0C0.00390621 0 430.179 1.36435 430.004 448.501C429.828 895.637 0 896.021 0 896.021" transform="matrix(-1 0 0 1 464.0039 64)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 200L1 0" transform="translate(453 751.2725)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 1L200 1" transform="translate(40 511)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 152L144 0" transform="translate(152 679.9998)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 152L144 0" transform="matrix(1 0 0 -1 144.001 351.9998)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

@@ -12,7 +12,7 @@ const SymbolSvg = (props) => {
   const { name } = props
   return (
     <svg key={name}>
-      <use xlinkHref={`${spriteUrl}#${name}`}/>
+      <use xlinkHref={`${spriteUrl}#${name.toUpperCase()}`}/>
     </svg>
   )
 }
