@@ -1,7 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-  <ellipse cx="6.5" cy="20.5" rx="2.5" ry="4.5" fill="none" stroke="black" stroke-width="1" />
-  <ellipse cx="15.5" cy="20.5" rx="2.5" ry="4.5" fill="none" stroke="black" stroke-width="1" />
-  <ellipse cx="24.5" cy="20.5" rx="2.5" ry="4.5" fill="none" stroke="black" stroke-width="1" />
-  <ellipse cx="33.5" cy="20.5" rx="2.5" ry="4.5" fill="none" stroke="black" stroke-width="1" />
-  <path d="M2.5 25.5 H37.5" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 1L976 1" transform="translate(24 600)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(71 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(171 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(271 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(371 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(471 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(572 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(673 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(773 436)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 74C0 33.1309 17.9086 0 40 0C62.0914 0 80 33.1309 80 74C80 114.869 62.0914 148 40 148C17.9086 148 0 114.869 0 74Z" transform="translate(873 436)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

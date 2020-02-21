@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-    <path d="M35.94 12.5L32.81 6.25" id="arAw6ky8S" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M35.94 28.13L32.81 34.38" id="bwO2RmK95" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M6.25 14.38L6.25 9.38L34.38 9.38" id="c9H7TGgQq" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M6.25 25.63L6.25 31.25L34.38 31.25" id="cpV7BywSx" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <text id="b1APhTVyh9" x="6.5" y="22.5" text-anchor="middle" font-size="8" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">B</text>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M78.9999 144L0 0" transform="translate(913 121)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M78.9999 144L0 0" transform="matrix(1 0 0 -1 912.9999 898)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M902 0L1.47627 0L0 215.5" transform="translate(51.5 192)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M900 209L0 208.036L0.306867 0" transform="translate(51.5 616.0001)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(0 420)">
+      <path d="M11.7188 149.305L11.7188 34.7734L54.6875 34.7734Q67.8125 34.7734 75.7422 38.25Q83.6719 41.7266 88.1641 48.9531Q92.6562 56.1797 92.6563 64.0703Q92.6563 71.4141 88.6719 77.8984Q84.6875 84.3828 76.6406 88.3672Q87.0313 91.4141 92.6172 98.7578Q98.2031 106.102 98.2031 116.102Q98.2031 124.148 94.8047 131.063Q91.4063 137.977 86.4063 141.727Q81.4062 145.477 73.8672 147.391C68.8411 148.667 62.6823 149.305 55.3906 149.305L11.7188 149.305ZM26.875 82.8984L51.6406 82.8984Q61.7188 82.8984 66.0938 81.5703Q71.875 79.8516 74.8047 75.8672Q77.7344 71.8828 77.7344 65.8672Q77.7344 60.1641 75 55.8281Q72.2656 51.4922 67.1875 49.8906Q62.1094 48.2891 49.7656 48.2891L26.875 48.2891L26.875 82.8984ZM26.875 135.789L55.3906 135.789Q62.7344 135.789 65.7031 135.242Q70.9375 134.305 74.4531 132.117Q77.9688 129.93 80.2344 125.75Q82.5 121.57 82.5 116.102Q82.5 109.695 79.2188 104.969Q75.9375 100.242 70.1172 98.3281Q64.2969 96.4141 53.3594 96.4141L26.875 96.4141L26.875 135.789Z" />
+    </g>
+  </g>
 </svg>

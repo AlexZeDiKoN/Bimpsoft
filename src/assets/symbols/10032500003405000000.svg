@@ -1,11 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-    <path d="M36.5 36.5L36.5 3.5" id="eS0GfRFKP" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M3.5 8.5L34.38 8.5" id="aWY2gTPdr" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M3.5 20.5L12.5 20.5" id="cgJvh3sGd" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M22.5 20.5L34.5 20.5" id="cpV7BywSx" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M3.5 31.5L34.5 31.5" id="b10Y70BgrJ" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M28.5 12.5L34.5 8.5L28.5 4.5" id="cleaYWFXe" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M28.5 35.5L34.5 31.5L28.5 27.5" id="b3VLS9uX" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M28.5 24.5L34.5 20.5L28.5 16.5" id="b6ki0qZhG8" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <text id="b1APhTVyh9" x="17.5" y="23.5" text-anchor="middle" font-size="8" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">C</text>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 0L0 976" transform="translate(984 24)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M315 0.727539L0 0" transform="translate(24 512)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M429 2L0 0" transform="translate(507 511.7275)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(366 419.9998)">
+      <path d="M94.0625 109.148L109.219 112.977Q104.453 131.648 92.0703 141.453Q79.6875 151.258 61.7969 151.258Q43.2813 151.258 31.6797 143.719Q20.0781 136.18 14.0234 121.883Q7.96875 107.586 7.96875 91.1797Q7.96875 73.2891 14.8047 59.9688Q21.6406 46.6484 34.2578 39.7344Q46.875 32.8203 62.0313 32.8203Q79.2187 32.8203 90.9375 41.5703Q102.656 50.3203 107.266 66.1797L92.3438 69.6953Q88.3594 57.1953 80.7813 51.4922Q73.2031 45.7891 61.7188 45.7891Q48.5156 45.7891 39.6484 52.1172Q30.7812 58.4453 27.1875 69.1094Q23.5937 79.7734 23.5938 91.1016Q23.5938 105.711 27.8516 116.609Q32.1094 127.508 41.0938 132.898Q50.0781 138.289 60.5469 138.289Q73.2812 138.289 82.1094 130.945Q90.9375 123.602 94.0625 109.148Z" />
+    </g>
+    <path d="M910 2L0 0" transform="translate(24 204.7275)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 943.6738 446.1909)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M910 2L0 0" transform="translate(24 818.7275)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 942.9023 139.1909)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 944.1309 753.1909)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

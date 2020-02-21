@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-
-
-    <path d="M25 7.5L9.5 7.5L9.5 32.33L35 32.5" id="aqlQqFFED" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M3 19.5L13.5 19.5" id="cCwBMDddG" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M22 19.5L31.5 19.5" id="ac38fuXOF" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M20.5 11.5L25.5 7.5L20.5 3.5" id="am0nnrl0y" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M26.5 23.5L31.5 19.5L26.5 15.5" id="g8J35g0Yf" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-    <path d="M30.5 36.5L35.5 32.5L30.5 28.5" id="a5oRVsHK" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-
-    <text id="b1APhTVyh9" x="17.5" y="22.5" text-anchor="middle" font-size="8" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">D</text>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M703.999 3.57394e-08L0 0L0.0117187 612L704 611.5" transform="translate(232 207)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M408 0.727539L0 0" transform="translate(24 512)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M336 2L0 0" transform="translate(600 511.7275)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(457 419.9998)">
+      <path d="M12.3438 149.305L12.3438 34.7734L51.7969 34.7734Q65.1562 34.7734 72.1875 36.4141Q82.0312 38.6797 88.9844 44.6172Q98.0469 52.2734 102.539 64.1875Q107.031 76.1016 107.031 91.4141Q107.031 104.461 103.984 114.539Q100.938 124.617 96.1719 131.219Q91.4062 137.82 85.7422 141.609Q80.0781 145.398 72.0703 147.352Q64.0625 149.305 53.6719 149.305L12.3438 149.305ZM27.5 135.789L51.9531 135.789Q63.2812 135.789 69.7266 133.68Q76.1719 131.57 80 127.742Q85.3906 122.352 88.3984 113.25Q91.4063 104.148 91.4063 91.1797Q91.4063 73.2109 85.5078 63.5625Q79.6094 53.9141 71.1719 50.6328Q65.0781 48.2891 51.5625 48.2891L27.5 48.2891L27.5 135.789Z" />
+    </g>
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 943.6738 446.1909)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 942.9023 139.1909)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 944.1309 753.1909)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>
