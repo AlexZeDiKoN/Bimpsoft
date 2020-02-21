@@ -76,16 +76,16 @@ export default function SymbolsTab (props) {
 
     return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
       <FormBlock vertical>
-      <Collapse
-        {...sections(index)}
-        ButtonComponent={ButtonComponent}
-        label={part.name}
-        {...value}
-      >
-        <Scrollbar className={'symbol-container'}>
-          { symbolJSX }
-        </Scrollbar>
-      </Collapse>
+        <Collapse
+          {...sections(index)}
+          ButtonComponent={ButtonComponent}
+          label={part.name}
+          {...value}
+        >
+          <Scrollbar className={'symbol-container'}>
+            { symbolJSX }
+          </Scrollbar>
+        </Collapse>
       </FormBlock>
     </div>
   })

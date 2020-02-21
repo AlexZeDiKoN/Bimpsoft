@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-  <path d="M38 19.5L36.5 19.5L36.5 15.5L31.5 15.5L31.5 19.5L27.5 19.5L27.5 15.5L22.5 15.5L22.5 19.5L18.5 19.5L18.5 15.5L13.5 15.5L13.5 19.5L10.5 19.5L10.5 15.5L5.5 15.5L5.5 19.5L2.5 19.5" id="a2CKATCBo8" stroke-width="1" stroke="black" fill="none" fill-opacity="1"></path>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M960 6.19441e-05L784 4.16517e-05L784 208L576 208L576 2.83018e-05L416 2.2088e-05L416 208L208 208L208 9.61194e-06L0 0" transform="matrix(1 0 0 -1 24 615.001)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

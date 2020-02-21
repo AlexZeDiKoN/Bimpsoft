@@ -1,8 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-  <path d="M11 31.72C12.35 28.52 13.97 25.06 15.84 21.33C18.66 15.73 21.89 13.43 25.41 11.72C27.75 10.58 29.49 9.8 30.63 9.38L30.75 6.88L37.5 13.13L30.63 18.13L30.63 15.63C29.85 14.88 27.94 13.55 24.88 11.66C20.28 8.81 14.99 6.71 10.5 13.75C7.51 18.44 5.05 23.06 3.13 27.59" id="bu2H0m3hz" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M28.75 14.27L28.75 10.27" id="g1tsbGl8Ev" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M21.25 14.18L21.25 10" id="g2cP2rJTTL" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M25 16.25L25 7.5" id="d4kz7PlIT8" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M27.19 16.25L22.81 16.25" id="bqdwdNj1h" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M25.4 7.5L25.8 8.26L25 8.26L24.2 8.26L24.6 7.5L25 6.74L25.4 7.5Z" id="c8xWujZi8" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M945 384L156.198 128L156.198 40L0 192L156.198 336L156.198 256L945 0" transform="matrix(-1 0 0 1 977 320)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 96" transform="translate(470 464.001)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L1 160" transform="translate(623 432)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M50.5 0L101 100L0 100L50.5 0Z" transform="translate(573 340.001)" fill="#000000" stroke="none" />
+    <path d="M104 1L0 1" transform="translate(572 591)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 96" transform="translate(760 464)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
 </svg>

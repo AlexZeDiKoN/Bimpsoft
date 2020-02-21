@@ -1,0 +1,9 @@
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 104L120 0" transform="translate(24 616)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 104L120 0" transform="translate(248 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 104L120 0" transform="matrix(-1 0 0 1 996 616)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 104L120 0" transform="matrix(-1 0 0 1 772 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 52.001L60 0L117.95 52.4745" transform="translate(452 300)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>
