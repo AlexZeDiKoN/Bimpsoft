@@ -7,7 +7,6 @@ import { types } from '../components/SelectionForm/parts/WithLineType'
 import {
   ENDS_ARROW1,
   ENDS_ARROW2,
-  ENDS_CROSS,
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
