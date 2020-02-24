@@ -67,6 +67,8 @@ const ColorPicker = (props) => {
     // eslint-disable-next-line
   }, [ props.color ])
 
+  const isTransparent = color !== undefined && (color === null || !color?.length)
+
   const isRGB = typeof color === 'object'
   const colorType = isRGB ? 'rgb' : 'hex'
 
@@ -84,11 +86,11 @@ const ColorPicker = (props) => {
 
   const popup = <div ref={clickOutsideRef}>
     <SketchPicker
-      presentColors={props.presentColors}
+      presetColors={props.presetColors }
       onChange={handleChange}
       onChangeComplete={handleChangeComplete}
-      color={color === null ? 'transparent' : color}
-      disableAlpha={!isRGB}
+      color={isTransparent ? 'TRANSPARENT' : color}
+      disableAlpha={!(isRGB || isTransparent)}
     />
   </div>
 
@@ -106,7 +108,7 @@ const ColorPicker = (props) => {
           className={classNames('color-picker-button', {
             [props.className]: Boolean(props.className),
             'color-picker-button-undefined': color === undefined,
-            'color-picker-button-empty': color !== undefined && (color === null || !color?.length),
+            'color-picker-button-empty': isTransparent,
           })}
           style={{ backgroundColor: color }}
           onClick={handleButtonClick}
@@ -122,14 +124,14 @@ ColorPicker.propTypes = {
   zIndex: PropTypes.number,
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  presentColors: PropTypes.array,
+  presetColors: PropTypes.array,
   placement: PropTypes.oneOf([ 'bottomLeft', 'bottomRight' ]),
 }
 
 ColorPicker.defaultProps = {
   zIndex: 1000,
   placement: 'bottomLeft',
-  presentColors: PRESENT_COLORS,
+  presetColors: PRESENT_COLORS,
 }
 
 export default ColorPicker

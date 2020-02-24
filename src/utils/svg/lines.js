@@ -214,7 +214,7 @@ const getShiftedPoints = (points, offset, locked) => {
   return shiftedPoints
 }
 
-const buildPoints = (points, segments, pointLocationResolver, bezier, insideMap, locked) => {
+const buildPoints = (points, segments, pointLocationResolver, bezier, locked) => {
   return segments.map((index) => {
     const segment = bezier
       ? new Bezier(...bezierArray(points, index, locked))
@@ -224,7 +224,6 @@ const buildPoints = (points, segments, pointLocationResolver, bezier, insideMap,
     point.n = segment.normal(t)
     point.t = t
     point.r = (Math.atan2(point.n.y, point.n.x) / Math.PI + 0.5) * 180
-    point.i = insideMap(point)
     return point
   })
 }
@@ -287,6 +286,30 @@ const offsetCurve = (cPoints, offset) => {
   return next.length < 3 ? R.chain(duplicate, next) : next
 }
 
+function getPolygonCentroid (points) {
+  const first = points[0]
+  const last = points[points.length - 1]
+  if (first.x !== last.x || first.y !== last.y) {
+    points = [ ...points, first ]
+  }
+  let twiceArea = 0
+  let x = 0
+  let y = 0
+  let p1
+  let p2
+  let f
+  const pointsLength = points.length
+  for (let i = 0, j = pointsLength - 1; i < pointsLength; j = i++) {
+    p1 = points[i]; p2 = points[j]
+    f = p1.x * p2.y - p2.x * p1.y
+    twiceArea += f
+    x += (p1.x + p2.x) * f
+    y += (p1.y + p2.y) * f
+  }
+  f = twiceArea * 3
+  return { x: x / f, y: y / f }
+}
+
 const getBoundsFunc = ({ min, max }, step) =>
   ({ x, y }) => x > min.x - step && y > min.y - step && x < max.x + step && y < max.y + step
 
@@ -312,9 +335,14 @@ const lineLength = (points, locked) => {
 const addLineTo = ({ x, y }) => ` L${x} ${y}`
 
 const addWave = (
-  inverse, waveSize, waveStep,
-  p1, p2,
-  halfWave = false, part = 'left', addLine = false,
+  inverse,
+  waveSize,
+  waveStep,
+  p1,
+  p2,
+  halfWave = false,
+  part = 'left',
+  addLine = false,
   addSize = !inverse,
 ) => {
   let result = ''
@@ -456,7 +484,6 @@ const getTextAmplifiers = ({
 
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
-
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
       if (type === 'middle' && amplifierType === 'level' && level) {
         return [ type, [ extractSubordinationLevelSVG(
@@ -484,7 +511,13 @@ const getTextAmplifiers = ({
         let { x, y, r } = point
         r = getRotate?.(type, r) ?? r
         result.maskPath.push(
-          pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
+          pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+            const movedPoint = add(point, x, y)
+            if (R.isNil(r) || r === 0) {
+              return movedPoint
+            }
+            return rotate(movedPoint, x, y, r)
+          }), true),
         )
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
@@ -579,9 +612,8 @@ export const getAmplifiers = ({
         segments,
         () => 0.5,
         bezier,
-        insideMap,
         locked,
-      ).filter((point, index) => point.i && shownIntermediateAmplifiers?.has(index)),
+      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers?.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForLineAmplifier,
     })
@@ -591,28 +623,45 @@ export const getAmplifiers = ({
 
   {
     const segments = [ 0, points.length - Number(!locked) - 1 ]
-    const { maskPath, group } = getTextAmplifiers({
-      level,
-      scale,
-      zoom,
-      amplifier: pointAmplifier,
-      points: buildPoints(
-        points,
-        segments,
-        (index) => index === 0 ? 0 : 1,
-        bezier,
-        insideMap,
-        locked,
-      ).filter((point) => point.i),
-      getOffset: getOffsetForNodalPointAmplifier,
-      getRotate: (amplifierType, pointRotate) => {
-        return amplifierType !== 'middle'
-          ? getRotateForLineAmplifier(amplifierType, pointRotate)
-          : 0
-      },
-    })
-    result.maskPath.push(...maskPath)
-    result.group += group
+
+    let amplifierOptions
+
+    if (locked) {
+      const centroid = getPolygonCentroid(points)
+      centroid.r = 0
+      amplifierOptions = {
+        points: insideMap(centroid) ? [ centroid ] : [],
+        getOffset: getOffsetForIntermediateAmplifier,
+      }
+    } else {
+      amplifierOptions = {
+        points: buildPoints(
+          points,
+          segments,
+          (index) => index === 0 ? 0 : 1,
+          bezier,
+          locked,
+        ).filter(insideMap),
+        getOffset: getOffsetForNodalPointAmplifier,
+        getRotate: (amplifierType, pointRotate) => {
+          return amplifierType !== 'middle'
+            ? getRotateForLineAmplifier(amplifierType, pointRotate)
+            : 0
+        },
+      }
+    }
+
+    if (amplifierOptions.points.length) {
+      const { maskPath, group } = getTextAmplifiers({
+        level,
+        scale,
+        zoom,
+        amplifier: pointAmplifier,
+        ...amplifierOptions,
+      })
+      result.maskPath.push(...maskPath)
+      result.group += group
+    }
   }
 
   points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers?.has(index))
@@ -685,6 +734,29 @@ const drawLineEnd = (type, { x, y }, angle, scale) => {
       break
   }
   return `${res}</g>`
+}
+
+export const getStylesForLineType = (type, scale = 1) => {
+  const styles = {
+    strokeDasharray: null,
+  }
+  switch (type) {
+    case 'chain': {
+      styles.strokeDasharray = [ 6, 3, 2, 3 ]
+      break
+    }
+    case 'dashed': {
+      styles.strokeDasharray = [ 6, 6 ]
+      break
+    }
+    default: {
+      break
+    }
+  }
+  if (styles.strokeDasharray) {
+    styles.strokeDasharray = styles.strokeDasharray.map((i) => i * scale).join(' ')
+  }
+  return styles
 }
 
 export const getLineEnds = (points, lineEnds, bezier, scale) => {

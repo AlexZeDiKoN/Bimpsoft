@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
-import { settings } from '../../../utils/svg/lines'
+import { getStylesForLineType, settings } from '../../../utils/svg/lines'
 
 const { LINE_WIDTH } = settings
 const { Option } = Select
@@ -49,12 +49,10 @@ const optionsSvg = (children) => (
 
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   let amp
-  const dash = {}
+  let dash = {}
   if (level) {
     amp = extractSubordinationLevelSVG(level, 36, 4, 56, 20)
-    if (borderStyle === 'dashed') {
-      dash.strokeDasharray = '3.5 1.5'
-    }
+    dash = getStylesForLineType(borderStyle)
   }
   if (level && amp) {
     return optionsSvg(
@@ -111,6 +109,18 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               strokeWidth={strokeWidth}
               fill="none"
               d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
+            />
+          </>,
+        )
+      case 'chain':
+        return optionsSvg(
+          <>
+            <path
+              mask="url(#sign)"
+              stroke="rgba(0,0,0,0.65)"
+              strokeWidth={strokeWidth}
+              d="M0,10 h56 m1,1"
+              strokeDasharray={'6 3 2 3'}
             />
           </>,
         )

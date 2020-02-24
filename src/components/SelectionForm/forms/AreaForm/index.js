@@ -5,10 +5,12 @@ import {
   WithFill,
   WithSegment,
   WithLineType,
+  WithHatch,
   WithNodalPointType,
   WithCoordinatesArray,
   WithSubordinationLevel,
   WithIntermediateAmplifiers,
+  WithPointAmplifiers,
   WithStrokeWidth,
   UnitSelect,
 } from '../../parts'
@@ -22,9 +24,11 @@ const Extenders = compose(
   WithNodalPointType,
   WithSegment,
   WithFill,
+  WithHatch,
   WithColor,
   WithStrokeWidth,
   WithIntermediateAmplifiers,
+  WithPointAmplifiers,
   UnitSelect,
 )
 
@@ -40,6 +44,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
             {this.renderColor()}
             {this.renderStrokeWidth()}
             {this.renderFill()}
+            {/*{this.renderHatch()}*/}
           </div>
           <div className="area-container__itemWidth">
             {this.renderOrgStructureSelect()}
@@ -49,6 +54,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
           </div>
         </div>
         {this.renderIntermediateAmplifiers()}
+        {this.renderPointAmplifiers()}
         {this.renderCoordinatesArray()}
       </div>
     )

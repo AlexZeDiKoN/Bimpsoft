@@ -5,7 +5,16 @@ import { filterSet } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
-import { circleToD, getAmplifiers, pointsToD, rectToPoints, stroked, waved, getLineEnds } from './lines'
+import {
+  circleToD,
+  getAmplifiers,
+  pointsToD,
+  rectToPoints,
+  stroked,
+  waved,
+  getLineEnds,
+  getStylesForLineType,
+} from './lines'
 import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
@@ -13,11 +22,8 @@ let lastMaskId = 1
 
 const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, maskD) => {
   const { color: outlineColor } = layerData
-  let strokeDasharray
   let mask
-  if (lineType === 'dashed') {
-    strokeDasharray = `${6 * scale} ${6 * scale}`
-  }
+  const styles = getStylesForLineType(lineType, scale)
   let maskEl = null
   if (maskD) {
     const maskId = lastMaskId++
@@ -44,7 +50,7 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
       <path
         stroke={colors.evaluateColor(color)}
         strokeWidth={strokeWidth * scale}
-        strokeDasharray={strokeDasharray}
+        {...styles}
         fill="none"
         d={d}
       />
@@ -56,7 +62,7 @@ const svgToG = (svg) => svg
   .replace(/^(\r|\n|.)*?<svg\b/i, '<g ')
   .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
 
-const getLineSvg = (points, attributes, layerData, zoom) => {
+const getLineSvg = (points, attributes, data, layerData, zoom) => {
   const {
     lineType,
     nodalPointIcon,
@@ -68,14 +74,16 @@ const getLineSvg = (points, attributes, layerData, zoom) => {
     skipStart,
     skipEnd,
     color,
+    left,
+    right,
+  } = attributes
+  const {
     level,
     bounds,
     bezier,
     locked,
     scale,
-    left,
-    right,
-  } = attributes
+  } = data
   const lineEnds = { left, right }
   let d
   if (lineType === 'waved') {
@@ -132,7 +140,8 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
     }
     return getLineSvg(
       points,
-      { ...attributes.toJS(), level, bounds, scale, bezier, locked },
+      attributes,
+      { level, bounds, scale, bezier, locked },
       layerData,
       zoom,
     )

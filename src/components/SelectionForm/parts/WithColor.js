@@ -19,7 +19,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
         color={color}
         onChange={this.colorChangeHandler}
         zIndex={COLOR_PICKER_Z_INDEX}
-        presentColors={PRESENT_COLORS}
+        presetColors={PRESENT_COLORS}
       />
     ) : colorDiv(color)
 
