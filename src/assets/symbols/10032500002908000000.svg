@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1024 1024">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
   <g>
     <path d="M768 1L0 1" transform="matrix(-1 0 0 1 896 511)" fill="none" stroke="#000000" stroke-width="20" />
     <path d="M0 90.5508L115.899 0L205.891 116.333" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 122.375 396.9648)" fill="none" stroke="#000000" stroke-width="20" />
