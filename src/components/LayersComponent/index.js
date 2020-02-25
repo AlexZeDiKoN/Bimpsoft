@@ -27,6 +27,8 @@ const getFilteredIds = TextFilter.getFilteredIdsFunc(
 )
 
 export default class LayersComponent extends React.Component {
+  static displayName = 'LayersComponent'
+
   getCommonData = memoizeOne((selectedLayerId, textFilter) => {
     const {
       onSelectLayer,
