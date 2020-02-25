@@ -1,0 +1,16 @@
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 0L835 192L941 795.999L132.5 868.5L0 0Z" transform="translate(43 60.00098)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.2588191 0.9659258 -0.9659258 0.2588191 238.891 700.6396)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.2588191 0.9659258 -0.9659258 0.2588191 206.5121 488.0801)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.2588191 0.9659258 -0.9659258 0.2588191 167.9999 252.5635)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.05233594 0.9986295 0.9986295 -0.05233594 862.1327 714.7295)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.9998477 -0.01745241 -0.01745241 0.9998477 767.2097 777.9414)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.9998477 -0.01745241 -0.01745241 0.9998477 471.2095 801.9424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.06975648 0.9975641 0.9975641 -0.06975648 821.2118 499.748)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.06975648 0.9975641 0.9975641 -0.06975648 786.2188 287.6758)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.9925461 -0.1218693 0.1218693 -0.9925461 224.986 202.7842)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.9902681 -0.1391732 0.1391732 -0.9902681 478.81 262.1191)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.9925461 -0.1218693 0.1218693 -0.9925461 734.3975 317.5547)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

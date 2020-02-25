@@ -9,6 +9,7 @@ const { FormRow } = components.form
 export const types = {
   solid: { text: i18n.SOLID, value: 'solid', simple: true },
   dashed: { text: i18n.DASHED, value: 'dashed', simple: true },
+  chain: { text: i18n.CHAIN_LINE, value: 'chain', simple: true },
   waved: { text: i18n.WAVED, value: 'waved', simple: false },
   waved2: { text: `${i18n.WAVED} 2`, value: 'waved2', simple: false },
   stroked: { text: i18n.STROKED, value: 'stroked', simple: false },

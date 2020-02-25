@@ -28,9 +28,9 @@ const forms = {
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
     component: LineForm,
-    minHeight: 685,
+    minHeight: 795,
     minWidth: 900,
-    maxHeight: 750,
+    maxHeight: 805,
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,

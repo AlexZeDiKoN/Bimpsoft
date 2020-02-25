@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import { Tooltip, Input } from 'antd'
 import PropTypes from 'prop-types'
-import { Collapse, Scrollbar, useToggleGroup } from '@DZVIN/CommonComponents'
+import { Collapse, Scrollbar, useToggleGroup, FormBlock } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
@@ -16,6 +16,11 @@ const SymbolSvg = (props) => {
     </svg>
   )
 }
+
+const ButtonComponent = (props) =>
+  <Collapse.Button {...props} active={false}>
+    <Tooltip title={props?.children} placement='left'>{props?.children}</Tooltip>
+  </Collapse.Button>
 
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 export default function SymbolsTab (props) {
@@ -70,15 +75,18 @@ export default function SymbolsTab (props) {
     const value = (search !== '') ? { value: true } : {}
 
     return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
-      <Collapse
-        {...sections(index)}
-        label={part.name}
-        { ...value }
-      >
-        <Scrollbar className={'symbol-container'}>
-          { symbolJSX }
-        </Scrollbar>
-      </Collapse>
+      <FormBlock vertical>
+        <Collapse
+          {...sections(index)}
+          ButtonComponent={ButtonComponent}
+          label={part.name}
+          {...value}
+        >
+          <Scrollbar className={'symbol-container'}>
+            { symbolJSX }
+          </Scrollbar>
+        </Collapse>
+      </FormBlock>
     </div>
   })
 

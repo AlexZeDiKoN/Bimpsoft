@@ -12,7 +12,7 @@ const filelist = require('gulp-filelist')
 const renameFunc2 = (file) => {
   const path = file.dirname === '.' ? [] : file.dirname.split('\\')
   path.push(file.basename)
-  const newNames = path.join('_').replace(/[^\d\w]+/g, '_').toUpperCase()
+  const newNames = path.join('_').replace(/[^\d\w]+/g, '_')
   file.basename = newNames
 }
 

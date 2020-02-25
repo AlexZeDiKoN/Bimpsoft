@@ -1,7 +1,6 @@
 /* global L */
+import { getStylesForLineType } from '../../../utils/svg/lines'
 import { interpolateSize } from './utils/helpers'
-
-const DASH_LENGTH = 6
 
 const _getEvents = L.Path.prototype.getEvents
 
@@ -148,7 +147,7 @@ export default L.Path.include({
       }
       if (scaleChanged || lineTypePrev !== lineType) {
         this.lineTypePrev = lineType
-        styles.dashArray = lineType === 'dashed' ? `${scale * DASH_LENGTH} ${scale * DASH_LENGTH}` : null
+        styles.dashArray = getStylesForLineType(lineType, scale).strokeDasharray
         hasStyles = true
         needRedraw = true
       }

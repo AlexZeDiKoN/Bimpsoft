@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
-import { settings } from '../../../utils/svg/lines'
+import { getStylesForLineType, settings } from '../../../utils/svg/lines'
 
 const { LINE_WIDTH } = settings
 const { Option } = Select
@@ -48,25 +48,19 @@ const optionsSvg = (children) => (
 )
 
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
-  let amp
-  const dash = {}
-  if (level) {
-    amp = extractSubordinationLevelSVG(level, 36, 4, 56, 20)
-    if (borderStyle === 'dashed') {
-      dash.strokeDasharray = '3.5 1.5'
-    }
-  }
-  if (level && amp) {
+  const dash = getStylesForLineType(borderStyle)
+  const amplifier = level ? extractSubordinationLevelSVG(level, 36, 4, 56, 20) : null
+  if (amplifier) {
     return optionsSvg(
       <>
         <mask id="sign">
           <rect fill="white" x="0" y="0" width="100%" height="100%"/>
           <rect
             fill="black"
-            x={amp.maskRect.x}
-            y={amp.maskRect.y}
-            width={amp.maskRect.width}
-            height={amp.maskRect.height}
+            x={amplifier.maskRect.x}
+            y={amplifier.maskRect.y}
+            width={amplifier.maskRect.width}
+            height={amplifier.maskRect.height}
           />
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
@@ -75,7 +69,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
           strokeWidth="4"
           fill="none"
           transform={`translate(28,10)`}
-          dangerouslySetInnerHTML={{ __html: amp.sign }}
+          dangerouslySetInnerHTML={{ __html: amplifier.sign }}
         />
       </>,
     )
@@ -111,6 +105,18 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               strokeWidth={strokeWidth}
               fill="none"
               d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
+            />
+          </>,
+        )
+      case 'chain':
+        return optionsSvg(
+          <>
+            <path
+              mask="url(#sign)"
+              stroke="rgba(0,0,0,0.65)"
+              strokeWidth={strokeWidth}
+              d="M0,10 h56 m1,1"
+              {...dash}
             />
           </>,
         )

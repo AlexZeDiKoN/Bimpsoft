@@ -214,7 +214,7 @@ const getShiftedPoints = (points, offset, locked) => {
   return shiftedPoints
 }
 
-const buildPoints = (points, segments, pointLocationResolver, bezier, insideMap, locked) => {
+const buildPoints = (points, segments, pointLocationResolver, bezier, locked) => {
   return segments.map((index) => {
     const segment = bezier
       ? new Bezier(...bezierArray(points, index, locked))
@@ -224,7 +224,6 @@ const buildPoints = (points, segments, pointLocationResolver, bezier, insideMap,
     point.n = segment.normal(t)
     point.t = t
     point.r = (Math.atan2(point.n.y, point.n.x) / Math.PI + 0.5) * 180
-    point.i = insideMap(point)
     return point
   })
 }
@@ -287,11 +286,35 @@ const offsetCurve = (cPoints, offset) => {
   return next.length < 3 ? R.chain(duplicate, next) : next
 }
 
+function getPolygonCentroid (points) {
+  const first = points[0]
+  const last = points[points.length - 1]
+  if (first.x !== last.x || first.y !== last.y) {
+    points = [ ...points, first ]
+  }
+  let twiceArea = 0
+  let x = 0
+  let y = 0
+  let p1
+  let p2
+  let f
+  const pointsLength = points.length
+  for (let i = 0, j = pointsLength - 1; i < pointsLength; j = i++) {
+    p1 = points[i]; p2 = points[j]
+    f = p1.x * p2.y - p2.x * p1.y
+    twiceArea += f
+    x += (p1.x + p2.x) * f
+    y += (p1.y + p2.y) * f
+  }
+  f = twiceArea * 3
+  return { x: x / f, y: y / f }
+}
+
 const getBoundsFunc = ({ min, max }, step) =>
   ({ x, y }) => x > min.x - step && y > min.y - step && x < max.x + step && y < max.y + step
 
-const getLineEnd = (lineEnds, end) => {
-  const res = lineEnds && lineEnds[end]
+const getLineEnd = (objectAttributes, end) => {
+  const res = objectAttributes && objectAttributes[end]
   return res === 'none' ? null : res
 }
 const getNodes = (nodalPointIcon) => nodalPointIcon === 'none' ? null : nodalPointIcon
@@ -312,9 +335,14 @@ const lineLength = (points, locked) => {
 const addLineTo = ({ x, y }) => ` L${x} ${y}`
 
 const addWave = (
-  inverse, waveSize, waveStep,
-  p1, p2,
-  halfWave = false, part = 'left', addLine = false,
+  inverse,
+  waveSize,
+  waveStep,
+  p1,
+  p2,
+  halfWave = false,
+  part = 'left',
+  addLine = false,
   addSize = !inverse,
 ) => {
   let result = ''
@@ -333,7 +361,7 @@ const addWave = (
   return result
 }
 
-export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
+export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -350,13 +378,13 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
     if (!wavePoints.length) {
       return 'M0 0'
     }
-    if (!inverse || !getLineEnd(lineEnds, 'left')) {
+    if (!inverse || !getLineEnd(objectAttributes, 'left')) {
       waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
     }
     for (let i = 1; i < wavePoints.length; i++) {
-      if (inverse && i === wavePoints.length - 1 && getLineEnd(lineEnds, 'right')) {
+      if (inverse && i === wavePoints.length - 1 && getLineEnd(objectAttributes, 'right')) {
         waves += addWave(inverse, waveSize, waveStep, wavePoints[i - 1], wavePoints[i], true)
-      } else if (i === 1 && getLineEnd(lineEnds, 'left')) {
+      } else if (i === 1 && getLineEnd(objectAttributes, 'left')) {
         waves += inverse
           ? addWave(inverse, waveSize, waveStep, wavePoints[0], wavePoints[1], true, 'right', true)
           : addLineTo(wavePoints[1])
@@ -376,7 +404,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
         if (locked) {
           waves += addWave(inverse, waveSize, waveStep, p0, points[0], false, false, false, false)
         } else {
-          if (getLineEnd(lineEnds, 'right')) {
+          if (getLineEnd(objectAttributes, 'right')) {
             waves += ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
           } else {
             const p2 = {
@@ -403,7 +431,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -411,8 +439,8 @@ export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds
   const strokeSize = strokeStep // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
-  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
-    points, bezier, locked, insideMap, getNodes(nodalPointIcon)).filter(({ i, o }) => i && o)
+  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(objectAttributes, 'left') ? -1 : -strokeStep / 2,
+    points, bezier, locked, insideMap, getNodes(objectAttributes.nodalPointIcon)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
     if (i < strokePoints.length - 1 ||
@@ -456,7 +484,6 @@ const getTextAmplifiers = ({
 
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
-
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
       if (type === 'middle' && amplifierType === 'level' && level) {
         return [ type, [ extractSubordinationLevelSVG(
@@ -484,7 +511,13 @@ const getTextAmplifiers = ({
         let { x, y, r } = point
         r = getRotate?.(type, r) ?? r
         result.maskPath.push(
-          pointsToD(rectToPoints(amplifier.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
+          pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+            const movedPoint = add(point, x, y)
+            if (R.isNil(r) || r === 0) {
+              return movedPoint
+            }
+            return rotate(movedPoint, x, y, r)
+          }), true),
         )
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
@@ -543,19 +576,22 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
 
 export const getAmplifiers = ({
   points,
-  intermediateAmplifierType,
-  intermediateAmplifier,
-  shownIntermediateAmplifiers,
-  shownNodalPointAmplifiers,
-  pointAmplifier,
-  level,
-  nodalPointIcon,
   bezier,
   locked,
   bounds,
   scale = 1,
   zoom = -1,
-}) => {
+}, objectAttributes) => {
+  const {
+    level,
+    intermediateAmplifierType,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
+    pointAmplifier,
+    nodalPointIcon,
+  } = objectAttributes ?? {}
+
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -579,9 +615,8 @@ export const getAmplifiers = ({
         segments,
         () => 0.5,
         bezier,
-        insideMap,
         locked,
-      ).filter((point, index) => point.i && shownIntermediateAmplifiers?.has(index)),
+      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers?.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForLineAmplifier,
     })
@@ -591,28 +626,45 @@ export const getAmplifiers = ({
 
   {
     const segments = [ 0, points.length - Number(!locked) - 1 ]
-    const { maskPath, group } = getTextAmplifiers({
-      level,
-      scale,
-      zoom,
-      amplifier: pointAmplifier,
-      points: buildPoints(
-        points,
-        segments,
-        (index) => index === 0 ? 0 : 1,
-        bezier,
-        insideMap,
-        locked,
-      ).filter((point) => point.i),
-      getOffset: getOffsetForNodalPointAmplifier,
-      getRotate: (amplifierType, pointRotate) => {
-        return amplifierType !== 'middle'
-          ? getRotateForLineAmplifier(amplifierType, pointRotate)
-          : 0
-      },
-    })
-    result.maskPath.push(...maskPath)
-    result.group += group
+
+    let amplifierOptions
+
+    if (locked) {
+      const centroid = getPolygonCentroid(points)
+      centroid.r = 0
+      amplifierOptions = {
+        points: insideMap(centroid) ? [ centroid ] : [],
+        getOffset: getOffsetForIntermediateAmplifier,
+      }
+    } else {
+      amplifierOptions = {
+        points: buildPoints(
+          points,
+          segments,
+          (index) => index === 0 ? 0 : 1,
+          bezier,
+          locked,
+        ).filter(insideMap),
+        getOffset: getOffsetForNodalPointAmplifier,
+        getRotate: (amplifierType, pointRotate) => {
+          return amplifierType !== 'middle'
+            ? getRotateForLineAmplifier(amplifierType, pointRotate)
+            : 0
+        },
+      }
+    }
+
+    if (amplifierOptions.points.length) {
+      const { maskPath, group } = getTextAmplifiers({
+        level,
+        scale,
+        zoom,
+        amplifier: pointAmplifier,
+        ...amplifierOptions,
+      })
+      result.maskPath.push(...maskPath)
+      result.group += group
+    }
   }
 
   points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers?.has(index))
@@ -687,12 +739,34 @@ const drawLineEnd = (type, { x, y }, angle, scale) => {
   return `${res}</g>`
 }
 
-export const getLineEnds = (points, lineEnds, bezier, scale) => {
-  const result = { left: null, right: null }
-  const leftEndType = getLineEnd(lineEnds, 'left')
-  const rightEndType = getLineEnd(lineEnds, 'right')
+export const getStylesForLineType = (type, scale = 1) => {
+  const styles = {
+    strokeDasharray: null,
+  }
+  switch (type) {
+    case 'chain': {
+      styles.strokeDasharray = [ 6, 3, 2, 3 ]
+      break
+    }
+    case 'dashed': {
+      styles.strokeDasharray = [ 6, 6 ]
+      break
+    }
+    default: {
+      break
+    }
+  }
+  if (styles.strokeDasharray) {
+    styles.strokeDasharray = styles.strokeDasharray.map((i) => i * scale).join(' ')
+  }
+  return styles
+}
+
+export const getLineEnds = (points, objectAttributes, bezier, scale) => {
+  const leftEndType = getLineEnd(objectAttributes, 'left')
+  const rightEndType = getLineEnd(objectAttributes, 'right')
   if (!leftEndType && !rightEndType) {
-    return result
+    return { left: null, right: null }
   }
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]

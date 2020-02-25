@@ -1,0 +1,10 @@
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M1 150L1 0" transform="matrix(-1 8.742278E-08 -8.742278E-08 -1 28.99964 591.002)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 160" transform="matrix(-4.371139E-08 -1 1 -4.371139E-08 27.99866 517)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 160" transform="matrix(-4.371139E-08 -1 1 -4.371139E-08 297.9987 517.002)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 160" transform="matrix(-4.371139E-08 -1 1 -4.371139E-08 567.9987 517.002)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 160" transform="matrix(-4.371139E-08 -1 1 -4.371139E-08 835.9985 517)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 150L1 0" transform="matrix(-1 8.742278E-08 -8.742278E-08 -1 996.9978 591.0029)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

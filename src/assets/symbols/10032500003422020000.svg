@@ -1,8 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 40 40" width="40" height="40">
-  <path d="M37.09 36.54L22.1 27.86L22.55 33.92L12.12 27.78" id="c3ifKIRRnj" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M37.91 4.22L22.04 11.25L23.15 5.28L12.09 10.27" id="c7yocbtp48" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M34.65 9.12L37.91 4.22L32.44 3" id="dwC53c6zE" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <path d="M32.39 38L37.88 36.91L35.87 31.88" id="b13on7qRRl" opacity="1" fill-opacity="0" stroke="black" stroke-width="1" stroke-opacity="1"></path>
-  <text id="b1APhTVyh9" x="7" y="15" text-anchor="middle" font-size="9" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">G</text>
-  <text id="b1APhTVye9" x="7" y="30" text-anchor="middle" font-size="9" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">G</text>
+<svg viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 971.875 500.6787)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M335.57 55.5005L127.5 56.5005L176 0.000488284L0 0" transform="matrix(-1 0 0 1 408 512)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M351.57 55.5L143.5 56.5L192 0L0 0" transform="translate(616 512)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.1218693 0.9925461 0.9925461 0.1218693 61.13086 499.6787)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(454 420)">
+      <path d="M65.9375 104.383L65.9375 90.9453L114.453 90.8672L114.453 133.367Q103.281 142.273 91.4063 146.766Q79.5312 151.258 67.0313 151.258Q50.1563 151.258 36.3672 144.031Q22.5781 136.805 15.5469 123.133Q8.51563 109.461 8.51563 92.5859Q8.51563 75.8672 15.5078 61.375Q22.5 46.8828 35.625 39.8516Q48.75 32.8203 65.8594 32.8203Q78.2812 32.8203 88.3203 36.8438Q98.3594 40.8672 104.063 48.0547Q109.766 55.2422 112.734 66.8047L99.0625 70.5547Q96.4844 61.8047 92.6563 56.8047Q88.8281 51.8047 81.7188 48.7969Q74.6094 45.7891 65.9375 45.7891Q55.5469 45.7891 47.9688 48.9531Q40.3906 52.1172 35.7422 57.2734Q31.0937 62.4297 28.5156 68.6016Q24.1406 79.2266 24.1406 91.6484Q24.1406 106.961 29.4141 117.273Q34.6875 127.586 44.7656 132.586Q54.8438 137.586 66.1719 137.586Q76.0156 137.586 85.3906 133.797Q94.7656 130.008 99.6094 125.711L99.6094 104.383L65.9375 104.383Z" />
+    </g>
+  </g>
 </svg>
