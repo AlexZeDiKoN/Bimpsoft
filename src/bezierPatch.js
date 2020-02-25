@@ -19,8 +19,8 @@ Bezier.prototype.derivative = function (t) {
   let x2 = this.points[2].x
   let y2 = this.points[2].y
 
-  const x3 = this.points[3].x
-  const y3 = this.points[3].y
+  const x3 = (this.points[3] || this.points[2]).x
+  const y3 = (this.points[3] || this.points[2]).y
   // If the curve handles are almost zero, reset the control points to the
   // anchors.
   if (isZero(x1 - x0) && isZero(y1 - y0)) {
