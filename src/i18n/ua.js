@@ -115,7 +115,7 @@ export const WAVED = 'Хвиляста'
 export const STROKED = 'З засічками'
 
 export const HATCH = 'Штриховка'
-export const LEFT_TO_RIGHT = 'Зліва на право'
+export const LEFT_TO_RIGHT = 'Зліва направо'
 
 export const REGULAR = 'Звичайний'
 export const LINE_ENDS_LEFT = 'Лівий край' // константа використовується

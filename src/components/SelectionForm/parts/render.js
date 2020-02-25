@@ -48,23 +48,19 @@ const optionsSvg = (children) => (
 )
 
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
-  let amp
-  let dash = {}
-  if (level) {
-    amp = extractSubordinationLevelSVG(level, 36, 4, 56, 20)
-    dash = getStylesForLineType(borderStyle)
-  }
-  if (level && amp) {
+  const dash = getStylesForLineType(borderStyle)
+  const amplifier = level ? extractSubordinationLevelSVG(level, 36, 4, 56, 20) : null
+  if (amplifier) {
     return optionsSvg(
       <>
         <mask id="sign">
           <rect fill="white" x="0" y="0" width="100%" height="100%"/>
           <rect
             fill="black"
-            x={amp.maskRect.x}
-            y={amp.maskRect.y}
-            width={amp.maskRect.width}
-            height={amp.maskRect.height}
+            x={amplifier.maskRect.x}
+            y={amplifier.maskRect.y}
+            width={amplifier.maskRect.width}
+            height={amplifier.maskRect.height}
           />
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
@@ -73,7 +69,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
           strokeWidth="4"
           fill="none"
           transform={`translate(28,10)`}
-          dangerouslySetInnerHTML={{ __html: amp.sign }}
+          dangerouslySetInnerHTML={{ __html: amplifier.sign }}
         />
       </>,
     )
@@ -120,7 +116,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={strokeWidth}
               d="M0,10 h56 m1,1"
-              strokeDasharray={'6 3 2 3'}
+              {...dash}
             />
           </>,
         )
