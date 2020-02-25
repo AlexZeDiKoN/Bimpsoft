@@ -3,7 +3,7 @@
   "version": "12.01.613",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^12.1.410",
+    "@DZVIN/CommonComponents": "^12.1.419",
     "@DZVIN/MilSymbolEditor": "^11.3.256",
     "@DZVIN/components": "^11.2.552",
     "@DZVIN/leaflet-measure-custom": "0.0.2",
