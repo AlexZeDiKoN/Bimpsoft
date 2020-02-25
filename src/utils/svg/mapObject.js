@@ -65,7 +65,6 @@ const svgToG = (svg) => svg
 const getLineSvg = (points, attributes, data, layerData, zoom) => {
   const {
     lineType,
-    nodalPointIcon,
     skipStart,
     skipEnd,
     color,
@@ -83,7 +82,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
   } else {
     d = bezier ? prepareBezierPath(points, locked, skipStart, skipEnd) : pointsToD(points, locked)
     if (lineType === 'stroked') {
-      d += stroked(points, attributes, nodalPointIcon, bezier, locked, bounds, scale, zoom)
+      d += stroked(points, attributes, bezier, locked, bounds, scale, zoom)
     }
   }
   const amplifiers = getAmplifiers({
