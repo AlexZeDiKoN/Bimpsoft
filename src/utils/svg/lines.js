@@ -313,8 +313,8 @@ function getPolygonCentroid (points) {
 const getBoundsFunc = ({ min, max }, step) =>
   ({ x, y }) => x > min.x - step && y > min.y - step && x < max.x + step && y < max.y + step
 
-const getLineEnd = (lineEnds, end) => {
-  const res = lineEnds && lineEnds[end]
+const getLineEnd = (objectAttributes, end) => {
+  const res = objectAttributes && objectAttributes[end]
   return res === 'none' ? null : res
 }
 const getNodes = (nodalPointIcon) => nodalPointIcon === 'none' ? null : nodalPointIcon
@@ -361,7 +361,7 @@ const addWave = (
   return result
 }
 
-export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
+export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -378,13 +378,13 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
     if (!wavePoints.length) {
       return 'M0 0'
     }
-    if (!inverse || !getLineEnd(lineEnds, 'left')) {
+    if (!inverse || !getLineEnd(objectAttributes, 'left')) {
       waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
     }
     for (let i = 1; i < wavePoints.length; i++) {
-      if (inverse && i === wavePoints.length - 1 && getLineEnd(lineEnds, 'right')) {
+      if (inverse && i === wavePoints.length - 1 && getLineEnd(objectAttributes, 'right')) {
         waves += addWave(inverse, waveSize, waveStep, wavePoints[i - 1], wavePoints[i], true)
-      } else if (i === 1 && getLineEnd(lineEnds, 'left')) {
+      } else if (i === 1 && getLineEnd(objectAttributes, 'left')) {
         waves += inverse
           ? addWave(inverse, waveSize, waveStep, wavePoints[0], wavePoints[1], true, 'right', true)
           : addLineTo(wavePoints[1])
@@ -404,7 +404,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
         if (locked) {
           waves += addWave(inverse, waveSize, waveStep, p0, points[0], false, false, false, false)
         } else {
-          if (getLineEnd(lineEnds, 'right')) {
+          if (getLineEnd(objectAttributes, 'right')) {
             waves += ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
           } else {
             const p2 = {
@@ -431,7 +431,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   return `${waves}${locked ? ' Z' : ''}`
 }
 
-export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -439,8 +439,8 @@ export const stroked = (points, lineEnds, nodalPointIcon, bezier, locked, bounds
   const strokeSize = strokeStep // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
-  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
-    points, bezier, locked, insideMap, getNodes(nodalPointIcon)).filter(({ i, o }) => i && o)
+  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(objectAttributes, 'left') ? -1 : -strokeStep / 2,
+    points, bezier, locked, insideMap, getNodes(objectAttributes.nodalPointIcon)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
     if (i < strokePoints.length - 1 ||
@@ -576,19 +576,22 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
 
 export const getAmplifiers = ({
   points,
-  intermediateAmplifierType,
-  intermediateAmplifier,
-  shownIntermediateAmplifiers,
-  shownNodalPointAmplifiers,
-  pointAmplifier,
-  level,
-  nodalPointIcon,
   bezier,
   locked,
   bounds,
   scale = 1,
   zoom = -1,
-}) => {
+}, objectAttributes) => {
+  const {
+    level,
+    intermediateAmplifierType,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
+    pointAmplifier,
+    nodalPointIcon,
+  } = objectAttributes ?? {}
+
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -759,12 +762,11 @@ export const getStylesForLineType = (type, scale = 1) => {
   return styles
 }
 
-export const getLineEnds = (points, lineEnds, bezier, scale) => {
-  const result = { left: null, right: null }
-  const leftEndType = getLineEnd(lineEnds, 'left')
-  const rightEndType = getLineEnd(lineEnds, 'right')
+export const getLineEnds = (points, objectAttributes, bezier, scale) => {
+  const leftEndType = getLineEnd(objectAttributes, 'left')
+  const rightEndType = getLineEnd(objectAttributes, 'right')
   if (!leftEndType && !rightEndType) {
-    return result
+    return { left: null, right: null }
   }
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]

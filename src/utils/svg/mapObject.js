@@ -66,16 +66,9 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
   const {
     lineType,
     nodalPointIcon,
-    intermediateAmplifierType,
-    intermediateAmplifier,
-    shownIntermediateAmplifiers,
-    shownNodalPointAmplifiers,
-    pointAmplifier,
     skipStart,
     skipEnd,
     color,
-    left,
-    right,
   } = attributes
   const {
     level,
@@ -84,33 +77,25 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     locked,
     scale,
   } = data
-  const lineEnds = { left, right }
   let d
   if (lineType === 'waved') {
-    d = waved(points, lineEnds, bezier, locked, bounds, scale, zoom)
+    d = waved(points, attributes, bezier, locked, bounds, scale, zoom)
   } else {
     d = bezier ? prepareBezierPath(points, locked, skipStart, skipEnd) : pointsToD(points, locked)
     if (lineType === 'stroked') {
-      d += stroked(points, lineEnds, nodalPointIcon, bezier, locked, bounds, scale, zoom)
+      d += stroked(points, attributes, nodalPointIcon, bezier, locked, bounds, scale, zoom)
     }
   }
   const amplifiers = getAmplifiers({
     points,
-    intermediateAmplifierType,
-    intermediateAmplifier,
-    shownIntermediateAmplifiers,
-    shownNodalPointAmplifiers,
-    pointAmplifier,
-    level,
-    nodalPointIcon,
     bezier,
     locked,
     bounds,
     scale,
     zoom,
-  })
+  }, { ...attributes, level })
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
-  const { left: leftSvg, right: rightSvg } = getLineEnds(points, lineEnds, bezier, scale * 2)
+  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale * 2)
   return (
     <>
       {Boolean(amplifiers.group) && (
