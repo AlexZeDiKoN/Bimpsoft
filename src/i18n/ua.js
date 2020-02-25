@@ -110,8 +110,12 @@ export const LINE_TYPE = 'Тип лінії'
 export const LINE_WIDTH = 'Товщина лінії'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
+export const CHAIN_LINE = 'Штрих-пунктир'
 export const WAVED = 'Хвиляста'
 export const STROKED = 'З засічками'
+
+export const HATCH = 'Штриховка'
+export const LEFT_TO_RIGHT = 'Зліва направо'
 
 export const REGULAR = 'Звичайний'
 export const LINE_ENDS_LEFT = 'Лівий край' // константа використовується

@@ -133,10 +133,10 @@ export const extractTextSVG = ({
     return {
       // 'dy' for top vertical align
       sign: `<text
-        font-family=${FONT_FAMILY}
+        font-family="${FONT_FAMILY}"
         stroke="none"
         transform="translate(${left}, ${top}) translate(${x})"
-        font-size=${fontSize}
+        font-size="${fontSize}"
         dy="${fontSize * 0.95}"
       >${line}</text>`,
       maskRect: {

@@ -5,7 +5,7 @@ import { colorDiv } from './render'
 
 export const PATH = [ 'attributes', 'color' ]
 
-const PRESENT_COLORS = Object.values(colors.values)
+const PRESET_COLORS = Object.values(colors.values)
 const COLOR_PICKER_Z_INDEX = 2000
 
 const WithColor = (Component) => class ColorComponent extends Component {
@@ -19,7 +19,7 @@ const WithColor = (Component) => class ColorComponent extends Component {
         color={color}
         onChange={this.colorChangeHandler}
         zIndex={COLOR_PICKER_Z_INDEX}
-        presentColors={PRESENT_COLORS}
+        presetColors={PRESET_COLORS}
       />
     ) : colorDiv(color)
 

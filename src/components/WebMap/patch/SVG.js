@@ -226,19 +226,12 @@ L.SVG.include({
     const bounds = layer._map._renderer._bounds
     const amplifiers = getAmplifiers({
       points: layer._rings[0],
-      intermediateAmplifierType: layer.options?.intermediateAmplifierType,
-      intermediateAmplifier: layer.options?.intermediateAmplifier,
-      shownIntermediateAmplifiers: layer.options?.shownIntermediateAmplifiers,
-      shownNodalPointAmplifiers: layer.options?.shownNodalPointAmplifiers,
-      pointAmplifier: layer.options?.pointAmplifier,
-      level: layer.object?.level,
-      nodalPointIcon: layer.options?.nodalPointIcon,
       bezier,
       locked,
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
-    })
+    }, layer.object.attributes)
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
@@ -257,7 +250,7 @@ L.SVG.include({
 
   _buildWaved: function (layer, bezier, locked, inverse) {
     const bounds = layer._map._renderer._bounds
-    return waved(layer._rings[0], layer.options?.lineEnds, bezier, locked, bounds, 1.0,
+    return waved(layer._rings[0], layer.object.attributes, bezier, locked, bounds, 1.0,
       layer._map.getZoom(), inverse)
   },
 
@@ -265,8 +258,7 @@ L.SVG.include({
     const bounds = layer._map._renderer._bounds
     return stroked(
       layer._rings[0],
-      layer.options?.lineEnds,
-      layer.options?.nodalPointIcon,
+      layer.object.attributes,
       bezier,
       locked,
       bounds,
@@ -280,7 +272,7 @@ L.SVG.include({
     const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
     const { left, right } = getLineEnds(
       layer._rings[0],
-      layer.options?.lineEnds,
+      layer.object.attributes,
       bezier,
       scale,
     )

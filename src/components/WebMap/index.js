@@ -1313,16 +1313,6 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
-      layer.options.intermediateAmplifierType = attributes.intermediateAmplifierType
-      layer.options.intermediateAmplifier = attributes.intermediateAmplifier
-      layer.options.shownIntermediateAmplifiers = attributes.shownIntermediateAmplifiers
-      layer.options.shownNodalPointAmplifiers = attributes.shownNodalPointAmplifiers
-      layer.options.pointAmplifier = attributes.pointAmplifier
-      layer.options.nodalPointIcon = attributes.nodalPointIcon
-      layer.options.lineEnds = {
-        left: attributes.left,
-        right: attributes.right,
-      }
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)

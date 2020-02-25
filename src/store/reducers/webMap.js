@@ -37,6 +37,7 @@ const webMapAttributesInitValues = {
   fill: colors.TRANSPARENT,
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
+  hatch: 'none',
   intermediateAmplifierType: 'none',
   intermediateAmplifier: LineAmplifier(),
   shownIntermediateAmplifiers: Set(),
