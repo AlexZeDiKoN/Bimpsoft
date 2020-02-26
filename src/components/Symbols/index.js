@@ -23,7 +23,7 @@ const ButtonComponent = (props) =>
   </Collapse.Button>
 
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
-export default function SymbolsTab (props) {
+const SymbolsTab = (props) => {
   const { wrapper: Wrapper = Fragment, canEdit } = props
   const [ search, onChange ] = useState('')
   const sections = useToggleGroup()
@@ -111,6 +111,10 @@ SymbolsTab.propTypes = {
   wrapper: PropTypes.any,
 }
 
+SymbolsTab.displayName = 'SymbolsTab'
+
 SymbolSvg.propTypes = {
   name: PropTypes.string.isRequired,
 }
+
+export default SymbolsTab
