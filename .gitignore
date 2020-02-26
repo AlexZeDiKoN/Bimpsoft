@@ -33,3 +33,4 @@ yarn-error.log*
 
 report.*
 sprite.svg
+/pnpm-lock.yaml
