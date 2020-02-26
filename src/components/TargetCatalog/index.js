@@ -10,6 +10,8 @@ const _expandedIds = {}
 const _defaultTargetSymbolCode = '10032500001603000000'
 
 export default class TargetCatalog extends React.PureComponent {
+  static displayName = 'TargetCatalog'
+
   milSymbolRenderer = ({ code, attributes }) => (
     <MilSymbol code={code || _defaultTargetSymbolCode} amplifiers={attributes}/>
   )
