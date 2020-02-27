@@ -3,7 +3,7 @@ import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import { setClassName } from './utils/helpers'
+import { setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -150,6 +150,15 @@ L.SVG.include({
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
+    } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
+      const container = {
+        d: '',
+        mask: '',
+        amplifiers: '',
+        layer,
+      }
+      layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
+      result = container.d
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       const parts = []
       const line = layer._rings[0]

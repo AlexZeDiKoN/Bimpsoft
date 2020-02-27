@@ -168,11 +168,12 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
 }
 
 function createSophisticated (data, layer) {
+  console.log(`createSophisticated`, data)
   if (layer && (layer instanceof L.Polyline)) {
     layer.setLatLngs(data.geometry.toJS())
   } else {
     const options = prepareOptions(entityKind.SOPHISTICATED)
-    layer = new L.Sophisticated(options, data.code, data.geometry.toJS())
+    layer = new L.Sophisticated(options, data.code, data.geometry?.toJS(), data.point, data.attributes?.placeholder)
   }
   return layer
 }
