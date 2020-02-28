@@ -16,23 +16,17 @@ export default class TabsPanel extends React.Component {
   componentDidUpdate (prevProps) {
     const { state, props } = this
     const { selectedIndex } = state
-    console.info('componentDidUpdate prev', prevProps)
-    console.info('componentDidUpdate this', state, props)
     if (prevProps.tabs.length !== props.tabs.length && !props.tabs[selectedIndex]) {
       this.setState({ selectedIndex: props.tabs.length - 1 })
     } else if (props.tabs[selectedIndex].displayName !== prevProps.tabs[selectedIndex].displayName) {
       const newIndex = props.tabs.findIndex((it) => it.displayName === prevProps.tabs[selectedIndex].displayName)
       this.setState({ selectedIndex: newIndex })
     }
-    console.info('after if', state)
   }
 
   containersRef = React.createRef()
 
-  selectHandler = (selectedIndex) => () => {
-    console.info('selectHandler', selectedIndex)
-    this.setState({ selectedIndex })
-  }
+  selectHandler = (selectedIndex) => () => this.setState({ selectedIndex })
 
   render () {
     const { tabs } = this.props

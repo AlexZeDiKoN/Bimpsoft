@@ -44,6 +44,8 @@ function scrollParentToChild (parent, child) {
 }
 
 export default class OrgStructuresComponent extends React.PureComponent {
+  static displayName = 'OrgStructuresComponent'
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (notSameProps(prevProps, this.props,
       [ 'selectedId', 'textFilter', 'byIds', 'roots', 'formation', 'expandedIds' ])
