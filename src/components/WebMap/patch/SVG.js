@@ -1,6 +1,6 @@
 /* global L */
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
-import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
+import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName } from './utils/helpers'
@@ -181,6 +181,28 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, false)
           break
+        case 'moatAntiTank':
+          result = this._buildBlockage(layer, false, false, lineType)
+          break
+        case 'blockage':
+        case 'blockageIsolation':
+        case 'moatAntiTankUnfin':
+        case 'blockageWire':
+        case 'trenches':
+          result = this._buildBlockage(layer, false, false, lineType, true)
+          break
+        // залишаємо початкову лінію
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, false, false, lineType)
+          break
         default:
           break
       }
@@ -212,14 +234,37 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, false)
           break
+        case 'moatAntiTank': // необхідна заливка
+          result = this._buildBlockage(layer, false, false, lineType)
+          break
+        case 'blockage':
+        case 'blockageIsolation':
+        case 'moatAntiTankUnfin':
+        case 'blockageWire':
+        case 'trenches':
+          result = this._buildBlockage(layer, true, false, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, true, false, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, true, false)
       this._updateLineEnds(layer, true)
     }
-
+    // console.log('до', layer)
     this._setPath(layer, result)
+    // console.log('после', layer)
   },
 
   _updateMask: function (layer, bezier, locked) {
@@ -265,6 +310,12 @@ L.SVG.include({
       1.0,
       layer._map.getZoom(),
     )
+  },
+
+  _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
+    const bounds = layer._map._renderer._bounds
+    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, 1.0,
+      layer._map.getZoom(), false, lineType, setEnd)
   },
 
   _updateLineEnds: function (layer, bezier) {
