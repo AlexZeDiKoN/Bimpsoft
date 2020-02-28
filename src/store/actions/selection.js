@@ -206,10 +206,7 @@ export const newShapeFromLine = (data, point, geometry) => withNotification((dis
     },
   } = getState()
 
-  const { code, amp = {}, placeholder } = data
-  if (placeholder) {
-    amp.placeholder = placeholder
-  }
+  const { code, amp } = data
 
   dispatch(
     setPreview(

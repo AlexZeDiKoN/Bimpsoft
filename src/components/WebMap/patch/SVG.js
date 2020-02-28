@@ -271,9 +271,7 @@ L.SVG.include({
       this._updateMask(layer, true, false)
       this._updateLineEnds(layer, true)
     }
-    // console.log('до', layer)
     this._setPath(layer, result)
-    // console.log('после', layer)
   },
 
   _updateMask: function (layer, bezier, locked) {

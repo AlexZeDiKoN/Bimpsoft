@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import { parseStringPromise } from 'xml2js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -53,6 +52,7 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { lineDefinitions } from './patch/Sophisticated/utils'
 
 const { Coordinates: Coord } = utils
 
@@ -1830,29 +1830,32 @@ export default class WebMap extends React.PureComponent {
       const { lat, lng } = point
       const { amp } = data
       const bounds = this.map.getBounds()
-      const x = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
-      const y = (bounds.getEast() - bounds.getWest()) / 4
+      const semiWidth = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
+      const semiHeight = (bounds.getEast() - bounds.getWest()) / 4
       let geometry = []
       if (amp.type !== 'special') {
         if (amp.type === entityKind.POLYLINE || amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
-          const p0 = { lat, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
-          const p2 = { lat: lat + x, lng: lng - y }
+          const p0 = { lat, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
+          const p2 = { lat: lat + semiWidth, lng: lng - semiHeight }
           geometry = [ p0, p1, p2 ]
         }
         if (amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
-          const p0 = { lat: lat + x, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
+          const p0 = { lat: lat + semiWidth, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
           geometry = [ p0, p1 ]
         }
         if (amp.type === entityKind.CIRCLE) {
           const p0 = { lat, lng }
-          const p1 = { lat: lat + x, lng: lng + y }
+          const p1 = { lat: lat + semiWidth, lng: lng + semiHeight }
           geometry = [ p0, p1 ]
         }
       } else {
         amp.type = entityKind.SOPHISTICATED
-        data.placeholder = { x, y }
+        geometry = lineDefinitions[data.code?.slice(10, 16)]?.init().map(({ x, y }) => ({
+          lng: lng - semiWidth + x * semiWidth * 2,
+          lat: lat - semiHeight + y * semiHeight * 2,
+        })) || geometry
       }
       this.props.newShapeFromLine(data, { lat, lng }, geometry)
     }
