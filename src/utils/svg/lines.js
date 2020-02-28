@@ -18,6 +18,12 @@ export const settings = {
   // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
   // була строго кратною WAVE_SIZE
   WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
+  CREASE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "изгиба" для ліній загородження
+  WIRE_SIZE: { min: 30, max: 180 }, // (пікселів) ширина шага повтора для ліній загородження з дрота
+  BLOCKAGE_HEIGHT: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "загородження"
+  MOAT_HEIGHT: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "ров"
+  MINE_HEIGHT: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "ряд мін"
+  DOTS_HEIGHT: { min: 4, max: 50 }, // (пікселів) висота знака для ліній "ряд мін"
   LINE_AMPLIFIER_TEXT_SIZE: { min: 6, max: 70 },
   // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
   STROKE_SIZE: { min: 9, max: 36 }, // (пікселів) відстань між "засічками" для лінії з засічками
@@ -429,6 +435,208 @@ export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 
     }
   }
   return `${waves}${locked ? ' Z' : ''}`
+}
+// ---------------------------------------------------------------------------------------------------
+// смещение линии
+const shiftLine = (points, verticalOffset = 0, bezier = false, locked = false) => {
+  let carcassPoints = points
+  const carcassLines = [] // каркас кривой со всеми точками
+  let last = carcassPoints.length - Number(!locked)
+  if (bezier) {
+    for (let i = 0; i < last; i++) {
+      if (verticalOffset) {
+        const curve = (new Bezier(bezierArray(carcassPoints, i, locked)).offset(verticalOffset))
+        carcassLines.push(...curve.map((elm) => elm.points))
+      } else {
+        carcassLines.push(bezierArray(carcassPoints, i, locked))
+      }
+    }
+  } else {
+    if (verticalOffset) {
+      carcassPoints = getShiftedPoints(points, verticalOffset, locked) // каркас смещенная ломанной со всеми точками
+    }
+    last = carcassPoints.length - Number(!locked)
+    for (let i = 0; i < last; i++) {
+      carcassLines.push(lineArray(carcassPoints, i, locked)) // каркас ломанной со всеми точками
+    }
+  }
+  return carcassLines
+}
+// построение смещенной линии
+const builderPathLine = (points, bezier = false, locked = false) => {
+  let dAdd = ''
+  const carcassLines = points
+  const last = carcassLines.length
+  // збираєм додаткову лінію
+  for (let i = 0; i < last; i++) {
+    const segment = carcassLines[i]
+    if (!i) {
+      dAdd = `M${segment[0].x} ${segment[0].y}`
+    }
+    dAdd += bezier ? `C${segment[1].x} ${segment[1].y}, ${segment[2].x} ${segment[2].y},${segment[3].x} ${segment[3].y}` : `L${segment[1].x} ${segment[1].y}`
+  }
+  return dAdd
+}
+// построение елемента типовой линии
+const addCrease = (
+  inverse,
+  markerSize,
+  markerStep,
+  p1,
+  p2,
+  halfWave = false,
+  lineType = 'blockage') => {
+  let result = ''
+  const v = vector(p1, p2)
+  const cp2 = { x: p1.x + v.x / 4, y: p1.y + v.y / 4 }
+  const cp4 = { x: p2.x - v.x / 4, y: p2.y - v.y / 4 }
+  if (halfWave) {
+    // const b = new Bezier([ p1.x, p1.y, cp1.x, cp1.y, cp2.x, cp2.y, p2.x, p2.y ])
+    // const p = b.split(0.5)[part].points
+    // addLine && (result = addLineTo(p[0]))
+    // result += ` C${p[1].x} ${p[1].y} ${p[2].x} ${p[2].y} ${p[3].x} ${p[3].y}`
+    result = ` M${p1.x} ${p1.y} L${cp2.x} ${cp2.y}` // L${cp4.x} ${cp4.y} L${p2.x} ${p2.y}`
+  } else {
+    switch (lineType) {
+      case 'solidWithDots': {
+        const n = setLength(normal(v), -markerSize / 2)
+        const cp2 = apply({ x: p1.x + v.x / 4, y: p1.y + v.y / 4 }, n)
+        const cp3 = apply({ x: p2.x - v.x / 4, y: p2.y - v.y / 4 }, n)
+        return ` M${cp2.x} ${cp2.y} A1 1 0 1 1 ${cp2.x + 0.1} ${cp2.y + 0.1} M${cp3.x} ${cp3.y} A1 1 0 1 1 ${cp3.x + 0.1} ${cp3.y + 0.1}`
+      }
+      case 'blockage': {
+        const n = setLength(normal(v), markerSize)
+        const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+        return ` M${p1.x} ${p1.y} L${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y} L${cp4.x} ${cp4.y} L${p2.x} ${p2.y}`
+      }
+      case 'blockageIsolation': {
+        const n = setLength(normal(v), markerSize)
+        const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+        return ` M${p1.x} ${p1.y} L${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y} L${cp4.x} ${cp4.y} L${p2.x} ${p2.y}Z` // M${cp2.x} ${cp2.y} L${cp4.x} ${cp4.y}`
+      }
+      case 'moatAntiTankUnfin':
+      case 'moatAntiTank': {
+        const n = setLength(normal(v), markerSize * 0.83)
+        const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+        return ` M${p1.x} ${p1.y} L${cp3.x} ${cp3.y} L${p2.x} ${p2.y} Z`
+      }
+      case 'blockageWireHigh':
+      case 'blockageWireLow':
+      case 'blockageWire':
+      case 'blockageWireFence':
+      case 'blockageWire1':
+      case 'blockageWire2': {
+        const n = setLength(normal(v), markerSize / 2)
+        const nN = setLength(normal(v), -markerSize / 2)
+        const cp1 = apply({ x: p1.x + v.x / 4, y: p1.y + v.y / 4 }, n)
+        const cp2 = apply({ x: p1.x + v.x / 4, y: p1.y + v.y / 4 }, nN)
+        const cp3 = apply({ x: p2.x - v.x / 4, y: p2.y - v.y / 4 }, n)
+        const cp4 = apply({ x: p2.x - v.x / 4, y: p2.y - v.y / 4 }, nN)
+        return ` M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y}`
+      }
+      case 'trenches' : {
+        const n = setLength(normal(v), markerStep / 2)
+        const cp3 = apply({ x: p1.x + v.x / 4, y: p1.y + v.y / 4 }, n)
+        const cp5 = apply({ x: p2.x - v.x / 4, y: p2.y - v.y / 4 }, n)
+        return ` M${p1.x} ${p1.y} L${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y} L${cp5.x} ${cp5.y} L${cp4.x} ${cp4.y} L${p2.x} ${p2.y}`
+      }
+      default: return ''
+    }
+  }
+  return result
+}
+// -----------------------------------------------------------------------------------------------------------------
+// построение типовой линии
+export const blockage = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false,
+  lineType = 'blockage', setEnd = false) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  // шаг интерполяции равен ширене маркера приведеной к маштабу
+  let size
+  let koefStep = 2
+  if (lineType === 'moatAntiTank' || lineType === 'moatAntiTankUnfin') {
+    koefStep = 1
+  } else if (lineType === 'blockageWire1' || lineType === 'blockageWire2') {
+    koefStep = 6
+  }
+  switch (lineType.slice(0, 4)) {
+    case 'sol':
+      koefStep = 1
+      size = settings.DOTS_HEIGHT // для ліній
+      break
+    case 'row':
+      size = settings.MINE_HEIGHT // для мін
+      break
+    case 'moa':
+      size = settings.MOAT_HEIGHT // для рвів
+      break
+    default:
+      size = settings.BLOCKAGE_HEIGHT // для загороджень
+  }
+  const markerSize = interpolateSize(zoom, size, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const markerStep = markerSize * koefStep
+  const lineLen = lineLength(points, locked)
+  let dAdd = '' // додаткова лінія
+  let creases = `M${points[0].x} ${points[0].y}`
+  if (lineLen <= markerSize * 5) { // если у нас нет концовок по умолчанию на обеих сторонах линии, нам нужно по крайней мере 3 маркера, чтобы было видно тип линии
+    points.forEach((p, i) => i && (creases += addLineTo(p)))
+  } else {
+    const insideMap = getBoundsFunc(bounds, markerStep)
+    let verticalOffset = 0
+    if (lineType === 'blockageWireLow' || lineType === 'blockageWireHigh' || lineType.slice(0, 10) === 'blockageSp') {
+      verticalOffset = markerSize / 2
+    }
+    // додаєм додаткову лінію
+    if (lineType === 'blockageWireHigh' || lineType === 'blockageSpiral3') {
+      const mLine = shiftLine(points, markerSize, bezier, locked)
+      dAdd = builderPathLine(mLine, bezier, locked)
+    }
+    const creasePoints = buildPeriodicPoints(markerStep, verticalOffset, -markerStep, points, bezier, locked, insideMap)
+    if (!creasePoints.length) {
+      return 'M0 0'
+    }
+    if (!inverse || !getLineEnd(objectAttributes, 'left')) {
+      creases = `M${creasePoints[0].x} ${creasePoints[0].y}`
+    }
+    for (let i = 1; i < creasePoints.length; i++) {
+      if (inverse && i === creasePoints.length - 1 && getLineEnd(objectAttributes, 'right')) {
+        // последняя точка и назначен правый край линии
+        creases += addCrease(inverse, markerSize, markerStep, creasePoints[i - 1], creasePoints[i], true, lineType)
+      } else if (i === 1 && getLineEnd(objectAttributes, 'left')) {
+        // начальная точка и назначен левый край линии
+        creases += inverse
+          ? addCrease(inverse, markerSize, markerStep, creasePoints[0], creasePoints[1], true)
+          : addLineTo(creasePoints[1])
+      } else if (!creasePoints[i].i) {
+        // закончить линию
+        if (lineType !== 'wireBlockage' && lineType !== 'wireBlockage1' && lineType !== 'wireBlockage2') {
+          creases += addLineTo(creasePoints[i])
+        }
+      } else {
+        creases += addCrease(inverse, markerSize, markerStep, creasePoints[i - 1], creasePoints[i], false, lineType)
+      }
+    }
+    if (creasePoints.length > 0) {
+      const p0 = creasePoints[creasePoints.length - 1]
+      const p1 = inverse
+        ? shiftPoint(verticalOffset, points[points.length - 1], points[points.length - 2])
+        : points[points.length - 1]
+      const rest = dist(p0, p1)
+      if (rest >= 1) {
+        if (locked) {
+          // дорисовка возврата к началу линии
+          creases += addCrease(inverse, markerSize, markerStep, p0, points[0], false, false, false, false)
+        } else {
+          // дотягиваемся до конца
+          if (setEnd) {
+            creases += ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
+          }
+        }
+      }
+    }
+  }
+  return `${dAdd} ${creases}${locked ? ' Z' : ''}`
 }
 
 export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
