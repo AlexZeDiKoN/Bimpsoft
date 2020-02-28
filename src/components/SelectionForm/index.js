@@ -15,6 +15,7 @@ import {
   SquareForm,
   TextForm,
   ContourForm,
+  SophisticatedForm,
 } from './forms'
 
 const forms = {
@@ -84,6 +85,13 @@ const forms = {
   [SelectionTypes.CONTOUR]: {
     title: i18n.CONTOUR,
     component: ContourForm,
+    minHeight: 330,
+    maxHeight: 330,
+    minWidth: 415,
+  },
+  [SelectionTypes.SOPHISTICATED]: {
+    title: i18n.SOPHISTICATED,
+    component: SophisticatedForm,
     minHeight: 330,
     maxHeight: 330,
     minWidth: 415,
