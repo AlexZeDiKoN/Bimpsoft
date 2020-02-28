@@ -80,6 +80,176 @@ export const STRATEGY = {
       adjustedNorm(prevPoints, nextPoints, changed, [ 1, 2, 3, 0 ]),
     )
   },
+
+  // перестроювання секторів
+  // перша, друга точки - напрямок секторів
+  // наступні пари точок завдають лівий та првий розмах сектора
+  shapeSector: (prevPoints, nextPoints, changed) => {
+    const p0 = prevPoints[0]
+    const p1 = prevPoints[1]
+    const pN0 = nextPoints[0]
+    const pN1 = nextPoints[1]
+    const indChanged = changed[0]
+    if (changed[0] === 0) { // змінюємо опорну
+      // зміщуємо усе
+      const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
+      const newPoints = shiftPoints(dP, prevPoints)
+      newPoints.map((elm, ind) => { nextPoints[ind] = elm })
+    } else if (changed[0] === 1) { // змінюємо азимут
+      // длина последнего сектора должна быть меньше длины стрелки на 15% (сам придумал)
+      if (lengthLine(pN0, pN1) * 0.85 < lengthLine(nextPoints[nextPoints.length - 1], pN0)) {
+        // поворачивае по углу, длину оставляем минимально допустимую
+        const newPointPolar = coordinatesToPolar(p0, p1, pN1)
+        newPointPolar.beamLength = lengthLine(p0, p1)
+        nextPoints[indChanged] = polarToCoordinates(p0, p1, newPointPolar)
+        // return
+      }
+      // перемещаем сектора за стрелкой
+      for (let i = 2; i < prevPoints.length; i += 2) {
+        const pL = coordinatesToPolar(p0, p1, nextPoints[i])
+        const pR = coordinatesToPolar(p0, p1, nextPoints[i + 1])
+        const lengthAverage = (pL.beamLength + pR.beamLength) / 2
+        pL.beamLength = lengthAverage
+        pR.beamLength = lengthAverage
+        nextPoints[i] = polarToCoordinates(pN0, pN1, pL)
+        nextPoints[i + 1] = polarToCoordinates(pN0, pN1, pR)
+      }
+    } else {
+      // изменяем сектор
+      const indCouple = indChanged + 1 - (indChanged % 2) * 2 // индекс парной точки сектора
+      const pChanged = coordinatesToPolar(pN0, pN1, nextPoints[indChanged])
+      const pCouple = coordinatesToPolar(pN0, pN1, nextPoints[indCouple])
+      // блокировка по левая <-> правая и по максимальному углу
+      // eslint-disable-next-line max-len
+      if (((indChanged < indCouple) ? -1 : 1) * (pChanged.angle - pCouple.angle) < 0.05 ||
+        Math.abs(pChanged.angle) >= Math.PI / 2) {
+        nextPoints[indChanged] = prevPoints[indChanged]
+        return
+      }
+      let tTop = pN1
+      const minGapBottom = lengthLine(pN0, pN1) * 0.05 // расстояние до нижестоящего сектора 5%
+      let minGapTop = minGapBottom * 3 // расстояние до стрелки 15%
+      if ((indChanged + 2) < nextPoints.length) {
+        // не последний сектор
+        tTop = nextPoints[indChanged + 2]
+        minGapTop = minGapBottom // расстояние до вышестоящего сектора 5%
+      }
+      const lengthNextSector = lengthLine(pN0, tTop)
+      let tBottom = pN0
+      if (indChanged > 3) {
+        tBottom = nextPoints[indChanged - 2]
+      }
+      const lengthPrevSector = lengthLine(pN0, tBottom)
+      // радиус сектора должна быть меньше радиуса следующего сектора и больше радиуса предыдущего на 5% (сам придумал)
+      if (lengthNextSector < pChanged.beamLength + minGapTop || pChanged.beamLength < lengthPrevSector + minGapBottom) {
+        // изменяем угол и оставляем высоту
+        const pP = coordinatesToPolar(p0, p1, prevPoints[indChanged])
+        pChanged.beamLength = pP.beamLength
+        nextPoints[indChanged] = polarToCoordinates(pN0, pN1, pChanged)
+        return
+      }
+      // выравниваем радиусы
+      pCouple.beamLength = pChanged.beamLength
+      nextPoints[indCouple] = polarToCoordinates(p0, p1, pCouple)
+    }
+  },
+
+  // перестроювання кругових секторів
+  // перша - центр кола
+  // наступні точки задають радіус секторів з зовні до середини
+  // alignement - прив'язка контрольних точок до горізогнталі або вертикалі
+  shapeCircleInvert: (alignement = 'none') => (prevPoints, nextPoints, changed) => {
+    const pPoints = [ prevPoints[0], ...prevPoints.slice(1).reverse() ]
+    const nPoints = [ nextPoints[0], ...nextPoints.slice(1).reverse() ]
+    const maxInd = nextPoints.length
+    let changedI = [ 0 ]
+    if (changed[0] !== 0) { changedI = [ maxInd - changed[0] ] }
+    STRATEGY.shapeCircle(alignement)(pPoints, nPoints, changedI)
+    nPoints.forEach((elm, ind) => {
+      if (ind === 0) {
+        nextPoints[0] = elm
+      } else {
+        nextPoints[maxInd - ind] = elm
+      }
+    })
+  },
+
+  // перестроювання кругових секторів
+  // перша - центр кола
+  // наступні точки задають радіус секторів
+  // alignment - прив'язка контрольних точок до горізогнталі або вертикалі
+  shapeCircle: (alignement = 'none') => (prevPoints, nextPoints, changed) => {
+    const pN0 = nextPoints[0]
+    const indChanged = changed[0]
+    if (changed[0] === 0) { // змінюємо опорну
+      // зміщуємо усе
+      const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
+      const newPoints = shiftPoints(dP, prevPoints)
+      newPoints.map((elm, ind) => { nextPoints[ind] = elm })
+    } else {
+      // змінюємо радіус сектора
+      const lengthChanged = lengthLine(pN0, nextPoints[indChanged])
+      const lBootom = lengthLine(pN0, nextPoints[indChanged - 1])
+      let lTop = Infinity
+      if (indChanged < nextPoints.length - 1) lTop = lengthLine(pN0, nextPoints[indChanged + 1])
+      // радіус сектора повинен бути більше попереднього і менше наступного сектора
+      if (lengthChanged <= lBootom + 1 || (lengthChanged >= lTop - 1)) {
+        nextPoints[indChanged] = prevPoints[indChanged]
+      } else { // радіус відповідає вимогам
+        if (alignement === 'left' || alignement === 'right') { // вирівнюємо опорні точки по горизонталі
+          nextPoints[indChanged].x = pN0.x + lengthLine(pN0, nextPoints[indChanged]) * (alignement === 'left' ? -1 : 1)
+          nextPoints[indChanged].y = pN0.y
+        } else if (alignement === 'top' || alignement === 'bottom') { // вирівнюємо опорні точки по вертикалі
+          nextPoints[indChanged].y = pN0.y + lengthLine(pN0, nextPoints[indChanged]) * (alignement === 'top' ? -1 : 1)
+          nextPoints[indChanged].x = pN0.x
+        }
+      }
+    }
+  },
+
+  // Центральна точка рухає прямокутник, друга точка задає розміри, третя кут повороту
+  shape7: (prevPoints, nextPoints, changed) => {
+    if (changed.includes(0)) {
+      const translation = getVector(prevPoints[0], nextPoints[0]);
+      [ 1, 2 ].map((i) => (nextPoints[i] = applyVector(prevPoints[i], translation)))
+    } else if (changed.includes(1)) {
+      nextPoints[2] = applyVector(
+        nextPoints[1],
+        oppositeVector(normalVectorTo(prevPoints[0], prevPoints[2], nextPoints[1])),
+      )
+    } else if (changed.includes(2)) {
+      const len = segmentLength(prevPoints[2], prevPoints[0])
+      const angle = angleOf(nextPoints[2], prevPoints[0]) - angleOf(prevPoints[2], prevPoints[0])
+      const vector = getVector(prevPoints[0], prevPoints[1])
+      nextPoints[1] = applyVector(
+        prevPoints[0],
+        applyToPoint(rotate(angle), vector),
+      )
+      nextPoints[2] = applyVector(
+        nextPoints[1],
+        oppositeVector(normalVectorTo(prevPoints[0], applyVector(
+          prevPoints[0],
+          setVectorLength(getVector(prevPoints[0], nextPoints[2]), len),
+        ), nextPoints[1])),
+      )
+    }
+  },
+
+  // Остання точка в масиві визначає ширину лінії, знаходится на серединному перпендикулярі між першою і другою точками
+  lineWithRegulatedWidth: (shaper) => {
+    const slicer = (arr) => [ arr[0], arr[1], arr[arr.length - 1] ]
+    return (prevPoints, nextPoints, changed) => {
+      const slice = slicer(nextPoints)
+      let ch = changed[0]
+      if (ch === nextPoints.length - 1) {
+        ch = 2
+      }
+      shaper(slicer(prevPoints), slice, [ ch ])
+      nextPoints[0] = slice[0]
+      nextPoints[1] = slice[1]
+      nextPoints[nextPoints.length - 1] = slice[2]
+    }
+  },
 }
 
 export const MIDDLE = {
@@ -96,6 +266,9 @@ export const MIDDLE = {
 
   // Область з кількома ампліфікаторми (ампліфікатори на початку списку) та крім останього
   areaWithAmplifiersNotEnd: (amplCount) => (index1, index2, total) => index1 >= amplCount - 1 && index2 < total - 1,
+
+  // Лінія з кількома ампліфікаторми (ампліфікатори в кінці списку)
+  lineWithAmplifiers: (amplCount) => (index1, index2, total) => total - index2 > amplCount,
 }
 
 export const DELETE = {
@@ -107,6 +280,29 @@ export const DELETE = {
 
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
   areaWithAmplifiers: (amplCount) => (index, count) => count > MIN_AREA_POINTS + amplCount && count - index > amplCount,
+
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок та не останній
   allowNotEnd: (amount) => (index, total) => (index >= amount) && (index < (total - 1)),
+}
+
+export const RENDER = {
+  // Заштрихована область з плавною границею, всередині точковий знак
+  hatchedAreaWihSymbol: (code, size, hatchingColor = 'yellow', hatchingWidth = 3, hatchingStep = 20) =>
+    (result, points, scale) => {
+      const sign = points[points.length - 1]
+      const area = points.slice(0, -1)
+
+      drawBezierSpline(result, area, true)
+
+      result.layer._path.setAttribute('fill', "url('#hatching')")
+      result.layer._path.setAttribute('width', 100)
+      result.amplifiers += ` 
+        <pattern id="hatching" x="0" y="0" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
+          <line x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
+        </pattern>`
+
+      const symbol = new window.ms.Symbol(code, { size: size * scale }).asSVG()
+      const d = size * scale / 2
+      result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
+    },
 }

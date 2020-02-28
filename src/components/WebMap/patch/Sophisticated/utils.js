@@ -1,9 +1,10 @@
 /* global L */
 
-import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
+import { rotate, translate, compose, inverse, applyToPoint, applyToPoints } from 'transformation-matrix'
 import { prepareBezierPath } from '../utils/Bezier'
 import { CONFIG } from '.'
 
+const EPSILON = 1e-12
 const textSizeCache = {}
 
 export const lineDefinitions = {}
@@ -47,10 +48,37 @@ export const ZERO = { x: 0, y: 0 }
 export const segmentLength = (p1, p2 = ZERO) => Math.sqrt(square(p1.x - p2.x) + square(p1.y - p2.y))
 
 // Частина відрізка
-export const segmentBy = (p1, p2, factor) => ({
+export const segmentBy = (p1, p2, factor = 0.5) => ({
   x: p1.x + (p2.x - p1.x) * factor,
   y: p1.y + (p2.y - p1.y) * factor,
 })
+
+// Проекція точки на пряму, задану відрізком, притягнута до наближчої точки цього відрізка
+export const setToSegment = (p, [ s1, s2 ]) => {
+  const dx = p.x - s1.x
+  if (dx === 0) {
+    const dy = p.y - s1.y
+    if (dy === 0) {
+      return s1
+    }
+    const factor = dy / (s2.y - s1.y)
+    if (factor >= 1) {
+      return s2
+    }
+    return p
+  }
+  const factor = dx / (s2.x - s1.x)
+  if (factor >= 1) {
+    return s2
+  }
+  return p
+}
+
+// Еквівалентність точок
+export const ptEq = (p1, p2) => p1.x === p2.x && p1.y === p2.y
+
+// Співвідношення довжини частини відрізку до довжини всього відрізку
+export const calcFactor = (p, [ s1, s2 ]) => segmentLength(getVector(s1, p)) / segmentLength(getVector(s1, s2))
 
 // Масив частин відрізка
 export const segmentsBy = (p1, p2, factors) => factors.map((factor) => segmentBy(p1, p2, factor))
@@ -141,7 +169,11 @@ export const getPointAt = (p1, p2, angle, length) => applyToPoint(
   { x: length, y: 0 },
 )
 
+// Трансляція центру координат до вказаної точки
 export const translateTo = (p) => translate(p.x, p.y)
+
+// Трансляція центру координат від вказаної точки
+export const translateFrom = (p) => translate(-p.x, -p.y)
 
 // Пошук у масиві точки, найближчої до вказаної
 export const findNearest = (point, list) => {
@@ -155,6 +187,45 @@ export const findNearest = (point, list) => {
     }
   }
   return index
+}
+
+// Наявність перетинів
+export const hasIntersection = (p1, p2, s1, s2) => {
+  if (ptEq(p1, p2) || ptEq(s1, s2)) {
+    return [ false ]
+  }
+  const det = (a, b, c, d) => a * d - b * c
+  const between = (a, b, c) => Math.min(a, b) <= c + EPSILON && c <= Math.max(a, b) + EPSILON
+  const intersect = (a, b, c, d) => {
+    if (a > b) {
+      [ a, b ] = [ b, a ]
+    }
+    if (c > d) {
+      [ c, d ] = [ d, c ]
+    }
+    return Math.max(a, c) <= Math.min(b, d)
+  }
+  const A1 = p1.y - p2.y
+  const B1 = p2.x - p1.x
+  const C1 = -A1 * p1.x - B1 * p1.y
+  const A2 = s1.y - s2.y
+  const B2 = s2.x - s1.x
+  const C2 = -A2 * s1.x - B2 * s1.y
+  const zn = det(A1, B1, A2, B2)
+  if (zn !== 0) {
+    const x = -det(C1, B1, C2, B2) / zn
+    const y = -det(A1, C1, A2, C2) / zn
+    return [
+      between(p1.x, p2.x, x) && between(p1.y, p2.y, y) && between(s1.x, s2.x, x) && between(s1.y, s2.y, y),
+      { x, y }
+    ]
+  } else {
+    return [
+      det(A1, C1, A2, C2) === 0 && det(B1, C1, B2, C2) === 0 && intersect(p1.x, p2.x, s1.x, s2.x) &&
+      intersect(p1.y, p2.y, s1.y, s2.y),
+      null // TODO: обчислити точку в цьому випадку
+    ]
+  }
 }
 
 export const drawBezierSpline = (result, points, locked) => (result.d += prepareBezierPath(points, locked))
@@ -184,14 +255,8 @@ export const lineTo = (result, p) => (result.d += ` L${p.x} ${p.y}`)
 
 export const bezierTo = (result, cp1, cp2, p) => (result.d += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p.x} ${p.y}`)
 
-// Лінія між двома вказаними точками (відрізок)
-export const drawLine = (result, p1, p2) => {
-  moveTo(result, p1)
-  lineTo(result, p2)
-}
-
-// Ломана лінія між трьома вказаними точками
-export const drawLine2 = (result, p1, ...rest) => {
+// Ломана лінія між вказаними точками
+export const drawLine = (result, p1, ...rest) => {
   moveTo(result, p1)
   rest.forEach((point) => lineTo(result, point))
 }
@@ -220,6 +285,32 @@ export const drawCircle = (result, center, radius) => {
   arcTo(result, p1, radius, radius)
 }
 
+export const drawRectangleC = (result, center, widthR, heightR) => {
+  const dx = widthR / 2
+  const dy = heightR / 2
+  const p1 = {
+    x: center.x - dx,
+    y: center.y - dy,
+  }
+  drawLine(
+    result,
+    p1,
+    {
+      x: center.x + dx,
+      y: center.y - dy,
+    },
+    {
+      x: center.x + dx,
+      y: center.y + dy,
+    },
+    {
+      x: center.x - dx,
+      y: center.y + dy,
+    },
+    p1,
+  )
+}
+
 export const drawBezier = (result, p1, ...rest) => {
   moveTo(result, p1)
   for (let i = 0; i < rest.length; i += 3) {
@@ -238,7 +329,7 @@ export const drawArrow = (result, p1, p2, dL, dW) => {
       translate(p1.x, p1.y),
       rotate(angleOf(applyToPoint(translate(-p1.x, -p1.y), p2))),
     )
-    drawLine2(
+    drawLine(
       result,
       applyToPoint(t, {
         x: l - dL,
@@ -266,7 +357,7 @@ export const drawArrowOutline = (result, p1, p2, dL, dW, ddL, ddW, drawArrowLine
       translate(p1.x, p1.y),
       rotate(angleOf(applyToPoint(translate(-p1.x, -p1.y), p2))),
     )
-    drawLine2(
+    drawLine(
       result,
       applyToPoint(t, {
         x: l - dL,
@@ -305,7 +396,7 @@ export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
       translate(p1.x, p1.y),
       rotate(angleOf(applyToPoint(translate(-p1.x, -p1.y), p2))),
     )
-    drawLine2(
+    drawLine(
       result,
       applyToPoint(t, {
         x: l - dL,
@@ -336,7 +427,7 @@ export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
       segmentBy(pd, pc, 0.4),
       segmentBy(pd, pc, 0.6),
     )
-    drawLine2(
+    drawLine(
       result,
       segmentBy(pd, pc, 0.8),
       pc,
@@ -364,8 +455,8 @@ export const continueLine = (result, p1, p2, x, y) => {
   return drawLine(result, p2, applyToPoint(t, { x, y }))
 }
 
-// Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
-export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1) => {
+// Виведення тексту
+export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null) => {
   // Обчислення розміру
   const key = `${sizeFactor}:${text}`
   let box = textSizeCache[key]
@@ -373,33 +464,43 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
     box = textBBox(text, result.layer, sizeFactor)
     textSizeCache[key] = box
   }
-  textAngle = deg(cropAngle(textAngle))
 
   // Ампліфікатор
-  let w = box.width / 2
-  let h = box.height / 2
+  const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
-    fill="${result.layer._path.getAttribute('stroke')}" 
-    text-anchor="middle" 
-    font-family="${CONFIG.FONT_FAMILY}"
-    font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor)}em"
-    font-weight="${CONFIG.FONT_WEIGHT}"
-    alignment-baseline="middle" 
+    transform="${transform}"
     x="${0}" 
     y="${0}" 
-    transform="translate(${textPoint.x},${textPoint.y}) rotate(${textAngle})"
+    fill="${color || result.layer._path.getAttribute('stroke')}" 
+    text-anchor="${textAnchor}" 
+    font-family="${CONFIG.FONT_FAMILY}"
+    font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
+    font-weight="${CONFIG.FONT_WEIGHT}"
+    alignment-baseline="middle" 
   >${text}</text>`
+  return [ transform, box ]
+}
 
+// Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
+export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle') => {
+  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor)
   // Маска
-  w += CONFIG.TEXT_EDGE
-  h += CONFIG.TEXT_EDGE
-  result.mask += `<g transform="translate(${textPoint.x},${textPoint.y}) rotate(${textAngle})">
-    <rect x="-${w}" y="-${h}" width="${w * 2}" height="${h * 2}" />
-  </g>`
+  const w = box.width / 2 + CONFIG.TEXT_EDGE
+  const h = box.height / 2 + CONFIG.TEXT_EDGE
+  result.mask += `<rect 
+    transform="${transform}" 
+    x="-${w}" 
+    y="-${h}" 
+    width="${w * 2}" 
+    height="${h * 2}"
+  />`
 }
 
 export const addPathAmplifier = (result, amplifier, closed, dash) => {
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
-  result.amplifiers += `<path stroke="${color}"${closed ? ` fill="${color}"` : ` stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} d="${amplifier.d}" />`
+  result.amplifiers += `<path 
+    stroke="${color}"${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
+    d="${amplifier.d}" 
+  />`
 }
