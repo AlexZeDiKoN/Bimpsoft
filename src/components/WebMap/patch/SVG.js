@@ -166,6 +166,30 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, true)
           break
+        // необхідна заливка
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+          result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'blockageWire':
+        case 'trenches':
+          result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        // залишаємо початкову лінію
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, false, true, lineType)
+          break
         default:
           break
       }
@@ -181,17 +205,19 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, false)
           break
+        // необхідна заливка
         case 'moatAntiTank':
-          result = this._buildBlockage(layer, false, false, lineType)
+        case 'moatAntiTankMine':
+          result = this._buildBlockage(layer, false, false, lineType, true)
           break
         case 'blockage':
-        case 'blockageIsolation':
         case 'moatAntiTankUnfin':
         case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, false, lineType, true)
           break
         // залишаємо початкову лінію
+        case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
         case 'blockageWireFence':
@@ -218,6 +244,33 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, true)
           break
+        // необхідна заливка
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+          result = this._buildBlockage(layer, true, true, lineType, true)
+          break
+        // не залишаємо початкову лінію
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, true, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, true, true, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, true, true, lineType)
+          break
         default:
           break
       }
@@ -234,17 +287,22 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, false)
           break
-        case 'moatAntiTank': // необхідна заливка
-          result = this._buildBlockage(layer, false, false, lineType)
+        // необхідна заливка
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+          result = this._buildBlockage(layer, true, false, lineType, true)
           break
+        // не залишаємо початкову лінію
         case 'blockage':
-        case 'blockageIsolation':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
+          result = this._buildBlockage(layer, true, false, lineType, true)
+          break
+        case 'blockageWire':
           result = this._buildBlockage(layer, true, false, lineType)
           break
         // залишаємо початкову лінію
+        case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
         case 'blockageWireFence':
@@ -314,7 +372,7 @@ L.SVG.include({
 
   _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
-    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, 1.0,
+    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
   },
 

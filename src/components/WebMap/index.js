@@ -1044,6 +1044,8 @@ export default class WebMap extends React.PureComponent {
     const { params } = this.props
     settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
     settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
+    settings.BLOCKAGE_SIZE.max = params[paramsNames.BLOCKAGE_SIZE_MAX]
+    settings.BLOCKAGE_SIZE.min = params[paramsNames.BLOCKAGE_SIZE_MIN]
     settings.STROKE_SIZE.max = params[paramsNames.STROKE_SIZE_MAX]
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
