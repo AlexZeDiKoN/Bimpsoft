@@ -49,6 +49,7 @@ export const actionNames = {
   SET_MARKER: action('SET_MARKER'),
   ADD_OBJECT: action('ADD_OBJECT'),
   DEL_OBJECT: action('DEL_OBJECT'),
+  DEL_OBJECTS: action('DEL_OBJECTS'),
   UPD_OBJECT: action('UPD_OBJECT'),
   UPD_ATTR: action('UPD_ATTR'),
   APP_INFO: action('APP_INFO'),
@@ -205,6 +206,19 @@ export const deleteObject = (id) =>
       payload: id,
     })
   })
+
+export const deleteObjects = (list) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDeleteList } }) => {
+    await objDeleteList(list)
+    dispatch({
+      type: actionNames.DEL_OBJECTS,
+      payload: list,
+    })
+  })
+
+export const removeObjects = (ids) => {
+  //TODO
+}
 
 export const refreshObject = (id, type, layer) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
