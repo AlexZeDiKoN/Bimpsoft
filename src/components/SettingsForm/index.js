@@ -172,6 +172,14 @@ export default class SettingsForm extends React.Component {
                   </div>
 
                   <div className="containerSign">
+                    <FormRow label={i18n.BLOCKAGE_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
                     <FormRow label={i18n.STROKE_SIGN_SIZE}/>
                     <FormDarkPart>
                       <FormRow>{this.renderScaleControl(paramsNames.STROKE_SIZE_MIN)}</FormRow>
