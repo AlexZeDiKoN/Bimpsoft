@@ -70,6 +70,16 @@ export default L.Path.include({
     return this._amplifierGroup
   },
 
+  // группа для залитых  объектов
+  getFilledGroup: function () {
+    if (!this._filledGroup) {
+      this._filledGroup = L.SVG.create('g')
+      this._renderer._rootGroup.appendChild(this._filledGroup)
+      this._renderer._updateStyle(this)
+    }
+    return this._amplifierGroup
+  },
+
   getLineEndsGroup: function () {
     if (!this._lineEndsGroup) {
       this._lineEndsGroup = L.SVG.create('g')
@@ -90,6 +100,13 @@ export default L.Path.include({
     if (this._amplifierGroup) {
       L.DomUtil.remove(this._amplifierGroup)
       delete this._amplifierGroup
+    }
+  },
+
+  deleteFilledGroup: function () {
+    if (this._filledGroup) {
+      L.DomUtil.remove(this._filledGroup)
+      delete this._filledGroup
     }
   },
 
