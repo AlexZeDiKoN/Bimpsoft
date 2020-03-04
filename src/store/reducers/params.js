@@ -14,6 +14,10 @@ const initialState = {
   [paramsNames.WAVE_SIZE_MAX]: 40,
   [paramsNames.BLOCKAGE_SIZE_MIN]: 4,
   [paramsNames.BLOCKAGE_SIZE_MAX]: 80,
+  [paramsNames.MOAT_SIZE_MIN]: 4,
+  [paramsNames.MOAT_SIZE_MAX]: 80,
+  [paramsNames.ROW_MINE_SIZE_MIN]: 4,
+  [paramsNames.ROW_MINE_SIZE_MAX]: 80,
   [paramsNames.STROKE_SIZE_MIN]: 3,
   [paramsNames.STROKE_SIZE_MAX]: 36,
 }

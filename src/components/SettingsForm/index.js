@@ -58,20 +58,20 @@ export default class SettingsForm extends React.Component {
 
     return (
       <>
-      <Select value={+value} onChange={this.changeParamOption(paramName)} showArrow={false} className="select-level">
-        {SubordinationLevel.list.map(({ value, title, icon }) => (
-          <Option key={value} value={value}>
-            <div className="flex-level">
-              <Icon className="icon-level" icon={icon} /> <span className="text-level">{title}</span>
-            </div>
-          </Option>
-        ))}
-      </Select>
-      <div className="moreButtonSettins">
-        <IconButton
-          icon={iconNames.MORE_WHITE_DEFAULT}
-        />
-      </div>
+        <Select value={+value} onChange={this.changeParamOption(paramName)} showArrow={false} className="select-level">
+          {SubordinationLevel.list.map(({ value, title, icon }) => (
+            <Option key={value} value={value}>
+              <div className="flex-level">
+                <Icon className="icon-level" icon={icon} /> <span className="text-level">{title}</span>
+              </div>
+            </Option>
+          ))}
+        </Select>
+        <div className="moreButtonSettins">
+          <IconButton
+            icon={iconNames.MORE_WHITE_DEFAULT}
+          />
+        </div>
       </>
     )
   }
@@ -176,6 +176,22 @@ export default class SettingsForm extends React.Component {
                     <FormDarkPart>
                       <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MIN)}</FormRow>
                       <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.MOAT_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.MOAT_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.MOAT_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.ROW_MINE_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.ROW_MINE_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.ROW_MINE_SIZE_MAX)}</FormRow>
                     </FormDarkPart>
                   </div>
 

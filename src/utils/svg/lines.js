@@ -21,8 +21,8 @@ export const settings = {
   CREASE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "изгиба" для ліній загородження
   WIRE_SIZE: { min: 30, max: 180 }, // (пікселів) ширина шага повтора для ліній загородження з дрота
   BLOCKAGE_SIZE: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "загородження"
-  MOAT_HEIGHT: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "ров"
-  MINE_HEIGHT: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "ряд мін"
+  MOAT_SIZE: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "рів"
+  ROW_MINE_SIZE: { min: 4, max: 80 }, // (пікселів) висота знака для ліній "ряд мін"
   DOTS_HEIGHT: { min: 4, max: 50 }, // (пікселів) висота знака для ліній "точки"
   LINE_AMPLIFIER_TEXT_SIZE: { min: 6, max: 70 },
   // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
@@ -561,7 +561,7 @@ const addUnitLine = (
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
       return ` M${p1.x} ${p1.y} L${cp3.x} ${cp3.y} L${p2.x} ${p2.y} Z`
     }
-    case 'moatAntiTankMine': {
+    case 'moatAntiTankMine1': {
       if (halfElement) {
         const n = setLength(normal(v), markerSize * 0.83)
         const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
@@ -572,8 +572,18 @@ const addUnitLine = (
         const nr = setLength(normal(v), markerSize * 0.2)
         const cp1 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, nr)
         const cp2 = apply(cp1, vr)
-        return `M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}M${p1.x} ${p1.y}L${p2.x} ${p2.y}`
+        return `M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}` // M${p1.x} ${p1.y}L${p2.x} ${p2.y}`
       }
+    }
+    case 'moatAntiTankMine': {
+      const r = markerSize / 6
+      const vr = setLength(v, 0.01)
+      const n = setLength(normal(v), markerSize * 0.83)
+      const nr = setLength(normal(v), markerSize * 0.5)
+      const cp1 = apply(p2, nr)
+      const cp2 = apply(cp1, vr)
+      const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+      return `M${p2.x} ${p2.y}L${cp3.x} ${cp3.y}L${p1.x} ${p1.y} Z M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}`
     }
     case 'blockageIsolation': {
       const n = setLength(normal(v), markerSize)
@@ -617,6 +627,27 @@ const addUnitLine = (
       const angleLine = angle(v)
       return ` M${p1.x} ${p1.y}A${r1} ${r2} ${angleLine} 1 1 ${cp1.x},${cp1.y}`
     }
+    case 'rowMinesLand': {
+      const r = markerSize / 3
+      const cpC = apply(p2, setLength(v, -r))
+      const cp1 = apply(p2, setLength(normal(v), markerSize / 1.75))
+      const cp2 = apply(cpC, setLength(vector(cpC, cp1), r))
+      const cp3 = apply(cp1, setLength(v, -r * 2))
+      const cp4 = apply(cpC, setLength(vector(cpC, cp3), r))
+      // const cpA = apply(p2, setLength(v, -r * 2))
+      const p2s = apply(p2, setLength(normal(v), 0.01))
+      return ` M${cp1.x} ${cp1.y}L${cp2.x} ${cp2.y} M${cp4.x} ${cp4.y} L${cp3.x} ${cp3.y}` +
+        ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}` // A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
+    }
+    case 'rowMinesAntyTank': {
+      // основная линия снизу
+      const r = markerSize / 3
+      const cp1 = apply(p2, setLength(v, -r * 2))
+      const p2s = apply(p2, setLength(normal(v), 0.01))
+      // const angleLine = angle(v)
+      return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
+      // return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${cp1.x},${cp1.y}A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
+    }
     default:
   }
   return result
@@ -630,21 +661,16 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   }
   let size
   const strokeWidth = interpolateSize(zoom, scaleOptions, 10.0, 5, 20) * objectAttributes.strokeWidth / 100
-  // objectAttributes.setAttribute('fill', 'black')
-  // let koefStep = 2
-  // if (lineType === 'blockageWire1' || lineType === 'blockageWire2') {
-  //  koefStep = 6
-  // }
-  switch (lineType.slice(0, 4)) {
+  switch (lineType.slice(0, 3)) {
     case 'sol':
       // koefStep = 1
       size = settings.BLOCKAGE_SIZE // settings.DOTS_HEIGHT // для ліній
       break
     case 'row':
-      size = settings.MINE_HEIGHT // для рядів мін
+      size = settings.ROW_MINE_SIZE // для рядів мін
       break
     case 'moa':
-      size = settings.MOAT_HEIGHT // для рвів
+      size = settings.MOAT_SIZE // для рвів
       // koefStep = 1
       break
     default:
@@ -680,6 +706,9 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   } else if (lineType === 'blockageWire2') {
     markerStep = [ 4, 0 ]
   } else if (lineType.slice(0, 4) === 'moat') {
+    markerStep = [ 0 ]
+    offsetM = -markerSize // маркер прорисовываем с самого начала линии
+  } else if (lineType.slice(0, 3) === 'row') {
     markerStep = [ 0 ]
     offsetM = -markerSize // маркер прорисовываем с самого начала линии
   } else if (lineType === 'trenches') {
