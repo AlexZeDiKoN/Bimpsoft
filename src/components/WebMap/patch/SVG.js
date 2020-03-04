@@ -187,9 +187,11 @@ L.SVG.include({
           result += this._buildBlockage(layer, false, true, lineType)
           break
         // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, false, true, lineType, false, true)
+          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
-        case 'rowMinesLand':
         case 'rowMinesAntyTank':
           rezultFilled = this._buildElementFilled(layer, false, true, lineType)
           break
@@ -229,9 +231,11 @@ L.SVG.include({
           result += this._buildBlockage(layer, false, false, lineType)
           break
         // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, false, false, lineType, false, true)
+          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
-        case 'rowMinesLand':
         case 'rowMinesAntyTank':
           rezultFilled = this._buildElementFilled(layer, false, false, lineType)
           break
@@ -274,9 +278,11 @@ L.SVG.include({
           result += this._buildBlockage(layer, true, true, lineType)
           break
         // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, true, true, lineType, false, true)
+          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
-        case 'rowMinesLand':
         case 'rowMinesAntyTank':
           rezultFilled = this._buildElementFilled(layer, true, true, lineType)
           // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
@@ -321,9 +327,11 @@ L.SVG.include({
           result += this._buildBlockage(layer, true, false, lineType)
           break
         // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, true, false, lineType, false, true)
+          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
-        case 'rowMinesLand':
         case 'rowMinesAntyTank':
           rezultFilled = this._buildElementFilled(layer, true, false, lineType)
           // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
@@ -389,15 +397,15 @@ L.SVG.include({
       layer._map.getZoom(), false, lineType, setEnd)
   },
 
-  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd) {
+  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd, setStrokeWidth = false) {
     const bounds = layer._map._renderer._bounds
     const colorLine = layer.object?.attributes?.color || 'black'
-    const widthLine = interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
-      (layer.object?.attributes?.strokeWidth || 1) / 100
+    const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
+      (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
 
     const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
-    return `<path fill="${colorLine}" stroke-width="${1}" d="${d}"/>`
+    return `<path fill="${colorLine}" stroke-width="${widthLine}" d="${d}"/>`
   },
 
   _updateLineFilled: function (layer, rezultFilled) {

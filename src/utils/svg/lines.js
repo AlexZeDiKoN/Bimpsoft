@@ -629,19 +629,24 @@ const addUnitLine = (
     }
     case 'rowMinesLand': {
       const r = markerSize / 3
+      const cpC = apply(p2, setLength(v, -r))
       const cp1 = apply(p2, setLength(normal(v), markerSize / 1.75))
-      const cp2 = apply(p2, setLength(v, -r))
+      const cp2 = apply(cpC, setLength(vector(cpC, cp1), r))
       const cp3 = apply(cp1, setLength(v, -r * 2))
-      const cpA = apply(p2, setLength(v, -r * 2))
-      return ` M${cp1.x} ${cp1.y}L${cp2.x} ${cp2.y} M${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y}` +
-        ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${cpA.x},${cpA.y}A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
+      const cp4 = apply(cpC, setLength(vector(cpC, cp3), r))
+      // const cpA = apply(p2, setLength(v, -r * 2))
+      const p2s = apply(p2, setLength(normal(v), 0.01))
+      return ` M${cp1.x} ${cp1.y}L${cp2.x} ${cp2.y} M${cp4.x} ${cp4.y} L${cp3.x} ${cp3.y}` +
+        ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}` // A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
     }
     case 'rowMinesAntyTank': {
       // основная линия снизу
-      const r = markerSize / 2.5
+      const r = markerSize / 3
       const cp1 = apply(p2, setLength(v, -r * 2))
+      const p2s = apply(p2, setLength(normal(v), 0.01))
       // const angleLine = angle(v)
-      return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${cp1.x},${cp1.y}A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
+      return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
+      // return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${cp1.x},${cp1.y}A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
     }
     default:
   }
