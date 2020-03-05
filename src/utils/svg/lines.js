@@ -642,11 +642,8 @@ const addUnitLine = (
     case 'rowMinesAntyTank': {
       // основная линия снизу
       const r = markerSize / 3
-      const cp1 = apply(p2, setLength(v, -r * 2))
       const p2s = apply(p2, setLength(normal(v), 0.01))
-      // const angleLine = angle(v)
       return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
-      // return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${cp1.x},${cp1.y}A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
     }
     default:
   }
