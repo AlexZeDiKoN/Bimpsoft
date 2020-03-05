@@ -38,7 +38,7 @@ const updateObject = (dispatch) => ({ id, type, layer }) => {
 }
 
 const deleteObjects = (dispatch) => (ids) => {
-  console.log('socket.io: delete objects', { ids })
+  // console.log('socket.io: delete objects', { ids })
   catchError(webMapActions.removeObjects)(ids)(dispatch)
 }
 

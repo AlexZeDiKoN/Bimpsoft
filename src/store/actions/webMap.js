@@ -24,7 +24,7 @@ const heartBeat = (objLock, objUnlock, objectId) => {
     .catch(console.error)
 }
 
-const stopHeartBeat = () => {
+export const stopHeartBeat = () => {
   if (lockHeartBeat) {
     clearInterval(lockHeartBeat)
     lockHeartBeat = null
@@ -216,9 +216,10 @@ export const deleteObjects = (list) =>
     })
   })
 
-export const removeObjects = (ids) => {
-  //TODO
-}
+export const removeObjects = (ids) => ({
+  type: actionNames.DEL_OBJECTS,
+  payload: ids,
+})
 
 export const refreshObject = (id, type, layer) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
