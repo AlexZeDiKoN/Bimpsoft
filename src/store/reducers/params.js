@@ -3,7 +3,7 @@ import { paramsNames, SCALES, INIT_VALUES } from '../../constants'
 
 const initialState = {
   [paramsNames.POINT_SIZE_MIN]: 4,
-  [paramsNames.POINT_SIZE_MAX]: 160,
+  [paramsNames.POINT_SIZE_MAX]: 90,
   [paramsNames.TEXT_SIZE_MIN]: 4,
   [paramsNames.TEXT_SIZE_MAX]: 70,
   [paramsNames.LINE_SIZE_MIN]: 4,
