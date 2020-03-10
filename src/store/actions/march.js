@@ -7,6 +7,8 @@ export const SET_INTEGRITY = action('SET_INTEGRITY')
 export const EDIT_FORM_FIELD = action('EDIT_FORM_FIELD')
 export const ADD_SEGMENT = action('ADD_SEGMENT')
 export const DELETE_SEGMENT = action('DELETE_SEGMENT')
+export const ADD_CHILD = action('ADD_CHILD')
+export const DELETE_CHILD = action('DELETE_CHILD')
 
 export const getIndicator = () =>
   async (dispatch, getState, { marchApi: { getTypeKinds } }) => {
@@ -41,4 +43,20 @@ export const addSegment = (segmentId) => ({
 export const deleteSegment = (segmentId) => ({
   type: DELETE_SEGMENT,
   payload: segmentId,
+})
+
+export const addChild = (segmentId, childId) => ({
+  type: ADD_CHILD,
+  payload: {
+    segmentId,
+    childId,
+  },
+})
+
+export const deleteChild = (segmentId, childId) => ({
+  type: DELETE_CHILD,
+  payload: {
+    segmentId,
+    childId,
+  },
 })

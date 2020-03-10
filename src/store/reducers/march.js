@@ -1,12 +1,5 @@
-import { omit, remove, update, insert, flatten, pick, assoc, compose } from 'ramda'
 import { List } from 'immutable'
 import { march } from '../actions'
-import {
-  MARCH_SEGMENT_KEYS,
-  FIELDS_TYPE,
-  DEFAULT_SEGMENT_ID,
-} from '../../constants/March'
-import i18n from '../../i18n'
 
 const initState = {
   marchEdit: true,
@@ -19,14 +12,14 @@ const initState = {
       segmentType: 41, // Своїм ходом
       terrain: 69, // Рівнинна
       velocity: 30,
-      coord: '',
+      coord: { },
       required: true,
       editableName: false,
       children: [
         {
           name: 'Вихідний рубіж',
           lineType: '',
-          coord: '',
+          coord: { },
           refPoint: '',
           required: true,
           editableName: false,
@@ -35,7 +28,7 @@ const initState = {
     },
     {
       segmentType: 0,
-      coord: '',
+      coord: { },
       name: 'Пункт призначення',
       required: true,
       editableName: false,
@@ -51,7 +44,7 @@ const defaultSegment = {
   segmentType: 41, // Своїм ходом
   terrain: 69, // Рівнинна
   velocity: 30,
-  coord: '',
+  coord: { },
   required: false,
   editableName: true,
   children: [ ],
@@ -60,7 +53,7 @@ const defaultSegment = {
 const defaultChild = {
   name: '',
   lineType: '',
-  coord: '',
+  coord: { },
   refPoint: '',
   required: false,
   editableName: true,
@@ -68,8 +61,6 @@ const defaultChild = {
 
 // eslint-disable-next-line
 const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
-
-const resetSegment = (segment) => assoc('id', uuid(), pick([ 'required', 'possibleTypes', 'id' ], segment))
 
 export default function reducer (state = initState, action) {
   const { type, payload } = action
@@ -113,6 +104,30 @@ export default function reducer (state = initState, action) {
     }
     case march.DELETE_SEGMENT: {
       return { ...state, segments: state.segments.delete(payload) }
+    }
+    case march.ADD_CHILD: {
+      const { segmentId, childId } = payload
+      const children = state.segments.get(segmentId).children
+
+      children.splice((childId || childId === 0) ? childId + 1 : 0, 0, defaultChild)
+
+      return { ...state,
+        segments: state.segments.update(segmentId, (segment) => ({
+          ...segment,
+          children,
+        })) }
+    }
+    case march.DELETE_CHILD: {
+      const { segmentId, childId } = payload
+      const children = state.segments.get(segmentId).children
+
+      children.splice(childId, 1)
+
+      return { ...state,
+        segments: state.segments.update(segmentId, (segment) => ({
+          ...segment,
+          children,
+        })) }
     }
     default:
       return state

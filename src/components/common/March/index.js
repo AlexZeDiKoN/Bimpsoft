@@ -1,16 +1,23 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Form, Icon, Input, Button, Select } from 'antd'
+import { Input, Button } from 'antd'
+import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
+import placeSearch from '../../../server/places'
 import SegmentButtonForm from './children/SegmentButtonForm'
 import './style.css'
 
+const {
+  form: { Coordinates },
+} = components
+
 class March extends Component {
   static propTypes = {
-    indicators: PropTypes.object,
     segments: PropTypes.array,
-    integrity: PropTypes.bool,
-    setMarchParams: PropTypes.func,
-    setIntegrity: PropTypes.func,
+    addSegment: PropTypes.func.isRequired,
+    deleteSegment: PropTypes.func.isRequired,
+    editFormField: PropTypes.func.isRequired,
+    addChild: PropTypes.func.isRequired,
+    deleteChild: PropTypes.func.isRequired,
   }
 
   renderSegmentBlocks = () => {
@@ -37,7 +44,7 @@ class March extends Component {
         default:
           break
       }
-      const height = (1 + segment.children.length) * 100
+      const height = (1 + segment.children.length) * 120
 
       return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
         00:00
@@ -56,7 +63,7 @@ class March extends Component {
   }
 
   renderDotsForms = () => {
-    const { segments, editFormField } = this.props
+    const { segments, editFormField, addChild, deleteChild } = this.props
     const formData = []
 
     segments.forEach((it, segmentId) => {
@@ -69,17 +76,24 @@ class March extends Component {
     })
 
     return formData.map((segment, id) => {
-      const { name, coord, refPoint, childId, segmentId, editableName } = segment
+      const { name, coord = {}, refPoint, childId, segmentId, editableName, segmentType, required } = segment
 
       return <div key={`dotForm${id}`} className={'dot-and-form'}>
-        <div className={'dot'}/>
+        <div className={'dots'}>
+          <div className={'dot'}/>
+          {(segmentType || childId || childId === 0) && <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}>+</div>}
+        </div>
         <div className={'dot-form'}>
-          <Input value={coord} onChange={(e) => editFormField({
-            fieldName: 'coord',
-            segmentId,
-            childId,
-            val: e.target.value,
-          })}/>
+          <Coordinates
+            coordinates={coord}
+            onChange={(e) => editFormField({
+              fieldName: 'coord',
+              segmentId,
+              childId,
+              val: e,
+            })}
+            onSearch={placeSearch}
+          />
           {refPoint || 'Географічний орієнтир'}
           <br/>
           {(editableName)
@@ -90,6 +104,7 @@ class March extends Component {
               val: e.target.value,
             })}/>
             : name }
+          {(!required) && <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>}
         </div>
       </div>
     })
@@ -106,6 +121,4 @@ class March extends Component {
   }
 }
 
-const WrappedMarch = Form.create()(March)
-
-export default WrappedMarch
+export default March

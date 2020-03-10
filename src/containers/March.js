@@ -15,6 +15,8 @@ const mapDispatchToProps = {
   editFormField: march.editFormField,
   addSegment: march.addSegment,
   deleteSegment: march.deleteSegment,
+  addChild: march.addChild,
+  deleteChild: march.deleteChild,
 }
 
 const MarchContainer = connect(

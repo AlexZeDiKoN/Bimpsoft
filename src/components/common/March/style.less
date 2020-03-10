@@ -55,19 +55,38 @@
     .right {
       width: 80%;
       height: 100%;
+
       .dot-and-form{
         display: flex;
         justify-content: space-between;
         flex-direction: row;
-        width: 80%;
-        height: 100px;
-        .dot {
-          align-self: center;
-          width: 10px;
-          height: 10px;
-          background-color: #DFE3B4;
-          border-radius: 50%;
-          border: 2px solid black;
+        width: 100%;
+        height: 120px;
+        .dots {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          height: 100%;
+          .dot {
+            align-self: center;
+            width: 10px;
+            height: 10px;
+            background-color: #DFE3B4;
+            border-radius: 50%;
+            border: 2px solid black;
+            margin-left: 10px;
+            margin-right: 10px;
+          }
+          .add-dot {
+            align-self: self-end;
+            width: 20px;
+            height: 20px;
+            background-color: #DFE3B4;
+            border-radius: 50%;
+            border: 2px solid black;
+            margin-left: 10px;
+            margin-right: 10px;
+          }
         }
         .dot-form {
           width: 100%;
