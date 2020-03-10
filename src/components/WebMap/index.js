@@ -1044,6 +1044,12 @@ export default class WebMap extends React.PureComponent {
     const { params } = this.props
     settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
     settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
+    settings.BLOCKAGE_SIZE.max = params[paramsNames.BLOCKAGE_SIZE_MAX]
+    settings.BLOCKAGE_SIZE.min = params[paramsNames.BLOCKAGE_SIZE_MIN]
+    settings.ROW_MINE_SIZE.max = params[paramsNames.ROW_MINE_SIZE_MAX]
+    settings.ROW_MINE_SIZE.min = params[paramsNames.ROW_MINE_SIZE_MIN]
+    settings.MOAT_SIZE.max = params[paramsNames.MOAT_SIZE_MAX]
+    settings.MOAT_SIZE.min = params[paramsNames.MOAT_SIZE_MIN]
     settings.STROKE_SIZE.max = params[paramsNames.STROKE_SIZE_MAX]
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
@@ -1834,13 +1840,13 @@ export default class WebMap extends React.PureComponent {
         const x = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
         const y = (bounds.getEast() - bounds.getWest()) / 4
         let geometry = []
-        if (amp.type === 6 || amp.type === 4 || amp.type === 3) {
+        if (amp.type === 4 || amp.type === 3) {
           const p0 = { lat, lng: lng + y }
           const p1 = { lat: lat - x, lng: lng - y }
           const p2 = { lat: lat + x, lng: lng - y }
           geometry = [ p0, p1, p2 ]
         }
-        if (amp.type === 8 || amp.type === 9) {
+        if (amp.type === 6 || amp.type === 8 || amp.type === 9) {
           const p0 = { lat: lat + x, lng: lng + y }
           const p1 = { lat: lat - x, lng: lng - y }
           geometry = [ p0, p1 ]
@@ -1920,5 +1926,3 @@ export default class WebMap extends React.PureComponent {
 
 /** Do not delete, please, it is FIX */
 export const buildFlexGridGeometry = formFlexGridGeometry
-
-// try { throw new Error() } catch (e) { console.log(e.stack) }

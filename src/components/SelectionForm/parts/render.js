@@ -5,6 +5,7 @@ import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
 import { getStylesForLineType, settings } from '../../../utils/svg/lines'
+import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
 const { Option } = Select
@@ -75,39 +76,6 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
     )
   } else {
     switch (borderStyle) {
-      case 'waved':
-        return optionsSvg(
-          <>
-            <path
-              stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7"
-            />
-          </>,
-        )
-      case 'waved2':
-        return optionsSvg(
-          <>
-            <path
-              stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7 L0,7"
-            />
-          </>,
-        )
-      case 'stroked':
-        return optionsSvg(
-          <>
-            <path
-              stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
-            />
-          </>,
-        )
       case 'chain':
         return optionsSvg(
           <>
@@ -117,6 +85,38 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
               strokeWidth={strokeWidth}
               d="M0,10 h56 m1,1"
               {...dash}
+            />
+          </>,
+        )
+      case 'solidWithDots':
+      case 'stroked':
+      case 'waved':
+      case 'waved2':
+      case 'blockage':
+      case 'blockageIsolation':
+      case 'moatAntiTankUnfin':
+      case 'moatAntiTank':
+      case 'moatAntiTankMine':
+      case 'blockageWire':
+      case 'blockageWire1':
+      case 'blockageWire2':
+      case 'blockageWireFence':
+      case 'blockageWireLow':
+      case 'blockageWireHigh':
+      case 'blockageSpiral':
+      case 'blockageSpiral2':
+      case 'blockageSpiral3':
+      case 'rowMinesAntyTank':
+      case 'rowMinesLand':
+      case 'trenches':
+        return optionsSvg(
+          <>
+            <path
+              mask="url(#sign)"
+              stroke="rgba(0,0,0,0.65)"
+              strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
+              fill={TYPE_LINE_PATH[borderStyle]?.fill || ''}
+              d={TYPE_LINE_PATH[borderStyle]?.d || 'M0,0 l56,20 M0,20 l56,-20'}
             />
           </>,
         )
