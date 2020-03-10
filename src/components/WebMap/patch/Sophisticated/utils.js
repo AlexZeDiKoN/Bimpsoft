@@ -1,6 +1,6 @@
 /* global L */
 
-import { rotate, translate, compose, inverse, applyToPoint, applyToPoints } from 'transformation-matrix'
+import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
 import { prepareBezierPath } from '../utils/Bezier'
 import { CONFIG } from '.'
 

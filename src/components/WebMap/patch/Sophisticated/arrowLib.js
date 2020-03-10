@@ -1,6 +1,8 @@
-// import Bezier from "bezier-js";
-// import {Intersection, ShapeInfo} from "kld-intersections";
-/* global ShapeInfo, Intersection, Bezier, moveTo, lineTo, drawArc, drawBezier  */
+import Bezier from 'bezier-js'
+import { Intersection, ShapeInfo } from 'kld-intersections'
+import {
+  moveTo, lineTo, drawArc, drawBezier,
+} from './utils'
 
 const coefTangent = 3
 const coefArrowWing = 0.33 // коэфициент выступа стрелки над телом стрелки
@@ -15,20 +17,9 @@ const isDef = (v) => v !== undefined && v !== null
 // eslint-disable-next-line no-unused-vars
 const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null && v.y !== undefined && v.y !== null
 
-// function controlPoint(t) {
-// расстоянте между точками апроксимации
-//     let kf=Math.sqrt((t[1].x - t[2].x)*(t[1].x - t[2].x) + (t[1].y - t[2].y)*(t[1].y - t[2].y) );
-//     // длина вектора контрольной точки
-//     let dlina=Math.sqrt((t[1].x - t[0].x)*(t[1].x - t[0].x) + (t[1].y - t[0].y)*(t[1].y - t[0].y) );
-//     // приводим длину вектора к растоянию между точками апроксимации
-//     let prx=(t[0].x-t[1].x)/dlina*kf/koefKasatelnoy;
-//     let pry=(t[0].y-t[1].y)/dlina*kf/koefKasatelnoy;
-//     return {x:(t[1].x-prx),y:(t[1].y-pry)};
-// }
-
 // ---------------------------------------------------------------------------------------
-// Поcтроение AIRBORNE / AVIATION
-//  bindingType= "arcs" "miter" "round" "bevel";
+// Построение AIRBORNE / AVIATION
+// bindingType= "arcs" "miter" "round" "bevel";
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
@@ -81,12 +72,8 @@ function buildingAirborne (datapt, typeLine, bindingType) {
     const bLineL = bindingLine(lineL, bindingType, halfTail)
     const bLineP = bindingLine(lineP, bindingType, halfTail)
     const tailPath = []
-    bLineL.map((el) => {
-      tailPath.push(lineToPath(el))
-    })
-    bLineP.map((el) => {
-      tailPath.push(lineToPath(el))
-    })
+    tailPath.push(...bLineL.map(lineToPath))
+    tailPath.push(...bLineP.map(lineToPath))
     return path + tailPath.join(' ')
   }
   // Статика стрелки
@@ -157,14 +144,15 @@ function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   // смещение
   const pm = shiftPoints(tO, arrPointRotation)
   // добавляем к стрелке фигуру
-  path = path + 'M' + `${pm[1].x} ${pm[1].y}` + 'L' + `${pm[9].x} ${pm[9].y}` +
-    'M' + `${pm[2].x} ${pm[2].y}` + 'L' + `${pm[10].x} ${pm[10].y}` +
-    'M' + `${pm[5].x} ${pm[5].y}` + 'L' + `${pm[6].x} ${pm[6].y}` +
-    'M' + `${pm[7].x} ${pm[7].y}` + 'L' + `${pm[8].x} ${pm[8].y}` +
-    'M' + `${pm[11].x} ${pm[11].y}` + 'L' + `${pm[12].x} ${pm[12].y}` +
-    'M' + `${pm[13].x} ${pm[13].y}` + 'L' + `${pm[14].x} ${pm[14].y}`
+  path = `${path}
+    M${pm[1].x} ${pm[1].y} L${pm[9].x} ${pm[9].y}
+    M${pm[2].x} ${pm[2].y} L${pm[10].x} ${pm[10].y}
+    M${pm[5].x} ${pm[5].y} L${pm[6].x} ${pm[6].y}
+    M${pm[7].x} ${pm[7].y} L${pm[8].x} ${pm[8].y}
+    M${pm[11].x} ${pm[11].y} L${pm[12].x} ${pm[12].y}
+    M${pm[13].x} ${pm[13].y} L${pm[14].x} ${pm[14].y}`
   // добавляем элемен фигуры с заливкой
-  const amplifiers = 'M' + `${pm[15].x} ${pm[15].y}` + 'L' + `${pm[16].x} ${pm[16].y}` + 'L' + `${pm[17].x} ${pm[17].y}` + 'Z'
+  const amplifiers = `M${pm[15].x} ${pm[15].y} L${pm[16].x} ${pm[16].y}L${pm[17].x} ${pm[17].y} Z`
   // построение динамического хвоста -------------------------------
   if (isDef(typeLine) && typeLine === 'L') { // дорисовка хвоста прямыми
     const timePt = pt.slice(0, -1) // убираем контрольнуя точку стрелки из построения
@@ -347,7 +335,7 @@ function pointRotationToPoint (point, angle, pointO) {
   return { x: pp.x * ca - pp.y * sa + pointO.x, y: pp.x * sa + pp.y * ca + pointO.y }
 }
 // сдвиг точек относительно заданой
-function shiftPoints (pO, pArray) {
+export function shiftPoints (pO, pArray) {
   return pArray.map((elm) => ({ x: elm.x + pO.x, y: elm.y + pO.y }))
 }
 // ------------------------------------------------------------------------------------------------
@@ -418,7 +406,7 @@ function coordinatesToAngle (t1, t2, t3) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function coordinatesToPolar (t1, t2, t3) {
+export function coordinatesToPolar (t1, t2, t3) {
   const beamLength = Math.sqrt((t1.x - t3.x) * (t1.x - t3.x) + (t1.y - t3.y) * (t1.y - t3.y))
   const angle = Math.atan2((t3.y - t1.y) * (t2.x - t1.x) - (t2.y - t1.y) * (t3.x - t1.x),
     (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
@@ -438,7 +426,7 @@ function angle4Points (t1, t2, t3, t4) {
   return Math.atan2((l1.A * l2.B - l2.A * l1.B), (l1.A * l2.A + l1.B * l2.B))
 }
 // eslint-disable-next-line no-unused-vars
-function polarToCoordinates (t0, t1, tP) {
+export function polarToCoordinates (t0, t1, tP) {
   const vectorN = vector(t0, t1)
   const angleVectora = Math.atan2(vectorN.y, vectorN.x)
   const sizeOsnovanija = tP.beamLength * Math.cos(tP.angle)
@@ -490,7 +478,7 @@ function pointReflected (n, p1, p2) {
 }
 
 // ----------------------------------------------------------------------------------------
-function lengthLine (t1, t2) {
+export function lengthLine (t1, t2) {
   return Math.sqrt((t1.x - t2.x) * (t1.x - t2.x) + (t1.y - t2.y) * (t1.y - t2.y))
 }
 
@@ -847,7 +835,7 @@ function curveToPath (mCurve) {
   const pathCurve = []
   for (let k = 0; k < mCurve.length; k++) {
     pathCurve.push(...mCurve[k].sectionBez.map((p) =>
-        `M ${p[0].x} ${p[0].y} C ${p[1].x} ${p[1].y}  ${p[2].x}  ${p[2].y}  ${p[3].x}  ${p[3].y} `)
+      `M ${p[0].x} ${p[0].y} C ${p[1].x} ${p[1].y}  ${p[2].x}  ${p[2].y}  ${p[3].x}  ${p[3].y} `)
     )
   }
   return pathCurve
@@ -960,13 +948,8 @@ function constructionTailLine (pt, widthL, bindingType) {
   // Сведение отрезков к ломанной
   const mLineTypeL = bindingLine(mLineL, bindingType, widthL)
   const mLineTypeP = bindingLine(mLineP, bindingType, widthL)
-
-  mLineTypeL.map((el) => {
-    path.push(lineToPath(el))
-  })
-  mLineTypeP.map((el) => {
-    path.push(lineToPath(el))
-  })
+  path.push(...mLineTypeL.map(lineToPath))
+  path.push(...mLineTypeP.map(lineToPath))
   return path.join(' ')
 }
 
@@ -976,7 +959,7 @@ function bindingLine (mLine, _bindingType, widthL) {
   let bindType = 'bevel'
   if (isDef(_bindingType)) {
     if (_bindingType === 'arcs' || _bindingType === 'bevel' || _bindingType === 'miter' ||
-        _bindingType === 'round' || _bindingType === 'smooth') {
+      _bindingType === 'round' || _bindingType === 'smooth') {
       bindType = _bindingType
     }
   }
@@ -989,7 +972,7 @@ function bindingLine (mLine, _bindingType, widthL) {
       if ((angle1 < Math.PI / 2) && (angle2 < Math.PI / 2)) {
         // Сводим внутренние близкие не пересекающиеся отрезки
         // mLine[0].p2 = mLine[1].p1
-        // console.log("Подоезаем", mLine[i], deg(angle1),deg(angle2))
+        // console.log("Подоезаем", mLine[i], deg(angle1), deg(angle2))
         pIntersec.status = 'Intersection'
         pIntersec.points = [ mLine[1].p1 ]
       }

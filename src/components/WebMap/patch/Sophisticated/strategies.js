@@ -1,7 +1,12 @@
 import Bezier from 'bezier-js'
+import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
 import {
-  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
+  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane, rad,
+  angleOf, oppositeVector, drawBezierSpline,
 } from './utils'
+import {
+  shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates,
+} from './arrowLib'
 
 export const MIN_LINE_POINTS = 2
 export const MIN_AREA_POINTS = 3
@@ -46,6 +51,22 @@ export const STRATEGY = {
       segmentBy(nextPoints[0], nextPoints[1], 0.5),
       adjustedNorm(prevPoints, nextPoints, changed)
     )
+  },
+
+  shape120: (prevPoints, nextPoints, changed) => {
+    nextPoints[2] = {
+      x: (nextPoints[2].x <= nextPoints[1].x) ? nextPoints[1].x : nextPoints[2].x,
+      y: nextPoints[1].y
+    }
+
+    const angle = angleOf(nextPoints[1], nextPoints[2])
+
+    const ang = (delta, point) => compose(
+      translate(point.x, point.y),
+      rotate(angle + Math.PI + rad(delta)),
+    )
+
+    nextPoints[0] = applyToPoint(ang(120, nextPoints[1]), { x: segmentLength(nextPoints[0], nextPoints[1]), y: 0 })
   },
 
   // Форма літери "L" (відрізок між двома точками, третя точка на кінці перпендикуляру від другої точки)
@@ -94,7 +115,7 @@ export const STRATEGY = {
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
-      newPoints.map((elm, ind) => { nextPoints[ind] = elm })
+      newPoints.forEach((elm, ind) => (nextPoints[ind] = elm))
     } else if (changed[0] === 1) { // змінюємо азимут
       // длина последнего сектора должна быть меньше длины стрелки на 15% (сам придумал)
       if (lengthLine(pN0, pN1) * 0.85 < lengthLine(nextPoints[nextPoints.length - 1], pN0)) {
@@ -185,7 +206,7 @@ export const STRATEGY = {
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
-      newPoints.map((elm, ind) => { nextPoints[ind] = elm })
+      newPoints.forEach((elm, ind) => (nextPoints[ind] = elm))
     } else {
       // змінюємо радіус сектора
       const lengthChanged = lengthLine(pN0, nextPoints[indChanged])
