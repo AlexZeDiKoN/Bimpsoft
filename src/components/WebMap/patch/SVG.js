@@ -3,7 +3,7 @@ import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import { setClassName, scaleValue } from './utils/helpers'
+import { interpolateSize, setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -136,6 +136,7 @@ L.SVG.include({
 
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
+    let rezultFilled = ''
     const lineType = layer.lineType || 'solid'
     const skipStart = layer.options?.skipStart
     const skipEnd = layer.options?.skipEnd
@@ -175,10 +176,39 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, true)
           break
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'blockageWire':
+        case 'trenches':
+          result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        // залишаємо початкову лінію
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, false, true, lineType)
+          break
+        // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, false, true, lineType, false, true)
+          break
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          rezultFilled = this._buildElementFilled(layer, false, true, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, false, true)
+      this._updateLineFilled(layer, rezultFilled)
     } else if (fullPolyline) {
       switch (lineType) {
         case 'waved':
@@ -190,17 +220,14 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, false)
           break
-        case 'moatAntiTank':
-          result = this._buildBlockage(layer, false, false, lineType)
-          break
         case 'blockage':
-        case 'blockageIsolation':
         case 'moatAntiTankUnfin':
         case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, false, lineType, true)
           break
         // залишаємо початкову лінію
+        case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
         case 'blockageWireFence':
@@ -212,12 +239,22 @@ L.SVG.include({
         case 'solidWithDots':
           result += this._buildBlockage(layer, false, false, lineType)
           break
+        // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, false, false, lineType, false, true)
+          break
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          rezultFilled = this._buildElementFilled(layer, false, false, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, false, false)
       this._updateLineEnds(layer, false)
-      result += ` m1,1`
+      this._updateLineFilled(layer, rezultFilled)
+      // result += ` m1,1`
     } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
@@ -227,10 +264,43 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, true)
           break
+        // не залишаємо початкову лінію
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, true, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, true, true, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'solidWithDots':
+          result += this._buildBlockage(layer, true, true, lineType)
+          break
+        // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, true, true, lineType, false, true)
+          break
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          rezultFilled = this._buildElementFilled(layer, true, true, lineType)
+          // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
+          break
         default:
           break
       }
       this._updateMask(layer, true, true)
+      this._updateLineFilled(layer, rezultFilled)
     } else if (fullCurve) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
       switch (lineType) {
@@ -243,17 +313,17 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, false)
           break
-        case 'moatAntiTank': // необхідна заливка
-          result = this._buildBlockage(layer, false, false, lineType)
-          break
+        // не залишаємо початкову лінію
         case 'blockage':
-        case 'blockageIsolation':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
+          result = this._buildBlockage(layer, true, false, lineType, true)
+          break
+        case 'blockageWire':
           result = this._buildBlockage(layer, true, false, lineType)
           break
         // залишаємо початкову лінію
+        case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
         case 'blockageWireFence':
@@ -265,11 +335,22 @@ L.SVG.include({
         case 'solidWithDots':
           result += this._buildBlockage(layer, true, false, lineType)
           break
+        // необхідна заливка
+        case 'rowMinesLand':
+          rezultFilled = this._buildElementFilled(layer, true, false, lineType, false, true)
+          break
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          rezultFilled = this._buildElementFilled(layer, true, false, lineType)
+          // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
+          break
         default:
           break
       }
       this._updateMask(layer, true, false)
       this._updateLineEnds(layer, true)
+      this._updateLineFilled(layer, rezultFilled)
     }
     this._setPath(layer, result)
   },
@@ -321,8 +402,26 @@ L.SVG.include({
 
   _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
-    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, 1.0,
+    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
+  },
+
+  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd, setStrokeWidth = false) {
+    const bounds = layer._map._renderer._bounds
+    const colorLine = layer.object?.attributes?.color || 'black'
+    const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
+      (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
+
+    const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
+      layer._map.getZoom(), false, lineType, setEnd)
+    return `<path fill="${colorLine}" stroke-width="${widthLine}" d="${d}"/>`
+  },
+
+  _updateLineFilled: function (layer, rezultFilled) {
+    // if (rezultFilled === '') {
+    //   return layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
+    // }
+    layer.getAmplifierGroup().innerHTML += `${rezultFilled}`
   },
 
   _updateLineEnds: function (layer, bezier) {

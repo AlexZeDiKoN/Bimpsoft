@@ -54,8 +54,9 @@ export const TYPE_LINE_PATH = {
     d: 'M0,19 l10,-18 l10,18 l10,-18 l10,18 l10,-18 l10,18 Z',
     fill: 'black' },
   moatAntiTankMine: {
-    d: `M0,16 l5,-10 l5,10 h8 l5,-10 l5,10 h8 l5,-10 l5,10 h8 l5,-10 l5,10Z M14,12 A3 3 0 1 1 14.01,12 M32,12 A3 3 0 1 1 32.01,12 M50,12 A3 3 0 1 1 50.01,12`,
-    fill: 'black' },
+    d: `M0,17 l8,-15 l8,15 l8,-15 l8,15  l8,-15 l8,15 l8,-15 l8,15Z M16,8 A3 3 0 1 1 16.01,8 M32,8 A3 3 0 1 1 32.01,8 M48,8 A3 3 0 1 1 48.01,8`,
+    fill: 'black',
+    strokeWidth: '1' },
   blockageWire: {
     d: 'M0,2 l6,12 M0,14 l6,-12 M16,2 l6,12 M16,14 l6,-12 M32,2 l6,12 M32,14 l6,-12 M48,2 l6,12 M48,14 l6,-12',
     fill: 'none' },

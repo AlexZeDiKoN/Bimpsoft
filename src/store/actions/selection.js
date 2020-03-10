@@ -309,9 +309,14 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   const {
     selection: { list = [] },
   } = state
-  for (const id of list) {
-    await dispatch(webMap.deleteObject(id))
+  if (list.length) {
+    await (
+      list.length === 1
+        ? dispatch(webMap.deleteObject(list[0]))
+        : dispatch(webMap.deleteObjects(list))
+    )
   }
+  webMap.stopHeartBeat()
   dispatch(batchActions([
     hideForm(),
     selectedList([]),

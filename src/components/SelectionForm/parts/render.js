@@ -114,7 +114,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             <path
               mask="url(#sign)"
               stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
+              strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
               fill={TYPE_LINE_PATH[borderStyle]?.fill || ''}
               d={TYPE_LINE_PATH[borderStyle]?.d || 'M0,0 l56,20 M0,20 l56,-20'}
             />
