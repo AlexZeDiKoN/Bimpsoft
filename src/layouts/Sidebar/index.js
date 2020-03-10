@@ -16,7 +16,7 @@ const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 
 const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 320
-const SIDEBAR_SIZE_MARCH_DEFAULT = 450
+const SIDEBAR_SIZE_MARCH_DEFAULT = 300
 const SIDEBAR_SIZE_MIN = 320
 
 export default class Sidebar extends React.Component {

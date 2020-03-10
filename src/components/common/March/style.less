@@ -1,235 +1,80 @@
-.march_container {
-  background-color: #ffffff;
-  .march_title {
-    display: flex;
-    font-size: 17px;
-    font-weight: bold;
-    line-height: 30px;
-    padding-left: 10px;
-    border-bottom: 1px solid lightgray;
-    background-color: #ededed;
-  }
-  .march_name {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid lightgray;
-    background-color: #ededed;
-    .march_name-title {
-      min-width: 215px;
-    }
-    .ant-select-selection--single {
-      min-width: 215px;
-    }
+.march-popup-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 150px;
+  width: 250px;
+  background: rgba(0, 0, 0, 0.15);
+
+  .ant-select {
+    width: 100%;
   }
 
-  .march_track {
-    display: flex;
-    flex-direction: column;
-    width: 570px;
-    margin: 0 auto;
-  }
-
-  .march_segment {
-    display: flex;
-    text-align: end;
-    .segment_point {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 32px;
-      height: 32px;
-      margin: -5px -11px;
-    }
-    .march_segment-delete {
-      display: flex;
-      justify-content: flex-start;
-      padding: 5px 0px;
-      button {
-        border: none;
-        background: transparent;
-      }
-    }
-    .march_segment-options {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      position: relative;
-
-      &::after {
-        position: absolute;
-        display: block;
-        right: 0;
-        bottom: -25%;
-        content: "";
-        width: 227px;
-        border-bottom: 1px solid lightgray;
-      }
-
-      .march_segment-params {
-        margin-left: auto;
-      }
-      .march_segment-adding {
-        margin-right: auto;
-        button {
-          margin: .35em 0 .35em 1em;
-          flex: 1 1 auto;
-          height: 2em;
-          background: #fafafa;
-          border: 1px dashed #a7a6a6;
-          border-radius: 0.3em;
-          color: #5e6269;
-          box-sizing: content-box;
-          padding: 0.35em;
-          font-weight: 500;
-        }
-        button:hover {
-          color: #b0b37d !important;
-          border-color: #b0b37d !important;
-          background-color: #fff;
-        }
-      }
-    }
-    .dzvin-form-input {
-      width: 227px;
-    }
-  }
-  .march_buttonBlock {
-    background-color: #ededed;
-    button {
-      flex: 1 1 auto;
-      width: 100px;
-      height: 2em;
-      background: #fafafa;
-      border: 1px solid #a7a6a6;
-      border-radius: 0.3em;
-      color: #5e6269;
-      box-sizing: content-box;
-      padding: 0.35em;
-      font-weight: 500;
-      margin: 0.6em;
-    }
-    .march_button-submit:hover {
-      color: #fff !important;
-      border-color: #b0b37d !important;
-      background-color: #b0b37d;
-      cursor: pointer;
-    }
-    .march_button-cancel:hover {
-      color: #b0b37d !important;
-      border-color: #b0b37d !important;
-      background-color: #fff;
-    }
+  .ant-button {
+    align-self: self-end;
   }
 }
 
-.march_link-bl {
-  padding-left: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  text-align: start;
-  background-color: #ededed;
-  & > a {
-    text-decoration: underline;
-  }
-}
-
-.march_segment-header {
+.march-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  & > .march_distance {
-    margin: 0 auto;
-  }
-}
+  height: 100%;
 
-.march_total_distance {
-  text-align: end;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 30px;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-bottom: 1px solid lightgray;
-  background-color: #ededed;
-}
-
-.march_segment-point {
-  width: 270px;
-  position: relative;
-
-  &-delete {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-
-.march_icon {
-  &-error {
-    color: red;
-  }
-  &-success {
-    color: green;
-  }
-}
-
-.march_path-indicator {
-  position: absolute;
-  top: 50%;
-  right: -30px;
-  transform: translateY(-50%);
-  & > span {
-    display: block;
-    position: relative;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid yellow;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      display: block;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background-color: yellow;
-      transform: translateX(-50%) translateY(-50%);
-    }
-
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: -10px;
-      display: block;
-      height: 300px;
-      border: 2px dashed lightgray;
-      transform: translateY(300px) translateX(6px);
-    }
+  .header {
+    width: 100%;
+    height: 40px;
   }
 
-  &--start {
-    & > span {
-      border-color: green;
-      &::before {
-        background-color: green;
+  .march-main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 5%;
+    height: 90%;
+    width: 100%;
+
+    .left {
+      width: 20%;
+      height: 100%;
+
+      .segment {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        height: 30%;
+        border-bottom: 1px solid #C4C4C4;
+        .ant-btn {
+          width: 100%;
+          height: 20px;
+        }
       }
     }
-  }
 
-  &--end {
-    position: absolute;
-    top: 50%;
-    right: -40px;
-    width: 40px;
-    height: 40px;
-    transform: translateY(-50%);
-    color: red;
+    .right {
+      width: 80%;
+      height: 100%;
+      .dot-and-form{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        width: 80%;
+        height: 100px;
+        .dot {
+          align-self: center;
+          width: 10px;
+          height: 10px;
+          background-color: #DFE3B4;
+          border-radius: 50%;
+          border: 2px solid black;
+        }
+        .dot-form {
+          width: 100%;
+          height: 100%;
+          border-bottom: 3px solid #C4C4C4;
+        }
+      }
+    }
   }
 }

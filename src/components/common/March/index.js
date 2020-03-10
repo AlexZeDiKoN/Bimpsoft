@@ -1,174 +1,108 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Form, Icon, Input, Button, Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
-import i18n from '../../../i18n'
-import { MarchKeys } from '../../../constants'
+import SegmentButtonForm from './children/SegmentButtonForm'
 import './style.css'
-import SegmentContainer from './children/Segment'
-
-const { names: iconNames, IconButton } = components.icons
 
 class March extends Component {
   static propTypes = {
-    form: PropTypes.object.isRequired,
     indicators: PropTypes.object,
-    params: PropTypes.object,
+    segments: PropTypes.array,
     integrity: PropTypes.bool,
     setMarchParams: PropTypes.func,
     setIntegrity: PropTypes.func,
   }
 
-  indicatorItemObj = (target, indicator) => {
-    const activeItem = indicator.typeValues.filter((item) => item.id === Number(target))
-    return {
-      indicatorId: indicator.id,
-      id: activeItem[ 0 ].id,
-      name: activeItem[ 0 ].name,
-    }
-  }
+  renderSegmentBlocks = () => {
+    const { segments, addSegment, deleteSegment } = this.props
+    return segments.map((segment, id) => {
+      const { segmentType, terrain, velocity, required } = segment
+      if (segmentType === 0) {
+        return null
+      }
+      let color = ''
+      switch (segmentType) {
+        case (41):
+          color = '#DFE3B4'
+          break
+        case (42):
+          color = '#FFE0A4'
+          break
+        case (43):
+          color = '#94D8FF'
+          break
+        case (44):
+          color = '#5bb24e'
+          break
+        default:
+          break
+      }
+      const height = (1 + segment.children.length) * 100
 
-  handleMarchType = (target, key) => {
-    const { setMarchParams, indicators } = this.props
-    const { MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
-    const template = MARCH_TEMPLATES[ target ].required
-    const targetObj = this.indicatorItemObj(target,
-      indicators[ MARCH_INDICATORS_GROUP.movementType ])
-    setMarchParams({
-      [ key ]: targetObj,
-      template,
+      return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
+        00:00
+        10 km
+        <SegmentButtonForm
+          segmentId={id}
+          deleteSegment={deleteSegment}
+          segmentType={segmentType}
+          terrain={terrain}
+          velocity={velocity}
+          required={required}
+        />
+        <Button onClick={() => addSegment(id)}>+</Button>
+      </div>
     })
   }
 
-  createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
+  renderDotsForms = () => {
+    const { segments, editFormField } = this.props
+    const formData = []
 
-  checkIntegrityOfMarch = () => {
-    const { form, setIntegrity } = this.props
-    form.validateFields((err) => setIntegrity(!err))
-  }
-
-  handleSubmitForm = (event) => {
-    event.preventDefault()
-    const { form, params } = this.props
-    form.validateFields((err) => {
-      if (!err) {
-        const segments = this.setSegmentCoords()
-        // TODO: send request to server, delete localStorage
-        localStorage.setItem('march:storage', JSON.stringify({ ...params, segments }))
+    segments.forEach((it, segmentId) => {
+      formData.push({ ...it, segmentId })
+      if (it.children && it.children.length > 0) {
+        it.children.forEach((it2, childId) => {
+          formData.push({ ...it2, childId, segmentId })
+        })
       }
     })
-  }
 
-  setSegmentCoords = () => {
-    const { params: { segments } } = this.props
-    const { FIELDS_TYPE } = MarchKeys
-    return segments.reduce((acc, curr, i, seg) => {
-      if (curr.type !== FIELDS_TYPE.POINT) {
-        const { coordinate: coordStart } = seg[i - 1]
-        const { coordinate: coordEnd } = seg[i + 1]
-        return [ ...acc, { ...curr, coordStart, coordEnd } ]
-      }
-      return [ ...acc, curr ]
-    }, [])
+    return formData.map((segment, id) => {
+      const { name, coord, refPoint, childId, segmentId, editableName } = segment
+
+      return <div key={`dotForm${id}`} className={'dot-and-form'}>
+        <div className={'dot'}/>
+        <div className={'dot-form'}>
+          <Input value={coord} onChange={(e) => editFormField({
+            fieldName: 'coord',
+            segmentId,
+            childId,
+            val: e.target.value,
+          })}/>
+          {refPoint || 'Географічний орієнтир'}
+          <br/>
+          {(editableName)
+            ? <Input value={name} onChange={(e) => editFormField({
+              fieldName: 'name',
+              segmentId,
+              childId,
+              val: e.target.value,
+            })}/>
+            : name }
+        </div>
+      </div>
+    })
   }
 
   render () {
-    const {
-      form,
-      form: { getFieldDecorator },
-      indicators,
-      setMarchParams,
-      params: { segments },
-      integrity,
-    } = this.props
-    const { FormRow } = components.form
-    const { MARCH_KEYS, MARCH_INDICATORS_GROUP } = MarchKeys
-    return (
-      <div className="march_container">
-        <div className="march_title">{i18n.MARCH_TITLE}</div>
-        <div className="march_link-bl">
-          <a href="#/" title="Варіант маршруту">
-            {i18n.MARCH_LINK} -{' '}
-          </a>
-        </div>
-        {indicators && (
-          <Form
-            className="march_form"
-            onBlur={this.checkIntegrityOfMarch}
-            onSubmit={this.handleSubmitForm}
-          >
-            <div className="march_name">
-              <div className="march_name-indicator">
-                <Icon type="branches"
-                  className={`march_icon-${integrity ? 'success' : 'error'}`}/>
-              </div>
-              <div className="march_name-form">
-                <FormRow>
-                  {getFieldDecorator(MARCH_KEYS.MARCH_NAME,
-                    { rules: [ { required: true } ] })(
-                    <Input
-                      className="march_name-title"
-                      placeholder={i18n.MARCH_NAME}
-                      onChange={({ target }) =>
-                        setMarchParams({
-                          [ MARCH_KEYS.MARCH_NAME ]: target.value,
-                        })
-                      }
-                    />,
-                  )}
-                </FormRow>
-                <FormRow>
-                  {getFieldDecorator(MARCH_KEYS.MARCH_TYPE,
-                    { rules: [ { required: true } ] })(
-                    <Select
-                      placeholder={i18n.MARCH_TYPE}
-                      onChange={(e) =>
-                        this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)
-                      }
-                    >
-                      {this.createSelectChildren(
-                        indicators[ MARCH_INDICATORS_GROUP.movementType ].typeValues,
-                      )}
-                    </Select>,
-                  )}
-                </FormRow>
-              </div>
-              <div className="march_name-load">
-                <IconButton
-                  title={i18n.OPEN_MARCH_FILE}
-                  icon={iconNames.PACK_DEFAULT}
-                  hoverIcon={iconNames.PACK_HOVER}
-                  onClick={() => console.info('open file')}
-                />
-              </div>
-            </div>
-            <div className="march_track">
-              {segments.map((item, i) => (
-                <SegmentContainer key={item.id} index={i} form={form}/>
-              ))}
-            </div>
-            <div className="march_total_distance">{i18n.MARCH_DISTANCE}: {0} км</div>
-            <div className="march_buttonBlock">
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="march_button-submit"
-              >
-                {i18n.CREATE_BTN_TITLE}
-              </Button>
-              <Button
-                htmlType="reset"
-                className="march_button-cancel"
-                onClick={() => console.info('cancel')}
-              >
-                {i18n.CANCEL_BTN_TITLE}
-              </Button>
-            </div>
-          </Form>
-        )}
+    return <div className={'march-container'}>
+      <div className={'header'}>Header</div>
+      <div className={'march-main'}>
+        <div className={'left'}>{this.renderSegmentBlocks()}</div>
+        <div className={'right'}>{this.renderDotsForms()}</div>
       </div>
-    )
+    </div>
   }
 }
 

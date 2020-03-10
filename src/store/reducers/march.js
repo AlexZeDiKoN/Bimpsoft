@@ -1,4 +1,5 @@
 import { omit, remove, update, insert, flatten, pick, assoc, compose } from 'ramda'
+import { List } from 'immutable'
 import { march } from '../actions'
 import {
   MARCH_SEGMENT_KEYS,
@@ -8,14 +9,61 @@ import {
 import i18n from '../../i18n'
 
 const initState = {
-  marchEdit: false,
+  marchEdit: true,
   indicators: undefined,
   integrity: false,
-  params: {
-    segments: [],
-  },
+  segments: List([
+    {
+      name: 'Пункт відправлення',
+      refPoint: 'База',
+      segmentType: 41, // Своїм ходом
+      terrain: 69, // Рівнинна
+      velocity: 30,
+      coord: '',
+      required: true,
+      editableName: false,
+      children: [
+        {
+          name: 'Вихідний рубіж',
+          lineType: '',
+          coord: '',
+          refPoint: '',
+          required: true,
+          editableName: false,
+        },
+      ],
+    },
+    {
+      segmentType: 0,
+      coord: '',
+      name: 'Пункт призначення',
+      required: true,
+      editableName: false,
+    },
+  ]),
   existingSegmentsById: {},
   landmarks: [],
+}
+
+const defaultSegment = {
+  name: '',
+  refPoint: '',
+  segmentType: 41, // Своїм ходом
+  terrain: 69, // Рівнинна
+  velocity: 30,
+  coord: '',
+  required: false,
+  editableName: true,
+  children: [ ],
+}
+
+const defaultChild = {
+  name: '',
+  lineType: '',
+  coord: '',
+  refPoint: '',
+  required: false,
+  editableName: true,
 }
 
 // eslint-disable-next-line
@@ -43,64 +91,28 @@ export default function reducer (state = initState, action) {
         return { ...state, params }
       }
     }
-    case march.ADD_POINT: {
-      const { segments } = state.params
-      const { index, optional } = payload
-      const position = index === 2 ? index + 1 : index
-
-      const nextSegment = resetSegment(segments[ position ])
-
-      const options = optional.map((val) => ({ ...val, id: uuid() }))
-      const updatedSegments = compose(
-        flatten,
-        insert(position, options),
-        update(position, nextSegment),
-      )(segments)
-      const params = { ...state.params, segments: updatedSegments }
-
-      return { ...state, params, integrity: false }
-    }
-    case march.DELETE_POINT: {
-      const { segments } = state.params
-      const nextSegmentIndex = payload + 1
-      const previousSegmentIndex = payload - 1
-
-      const nextSegment = resetSegment(segments[ nextSegmentIndex ])
-
-      const updatedSegments = compose(
-        remove(previousSegmentIndex, 2),
-        update(nextSegmentIndex, nextSegment),
-      )(segments)
-      const params = { ...state.params, segments: updatedSegments }
-      return { ...state, params, integrity: false }
-    }
-    case march.DELETE_SEGMENT: {
-      const { segments } = state.params
-      const updatedSegment = assoc('id', uuid(), omit(
-        [ MARCH_SEGMENT_KEYS.SEGMENT, MARCH_SEGMENT_KEYS.SEGMENT_NAME ],
-        segments[ payload ]))
-
-      const updatedSegments = update(payload, updatedSegment, segments)
-      const params = { ...state.params, segments: updatedSegments }
-      return { ...state, params, integrity: false }
-    }
     case march.SET_INTEGRITY: {
       return { ...state, integrity: payload }
     }
-    case march.GET_EXISTING_SEGMENTS: {
-      const byId = payload
-        .filter((item) => item.type !== FIELDS_TYPE.POINT)
-        .reduce(
-          (acc, curr) => ({ ...acc, [curr.id]: curr }), {})
-      return {
-        ...state,
-        existingSegmentsById: {
-          [DEFAULT_SEGMENT_ID]: { id: DEFAULT_SEGMENT_ID, name: i18n.DEFAULT_SEGMENT_NAME }, ...byId,
-        },
+    case march.EDIT_FORM_FIELD: {
+      const { val, fieldName, segmentId, childId } = payload
+
+      let newSegments
+      if (childId || childId === 0) {
+        newSegments = state.segments.update(segmentId, (segment) => ({
+          ...segment,
+          children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName]: val } : it),
+        }))
+      } else {
+        newSegments = state.segments.update(segmentId, (segment) => ({ ...segment, [fieldName]: val }))
       }
+      return { ...state, segments: newSegments }
     }
-    case march.GET_LANDMARKS: {
-      return { ...state, landmarks: payload }
+    case march.ADD_SEGMENT: {
+      return { ...state, segments: state.segments.insert(payload + 1, defaultSegment) }
+    }
+    case march.DELETE_SEGMENT: {
+      return { ...state, segments: state.segments.delete(payload) }
     }
     default:
       return state
