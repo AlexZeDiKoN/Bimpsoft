@@ -523,8 +523,7 @@ const addUnitLine = (
   p2,
   lineType = 'blockage',
   strokeWidth = 1,
-  halfElement = false,
-  continueLine = false) => {
+  halfElement = false) => {
   const result = ''
   const v = vector(p1, p2)
   switch (lineType) {
@@ -538,22 +537,18 @@ const addUnitLine = (
       if (halfElement) {
         const n = setLength(normal(v), markerSize)
         const cp2 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
-        return continueLine
-          ? ` L${cp2.x} ${cp2.y} L${p2.x} ${p2.y}`
-          : ` M${p1.x} ${p1.y} L${cp2.x} ${cp2.y} L${p2.x} ${p2.y}`
+        return `L${cp2.x} ${cp2.y} L${p2.x} ${p2.y}`
       }
-      return continueLine ? `L${p2.x} ${p2.y}` : `M${p1.x} ${p1.y}L${p2.x} ${p2.y}`
+      return `L${p2.x} ${p2.y}`
     }
     case 'trenches' : {
       if (halfElement) {
         const n = setLength(normal(v), markerSize)
         const cp2 = apply(p1, n)
         const cp3 = apply(p2, n)
-        return continueLine
-          ? `L${cp2.x} ${cp2.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}`
-          : `M${p1.x} ${p1.y}L${cp2.x} ${cp2.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}`
+        return `L${cp2.x} ${cp2.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}`
       }
-      return continueLine ? `L${p2.x} ${p2.y}` : `M${p1.x} ${p1.y}L${p2.x} ${p2.y}`
+      return `L${p2.x} ${p2.y}`
     }
     case 'moatAntiTankUnfin':
     case 'moatAntiTank': {
@@ -583,7 +578,7 @@ const addUnitLine = (
       const cp1 = apply(p2, nr)
       const cp2 = apply(cp1, vr)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
-      return `M${p2.x} ${p2.y}L${cp3.x} ${cp3.y}L${p1.x} ${p1.y} Z M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}`
+      return `M${p2.x} ${p2.y}L${cp3.x} ${cp3.y}L${p1.x} ${p1.y}Z M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}`
     }
     case 'blockageIsolation': {
       const n = setLength(normal(v), markerSize)
@@ -593,12 +588,14 @@ const addUnitLine = (
     case 'blockageWireHigh':
     case 'blockageWireLow': {
       // основная линия снизу
+      const dx = v.x / 8
+      const dy = v.y / 8
+      const cp1 = { x: p1.x + dx, y: p1.y + dy }
+      const cp2 = { x: p2.x - dx, y: p2.y - dy }
       const n = setLength(normal(v), markerSize)
-      const np = setLength(v, markerSize)
-      const cp3 = apply(p1, n)
-      const cp2 = { x: p1.x + np.x, y: p1.y + np.y }
-      const cp1 = apply(cp2, n)
-      return ` M${p1.x} ${p1.y} L${cp1.x} ${cp1.y} M${cp3.x} ${cp3.y} L${cp2.x} ${cp2.y}`
+      const cp3 = apply(cp1, n)
+      const cp4 = apply(cp2, n)
+      return `M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp3.x} ${cp3.y} L${cp2.x} ${cp2.y}`
     }
     case 'blockageWire':
     case 'blockageWireFence':
@@ -615,7 +612,7 @@ const addUnitLine = (
       const cp2 = apply(dp1, nN)
       const cp3 = apply(dp2, n)
       const cp4 = apply(dp2, nN)
-      return ` M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y}`
+      return `M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y}`
     }
     case 'blockageSpiral':
     case 'blockageSpiral2':
@@ -625,25 +622,31 @@ const addUnitLine = (
       const r2 = markerSize / 2
       const cp1 = apply(p1, setLength(v, 0.01))
       const angleLine = angle(v)
-      return ` M${p1.x} ${p1.y}A${r1} ${r2} ${angleLine} 1 1 ${cp1.x},${cp1.y}`
+      return `M${p1.x} ${p1.y}A${r1} ${r2} ${angleLine} 1 1 ${cp1.x},${cp1.y}`
     }
     case 'rowMinesLand': {
-      const r = markerSize / 3
+      const r = markerSize / 2
       const cpC = apply(p2, setLength(v, -r))
-      const cp1 = apply(p2, setLength(normal(v), markerSize / 1.75))
-      const cp2 = apply(cpC, setLength(vector(cpC, cp1), r))
-      const cp3 = apply(cp1, setLength(v, -r * 2))
-      const cp4 = apply(cpC, setLength(vector(cpC, cp3), r))
+      const cp1 = apply(p2, setLength(normal(v), markerSize / 1.3)) // верх рога
+      const cp2 = apply(cpC, setLength(vector(cpC, cp1), r)) // низ рога
+      const cp1d = apply(cp1, setLength(v, -r / 5))
+      const cp2d = apply(cp2, setLength(v, -r / 5))
+
+      const cp3 = apply(cp1, setLength(v, -r * 2)) // верх рога
+      const cp4 = apply(cpC, setLength(vector(cpC, cp3), r)) // низ рога
+      const cp3d = apply(cp3, setLength(v, r / 5))
+      const cp4d = apply(cp4, setLength(v, r / 5))
       // const cpA = apply(p2, setLength(v, -r * 2))
       const p2s = apply(p2, setLength(normal(v), 0.01))
-      return ` M${cp1.x} ${cp1.y}L${cp2.x} ${cp2.y} M${cp4.x} ${cp4.y} L${cp3.x} ${cp3.y}` +
-        ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}` // A${r} ${r} 0 1 1 ${p2.x},${p2.y}`
+      return `M${cp2.x} ${cp2.y}L${cp1.x} ${cp1.y}L${cp1d.x} ${cp1d.y}L${cp2d.x} ${cp2d.y}
+        M${cp4.x} ${cp4.y}L${cp3.x} ${cp3.y}L${cp3d.x} ${cp3d.y}L${cp4d.x} ${cp4d.y}
+        M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
     }
     case 'rowMinesAntyTank': {
       // основная линия снизу
-      const r = markerSize / 3
+      const r = markerSize / 2
       const p2s = apply(p2, setLength(normal(v), 0.01))
-      return ` M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
+      return `M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
     }
     default:
   }
@@ -659,10 +662,6 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   let size
   const strokeWidth = interpolateSize(zoom, scaleOptions, 10.0, 5, 20) * objectAttributes.strokeWidth / 100
   switch (lineType.slice(0, 3)) {
-    case 'sol':
-      // koefStep = 1
-      size = settings.BLOCKAGE_SIZE // settings.DOTS_HEIGHT // для ліній
-      break
     case 'row':
       size = settings.ROW_MINE_SIZE // для рядів мін
       break
@@ -678,7 +677,7 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   let markerSize = interpolateSize(zoom, size, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const lineLen = lineLength(points, locked)
   let creases = `M${points[0].x} ${points[0].y}`
-  if (lineLen <= markerSize * 3) { // если у нас нам нужно по крайней мере 3 маркера, чтобы было видно тип линии
+  if (lineLen <= markerSize * 3) { // нам нужно по крайней мере 3 маркера, чтобы было видно тип линии
     points.forEach((p, i) => i && (creases += addLineTo(p)))
     return creases
   }
@@ -695,9 +694,8 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   }
   // строим только маркеры к линии
   let markerStep = [ 1 ] // коэфициент шага между маркерами линии (целое число)
-  let offsetM = -markerSize / 2
+  let offsetM = -markerSize / 2 // маркер прорисовываем с отступом в пол символа
   let step = markerSize
-  let continueLine = false
   if (lineType === 'blockageWire1') {
     markerStep = [ 5 ]
   } else if (lineType === 'blockageWire2') {
@@ -707,43 +705,39 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
     offsetM = -markerSize // маркер прорисовываем с самого начала линии
   } else if (lineType.slice(0, 3) === 'row') {
     markerStep = [ 0 ]
-    offsetM = -markerSize // маркер прорисовываем с самого начала линии
+    step = markerSize * 1.25
+    offsetM = -step // маркер прорисовываем с самого начала линии
   } else if (lineType === 'trenches') {
     markerStep = [ 0 ]
     offsetM = -markerSize / 2 // маркер прорисовываем с самого начала линии
-    continueLine = true
-    // creases = `M${points[0].x} ${points[0].y}`
   } else if (lineType.slice(8, 14) === 'Spiral') {
     markerStep = [ 2 ]
     step = markerSize / 1.5
-    offsetM = 0 // маркер прорисовываем с самого начала линии
+    offsetM = 0 // маркер прорисовываем отступив шаг
   } else if (lineType === 'blockage') {
     markerStep = [ 0 ]
-    offsetM = -markerSize // маркер прорисовываем с самого начала линии
-    // creases = `M${points[0].x} ${points[0].y}`
-    continueLine = true
   }
   let creasePoints
   if (lineType === 'solidWithDots') {
     // смещаем построение точек
     markerSize = markerSize / 2
-    const verticalOffset = -markerSize
+    const verticalOffset = -markerSize / 1.5
     const shiftPoints = shiftPointsToPoints(points, verticalOffset, bezier, locked)
     creasePoints = buildPeriodicPoints(markerSize, 0, -markerSize, shiftPoints, bezier, locked, insideMap)
   } else {
     creasePoints = buildPeriodicPoints(step, 0, offsetM, points, bezier, locked, insideMap)
   }
-  // Начало линии сдвинуто, дотягиваем
+  // Начало линии сдвинуто, дотягиваем до начала отрисовки знаков линии
   if (lineType === 'trenches' || lineType === 'blockage') {
     creases += `L${creasePoints[0].x} ${creasePoints[0].y}`
   }
   const kolStep = markerStep.length || 0
   for (let i = 1; i < creasePoints.length; i += (1 + markerStep[i % kolStep])) {
-    creases += addUnitLine(markerSize, creasePoints[i - 1], creasePoints[i], lineType, strokeWidth, i % 2, continueLine)
+    creases += addUnitLine(markerSize, creasePoints[i - 1], creasePoints[i], lineType, strokeWidth, i % 2)
   }
-  // дотягиваемся до конца
+  // дотягиваемся до конечной точки
   if (setEnd) {
-    creases += locked ? ` L${points[0].x} ${points[0].y}` : ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
+    creases += locked ? `L${points[0].x} ${points[0].y}` : `L${points[points.length - 1].x} ${points[points.length - 1].y}`
   }
   return `${dAdd} ${creases}`
 }

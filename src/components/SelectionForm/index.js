@@ -15,6 +15,10 @@ import {
   SquareForm,
   TextForm,
   ContourForm,
+  AirborneForm,
+  ManoeuvreForm,
+  MinedAreaForm,
+  SectorsForm,
 } from './forms'
 
 const forms = {
@@ -88,6 +92,34 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.AIRBORNE]: {
+    title: i18n.SHAPE_AIRBORNE,
+    component: AirborneForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MANOEUVRE]: {
+    title: i18n.SHAPE_MANOEUVRE,
+    component: ManoeuvreForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MINEDAREA]: {
+    title: i18n.SHAPE_MINEDAREA,
+    component: MinedAreaForm,
+    minHeight: 645,
+    minWidth: 900,
+    maxHeight: 655,
+  },
+  [SelectionTypes.SECTORS]: {
+    title: i18n.SHAPE_SECTORS,
+    component: SectorsForm,
+    minHeight: 645,
+    minWidth: 900,
+    maxHeight: 655,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -129,32 +161,32 @@ export default class SelectionForm extends React.Component {
     const { wrapper: Wrapper } = this.props
     return (
       <>
-      <NotClickableArea/>
-      <Wrapper
-        title={title}
-        onClose={onCancel}
-        minWidth={minWidth}
-        maxHeight={maxHeight}
-        minHeight={minHeight}
-      >
-        <FocusTrap>
-          <HotKeysContainer>
-            <Component
-              data={data}
-              canEdit={canEdit}
-              orgStructures={orgStructures}
-              onOk={onOk}
-              onChange={this.changeHandler}
-              onClose={onCancel}
-              onAddToTemplates={this.addToTemplateHandler}
-              onCoordinateFocusChange={onCoordinateFocusChange}
-              ovtData={ovtData}
-            />
-            <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-          </HotKeysContainer>
-        </FocusTrap>
-      </Wrapper>
-    </>
+        <NotClickableArea/>
+        <Wrapper
+          title={title}
+          onClose={onCancel}
+          minWidth={minWidth}
+          maxHeight={maxHeight}
+          minHeight={minHeight}
+        >
+          <FocusTrap>
+            <HotKeysContainer>
+              <Component
+                data={data}
+                canEdit={canEdit}
+                orgStructures={orgStructures}
+                onOk={onOk}
+                onChange={this.changeHandler}
+                onClose={onCancel}
+                onAddToTemplates={this.addToTemplateHandler}
+                onCoordinateFocusChange={onCoordinateFocusChange}
+                ovtData={ovtData}
+              />
+              <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
+            </HotKeysContainer>
+          </FocusTrap>
+        </Wrapper>
+      </>
     )
   }
 }

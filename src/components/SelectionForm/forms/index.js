@@ -6,6 +6,10 @@ import RectangleForms from './RectangleForm'
 import SquareForms from './SquareForm'
 import TextForms from './TextForm'
 import ContourForms from './ContourForm'
+import AirborneForms from './AirborneForm'
+import ManoeuvreForms from './ManoeuvreControlForm'
+import MinedAreaForms from './MinedAreaForm'
+import SectorsForms from './SectorsForm'
 
 export const AreaForm = AreaForms
 export const CircleForm = CircleForms
@@ -15,3 +19,7 @@ export const RectangleForm = RectangleForms
 export const SquareForm = SquareForms
 export const TextForm = TextForms
 export const ContourForm = ContourForms
+export const AirborneForm = AirborneForms
+export const ManoeuvreForm = ManoeuvreForms
+export const MinedAreaForm = MinedAreaForms
+export const SectorsForm = SectorsForms

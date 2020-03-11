@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g stroke-width="1" stroke="black" fill="none" fill-opacity="1">
+     <path d="M160 540L240 540L240 620L160 620Z"></path>
+     <text x="200" y="600" text-anchor="middle" font-size="60" font-family="Arial" font-weight="bold" stroke="none" fill="black">T</text>
+     <path d="M380 320L460 320L460 400L380 400Z"></path>
+     <text x="420" y="380" text-anchor="middle" font-size="60" font-family="Arial" font-weight="bold" stroke="none" fill="black">W</text>
+  </g>
+  <g stroke-width="5" stroke="black" fill="none" fill-opacity="1" stroke-linecap="round" stroke-linejoin="round">
+    <path  d="M500 440 L770 270 L770 200 L950 350 L770 500 L770 430 L500 260"></path>
+    <path  d="M500 260 C 470 245 430 245 395 250 M 395 250 C 150 300 10 740 10 740 "></path>
+    <path  d="M 500 440 C 300 550 240 820 240 820"></path>
+    <path  d="M570 395 L570 305 M715 305 L715 395 M645 250 L645 430 M610 430 L680 430"></path>
+    <path  fill="black"  d="M635 285 L645 250 L655 285Z"></path>
+  </g>
+</svg>
+
