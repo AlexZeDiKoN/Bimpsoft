@@ -17,6 +17,8 @@ export default {
     getDirect(`${webmapUrl}/obj/add`, data),
   objDelete: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/del`, false),
+  objDeleteList: (list = []) =>
+    getDirect(`${webmapUrl}/obj/del`, { list }),
   objRefresh: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
   objLock: (id = 0) =>

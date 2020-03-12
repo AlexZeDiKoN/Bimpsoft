@@ -3,7 +3,7 @@ import { paramsNames, SCALES, INIT_VALUES } from '../../constants'
 
 const initialState = {
   [paramsNames.POINT_SIZE_MIN]: 4,
-  [paramsNames.POINT_SIZE_MAX]: 160,
+  [paramsNames.POINT_SIZE_MAX]: 90,
   [paramsNames.TEXT_SIZE_MIN]: 4,
   [paramsNames.TEXT_SIZE_MAX]: 70,
   [paramsNames.LINE_SIZE_MIN]: 4,
@@ -12,6 +12,12 @@ const initialState = {
   [paramsNames.NODE_SIZE_MAX]: 70,
   [paramsNames.WAVE_SIZE_MIN]: 2,
   [paramsNames.WAVE_SIZE_MAX]: 40,
+  [paramsNames.BLOCKAGE_SIZE_MIN]: 4,
+  [paramsNames.BLOCKAGE_SIZE_MAX]: 80,
+  [paramsNames.MOAT_SIZE_MIN]: 4,
+  [paramsNames.MOAT_SIZE_MAX]: 80,
+  [paramsNames.ROW_MINE_SIZE_MIN]: 4,
+  [paramsNames.ROW_MINE_SIZE_MAX]: 80,
   [paramsNames.STROKE_SIZE_MIN]: 3,
   [paramsNames.STROKE_SIZE_MAX]: 36,
 }
