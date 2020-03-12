@@ -351,6 +351,8 @@ export default class WebMap extends React.PureComponent {
     dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
+    getCoordForMarch: PropTypes.func,
+    marchMode: PropTypes.bool,
   }
 
   constructor (props) {
@@ -901,7 +903,7 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    const { selection: { newShape, preview }, printStatus, onClick } = this.props
+    const { selection: { newShape, preview }, printStatus, onClick, marchMode, getCoordForMarch } = this.props
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -918,6 +920,10 @@ export default class WebMap extends React.PureComponent {
         }
         getTopographicObjects(location)
       }
+    }
+
+    if (marchMode) {
+      getCoordForMarch(e.latlng)
     }
 
     onClick(e.latlng)

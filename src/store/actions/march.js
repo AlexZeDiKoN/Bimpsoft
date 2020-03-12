@@ -9,6 +9,8 @@ export const ADD_SEGMENT = action('ADD_SEGMENT')
 export const DELETE_SEGMENT = action('DELETE_SEGMENT')
 export const ADD_CHILD = action('ADD_CHILD')
 export const DELETE_CHILD = action('DELETE_CHILD')
+export const SET_COORD_MODE = action('SET_COORD_MODE')
+export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
 
 export const getIndicator = () =>
   async (dispatch, getState, { marchApi: { getTypeKinds } }) => {
@@ -59,4 +61,15 @@ export const deleteChild = (segmentId, childId) => ({
     segmentId,
     childId,
   },
+})
+
+// data = { segmentId <, childId> }
+export const setCoordMode = (data) => ({
+  type: SET_COORD_MODE,
+  payload: data,
+})
+
+export const setCoordFromMap = (coord) => ({
+  type: SET_COORD_FROM_MAP,
+  payload: coord,
 })

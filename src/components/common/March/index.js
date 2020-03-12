@@ -18,6 +18,7 @@ class March extends Component {
     editFormField: PropTypes.func.isRequired,
     addChild: PropTypes.func.isRequired,
     deleteChild: PropTypes.func.isRequired,
+    setCoordMode: PropTypes.func.isRequired,
   }
 
   renderSegmentBlocks = () => {
@@ -63,7 +64,7 @@ class March extends Component {
   }
 
   renderDotsForms = () => {
-    const { segments, editFormField, addChild, deleteChild } = this.props
+    const { segments, editFormField, addChild, deleteChild, setCoordMode } = this.props
     const formData = []
 
     segments.forEach((it, segmentId) => {
@@ -94,6 +95,7 @@ class March extends Component {
             })}
             onSearch={placeSearch}
           />
+          <button onClick={() => setCoordMode({ segmentId, childId })}>координаты с карты</button>
           {refPoint || 'Географічний орієнтир'}
           <br/>
           {(editableName)

@@ -6,7 +6,7 @@ import {
   activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
 } from '../store/selectors'
 import {
-  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups,
+  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups, march,
 } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -51,6 +51,7 @@ const WebMapContainer = connect(
     catalogs: state.catalogs.byIds,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
+    marchMode: state.march.coordMode,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -132,6 +133,7 @@ const WebMapContainer = connect(
     dropGroup: groups.dropGroup,
     newShapeFromSymbol: selection.newShapeFromSymbol,
     newShapeFromLine: selection.newShapeFromLine,
+    getCoordForMarch: march.setCoordFromMap,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

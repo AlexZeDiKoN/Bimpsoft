@@ -5,6 +5,8 @@ const initState = {
   marchEdit: true,
   indicators: undefined,
   integrity: false,
+  coordMode: false,
+  coordModeData: { },
   segments: List([
     {
       name: 'Пункт відправлення',
@@ -62,6 +64,22 @@ const defaultChild = {
 // eslint-disable-next-line
 const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
 
+const editFormField = (state, payload) => {
+  const { val, fieldName, segmentId, childId } = payload
+
+  let newSegments
+  if (childId || childId === 0) {
+    newSegments = state.segments.update(segmentId, (segment) => ({
+      ...segment,
+      children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName]: val } : it),
+    }))
+  } else {
+    newSegments = state.segments.update(segmentId, (segment) => ({ ...segment, [fieldName]: val }))
+  }
+
+  return { ...state, segments: newSegments, coordMode: false }
+}
+
 export default function reducer (state = initState, action) {
   const { type, payload } = action
 
@@ -86,18 +104,7 @@ export default function reducer (state = initState, action) {
       return { ...state, integrity: payload }
     }
     case march.EDIT_FORM_FIELD: {
-      const { val, fieldName, segmentId, childId } = payload
-
-      let newSegments
-      if (childId || childId === 0) {
-        newSegments = state.segments.update(segmentId, (segment) => ({
-          ...segment,
-          children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName]: val } : it),
-        }))
-      } else {
-        newSegments = state.segments.update(segmentId, (segment) => ({ ...segment, [fieldName]: val }))
-      }
-      return { ...state, segments: newSegments }
+      return editFormField(state, payload)
     }
     case march.ADD_SEGMENT: {
       return { ...state, segments: state.segments.insert(payload + 1, defaultSegment) }
@@ -128,6 +135,14 @@ export default function reducer (state = initState, action) {
           ...segment,
           children,
         })) }
+    }
+    case march.SET_COORD_MODE: {
+      return { ...state, coordMode: true, coordModeData: payload }
+    }
+    case march.SET_COORD_FROM_MAP: {
+      const { coordModeData: data } = state
+
+      return editFormField(state, { ...data, val: payload, fieldName: 'coord' })
     }
     default:
       return state

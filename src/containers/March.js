@@ -17,6 +17,7 @@ const mapDispatchToProps = {
   deleteSegment: march.deleteSegment,
   addChild: march.addChild,
   deleteChild: march.deleteChild,
+  setCoordMode: march.setCoordMode,
 }
 
 const MarchContainer = connect(
