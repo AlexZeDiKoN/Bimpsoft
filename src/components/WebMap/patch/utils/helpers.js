@@ -95,4 +95,4 @@ export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = MIN_ZOOM, 
 }
 
 export const scaleValue = (value, layer) => interpolateSize(layer._map.getZoom(), { min: value * 0.0025, max: value * 2.5 },
-  1.0, layer._map.getMinZoom() + 5, layer._map.getMaxZoom())
+  1.0, layer._map.getMinZoom(), layer._map.getMaxZoom())

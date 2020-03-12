@@ -178,14 +178,14 @@ export const STRATEGY = {
   // перестроювання кругових секторів
   // перша - центр кола
   // наступні точки задають радіус секторів з зовні до середини
-  // alignement - прив'язка контрольних точок до горізогнталі або вертикалі
-  shapeCircleInvert: (alignement = 'none') => (prevPoints, nextPoints, changed) => {
+  // alignment - прив'язка контрольних точок до горізогнталі або вертикалі
+  shapeCircleInvert: (alignment = 'none') => (prevPoints, nextPoints, changed) => {
     const pPoints = [ prevPoints[0], ...prevPoints.slice(1).reverse() ]
     const nPoints = [ nextPoints[0], ...nextPoints.slice(1).reverse() ]
     const maxInd = nextPoints.length
     let changedI = [ 0 ]
     if (changed[0] !== 0) { changedI = [ maxInd - changed[0] ] }
-    STRATEGY.shapeCircle(alignement)(pPoints, nPoints, changedI)
+    STRATEGY.shapeCircle(alignment)(pPoints, nPoints, changedI)
     nPoints.forEach((elm, ind) => {
       if (ind === 0) {
         nextPoints[0] = elm
@@ -199,7 +199,7 @@ export const STRATEGY = {
   // перша - центр кола
   // наступні точки задають радіус секторів
   // alignment - прив'язка контрольних точок до горізогнталі або вертикалі
-  shapeCircle: (alignement = 'none') => (prevPoints, nextPoints, changed) => {
+  shapeCircle: (alignment = 'none') => (prevPoints, nextPoints, changed) => {
     const pN0 = nextPoints[0]
     const indChanged = changed[0]
     if (changed[0] === 0) { // змінюємо опорну
@@ -217,11 +217,11 @@ export const STRATEGY = {
       if (lengthChanged <= lBootom + 1 || (lengthChanged >= lTop - 1)) {
         nextPoints[indChanged] = prevPoints[indChanged]
       } else { // радіус відповідає вимогам
-        if (alignement === 'left' || alignement === 'right') { // вирівнюємо опорні точки по горизонталі
-          nextPoints[indChanged].x = pN0.x + lengthLine(pN0, nextPoints[indChanged]) * (alignement === 'left' ? -1 : 1)
+        if (alignment === 'left' || alignment === 'right') { // вирівнюємо опорні точки по горизонталі
+          nextPoints[indChanged].x = pN0.x + lengthLine(pN0, nextPoints[indChanged]) * (alignment === 'left' ? -1 : 1)
           nextPoints[indChanged].y = pN0.y
-        } else if (alignement === 'top' || alignement === 'bottom') { // вирівнюємо опорні точки по вертикалі
-          nextPoints[indChanged].y = pN0.y + lengthLine(pN0, nextPoints[indChanged]) * (alignement === 'top' ? -1 : 1)
+        } else if (alignment === 'top' || alignment === 'bottom') { // вирівнюємо опорні точки по вертикалі
+          nextPoints[indChanged].y = pN0.y + lengthLine(pN0, nextPoints[indChanged]) * (alignment === 'top' ? -1 : 1)
           nextPoints[indChanged].x = pN0.x
         }
       }
