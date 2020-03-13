@@ -1,9 +1,10 @@
 /* global L */
 
 import entityKind from '../../entityKind'
-import { lineDefinitions } from './utils'
+import { findDefinition } from './utils'
 
 import './line_types/340500'
+import './line_types/017006'
 
 export const CONFIG = {
   TEXT_EDGE: 4,
@@ -24,11 +25,10 @@ L.Sophisticated = L.Polyline.extend({
 
   initialize (options, code, points, initMap) {
     L.setOptions(this, options)
-    const lineCode = code.slice(10, 16)
     this._initMap = initMap
-    this.lineDefinition = lineDefinitions[lineCode]
+    this.lineDefinition = findDefinition(code)
     if (!this.lineDefinition) {
-      console.warn(`No line definition for code: `, lineCode)
+      console.warn(`No line definition for code: `, code)
     }
     this.setLatLngs(points)
   },

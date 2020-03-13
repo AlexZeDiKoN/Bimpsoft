@@ -9,6 +9,8 @@ const textSizeCache = {}
 
 export const lineDefinitions = {}
 
+export const findDefinition = (code) => lineDefinitions[code.slice(11, 17)] || lineDefinitions[code.slice(10, 16)]
+
 // === Math ===
 
 // Квадрат (для зручності просто)

@@ -52,7 +52,7 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
-import { lineDefinitions } from './patch/Sophisticated/utils'
+import { findDefinition } from './patch/Sophisticated/utils'
 
 const { Coordinates: Coord } = utils
 
@@ -1858,10 +1858,10 @@ export default class WebMap extends React.PureComponent {
         }
       } else {
         amp.type = entityKind.SOPHISTICATED
-        geometry = lineDefinitions[data.code?.slice(10, 16)]?.init().map(({ x, y }) => ({
+        geometry = geometry || findDefinition(data.code)?.init().map(({ x, y }) => ({
           lng: lng - semiWidth + x * semiWidth * 2,
           lat: lat - semiHeight + y * semiHeight * 2,
-        })) || geometry
+        }))
       }
       this.props.newShapeFromLine(data, { lat, lng }, geometry)
     }
