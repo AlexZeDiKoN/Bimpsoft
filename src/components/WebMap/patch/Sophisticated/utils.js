@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
 import { prepareBezierPath } from '../utils/Bezier'
 import { CONFIG } from '.'

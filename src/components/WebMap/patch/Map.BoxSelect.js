@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 import './Map.BoxSelect.css'
 

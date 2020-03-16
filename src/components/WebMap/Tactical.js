@@ -364,6 +364,7 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA: {
@@ -420,6 +421,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:
     case entityKind.AREA:

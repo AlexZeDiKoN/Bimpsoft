@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'

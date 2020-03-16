@@ -35,9 +35,6 @@ lineDefinitions['017006'] = {
 
   // Рендер-функція
   render: (result, points, scale) => {
-    if (!points) {
-      return
-    }
     const [ p0, p1, p2 ] = points
 
     const mid = segmentBy(p0, p1, 0.5)

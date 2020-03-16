@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import './FlexGrid'
 import './Sophisticated'
 import './PM'

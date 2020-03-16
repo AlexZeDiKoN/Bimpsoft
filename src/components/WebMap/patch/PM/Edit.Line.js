@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import entityKind, { GROUPS } from '../../entityKind'
 import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
 

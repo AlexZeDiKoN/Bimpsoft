@@ -152,14 +152,19 @@ L.SVG.include({
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
     } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
-      const container = {
-        d: '',
-        mask: '',
-        amplifiers: '',
-        layer,
+      console.log(111, layer._rings[0])
+      if (!layer._rings || !layer._rings[0]) {
+        result = ''
+      } else {
+        const container = {
+          d: '',
+          mask: '',
+          amplifiers: '',
+          layer,
+        }
+        layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
+        result = container.d
       }
-      layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
-      result = container.d
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       const parts = []
       const line = layer._rings[0]

@@ -1858,7 +1858,7 @@ export default class WebMap extends React.PureComponent {
         }
       } else {
         amp.type = entityKind.SOPHISTICATED
-        geometry = geometry || findDefinition(data.code)?.init().map(({ x, y }) => ({
+        geometry = (geometry && geometry.length) || findDefinition(data.code).init().map(({ x, y }) => ({
           lng: lng - semiWidth + x * semiWidth * 2,
           lat: lat - semiHeight + y * semiHeight * 2,
         }))
