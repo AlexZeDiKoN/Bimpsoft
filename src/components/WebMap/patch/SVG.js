@@ -8,6 +8,13 @@ import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
+const getViewBox = (element) => {
+  while (element && (element.nodeName !== 'svg')) {
+    element = element.parentElement
+  }
+  return element && element.getAttribute('viewBox').split(' ')
+}
+
 const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
 
 L.SVG.include({
@@ -152,7 +159,6 @@ L.SVG.include({
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
     } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
-      console.log(111, layer._rings[0])
       if (!layer._rings || !layer._rings[0]) {
         result = ''
       } else {
@@ -164,6 +170,7 @@ L.SVG.include({
         }
         layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
         result = container.d
+        this._setMask(layer, container.amplifiers, container.mask)
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       const parts = []
@@ -370,17 +377,32 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
     }, layer.object?.attributes)
-    if (amplifiers.maskPath.length) {
-      layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
-      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
-      layer._shadowPath.setAttribute('mask', `url(#mask-${layer.object.id})`)
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+  },
+
+  _setMask: function (layer, amplifiers, mask) {
+    console.log({ amplifiers, mask })
+    if (Array.isArray(mask)) {
+      mask = mask.map((item) => `<path fill="black" d="${item}" />`).join('')
+      // mask = mask.length ? `<path fill-rule="nonzero" d="${mask.join(' ')}" />` : null
+    }
+    if (mask) {
+      const vb = getViewBox(layer._path)
+      if (vb) {
+        mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
+      }
+      console.log({ mask })
+      layer.getMask().innerHTML = mask
+      const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`
+      layer._path.setAttribute('mask', maskURL)
+      layer._shadowPath.setAttribute('mask', maskURL)
     } else {
       layer.deleteMask && layer.deleteMask()
       layer._path.removeAttribute('mask')
       layer._shadowPath.removeAttribute('mask')
     }
-    if (amplifiers.group) {
-      layer.getAmplifierGroup().innerHTML = amplifiers.group
+    if (amplifiers) {
+      layer.getAmplifierGroup().innerHTML = amplifiers
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }

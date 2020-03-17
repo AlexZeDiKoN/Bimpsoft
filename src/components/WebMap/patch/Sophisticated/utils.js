@@ -488,7 +488,8 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
-  result.mask += `<rect 
+  result.mask += `<rect
+    fill="black"
     transform="${transform}" 
     x="-${w}" 
     y="-${h}" 

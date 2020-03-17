@@ -1014,9 +1014,9 @@ export const getAmplifiers = ({
     default:
       break
   }
-  if (result.maskPath.length) {
+  /* if (result.maskPath.length) {
     result.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
-  }
+  } */
   return result
 }
 

@@ -35,7 +35,6 @@ lineDefinitions['017008'] = {
 
   // Рендер-функція
   render: (result, points, scale) => {
-    console.log(222, points)
     const [ p0, p1, p2, p3 ] = points
 
     const norm = normalVectorTo(p1, p2, p0)
