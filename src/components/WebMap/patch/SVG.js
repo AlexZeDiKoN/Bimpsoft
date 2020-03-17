@@ -376,7 +376,7 @@ L.SVG.include({
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
-    }, layer.object?.attributes)
+    }, layer.object)
     this._setMask(layer, amplifiers.group, amplifiers.maskPath)
   },
 
