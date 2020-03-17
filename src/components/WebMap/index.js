@@ -90,7 +90,7 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && L.latLngBounds(geometry)
+  const rect = geometry && geometry.length && L.latLngBounds(geometry)
   return rect && bounds.contains(rect)
 }
 
@@ -1837,7 +1837,7 @@ export default class WebMap extends React.PureComponent {
       const { amp } = data
       const bounds = this.map.getBounds()
       const semiWidth = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
-      const semiHeight = (bounds.getEast() - bounds.getWest()) / 4
+      const semiHeight = (bounds.getEast() - bounds.getWest()) / 12
       let geometry = []
       if (amp.type !== 'special') {
         if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {

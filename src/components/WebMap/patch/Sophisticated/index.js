@@ -5,6 +5,8 @@ import { findDefinition } from './utils'
 import './line_types/340500'
 import './line_types/017006'
 import './line_types/017008'
+import './line_types/017009'
+import './line_types/017010'
 
 export const CONFIG = {
   TEXT_EDGE: 4,

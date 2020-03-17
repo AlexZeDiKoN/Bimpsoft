@@ -381,17 +381,12 @@ L.SVG.include({
   },
 
   _setMask: function (layer, amplifiers, mask) {
-    console.log({ amplifiers, mask })
     if (Array.isArray(mask)) {
-      mask = mask.map((item) => `<path fill="black" d="${item}" />`).join('')
-      // mask = mask.length ? `<path fill-rule="nonzero" d="${mask.join(' ')}" />` : null
+      mask = mask.length ? `<path fill="black" fill-rule="nonzero" d="${mask.join(' ')}" />` : null
     }
     if (mask) {
-      const vb = getViewBox(layer._path)
-      if (vb) {
-        mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
-      }
-      console.log({ mask })
+      const vb = getViewBox(layer._path) || [ 0, 0, '100%', '100%' ]
+      mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
       layer.getMask().innerHTML = mask
       const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`
       layer._path.setAttribute('mask', maskURL)
