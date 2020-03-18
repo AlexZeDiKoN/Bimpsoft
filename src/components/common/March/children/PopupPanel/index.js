@@ -19,8 +19,6 @@ const PopupPanel = (props) => {
   const { deleteSegment, id: segmentId, segmentType, required, terrain, velocity } = propData
   const typeNameById = (typeValues, type) => typeValues.find(({ id }) => id === type)
 
-  console.log('++++++++++++++++', props)
-
   const showDeleteConfirm = () => {
     confirm({
       title: 'Ви впевнені що хочете видалити даний сегмент?',
@@ -28,7 +26,6 @@ const PopupPanel = (props) => {
       okType: 'danger',
       cancelText: 'Ні',
       onOk () {
-        console.log('OK..............', propData)
       },
     })
   }
