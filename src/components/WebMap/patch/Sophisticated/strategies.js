@@ -46,9 +46,9 @@ export const STRATEGY = {
   empty: () => {},
 
   // Форма літери "T" (відрізок між двома точками, третя точка на кінці серединного перпендикуляру)
-  shapeT: (prevPoints, nextPoints, changed) => {
+  shapeT: (factor = 0.5) => (prevPoints, nextPoints, changed) => {
     nextPoints[2] = applyVector(
-      segmentBy(nextPoints[0], nextPoints[1], 0.5),
+      segmentBy(nextPoints[0], nextPoints[1], factor),
       adjustedNorm(prevPoints, nextPoints, changed)
     )
   },

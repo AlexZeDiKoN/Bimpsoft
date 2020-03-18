@@ -1860,7 +1860,7 @@ export default class WebMap extends React.PureComponent {
         amp.type = entityKind.SOPHISTICATED
         geometry = (geometry && geometry.length) || findDefinition(data.code).init().map(({ x, y }) => ({
           lng: lng - semiWidth + x * semiWidth * 2,
-          lat: lat - semiHeight + y * semiHeight * 2,
+          lat: lat - semiHeight + (1 - y) * semiHeight * 2,
         }))
       }
       this.props.newShapeFromLine(data, { lat, lng }, geometry)

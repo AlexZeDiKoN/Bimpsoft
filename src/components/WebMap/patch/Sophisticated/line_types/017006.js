@@ -24,12 +24,12 @@ lineDefinitions['017006'] = {
   allowDelete: DELETE.allowOver(POINTS),
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-  adjust: STRATEGY.shapeT,
+  adjust: STRATEGY.shapeT(),
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => ([
-    { x: 0.25, y: 0.66 },
     { x: 0.25, y: 0.33 },
+    { x: 0.25, y: 0.67 },
     { x: 0.75, y: 0.50 },
   ]),
 
