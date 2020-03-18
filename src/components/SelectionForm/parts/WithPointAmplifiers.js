@@ -11,6 +11,11 @@ const PAIRS = {
   BOTTOM: { id: 'bottom', name: 'W' },
 }
 
+export const MAX_LENGTH_TEXT_AMPLIFIERS = {
+  TEXTAREA: 30,
+  INPUT: 15,
+}
+
 const PAIR_LIST = Object.values(PAIRS)
 
 const PATH = [ 'attributes', 'pointAmplifier' ]
@@ -34,6 +39,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
                 onChange={this.createPointAmplifierHandler(id)}
                 disabled={!canEdit}
                 rows={1}
+                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
               />
             </FormRow>
           </div>
