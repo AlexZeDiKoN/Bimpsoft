@@ -27,7 +27,6 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
     if (leftM && rightM) {
       const marker = parent._createMiddleMarker.call(this, leftM, rightM)
       const check = this._layer.lineDefinition.allowMiddle(leftM._index, rightM._index, this._layer._latlngs.length, this._layer)
-      console.log({ index1: leftM._index, index2: rightM._index, count: this._layer._latlngs.length, check })
       if (typeof check === 'object') {
         marker.setLatLng(check)
       } else if (!check) {
