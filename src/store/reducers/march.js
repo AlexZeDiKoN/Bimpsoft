@@ -24,7 +24,7 @@ const initState = {
           coord: { },
           refPoint: '',
           required: true,
-          editableName: false,
+          editableName: true,
         },
       ],
     },

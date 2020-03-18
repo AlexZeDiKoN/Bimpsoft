@@ -1,14 +1,30 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Input, Button } from 'antd'
+import { Input, Button, Select, Tooltip, Popover } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import placeSearch from '../../../server/places'
 import SegmentButtonForm from './children/SegmentButtonForm'
+import Header from './children/Header'
+import PopupPanel from './children/PopupPanel'
+
 import './style.css'
 
 const {
   form: { Coordinates },
 } = components
+
+const points = [
+  { name: 'Вихідний рубіж', rest: false },
+  { name: 'Пункт на маршруті', rest: false },
+  { name: 'Пункт привала', rest: true },
+  { name: 'Пункт денного(нічного) відпочинку', rest: true },
+  { name: 'Пункт добового відпочинку', rest: true },
+  { name: 'Пункт(рубіж) регулювання', rest: false },
+]
+
+const getPointByName = (name) => {
+  return points.find((point) => point.name === name)
+}
 
 class March extends Component {
   static propTypes = {
@@ -45,11 +61,13 @@ class March extends Component {
         default:
           break
       }
-      const height = (1 + segment.children.length) * 120
+      const height = (1 + segment.children.length) * 145
 
       return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
         00:00
+        <Popover placement="left" trigger="click" content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> } >
         10 km
+        </Popover>
         <SegmentButtonForm
           segmentId={id}
           deleteSegment={deleteSegment}
@@ -79,34 +97,93 @@ class March extends Component {
     return formData.map((segment, id) => {
       const { name, coord = {}, refPoint, childId, segmentId, editableName, segmentType, required } = segment
 
+      const point = getPointByName(name)
+
+      let dotClass
+      if (childId === undefined) {
+        dotClass = formData.length - 1 === id ? 'flag-dot' : 'empty-dot'
+      } else {
+        dotClass = point && point.rest ? 'camp-dot' : 'cross-dot'
+      }
+
+      let lineColorClass
+      switch (segmentType || formData[segmentId].segmentType) {
+        case 42:
+          lineColorClass = 'line-orange'
+          break
+        case 43:
+          lineColorClass = 'line-blue'
+          break
+        default:
+          lineColorClass = 'line-green'
+      }
+
       return <div key={`dotForm${id}`} className={'dot-and-form'}>
         <div className={'dots'}>
-          <div className={'dot'}/>
-          {(segmentType || childId || childId === 0) && <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}>+</div>}
+          <Tooltip placement='topRight' title={'Розташування'}>
+            <div className={`dot ${dotClass}`}/>
+          </Tooltip>
+          {(segmentType || childId || childId === 0)
+            ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
+              <Tooltip placement='topRight' title={'Додати пункт'}>
+                <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
+              </Tooltip>
+            </div>
+            : <div className={'vertical-block'}/>
+          }
         </div>
         <div className={'dot-form'}>
-          <Coordinates
-            coordinates={coord}
-            onChange={(e) => editFormField({
-              fieldName: 'coord',
-              segmentId,
-              childId,
-              val: e,
-            })}
-            onSearch={placeSearch}
-          />
-          <button onClick={() => setCoordMode({ segmentId, childId })}>координаты с карты</button>
-          {refPoint || 'Географічний орієнтир'}
+          <div className={'march-coord'}>
+            <Coordinates
+              coordinates={coord}
+              onChange={(e) => editFormField({
+                fieldName: 'coord',
+                segmentId,
+                childId,
+                val: e,
+              })}
+              onSearch={placeSearch}
+            />
+            <Tooltip placement='topRight' title={'Вказати на карті'}>
+              <a href='#' className={'logoMap'} onClick={() => setCoordMode({ segmentId, childId })}/>
+            </Tooltip>
+          </div>
+          <Input value={refPoint || 'Географічний орієнтир'}/>
           <br/>
-          {(editableName)
+          {(!editableName)
             ? <Input value={name} onChange={(e) => editFormField({
               fieldName: 'name',
               segmentId,
               childId,
               val: e.target.value,
             })}/>
-            : name }
-          {(!required) && <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>}
+            : <Select
+              className={'selectPoint'}
+              defaultValue={name}
+              onChange={(value) => editFormField({
+                val: value,
+                segmentId,
+                childId,
+                fieldName: 'name',
+              })}
+            >
+              {points.map(({ name }, id) => (
+                <Select.Option key={id} value={name}>{name}</Select.Option>
+              ))}
+            </Select>
+          }
+          {(!required) &&
+          <div className={'unRequiredField'}>
+            {(point && point.rest)
+              ? <div className={'timeBlock'}>
+                <div className={'logoTime'}/>
+                <Input maxLength={10} style={{ width: '50px' }}/>
+              </div>
+              : <div/>
+            }
+            <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>
+          </div>
+          }
         </div>
       </div>
     })
@@ -114,7 +191,9 @@ class March extends Component {
 
   render () {
     return <div className={'march-container'}>
-      <div className={'header'}>Header</div>
+      <div className={'march-header'}>
+        <Header/>
+      </div>
       <div className={'march-main'}>
         <div className={'left'}>{this.renderSegmentBlocks()}</div>
         <div className={'right'}>{this.renderDotsForms()}</div>
