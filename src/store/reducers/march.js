@@ -137,7 +137,7 @@ export default function reducer (state = initState, action) {
         })) }
     }
     case march.SET_COORD_MODE: {
-      return { ...state, coordMode: true, coordModeData: payload }
+      return { ...state, coordMode: !state.coordMode, coordModeData: payload }
     }
     case march.SET_COORD_FROM_MAP: {
       const { coordModeData: data } = state
