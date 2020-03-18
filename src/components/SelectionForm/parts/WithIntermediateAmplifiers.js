@@ -4,6 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const { FormRow } = components.form
 
@@ -58,6 +59,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
             onChange={this.createIntermediateAmplifierHandler(id)}
             disabled={!canEdit}
             rows={1}
+            maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
           />
         </FormRow>
       </div>
@@ -81,6 +83,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 disabled={!canEdit || type !== TYPES.TEXT}
                 value={currentValue[PAIRS.MIDDLE.id] ?? ''}
                 onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
+                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.INPUT}
               />
             </FormRow>
           </div>

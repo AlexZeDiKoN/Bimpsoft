@@ -306,7 +306,8 @@ function getPolygonCentroid (points) {
   let f
   const pointsLength = points.length
   for (let i = 0, j = pointsLength - 1; i < pointsLength; j = i++) {
-    p1 = points[i]; p2 = points[j]
+    p1 = points[i]
+    p2 = points[j]
     f = p1.x * p2.y - p2.x * p1.y
     twiceArea += f
     x += (p1.x + p2.x) * f
@@ -898,26 +899,29 @@ export const getAmplifiers = ({
   bounds,
   scale = 1,
   zoom = -1,
-}, objectAttributes) => {
+}, object) => {
+  const result = {
+    maskPath: [],
+    group: '',
+  }
+  if (!object) {
+    return result
+  }
   const {
-    level,
     intermediateAmplifierType,
     intermediateAmplifier,
     shownIntermediateAmplifiers,
     shownNodalPointAmplifiers,
     pointAmplifier,
     nodalPointIcon,
-  } = objectAttributes ?? {}
+  } = object.attributes
+  const { level } = object
 
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
   const interpolatedNodeSize = interpolateSize(zoom, settings.NODES_SIZE, scale)
   const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
-  const result = {
-    maskPath: [],
-    group: '',
-  }
 
   {
     const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
@@ -933,7 +937,7 @@ export const getAmplifiers = ({
         () => 0.5,
         bezier,
         locked,
-      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers?.has(index)),
+      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForLineAmplifier,
     })
@@ -984,7 +988,7 @@ export const getAmplifiers = ({
     }
   }
 
-  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers?.has(index))
+  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers.has(index))
 
   switch (nodalPointIcon) {
     case 'cross-circle': {
