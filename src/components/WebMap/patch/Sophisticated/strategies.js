@@ -280,6 +280,9 @@ export const MIDDLE = {
   // Дозволено на будь-якому відрізку
   any: () => true,
 
+  area: (index1, index2, count, layer) =>
+    layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % count)),
+
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
   areaWithAmplifiers: (amplCount) => (index1, index2, count, layer) => count - index2 >= amplCount
     ? layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % (count - amplCount)))
@@ -299,6 +302,9 @@ export const DELETE = {
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок
   allowOver: (amount) => (index) => index >= amount,
 
+  // Область
+  area: (index, count) => count > MIN_AREA_POINTS,
+
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
   areaWithAmplifiers: (amplCount) => (index, count) => count > MIN_AREA_POINTS + amplCount && count - index > amplCount,
 
@@ -315,8 +321,11 @@ export const RENDER = {
 
       drawBezierSpline(result, area, true)
 
-      result.layer._path.setAttribute('fill', "url('#hatching')")
+      const hf = 'url(\'#hatching\')'
+      console.log('fill ', result.layer._path.getAttribute('fill'))
+      result.layer._path.setAttribute('fill', hf)
       result.layer._path.setAttribute('width', 100)
+      result.layer.options.fillColor = hf
       result.amplifiers += ` 
         <pattern id="hatching" x="0" y="0" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
           <line x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />

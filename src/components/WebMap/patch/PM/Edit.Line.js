@@ -32,6 +32,8 @@ L.PM.Edit.Line.include({
   },
 
   _createMiddleMarker: function (leftM, rightM) {
+    console.log({ index1: leftM._index, index2: rightM._index })
+    try { throw new Error() } catch (e) { console.warn(e.stack) }
     const kind = this._layer.options.tsType
     let marker
     // для певних типів знаків забороняємо створення додаткових вершин
@@ -93,6 +95,7 @@ L.PM.Edit.Line.include({
   },
 
   _onMarkerDrag: function (e) {
+    this._markers = this._markers ?? []
     parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType

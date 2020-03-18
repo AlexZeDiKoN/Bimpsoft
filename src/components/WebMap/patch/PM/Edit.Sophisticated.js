@@ -3,9 +3,16 @@ import L from 'leaflet'
 const { _createMiddleMarker, _createMarker } = L.PM.Edit.Line.prototype
 const parent = { _createMiddleMarker, _createMarker }
 
+L.PM.Edit.include({
+  isPolygon() {
+    // if it's a polygon, it means the coordinates array is multi dimensional
+    return this._layer instanceof L.Polygon || (this._layer.lineDefinition && this._layer.lineDefinition.isPolygon);
+  },
+})
+
 L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
   _createMarker: function (latlng, index) {
-    const allowDelete = this._layer.lineDefinition.allowDelete(index, this._layer._latlngs.length)
+    const allowDelete = !index && this._layer.lineDefinition.allowDelete(index, this._layer._latlngs.length)
     if (!allowDelete) {
       this.options.preventMarkerRemoval = true
     }
@@ -20,6 +27,7 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
     if (leftM && rightM) {
       const marker = parent._createMiddleMarker.call(this, leftM, rightM)
       const check = this._layer.lineDefinition.allowMiddle(leftM._index, rightM._index, this._layer._latlngs.length, this._layer)
+      console.log({ index1: leftM._index, index2: rightM._index, count: this._layer._latlngs.length, check })
       if (typeof check === 'object') {
         marker.setLatLng(check)
       } else if (!check) {
