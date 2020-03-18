@@ -355,7 +355,7 @@ L.SVG.include({
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
-    }, layer.object?.attributes)
+    }, layer.object)
     if (amplifiers.maskPath.length) {
       layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
       layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)

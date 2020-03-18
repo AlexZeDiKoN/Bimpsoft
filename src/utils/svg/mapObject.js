@@ -70,7 +70,6 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     color,
   } = attributes
   const {
-    level,
     bounds,
     bezier,
     locked,
@@ -92,7 +91,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     bounds,
     scale,
     zoom,
-  }, { ...attributes, level })
+  }, { ...data, attributes })
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale * 2)
   return (
