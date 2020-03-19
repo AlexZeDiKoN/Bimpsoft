@@ -51,7 +51,5 @@ lineDefinitions['017063'] = {
 
     const point22 = getPointAt(p0, point2, Math.PI * 2 / 3, len)
     drawArrow(result, point2, point22, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
-
-    console.log({ p0, p1, p2, len, point1, point12, point2, point22 })
   },
 }
