@@ -15,6 +15,7 @@ import './line_types/017019'
 import './line_types/017024'
 import './line_types/017032'
 import './line_types/017049'
+import './line_types/017063'
 
 export const CONFIG = {
   TEXT_EDGE: 4,

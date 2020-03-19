@@ -160,6 +160,9 @@ export const halfPlane = (p0, p1, p2) => {
   return Number(pCheck.y > 0)
 }
 
+// Переводить 1 в 1, 0 в -1,
+export const neg = (value) => value * 2 - 1
+
 // Обчислити координати точки, яку отримаємо, якщо рухаючись із точки p1 до p2
 // повернемо на вказаний кут і пройдемо ще вказану відстань
 export const getPointAt = (p1, p2, angle, length) => applyToPoint(

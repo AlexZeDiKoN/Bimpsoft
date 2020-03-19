@@ -1,8 +1,8 @@
 import Bezier from 'bezier-js'
-import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
+import { rotate, applyToPoint } from 'transformation-matrix'
 import {
-  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane, rad,
-  angleOf, oppositeVector, drawBezierSpline,
+  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
+  angleOf, oppositeVector, drawBezierSpline, getPointAt, neg,
 } from './utils'
 import {
   shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates,
@@ -53,20 +53,14 @@ export const STRATEGY = {
     )
   },
 
+  // Форма кута 120 градусів
   shape120: (prevPoints, nextPoints, changed) => {
-    nextPoints[2] = {
-      x: (nextPoints[2].x <= nextPoints[1].x) ? nextPoints[1].x : nextPoints[2].x,
-      y: nextPoints[1].y
-    }
-
-    const angle = angleOf(nextPoints[1], nextPoints[2])
-
-    const ang = (delta, point) => compose(
-      translate(point.x, point.y),
-      rotate(angle + Math.PI + rad(delta)),
+    nextPoints[0] = getPointAt(
+      nextPoints[2],
+      nextPoints[1],
+      neg(halfPlane(nextPoints[2], nextPoints[1], nextPoints[0])) * Math.PI / 3,
+      changed.includes(1) ? segmentLength(prevPoints[0], prevPoints[1]) : segmentLength(nextPoints[0], nextPoints[1])
     )
-
-    nextPoints[0] = applyToPoint(ang(120, nextPoints[1]), { x: segmentLength(nextPoints[0], nextPoints[1]), y: 0 })
   },
 
   // Форма літери "L" (відрізок між двома точками, третя точка на кінці перпендикуляру від другої точки)
@@ -301,6 +295,9 @@ export const DELETE = {
 
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок
   allowOver: (amount) => (index) => index >= amount,
+
+  // Лінія
+  line: (index, count) => count > MIN_LINE_POINTS,
 
   // Область
   area: (index, count) => count > MIN_AREA_POINTS,
