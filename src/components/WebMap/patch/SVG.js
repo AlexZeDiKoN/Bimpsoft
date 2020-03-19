@@ -4,7 +4,6 @@ import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../u
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { interpolateSize, setClassName, scaleValue } from './utils/helpers'
-import { setClassName } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------

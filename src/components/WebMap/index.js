@@ -1841,30 +1841,30 @@ export default class WebMap extends React.PureComponent {
       let geometry = []
       if (amp.type !== 'special') {
         if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
-          const p0 = {lat, lng: lng + semiHeight}
-          const p1 = {lat: lat - semiWidth, lng: lng - semiHeight}
-          const p2 = {lat: lat + semiWidth, lng: lng - semiHeight}
-          geometry = [p0, p1, p2]
+          const p0 = { lat, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
+          const p2 = { lat: lat + semiWidth, lng: lng - semiHeight }
+          geometry = [ p0, p1, p2 ]
         }
         if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
-          const p0 = {lat: lat + semiWidth, lng: lng + semiHeight}
-          const p1 = {lat: lat - semiWidth, lng: lng - semiHeight}
-          geometry = [p0, p1]
+          const p0 = { lat: lat + semiWidth, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
+          geometry = [ p0, p1 ]
         }
         if (amp.type === entityKind.CIRCLE) {
-          const p0 = {lat, lng}
-          const p1 = {lat: lat + semiWidth, lng: lng + semiHeight}
-          geometry = [p0, p1]
+          const p0 = { lat, lng }
+          const p1 = { lat: lat + semiWidth, lng: lng + semiHeight }
+          geometry = [ p0, p1 ]
         }
         if (amp.type === '17076000') {
           amp.type = entityKind.SECTORS
-          const p0 = {lat, lng}
-          const p1 = {lat: lat + x, lng: lng}
-          const p2 = {lng: lng - y / 2, lat: lat + x / 3}
-          const p3 = {lng: lng + y / 2, lat: lat + x / 3}
-          const p4 = {lng: lng - y / 4, lat: lat + x / 2}
-          const p5 = {lng: lng + y / 4, lat: lat + x / 2}
-          geometry = [p0, p1, p2, p3, p4, p5]
+          const p0 = { lat, lng }
+          const p1 = { lat: lat + semiWidth, lng: lng }
+          const p2 = { lng: lng - semiHeight / 2, lat: lat + semiWidth / 3 }
+          const p3 = { lng: lng + semiHeight / 2, lat: lat + semiWidth / 3 }
+          const p4 = { lng: lng - semiHeight / 4, lat: lat + semiWidth / 2 }
+          const p5 = { lng: lng + semiHeight / 4, lat: lat + semiWidth / 2 }
+          geometry = [ p0, p1, p2, p3, p4, p5 ]
         }
       } else {
         amp.type = entityKind.SOPHISTICATED
