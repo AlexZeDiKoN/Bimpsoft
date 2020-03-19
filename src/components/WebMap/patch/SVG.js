@@ -3,10 +3,18 @@ import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
+import { interpolateSize, setClassName, scaleValue } from './utils/helpers'
 import { setClassName } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
+
+const getViewBox = (element) => {
+  while (element && (element.nodeName !== 'svg')) {
+    element = element.parentElement
+  }
+  return element && element.getAttribute('viewBox').split(' ')
+}
 
 const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
 
@@ -150,6 +158,21 @@ L.SVG.include({
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
+      }
+    } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
+      if (!layer._rings || !layer._rings[0]) {
+        result = ''
+      } else {
+        const container = {
+          d: '',
+          mask: '',
+          amplifiers: '',
+          layer,
+        }
+        const points = layer._latlngs.map(layer._map.latLngToLayerPoint.bind(layer._map))
+        layer.lineDefinition.render(container, points, scaleValue(1000, layer) / 1000)
+        result = container.d
+        this._setMask(layer, container.amplifiers, container.mask)
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       const parts = []
@@ -351,18 +374,28 @@ L.SVG.include({
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
-    }, layer.object?.attributes)
-    if (amplifiers.maskPath.length) {
-      layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
-      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
-      layer._shadowPath.setAttribute('mask', `url(#mask-${layer.object.id})`)
+    }, layer.object)
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+  },
+
+  _setMask: function (layer, amplifiers, mask) {
+    if (Array.isArray(mask)) {
+      mask = mask.length ? `<path fill="black" fill-rule="nonzero" d="${mask.join(' ')}" />` : null
+    }
+    if (mask) {
+      const vb = getViewBox(layer._path) || [ 0, 0, '100%', '100%' ]
+      mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
+      layer.getMask().innerHTML = mask
+      const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`
+      layer._path.setAttribute('mask', maskURL)
+      layer._shadowPath.setAttribute('mask', maskURL)
     } else {
       layer.deleteMask && layer.deleteMask()
       layer._path.removeAttribute('mask')
       layer._shadowPath.removeAttribute('mask')
     }
-    if (amplifiers.group) {
-      layer.getAmplifierGroup().innerHTML = amplifiers.group
+    if (amplifiers) {
+      layer.getAmplifierGroup().innerHTML = amplifiers
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }

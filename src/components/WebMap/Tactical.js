@@ -116,6 +116,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
+    case entityKind.SOPHISTICATED:
+      return createSophisticated(data, prevLayer, map)
     case entityKind.AIRBORNE:
       return createGroup(entityKind.AIRBORNE, data, prevLayer)
     case entityKind.MANOEUVRE:
@@ -169,6 +171,17 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
     marker.options.tsType = entityKind.POINT
     return marker
   }
+}
+
+function createSophisticated (data, layer, initMap) {
+  if (layer && (layer instanceof L.Polyline)) {
+    layer.setLatLngs(data.geometry.toJS())
+  } else {
+    const options = prepareOptions(entityKind.SOPHISTICATED)
+    options.textAmplifiers = data.attributes.textAmplifiers
+    layer = new L.Sophisticated(options, data.code, data.geometry?.toJS(), initMap)
+  }
+  return layer
 }
 
 function createSectors (type, data, layer) {
@@ -368,6 +381,7 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
     case entityKind.AREA: {
@@ -424,6 +438,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:
     case entityKind.AREA:

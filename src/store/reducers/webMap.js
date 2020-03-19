@@ -43,6 +43,7 @@ const webMapAttributesInitValues = {
   shownIntermediateAmplifiers: Set(),
   shownNodalPointAmplifiers: Set(),
   pointAmplifier: LineAmplifier(),
+  textAmplifiers: {},
   sectorsInfo: List(),
   left: 'none',
   right: 'none',
@@ -268,6 +269,10 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.DEL_OBJECT:
       return payload
         ? state.deleteIn([ 'objects', payload ])
+        : state
+    case actionNames.DEL_OBJECTS:
+      return payload
+        ? state.set('objects', state.get('objects').filter((value, key) => !payload.includes(key)))
         : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
       const delLayerId = payload

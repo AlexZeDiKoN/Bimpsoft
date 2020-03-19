@@ -208,15 +208,18 @@ export const newShapeFromLine = (data, point, geometry) => withNotification((dis
 
   const { code, amp } = data
 
-  dispatch(setPreview(WebMapObject({
-    type: amp.type,
-    code,
-    layer,
-    geometry: List(geometry),
-    point: point,
-    attributes: createObjectRecord(amp || {}),
-  }),
-  ))
+  dispatch(
+    setPreview(
+      WebMapObject({
+        type: amp.type,
+        code,
+        layer,
+        geometry: List(geometry),
+        point: point,
+        attributes: createObjectRecord(amp),
+      }),
+    ),
+  )
 })
 
 export const copy = () => withNotification((dispatch, getState) => {
@@ -306,9 +309,14 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   const {
     selection: { list = [] },
   } = state
-  for (const id of list) {
-    await dispatch(webMap.deleteObject(id))
+  if (list.length) {
+    await (
+      list.length === 1
+        ? dispatch(webMap.deleteObject(list[0]))
+        : dispatch(webMap.deleteObjects(list))
+    )
   }
+  webMap.stopHeartBeat()
   dispatch(batchActions([
     hideForm(),
     selectedList([]),

@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import { halfPoint } from './Bezier'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
@@ -93,3 +92,6 @@ export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = MIN_ZOOM, 
       : (1 / (2 - (zoom - minZoom) / (maxZoom - minZoom) * 1.5) - 0.5) / 1.5 * (max - min) + +min
   return Math.round(result * factor)
 }
+
+export const scaleValue = (value, layer) => interpolateSize(layer._map.getZoom(), { min: value * 0.0025, max: value * 2.5 },
+  1.0, layer._map.getMinZoom(), layer._map.getMaxZoom())
