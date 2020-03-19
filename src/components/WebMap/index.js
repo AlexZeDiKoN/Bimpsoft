@@ -353,6 +353,7 @@ export default class WebMap extends React.PureComponent {
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,
     marchMode: PropTypes.bool,
+    marchDots: PropTypes.array,
   }
 
   constructor (props) {
@@ -362,6 +363,7 @@ export default class WebMap extends React.PureComponent {
       zoom: 0,
     }
     this.activeLayer = null
+    this.marchMarkers = []
   }
 
   async componentDidMount () {
@@ -394,7 +396,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects,
+      targetingObjects, marchDots,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -476,6 +478,7 @@ export default class WebMap extends React.PureComponent {
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
+    this.updateMarchDots(marchDots, prevProps.marchDots)
   }
 
   componentWillUnmount () {
@@ -842,6 +845,33 @@ export default class WebMap extends React.PureComponent {
       this.markers.push(marker)
       setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
     }, 50)
+  }
+
+  updateMarchDots = (marchDots, prevMarchDots) => {
+    if (marchDots.length !== prevMarchDots.length) {
+      if (this.marchMarkers.length !== 0) {
+        this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
+        this.marchMarkers = []
+      }
+      marchDots.forEach((dot) => {
+        const text = this.createUserMarkerText(dot)
+        const marker = createSearchMarker(dot, text)
+        marker.addTo(this.map)
+        this.marchMarkers.push(marker)
+      })
+    } else {
+      if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
+        marchDots.forEach((dot, id) => {
+          if (dot.lat !== prevMarchDots[id].lat || dot.lng !== prevMarchDots[id].lng) {
+            this.marchMarkers[id].removeFrom(this.map)
+            const text = this.createUserMarkerText(dot)
+            const marker = createSearchMarker(dot, text)
+            marker.addTo(this.map)
+            this.marchMarkers[id] = marker
+          }
+        })
+      }
+    }
   }
 
   addTopographicMarker = (point) => {
