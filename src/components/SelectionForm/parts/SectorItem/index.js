@@ -340,10 +340,14 @@ export default class SectorItem extends React.Component {
     const da2 = distanceAngle([ beginCoordinate, coordinate2 ])
     const azimut1 = da1.angledeg.toFixed(0)
     const azimut2 = da2.angledeg.toFixed(0)
-    // const newCoord = sphereDirect([ beginCoordinate.lat * Math.PI / 180, beginCoordinate.lng * Math.PI / 180 ],
-    //   da1.angledeg * Math.PI / 180, da1.distance / Earth.R)
-    // const newCoordR = { lat: newCoord[0] * 180 / Math.PI, lng: newCoord[1] * 180 / Math.PI }
-    // console.log(JSON.stringify({ coordinate1, newCoordR }))
+    const newCoord = sphereDirect([ beginCoordinate.lat * Math.PI / 180, beginCoordinate.lng * Math.PI / 180 ],
+      da1.angledeg * Math.PI / 180, da1.distance / Earth.R)
+    const newCoordR = { lat: newCoord[0] * 180 / Math.PI, lng: newCoord[1] * 180 / Math.PI }
+    // eslint-disable-next-line no-constant-condition
+    if (false) {
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify({ coordinate1, newCoordR }))
+    }
     const amplifierT = sectorInfo?.amplifier || ''
     const color = sectorInfo?.color || colors.BLACK
     const fill = sectorInfo?.fill || colors.TRANSPARENT
