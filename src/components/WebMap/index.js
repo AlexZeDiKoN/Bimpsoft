@@ -1856,6 +1856,16 @@ export default class WebMap extends React.PureComponent {
           const p1 = { lat: lat + x, lng: lng + y }
           geometry = [ p0, p1 ]
         }
+        if (amp.type === '17076000') {
+          amp.type = entityKind.SECTORS
+          const p0 = { lat, lng }
+          const p1 = { lat: lat + x, lng: lng }
+          const p2 = { lng: lng - y / 2, lat: lat + x / 3 }
+          const p3 = { lng: lng + y / 2, lat: lat + x / 3 }
+          const p4 = { lng: lng - y / 4, lat: lat + x / 2 }
+          const p5 = { lng: lng + y / 4, lat: lat + x / 2 }
+          geometry = [ p0, p1, p2, p3, p4, p5 ]
+        }
         this.props.newShapeFromLine(data, { lat, lng }, geometry)
       }
     }

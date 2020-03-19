@@ -11,6 +11,8 @@ import {
   WithStrokeWidth,
   UnitSelect,
   WithAffiliation,
+  WithSectorsArray,
+  PointAmplifierSelect,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SectorsForm.css'
@@ -28,6 +30,8 @@ export default class SectorsForm extends compose(
   UnitSelect,
   WithAffiliation,
   WithStatus,
+  WithSectorsArray,
+  PointAmplifierSelect,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -47,6 +51,7 @@ export default class SectorsForm extends compose(
               {this.renderSubordinationLevel()}
               {this.renderAffiliation()}
               {this.renderCoordinateBegin()}
+              {this.renderPointAmplifierSelect()}
             </div>
           </div>
           <div className="sectors-container__item--secondSection">
@@ -54,11 +59,10 @@ export default class SectorsForm extends compose(
               <div className="containerTypeColor">
                 {this.renderColor()}
                 {this.renderStrokeWidth()}
-                {this.renderSegment()}
               </div>
             </div>
           </div>
-          {this.renderPointAmplifiers()}
+          {this.renderSectorsArray()}
         </div>
       </Scrollbar>
     )

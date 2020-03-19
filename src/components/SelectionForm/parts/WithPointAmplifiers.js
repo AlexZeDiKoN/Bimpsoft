@@ -23,7 +23,6 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
   renderPointAmplifiers () {
     const currentValue = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
-
     return (
       <div className="line-container__item">
         {PAIR_LIST.map(({ id, name }) => (

@@ -21,13 +21,13 @@ const WithCoordinateBegin = (Component) => class CoordinatesComponent extends Co
     ),
   )
 
-  coordinatesEditClickHandler = () => this.setState((state) => ({
-    editCoordinates: !state.editCoordinates,
-  }))
+  // coordinatesEditClickHandler = () => this.setState((state) => ({
+  //   editCoordinates: !state.editCoordinates,
+  // }))
 
-  coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
-  )
+  // coordinateAddHandler = () => this.setResult((result) =>
+  //   result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
+  // )
 
   renderCoordinateBegin () {
     const { editCoordinates } = this.state
@@ -40,7 +40,6 @@ const WithCoordinateBegin = (Component) => class CoordinatesComponent extends Co
         {coordinateBegin
           ? <Fragment key={`${coordinateBegin.lat}/${coordinateBegin.lng}`}>
             <CoordinateItem
-              key={0}
               coordinate={coordinateBegin}
               index={0}
               readOnly={!canEdit || !editCoordinates}

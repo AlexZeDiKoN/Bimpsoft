@@ -120,6 +120,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.AIRBORNE, data, prevLayer)
     case entityKind.MANOEUVRE:
       return createGroup(entityKind.MANOEUVRE, data, prevLayer)
+    case entityKind.SECTORS:
+      return createSectors(entityKind.SECTORS, data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -167,6 +169,16 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
     marker.options.tsType = entityKind.POINT
     return marker
   }
+}
+
+function createSectors (type, data, layer) {
+  if (layer && (layer instanceof L.Polyline)) {
+    layer.setLatLngs(data.geometry.toJS())
+  } else {
+    const options = prepareOptions(entityKind.SECTORS)
+    layer = new L.Sectors(options, data.code, data.geometry?.toJS())
+  }
+  return layer
 }
 
 function createPoint (data, layer) {
