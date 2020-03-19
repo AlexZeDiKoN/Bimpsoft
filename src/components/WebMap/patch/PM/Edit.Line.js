@@ -97,7 +97,7 @@ L.PM.Edit.Line.include({
     parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType
-    if (GROUPS.BEZIER.includes(kind) && marker._index >= 0) {
+    if (marker._index >= 0 && (GROUPS.BEZIER.includes(kind) || (kind === entityKind.SOPHISTICATED && this.isPolygon()))) {
       const len = this._getMarkersCount()
       const markerArray = this._getMarkersArray()
       const nextMarkerIndex = (marker._index + 1) % len

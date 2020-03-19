@@ -168,7 +168,8 @@ L.SVG.include({
           amplifiers: '',
           layer,
         }
-        layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
+        const points = layer._latlngs.map(layer._map.latLngToLayerPoint.bind(layer._map))
+        layer.lineDefinition.render(container, points, scaleValue(1000, layer) / 1000)
         result = container.d
         this._setMask(layer, container.amplifiers, container.mask)
       }

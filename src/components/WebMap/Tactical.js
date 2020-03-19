@@ -172,6 +172,7 @@ function createSophisticated (data, layer, initMap) {
     layer.setLatLngs(data.geometry.toJS())
   } else {
     const options = prepareOptions(entityKind.SOPHISTICATED)
+    options.textAmplifiers = data.attributes.textAmplifiers
     layer = new L.Sophisticated(options, data.code, data.geometry?.toJS(), initMap)
   }
   return layer

@@ -14,8 +14,7 @@ function getKoefArrow () {
 
 const isDef = (v) => v !== undefined && v !== null
 
-// eslint-disable-next-line no-unused-vars
-const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null && v.y !== undefined && v.y !== null
+export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null && v.y !== undefined && v.y !== null
 
 // ---------------------------------------------------------------------------------------
 // Построение AIRBORNE / AVIATION

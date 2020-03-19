@@ -10,9 +10,6 @@ import {
 
 const POINTS = 3
 const TIP_LENGTH = 50
-const TEXT = 'N'
-const TEXT2 = 'B'
-const TEXT3 = 'T'
 const EDGE = 40
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
@@ -60,7 +57,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
       Math.PI,
-      TEXT,
+      result.layer?.options?.textAmplifiers?.N,
       1,
       'middle',
       'black'
@@ -70,7 +67,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(segmentBy(p0, mid, 0.1), setVectorLength(oppositeVector(norm), 2 * EDGE * scale)),
       Math.PI,
-      TEXT2,
+      result.layer?.options?.textAmplifiers?.B,
       1,
       'middle',
       'black'
@@ -80,7 +77,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(segmentBy(p0, mid, 0.8), setVectorLength(norm, 2 * EDGE * scale)),
       Math.PI,
-      TEXT3,
+      result.layer.options?.textAmplifiers?.T,
       1,
       'middle',
       'black'

@@ -11,6 +11,14 @@ L.PM.Edit.include({
 })
 
 L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
+  _getMarkersArray: function () {
+    return this._markers
+  },
+
+  _getMarkersCount: function () {
+    return this._markers.length
+  },
+
   _createMarker: function (latlng, index) {
     const allowDelete = !index && this._layer.lineDefinition.allowDelete(index, this._layer._latlngs.length)
     if (!allowDelete) {

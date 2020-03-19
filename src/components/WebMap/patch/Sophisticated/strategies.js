@@ -202,7 +202,7 @@ export const STRATEGY = {
   shapeCircle: (alignment = 'none') => (prevPoints, nextPoints, changed) => {
     const pN0 = nextPoints[0]
     const indChanged = changed[0]
-    if (changed[0] === 0) { // змінюємо опорну
+    if (!changed[0]) { // змінюємо опорну
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
@@ -322,7 +322,6 @@ export const RENDER = {
       drawBezierSpline(result, area, true)
 
       const hf = 'url(\'#hatching\')'
-      console.log('fill ', result.layer._path.getAttribute('fill'))
       result.layer._path.setAttribute('fill', hf)
       result.layer._path.setAttribute('width', 100)
       result.layer.options.fillColor = hf

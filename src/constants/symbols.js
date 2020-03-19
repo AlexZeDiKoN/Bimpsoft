@@ -513,7 +513,7 @@ export const symbols = [
       {
         hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.',
         code: '10032500000017015000',
-        amp: { isSvg: true, type: 'special' },
+        amp: { isSvg: true, type: 'special', textAmplifiers: { N: 'N', B: 'B', T: 'T' } },
       },
       { hint: 'Послідовне зосередження вогню', code: '10032500000017016000', amp: { isSvg: true, type: 'special' } },
       { hint: 'Зона цілі', code: '10032500002408050000', amp: { isSvg: true, type: 'special' } },
