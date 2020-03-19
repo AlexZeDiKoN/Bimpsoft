@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Input, Button, Select, Tooltip, Popover } from 'antd'
+import { Input, Button, Select, Tooltip } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import placeSearch from '../../../server/places'
-import SegmentButtonForm from './children/SegmentButtonForm'
 import Header from './children/Header'
 import PopupPanel from './children/PopupPanel'
-
+import SegmentButtonPopover from './children/SegmentButtonPopover'
 import './style.css'
 
 const {
@@ -40,7 +39,7 @@ class March extends Component {
   renderSegmentBlocks = () => {
     const { segments, addSegment, deleteSegment } = this.props
     return segments.map((segment, id) => {
-      const { segmentType, terrain, velocity, required } = segment
+      const { segmentType } = segment
       if (segmentType === 0) {
         return null
       }
@@ -65,17 +64,9 @@ class March extends Component {
 
       return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
         00:00
-        <Popover placement="left" trigger="click" content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> } >
         10 km
-        </Popover>
-        <SegmentButtonForm
-          segmentId={id}
-          deleteSegment={deleteSegment}
-          segmentType={segmentType}
-          terrain={terrain}
-          velocity={velocity}
-          required={required}
-        />
+        <SegmentButtonPopover segmentType={segmentType} content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> }/>
+
         <Button onClick={() => addSegment(id)}>+</Button>
       </div>
     })

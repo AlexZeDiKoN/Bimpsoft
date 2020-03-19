@@ -1,23 +1,39 @@
-import { Input, Select, Modal } from 'antd'
 import React from 'react'
+import PropTypes from 'prop-types'
+import { Input, Select, Modal } from 'antd'
 import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
+import { isNumberSymbols } from '../../../../../utils/validation/number'
 const { confirm } = Modal
 
 const mapStateToProps = ({ march: { indicators } }) => ({
-  MB001: indicators && indicators['МШВ001'],
-  MB007: indicators && indicators['МШВ007'],
+  MB001: (indicators && indicators['МШВ001']) || {},
+  MB007: (indicators && indicators['МШВ007']) || {},
 })
 
 const mapDispatchToProps = {
   editFormField: march.editFormField,
 }
 
+const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === type) || ''
+
 const PopupPanel = (props) => {
-  const { MB001: { typeValues: typeMB001 = [] }, MB007: { typeValues: typeMB007 = [] }, editFormField, propData } = props
+  const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
   const { deleteSegment, id: segmentId, segmentType, required, terrain, velocity } = propData
-  const typeNameById = (typeValues, type) => typeValues.find(({ id }) => id === type)
+
+  const onEditFormField = (fieldName) => (id) => editFormField({
+    segmentId,
+    fieldName,
+    val: id,
+  })
+
+  const onChangeVelocity = (e) => {
+    const { value } = e.target
+    const numberVal = value ? (isNumberSymbols(value) && value) || velocity : ''
+
+    onEditFormField('velocity')(+numberVal)
+  }
 
   const showDeleteConfirm = () => {
     confirm({
@@ -26,6 +42,7 @@ const PopupPanel = (props) => {
       okType: 'danger',
       cancelText: 'Ні',
       onOk () {
+        deleteSegment(segmentId)
       },
     })
   }
@@ -33,22 +50,25 @@ const PopupPanel = (props) => {
   return <div className={'march-popup-form2'}>
     <Select
       className={''}
-      defaultValue={typeNameById(typeMB001, segmentType).name}
-      onChange={(value) => {}}
+      defaultValue={nameTypeById(MB001, segmentType).name}
+      onChange={onEditFormField('segmentType')}
     >
-      {typeMB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+      {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
     </Select>
 
-    <Select
-      className={''}
-      defaultValue={typeNameById(typeMB007, terrain).name}
-      onChange={(value) => {}}
-    >
-      {typeMB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
-    </Select>
+    {(segmentType === 41) &&
+      <Select
+        className={''}
+        defaultValue={nameTypeById(MB007, terrain).name}
+        onChange={onEditFormField('terrain')}
+      >
+        {MB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+      </Select>
+    }
 
     <div className={'speedBlock'}>
-      <span>Середня швидкість (км/год): </span>  <Input maxLength={10} style={{ width: '60px' }}/>
+      <span>Середня швидкість (км/год): </span>
+      <Input onChange={onChangeVelocity} value={velocity} maxLength={10} style={{ width: '60px' }}/>
     </div>
     <div><span>Довжина ділянки: </span> {350} км</div>
     <div className={'bottomPanel'}>
@@ -56,6 +76,24 @@ const PopupPanel = (props) => {
       { !required && <div onClick={() => showDeleteConfirm(propData)} className={'deleteSegment'} />}
     </div>
   </div>
+}
+
+PopupPanel.propTypes = {
+  propData: PropTypes.shape({
+    deleteSegment: PropTypes.func.isRequired,
+    id: PropTypes.number.isRequired,
+    required: PropTypes.bool.isRequired,
+    segmentType: PropTypes.number.isRequired,
+    terrain: PropTypes.number.isRequired,
+    velocity: PropTypes.number.isRequired,
+  }).isRequired,
+  MB001: PropTypes.shape({
+    typeValues: PropTypes.array.isRequired,
+  }).isRequired,
+  MB007: PropTypes.shape({
+    typeValues: PropTypes.array.isRequired,
+  }).isRequired,
+  editFormField: PropTypes.func.isRequired,
 }
 
 export default connect(mapStateToProps, catchErrors(mapDispatchToProps))(PopupPanel)
