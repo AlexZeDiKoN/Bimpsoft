@@ -269,7 +269,7 @@ export const symbols = [
       {
         hint: 'Район базування військової частини, підрозділу авіації',
         code: '10032500001204000000',
-        amp: { isSvg: true, type: 'special' },
+        amp: { isSvg: true, type: 'special', textAmplifiers: { H: 'H' } },
       },
       { hint: 'Базовий табір бригади', code: '10031000181409000000', amp: {} },
       {
@@ -517,6 +517,15 @@ export const symbols = [
           isSvg: true,
           type: 'special',
           textAmplifiers: { N: 'N', B: 'B', T: 'T' },
+        },
+      },
+      {
+        hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.',
+        code: '10032500000017078000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N', B: 'B' },
         },
       },
       {

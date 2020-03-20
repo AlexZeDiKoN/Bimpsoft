@@ -16,6 +16,8 @@ import './line_types/017032'
 import './line_types/017049'
 import './line_types/017063'
 import './line_types/017076'
+import './line_types/017078'
+import './line_types/120400'
 
 import './line_types/340500'
 
