@@ -332,3 +332,18 @@ export const RENDER = {
       result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
     },
 }
+
+export const SEQUENCE = {
+  // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
+  areaWithAmplifiers: (amplCount) => (index, count) => {
+    let prev = index - 1
+    let next = index + 1
+    if (prev < 0) {
+      prev = count - amplCount - 1
+    }
+    if (next > count - amplCount - 1) {
+      next = 0
+    }
+    return [ prev, next ]
+  }
+}

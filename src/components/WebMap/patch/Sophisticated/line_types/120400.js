@@ -1,5 +1,5 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
-import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import {
   lineDefinitions, drawLine, drawBezierSpline, drawMaskedText,
 } from '../utils'
@@ -12,6 +12,8 @@ const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30
 
 lineDefinitions['120400'] = {
+  isArea: true,
+
   // Кількість точок у лінії (мінімальна)
   POINTS,
 
@@ -23,6 +25,9 @@ lineDefinitions['120400'] = {
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.snapNearest1,
+
+  // Індексація точок замкнутого контуру
+  areaSeq: SEQUENCE.areaWithAmplifiers(2),
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => ([

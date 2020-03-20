@@ -1,4 +1,3 @@
-import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import {
   lineDefinitions, drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier,
