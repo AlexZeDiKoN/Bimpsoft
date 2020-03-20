@@ -1,6 +1,5 @@
 import React from 'react'
-import { components, utils } from '@DZVIN/CommonComponents'
-// import { Checkbox } from 'antd'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SectorItem from './SectorItem'
 
@@ -10,27 +9,10 @@ const {
   FormDarkPart,
 } = components.form
 
-const { Coordinates: Coord } = utils
-
 const {
   icons: { IconHovered, names: IconNames },
 } = components
 
-function getCoordinatesFromRadius (coordinatesArray, radius) {
-  // const coord1 = coordinatesArray[0]
-  const coord2 = coordinatesArray[1]
-  // if (Coord.check(coord1) && Coord.check(coord2)) {
-  //   const corner1 = L.latLng(coord1)
-  //   const corner2 = L.latLng(coord2)
-  //
-  //   const radiusNew = Math.round(corner1.distanceTo(corner2))
-  //   console.log(corner1, corner2, radius, radiusNew)
-  // }
-  return coord2
-}
-
-// const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
-// const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
 const PATH_S_INFO = [ 'attributes', 'sectorsInfo' ]
 const COORDINATE_PATH = [ 'geometry' ]
 
@@ -84,31 +66,17 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     })
   }
 
-  // обработка изменения радиуса
-  radiusChangeHandler = (index) => (radiusText) => {
-    // const { index } = this.props
-    // console.log(JSON.stringify(index), JSON.stringify(radiusText))
+  sectorChangeHandler = (target) => {
+    const { coord1, coord2, index } = target
     this.setResult((result) => {
-      const radius = Number(radiusText)
-      if (Number.isFinite(radius)) {
-        const coordinatesArray = result.getIn(COORDINATE_PATH)
-        const coord1 = coordinatesArray.get(0)
-        const coord2 = coordinatesArray.get(index)
-        const coord3 = coordinatesArray.get(index + 1)
-        if (Coord.check(coord1) && Coord.check(coord2) && Coord.check(coord3)) {
-          // const coord3 = L.CRS.Earth.calcPairRight(coord1, radius)
-          const coordN2 = getCoordinatesFromRadius([ coord1, coord2 ], radius)
-          result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(index, coordN2))
-          const coordN3 = getCoordinatesFromRadius([ coord1, coord3 ], radius)
-          result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(index, coordN3))
-        }
-      }
+      result = result.updateIn(COORDINATE_PATH, (coordinates) => {
+        const coordNew = coordinates.set((2 + index * 2), coord1)
+        return coordNew.set((3 + index * 2), coord2)
+      })
+      // result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(3 + index * 2, coord2))
       return result
     })
-    this.setState({ radiusText })
   }
-
-  radiusBlurHandler = () => this.setState({ radiusText: null })
 
   addSectors (points, readOnly) {
     const sector = []
@@ -121,13 +89,14 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
         <SectorItem key={`${points[i].lat}/${points[i].lng}`}
           index = {numSector}
           beginCoordinate={points[0]}
-          coordinate1={points[i]}
-          coordinate2={points[i + 1]}
+          coord1={points[i]}
+          coord2={points[i + 1]}
           sectorInfo={sectorInfo}
           canRemove={canRemove}
           readOnly={readOnly}
           onRemove={this.sectorRemoveHandler}
           onChangeProps={this.sectorPropertiesChangeHandler}
+          onChange={this.sectorChangeHandler}
         />,
       )
     }
