@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Input, Button, Select, Tooltip } from 'antd'
+import { Input, Select, Tooltip } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import placeSearch from '../../../server/places'
 import Header from './children/Header'
@@ -63,11 +63,19 @@ class March extends Component {
       const height = (1 + segment.children.length) * 145
 
       return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
-        00:00
-        10 km
-        <SegmentButtonPopover segmentType={segmentType} content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> }/>
 
-        <Button onClick={() => addSegment(id)}>+</Button>
+        <SegmentButtonPopover
+          segmentType={segmentType}
+          content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> }
+        />
+        <span>00:00</span>
+        <span>10 km</span>
+
+        <div className={'hoverAddSegmentButton'}>
+          <Tooltip placement='topRight' title={'Додати ділянку'}>
+            <div className={'addSegmentButton'} onClick={() => addSegment(id)}/>
+          </Tooltip>
+        </div>
       </div>
     })
   }
@@ -98,7 +106,7 @@ class March extends Component {
       }
 
       let lineColorClass
-      switch (segmentType || formData[segmentId].segmentType) {
+      switch (segmentType || segments[segmentId].segmentType) {
         case 42:
           lineColorClass = 'line-orange'
           break
@@ -117,7 +125,9 @@ class March extends Component {
           {(segmentType || childId || childId === 0)
             ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
               <Tooltip placement='topRight' title={'Додати пункт'}>
+                { !(segmentId === 0 && childId === undefined) &&
                 <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
+                }
               </Tooltip>
             </div>
             : <div className={'vertical-block'}/>

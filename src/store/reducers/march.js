@@ -49,7 +49,8 @@ const defaultSegment = {
   coord: { },
   required: false,
   editableName: true,
-  children: [ ],
+  // eslint-disable-next-line
+  //children: [ ],
 }
 
 const defaultChild = {
@@ -107,7 +108,7 @@ export default function reducer (state = initState, action) {
       return editFormField(state, payload)
     }
     case march.ADD_SEGMENT: {
-      return { ...state, segments: state.segments.insert(payload + 1, defaultSegment) }
+      return { ...state, segments: state.segments.insert(payload + 1, { ...defaultSegment, children: [ ] }) }
     }
     case march.DELETE_SEGMENT: {
       return { ...state, segments: state.segments.delete(payload) }
