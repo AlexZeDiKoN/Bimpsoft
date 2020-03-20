@@ -104,13 +104,13 @@ export const STRATEGY = {
     const p1 = prevPoints[1]
     const pN0 = nextPoints[0]
     const pN1 = nextPoints[1]
-    const indChanged = changed[0]
-    if (changed[0] === 0) { // змінюємо опорну
+    const indChanged = changed[0] ?? 0
+    if (indChanged === 0) { // змінюємо опорну
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
       newPoints.forEach((elm, ind) => (nextPoints[ind] = elm))
-    } else if (changed[0] === 1) { // змінюємо азимут
+    } else if (indChanged === 1) { // змінюємо азимут
       // длина последнего сектора должна быть меньше длины стрелки на 15% (сам придумал)
       if (lengthLine(pN0, pN1) * 0.85 < lengthLine(nextPoints[nextPoints.length - 1], pN0)) {
         // поворачивае по углу, длину оставляем минимально допустимую

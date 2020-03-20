@@ -77,7 +77,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(segmentBy(p0, mid, 0.8), setVectorLength(norm, 2 * EDGE * scale)),
       Math.PI,
-      result.layer.options?.textAmplifiers?.T,
+      result.layer?.options?.textAmplifiers?.T,
       1,
       'middle',
       'black'

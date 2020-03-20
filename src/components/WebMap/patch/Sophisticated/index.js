@@ -2,7 +2,6 @@ import L from 'leaflet'
 import entityKind from '../../entityKind'
 import { findDefinition } from './utils'
 
-import './line_types/340500'
 import './line_types/017006'
 import './line_types/017008'
 import './line_types/017009'
@@ -16,6 +15,9 @@ import './line_types/017024'
 import './line_types/017032'
 import './line_types/017049'
 import './line_types/017063'
+import './line_types/017076'
+
+import './line_types/340500'
 
 export const CONFIG = {
   TEXT_EDGE: 4,

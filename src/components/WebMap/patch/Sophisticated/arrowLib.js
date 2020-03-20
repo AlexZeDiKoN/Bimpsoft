@@ -309,7 +309,7 @@ function segmentDivision (t1, t2, kf) {
 }
 
 // точка на отрезке на расстоянии l от начальной точки (t1)
-function pointsToSegment (t1, t2, l) {
+export function pointsToSegment (t1, t2, l) {
   const razX = t1.x - t2.x
   const razY = t1.y - t2.y
   const lengthSection = lengthLine(t1, t2)
@@ -412,7 +412,7 @@ export function coordinatesToPolar (t1, t2, t3) {
   return { angle, beamLength }
 }
 
-function angle3Points (t1, t2, t3) {
+export function angle3Points (t1, t2, t3) {
   return Math.atan2((t3.y - t1.y) * (t2.x - t1.x) - (t2.y - t1.y) * (t3.x - t1.x),
     (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
 }
