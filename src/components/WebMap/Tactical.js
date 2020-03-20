@@ -171,9 +171,16 @@ function createSophisticated (data, layer, initMap) {
   if (layer && (layer instanceof L.Polyline)) {
     layer.setLatLngs(data.geometry.toJS())
   } else {
-    const options = prepareOptions(entityKind.SOPHISTICATED)
-    options.textAmplifiers = data.attributes.textAmplifiers
-    layer = new L.Sophisticated(options, data.code, data.geometry?.toJS(), initMap)
+    layer = new L.Sophisticated(
+      {
+        ...prepareOptions(entityKind.SOPHISTICATED),
+        textAmplifiers: data.attributes.textAmplifiers,
+        params: data.attributes.params,
+      },
+      data.code,
+      data.geometry?.toJS(),
+      initMap,
+    )
   }
   return layer
 }

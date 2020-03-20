@@ -461,6 +461,9 @@ export const continueLine = (result, p1, p2, x, y) => {
 
 // Виведення тексту
 export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null) => {
+  if (!text || !text.length) {
+    return
+  }
   // Обчислення розміру
   const key = `${sizeFactor}:${text}`
   let box = textSizeCache[key]
@@ -487,6 +490,9 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
 
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
 export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle') => {
+  if (!text || !text.length) {
+    return
+  }
   const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor)
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE

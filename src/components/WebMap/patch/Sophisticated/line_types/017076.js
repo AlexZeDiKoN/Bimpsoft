@@ -11,6 +11,7 @@ import {
 
 const POINTS = 2
 const DEF_COUNT = 2
+const ARROW_LENGTH = 60
 
 lineDefinitions['017076'] = {
   // Кількість точок у символа (мінімальна)
@@ -27,13 +28,13 @@ lineDefinitions['017076'] = {
 
   // Ініціалізація вершин при створенні нового символу даного типу
   init: () => {
-    // Варіант для демонстрації
     let c = DEF_COUNT
-    const um = { offsetHeight: 1, offsetWidth: 1 }
-    const dmap = document.getElementById('map') || um
-    const scale = dmap.offsetHeight / dmap.offsetWidth
-    if (c < 1) { c = 1 }
-    if (c > 10) { c = 9 }
+    if (c < 1) {
+      c = 1
+    }
+    if (c > 10) {
+      c = 9
+    }
     const ih = 0.80 / c
     const result = [
       { x: 0.50, y: 0.75 },
@@ -43,8 +44,8 @@ lineDefinitions['017076'] = {
     const ca = Math.cos(Math.PI / 6.0)
     for (let i = 1; i <= c; i++) {
       result.push(
-        { x: 0.50 - i * 0.50 * ih * sa * scale, y: 0.75 - i * 0.50 * ih * ca },
-        { x: 0.50 + 0.50 * ih * sa * i * scale, y: 0.75 - 0.50 * ih * ca * i },
+        { x: 0.50 - i * 0.50 * ih * sa /* * scale */, y: 0.75 - i * 0.50 * ih * ca },
+        { x: 0.50 + 0.50 * ih * sa * i /* * scale */, y: 0.75 - 0.50 * ih * ca * i },
       )
     }
     return result
@@ -60,10 +61,8 @@ lineDefinitions['017076'] = {
     }
     const arrows = emptyPath()
     drawLine(result, pO, pE)
-    // const pDownArrow = segmentDivision(points[1], points[0], 0.1)
-    const lengthArrow = lengthLine(pE, pO) * 0.075
-    const pa1 = getPointAt(pO, pE, Math.PI / 12, -lengthArrow)
-    const pa2 = getPointAt(pO, pE, -Math.PI / 12, -lengthArrow)
+    const pa1 = getPointAt(pO, pE, Math.PI / 12, -ARROW_LENGTH * scale)
+    const pa2 = getPointAt(pO, pE, -Math.PI / 12, -ARROW_LENGTH * scale)
     // стрелка азимута
     drawLine(arrows, pE, pa1, pa2)
     addPathAmplifier(result, arrows, true)

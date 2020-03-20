@@ -513,9 +513,22 @@ export const symbols = [
       {
         hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.',
         code: '10032500000017015000',
-        amp: { isSvg: true, type: 'special', textAmplifiers: { N: 'N', B: 'B', T: 'T' } },
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N', B: 'B', T: 'T' },
+        },
       },
-      { hint: 'Послідовне зосередження вогню', code: '10032500000017016000', amp: { isSvg: true, type: 'special' } },
+      {
+        hint: 'Послідовне зосередження вогню',
+        code: '10032500000017016000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { T: 'T' },
+          params: { count: 5, number: 101 },
+        },
+      },
       { hint: 'Зона цілі', code: '10032500002408050000', amp: { isSvg: true, type: 'special' } },
       {
         hint: 'Смуга ураження керованими снарядами дивізіону (Олово) із зазначенням смуг (зон) ураження батарей',

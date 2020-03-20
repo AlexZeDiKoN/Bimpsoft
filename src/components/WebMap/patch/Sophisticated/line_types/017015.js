@@ -57,7 +57,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
       Math.PI,
-      result.layer?.options?.textAmplifiers?.N,
+      result.layer?.options?.textAmplifiers?.N ?? '',
       1,
       'middle',
       'black'
@@ -67,7 +67,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(segmentBy(p0, mid, 0.1), setVectorLength(oppositeVector(norm), 2 * EDGE * scale)),
       Math.PI,
-      result.layer?.options?.textAmplifiers?.B,
+      result.layer?.options?.textAmplifiers?.B ?? '',
       1,
       'middle',
       'black'
@@ -77,7 +77,7 @@ lineDefinitions['017015'] = {
       result,
       applyVector(segmentBy(p0, mid, 0.8), setVectorLength(norm, 2 * EDGE * scale)),
       Math.PI,
-      result.layer?.options?.textAmplifiers?.T,
+      result.layer?.options?.textAmplifiers?.T ?? '',
       1,
       'middle',
       'black'
