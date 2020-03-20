@@ -44,6 +44,7 @@ const webMapAttributesInitValues = {
   shownNodalPointAmplifiers: Set(),
   pointAmplifier: LineAmplifier(),
   textAmplifiers: {},
+  params: {},
   sectorsInfo: List(),
   left: 'none',
   right: 'none',

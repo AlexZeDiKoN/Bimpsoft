@@ -513,9 +513,22 @@ export const symbols = [
       {
         hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.',
         code: '10032500000017015000',
-        amp: { isSvg: true, type: 'special', textAmplifiers: { N: 'N', B: 'B', T: 'T' } },
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N', B: 'B', T: 'T' },
+        },
       },
-      { hint: 'Послідовне зосередження вогню', code: '10032500000017016000', amp: { isSvg: true, type: 'special' } },
+      {
+        hint: 'Послідовне зосередження вогню',
+        code: '10032500000017016000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { T: 'T' },
+          params: { count: 5, number: 101 },
+        },
+      },
       { hint: 'Зона цілі', code: '10032500002408050000', amp: { isSvg: true, type: 'special' } },
       {
         hint: 'Смуга ураження керованими снарядами дивізіону (Олово) із зазначенням смуг (зон) ураження батарей',
@@ -679,7 +692,7 @@ export const symbols = [
       { hint: 'Зенітний ракетний (ракетно-артилерійський) дивізіон', code: '10031000161301020000', amp: {} },
       { hint: 'Група регламенту та ремонту', code: '10031000151611000000', amp: {} },
       { hint: 'Технічна батарея', code: '10031000151301003100', amp: { [amps.uniqueDesignation]: 'тб' } },
-      { hint: 'Сектор відповідальності підрозділу ППО', code: '10032500000017032000', amp: { isSvg: true, type: '' } },
+      { hint: 'Сектор відповідальності підрозділу ППО', code: '10032500000017032000', amp: { isSvg: true, type: 'special' } },
       { hint: 'Кочуюча БМ (ЗСУ, підрозділ)', code: '10032500000017033000', amp: { isSvg: true, type: 'special' } },
       { hint: 'Зона розвідки повітряного противника', code: '10032500000017019000', amp: { isSvg: true, type: 'special' } },
     ],
