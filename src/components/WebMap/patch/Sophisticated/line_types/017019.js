@@ -9,19 +9,15 @@ import {
 // sign name: Дальність дії (кругові)
 // task code: DZVIN-5769 (part 3)
 
-const POINTS = 4
 const SIZE = 96
 const COLORS = [ 'black', 'blue', 'red', 'green' ]
 
 lineDefinitions['017019'] = {
-  // Кількість точок у символа (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин символа
-  allowMiddle: MIDDLE.none, // areaWithAmplifiersNotEnd(POINTS),
+  allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.none, // allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" символа)
   adjust: STRATEGY.shapeCircle('bottom'),

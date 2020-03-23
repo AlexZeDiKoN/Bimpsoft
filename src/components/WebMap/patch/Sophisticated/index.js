@@ -63,15 +63,17 @@ L.Sophisticated = L.Polyline.extend({
       this._bounds = new L.LatLngBounds()
     }
     let next = this._convertLatLngs(latlngs)
-    let firstTime = !this._prevPoints
+    let firstTime = !this._prevPoints || this._prevPoints.length !== next.length
     if (firstTime) {
       this._prevPoints = next
     }
     if (this.lineDefinition && next.length > 0) {
       const changed = []
-      for (let i = 0; i < next.length; i++) {
-        if (next[i].lat !== this._prevPoints[i].lat || next[i].lng !== this._prevPoints[i].lng) {
-          changed.push(i)
+      if (!firstTime) {
+        for (let i = 0; i < next.length; i++) {
+          if (next[i].lat !== this._prevPoints[i].lat || next[i].lng !== this._prevPoints[i].lng) {
+            changed.push(i)
+          }
         }
       }
       if (firstTime || changed.length > 0) {
