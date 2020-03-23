@@ -20,6 +20,9 @@ import './line_types/017078'
 import './line_types/120400'
 import './line_types/140500'
 import './line_types/140601'
+import './line_types/140602'
+import './line_types/140603'
+import './line_types/140605'
 
 import './line_types/340500'
 

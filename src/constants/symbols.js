@@ -446,6 +446,21 @@ export const symbols = [
         amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
       },
       {
+        hint: 'Головний напрямок свого удару',
+        code: '10032500001406020000',
+        amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
+      },
+      {
+        hint: 'Другорядний напрямок свого удару',
+        code: '10032500001406030000',
+        amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
+      },
+      {
+        hint: 'Напрямок хибного удару',
+        code: '10032500001406050000',
+        amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
+      },
+      {
         hint: 'Рубіж постановки завад (придушення ППО) ',
         code: '10032500000017012000',
         amp: { isSvg: true, type: 6, color: '#ff0404', pointAmplifier: { [amps.T]: 'SEAD' } },
