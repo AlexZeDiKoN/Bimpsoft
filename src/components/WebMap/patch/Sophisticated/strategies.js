@@ -274,6 +274,11 @@ export const MIDDLE = {
   // Дозволено на будь-якому відрізку
   any: () => true,
 
+  // Дозволено на відрізку, індекс якого більше або дорівнює вказаному
+  allowOver: (amount) =>
+    (index) => index >= amount,
+
+  // Область
   area: (index1, index2, count, layer) =>
     layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % count)),
 

@@ -440,7 +440,11 @@ export const symbols = [
         code: '10062500001514010000',
         amp: { isSvg: true, type: 'special' },
       },
-      { hint: 'Напрямок удару своєї авіації', code: '10032500001406010000', amp: { isSvg: true, type: 'special' } },
+      {
+        hint: 'Напрямок удару своєї авіації',
+        code: '10032500001406010000',
+        amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
+      },
       {
         hint: 'Рубіж постановки завад (придушення ППО) ',
         code: '10032500000017012000',

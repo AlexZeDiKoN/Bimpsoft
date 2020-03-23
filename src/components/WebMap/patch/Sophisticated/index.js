@@ -18,6 +18,8 @@ import './line_types/017063'
 import './line_types/017076'
 import './line_types/017078'
 import './line_types/120400'
+import './line_types/140500'
+import './line_types/140601'
 
 import './line_types/340500'
 
