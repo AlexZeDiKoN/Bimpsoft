@@ -6,19 +6,15 @@ import {
 // sign name: FRIENDLY DIRECTION OF SUPPORTING ATTACK
 // task code: DZVIN-5519
 
-const POINTS = 2
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36
 
 lineDefinitions['140603'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
-  allowMiddle: MIDDLE.allowOver(POINTS - 1),
+  allowMiddle: MIDDLE.allowOver(1),
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.line,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,

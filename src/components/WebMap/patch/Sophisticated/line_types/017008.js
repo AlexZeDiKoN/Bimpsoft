@@ -7,20 +7,16 @@ import {
 // sign name: ДЕМОНСТРУВАТИ
 // task code: DZVIN-5778
 
-const POINTS = 4
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 const TEXT = 'D'
 
 lineDefinitions['017008'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'яок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.shapeU,

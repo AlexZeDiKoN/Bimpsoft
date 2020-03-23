@@ -1,39 +1,35 @@
-(function () {
-  /* global lineDefinitions, STRATEGY, MIDDLE, DELETE, normalVectorTo, applyVector, drawLine, oppositeVector */
+import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import {
+  lineDefinitions, drawLine, normalVectorTo, applyVector, oppositeVector,
+} from '../utils'
 
-  // sign name: INFILTRATION LANE
-  // task code: DZVIN-5525
+// sign name: INFILTRATION LANE
+// task code: DZVIN-5525
 
-  const POINTS = 3
+lineDefinitions['140800'] = {
+  // Відрізки, на яких дозволено додавання вершин лінії
+  allowMiddle: MIDDLE.none,
 
-  lineDefinitions['140800'] = {
-    // Кількість точок у лінії (мінімальна)
-    POINTS,
+  // Вершини, які дозволено вилучати
+  allowDelete: DELETE.none,
 
-    // Відрізки, на яких дозволено додавання вершин лінії
-    allowMiddle: MIDDLE.none,
+  // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
+  adjust: STRATEGY.shapeT(),
 
-    // Вершини, які дозволено вилучати
-    allowDelete: DELETE.allowOver(POINTS),
+  // Ініціалізація вершин при створенні нової лінії даного типу
+  init: () => ([
+    { x: 0.25, y: 0.50 },
+    { x: 0.75, y: 0.50 },
+    { x: 0.50, y: 0.45 },
+  ]),
 
-    // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-    adjust: STRATEGY.shapeT(),
+  // Рендер-функція
+  render: (result, points) => {
+    const [ p0, p1, p2 ] = points
 
-    // Ініціалізація вершин при створенні нової лінії даного типу
-    init: () => ([
-      { x: 0.25, y: 0.50 },
-      { x: 0.75, y: 0.50 },
-      { x: 0.50, y: 0.45 },
-    ]),
-
-    // Рендер-функція
-    render: (result, points) => {
-      const [ p0, p1, p2 ] = points
-
-      const norm = normalVectorTo(p0, p1, p2)
-      const antiNorm = oppositeVector(norm)
-      drawLine(result, applyVector(p0, norm), applyVector(p1, norm))
-      drawLine(result, applyVector(p0, antiNorm), applyVector(p1, antiNorm))
-    },
-  }
-})()
+    const norm = normalVectorTo(p0, p1, p2)
+    const antiNorm = oppositeVector(norm)
+    drawLine(result, applyVector(p0, norm), applyVector(p1, norm))
+    drawLine(result, applyVector(p0, antiNorm), applyVector(p1, antiNorm))
+  },
+}

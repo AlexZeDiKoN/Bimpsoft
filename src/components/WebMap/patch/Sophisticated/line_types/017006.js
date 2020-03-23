@@ -8,20 +8,16 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986
 
-const POINTS = 3
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 const EDGE_LENGTH = 60
 
 lineDefinitions['017006'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.shapeT(),

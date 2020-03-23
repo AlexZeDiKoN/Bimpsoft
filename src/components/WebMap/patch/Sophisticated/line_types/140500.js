@@ -6,20 +6,16 @@ import {
 // sign name: PRINCIPAL DIRECTION OF FIRE
 // task code: DZVIN-5516
 
-const POINTS = 3
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 const WEIGHT = 5
 
 lineDefinitions['140500'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,

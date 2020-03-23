@@ -7,18 +7,14 @@ import {
 // sign name: Підрозділ (група), який проводить пошук (наліт), із зазначенням належності
 // task code: DZVIN-6010
 
-const POINTS = 4
 const ARROW_WIDTH = 50
 
 lineDefinitions['017024'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'яок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.shapeU,

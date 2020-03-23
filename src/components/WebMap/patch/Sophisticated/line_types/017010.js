@@ -8,19 +8,15 @@ import {
 // sign name: ПЕРЕСЛІДУВАТИ
 // task code: DZVIN-6008
 
-const POINTS = 3
 const CROSS_LENGTH = 48
 const TEXT = 'P'
 
 lineDefinitions['017010'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.shapeL,

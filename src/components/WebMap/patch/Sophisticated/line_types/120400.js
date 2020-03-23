@@ -7,15 +7,12 @@ import {
 // sign name: AIRFIELD ZONE
 // task code: DZVIN-5791
 
-const POINTS = 5
 const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30
 
 lineDefinitions['120400'] = {
+  // Спеціальний випадок
   isArea: true,
-
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
 
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.areaWithAmplifiers(2),

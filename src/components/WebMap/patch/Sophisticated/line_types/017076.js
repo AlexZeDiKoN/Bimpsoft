@@ -9,19 +9,15 @@ import {
 // sign name: WEAPON/SENSOR RANGE FAN, SECTOR
 // task code: DZVIN-5769 (part 3)
 
-const POINTS = 2
 const DEF_COUNT = 2
 const ARROW_LENGTH = 60
 
 lineDefinitions['017076'] = {
-  // Кількість точок у символа (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин символа
-  allowMiddle: MIDDLE.none, // areaWithAmplifiersNotEnd(POINTS),
+  allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.none, // allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" символа)
   adjust: STRATEGY.shapeSector,

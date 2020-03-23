@@ -6,17 +6,14 @@ import {
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
 
-const POINTS = 3
 const STROKE_WIDTH = 5
 const CROSS_SIZE = 48
 
 const CODE = '017018'
 
 lineDefinitions[CODE] = {
+  // Спеціальний випадок
   isPolygon: true,
-
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
 
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.area,

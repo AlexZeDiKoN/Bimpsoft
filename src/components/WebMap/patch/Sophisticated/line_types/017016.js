@@ -13,9 +13,6 @@ const BORDER = 48
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
-  // Кількість точок у лінії (мінімальна)
-  // POINTS: () => COUNT * 3 + 1,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 

@@ -7,20 +7,16 @@ import {
 // sign name: СТЕЖЕННЯ
 // task code: DZVIN-5532
 
-const POINTS = 2
 const ARROW_LENGTH = 16
 const SPRING_LENGTH = 16
 const SPRING_WIDTH = 16
 
 lineDefinitions['017049'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,

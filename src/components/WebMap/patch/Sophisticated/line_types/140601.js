@@ -6,20 +6,16 @@ import {
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
 
-const POINTS = 2
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36
 const BUT_HEIGHT = 48
 
 lineDefinitions['140601'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
-  allowMiddle: MIDDLE.allowOver(POINTS - 1),
+  allowMiddle: MIDDLE.allowOver(1),
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.line,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,

@@ -23,6 +23,7 @@ import './line_types/140601'
 import './line_types/140602'
 import './line_types/140603'
 import './line_types/140605'
+import './line_types/140800'
 
 import './line_types/340500'
 

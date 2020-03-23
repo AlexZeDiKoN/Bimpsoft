@@ -7,21 +7,17 @@ import {
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 
-const POINTS = 3
 const TIP_LENGTH = 50
 const EDGE = 40
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 
 lineDefinitions['017015'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.shapeT(),

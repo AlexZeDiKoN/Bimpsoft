@@ -277,6 +277,11 @@ export const symbols = [
         code: '10032500001405000000',
         amp: { isSvg: true, type: 'special' },
       },
+      {
+        hint: 'INFILTRATION LANE',
+        code: '10032500001408000000',
+        amp: { isSvg: true, type: 'special' },
+      },
       { hint: 'Ділянка прориву', code: '10032500003402000000', amp: { isSvg: true, type: 'special' } },
       { hint: 'Ділянка висадки морського десанту (пункт висадки)', code: '10032500002104000000', amp: {} },
       { hint: 'Ділянка форсування', code: '10032500002713000000', amp: { isSvg: true, type: 'special' } },
@@ -446,17 +451,17 @@ export const symbols = [
         amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
       },
       {
-        hint: 'Головний напрямок свого удару',
+        hint: 'FRIENDLY DIRECTION OF MAIN ATTACK',
         code: '10032500001406020000',
         amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
       },
       {
-        hint: 'Другорядний напрямок свого удару',
+        hint: 'FRIENDLY DIRECTION OF SUPPORTING ATTACK',
         code: '10032500001406030000',
         amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
       },
       {
-        hint: 'Напрямок хибного удару',
+        hint: 'DIRECTION OF ATTACK FEINT',
         code: '10032500001406050000',
         amp: { isSvg: true, type: 'special', textAmplifiers: { T: 'T' } },
       },

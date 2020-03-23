@@ -6,18 +6,14 @@ import {
 // sign name: СЕКТОР ВІДПОВІДАЛЬНОСТІ ПІДРОЗДІЛУ
 // task code: DZVIN-5992
 
-const POINTS = 3
 const ARROW_WIDTH = 30
 
 lineDefinitions['017032'] = {
-  // Кількість точок у лінії (мінімальна)
-  POINTS,
-
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowOver(POINTS),
+  allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,
