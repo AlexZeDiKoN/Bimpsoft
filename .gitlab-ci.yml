@@ -50,7 +50,7 @@ build:
         echo "Version  $CURRENT_VERSION.$updated"
     # - rm pnpm-lock.yaml    
     - yarn
-#    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
+    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
     - cp .env .env.backup
     - rm .env 
     - cp .env.production .env
