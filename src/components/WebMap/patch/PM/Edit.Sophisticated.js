@@ -6,8 +6,12 @@ const parent = { _createMiddleMarker, _createMarker }
 L.PM.Edit.include({
   isPolygon() {
     // if it's a polygon, it means the coordinates array is multi dimensional
-    return this._layer instanceof L.Polygon || (this._layer.lineDefinition && this._layer.lineDefinition.isPolygon);
+    return this._layer instanceof L.Polygon || (this._layer.lineDefinition && this._layer.lineDefinition.isPolygon)
   },
+
+  isArea() {
+    return this._layer?.lineDefinition?.isArea
+  }
 })
 
 L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({

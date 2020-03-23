@@ -97,25 +97,41 @@ L.PM.Edit.Line.include({
     parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType
-    if (marker._index >= 0 && (GROUPS.BEZIER.includes(kind) || (kind === entityKind.SOPHISTICATED && this.isPolygon()))) {
-      const len = this._getMarkersCount()
-      const markerArray = this._getMarkersArray()
-      const nextMarkerIndex = (marker._index + 1) % len
-      const prevMarkerIndex = ((marker._index + len) - 1) % len
-      const nextNextMarkerIndex = (nextMarkerIndex + 1) % len
-      const prevPrevMarkerIndex = ((prevMarkerIndex + len) - 1) % len
-      if (marker._middleMarkerNext) {
-        setBezierMiddleMarkerCoords(this, marker._middleMarkerNext, marker, markerArray[nextMarkerIndex])
-        if (markerArray[nextMarkerIndex]._middleMarkerNext) {
-          setBezierMiddleMarkerCoords(this, markerArray[nextMarkerIndex]._middleMarkerNext,
-            markerArray[nextMarkerIndex], markerArray[nextNextMarkerIndex])
+    if (marker._index >= 0) {
+      if (
+        GROUPS.BEZIER.includes(kind) ||
+        (kind === entityKind.SOPHISTICATED && (this.isPolygon() || this.isArea()))
+      ) {
+        const len = this._getMarkersCount()
+        const markerArray = this._getMarkersArray()
+
+        let nextMarkerIndex, prevMarkerIndex, nextNextMarkerIndex, prevPrevMarkerIndex
+
+        const getSeq = this.lineDefinition?.areaSeq
+        if (getSeq) {
+          [ prevMarkerIndex, nextMarkerIndex ] = getSeq(marker._index);
+          [ , nextNextMarkerIndex ] = getSeq(nextMarkerIndex);
+          [ prevPrevMarkerIndex ] = getSeq(prevMarkerIndex)
+        } else {
+          nextMarkerIndex = (marker._index + 1) % len
+          prevMarkerIndex = ((marker._index + len) - 1) % len
+          nextNextMarkerIndex = (nextMarkerIndex + 1) % len
+          prevPrevMarkerIndex = ((prevMarkerIndex + len) - 1) % len
         }
-      }
-      if (marker._middleMarkerPrev) {
-        setBezierMiddleMarkerCoords(this, marker._middleMarkerPrev, markerArray[prevMarkerIndex], marker)
-        if (markerArray[prevMarkerIndex]._middleMarkerPrev) {
-          setBezierMiddleMarkerCoords(this, markerArray[prevMarkerIndex]._middleMarkerPrev,
-            markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
+
+        if (marker._middleMarkerNext) {
+          setBezierMiddleMarkerCoords(this, marker._middleMarkerNext, marker, markerArray[nextMarkerIndex])
+          if (markerArray[nextMarkerIndex]._middleMarkerNext) {
+            setBezierMiddleMarkerCoords(this, markerArray[nextMarkerIndex]._middleMarkerNext,
+              markerArray[nextMarkerIndex], markerArray[nextNextMarkerIndex])
+          }
+        }
+        if (marker._middleMarkerPrev) {
+          setBezierMiddleMarkerCoords(this, marker._middleMarkerPrev, markerArray[prevMarkerIndex], marker)
+          if (markerArray[prevMarkerIndex]._middleMarkerPrev) {
+            setBezierMiddleMarkerCoords(this, markerArray[prevMarkerIndex]._middleMarkerPrev,
+              markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
+          }
         }
       }
     }

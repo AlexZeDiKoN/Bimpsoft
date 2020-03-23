@@ -8,16 +8,13 @@ import {
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
 
-const DEF_COUNT = 3
-const DEF_NUMBER = 101
-const DEF_TEXT = 'T'
 const EDGE = 32
 const BORDER = 48
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
   // Кількість точок у лінії (мінімальна)
-  POINTS: () => DEF_COUNT * 3 + 1,
+  // POINTS: () => COUNT * 3 + 1,
 
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
@@ -26,9 +23,9 @@ lineDefinitions['017016'] = {
   allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-  adjust: (prevPoints, nextPoints, changed) => {
+  adjust: (prevPoints, nextPoints, changed, layer) => {
     // Варіант для демонстрації
-    const c = DEF_COUNT
+    const c = layer?.options?.params?.count
     for (const ch of changed) {
       const role = ch % 3
       if (role === 0) {
@@ -89,9 +86,8 @@ lineDefinitions['017016'] = {
   },
 
   // Ініціалізація вершин при створенні нової лінії даного типу
-  init: () => {
-    // Варіант для демонстрації
-    const c = DEF_COUNT
+  init: (options) => {
+    const c = options?.params?.count
     const ih = 0.5 / c
     const result = [
       { x: 0.50, y: 0.25 }
@@ -108,8 +104,7 @@ lineDefinitions['017016'] = {
 
   // Рендер-функція
   render: (result, points, scale) => {
-    // Варіант для демонстрації
-    const c = DEF_COUNT
+    const c = result.layer?.options?.params?.count ?? 0
     let start = points[0]
     for (let i = 0; i < c; i++) {
       const t = compose(
@@ -145,7 +140,7 @@ lineDefinitions['017016'] = {
     drawBorder(c - 1, c)
 
     // Варіант для демонстрації
-    const text = DEF_TEXT
+    const text = result.layer?.options?.textAmplifiers?.T ?? ''
     if (text) {
       drawText(
         result,
@@ -156,7 +151,7 @@ lineDefinitions['017016'] = {
     }
 
     // Варіант для демонстрації
-    const number = DEF_NUMBER
+    const number = result.layer?.options?.params?.number ?? 0
     if (number >= 0) {
       for (let i = 0; i < c; i++) {
         drawText(

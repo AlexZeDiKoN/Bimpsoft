@@ -1,8 +1,8 @@
 import Bezier from 'bezier-js'
-import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
+import { rotate, applyToPoint } from 'transformation-matrix'
 import {
-  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane, rad,
-  angleOf, oppositeVector, drawBezierSpline,
+  normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
+  angleOf, oppositeVector, drawBezierSpline, getPointAt, neg,
 } from './utils'
 import {
   shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates,
@@ -53,20 +53,14 @@ export const STRATEGY = {
     )
   },
 
+  // Форма кута 120 градусів
   shape120: (prevPoints, nextPoints, changed) => {
-    nextPoints[2] = {
-      x: (nextPoints[2].x <= nextPoints[1].x) ? nextPoints[1].x : nextPoints[2].x,
-      y: nextPoints[1].y
-    }
-
-    const angle = angleOf(nextPoints[1], nextPoints[2])
-
-    const ang = (delta, point) => compose(
-      translate(point.x, point.y),
-      rotate(angle + Math.PI + rad(delta)),
+    nextPoints[0] = getPointAt(
+      nextPoints[2],
+      nextPoints[1],
+      neg(halfPlane(nextPoints[2], nextPoints[1], nextPoints[0])) * Math.PI / 3,
+      changed.includes(1) ? segmentLength(prevPoints[0], prevPoints[1]) : segmentLength(nextPoints[0], nextPoints[1])
     )
-
-    nextPoints[0] = applyToPoint(ang(120, nextPoints[1]), { x: segmentLength(nextPoints[0], nextPoints[1]), y: 0 })
   },
 
   // Форма літери "L" (відрізок між двома точками, третя точка на кінці перпендикуляру від другої точки)
@@ -110,13 +104,13 @@ export const STRATEGY = {
     const p1 = prevPoints[1]
     const pN0 = nextPoints[0]
     const pN1 = nextPoints[1]
-    const indChanged = changed[0]
-    if (changed[0] === 0) { // змінюємо опорну
+    const indChanged = changed[0] ?? 0
+    if (indChanged === 0) { // змінюємо опорну
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
       newPoints.forEach((elm, ind) => (nextPoints[ind] = elm))
-    } else if (changed[0] === 1) { // змінюємо азимут
+    } else if (indChanged === 1) { // змінюємо азимут
       // длина последнего сектора должна быть меньше длины стрелки на 15% (сам придумал)
       if (lengthLine(pN0, pN1) * 0.85 < lengthLine(nextPoints[nextPoints.length - 1], pN0)) {
         // поворачивае по углу, длину оставляем минимально допустимую
@@ -302,6 +296,9 @@ export const DELETE = {
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок
   allowOver: (amount) => (index) => index >= amount,
 
+  // Лінія
+  line: (index, count) => count > MIN_LINE_POINTS,
+
   // Область
   area: (index, count) => count > MIN_AREA_POINTS,
 
@@ -334,4 +331,19 @@ export const RENDER = {
       const d = size * scale / 2
       result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
     },
+}
+
+export const SEQUENCE = {
+  // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
+  areaWithAmplifiers: (amplCount) => (index, count) => {
+    let prev = index - 1
+    let next = index + 1
+    if (prev < 0) {
+      prev = count - amplCount - 1
+    }
+    if (next > count - amplCount - 1) {
+      next = 0
+    }
+    return [ prev, next ]
+  }
 }
