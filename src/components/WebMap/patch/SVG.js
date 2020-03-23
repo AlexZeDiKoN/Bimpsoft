@@ -191,9 +191,11 @@ L.SVG.include({
           break
         case 'blockage':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, true, lineType)
           break
         // залишаємо початкову лінію
         case 'blockageIsolation':
@@ -210,8 +212,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, false, true, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -235,9 +235,11 @@ L.SVG.include({
           break
         case 'blockage':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, false, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, false, lineType)
           break
         // залишаємо початкову лінію
         case 'blockageIsolation':
@@ -254,8 +256,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, false, false, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -301,8 +301,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, true, true, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -350,8 +348,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, true, false, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -432,12 +428,12 @@ L.SVG.include({
   _buildElementFilled: function (layer, bezier, locked, lineType, setEnd, setStrokeWidth = false) {
     const bounds = layer._map._renderer._bounds
     const colorLine = layer.object?.attributes?.color || 'black'
-    const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
-      (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
+    // const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
+    //  (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
 
     const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
-    return `<path fill="${colorLine}" stroke-width="${widthLine}" d="${d}"/>`
+    return `<path fill="${colorLine}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
   },
 
   _updateLineFilled: function (layer, rezultFilled) {

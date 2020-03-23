@@ -1,7 +1,6 @@
 // Условные знаки для новой вкладки
 // формат: [ { name: '', children: [ { hint: '', code: '<Number>', amp: '' }, ..., {} ] }, ..., {} ]
 
-// import { Set } from 'immutable'
 import { NODAL_POINT_ICONS } from '../components/SelectionForm/parts/WithNodalPointType'
 import { types } from '../components/SelectionForm/parts/WithLineType'
 import {
@@ -332,9 +331,9 @@ export const symbols = [
         code: '10032500000017007000',
         amp: { isSvg: true, type: 4, right: ENDS_ARROW1 },
       },
-      { hint: 'Напрямок головного удару', code: '10032500001514030000', amp: { isSvg: true, type: 'special' } },
-      { hint: 'Інший напрямок удару', code: '10032500001514040000', amp: { isSvg: true, type: 'special' } },
-      { hint: 'Хибний напрямок наступу', code: '10032500001514060000', amp: { isSvg: true, type: 'special' } },
+      { hint: 'Напрямок головного удару', code: '10032500001514030000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
+      { hint: 'Інший напрямок удару', code: '10032500001514040000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
+      { hint: 'Хибний напрямок наступу', code: '10032500001514060000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
       { hint: 'Засідка', code: '10032500001417000000', amp: { isSvg: true, type: 'special' } },
       {
         hint: 'Рубіж блокування противника (блокування)',
@@ -1039,9 +1038,9 @@ export const symbols = [
       {
         hint: 'Напрямок дій авіації / повітряного десанту',
         code: '10032500001514010000',
-        amp: { isSvg: true, type: 'special' },
+        amp: { isSvg: true, type: '151400' },
       },
-      { hint: 'Напрямок дій вертольотів', code: '10032500001514020000', amp: { isSvg: true, type: 'special' } },
+      { hint: 'Напрямок дій вертольотів', code: '10032500001514020000', amp: { isSvg: true, type: '151400' } },
     ],
   },
   {
@@ -1573,7 +1572,7 @@ export const symbols = [
       { hint: 'Мінна пастка', code: '10032500002807000000', amp: {} },
       { hint: 'Протипіхотна міна направленої дії ', code: '10032500002802010000', amp: {} },
       { hint: 'Протитанкова міна встановлена з елементом не вилучення', code: '10032500002804000000', amp: {} },
-      { hint: 'Район мінування', code: '10032500002708000000', amp: { isSvg: true, type: 'special' } },
+      { hint: 'Район мінування', code: '10032500002708000000', amp: { isSvg: true, type: '270800' } },
       { hint: 'Група мін', code: '10032500002904000000', amp: { isSvg: true, type: 'special' } },
       {
         hint: 'Прохід в протитанковому мінному полі (шириною до 6 метрів)',
