@@ -274,19 +274,27 @@ export const MIDDLE = {
   // Дозволено на будь-якому відрізку
   any: () => true,
 
+  // Дозволено на відрізку, індекс якого більше або дорівнює вказаному
+  allowOver: (amount) =>
+    (index) => index >= amount,
+
+  // Область
   area: (index1, index2, count, layer) =>
     layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % count)),
 
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
-  areaWithAmplifiers: (amplCount) => (index1, index2, count, layer) => count - index2 >= amplCount
-    ? layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % (count - amplCount)))
-    : false,
+  areaWithAmplifiers: (amplCount) =>
+    (index1, index2, count, layer) => count - index2 >= amplCount
+      ? layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % (count - amplCount)))
+      : false,
 
   // Область з кількома ампліфікаторми (ампліфікатори на початку списку) та крім останього
-  areaWithAmplifiersNotEnd: (amplCount) => (index1, index2, total) => index1 >= amplCount - 1 && index2 < total - 1,
+  areaWithAmplifiersNotEnd: (amplCount) =>
+    (index1, index2, total) => index1 >= amplCount - 1 && index2 < total - 1,
 
   // Лінія з кількома ампліфікаторми (ампліфікатори в кінці списку)
-  lineWithAmplifiers: (amplCount) => (index1, index2, total) => total - index2 > amplCount,
+  lineWithAmplifiers: (amplCount) =>
+    (index1, index2, total) => total - index2 > amplCount,
 }
 
 export const DELETE = {
@@ -294,7 +302,8 @@ export const DELETE = {
   none: () => false,
 
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок
-  allowOver: (amount) => (index) => index >= amount,
+  allowOver: (amount) =>
+    (index) => index >= amount,
 
   // Лінія
   line: (index, count) => count > MIN_LINE_POINTS,
@@ -303,10 +312,12 @@ export const DELETE = {
   area: (index, count) => count > MIN_AREA_POINTS,
 
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
-  areaWithAmplifiers: (amplCount) => (index, count) => count > MIN_AREA_POINTS + amplCount && count - index > amplCount,
+  areaWithAmplifiers: (amplCount) =>
+    (index, count) => (count > MIN_AREA_POINTS + amplCount) && (index < count - amplCount),
 
   // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок та не останній
-  allowNotEnd: (amount) => (index, total) => (index >= amount) && (index < (total - 1)),
+  allowNotEnd: (amount) =>
+    (index, total) => (index >= amount) && (index < (total - 1)),
 }
 
 export const RENDER = {
@@ -331,4 +342,19 @@ export const RENDER = {
       const d = size * scale / 2
       result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
     },
+}
+
+export const SEQUENCE = {
+  // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
+  areaWithAmplifiers: (amplCount) => (index, count) => {
+    let prev = index - 1
+    let next = index + 1
+    if (prev < 0) {
+      prev = count - amplCount - 1
+    }
+    if (next > count - amplCount - 1) {
+      next = 0
+    }
+    return [ prev, next ]
+  }
 }

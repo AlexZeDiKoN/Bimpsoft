@@ -6,8 +6,12 @@ const parent = { _createMiddleMarker, _createMarker }
 L.PM.Edit.include({
   isPolygon() {
     // if it's a polygon, it means the coordinates array is multi dimensional
-    return this._layer instanceof L.Polygon || (this._layer.lineDefinition && this._layer.lineDefinition.isPolygon);
+    return this._layer instanceof L.Polygon || (this._layer.lineDefinition && this._layer.lineDefinition.isPolygon)
   },
+
+  isArea() {
+    return this._layer?.lineDefinition?.isArea
+  }
 })
 
 L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
@@ -20,13 +24,13 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
   },
 
   _createMarker: function (latlng, index) {
-    const allowDelete = !index && this._layer.lineDefinition.allowDelete(index, this._layer._latlngs.length)
-    if (!allowDelete) {
-      this.options.preventMarkerRemoval = true
-    }
+    const preventDelete = index === undefined ||
+      !this._layer.lineDefinition.allowDelete(index, this._layer._latlngs.length)
     const marker = parent._createMarker.call(this, latlng, index)
-    if (!allowDelete) {
+    if (preventDelete) {
       L.DomUtil.addClass(marker._icon, 'protected')
+    } else {
+      marker.on('contextmenu', this._removeMarker, this)
     }
     return marker
   },
