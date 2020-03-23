@@ -127,14 +127,14 @@ export function sphereDirect (pt0, angledeg, distM) {
 // }
 // --------------------------------------------------------------------------------
 
-export function distanceAngle (coord) { // rad - радиус сферы (Земли)
+export function distanceAngle (coord1, coord2) { // rad - радиус сферы (Земли)
   // const rad = 6372795
   const rad = Earth.R
 
-  const lat1 = coord[0].lat * Math.PI / 180.0
-  const lat2 = coord[1].lat * Math.PI / 180.0
-  const long1 = coord[0].lng * Math.PI / 180.0
-  const long2 = coord[1].lng * Math.PI / 180.0
+  const lat1 = coord1.lat * Math.PI / 180.0
+  const lat2 = coord2.lat * Math.PI / 180.0
+  const long1 = coord1.lng * Math.PI / 180.0
+  const long2 = coord2.lng * Math.PI / 180.0
   // console.log(JSON.stringify({ lat1, lat2, long1, long2 }))
   const cl1 = Math.cos(lat1)
   const cl2 = Math.cos(lat2)

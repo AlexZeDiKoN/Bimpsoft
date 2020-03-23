@@ -196,7 +196,10 @@ function createSectors (type, data, layer) {
     layer.setLatLngs(data.geometry.toJS())
   } else {
     const options = prepareOptions(entityKind.SECTORS)
-    layer = new L.Sectors(options, data.code, data.geometry?.toJS())
+    layer = new L.Sectors(
+      options,
+      data.code,
+      data.geometry?.toJS())
   }
   return layer
 }

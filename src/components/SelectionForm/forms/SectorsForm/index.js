@@ -6,7 +6,7 @@ import {
   WithSegment,
   WithPointAmplifiers,
   WithIntermediateAmplifiers,
-  WithCoordinateBegin,
+  WithCoordinateAndAzimut,
   WithSubordinationLevel,
   WithStrokeWidth,
   UnitSelect,
@@ -21,7 +21,7 @@ import spriteUrl from '../../../Symbols/sprite.svg'
 
 export default class SectorsForm extends compose(
   WithSubordinationLevel,
-  WithCoordinateBegin,
+  WithCoordinateAndAzimut,
   WithPointAmplifiers,
   WithIntermediateAmplifiers,
   WithSegment,
@@ -50,8 +50,7 @@ export default class SectorsForm extends compose(
               {this.renderOrgStructureSelect()}
               {this.renderSubordinationLevel()}
               {this.renderAffiliation()}
-              {this.renderCoordinateBegin()}
-              {this.renderPointAmplifierSelect()}
+              {this.renderCoordinateAndAzimut()}
             </div>
           </div>
           <div className="sectors-container__item--secondSection">

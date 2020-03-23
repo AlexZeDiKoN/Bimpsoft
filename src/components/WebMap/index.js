@@ -1858,13 +1858,17 @@ export default class WebMap extends React.PureComponent {
         }
         if (amp.type === '17076000') {
           amp.type = entityKind.SECTORS
-          const p0 = { lat, lng }
-          const p1 = { lat: lat + semiWidth, lng: lng }
-          const p2 = { lng: lng - semiHeight / 2, lat: lat + semiWidth / 3 }
-          const p3 = { lng: lng + semiHeight / 2, lat: lat + semiWidth / 3 }
-          const p4 = { lng: lng - semiHeight / 4, lat: lat + semiWidth / 2 }
-          const p5 = { lng: lng + semiHeight / 4, lat: lat + semiWidth / 2 }
-          geometry = [ p0, p1, p2, p3, p4, p5 ]
+          geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x, y }) => ({
+            lng: lng - semiWidth + x * semiWidth * 2,
+            lat: lat - semiHeight + (1 - y) * semiHeight * 2,
+          }))
+          // const p0 = { lat, lng }
+          // const p1 = { lat: lat + semiWidth, lng: lng }
+          // const p2 = { lng: lng - semiHeight / 2, lat: lat + semiWidth / 3 }
+          // const p3 = { lng: lng + semiHeight / 2, lat: lat + semiWidth / 3 }
+          // const p4 = { lng: lng - semiHeight / 4, lat: lat + semiWidth / 2 }
+          // const p5 = { lng: lng + semiHeight / 4, lat: lat + semiWidth / 2 }
+          // geometry = [ p0, p1, p2, p3, p4, p5 ]
         }
       } else {
         amp.type = entityKind.SOPHISTICATED

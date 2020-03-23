@@ -37,8 +37,8 @@ export default class SectorItem extends React.Component {
   constructor (props) {
     super(props)
     const { beginCoordinate, coord1, coord2 } = this.props
-    const da1 = distanceAngle([ beginCoordinate, coord1 ])
-    const da2 = distanceAngle([ beginCoordinate, coord2 ])
+    const da1 = distanceAngle(beginCoordinate, coord1)
+    const da2 = distanceAngle(beginCoordinate, coord2)
     this.state = {
       azimut1Text: da1.angledeg.toFixed(0),
       azimut2Text: da2.angledeg.toFixed(0),
@@ -80,8 +80,8 @@ export default class SectorItem extends React.Component {
     const { radiusText } = this.state
     const radius = Number(radiusText)
     if (Number.isFinite(radius) && Coord.check(beginCoordinate) && Coord.check(coord1) && Coord.check(coord2)) {
-      const da1 = distanceAngle([ beginCoordinate, coord1 ])
-      const da2 = distanceAngle([ beginCoordinate, coord2 ])
+      const da1 = distanceAngle(beginCoordinate, coord1)
+      const da2 = distanceAngle(beginCoordinate, coord2)
       const coord1New = sphereDirect(beginCoordinate, da1.angledeg, radius)
       const coord2New = sphereDirect(beginCoordinate, da2.angledeg, radius)
       if (Coord.check(coord1New) && Coord.check(coord2New)) {
@@ -111,8 +111,8 @@ export default class SectorItem extends React.Component {
   render () {
     const { index, sectorInfo, readOnly, beginCoordinate, coord1, coord2 } = this.props
     if (index === undefined) { return }
-    const da1 = distanceAngle([ beginCoordinate, coord1 ])
-    const da2 = distanceAngle([ beginCoordinate, coord2 ])
+    const da1 = distanceAngle(beginCoordinate, coord1)
+    const da2 = distanceAngle(beginCoordinate, coord2)
     const { radiusText, azimut1Text, azimut2Text } = this.state
     const radius = radiusText !== null ? radiusText : da1.distance.toFixed(0)
     const azimut1 = azimut1Text !== null ? azimut1Text : da1.angledeg.toFixed(0)

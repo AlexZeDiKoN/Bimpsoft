@@ -70,7 +70,7 @@ export const SHAPE_TEXT = 'Текстова мітка'
 export const SHAPE_AIRBORNE = 'Умовний знак'
 export const SHAPE_MANOEUVRE = 'Напрямок'
 export const SHAPE_MINEDAREA = 'Район мінування'
-export const SHAPE_SECTORS = 'Сектора'
+export const SHAPE_SECTORS = 'Сектори'
 
 export const UNDEFINED = 'Не вказано'
 

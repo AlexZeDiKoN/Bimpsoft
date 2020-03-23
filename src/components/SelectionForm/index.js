@@ -21,6 +21,7 @@ import {
   MinedAreaForm,
   SectorsForm,
 } from './forms'
+import {ifElse} from 'ramda'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -158,13 +159,24 @@ export default class SelectionForm extends React.Component {
     if (data === null || !forms[data.type]) {
       return null
     }
+    let formType
+    if (data.type !== SelectionTypes.SOPHISTICATED) {
+      formType = data.type
+    } else {
+      switch (data.code.slice(10)) {
+        case '0017076000':
+          formType = SelectionTypes.SECTORS
+          break
+        default: formType = SelectionTypes.SOPHISTICATED
+      }
+    }
     const {
       title,
       minHeight,
       maxHeight,
       minWidth,
       component: Component,
-    } = forms[data.type]
+    } = forms[formType]
 
     const { wrapper: Wrapper } = this.props
     return (

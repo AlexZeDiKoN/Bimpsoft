@@ -1,7 +1,6 @@
 // Условные знаки для новой вкладки
 // формат: [ { name: '', children: [ { hint: '', code: '<Number>', amp: '' }, ..., {} ] }, ..., {} ]
 
-// import { Set } from 'immutable'
 import { NODAL_POINT_ICONS } from '../components/SelectionForm/parts/WithNodalPointType'
 import { types } from '../components/SelectionForm/parts/WithLineType'
 import {
@@ -1056,7 +1055,7 @@ export const symbols = [
         amp: { [amps.additionalInformation]: 'MR' },
       },
       { hint: 'Зона ураження / виявлення (кругова)', code: '10032500000017019000', amp: { isSvg: true, type: 'special' } },
-      { hint: 'Зона ураження / виявлення (сектор)', code: '10032500000017076000', amp: { isSvg: true, type: '17076000' } },
+      { hint: 'Зона ураження / виявлення (сектор)', code: '10032500000017076000', amp: { isSvg: true, type: 'special' } },
       // {
       //   hint: 'Основний сектор стрільби на середніх та великих висотах',
       //   code: '10032500000017081000',
@@ -1123,7 +1122,7 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (сектор)',
         code: '10032500000017076000',
-        amp: { isSvg: true, type: '17076000' },
+        amp: { isSvg: true, type: 'special' },
       },
       {
         hint: 'Потрібний рубіж видачі розвідувальної інформації',
@@ -2489,7 +2488,7 @@ export const symbols = [
       {
         hint: 'Сектор, межі (зони) стійкого прийому цивільних радіозасобів та телезасобів',
         code: '10032500000017076000',
-        amp: { isSvg: true, type: '17076000' },
+        amp: { isSvg: true, type: 'special' },
       },
       {
         hint: 'Район, до якого сплановано відселення (евакуацію) населення, біженців із районів воєнних дій',

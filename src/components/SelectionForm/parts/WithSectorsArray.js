@@ -1,5 +1,6 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import SectorItem from './SectorItem'
 
@@ -17,6 +18,19 @@ const PATH_S_INFO = [ 'attributes', 'sectorsInfo' ]
 const COORDINATE_PATH = [ 'geometry' ]
 
 const WithSectorsArray = (Component) => class SectorsArrayComponent extends Component {
+  static propTypes = {
+    data: PropTypes.object,
+    canEdit: PropTypes.bool,
+    orgStructures: PropTypes.object,
+    readOnly: PropTypes.bool,
+    onOk: PropTypes.func,
+    onChange: PropTypes.func,
+    onClose: PropTypes.func,
+    onAddToTemplates: PropTypes.func,
+    onCoordinateFocusChange: PropTypes.func,
+    ovtData: PropTypes.object,
+  }
+
   state = { editCoordinates: false }
 
   // createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
