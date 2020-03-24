@@ -198,6 +198,7 @@ export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підпи
 export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'
 export const LAYER_VISIBILITY = 'Видимість шару'
+export const LAYERS_VISIBILITY = 'Видимість шарів'
 export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картографічної основи (%)'
 export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
@@ -250,7 +251,7 @@ export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні Знаки'
 // кнопка меню
-export const PRINT_BUTTON = `Роздрукувати листи карти`
+export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`
 export const FLEX_GRID_SHORTCUT = `Alt + R`
 export const DIRECTIONS_AMOUNT = `Кількість напрямків`
@@ -291,8 +292,11 @@ export const CANCEL_BTN_TITLE = 'Скасувати'
 export const DEFAULT_SEGMENT_NAME = 'Створити вручну'
 
 export const CREATE_FLEX_GRID_HINT = 'Розташуйте підрозділи на карті та визначте операційну зону'
-export const PERIOD_FROM = 'Період з'
-export const PERIOD_TO = 'до'
+export const PERIOD_FROM = 'з'
+export const PERIOD_TO = 'по'
+export const GRID = 'Плиткою'
+export const LIST = 'Списком'
+export const DISPLAY_PERIOD = 'Період показу'
 export const TARGETING = 'Цілевказання'
 export const TARGETS = 'Цілі'
 
@@ -324,7 +328,6 @@ export const AREA = 'Район'
 export const FRONTIER = 'Рубіж'
 export const LOCATION = 'Позиція'
 
-export const ACCESS_FULL = 'Повний доступ'
 export const ACCESS_READONLY = 'Лише перегляд'
 export const GROUPPING = 'Групувати'
 
