@@ -122,9 +122,9 @@ export function createTacticalSign (data, map, prevLayer) {
   }
 }
 
-export function createSearchMarker (point) {
+export function createSearchMarker (point, bounce = true) {
   const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
-  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: true })
+  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: bounce })
 }
 
 export function createCoordinateMarker (point) {
