@@ -31,6 +31,7 @@ export default class SectorItem extends React.Component {
     onChangeProps: PropTypes.func,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
+    onFocus: PropTypes.func,
   }
 
   // state = { azimut1Text: null, azimut2Text: null, radiusText: null }
@@ -75,8 +76,18 @@ export default class SectorItem extends React.Component {
     this.setState({ radiusText })
   }
 
+  onFocusHandler = () => {
+    const { onFocus, index } = this.props
+    onFocus && onFocus({ index, isActive: true })
+  }
+
+  onBlurHandler = () => {
+    const { onFocus, index } = this.props
+    onFocus && onFocus({ index, isActive: false })
+  }
+
   radiusBlurHandler = () => {
-    const { onChange, index, beginCoordinate, coord1, coord2 } = this.props
+    const { onChange, onFocus, index, beginCoordinate, coord1, coord2 } = this.props
     const { radiusText } = this.state
     const radius = Number(radiusText)
     if (Number.isFinite(radius) && Coord.check(beginCoordinate) && Coord.check(coord1) && Coord.check(coord2)) {
@@ -88,12 +99,14 @@ export default class SectorItem extends React.Component {
         onChange && onChange({ coord1: coord1New, coord2: coord2New, index })
       }
     }
+    this.setState({ isFocus: false })
+    onFocus({ index, isActive: false })
   }
 
   azimut1ChangHandler = (value) => this.setState({ azimut1Text: value })
 
   azimutBlurHandler = () => {
-    const { onChange, index, beginCoordinate } = this.props
+    const { onChange, onFocus, index, beginCoordinate } = this.props
     const { radiusText, azimut1Text, azimut2Text } = this.state
     const radius = Number(radiusText)
     if (Number.isFinite(radius) && Coord.check(beginCoordinate) &&
@@ -104,6 +117,8 @@ export default class SectorItem extends React.Component {
         onChange && onChange({ coord1: coord1New, coord2: coord2New, index })
       }
     }
+    this.setState({ isFocus: false })
+    onFocus({ index, isActive: false })
   }
 
   azimut2ChangHandler = (value) => this.setState({ azimut2Text: value })
@@ -133,6 +148,7 @@ export default class SectorItem extends React.Component {
               readOnly={readOnly}
               value={radius}
               onChange={!readOnly ? this.radiusChangeHandler : null }
+              onFocus={!readOnly ? this.onFocusHandler : null }
               onBlur={!readOnly ? this.radiusBlurHandler : null}
               suffix={i18n.ABBR_METERS}
               error={!radiusIsWrong}
@@ -144,6 +160,7 @@ export default class SectorItem extends React.Component {
               readOnly={readOnly}
               value={azimut1}
               onChange={!readOnly ? this.azimut1ChangHandler : null }
+              onFocus={!readOnly ? this.onFocusHandler : null }
               onBlur={!readOnly ? this.azimutBlurHandler : null}
               suffix={i18n.ABBR_GRADUS}
               error={azimut1IsWrong}
@@ -155,6 +172,7 @@ export default class SectorItem extends React.Component {
               readOnly={readOnly}
               value={ azimut2}
               onChange={!readOnly ? this.azimut2ChangHandler : null }
+              onFocus={!readOnly ? this.onFocusHandler : null }
               onBlur={!readOnly ? this.azimutBlurHandler : null}
               suffix={i18n.ABBR_GRADUS}
               error={azimut2IsWrong}
@@ -165,6 +183,8 @@ export default class SectorItem extends React.Component {
               value={amplifierT}
               name={'amplifier'}
               onChange={this.sectorAmplifierChangeHandler}
+              onFocus={!readOnly ? this.onFocusHandler : null }
+              onBlur={!readOnly ? this.onBlurHandler : null}
               disabled={readOnly}
               rows={1}
             />
