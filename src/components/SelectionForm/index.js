@@ -16,7 +16,12 @@ import {
   TextForm,
   ContourForm,
   SophisticatedForm,
+  AirborneForm,
+  ManoeuvreForm,
+  MinedAreaForm,
+  SectorsForm,
 } from './forms'
+import {ifElse} from 'ramda'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -96,6 +101,34 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.AIRBORNE]: {
+    title: i18n.SHAPE_AIRBORNE,
+    component: AirborneForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MANOEUVRE]: {
+    title: i18n.SHAPE_MANOEUVRE,
+    component: ManoeuvreForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MINEDAREA]: {
+    title: i18n.SHAPE_MINEDAREA,
+    component: MinedAreaForm,
+    minHeight: 645,
+    minWidth: 900,
+    maxHeight: 655,
+  },
+  [SelectionTypes.SECTORS]: {
+    title: i18n.SHAPE_SECTORS,
+    component: SectorsForm,
+    minHeight: 645,
+    minWidth: 900,
+    maxHeight: 655,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -126,43 +159,54 @@ export default class SelectionForm extends React.Component {
     if (data === null || !forms[data.type]) {
       return null
     }
+    let formType
+    if (data.type !== SelectionTypes.SOPHISTICATED) {
+      formType = data.type
+    } else {
+      switch (data.code.slice(10)) {
+        case '0017076000':
+          formType = SelectionTypes.SECTORS
+          break
+        default: formType = SelectionTypes.SOPHISTICATED
+      }
+    }
     const {
       title,
       minHeight,
       maxHeight,
       minWidth,
       component: Component,
-    } = forms[data.type]
+    } = forms[formType]
 
     const { wrapper: Wrapper } = this.props
     return (
       <>
-      <NotClickableArea/>
-      <Wrapper
-        title={title}
-        onClose={onCancel}
-        minWidth={minWidth}
-        maxHeight={maxHeight}
-        minHeight={minHeight}
-      >
-        <FocusTrap>
-          <HotKeysContainer>
-            <Component
-              data={data}
-              canEdit={canEdit}
-              orgStructures={orgStructures}
-              onOk={onOk}
-              onChange={this.changeHandler}
-              onClose={onCancel}
-              onAddToTemplates={this.addToTemplateHandler}
-              onCoordinateFocusChange={onCoordinateFocusChange}
-              ovtData={ovtData}
-            />
-            <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-          </HotKeysContainer>
-        </FocusTrap>
-      </Wrapper>
-    </>
+        <NotClickableArea/>
+        <Wrapper
+          title={title}
+          onClose={onCancel}
+          minWidth={minWidth}
+          maxHeight={maxHeight}
+          minHeight={minHeight}
+        >
+          <FocusTrap>
+            <HotKeysContainer>
+              <Component
+                data={data}
+                canEdit={canEdit}
+                orgStructures={orgStructures}
+                onOk={onOk}
+                onChange={this.changeHandler}
+                onClose={onCancel}
+                onAddToTemplates={this.addToTemplateHandler}
+                onCoordinateFocusChange={onCoordinateFocusChange}
+                ovtData={ovtData}
+              />
+              <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
+            </HotKeysContainer>
+          </FocusTrap>
+        </Wrapper>
+      </>
     )
   }
 }

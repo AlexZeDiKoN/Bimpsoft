@@ -44,6 +44,7 @@ const webMapAttributesInitValues = {
   shownNodalPointAmplifiers: Set(),
   pointAmplifier: LineAmplifier(),
   textAmplifiers: {},
+  sectorsInfo: List(),
   params: {},
   left: 'none',
   right: 'none',
@@ -138,6 +139,7 @@ export const createObjectRecord = (attributes) => {
     intermediateAmplifier,
     shownIntermediateAmplifiers,
     shownNodalPointAmplifiers,
+    sectorsInfo,
     ...otherAttrs
   } = attributes
   return WebMapAttributes({
@@ -146,6 +148,7 @@ export const createObjectRecord = (attributes) => {
     shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
     shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
     pointAmplifier: LineAmplifier(pointAmplifier),
+    sectorsInfo: List(sectorsInfo),
     ...otherAttrs,
   })
 }
