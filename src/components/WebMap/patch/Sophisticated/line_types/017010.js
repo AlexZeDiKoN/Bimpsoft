@@ -1,8 +1,8 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf,
-  segmentLength, drawMaskedText, rad
+  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
+  drawMaskedText, rad,
 } from '../utils'
 
 // sign name: ПЕРЕСЛІДУВАТИ

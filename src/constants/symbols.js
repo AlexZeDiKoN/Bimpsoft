@@ -475,7 +475,7 @@ export const symbols = [
         amp: { isSvg: true, type: 7 },
       },
       {
-        hint: 'Хибна атаки',
+        hint: 'Хибна атака',
         code: '10032500000140605000',
         amp: { isSvg: true, type: 7 },
       },

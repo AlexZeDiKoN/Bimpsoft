@@ -22,7 +22,7 @@ export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null &
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingAirborne (datapt, typeLine, bindingType) {
+export function buildingAirborne (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) return null
   let pt
@@ -89,7 +89,7 @@ function buildingAirborne (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingAttackHelicopter (datapt, typeLine, bindingType) {
+export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) return null
   let pt
@@ -170,7 +170,7 @@ function buildingAttackHelicopter (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingMainAttack (datapt, typeLine, bindingType) {
+export function buildingMainAttack (datapt, typeLine, bindingType) {
   if (!datapt) return null
   let pt
   if (typeof (datapt) === 'string') {
@@ -218,7 +218,7 @@ function buildingMainAttack (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingArrow (datapt, typeLine, bindingType) {
+export function buildingArrow (datapt, typeLine, bindingType) {
   if (!datapt) return null
   let pt
   if (typeof (datapt) === 'string') {
@@ -275,7 +275,7 @@ function servicePath (pt) {
 // ---------------------------------------------------------------------------------------------------------
 // стратегия перемещения опорных точек для символов 151401 - 151406
 // eslint-disable-next-line no-unused-vars
-const STRATEGY_ARROW = {
+export const STRATEGY_ARROW = {
   // Довільне розташування усіх точок
   empty: () => {
   },
@@ -841,7 +841,7 @@ function curveToPath (mCurve) {
 }
 // ----------------------------------------------------------------------------------------------
 // eslint-disable-next-line no-unused-vars
-function buildingDotted (result, points) {
+export function buildingDotted (result, points) {
   if (points.length < 4) return ''
   const pointN = points[points.length - 1]
   const [ pointR, pointBase ] = pointReflected(pointN, points[0], points[1])
