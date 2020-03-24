@@ -461,6 +461,26 @@ export const symbols = [
         code: '10032500000017014000',
         amp: { isSvg: true, type: 4, color: '#ff0404', lineType: types.dashed.value, right: ENDS_ARROW2 },
       },
+      {
+        hint: 'Головний напрямок атаки',
+        code: '10032500000140602000',
+        amp: { isSvg: true, type: 7 },
+      },
+      {
+        hint: 'Підтримка атаки',
+        code: '10032500000140603000',
+        amp: { isSvg: true, type: 7 },
+      },
+      {
+        hint: 'Хибна атаки',
+        code: '10032500000140605000',
+        amp: { isSvg: true, type: 7 },
+      },
+      {
+        hint: 'Смуга руху підрозділів, що проникають в розташування противника',
+        code: '10032500000140800000',
+        amp: { isSvg: true, type: 7 },
+      },
     ],
   },
   {
