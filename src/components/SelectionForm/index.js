@@ -21,7 +21,6 @@ import {
   MinedAreaForm,
   SectorsForm,
 } from './forms'
-import {ifElse} from 'ramda'
 
 const forms = {
   [SelectionTypes.POINT]: {
