@@ -20,7 +20,7 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
-  const { deleteSegment, id: segmentId, segmentType, required, terrain, velocity } = propData
+  const { deleteSegment, segmentId, segmentType, required, terrain, velocity } = propData
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,

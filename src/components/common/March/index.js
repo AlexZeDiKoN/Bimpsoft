@@ -1,29 +1,9 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Input, Select, Tooltip } from 'antd'
-import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
-import placeSearch from '../../../server/places'
 import Header from './children/Header'
-import PopupPanel from './children/PopupPanel'
-import SegmentButtonPopover from './children/SegmentButtonPopover'
+import SegmentBlock from './children/SegmentBlock'
+import MarchForm from './children/MarchForm'
 import './style.css'
-
-const {
-  form: { Coordinates },
-} = components
-
-const points = [
-  { name: 'Вихідний рубіж', rest: false },
-  { name: 'Пункт на маршруті', rest: false },
-  { name: 'Пункт привала', rest: true },
-  { name: 'Пункт денного(нічного) відпочинку', rest: true },
-  { name: 'Пункт добового відпочинку', rest: true },
-  { name: 'Пункт(рубіж) регулювання', rest: false },
-]
-
-const getPointByName = (name) => {
-  return points.find((point) => point.name === name)
-}
 
 class March extends Component {
   static propTypes = {
@@ -36,158 +16,50 @@ class March extends Component {
     setCoordMode: PropTypes.func.isRequired,
   }
 
-  renderSegmentBlocks = () => {
-    const { segments, addSegment, deleteSegment } = this.props
-    return segments.map((segment, id) => {
-      const { segmentType } = segment
-      if (segmentType === 0) {
-        return null
-      }
-      let color = ''
-      switch (segmentType) {
-        case (41):
-          color = '#DFE3B4'
-          break
-        case (42):
-          color = '#FFE0A4'
-          break
-        case (43):
-          color = '#94D8FF'
-          break
-        case (44):
-          color = '#5bb24e'
-          break
-        default:
-          break
-      }
-      const height = (1 + segment.children.length) * 145
-
-      return <div key={`block${id}${segmentType}`} className={'segment'} style={{ backgroundColor: color, height }}>
-
-        <SegmentButtonPopover
-          segmentType={segmentType}
-          content={ <PopupPanel propData={{ ...segment, id, deleteSegment }} /> }
-        />
-        <span>00:00</span>
-        <span>10 km</span>
-
-        <div className={'hoverAddSegmentButton'}>
-          <Tooltip placement='topRight' title={'Додати ділянку'}>
-            <div className={'addSegmentButton'} onClick={() => addSegment(id)}/>
-          </Tooltip>
-        </div>
-      </div>
-    })
-  }
-
   renderDotsForms = () => {
     const { segments, editFormField, addChild, deleteChild, setCoordMode } = this.props
-    const formData = []
+    const handlers = {
+      editFormField,
+      addChild,
+      deleteChild,
+      setCoordMode,
+    }
 
-    segments.forEach((it, segmentId) => {
-      formData.push({ ...it, segmentId })
-      if (it.children && it.children.length > 0) {
-        it.children.forEach((it2, childId) => {
-          formData.push({ ...it2, childId, segmentId })
-        })
-      }
-    })
+    return <div className={'dots-forms'}>
+      { segments.map((segment, segmentId) => {
+        const { children } = segment
 
-    return formData.map((segment, id) => {
-      const { name, coord = {}, refPoint, childId, segmentId, editableName, segmentType, required } = segment
-
-      const point = getPointByName(name)
-
-      let dotClass
-      if (childId === undefined) {
-        dotClass = formData.length - 1 === id ? 'flag-dot' : 'empty-dot'
-      } else {
-        dotClass = point && point.rest ? 'camp-dot' : 'cross-dot'
-      }
-
-      let lineColorClass
-      switch (segmentType || segments[segmentId].segmentType) {
-        case 42:
-          lineColorClass = 'line-orange'
-          break
-        case 43:
-          lineColorClass = 'line-blue'
-          break
-        default:
-          lineColorClass = 'line-green'
-      }
-
-      return <div key={`dotForm${id}`} className={'dot-and-form'}>
-        <div className={'dots'}>
-          <Tooltip placement='topRight' title={'Розташування'}>
-            <div className={`dot ${dotClass}`}/>
-          </Tooltip>
-          {(segmentType || childId || childId === 0)
-            ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
-              <Tooltip placement='topRight' title={'Додати пункт'}>
-                { !(segmentId === 0 && childId === undefined) &&
-                <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
-                }
-              </Tooltip>
-            </div>
-            : <div className={'vertical-block'}/>
-          }
-        </div>
-        <div className={'dot-form'}>
-          <div className={'march-coord'}>
-            <Coordinates
-              coordinates={coord}
-              onChange={(e) => editFormField({
-                fieldName: 'coord',
-                segmentId,
-                childId,
-                val: e,
-              })}
-              onSearch={placeSearch}
+        return (<div key={segmentId} className={'segmentWithForm'}>
+          <div className={'segment-block'}>
+            <SegmentBlock
+              segment={segment}
+              addSegment={this.props.addSegment}
+              deleteSegment={this.props.deleteSegment}
+              segmentId={segmentId}
             />
-            <Tooltip placement='topRight' title={'Вказати на карті'}>
-              <a href='#' className={'logoMap'} onClick={() => setCoordMode({ segmentId, childId })}/>
-            </Tooltip>
           </div>
-          <Input value={refPoint || 'Географічний орієнтир'}/>
-          <br/>
-          {(!editableName)
-            ? <Input value={name} onChange={(e) => editFormField({
-              fieldName: 'name',
-              segmentId,
-              childId,
-              val: e.target.value,
-            })}/>
-            : <Select
-              className={'selectPoint'}
-              defaultValue={name}
-              onChange={(value) => editFormField({
-                val: value,
-                segmentId,
-                childId,
-                fieldName: 'name',
-              })}
-            >
-              {points.map(({ name }, id) => (
-                <Select.Option key={id} value={name}>{name}</Select.Option>
-              ))}
-            </Select>
-          }
-          {(!required) &&
-          <div className={'unRequiredField'}>
-            {(point && point.rest)
-              ? <div className={'timeBlock'}>
-                <div className={'logoTime'}/>
-                <Input maxLength={10} style={{ width: '50px' }}/>
-              </div>
-              : <div/>
-            }
-            <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>
+          <div className={'formContainer'}>
+            <MarchForm
+              key={`segment${segmentId}`}
+              segmentId={segmentId}
+              handlers={handlers}
+              {...segment}
+              isLast={segments.length - 1 === segmentId}
+            />
+            {children && children.map((child, childId) => {
+              return <MarchForm
+                key={`child${childId}`}
+                segmentId={segmentId}
+                childId={childId}
+                handlers={handlers}
+                {...segment}
+                {...child}
+              />
+            })}
           </div>
-          }
-        </div>
-      </div>
-    })
+        </div>)
+      })}
+    </div>
   }
 
   render () {
@@ -196,8 +68,7 @@ class March extends Component {
         <Header/>
       </div>
       <div className={'march-main'}>
-        <div className={'left'}>{this.renderSegmentBlocks()}</div>
-        <div className={'right'}>{this.renderDotsForms()}</div>
+        <div>{this.renderDotsForms()}</div>
       </div>
     </div>
   }
