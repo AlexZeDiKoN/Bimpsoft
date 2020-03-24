@@ -1,11 +1,20 @@
 import React, { Fragment, useState } from 'react'
-import { Tooltip, Input } from 'antd'
+import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { Collapse, Scrollbar, useToggleGroup, FormBlock } from '@DZVIN/CommonComponents'
+import {
+  Collapse,
+  Scrollbar,
+  useToggleGroup,
+  ButtonTypes,
+  ColorTypes,
+  IButton,
+  IconNames,
+  FormBlock } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
+import { InputButton } from '../common'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -26,6 +35,7 @@ const ButtonComponent = (props) =>
 const SymbolsTab = (props) => {
   const { wrapper: Wrapper = Fragment, canEdit } = props
   const [ search, onChange ] = useState('')
+  const [ listMode, setListMode ] = useState(false)
   const sections = useToggleGroup()
 
   const dragStartHandler = (e, symbol, type) => {
@@ -45,28 +55,42 @@ const SymbolsTab = (props) => {
 
       const elemToRender = (!amp.isSvg)
         ? <div
+          className={listMode ? 'list' : ''}
           onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'symbol') : null}
           draggable={canEdit}
         >
-          <MilSymbol
+          {listMode ? <> <MilSymbol
             code={code}
             amplifiers={amp}
             className={'symbol'}
-          />
+          /><div>{hint}</div></>
+            : <MilSymbol
+              code={code}
+              amplifiers={amp}
+              className={'symbol'}
+            />}
         </div>
         : <div
-          className={'symbol'}
+          className={listMode ? 'list' : 'symbol'}
           draggable={canEdit}
           onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'line') : null}
         >
-          <SymbolSvg
-            name={`${code}`}
-          />
+          {listMode ? <>
+            <div className='symbol'>
+              <SymbolSvg
+                name={`${code}`}
+              />
+            </div>
+            <div>{hint}</div>
+          </>
+            : <SymbolSvg
+              name={`${code}`}
+            />}
         </div>
 
       return <Tooltip
         key={`${hint}${code}`}
-        title={hint}
+        title={!listMode && hint}
       >
         { elemToRender }
       </Tooltip>
@@ -82,7 +106,7 @@ const SymbolsTab = (props) => {
           label={part.name}
           {...value}
         >
-          <Scrollbar className={'symbol-container'}>
+          <Scrollbar className={listMode ? 'symbol-container-nowrap symbol-container' : 'symbol-container'}>
             { symbolJSX }
           </Scrollbar>
         </Collapse>
@@ -91,15 +115,32 @@ const SymbolsTab = (props) => {
   })
 
   return <Wrapper
+    icon={IconNames.SYMBOLS}
     title={i18n.SYMBOLS}
   >
-    <div className={'symbols-wrapper'}>
-      <Input.Search
-        placeholder={i18n.FILTER}
-        onChange={onChangeSearch}
-        value={search}
-      />
-      <Scrollbar className={'parts-container'}>
+    <div className='symbols-wrapper'>
+      <div className='symbols-header'>
+        <InputButton
+          onChange={onChangeSearch}
+          value={search}
+          title={i18n.SYMBOLS}
+        />
+        <IButton
+          active={!listMode}
+          type={ButtonTypes.WITH_BG}
+          colorType={ColorTypes.WHITE}
+          onClick={() => setListMode(false)}
+          title={i18n.GRID}
+          icon={IconNames.GRID}/>
+        <IButton
+          active={listMode}
+          type={ButtonTypes.WITH_BG}
+          colorType={ColorTypes.WHITE}
+          onClick={() => setListMode(true)}
+          title={i18n.LIST}
+          icon={IconNames.LIST}/>
+      </div>
+      <Scrollbar className='parts-container'>
         {partsJSX}
       </Scrollbar>
     </div>

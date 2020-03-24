@@ -64,7 +64,7 @@ export default class RightMenu extends React.Component {
 
   render () {
     const {
-      isSettingsShow, isSidebarShow, onClickSettings, onClickSidebar, searchFailed, printFiles, is3DMapMode,
+      isSettingsShow, onClickSettings, searchFailed, printFiles, is3DMapMode,
     } = this.props
     return (
       <div className='left-menu'>
@@ -83,13 +83,6 @@ export default class RightMenu extends React.Component {
         <div className="search-options-sub-panel search-options-sub-panel-right">
           <SearchOptions />
         </div>
-        <IconButton
-          placement={'bottomRight'}
-          title={i18n.TOGGLE_SIDEBAR}
-          icon={iconNames.MENU_LEFT_MENU_DEFAULT}
-          checked={isSidebarShow}
-          onClick={onClickSidebar}
-        />
         <IconButton
           placement={'bottomRight'}
           title={i18n.SETTINGS}

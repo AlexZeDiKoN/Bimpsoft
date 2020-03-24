@@ -1,0 +1,39 @@
+.input-button{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  &__title{
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    font-family: Roboto;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .search-input{
+    flex: 1 1 auto;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .dzvin-input {
+      width: 0;
+      transition: 0.3s;
+      border: 0;
+      input {
+        min-width: 0;
+      }
+    }
+  }
+  .active-search-input{
+    flex: 1 1 auto;
+    .dzvin-input {
+      width: 100%;
+      input{
+        min-width: 30px;
+      }
+    }
+  }
+}
