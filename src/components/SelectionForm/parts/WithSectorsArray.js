@@ -2,6 +2,8 @@ import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
+import { distanceAngle, sphereDirect } from '../../WebMap/patch/utils/sectors'
+import { colors } from '../../../constants'
 import SectorItem from './SectorItem'
 
 const {
@@ -46,57 +48,76 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
 
   // удаление сектора
   sectorRemoveHandler = (index) => this.setResult((result) => {
-    // const indexDelete = index * 2
-    // console.log(JSON.stringify(indexDelete))
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => {
-      // coordinatesArray.size < (indexDelete + 1) ? coordinatesArray : coordinatesArray.delete(indexDelete + 1)
-      // console.log(JSON.stringify(coordinatesArray))
-      return coordinatesArray
+    const indexDelete = index * 2 + 2
+    let deleteSector = false
+    const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
+      const oldSize = coordArray.size
+      const newArray = (((oldSize > 5) && (oldSize > (indexDelete + 1))) // должен остаться хотя бы один сектор
+        ? coordArray.delete(indexDelete + 1).delete(indexDelete) : coordArray)
+      if (oldSize === (newArray.size + 2)) {
+        deleteSector = true
+      }
+      return newArray
     })
-    // result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
-    //   coordinatesArray.size < indexDelete ? coordinatesArray : coordinatesArray.delete(indexDelete),
-    // )
-    result.updateIn(PATH_S_INFO, (fieldSectors) => {
-      // console.log(JSON.stringify(fieldSectors))
-      return fieldSectors
-    })
+    if (deleteSector) {
+      return newResult.updateIn(PATH_S_INFO, (fieldSectors) => (fieldSectors.delete(index)))
+    }
+    return result
   })
 
   // onSectorRemoveHandler = this.sectorRemoveHandler.bind(this)
 
   // Обработчик нажатия кнопки добавления сектора
   sectorAddHandler = () => this.setResult((result) => {
-    // console.log(JSON.stringify('Добавить сектор'))
-    // result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' }))
-    // result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' }))
+    let endIndex
+    const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
+      const coordO = coordArray.get(0)
+      const coordA = coordArray.get(1)
+      const azimun1 = distanceAngle(coordO, coordA)
+      const coordN1 = sphereDirect(coordO, azimun1.angledeg - 30, azimun1.distance)
+      const coordN2 = sphereDirect(coordO, azimun1.angledeg + 30, azimun1.distance)
+      const coordNA = sphereDirect(coordO, azimun1.angledeg, azimun1.distance * 1.1)
+      const newCoordArray = coordArray.set(1, coordNA).push(coordN1).push(coordN2)
+      endIndex = newCoordArray.size / 2 - 2
+      return newCoordArray
+    })
+    if (Number.isFinite(Number(endIndex)) && endIndex > 0 && endIndex < 10) {
+      return newResult.updateIn(PATH_S_INFO, (infoArray) => (
+        infoArray.set(endIndex, ({ amplifier: '', color: '#000000', fill: colors.TRANSPARENT }))
+      ))
+    } else {
+      return result
+    }
   })
 
   sectorPropertiesChangeHandler = (target) => {
     const { name, value, index } = target
-    this.setResult((result) => {
-      result = result.updateIn([ ...PATH_S_INFO ],
+    this.setResult((result) => (
+      result.updateIn(PATH_S_INFO,
         (sectorsInfo) => sectorsInfo.set(index, Object.assign({}, sectorsInfo.get(index), { [name]: value })))
-      return result
-    })
+    ))
   }
 
   sectorChangeHandler = (target) => {
     const { coord1, coord2, index } = target
-    this.setResult((result) => {
-      result = result.updateIn(COORDINATE_PATH, (coordinates) => {
-        const coordNew = coordinates.set((2 + index * 2), coord1)
-        return coordNew.set((3 + index * 2), coord2)
-      })
-      // result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(3 + index * 2, coord2))
-      return result
-    })
+    this.setResult((result) => (
+      result.updateIn(COORDINATE_PATH, (coordinates) => (
+        coordinates.set((2 + index * 2), coord1).set((3 + index * 2), coord2)
+      ))
+    ))
+  }
+
+  sectorFocusChange = (target) => {
+    const { isActive, index } = target
+    const { onCoordinateFocusChange } = this.props
+    onCoordinateFocusChange && onCoordinateFocusChange(index * 2 + 2, isActive)
   }
 
   addSectors (points, readOnly) {
     const sector = []
     const formStore = this.getResult()
     const canRemove = points.size > 8
-    const sectorsInfo = formStore.getIn([ ...PATH_S_INFO ])
+    const sectorsInfo = formStore.getIn(PATH_S_INFO)
     for (let i = 2, numSector = 0; i < points.length; i += 2, numSector++) {
       const sectorInfo = sectorsInfo.get(numSector)
       sector.push(
@@ -111,6 +132,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
           onRemove={this.sectorRemoveHandler}
           onChangeProps={this.sectorPropertiesChangeHandler}
           onChange={this.sectorChangeHandler}
+          onFocus={this.sectorFocusChange}
         />,
       )
     }
