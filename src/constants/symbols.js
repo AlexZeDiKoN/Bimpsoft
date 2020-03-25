@@ -26,6 +26,22 @@ export const amps = {
   W: 'bottom', // --||--
 }
 
+export const MINE_TYPES = {
+  ANTI_TANK: 0,
+  ANTI_PERSONNEL: 1,
+  UNDEFINED_TYPE: 2,
+  VARIOUS_TYPES: 3,
+  MARINE: 4,
+  MARINE_BOTTOM: 5,
+  MARINE_ANCHORS: 6,
+}
+
+export const CONTROL_TYPES = {
+  UNCONTROLLED: 0,
+  RADIO: 1,
+  WIRED: 2,
+}
+
 // Все, что с пустым кодом - Линии, все у которых isSvh = true - Линии. TODO - добавить свгши, или ссылки на них
 export const symbols = [
   {
@@ -1583,7 +1599,20 @@ export const symbols = [
         code: '10032500000017060000',
         amp: { isSvg: true, type: 6, lineType: types.dashed.value, right: ENDS_STROKE1 },
       },
-      { hint: 'Мінне поле (Мінне загородження)', code: '10032500002707010000', amp: { isSvg: true, type: 'special' } },
+      {
+        hint: 'Мінне поле (Мінне загородження)',
+        code: '10032500002707010000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N', H1: 'H1', H2: 'H2' },
+          params: {
+            mineType: MINE_TYPES.ANTI_TANK,
+            controlType: CONTROL_TYPES.UNCONTROLLED,
+            dummy: false,
+          },
+        },
+      },
       { hint: 'Ряд протитанкових мін ', code: '10032500000017061000', amp: { isSvg: true, type: 6 } },
       { hint: 'Ряд протипіхотних мін', code: '10032500000017062000', amp: { isSvg: true, type: 6 } },
       { hint: 'Протитанкова міна', code: '10032500002803000000', amp: {} },

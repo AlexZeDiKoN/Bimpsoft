@@ -856,7 +856,7 @@ export function buildingDotted (result, points) {
 // ----------------------------------------------------------------------------------------------
 // пунктир по точкам
 // eslint-disable-next-line no-unused-vars
-function drawDotted (result, points) {
+export function drawDotted (result, points) {
   if (points.length < 2) return ''
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
@@ -1062,7 +1062,7 @@ function bindingLine (mLine, _bindingType, widthL) {
 // -------------------------------------------------------------------------------------------------------
 // блискавка
 // eslint-disable-next-line no-unused-vars
-function drawLightning (result, pN, pK) {
+export function drawLightning (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const lengthZ = lengthL / 10
   const dx = pN.x - pK.x
@@ -1102,7 +1102,7 @@ function drawLightning (result, pN, pK) {
 // ---------------------------------------------------------------------------------------------------
 // проводне керування
 // eslint-disable-next-line no-unused-vars
-function drawWires (result, pN, pK) {
+export function drawWires (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const radius = lengthL / 4
   const lengthK = lengthL / 5

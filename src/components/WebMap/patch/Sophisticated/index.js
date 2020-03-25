@@ -39,6 +39,9 @@ import './line_types/170101'
 import './line_types/230200'
 import './line_types/240701'
 import './line_types/240805'
+import './line_types/270501'
+import './line_types/270601' // TODO Цієї лінії немає в символах!
+import './line_types/270701'
 
 import './line_types/340500'
 
