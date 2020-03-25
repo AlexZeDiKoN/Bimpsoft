@@ -62,7 +62,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
   inputRef = React.createRef()
 
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 

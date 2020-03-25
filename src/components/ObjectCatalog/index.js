@@ -40,7 +40,7 @@ export default class CatalogsComponent extends React.PureComponent {
 
   scrollPanelRef = React.createRef()
 
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 
