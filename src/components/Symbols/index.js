@@ -28,7 +28,13 @@ const SymbolSvg = (props) => {
 
 const ButtonComponent = (props) =>
   <Collapse.Button {...props} active={false}>
-    <Tooltip title={props?.children} placement='left'>{props?.children}</Tooltip>
+    <Tooltip
+      title={props?.children}
+      placement='left'
+      className={props?.value ? 'symbols-title symbols-title-opened' : 'symbols-title'}
+    >
+      {props?.children}
+    </Tooltip>
   </Collapse.Button>
 
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
@@ -42,7 +48,7 @@ const SymbolsTab = (props) => {
     e.dataTransfer.setData('text', JSON.stringify({ type, ...symbol }))
   }
 
-  const onChangeSearch = ({ target: { value } }) => {
+  const onChangeSearch = (value) => {
     onChange(value)
   }
 
