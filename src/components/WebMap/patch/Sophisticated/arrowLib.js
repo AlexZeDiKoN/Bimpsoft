@@ -22,7 +22,7 @@ export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null &
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingAirborne (datapt, typeLine, bindingType) {
+export function buildingAirborne (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) return null
   let pt
@@ -89,7 +89,7 @@ function buildingAirborne (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingAttackHelicopter (datapt, typeLine, bindingType) {
+export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) return null
   let pt
@@ -170,7 +170,7 @@ function buildingAttackHelicopter (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingMainAttack (datapt, typeLine, bindingType) {
+export function buildingMainAttack (datapt, typeLine, bindingType) {
   if (!datapt) return null
   let pt
   if (typeof (datapt) === 'string') {
@@ -218,7 +218,7 @@ function buildingMainAttack (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
-function buildingArrow (datapt, typeLine, bindingType) {
+export function buildingArrow (datapt, typeLine, bindingType) {
   if (!datapt) return null
   let pt
   if (typeof (datapt) === 'string') {
@@ -275,7 +275,7 @@ function servicePath (pt) {
 // ---------------------------------------------------------------------------------------------------------
 // стратегия перемещения опорных точек для символов 151401 - 151406
 // eslint-disable-next-line no-unused-vars
-const STRATEGY_ARROW = {
+export const STRATEGY_ARROW = {
   // Довільне розташування усіх точок
   empty: () => {
   },
@@ -841,7 +841,7 @@ function curveToPath (mCurve) {
 }
 // ----------------------------------------------------------------------------------------------
 // eslint-disable-next-line no-unused-vars
-function buildingDotted (result, points) {
+export function buildingDotted (result, points) {
   if (points.length < 4) return ''
   const pointN = points[points.length - 1]
   const [ pointR, pointBase ] = pointReflected(pointN, points[0], points[1])
@@ -856,7 +856,7 @@ function buildingDotted (result, points) {
 // ----------------------------------------------------------------------------------------------
 // пунктир по точкам
 // eslint-disable-next-line no-unused-vars
-function drawDotted (result, points) {
+export function drawDotted (result, points) {
   if (points.length < 2) return ''
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
@@ -1062,7 +1062,7 @@ function bindingLine (mLine, _bindingType, widthL) {
 // -------------------------------------------------------------------------------------------------------
 // блискавка
 // eslint-disable-next-line no-unused-vars
-function drawLightning (result, pN, pK) {
+export function drawLightning (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const lengthZ = lengthL / 10
   const dx = pN.x - pK.x
@@ -1102,7 +1102,7 @@ function drawLightning (result, pN, pK) {
 // ---------------------------------------------------------------------------------------------------
 // проводне керування
 // eslint-disable-next-line no-unused-vars
-function drawWires (result, pN, pK) {
+export function drawWires (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const radius = lengthL / 4
   const lengthK = lengthL / 5

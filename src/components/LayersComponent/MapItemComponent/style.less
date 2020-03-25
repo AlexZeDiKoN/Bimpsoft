@@ -5,7 +5,7 @@
   .flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 5px 5px 6px;
+  height: 40px;
   background: @sidebar-item-background-color;
   color: @toolbar-color;
   font-family: @sidebar-font;
@@ -13,20 +13,45 @@
   border-top: 1px solid @sidebar-item-border-color;
   position: relative;
   border-bottom: 1px solid @sidebar-item-border-color;
-  .dzvin-expand-icon {
-    font-size: 0.9em;
-    margin-bottom: 5px;
-    &::after{
-      opacity: 0.84;
-    }
-  }
   .icon{
     color: @toolbar-color;
   }
   .icon-button:hover{
     background: transparent;
   }
+
+  .expand-icon{
+    height: 21px;
+    font-size: 0.75em;
+    width: 21px;
+    transition: 0.3s;
+  }
+
+  .expand-icon-expanded{
+    transform: rotate(90deg);
+  }
+
+  .color-container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .color-picker-hover{
+    display: none;
+  }
+  .color-picker{
+    width: 28px;
+    height: 28px;
+    font-size: 0.8em;
+  }
 }
+
+.map-item-component-icon{
+  font-size: 0.78em;
+  display: flex;
+}
+
 .map-item-component-title{
   margin: auto 1px;
   width: 1px;
@@ -36,18 +61,6 @@
   text-overflow: ellipsis;
   font-weight: 500;
   text-align: left;
-}
-.map-item-component-control{
-  margin: auto 1px;
-  flex: 0 0 auto;
-  &.icon-button .icon{
-      color: @input-background-color;
-    }
-  &.icon-button:hover{
-    & .icon{
-      background: transparent;
-    }
-   }
 }
 .confirm-close-map{
   width: 0;
@@ -76,5 +89,19 @@
   }
   to {
     transform: scale(1, 1);
+  }
+}
+
+.map-item-component:hover {
+  .color-picker-hover{
+    display: flex;
+    align-items: center;
+  }
+}
+
+.map-item-component-hover{
+  .color-picker-hover{
+    display: flex;
+    align-items: center;
   }
 }

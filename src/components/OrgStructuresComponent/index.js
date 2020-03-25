@@ -2,9 +2,10 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input, Tooltip } from 'antd'
-import { data, components } from '@DZVIN/CommonComponents'
+import { data, components, IconNames } from '@DZVIN/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
+import { InputButton } from '../common'
 import Item from './children/Item'
 import OrgStructureMenu from './children/OrgStructureMenu'
 
@@ -61,12 +62,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
   inputRef = React.createRef()
 
-  mouseUpHandler = (e) => {
-    e.preventDefault()
-    this.inputRef.current.focus()
-  }
-
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 
@@ -113,7 +109,9 @@ export default class OrgStructuresComponent extends React.PureComponent {
     } = this.props
 
     if (formation === null) {
-      return <Wrapper title={(<Tooltip title={i18n.NO_ORG_STRUCTURE}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
+      return <Wrapper
+        icon={IconNames.ORG_STRUCTURE}
+        title={(<Tooltip title={i18n.NO_ORG_STRUCTURE}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
         <div className="org-structures">
           <div className='org-structures-searchBlock'>
             <Input.Search
@@ -145,9 +143,8 @@ export default class OrgStructuresComponent extends React.PureComponent {
       <Wrapper title={(<Tooltip title={formation.fullName}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
         <div className="org-structures">
           <div className='org-structures-searchBlock'>
-            <Input.Search
-              ref={this.inputRef}
-              placeholder={i18n.FILTER}
+            <InputButton
+              title={i18n.ORG_STRUCTURE_SHORT}
               onChange={this.filterTextChangeHandler}
             />
             <OrgStructureMenu
@@ -157,9 +154,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
             />
           </div>
           <div className="org-structures-scroll" ref={this.scrollPanelRef}>
-            <div>
-              <b>{formation.fullName}</b>
-            </div>
+            <div className='org-structures-title'>{formation.fullName}</div>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
@@ -168,7 +163,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
               roots={roots}
               itemTemplate={Item}
               commonData={commonData}
-              onMouseUp={this.mouseUpHandler}
             />
           </div>
         </div>

@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import * as ReactDom from 'react-dom'
+import { Tooltip } from 'antd'
+import { IButton, IconNames } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
 import './style.css'
 
 export default class TabsPanel extends React.Component {
@@ -26,10 +29,14 @@ export default class TabsPanel extends React.Component {
 
   containersRef = React.createRef()
 
-  selectHandler = (selectedIndex) => () => this.setState({ selectedIndex })
+  selectHandler = (selectedIndex) => () => {
+    const { setSidebar, sidebar } = this.props
+    setSidebar(!sidebar || selectedIndex !== this.state.selectedIndex)
+    this.setState({ selectedIndex })
+  }
 
   render () {
-    const { tabs } = this.props
+    const { tabs, sidebar } = this.props
     const { selectedIndex } = this.state
     return (
       <div className="tabs-panel">
@@ -37,14 +44,21 @@ export default class TabsPanel extends React.Component {
           tabs.map((Panel, index) => this.state.isMounted && (
             <Panel
               key={index}
-              wrapper={({ children, title }) => {
+              wrapper={({ children, title, icon }) => {
                 const selected = selectedIndex === index
                 return [
                   <div
-                    key={index}
-                    className={'tabs-panel-header ' + (selected ? 'tabs-panel-header-selected' : '')}
-                    onClick={this.selectHandler(index)}
-                  >{title}</div>,
+                    key={index}>
+                    <Tooltip title={title} placement='left'>
+                      <IButton
+                        colorType={ColorTypes.WHITE}
+                        type={ButtonTypes.WITH_BG}
+                        active={sidebar && selected}
+                        icon={icon || IconNames.ORG_STRUCTURE}
+                        onClick={this.selectHandler(index)}
+                      />
+                    </Tooltip>
+                  </div>,
                   ReactDom.createPortal(
                     <div
                       key={index}
@@ -67,4 +81,6 @@ export default class TabsPanel extends React.Component {
 
 TabsPanel.propTypes = {
   tabs: PropTypes.array,
+  sidebar: PropTypes.bool,
+  setSidebar: PropTypes.func,
 }

@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import './style.css'
-
-const { names: iconNames, IconButton } = components.icons
 
 const VisibilityButton = (props) => {
   const { title, visible, onChange, isDark } = props
@@ -21,9 +19,10 @@ const VisibilityButton = (props) => {
     : (visible ? classNames.push('closed') : classNames.push('unClosed'))
 
   return (
-    <div className={classNames.join(' ')} title={title} onClick={clickHandler}>
-      <IconButton
-        icon={iconNames.DARK_EYE_ON_ACTIVE}
+    <div className={classNames.join(' ')} onClick={clickHandler}>
+      <IButton
+        title={title}
+        icon={IconNames.DARK_EYE_ON}
       />
     </div>
   )

@@ -6,33 +6,74 @@
   flex-direction: column;
   width: 100%;
 
+  .symbols-header{
+    background: #878C95;
+    padding: 20px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    & > button{
+      margin-left: 7px;
+      font-size: 0.85em;
+    }
+  }
+
   .parts-container{
     .flex;
     flex-direction: column;
     .collapseSection{
       border-bottom: 2px solid #f5f5f5;
-      label{
+      .dzvin-ibutton{
+        padding: 0 7px;
+      }
+      .symbols-title{
         font-size: 12px;
+        font-family: Roboto;
+        color: @toolbar-color;
+      }
+      .symbols-title-opened{
+        font-weight: 600;
       }
       .symbol-container {
         .flex;
         flex-direction: row;
         flex-wrap: wrap;
-        margin: 0 8%;
+        margin: 0 5%;
         align-content: space-evenly;
         height: 100%;
 
+        .list {
+          display: flex;
+          align-items: center;
+          border: 1px solid #E7E7E7;
+          & > div {
+            text-align: left;
+            margin-left: 10px;
+            font-size: 12px;
+            font-weight: 600;
+          }
+        }
         .symbol {
-          width: 60px;
-          height: 60px;
+          width: 90px;
+          height: 90px;
+          background: #E7E7E7;
           padding: 1px;
           border: 1px solid #3333;
           margin: 5px 5px;
+          display: flex;
+          align-items: center;
+          flex: 0 0 auto;
+          justify-content: center;
+          cursor: pointer;
           svg {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
           }
         }
+      }
+      .symbol-container-nowrap{
+        flex-wrap: nowrap;
+        flex-direction: column;
       }
     }
   }

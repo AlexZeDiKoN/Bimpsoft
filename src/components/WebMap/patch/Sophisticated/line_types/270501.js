@@ -1,40 +1,36 @@
-(function () {
-  /* global lineDefinitions, STRATEGY, MIDDLE, DELETE, segmentBy, normalVectorTo, applyVector, drawLine */
+import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import {
+  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy,
+} from '../utils'
 
-  // sign name: BLOCK
-  // task code: DZVIN-5522 (part 2)
+// sign name: BLOCK
+// task code: DZVIN-5522 (part 2)
 
-  const POINTS = 3
+lineDefinitions['270501'] = {
+  // Відрізки, на яких дозволено додавання вершин лінії
+  allowMiddle: MIDDLE.none,
 
-  lineDefinitions['270501'] = {
-    // Кількість точок у лінії (мінімальна)
-    POINTS,
+  // Вершини, які дозволено вилучати
+  allowDelete: DELETE.none,
 
-    // Відрізки, на яких дозволено додавання вершин лінії
-    allowMiddle: MIDDLE.none,
+  // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
+  adjust: STRATEGY.shapeT(),
 
-    // Вершини, які дозволено вилучати
-    allowDelete: DELETE.allowOver(POINTS),
+  // Ініціалізація вершин при створенні нової лінії даного типу
+  init: () => ([
+    { x: 0.75, y: 0.33 },
+    { x: 0.75, y: 0.66 },
+    { x: 0.25, y: 0.50 },
+  ]),
 
-    // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-    adjust: STRATEGY.shapeT(),
+  // Рендер-функція
+  render: (result, points) => {
+    const [ p0, p1, p2 ] = points
 
-    // Ініціалізація вершин при створенні нової лінії даного типу
-    init: () => ([
-      { x: 0.75, y: 0.33 },
-      { x: 0.75, y: 0.66 },
-      { x: 0.25, y: 0.50 },
-    ]),
-
-    // Рендер-функція
-    render: (result, points) => {
-      const [ p0, p1, p2 ] = points
-
-      const pa = segmentBy(p0, p1, 0.5)
-      const norm = normalVectorTo(p0, p1, p2)
-      const startPoint = applyVector(pa, norm)
-      drawLine(result, startPoint, pa)
-      drawLine(result, p0, p1)
-    },
-  }
-})()
+    const pa = segmentBy(p0, p1, 0.5)
+    const norm = normalVectorTo(p0, p1, p2)
+    const startPoint = applyVector(pa, norm)
+    drawLine(result, startPoint, pa)
+    drawLine(result, p0, p1)
+  },
+}

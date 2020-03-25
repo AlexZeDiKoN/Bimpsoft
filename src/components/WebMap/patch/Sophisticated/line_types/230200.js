@@ -1,36 +1,32 @@
-(function () {
-  /* global lineDefinitions, STRATEGY, MIDDLE, DELETE, drawLine */
+import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import {
+  lineDefinitions, drawLine,
+} from '../utils'
 
-  // sign name: DECOY/DUMMY AND FEINT
-  // task code: DZVIN-5801
+// sign name: DECOY/DUMMY AND FEINT
+// task code: DZVIN-5801
 
-  const POINTS = 3
+lineDefinitions['230200'] = {
+  // Відрізки, на яких дозволено додавання вершин лінії
+  allowMiddle: MIDDLE.none,
 
-  lineDefinitions['230200'] = {
-    // Кількість точок у лінії (мінімальна)
-    POINTS,
+  // Вершини, які дозволено вилучати
+  allowDelete: DELETE.none,
 
-    // Відрізки, на яких дозволено додавання вершин лінії
-    allowMiddle: MIDDLE.none,
+  // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
+  adjust: STRATEGY.shapeT(),
 
-    // Вершини, які дозволено вилучати
-    allowDelete: DELETE.allowOver(POINTS),
+  // Ініціалізація вершин при створенні нової лінії даного типу
+  init: () => ([
+    { x: 0.25, y: 0.66 },
+    { x: 0.75, y: 0.66 },
+    { x: 0.50, y: 0.33 },
+  ]),
 
-    // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-    adjust: STRATEGY.shapeT(),
-
-    // Ініціалізація вершин при створенні нової лінії даного типу
-    init: () => ([
-      { x: 0.25, y: 0.66 },
-      { x: 0.75, y: 0.66 },
-      { x: 0.50, y: 0.33 },
-    ]),
-
-    // Рендер-функція
-    render: (result, points, scale) => {
-      const [ p0, p1, p2 ] = points
-      drawLine(result, p0, p2, p1)
-      result.layer._path.setAttribute('stroke-dasharray', 20)
-    },
-  }
-})()
+  // Рендер-функція
+  render: (result, points, scale) => {
+    const [ p0, p1, p2 ] = points
+    drawLine(result, p0, p2, p1)
+    result.layer._path.setAttribute('stroke-dasharray', 20)
+  },
+}

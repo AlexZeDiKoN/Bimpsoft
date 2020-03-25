@@ -16,6 +16,7 @@ import flexGrid from './flexGrid'
 import march from './march'
 import catalogs from './catalogs'
 import ovt from './ovt'
+import sidebar from './sidebar'
 import targeting from './targeting'
 import task from './task'
 import targetCatalog from './targetCatalog'
@@ -37,6 +38,7 @@ export default combineReducers({
   catalogs,
   webMap3D,
   ovt,
+  sidebar,
   targeting,
   task,
   targetCatalog,

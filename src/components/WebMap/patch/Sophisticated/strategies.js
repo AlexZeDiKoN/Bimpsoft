@@ -1,4 +1,5 @@
 import Bezier from 'bezier-js'
+import { Symbol } from '@DZVIN/milsymbol'
 import { rotate, applyToPoint } from 'transformation-matrix'
 import {
   normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
@@ -338,7 +339,7 @@ export const RENDER = {
           <line x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
         </pattern>`
 
-      const symbol = new window.ms.Symbol(code, { size: size * scale }).asSVG()
+      const symbol = new Symbol(code, { size: size * scale }).asSVG()
       const d = size * scale / 2
       result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
     },

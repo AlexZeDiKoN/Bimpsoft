@@ -1,7 +1,7 @@
 dependencies:
-  '@DZVIN/CommonComponents': 12.1.419_deda1989298848ac0fef46dc6154a481
-  '@DZVIN/MilSymbolEditor': 11.3.256
-  '@DZVIN/components': 11.3.554_e748ab1c68d8c365561fed23345130e3
+  '@DZVIN/CommonComponents': 12.3.436_deda1989298848ac0fef46dc6154a481
+  '@DZVIN/MilSymbolEditor': 12.3.258
+  '@DZVIN/components': 12.3.558_e748ab1c68d8c365561fed23345130e3
   '@DZVIN/leaflet-measure-custom': 0.0.2
   '@DZVIN/milsymbol': 0.0.5
   antd: 3.26.7_react-dom@16.12.0+react@16.12.0
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.3.0
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/12.1.419_deda1989298848ac0fef46dc6154a481:
+  /@DZVIN/CommonComponents/12.3.436_deda1989298848ac0fef46dc6154a481:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -87,18 +87,18 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-OPN9sxq3m9of9Lgft2C6BCTEvsTpVlskizHchS0z8BjSctc4e5dneWPsxxsvQ4UqC5FAO7vaMRDSuvFEMgBpvw==
+      integrity: sha512-ytyChfUjm7lla3m5kiy5zQQWwmSOu1NMChLooqIQCZ11glhLM7hXoxignY7yWXwcUEKh2sxDjzbvzmi7HSNqqA==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/11.3.256:
+  /@DZVIN/MilSymbolEditor/12.3.258:
     dependencies:
       '@DZVIN/milsymbol': 0.0.5
     dev: false
     resolution:
-      integrity: sha512-bX+5uz8dlpf7r5uetzCnGBpt5qJFc30p76ekwNIyAYJ8dUYlDbkAkMO1uqmnZRH46AqerJ2w5J8OMM07S+OdBw==
-  /@DZVIN/components/11.3.554_e748ab1c68d8c365561fed23345130e3:
+      integrity: sha512-HaRVseLH701BYnRwJdhesXs9h5N6fQX5OjDFUvYIjYAoaLLR17oanWxb7KuChUSJMNnqWPEr2Nv1Fqafxjxiug==
+  /@DZVIN/components/12.3.558_e748ab1c68d8c365561fed23345130e3:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.3.35
@@ -110,7 +110,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-DvJUJYPuhq+qHrgh1bzWWwgGdm7THuNV4QkYkg/DvgTTbTmXyzuYfgCfPvgu9CBPRn3sb+LuMiYUL7toJRHdrg==
+      integrity: sha512-TopOZltJJdhkR64xqgymQfFdJMn5EFzu73PJkS0aqYcw+RknpgeudUg5KLPiO9275vI0j/7seVTkWZlLbBQKdg==
   /@DZVIN/leaflet-measure-custom/0.0.2:
     dev: false
     resolution:
@@ -16205,9 +16205,9 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^12.2.423
-  '@DZVIN/MilSymbolEditor': ^11.3.256
-  '@DZVIN/components': ^12.1.556
+  '@DZVIN/CommonComponents': ^12.3.436
+  '@DZVIN/MilSymbolEditor': ^12.3.258
+  '@DZVIN/components': ^12.3.558
   '@DZVIN/leaflet-measure-custom': 0.0.2
   '@DZVIN/milsymbol': ^0.0.5
   '@craco/craco': ^5.2.1

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { SketchPicker } from 'react-color'
 import './style.css'
+import { IButton } from '@DZVIN/CommonComponents'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const PRESENT_COLORS = [
@@ -73,6 +74,9 @@ const ColorPicker = (props) => {
   const colorType = isRGB ? 'rgb' : 'hex'
 
   const handleButtonClick = () => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(true)
+    }
     if (!props.disabled) {
       setOpened(!opened)
     }
@@ -81,6 +85,9 @@ const ColorPicker = (props) => {
   const handleChangeComplete = (color) => props.onChange?.(color[colorType])
 
   const clickOutsideRef = getClickOutsideRef(() => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(false)
+    }
     opened === true && setOpened(false)
   })
 
@@ -104,21 +111,27 @@ const ColorPicker = (props) => {
         zIndex={props.zIndex}
         popupStyle={POPUP_STYLE}
         popup={popup}>
-        <button
-          className={classNames('color-picker-button', {
-            [props.className]: Boolean(props.className),
-            'color-picker-button-undefined': color === undefined,
-            'color-picker-button-empty': isTransparent,
-          })}
-          style={{ backgroundColor: color }}
-          onClick={handleButtonClick}
-        />
+        {props.icon
+          ? <IButton icon={props.icon} title={props.title} onClick={handleButtonClick}/>
+          : <button
+            className={classNames('color-picker-button', {
+              [props.className]: Boolean(props.className),
+              'color-picker-button-undefined': color === undefined,
+              'color-picker-button-empty': isTransparent,
+            })}
+            style={{ backgroundColor: color }}
+            onClick={handleButtonClick}
+          />
+        }
       </Trigger>
     </div>
   )
 }
 
 ColorPicker.propTypes = {
+  icon: PropTypes.string,
+  onHandlerColor: PropTypes.func,
+  title: PropTypes.string,
   color: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
   onChange: PropTypes.func,
   zIndex: PropTypes.number,

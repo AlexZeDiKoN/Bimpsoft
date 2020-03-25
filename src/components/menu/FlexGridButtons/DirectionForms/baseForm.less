@@ -31,8 +31,22 @@
   }
 
   .dir_option {
-    display: block;
+    display: flex;
     text-align: left;
+    align-items: center;
+    & > span {
+      height: 24px;
+      .dir_info{
+        display: inline-block;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+    span.ant-radio{
+      height: 20px;
+    }
   }
 
   .dzvin-form-item:nth-child(2) {

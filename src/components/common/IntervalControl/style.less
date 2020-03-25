@@ -3,9 +3,13 @@
 
 .interval-control{
   .flex;
-  padding: 5px;
+  overflow: hidden;
   .ant-calendar-picker{
     flex: 1 1 auto;
+    margin: 8px;
+    & > div {
+      position: relative;
+    }
   }
   .ant-input{
     overflow: hidden;
@@ -13,6 +17,14 @@
     white-space: nowrap;
     padding: 0 25px 0 5px;
     height: 24px;
+    background: @sidebar-control-background-color;
+    border: 0;
+  }
+  .ant-calendar-picker-icon{
+    color: @toolbar-light-background;
+  }
+  .ant-calendar-picker-clear{
+    background: @sidebar-control-background-color;
   }
 }
 
