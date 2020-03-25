@@ -73,9 +73,6 @@ lineDefinitions['170101'] = {
       return [ p1, p2 ]
     }
 
-    // Варіант для демонстрації
-    const text = document.getElementById('ampl_text').value
-
     for (let i = 0; i < points.length - 2; i++) {
       let p1, p2
       [ p1, p2 ] = adjustSegmentPoints(i, 1)
@@ -86,35 +83,36 @@ lineDefinitions['170101'] = {
       if (!ptEq(p1, p2)) {
         drawLine(result, p1, p2)
       }
-      if (text) {
-        drawText(
-          result,
-          segmentBy(points[i], points[i + 1]),
-          angleOf(points[i], points[i + 1]),
-          text,
-          LARGE_TEXT_SIZE,
-        )
-      }
+      drawText(
+        result,
+        segmentBy(points[i], points[i + 1]),
+        angleOf(points[i], points[i + 1]),
+        result.layer?.options?.textAmplifiers?.T ?? '',
+        LARGE_TEXT_SIZE,
+      )
     }
 
-    const mlt = document.getElementById('multiline_text').value
-    if (mlt) {
-      const bb = textBBox('bp', result.layer, SMALL_TEXT_SIZE)
-      mlt
-        .split('\n')
-        .map((line) => line.split())
-        .forEach((line, index, array) => {
-          if (line) {
-            drawText(
-              result,
-              getPointAt(points[1], points[0], Math.PI / 2, sw + (array.length - index) * bb.height * INTERLINE),
-              angleOf(points[0], points[1]),
-              line,
-              SMALL_TEXT_SIZE,
-              'start',
-            )
-          }
-        })
-    }
+    const bb = textBBox('bp', result.layer, SMALL_TEXT_SIZE);
+    [
+      `NAME: ${result.layer?.options?.textAmplifiers?.T ?? ''}`,
+      `WIDTH: ${result.layer?.options?.textAmplifiers?.AM ?? ''}`,
+      `MIN ALT: ${result.layer?.options?.textAmplifiers?.X ?? ''}`,
+      `MAX ALT: ${result.layer?.options?.textAmplifiers?.X1 ?? ''}`,
+      `DTG START: ${result.layer?.options?.textAmplifiers?.W ?? ''}`,
+      `DTG END: ${result.layer?.options?.textAmplifiers?.W1 ?? ''}`,
+    ]
+      .map((line) => line.split())
+      .forEach((line, index, array) => {
+        if (line) {
+          drawText(
+            result,
+            getPointAt(points[1], points[0], Math.PI / 2, sw + (array.length - index) * bb.height * INTERLINE),
+            angleOf(points[0], points[1]),
+            line,
+            SMALL_TEXT_SIZE,
+            'start',
+          )
+        }
+      })
   },
 }

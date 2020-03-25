@@ -1106,8 +1106,12 @@ export const symbols = [
       // },
       {
         hint: 'Коридор прольоту авіації через зону вогню військової частини ЗРВ',
-        code: '10032500001701000000',
-        amp: { isSvg: true, type: 'special' },
+        code: '10032500001701010000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { T: 'T', AM: 'AM', X: 'X', X1: 'X1', W: 'W', W1: 'W1' },
+        },
       },
       {
         hint: 'Пункт бойового управління на буксирній тязі ',

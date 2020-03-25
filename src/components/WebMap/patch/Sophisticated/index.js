@@ -35,6 +35,8 @@ import './line_types/151406'
 import './line_types/152000'
 import './line_types/152100'
 import './line_types/152200'
+import './line_types/170101'
+import './line_types/230200'
 
 import './line_types/340500'
 
