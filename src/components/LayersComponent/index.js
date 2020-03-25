@@ -72,7 +72,7 @@ export default class LayersComponent extends React.Component {
 
   okCloseHandler = () => this.setState({ showCloseForm: false }, this.props.onCloseAllMaps)
 
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 
