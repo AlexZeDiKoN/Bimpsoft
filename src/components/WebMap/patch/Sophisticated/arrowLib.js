@@ -12,7 +12,7 @@ function getKoefArrow () {
   return coefArrowWing
 }
 
-const isDef = (v) => v !== undefined && v !== null
+export const isDef = (v) => v !== undefined && v !== null
 
 export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null && v.y !== undefined && v.y !== null
 
@@ -24,7 +24,9 @@ export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null &
 // eslint-disable-next-line no-unused-vars
 export function buildingAirborne (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
-  if (!datapt) return null
+  if (!datapt) {
+    return null
+  }
   let pt
   if (typeof (datapt) === 'string') {
     try {
@@ -34,11 +36,15 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
       return null
     }
   } else {
-    if (typeof (datapt) !== 'object') return null
+    if (typeof (datapt) !== 'object') {
+      return null
+    }
     pt = datapt.slice()
   }
 
-  if (pt.length < 3) return null // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+  if (pt.length < 3) {
+    return null
+  } // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
   const indEnd = pt.length - 1
   let pointSide // Боковая опорная точка
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
@@ -91,7 +97,9 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
 // eslint-disable-next-line no-unused-vars
 export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
-  if (!datapt) return null
+  if (!datapt) {
+    return null
+  }
   let pt
   if (typeof (datapt) === 'string') {
     try {
@@ -101,11 +109,15 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
       return null
     }
   } else {
-    if (typeof (datapt) !== 'object') return null
+    if (typeof (datapt) !== 'object') {
+      return null
+    }
     pt = datapt.slice()
   }
 
-  if (pt.length < 3) return null// constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+  if (pt.length < 3) {
+    return null
+  }// constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
   const indEnd = pt.length - 1
   let pointSide // Боковая опорная точка стрелки
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
@@ -132,7 +144,9 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
     [ unitX / 2, unitY / 2 ], [ unitX / 2, -unitY / 2 ], [ 3 * unitX / 2, -unitY / 2 ], [ 3 * unitX / 2, unitY / 2 ],
     [ 2 * unitX, -unitY ], [ 2 * unitX, unitY ] ]
   let fRotate = 1
-  if (angle > Math.PI / 2 || angle < -Math.PI / 2) fRotate = -1 // Выворачивание стрелочки к верху
+  if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
+    fRotate = -1
+  } // Выворачивание стрелочки к верху
   const pointSmallArrow = [ [ unitX, (unitY - unitY / 4) * fRotate ], [ unitX, -unitY * fRotate ], // вертикаль стрелочки
     [ unitX - unitX / 4, (unitY - unitY / 4) * fRotate ], [ unitX + unitX / 4, (unitY - unitY / 4) * fRotate ], // низ стрелочки
     [ unitX - unitX / 8, -(unitY - unitY / 4) * fRotate ], [ unitX + unitX / 8, -(unitY - unitY / 4) * fRotate ], // верх стрелочки
@@ -171,7 +185,9 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
 export function buildingMainAttack (datapt, typeLine, bindingType) {
-  if (!datapt) return null
+  if (!datapt) {
+    return null
+  }
   let pt
   if (typeof (datapt) === 'string') {
     try {
@@ -181,11 +197,15 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
       return null
     }
   } else {
-    if (typeof (datapt) !== 'object') return null
+    if (typeof (datapt) !== 'object') {
+      return null
+    }
     pt = datapt.slice()
   }
 
-  if (pt.length < 3) return null // constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+  if (pt.length < 3) { // constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+    return null
+  }
   const indEnd = pt.length - 1
   let pointSide // Боковая опорная точка
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
@@ -219,7 +239,9 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
 //          * - кривые Безье
 // eslint-disable-next-line no-unused-vars
 export function buildingArrow (datapt, typeLine, bindingType) {
-  if (!datapt) return null
+  if (!datapt) {
+    return null
+  }
   let pt
   if (typeof (datapt) === 'string') {
     try {
@@ -229,11 +251,15 @@ export function buildingArrow (datapt, typeLine, bindingType) {
       return null
     }
   } else {
-    if (typeof (datapt) !== 'object') return null
+    if (typeof (datapt) !== 'object') {
+      return null
+    }
     pt = datapt.slice()
   }
 
-  if (pt.length < 3) return null// constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+  if (pt.length < 3) { // constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+    return null
+  }
   const indEnd = pt.length - 1
   let pointSide // Боковая опорная точка
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
@@ -295,7 +321,7 @@ export const STRATEGY_ARROW = {
         nextPoints[indEnd] = { x: coordinates.x, y: coordinates.y }
       }
     }
-  }
+  },
 }
 
 // ----------------------------------------------------------------------------------
@@ -470,7 +496,7 @@ function pointReflected (n, p1, p2) {
   // пересечение двух прямых
   const intersection = {
     x: (C1 * line.B - line.C * B1) / (line.A * B1 - A1 * line.B),
-    y: (A1 * line.C - line.A * C1) / (B1 * line.A - line.B * A1)
+    y: (A1 * line.C - line.A * C1) / (B1 * line.A - line.B * A1),
   }
   const reflection = { x: intersection.x * 2 - n.x, y: intersection.y * 2 - n.y }
   return [ reflection, intersection ]
@@ -601,7 +627,9 @@ function truncateSection (pN, pK, truncate) {
 function qalqControlPoints (dataPt, equally) {
   const mKtBezier = []
   let ktL, ktR
-  if (dataPt.length < 3) return null
+  if (dataPt.length < 3) {
+    return null
+  }
   let minLength = 0
   if (isDef(equally)) {
     minLength = lengthLine(dataPt[1], dataPt[2])
@@ -728,7 +756,9 @@ function intersectionSlicing (mCurveBez) {
 // Построение тела полилинии шириной widthL
 // первая точка задает направление, нужна для qalqControlPoints
 function constructionTailBezier (pt, widthL, equally) {
-  if (pt.length < 1) return null
+  if (pt.length < 1) {
+    return null
+  }
   const mKtBezier = qalqControlPoints(pt, equally)
   const mpt = pt.slice(1) // убираем первую точку(задание стартового направления)
   const indEnd = mpt.length - 1
@@ -747,10 +777,10 @@ function constructionTailBezier (pt, widthL, equally) {
       continue
     }
     mPolyBezSideP.push({
-      sectionBez: (outlineOffsetP.map((elm) => elm.points))
+      sectionBez: (outlineOffsetP.map((elm) => elm.points)),
     })
     mPolyBezSideL.push({
-      sectionBez: (outlineOffsetL.map((elm) => elm.points))
+      sectionBez: (outlineOffsetL.map((elm) => elm.points)),
     })
   }
 
@@ -834,7 +864,7 @@ function curveToPath (mCurve) {
   const pathCurve = []
   for (let k = 0; k < mCurve.length; k++) {
     pathCurve.push(...mCurve[k].sectionBez.map((p) =>
-      `M ${p[0].x} ${p[0].y} C ${p[1].x} ${p[1].y}  ${p[2].x}  ${p[2].y}  ${p[3].x}  ${p[3].y} `)
+      `M ${p[0].x} ${p[0].y} C ${p[1].x} ${p[1].y}  ${p[2].x}  ${p[2].y}  ${p[3].x}  ${p[3].y} `),
     )
   }
   return pathCurve
@@ -842,7 +872,9 @@ function curveToPath (mCurve) {
 // ----------------------------------------------------------------------------------------------
 // eslint-disable-next-line no-unused-vars
 export function buildingDotted (result, points) {
-  if (points.length < 4) return ''
+  if (points.length < 4) {
+    return ''
+  }
   const pointN = points[points.length - 1]
   const [ pointR, pointBase ] = pointReflected(pointN, points[0], points[1])
   const lengthStreych = lengthLine(points[points.length - 1], pointR) / 8
@@ -857,7 +889,9 @@ export function buildingDotted (result, points) {
 // пунктир по точкам
 // eslint-disable-next-line no-unused-vars
 export function drawDotted (result, points) {
-  if (points.length < 2) return ''
+  if (points.length < 2) {
+    return ''
+  }
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
   const pathDotted = 'M' + points.map((el) => `${el.x} ${el.y}`).join('L')
@@ -870,7 +904,6 @@ export function drawDotted (result, points) {
   result.amplifiers += `<path fill="transparent" stroke="${color}" stroke-width="${width}" stroke-dasharray="${dash}" d="${pathDotted}" />`
 }
 // -------------------------------------------------
-// eslint-disable-next-line no-unused-vars
 function constructionPath (datapt, equally) {
   const pt = JSON.parse(datapt)
   const mKtBezier = qalqControlPoints(pt, equally)
@@ -883,7 +916,6 @@ function constructionPath (datapt, equally) {
 }
 // -----------------------------------------------------------------------------------------------------------
 // заполнение path линиями
-// eslint-disable-next-line no-unused-vars
 function lineToPath (el) {
   if (el.typeLine === 'line') {
     return `M${el.p1.x} ${el.p1.y} L${el.p2.x} ${el.p2.y}`
@@ -1070,25 +1102,25 @@ export function drawLightning (result, pN, pK) {
   const angle = Math.atan2(dy, dx) - Math.PI / 4
   const pC = {
     x: pN.x - dx / 2,
-    y: pN.y - dy / 2
+    y: pN.y - dy / 2,
   }
   const p1 = {
     x: pC.x - Math.cos(angle) * lengthZ,
-    y: pC.y - Math.sin(angle) * lengthZ
+    y: pC.y - Math.sin(angle) * lengthZ,
   }
   const p2 = {
     x: pC.x + Math.cos(angle) * lengthZ,
-    y: pC.y + Math.sin(angle) * lengthZ
+    y: pC.y + Math.sin(angle) * lengthZ,
   }
   const angleA = Math.atan2(p2.y - pK.y, p2.x - pK.x)
   const pA1 = {
     x: pK.x + Math.cos(angleA - Math.PI / 18) * lengthL / 5,
-    y: pK.y + Math.sin(angleA - Math.PI / 18) * lengthL / 5
+    y: pK.y + Math.sin(angleA - Math.PI / 18) * lengthL / 5,
   }
 
   const pA2 = {
     x: pK.x + Math.cos(angleA + Math.PI / 18) * lengthL / 5,
-    y: pK.y + Math.sin(angleA + Math.PI / 18) * lengthL / 5
+    y: pK.y + Math.sin(angleA + Math.PI / 18) * lengthL / 5,
   }
   // console.log(pC, dx, dy, p1, p2, lengthZ)
   moveTo(result, pN)
@@ -1111,24 +1143,24 @@ export function drawWires (result, pN, pK) {
   const da = radius - Math.sqrt(radius * radius - lengthK * lengthK)
   const pA1 = {
     x: pK.x - lengthK,
-    y: pK.y + da
+    y: pK.y + da,
   }
   const pA2 = {
     x: pK.x + lengthK,
-    y: pK.y + da
+    y: pK.y + da,
   }
   drawArc(result, pA1, pA2, radius, 0, 0, 1)
   const pC = {
     x: pN.x - dx / 2,
-    y: pN.y - dy / 2
+    y: pN.y - dy / 2,
   }
   const pK1 = {
     x: pC.x - lengthK,
-    y: pC.y - lengthK
+    y: pC.y - lengthK,
   }
   const pK2 = {
     x: pC.x + lengthK,
-    y: pC.y + lengthK
+    y: pC.y + lengthK,
   }
   drawBezier(result, pN, pK1, pK2, pK)
 }

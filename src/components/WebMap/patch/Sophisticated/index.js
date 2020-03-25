@@ -44,6 +44,7 @@ import './line_types/270601' // TODO Цієї лінії немає в симв�
 import './line_types/270701'
 import './line_types/271300'
 import './line_types/271400'
+import './line_types/272100'
 
 import './line_types/340500'
 
@@ -122,4 +123,3 @@ L.Sophisticated = L.Polyline.extend({
     }
   },
 })
-
