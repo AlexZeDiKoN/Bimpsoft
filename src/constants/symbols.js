@@ -531,7 +531,11 @@ export const symbols = [
       {
         hint: 'Одинарний нерухомий загороджувальний вогонь',
         code: '10032500002407010000',
-        amp: { isSvg: true, type: 'special' },
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N', B: 'B' },
+        },
       },
       {
         hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.',
@@ -561,7 +565,15 @@ export const symbols = [
           params: { count: 5, number: 101 },
         },
       },
-      { hint: 'Зона цілі', code: '10032500002408050000', amp: { isSvg: true, type: 'special' } },
+      {
+        hint: 'Зона цілі',
+        code: '10032500002408050000',
+        amp: {
+          isSvg: true,
+          type: 'special',
+          textAmplifiers: { N: 'N' },
+        },
+      },
       {
         hint: 'Смуга ураження керованими снарядами дивізіону (Олово) із зазначенням смуг (зон) ураження батарей',
         code: '10032500000017017000',
