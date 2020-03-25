@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
 import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
+import { ifElse } from 'ramda'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -20,8 +21,8 @@ import {
   ManoeuvreForm,
   MinedAreaForm,
   SectorsForm,
+  PollutionCircleForm,
 } from './forms'
-import {ifElse} from 'ramda'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -130,6 +131,14 @@ const forms = {
     maxWidth: 700,
     maxHeight: 655,
   },
+  [SelectionTypes.POLLUTINCIRCLE]: {
+    title: i18n.SHAPE_POLLUTINCIRCLE,
+    component: PollutionCircleForm,
+    minHeight: 645,
+    minWidth: 600,
+    maxWidth: 700,
+    maxHeight: 655,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -167,6 +176,9 @@ export default class SelectionForm extends React.Component {
       switch (data.code.slice(10)) {
         case '0017076000':
           formType = SelectionTypes.SECTORS
+          break
+        case '2721000000':
+          formType = SelectionTypes.POLLUTINCIRCLE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }

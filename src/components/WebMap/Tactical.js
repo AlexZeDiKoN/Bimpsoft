@@ -118,12 +118,6 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
-    case entityKind.AIRBORNE:
-      return createGroup(entityKind.AIRBORNE, data, prevLayer)
-    case entityKind.MANOEUVRE:
-      return createGroup(entityKind.MANOEUVRE, data, prevLayer)
-    case entityKind.SECTORS:
-      return createSectors(entityKind.SECTORS, data, prevLayer)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -182,24 +176,12 @@ function createSophisticated (data, layer, initMap) {
         ...prepareOptions(entityKind.SOPHISTICATED),
         textAmplifiers: data.attributes.textAmplifiers,
         params: data.attributes.params,
+        ...(data.attributes.sectorsInfo ? { sectorsInfo: data.attributes.sectorsInfo } : {}),
       },
       data.code,
       data.geometry?.toJS(),
       initMap,
     )
-  }
-  return layer
-}
-
-function createSectors (type, data, layer) {
-  if (layer && (layer instanceof L.Polyline)) {
-    layer.setLatLngs(data.geometry.toJS())
-  } else {
-    const options = prepareOptions(entityKind.SECTORS)
-    layer = new L.Sectors(
-      options,
-      data.code,
-      data.geometry?.toJS())
   }
   return layer
 }

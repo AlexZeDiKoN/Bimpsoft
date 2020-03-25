@@ -11,6 +11,7 @@ import AirborneForms from './AirborneForm'
 import ManoeuvreForms from './ManoeuvreControlForm'
 import MinedAreaForms from './MinedAreaForm'
 import SectorsForms from './SectorsForm'
+import PollutionCircleForms from './PollutionCircleForm'
 
 export const AreaForm = AreaForms
 export const CircleForm = CircleForms
@@ -25,3 +26,4 @@ export const AirborneForm = AirborneForms
 export const ManoeuvreForm = ManoeuvreForms
 export const MinedAreaForm = MinedAreaForms
 export const SectorsForm = SectorsForms
+export const PollutionCircleForm = PollutionCircleForms

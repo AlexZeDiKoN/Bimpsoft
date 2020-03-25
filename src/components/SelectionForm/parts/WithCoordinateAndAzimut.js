@@ -21,7 +21,7 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
     onCoordinateFocusChange: PropTypes.func,
   }
 
-  state = { editCoordinates: false, azimutText: null }
+  state = { azimutText: null }
 
   coordinateChangeHandler = async (index, value) => {
     await this.setResult((result) => result.setIn([ ...COORDINATE_PATH, index ], value))
@@ -75,7 +75,7 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
   onAzimutChangeHandler = this.azimutChangeHandler.bind(this)
 
   renderCoordinateAndAzimut () {
-    const { editCoordinates, azimutText = null } = this.state
+    const { azimutText = null } = this.state
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const coordBegin = coordinatesArray[0]
@@ -83,7 +83,6 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
     const azimut = azimutText !== null ? azimutText : distanceAngle(coordBegin, coordEnd).angledeg.toFixed(0)
     const azimutInd = 1
     const canEdit = this.isCanEdit()
-    const readOnly = !canEdit || !editCoordinates
     const azimutIsWrong = angleDegCheck(azimut)
     return (
       <FormRow label={i18n.COORDINATES}>
@@ -92,20 +91,20 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
             <FormItem className="coordinatesModal">
               <Coordinates
                 index = {0}
-                isReadOnly={readOnly}
+                isReadOnly={!canEdit}
                 coordinates={coordBegin}
                 onChange={null} // {this.changeHandler}
                 onEnter={this.onCoordinateFocusHandler}
                 onBlur={this.onCoordinateBlurHandler}
-                onExitWithChange={readOnly ? null : this.onCoordinateChangeHandler}
+                onExitWithChange={canEdit ? this.onCoordinateChangeHandler : null }
                 onSearch={placeSearch}
               />
             </FormItem>
             <FormRow label={i18n.AZIMUT}>
               <InputWithSuffix
-                readOnly={readOnly}
+                readOnly={!canEdit}
                 value={azimut}
-                onChange={!readOnly ? this.onAzimutChangeHandler : null }
+                onChange={canEdit ? this.onAzimutChangeHandler : null }
                 onFocus={this.onAzimutFocusHandler(azimutInd)}
                 onBlur={this.onAzimutBlurHandler(azimutInd)}
                 suffix={i18n.ABBR_GRADUS}

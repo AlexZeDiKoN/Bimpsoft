@@ -33,7 +33,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     ovtData: PropTypes.object,
   }
 
-  state = { editCoordinates: false }
+  state = { editSectors: false }
 
   // createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
   //   result.updateIn(path, (showedSet) =>
@@ -43,22 +43,25 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
 
   // Обработчик нажатия кнопки разрешения редактирования
   sectorsEditClickHandler = () => this.setState((state) => ({
-    editCoordinates: !state.editCoordinates,
+    editSectors: !state.editSectors,
   }))
 
   // удаление сектора
   sectorRemoveHandler = (index) => this.setResult((result) => {
     const indexDelete = index * 2 + 2
     let deleteSector = false
+    // удаление координат сектора
     const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
       const oldSize = coordArray.size
       const newArray = (((oldSize > 5) && (oldSize > (indexDelete + 1))) // должен остаться хотя бы один сектор
         ? coordArray.delete(indexDelete + 1).delete(indexDelete) : coordArray)
       if (oldSize === (newArray.size + 2)) {
         deleteSector = true
+        return newArray
       }
-      return newArray
+      return coordArray
     })
+    // удаление свойств сектора
     if (deleteSector) {
       return newResult.updateIn(PATH_S_INFO, (fieldSectors) => (fieldSectors.delete(index)))
     }
@@ -118,6 +121,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     const formStore = this.getResult()
     const canRemove = points.size > 8
     const sectorsInfo = formStore.getIn(PATH_S_INFO)
+    const addOnly = points.length < 6
     for (let i = 2, numSector = 0; i < points.length; i += 2, numSector++) {
       const sectorInfo = sectorsInfo.get(numSector)
       sector.push(
@@ -129,6 +133,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
           sectorInfo={sectorInfo}
           canRemove={canRemove}
           readOnly={readOnly}
+          addOnly={addOnly}
           onRemove={this.sectorRemoveHandler}
           onChangeProps={this.sectorPropertiesChangeHandler}
           onChange={this.sectorChangeHandler}
@@ -140,16 +145,16 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
   }
 
   renderSectorsArray () {
-    const { editCoordinates } = this.state
+    const { editSectors } = this.state
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit() // общее разрешение редактирования
-    const sector = this.addSectors(coordinatesArray, !canEdit || !editCoordinates)
+    const sector = this.addSectors(coordinatesArray, !canEdit || !editSectors)
     return (
       <FormDarkPart>
         <FormRow label={i18n.SECTORS}>
           {canEdit && (<IconHovered
-            icon={editCoordinates ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
+            icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
             hoverIcon={IconNames.BAR_2_EDIT_HOVER}
             onClick={this.sectorsEditClickHandler}
           />)}
@@ -182,7 +187,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
             </tbody>
           </table>
           <FormRow label={i18n.SECTOR}>
-            {canEdit && editCoordinates && <IconHovered
+            {canEdit && editSectors && <IconHovered
               icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
               hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
               onClick={this.sectorAddHandler}
