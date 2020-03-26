@@ -107,11 +107,11 @@ L.PM.Edit.Line.include({
 
         let nextMarkerIndex, prevMarkerIndex, nextNextMarkerIndex, prevPrevMarkerIndex
 
-        const getSeq = this.lineDefinition?.areaSeq
+        const getSeq = this._layer.lineDefinition?.areaSeq
         if (getSeq) {
-          [ prevMarkerIndex, nextMarkerIndex ] = getSeq(marker._index);
-          [ , nextNextMarkerIndex ] = getSeq(nextMarkerIndex);
-          [ prevPrevMarkerIndex ] = getSeq(prevMarkerIndex)
+          [ prevMarkerIndex, nextMarkerIndex ] = getSeq(marker._index, markerArray.length);
+          [ , nextNextMarkerIndex ] = getSeq(nextMarkerIndex, markerArray.length);
+          [ prevPrevMarkerIndex ] = getSeq(prevMarkerIndex, markerArray.length)
         } else {
           nextMarkerIndex = (marker._index + 1) % len
           prevMarkerIndex = ((marker._index + len) - 1) % len

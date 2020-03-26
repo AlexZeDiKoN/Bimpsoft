@@ -37,6 +37,16 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
 
   _createMiddleMarker: function (leftM, rightM) {
     if (leftM && rightM) {
+      const getSeq = this._layer.lineDefinition?.areaSeq
+      if (getSeq) {
+        const [ , nextIndex ] = getSeq(leftM._index, this._layer._latlngs.length)
+        if (nextIndex !== rightM._index) {
+          rightM = leftM
+          while (rightM && rightM._index !== nextIndex) {
+            rightM = rightM._leftM || rightM._middleMarkerPrev
+          }
+        }
+      }
       const marker = parent._createMiddleMarker.call(this, leftM, rightM)
       const check = this._layer.lineDefinition.allowMiddle(leftM._index, rightM._index, this._layer._latlngs.length, this._layer)
       if (typeof check === 'object') {
@@ -44,6 +54,8 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
       } else if (!check) {
         this._markerGroup.removeLayer(marker)
       }
+      marker._leftM = leftM
+      marker._rightM = rightM
       return marker
     }
   },
