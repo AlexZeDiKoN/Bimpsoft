@@ -134,8 +134,7 @@ const forms = {
     title: i18n.SHAPE_POLLUTINCIRCLE,
     component: PollutionCircleForm,
     minHeight: 645,
-    minWidth: 600,
-    maxWidth: 700,
+    minWidth: 680,
     maxHeight: 655,
   },
 }

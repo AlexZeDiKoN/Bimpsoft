@@ -11,7 +11,7 @@ import {
   WithStrokeWidth,
   UnitSelect,
   WithAffiliation,
-  WithTwoCoordinates,
+  WithStartingCoordinate,
   // WithRadiusArray,
 } from '../../parts'
 
@@ -25,13 +25,13 @@ export default class PollutionCircleForm extends compose(
   WithCoordinateAndAzimut,
   WithColor,
   WithStrokeWidth,
-  WithTwoCoordinates,
+  WithStartingCoordinate,
   // WithRadiusArray,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
-    const name = this.props.data.code // 10032500000017076000, 10032500001405000000,
+    const name = this.props.data.code
     return (
       <Scrollbar>
         <div className="pollutioncircle-container">
@@ -47,7 +47,7 @@ export default class PollutionCircleForm extends compose(
             </div>
             <div className="pollutioncircle-container__itemWidth-right">
               {this.renderAffiliation()}
-              {this.renderTwoCoordinates()}
+              {this.renderStartingCoordinate()}
             </div>
           </div>
           <div className="pollutioncircle-container__item--secondSection">

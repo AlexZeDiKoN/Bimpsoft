@@ -54,7 +54,7 @@ lineDefinitions['272100'] = {
           { x: (pO.x + lengthLine(pO, elm) + 2), y: pO.y },
           0,
           MARKER[ind],
-          undefined,
+          scale * 2,
           'start')
       }
     })

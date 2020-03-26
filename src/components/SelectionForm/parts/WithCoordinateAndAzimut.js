@@ -57,14 +57,14 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
     // })
   }
 
-  coordinateFocusChange (isActive, index) {
+  coordinateAzimutFocusChange (isActive, index) {
     const { onCoordinateFocusChange } = this.props
     onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
   }
 
-  onCoordinateFocusHandler = this.coordinateFocusChange.bind(this, true, 0)
+  onCoordinateAzimutFocusHandler = this.coordinateAzimutFocusChange.bind(this, true, 0)
 
-  onCoordinateBlurHandler = this.coordinateFocusChange.bind(this, false, 0)
+  onCoordinateAzimutBlurHandler = this.coordinateAzimutFocusChange.bind(this, false, 0)
 
   onCoordinateChangeHandler = this.coordinateChangeHandler.bind(this, 0)
 
@@ -94,8 +94,8 @@ const WithCoordinateAndAzimut = (Component) => class CoordinatesAndAzimutCompone
                 isReadOnly={!canEdit}
                 coordinates={coordBegin}
                 onChange={null} // {this.changeHandler}
-                onEnter={this.onCoordinateFocusHandler}
-                onBlur={this.onCoordinateBlurHandler}
+                onEnter={this.onCoordinateAzimutFocusHandler}
+                onBlur={this.onCoordinateAzimutBlurHandler}
                 onExitWithChange={canEdit ? this.onCoordinateChangeHandler : null }
                 onSearch={placeSearch}
               />

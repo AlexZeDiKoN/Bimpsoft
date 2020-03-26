@@ -460,6 +460,7 @@ export const continueLine = (result, p1, p2, x, y) => {
 }
 
 // Виведення тексту
+// eslint-disable-next-line max-len
 export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null, textAlign = 'middle') => {
   if (!text || !text.length) {
     return
@@ -489,6 +490,7 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
 }
 
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
+// eslint-disable-next-line max-len
 export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle') => {
   if (!text || !text.length) {
     return
@@ -496,7 +498,7 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
   const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, null, textAlign)
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE
-  const h = box.height / 2 // + CONFIG.TEXT_EDGE
+  const h = box.height / 2 + CONFIG.TEXT_EDGE
   let y
   if (textAlign === 'baseline') {
     y = h * 2
