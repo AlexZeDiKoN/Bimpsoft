@@ -71,6 +71,7 @@ export const SHAPE_AIRBORNE = 'Умовний знак'
 export const SHAPE_MANOEUVRE = 'Напрямок'
 export const SHAPE_MINEDAREA = 'Район мінування'
 export const SHAPE_SECTORS = 'Сектори'
+export const SHAPE_POLLUTINCIRCLE = 'Мінімально безпечні відстані забруднення місцевості'
 
 export const UNDEFINED = 'Не вказано'
 

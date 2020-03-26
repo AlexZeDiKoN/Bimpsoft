@@ -130,12 +130,13 @@ export function sphereDirect (pt0, angledeg, distM) {
 export function distanceAngle (coord1, coord2) { // rad - радиус сферы (Земли)
   // const rad = 6372795
   const rad = Earth.R
-
+  if (!Coord.check(coord1) || !Coord.check(coord2)) {
+    return { angledeg: 0, distance: 0 }
+  }
   const lat1 = coord1.lat * Math.PI / 180.0
   const lat2 = coord2.lat * Math.PI / 180.0
   const long1 = coord1.lng * Math.PI / 180.0
   const long2 = coord2.lng * Math.PI / 180.0
-  // console.log(JSON.stringify({ lat1, lat2, long1, long2 }))
   const cl1 = Math.cos(lat1)
   const cl2 = Math.cos(lat2)
   const sl1 = Math.sin(lat1)
@@ -152,15 +153,22 @@ export function distanceAngle (coord1, coord2) { // rad - радиус сфер�
   // вычисление  начального  азимута
   x = (cl1 * sl2) - (sl1 * cl2 * cdelta)
   y = sdelta * cl2
-  let z = Math.atan2(-y, x) * 180.0 / Math.PI
-
-  if (x < 0) { z = z + 180 }
-
-  let z2 = (z + 180.0) % 360.0 - 180.0
-  z2 = -(z2 * Math.PI / 180)
-  const anglerad2 = z2 - ((2 * Math.PI) * Math.floor((z2 / (2 * Math.PI))))
-  const angledeg = (anglerad2 * 180.0) / Math.PI
-  return { angledeg, distance }
+  const zr = Math.atan2(-y, x)
+  const z = zr * 180.0 / Math.PI // перевод в градусы
+  return { angledeg: ((z < 0) ? -z : (360.0 - z)), distance }
+  // console.log(JSON.stringify({ z: (z < 0) ? -z : (360.0 - z), x }))
+  // if (x < 0) {
+  //   z = z + 180.0
+  // }
+  // let z2 = (z + 180.0) % 360.0 - 180.0
+  // z2 = -(z2 * Math.PI / 180) // перевод в радианы
+  // const anglerad2 = z2 - ((2 * Math.PI) * Math.floor((z2 / (2 * Math.PI))))
+  // const angledeg = (anglerad2 * 180.0) / Math.PI
+  // return { angledeg, distance }
+  // let zr2 = (zr + Math.PI) % (Math.PI * 2) - Math.PI
+  // zr2 = -zr2
+  // const angleradR2 = zr2 - ((2 * Math.PI) * Math.floor((zr2 / (2 * Math.PI))))
+  // return { angledeg: (angleradR2 * 180.0) / Math.PI, distance }
 }
 //
 // function getazimut (coordinatesArray) {

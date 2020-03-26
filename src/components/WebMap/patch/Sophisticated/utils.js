@@ -221,13 +221,13 @@ export const hasIntersection = (p1, p2, s1, s2) => {
     const y = -det(A1, C1, A2, C2) / zn
     return [
       between(p1.x, p2.x, x) && between(p1.y, p2.y, y) && between(s1.x, s2.x, x) && between(s1.y, s2.y, y),
-      { x, y }
+      { x, y },
     ]
   } else {
     return [
       det(A1, C1, A2, C2) === 0 && det(B1, C1, B2, C2) === 0 && intersect(p1.x, p2.x, s1.x, s2.x) &&
       intersect(p1.y, p2.y, s1.y, s2.y),
-      null // TODO: обчислити точку в цьому випадку
+      null, // TODO: обчислити точку в цьому випадку
     ]
   }
 }
@@ -454,13 +454,14 @@ export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
 export const continueLine = (result, p1, p2, x, y) => {
   const t = compose(
     translate(p2.x, p2.y),
-    rotate(angleOf(applyToPoint(translate(-p1.x, -p1.y), p2)))
+    rotate(angleOf(applyToPoint(translate(-p1.x, -p1.y), p2))),
   )
   return drawLine(result, p2, applyToPoint(t, { x, y }))
 }
 
 // Виведення тексту
-export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null) => {
+// eslint-disable-next-line max-len
+export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null, textAlign = 'middle') => {
   if (!text || !text.length) {
     return
   }
@@ -483,25 +484,34 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
     font-family="${CONFIG.FONT_FAMILY}"
     font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
     font-weight="${CONFIG.FONT_WEIGHT}"
-    alignment-baseline="middle" 
+    alignment-baseline="${textAlign}" 
   >${text}</text>`
   return [ transform, box ]
 }
 
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
-export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle') => {
+// eslint-disable-next-line max-len
+export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle') => {
   if (!text || !text.length) {
     return
   }
-  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor)
+  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, null, textAlign)
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
+  let y
+  if (textAlign === 'baseline') {
+    y = h * 2
+  } else if (textAlign === 'before-edge') {
+    y = 0
+  } else {
+    y = h
+  }
   result.mask += `<rect
     fill="black"
     transform="${transform}" 
     x="-${w}" 
-    y="-${h}" 
+    y="-${y}" 
     width="${w * 2}" 
     height="${h * 2}"
   />`

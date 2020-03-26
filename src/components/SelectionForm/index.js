@@ -20,6 +20,7 @@ import {
   ManoeuvreForm,
   MinedAreaForm,
   SectorsForm,
+  PollutionCircleForm,
 } from './forms'
 
 const forms = {
@@ -129,6 +130,13 @@ const forms = {
     maxWidth: 700,
     maxHeight: 655,
   },
+  [SelectionTypes.POLLUTIONCIRCLE]: {
+    title: i18n.SHAPE_POLLUTINCIRCLE,
+    component: PollutionCircleForm,
+    minHeight: 645,
+    minWidth: 680,
+    maxHeight: 655,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -166,6 +174,9 @@ export default class SelectionForm extends React.Component {
       switch (data.code.slice(10)) {
         case '0017076000':
           formType = SelectionTypes.SECTORS
+          break
+        case '2721000000':
+          formType = SelectionTypes.POLLUTIONCIRCLE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }

@@ -28,6 +28,7 @@ export default class SectorItem extends React.Component {
     sectorInfo: PropTypes.object,
     canRemove: PropTypes.bool,
     readOnly: PropTypes.bool,
+    addOnly: PropTypes.bool,
     onChangeProps: PropTypes.func,
     onChange: PropTypes.func,
     onRemove: PropTypes.func,
@@ -124,7 +125,7 @@ export default class SectorItem extends React.Component {
   azimut2ChangHandler = (value) => this.setState({ azimut2Text: value })
 
   render () {
-    const { index, sectorInfo, readOnly, beginCoordinate, coord1, coord2 } = this.props
+    const { index, sectorInfo, readOnly, beginCoordinate, coord1, coord2, addOnly } = this.props
     if (index === undefined) { return }
     const da1 = distanceAngle(beginCoordinate, coord1)
     const da2 = distanceAngle(beginCoordinate, coord2)
@@ -138,7 +139,6 @@ export default class SectorItem extends React.Component {
     const amplifierT = sectorInfo?.amplifier || ''
     const color = sectorInfo?.color || colors.BLACK
     const fill = sectorInfo?.fill || colors.TRANSPARENT
-
     return (
       <Fragment key={`${coord1.lat}/${coord1.lng}`}>
         <tr>
@@ -215,7 +215,7 @@ export default class SectorItem extends React.Component {
           </td>
           <td>
             <FormItem className={'sectorItems'}>
-              { !readOnly && (<IconHovered
+              { !readOnly && !addOnly && (<IconHovered
                 icon={IconNames.DELETE_24_DEFAULT}
                 hoverIcon={IconNames.DELETE_24_HOVER}
                 onClick={this.removeSectorClickHandler}
