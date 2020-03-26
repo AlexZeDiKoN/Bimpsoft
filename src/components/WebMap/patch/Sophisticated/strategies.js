@@ -251,6 +251,15 @@ export const STRATEGY = {
     }
   },
 
+  // Дві точки в одній
+  onePointLine: (prevPoints, nextPoints, changed) => {
+    if (changed.includes(1)) {
+      nextPoints[0] = nextPoints[1]
+    } else {
+      nextPoints[1] = nextPoints[0]
+    }
+  },
+
   // Остання точка в масиві визначає ширину лінії, знаходится на серединному перпендикулярі між першою і другою точками
   lineWithRegulatedWidth: (shaper) => {
     const slicer = (arr) => [ arr[0], arr[1], arr[arr.length - 1] ]
