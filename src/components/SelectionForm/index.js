@@ -130,7 +130,7 @@ const forms = {
     maxWidth: 700,
     maxHeight: 655,
   },
-  [SelectionTypes.POLLUTIONCIRCLE]: {
+  [SelectionTypes.POLLUTION_CIRCLE]: {
     title: i18n.SHAPE_POLLUTINCIRCLE,
     component: PollutionCircleForm,
     minHeight: 645,
@@ -176,7 +176,7 @@ export default class SelectionForm extends React.Component {
           formType = SelectionTypes.SECTORS
           break
         case '2721000000':
-          formType = SelectionTypes.POLLUTIONCIRCLE
+          formType = SelectionTypes.POLLUTION_CIRCLE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }
