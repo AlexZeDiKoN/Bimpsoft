@@ -7,9 +7,6 @@ import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAngle } from '../../utils/sectors'
-import { renderZoomable } from '../../../MapContext'
-import { settings as settingsLine } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
 const { Coordinates: Coord } = utils
 
 // sign name: WEAPON/SENSOR RANGE FAN, SECTOR
@@ -99,9 +96,6 @@ lineDefinitions['017076'] = {
     // відображення азимутів
     const pA1 = { x: (pO.x + s1top.x) / 2, y: (pO.y + s1top.y) / 2 }
     const pA2 = { x: (pO.x + s2top.x) / 2, y: (pO.y + s2top.y) / 2 }
-    // const amplifSize = interpolateSize(settingsLine.MAX_ZOOM, settingsLine.LINE_AMPLIFIER_TEXT_SIZE,
-    // scale, settingsLine.MIN_ZOOM, settingsLine.MAX_ZOOM)
-    // console.log(JSON.stringify({ sL: settingsLine.LINE_AMPLIFIER_TEXT_SIZE, amplifSize, scale }))
     const amplifSize = scale * 2
     drawMaskedText(result, pA1, 0, infoArray[0].azimut1, amplifSize)
     drawMaskedText(result, pA2, 0, infoArray[0].azimut2, amplifSize)

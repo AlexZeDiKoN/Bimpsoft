@@ -1,6 +1,5 @@
-import L from 'leaflet'
 import React from 'react'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import placeSearch from '../../../server/places'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
@@ -9,7 +8,6 @@ const {
   FormRow,
   Coordinates,
 } = components.form
-const { Coordinates: Coord } = utils
 
 const WithStartingCoordinate = (Component) => class StartingCoordinateComponent extends CoordinatesMixin(Component) {
   startingCoordinateExitChangeHandler = async (value) => {
