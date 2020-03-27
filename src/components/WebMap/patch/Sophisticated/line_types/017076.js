@@ -7,9 +7,9 @@ import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAngle } from '../../utils/sectors'
-import { renderZoomable } from '../../../MapContext'
-import { settings as settingsLine } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+// import { renderZoomable } from '../../../MapContext'
+// import { settings as settingsLine } from '../../../../../utils/svg/lines'
+// import { interpolateSize } from '../../utils/helpers'
 const { Coordinates: Coord } = utils
 
 // sign name: WEAPON/SENSOR RANGE FAN, SECTOR

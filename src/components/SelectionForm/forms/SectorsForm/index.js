@@ -7,7 +7,7 @@ import AbstractShapeForm, {
 import {
   WithColor,
   // WithSegment,
-  WithCoordinateAndAzimut,
+  WithCoordinateAndAzimuth,
   WithSubordinationLevel,
   WithStrokeWidth,
   UnitSelect,
@@ -22,7 +22,7 @@ export default class SectorsForm extends compose(
   UnitSelect,
   WithSubordinationLevel,
   WithAffiliation,
-  WithCoordinateAndAzimut,
+  WithCoordinateAndAzimuth,
   WithColor,
   WithStrokeWidth,
   WithSectorsArray,
@@ -45,7 +45,7 @@ export default class SectorsForm extends compose(
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
               {this.renderAffiliation()}
-              {this.renderCoordinateAndAzimut()}
+              {this.renderCoordinateAndAzimuth()}
             </div>
           </div>
           <div className="sectors-container__item--secondSection">
