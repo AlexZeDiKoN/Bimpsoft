@@ -6,13 +6,12 @@ import AbstractShapeForm, {
 } from '../../parts/AbstractShapeForm'
 import {
   WithColor,
-  WithCoordinateAndAzimut,
   WithSubordinationLevel,
   WithStrokeWidth,
   UnitSelect,
   WithAffiliation,
   WithStartingCoordinate,
-  // WithRadiusArray,
+  WithRadii,
 } from '../../parts'
 
 import './PollutionCircleForm.css'
@@ -22,11 +21,10 @@ export default class PollutionCircleForm extends compose(
   UnitSelect,
   WithSubordinationLevel,
   WithAffiliation,
-  WithCoordinateAndAzimut,
   WithColor,
   WithStrokeWidth,
   WithStartingCoordinate,
-  // WithRadiusArray,
+  WithRadii,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -41,21 +39,16 @@ export default class PollutionCircleForm extends compose(
                 <use xlinkHref={`${spriteUrl}#${name}`}/>
               </svg>
             </div>
-            <div className="pollutioncircle-container__itemWidth-left">
+            <div className="pollutioncircle-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
-            </div>
-            <div className="pollutioncircle-container__itemWidth-right">
               {this.renderAffiliation()}
               {this.renderStartingCoordinate()}
             </div>
           </div>
           <div className="pollutioncircle-container__item--secondSection">
             <div className="pollutioncircle-container__itemWidth">
-              <div className="containerTypeColor">
-                {this.renderColor()}
-                {this.renderStrokeWidth()}
-              </div>
+              {this.renderRadii()}
             </div>
           </div>
         </div>
