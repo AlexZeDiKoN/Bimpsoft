@@ -2,9 +2,8 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText, rad,
+  drawLine, angleOf,
 } from '../utils'
-/* global lineDefinitions, STRATEGY, MIDDLE, DELETE, drawLine, angleOf, applyToPoint, translate, compose, rotate */
 
 // sign name: ABATIS
 // task code: DZVIN-5780
