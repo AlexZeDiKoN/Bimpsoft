@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, segmentLength, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, segmentLength, getPointAt, addPathAmplifier, emptyPath,
 } from '../utils'
 
 // sign name: SEARCH AREA

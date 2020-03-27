@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, drawMaskedText, drawArrow,
+  drawLine, segmentBy, angleOf, drawMaskedText, drawArrow,
 } from '../utils'
 
 // sign name: FRIENDLY DIRECTION OF SUPPORTING ATTACK

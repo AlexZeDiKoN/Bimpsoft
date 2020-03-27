@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength,
+  drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength,
 } from '../utils'
 
 // sign name: ЗОНА ЦІЛІ

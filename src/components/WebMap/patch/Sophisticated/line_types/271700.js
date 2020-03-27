@@ -1,7 +1,5 @@
 import { MIDDLE, DELETE, STRATEGY, RENDER, SEQUENCE } from '../strategies'
-import {
-  lineDefinitions,
-} from '../utils'
+import lineDefinitions from '../lineDefinitions'
 
 // sign name: BIOLOGICAL CONTAMINATED AREA
 // task code: DZVIN-6163 (part 1)

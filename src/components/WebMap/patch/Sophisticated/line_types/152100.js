@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, continueLine,
+  drawLine, drawArrow, continueLine,
 } from '../utils'
 
 // sign name: SUPPORT BY FIRE POSITION

@@ -1,8 +1,9 @@
 import { Symbol } from '@DZVIN/milsymbol'
 import { MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawRectangleC, drawText, textBBox,
+  drawRectangleC, drawText, textBBox,
 } from '../utils'
 import {
   drawLightning, drawWires, drawDotted,

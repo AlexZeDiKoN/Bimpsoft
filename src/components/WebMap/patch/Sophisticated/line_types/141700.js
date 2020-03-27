@@ -1,8 +1,8 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, rad,
-  drawArrow, square,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, rad, drawArrow, square,
 } from '../utils'
 
 // sign name: AMBUSH

@@ -1,11 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, segmentLength, drawArrow, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, angleOf, segmentLength, drawArrow, getPointAt, addPathAmplifier, emptyPath,
 } from '../utils'
 
 // sign name: СТЕЖЕННЯ
 // task code: DZVIN-5532
+// hint: 'Стеження за противником'
 
 const ARROW_LENGTH = 16
 const SPRING_LENGTH = 16

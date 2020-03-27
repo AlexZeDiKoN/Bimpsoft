@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawCircle, drawText,
+  drawCircle, drawText,
 } from '../utils'
 import {
   lengthLine, isDefPoint,
@@ -8,6 +9,7 @@ import {
 
 // sign name: Дальність дії (кругові)
 // task code: DZVIN-5769 (part 3)
+// hint: 'Рубіж досяжності вогневих засобів'
 
 const SIZE = 96
 const COLORS = [ 'black', 'blue', 'red', 'green' ]

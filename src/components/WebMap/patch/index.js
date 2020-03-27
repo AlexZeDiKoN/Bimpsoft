@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import './FlexGrid'
 import './Sophisticated'
-import './Sectors'
 import './PM'
 import './Path'
 import './Polyline'

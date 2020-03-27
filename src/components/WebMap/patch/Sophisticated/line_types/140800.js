@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, oppositeVector,
+  drawLine, normalVectorTo, applyVector, oppositeVector,
 } from '../utils'
 
 // sign name: INFILTRATION LANE

@@ -1,7 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, segmentBy, drawArc, angleOf, segmentLength, getPointAt, calcFactor, ptEq,
-  hasIntersection, drawText, textBBox,
+  drawLine, normalVectorTo, segmentBy, drawArc, angleOf, segmentLength, getPointAt, calcFactor, ptEq, hasIntersection,
+  drawText, textBBox,
 } from '../utils'
 
 // sign name: AIR CORRIDOR

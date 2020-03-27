@@ -1,7 +1,8 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawBezierSpline, drawMaskedText,
+  drawLine, drawBezierSpline, drawMaskedText,
 } from '../utils'
 
 // sign name: AIRFIELD ZONE

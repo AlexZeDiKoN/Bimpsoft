@@ -5,6 +5,7 @@ import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
+import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
 import i18n from '../../i18n'
 import {
   AreaForm,
@@ -171,11 +172,11 @@ export default class SelectionForm extends React.Component {
     if (data.type !== SelectionTypes.SOPHISTICATED) {
       formType = data.type
     } else {
-      switch (data.code.slice(10)) {
-        case '0017076000':
+      switch (extractLineCode(data.code)) {
+        case '017076':
           formType = SelectionTypes.SECTORS
           break
-        case '2721000000':
+        case '272100':
           formType = SelectionTypes.POLLUTION_CIRCLE
           break
         default: formType = SelectionTypes.SOPHISTICATED

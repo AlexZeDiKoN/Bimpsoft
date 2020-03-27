@@ -1,9 +1,10 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import { TEXTS } from '../index'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
-  drawMaskedText, drawArrow,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText,
+  drawArrow,
 } from '../utils'
 
 // sign name: CONTAIN

@@ -1,16 +1,19 @@
 import { utils } from '@DZVIN/CommonComponents'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArc, emptyPath, addPathAmplifier, getPointAt, drawMaskedText,
+  drawLine, drawArc, emptyPath, addPathAmplifier, getPointAt, drawMaskedText,
 } from '../utils'
 import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAngle } from '../../utils/sectors'
+
 const { Coordinates: Coord } = utils
 
 // sign name: WEAPON/SENSOR RANGE FAN, SECTOR
 // task code: DZVIN-5769 (part 3)
+// hint: 'Зона ураження / виявлення (сектор)'
 
 const DEF_COUNT = 2
 const ARROW_LENGTH = 60

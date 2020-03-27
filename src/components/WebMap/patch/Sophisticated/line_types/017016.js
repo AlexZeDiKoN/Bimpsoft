@@ -1,12 +1,14 @@
 import { applyToPoint, applyToPoints, compose, inverse, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo,
-  getPointAt, drawText, setVectorLength, getVector, setToSegment, oppositeVector,
+  drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo, getPointAt, drawText,
+  setVectorLength, getVector, setToSegment, oppositeVector,
 } from '../utils'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
+// hint: 'Послідовне зосередження вогню'
 
 const EDGE = 32
 const BORDER = 48

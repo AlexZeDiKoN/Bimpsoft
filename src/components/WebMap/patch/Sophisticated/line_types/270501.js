@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy,
+  drawLine, normalVectorTo, applyVector, segmentBy,
 } from '../utils'
 
 // sign name: BLOCK

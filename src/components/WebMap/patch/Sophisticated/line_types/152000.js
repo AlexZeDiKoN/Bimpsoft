@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArrow, continueLine,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArrow, continueLine,
 } from '../utils'
 
 // sign name: ATTACK BY FIRE POSITION

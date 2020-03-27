@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, segmentLength, drawArrow, getPointAt,
+  drawLine, segmentBy, segmentLength, drawArrow, getPointAt,
 } from '../utils'
 
 // sign name: PRINCIPAL DIRECTION OF FIRE

@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, drawMaskedText, drawArrowDashes,
+  drawLine, segmentBy, angleOf, drawMaskedText, drawArrowDashes,
 } from '../utils'
 
 // sign name: DIRECTION OF ATTACK FEINT

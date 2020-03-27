@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, emptyPath, getPointAt, addPathAmplifier,
+  drawLine, normalVectorTo, applyVector, emptyPath, getPointAt, addPathAmplifier,
 } from '../utils'
 
 // sign name: OBSTACLE BYPASS EASY

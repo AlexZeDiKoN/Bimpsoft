@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt,
+  drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt,
 } from '../utils'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ

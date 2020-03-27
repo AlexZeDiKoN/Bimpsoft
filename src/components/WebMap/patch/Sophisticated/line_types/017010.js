@@ -1,12 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
-  drawMaskedText, rad,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText, rad,
 } from '../utils'
 
 // sign name: ПЕРЕСЛІДУВАТИ
 // task code: DZVIN-6008
+// hint: 'Переслідувати – зайняття позицій на маршрутах відходу противника в ході переслідування'
 
 const CROSS_LENGTH = 48
 const TEXT = 'P'

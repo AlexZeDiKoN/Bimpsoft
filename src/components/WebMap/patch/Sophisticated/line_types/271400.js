@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, continueLine, halfPlane,
+  drawLine, normalVectorTo, applyVector, continueLine, halfPlane,
 } from '../utils'
 
 // sign name: BRIDGE

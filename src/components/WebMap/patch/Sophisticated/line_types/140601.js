@@ -1,6 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow, getPointAt,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow, getPointAt,
 } from '../utils'
 
 // sign name: FRIENDLY AVIATION
