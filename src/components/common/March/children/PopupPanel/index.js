@@ -47,9 +47,8 @@ const PopupPanel = (props) => {
     })
   }
 
-  return <div className={'march-popup-form2'}>
+  return <div className={'march-popup-form'}>
     <Select
-      className={''}
       defaultValue={nameTypeById(MB001, segmentType).name}
       onChange={onEditFormField('segmentType')}
     >
@@ -66,14 +65,14 @@ const PopupPanel = (props) => {
       </Select>
     }
 
-    <div className={'speedBlock'}>
+    <div className={'speed-block'}>
       <span>Середня швидкість (км/год): </span>
       <Input onChange={onChangeVelocity} value={velocity} maxLength={10} style={{ width: '60px' }}/>
     </div>
     <div><span>Довжина ділянки: </span> {350} км</div>
-    <div className={'bottomPanel'}>
+    <div className={'bottom-panel'}>
       <div><span>Час проходження: </span> {6} км</div>
-      { !required && <div onClick={() => showDeleteConfirm(propData)} className={'deleteSegment'} />}
+      { !required && <div onClick={() => showDeleteConfirm(propData)} className={'delete-segment'} />}
     </div>
   </div>
 }
@@ -86,6 +85,7 @@ PopupPanel.propTypes = {
     segmentType: PropTypes.number.isRequired,
     terrain: PropTypes.number.isRequired,
     velocity: PropTypes.number.isRequired,
+    segmentId: PropTypes.number.isRequired,
   }).isRequired,
   MB001: PropTypes.shape({
     typeValues: PropTypes.array.isRequired,

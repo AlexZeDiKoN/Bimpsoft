@@ -14,22 +14,24 @@ class March extends Component {
     addChild: PropTypes.func.isRequired,
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
+    setRefPoint: PropTypes.func.isRequired,
   }
 
   renderDotsForms = () => {
-    const { segments, editFormField, addChild, deleteChild, setCoordMode } = this.props
+    const { segments, editFormField, addChild, deleteChild, setCoordMode, setRefPoint } = this.props
     const handlers = {
       editFormField,
       addChild,
       deleteChild,
       setCoordMode,
+      setRefPoint,
     }
 
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
         const { children } = segment
 
-        return (<div key={segmentId} className={'segmentWithForm'}>
+        return (<div key={segmentId} className={'segment-with-form'}>
           <div className={'segment-block'}>
             <SegmentBlock
               segment={segment}
@@ -38,7 +40,7 @@ class March extends Component {
               segmentId={segmentId}
             />
           </div>
-          <div className={'formContainer'}>
+          <div className={'form-container'}>
             <MarchForm
               key={`segment${segmentId}`}
               segmentId={segmentId}
@@ -68,7 +70,7 @@ class March extends Component {
         <Header/>
       </div>
       <div className={'march-main'}>
-        <div>{this.renderDotsForms()}</div>
+        <div style={{ width: '100%' }}>{this.renderDotsForms()}</div>
       </div>
     </div>
   }

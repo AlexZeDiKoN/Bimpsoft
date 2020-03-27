@@ -29,7 +29,7 @@ const SegmentButtonPopover = (props) => {
 
   return (
     <Popover placement='left' trigger='click' { ...props } onVisibleChange={changeSelected} >
-      <div className={'segmentBlocksIcon'} style={triggerStyle} />
+      <div className={'segment-blocks-icon'} style={triggerStyle} />
     </Popover>
   )
 }

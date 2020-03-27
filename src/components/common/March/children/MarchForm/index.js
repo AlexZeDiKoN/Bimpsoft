@@ -1,37 +1,71 @@
 import { Input, Select, Tooltip } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import placeSearch from '../../../../../server/places'
-
-const getPointByName = (name) => {
-  return marchPoints.find((point) => point.name === name)
-}
+import { isNumberSymbols } from '../../../../../utils/validation/number'
 
 const {
   form: { Coordinates },
 } = components
 
 const marchPoints = [
-  { name: 'Вихідний рубіж', rest: false },
-  { name: 'Пункт на маршруті', rest: false },
-  { name: 'Пункт привала', rest: true },
-  { name: 'Пункт денного(нічного) відпочинку', rest: true },
-  { name: 'Пункт добового відпочинку', rest: true },
-  { name: 'Пункт(рубіж) регулювання', rest: false },
+  { name: 'Вихідний рубіж', rest: false, base: true, time: 0 },
+  { name: 'Пункт на маршруті', rest: false, time: 0 },
+  { name: 'Пункт привалу', rest: true, time: 1 },
+  { name: 'Пункт денного(нічного) відпочинку', rest: true, time: 8 },
+  { name: 'Пункт добового відпочинку', rest: true, time: 24 },
+  { name: 'Пункт(рубіж) регулювання', rest: true, time: 0, notEditableTime: true },
 ]
+
+const getPointByName = (name) => marchPoints.find((point) => point.name === name) || marchPoints[0]
 
 const MarchForm = (props) => {
   const { name, coord = {}, refPoint, editableName, segmentType, required, segmentId, childId, isLast } = props
-  const { editFormField, addChild, deleteChild, setCoordMode } = props.handlers
+  const { editFormField, addChild, deleteChild, setCoordMode, setRefPoint } = props.handlers
 
-  const point = getPointByName(name)
+  let point = getPointByName(name)
+
+  const [ pointTime, setPointTime ] = useState(0)
+  const [ rPoint, changeRefPoint ] = useState(refPoint)
+
+  const onChangeTime = (e) => {
+    if (point.notEditableTime) {
+      setPointTime(0)
+      return pointTime
+    }
+    const { value } = e.target
+    const numberVal = value ? (isNumberSymbols(value) && value) || pointTime : ''
+
+    setPointTime(+numberVal)
+  }
+
+  const onEditFormField = (value) => {
+    editFormField({
+      val: value,
+      segmentId,
+      childId,
+      fieldName: 'name',
+    })
+
+    point = getPointByName(value)
+    setPointTime(+point.time)
+  }
+
+  const onBlurRefPoint = (e) => {
+    editFormField({
+      val: e.target.value,
+      fieldName: 'refPoint',
+      segmentId,
+      childId,
+    })
+  }
 
   let dotClass
   if (childId === undefined) {
     dotClass = isLast ? 'flag-dot' : 'empty-dot'
   } else {
-    dotClass = point && point.rest ? 'camp-dot' : 'cross-dot'
+    dotClass = point.rest ? 'camp-dot' : 'cross-dot'
   }
 
   let lineColorClass
@@ -60,7 +94,7 @@ const MarchForm = (props) => {
               }
             </Tooltip>
           </div>
-          : <div className={'vertical-block'}/>
+          : <div className={'vertical-block'} style={{ borderColor: 'transparent' }}/>
         }
       </div>
       <div className={'dot-form'}>
@@ -76,39 +110,42 @@ const MarchForm = (props) => {
             onSearch={placeSearch}
           />
           <Tooltip placement='topRight' title={'Вказати на карті'}>
-            <a href='#' className={'logoMap'} onClick={() => setCoordMode({ segmentId, childId })}/>
+            <a href='#' className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
           </Tooltip>
         </div>
-        <Input value={refPoint || 'Географічний орієнтир'}/>
+        <Tooltip placement='left' title={'Географічний орієнтир'}>
+          <Input
+            value={rPoint}
+            onChange={(e) => { changeRefPoint(e.target.value) }}
+            onBlur={onBlurRefPoint}
+          />
+        </Tooltip>
         <br/>
-        {(!editableName)
-          ? <Input value={name} onChange={(e) => editFormField({
-            fieldName: 'name',
-            segmentId,
-            childId,
-            val: e.target.value,
-          })}/>
-          : <Select
-            className={'selectPoint'}
-            defaultValue={name}
-            onChange={(value) => editFormField({
-              val: value,
+        <Tooltip placement='left' title={'Тип пункту'}>
+          {(!editableName)
+            ? <Input value={name} onChange={(e) => editFormField({
+              fieldName: 'name',
               segmentId,
               childId,
-              fieldName: 'name',
-            })}
-          >
-            {marchPoints.map(({ name }, id) => (
-              <Select.Option key={id} value={name}>{name}</Select.Option>
-            ))}
-          </Select>
-        }
+              val: e.target.value,
+            })}/>
+            : <Select
+              className={'select-point'}
+              defaultValue={name}
+              onChange={onEditFormField}
+            >
+              {marchPoints.map(({ name }, id) => (
+                <Select.Option key={id} value={name}>{name}</Select.Option>
+              ))}
+            </Select>
+          }
+        </Tooltip>
         {(!required) &&
-        <div className={'unRequiredField'}>
-          {(point && point.rest)
-            ? <div className={'timeBlock'}>
-              <div className={'logoTime'}/>
-              <Input maxLength={10} style={{ width: '50px' }}/>
+        <div className={'un-required-field'}>
+          {(!point.base)
+            ? <div className={'time-block'}>
+              <div className={'logo-time'}/>
+              <Input onChange={onChangeTime} value={pointTime} maxLength={10} style={{ width: '50px' }}/>
             </div>
             : <div/>
           }
@@ -135,6 +172,7 @@ MarchForm.propTypes = {
     addChild: PropTypes.func.isRequired,
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
+    setRefPoint: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
 }

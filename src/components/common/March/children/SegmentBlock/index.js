@@ -6,7 +6,7 @@ import SegmentButtonPopover from '../SegmentButtonPopover'
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId } = props
-  const { segmentType } = segment
+  const { segmentType, children } = segment
 
   if (segmentType === 0) {
     return null
@@ -35,21 +35,18 @@ const SegmentBlock = (props) => {
       content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment }} /> }
     />
 
-    <div className={'timeDistance'}>
-      <span>00:00</span>
-      <span className={'distance'}>10 km</span>
-    </div>
-    <div className={'timeDistance'}>
-      <span>00:00</span>
-      <span className={'distance'}>10 km</span>
-    </div>
-    <div className={'timeDistance'}>
-      <span>00:00</span>
-      <span className={'distance'}>10 km</span>
-    </div>
-    <div className={'hoverAddSegmentButton'}>
+    {children && children.map((child, id) => {
+      return (
+        <div key={id} className={'time-distance'}>
+          <span>00:00</span>
+          <span className={'distance'}>10 km</span>
+        </div>
+      )
+    })}
+
+    <div className={'hover-add-segment-button'}>
       <Tooltip placement='topRight' title={'Додати ділянку'}>
-        <div className={'addSegmentButton'} onClick={() => addSegment(segmentId)}/>
+        <div className={'add-segment-button'} onClick={() => addSegment(segmentId)}/>
       </Tooltip>
     </div>
   </div>)
@@ -59,6 +56,7 @@ SegmentBlock.propTypes = {
   segmentId: PropTypes.number.isRequired,
   segment: PropTypes.shape({
     segmentType: PropTypes.number.isRequired,
+    children: PropTypes.array.isRequired,
   }).isRequired,
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
