@@ -6,7 +6,7 @@ import {
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
-// hint: 'Рубіж загороджувального вогню'
+// hint: 'Одинарний нерухомий загороджувальний вогонь'
 
 const TIP_LENGTH = 50
 const EDGE = 40
