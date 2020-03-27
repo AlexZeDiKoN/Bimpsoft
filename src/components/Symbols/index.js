@@ -96,6 +96,7 @@ const SymbolsTab = (props) => {
 
       return <Tooltip
         key={`${hint}${code}`}
+        mouseEnterDelay={1}
         title={!listMode && hint}
       >
         { elemToRender }
