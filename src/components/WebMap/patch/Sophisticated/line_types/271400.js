@@ -6,6 +6,7 @@ import {
 
 // sign name: BRIDGE
 // task code: DZVIN-5775
+// hint: 'Мостова переправа'
 
 const EDGE_WIDTH = 60
 

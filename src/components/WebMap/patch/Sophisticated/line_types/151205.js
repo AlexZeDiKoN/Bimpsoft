@@ -7,6 +7,7 @@ import {
 
 // sign name: RETAIN
 // task code: DZVIN-5524
+// hint: 'Запобігти захопленню визначеної ділянки місцевості (об’єкту) противником'
 
 const ARROW_LENGTH = 48
 const FRACTIONS = 8

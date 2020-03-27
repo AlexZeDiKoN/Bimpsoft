@@ -6,6 +6,7 @@ import {
 
 // sign name: PRINCIPAL DIRECTION OF FIRE
 // task code: DZVIN-5516
+// hint: 'Межа смуги вогню основного сектора обстрілу'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

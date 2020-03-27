@@ -6,6 +6,7 @@ import {
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519
+// hint: 'Хибна атака'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

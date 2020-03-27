@@ -6,6 +6,7 @@ import {
 
 // sign name: OBSTACLE BYPASS EASY
 // task code: DZVIN-5766 (part 1)
+// hint: 'Обхід загороджень'
 
 const ARROW_LENGTH = 36
 

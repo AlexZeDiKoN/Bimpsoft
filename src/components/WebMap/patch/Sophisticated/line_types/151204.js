@@ -9,6 +9,7 @@ import {
 
 // sign name: CONTAIN
 // task code: DZVIN-5523
+// hint: 'Сковування противника'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

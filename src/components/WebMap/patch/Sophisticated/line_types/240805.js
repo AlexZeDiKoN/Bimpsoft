@@ -6,6 +6,7 @@ import {
 
 // sign name: ЗОНА ЦІЛІ
 // task code: DZVIN-5994
+// hint: 'Зона цілі'
 
 const EDGE = 48
 

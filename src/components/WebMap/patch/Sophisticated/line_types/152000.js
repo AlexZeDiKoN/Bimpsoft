@@ -6,6 +6,7 @@ import {
 
 // sign name: ATTACK BY FIRE POSITION
 // task code: DZVIN-5517
+// hint: 'Розвідувальні (спеціальні) завдання нападом'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

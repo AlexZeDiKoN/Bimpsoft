@@ -7,6 +7,7 @@ import {
 
 // sign name: AIR CORRIDOR
 // task code: DZVIN-5539
+// hint: 'Коридор прольоту авіації через зону вогню військової частини ЗРВ'
 
 const LARGE_TEXT_SIZE = 1.5
 const SMALL_TEXT_SIZE = 0.67

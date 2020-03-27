@@ -6,6 +6,7 @@ import {
 
 // sign name: FRIENDLY DIRECTION OF MAIN ATTACK
 // task code: DZVIN-5519
+// hint: 'Головний напрямок атаки'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

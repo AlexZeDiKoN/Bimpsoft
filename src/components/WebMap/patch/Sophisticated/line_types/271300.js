@@ -6,6 +6,7 @@ import {
 
 // sign name: ASSAULT CROSSING
 // task code: DZVIN-5765
+// hint: 'Ділянка форсування'
 
 const EDGE_WIDTH = 60
 

@@ -7,6 +7,7 @@ import {
 
 // sign name: AIRFIELD ZONE
 // task code: DZVIN-5791
+// hint: 'Район базування військової частини, підрозділу авіації'
 
 const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30

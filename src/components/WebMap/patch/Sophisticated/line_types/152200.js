@@ -6,6 +6,7 @@ import {
 
 // sign name: SEARCH AREA
 // task code: DZVIN-5526
+// hint: 'Район (сектор) РХБ розвідки'
 
 const ARROW_WIDTH = 24
 const Z_WIDTH = 16

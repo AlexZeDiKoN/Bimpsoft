@@ -4,6 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 
 // sign name: MAIN ATTACK
 // task code: DZVIN-5769 (part 3)
+// hint: 'Напрямок головного удару'
 
 const POINTS = 3
 const BINDING_TYPE = 'round'

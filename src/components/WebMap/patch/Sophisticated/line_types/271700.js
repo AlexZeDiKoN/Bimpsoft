@@ -3,6 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 
 // sign name: BIOLOGICAL CONTAMINATED AREA
 // task code: DZVIN-6163 (part 1)
+// hint: 'Район біологічного зараження'
 
 const SIZE = 96
 const CODE = '10032500002814000000'

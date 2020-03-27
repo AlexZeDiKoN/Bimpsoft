@@ -6,6 +6,7 @@ import {
 
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
+// hint: 'Напрямок удару своєї авіації'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

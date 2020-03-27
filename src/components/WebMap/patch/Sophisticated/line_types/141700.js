@@ -7,6 +7,7 @@ import {
 
 // sign name: AMBUSH
 // task code: DZVIN-5521
+// hint: 'Розвідувальні (спеціальні) завдання засідкою'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

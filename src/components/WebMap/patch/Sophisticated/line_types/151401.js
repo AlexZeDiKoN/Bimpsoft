@@ -4,6 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
+// hint: 'Напрямок дій авіації / повітряного десанту'
 
 const POINTS = 3
 const BINDING_TYPE = 'round'

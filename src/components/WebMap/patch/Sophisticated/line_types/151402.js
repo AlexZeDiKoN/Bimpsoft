@@ -7,6 +7,7 @@ import {
 
 // sign name: ATTACK HELICOPTER
 // task code: DZVIN-5769 (part 3)
+// hint: 'Напрямок дій вертольотів'
 
 const POINTS = 3
 const BINDING_TYPE = 'round'

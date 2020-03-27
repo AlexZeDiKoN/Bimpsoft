@@ -342,9 +342,9 @@ export const symbols = [
         code: '10032500000170070000',
         amp: { isSvg: true, type: 4, right: ENDS_ARROW1 },
       },
-      { hint: 'Напрямок головного удару', code: '10032500001514030000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
-      { hint: 'Інший напрямок удару', code: '10032500001514040000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
-      { hint: 'Хибний напрямок наступу', code: '10032500001514060000', amp: { isSvg: true, type: '151400' } }, // 'special' } },
+      { hint: 'Напрямок головного удару', code: '10032500001514030000', amp: { isSvg: true, type: 'special' } },
+      { hint: 'Інший напрямок удару', code: '10032500001514040000', amp: { isSvg: true, type: 'special' } },
+      { hint: 'Хибний напрямок наступу', code: '10032500001514060000', amp: { isSvg: true, type: 'special' } },
       { hint: 'Засідка', code: '10032500001417000000', amp: { isSvg: true, type: 'special' } },
       {
         hint: 'Рубіж блокування противника (блокування)',
@@ -1071,9 +1071,9 @@ export const symbols = [
       {
         hint: 'Напрямок дій авіації / повітряного десанту',
         code: '10032500001514010000',
-        amp: { isSvg: true, type: '151400' },
+        amp: { isSvg: true, type: 'special' },
       },
-      { hint: 'Напрямок дій вертольотів', code: '10032500001514020000', amp: { isSvg: true, type: '151400' } },
+      { hint: 'Напрямок дій вертольотів', code: '10032500001514020000', amp: { isSvg: true, type: 'special' } },
     ],
   },
   {

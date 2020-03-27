@@ -6,6 +6,7 @@ import {
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
+// hint: 'Рубіж загороджувального вогню'
 
 const TIP_LENGTH = 50
 const EDGE = 40

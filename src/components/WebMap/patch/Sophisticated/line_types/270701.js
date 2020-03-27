@@ -11,6 +11,7 @@ import {
 
 // sign name: Міне поле (мінне загородження)
 // task code: DZVIN-5776
+// hint: 'Мінне поле (Мінне загородження)'
 
 const SMALL_TEXT_SIZE = 0.67
 const SIZE = 48

@@ -6,6 +6,7 @@ import {
 
 // sign name: DECOY/DUMMY AND FEINT
 // task code: DZVIN-5801
+// hint: 'Хибний об’єкт'
 
 lineDefinitions['230200'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
