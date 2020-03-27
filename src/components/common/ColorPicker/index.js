@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { SketchPicker } from 'react-color'
 import './style.css'
 import { IButton } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const PRESENT_COLORS = [
@@ -112,7 +113,11 @@ const ColorPicker = (props) => {
         popupStyle={POPUP_STYLE}
         popup={popup}>
         {props.icon
-          ? <IButton icon={props.icon} title={props.title} onClick={handleButtonClick}/>
+          ? <Tooltip title={props.title} placement='topRight'>
+            <IButton
+              icon={props.icon}
+              onClick={handleButtonClick}/>
+          </Tooltip>
           : <button
             className={classNames('color-picker-button', {
               [props.className]: Boolean(props.className),

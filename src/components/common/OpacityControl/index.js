@@ -21,17 +21,17 @@ const OpacityControl = (props) => {
           className="opacity-control-icon"
           icon={icon}
         />
+        <InputNumber
+          size="small"
+          title={title}
+          step={10}
+          min={0}
+          max={100}
+          value={opacity}
+          className="opacity-control-input"
+          onChange={changeHandler}
+        />
       </div>
-      <InputNumber
-        size="small"
-        title={title}
-        step={10}
-        min={0}
-        max={100}
-        value={opacity}
-        className="opacity-control-input"
-        onChange={changeHandler}
-      />
     </div>
   )
 }

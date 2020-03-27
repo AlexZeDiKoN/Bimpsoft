@@ -83,6 +83,7 @@ const mapDispatchToProps = {
     }
   },
   onCloseAllMaps: maps.deleteAllMaps,
+  onCloseMapSections: maps.closeMapSections,
   onExpand: (key) => (dispatch) => key[0] === 'm' && dispatch(maps.toggleExpandMap(key.substr(1))),
   onFilterTextChange: layers.setFilterText,
 }
