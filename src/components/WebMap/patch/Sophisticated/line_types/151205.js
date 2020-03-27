@@ -1,11 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, drawArc, angleOf, segmentLength, drawMaskedText,
+  drawLine, segmentBy, drawArc, angleOf, segmentLength, drawMaskedText,
 } from '../utils'
 
 // sign name: RETAIN
 // task code: DZVIN-5524
+// hint: 'Запобігти захопленню визначеної ділянки місцевості (об’єкту) противником'
 
 const ARROW_LENGTH = 48
 const FRACTIONS = 8

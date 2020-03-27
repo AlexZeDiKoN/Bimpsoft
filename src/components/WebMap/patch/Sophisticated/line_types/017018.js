@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawBezierSpline,
+  drawBezierSpline,
 } from '../utils'
 
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
+// hint: 'Район розповсюдження агітаційного матеріалу'
 
 const STROKE_WIDTH = 5
 const CROSS_SIZE = 48

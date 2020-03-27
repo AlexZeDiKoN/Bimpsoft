@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, emptyPath, getPointAt, addPathAmplifier,
+  drawLine, segmentBy, emptyPath, getPointAt, addPathAmplifier,
 } from '../utils'
 
 // sign name: СЕКТОР ВІДПОВІДАЛЬНОСТІ ПІДРОЗДІЛУ
 // task code: DZVIN-5992
+// hint: 'Сектор відповідальності підрозділу ППО'
 
 const ARROW_WIDTH = 30
 

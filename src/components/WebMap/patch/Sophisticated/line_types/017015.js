@@ -1,11 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, continueLine, drawArrow, drawText, setVectorLength,
-  getVector, oppositeVector,
+  drawLine, normalVectorTo, applyVector, segmentBy, continueLine, drawArrow, drawText, setVectorLength, getVector,
+  oppositeVector,
 } from '../utils'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
+// hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
 const TIP_LENGTH = 50
 const EDGE = 40

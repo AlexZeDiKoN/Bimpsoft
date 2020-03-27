@@ -1,12 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, setVectorLength, drawArc,
-  oppositeVector
+  drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, setVectorLength, drawArc, oppositeVector
 } from '../utils'
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986
+// hint: 'Атакувати вогнем – вогневе ураження противника без зближення та захоплення його об’єктів'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

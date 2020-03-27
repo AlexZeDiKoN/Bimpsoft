@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import memoizeOne from 'memoize-one'
+import { Tooltip } from 'antd'
 import './style.css'
 import {
   components,
@@ -91,7 +92,6 @@ export default class LayersComponent extends React.Component {
       onChangeBackOpacity,
       hiddenOpacity,
       onChangeHiddenOpacity,
-      onCloseAllMaps,
       byIds,
       roots,
       selectedLayerId,
@@ -99,6 +99,7 @@ export default class LayersComponent extends React.Component {
       expandedIds,
       textFilter,
       is3DMapMode,
+      onCloseMapSections,
     } = this.props
 
     const { showLayers, showPeriod, showCloseForm } = this.state
@@ -112,23 +113,25 @@ export default class LayersComponent extends React.Component {
           <div className='container-layers'>
             <InputButton title={i18n.LAYERS} onChange={this.filterTextChangeHandler}/>
             <div className='container-layers__btnContainer'>
-              <IButton
-                icon={IconNames.COLORS}
-                colorType={ColorTypes.WHITE}
-                type={ButtonTypes.WITH_BG}
-                active={showLayers}
-                title={i18n.LAYERS_VISIBILITY}
-                disabled={is3DMapMode}
-                onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
-              />
-              <IButton
-                icon={IconNames.CALENDAR}
-                colorType={ColorTypes.WHITE}
-                type={ButtonTypes.WITH_BG}
-                active={showPeriod}
-                title={i18n.DISPLAY_PERIOD}
-                onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
-              />
+              <Tooltip title={i18n.LAYERS_VISIBILITY} placement='topRight'>
+                <IButton
+                  icon={IconNames.COLORS}
+                  colorType={ColorTypes.WHITE}
+                  type={ButtonTypes.WITH_BG}
+                  active={showLayers}
+                  disabled={is3DMapMode}
+                  onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
+                />
+              </Tooltip>
+              <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
+                <IButton
+                  icon={IconNames.CALENDAR}
+                  colorType={ColorTypes.WHITE}
+                  type={ButtonTypes.WITH_BG}
+                  active={showPeriod}
+                  onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
+                />
+              </Tooltip>
             </div>
           </div>
           <div className='interval-control-container' style={{ height: showPeriod ? 52 : 0 }}>
@@ -150,7 +153,6 @@ export default class LayersComponent extends React.Component {
                 onChangeBackOpacity={onChangeBackOpacity}
                 hiddenOpacity={hiddenOpacity}
                 onChangeHiddenOpacity={onChangeHiddenOpacity}
-                onCloseAllMaps={onCloseAllMaps}
               />
             </div>
           }
@@ -174,11 +176,22 @@ export default class LayersComponent extends React.Component {
               onChange={onChangeVisibility}
             />
             <div className='divider'/>
-            <IButton
-              title={i18n.LAYERS_CLOSE_ALL_MAPS}
-              icon={IconNames.CLOSE_MAP}
-              onClick={this.closeHandler}
-            />
+            <Tooltip title={i18n.CLOSE_MAP_SECTIONS} placement='topRight'>
+              <IButton
+                icon={IconNames.HIDE_MAP}
+                colorType={ColorTypes.WITH_BG}
+                disabled={roots?.length === 0}
+                type={ButtonTypes.WHITE}
+                onClick={onCloseMapSections}
+              />
+            </Tooltip>
+            <div className='divider'/>
+            <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
+              <IButton
+                icon={IconNames.CLOSE_MAP}
+                onClick={this.closeHandler}
+              />
+            </Tooltip>
           </div>
         </div>
       </Wrapper>
@@ -214,6 +227,7 @@ LayersComponent.propTypes = {
   hiddenOpacity: PropTypes.number,
   onChangeHiddenOpacity: PropTypes.func,
   onCloseAllMaps: PropTypes.func,
+  onCloseMapSections: PropTypes.func,
   onFilterTextChange: PropTypes.func,
   is3DMapMode: PropTypes.bool.isRequired,
 }

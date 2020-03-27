@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow, getPointAt,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow, getPointAt,
 } from '../utils'
 
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
+// hint: 'Напрямок удару своєї авіації'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

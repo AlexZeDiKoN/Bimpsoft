@@ -1,11 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArc, angleOf, segmentLength, drawMaskedText, rad
+  drawLine, drawArc, angleOf, segmentLength, drawMaskedText, rad,
 } from '../utils'
 
 // sign name: ЗАКРІПИТИСЯ
 // task code: DZVIN-6007
+// hint: `Закріпитися – захопити (зайняти) та утримувати позицію, яку противник може використати в ході ведення бою та запобігти її руйнуванню`
 
 const CROSS_LENGTH = 48
 const TEXT = 'S'

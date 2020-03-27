@@ -1,11 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier,
-  emptyPath, getPointAt, setVectorLength,
+  drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier, emptyPath, getPointAt,
+  setVectorLength,
 } from '../utils'
 
 // sign name: Підрозділ (група), який проводить пошук (наліт), із зазначенням належності
 // task code: DZVIN-6010
+// hint: 'Підрозділ (група), який проводить пошук (наліт), із зазначенням належності'
 
 const ARROW_WIDTH = 50
 

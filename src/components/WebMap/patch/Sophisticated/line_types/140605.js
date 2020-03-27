@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, drawMaskedText, drawArrowDashes,
+  drawLine, segmentBy, angleOf, drawMaskedText, drawArrowDashes,
 } from '../utils'
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519
+// hint: 'Хибна атака'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy,
+  drawLine, normalVectorTo, applyVector, segmentBy,
 } from '../utils'
 
 // sign name: BLOCK
 // task code: DZVIN-5522 (part 2)
+// hint: `Ефект блокування  об’єднує вогонь, що прикриває загородження та загородження з метою зупинки противника вздовж шляхів підходу або перешкоджає його проходженню через зону бойових дій`
 
 lineDefinitions['270501'] = {
   // Відрізки, на яких дозволено додавання вершин лінії

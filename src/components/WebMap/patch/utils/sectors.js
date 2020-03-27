@@ -156,7 +156,6 @@ export function distanceAngle (coord1, coord2) { // rad - радиус сфер�
   const zr = Math.atan2(-y, x)
   const z = zr * 180.0 / Math.PI // перевод в градусы
   return { angledeg: ((z < 0) ? -z : (360.0 - z)), distance }
-  // console.log(JSON.stringify({ z: (z < 0) ? -z : (360.0 - z), x }))
   // if (x < 0) {
   //   z = z + 180.0
   // }

@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, segmentsBy, normalVectorTo, applyVector, drawMaskedText, segmentBy, angleOf,
-  segmentLength,
+  drawLine, drawArrow, segmentsBy, normalVectorTo, applyVector, drawMaskedText, segmentBy, angleOf, segmentLength,
 } from '../utils'
 
 // sign name: CLEAR

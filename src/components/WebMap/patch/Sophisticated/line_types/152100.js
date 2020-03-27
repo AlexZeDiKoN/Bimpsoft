@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, continueLine,
+  drawLine, drawArrow, continueLine,
 } from '../utils'
 
 // sign name: SUPPORT BY FIRE POSITION
 // task code: DZVIN-5520
+// hint: 'Підтримка вогнем, ведення прямого вогню по противнику з метою підтримки маневру іншого підрозділу'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

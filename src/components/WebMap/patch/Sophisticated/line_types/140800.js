@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, oppositeVector,
+  drawLine, normalVectorTo, applyVector, oppositeVector,
 } from '../utils'
 
 // sign name: INFILTRATION LANE
 // task code: DZVIN-5525
+// hint: 'Смуга руху підрозділів, що проникають в розташування противника'
 
 lineDefinitions['140800'] = {
   // Відрізки, на яких дозволено додавання вершин лінії

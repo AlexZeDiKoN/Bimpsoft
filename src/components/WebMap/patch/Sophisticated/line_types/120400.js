@@ -1,11 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawBezierSpline, drawMaskedText,
+  drawLine, drawBezierSpline, drawMaskedText,
 } from '../utils'
 
 // sign name: AIRFIELD ZONE
 // task code: DZVIN-5791
+// hint: 'Район базування військової частини, підрозділу авіації'
 
 const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30

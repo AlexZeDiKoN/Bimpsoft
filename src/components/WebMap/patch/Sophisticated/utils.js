@@ -1,14 +1,14 @@
 import L from 'leaflet'
 import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
 import { prepareBezierPath } from '../utils/Bezier'
+import lineDefinitions from './lineDefinitions'
 import { CONFIG } from '.'
 
 const EPSILON = 1e-12
 const textSizeCache = {}
 
-export const lineDefinitions = {}
-
-export const findDefinition = (code) => lineDefinitions[code.slice(11, 17)] || lineDefinitions[code.slice(10, 16)]
+export const extractLineCode = (code) => code.slice(10, 16)
+export const findDefinition = (code) => lineDefinitions[extractLineCode(code)]
 
 // === Math ===
 

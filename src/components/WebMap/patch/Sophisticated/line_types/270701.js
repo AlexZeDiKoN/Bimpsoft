@@ -1,8 +1,9 @@
 import { Symbol } from '@DZVIN/milsymbol'
 import { MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawRectangleC, drawText, textBBox,
+  drawRectangleC, drawText, textBBox,
 } from '../utils'
 import {
   drawLightning, drawWires, drawDotted,
@@ -10,6 +11,7 @@ import {
 
 // sign name: Міне поле (мінне загородження)
 // task code: DZVIN-5776
+// hint: 'Мінне поле (Мінне загородження)'
 
 const SMALL_TEXT_SIZE = 0.67
 const SIZE = 48
@@ -31,14 +33,13 @@ lineDefinitions['270701'] = {
   allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" символа)
-  adjust: STRATEGY.empty,
+  adjust: STRATEGY.onePointLine,
 
   // Ініціалізація вершин при створенні нового символу даного типу
   init: () => [
     { x: 0.50, y: 0.50 },
     { x: 0.50, y: 0.50 }, // Друга точка потрібна лише тому, що Leaflet.PM погано почувається, коли на полі є лінії,
     // що складаються лише з однієї точки
-    // TODO: пристосувати для чогось другу точку! все одно приховати її не вдасться (в режимі редагування)
   ],
 
   // Рендер-функція

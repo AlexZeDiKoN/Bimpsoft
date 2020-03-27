@@ -1,11 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf,
-  segmentLength, drawMaskedText,
+  drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
+  drawMaskedText,
 } from '../utils'
 
 // sign name: ХИБНІ ДІЇ
 // task code: DZVIN-5779
+// hint: `Хибні дії – хибні дії, які здійснюються для примушення противника до використання резервів або маневру ними, викриття системи вогню, перенесення вогню засобів вогневої підтримки.`
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

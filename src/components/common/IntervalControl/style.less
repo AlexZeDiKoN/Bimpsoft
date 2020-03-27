@@ -5,23 +5,24 @@
   .flex;
   overflow: hidden;
   .ant-calendar-picker{
-    flex: 1 1 auto;
     margin: 8px;
     & > div {
       position: relative;
+      width: 82px;
     }
   }
   .ant-input{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    padding: 0 25px 0 5px;
+    padding: 5px;
+    color: @toolbar-light-background;
     height: 24px;
     background: @sidebar-control-background-color;
     border: 0;
   }
   .ant-calendar-picker-icon{
-    color: @toolbar-light-background;
+    display: none;
   }
   .ant-calendar-picker-clear{
     background: @sidebar-control-background-color;

@@ -1,11 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf,
-  segmentLength, drawMaskedText,
+  drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
+  drawMaskedText,
 } from '../utils'
 
 // sign name: ДЕМОНСТРУВАТИ
 // task code: DZVIN-5778
+// hint: 'Демонструвати - ввести противника в оману демонстрацією сили без контакту з противником.'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

@@ -1,11 +1,10 @@
 import { MIDDLE, DELETE } from '../strategies'
 import { STRATEGY_ARROW, buildingArrow } from '../arrowLib'
-import {
-  lineDefinitions,
-} from '../utils'
+import lineDefinitions from '../lineDefinitions'
 
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
+// hint: 'Інший напрямок удару'
 
 const POINTS = 3
 const BINDING_TYPE = 'round'

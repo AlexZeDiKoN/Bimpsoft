@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine,
+  drawLine,
 } from '../utils'
 
 // sign name: DECOY/DUMMY AND FEINT
 // task code: DZVIN-5801
+// hint: 'Хибний об’єкт'
 
 lineDefinitions['230200'] = {
   // Відрізки, на яких дозволено додавання вершин лінії

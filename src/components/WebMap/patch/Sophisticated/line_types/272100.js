@@ -1,13 +1,10 @@
-// /* global lineDefinitions, MIDDLE, DELETE, STRATEGY, lengthLine, drawCircle, drawText, isDef */
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions,
-  drawText,
-  drawCircle,
+  drawText, drawCircle,
 } from '../utils'
 import {
-  isDefPoint,
-  lengthLine,
+  isDefPoint, lengthLine,
 } from '../arrowLib'
 
 // sign name: Зони РХБЗ
@@ -18,6 +15,7 @@ const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
 lineDefinitions['272100'] = {
   // Кількість точок у символа (мінімальна)
   POINTS: 5,
+
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.none, // areaWithAmplifiersNotEnd(POINTS),
 

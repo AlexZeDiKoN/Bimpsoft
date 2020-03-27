@@ -43,6 +43,9 @@ export default function reducer (state = initState, action) {
       }
       return { ...state, expandedIds }
     }
+    case maps.CLOSE_MAP_SECTIONS: {
+      return { ...state, expandedIds: {} }
+    }
     case maps.SET_CALC_VARIANT: {
       let calc = { ...state.calc }
       const { mapId, variantId } = payload

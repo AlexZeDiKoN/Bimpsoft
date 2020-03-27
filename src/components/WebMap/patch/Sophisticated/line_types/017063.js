@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentLength, drawArrow, getPointAt,
+  drawLine, segmentLength, drawArrow, getPointAt,
 } from '../utils'
 
 // sign name: Створення активних перешкод
 // task code: DZVIN-5990
+// hint: 'Створення активних перешкод радіоелектронним засобам противника'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

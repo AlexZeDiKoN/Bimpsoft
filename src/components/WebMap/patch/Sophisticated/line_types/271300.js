@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, continueLine,
+  drawLine, continueLine,
 } from '../utils'
 
 // sign name: ASSAULT CROSSING
 // task code: DZVIN-5765
+// hint: 'Ділянка форсування'
 
 const EDGE_WIDTH = 60
 

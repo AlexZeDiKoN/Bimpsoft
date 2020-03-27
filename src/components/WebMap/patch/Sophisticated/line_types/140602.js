@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, angleOf, drawMaskedText, drawArrowOutline,
+  drawLine, segmentBy, angleOf, drawMaskedText, drawArrowOutline,
 } from '../utils'
 
 // sign name: FRIENDLY DIRECTION OF MAIN ATTACK
 // task code: DZVIN-5519
+// hint: 'Головний напрямок атаки'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 36

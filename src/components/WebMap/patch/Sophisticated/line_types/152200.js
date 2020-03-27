@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, segmentLength, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, segmentLength, getPointAt, addPathAmplifier, emptyPath,
 } from '../utils'
 
 // sign name: SEARCH AREA
 // task code: DZVIN-5526
+// hint: 'Район (сектор) РХБ розвідки'
 
 const ARROW_WIDTH = 24
 const Z_WIDTH = 16

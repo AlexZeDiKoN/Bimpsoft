@@ -1,12 +1,13 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, rad,
-  drawArrow, square,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, rad, drawArrow, square,
 } from '../utils'
 
 // sign name: AMBUSH
 // task code: DZVIN-5521
+// hint: 'Розвідувальні (спеціальні) завдання засідкою'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

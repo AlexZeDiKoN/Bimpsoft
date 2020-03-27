@@ -1,10 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, drawLine, segmentBy, segmentLength, drawArrow, getPointAt,
+  drawLine, segmentBy, segmentLength, drawArrow, getPointAt,
 } from '../utils'
 
 // sign name: PRINCIPAL DIRECTION OF FIRE
 // task code: DZVIN-5516
+// hint: 'Межа смуги вогню основного сектора обстрілу'
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18

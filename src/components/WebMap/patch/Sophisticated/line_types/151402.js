@@ -1,11 +1,13 @@
 import { MIDDLE, DELETE } from '../strategies'
 import { STRATEGY_ARROW, buildingAttackHelicopter } from '../arrowLib'
+import lineDefinitions from '../lineDefinitions'
 import {
-  lineDefinitions, addPathAmplifier,
+  addPathAmplifier,
 } from '../utils'
 
 // sign name: ATTACK HELICOPTER
 // task code: DZVIN-5769 (part 3)
+// hint: 'Напрямок дій вертольотів'
 
 const POINTS = 3
 const BINDING_TYPE = 'round'
