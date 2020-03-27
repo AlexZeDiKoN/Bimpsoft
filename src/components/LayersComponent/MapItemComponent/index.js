@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { data, components, IconNames, IButton } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
@@ -79,11 +80,12 @@ export default class MapItemComponent extends React.Component {
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <div className='color-picker-hover'>
-          <IButton
-            title={i18n.PRINT_BUTTON}
-            icon={IconNames.MENU_PRINT}
-            onClick={this.onPrintMapHandler}
-          />
+          <Tooltip title={i18n.PRINT_BUTTON} placement='topRight'>
+            <IButton
+              icon={IconNames.MENU_PRINT}
+              onClick={this.onPrintMapHandler}
+            />
+          </Tooltip>
           <ColorPicker
             onHandlerColor={(value) => this.onHandlerColor(value)}
             icon={IconNames.PALETTE}
@@ -92,11 +94,12 @@ export default class MapItemComponent extends React.Component {
             color={color}
             onChange={this.changeColorHandler}
           />
-          <IButton
-            title={i18n.LAYERS_CLOSE_CURRENT_MAP}
-            icon={IconNames.CLOSE_MAP}
-            onClick={this.closeHandler}
-          />
+          <Tooltip title={i18n.LAYERS_CLOSE_CURRENT_MAP} placement='topRight'>
+            <IButton
+              icon={IconNames.CLOSE_MAP}
+              onClick={this.closeHandler}
+            />
+          </Tooltip>
         </div>
       </div>
     )

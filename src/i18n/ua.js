@@ -195,7 +195,7 @@ export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
 export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
 
-export const MAPS_VISIBILITY = 'Видимість усіх карт'
+export const MAPS_VISIBILITY = 'Сховати всі карти'
 export const MAP_VISIBILITY = 'Видимість карти'
 export const LAYER_VISIBILITY = 'Видимість шару'
 export const LAYERS_VISIBILITY = 'Видимість шарів'
@@ -203,6 +203,7 @@ export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картогра
 export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
+export const CLOSE_MAP_SECTIONS = 'Згорнути всі карти'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
 export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 
@@ -249,7 +250,7 @@ export const RANG = `Звання`
 export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
-export const SYMBOLS = 'Умовні Знаки'
+export const SYMBOLS = 'Умовні знаки'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`
