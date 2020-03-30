@@ -1,5 +1,6 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
+import { TEXTS } from '../index'
 import {
   normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText, drawArrow,
 } from '../utils'
@@ -10,7 +11,6 @@ import {
 
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
-const TEXT = 'RIP'
 
 lineDefinitions['341900'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -49,7 +49,7 @@ lineDefinitions['341900'] = {
       result,
       segmentBy(segmentBy(p2, a, 0.5), segmentBy(p1, a1, 0.5), 0.5),
       angleOf(a1, p2),
-      TEXT,
+      TEXTS.RIP,
     )
   },
 }

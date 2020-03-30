@@ -72,6 +72,11 @@ import './line_types/341800'
 import './line_types/341900'
 import './line_types/342000'
 import './line_types/342100'
+import './line_types/342201'
+import './line_types/342202'
+import './line_types/342203'
+import './line_types/342300'
+import './line_types/342400'
 
 export const CONFIG = {
   TEXT_EDGE: 4,
@@ -82,6 +87,7 @@ export const CONFIG = {
 
 export const TEXTS = {
   ENY: 'ENY',
+  RIP: 'RIP',
 }
 
 L.Sophisticated = L.Polyline.extend({
