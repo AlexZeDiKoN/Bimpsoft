@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Trigger from 'rc-trigger'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { SketchPicker } from 'react-color'
+import { Checkboard } from 'react-color/lib/components/common'
 import './style.css'
 import { IButton } from '@DZVIN/CommonComponents'
+import { colors } from '../../../constants'
 import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
+import ColorPickerPopup from './ColorPickerPopup'
 
 const PRESENT_COLORS = [
+  colors.TRANSPARENT,
   '#ffffff', // '#FFFFFFaa',
   '#ff999c', // '#ff666baa',
   '#ffbe99', // '#ff9e66aa',
@@ -69,7 +72,7 @@ const ColorPicker = (props) => {
     // eslint-disable-next-line
   }, [ props.color ])
 
-  const isTransparent = color !== undefined && (color === null || !color?.length)
+  const noColor = color !== undefined && (color === null || !color?.length || color === 'transparent')
 
   const isRGB = typeof color === 'object'
   const colorType = isRGB ? 'rgb' : 'hex'
@@ -82,8 +85,8 @@ const ColorPicker = (props) => {
       setOpened(!opened)
     }
   }
-  const handleChange = (color) => setColor(color[colorType])
-  const handleChangeComplete = (color) => props.onChange?.(color[colorType])
+  const handleChange = useCallback(() => (color) => setColor(color[colorType]), [ colorType ])
+  const handleChangeComplete = useCallback((color) => props.onChange?.(color[colorType]), [ props.onChange, colorType ])
 
   const clickOutsideRef = getClickOutsideRef(() => {
     if (props.onHandlerColor) {
@@ -93,12 +96,11 @@ const ColorPicker = (props) => {
   })
 
   const popup = <div ref={clickOutsideRef}>
-    <SketchPicker
-      presetColors={props.presetColors }
+    <ColorPickerPopup
+      presetColors={props.presetColors}
       onChange={handleChange}
       onChangeComplete={handleChangeComplete}
-      color={isTransparent ? 'TRANSPARENT' : color}
-      disableAlpha={!(isRGB || isTransparent)}
+      color={noColor ? 'transparent' : color}
     />
   </div>
 
@@ -122,11 +124,10 @@ const ColorPicker = (props) => {
             className={classNames('color-picker-button', {
               [props.className]: Boolean(props.className),
               'color-picker-button-undefined': color === undefined,
-              'color-picker-button-empty': isTransparent,
             })}
             style={{ backgroundColor: color }}
             onClick={handleButtonClick}
-          />
+          >{noColor ? <Checkboard/> : null}</button>
         }
       </Trigger>
     </div>
