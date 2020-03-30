@@ -58,6 +58,7 @@ import './line_types/290500'
 import './line_types/291000'
 import './line_types/340100'
 import './line_types/340200'
+import './line_types/340300'
 
 import './line_types/340500'
 
