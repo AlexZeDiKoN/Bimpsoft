@@ -67,6 +67,9 @@ import './line_types/341100'
 import './line_types/341200'
 import './line_types/341300'
 import './line_types/341500'
+import './line_types/341700'
+import './line_types/341800'
+import './line_types/341900'
 
 export const CONFIG = {
   TEXT_EDGE: 4,
