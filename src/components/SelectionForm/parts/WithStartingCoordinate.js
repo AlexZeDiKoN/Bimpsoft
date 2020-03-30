@@ -1,9 +1,7 @@
 import React from 'react'
-import { components, utils } from '@DZVIN/CommonComponents'
-import L from 'leaflet'
+import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import placeSearch from '../../../server/places'
-import { distanceAngle } from '../../WebMap/patch/utils/sectors'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
@@ -11,24 +9,9 @@ const {
   Coordinates,
 } = components.form
 
-const { Coordinates: Coord } = utils
-
 const WithStartingCoordinate = (Component) => class StartingCoordinateComponent extends CoordinatesMixin(Component) {
-  startingCoordinateExitChangeHandler = async (value) => {
-    if (!Coord.check(value)) {
-      return
-    }
-    const coordArray = this.getResult().getIn(COORDINATE_PATH)
-    const coordO = coordArray.get(0)
-    const coordList = coordArray.map((elm) => {
-      const radius = distanceAngle(coordO, elm).distance
-      return L.CRS.Earth.calcPairRight(value, radius)
-    })
-    await this.setResult((result) => result.setIn(COORDINATE_PATH, coordList))
-  }
-
-  startingCoordinateChangeHandler = (value) => {
-    // console.log(JSON.stringify(value))
+  firstCoordinateExitChangeHandler = async (value) => {
+    await this.onFirstCoordinateExitChangeHandler(value)
   }
 
   renderStartingCoordinate () {
@@ -43,7 +26,7 @@ const WithStartingCoordinate = (Component) => class StartingCoordinateComponent 
           // onChange={this.startingCoordinateChangeHandler}
           onEnter={() => { this.onCoordinateFocusHandler(0) }}
           onBlur={() => { this.onCoordinateBlurHandler(0) }}
-          onExitWithChange={canEdit ? this.startingCoordinateExitChangeHandler : null}
+          onExitWithChange={canEdit ? this.firstCoordinateExitChangeHandler : null}
           onSearch={placeSearch}
         />
       </FormRow>

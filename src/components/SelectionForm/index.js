@@ -23,6 +23,7 @@ import {
   SectorsForm,
   PollutionCircleForm,
 } from './forms'
+import CircularZoneForm from './forms/CircularZoneForm'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -138,6 +139,13 @@ const forms = {
     minWidth: 600,
     maxHeight: 545,
   },
+  [SelectionTypes.CIRCULAR_ZONE]: {
+    title: i18n.SHAPE_CIRCULARZONE,
+    component: CircularZoneForm,
+    minHeight: 645,
+    minWidth: 550,
+    maxHeight: 645,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -178,6 +186,9 @@ export default class SelectionForm extends React.Component {
           break
         case '272100':
           formType = SelectionTypes.POLLUTION_CIRCLE
+          break
+        case '017019':
+          formType = SelectionTypes.CIRCULAR_ZONE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }

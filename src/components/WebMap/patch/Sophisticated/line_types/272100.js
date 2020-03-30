@@ -8,7 +8,7 @@ import {
 } from '../arrowLib'
 
 // sign name: Зони РХБЗ
-// task code: DZVIN-5769 (part 3)
+// task code: DZVIN-5540 (part 3)
 // hint: 'Мінімально безпечні відстані радіаційного забруднення місцевості'
 
 const COLORS = [ 'black', 'blue', 'red', 'green' ]
@@ -37,11 +37,12 @@ lineDefinitions['272100'] = {
   ]),
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     // const arrows = emptyPath()
     // const color = result.layer._path.getAttribute('stroke')
     // const width = result.layer._path.getAttribute('stroke-width')
     if (points.length < 1) { return }
+    const amplifSize = 1
     result.layer._path.setAttribute('stroke-width', 0.1)
     const pO = points[0]
     points.forEach((elm, ind) => {
@@ -54,7 +55,7 @@ lineDefinitions['272100'] = {
           { x: (pO.x + lengthLine(pO, elm) + 2), y: pO.y },
           0,
           MARKER[ind],
-          scale * 2,
+          amplifSize,
           'start')
       }
     })

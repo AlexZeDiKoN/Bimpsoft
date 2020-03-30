@@ -59,6 +59,22 @@ export function sphereDirect (pt0, angledeg, distM) {
   const pt1 = cartToSpher(x) // декартовы -> сферические
   return { lat: (pt1[0] * 180 / Math.PI), lng: (pt1[1] * 180 / Math.PI) }
 }
+
+export function moveCoordinate (pt0, distM, angleDeg) {
+  let x
+  const dist = distM / Earth.R
+  const GtoR = Math.PI / 180
+  const azi = angleDeg * GtoR // в радианы
+  const lat = pt0.lat * GtoR
+  const lng = pt0.lng * GtoR
+  const pt = [ Math.PI / 2 - dist, Math.PI - azi ]
+  x = spherToCart(pt) // сферические -> декартовы
+  x = rotate(x, lat - Math.PI / 2, 1) // первое вращение
+  x = rotate(x, -lng, 2) // второе вращение
+  const ptNew = cartToSpher(x) // декартовы -> сферические
+  return { lat: (ptNew[0] * 180 / Math.PI), lng: (ptNew[1] * 180 / Math.PI) }
+}
+
 //
 // function sphereInverse (pt1, pt2) {
 //   let x = spherToCart(pt2)
