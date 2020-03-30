@@ -8,7 +8,7 @@ import {
 } from '../arrowLib'
 
 // sign name: Зони РХБЗ
-// task code: DZVIN-5769 (part 3)
+// task code: DZVIN-5540 (part 3)
 const COLORS = [ 'black', 'blue', 'red', 'green' ]
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
 

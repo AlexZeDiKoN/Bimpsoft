@@ -14,9 +14,12 @@ const { Coordinates: Coord } = utils
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
 
 const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(Component) {
-    state = {
+  constructor (props) {
+    super(props)
+    this.state = {
       radiiText: [],
     }
+  }
 
   radiusChangeHandler = (index) => (radiusText) => {
     this.setResult((result) => {
@@ -26,7 +29,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
         const coord1 = coordinatesArray[0]
         if (Coord.check(coord1)) {
           const coord2 = L.CRS.Earth.calcPairRight(coord1, radius)
-          let isSet = false
+          let isSet
           switch (index) {
             case 1:
               isSet = coord2.lng > coordinatesArray[index + 1].lng
@@ -87,7 +90,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
             : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
           const radiusIsWrong = !Number.isFinite(Number(radius))
           return (index !== 0) ? (
-            <FormRow label={`${i18n.RADIUS} «${MARKER[index]}»`}>
+            <FormRow key={radius} label={`${i18n.RADIUS} «${MARKER[index]}»`}>
               <InputWithSuffix
                 readOnly={!canEdit}
                 value={radius}

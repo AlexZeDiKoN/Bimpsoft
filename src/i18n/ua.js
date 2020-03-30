@@ -72,6 +72,7 @@ export const SHAPE_MANOEUVRE = 'Напрямок'
 export const SHAPE_MINEDAREA = 'Район мінування'
 export const SHAPE_SECTORS = 'Сектори'
 export const SHAPE_POLLUTINCIRCLE = 'Мінімально безпечні відстані забруднення місцевості'
+export const SHAPE_CIRCULARZONE = 'Кругова зона'
 
 export const UNDEFINED = 'Не вказано'
 
