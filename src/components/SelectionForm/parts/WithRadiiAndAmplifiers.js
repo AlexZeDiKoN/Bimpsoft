@@ -6,6 +6,7 @@ import i18n from '../../../i18n'
 import { distanceAngle } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
+import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -16,7 +17,7 @@ const {
 } = components.form
 
 const { Coordinates: Coord } = utils
-const MARKER = [ '', 'Мінимальний', 'Ефективний', 'Максимальний' ]
+const MARKER = [ '', MINIMUM, EFFECTIVE, MAXIMUM ]
 const PATH_S_INFO = [ 'attributes', 'sectorsInfo' ]
 const PRESET_COLORS = Object.values(colors.values)
 const COLOR_PICKER_Z_INDEX = 2000
@@ -129,7 +130,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     error={radiusIsWrong}
                   />
                 </FormRow>
-                <FormRow key="a" label={`Ампліфікатор «Т${index}»`} >
+                <FormRow label={`Ампліфікатор «Т${index}»`} >
                   <Input.TextArea
                     value={amplifierT}
                     name={'amplifier'}
@@ -142,7 +143,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                 </FormRow>
               </div>
               <div>
-                <FormRow key="c" label="Колір">
+                <FormRow label="Колір">
                   <ColorPicker
                     color={color}
                     disabled={!canEdit}
@@ -151,7 +152,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     presetColors={PRESET_COLORS}
                   />
                 </FormRow>
-                <FormRow key="f" label="Заливка">
+                <FormRow label="Заливка">
                   <Select
                     value={fill}
                     disabled={!canEdit}

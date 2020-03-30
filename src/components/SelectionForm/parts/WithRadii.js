@@ -90,7 +90,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
             : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
           const radiusIsWrong = !Number.isFinite(Number(radius))
           return (index !== 0) ? (
-            <FormRow key={radius} label={`${i18n.RADIUS} «${MARKER[index]}»`}>
+            <FormRow key={index} label={`${i18n.RADIUS} «${MARKER[index]}»`}>
               <InputWithSuffix
                 readOnly={!canEdit}
                 value={radius}
