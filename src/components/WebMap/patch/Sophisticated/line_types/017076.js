@@ -99,7 +99,7 @@ lineDefinitions['017076'] = {
     // відображення азимутів
     const pA1 = { x: (pO.x + s1top.x) / 2, y: (pO.y + s1top.y) / 2 }
     const pA2 = { x: (pO.x + s2top.x) / 2, y: (pO.y + s2top.y) / 2 }
-    const amplifSize = scale * 2
+    const amplifSize = 0.667 // scale * 2
     drawMaskedText(result, pA1, 0, infoArray[0].azimut1, amplifSize)
     drawMaskedText(result, pA2, 0, infoArray[0].azimut2, amplifSize)
     // відображення радіусу

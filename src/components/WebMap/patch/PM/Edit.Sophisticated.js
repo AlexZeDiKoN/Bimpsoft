@@ -41,9 +41,13 @@ L.PM.Edit.Sophisticated = L.PM.Edit.Line.extend({
       if (getSeq) {
         const [ , nextIndex ] = getSeq(leftM._index, this._layer._latlngs.length)
         if (nextIndex !== rightM._index) {
+          const save = rightM
           rightM = leftM
           while (rightM && rightM._index !== nextIndex) {
             rightM = rightM._leftM || rightM._middleMarkerPrev
+          }
+          if (!rightM) {
+            rightM = save
           }
         }
       }

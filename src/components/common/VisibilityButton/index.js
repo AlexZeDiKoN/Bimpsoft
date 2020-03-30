@@ -20,12 +20,14 @@ const VisibilityButton = (props) => {
     : (visible ? classNames.push('closed') : classNames.push('unClosed'))
 
   return (
-    <Tooltip title={title} className={classNames.join(' ')} placement='topRight'>
-      <IButton
-        onClick={clickHandler}
-        icon={IconNames.DARK_EYE_ON}
-      />
-    </Tooltip>
+    <div className={classNames.join(' ')}>
+      <Tooltip title={title} placement='topRight'>
+        <IButton
+          onClick={clickHandler}
+          icon={IconNames.DARK_EYE_ON}
+        />
+      </Tooltip>
+    </div>
   )
 }
 
