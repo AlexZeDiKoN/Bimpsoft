@@ -24,6 +24,12 @@ import spriteUrl from '../../../Symbols/sprite.svg'
 
 const { FormRow } = components.form
 
+const PAIRS_AMPLIFIERS = [
+  { id: 'middle', name: 'N' },
+  { id: 'top', name: 'H1' },
+  { id: 'bottom', name: 'H2' },
+]
+
 export default class PollutionCircleForm extends compose(
   UnitSelect,
   WithSubordinationLevel,
@@ -76,7 +82,7 @@ export default class PollutionCircleForm extends compose(
                 </FormRow>
               </div>
             </div>
-            {this.renderAmplifiers()}
+            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
           </div>
         </div>
       </Scrollbar>
