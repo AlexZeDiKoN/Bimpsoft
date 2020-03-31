@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { interpolateSize } from '../utils/helpers'

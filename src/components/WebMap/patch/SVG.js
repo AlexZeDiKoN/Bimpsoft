@@ -1,12 +1,19 @@
-/* global L */
+import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import { interpolateSize, setClassName } from './utils/helpers'
+import { setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
+
+const getViewBox = (element) => {
+  while (element && (element.nodeName !== 'svg')) {
+    element = element.parentElement
+  }
+  return element && element.getAttribute('viewBox').split(' ')
+}
 
 const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
 
@@ -151,6 +158,21 @@ L.SVG.include({
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
+    } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
+      if (!layer._rings || !layer._rings[0]) {
+        result = ''
+      } else {
+        const container = {
+          d: '',
+          mask: '',
+          amplifiers: '',
+          layer,
+        }
+        layer._rings[0] = layer._latlngs.map(layer._map.latLngToLayerPoint.bind(layer._map))
+        layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
+        result = container.d
+        this._setMask(layer, container.amplifiers, container.mask)
+      }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       const parts = []
       const line = layer._rings[0]
@@ -169,9 +191,11 @@ L.SVG.include({
           break
         case 'blockage':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, true, lineType)
           break
         // залишаємо початкову лінію
         case 'blockageIsolation':
@@ -188,8 +212,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, false, true, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -213,9 +235,11 @@ L.SVG.include({
           break
         case 'blockage':
         case 'moatAntiTankUnfin':
-        case 'blockageWire':
         case 'trenches':
           result = this._buildBlockage(layer, false, false, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, false, lineType)
           break
         // залишаємо початкову лінію
         case 'blockageIsolation':
@@ -232,8 +256,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, false, false, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -279,8 +301,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, true, true, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -328,8 +348,6 @@ L.SVG.include({
           break
         // необхідна заливка
         case 'rowMinesLand':
-          rezultFilled = this._buildElementFilled(layer, true, false, lineType, false, true)
-          break
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
@@ -356,17 +374,27 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
     }, layer.object)
-    if (amplifiers.maskPath.length) {
-      layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
-      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
-      layer._shadowPath.setAttribute('mask', `url(#mask-${layer.object.id})`)
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+  },
+
+  _setMask: function (layer, amplifiers, mask) {
+    if (Array.isArray(mask)) {
+      mask = mask.length ? `<path fill="black" fill-rule="nonzero" d="${mask.join(' ')}" />` : null
+    }
+    if (mask) {
+      const vb = getViewBox(layer._path) || [ 0, 0, '100%', '100%' ]
+      mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
+      layer.getMask().innerHTML = mask
+      const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`
+      layer._path.setAttribute('mask', maskURL)
+      layer._shadowPath.setAttribute('mask', maskURL)
     } else {
       layer.deleteMask && layer.deleteMask()
       layer._path.removeAttribute('mask')
       layer._shadowPath.removeAttribute('mask')
     }
-    if (amplifiers.group) {
-      layer.getAmplifierGroup().innerHTML = amplifiers.group
+    if (amplifiers) {
+      layer.getAmplifierGroup().innerHTML = amplifiers
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
@@ -400,12 +428,12 @@ L.SVG.include({
   _buildElementFilled: function (layer, bezier, locked, lineType, setEnd, setStrokeWidth = false) {
     const bounds = layer._map._renderer._bounds
     const colorLine = layer.object?.attributes?.color || 'black'
-    const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
-      (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
+    // const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
+    //  (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
 
     const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
-    return `<path fill="${colorLine}" stroke-width="${widthLine}" d="${d}"/>`
+    return `<path fill="${colorLine}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
   },
 
   _updateLineFilled: function (layer, rezultFilled) {

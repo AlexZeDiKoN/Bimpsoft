@@ -208,15 +208,18 @@ export const newShapeFromLine = (data, point, geometry) => withNotification((dis
 
   const { code, amp } = data
 
-  dispatch(setPreview(WebMapObject({
-    type: amp.type,
-    code,
-    layer,
-    geometry: List(geometry),
-    point: point,
-    attributes: createObjectRecord(amp || {}),
-  }),
-  ))
+  dispatch(
+    setPreview(
+      WebMapObject({
+        type: amp.type,
+        code,
+        layer,
+        geometry: List(geometry),
+        point: point,
+        attributes: createObjectRecord(amp),
+      }),
+    ),
+  )
 })
 
 export const copy = () => withNotification((dispatch, getState) => {

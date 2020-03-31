@@ -21,7 +21,7 @@ const mapObjectBuilders = new Map()
 let lastMaskId = 1
 
 const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, maskD) => {
-  const { color: outlineColor } = layerData
+  const { color: outlineColor, fillOpacity } = layerData
   let mask
   const styles = getStylesForLineType(lineType, scale)
   let maskEl = null
@@ -38,7 +38,7 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
       {maskEl}
       <path
         fill={colors.evaluateColor(fill)}
-        fillOpacity="0.2"
+        fillOpacity={fillOpacity ?? 0.2}
         d={d}
       />
       {Boolean(outlineColor) && <path

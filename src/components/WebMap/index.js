@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import { parseStringPromise } from 'xml2js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -53,6 +52,7 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { findDefinition } from './patch/Sophisticated/utils'
 
 const { Coordinates: Coord } = utils
 
@@ -90,7 +90,7 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && L.latLngBounds(geometry)
+  const rect = geometry && geometry.length && L.latLngBounds(geometry)
   return rect && bounds.contains(rect)
 }
 
@@ -1835,29 +1835,49 @@ export default class WebMap extends React.PureComponent {
       const point = this.map.mouseEventToLatLng(e)
       const { lat, lng } = point
       const { amp } = data
+      const bounds = this.map.getBounds()
+      const semiWidth = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
+      const semiHeight = (bounds.getEast() - bounds.getWest()) / 12
+      let geometry = []
       if (amp.type !== 'special') {
-        const bounds = this.map.getBounds()
-        const x = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
-        const y = (bounds.getEast() - bounds.getWest()) / 4
-        let geometry = []
-        if (amp.type === 4 || amp.type === 3) {
-          const p0 = { lat, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
-          const p2 = { lat: lat + x, lng: lng - y }
+        if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
+          const p0 = { lat, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
+          const p2 = { lat: lat + semiWidth, lng: lng - semiHeight }
           geometry = [ p0, p1, p2 ]
         }
-        if (amp.type === 6 || amp.type === 8 || amp.type === 9) {
-          const p0 = { lat: lat + x, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
+        if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
+          const p0 = { lat: lat + semiWidth, lng: lng + semiHeight }
+          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
           geometry = [ p0, p1 ]
         }
-        if (amp.type === 7) {
+        if (amp.type === entityKind.CIRCLE) {
           const p0 = { lat, lng }
-          const p1 = { lat: lat + x, lng: lng + y }
+          const p1 = { lat: lat + semiWidth, lng: lng + semiHeight }
           geometry = [ p0, p1 ]
         }
-        this.props.newShapeFromLine(data, { lat, lng }, geometry)
+        if (amp.type === '17076000') {
+          amp.type = entityKind.SECTORS
+          geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x, y }) => ({
+            lng: lng - semiWidth + x * semiWidth * 2,
+            lat: lat - semiHeight + (1 - y) * semiHeight * 2,
+          }))
+          // const p0 = { lat, lng }
+          // const p1 = { lat: lat + semiWidth, lng: lng }
+          // const p2 = { lng: lng - semiHeight / 2, lat: lat + semiWidth / 3 }
+          // const p3 = { lng: lng + semiHeight / 2, lat: lat + semiWidth / 3 }
+          // const p4 = { lng: lng - semiHeight / 4, lat: lat + semiWidth / 2 }
+          // const p5 = { lng: lng + semiHeight / 4, lat: lat + semiWidth / 2 }
+          // geometry = [ p0, p1, p2, p3, p4, p5 ]
+        }
+      } else {
+        amp.type = entityKind.SOPHISTICATED
+        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x, y }) => ({
+          lng: lng - semiWidth + x * semiWidth * 2,
+          lat: lat - semiHeight + (1 - y) * semiHeight * 2,
+        }))
       }
+      this.props.newShapeFromLine(data, { lat, lng }, geometry)
     }
   }
 
