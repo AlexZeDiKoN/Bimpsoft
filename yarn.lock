@@ -6203,7 +6203,7 @@ got@^8.3.1:
 
 gp-data-transformer@^0.0.1:
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/gp-data-transformer/-/gp-data-transformer-0.0.1.tgz#0e7b749002cb2a5f09064846c0e2c179edfcd8c1"
+  resolved "http://172.16.95.16:4873/gp-data-transformer/-/gp-data-transformer-0.0.1.tgz#0e7b749002cb2a5f09064846c0e2c179edfcd8c1"
   integrity sha512-FyIPRC8y6nRY9QX6hZhW3Qk+r2QD6r9a4JwoV7/C/bM4mjyQJLPFkojdrmu2811oU4za/jtO6q9U3P/u/DaIkw==
   dependencies:
     yargs "^13.2.4"
@@ -8107,12 +8107,12 @@ kind-of@^6.0.0, kind-of@^6.0.2:
 
 kld-affine@^2.1.1:
   version "2.1.1"
-  resolved "https://registry.yarnpkg.com/kld-affine/-/kld-affine-2.1.1.tgz#e28296585f305230eaad3b1e346d3ac5ca4c72b3"
+  resolved "http://172.16.95.16:4873/kld-affine/-/kld-affine-2.1.1.tgz#e28296585f305230eaad3b1e346d3ac5ca4c72b3"
   integrity sha512-NIS9sph8ZKdnQxZa5TcggaFs/Qr9zX3brFlGwE0+0Z4EzFIvAFuqLSwNeU4GkEpaX8ndh3ggGmWV7BPPcS3vjQ==
 
 kld-intersections@^0.6.0:
   version "0.6.0"
-  resolved "https://registry.yarnpkg.com/kld-intersections/-/kld-intersections-0.6.0.tgz#fbc3f1d4ed2de3cb40218c234007fe30d308946a"
+  resolved "http://172.16.95.16:4873/kld-intersections/-/kld-intersections-0.6.0.tgz#fbc3f1d4ed2de3cb40218c234007fe30d308946a"
   integrity sha512-C03Ym09e4xtE8FefFP2Sr7/YwQE7JyEXL9yFfkWll7iQtloIee9ssnY9RYe3QSWDzbb8t8cY8G+0z1CuxTjeQg==
   dependencies:
     gp-data-transformer "^0.0.1"
@@ -8122,12 +8122,12 @@ kld-intersections@^0.6.0:
 
 kld-path-parser@^0.2.1:
   version "0.2.1"
-  resolved "https://registry.yarnpkg.com/kld-path-parser/-/kld-path-parser-0.2.1.tgz#ad1f7c8ebc9c9d67409413fc4de459293394e86b"
+  resolved "http://172.16.95.16:4873/kld-path-parser/-/kld-path-parser-0.2.1.tgz#ad1f7c8ebc9c9d67409413fc4de459293394e86b"
   integrity sha512-C1EqY6vzqv5tdKeMF31L+JXq97n5zo67LiSEhZf4sPq8YeM+8ytp/qMGSKN8VdSPvFa6h1SR35aF4+T2JtxZww==
 
 kld-polynomial@^0.3.0:
   version "0.3.0"
-  resolved "https://registry.yarnpkg.com/kld-polynomial/-/kld-polynomial-0.3.0.tgz#cb7f3f37c679925d895f4cd737ed713a3b379921"
+  resolved "http://172.16.95.16:4873/kld-polynomial/-/kld-polynomial-0.3.0.tgz#cb7f3f37c679925d895f4cd737ed713a3b379921"
   integrity sha512-PEfxjQ6tsxL9DHBIhM2UZsSes0GI+OIMjbE0kj60jr80Biq/xXl1eGfnyzmfoackAMdKZtw2060L09HdjkPP5w==
 
 kleur@^3.0.3:
@@ -13581,7 +13581,7 @@ tr46@^1.0.1:
 
 transformation-matrix@^2.2.0:
   version "2.2.0"
-  resolved "https://registry.yarnpkg.com/transformation-matrix/-/transformation-matrix-2.2.0.tgz#1b98546a20b5ff882c30d7b3f35b5d08b420253e"
+  resolved "http://172.16.95.16:4873/transformation-matrix/-/transformation-matrix-2.2.0.tgz#1b98546a20b5ff882c30d7b3f35b5d08b420253e"
   integrity sha512-cxs7k1YT05BgY03PZg8P4MJUcLCqYdG+web+rXdTpyCYfyu6u6CS+X0hSMkHHdFrWpe5gsIQwwPAik+K6UnuMw==
 
 trim-newlines@^1.0.0:
@@ -14580,6 +14580,14 @@ yargs-parser@^13.1.1:
     camelcase "^5.0.0"
     decamelize "^1.2.0"
 
+yargs-parser@^13.1.2:
+  version "13.1.2"
+  resolved "http://172.16.95.16:4873/yargs-parser/-/yargs-parser-13.1.2.tgz#130f09702ebaeef2650d54ce6e3e5706f7a4fb38"
+  integrity sha512-3lbsNRf/j+A4QuSZfDRA7HRSfWrzO0YjqTJd5kjAq37Zep1CEgaYmrH9Q3GwPiB9cHyd1Y1UwggGhJGoxipbzg==
+  dependencies:
+    camelcase "^5.0.0"
+    decamelize "^1.2.0"
+
 yargs-parser@^5.0.0:
   version "5.0.0"
   resolved "http://172.16.95.16:4873/yargs-parser/-/yargs-parser-5.0.0.tgz#275ecf0d7ffe05c77e64e7c86e4cd94bf0e1228a"
@@ -14605,9 +14613,25 @@ yargs@12.0.5:
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^11.1.1"
 
-yargs@^13.2.4, yargs@^13.3.0:
+yargs@^13.2.4:
+  version "13.3.2"
+  resolved "http://172.16.95.16:4873/yargs/-/yargs-13.3.2.tgz#ad7ffefec1aa59565ac915f82dccb38a9c31a2dd"
+  integrity sha512-AX3Zw5iPruN5ie6xGRIDgqkT+ZhnRlZMLMHAs8tg7nRruy2Nb+i5o9bwghAogtM08q1dpr2LVoS8KSTMYpWXUw==
+  dependencies:
+    cliui "^5.0.0"
+    find-up "^3.0.0"
+    get-caller-file "^2.0.1"
+    require-directory "^2.1.1"
+    require-main-filename "^2.0.0"
+    set-blocking "^2.0.0"
+    string-width "^3.0.0"
+    which-module "^2.0.0"
+    y18n "^4.0.0"
+    yargs-parser "^13.1.2"
+
+yargs@^13.3.0:
   version "13.3.0"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
+  resolved "http://172.16.95.16:4873/yargs/-/yargs-13.3.0.tgz#4c657a55e07e5f2cf947f8a366567c04a0dedc83"
   integrity sha512-2eehun/8ALW8TLoIl7MVaRUrg+yCnenu8B4kBlRxj3GJGDKU1Og7sMXPNm1BYyM1DOJmTZ4YeN/Nwxv+8XJsUA==
   dependencies:
     cliui "^5.0.0"
