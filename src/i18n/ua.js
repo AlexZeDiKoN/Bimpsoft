@@ -73,6 +73,7 @@ export const SHAPE_MINEDAREA = 'Район мінування'
 export const SHAPE_SECTORS = 'Зона ураження / виявлення (сектор)'
 export const SHAPE_POLLUTINCIRCLE = 'Мінімально безпечні відстані забруднення місцевості'
 export const SHAPE_CIRCULARZONE = 'Кругова зона'
+export const SHAPE_MINEFIELD = 'Мінне поле'
 
 export const UNDEFINED = 'Не вказано'
 
@@ -125,6 +126,8 @@ export const LINE_SEGMENT = 'Відрізок лінії'
 export const SEGMENT_DIRECT = 'Пряма лінія'
 export const SEGMENT_ARC = 'Дуга'
 
+export const MINE_TYPE = 'Тип мін'
+export const MINE_CONTROLLABILITY = 'Керованість'
 export const LINE_TYPE = 'Тип лінії'
 export const LINE_WIDTH = 'Товщина лінії'
 export const LINE_COLOR = 'Колір'
@@ -359,3 +362,21 @@ export const EXISTING = 'Існуючий'
 export const PLANNED = 'Плановий'
 export const EXPECTED = 'Очікуваний'
 export const PROBABLE = 'Ймовірний'
+
+// dummy  Макет/Хибний
+export const DUMMY = 'Макет/Хибний'
+export const DUMMY_DESCR = 'Показує, що це макет або хибний підрозділ для введення в оману'
+
+// тип мін
+export const MINE_ANTI_TANK = 'Протитанкові'
+export const MINE_ANTI_PERSONNEL = 'Протипіхотні'
+export const MINE_UNDEFINED_TYPE = 'Невизначеного типу'
+export const MINE_VARIOUS_TYPES = 'Різних типів'
+export const MINE_MARINE = 'Морські міни'
+export const MINE_MARINE_BOTTOM = 'Морські донні міни'
+export const MINE_MARINE_ANCHORS = 'Морські якірні міни'
+
+// керованість мін
+export const MINE_UNCONTROLLED = 'Не вказано'
+export const MINE_RADIO = 'По радіо'
+export const MINE_WIRED = 'По проводам'
