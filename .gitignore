@@ -33,5 +33,3 @@ yarn-error.log*
 
 report.*
 sprite.svg
-/pnpm-lock.yaml
-/public/map/images/marker-icon.png

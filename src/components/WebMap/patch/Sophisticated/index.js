@@ -67,6 +67,16 @@ import './line_types/341100'
 import './line_types/341200'
 import './line_types/341300'
 import './line_types/341500'
+import './line_types/341700'
+import './line_types/341800'
+import './line_types/341900'
+import './line_types/342000'
+import './line_types/342100'
+import './line_types/342201'
+import './line_types/342202'
+import './line_types/342203'
+import './line_types/342300'
+import './line_types/342400'
 
 export const CONFIG = {
   TEXT_EDGE: 4,
@@ -77,7 +87,11 @@ export const CONFIG = {
 
 export const TEXTS = {
   ENY: 'ENY',
+  RIP: 'RIP',
 }
+
+/* const { setStyle } = L.Polyline.prototype
+const parent = { setStyle } */
 
 L.Sophisticated = L.Polyline.extend({
   options: {
@@ -94,6 +108,12 @@ L.Sophisticated = L.Polyline.extend({
     }
     this.setLatLngs(points)
   },
+
+  /* setStyle: function (style) {
+    try { throw new Error('debug') } catch (e) { console.warn(e) }
+    console.log('Sophisticated.setStyle', style)
+    parent.setStyle.call(this, style)
+  }, */
 
   _adjustPoints: function (changed, from, to) {
     const map = this._map || this._initMap

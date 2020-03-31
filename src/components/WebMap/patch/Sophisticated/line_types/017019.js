@@ -17,6 +17,7 @@ const { Coordinates: Coord } = utils
 
 // const SIZE = 96
 const COLORS = [ 'black', 'blue', 'red', 'green' ]
+const SMALL_TEXT_SIZE = 0.667
 
 lineDefinitions['017019'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -45,7 +46,6 @@ lineDefinitions['017019'] = {
     if (points.length < 1 || !isDefPoint(points[0])) {
       return
     }
-    const amplifSize = 0.667
     const pO = points[0]
     const pgO = coordArray[0]
     points.forEach((elm, ind) => {
@@ -63,8 +63,8 @@ lineDefinitions['017019'] = {
           // const m = Math.round(result.layer._map.layerPointToLatLng(pO)
           // .distanceTo(result.layer._map.layerPointToLatLng(elm)))
           const amplifier = sectorsInfo[ind]?.amplifier ?? '_'
-          drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, amplifSize, 'middle', null, 'after-edge')
-          drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, amplifSize, 'middle', null, 'before-edge')
+          drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'after-edge')
+          drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, 1, 'middle', null, 'before-edge')
         }
       }
     })
