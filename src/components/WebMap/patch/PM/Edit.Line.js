@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import entityKind, { GROUPS } from '../../entityKind'
 import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
+import { findDefinition } from '../Sophisticated/utils'
 
 const { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag } = L.PM.Edit.Line.prototype
 const parent = { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag }
@@ -87,8 +88,15 @@ L.PM.Edit.Line.include({
           parent._removeMarker.call(this, e)
         }
         break
-      default:
+      case entityKind.SOPHISTICATED: { // для складних ліній
+        if (findDefinition(this._layer.object.code)?.allowDelete(e.target._index, this._layer._rings[0].length)) {
+          parent._removeMarker.call(this, e)
+        }
+        break
+      }
+      default: {
         parent._removeMarker.call(this, e)
+      }
     }
   },
 

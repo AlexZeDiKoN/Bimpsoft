@@ -207,7 +207,9 @@ export const STRATEGY = {
       const lengthChanged = lengthLine(pN0, nextPoints[indChanged])
       const lBootom = lengthLine(pN0, nextPoints[indChanged - 1])
       let lTop = Infinity
-      if (indChanged < nextPoints.length - 1) lTop = lengthLine(pN0, nextPoints[indChanged + 1])
+      if (indChanged < nextPoints.length - 1) {
+        lTop = lengthLine(pN0, nextPoints[indChanged + 1])
+      }
       // радіус сектора повинен бути більше попереднього і менше наступного сектора
       if (lengthChanged <= lBootom + 1 || (lengthChanged >= lTop - 1)) {
         nextPoints[indChanged] = prevPoints[indChanged]
@@ -325,9 +327,11 @@ export const DELETE = {
   areaWithAmplifiers: (amplCount) =>
     (index, count) => (count > MIN_AREA_POINTS + amplCount) && (index < count - amplCount),
 
-  // Вилучення точки дозволене за умови, що її індекс більший вказаної мінілмальної кількості точок та не останній
+  // Вилучення точки дозволене за умови, що
+  // їх більше вказаної мінілмальної кількості точок,
+  // її індекс не останній та не перший
   allowNotEnd: (amount) =>
-    (index, total) => (index >= amount) && (index < (total - 1)),
+    (index, total) => (total > amount) && ((index < (total - 1)) && (index > 0)),
 }
 
 export const RENDER = {

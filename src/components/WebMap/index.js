@@ -1859,6 +1859,8 @@ export default class WebMap extends React.PureComponent {
         }
       } else {
         amp.type = entityKind.SOPHISTICATED
+        const semiHeight = (bounds.getNorth() - bounds.getSouth()) / 8
+        const semiWidth = (bounds.getEast() - bounds.getWest()) / 8
         geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x, y }) => ({
           lng: lng - semiWidth + x * semiWidth * 2,
           lat: lat - semiHeight + (1 - y) * semiHeight * 2,
