@@ -396,7 +396,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects, marchDots,
+      targetingObjects, marchDots, marchMode
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -474,7 +474,7 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
@@ -597,7 +597,7 @@ export default class WebMap extends React.PureComponent {
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
-            this.markers = [ createSearchMarker(point, text) ]
+            this.markers = [ createSearchMarker(point) ]
             this.markers[0].addTo(this.map)
             setTimeout(() => this.markers && this.markers[0].bindPopup(text).openPopup(), 1000)
           }, 500)
@@ -610,9 +610,9 @@ export default class WebMap extends React.PureComponent {
       } else {
         if (marker) {
           let { point, text } = marker
-          text = this.createSearchMarkerText(point, text)
+          text = this.createSearchMarkerText(point)
           setTimeout(() => {
-            const searchMarker = createSearchMarker(point, text)
+            const searchMarker = createSearchMarker(point)
             searchMarker.addTo(this.map)
             this.markers.push(searchMarker)
             setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
@@ -840,7 +840,7 @@ export default class WebMap extends React.PureComponent {
   addUserMarker = (point) => {
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
-      const marker = createSearchMarker(point, text)
+      const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
       setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
@@ -848,28 +848,59 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
+    const drawMarchLine = () => {
+      if (!this.marchLines) {
+        this.marchLines = []
+      }
+      if (this.marchLines.length > 0) {
+        this.marchLines.forEach((line) => {
+          line.removeFrom(this.map)
+        })
+        this.marchLines = []
+      }
+      marchDots.forEach((dot, id) => {
+        if (id !== marchDots.length - 1) {
+          const marchLine = L.polyline([ dot.coord, marchDots[id + 1].coord ], dot.options)
+          marchLine.addTo(this.map)
+          this.marchLines.push(marchLine)
+        }
+      })
+    }
+
     if (marchDots.length !== prevMarchDots.length) {
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
         this.marchMarkers = []
       }
       marchDots.forEach((dot) => {
-        const text = this.createUserMarkerText(dot)
-        const marker = createSearchMarker(dot, text)
+        const marker = createSearchMarker(dot.coord, false)
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
       })
+      if (marchDots.length > 1) {
+        drawMarchLine()
+      }
     } else {
       if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
+        let redrawLine = false
         marchDots.forEach((dot, id) => {
-          if (dot.lat !== prevMarchDots[id].lat || dot.lng !== prevMarchDots[id].lng) {
+          if (
+            dot.coord.lat !== prevMarchDots[id].coord.lat ||
+            dot.coord.lng !== prevMarchDots[id].coord.lng ||
+            dot.options.color !== prevMarchDots[id].options.color
+          ) {
+            redrawLine = true
             this.marchMarkers[id].removeFrom(this.map)
-            const text = this.createUserMarkerText(dot)
-            const marker = createSearchMarker(dot, text)
+            const marker = createSearchMarker(dot.coord, false)
             marker.addTo(this.map)
             this.marchMarkers[id] = marker
           }
         })
+        if (marchDots.length > 1) {
+          if (redrawLine) {
+            drawMarchLine()
+          }
+        }
       }
     }
   }
