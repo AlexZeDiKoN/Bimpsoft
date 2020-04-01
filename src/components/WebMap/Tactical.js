@@ -175,6 +175,7 @@ function createSophisticated (data, layer, initMap) {
       {
         ...prepareOptions(entityKind.SOPHISTICATED),
         textAmplifiers: data.attributes.textAmplifiers,
+        pointAmplifier: data.attributes.pointAmplifier,
         params: data.attributes.params,
         ...(data.attributes.sectorsInfo ? { sectorsInfo: data.attributes.sectorsInfo } : {}),
       },

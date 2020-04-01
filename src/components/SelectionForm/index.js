@@ -21,7 +21,7 @@ import {
   ManoeuvreForm,
   MinedAreaForm,
   SectorsForm,
-  PollutionCircleForm,
+  PollutionCircleForm, MineFieldForm,
 } from './forms'
 import CircularZoneForm from './forms/CircularZoneForm'
 
@@ -146,6 +146,13 @@ const forms = {
     minWidth: 550,
     maxHeight: 645,
   },
+  [SelectionTypes.MINE_FIELD]: {
+    title: i18n.SHAPE_MINEFIELD,
+    component: MineFieldForm,
+    minHeight: 445,
+    minWidth: 750,
+    maxHeight: 445,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -189,6 +196,9 @@ export default class SelectionForm extends React.Component {
           break
         case '017019':
           formType = SelectionTypes.CIRCULAR_ZONE
+          break
+        case '270701':
+          formType = SelectionTypes.MINE_FIELD
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }

@@ -105,7 +105,7 @@ lineDefinitions['017076'] = {
     // відображення радіусу
     const heightPreviousSector = lengthLine(pO, s1top) // heightSector
     const pR = pointsToSegment(pO, pE, heightPreviousSector)
-    drawMaskedText(result, pR, 0, infoArray[0].radius, amplifSize, 'middle', 'baseline')
+    drawMaskedText(result, pR, 0, infoArray[0].radius, amplifSize, 'middle', 'after-edge')
     drawMaskedText(result, pR, 0, sectorInfo[0]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
     let s1topPrev, s2topPrev
     // построения последующих секторов
@@ -130,7 +130,7 @@ lineDefinitions['017076'] = {
       drawMaskedText(result, pA2, 0, infoArray[iA].azimut2, amplifSize)
       // відображення радіусу та ампліфікатору
       const pR = pointsToSegment(pO, pE, lengthLine(pO, s1top))
-      drawMaskedText(result, pR, 0, infoArray[iA].radius, amplifSize, 'middle', 'baseline')
+      drawMaskedText(result, pR, 0, infoArray[iA].radius, amplifSize, 'middle', 'after-edge')
       drawMaskedText(result, pR, 0, sectorInfo[iA]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
       // построение верха секторов
       const mP = [ s1topPrev, s2topPrev, s1bottom, s2bottom ]

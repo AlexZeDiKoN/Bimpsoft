@@ -9,7 +9,7 @@ import {
   drawLightning, drawWires, drawDotted,
 } from '../arrowLib'
 
-// sign name: Міне поле (мінне загородження)
+// sign name: Мінне поле (мінне загородження)
 // task code: DZVIN-5776
 // hint: 'Мінне поле (Мінне загородження)'
 
@@ -77,7 +77,7 @@ lineDefinitions['270701'] = {
       drawDotted(result, [ pN, pS, pK ])
     }
     // Ампліфікатор «N»
-    const amplN = result.layer?.options?.textAmplifiers?.N ?? ''
+    const amplN = result.layer?.options?.pointAmplifier?.middle ?? ''
     if (amplN) {
       const pAR = { x: pO.x + d * 3.5, y: pO.y }
       const pAL = { x: pO.x - d * 3.5, y: pO.y }
@@ -90,7 +90,7 @@ lineDefinitions['270701'] = {
       result,
       { x: pO.x, y: pO.y - d * 1.25 - bb.height * 0.7 },
       0,
-      result.layer?.options?.textAmplifiers?.H1 ?? '',
+      result.layer?.options?.pointAmplifier?.top ?? '',
       SMALL_TEXT_SIZE,
       'middle',
     )
@@ -98,9 +98,9 @@ lineDefinitions['270701'] = {
       result,
       { x: pO.x, y: pO.y + d * 1.25 + bb.height * 0.85 },
       0,
-      result.layer?.options?.textAmplifiers?.H2 ?? '',
+      result.layer?.options?.pointAmplifier?.bottom ?? '',
       SMALL_TEXT_SIZE,
       'middle',
     )
-  }
+  },
 }

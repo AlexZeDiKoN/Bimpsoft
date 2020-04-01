@@ -10,6 +10,7 @@ import SophisticatedForms from './SophisticatedForm'
 import AirborneForms from './AirborneForm'
 import ManoeuvreForms from './ManoeuvreControlForm'
 import MinedAreaForms from './MinedAreaForm'
+import MineFieldForms from './MineFieldForm'
 import SectorsForms from './SectorsForm'
 import PollutionCircleForms from './PollutionCircleForm'
 
@@ -25,5 +26,6 @@ export const SophisticatedForm = SophisticatedForms
 export const AirborneForm = AirborneForms
 export const ManoeuvreForm = ManoeuvreForms
 export const MinedAreaForm = MinedAreaForms
+export const MineFieldForm = MineFieldForms
 export const SectorsForm = SectorsForms
 export const PollutionCircleForm = PollutionCircleForms

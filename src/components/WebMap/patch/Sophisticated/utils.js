@@ -500,7 +500,7 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
   let y
-  if (textAlign === 'baseline') {
+  if (textAlign === 'baseline' || textAlign === 'after-edge') {
     y = h * 2
   } else if (textAlign === 'before-edge') {
     y = 0
