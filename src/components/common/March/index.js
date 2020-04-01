@@ -198,6 +198,7 @@ class March extends Component {
         <div className={'left'}>{this.renderSegmentBlocks()}</div>
         <div className={'right'}>{this.renderDotsForms()}</div>
       </div>
+      <button onClick={() => this.props.getNearestSettlement({ lat: 30, lng: 50 })}>getNearestSettlement(48.62010, 30.08057)</button>
     </div>
   }
 }

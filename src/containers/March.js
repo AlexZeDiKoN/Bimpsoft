@@ -9,7 +9,7 @@ const mapStateToProps = ({ march: { indicators, segments, integrity } }) => ({
   integrity,
 })
 
-const mapDispatchToProps = {
+const mapDispatchToProps = catchErrors({
   setMarchParams: march.setMarchParams,
   setIntegrity: march.setIntegrity,
   editFormField: march.editFormField,
@@ -18,7 +18,8 @@ const mapDispatchToProps = {
   addChild: march.addChild,
   deleteChild: march.deleteChild,
   setCoordMode: march.setCoordMode,
-}
+  getNearestSettlement: march.getNearestSettlements,
+})
 
 const MarchContainer = connect(
   mapStateToProps,

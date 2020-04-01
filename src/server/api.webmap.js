@@ -90,4 +90,6 @@ export default {
     getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }),
   groupMove: (id, shift) =>
     getDirect(`${webmapUrl}/group/move`, { id, shift }),
+  nearestSettlement: ({ lat, lng }) => // coord = { lat, lng }
+    getDirect(`${webmapUrl}/nearestSettlement`, { x: lat, y: lng }),
 }
