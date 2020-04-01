@@ -13,8 +13,6 @@ const PAIRS_DEFAULT = [
   { id: 'bottom', name: 'H2_' },
 ]
 
-// const amplifiersPairs = PAIRS_DEFAULT
-
 export const PATH_AMPLIFIERS = [ 'attributes', 'pointAmplifier' ]
 
 const WithAmplifiers = (Component) => class AmplifiersComponent extends Component {
