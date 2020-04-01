@@ -15,10 +15,11 @@ class March extends Component {
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
     setRefPoint: PropTypes.func.isRequired,
+    dataMarch: PropTypes.shape({}).isRequired,
   }
 
   renderDotsForms = () => {
-    const { segments, editFormField, addChild, deleteChild, setCoordMode, setRefPoint } = this.props
+    const { segments, editFormField, addChild, deleteChild, setCoordMode, setRefPoint, dataMarch } = this.props
     const handlers = {
       editFormField,
       addChild,
@@ -35,9 +36,11 @@ class March extends Component {
           <div className={'segment-block'}>
             <SegmentBlock
               segment={segment}
+              nextSegment={segments[segmentId + 1]}
+              segmentId={segmentId}
+              dataMarch={dataMarch}
               addSegment={this.props.addSegment}
               deleteSegment={this.props.deleteSegment}
-              segmentId={segmentId}
             />
           </div>
           <div className={'form-container'}>

@@ -3,9 +3,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
+import formulas from '../../formulas'
+
+const { getTruckSegmentDetails, getTrainOrShipSegmentDetails } = formulas.marchTime
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId } = props
+  const { segment, nextSegment, addSegment, deleteSegment, segmentId, dataMarch } = props
   const { segmentType, children } = segment
 
   if (segmentType === 0) {
@@ -28,6 +31,10 @@ const SegmentBlock = (props) => {
     default:
       break
   }
+
+  const segmentDetails = segmentType === 41
+    ? getTruckSegmentDetails(segment, nextSegment, dataMarch)
+    : getTrainOrShipSegmentDetails(segment, nextSegment, dataMarch)
 
   return (<div className={'segment'} style={{ backgroundColor: color }}>
     <SegmentButtonPopover
@@ -58,8 +65,10 @@ SegmentBlock.propTypes = {
     segmentType: PropTypes.number.isRequired,
     children: PropTypes.array.isRequired,
   }).isRequired,
+  nextSegment: PropTypes.shape({}),
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
+  dataMarch: PropTypes.shape({}),
 }
 
 export default SegmentBlock

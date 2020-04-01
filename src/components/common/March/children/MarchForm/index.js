@@ -21,12 +21,12 @@ const marchPoints = [
 const getPointByName = (name) => marchPoints.find((point) => point.name === name) || marchPoints[0]
 
 const MarchForm = (props) => {
-  const { name, coord = {}, refPoint, editableName, segmentType, required, segmentId, childId, isLast } = props
+  const { name, coord = {}, refPoint, editableName, segmentType, required, segmentId, childId, isLast, restTime } = props
   const { editFormField, addChild, deleteChild, setCoordMode, setRefPoint } = props.handlers
 
-  let point = getPointByName(name)
+  const point = getPointByName(name)
 
-  const [ pointTime, setPointTime ] = useState(0)
+  const [ pointTime, setPointTime ] = useState(+restTime)
   const [ rPoint, changeRefPoint ] = useState(refPoint)
 
   const onChangeTime = (e) => {
@@ -40,7 +40,7 @@ const MarchForm = (props) => {
     setPointTime(+numberVal)
   }
 
-  const onEditFormField = (value) => {
+  const onChangeMarchPoint = (value) => {
     editFormField({
       val: value,
       segmentId,
@@ -48,8 +48,16 @@ const MarchForm = (props) => {
       fieldName: 'name',
     })
 
-    point = getPointByName(value)
-    setPointTime(+point.time)
+    const point = getPointByName(value)
+
+    editFormField({
+      val: point.time,
+      segmentId,
+      childId,
+      fieldName: 'restTime',
+    })
+
+    setPointTime(point.time)
   }
 
   const onBlurRefPoint = (e) => {
@@ -58,6 +66,15 @@ const MarchForm = (props) => {
       fieldName: 'refPoint',
       segmentId,
       childId,
+    })
+  }
+
+  const onBlurTime = (e) => {
+    editFormField({
+      val: +e.target.value,
+      segmentId,
+      childId,
+      fieldName: 'restTime',
     })
   }
 
@@ -101,11 +118,11 @@ const MarchForm = (props) => {
         <div className={'march-coord'}>
           <Coordinates
             coordinates={coord}
-            onChange={(e) => editFormField({
+            onChange={({ lat, lng }) => editFormField({
               fieldName: 'coord',
               segmentId,
               childId,
-              val: e,
+              val: { lat, lng },
             })}
             onSearch={placeSearch}
           />
@@ -132,7 +149,7 @@ const MarchForm = (props) => {
             : <Select
               className={'select-point'}
               defaultValue={name}
-              onChange={onEditFormField}
+              onChange={onChangeMarchPoint}
             >
               {marchPoints.map(({ name }, id) => (
                 <Select.Option key={id} value={name}>{name}</Select.Option>
@@ -145,7 +162,13 @@ const MarchForm = (props) => {
           {(!point.base)
             ? <div className={'time-block'}>
               <div className={'logo-time'}/>
-              <Input onChange={onChangeTime} value={pointTime} maxLength={10} style={{ width: '50px' }}/>
+              <Input
+                onChange={onChangeTime}
+                onBlur={onBlurTime}
+                value={pointTime}
+                maxLength={10}
+                style={{ width: '50px' }}
+              />
             </div>
             : <div/>
           }
@@ -175,6 +198,7 @@ MarchForm.propTypes = {
     setRefPoint: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
+  restTime: PropTypes.number,
 }
 
 export default MarchForm

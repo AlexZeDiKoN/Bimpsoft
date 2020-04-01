@@ -7,6 +7,27 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  dataMarch: {
+    vehiclesLength: 30,
+    distanceVehicle: 50,
+    distanceRots: 10,
+    distanceBats: 20,
+    distanceBrg: 30,
+    distanceGslz: 40,
+    vehiclesCount: 5,
+    rotsCount: 60,
+    batsCount: 50,
+    brgCount: 40,
+    timeIncreaseFactor: 1.2,
+    timeCorrectionFactor: 1.3,
+    mountingFactor: 1.4,
+    workInDarkFactor: 1.5,
+    workInGasMasksFactor: 1.6,
+    loadingTimes: [ 30, 50, 120, 60, 180 ],
+    uploadingTimes: [ 20, 40, 110, 40, 160 ],
+    intervalEchelon: 1,
+    numberEchelons: 1,
+  },
   segments: List([
     {
       name: 'Пункт відправлення',
@@ -14,23 +35,33 @@ const initState = {
       segmentType: 41, // Своїм ходом
       terrain: 69, // Рівнинна
       velocity: 30,
-      coord: { },
+      coord: {
+        lat: 20,
+        lng: 20,
+      },
       required: true,
       editableName: false,
       children: [
         {
           name: 'Вихідний рубіж',
           lineType: '',
-          coord: { },
+          coord: {
+            lat: 25,
+            lng: 25,
+          },
           refPoint: '',
           required: true,
           editableName: true,
+          restTime: null,
         },
       ],
     },
     {
       segmentType: 0,
-      coord: { },
+      coord: {
+        lat: 30,
+        lng: 30,
+      },
       name: 'Пункт призначення',
       required: true,
       editableName: false,
@@ -60,6 +91,7 @@ const defaultChild = {
   refPoint: '',
   required: false,
   editableName: true,
+  restTime: 0,
 }
 
 // eslint-disable-next-line
