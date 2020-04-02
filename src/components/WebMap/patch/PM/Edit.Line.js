@@ -89,7 +89,7 @@ L.PM.Edit.Line.include({
         }
         break
       case entityKind.SOPHISTICATED: { // для складних ліній
-        if (findDefinition(this._layer.object.code)?.allowDelete(e.target._index, this._layer._rings[0].length)) {
+        if (this._layer.lineDefinition?.allowDelete(e.target._index, this._layer._latlngs.length)) {
           parent._removeMarker.call(this, e)
         }
         break
