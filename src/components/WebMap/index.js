@@ -1833,38 +1833,34 @@ export default class WebMap extends React.PureComponent {
       this.props.newShapeFromSymbol(data, { lat, lng })
     }
     if (data.type === 'line') {
-      const point = this.map.mouseEventToLatLng(e)
-      const { lat, lng } = point
+      const point = this.map.mouseEventToContainerPoint(e)
+      const { x, y } = point
       const { amp } = data
-      const bounds = this.map.getBounds()
-      const semiWidth = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
-      const semiHeight = (bounds.getEast() - bounds.getWest()) / 12
+      const size = this.map.getSize()
+      const w = Math.max(Math.min(size.x, size.y) / 4, 128)
+      const sw = w / 2
+      const c2g = (p) => this.map.containerPointToLatLng(p)
       let geometry = []
-      if (amp.type !== 'special') {
-        if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
-          const p0 = { lat, lng: lng + semiHeight }
-          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
-          const p2 = { lat: lat + semiWidth, lng: lng - semiHeight }
-          geometry = [ p0, p1, p2 ]
-        }
-        if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
-          const p0 = { lat: lat + semiWidth, lng: lng + semiHeight }
-          const p1 = { lat: lat - semiWidth, lng: lng - semiHeight }
-          geometry = [ p0, p1 ]
-        }
-        if (amp.type === entityKind.CIRCLE) {
-          const p0 = { lat, lng }
-          const p1 = { lat: lat + semiWidth, lng: lng + semiHeight }
-          geometry = [ p0, p1 ]
-        }
+      if (amp.type === entityKind.SOPHISTICATED) {
+        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+          x: x - w + dx * w * 2,
+          y: y - w + dy * w * 2,
+        })).map(c2g)
+      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
+        const p0 = { x: x + sw, y }
+        const p1 = { x: x - sw, y: y - sw }
+        const p2 = { x: x - sw, y: y + sw }
+        geometry = [ p0, p1, p2 ].map(c2g)
+      } else if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
+        const p0 = { x: x + sw, y: y + sw }
+        const p1 = { x: x - sw, y: y - sw }
+        geometry = [ p0, p1 ].map(c2g)
       } else {
-        amp.type = entityKind.SOPHISTICATED
-        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x, y }) => ({
-          lng: lng - semiWidth + x * semiWidth * 2,
-          lat: lat - semiHeight + (1 - y) * semiHeight * 2,
-        }))
+        const p0 = { x, y }
+        const p1 = { x: x + sw, y: y + sw }
+        geometry = [ p0, p1 ].map(c2g)
       }
-      this.props.newShapeFromLine(data, { lat, lng }, geometry)
+      this.props.newShapeFromLine(data, this.map.containerPointToLatLng(point), geometry)
     }
   }
 
