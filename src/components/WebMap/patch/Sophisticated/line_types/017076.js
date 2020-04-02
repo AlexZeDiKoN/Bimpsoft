@@ -61,7 +61,7 @@ lineDefinitions['017076'] = {
       return
     }
     // ---------------------------------------------------------------
-    const sectorInfo = result.layer?.options?.sectorsInfo.toJS()
+    const sectorInfo = result.layer?.object?.attributes?.sectorsInfo.toJS()
     const coordArray = result.layer?.getLatLng ? [ result.layer.getLatLng() ] : result.layer?.getLatLngs()
     const infoArray = []
     const coordO = coordArray[0]

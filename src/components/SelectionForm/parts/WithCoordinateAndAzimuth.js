@@ -28,12 +28,12 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
     this.setState({ azimuthText: null })
   }
 
-  azimuthFocusChange = (isActive, index) => () => {
-    const { onCoordinateFocusChange } = this.props
-    onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
-  }
+  // azimuthFocusChange = (isActive, index) => {
+  //   const { onCoordinateFocusChange } = this.props
+  //   onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
+  // }
 
-  azimuthChangeHandler = (azimuthText) => {
+  azimuthChangeHandler (azimuthText) {
     const azimuth = Number(azimuthText)
     if (angleDegCheck(azimuth)) {
       const formStore = this.getResult()
@@ -53,31 +53,30 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
     }
   }
 
-  coordinateazimuthFocusChange (isActive, index) {
+  coordinateFocusChange (isActive, index) {
     const { onCoordinateFocusChange } = this.props
     onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
   }
 
-  onCoordinateazimuthFocusHandler = this.coordinateazimuthFocusChange.bind(this, true, 0)
+  onCoordinateazimuthFocusHandler = this.coordinateFocusChange.bind(this, true, 0)
 
-  onCoordinateazimuthBlurHandler = this.coordinateazimuthFocusChange.bind(this, false, 0)
+  onCoordinateazimuthBlurHandler = this.coordinateFocusChange.bind(this, false, 0)
 
   onCoordinateChangeHandler = this.coordinateChangeHandler.bind(this, 0)
 
-  onazimuthFocusHandler = this.azimuthFocusChange.bind(this, true)
+  onAzimuthFocusHandler = this.coordinateFocusChange.bind(this, true, 1)
 
-  onazimuthBlurHandler = this.azimuthFocusChange.bind(this, false)
+  onAzimuthBlurHandler = this.coordinateFocusChange.bind(this, false, 1)
 
-  onazimuthChangeHandler = this.azimuthChangeHandler.bind(this)
+  onAzimuthChangeHandler = this.azimuthChangeHandler.bind(this)
 
   renderCoordinateAndAzimuth () {
     const { azimuthText = null } = this.state
-    const formStore = this.getResult()
-    const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
+    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const coordBegin = coordinatesArray[0]
     const coordEnd = coordinatesArray[1]
     const azimuth = azimuthText !== null ? azimuthText : distanceAngle(coordBegin, coordEnd).angledeg.toFixed(0)
-    const azimuthInd = 1
+    // const azimuthInd = 1
     const canEdit = this.isCanEdit()
     const azimuthIsWrong = angleDegCheck(azimuth)
     return (
@@ -96,13 +95,13 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
                 onSearch={placeSearch}
               />
             </FormItem>
-            <FormRow label={i18n.azimuth}>
+            <FormRow label={i18n.AZIMUT}>
               <InputWithSuffix
                 readOnly={!canEdit}
                 value={azimuth}
-                onChange={canEdit ? this.onazimuthChangeHandler : null }
-                onFocus={this.onazimuthFocusHandler(azimuthInd)}
-                onBlur={this.onazimuthBlurHandler(azimuthInd)}
+                onChange={canEdit ? this.onAzimuthChangeHandler : null }
+                onFocus={this.onAzimuthFocusHandler}
+                onBlur={this.onAzimuthBlurHandler}
                 suffix={i18n.ABBR_GRADUS}
                 error={azimuthIsWrong}
               />

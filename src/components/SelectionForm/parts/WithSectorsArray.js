@@ -72,7 +72,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
 
   // Обработчик нажатия кнопки добавления сектора
   sectorAddHandler = () => this.setResult((result) => {
-    let endIndex
+    let endIndex = null
     const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
       const coordO = coordArray.get(0)
       const coordA = coordArray.get(1)
@@ -186,13 +186,11 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
               {sector}
             </tbody>
           </table>
-          <FormRow label={i18n.SECTOR}>
-            {canEdit && editSectors && <IconHovered
-              icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
-              hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
-              onClick={this.sectorAddHandler}
-            />}
-          </FormRow>
+          {canEdit && editSectors && <IconHovered
+            icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
+            hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
+            onClick={this.sectorAddHandler}
+          />}
         </div>
       </FormDarkPart>
     )

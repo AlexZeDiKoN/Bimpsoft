@@ -3,7 +3,7 @@ import { MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawRectangleC, drawText, textBBox,
+  drawRectangleC, drawText,
 } from '../utils'
 import {
   drawLightning, drawWires, drawDotted,
@@ -44,13 +44,15 @@ lineDefinitions['270701'] = {
 
   // Рендер-функція
   render: (result, points, scale) => {
-    const mineType = result.layer?.options?.params?.mineType ?? MINE_TYPES.ANTI_TANK
-    const controlType = result.layer?.options?.params?.controlType ?? CONTROL_TYPES.UNCONTROLLED
-    const dummy = result.layer?.options?.params?.dummy ?? false
+    const mineType = result.layer?.object?.attributes?.params?.mineType ?? MINE_TYPES.ANTI_TANK
+    const controlType = result.layer?.object?.attributes?.params?.controlType ?? CONTROL_TYPES.UNCONTROLLED
+    const dummy = result.layer?.object?.attributes?.params?.dummy ?? false
+    const amplifiers = result.layer?.object?.attributes?.pointAmplifier ?? { top: null, middle: null, bottom: null }
     const pO = points[0]
     // міни
     const d = SIZE * scale / 2
     const symbolScale = mineType >= MINE_TYPES.MARINE ? 0.9 : 1
+
     let symbol = new Symbol(CODE[mineType], { size: SIZE * scale * symbolScale }).asSVG()
     result.amplifiers += `<g transform="translate(${pO.x - d * 3.2}, ${pO.y - d * 1.05})">${symbol}</g>`
     result.amplifiers += `<g transform="translate(${pO.x + d}, ${pO.y - d * 1.05})">${symbol}</g>`
@@ -58,7 +60,9 @@ lineDefinitions['270701'] = {
       symbol = new Symbol(CODE[0], { size: SIZE * scale * symbolScale }).asSVG()
     }
     result.amplifiers += `<g transform="translate(${pO.x - d * 1.1}, ${pO.y - d * 1.05})">${symbol}</g>`
+
     drawRectangleC(result, pO, d * 6.5, d * 2.5)
+
     // Керованість
     if (controlType === 1) { // Керованість по радіо
       const pN = { x: pO.x + 2 * d, y: pO.y - d * 5 }
@@ -77,30 +81,36 @@ lineDefinitions['270701'] = {
       drawDotted(result, [ pN, pS, pK ])
     }
     // Ампліфікатор «N»
-    const amplN = result.layer?.options?.pointAmplifier?.middle ?? ''
-    if (amplN) {
+    if (amplifiers.middle && amplifiers.middle.length !== 0) {
       const pAR = { x: pO.x + d * 3.5, y: pO.y }
       const pAL = { x: pO.x - d * 3.5, y: pO.y }
-      drawText(result, pAR, 0, amplN, 1, 'start')
-      drawText(result, pAL, 0, amplN, 1, 'end')
+      drawText(result, pAR, 0, amplifiers.middle, 1, 'start')
+      drawText(result, pAL, 0, amplifiers.middle, 1, 'end')
     }
     // Ампліфікатор «H1» «H2»
-    const bb = textBBox('bp', result.layer, SMALL_TEXT_SIZE)
-    drawText(
-      result,
-      { x: pO.x, y: pO.y - d * 1.25 - bb.height * 0.7 },
-      0,
-      result.layer?.options?.pointAmplifier?.top ?? '',
-      SMALL_TEXT_SIZE,
-      'middle',
-    )
-    drawText(
-      result,
-      { x: pO.x, y: pO.y + d * 1.25 + bb.height * 0.85 },
-      0,
-      result.layer?.options?.pointAmplifier?.bottom ?? '',
-      SMALL_TEXT_SIZE,
-      'middle',
-    )
+    if (amplifiers.top && amplifiers.top.length !== 0) {
+      drawText(
+        result,
+        { x: pO.x, y: pO.y - d * 1.3 },
+        0,
+        amplifiers.top ?? '',
+        SMALL_TEXT_SIZE,
+        'middle',
+        null,
+        'after-edge',
+      )
+    }
+    if (amplifiers.bottom && amplifiers.bottom.length !== 0) {
+      drawText(
+        result,
+        { x: pO.x, y: pO.y + d * 1.25 },
+        0,
+        amplifiers.bottom ?? '',
+        SMALL_TEXT_SIZE,
+        'middle',
+        null,
+        'before-edge',
+      )
+    }
   },
 }

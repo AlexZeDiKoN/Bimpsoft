@@ -21,32 +21,40 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
     }
   }
 
+  isGoodRadiusRight = (radius, coordArray, index) => {
+    if (!Number.isFinite(radius)) {
+      return false
+    }
+    const coord1 = coordArray[0]
+    let isGood = false
+    if (Coord.check(coord1)) {
+      const coord2 = L.CRS.Earth.calcPairRight(coord1, radius)
+      switch (index) {
+        case 1:
+          isGood = coord2.lng > coordArray[index + 1].lng
+          break
+        case 2:
+        case 3:
+          isGood = (coord2.lng > coordArray[index + 1].lng) && (coord2.lng < coordArray[index - 1].lng)
+          break
+        case 4:
+          isGood = (coord2.lng > coordArray[0].lng) && (coord2.lng < coordArray[index - 1].lng)
+          break
+        default:
+          isGood = false
+      }
+    }
+    return isGood
+  }
+
   radiusChangeHandler = (index) => (radiusText) => {
     this.setResult((result) => {
       const radius = Number(radiusText)
-      if (Number.isFinite(radius)) {
-        const coordinatesArray = result.getIn(COORDINATE_PATH).toJS()
-        const coord1 = coordinatesArray[0]
-        if (Coord.check(coord1)) {
-          const coord2 = L.CRS.Earth.calcPairRight(coord1, radius)
-          let isSet
-          switch (index) {
-            case 1:
-              isSet = coord2.lng > coordinatesArray[index + 1].lng
-              break
-            case 2:
-            case 3:
-              isSet = (coord2.lng > coordinatesArray[index + 1].lng) && (coord2.lng < coordinatesArray[index - 1].lng)
-              break
-            case 4:
-              isSet = (coord2.lng > coordinatesArray[0].lng) && (coord2.lng < coordinatesArray[index - 1].lng)
-              break
-            default: isSet = false
-          }
-          if (isSet) {
-            return result.setIn([ ...COORDINATE_PATH, index ], coord2)
-          }
-        }
+      const coordinatesArray = result.getIn(COORDINATE_PATH).toJS()
+      const isSet = this.isGoodRadiusRight(radius, coordinatesArray, index)
+      if (isSet) {
+        const coord2 = L.CRS.Earth.calcPairRight(coordinatesArray[0], radius)
+        return result.setIn([ ...COORDINATE_PATH, index ], coord2)
       }
       return result
     })
@@ -57,21 +65,9 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
 
   radiiBlurHandler = (index) => () => {
     const { radiiText = [] } = this.state
-    const radius = Number(radiiText[index])
     radiiText[index] = undefined
     this.setState({ radiiText })
     this.onCoordinateBlurHandler(index)
-    this.setResult((result) => {
-      if (Number.isFinite(radius)) {
-        const coordinatesArray = result.getIn(COORDINATE_PATH)
-        const coord1 = coordinatesArray.get(0)
-        if (Coord.check(coord1)) {
-          const coord2 = L.CRS.Earth.calcPairRight(coord1, radius)
-          result = result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(index, coord2))
-        }
-      }
-      return result
-    })
   }
 
   radiiFocusHandler = (index) => () => {
@@ -88,7 +84,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
         {coordinatesArray.map((elm, index) => {
           const radius = radiiText[index] ? radiiText[index]
             : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
-          const radiusIsWrong = !Number.isFinite(Number(radius))
+          const radiusIsGood = this.isGoodRadiusRight(Number(radius), coordinatesArray, index)
           return (index !== 0) ? (
             <FormRow key={index} label={`${i18n.RADIUS} «${MARKER[index]}»`}>
               <InputWithSuffix
@@ -97,8 +93,8 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
                 onChange={canEdit ? this.radiusChangeHandler(index) : null}
                 onFocus={canEdit ? this.radiiFocusHandler(index) : null}
                 onBlur={canEdit ? this.radiiBlurHandler(index) : null}
-                suffix={i18n.ABBR_METERS}
-                error={radiusIsWrong}
+                suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
+                error={!radiusIsGood}
               />
             </FormRow>) : ''
         })}
