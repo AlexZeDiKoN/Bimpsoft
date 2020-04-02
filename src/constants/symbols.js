@@ -58,7 +58,11 @@ export const symbols = [
   {
     name: 'Пункти управління',
     children: [
-      { hint: 'Командний пункт ЗС України', code: '10031002250000009800', amp: { [amps.specialHeadquarters]: 'ЗСУ' } },
+      {
+        hint: 'Командний пункт ЗС України',
+        code: '10031002250000009800',
+        amp: { [amps.specialHeadquarters]: 'ЗСУ' },
+      },
       {
         hint: 'Командний пункт Об’єднаних Сил ЗС України',
         code: '10031006250000009800',
@@ -119,7 +123,11 @@ export const symbols = [
         code: '10031002220000009800',
         amp: { [amps.specialHeadquarters]: 'ОТУ' },
       },
-      { hint: 'Командний пункт корпусу резерву', code: '10031006220000009800', amp: { [amps.specialHeadquarters]: 'КР' } },
+      {
+        hint: 'Командний пункт корпусу резерву',
+        code: '10031006220000009800',
+        amp: { [amps.specialHeadquarters]: 'КР' }
+      },
       {
         hint: 'Пункт управління адміністрації Державної спеціальної служби транспорту (ДССТ)',
         code: '10031002240000009800',
@@ -285,7 +293,11 @@ export const symbols = [
         code: '10032500002407010000',
         amp: { isSvg: true, type: entityKind.POLYLINE, left: ENDS_STROKE1, right: ENDS_STROKE1 },
       },
-      { hint: 'Рубіж дії бойових підрозділу', code: '10032500000170010000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Рубіж дії бойових підрозділу',
+        code: '10032500000170010000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
       {
         hint: 'Район зосередження',
         code: '10032500001502000000',
@@ -305,7 +317,11 @@ export const symbols = [
       },
       { hint: 'Ділянка прориву', code: '10032500003402000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       { hint: 'Ділянка висадки морського десанту (пункт висадки)', code: '10032500002104000000', amp: {} },
-      { hint: 'Ділянка форсування', code: '10032500002713000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Ділянка форсування',
+        code: '10032500002713000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Район десантування (висадки розвідгруп)',
         code: '10032500001508000000',
@@ -353,9 +369,21 @@ export const symbols = [
         code: '10032500000170070000',
         amp: { isSvg: true, type: entityKind.CURVE, right: ENDS_ARROW1 },
       },
-      { hint: 'Напрямок головного удару', code: '10032500001514030000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Інший напрямок удару', code: '10032500001514040000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Хибний напрямок наступу', code: '10032500001514060000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Напрямок головного удару',
+        code: '10032500001514030000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Інший напрямок удару',
+        code: '10032500001514040000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Хибний напрямок наступу',
+        code: '10032500001514060000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Засідка', code: '10032500001417000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
         hint: 'Рубіж блокування противника (блокування)',
@@ -378,7 +406,11 @@ export const symbols = [
         code: '10032500003410000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Сковування противника', code: '10032500001512040000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Сковування противника',
+        code: '10032500001512040000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Вклинення', code: '10032500003418000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
         hint: 'Затримати - затримання маневру противника у визначеному місці та у визначений час',
@@ -400,7 +432,11 @@ export const symbols = [
         code: '10032500003420000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Відхід під натиском', code: '10032500003424000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Відхід під натиском',
+        code: '10032500003424000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Замінити підрозділи – здійснення заміни підрозділів',
         code: '10032500003419000000',
@@ -444,7 +480,11 @@ export const symbols = [
       { hint: 'Знищити', code: '10032500003409000000', amp: {} },
       { hint: 'Подавити (нейтралізувати)', code: '10032500003416000000', amp: {} },
       { hint: 'Запобігти (перешкодити)', code: '10032500003414000000', amp: {} },
-      { hint: 'Ізолювання противника', code: '10032500003415000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Ізолювання противника',
+        code: '10032500003415000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Зайняття визначеного району без вогневого контакту з противником',
         code: '10032500003417000000',
@@ -460,7 +500,11 @@ export const symbols = [
         code: '10032500001512050000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Взяти під контроль', code: '10032500003421000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Взяти під контроль',
+        code: '10032500003421000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Імовірний напрямок удару повітряного противника',
         code: '10062500001514010000',
@@ -474,12 +518,23 @@ export const symbols = [
       {
         hint: 'Рубіж постановки завад (придушення ППО)',
         code: '10032500000170120000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, color: '#ff0404', pointAmplifier: { [amps.T]: 'SEAD' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          color: '#ff0404',
+          pointAmplifier: { [amps.T]: 'SEAD' },
+        },
       },
       {
         hint: 'Рубіж пуску КР, ПРР',
         code: '10032500000170130000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, color: '#ff0404', lineType: types.dashed.value, right: ENDS_ARROW2 },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          color: '#ff0404',
+          lineType: types.dashed.value,
+          right: ENDS_ARROW2
+        },
       },
       {
         hint: 'Зона чергування постановників завад',
@@ -489,7 +544,13 @@ export const symbols = [
       {
         hint: 'Зона баражування літаків-розвідників (ДРЛВ, ДРЛВУ)',
         code: '10032500000170140000',
-        amp: { isSvg: true, type: entityKind.CURVE, color: '#ff0404', lineType: types.dashed.value, right: ENDS_ARROW2 },
+        amp: {
+          isSvg: true,
+          type: entityKind.CURVE,
+          color: '#ff0404',
+          lineType: types.dashed.value,
+          right: ENDS_ARROW2
+        },
       },
       {
         hint: 'Головний напрямок атаки',
@@ -609,7 +670,7 @@ export const symbols = [
       {
         hint: 'Район дистанційного мінування місцевості',
         code: '10032500002708000000',
-        amp: { isSvg: true, type: 'constructor' },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
       {
         hint: 'Район розповсюдження агітаційного матеріалу',
@@ -639,7 +700,11 @@ export const symbols = [
         code: '10032500002405000000opr',
         amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'ОПР' } },
       },
-      { hint: 'Рубіж досяжності вогневих засобів', code: '10032500000170190000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Рубіж досяжності вогневих засобів',
+        code: '10032500000170190000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Ракетний удар', code: '10032500000170200000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
         hint: 'Район зосередження',
@@ -739,7 +804,11 @@ export const symbols = [
         code: '10032500002907000000',
         amp: { isSvg: true, type: entityKind.POLYLINE, right: ENDS_ARROW2, left: ENDS_ARROW2 },
       },
-      { hint: 'На підручних засобах', code: '10032500002908000000', amp: { isSvg: true, type: entityKind.POLYLINE, left: ENDS_FORK } },
+      {
+        hint: 'На підручних засобах',
+        code: '10032500002908000000',
+        amp: { isSvg: true, type: entityKind.POLYLINE, left: ENDS_FORK }
+      },
       { hint: 'Хибний міст', code: '10031501001305000000', amp: {} },
     ],
   },
@@ -763,9 +832,21 @@ export const symbols = [
       { hint: 'Зенітний ракетний (ракетно-артилерійський) дивізіон', code: '10031000161301020000', amp: {} },
       { hint: 'Група регламенту та ремонту', code: '10031000151611000000', amp: {} },
       { hint: 'Технічна батарея', code: '10031000151301003100', amp: { [amps.uniqueDesignation]: 'тб' } },
-      { hint: 'Сектор відповідальності підрозділу ППО', code: '10032500000170320000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Кочуюча БМ (ЗСУ, підрозділ)', code: '10032500000170330000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Зона розвідки повітряного противника', code: '10032500000170190000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Сектор відповідальності підрозділу ППО',
+        code: '10032500000170320000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Кочуюча БМ (ЗСУ, підрозділ)',
+        code: '10032500000170330000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Зона розвідки повітряного противника',
+        code: '10032500000170190000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
     ],
   },
   {
@@ -795,48 +876,96 @@ export const symbols = [
         amp: { [amps.additionalInformation]: 'СЗ' },
       },
       { hint: 'Станція радіозв’язку', code: '10031500002001000000', amp: { [amps.additionalInformation]: 'РЗ' } },
-      { hint: 'Станція транкінгового зв’язку', code: '10031500002001000000', amp: { [amps.additionalInformation]: 'ТрЗ' } },
+      {
+        hint: 'Станція транкінгового зв’язку',
+        code: '10031500002001000000',
+        amp: { [amps.additionalInformation]: 'ТрЗ' }
+      },
       {
         hint: 'Станція радіорелейного зв’язку',
         code: '10031500002001000000',
         amp: { [amps.additionalInformation]: 'РРЗ' },
       },
-      { hint: 'Станція тропосферного зв’язку', code: '10031500002001000000', amp: { [amps.additionalInformation]: 'ТРЗ' } },
-      { hint: 'Станція супутникового зв’язку', code: '10031500002001000000', amp: { [amps.additionalInformation]: 'CЗ' } },
+      {
+        hint: 'Станція тропосферного зв’язку',
+        code: '10031500002001000000',
+        amp: { [amps.additionalInformation]: 'ТРЗ' }
+      },
+      {
+        hint: 'Станція супутникового зв’язку',
+        code: '10031500002001000000',
+        amp: { [amps.additionalInformation]: 'CЗ' }
+      },
       {
         hint: 'Лінія радіозв’язку',
         code: '10032500000170340000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'РЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'РЗ' }
+        },
       },
       {
         hint: 'Лінія транкінгового зв’язку',
         code: '10032500000170350000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'ТрЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'ТрЗ' }
+        },
       },
       {
         hint: 'Лінія радіорелейного зв’язку',
         code: '10032500000170360000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'РРЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'РРЗ' }
+        },
       },
       {
         hint: 'Лінія тропосферного зв’язку',
         code: '10032500000170370000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'TРЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'TРЗ' }
+        },
       },
       {
         hint: 'Лінія супутникового зв’язку',
         code: '10032500000170380000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'CЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'CЗ' }
+        },
       },
       {
         hint: 'Лінія проводового зв’язку',
         code: '10032500000170390000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: 'ПрЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: 'ПрЗ' }
+        },
       },
       {
         hint: 'Вісь (рокада) зв’язку в опорній мережі зв’язку',
         code: '10032500000170400000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifierType: 'text', intermediateAmplifier: { [amps.N]: '2E1' }, strokeWidth: 16 },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifierType: 'text',
+          intermediateAmplifier: { [amps.N]: '2E1' },
+          strokeWidth: 16
+        },
       },
       { hint: 'Військовий супутник зв’язку', code: '10030500001111000000', amp: {} },
       { hint: 'Цивільний супутник зв’язку', code: '10030500001206000000', amp: {} },
@@ -991,7 +1120,11 @@ export const symbols = [
       { hint: 'Повітряний засіб (вертоліт) радіоелектронної боротьби (РЕБ)', code: '10030100001102001600', amp: {} },
       { hint: 'Розвідувальний повітряний засіб (вертоліт)', code: '10030100001102001800', amp: {} },
       { hint: 'Багатоцільовий повітряний засіб (вертоліт)', code: '10030100001102003600', amp: {} },
-      { hint: 'Допоміжний (загального застосування) повітряний засіб (вертоліт)', code: '10030100001102000700', amp: {} },
+      {
+        hint: 'Допоміжний (загального застосування) повітряний засіб (вертоліт)',
+        code: '10030100001102000700',
+        amp: {}
+      },
       { hint: 'Вертоліт - повітряний пункт управління', code: '10030100001102001100', amp: {} },
       { hint: 'Вертоліт санітарний (медичної евакуації)', code: '10030100001102001400', amp: {} },
       { hint: 'Цивільне повітряне судно', code: '10030100001201000000', amp: {} },
@@ -1021,7 +1154,11 @@ export const symbols = [
         code: '10031000161208000000',
         amp: { [amps.additionalInformation]: 'F' },
       },
-      { hint: 'Авіаційна ескадрилья (штурмова)', code: '10031000161208000000', amp: { [amps.additionalInformation]: 'A' } },
+      {
+        hint: 'Авіаційна ескадрилья (штурмова)',
+        code: '10031000161208000000',
+        amp: { [amps.additionalInformation]: 'A' }
+      },
       {
         hint: 'Авіаційна ескадрилья (бомбардувальна)',
         code: '10031000161208000000',
@@ -1032,18 +1169,34 @@ export const symbols = [
         code: '10031000161208000000',
         amp: { [amps.additionalInformation]: 'R' },
       },
-      { hint: 'Авіаційна ланка (винищувальна)', code: '10031000151208000000', amp: { [amps.additionalInformation]: 'F' } },
+      {
+        hint: 'Авіаційна ланка (винищувальна)',
+        code: '10031000151208000000',
+        amp: { [amps.additionalInformation]: 'F' }
+      },
       { hint: 'Авіаційна ланка (штурмова)', code: '10031000151208000000', amp: { [amps.additionalInformation]: 'A' } },
       {
         hint: 'Авіаційна ланка (бомбардувальна)',
         code: '10031000151208000000',
         amp: { [amps.additionalInformation]: 'B' },
       },
-      { hint: 'Авіаційна ланка (розвідувальна)', code: '10031000151208000000', amp: { [amps.additionalInformation]: 'R' } },
-      { hint: 'Бригада транспортної авіації', code: '10031000181208000000', amp: { [amps.additionalInformation]: 'C' } },
+      {
+        hint: 'Авіаційна ланка (розвідувальна)',
+        code: '10031000151208000000',
+        amp: { [amps.additionalInformation]: 'R' }
+      },
+      {
+        hint: 'Бригада транспортної авіації',
+        code: '10031000181208000000',
+        amp: { [amps.additionalInformation]: 'C' }
+      },
       { hint: 'Навчальна авіаційна бригада', code: '10031000181207000000', amp: { [amps.additionalInformation]: 'T' } },
       { hint: 'Техніко-експлуатаційна частина (авіаційна)', code: '10031000161208003100', amp: {} },
-      { hint: 'Спеціальна інженерна служба', code: '10031000151407000000', amp: { [amps.additionalInformation]: 'ІнжС' } },
+      {
+        hint: 'Спеціальна інженерна служба',
+        code: '10031000151407000000',
+        amp: { [amps.additionalInformation]: 'ІнжС' }
+      },
       { hint: 'Група технічної розвідки', code: '10031000141611000000', amp: { [amps.additionalInformation]: 'ТхР' } },
       { hint: 'Евакуаційна група', code: '10031000141611000000', amp: { [amps.additionalInformation]: 'ЕВ' } },
       {
@@ -1072,19 +1225,31 @@ export const symbols = [
         code: '10031000001603000000',
         amp: { [amps.additionalInformation]: 'АвК' },
       },
-      { hint: 'Рубіж введення винищувачів до бою', code: '10032500000170420000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Рубіж введення винищувачів до бою',
+        code: '10032500000170420000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Район повітряного бою',
         code: '10032500001200000000rpb',
         amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'РПБ' } },
       },
-      { hint: 'Завдання повітряного удару', code: '10032500000170430000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Завдання повітряного удару',
+        code: '10032500000170430000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Напрямок дій авіації / повітряного десанту',
         code: '10032500001514010000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Напрямок дій вертольотів', code: '10032500001514020000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Напрямок дій вертольотів',
+        code: '10032500001514020000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
     ],
   },
   {
@@ -1131,8 +1296,16 @@ export const symbols = [
         code: '10031000151301023100',
         amp: { [amps.additionalInformation]: 'MR' },
       },
-      { hint: 'Зона ураження / виявлення (кругова)', code: '10032500000170190000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Зона ураження / виявлення (сектор)', code: '10032500000170760000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Зона ураження / виявлення (кругова)',
+        code: '10032500000170190000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Зона ураження / виявлення (сектор)',
+        code: '10032500000170760000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       // {
       //   hint: 'Основний сектор стрільби на середніх та великих висотах',
       //   code: '10032500000170810000',
@@ -1243,7 +1416,11 @@ export const symbols = [
         code: '10031002161701000000',
         amp: { [amps.uniqueDesignation]: 'КОВР' },
       },
-      { hint: 'Морський розвідувальний пункт', code: '10031002161213004600', amp: { [amps.specialHeadquarters]: 'МРП' } },
+      {
+        hint: 'Морський розвідувальний пункт',
+        code: '10031002161213004600',
+        amp: { [amps.specialHeadquarters]: 'МРП' }
+      },
       { hint: 'Окремий батальйон морської піхоти', code: '10031002161211014600', amp: {} },
       { hint: 'Дивізіон пошуково-рятувальних суден', code: '10031002161418004600', amp: {} },
       { hint: 'Дивізіон суден забезпечення', code: '10031002161600004600', amp: {} },
@@ -1279,7 +1456,11 @@ export const symbols = [
       { hint: 'Великий розвідувальний корабель', code: '10033000001301040002', amp: {} },
       { hint: 'Середній розвідувальний корабель', code: '10033000001301040004', amp: {} },
       { hint: 'Малий розвідувальний корабель', code: '10033000001301040003', amp: {} },
-      { hint: 'Великий артилерійський катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'ВАКА' } },
+      {
+        hint: 'Великий артилерійський катер',
+        code: '10033000000000000000',
+        amp: { [amps.specialHeadquarters]: 'ВАКА' }
+      },
       {
         hint: 'Малий броньований артилерійський катер',
         code: '10033000000000000000',
@@ -1287,7 +1468,11 @@ export const symbols = [
       },
       { hint: 'Артилерійський катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'АКА' } },
       { hint: 'Рятувальне буксирне судно', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'РБС' } },
-      { hint: 'Протипожежне буксирне судно', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'ПЖБС' } },
+      {
+        hint: 'Протипожежне буксирне судно',
+        code: '10033000000000000000',
+        amp: { [amps.specialHeadquarters]: 'ПЖБС' }
+      },
       { hint: 'Морський рятувальний буксир', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'МРБ' } },
       { hint: 'Морське водолазне судно', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'МВС' } },
       { hint: 'Рейдовий водолазний катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'РВКА' } },
@@ -1317,7 +1502,11 @@ export const symbols = [
       { hint: 'Плавмайстерня', code: '10033000001301110000', amp: {} },
       { hint: 'Кілекторне судно', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'КІЛС' } },
       { hint: 'Судно розмагнічування', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'СР' } },
-      { hint: 'Судно контролю фізичних полів', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'СКФП' } },
+      {
+        hint: 'Судно контролю фізичних полів',
+        code: '10033000000000000000',
+        amp: { [amps.specialHeadquarters]: 'СКФП' }
+      },
       { hint: 'Морський буксир', code: '10033000001301120000', amp: {} },
       { hint: 'Плавучий кран', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'ПКН' } },
       { hint: 'Судно зв’язку', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'СЗВ' } },
@@ -1326,7 +1515,11 @@ export const symbols = [
       { hint: 'Рейдовий буксир', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'РБ' } },
       { hint: 'Морський катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'МКА' } },
       { hint: 'Рейдовий (роз’їзний) катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'РРКА' } },
-      { hint: 'Великий гідрографічний катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'ВГКА' } },
+      {
+        hint: 'Великий гідрографічний катер',
+        code: '10033000000000000000',
+        amp: { [amps.specialHeadquarters]: 'ВГКА' }
+      },
       { hint: 'Малий гідрографічний катер', code: '10033000000000000000', amp: { [amps.specialHeadquarters]: 'МГКА' } },
       { hint: 'Надводний безекіпажний апарат', code: '10033000001207000000', amp: {} },
       { hint: 'Протичовновий літак', code: '10030100001101002200', amp: {} },
@@ -1345,7 +1538,11 @@ export const symbols = [
       { hint: 'Якірна міна', code: '10033600001102000000', amp: {} },
       { hint: 'Дрейфуюча міна', code: '10033600001103000000', amp: {} },
       { hint: 'Плаваюча міна', code: '10033600001105000000', amp: {} },
-      { hint: 'Район тралення', code: '10032500000170440000', amp: { isSvg: true, type: entityKind.POLYGON, lineType: types.dashed.value } },
+      {
+        hint: 'Район тралення',
+        code: '10032500000170440000',
+        amp: { isSvg: true, type: entityKind.POLYGON, lineType: types.dashed.value }
+      },
       { hint: 'Торпеда', code: '10032500002110000000', amp: {} },
       { hint: 'Радіогідроакустичний буй в бойовому положенні', code: '10032500002135000000', amp: {} },
       { hint: 'Радіогідроакустичний буй нейтралізований', code: '10032500002135100000', amp: {} },
@@ -1359,7 +1556,11 @@ export const symbols = [
         code: '10033000001210030000',
         amp: { [amps.uniqueDesignation]: 'У' },
       },
-      { hint: 'Корабельна пошуково-ударна група', code: '10033000001210030000', amp: { [amps.uniqueDesignation]: 'ПУ' } },
+      {
+        hint: 'Корабельна пошуково-ударна група',
+        code: '10033000001210030000',
+        amp: { [amps.uniqueDesignation]: 'ПУ' }
+      },
       { hint: 'Корабельна тральна група', code: '10033000001210030000', amp: { [amps.uniqueDesignation]: 'Т' } },
       { hint: 'Корабельна група загородження', code: '10033000001210030000', amp: { [amps.uniqueDesignation]: 'З' } },
       { hint: 'Корабельна десантна група', code: '10033000001210030000', amp: { [amps.uniqueDesignation]: 'Д' } },
@@ -1400,8 +1601,16 @@ export const symbols = [
         code: '10032500001521000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Охорона та оборона пункту базування', code: '10032500003421000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Стеження за противником', code: '10032500000170490000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Охорона та оборона пункту базування',
+        code: '10032500003421000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Стеження за противником',
+        code: '10032500000170490000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Район ізоляції', code: '10032500000170500000', amp: { isSvg: true, type: entityKind.POLYGON } },
       { hint: 'Пункт призначення', code: '10032500002102000000', amp: {} },
       { hint: 'Точка фіксації акустичного контакту', code: '10032500002123000000', amp: {} },
@@ -1479,7 +1688,11 @@ export const symbols = [
         code: '10031000001701006300',
         amp: {},
       },
-      { hint: 'Морський центр спеціального призначення Сил спеціальних операцій', code: '10031000171218004600', amp: {} },
+      {
+        hint: 'Морський центр спеціального призначення Сил спеціальних операцій',
+        code: '10031000171218004600',
+        amp: {}
+      },
       { hint: 'Вертолітний підрозділ зі складу Сил спеціальних операцій', code: '10031000001206006300', amp: {} },
       {
         hint: 'Вертолітний підрозділ пошуку та рятування зі складу Сил спеціальних операцій',
@@ -1504,7 +1717,11 @@ export const symbols = [
         code: '10032500001522000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Район підрозділу зі складу руху опору', code: '10032500000170520000', amp: { isSvg: true, type: entityKind.AREA } },
+      {
+        hint: 'Район підрозділу зі складу руху опору',
+        code: '10032500000170520000',
+        amp: { isSvg: true, type: entityKind.AREA }
+      },
       {
         hint: 'Район виконання завдань Гр СпП ССпО',
         code: '100325000012000000000spr',
@@ -1525,7 +1742,11 @@ export const symbols = [
         code: '10032500000170550000',
         amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.W]: 'Вих' }, right: ENDS_ARROW2 },
       },
-      { hint: 'Pозвідувальні завдання пошуком', code: '10032500000170560000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Pозвідувальні завдання пошуком',
+        code: '10032500000170560000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       {
         hint: 'Розвідувальні (спеціальні) завдання засідкою',
         code: '10032500001417000000',
@@ -1576,13 +1797,25 @@ export const symbols = [
         code: '10031004141407030000',
         amp: { [amps.additionalInformation]: 'ІРД' },
       },
-      { hint: 'Пункт заготівлі конструкцій', code: '10031000001640000000', amp: { [amps.additionalInformation]: 'ПЗК' } },
-      { hint: 'Одиночний окоп (позиція підрозділу)', code: '10032500002910000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Пункт заготівлі конструкцій',
+        code: '10031000001640000000',
+        amp: { [amps.additionalInformation]: 'ПЗК' }
+      },
+      {
+        hint: 'Одиночний окоп (позиція підрозділу)',
+        code: '10032500002910000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Система траншей', code: '10032500002909000000', amp: { isSvg: true, type: entityKind.POLYLINE } },
       { hint: 'Укриття (бліндаж)', code: '10032500002809000000', amp: {} },
       { hint: 'Надземне укриття', code: '10032500002810000000', amp: {} },
       { hint: 'Підземне укриття', code: '10032500002811000000', amp: {} },
-      { hint: 'Протитанковий рів (ескарп, контрескарп)', code: '10032500002902020000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Протитанковий рів (ескарп, контрескарп)',
+        code: '10032500002902020000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
       {
         hint: `Ефект руйнування спрямований на використання вогню і ефекту загороджень, щоб примусити противника розділити свої формування, порушити бойовий порядок, витратити час, змінити план, поспішно здійснити розмінування та зірвати атаку`,
         code: '10032500002705020000',
@@ -1598,7 +1831,11 @@ export const symbols = [
         code: '10032500003411000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Зона вільна (очищена) від загороджень', code: '10032500002704000000', amp: { isSvg: true, type: entityKind.POLYGON } },
+      {
+        hint: 'Зона вільна (очищена) від загороджень',
+        code: '10032500002704000000',
+        amp: { isSvg: true, type: entityKind.POLYGON }
+      },
       {
         hint: 'Зона (смуга) загороджень із зазначенням всередині знаку ефекту',
         code: '10032500000170580000',
@@ -1633,7 +1870,7 @@ export const symbols = [
       { hint: 'Мінна пастка', code: '10032500002807000000', amp: {} },
       { hint: 'Протипіхотна міна направленої дії', code: '10032500002802010000', amp: {} },
       { hint: 'Протитанкова міна встановлена з елементом не вилучення', code: '10032500002804000000', amp: {} },
-      { hint: 'Район мінування', code: '10032500002708000000', amp: { isSvg: true, type: '270800' } },
+      { hint: 'Район мінування', code: '10032500002708000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       { hint: 'Група мін', code: '10032500002904000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
         hint: 'Прохід в протитанковому мінному полі (шириною до 6 метрів)',
@@ -1651,23 +1888,51 @@ export const symbols = [
         code: '10032500002902030000',
         amp: { isSvg: true, type: entityKind.POLYLINE },
       },
-      { hint: 'Протитанковий рів в процесі обладнання', code: '10032500002902010000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Протитанковий рів в процесі обладнання',
+        code: '10032500002902010000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
       {
         hint: 'Лінія загороджень (яка поєднує в собі різні типи загороджень)',
         code: '10032500002901000000',
         amp: { isSvg: true, type: entityKind.POLYLINE },
       },
-      { hint: 'Однорядне дротяне загородження', code: '10032500002903020000', amp: { isSvg: true, type: entityKind.POLYLINE } },
-      { hint: 'Дворядне дротяне загородження', code: '10032500002903030000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Однорядне дротяне загородження',
+        code: '10032500002903020000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
+      {
+        hint: 'Дворядне дротяне загородження',
+        code: '10032500002903030000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
       {
         hint: 'Дротяне загородження на низьких кілках (типу спотикач)',
         code: '10032500002903050000',
         amp: { isSvg: true, type: entityKind.POLYLINE },
       },
-      { hint: 'Дротяне загородження на високих кілках', code: '10032500002903060000', amp: { isSvg: true, type: entityKind.POLYLINE } },
-      { hint: 'Спіральне однорядне дротяне загородження', code: '10032500002903070000', amp: { isSvg: true, type: entityKind.POLYLINE } },
-      { hint: 'Спіральне дворядне дротяне загородження', code: '10032500002903080000', amp: { isSvg: true, type: entityKind.POLYLINE } },
-      { hint: 'Спіральне трьохрядне дротяне загородження', code: '10032500002903090000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Дротяне загородження на високих кілках',
+        code: '10032500002903060000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
+      {
+        hint: 'Спіральне однорядне дротяне загородження',
+        code: '10032500002903070000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
+      {
+        hint: 'Спіральне дворядне дротяне загородження',
+        code: '10032500002903080000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
+      {
+        hint: 'Спіральне трьохрядне дротяне загородження',
+        code: '10032500002903090000',
+        amp: { isSvg: true, type: entityKind.POLYLINE }
+      },
       {
         hint: `Пункт польового водопостачання (ВІДПВП-відділення польового водопостачання групи інженерного забезпечення)`,
         code: '10031004121647000000',
@@ -1688,7 +1953,11 @@ export const symbols = [
         code: '10032500002908000000',
         amp: { isSvg: true, type: entityKind.POLYLINE, right: ENDS_FORK, left: ENDS_FORK },
       },
-      { hint: 'Наплаваний міст з парку ПМП', code: '10032500002714000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Наплаваний міст з парку ПМП',
+        code: '10032500002714000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Десантно доступна ділянка', code: '10032500002104000000', amp: {} },
       { hint: 'Хибний об’єкт', code: '1003250000230200', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       { hint: 'Майстерня з ремонту інженерної техніки', code: '10031000121407003100', amp: {} },
@@ -1769,7 +2038,11 @@ export const symbols = [
         code: '10032500001200000000rez',
         amp: { isSvg: true, type: entityKind.RECTANGLE, pointAmplifier: { [amps.W]: 'РЕЗ' } },
       },
-      { hint: 'Район, вільний від радіоелектронних засобів', code: '10032500000170650000', amp: { isSvg: true, type: entityKind.POLYGON } },
+      {
+        hint: 'Район, вільний від радіоелектронних засобів',
+        code: '10032500000170650000',
+        amp: { isSvg: true, type: entityKind.POLYGON }
+      },
       {
         hint: 'Межа зони розвідки КХ засобів зв’язку',
         code: '10032500000170660000',
@@ -1824,15 +2097,27 @@ export const symbols = [
         amp: { [amps.specialHeadquarters]: 'ВП' },
       },
       { hint: 'Вогнеметна рота РХБ захисту', code: '10031000150000000000', amp: { [amps.specialHeadquarters]: 'ВП' } },
-      { hint: 'Вогнеметний взвод РХБ захисту', code: '10031000140000000000', amp: { [amps.specialHeadquarters]: 'ВП' } },
+      {
+        hint: 'Вогнеметний взвод РХБ захисту',
+        code: '10031000140000000000',
+        amp: { [amps.specialHeadquarters]: 'ВП' }
+      },
       {
         hint: 'Вогнеметне відділення РХБ захисту',
         code: '10031000120000000000',
         amp: { [amps.specialHeadquarters]: 'ВП' },
       },
       { hint: 'Зведений загін РХБ захисту', code: '10031004151401000000', amp: {} },
-      { hint: 'Дозор РХБ розвідки', code: '10032500003422020000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
-      { hint: 'Район (сектор) РХБ розвідки', code: '10032500001522000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Дозор РХБ розвідки',
+        code: '10032500003422020000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
+      {
+        hint: 'Район (сектор) РХБ розвідки',
+        code: '10032500001522000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED }
+      },
       { hint: 'Пост РХБ спостереження розгорнутий штатними підрозділами', code: '10032500001602030000', amp: {} },
       {
         hint: 'Відділення РХБ захисту дозиметричного та хімічного контролю',
@@ -1964,7 +2249,13 @@ export const symbols = [
       {
         hint: 'Аерозольне маскування рубежу безпосередньо перед районами розташування своїх військ',
         code: '10032500001102000000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, intermediateAmplifier: { [amps.W]: 'AM' }, left: ENDS_STROKE1, right: ENDS_STROKE1 },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          intermediateAmplifier: { [amps.W]: 'AM' },
+          left: ENDS_STROKE1,
+          right: ENDS_STROKE1
+        },
       },
       {
         hint: 'Район, який маскується аерозолем в районах розташування своїх військ',
@@ -2172,7 +2463,11 @@ export const symbols = [
       { hint: 'Метеорологічна група ВМС', code: '10031000131306004600', amp: { [amps.uniqueDesignation]: 'метгр' } },
       { hint: 'Метеорологічне бюро ВМС', code: '10031000141306004600', amp: { [amps.uniqueDesignation]: 'метбюро' } },
       { hint: 'Гідрометеорологічна служба СВ', code: '10031000121306000000', amp: { [amps.uniqueDesignation]: 'ГМС' } },
-      { hint: 'Метеорологічне бюро КП АА СВ', code: '10031000131306007800', amp: { [amps.uniqueDesignation]: 'метбюро' } },
+      {
+        hint: 'Метеорологічне бюро КП АА СВ',
+        code: '10031000131306007800',
+        amp: { [amps.uniqueDesignation]: 'метбюро' }
+      },
       { hint: 'Метеорологічний взвод омбр (отбр)', code: '10031000141211023200', amp: {} },
       { hint: 'Метеорологічний взвод огпбр', code: '10031000141211003227', amp: {} },
       {
@@ -2266,7 +2561,11 @@ export const symbols = [
       { hint: 'Група технічної розвідки', code: '10031004001611000000', amp: { [amps.additionalInformation]: 'ГТР' } },
       { hint: 'Евакуаційна група', code: '10031004001611000000', amp: { [amps.additionalInformation]: 'ЕГ' } },
       { hint: 'Евакуаційна команда', code: '10031004001611000000', amp: { [amps.additionalInformation]: 'ЕК' } },
-      { hint: 'Ремонтно-евакуаційна група', code: '10031004001611000000', amp: { [amps.additionalInformation]: 'РЕГ' } },
+      {
+        hint: 'Ремонтно-евакуаційна група',
+        code: '10031004001611000000',
+        amp: { [amps.additionalInformation]: 'РЕГ' }
+      },
       {
         hint: 'Рятувально-евакуаційна група',
         code: '10031004001611000000',
@@ -2296,7 +2595,11 @@ export const symbols = [
         code: '10032500001301000000',
         amp: { isSvg: true, type: '', [amps.T]: 'ПП' },
       },
-      { hint: 'Пункт технічної допомоги', code: '10032500001301000000', amp: { isSvg: true, type: '', [amps.T]: 'ПТД' } },
+      {
+        hint: 'Пункт технічної допомоги',
+        code: '10032500001301000000',
+        amp: { isSvg: true, type: '', [amps.T]: 'ПТД' }
+      },
       {
         hint: 'Пункт технічного спостереження',
         code: '10032500001301000000',
@@ -2325,7 +2628,11 @@ export const symbols = [
       },
       { hint: 'Склад з ракетами та боєприпасами', code: '10031000001641000000', amp: {} },
       { hint: 'Запаси ракет та боєприпасів, які розміщені на ґрунті', code: '10031000001604000000', amp: {} },
-      { hint: 'Склад бронетанкового майна', code: '10031000001645000000', amp: { [amps.additionalInformation]: 'БТМ' } },
+      {
+        hint: 'Склад бронетанкового майна',
+        code: '10031000001645000000',
+        amp: { [amps.additionalInformation]: 'БТМ' }
+      },
       { hint: 'Склад автомобільного майна', code: '10031000001645000000', amp: { [amps.additionalInformation]: 'АМ' } },
       {
         hint: 'Центральна база зберігання ракет та боєприпасів',
@@ -2526,7 +2833,11 @@ export const symbols = [
     name: 'Суспільно-політична обстановка та адміністративно-територіальний устрій',
     children: [
       { hint: 'Підрозділ МПЗ', code: '10031000001615000000', amp: {} },
-      { hint: 'Пункт психологічної допомоги', code: '10032500001301000000', amp: { [amps.additionalInformation]: 'ПсхД' } },
+      {
+        hint: 'Пункт психологічної допомоги',
+        code: '10032500001301000000',
+        amp: { [amps.additionalInformation]: 'ПсхД' }
+      },
       {
         hint: 'Будинок офіцерів',
         code: '10032000000000000000',
@@ -2559,8 +2870,16 @@ export const symbols = [
         amp: { [amps.specialHeadquarters]: 'ВЦА' },
       },
       { hint: 'Цивільно-військове співробітництво', code: '10031000001103000000', amp: {} },
-      { hint: 'Обласний військовий комісаріат', code: '10032000000000000000', amp: { [amps.specialHeadquarters]: 'ОВК' } },
-      { hint: 'Районний військовий комісаріат', code: '10032000000000000000', amp: { [amps.specialHeadquarters]: 'РВК' } },
+      {
+        hint: 'Обласний військовий комісаріат',
+        code: '10032000000000000000',
+        amp: { [amps.specialHeadquarters]: 'ОВК' }
+      },
+      {
+        hint: 'Районний військовий комісаріат',
+        code: '10032000000000000000',
+        amp: { [amps.specialHeadquarters]: 'РВК' }
+      },
       {
         hint: 'Район компактного проживання національних меншин',
         code: '10032500001200000000kpnm',

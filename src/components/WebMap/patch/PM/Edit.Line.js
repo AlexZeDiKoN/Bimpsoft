@@ -1,7 +1,6 @@
 import L from 'leaflet'
 import entityKind, { GROUPS } from '../../entityKind'
 import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
-import { findDefinition } from '../Sophisticated/utils'
 
 const { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag } = L.PM.Edit.Line.prototype
 const parent = { _initMarkers, _createMarker, _createMiddleMarker, _removeMarker, _onMarkerDrag }
