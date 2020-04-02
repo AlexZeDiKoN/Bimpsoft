@@ -188,27 +188,31 @@ const serializeCoordinate = (mode, lat, lng) => {
 }
 
 const setScaleOptions = (layer, params) => {
+  const pointSizes = {
+    min: Number(params[paramsNames.POINT_SIZE_MIN]),
+    max: Number(params[paramsNames.POINT_SIZE_MAX]),
+  }
+  const textSizes = {
+    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+  }
+  const lineSizes = {
+    min: Number(params[paramsNames.LINE_SIZE_MIN]),
+    max: Number(params[paramsNames.LINE_SIZE_MAX]),
+    pointSizes,
+  }
   if (layer?.object) {
     if (layer.object.catalogId) {
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.POINT_SIZE_MIN]),
-        max: Number(params[paramsNames.POINT_SIZE_MAX]),
-      })
+      layer.setScaleOptions(pointSizes)
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.POINT_SIZE_MIN]),
-            max: Number(params[paramsNames.POINT_SIZE_MAX]),
-          })
+          layer.setScaleOptions(pointSizes)
           break
         case entityKind.TEXT:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-          })
+          layer.setScaleOptions(textSizes)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
@@ -220,10 +224,7 @@ const setScaleOptions = (layer, params) => {
         case entityKind.SQUARE:
         case entityKind.CONTOUR:
         case entityKind.SOPHISTICATED:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.LINE_SIZE_MIN]),
-            max: Number(params[paramsNames.LINE_SIZE_MAX]),
-          })
+          layer.setScaleOptions(lineSizes)
           break
         default:
       }
