@@ -138,19 +138,22 @@ L.Sophisticated = L.Polyline.extend({
       const changed = []
       if (!firstTime) {
         for (let i = 0; i < next.length; i++) {
-          if (next[i].lat !== this._prevPoints[i].lat || next[i].lng !== this._prevPoints[i].lng) {
+          if (next[i].lat.toFixed(10) !== this._prevPoints[i].lat.toFixed(10) ||
+            next[i].lng.toFixed(10) !== this._prevPoints[i].lng.toFixed(10)) {
             changed.push(i)
           }
         }
       }
       if (firstTime || changed.length > 0) {
-        next = this._adjustPoints(changed, this._prevPoints, next)
+        this.lineDefinition.adjustLL ? this.lineDefinition.adjustLL(this._prevPoints, next, changed)
+          : next = this._adjustPoints(changed, this._prevPoints, next)
       }
     }
     this._latlngs = next
     // JSON stringify/parse - найшвидший спосіб глибокого копіювання об'єктів
     const cacheNextPoints = JSON.parse(JSON.stringify(next))
-    if (cacheNextPoints !== this._prevPoints) {
+    if (JSON.stringify(next) !== JSON.stringify(this._prevPoints)) {
+    // if (cacheNextPoints !== this._prevPoints) {
       this._prevPoints = cacheNextPoints
       if (next && this.pm && this.pm._markers) {
         next.forEach((pt, idx) => {

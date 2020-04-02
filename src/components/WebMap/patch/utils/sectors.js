@@ -143,6 +143,29 @@ export function moveCoordinate (pt0, distM, angleDeg) {
 // }
 // --------------------------------------------------------------------------------
 
+export function distanceBetweenCoord (coord1, coord2) { // rad - радиус сферы (Земли)
+  const rad = Earth.R
+  if (!Coord.check(coord1) || !Coord.check(coord2)) {
+    return undefined
+  }
+  const lat1 = coord1.lat * Math.PI / 180.0
+  const lat2 = coord2.lat * Math.PI / 180.0
+  const long1 = coord1.lng * Math.PI / 180.0
+  const long2 = coord2.lng * Math.PI / 180.0
+  const cl1 = Math.cos(lat1)
+  const cl2 = Math.cos(lat2)
+  const sl1 = Math.sin(lat1)
+  const sl2 = Math.sin(lat2)
+  const delta = long2 - long1
+  const cdelta = Math.cos(delta)
+  const sdelta = Math.sin(delta)
+
+  const y = Math.sqrt(Math.pow(cl2 * sdelta, 2) + Math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
+  const x = sl1 * sl2 + cl1 * cl2 * cdelta
+  const ad = Math.atan2(y, x)
+  return ad * rad
+}
+
 export function distanceAngle (coord1, coord2) { // rad - радиус сферы (Земли)
   // const rad = 6372795
   const rad = Earth.R

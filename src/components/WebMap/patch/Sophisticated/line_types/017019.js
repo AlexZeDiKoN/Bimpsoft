@@ -29,6 +29,7 @@ lineDefinitions['017019'] = {
   // Взаємозв'язок розташування вершин (форма "каркасу" символа)
   adjust: STRATEGY.shapeCircle('bottom'),
 
+  adjustLL: STRATEGY.shapeCircleLL('bottom'),
   // Ініціалізація вершин при створенні нового символу даного типу
   init: () => [
     { x: 0.50, y: 0.50 },
@@ -41,7 +42,7 @@ lineDefinitions['017019'] = {
   render: (result, points) => {
     const width = 3 // result.layer._path.getAttribute('stroke-width')
     const coordArray = result.layer?.getLatLng ? [ result.layer.getLatLng() ] : result.layer?.getLatLngs()
-    const sectorsInfo = result.layer?.options?.sectorsInfo?.toJS()
+    const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     result.layer._path.setAttribute('stroke-width', 0.001)
     if (points.length < 1 || !isDefPoint(points[0])) {
       return

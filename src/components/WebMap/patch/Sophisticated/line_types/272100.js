@@ -6,6 +6,7 @@ import {
 import {
   isDefPoint, lengthLine,
 } from '../arrowLib'
+// import L from 'leaflet'
 
 // sign name: Зони РХБЗ
 // task code: DZVIN-5540 (part 3)
@@ -26,6 +27,43 @@ lineDefinitions['272100'] = {
 
   // Взаємозв'язок розташування вершин (форма "каркасу" символа)
   adjust: STRATEGY.shapeCircleInvert('right'),
+
+  adjustLL: (prevPoints, nextPoints, changed) => {
+    const index = changed[0]
+    const coord = nextPoints[index]
+    let isGood = false
+    switch (index) {
+      case 0: { // сдвигаем все точки
+        const dLng = prevPoints[0].lng - nextPoints[0].lng
+        for (let i = 1; i < nextPoints.length; i++) {
+          nextPoints[i].lat = nextPoints[0].lat
+          nextPoints[i].lng = prevPoints[i].lng - dLng
+        }
+      }
+        return
+      case 1:
+        isGood = coord.lng > nextPoints[index + 1].lng
+        break
+      case 2:
+      case 3:
+        isGood = (coord.lng > nextPoints[index + 1].lng) && (coord.lng < nextPoints[index - 1].lng)
+        break
+      case 4:
+        isGood = (coord.lng > nextPoints[0].lng) && (coord.lng < nextPoints[index - 1].lng)
+        break
+      case undefined: // привести координаты к норме
+        for (let i = 1; i < nextPoints.length; i++) {
+          nextPoints[i].lat = nextPoints[0].lat
+        }
+        return
+      default:
+        return
+    }
+    if (!isGood) {
+      nextPoints[index].lng = prevPoints[index].lng
+    }
+    nextPoints[index].lat = nextPoints[0].lat // выравниваем по горизонтали
+  },
 
   // Ініціалізація вершин при створенні нового символу даного типу
   init: () => ([

@@ -1,9 +1,13 @@
 import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
+import { Select } from 'antd'
 import i18n from '../../../i18n'
 import { distanceAngle } from '../../WebMap/patch/utils/sectors'
+import ColorPicker from '../../common/ColorPicker'
+import { colors } from '../../../constants'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { colorOption } from './render'
 
 const {
   FormRow,
@@ -12,6 +16,8 @@ const {
 
 const { Coordinates: Coord } = utils
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
+const PRESET_COLORS = Object.values(colors.values)
+const COLOR_PICKER_Z_INDEX = 2000
 
 const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(Component) {
   constructor (props) {
@@ -74,6 +80,28 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
     this.onCoordinateFocusHandler(index)
   }
 
+  changeSectorsInfo (info) {
+    // this.setResult((result) => (
+    //   result.updateIn([ ...PATH_S_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
+    // ))
+  }
+
+  sectorAmplifierChangeHandler = (index) => ({ target: { name, value } }) => {
+    this.changeSectorsInfo({ name, index, value })
+  }
+
+  sectorColorChangeHandler = (index) => (color) => {
+    const name = 'color'
+    const value = color
+    this.changeSectorsInfo({ name, index, value })
+  }
+
+  sectorFillChangeHandler = (index) => (fill) => {
+    const name = 'fill'
+    const value = fill
+    this.changeSectorsInfo({ name, index, value })
+  }
+
   renderRadii () {
     const canEdit = this.isCanEdit()
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
@@ -85,18 +113,46 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
           const radius = radiiText[index] ? radiiText[index]
             : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
           const radiusIsGood = this.isGoodRadiusRight(Number(radius), coordinatesArray, index)
+          const color = 'red'
+          const fill = 'transparent'
           return (index !== 0) ? (
-            <FormRow key={index} label={`${i18n.RADIUS} «${MARKER[index]}»`}>
-              <InputWithSuffix
-                readOnly={!canEdit}
-                value={radius}
-                onChange={canEdit ? this.radiusChangeHandler(index) : null}
-                onFocus={canEdit ? this.radiiFocusHandler(index) : null}
-                onBlur={canEdit ? this.radiiBlurHandler(index) : null}
-                suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
-                error={!radiusIsGood}
-              />
-            </FormRow>) : ''
+            <div key={index} className="container__itemWidth">
+              <FormRow label={`${i18n.RADIUS} «${MARKER[index]}»`}>
+                <InputWithSuffix
+                  readOnly={!canEdit}
+                  value={radius}
+                  onChange={canEdit ? this.radiusChangeHandler(index) : null}
+                  onFocus={canEdit ? this.radiiFocusHandler(index) : null}
+                  onBlur={canEdit ? this.radiiBlurHandler(index) : null}
+                  suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
+                  error={!radiusIsGood}
+                />
+              </FormRow>
+              <FormRow label="Колір">
+                <ColorPicker
+                  color={color}
+                  disabled={!canEdit}
+                  onChange={this.sectorColorChangeHandler(index)}
+                  zIndex={COLOR_PICKER_Z_INDEX}
+                  presetColors={PRESET_COLORS}
+                />
+              </FormRow>
+              <FormRow label="Заливка">
+                <Select
+                  value={fill}
+                  disabled={!canEdit}
+                  onChange={this.sectorFillChangeHandler(index)}
+                >
+                  {colorOption(colors.TRANSPARENT)}
+                  {colorOption(colors.BLUE)}
+                  {colorOption(colors.RED)}
+                  {colorOption(colors.BLACK)}
+                  {colorOption(colors.GREEN)}
+                  {colorOption(colors.YELLOW)}
+                  {colorOption(colors.WHITE)}
+                </Select>
+              </FormRow>
+            </div>) : ''
         })}
       </div>
     )

@@ -1,6 +1,7 @@
 import Bezier from 'bezier-js'
 import { Symbol } from '@DZVIN/milsymbol'
 import { rotate, applyToPoint } from 'transformation-matrix'
+import { distanceBetweenCoord, sphereDirect } from '../utils/sectors'
 import {
   normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
   angleOf, oppositeVector, drawBezierSpline, getPointAt, neg,
@@ -196,8 +197,8 @@ export const STRATEGY = {
   // alignment - прив'язка контрольних точок до горізогнталі або вертикалі
   shapeCircle: (alignment = 'none') => (prevPoints, nextPoints, changed) => {
     const pN0 = nextPoints[0]
-    const indChanged = changed[0]
-    if (!changed[0]) { // змінюємо опорну
+    const indChanged = changed[0] // зміщуемо тільки одну точку, або увесь об'єкт
+    if (indChanged === 0) { // зміщена опорна
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
       const newPoints = shiftPoints(dP, prevPoints)
@@ -221,6 +222,71 @@ export const STRATEGY = {
           nextPoints[indChanged].y = pN0.y + lengthLine(pN0, nextPoints[indChanged]) * (alignment === 'top' ? -1 : 1)
           nextPoints[indChanged].x = pN0.x
         }
+      }
+    }
+  },
+
+  shapeCircleLL: (alignment = 'none') => (prevPoints, nextPoints, changed) => {
+    const pN0 = nextPoints[0]
+    const indChanged = changed[0] // зміщуемо тільки одну точку, або увесь об'єкт
+    if (!Number.isFinite(indChanged)) {
+      return
+    }
+    const dLng = prevPoints[0].lng - nextPoints[0].lng
+    const dLat = prevPoints[0].lat - nextPoints[0].lat
+    if (indChanged === 0) { // зміщена опорна
+      // зміщуємо усе
+      switch (alignment) {
+        case 'left':
+        case 'right':
+          for (let i = 1; i < nextPoints.length; i++) {
+            nextPoints[i].lat = nextPoints[0].lat
+            nextPoints[i].lng = prevPoints[i].lng - dLng
+          }
+          break
+        case 'top':
+        case 'bottom':
+          for (let i = 1; i < nextPoints.length; i++) {
+            nextPoints[i].lat = prevPoints[i].lat - dLat
+            nextPoints[i].lng = nextPoints[0].lng
+          }
+          break
+        default:
+          for (let i = 1; i < nextPoints.length; i++) {
+            nextPoints[i].lat = prevPoints[i].lat - dLat
+            nextPoints[i].lng = prevPoints[i].lng - dLng
+          }
+      }
+    } else {
+      // змінюємо радіус сектора
+      const lengthChanged = distanceBetweenCoord(pN0, nextPoints[indChanged])
+      const lBootom = distanceBetweenCoord(pN0, nextPoints[indChanged - 1])
+      let lTop = Infinity
+      if (indChanged < nextPoints.length - 1) {
+        lTop = distanceBetweenCoord(pN0, nextPoints[indChanged + 1])
+      }
+      // радіус сектора повинен бути більше попереднього і менше наступного сектора
+      if (lengthChanged <= lBootom + 1 || (lengthChanged >= lTop - 1)) {
+        nextPoints[indChanged] = prevPoints[indChanged]
+      } else { // радіус відповідає вимогам
+        let newPoint
+        switch (alignment) {
+          case 'left':
+            newPoint = sphereDirect(nextPoints[0], 270, lengthChanged)
+            break
+          case 'right':
+            newPoint = sphereDirect(nextPoints[0], 90, lengthChanged)
+            break
+          case 'top':
+            newPoint = sphereDirect(nextPoints[0], 0, lengthChanged)
+            break
+          case 'bottom':
+            newPoint = sphereDirect(nextPoints[0], 180, lengthChanged)
+            break
+          default: return
+        }
+        nextPoints[indChanged].lat = newPoint.lat
+        nextPoints[indChanged].lng = newPoint.lng
       }
     }
   },
