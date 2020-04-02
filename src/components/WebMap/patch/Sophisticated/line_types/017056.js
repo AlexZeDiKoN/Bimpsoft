@@ -1,17 +1,7 @@
-import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine,
-  segmentBy,
-  angleOf,
-  segmentLength,
-  drawArrow,
-  getPointAt,
-  addPathAmplifier,
-  emptyPath,
-  getVector,
-  setVectorLength, applyVector, drawArc,
+  drawLine, segmentLength, getPointAt, addPathAmplifier, emptyPath, getVector, setVectorLength, applyVector, drawArc,
 } from '../utils'
 import { interpolateSize } from '../../utils/helpers'
 

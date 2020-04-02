@@ -670,7 +670,7 @@ export const symbols = [
       {
         hint: 'Район дистанційного мінування місцевості',
         code: '10032500002708000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [amps.T]: '', [amps.W]: '' } },
       },
       {
         hint: 'Район розповсюдження агітаційного матеріалу',
@@ -1870,7 +1870,11 @@ export const symbols = [
       { hint: 'Мінна пастка', code: '10032500002807000000', amp: {} },
       { hint: 'Протипіхотна міна направленої дії', code: '10032500002802010000', amp: {} },
       { hint: 'Протитанкова міна встановлена з елементом не вилучення', code: '10032500002804000000', amp: {} },
-      { hint: 'Район мінування', code: '10032500002708000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Район мінування',
+        code: '10032500002708000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [amps.T]: '', [amps.W]: '' } }
+      },
       { hint: 'Група мін', code: '10032500002904000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
         hint: 'Прохід в протитанковому мінному полі (шириною до 6 метрів)',
