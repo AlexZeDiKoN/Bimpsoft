@@ -83,7 +83,6 @@ lineDefinitions['017020'] = {
     )
     const leftLine = Math.max(b1.width, b2.width) + r * 0.4
     const rightLine = Math.max(b3.width, b4.width) + r * 0.4
-    console.log({ leftLine, rightLine })
     drawLine(result, { x: p0.x - r * 1.2, y: p0.y }, { x: p0.x - r * 1.2 - leftLine, y: p0.y })
     drawLine(result, { x: p0.x + r * 1.2, y: p0.y }, { x: p0.x + r * 1.2 + rightLine, y: p0.y })
   },
