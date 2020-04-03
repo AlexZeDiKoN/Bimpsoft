@@ -29,13 +29,13 @@ lineDefinitions['120400'] = {
   areaSeq: SEQUENCE.areaWithAmplifiers(2),
 
   // Ініціалізація вершин при створенні нової лінії даного типу
-  init: () => ([
+  init: () => [
     { x: 0.25, y: 0.75 },
     { x: 0.50, y: 0.25 },
     { x: 0.75, y: 0.75 },
     { x: 0.50, y: 0.50 },
     { x: 0.55, y: 0.20 },
-  ]),
+  ],
 
   // Рендер-функція
   render: (result, points, scale) => {

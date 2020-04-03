@@ -25,6 +25,7 @@ export const amps = {
   // Если что, в формах любых линий есть топ, ботом и мидл, но лейбл у них разный, например W и H это ботом
   T: 'top', // --||--
   W: 'bottom', // --||--
+  A: 'additional',
 }
 
 export const MINE_TYPES = {
@@ -705,7 +706,15 @@ export const symbols = [
         code: '10032500000170190000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED }
       },
-      { hint: 'Ракетний удар', code: '10032500000170200000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
+      {
+        hint: 'Ракетний удар',
+        code: '10032500000170200000',
+        amp: {
+          isSvg: true,
+          type: entityKind.SOPHISTICATED,
+          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.A]: '' },
+        }
+      },
       {
         hint: 'Район зосередження',
         code: '10032500001502000000',
