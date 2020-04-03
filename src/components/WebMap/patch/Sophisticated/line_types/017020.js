@@ -43,7 +43,7 @@ lineDefinitions['017020'] = {
     // Ампліфікатори
     const [ , b1 ] = drawText(
       result,
-      { x: p0.x - r * 1.2, y: p0.y - r / 5 },
+      { x: p0.x - r * 1.4, y: p0.y - r / 5 },
       0,
       result.layer?.options?.pointAmplifier?.middle ?? '',
       TEXT_SIZE,
@@ -53,7 +53,7 @@ lineDefinitions['017020'] = {
     )
     const [ , b2 ] = drawText(
       result,
-      { x: p0.x - r * 1.2, y: p0.y + r / 5 },
+      { x: p0.x - r * 1.4, y: p0.y + r / 5 },
       0,
       result.layer?.options?.pointAmplifier?.top ?? '',
       TEXT_SIZE,
@@ -63,7 +63,7 @@ lineDefinitions['017020'] = {
     )
     const [ , b3 ] = drawText(
       result,
-      { x: p0.x + r * 1.2, y: p0.y - r / 5},
+      { x: p0.x + r * 1.4, y: p0.y - r / 5},
       0,
       result.layer?.options?.pointAmplifier?.bottom ?? '',
       TEXT_SIZE,
@@ -73,7 +73,7 @@ lineDefinitions['017020'] = {
     )
     const [ , b4 ] = drawText(
       result,
-      { x: p0.x + r * 1.2, y: p0.y + r / 5 },
+      { x: p0.x + r * 1.4, y: p0.y + r / 5 },
       0,
       result.layer?.options?.pointAmplifier?.additional ?? '',
       TEXT_SIZE,
@@ -81,8 +81,8 @@ lineDefinitions['017020'] = {
       TEXT_COLOR,
       'before-edge',
     )
-    const leftLine = Math.max(b1.width, b2.width)
-    const rightLine = Math.max(b3.width, b4.width)
+    const leftLine = Math.max(b1.width, b2.width) + r * 0.4
+    const rightLine = Math.max(b3.width, b4.width) + r * 0.4
     console.log({ leftLine, rightLine })
     drawLine(result, { x: p0.x - r * 1.2, y: p0.y }, { x: p0.x - r * 1.2 - leftLine, y: p0.y })
     drawLine(result, { x: p0.x + r * 1.2, y: p0.y }, { x: p0.x + r * 1.2 + rightLine, y: p0.y })
