@@ -7,7 +7,7 @@ import {
 import {
   lengthLine, isDefPoint,
 } from '../arrowLib'
-import { distanceAngle } from '../../utils/sectors'
+import { distanceAzimuth } from '../../utils/sectors'
 
 const { Coordinates: Coord } = utils
 
@@ -59,7 +59,7 @@ lineDefinitions['017019'] = {
           if (!Coord.check(coordArray[ind])) {
             radiusM = 0
           } else {
-            radiusM = distanceAngle(pgO, coordArray[ind]).distance.toFixed(0)
+            radiusM = distanceAzimuth(pgO, coordArray[ind]).distance.toFixed(0)
           }
           // const m = Math.round(result.layer._map.layerPointToLatLng(pO)
           // .distanceTo(result.layer._map.layerPointToLatLng(elm)))

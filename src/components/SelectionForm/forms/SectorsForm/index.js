@@ -21,7 +21,6 @@ export default class SectorsForm extends compose(
   WithAffiliation,
   WithCoordinateAndAzimuth,
   WithSectorsArray,
-  // WithSegment,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -48,7 +47,6 @@ export default class SectorsForm extends compose(
           </Scrollbar>
         </div>
       </div>
-
     )
   }
 }

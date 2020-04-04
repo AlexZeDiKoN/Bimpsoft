@@ -7,6 +7,50 @@ export function angleDegCheck (angle) {
   return Number.isFinite(Number(angle)) && (Math.abs(angle) < 360)
 }
 
+export function azimuthCheck (aO, aL, aR) {
+  let azimuthL, azimuthR, azimuthO
+  const PI2 = Math.PI * 2
+  if (aO > Math.PI) {
+    azimuthO = aO - PI2
+  } else {
+    azimuthO = aO
+  }
+  if (aL > Math.PI) {
+    azimuthL = aL - PI2
+  } else {
+    azimuthL = aL
+  }
+  if (aR > Math.PI) {
+    azimuthR = aR - PI2
+  } else {
+    azimuthR = aR
+  }
+  if (Math.abs(azimuthL - azimuthR) > Math.PI) {
+    azimuthL = azimuthL < 0 ? azimuthL + Math.PI : azimuthL - Math.PI
+    azimuthR = azimuthR < 0 ? azimuthR + Math.PI : azimuthR - Math.PI
+  }
+  // блокировка по левая <-> правая и по максимальному углу
+  return !((Math.abs(azimuthO - azimuthR) >= Math.PI / 2) ||
+    (Math.abs(azimuthO - azimuthL) >= Math.PI / 2) ||
+    (azimuthR - azimuthL) < 0.02)
+}
+
+export function alignmentAngle (angle, dAngle) {
+  let da = (((angle - dAngle) * 100) % 36000) / 100
+  if (da < 0) {
+    da = 360 + da
+  }
+  return da
+}
+
+export function angleBetweenPoints (p0, p1, p2) {
+  const r = Earth.R
+  const a = Earth.distance(p1, p2) / r
+  const b = Earth.distance(p0, p2) / r
+  const c = Earth.distance(p0, p1) / r
+  return Math.acos((Math.cos(a) - Math.cos(b) * Math.cos(c)) / Math.sin(b) / Math.sin(c))
+}
+
 /* Вращение вокруг координатной оси
  * Аргументы: x - входной/выходной 3-вектор
  *            a - угол вращения
@@ -60,11 +104,11 @@ export function sphereDirect (pt0, angledeg, distM) {
   return { lat: (pt1[0] * 180 / Math.PI), lng: (pt1[1] * 180 / Math.PI) }
 }
 
-export function moveCoordinate (pt0, distM, angleDeg) {
+export function moveCoordinate (pt0, moveTo) {
   let x
-  const dist = distM / Earth.R
+  const dist = moveTo.distance / Earth.R
   const GtoR = Math.PI / 180
-  const azi = angleDeg * GtoR // в радианы
+  const azi = moveTo.angledeg * GtoR // в радианы
   const lat = pt0.lat * GtoR
   const lng = pt0.lng * GtoR
   const pt = [ Math.PI / 2 - dist, Math.PI - azi ]
@@ -142,32 +186,7 @@ export function moveCoordinate (pt0, distM, angleDeg) {
 //   return pt3
 // }
 // --------------------------------------------------------------------------------
-
-export function distanceBetweenCoord (coord1, coord2) { // rad - радиус сферы (Земли)
-  const rad = Earth.R
-  if (!Coord.check(coord1) || !Coord.check(coord2)) {
-    return undefined
-  }
-  const lat1 = coord1.lat * Math.PI / 180.0
-  const lat2 = coord2.lat * Math.PI / 180.0
-  const long1 = coord1.lng * Math.PI / 180.0
-  const long2 = coord2.lng * Math.PI / 180.0
-  const cl1 = Math.cos(lat1)
-  const cl2 = Math.cos(lat2)
-  const sl1 = Math.sin(lat1)
-  const sl2 = Math.sin(lat2)
-  const delta = long2 - long1
-  const cdelta = Math.cos(delta)
-  const sdelta = Math.sin(delta)
-
-  const y = Math.sqrt(Math.pow(cl2 * sdelta, 2) + Math.pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
-  const x = sl1 * sl2 + cl1 * cl2 * cdelta
-  const ad = Math.atan2(y, x)
-  return ad * rad
-}
-
-export function distanceAngle (coord1, coord2) { // rad - радиус сферы (Земли)
-  // const rad = 6372795
+export function distanceAzimuth (coord1, coord2) { // rad - радиус сферы (Земли)
   const rad = Earth.R
   if (!Coord.check(coord1) || !Coord.check(coord2)) {
     return { angledeg: 0, distance: 0 }
@@ -194,19 +213,7 @@ export function distanceAngle (coord1, coord2) { // rad - радиус сфер�
   y = sdelta * cl2
   const zr = Math.atan2(-y, x)
   const z = zr * 180.0 / Math.PI // перевод в градусы
-  return { angledeg: ((z < 0) ? -z : (360.0 - z)), distance }
-  // if (x < 0) {
-  //   z = z + 180.0
-  // }
-  // let z2 = (z + 180.0) % 360.0 - 180.0
-  // z2 = -(z2 * Math.PI / 180) // перевод в радианы
-  // const anglerad2 = z2 - ((2 * Math.PI) * Math.floor((z2 / (2 * Math.PI))))
-  // const angledeg = (anglerad2 * 180.0) / Math.PI
-  // return { angledeg, distance }
-  // let zr2 = (zr + Math.PI) % (Math.PI * 2) - Math.PI
-  // zr2 = -zr2
-  // const angleradR2 = zr2 - ((2 * Math.PI) * Math.floor((zr2 / (2 * Math.PI))))
-  // return { angledeg: (angleradR2 * 180.0) / Math.PI, distance }
+  return { angledeg: ((z < 0) ? -z : (360.0 - z)), distance, angleRad: -zr }
 }
 //
 // function getazimut (coordinatesArray) {

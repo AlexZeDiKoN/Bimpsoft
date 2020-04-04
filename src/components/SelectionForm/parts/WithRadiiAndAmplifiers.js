@@ -3,7 +3,7 @@ import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import { Input, Select } from 'antd'
 import i18n from '../../../i18n'
-import { distanceAngle } from '../../WebMap/patch/utils/sectors'
+import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
@@ -76,7 +76,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     this.onCoordinateFocusHandler(index)
   }
 
-  changeSectorsInfo (info) {
+  changeSectorsInfo = (info) => {
     this.setResult((result) => (
       result.updateIn([ ...PATH_S_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
     ))
@@ -109,15 +109,15 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     return (
       coordinatesArray.map((elm, index) => {
         const radius = radiiText[index] ? radiiText[index]
-          : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
+          : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
         const sectorInfo = sectorsInfo[index] ?? {}
         const amplifierT = sectorInfo?.amplifier || ''
         const color = sectorInfo?.color || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
         const radiusIsGood = Number.isFinite(Number(radius))
         return (index !== 0) ? (
-          <>
-            <div key={index} className="circularzone-container__itemWidth">
+          <div key={index}>
+            <div className="circularzone-container__itemWidth">
               <div className="container__itemWidth50">
                 <FormRow label={`${MARKER[index]} радіус`} >
                   <InputWithSuffix
@@ -170,7 +170,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
               </div>
             </div>
             { (index < indexEnd) && <FormDivider/> }
-          </>)
+          </div>)
           : ''
       })
     )

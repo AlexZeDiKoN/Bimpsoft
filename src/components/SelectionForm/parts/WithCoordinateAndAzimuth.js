@@ -1,9 +1,11 @@
 import React, { Fragment } from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
-import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
-import { angleDegCheck, distanceAngle, sphereDirect } from '../../WebMap/patch/utils/sectors'
+import { angleDegCheck, distanceAzimuth, moveCoordinate } from '../../WebMap/patch/utils/sectors'
 import placeSearch from '../../../server/places'
+import { STRATEGY } from '../../WebMap/patch/Sophisticated/strategies'
+import CoordinatesMixin from './CoordinatesMixin'
+
 const COORDINATE_PATH = [ 'geometry' ]
 const { Coordinates: Coord } = utils
 
@@ -14,84 +16,66 @@ const {
   FormItem,
 } = components.form
 
-// const { icons: { IconHovered, names: iconNames } } = components
+// eslint-disable-next-line max-len
+const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthComponent extends CoordinatesMixin(Component) {
+  state = { azimuthText: undefined }
 
-const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthComponent extends Component {
-  static propTypes = {
-    onCoordinateFocusChange: PropTypes.func,
+  firstCoordinateExitChangeHandler = async (value) => {
+    await this.onFirstCoordinateExitChangeHandler(value)
   }
 
-  state = { azimuthText: null }
-
-  coordinateChangeHandler = async (index, value) => {
-    await this.setResult((result) => result.setIn([ ...COORDINATE_PATH, index ], value))
-    this.setState({ azimuthText: null })
+  azimuthChangeHandler = (azimuthText) => {
+    this.setState({ azimuthText })
   }
 
-  // azimuthFocusChange = (isActive, index) => {
-  //   const { onCoordinateFocusChange } = this.props
-  //   onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
-  // }
-
-  azimuthChangeHandler (azimuthText) {
+  onAzimuthBlurHandler = async () => {
+    const { azimuthText } = this.state
     const azimuth = Number(azimuthText)
-    if (angleDegCheck(azimuth)) {
+    if (Number.isFinite(azimuth) && angleDegCheck(azimuth)) {
       const formStore = this.getResult()
-      const coordArray = formStore.getIn(COORDINATE_PATH)
-      // console.log(JSON.stringify({ azimuth, coord1: coordArray.get(0), coord2: coordArray.get(1) }))
-      const calculatedazimuth = distanceAngle(coordArray.get(0), coordArray.get(1))
-      if (azimuth.toFixed(0) !== calculatedazimuth.angledeg.toFixed(0)) {
-        const coord1 = coordArray.get(0)
-        this.setState({ azimuthText })
-        if (Coord.check(coord1)) {
-          const coord2 = sphereDirect(coord1, azimuthText, calculatedazimuth.distance)
-          if (Coord.check(coord2)) {
-            this.coordinateChangeHandler(1, coord2)
-          }
+      const coordList = formStore.getIn(COORDINATE_PATH)
+      const coordArray = coordList.toJS()
+      const coordO = coordArray[0]
+      const coordTo = distanceAzimuth(coordO, coordArray[1])
+      if (azimuth.toFixed(0) !== coordTo.angledeg.toFixed(0)) {
+        coordTo.angledeg = azimuth
+        const coord2 = moveCoordinate(coordO, coordTo)
+        if (Coord.check(coord2)) {
+          const nextCoord = coordList.toJS()
+          nextCoord[1] = coord2
+          // перенос всех координат
+          STRATEGY.shapeSectorLL(coordArray, nextCoord, 1)
+          await this.onAllCoordinateChangeHandler(nextCoord)
         }
       }
     }
+    this.setState({ azimuthText: undefined })
+    this.onCoordinateBlurHandler(1)
   }
-
-  coordinateFocusChange (isActive, index) {
-    const { onCoordinateFocusChange } = this.props
-    onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
-  }
-
-  onCoordinateazimuthFocusHandler = this.coordinateFocusChange.bind(this, true, 0)
-
-  onCoordinateazimuthBlurHandler = this.coordinateFocusChange.bind(this, false, 0)
-
-  onCoordinateChangeHandler = this.coordinateChangeHandler.bind(this, 0)
-
-  onAzimuthFocusHandler = this.coordinateFocusChange.bind(this, true, 1)
-
-  onAzimuthBlurHandler = this.coordinateFocusChange.bind(this, false, 1)
 
   onAzimuthChangeHandler = this.azimuthChangeHandler.bind(this)
 
   renderCoordinateAndAzimuth () {
-    const { azimuthText = null } = this.state
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const coordBegin = coordinatesArray[0]
     const coordEnd = coordinatesArray[1]
-    const azimuth = azimuthText !== null ? azimuthText : distanceAngle(coordBegin, coordEnd).angledeg.toFixed(0)
-    // const azimuthInd = 1
+    const { azimuthText } = this.state
+    const azimuth = azimuthText ?? distanceAzimuth(coordBegin, coordEnd).angledeg.toFixed(0)
     const canEdit = this.isCanEdit()
-    const azimuthIsWrong = angleDegCheck(azimuth)
+    const azimuthIsWrong = !angleDegCheck(azimuth)
+
     return (
       <FormRow label={i18n.COORDINATES}>
         {coordBegin
           ? <Fragment key={`${coordBegin.lat}/${coordBegin.lng}`}>
             <FormItem className="coordinatesModal">
               <Coordinates
-                index = {0}
                 isReadOnly={!canEdit}
                 coordinates={coordBegin}
                 onChange={null} // {this.changeHandler}
-                onEnter={this.onCoordinateazimuthFocusHandler}
-                onBlur={this.onCoordinateazimuthBlurHandler}
-                onExitWithChange={canEdit ? this.onCoordinateChangeHandler : null }
+                onEnter={() => this.onCoordinateFocusHandler(0)}
+                onBlur={() => this.onCoordinateBlurHandler(0)}
+                onExitWithChange={canEdit ? this.firstCoordinateExitChangeHandler : null }
                 onSearch={placeSearch}
               />
             </FormItem>
@@ -100,9 +84,9 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
                 readOnly={!canEdit}
                 value={azimuth}
                 onChange={canEdit ? this.onAzimuthChangeHandler : null }
-                onFocus={this.onAzimuthFocusHandler}
-                onBlur={this.onAzimuthBlurHandler}
-                suffix={i18n.ABBR_GRADUS}
+                onFocus={() => this.onCoordinateFocusHandler(1)}
+                onBlur={canEdit ? this.onAzimuthBlurHandler : () => this.onCoordinateBlurHandler(1) }
+                suffix={`${i18n.ABBR_GRADUS} ${azimuthIsWrong ? '*' : ''}`}
                 error={azimuthIsWrong}
               />
             </FormRow>

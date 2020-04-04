@@ -123,8 +123,11 @@ L.Sophisticated = L.Polyline.extend({
     const unproject = (x) => map.layerPointToLatLng(x)
     const prevPoints = from.map(project)
     const nextPoints = to.map(project)
-    this.lineDefinition.adjust(prevPoints, nextPoints, changed, this)
-    return nextPoints.map(unproject)
+    if (JSON.stringify(prevPoints) !== JSON.stringify(nextPoints)) {
+      this.lineDefinition.adjust(prevPoints, nextPoints, changed, this)
+      return nextPoints.map(unproject)
+    }
+    return [ ...to ]
   },
 
   _setLatLngs: function (latlngs) {
@@ -140,8 +143,8 @@ L.Sophisticated = L.Polyline.extend({
       const changed = []
       if (!firstTime) {
         for (let i = 0; i < next.length; i++) {
-          if (next[i].lat.toFixed(10) !== this._prevPoints[i].lat.toFixed(10) ||
-            next[i].lng.toFixed(10) !== this._prevPoints[i].lng.toFixed(10)) {
+          if (next[i].lat.toFixed(8) !== this._prevPoints[i].lat.toFixed(8) ||
+            next[i].lng.toFixed(8) !== this._prevPoints[i].lng.toFixed(8)) {
             changed.push(i)
           }
         }

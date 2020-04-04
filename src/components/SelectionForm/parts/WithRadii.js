@@ -3,7 +3,7 @@ import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import { Select } from 'antd'
 import i18n from '../../../i18n'
-import { distanceAngle } from '../../WebMap/patch/utils/sectors'
+import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
@@ -111,7 +111,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
       <div>
         {coordinatesArray.map((elm, index) => {
           const radius = radiiText[index] ? radiiText[index]
-            : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
+            : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
           const radiusIsGood = this.isGoodRadiusRight(Number(radius), coordinatesArray, index)
           const color = 'red'
           const fill = 'transparent'

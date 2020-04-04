@@ -1,7 +1,14 @@
 import Bezier from 'bezier-js'
 import { Symbol } from '@DZVIN/milsymbol'
 import { rotate, applyToPoint } from 'transformation-matrix'
-import { distanceBetweenCoord, sphereDirect } from '../utils/sectors'
+import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
+import {
+  distanceAzimuth,
+  moveCoordinate,
+  sphereDirect,
+  alignmentAngle,
+  angleBetweenPoints,
+} from '../utils/sectors'
 import {
   normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
   angleOf, oppositeVector, drawBezierSpline, getPointAt, neg,
@@ -51,8 +58,7 @@ export const STRATEGY = {
   shapeT: (factor = 0.5) => (prevPoints, nextPoints, changed) => {
     nextPoints[2] = applyVector(
       segmentBy(nextPoints[0], nextPoints[1], factor),
-      adjustedNorm(prevPoints, nextPoints, changed)
-    )
+      adjustedNorm(prevPoints, nextPoints, changed))
   },
 
   // Форма кута 120 градусів
@@ -61,8 +67,7 @@ export const STRATEGY = {
       nextPoints[2],
       nextPoints[1],
       neg(halfPlane(nextPoints[2], nextPoints[1], nextPoints[0])) * Math.PI / 3,
-      changed.includes(1) ? segmentLength(prevPoints[0], prevPoints[1]) : segmentLength(nextPoints[0], nextPoints[1])
-    )
+      changed.includes(1) ? segmentLength(prevPoints[0], prevPoints[1]) : segmentLength(nextPoints[0], nextPoints[1]))
   },
 
   // Форма літери "L" (відрізок між двома точками, третя точка на кінці перпендикуляру від другої точки)
@@ -90,7 +95,7 @@ export const STRATEGY = {
   shapeU: (prevPoints, nextPoints, changed) => {
     nextPoints[0] = applyVector(
       nextPoints[1],
-      adjustedNorm(prevPoints, nextPoints, changed, [ 2, 1, 0, 3 ])
+      adjustedNorm(prevPoints, nextPoints, changed, [ 2, 1, 0, 3 ]),
     )
     nextPoints[3] = applyVector(
       nextPoints[2],
@@ -101,12 +106,122 @@ export const STRATEGY = {
   // перестроювання секторів
   // перша, друга точки - напрямок секторів
   // наступні пари точок завдають лівий та првий розмах сектора
+  shapeSectorLL: (prevPoints, nextPoints, changedP) => {
+    const p0 = prevPoints[0]
+    const p1 = prevPoints[1]
+    const pN0 = nextPoints[0]
+    const pN1 = nextPoints[1]
+    let indChanged
+    // const distance = (p1, p2) => window.webMap.map.distance(p1, p2)
+    if (prevPoints.length !== nextPoints.length) { // перестройка всей фигуры
+      // TODO нужно проверить всю структуру и исправить
+      const minDistance = Earth.distance(pN0, nextPoints[nextPoints.length - 2]) * 1.15
+      const p1DA = distanceAzimuth(pN0, pN1)
+      if (minDistance > p1DA.distance) {
+        p1DA.distance = minDistance
+        nextPoints[1] = moveCoordinate(pN0, p1DA)
+      }
+      return
+    }
+    if (Array.isArray(changedP)) { // запрос с карты
+      if (changedP.length === 1) {
+        indChanged = changedP[0] ?? 0
+      } else { // или после формы или тащили весь объект
+        return
+      }
+    } else { // запрос из формы
+      indChanged = changedP ?? 0
+    }
+    switch (indChanged) {
+      case 0: { // сдвигаем все точки
+        const dLng = p0.lng - pN0.lng
+        const dLat = p0.lat - pN0.lat
+        prevPoints.forEach((elm, i) => {
+          nextPoints[i].lat = elm.lat - dLat
+          nextPoints[i].lng = elm.lng - dLng
+        })
+        break
+      }
+      case 1: { // поворачиваем фигуру по азимуту
+        const dAngle = distanceAzimuth(p0, p1).angledeg - distanceAzimuth(p0, pN1).angledeg
+        nextPoints[0] = prevPoints[0]
+        for (let i = 2; i < prevPoints.length; i += 2) {
+          const da1 = distanceAzimuth(p0, prevPoints[i])
+          const da2 = distanceAzimuth(p0, prevPoints[i + 1])
+          // приведение угла к 0 - 360
+          da1.angledeg = alignmentAngle(da1.angledeg, dAngle)
+          nextPoints[i] = moveCoordinate(pN0, da1)
+          da1.angledeg = alignmentAngle(da2.angledeg, dAngle)
+          nextPoints[i + 1] = moveCoordinate(pN0, da1)
+        }
+        // длины стрелки должна быть больше длина последнего сектора
+        const minDistance = Earth.distance(pN0, nextPoints[nextPoints.length - 1]) * 1.15
+        const p1DA = distanceAzimuth(pN0, pN1)
+        if (minDistance > p1DA.distance) {
+          p1DA.distance = minDistance
+          nextPoints[1] = moveCoordinate(pN0, p1DA)
+        }
+        break
+      }
+      default: { // сектор по азимуту
+        // изменяем сектор
+        const indCouple = indChanged + 1 - (indChanged % 2) * 2 // индекс парной точки сектора
+        let azimuthChanged = distanceAzimuth(pN0, nextPoints[indChanged]).angleRad
+        let azimuthCouple = distanceAzimuth(pN0, nextPoints[indCouple]).angleRad
+        if (Math.abs(azimuthChanged - azimuthCouple) > Math.PI) {
+          azimuthChanged = azimuthChanged < 0 ? azimuthChanged + Math.PI : azimuthChanged - Math.PI
+          azimuthCouple = azimuthCouple < 0 ? azimuthCouple + Math.PI : azimuthCouple - Math.PI
+        }
+        const AngleP1Change = angleBetweenPoints(pN0, pN1, nextPoints[indChanged])
+        // блокировка по левая <-> правая и по максимальному углу
+        if (AngleP1Change >= Math.PI / 2 ||
+            ((indChanged < indCouple) ? -1 : 1) * (azimuthChanged - azimuthCouple) < 0.02) {
+          nextPoints[indChanged] = prevPoints[indChanged]
+          break
+        }
+        let tTop = pN1
+        const minGapBottom = Earth.distance(pN0, pN1) * 0.05 // расстояние до нижестоящего сектора 5%
+        let minGapTop = minGapBottom * 3 // расстояние до стрелки 15%
+        if ((indChanged + 2) < nextPoints.length) {
+          // не последний сектор
+          tTop = nextPoints[indChanged + 2]
+          minGapTop = minGapBottom // расстояние до вышестоящего сектора 5%
+        }
+        const heightNextSector = Earth.distance(pN0, tTop)
+        let tBottom = pN0
+        if (indChanged > 3) {
+          tBottom = nextPoints[indChanged - 2]
+        }
+        const pChanged = distanceAzimuth(pN0, nextPoints[indChanged])
+        const pCouple = distanceAzimuth(pN0, nextPoints[indCouple])
+        const heightPrevSector = Earth.distance(pN0, tBottom)
+        // радиус сектора должна быть меньше радиуса следующего сектора и больше радиуса предыдущего на 5%
+        if (heightNextSector < pChanged.distance + minGapTop || pChanged.distance < heightPrevSector + minGapBottom) {
+          // изменяем угол и оставляем высоту
+          pChanged.distance = Earth.distance(p0, prevPoints[indChanged])
+          nextPoints[indChanged] = moveCoordinate(pN0, pChanged)
+          break
+        }
+        // выравниваем радиусы
+        pCouple.distance = pChanged.distance
+        nextPoints[indCouple] = moveCoordinate(pN0, pCouple)
+      }
+    }
+  },
+
   shapeSector: (prevPoints, nextPoints, changed) => {
     const p0 = prevPoints[0]
     const p1 = prevPoints[1]
     const pN0 = nextPoints[0]
     const pN1 = nextPoints[1]
-    const indChanged = changed[0] ?? 0
+    let indChanged
+    if (changed.length === 1) { // изменили одну точку
+      indChanged = changed[0] ?? 0
+    } else if (changed.length === nextPoints.length) { // изменения всего объекта (или перетянули весь или повернули в форме)
+      indChanged = 0
+    } else { // изменяем фигуру по первой изменненой точке
+      indChanged = changed[0]
+    }
     if (indChanged === 0) { // змінюємо опорну
       // зміщуємо усе
       const dP = { x: nextPoints[0].x - prevPoints[0].x, y: nextPoints[0].y - prevPoints[0].y }
@@ -259,11 +374,11 @@ export const STRATEGY = {
       }
     } else {
       // змінюємо радіус сектора
-      const lengthChanged = distanceBetweenCoord(pN0, nextPoints[indChanged])
-      const lBootom = distanceBetweenCoord(pN0, nextPoints[indChanged - 1])
+      const lengthChanged = Earth.distance(pN0, nextPoints[indChanged])
+      const lBootom = Earth.distance(pN0, nextPoints[indChanged - 1])
       let lTop = Infinity
       if (indChanged < nextPoints.length - 1) {
-        lTop = distanceBetweenCoord(pN0, nextPoints[indChanged + 1])
+        lTop = Earth.distance(pN0, nextPoints[indChanged + 1])
       }
       // радіус сектора повинен бути більше попереднього і менше наступного сектора
       if (lengthChanged <= lBootom + 1 || (lengthChanged >= lTop - 1)) {
@@ -436,5 +551,4 @@ export const SEQUENCE = {
       next = 0
     }
     return [ prev, next ]
-  }
-}
+  } }
