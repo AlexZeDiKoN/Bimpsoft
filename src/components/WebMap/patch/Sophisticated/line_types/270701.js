@@ -1,5 +1,5 @@
 import { Symbol } from '@DZVIN/milsymbol'
-import { MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
+import { CODE_MINE_TYPES, MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -15,15 +15,6 @@ import {
 
 const SMALL_TEXT_SIZE = 0.67
 const SIZE = 48
-const CODE = [
-  '10032500002803000000',
-  '10032500002802000000',
-  '10032500002806000000',
-  '10032500002802000000',
-  '00033600001100000000',
-  '00033600001101000000',
-  '00033600001102000000',
-]
 
 lineDefinitions['270701'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -52,12 +43,11 @@ lineDefinitions['270701'] = {
     // міни
     const d = SIZE * scale / 2
     const symbolScale = mineType >= MINE_TYPES.MARINE ? 0.9 : 1
-
-    let symbol = new Symbol(CODE[mineType], { size: SIZE * scale * symbolScale }).asSVG()
+    let symbol = new Symbol(CODE_MINE_TYPES[mineType], { size: SIZE * scale * symbolScale }).asSVG()
     result.amplifiers += `<g transform="translate(${pO.x - d * 3.2}, ${pO.y - d * 1.05})">${symbol}</g>`
     result.amplifiers += `<g transform="translate(${pO.x + d}, ${pO.y - d * 1.05})">${symbol}</g>`
     if (mineType === MINE_TYPES.VARIOUS_TYPES) {
-      symbol = new Symbol(CODE[0], { size: SIZE * scale * symbolScale }).asSVG()
+      symbol = new Symbol(CODE_MINE_TYPES[0], { size: SIZE * scale * symbolScale }).asSVG()
     }
     result.amplifiers += `<g transform="translate(${pO.x - d * 1.1}, ${pO.y - d * 1.05})">${symbol}</g>`
 

@@ -21,12 +21,12 @@ lineDefinitions['151404'] = {
   adjust: STRATEGY_ARROW.supportingAttack,
 
   // Ініціалізація вершин при створенні нового символу даного типу
-  init: () => ([
+  init: () => [
     { x: 0.85, y: 0.35 },
     { x: 0.50, y: 0.35 },
     { x: 0.15, y: 0.75 },
     { x: 0.65, y: 0.15 },
-  ]),
+  ],
 
   // Рендер-функція
   render: (result, points) => {

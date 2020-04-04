@@ -19,10 +19,10 @@ lineDefinitions['290400'] = {
   adjust: STRATEGY.empty,
 
   // Ініціалізація вершин при створенні нової лінії даного типу
-  init: () => ([
+  init: () => [
     { x: 0.6, y: 0.5 },
     { x: 0.2, y: 0.5 },
-  ]),
+  ],
 
   // Рендер-функція
   render: (result, points, scale) => {
