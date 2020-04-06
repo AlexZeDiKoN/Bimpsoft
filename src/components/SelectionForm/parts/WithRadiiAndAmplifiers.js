@@ -3,7 +3,7 @@ import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import { Input, Select } from 'antd'
 import i18n from '../../../i18n'
-import { distanceAngle } from '../../WebMap/patch/utils/sectors'
+import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
@@ -76,9 +76,9 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     this.onCoordinateFocusHandler(index)
   }
 
-  changeSectorsInfo (info) {
+  changeSectorsInfo = (info) => {
     this.setResult((result) => (
-      result.setIn([ ...PATH_S_INFO, info.index ], { [info.name]: info.value })
+      result.updateIn([ ...PATH_S_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
     ))
   }
 
@@ -109,16 +109,16 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     return (
       coordinatesArray.map((elm, index) => {
         const radius = radiiText[index] ? radiiText[index]
-          : Math.round(distanceAngle(coordO, coordinatesArray[index]).distance)
+          : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
         const sectorInfo = sectorsInfo[index] ?? {}
         const amplifierT = sectorInfo?.amplifier || ''
         const color = sectorInfo?.color || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
-        const radiusIsWrong = !Number.isFinite(Number(radius))
+        const radiusIsGood = Number.isFinite(Number(radius))
         return (index !== 0) ? (
-          <div key={`${elm.lat}${elm.lng}`}>
-            <div className="circularzone-container__item">
-              <div >
+          <div key={index}>
+            <div className="circularzone-container__itemWidth">
+              <div className="container__itemWidth50">
                 <FormRow label={`${MARKER[index]} радіус`} >
                   <InputWithSuffix
                     readOnly={!canEdit}
@@ -126,8 +126,8 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     onChange={canEdit ? this.radiusChangeHandler(index) : null}
                     onFocus={canEdit ? this.sectorFocusHandler(index) : null}
                     onBlur={canEdit ? this.radiusBlurHandler(index) : null}
-                    suffix={i18n.ABBR_METERS}
-                    error={radiusIsWrong}
+                    suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
+                    error={!radiusIsGood}
                   />
                 </FormRow>
                 <FormRow label={`Ампліфікатор «Т${index}»`} >
@@ -142,12 +142,12 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                   />
                 </FormRow>
               </div>
-              <div>
+              <div className="container__itemWidth50">
                 <FormRow label="Колір">
                   <ColorPicker
                     color={color}
                     disabled={!canEdit}
-                    onChange={this.sectorColorChangeHandler}
+                    onChange={this.sectorColorChangeHandler(index)}
                     zIndex={COLOR_PICKER_Z_INDEX}
                     presetColors={PRESET_COLORS}
                   />
@@ -156,7 +156,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                   <Select
                     value={fill}
                     disabled={!canEdit}
-                    onChange={this.sectorFillChangeHandler}
+                    onChange={this.sectorFillChangeHandler(index)}
                   >
                     {colorOption(colors.TRANSPARENT)}
                     {colorOption(colors.BLUE)}
@@ -169,7 +169,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                 </FormRow>
               </div>
             </div>
-            {(index < indexEnd) && <FormDivider/>}
+            { (index < indexEnd) && <FormDivider/> }
           </div>)
           : ''
       })

@@ -127,10 +127,9 @@ const forms = {
   [SelectionTypes.SECTORS]: {
     title: i18n.SHAPE_SECTORS,
     component: SectorsForm,
-    minHeight: 645,
-    minWidth: 600,
-    maxWidth: 700,
-    maxHeight: 655,
+    minHeight: 640,
+    minWidth: 900,
+    maxHeight: 800,
   },
   [SelectionTypes.POLLUTION_CIRCLE]: {
     title: i18n.SHAPE_POLLUTINCIRCLE,

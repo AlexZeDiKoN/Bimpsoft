@@ -2,7 +2,7 @@ import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
-import { distanceAngle, sphereDirect } from '../../WebMap/patch/utils/sectors'
+import { distanceAzimuth, sphereDirect } from '../../WebMap/patch/utils/sectors'
 import { colors } from '../../../constants'
 import SectorItem from './SectorItem'
 
@@ -72,11 +72,11 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
 
   // Обработчик нажатия кнопки добавления сектора
   sectorAddHandler = () => this.setResult((result) => {
-    let endIndex
+    let endIndex = 0
     const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
       const coordO = coordArray.get(0)
       const coordA = coordArray.get(1)
-      const azimun1 = distanceAngle(coordO, coordA)
+      const azimun1 = distanceAzimuth(coordO, coordA)
       const coordN1 = sphereDirect(coordO, azimun1.angledeg - 30, azimun1.distance)
       const coordN2 = sphereDirect(coordO, azimun1.angledeg + 30, azimun1.distance)
       const coordNA = sphereDirect(coordO, azimun1.angledeg, azimun1.distance * 1.1)
@@ -84,7 +84,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
       endIndex = newCoordArray.size / 2 - 2
       return newCoordArray
     })
-    if (Number.isFinite(Number(endIndex)) && endIndex > 0 && endIndex < 10) {
+    if (endIndex > 0 && endIndex < 10) {
       return newResult.updateIn(PATH_S_INFO, (infoArray) => (
         infoArray.set(endIndex, ({ amplifier: '', color: '#000000', fill: colors.TRANSPARENT }))
       ))
@@ -128,6 +128,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
         <SectorItem key={`${points[i].lat}/${points[i].lng}`}
           index = {numSector}
           beginCoordinate={points[0]}
+          secondCoordinate={points[1]}
           coord1={points[i]}
           coord2={points[i + 1]}
           sectorInfo={sectorInfo}
@@ -186,13 +187,11 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
               {sector}
             </tbody>
           </table>
-          <FormRow label={i18n.SECTOR}>
-            {canEdit && editSectors && <IconHovered
-              icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
-              hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
-              onClick={this.sectorAddHandler}
-            />}
-          </FormRow>
+          {canEdit && editSectors && <IconHovered
+            icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
+            hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
+            onClick={this.sectorAddHandler}
+          />}
         </div>
       </FormDarkPart>
     )

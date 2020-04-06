@@ -47,9 +47,7 @@ export default class CircularZoneForm extends compose(
             </div>
           </div>
           <div className="circularzone-container__item--secondSection">
-            <div className="circularzone-container__itemWidth">
-              {this.renderRadiiAndAmplifiers()}
-            </div>
+            {this.renderRadiiAndAmplifiers()}
           </div>
         </div>
       </Scrollbar>
