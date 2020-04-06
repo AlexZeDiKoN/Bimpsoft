@@ -7,14 +7,39 @@
   justify-content: space-between;
   min-height: 160px;
   max-height: 730px;
+
+  &--secondSection {
+    //display: flex;
+    //flex-direction: row;
+    //flex-wrap: wrap;
+    width: 100%;
+    padding: 0 0.3em;
+    border-bottom: 2px solid rgba(159, 166, 89, 0.54);
+    border-top: 2px solid rgba(159, 166, 89, 0.54);
+
+    .dzvin-form-dark-part{
+      width: 100%;
+
+      .dzvin-form-divider{
+        margin: 0.4em 0;
+      }
+    }
+
+    .container-color-picker{
+      padding: 0;
+      height: auto;
+    }
+  }
+
   &__item{
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+
     .dzvin-form-row{
       display: flex;
       flex-direction: column;
-      height: 68px;
+      height: auto;
       align-items: flex-start;
       .dzvin-form-input{
         position: relative;
@@ -32,9 +57,14 @@
       }
     }
   }
+
   &__itemWidth{
     width: 50%;
     margin-top: 10px;
+
+    label{
+      margin: 7px;
+    }
 
     .dzvin-form-row-label{
       flex: 0 0 auto;

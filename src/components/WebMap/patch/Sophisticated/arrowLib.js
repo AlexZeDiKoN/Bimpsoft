@@ -297,10 +297,10 @@ export const STRATEGY_ARROW = {
   },
   // Проверка взаиморасположения точек PT 1, PT 2, PT N (определяют длину и ширину стрелки)
   supportingAttack: (prevPoints, nextPoints, changed) => {
-    if (prevPoints.length === nextPoints.length && changed.length === nextPoints.length) { // кол-во точек совпадает и перетаскиваем одну точку
+    if (prevPoints.length === nextPoints.length && changed.length === 1) { // кол-во точек совпадает и перетаскиваем одну точку
       const indEnd = prevPoints.length - 1
       // опорных точек должно быть минимум 4 (мне хотябы 3), обрабатываем изменение одной точки
-      if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 2)) { // Обрабатываем изменения контрольных точек головы стрелки
+      if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 1)) { // Обрабатываем изменения контрольных точек головы стрелки
         const referencePT = { x: nextPoints[indEnd].x, y: nextPoints[indEnd].y }
         const polarPoint = coordinatesToPolar(prevPoints[0], prevPoints[1], referencePT)
         const coordinates = referencePoint(nextPoints[0], nextPoints[1], polarPoint.angle, polarPoint.beamLength)
