@@ -13,6 +13,7 @@ import MinedAreaForms from './MinedAreaForm'
 import MineFieldForms from './MineFieldForm'
 import SectorsForms from './SectorsForm'
 import PollutionCircleForms from './PollutionCircleForm'
+import CircularZoneForms from './CircularZoneForm'
 
 export const AreaForm = AreaForms
 export const CircleForm = CircleForms
@@ -29,3 +30,4 @@ export const MinedAreaForm = MinedAreaForms
 export const MineFieldForm = MineFieldForms
 export const SectorsForm = SectorsForms
 export const PollutionCircleForm = PollutionCircleForms
+export const CircularZoneForm = CircularZoneForms

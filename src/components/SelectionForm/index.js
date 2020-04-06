@@ -21,9 +21,11 @@ import {
   ManoeuvreForm,
   MinedAreaForm,
   SectorsForm,
-  PollutionCircleForm, MineFieldForm,
+  PollutionCircleForm,
+  MineFieldForm,
+  CircularZoneForm,
 } from './forms'
-import CircularZoneForm from './forms/CircularZoneForm'
+// import  from './forms/CircularZoneForm'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -100,7 +102,7 @@ const forms = {
     title: i18n.SOPHISTICATED,
     component: SophisticatedForm,
     minHeight: 330,
-    maxHeight: 330,
+    maxHeight: 630,
     minWidth: 415,
   },
   [SelectionTypes.AIRBORNE]: {

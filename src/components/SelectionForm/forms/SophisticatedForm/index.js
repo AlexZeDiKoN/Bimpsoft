@@ -17,7 +17,7 @@ import {
 import './SophisticatedForm.css'
 import i18n from '../../../../i18n'
 
-const { FormRow, FormDarkPart, FormDivider } = components.form
+const { FormRow, FormDarkPart } = components.form
 
 export default class SophisticatedForm extends compose(
   UnitSelect,
@@ -32,13 +32,15 @@ export default class SophisticatedForm extends compose(
   renderContent () {
     return (
       <div className="contour-container">
-        <div className="contour-container__item">
-          <div className="contour-container__itemWidth">
-            {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
-          </div>
-          <div className="contour-container__itemWidth">
-            {this.renderAffiliation()}
+        <div className="contour-container--firstSection">
+          <div className="contour-container__item">
+            <div className="contour-container__itemWidth">
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+            </div>
+            <div className="contour-container__itemWidth">
+              {this.renderAffiliation()}
+            </div>
           </div>
         </div>
         <div className="contour-container--secondSection">
@@ -49,7 +51,6 @@ export default class SophisticatedForm extends compose(
             </FormRow>
           </div>
           <div className="contour-container__item">
-            {<FormDivider/>}
             <FormDarkPart>
               {this.renderCoordinates()}
             </FormDarkPart>
