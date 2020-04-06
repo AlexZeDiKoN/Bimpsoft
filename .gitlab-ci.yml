@@ -171,7 +171,7 @@ Increment_dzvin_dev:
 
 build-master:
   stage: build
-    only:
+  only:
     - master
   tags: 
     - explorer-build
