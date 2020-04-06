@@ -21,7 +21,6 @@ export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null &
 // bindingType= "arcs" "miter" "round" "bevel";
 // TypeLine L - прямые
 //          * - кривые Безье
-// eslint-disable-next-line no-unused-vars
 export function buildingAirborne (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) {
@@ -32,7 +31,6 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
     try {
       pt = JSON.parse(datapt)
     } catch (e) {
-      //        console.log("Error Jason.parse datapt");
       return null
     }
   } else {
@@ -50,19 +48,16 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
   } else { // координаты опорной стрелки рассчитываем по имеющимся данным
-    const polarPoints = coordinatesToAngle(pt[0], pt[1], pt[indEnd])
+    const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
   const [ tR, tO ] = pointReflected(pointSide, pt[0], pt[1]) // tR - точка отражения края стрелки , tO задний край стрелки
   const tLp = segmentDivision(pointSide, tO, coeffH)
   const tRp = segmentDivision(tR, tO, coeffH)
-  // eslint-disable-next-line prefer-const
   const widthL = lengthLine(tLp, tRp) // Ширина тела стрелки
   const tEnd = pointsToSegment(pt[1], pt[0], -widthL / 2) // perpendStraight(pt[1], pt[0], pt[1])
   const tEndL = pointRotationToPoint(tEnd, Math.PI / 2, pt[1])
   const tEndR = pointRotationToPoint(tEnd, -Math.PI / 2, pt[1])
-  // const PointArrow = [ tLp, pointSide, pt[0], tR, tRp ] // tEndR,tEndL ]
-  // const path = 'M' + PointArrow.map(({ x, y }) => `${x} ${y}`).join(' L')
   // пропускаем начало тела стрелки
   const timePt = pt.slice(0, -1) // убираем контрольнуя точку стрелки из построения
   const halfTail = widthL / 2
@@ -94,7 +89,6 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
 //  bindingType= "arcs" "miter" "round" "bevel" "smooth";
 // TypeLine L - прямые
 //          * - кривые Безье
-// eslint-disable-next-line no-unused-vars
 export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) {
@@ -123,7 +117,7 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
   } else { // координаты опорной стрелки рассчитываем по имеющимся данным
-    const polarPoints = coordinatesToAngle(pt[0], pt[1], pt[indEnd])
+    const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
   // построение острия стрелки
@@ -183,7 +177,6 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
 //  bindingType= "arcs" "miter" "round" "bevel" "smooth";
 // TypeLine L - прямые
 //          * - кривые Безье
-// eslint-disable-next-line no-unused-vars
 export function buildingMainAttack (datapt, typeLine, bindingType) {
   if (!datapt) {
     return null
@@ -203,7 +196,7 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
     pt = datapt.slice()
   }
 
-  if (pt.length < 3) { // constructionTail(pt,30); // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
+  if (pt.length < 3) { // для построения стрелки нужно минимум две координаты и опоргая точка стрелки[null,null]
     return null
   }
   const indEnd = pt.length - 1
@@ -211,7 +204,7 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
   } else { // координаты опорной стрелки рассчитываем по имеющимся данным
-    const polarPoints = coordinatesToAngle(pt[0], pt[1], pt[indEnd])
+    const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
   const [ tR, tO ] = pointReflected(pointSide, pt[0], pt[1]) // tR - точка отражения края стрелки , tO задний край стрелки
@@ -237,7 +230,6 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
 //  bindingType= "arcs" "miter" "round" "bevel";
 // TypeLine L - прямые
 //          * - кривые Безье
-// eslint-disable-next-line no-unused-vars
 export function buildingArrow (datapt, typeLine, bindingType) {
   if (!datapt) {
     return null
@@ -265,13 +257,12 @@ export function buildingArrow (datapt, typeLine, bindingType) {
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
   } else { // координаты опорной стрелки имеются, рассчитываем по имеющимся данным для полярной системы
-    const polarPoints = coordinatesToAngle(pt[0], pt[1], pt[indEnd])
+    const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
   const [ tR, tO ] = pointReflected(pointSide, pt[0], pt[1]) // tR - точка отражения края стрелки , tO задний край стрелки
   const tLp = segmentDivision(pointSide, tO, getKoefArrow())
   const tRp = segmentDivision(tR, tO, getKoefArrow())
-  // eslint-disable-next-line prefer-const
   const widthL = lengthLine(tLp, tRp) // Ширина тела стрелки
   const PointArrow = [ tLp, pointSide, pt[0], tR, tRp ]
   const path = 'M' + PointArrow.map(({ x, y }) => `${x} ${y}`).join(' L')
@@ -300,24 +291,19 @@ function servicePath (pt) {
 }
 // ---------------------------------------------------------------------------------------------------------
 // стратегия перемещения опорных точек для символов 151401 - 151406
-// eslint-disable-next-line no-unused-vars
 export const STRATEGY_ARROW = {
   // Довільне розташування усіх точок
   empty: () => {
   },
   // Проверка взаиморасположения точек PT 1, PT 2, PT N (определяют длину и ширину стрелки)
   supportingAttack: (prevPoints, nextPoints, changed) => {
-    // const newPT = [...prevPoints];
-    if (prevPoints.length === nextPoints.length) { // кол-во точек совпадает
+    if (prevPoints.length === nextPoints.length && changed.length === nextPoints.length) { // кол-во точек совпадает и перетаскиваем одну точку
       const indEnd = prevPoints.length - 1
-      // console.log({changed},{indEnd});
       // опорных точек должно быть минимум 4 (мне хотябы 3), обрабатываем изменение одной точки
       if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 2)) { // Обрабатываем изменения контрольных точек головы стрелки
         const referencePT = { x: nextPoints[indEnd].x, y: nextPoints[indEnd].y }
-        const polarPoint = coordinatesToAngle(prevPoints[0], prevPoints[1], referencePT)
-        //      console.log({referencePT});
+        const polarPoint = coordinatesToPolar(prevPoints[0], prevPoints[1], referencePT)
         const coordinates = referencePoint(nextPoints[0], nextPoints[1], polarPoint.angle, polarPoint.beamLength)
-        //      console.log({coordinates});
         nextPoints[indEnd] = { x: coordinates.x, y: coordinates.y }
       }
     }
@@ -352,7 +338,6 @@ function pointRotation (point, angle) {
   return { x: point.x * ca - point.y * sa, y: point.x * sa + point.y * ca }
 }
 // поворот точки на заданный угол относительно точки
-// eslint-disable-next-line no-unused-vars
 function pointRotationToPoint (point, angle, pointO) {
   const pp = { x: point.x - pointO.x, y: point.y - pointO.y }
   const ca = Math.cos(angle)
@@ -414,8 +399,6 @@ function pointIntersecLine (l1p1, l1p2, l2p1, l2p2) {
   if (d === 0) { // прямые параллельны
     return null
   }
-  // const c1 = l1p2.y * l1p1.x - l1p2.x * l1p1.y;
-  // const c2 = l2p2.y * l2p1.x - l2p2.x * l2p1.y;
   return { x: (b1 * c2 - b2 * c1) / d, y: (a2 * c1 - a1 * c2) / d }
 }
 
@@ -424,33 +407,24 @@ function pointIntersecLine (l1p1, l1p2, l2p1, l2p2) {
 // t1, t2 координаты отрезка
 // t3 - координаты точка
 // возвращаем угол между лучами (t1,t2) и (t1,t3) и длину отрезка (t1,t3)
-function coordinatesToAngle (t1, t2, t3) {
-  const beamLength = Math.sqrt((t1.x - t3.x) * (t1.x - t3.x) + (t1.y - t3.y) * (t1.y - t3.y))
-  const angle = anglePoint(t1, t2, t3)
-  return { angle, beamLength }
-}
-
-// eslint-disable-next-line no-unused-vars
 export function coordinatesToPolar (t1, t2, t3) {
   const beamLength = Math.sqrt((t1.x - t3.x) * (t1.x - t3.x) + (t1.y - t3.y) * (t1.y - t3.y))
-  const angle = Math.atan2((t3.y - t1.y) * (t2.x - t1.x) - (t2.y - t1.y) * (t3.x - t1.x),
-    (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
+  const angle = angle3Points(t1, t2, t3)
   return { angle, beamLength }
 }
 
+// Расчет угла между отрезками t1t2 t1t3
 export function angle3Points (t1, t2, t3) {
   return Math.atan2((t3.y - t1.y) * (t2.x - t1.x) - (t2.y - t1.y) * (t3.x - t1.x),
     (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
 }
 
 function angle4Points (t1, t2, t3, t4) {
-  // return Math.atan2((t1.y - t2.y) * (t4.x - t3.x) - (t3.y - t4.y) * (t2.x - t1.x),
-  //   (t2.x - t1.x) * (t4.x - t3.x) + (t1.y - t2.y) * (t3.y - t3.y))
   const l1 = straight(t1, t2)
   const l2 = straight(t3, t4)
   return Math.atan2((l1.A * l2.B - l2.A * l1.B), (l1.A * l2.A + l1.B * l2.B))
 }
-// eslint-disable-next-line no-unused-vars
+// ------------------------------------------------------------------------------------------
 export function polarToCoordinates (t0, t1, tP) {
   const vectorN = vector(t0, t1)
   const angleVectora = Math.atan2(vectorN.y, vectorN.x)
@@ -477,8 +451,6 @@ function straight (p1, p2) {
 function perpendStraight (n, p1, p2) {
   const A1 = p1.y - p2.y
   const B1 = p2.x - p1.x
-  // пересечение перпендикулярных прямых
-  // const intersection={x: -(C1*A1+C2*B1)/(B1*B1+A1*A1), y: (A1*C2-B1*C1)/(B1*B1+A1*A1)};
   const A2 = B1
   const B2 = -A1
   const C2 = A1 * n.y - B1 * n.x
@@ -513,15 +485,6 @@ function angleLineToOX (p1, p2) {
   return Math.atan2(p2.y - p1.y, p2.x - p1.x)
 }
 
-// -----------------------------------------------------------------------------------------
-// Расчет угла между отрезками P1P2 P1P3
-function anglePoint (p1, p2, p3) {
-  const m1 = Math.sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y))
-  const m2 = Math.sqrt((p3.x - p1.x) * (p3.x - p1.x) + (p3.y - p1.y) * (p3.y - p1.y))
-  const sm = (p2.x - p1.x) * (p3.x - p1.x) + (p2.y - p1.y) * (p3.y - p1.y)
-  return Math.acos(sm / (m1 * m2))
-}
-
 // ----------------------------------------------------------------------------------------
 function vector (p1, p2) {
   return { x: p2.x - p1.x, y: p2.y - p1.y }
@@ -549,8 +512,6 @@ function angleVector (v1, v2) {
 // -----------------------------------------------------------------------------------------
 // расчет контрольных точек для кривых Безье
 function referencePoints (t, position, minLength) {
-  // const ugol = angleLineToOX(t[0], t[2])
-  // const ugol2 = angleLineToOX(t[2], t[0])
   let dlinaL = lengthLine(t[0], t[1]) / coefTangent
   let dlinaR = lengthLine(t[1], t[2]) / coefTangent
   if (isDef(minLength) && minLength > 0) {
@@ -564,23 +525,11 @@ function referencePoints (t, position, minLength) {
     return [ t[1], { x: t[1].x + dlinaR * Math.cos(angleR), y: t[1].y + dlinaR * Math.sin(angleR) } ]
   } else if (position > 0) {
     // контрольная точка для конца линии ( направление свободное)
-    // angleR = angleLineToOX(t[0], t[1])
     return [ t[1], t[1] ]
   }
-  // console.log(deg(ugol), deg(ugol2), deg(angleR), deg(angleL))
-  // eslint-disable-next-line no-unused-vars
   // приводим длину вектора к растоянию между точками апроксимации
-  // eslint-disable-next-line prefer-const
   const ktR = { x: t[1].x + dlinaR * Math.cos(angleR), y: t[1].y + dlinaR * Math.sin(angleR) }
   const ktL = { x: t[1].x - dlinaL * Math.cos(angleR), y: t[1].y - dlinaL * Math.sin(angleR) }
-  // if (position < 0) {
-  //   // контрольная точка для начала линии (t0 и t1 совпадают)
-  //   ktL = t[1]
-  // } else if (position > 0) {
-  //   // контрольная точка для конца линии (t1 и t2 совпадают)
-  //   ktR = t[1]
-  //   ktL = t[1]
-  // }
   return [ ktL, ktR ]
 }
 
@@ -595,8 +544,6 @@ function qalqNormal (point, pointL, pointR) {
     return true
   }
   // выпали из отрезка
-  // const line = straight(pointL, pointR)
-  // const distan = distance(point, line)
   return false
 }
 
@@ -639,8 +586,6 @@ function qalqControlPoints (dataPt, equally) {
       }
     }
   }
-  // [ ktL, ktR ] = referencePoints([ dataPt[0], dataPt[0], dataPt[1] ], minLength)
-  // mKtBezier.push({ ktL, ktR })
   // первая контрольная точка
   [ ktL, ktR ] = referencePoints([ dataPt[0], dataPt[1], dataPt[2] ], -1, minLength)
   mKtBezier.push({ ktL, ktR })
@@ -675,7 +620,6 @@ function intersectionBezier (bezier1, bezier2) {
   try {
     intersec = Intersection.intersect(bz1, bz2)
   } catch (e) {
-    // console.log('Intersec ', {e}, bz1, bz2)
     return null
   }
   return intersec
@@ -765,7 +709,6 @@ function constructionTailBezier (pt, widthL, equally) {
   const mPolyBezSideL = [] // масив тел полилиний
   const mPolyBezSideP = [] // масив тел полилиний
   let outlineOffsetL, outlineOffsetP
-  // const mpt = pt.slice(1)
   for (let i = 1; i <= indEnd; i++) {
     const PolyBez = new Bezier(mpt[i - 1].x, mpt[i - 1].y, mKtBezier[i - 1].ktR.x, mKtBezier[i - 1].ktR.y,
       mKtBezier[i].ktL.x, mKtBezier[i].ktL.y, mpt[i].x, mpt[i].y)
@@ -773,7 +716,6 @@ function constructionTailBezier (pt, widthL, equally) {
       outlineOffsetL = PolyBez.offset(-Math.max(widthL, 5))
       outlineOffsetP = PolyBez.offset(Math.max(widthL, 5))
     } catch (e) {
-      // console.log('error constructing the body of the curve Bez ', PolyBez.points, e)
       continue
     }
     mPolyBezSideP.push({
@@ -870,24 +812,22 @@ function curveToPath (mCurve) {
   return pathCurve
 }
 // ----------------------------------------------------------------------------------------------
-// eslint-disable-next-line no-unused-vars
+// определение точек пунктирной линии перед стредкой
 export function buildingDotted (result, points) {
-  if (points.length < 4) {
+  if (points.length < 3) {
     return ''
   }
   const pointN = points[points.length - 1]
   const [ pointR, pointBase ] = pointReflected(pointN, points[0], points[1])
-  const lengthStreych = lengthLine(points[points.length - 1], pointR) / 8
-  // eslint-disable-next-line max-len
-  const pointO = increaseSection(pointBase, points[0], lengthStreych / Math.tan(angle3Points(points[0], pointBase, pointN)))
-  const pointDottedL = increaseSection(pointBase, pointN, lengthStreych)
-  const pointDottedR = increaseSection(pointBase, pointR, lengthStreych)
+  const offset = lengthLine(points[points.length - 1], pointR) / 8
+  const pointO = increaseSection(pointBase, points[0], offset / Math.tan(angle3Points(points[0], pointBase, pointN)))
+  const pointDottedL = increaseSection(pointBase, pointN, offset)
+  const pointDottedR = increaseSection(pointBase, pointR, offset)
   const mLine = [ pointDottedL, pointO, pointDottedR ]
   drawDotted(result, mLine)
 }
 // ----------------------------------------------------------------------------------------------
 // пунктир по точкам
-// eslint-disable-next-line no-unused-vars
 export function drawDotted (result, points) {
   if (points.length < 2) {
     return ''
@@ -1002,8 +942,6 @@ function bindingLine (mLine, _bindingType, widthL) {
       const angle1 = Math.abs(angle3Points(mLine[0].p2, mLine[0].p1, mLine[1].p1))
       if ((angle1 < Math.PI / 2) && (angle2 < Math.PI / 2)) {
         // Сводим внутренние близкие не пересекающиеся отрезки
-        // mLine[0].p2 = mLine[1].p1
-        // console.log("Подоезаем", mLine[i], deg(angle1), deg(angle2))
         pIntersec.status = 'Intersection'
         pIntersec.points = [ mLine[1].p1 ]
       }
@@ -1027,28 +965,22 @@ function bindingLine (mLine, _bindingType, widthL) {
         mLine[i + 1].p1 = s2 // pIntersec.points[0]
       } else {
         // просто обрезаем до точки пересечения
-        // console.log(i, mLine[i])
         mLine[i].p2 = pIntersec.points[0]
         mNewLine.push({ p1: mLine[i].p1, p2: mLine[i].p2, typeLine: 'line' })
         mLine[i + 1].p1 = pIntersec.points[0]
       }
     } else { // нет пересечения, соединяем
-      // if (i === 0) { console.log('До ', mLine[0]) }
       let bind = bindType
       if (bindType === 'miter') {
         // Срез определяется по углу пересечения
-        // const angle = angleLine(mLine[i].p1, mLine[i].p2, mLine[i + 1].p1, mLine[i + 1].p2)
         const angle2 = Math.abs(angle4Points(mLine[i].p2, mLine[i].p1, mLine[i + 1].p1, mLine[i + 1].p2))
-        // console.log(i, deg(angle), deg(angle2))
         if (angle2 > Math.PI / 2) {
           // угол тупой - дотягиваем линии до пересечения
           bind = 'arcs'
         } else {
           // удлиняем линии чтобы соединяющая линии была дальше ширины линии
           bind = 'bevel'
-          // const increase = widthL * Math.tan(angle / 4)
           const increase = widthL * Math.tan((Math.PI - angle2) / 4)
-          // console.log(i, deg(angle), deg(angle2), increase)
           mLine[i].p2 = increaseSection(mLine[i].p1, mLine[i].p2, increase)
           mLine[i + 1].p1 = increaseSection(mLine[i + 1].p2, mLine[i + 1].p1, increase)
         }
@@ -1083,7 +1015,6 @@ function bindingLine (mLine, _bindingType, widthL) {
       if (bind === 'bevel') { // Срезаем угол пересечения, соединяем разведенные отрезки
         mNewLine.push({ p1: mLine[i].p2, p2: mLine[i + 1].p1, typeLine: 'line' })
       }
-      // if (i === 0) { console.log('После ', mLine[0]) }
     }
   }
   if (mLine.length > 0) {
@@ -1093,7 +1024,6 @@ function bindingLine (mLine, _bindingType, widthL) {
 }
 // -------------------------------------------------------------------------------------------------------
 // блискавка
-// eslint-disable-next-line no-unused-vars
 export function drawLightning (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const lengthZ = lengthL / 10
@@ -1122,7 +1052,6 @@ export function drawLightning (result, pN, pK) {
     x: pK.x + Math.cos(angleA + Math.PI / 18) * lengthL / 5,
     y: pK.y + Math.sin(angleA + Math.PI / 18) * lengthL / 5,
   }
-  // console.log(pC, dx, dy, p1, p2, lengthZ)
   moveTo(result, pN)
   lineTo(result, p1)
   lineTo(result, p2)
@@ -1133,7 +1062,6 @@ export function drawLightning (result, pN, pK) {
 }
 // ---------------------------------------------------------------------------------------------------
 // проводне керування
-// eslint-disable-next-line no-unused-vars
 export function drawWires (result, pN, pK) {
   const lengthL = lengthLine(pN, pK)
   const radius = lengthL / 4
