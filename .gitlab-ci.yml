@@ -171,20 +171,19 @@ Increment_dzvin_dev:
 
 build-master:
   stage: build
-  <<: *base
-#  before_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text="Pipe Start %CI_PROJECT_NAME% with %CI_COMMIT_MESSAGE% by %GITLAB_USER_LOGIN% on %CI_COMMIT_REF_NAME%"
+  only:
+    - master
+  tags: 
+    - explorer-build
   script:
-    - echo Building project...
-    - call yarn install --mutex network --network-concurrency 1
-    - call yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --network-concurrency 1
-    - copy .env .env.backup
-    - copy .env.production .env
-    - call npm run-script build
-    - rmdir /s /q build\explorerLite
+    - yarn
+    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
+    - cp .env .env.backup
+    - rm .env 
+    - cp .env.production .env
+    - yarn run svg-sprite2
+    - yarn run build
     - echo Done
-#  after_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
   artifacts:
     expire_in: 1 hour
     paths:
