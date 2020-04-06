@@ -12,7 +12,7 @@ const LINE_TYPE = 'L'
 
 lineDefinitions['151406'] = {
   // Відрізки, на яких дозволено додавання вершин символа
-  allowMiddle: MIDDLE.areaWithAmplifiersNotEnd(POINTS - 2),
+  allowMiddle: MIDDLE.allowOverAndNotEnd(POINTS - 2),
 
   // Вершини, які дозволено вилучати
   allowDelete: DELETE.allowNotEnd(POINTS),
