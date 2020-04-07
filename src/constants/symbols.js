@@ -517,7 +517,6 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T' },
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
       },
@@ -564,7 +563,6 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T' },
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
       },
@@ -574,7 +572,6 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T' },
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
       },
@@ -584,7 +581,6 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T' },
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
       },
