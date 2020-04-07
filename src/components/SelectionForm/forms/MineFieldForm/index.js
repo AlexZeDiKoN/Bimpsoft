@@ -1,7 +1,6 @@
 import { compose } from 'redux'
 import React from 'react'
 import { components, Scrollbar } from '@DZVIN/CommonComponents'
-// import { FlagsForm } from '@DZVIN/MilSymbolEditor/src/SymbolEditorComponent/FlagsForm'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -21,6 +20,7 @@ import {
 
 import './MineFieldForm.css'
 import spriteUrl from '../../../Symbols/sprite.svg'
+import i18n from '../../../../i18n'
 
 const { FormRow } = components.form
 
@@ -77,7 +77,7 @@ export default class PollutionCircleForm extends compose(
                 {this.renderControllability()}
               </div>
               <div className="line-container__itemWidth30">
-                <FormRow label='Колір'>
+                <FormRow label={i18n.LINE_COLOR}>
                   {this.renderColor()}
                 </FormRow>
               </div>

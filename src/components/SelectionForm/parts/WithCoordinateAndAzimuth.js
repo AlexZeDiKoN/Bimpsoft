@@ -72,7 +72,6 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
               <Coordinates
                 isReadOnly={!canEdit}
                 coordinates={coordBegin}
-                onChange={null} // {this.changeHandler}
                 onEnter={() => this.onCoordinateFocusHandler(0)}
                 onBlur={() => this.onCoordinateBlurHandler(0)}
                 onExitWithChange={canEdit ? this.firstCoordinateExitChangeHandler : null }

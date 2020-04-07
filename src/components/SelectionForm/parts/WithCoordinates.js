@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
+import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -25,15 +27,23 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     editCoordinates: !state.editCoordinates,
   }))
 
-  coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
-  )
+  coordinateAddHandler = (index) => {
+    // console.log('add', index)
+    // this.setResult((result) =>
+    //   result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
+    // )
+  }
 
   renderCoordinates () {
     const { editCoordinates } = this.state
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit()
+    const canEditCoord = canEdit && editCoordinates
+    const codeLine = extractLineCode(this.props.data.code)
+    const allowDelete = lineDefinitions[codeLine]?.allowDelete
+    const allowMiddle = lineDefinitions[codeLine]?.allowMiddle
+    const countCoordinates = coordinatesArray.length
     return (
       <FormDarkPart>
         <FormRow label={i18n.NODAL_POINTS}>
@@ -50,33 +60,39 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
               <tr>
                 <th>
                   <FormRow label={i18n.COORDINATES}>
-                    {canEdit && editCoordinates && <IconHovered
-                      icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-                      hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-                      onClick={this.coordinateAddHandler}
-                    />}
                   </FormRow>
                 </th>
               </tr>
-              {coordinatesArray.map((coordinate, index) => (
-                <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
-                  <tr>
-                    <td>
-                      <CoordinateItem
-                        key={index}
-                        coordinate={coordinate}
-                        index={index}
-                        readOnly={!canEdit || !editCoordinates}
-                        canRemove={coordinatesArray.size > 2}
-                        onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
-                        onRemove={this.coordinateRemoveHandler}
-                        onFocus={this.onCoordinateFocusHandler}
-                        onBlur={this.onCoordinateBlurHandler}
-                      />
-                    </td>
-                  </tr>
-                </Fragment>
-              ))}
+              {coordinatesArray.map((coordinate, index) => {
+                const canRemove = allowDelete ? allowDelete(index, countCoordinates) : countCoordinates > 2
+                const canAdd = canEditCoord && (allowMiddle ? allowMiddle(index, index + 1, countCoordinates) : false)
+                return (
+                  <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
+                    <tr>
+                      <td>
+                        <CoordinateItem
+                          key={index}
+                          coordinate={coordinate}
+                          index={index}
+                          readOnly={!canEditCoord}
+                          canRemove={canRemove && canEditCoord }
+                          onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+                          onRemove={this.coordinateRemoveHandler}
+                          onFocus={this.onCoordinateFocusHandler}
+                          onBlur={this.onCoordinateBlurHandler}
+                        />
+                      </td>
+                      <td>
+                        {canAdd && <IconHovered
+                          icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                          hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                          onClick={() => this.coordinateAddHandler(index)}
+                        />}
+                      </td>
+                    </tr>
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
         </div>
