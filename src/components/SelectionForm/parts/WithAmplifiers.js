@@ -25,7 +25,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const currentValue = this.getResult().getIn(PATH_AMPLIFIERS)
     const canEdit = this.isCanEdit()
     return (
-      <div className="line-container__itemWidth">
+      <>
         {amplifiersPairs.map(({ id, name }) => (
           <div className="line-container__itemWidth30" key={id}>
             <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
@@ -39,7 +39,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
             </FormRow>
           </div>
         ))}
-      </div>
+      </>
     )
   }
 }

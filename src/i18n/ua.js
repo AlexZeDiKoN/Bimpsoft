@@ -195,6 +195,7 @@ export const COMBINE = 'Об\'єднати'
 export const MIRROR_IMAGE = 'Дзеркально відобразити'
 export const CONTOUR = 'Контур'
 export const SOPHISTICATED = 'Складна лінія'
+export const ATTACK = 'Напрямок удару / атаки'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`

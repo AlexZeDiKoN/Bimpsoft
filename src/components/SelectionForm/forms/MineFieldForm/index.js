@@ -82,7 +82,9 @@ export default class PollutionCircleForm extends compose(
                 </FormRow>
               </div>
             </div>
-            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+            <div className="line-container__itemWidth">
+              {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+            </div>
           </div>
         </div>
       </Scrollbar>

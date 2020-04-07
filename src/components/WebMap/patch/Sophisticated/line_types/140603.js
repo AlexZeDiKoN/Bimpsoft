@@ -1,8 +1,9 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, drawArrow,
+  drawLine, segmentBy, angleOf, drawMaskedText, drawArrow, getPointAt,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: FRIENDLY DIRECTION OF SUPPORTING ATTACK
 // task code: DZVIN-5519
@@ -31,6 +32,7 @@ lineDefinitions['140603'] = {
   // Рендер-функція
   render: (result, points, scale) => {
     const [ p0, p1, ...rest ] = points
+    const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
 
     drawArrow(result, p1, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
 
@@ -42,7 +44,17 @@ lineDefinitions['140603'] = {
       result,
       segmentBy(p0, p1, 1 / 3),
       angleOf(p1, p0),
-      result.layer?.options?.textAmplifiers?.T ?? '',
+      amplifiersInfo[amps.T] ?? '',
+    )
+
+    const p05 = segmentBy(p0, p1, 1 / 2)
+    const pW = getPointAt(p1, p05, Math.PI / 2, ARROW_WIDTH * scale)
+    drawMaskedText(
+      result,
+      pW,
+      angleOf(p1, p0),
+      amplifiersInfo[amps.W] ?? '',
+      0.75,
     )
   },
 }

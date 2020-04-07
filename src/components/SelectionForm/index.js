@@ -23,7 +23,7 @@ import {
   SectorsForm,
   PollutionCircleForm,
   MineFieldForm,
-  CircularZoneForm,
+  CircularZoneForm, AttackForm,
 } from './forms'
 // import  from './forms/CircularZoneForm'
 
@@ -101,6 +101,13 @@ const forms = {
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.SOPHISTICATED,
     component: SophisticatedForm,
+    minHeight: 330,
+    maxHeight: 630,
+    minWidth: 415,
+  },
+  [SelectionTypes.ATTACK]: {
+    title: i18n.ATTACK,
+    component: AttackForm,
     minHeight: 330,
     maxHeight: 630,
     minWidth: 415,
@@ -200,6 +207,12 @@ export default class SelectionForm extends React.Component {
           break
         case '270701':
           formType = SelectionTypes.MINE_FIELD
+          break
+        case '140601':
+        case '140602':
+        case '140603':
+        case '140605':
+          formType = SelectionTypes.ATTACK
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }
