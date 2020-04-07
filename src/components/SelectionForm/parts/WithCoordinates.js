@@ -28,6 +28,16 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
   }))
 
   coordinateAddHandler = (index) => {
+    const formStore = this.getResult()
+    const coordArray = formStore.getIn(COORDINATE_PATH).toJS()
+    if (index + 1 < coordArray.length) { // вставка между опорными точками
+      const coordNew = {
+        lat: (coordArray[index + 1].lat + coordArray[index].lat) / 2,
+        lng: (coordArray[index + 1].lng + coordArray[index].lng) / 2,
+      }
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
+    }
     // console.log('add', index)
     // this.setResult((result) =>
     //   result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),

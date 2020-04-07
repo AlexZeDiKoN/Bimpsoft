@@ -4,6 +4,8 @@ import {
   drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow, getPointAt,
 } from '../utils'
 
+import { amps } from '../../../../../constants/symbols'
+
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
 // hint: 'Напрямок удару своєї авіації'
@@ -36,9 +38,12 @@ lineDefinitions['140601'] = {
     const l = segmentLength(p0, p1)
     const h = BUT_HEIGHT * scale / 2
     const d = h * Math.sqrt(3)
+
+    const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
+    const p0e = segmentBy(p0, p1, 2 / 3 - d / l)
+
     if (l > d * 4) {
       const p1e = segmentBy(p0, p1, 2 / 3 + d / l)
-      const p0e = segmentBy(p0, p1, 2 / 3 - d / l)
       drawArrow(result, p0e, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
       drawLine(result, p1, p1e)
       const p = getPointAt(p1, p1e, -Math.PI / 2, h)
@@ -62,7 +67,15 @@ lineDefinitions['140601'] = {
       result,
       segmentBy(p0, p1, 1 / 3),
       angleOf(p1, p0),
-      result.layer?.options?.textAmplifiers?.T ?? '',
+      amplifiersInfo[amps.T] ?? '',
+    )
+
+    drawMaskedText(
+      result,
+      getPointAt(p1, p0e, Math.PI / 2, h),
+      angleOf(p1, p0),
+      amplifiersInfo[amps.W] ?? '',
+      0.75, 'middle', 'before-edge',
     )
   },
 }
