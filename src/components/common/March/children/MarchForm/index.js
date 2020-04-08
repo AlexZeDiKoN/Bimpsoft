@@ -10,6 +10,8 @@ const {
   form: { Coordinates },
 } = components
 
+const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
+
 const marchPoints = [
   { name: 'Вихідний рубіж', rest: false, base: true, time: 0 },
   { name: 'Пункт на маршруті', rest: false, time: 0 },
@@ -24,9 +26,11 @@ const getPointByName = (name) => marchPoints.find((point) => point.name === name
 const getFormattedGeoLandmarks = (geoLandmarks) => {
   const { features = [] } = geoLandmarks
 
-  return features.map(({ properties: { name, distance, azimuth } }) => {
+  const filteredGeoLandmarks = getFilteredGeoLandmarks(features)
+
+  return filteredGeoLandmarks.map(({ name, distance, azimuth }) => {
     const distanceInKm = (distance / 1000).toFixed(0)
-    const cardinalDirection = utilsMarch.convertUnits.azimuthToCardinalDirection(azimuth)
+    const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
     return `${distanceInKm} км на ${cardinalDirection} від м. ${name}`
   })

@@ -32,6 +32,30 @@ const azimuthToCardinalDirection = (azimuth) => {
   return cardinalDirection
 }
 
+const getFilteredGeoLandmarks = (features) => {
+  const filteredGeoLandmarks = {}
+
+  features.forEach(({ properties }) => {
+    const { name, distance } = properties
+
+    if (!name) {
+      return
+    }
+
+    const filteredLandmark = filteredGeoLandmarks[name]
+    if (filteredLandmark) {
+      if (distance < filteredLandmark.distance) {
+        filteredGeoLandmarks[name] = properties
+      }
+    } else {
+      filteredGeoLandmarks[name] = properties
+    }
+  })
+
+  return Object.values(filteredGeoLandmarks)
+}
+
 export default {
   azimuthToCardinalDirection,
+  getFilteredGeoLandmarks,
 }
