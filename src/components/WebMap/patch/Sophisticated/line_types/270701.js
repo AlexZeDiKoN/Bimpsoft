@@ -42,16 +42,17 @@ lineDefinitions['270701'] = {
     const pO = points[0]
     // міни
     const d = SIZE * scale / 2
-    const symbolScale = mineType >= MINE_TYPES.MARINE ? 0.9 : 1
-    let symbol = new Symbol(CODE_MINE_TYPES[mineType], { size: SIZE * scale * symbolScale }).asSVG()
+    const symbolScale = mineType >= MINE_TYPES.MARINE ? 0.85 : 1
+    const sizeSymbol = SIZE * scale * symbolScale
+    let symbol = new Symbol(CODE_MINE_TYPES[mineType], { size: sizeSymbol }).asSVG()
     result.amplifiers += `<g transform="translate(${pO.x - d * 3.2}, ${pO.y - d * 1.05})">${symbol}</g>`
-    result.amplifiers += `<g transform="translate(${pO.x + d}, ${pO.y - d * 1.05})">${symbol}</g>`
+    result.amplifiers += `<g transform="translate(${pO.x + d * 1.15}, ${pO.y - d * 1.05})">${symbol}</g>`
     if (mineType === MINE_TYPES.VARIOUS_TYPES) {
-      symbol = new Symbol(CODE_MINE_TYPES[0], { size: SIZE * scale * symbolScale }).asSVG()
+      symbol = new Symbol(CODE_MINE_TYPES[0], { size: sizeSymbol }).asSVG()
     }
-    result.amplifiers += `<g transform="translate(${pO.x - d * 1.1}, ${pO.y - d * 1.05})">${symbol}</g>`
+    result.amplifiers += `<g transform="translate(${pO.x - d * 1.05}, ${pO.y - d * 1.05})">${symbol}</g>`
 
-    drawRectangleC(result, pO, d * 6.5, d * 2.5)
+    drawRectangleC(result, pO, d * 6.8, d * 2.5)
 
     // Керованість
     if (controlType === 1) { // Керованість по радіо

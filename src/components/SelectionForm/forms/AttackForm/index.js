@@ -24,8 +24,8 @@ import { amps } from '../../../../constants/symbols'
 const { FormRow, FormDarkPart } = components.form
 const svgAmplifier = <svg viewBox="0 0 1024 1024">
   <path
-    d="M570 400 h224 v224 h-224z m48 48h124h-62v142 M512 664v224h-224v-224z M332 724l32 96 l32-96 l32 96 l32-96"
-    fill="white" strokeLinejoin="bevel" stroke="#000000" strokeWidth="10">
+    d="M560 400h224v224h-224zm48 48h124h-62v128M512 664h-224v224h224zM336 724l32 96l32-96l32 96l32-96"
+    fill="white" fillRule="nonzero" strokeLinejoin="bevel" stroke="#000000" strokeWidth="10">
   </path>
 </svg>
 

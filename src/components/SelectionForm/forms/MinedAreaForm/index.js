@@ -2,36 +2,38 @@ import { compose } from 'redux'
 import React from 'react'
 import { Scrollbar } from '@DZVIN/CommonComponents'
 import {
-  WithColor, // цвет линии
+  UnitSelect, // Підрозділ
+  WithSubordinationLevel, // Рівень підпорядкування
+  WithAffiliation, // Приналежність
+  WithStatus, // Стан
   WithSegment, // кривые или прямые отрезки
   WithLineType, // тип линии
-  WithPointAmplifiers, // Амплификатори  T, N, W
-  // WithIntermediateAmplifiers, // Амплификатори  H1, B, H2
-  WithCoordinates, // массив координат
-  WithSubordinationLevel, // Рівень підпорядкування
+  WithColor, // цвет линии
   WithStrokeWidth, // Товщина лінії
-  UnitSelect, // Підрозділ
-  WithLineClassifier, // Класифікація НАТО
-  WithAffiliation, // Приналежність
+  WithAmplifiers, // Амплификатори
+  WithCoordinates, // массив координат
 } from '../../parts'
 
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './MinedAreaForm.css'
-import WithStatus from '../../parts/WithStatus'
 import spriteUrl from '../../../Symbols/sprite.svg'
 
+const PAIRS_AMPLIFIERS = [
+  { id: 'middle', name: 'N' },
+  { id: 'top', name: 'H1' },
+]
+
 export default class MinedAreaForm extends compose(
-  WithColor,
-  WithSegment,
-  WithLineType,
-  WithPointAmplifiers,
+  UnitSelect, // Підрозділ
+  WithSubordinationLevel, // Рівень підпорядкування
+  WithAffiliation, // Приналежність
+  WithStatus, // Стан
+  WithSegment, // кривые или прямые отрезки
+  WithLineType, // тип линии
+  WithColor, // цвет линии
+  WithStrokeWidth, // Товщина лінії
+  WithAmplifiers, // Амплификатори  T, N, W
   WithCoordinates,
-  WithSubordinationLevel,
-  WithStrokeWidth,
-  UnitSelect,
-  WithLineClassifier,
-  WithAffiliation,
-  WithStatus,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -41,36 +43,31 @@ export default class MinedAreaForm extends compose(
       <Scrollbar>
         <div className="minedarea-container">
           <div className="minedarea-container__item--firstSection">
-            <div className="minedarea-container__itemWidth-left">
+            <div className="line-container__itemWidth-left">
               <svg key={name}>
                 <use xlinkHref={`${spriteUrl}#${name}`}/>
               </svg>
             </div>
-            <div className="minedarea-container__itemWidth-right">
-              <div className='minedarea-container__itemWidth--section1'>
-                <div className="minedarea-container__itemWidth">
-                  {this.renderOrgStructureSelect()} { /* підрозділ */ }
-                  {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
-                  {this.renderStatus()} { /* необхыдно тип Мін */ }
-                </div>
-                <div className="minedarea-container__itemWidth">
-                  {this.renderAffiliation()} { /* принадлежність */ }
-                  {this.renderStatus()} { /* Стан */ }
-                </div>
+            <div className="line-container__itemWidth-right">
+              <div className="line-container__itemWidth">
+                {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
+                {this.renderOrgStructureSelect()} { /* підрозділ */ }
+              </div>
+              <div className="line-container__itemWidth">
+                {this.renderAffiliation()} { /* принадлежність */ }
+                {this.renderStatus()} { /* Стан */ }
               </div>
             </div>
           </div>
           <div className="minedarea-container__item--secondSection">
-            <div className="minedarea-container__itemWidth">
-              <div className='containerTypeColor'>
-                {this.renderSegment()}
-                {this.renderLineType()}
-                {this.renderColor()}
-              </div>
-              {this.renderStrokeWidth()}
+            <div className="line-container__item">
+              {this.renderSegment()}
+              {this.renderLineType()}
+              {this.renderColor()}
             </div>
+            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+            {this.renderCoordinates()}
           </div>
-          {this.renderCoordinates()}
         </div>
       </Scrollbar>
     )

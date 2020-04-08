@@ -52,12 +52,11 @@ const TYPE_PATH = [ 'type' ]
 
 const WithSegment = (Component) => class SegmentComponent extends Component {
   segmentChangeHandler = (segment) => this.setResult((result) =>
-    result.updateIn(TYPE_PATH, (type) => getTypeBySegment(type, segment))
-  )
+    result.updateIn(TYPE_PATH, (type) => getTypeBySegment(type, segment)))
 
   renderSegment () {
-    const type = this.getResult().getIn(TYPE_PATH)
-    const segment = typeToSegment.get(type)
+    const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
+    const segment = typeToSegment.get(type) ?? SEGMENT_ARC
     const segmentInfo = segments[segment]
     const canEdit = this.isCanEdit()
 

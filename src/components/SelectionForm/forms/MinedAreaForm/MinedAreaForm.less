@@ -1,24 +1,30 @@
 @import "../../../../assets/styles/_variables.less";
 
-.line-container {
+.minedarea-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
   .dzvin-form-row{
+    margin-top: 0.5em;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     label{
-      margin-bottom: 0.35em;
+      margin-top: 0.35em;
       margin-left: 0.5em;
-      font-size: 12px;
+      font-size: 14px;
+      text-align: left;
       flex: 0 0 auto;
       display: block;
       white-space: nowrap;
       overflow: hidden;
       margin-right: 0;
       text-overflow: ellipsis;
+
+      input{
+       margin-right: 5px;
+     }
     }
     textarea.ant-input{
       min-height: 48px;
@@ -82,7 +88,7 @@
       border-bottom: 2px solid rgba(159,166,89,.54);
 
       .line-container__itemWidth-left {
-        width: 50%;
+        width: 35%;
         border: 7px solid #eaeaea;
         margin: 12px;
         height: 153px;
@@ -94,13 +100,24 @@
       }
 
       .line-container__itemWidth-right {
-        width: 50%;
+        width: 65%;
+        display: flex;
+
         .dzvin-form-input {
           width: 100%;
+
+          .symbol {
+            height: inherit;
+            margin-top: 5px;
+            margin-right: 5px;
+          }
+
           .ant-select{
             width: 100%;
           }
+
         }
+
         .line-container__itemWidth--section1 {
           display: flex;
           .dzvin-input{
@@ -121,27 +138,25 @@
     }
 
     &--secondSection{
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
       width: 100%;
       padding: 0 0.3em;
       border-bottom: 2px solid rgba(159, 166, 89, 0.54);
 
-      .line-container__itemWidth {
+      label {
         width: 100%;
+      }
 
-        .containerTypeColor{
-          display: flex;
-          align-items: center;
-          width: 100%;
-          margin-right: 2em;
-          .container-color-picker{
-            height: 48px;
-            display: flex;
-            align-items: flex-end;
-          }
-        }
+      .container-color-picker {
+        margin: 5px 14px;
+        width: 100%;
+        height: 48px;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .line-container__itemWidth {
+        display: flex;
+        width: 100%;
 
         & > div {
           display: flex;
@@ -194,6 +209,10 @@
     min-height: 250px;
     height: 100%;
     margin: 0;
+
+    label{
+      width: auto;
+    }
 
     .dzvin-form-row{
       padding: 5px 10px;

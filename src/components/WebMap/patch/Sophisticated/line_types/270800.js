@@ -36,30 +36,24 @@ lineDefinitions['270800'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const sign = points[points.length - 1]
     const area = points.slice(0, -1)
 
-    const text = JSON.stringify(result.layer.options.pointAmplifier)
-    result.layer.options.pointAmplifier = {}
-    lineDefinitions['270701'].render(result, [ sign ], scale)
-    const { top, bottom } = result.layer.options.pointAmplifier = JSON.parse(text)
+    const textAmplifier = result.layer?.object?.attributes?.pointAmplifier
+    const { top = '', middle = '' } = textAmplifier
+    drawMaskedText(result, sign, 0, middle, TEXT_SIZE, 'middle', 'middle')
 
     drawBezierSpline(result, area, true)
-    let topPoint, bottomPoint
+    let topPoint
     area.forEach((point) => {
       drawMaskedText(result, point, 0, TEXT)
       if (!topPoint || topPoint.y > point.y) {
         topPoint = point
       }
-      if (!bottomPoint || bottomPoint.y < point.y) {
-        bottomPoint = point
-      }
     })
-    const bb = textBBox('bp', result.layer)
-    topPoint.y -= bb.height * 0.667
-    bottomPoint.y += bb.height * 0.5
+    const bb = textBBox('M', result.layer)
+    topPoint.y -= bb.height * 0.67
     drawMaskedText(result, topPoint, 0, top, TEXT_SIZE, 'middle', 'after-edge')
-    drawMaskedText(result, bottomPoint, 0, bottom, TEXT_SIZE, 'middle', 'before-edge')
   },
 }
