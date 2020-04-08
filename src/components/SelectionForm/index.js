@@ -130,8 +130,9 @@ const forms = {
     title: i18n.SHAPE_MINEDAREA,
     component: MinedAreaForm,
     minHeight: 645,
-    minWidth: 900,
+    minWidth: 800,
     maxHeight: 655,
+    maxWidth: 950,
   },
   [SelectionTypes.SECTORS]: {
     title: i18n.SHAPE_SECTORS,
@@ -213,6 +214,9 @@ export default class SelectionForm extends React.Component {
         case '140603':
         case '140605':
           formType = SelectionTypes.ATTACK
+          break
+        case '270800':
+          formType = SelectionTypes.MINEDAREA
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }
