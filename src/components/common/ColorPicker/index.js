@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Trigger from 'rc-trigger'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { SketchPicker } from 'react-color'
+import { Checkboard } from 'react-color/lib/components/common'
 import './style.css'
+import { IButton } from '@DZVIN/CommonComponents'
+import { colors } from '../../../constants'
+import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
+import ColorPickerPopup from './ColorPickerPopup'
 
 const PRESENT_COLORS = [
+  colors.TRANSPARENT,
   '#ffffff', // '#FFFFFFaa',
   '#ff999c', // '#ff666baa',
   '#ffbe99', // '#ff9e66aa',
@@ -67,30 +72,35 @@ const ColorPicker = (props) => {
     // eslint-disable-next-line
   }, [ props.color ])
 
-  const isTransparent = color !== undefined && (color === null || !color?.length)
+  const noColor = color !== undefined && (color === null || !color?.length || color === 'transparent')
 
   const isRGB = typeof color === 'object'
   const colorType = isRGB ? 'rgb' : 'hex'
 
   const handleButtonClick = () => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(true)
+    }
     if (!props.disabled) {
       setOpened(!opened)
     }
   }
-  const handleChange = (color) => setColor(color[colorType])
-  const handleChangeComplete = (color) => props.onChange?.(color[colorType])
+  const handleChange = useCallback(() => (color) => setColor(color[colorType]), [ colorType ])
+  const handleChangeComplete = useCallback((color) => props.onChange?.(color[colorType]), [ props.onChange, colorType ])
 
   const clickOutsideRef = getClickOutsideRef(() => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(false)
+    }
     opened === true && setOpened(false)
   })
 
   const popup = <div ref={clickOutsideRef}>
-    <SketchPicker
-      presetColors={props.presetColors }
+    <ColorPickerPopup
+      presetColors={props.presetColors}
       onChange={handleChange}
       onChangeComplete={handleChangeComplete}
-      color={isTransparent ? 'TRANSPARENT' : color}
-      disableAlpha={!(isRGB || isTransparent)}
+      color={noColor ? 'transparent' : color}
     />
   </div>
 
@@ -104,21 +114,30 @@ const ColorPicker = (props) => {
         zIndex={props.zIndex}
         popupStyle={POPUP_STYLE}
         popup={popup}>
-        <button
-          className={classNames('color-picker-button', {
-            [props.className]: Boolean(props.className),
-            'color-picker-button-undefined': color === undefined,
-            'color-picker-button-empty': isTransparent,
-          })}
-          style={{ backgroundColor: color }}
-          onClick={handleButtonClick}
-        />
+        {props.icon
+          ? <Tooltip title={props.title} placement='topRight'>
+            <IButton
+              icon={props.icon}
+              onClick={handleButtonClick}/>
+          </Tooltip>
+          : <button
+            className={classNames('color-picker-button', {
+              [props.className]: Boolean(props.className),
+              'color-picker-button-undefined': color === undefined,
+            })}
+            style={{ backgroundColor: color }}
+            onClick={handleButtonClick}
+          >{noColor ? <Checkboard/> : null}</button>
+        }
       </Trigger>
     </div>
   )
 }
 
 ColorPicker.propTypes = {
+  icon: PropTypes.string,
+  onHandlerColor: PropTypes.func,
+  title: PropTypes.string,
   color: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
   onChange: PropTypes.func,
   zIndex: PropTypes.number,

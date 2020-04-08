@@ -60,7 +60,7 @@ export default class CoordinateItem extends React.Component {
           onExitWithChange={this.onExitWithChangeHandler}
           onSearch={placeSearch}
         />
-        {!readOnly && (<IconHovered
+        { canRemove && (<IconHovered
           icon={canRemove ? IconNames.DELETE_24_DEFAULT : IconNames.DELETE_24_DISABLE}
           hoverIcon={canRemove ? IconNames.DELETE_24_HOVER : IconNames.DELETE_24_ACTIVE}
           onClick={this.removeClickHandler}

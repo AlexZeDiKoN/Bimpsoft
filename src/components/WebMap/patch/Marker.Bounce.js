@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 (function () {
   // Retain the value of the original onAdd and onRemove functions

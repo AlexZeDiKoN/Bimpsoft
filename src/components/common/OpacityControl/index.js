@@ -1,9 +1,9 @@
 import React from 'react'
 import { InputNumber } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { IButton } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
-const { IconButton } = components.icons
+import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
 const OpacityControl = (props) => {
   const { title, icon, opacity, className, onChange } = props
 
@@ -14,22 +14,24 @@ const OpacityControl = (props) => {
 
   return (
     <div className={'opacity-control ' + className}>
-      <div className="opacity-control-block" title={title}>
-        <IconButton
+      <div className="opacity-control-block">
+        <IButton
+          title={title}
+          colorType={ColorTypes.WHITE}
           className="opacity-control-icon"
           icon={icon}
         />
+        <InputNumber
+          size="small"
+          title={title}
+          step={10}
+          min={0}
+          max={100}
+          value={opacity}
+          className="opacity-control-input"
+          onChange={changeHandler}
+        />
       </div>
-      <InputNumber
-        size="small"
-        title={title}
-        step={10}
-        min={0}
-        max={100}
-        value={opacity}
-        className="opacity-control-input"
-        onChange={changeHandler}
-      />
     </div>
   )
 }

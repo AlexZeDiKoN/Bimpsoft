@@ -7,6 +7,7 @@ export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
 export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
 export const EXPAND_MAP = action('EXPAND_MAP')
+export const CLOSE_MAP_SECTIONS = action('CLOSE_MAP_SECTIONS')
 export const SET_CALC_VARIANT = action('SET_CALC_VARIANT')
 
 export const updateMap = (mapData) => ({
@@ -145,6 +146,10 @@ export const expandMap = (id, expand) => ({
   type: EXPAND_MAP,
   id,
   expand,
+})
+
+export const closeMapSections = () => ({
+  type: CLOSE_MAP_SECTIONS,
 })
 
 export const toggleExpandMap = (id) => (dispatch, getState) =>

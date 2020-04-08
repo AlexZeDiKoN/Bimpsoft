@@ -5,13 +5,60 @@
   .flex;
   flex-direction: column;
   flex: 1 1 auto;
+  max-width: 100%;
   .interval-control{
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    padding-left: 42px;
+    align-items: center;
+    color: @toolbar-light-background;
+    justify-content: flex-end;
+    padding-right: 12px;
   }
-  .layers-controls-component{
+
+  .container-layers{
+    background: #878C95;
+    display: flex;
+    align-items: center;
+    height: 40px;
+    justify-content: space-between;
+    padding: 0 20px;
     flex: 0 0 auto;
-    padding-left: 19px;
-    padding-right: 24px;
+    &__btnContainer{
+      display: flex;
+      button {
+        margin-left: 7px;
+        font-size: 1.18em;
+      }
+    }
+  }
+
+  .interval-control-container{
+    background: #8F949C;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    border-top: 1px solid @sidebar-control-background-color;
+    border-bottom: 1px solid @sidebar-control-background-color;
+  }
+
+  .container-layers-controls{
+    display: flex;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    .closed{
+      margin-top: 0;
+    }
+  }
+
+  .layers-controls-component{
+    flex: 1 1 auto;
+    background: #8F949C;
+    border-bottom: 1px solid @sidebar-control-background-color;
+    padding-right: 6px;
+    overflow: hidden;
+    padding-left: 57px;
+    height: 40px;
     .icon:hover{
       color: @toolbar-header-background;
       background-color: transparent;
@@ -49,6 +96,17 @@
  .ant-input-search{
    padding: 5px;
  }
+
+  .control-button{
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #C4C4C4;
+    .divider{
+      width: 1px;
+      height: 18px;
+      background: #C4C4C4;
+    }
+  }
 }
 
 @keyframes layers-list_show {

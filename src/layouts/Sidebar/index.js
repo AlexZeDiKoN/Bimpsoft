@@ -18,6 +18,8 @@ const { common: { ValueSwiper } } = components
 const SIDEBAR_SIZE_DEFAULT = 320
 const SIDEBAR_SIZE_MARCH_DEFAULT = 405
 const SIDEBAR_SIZE_MIN = 320
+const SIDEBAR_CLOSED_SIZE = 40
+const SIDEBAR_OPEN_MIN_SIZE = 275
 
 export default class Sidebar extends React.Component {
   static propTypes = {
@@ -26,6 +28,8 @@ export default class Sidebar extends React.Component {
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
+    setSidebar: PropTypes.func,
+    sidebar: PropTypes.bool,
   }
 
   state = {
@@ -39,7 +43,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP, is3DMapMode } = this.props
+    const { printStatus, marchEdit, isMapCOP, is3DMapMode, sidebar, setSidebar } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -51,12 +55,14 @@ export default class Sidebar extends React.Component {
             className="sidebar-panel1"
           >
             <TabsPanel
+              setSidebar={setSidebar}
+              sidebar={sidebar}
               tabs={[
-                SymbolsContainer,
+                LayersContainer,
                 OrgStructuresContainer,
                 !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
-                LayersContainer,
+                SymbolsContainer,
               ].filter(Boolean)}
             />
           </div>
@@ -66,16 +72,22 @@ export default class Sidebar extends React.Component {
   }
 
   render () {
-    const { visible } = this.props
+    const { sidebarWidth } = this.state
+    const { visible, sidebar } = this.props
     const sidebarDisplay = visible ? '' : 'none'
     return (
       <>
-        <ValueSwiper
+        {sidebar && <ValueSwiper
           style={{ display: sidebarDisplay }}
           value={this.state.sidebarWidth}
           onChange={this.changeWidthHandler}
-        />
-        <div className="app-sidebar" style={{ width: this.state.sidebarWidth, display: sidebarDisplay }}>
+        />}
+        <div
+          className="app-sidebar"
+          style={{
+            minWidth: sidebar ? SIDEBAR_OPEN_MIN_SIZE : SIDEBAR_CLOSED_SIZE,
+            width: !sidebar ? SIDEBAR_CLOSED_SIZE : sidebarWidth,
+            display: sidebarDisplay }}>
           <div className="sidebar">
             {this.changeSidebarPanels()}
           </div>

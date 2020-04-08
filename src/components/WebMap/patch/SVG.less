@@ -24,7 +24,7 @@
 
 .dzvin-path-selected-on-active-layer {
   stroke: @svg-select-stroke-active-layer;
-  &:not([fill="none"]) {
+  &:not([fill="none"]) &:not([fill="transparent"]) {
     fill: @svg-select-fill-active-layer;
   }
 }

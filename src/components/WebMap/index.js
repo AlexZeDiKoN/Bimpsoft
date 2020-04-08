@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import { parseStringPromise } from 'xml2js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
@@ -53,6 +52,7 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { findDefinition } from './patch/Sophisticated/utils'
 
 const { Coordinates: Coord } = utils
 
@@ -90,7 +90,7 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && L.latLngBounds(geometry)
+  const rect = geometry && geometry.length && L.latLngBounds(geometry)
   return rect && bounds.contains(rect)
 }
 
@@ -188,27 +188,31 @@ const serializeCoordinate = (mode, lat, lng) => {
 }
 
 const setScaleOptions = (layer, params) => {
+  const pointSizes = {
+    min: Number(params[paramsNames.POINT_SIZE_MIN]),
+    max: Number(params[paramsNames.POINT_SIZE_MAX]),
+  }
+  const textSizes = {
+    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+  }
+  const lineSizes = {
+    min: Number(params[paramsNames.LINE_SIZE_MIN]),
+    max: Number(params[paramsNames.LINE_SIZE_MAX]),
+    pointSizes,
+  }
   if (layer?.object) {
     if (layer.object.catalogId) {
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.POINT_SIZE_MIN]),
-        max: Number(params[paramsNames.POINT_SIZE_MAX]),
-      })
+      layer.setScaleOptions(pointSizes)
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.POINT_SIZE_MIN]),
-            max: Number(params[paramsNames.POINT_SIZE_MAX]),
-          })
+          layer.setScaleOptions(pointSizes)
           break
         case entityKind.TEXT:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-          })
+          layer.setScaleOptions(textSizes)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
@@ -219,10 +223,8 @@ const setScaleOptions = (layer, params) => {
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
         case entityKind.CONTOUR:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.LINE_SIZE_MIN]),
-            max: Number(params[paramsNames.LINE_SIZE_MAX]),
-          })
+        case entityKind.SOPHISTICATED:
+          layer.setScaleOptions(lineSizes)
           break
         default:
       }
@@ -1903,32 +1905,34 @@ export default class WebMap extends React.PureComponent {
       this.props.newShapeFromSymbol(data, { lat, lng })
     }
     if (data.type === 'line') {
-      const point = this.map.mouseEventToLatLng(e)
-      const { lat, lng } = point
+      const point = this.map.mouseEventToContainerPoint(e)
+      const { x, y } = point
       const { amp } = data
-      if (amp.type !== 'special') {
-        const bounds = this.map.getBounds()
-        const x = (bounds.getNorth() - bounds.getSouth()) / 4 // Поменять 4ку, если на карте выглядит большим
-        const y = (bounds.getEast() - bounds.getWest()) / 4
-        let geometry = []
-        if (amp.type === 4 || amp.type === 3) {
-          const p0 = { lat, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
-          const p2 = { lat: lat + x, lng: lng - y }
-          geometry = [ p0, p1, p2 ]
-        }
-        if (amp.type === 6 || amp.type === 8 || amp.type === 9) {
-          const p0 = { lat: lat + x, lng: lng + y }
-          const p1 = { lat: lat - x, lng: lng - y }
-          geometry = [ p0, p1 ]
-        }
-        if (amp.type === 7) {
-          const p0 = { lat, lng }
-          const p1 = { lat: lat + x, lng: lng + y }
-          geometry = [ p0, p1 ]
-        }
-        this.props.newShapeFromLine(data, { lat, lng }, geometry)
+      const size = this.map.getSize()
+      const w = Math.max(Math.min(size.x, size.y) / 4, 128)
+      const sw = w / 2
+      const c2g = (p) => this.map.containerPointToLatLng(p)
+      let geometry = []
+      if (amp.type === entityKind.SOPHISTICATED) {
+        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+          x: x - w + dx * w * 2,
+          y: y - w + dy * w * 2,
+        })).map(c2g)
+      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
+        const p0 = { x: x + sw, y }
+        const p1 = { x: x - sw, y: y - sw }
+        const p2 = { x: x - sw, y: y + sw }
+        geometry = [ p0, p1, p2 ].map(c2g)
+      } else if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
+        const p0 = { x: x + sw, y: y + sw }
+        const p1 = { x: x - sw, y: y - sw }
+        geometry = [ p0, p1 ].map(c2g)
+      } else {
+        const p0 = { x, y }
+        const p1 = { x: x + sw, y: y + sw }
+        geometry = [ p0, p1 ].map(c2g)
       }
+      this.props.newShapeFromLine(data, this.map.containerPointToLatLng(point), geometry)
     }
   }
 

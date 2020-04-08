@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { renderTextSymbol } from '../../../../utils'
 import { interpolateSize } from '../utils/helpers'
