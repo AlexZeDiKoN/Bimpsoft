@@ -86,7 +86,7 @@ export default class Sidebar extends React.Component {
           className="app-sidebar"
           style={{
             minWidth: sidebar ? SIDEBAR_OPEN_MIN_SIZE : SIDEBAR_CLOSED_SIZE,
-            width: !sidebar ? SIDEBAR_CLOSED_SIZE : sidebarWidth,
+            width: /*!*/sidebar ? SIDEBAR_CLOSED_SIZE : sidebarWidth,
             display: sidebarDisplay }}>
           <div className="sidebar">
             {this.changeSidebarPanels()}
