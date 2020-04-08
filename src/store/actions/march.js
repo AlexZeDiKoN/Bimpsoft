@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
-import {asyncAction} from "./index";
+import { asyncAction } from './index'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
@@ -74,9 +74,3 @@ export const setCoordFromMap = (coord) => ({
   type: SET_COORD_FROM_MAP,
   payload: coord,
 })
-
-export const getNearestSettlements = (coord) => asyncAction.withNotification(
-  async (dispatch, getState, { webmapApi: { nearestSettlement } }) => {
-    const res = await nearestSettlement(coord)
-    console.log('nearestSettlement', res)
-  })

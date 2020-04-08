@@ -1,5 +1,6 @@
 import { List } from 'immutable'
 import { march } from '../actions'
+import React from 'react'
 
 const initState = {
   marchEdit: true,
@@ -77,7 +78,10 @@ const defaultSegment = {
   segmentType: 41, // Своїм ходом
   terrain: 69, // Рівнинна
   velocity: 30,
-  coord: { },
+  coord: {
+    lat: 30,
+    lng: 50,
+  },
   required: false,
   editableName: true,
   // eslint-disable-next-line
@@ -87,7 +91,10 @@ const defaultSegment = {
 const defaultChild = {
   name: '',
   lineType: '',
-  coord: { },
+  coord: {
+    lat: 0,
+    lng: 0,
+  },
   refPoint: '',
   required: false,
   editableName: true,

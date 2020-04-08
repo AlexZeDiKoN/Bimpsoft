@@ -19,7 +19,6 @@ const mapDispatchToProps = catchErrors({
   addChild: march.addChild,
   deleteChild: march.deleteChild,
   setCoordMode: march.setCoordMode,
-  getNearestSettlement: march.getNearestSettlements,
 })
 
 const MarchContainer = connect(

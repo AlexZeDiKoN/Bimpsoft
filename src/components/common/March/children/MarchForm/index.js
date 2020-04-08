@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import placeSearch from '../../../../../server/places'
 import { isNumberSymbols } from '../../../../../utils/validation/number'
+import utilsMarch from '../../utilsMarch'
 
 const {
   form: { Coordinates },
@@ -20,14 +21,49 @@ const marchPoints = [
 
 const getPointByName = (name) => marchPoints.find((point) => point.name === name) || marchPoints[0]
 
+const getFormattedGeoLandmarks = (geoLandmarks) => {
+  const { features = [] } = geoLandmarks
+
+  return features.map(({ properties: { name, distance, azimuth } }) => {
+    const distanceInKm = (distance / 1000).toFixed(0)
+    const cardinalDirection = utilsMarch.convertUnits.azimuthToCardinalDirection(azimuth)
+
+    return `${distanceInKm} км на ${cardinalDirection} від м. ${name}`
+  })
+}
+
 const MarchForm = (props) => {
-  const { name, coord = {}, refPoint, editableName, segmentType, required, segmentId, childId, isLast, restTime } = props
-  const { editFormField, addChild, deleteChild, setCoordMode, setRefPoint } = props.handlers
+  const {
+    name,
+    coord = {},
+    refPoint,
+    editableName,
+    segmentType,
+    required,
+    segmentId,
+    childId,
+    isLast,
+    restTime,
+  } = props
+  const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
 
   const point = getPointByName(name)
 
+  coord.lat = coord.lat || 0.00001
+  coord.lng = coord.lng || 0.00001
+
   const [ pointTime, setPointTime ] = useState(+restTime)
-  const [ rPoint, changeRefPoint ] = useState(refPoint)
+  const [ refPointMarch, changeRefPoint ] = useState(refPoint)
+  const [ geoLandmarks, changeGeoLandmarks ] = useState({})
+  const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
+
+  const getGeoLandmarks = async (coord) => {
+    await changeIsLoadingGeoLandmarks(true)
+    changeGeoLandmarks({})
+    const res = await getMemoGeoLandmarks(coord)
+    changeGeoLandmarks(res)
+    await changeIsLoadingGeoLandmarks(false)
+  }
 
   const onChangeTime = (e) => {
     if (point.notEditableTime) {
@@ -40,7 +76,7 @@ const MarchForm = (props) => {
     setPointTime(+numberVal)
   }
 
-  const onChangeMarchPoint = (value) => {
+  const onChangeMarchPointType = (value) => {
     editFormField({
       val: value,
       segmentId,
@@ -60,13 +96,15 @@ const MarchForm = (props) => {
     setPointTime(point.time)
   }
 
-  const onBlurRefPoint = (e) => {
+  const onChangeRefPoint = (value) => {
     editFormField({
-      val: e.target.value,
+      val: value,
       fieldName: 'refPoint',
       segmentId,
       childId,
     })
+
+    changeRefPoint(value)
   }
 
   const onBlurTime = (e) => {
@@ -78,11 +116,26 @@ const MarchForm = (props) => {
     })
   }
 
+  const onBlurCoordinates = async ({ lat, lng }) => {
+    editFormField({
+      fieldName: 'coord',
+      segmentId,
+      childId,
+      val: { lat, lng },
+    })
+  }
+
+  const onDropdownVisibleChange = (isOpen) => {
+    if (isOpen) {
+      getGeoLandmarks(coord)
+    }
+  }
+
   let dotClass
   if (childId === undefined) {
     dotClass = isLast ? 'flag-dot' : 'empty-dot'
   } else {
-    dotClass = point.rest ? 'camp-dot' : 'cross-dot'
+    dotClass = point.rest && segmentType === 41 ? 'camp-dot' : 'cross-dot'
   }
 
   let lineColorClass
@@ -118,28 +171,32 @@ const MarchForm = (props) => {
         <div className={'march-coord'}>
           <Coordinates
             coordinates={coord}
-            onChange={({ lat, lng }) => editFormField({
-              fieldName: 'coord',
-              segmentId,
-              childId,
-              val: { lat, lng },
-            })}
             onSearch={placeSearch}
+            onExitWithChange={onBlurCoordinates}
           />
           <Tooltip placement='topRight' title={'Вказати на карті'}>
             <a href='#' className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
           </Tooltip>
         </div>
         <Tooltip placement='left' title={'Географічний орієнтир'}>
-          <Input
-            value={rPoint}
-            onChange={(e) => { changeRefPoint(e.target.value) }}
-            onBlur={onBlurRefPoint}
-          />
+          <Select
+            className={'select-point'}
+            defaultValue={refPointMarch}
+            onChange={onChangeRefPoint}
+            loading={isLoadingGeoLandmarks}
+            onDropdownVisibleChange={onDropdownVisibleChange}
+          >
+            {getFormattedGeoLandmarks(geoLandmarks).map((geoLandmark, id) => (
+              <Select.Option
+                key={id}
+                value={geoLandmark}
+              >{geoLandmark}</Select.Option>
+            ))}
+          </Select>
         </Tooltip>
         <br/>
         <Tooltip placement='left' title={'Тип пункту'}>
-          {(!editableName)
+          {(!editableName || segmentType !== 41)
             ? <Input value={name} onChange={(e) => editFormField({
               fieldName: 'name',
               segmentId,
@@ -149,17 +206,19 @@ const MarchForm = (props) => {
             : <Select
               className={'select-point'}
               defaultValue={name}
-              onChange={onChangeMarchPoint}
+              onChange={onChangeMarchPointType}
             >
               {marchPoints.map(({ name }, id) => (
-                <Select.Option key={id} value={name}>{name}</Select.Option>
+                <Select.Option key={id} value={name}>
+                  {name}
+                </Select.Option>
               ))}
             </Select>
           }
         </Tooltip>
         {(!required) &&
         <div className={'un-required-field'}>
-          {(!point.base)
+          {(!point.base && segmentType === 41)
             ? <div className={'time-block'}>
               <div className={'logo-time'}/>
               <Input
@@ -189,13 +248,13 @@ MarchForm.propTypes = {
   segmentType: PropTypes.number.isRequired,
   required: PropTypes.bool.isRequired,
   segmentId: PropTypes.number.isRequired,
-  childId: PropTypes.number.isRequired,
+  childId: PropTypes.number,
   handlers: PropTypes.shape({
     editFormField: PropTypes.func.isRequired,
     addChild: PropTypes.func.isRequired,
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
-    setRefPoint: PropTypes.func.isRequired,
+    getMemoGeoLandmarks: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,

@@ -20,7 +20,14 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
-  const { deleteSegment, segmentId, segmentType, required, terrain, velocity } = propData
+  const { deleteSegment, segmentId, segmentType, required, terrain, velocity, segmentDetails } = propData
+  const { totalTime, totalDistance, referenceData } = segmentDetails
+
+  const distance = (totalDistance - referenceData.distance).toFixed(1)
+  const time = totalTime - referenceData.time
+  const hour = time.toFixed(0)
+  const minutes = ((time % 1) * 60).toFixed(0)
+  const formatTotalTime = time === Infinity ? 'неможливо вирахувати' : `${hour}:${minutes} годин`
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,
@@ -57,7 +64,6 @@ const PopupPanel = (props) => {
 
     {(segmentType === 41) &&
       <Select
-        className={''}
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
       >
@@ -69,9 +75,9 @@ const PopupPanel = (props) => {
       <span>Середня швидкість (км/год): </span>
       <Input onChange={onChangeVelocity} value={velocity} maxLength={10} style={{ width: '60px' }}/>
     </div>
-    <div><span>Довжина ділянки: </span> {350} км</div>
+    <div><span>Довжина ділянки: </span> {distance} км</div>
     <div className={'bottom-panel'}>
-      <div><span>Час проходження: </span> {6} км</div>
+      <div><span>Час проходження: </span> {formatTotalTime}</div>
       { !required && <div onClick={() => showDeleteConfirm(propData)} className={'delete-segment'} />}
     </div>
   </div>
@@ -86,6 +92,14 @@ PopupPanel.propTypes = {
     terrain: PropTypes.number.isRequired,
     velocity: PropTypes.number.isRequired,
     segmentId: PropTypes.number.isRequired,
+    segmentDetails: PropTypes.shape({
+      totalTime: PropTypes.number.isRequired,
+      totalDistance: PropTypes.number.isRequired,
+      referenceData: PropTypes.shape({
+        distance: PropTypes.number.isRequired,
+        time: PropTypes.number.isRequired,
+      }).isRequired,
+    }).isRequired,
   }).isRequired,
   MB001: PropTypes.shape({
     typeValues: PropTypes.array.isRequired,

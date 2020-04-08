@@ -396,7 +396,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects, marchDots, marchMode
+      targetingObjects, marchDots, marchMode,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -890,10 +890,14 @@ export default class WebMap extends React.PureComponent {
             dot.options.color !== prevMarchDots[id].options.color
           ) {
             redrawLine = true
-            this.marchMarkers[id].removeFrom(this.map)
             const marker = createSearchMarker(dot.coord, false)
             marker.addTo(this.map)
-            this.marchMarkers[id] = marker
+            if (this.marchMarkers.length && this.marchMarkers[id]) {
+              this.marchMarkers[id].removeFrom(this.map)
+              this.marchMarkers[id] = marker
+            } else {
+              this.marchMarkers.push(marker)
+            }
           }
         })
         if (marchDots.length > 1) {

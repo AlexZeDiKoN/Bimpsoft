@@ -1,46 +1,74 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import webmapApi from '../../../server/api.webmap'
 import Header from './children/Header'
 import SegmentBlock from './children/SegmentBlock'
 import MarchForm from './children/MarchForm'
+import utilsMarch from './utilsMarch'
+
 import './style.css'
 
-class March extends Component {
-  static propTypes = {
-    segments: PropTypes.array,
-    addSegment: PropTypes.func.isRequired,
-    deleteSegment: PropTypes.func.isRequired,
-    editFormField: PropTypes.func.isRequired,
-    addChild: PropTypes.func.isRequired,
-    deleteChild: PropTypes.func.isRequired,
-    setCoordMode: PropTypes.func.isRequired,
-    setRefPoint: PropTypes.func.isRequired,
-    dataMarch: PropTypes.shape({}).isRequired,
-  }
+const { getTruckSegmentDetails, getTrainOrShipSegmentDetails, getTotalMarchDetails } = utilsMarch.formulas
 
-  renderDotsForms = () => {
-    const { segments, editFormField, addChild, deleteChild, setCoordMode, setRefPoint, dataMarch } = this.props
+const getMemoGeoLandmarks = (() => {
+  const memoGeoLandmark = {}
+
+  return async (coord = {}) => {
+    const { lat, lng } = coord
+    const geoKey = `${lat}:${lng}`
+
+    let geoLandmark = memoGeoLandmark[geoKey]
+
+    if (!geoLandmark) {
+      try {
+        geoLandmark = await webmapApi.nearestSettlement(coord)
+        memoGeoLandmark[geoKey] = geoLandmark
+      } catch (e) {
+        geoLandmark = {}
+      }
+    }
+
+    return geoLandmark
+  }
+})()
+
+const March = (props) => {
+  const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+
+  const renderDotsForms = () => {
+    const { segments, editFormField, addChild, deleteChild, setCoordMode, dataMarch } = props
     const handlers = {
       editFormField,
       addChild,
       deleteChild,
       setCoordMode,
-      setRefPoint,
+      getMemoGeoLandmarks,
+    }
+    const referenceData = {
+      time: 0,
+      distance: 0,
     }
 
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
         const { children } = segment
+        const getSegmentDetails = segment.segmentType === 41 ? getTruckSegmentDetails : getTrainOrShipSegmentDetails
+        const segmentDetails = getSegmentDetails(segment, segments[segmentId + 1], dataMarch, { ...referenceData })
+
+        if (timeDistanceView) {
+          referenceData.time += segmentDetails.totalTime
+          referenceData.distance += segmentDetails.totalDistance
+        }
 
         return (<div key={segmentId} className={'segment-with-form'}>
           <div className={'segment-block'}>
             <SegmentBlock
               segment={segment}
-              nextSegment={segments[segmentId + 1]}
+              segmentDetails={segmentDetails}
               segmentId={segmentId}
-              dataMarch={dataMarch}
-              addSegment={this.props.addSegment}
-              deleteSegment={this.props.deleteSegment}
+              timeDistanceView={timeDistanceView}
+              addSegment={props.addSegment}
+              deleteSegment={props.deleteSegment}
             />
           </div>
           <div className={'form-container'}>
@@ -48,6 +76,7 @@ class March extends Component {
               key={`segment${segmentId}`}
               segmentId={segmentId}
               handlers={handlers}
+              refPoint={''}
               {...segment}
               isLast={segments.length - 1 === segmentId}
             />
@@ -67,17 +96,31 @@ class March extends Component {
     </div>
   }
 
-  render () {
-    return <div className={'march-container'}>
-      <div className={'march-header'}>
-        <Header/>
-      </div>
-      <div className={'march-main'}>
-        <div style={{ width: '100%' }}>{this.renderDotsForms()}</div>
-      </div>
-      <button onClick={() => this.props.getNearestSettlement({ lat: 30, lng: 50 })}>getNearestSettlement(48.62010, 30.08057)</button>
+  const marchDetails = getTotalMarchDetails(props.segments, props.dataMarch)
+
+  return <div className={'march-container'}>
+    <div className={'march-header'}>
+      <Header
+        marchDetails={marchDetails}
+        changeTimeDistanceView={changeTimeDistanceView}
+        timeDistanceView={timeDistanceView}
+      />
     </div>
-  }
+    <div className={'march-main'}>
+      <div style={{ width: '100%' }}>{renderDotsForms()}</div>
+    </div>
+  </div>
+}
+
+March.propTypes = {
+  addSegment: PropTypes.func.isRequired,
+  deleteSegment: PropTypes.func.isRequired,
+  editFormField: PropTypes.func.isRequired,
+  addChild: PropTypes.func.isRequired,
+  deleteChild: PropTypes.func.isRequired,
+  setCoordMode: PropTypes.func.isRequired,
+  dataMarch: PropTypes.shape({}).isRequired,
+  segments: PropTypes.array.isRequired,
 }
 
 export default March
