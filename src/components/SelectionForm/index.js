@@ -158,9 +158,9 @@ const forms = {
   [SelectionTypes.MINE_FIELD]: {
     title: i18n.SHAPE_MINEFIELD,
     component: MineFieldForm,
-    minHeight: 445,
+    minHeight: 420,
     minWidth: 750,
-    maxHeight: 445,
+    maxHeight: 420,
   },
 }
 
