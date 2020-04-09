@@ -472,8 +472,9 @@ export const MIDDLE = {
     (index) => index >= amount,
 
   // Область
-  area: (index1, index2, count, layer) =>
-    layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % count)),
+  area: (index1, index2, count, layer) => layer
+    ? layer._map.layerPointToLatLng(middlePointBezier(layer._rings[0], index1, index2 % count))
+    : true,
 
   // Область з кількома ампліфікаторми (ампліфікатори в кінці списку)
   areaWithAmplifiers: (amplCount) =>

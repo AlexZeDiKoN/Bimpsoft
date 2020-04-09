@@ -3,7 +3,7 @@ import { CODE_MINE_TYPES, MINE_TYPES, CONTROL_TYPES } from '../../../../../const
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawRectangleC, drawText,
+  drawRectangleCz, drawText,
 } from '../utils'
 import {
   drawLightning, drawWires, drawDotted,
@@ -52,7 +52,7 @@ lineDefinitions['270701'] = {
     }
     result.amplifiers += `<g transform="translate(${pO.x - d * 1.05}, ${pO.y - d * 1.05})">${symbol}</g>`
 
-    drawRectangleC(result, pO, d * 6.8, d * 2.5)
+    drawRectangleCz(result, pO, d * 6.8, d * 2.5)
 
     // Керованість
     if (controlType === 1) { // Керованість по радіо
@@ -73,8 +73,8 @@ lineDefinitions['270701'] = {
     }
     // Ампліфікатор «N»
     if (amplifiers.middle && amplifiers.middle.length !== 0) {
-      const pAR = { x: pO.x + d * 3.5, y: pO.y }
-      const pAL = { x: pO.x - d * 3.5, y: pO.y }
+      const pAR = { x: pO.x + d * 3.6, y: pO.y }
+      const pAL = { x: pO.x - d * 3.6, y: pO.y }
       drawText(result, pAR, 0, amplifiers.middle, 1, 'start')
       drawText(result, pAL, 0, amplifiers.middle, 1, 'end')
     }
@@ -82,7 +82,7 @@ lineDefinitions['270701'] = {
     if (amplifiers.top && amplifiers.top.length !== 0) {
       drawText(
         result,
-        { x: pO.x, y: pO.y - d * 1.3 },
+        { x: pO.x, y: pO.y - d * 1.45 },
         0,
         amplifiers.top ?? '',
         SMALL_TEXT_SIZE,
@@ -94,7 +94,7 @@ lineDefinitions['270701'] = {
     if (amplifiers.bottom && amplifiers.bottom.length !== 0) {
       drawText(
         result,
-        { x: pO.x, y: pO.y + d * 1.25 },
+        { x: pO.x, y: pO.y + d * 1.4 },
         0,
         amplifiers.bottom ?? '',
         SMALL_TEXT_SIZE,

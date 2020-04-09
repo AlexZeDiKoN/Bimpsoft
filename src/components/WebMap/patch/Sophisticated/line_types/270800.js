@@ -10,23 +10,25 @@ import {
 
 const TEXT = 'M'
 const TEXT_SIZE = 0.667
+const AMPL_COUNT = 1
 
 lineDefinitions['270800'] = {
   // Спеціальний випадок
   isArea: true,
 
   // Відрізки, на яких дозволено додавання вершин лінії
-  allowMiddle: MIDDLE.areaWithAmplifiers(1),
+  allowMiddle: MIDDLE.areaWithAmplifiers(AMPL_COUNT),
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.areaWithAmplifiers(1),
+  allowDelete: DELETE.areaWithAmplifiers(AMPL_COUNT),
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,
 
   // Індексація точок замкнутого контуру
-  areaSeq: SEQUENCE.areaWithAmplifiers(1),
+  areaSeq: SEQUENCE.areaWithAmplifiers(AMPL_COUNT),
 
+  amplCount: AMPL_COUNT,
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => [
     { x: 0.25, y: 0.75 },
