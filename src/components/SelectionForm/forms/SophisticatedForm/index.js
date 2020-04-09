@@ -9,6 +9,7 @@ import {
   UnitSelect,
   WithSubordinationLevel,
   WithAffiliation,
+  WithStatus,
   WithStrokeWidth,
   WithColor,
   WithCoordinates,
@@ -23,6 +24,7 @@ export default class SophisticatedForm extends compose(
   UnitSelect,
   WithSubordinationLevel,
   WithAffiliation,
+  WithStatus,
   WithStrokeWidth,
   WithColor,
   WithCoordinates,
@@ -40,6 +42,7 @@ export default class SophisticatedForm extends compose(
             </div>
             <div className="contour-container__itemWidth">
               {this.renderAffiliation()}
+              {this.renderStatus()}
             </div>
           </div>
         </div>

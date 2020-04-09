@@ -29,7 +29,11 @@ lineDefinitions['151404'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
+    const status = result.layer?.object?.attributes?.status ?? '0'
+    if (status === '1') {
+      result.layer._path.setAttribute('stroke-dasharray', 20 * scale)
+    }
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }
