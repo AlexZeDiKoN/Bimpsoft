@@ -315,6 +315,32 @@ export const drawRectangleC = (result, center, widthR, heightR) => {
   )
 }
 
+export const drawRectangleCz = (result, center, widthR, heightR) => {
+  const dx = widthR / 2
+  const dy = heightR / 2
+  const p1 = {
+    x: center.x - dx,
+    y: center.y - dy,
+  }
+  drawLine(
+    result,
+    p1,
+    {
+      x: center.x + dx,
+      y: center.y - dy,
+    },
+    {
+      x: center.x + dx,
+      y: center.y + dy,
+    },
+    {
+      x: center.x - dx,
+      y: center.y + dy,
+    },
+  )
+  result.d += 'z'
+}
+
 export const drawBezier = (result, p1, ...rest) => {
   moveTo(result, p1)
   for (let i = 0; i < rest.length; i += 3) {

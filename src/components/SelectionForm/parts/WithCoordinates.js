@@ -30,18 +30,16 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
   coordinateAddHandler = (index) => {
     const formStore = this.getResult()
     const coordArray = formStore.getIn(COORDINATE_PATH).toJS()
-    if (index + 1 < coordArray.length) { // вставка между опорными точками
-      const coordNew = {
-        lat: (coordArray[index + 1].lat + coordArray[index].lat) / 2,
-        lng: (coordArray[index + 1].lng + coordArray[index].lng) / 2,
-      }
-      this.setResult((result) =>
-        result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
+    const count = coordArray.length
+    const amplCount = lineDefinitions[extractLineCode(this.props.data.code)]?.amplCount ?? 0
+    const index2 = (index + 1) % (count - amplCount)
+    // вставка между опорными точками
+    const coordNew = {
+      lat: (coordArray[index2].lat + coordArray[index].lat) / 2,
+      lng: (coordArray[index2].lng + coordArray[index].lng) / 2,
     }
-    // console.log('add', index)
-    // this.setResult((result) =>
-    //   result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
-    // )
+    this.setResult((result) =>
+      result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
   }
 
   renderCoordinates () {
