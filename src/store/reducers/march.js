@@ -1,6 +1,5 @@
 import { List } from 'immutable'
 import { march } from '../actions'
-import React from 'react'
 
 const initState = {
   marchEdit: true,
@@ -37,8 +36,8 @@ const initState = {
       terrain: 69, // Рівнинна
       velocity: 30,
       coord: {
-        lat: 20,
-        lng: 20,
+        lat: 0,
+        lng: 0,
       },
       required: true,
       editableName: false,
@@ -47,8 +46,8 @@ const initState = {
           name: 'Вихідний рубіж',
           lineType: '',
           coord: {
-            lat: 25,
-            lng: 25,
+            lat: 0,
+            lng: 0,
           },
           refPoint: '',
           required: true,
@@ -60,8 +59,8 @@ const initState = {
     {
       segmentType: 0,
       coord: {
-        lat: 30,
-        lng: 30,
+        lat: 0,
+        lng: 0,
       },
       name: 'Пункт призначення',
       required: true,
@@ -79,11 +78,11 @@ const defaultSegment = {
   terrain: 69, // Рівнинна
   velocity: 30,
   coord: {
-    lat: 30,
-    lng: 50,
+    lat: 0,
+    lng: 0,
   },
   required: false,
-  editableName: true,
+  editableName: false,
   // eslint-disable-next-line
   //children: [ ],
 }
@@ -147,7 +146,15 @@ export default function reducer (state = initState, action) {
       return editFormField(state, payload)
     }
     case march.ADD_SEGMENT: {
-      return { ...state, segments: state.segments.insert(payload + 1, { ...defaultSegment, children: [ ] }) }
+      const firstPoint = { ...defaultChild }
+      firstPoint.required = true
+      firstPoint.editableName = false
+      firstPoint.name = 'Вихідний рубіж'
+
+      return { ...state,
+        segments: state.segments.insert(payload + 1,
+          { ...defaultSegment, children: [ firstPoint ] }),
+      }
     }
     case march.DELETE_SEGMENT: {
       return { ...state, segments: state.segments.delete(payload) }

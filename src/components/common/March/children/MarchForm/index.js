@@ -1,4 +1,4 @@
-import { Input, Select, Tooltip } from 'antd'
+import { Input, Select, Tooltip, Modal, Divider } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
@@ -61,6 +61,22 @@ const MarchForm = (props) => {
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
 
+  const [ isModalVisible, changeIsModalVisible ] = useState(false)
+  const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
+
+  const showModal = () => {
+    changeIsModalVisible(true)
+  }
+
+  const handleOkModal = (e) => {
+    // changeRefPoint(ownRefPointMarch)
+    changeIsModalVisible(false)
+  }
+
+  const handleCancelModal = (e) => {
+    changeIsModalVisible(false)
+  }
+
   const getGeoLandmarks = async (coord) => {
     await changeIsLoadingGeoLandmarks(true)
     changeGeoLandmarks({})
@@ -100,7 +116,11 @@ const MarchForm = (props) => {
     setPointTime(point.time)
   }
 
-  const onChangeRefPoint = (value) => {
+  const onChangeRefPoint = (value, option) => {
+    if (option.key === 'addItem') {
+      return
+    }
+
     editFormField({
       val: value,
       fieldName: 'refPoint',
@@ -135,6 +155,11 @@ const MarchForm = (props) => {
     }
   }
 
+  const onHandlerOwnGeoLandmark = () => {
+    changeRefPoint('')
+    showModal()
+  }
+
   let dotClass
   if (childId === undefined) {
     dotClass = isLast ? 'flag-dot' : 'empty-dot'
@@ -152,6 +177,17 @@ const MarchForm = (props) => {
       break
     default:
       lineColorClass = 'line-green'
+  }
+
+  let pointTypeName
+  if (segmentType === 41) {
+    if (childId === undefined && segmentId !== 0) {
+      pointTypeName = 'Пункт на маршруті'
+    } else {
+      pointTypeName = childId === 1 ? 'Вихідний рубіж' : name
+    }
+  } else {
+    pointTypeName = segmentType === 0 ? name : 'Пункт на маршруті'
   }
 
   return (
@@ -185,28 +221,43 @@ const MarchForm = (props) => {
         <Tooltip placement='left' title={'Географічний орієнтир'}>
           <Select
             className={'select-point'}
-            defaultValue={refPointMarch}
+            value={refPointMarch}
             onChange={onChangeRefPoint}
             loading={isLoadingGeoLandmarks}
+            placeholder='Географічний орієнтир'
             onDropdownVisibleChange={onDropdownVisibleChange}
           >
+            {ownRefPointMarch &&
+            <Select.Option key={'ownGeoLandmark'} value={ownRefPointMarch}>
+              {ownRefPointMarch}
+            </Select.Option>}
             {getFormattedGeoLandmarks(geoLandmarks).map((geoLandmark, id) => (
               <Select.Option
                 key={id}
                 value={geoLandmark}
               >{geoLandmark}</Select.Option>
             ))}
+            <Select.Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
+              <Divider style={{ margin: '4px 0' }}/>
+              <div style={{ display: 'flex', justifyContent: 'center', background: '#E6FBFF' }}>
+                <span><strong>+ власний варіант</strong></span>
+              </div>
+            </Select.Option>
           </Select>
         </Tooltip>
         <br/>
         <Tooltip placement='left' title={'Тип пункту'}>
           {(!editableName || segmentType !== 41)
-            ? <Input value={name} onChange={(e) => editFormField({
-              fieldName: 'name',
-              segmentId,
-              childId,
-              val: e.target.value,
-            })}/>
+            ? <Input
+              value={pointTypeName}
+            //  value={childId ? name : }
+            //   onChange={(e) => editFormField({
+            //   fieldName: 'name',
+            //   segmentId,
+            //   childId,
+            //   val: e.target.value,
+            // })}
+            />
             : <Select
               className={'select-point'}
               defaultValue={name}
@@ -220,7 +271,7 @@ const MarchForm = (props) => {
             </Select>
           }
         </Tooltip>
-        {(!required) &&
+        {(!required && childId !== undefined || segmentType !== 41) &&
         <div className={'un-required-field'}>
           {(!point.base && segmentType === 41)
             ? <div className={'time-block'}>
@@ -235,10 +286,20 @@ const MarchForm = (props) => {
             </div>
             : <div/>
           }
-          <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>
+          {childId !== undefined &&
+          <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>}
+
         </div>
         }
       </div>
+      <Modal
+        title='Вказати географічний орієнтир'
+        visible={isModalVisible}
+        onOk={handleOkModal}
+        onCancel={handleCancelModal}
+      >
+        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder='Географічний орієнтир' />
+      </Modal>
     </div>
   )
 }

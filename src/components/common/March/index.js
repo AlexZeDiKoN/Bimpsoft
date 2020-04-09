@@ -8,7 +8,7 @@ import utilsMarch from './utilsMarch'
 
 import './style.css'
 
-const { getTruckSegmentDetails, getTrainOrShipSegmentDetails, getTotalMarchDetails } = utilsMarch.formulas
+const { getSegmentDetails, getTotalMarchDetails } = utilsMarch.formulas
 
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
@@ -52,7 +52,6 @@ const March = (props) => {
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
         const { children } = segment
-        const getSegmentDetails = segment.segmentType === 41 ? getTruckSegmentDetails : getTrainOrShipSegmentDetails
         const segmentDetails = getSegmentDetails(segment, segments[segmentId + 1], dataMarch, { ...referenceData })
 
         if (timeDistanceView) {

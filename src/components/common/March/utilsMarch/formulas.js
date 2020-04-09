@@ -122,7 +122,7 @@ const getLoadUnloadTime = (data) => {
   return loadUnloadVehiclesTime * (Kv * Kpl * Kkr * Ktc * Kpr)
 }
 
-const getTrainOrShipSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceData = defaultReferenceData) => {
+const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceData = defaultReferenceData) => {
   const { velocity, children = [] } = startingPoint
   const { time: refTime, distance: refDistance } = referenceData
   const {
@@ -167,7 +167,7 @@ const getTrainOrShipSegmentDetails = (startingPoint, nextPoint, dataMarch, refer
     totalTime += s / velocity
     totalDistance += s
   } else {
-    totalDistance = getDistance(startingPoint.coord, nextPoint && nextPoint.coord)
+    totalDistance += getDistance(startingPoint.coord, nextPoint && nextPoint.coord)
     totalTime = totalDistance / velocity
   }
 
@@ -198,6 +198,24 @@ const getTrainOrShipSegmentDetails = (startingPoint, nextPoint, dataMarch, refer
   }
 }
 
+const getSegmentDetails = (...args) => {
+  if (args[0].segmentType) {
+    const segmentDetails = args[0].segmentType === 41 ? getTruckSegmentDetails : getVehiclesSegmentDetails
+
+    return segmentDetails.apply(null, args)
+  } else {
+    return {
+      totalTime: 0,
+      totalDistance: 0,
+      childSegments: [],
+      referenceData: {
+        time: 0,
+        distance: 0,
+      },
+    }
+  }
+}
+
 const getTotalMarchDetails = (segments, dataMarch) => {
   const totalData = {
     totalMarchTime: 0,
@@ -209,11 +227,12 @@ const getTotalMarchDetails = (segments, dataMarch) => {
       return
     }
 
-    const getSegmentDetails = segment.segmentType === 41 ? getTruckSegmentDetails : getTrainOrShipSegmentDetails
-    const segmentDetails = getSegmentDetails(segment, segments[index + 1], dataMarch)
+    if (segment.segmentType) {
+      const segmentDetails = getSegmentDetails(segment, segments[index + 1], dataMarch)
 
-    totalData.totalMarchTime += segmentDetails.totalTime
-    totalData.totalMarchDistance += segmentDetails.totalDistance
+      totalData.totalMarchTime += segmentDetails.totalTime
+      totalData.totalMarchDistance += segmentDetails.totalDistance
+    }
   })
 
   return totalData
@@ -221,6 +240,7 @@ const getTotalMarchDetails = (segments, dataMarch) => {
 
 export default {
   getTruckSegmentDetails,
-  getTrainOrShipSegmentDetails,
+  getVehiclesSegmentDetails,
   getTotalMarchDetails,
+  getSegmentDetails,
 }

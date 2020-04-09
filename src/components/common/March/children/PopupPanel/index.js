@@ -51,7 +51,10 @@ const PopupPanel = (props) => {
       onOk () {
         deleteSegment(segmentId)
       },
-    })
+      centered: true,
+      zIndex: 10000,
+    },
+    )
   }
 
   return <div className={'march-popup-form'}>
@@ -78,7 +81,7 @@ const PopupPanel = (props) => {
     <div><span>Довжина ділянки: </span> {distance} км</div>
     <div className={'bottom-panel'}>
       <div><span>Час проходження: </span> {formatTotalTime}</div>
-      { !required && <div onClick={() => showDeleteConfirm(propData)} className={'delete-segment'} />}
+      { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
     </div>
   </div>
 }
@@ -86,7 +89,6 @@ const PopupPanel = (props) => {
 PopupPanel.propTypes = {
   propData: PropTypes.shape({
     deleteSegment: PropTypes.func.isRequired,
-    id: PropTypes.number.isRequired,
     required: PropTypes.bool.isRequired,
     segmentType: PropTypes.number.isRequired,
     terrain: PropTypes.number.isRequired,
