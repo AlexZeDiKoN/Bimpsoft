@@ -1,5 +1,5 @@
 import React from 'react'
-import { InputNumber } from 'antd'
+import { InputNumber, Tooltip } from 'antd'
 import { IButton } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
@@ -14,16 +14,14 @@ const OpacityControl = (props) => {
 
   return (
     <div className={'opacity-control ' + className}>
-      <div className="opacity-control-block">
+      <Tooltip title={title} placement='topRight' className="opacity-control-block">
         <IButton
-          title={title}
           colorType={ColorTypes.WHITE}
           className="opacity-control-icon"
           icon={icon}
         />
         <InputNumber
           size="small"
-          title={title}
           step={10}
           min={0}
           max={100}
@@ -31,7 +29,7 @@ const OpacityControl = (props) => {
           className="opacity-control-input"
           onChange={changeHandler}
         />
-      </div>
+      </Tooltip>
     </div>
   )
 }
