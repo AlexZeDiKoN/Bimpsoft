@@ -682,7 +682,7 @@ export const symbols = [
       {
         hint: 'Смуга ураження керованими снарядами дивізіону (Олово) із зазначенням смуг (зон) ураження батарей',
         code: '10032500000170170000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.FLEXGRID },
       },
       {
         hint: 'Район дистанційного мінування місцевості',
