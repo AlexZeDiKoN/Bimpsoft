@@ -20,6 +20,7 @@ const COLORS = [ 'black', 'blue', 'red', 'green' ]
 const SMALL_TEXT_SIZE = 0.667
 
 lineDefinitions['017019'] = {
+  presetColor: COLORS,
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.none,
 
@@ -52,8 +53,9 @@ lineDefinitions['017019'] = {
     points.forEach((elm, ind) => {
       if (isDefPoint(elm)) {
         const radius = lengthLine(pO, elm)
+        const color = sectorsInfo[ind]?.color ?? COLORS[ind]
         drawCircle(result, pO, radius + !ind * 2)
-        result.amplifiers += `<circle stroke-width="${width}" stroke="${COLORS[ind]}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
+        result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
         let radiusM
         if (ind !== 0) {
           if (!Coord.check(coordArray[ind])) {
