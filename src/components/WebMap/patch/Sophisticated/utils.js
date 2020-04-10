@@ -1,7 +1,9 @@
 import L from 'leaflet'
 import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
+import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import lineDefinitions from './lineDefinitions'
+import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
 
 const EPSILON = 1e-12
@@ -550,4 +552,54 @@ export const addPathAmplifier = (result, amplifier, closed, dash) => {
     stroke="${color}"${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
     d="${amplifier.d}" 
   />`
+}
+
+export const getMaxPoligon = (points) => {
+  const poligon = []
+  let beginPoint = points[0]
+  let beginIndex = 0
+  if (points.length < 3) {
+    return [ ...points ]
+  }
+  points.forEach((point, index) => {
+    if (point.x < beginPoint.x || (point.x === beginPoint.x && point.y < beginPoint.y)) {
+      beginPoint = point
+      beginIndex = index
+    }
+  })
+  poligon.push(beginPoint)
+  const degradation = points.filter((e, index) => (index !== beginIndex))
+  const nextPoint = degradation[0]
+  const indexR = getLeftPoint(degradation, beginPoint, nextPoint)
+  poligon.push(degradation[indexR]) // есть вторая точка многоугольника
+  degradation.splice(indexR, 1)
+  degradation.push(beginPoint)
+  while (degradation.length) {
+    const endIndex = poligon.length - 1
+    const indexR = getLeftPoint(degradation, poligon[endIndex], poligon[endIndex - 1])
+    if (indexR < 0) { // чето не срослось
+      break
+    }
+    if (indexR === degradation.length - 1) { // пришли в начало
+      break
+    }
+    poligon.push(degradation[indexR])
+    degradation.splice(indexR, 1)
+  }
+  return poligon
+}
+
+function getLeftPoint (points, lP, nP) {
+  let angle = -Math.PI
+  let indexR = -1
+  let distance = infinity
+  points.forEach((point, index) => {
+    const pP = coordinatesToPolar(lP, nP, point)
+    if ((angle < pP.angle) || (angle === pP.angle && distance > pP.beamLength)) {
+      angle = pP.angle
+      indexR = index
+      distance = pP.beamLength
+    }
+  })
+  return indexR
 }

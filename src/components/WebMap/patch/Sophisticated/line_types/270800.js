@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline, drawMaskedText, textBBox,
+  drawBezierSpline, drawLine, drawMaskedText, getMaxPoligon, textBBox,
 } from '../utils'
 
 // sign name: Район мінування
@@ -57,5 +57,20 @@ lineDefinitions['270800'] = {
     const bb = textBBox('M', result.layer)
     topPoint.y -= bb.height * 0.67
     drawMaskedText(result, topPoint, 0, top, TEXT_SIZE, 'middle', 'after-edge')
+
+    const poligon = getMaxPoligon(points)
+    const rectanglePoints = []
+    const dx = 20
+    const dy = 10
+    poligon.forEach((elm, number) => {
+      rectanglePoints.push({ x: elm.x - dx, y: elm.y - dy, number })
+      rectanglePoints.push({ x: elm.x + dx, y: elm.y - dy, number })
+      rectanglePoints.push({ x: elm.x - dx, y: elm.y + dy, number })
+      rectanglePoints.push({ x: elm.x + dx, y: elm.y + dy, number })
+    })
+    const rectanglePoligon = getMaxPoligon(rectanglePoints)
+    const [ p0, ...rest ] = rectanglePoligon
+    drawLine(result, p0, ...rest)
+    result.d += 'z'
   },
 }
