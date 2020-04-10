@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline, drawLine, drawMaskedText, getMaxPoligon, textBBox,
+  drawBezierSpline, drawMaskedText, textBBox, // drawLine, getMaxPoligon,
 } from '../utils'
 
 // sign name: Район мінування
@@ -58,7 +58,7 @@ lineDefinitions['270800'] = {
     topPoint.y -= bb.height * 0.67
     drawMaskedText(result, topPoint, 0, top, TEXT_SIZE, 'middle', 'after-edge')
 
-    const poligon = getMaxPoligon(points)
+    /* const poligon = getMaxPoligon(points)
     const rectanglePoints = []
     const dx = 20
     const dy = 10
@@ -71,6 +71,6 @@ lineDefinitions['270800'] = {
     const rectanglePoligon = getMaxPoligon(rectanglePoints)
     const [ p0, ...rest ] = rectanglePoligon
     drawLine(result, p0, ...rest)
-    result.d += 'z'
+    result.d += 'z' */
   },
 }
