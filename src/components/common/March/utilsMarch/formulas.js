@@ -6,7 +6,7 @@ const defaultReferenceData = {
 }
 
 const getDistance = (from, to) => {
-  if (!from || !to) {
+  if (!from || !to || !from.lat || !from.lng || !to.lat || !to.lng) {
     return 0
   }
   const fromLatlng = L.latLng(from.lat, from.lng)
@@ -49,46 +49,46 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   const { velocity, children = [] } = startingPoint
   const { time: refTime, distance: refDistance } = referenceData
 
+  let s = 0
+  let v = 0
+  let index = 0
   let totalTime = refTime
   let totalDistance = refDistance
+  let currentCoord = startingPoint.coord
   const childSegments = []
-  let s = 0
 
-  if (children.length) {
-    let index = 0
+  for (; index < children.length; index++) {
+    s = getDistance(startingPoint.coord, children[index].coord)
 
-    for (; index < children.length; index++) {
-      let v
-
-      if (index === 0) {
-        s = getDistance(startingPoint.coord, children[index].coord)
-      } else {
-        s = getDistance(children[index - 1].coord, children[index].coord)
-      }
-
-      if (children[index].required) {
-        v = 0.8 * velocity
-      } else {
-        v = velocity
-      }
-
-      const t = s / v
-
-      totalTime += t
-      totalDistance += s
-
+    if (s === 0) {
       childSegments.push({
         distance: +totalDistance.toFixed(1),
         time: +totalTime.toFixed(2),
       })
-
-      totalTime += children[index].restTime
+      continue
     }
 
-    s = getDistance(children[index - 1].coord, nextPoint && nextPoint.coord)
-  } else {
-    s = getDistance(startingPoint.coord, nextPoint && nextPoint.coord)
+    if (children[index].required) {
+      v = 0.8 * velocity
+    } else {
+      v = velocity
+    }
+
+    const t = s / v
+
+    totalTime += t
+    totalDistance += s
+
+    childSegments.push({
+      distance: +totalDistance.toFixed(1),
+      time: +totalTime.toFixed(2),
+    })
+
+    totalTime += children[index].restTime
+    currentCoord = children[index].coord
   }
+
+  s = getDistance(currentCoord, nextPoint && nextPoint.coord)
 
   const t = s / velocity
 
@@ -137,39 +137,39 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
     workInGasMasksFactor,
   } = dataMarch
 
+  let s = 0
+  let index = 0
+  const childSegments = []
   let totalTime = refTime
   let totalDistance = refDistance
-  const childSegments = []
-  let index = 0
-  let s = 0
+  let currentCoord = startingPoint.coord
 
-  if (children.length) {
-    for (; index < children.length; index++) {
-      if (index === 0) {
-        s = getDistance(startingPoint.coord, children[index].coord)
-      } else {
-        s = getDistance(children[index - 1].coord, children[index].coord)
-      }
+  for (; index < children.length; index++) {
+    s = getDistance(currentCoord, children[index].coord)
 
-      const t = s / velocity
-
-      totalTime += t
-      totalDistance += s
-
+    if (s === 0) {
       childSegments.push({
         distance: +totalDistance.toFixed(1),
         time: +totalTime.toFixed(2),
       })
+      continue
     }
 
-    s = getDistance(children[index - 1].coord, nextPoint.coord)
+    const t = s / velocity
 
-    totalTime += s / velocity
+    totalTime += t
     totalDistance += s
-  } else {
-    totalDistance += getDistance(startingPoint.coord, nextPoint && nextPoint.coord)
-    totalTime = totalDistance / velocity
+
+    childSegments.push({
+      distance: +totalDistance.toFixed(1),
+      time: +totalTime.toFixed(2),
+    })
+
+    currentCoord = children[index].coord
   }
+
+  totalDistance += getDistance(currentCoord, nextPoint.coord)
+  totalTime += totalDistance / velocity
 
   const loadUnloadData = {
     timeIncreaseFactor,

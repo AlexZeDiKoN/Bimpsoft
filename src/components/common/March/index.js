@@ -21,6 +21,8 @@ const getMemoGeoLandmarks = (() => {
 
     if (!geoLandmark) {
       try {
+        coord.lat = lat || 0.00001
+        coord.lng = lng || 0.00001
         geoLandmark = await webmapApi.nearestSettlement(coord)
         memoGeoLandmark[geoKey] = geoLandmark
       } catch (e) {

@@ -35,20 +35,14 @@ const initState = {
       segmentType: 41, // Своїм ходом
       terrain: 69, // Рівнинна
       velocity: 30,
-      coord: {
-        lat: 0,
-        lng: 0,
-      },
+      coord: {},
       required: true,
       editableName: false,
       children: [
         {
           name: 'Вихідний рубіж',
           lineType: '',
-          coord: {
-            lat: 0,
-            lng: 0,
-          },
+          coord: {},
           refPoint: '',
           required: true,
           editableName: true,
@@ -58,10 +52,7 @@ const initState = {
     },
     {
       segmentType: 0,
-      coord: {
-        lat: 0,
-        lng: 0,
-      },
+      coord: {},
       name: 'Пункт призначення',
       required: true,
       editableName: false,
@@ -77,10 +68,7 @@ const defaultSegment = {
   segmentType: 41, // Своїм ходом
   terrain: 69, // Рівнинна
   velocity: 30,
-  coord: {
-    lat: 0,
-    lng: 0,
-  },
+  coord: {},
   required: false,
   editableName: false,
   // eslint-disable-next-line
@@ -90,10 +78,7 @@ const defaultSegment = {
 const defaultChild = {
   name: '',
   lineType: '',
-  coord: {
-    lat: 0,
-    lng: 0,
-  },
+  coord: {},
   refPoint: '',
   required: false,
   editableName: true,

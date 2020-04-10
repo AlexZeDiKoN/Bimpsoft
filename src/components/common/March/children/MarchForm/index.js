@@ -53,9 +53,6 @@ const MarchForm = (props) => {
 
   const point = getPointByName(name)
 
-  coord.lat = coord.lat || 0.00001
-  coord.lng = coord.lng || 0.00001
-
   const [ pointTime, setPointTime ] = useState(+restTime)
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})
@@ -271,7 +268,7 @@ const MarchForm = (props) => {
             </Select>
           }
         </Tooltip>
-        {(!required && childId !== undefined || segmentType !== 41) &&
+        {((!required && childId !== undefined) || segmentType !== 41) &&
         <div className={'un-required-field'}>
           {(!point.base && segmentType === 41)
             ? <div className={'time-block'}>
