@@ -122,7 +122,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
           <div key={index}>
             <div className="circularzone-container__itemWidth">
               <div className="container__itemWidth50">
-                <FormRow label={`${MARKER[index]} радіус`}>
+                <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
                   <InputWithSuffix
                     readOnly={!canEdit}
                     value={radius}
@@ -133,7 +133,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     error={!radiusIsGood}
                   />
                 </FormRow>
-                <FormRow label={`Ампліфікатор «Т${index}»`}>
+                <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
                   <Input.TextArea
                     value={amplifierT}
                     name={'amplifier'}
