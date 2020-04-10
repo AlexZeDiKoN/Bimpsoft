@@ -7,6 +7,8 @@ import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
+import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
+import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -105,6 +107,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     const sectorsInfo = formStore.getIn(PATH_S_INFO).toJS()
     const coordO = coordinatesArray[0]
     const indexEnd = coordinatesArray.length - 1
+    const presetColor = lineDefinitions[extractLineCode(this.props.data.code)]?.presetColor
     const { radiiText = [] } = this.state
     return (
       coordinatesArray.map((elm, index) => {
@@ -112,14 +115,14 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
           : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
         const sectorInfo = sectorsInfo[index] ?? {}
         const amplifierT = sectorInfo?.amplifier || ''
-        const color = sectorInfo?.color || '#000000'
+        const color = sectorInfo?.color || (presetColor && presetColor[index]) || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
         const radiusIsGood = Number.isFinite(Number(radius))
         return (index !== 0) ? (
           <div key={index}>
             <div className="circularzone-container__itemWidth">
               <div className="container__itemWidth50">
-                <FormRow label={`${MARKER[index]} радіус`} >
+                <FormRow label={`${MARKER[index]} радіус`}>
                   <InputWithSuffix
                     readOnly={!canEdit}
                     value={radius}
@@ -130,7 +133,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     error={!radiusIsGood}
                   />
                 </FormRow>
-                <FormRow label={`Ампліфікатор «Т${index}»`} >
+                <FormRow label={`Ампліфікатор «Т${index}»`}>
                   <Input.TextArea
                     value={amplifierT}
                     name={'amplifier'}
