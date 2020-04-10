@@ -1,7 +1,6 @@
 import React from 'react'
 import { DatePicker, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import { TIME_FORMAT, DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
 
@@ -13,7 +12,7 @@ export default class IntervalControl extends React.Component {
     return (
       <div className='interval-control'>
         <span>{i18n.PERIOD_FROM}</span>
-        <Tooltip title={from && moment(from).format(DATE_TIME_FORMAT)} placement='topRight'>
+        <Tooltip title={i18n.PERIOD_START} placement='topRight'>
           <DatePicker
             value={from}
             style={{ width: 'auto', minWidth: 'auto' }}
@@ -24,7 +23,7 @@ export default class IntervalControl extends React.Component {
           />
         </Tooltip>
         <span>{i18n.PERIOD_TO}</span>
-        <Tooltip title={to && moment(to).format(DATE_TIME_FORMAT)} placement='topRight'>
+        <Tooltip title={i18n.PERIOD_END} placement='topRight'>
           <DatePicker
             value={to}
             style={{ width: 'auto', minWidth: 'auto' }}
