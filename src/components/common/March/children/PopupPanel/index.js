@@ -1,10 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Input, Select, Modal } from 'antd'
+import { Input, Select, Modal, Tooltip } from 'antd'
 import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
 import { isNumberSymbols } from '../../../../../utils/validation/number'
+import i18n from '../../../../../i18n'
 const { confirm } = Modal
 
 const mapStateToProps = ({ march: { indicators } }) => ({
@@ -27,7 +28,7 @@ const PopupPanel = (props) => {
   const time = totalTime - referenceData.time
   const hour = time.toFixed(0)
   const minutes = ((time % 1) * 60).toFixed(0)
-  const formatTotalTime = time === Infinity ? 'неможливо вирахувати' : `${hour}:${minutes} годин`
+  const formatTotalTime = time === Infinity ? '--/--' : `${hour}:${minutes} ${i18n.HOURS}`
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,
@@ -44,10 +45,10 @@ const PopupPanel = (props) => {
 
   const showDeleteConfirm = () => {
     confirm({
-      title: 'Ви впевнені що хочете видалити даний сегмент?',
-      okText: 'Так',
+      title: i18n.DELETE_SEGMENT_CONFIRM_TITLE,
+      okText: i18n.OK_BUTTON_TEXT,
       okType: 'danger',
-      cancelText: 'Ні',
+      cancelText: i18n.CANCEL_BUTTON_TEXT,
       onOk () {
         deleteSegment(segmentId)
       },
@@ -57,30 +58,43 @@ const PopupPanel = (props) => {
     )
   }
 
+  const typeOfMove = nameTypeById(MB001, segmentType).name
+
   return <div className={'march-popup-form'}>
-    <Select
-      defaultValue={nameTypeById(MB001, segmentType).name}
-      onChange={onEditFormField('segmentType')}
-    >
-      {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
-    </Select>
+    <Tooltip placement='left' title={i18n.TYPE_OF_MOVE}>
+      {segmentId === 0
+        ? <Input
+          value={typeOfMove}
+        />
+        : <Select
+          defaultValue={typeOfMove}
+          onChange={onEditFormField('segmentType')}
+        >
+          {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+        </Select>
+
+      }
+
+    </Tooltip>
 
     {(segmentType === 41) &&
+    <Tooltip placement='left' title={i18n.NATURE_OF_TERRAIN}>
       <Select
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
       >
         {MB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
       </Select>
+    </Tooltip>
     }
 
     <div className={'speed-block'}>
-      <span>Середня швидкість (км/год): </span>
+      <span>{i18n.AVERAGE_SPEED}: </span>
       <Input onChange={onChangeVelocity} value={velocity} maxLength={10} style={{ width: '60px' }}/>
     </div>
-    <div><span>Довжина ділянки: </span> {distance} км</div>
+    <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
-      <div><span>Час проходження: </span> {formatTotalTime}</div>
+      <div><span>{i18n.TIME_OF_PASSING}: </span> {formatTotalTime}</div>
       { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
     </div>
   </div>

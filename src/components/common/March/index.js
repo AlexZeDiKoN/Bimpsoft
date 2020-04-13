@@ -8,7 +8,7 @@ import utilsMarch from './utilsMarch'
 
 import './style.css'
 
-const { getSegmentDetails, getTotalMarchDetails } = utilsMarch.formulas
+const { getSegmentDetails, getMarchDetails } = utilsMarch.formulas
 
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
@@ -97,7 +97,7 @@ const March = (props) => {
     </div>
   }
 
-  const marchDetails = getTotalMarchDetails(props.segments, props.dataMarch)
+  const marchDetails = getMarchDetails(props.segments, props.dataMarch)
 
   return <div className={'march-container'}>
     <div className={'march-header'}>

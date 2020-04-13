@@ -5,6 +5,8 @@ import PropTypes from 'prop-types'
 import placeSearch from '../../../../../server/places'
 import { isNumberSymbols } from '../../../../../utils/validation/number'
 import utilsMarch from '../../utilsMarch'
+import i18n from './../../../../../i18n'
+const { confirm } = Modal
 
 const {
   form: { Coordinates },
@@ -13,12 +15,12 @@ const {
 const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
 
 const marchPoints = [
-  { name: 'Вихідний рубіж', rest: false, base: true, time: 0 },
-  { name: 'Пункт на маршруті', rest: false, time: 0 },
-  { name: 'Пункт привалу', rest: true, time: 1 },
-  { name: 'Пункт денного(нічного) відпочинку', rest: true, time: 8 },
-  { name: 'Пункт добового відпочинку', rest: true, time: 24 },
-  { name: 'Пункт(рубіж) регулювання', rest: true, time: 0, notEditableTime: true },
+  { name: i18n.STARTING_LINE, rest: false, time: 0 },
+  { name: i18n.POINT_ON_MARCH, rest: false, time: 0 },
+  { name: i18n.REST_POINT, rest: true, time: 1 },
+  { name: i18n.DAY_NIGHT_REST_POINT, rest: true, time: 8 },
+  { name: i18n.DAILY_REST_POINT, rest: true, time: 24 },
+  { name: i18n.POINT_OF_REGULATION, rest: true, time: 0, notEditableTime: true },
 ]
 
 const getPointByName = (name) => marchPoints.find((point) => point.name === name) || marchPoints[0]
@@ -41,9 +43,7 @@ const MarchForm = (props) => {
     name,
     coord = {},
     refPoint,
-    editableName,
     segmentType,
-    required,
     segmentId,
     childId,
     isLast,
@@ -51,26 +51,22 @@ const MarchForm = (props) => {
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
 
-  const point = getPointByName(name)
-
   const [ pointTime, setPointTime ] = useState(+restTime)
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
-
   const [ isModalVisible, changeIsModalVisible ] = useState(false)
   const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
 
-  const showModal = () => {
+  const showOwnRefPointModal = () => {
     changeIsModalVisible(true)
   }
 
-  const handleOkModal = (e) => {
-    // changeRefPoint(ownRefPointMarch)
+  const onOkOwnRefPointModal = () => {
     changeIsModalVisible(false)
   }
 
-  const handleCancelModal = (e) => {
+  const onCancelOwnRefPointModal = () => {
     changeIsModalVisible(false)
   }
 
@@ -81,6 +77,8 @@ const MarchForm = (props) => {
     changeGeoLandmarks(res)
     await changeIsLoadingGeoLandmarks(false)
   }
+
+  const point = getPointByName(name)
 
   const onChangeTime = (e) => {
     if (point.notEditableTime) {
@@ -154,7 +152,7 @@ const MarchForm = (props) => {
 
   const onHandlerOwnGeoLandmark = () => {
     changeRefPoint('')
-    showModal()
+    showOwnRefPointModal()
   }
 
   let dotClass
@@ -179,24 +177,52 @@ const MarchForm = (props) => {
   let pointTypeName
   if (segmentType === 41) {
     if (childId === undefined && segmentId !== 0) {
-      pointTypeName = 'Пункт на маршруті'
+      pointTypeName = i18n.POINT_ON_MARCH
     } else {
-      pointTypeName = childId === 1 ? 'Вихідний рубіж' : name
+      pointTypeName = childId === 0 ? i18n.STARTING_LINE : name
     }
   } else {
-    pointTypeName = segmentType === 0 ? name : 'Пункт на маршруті'
+    if (childId === undefined) {
+      pointTypeName = segmentType === 0 || segmentId === 0 ? name : i18n.POINT_ON_MARCH
+    } else {
+      pointTypeName = i18n.POINT_ON_MARCH
+    }
+  }
+
+  let isStaticPointType
+  if (segmentType === 0 || (segmentId === 0 && childId === undefined) || segmentType !== 41) {
+    isStaticPointType = true
+  } else {
+    isStaticPointType = childId === 0
+  }
+
+  const isViewBottomPanel = (childId !== undefined) && !(segmentType === 41 && childId === 0)
+
+  const showDeletePointConfirm = () => {
+    confirm({
+      title: i18n.DELETE_POINT_CONFIRM_TITLE,
+      okText: i18n.OK_BUTTON_TEXT,
+      okType: 'danger',
+      cancelText: i18n.CANCEL_BUTTON_TEXT,
+      onOk () {
+        deleteChild(segmentId, childId)
+      },
+      centered: true,
+      zIndex: 10000,
+    },
+    )
   }
 
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
-        <Tooltip placement='topRight' title={'Розташування'}>
+        <Tooltip placement='topRight' title={i18n.MARCH_LOCATION}>
           <div className={`dot ${dotClass}`}/>
         </Tooltip>
         {(segmentType || childId || childId === 0)
           ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
-            <Tooltip placement='topRight' title={'Додати пункт'}>
-              { !(segmentId === 0 && childId === undefined) &&
+            <Tooltip placement='topRight' title={i18n.ADD_POINT}>
+              {!(segmentType === 41 && childId === undefined) &&
               <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
               }
             </Tooltip>
@@ -211,17 +237,17 @@ const MarchForm = (props) => {
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
           />
-          <Tooltip placement='topRight' title={'Вказати на карті'}>
+          <Tooltip placement='topRight' title={i18n.POINT_ON_MAP}>
             <a href='#' className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
           </Tooltip>
         </div>
-        <Tooltip placement='left' title={'Географічний орієнтир'}>
+        <Tooltip placement='left' title={i18n.GEOGRAPHICAL_LANDMARK}>
           <Select
             className={'select-point'}
             value={refPointMarch}
             onChange={onChangeRefPoint}
             loading={isLoadingGeoLandmarks}
-            placeholder='Географічний орієнтир'
+            placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
           >
             {ownRefPointMarch &&
@@ -237,27 +263,21 @@ const MarchForm = (props) => {
             <Select.Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
               <Divider style={{ margin: '4px 0' }}/>
               <div style={{ display: 'flex', justifyContent: 'center', background: '#E6FBFF' }}>
-                <span><strong>+ власний варіант</strong></span>
+                <span><strong>+ {i18n.OWN_VARIANT}</strong></span>
               </div>
             </Select.Option>
           </Select>
         </Tooltip>
         <br/>
-        <Tooltip placement='left' title={'Тип пункту'}>
-          {(!editableName || segmentType !== 41)
+        <Tooltip placement='left' title={i18n.POINT_TYPE}>
+          {isStaticPointType
             ? <Input
               value={pointTypeName}
-            //  value={childId ? name : }
-            //   onChange={(e) => editFormField({
-            //   fieldName: 'name',
-            //   segmentId,
-            //   childId,
-            //   val: e.target.value,
-            // })}
             />
             : <Select
               className={'select-point'}
-              defaultValue={name}
+              defaultValue={pointTypeName}
+              value={pointTypeName}
               onChange={onChangeMarchPointType}
             >
               {marchPoints.map(({ name }, id) => (
@@ -268,9 +288,9 @@ const MarchForm = (props) => {
             </Select>
           }
         </Tooltip>
-        {((!required && childId !== undefined) || segmentType !== 41) &&
-        <div className={'un-required-field'}>
-          {(!point.base && segmentType === 41)
+        {isViewBottomPanel &&
+        <div className={'bottom-panel'}>
+          {segmentType === 41
             ? <div className={'time-block'}>
               <div className={'logo-time'}/>
               <Input
@@ -283,19 +303,19 @@ const MarchForm = (props) => {
             </div>
             : <div/>
           }
-          {childId !== undefined &&
-          <IButton icon={IconNames.BAR_2_DELETE} onClick={() => deleteChild(segmentId, childId)}/>}
-
+          <IButton icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
         </div>
         }
       </div>
       <Modal
-        title='Вказати географічний орієнтир'
+        title={i18n.SPECIFY_GEO_LANDMARK_TITLE}
         visible={isModalVisible}
-        onOk={handleOkModal}
-        onCancel={handleCancelModal}
+        onOk={onOkOwnRefPointModal}
+        onCancel={onCancelOwnRefPointModal}
+        okText={i18n.ADD_BUTTON_TEXT}
+        cancelText={i18n.REJECT_BUTTON_TEXT}
       >
-        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder='Географічний орієнтир' />
+        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
       </Modal>
     </div>
   )
@@ -306,9 +326,7 @@ MarchForm.propTypes = {
   coord: PropTypes.shape({}).isRequired,
   children: PropTypes.array,
   refPoint: PropTypes.string.isRequired,
-  editableName: PropTypes.bool.isRequired,
   segmentType: PropTypes.number.isRequired,
-  required: PropTypes.bool.isRequired,
   segmentId: PropTypes.number.isRequired,
   childId: PropTypes.number,
   handlers: PropTypes.shape({

@@ -1,6 +1,7 @@
 import { Switch, Tooltip } from 'antd'
 import React from 'react'
 import PropTypes from 'prop-types'
+import i18n from './../../../../../i18n'
 
 const Header = (props) => {
   const { changeTimeDistanceView, timeDistanceView, marchDetails } = props
@@ -8,20 +9,19 @@ const Header = (props) => {
 
   const hour = totalMarchTime.toFixed(0)
   const minutes = ((totalMarchTime % 1) * 60).toFixed(0)
-  const formatTotalTime = totalMarchTime === Infinity ? 'неможливо вирахувати' : `${hour}:${minutes} годин`
+  const formatTotalTime = totalMarchTime === Infinity ? '--/--' : `${hour}:${minutes} ${i18n.HOURS}`
 
   return <>
     <div className={'march-title-top'}>
       <div className={'march-title'}>
-        Маршрут переміщення
+        {i18n.MARCH_TITLE}
       </div>
       <div className={'march-save-button'}/>
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip
         placement='left'
-        title={timeDistanceView ? 'Час та відстань: від пункту відправлення'
-          : 'Час та відстань: від попереднього пункту'}>
+        title={timeDistanceView ? i18n.FROM_DEPARTURE_POINT : i18n.FROM_PREVIOUS_POINT}>
         <Switch
           checkedChildren='В'
           unCheckedChildren='П'
@@ -30,8 +30,8 @@ const Header = (props) => {
           onChange={changeTimeDistanceView}
         />
       </Tooltip>
-      <span className={'march-title-value'}>Довжина маршруту: {totalMarchDistance.toFixed(1)} км</span>
-      <span className={'march-title-value'}>час: {formatTotalTime}</span>
+      <span className={'march-title-value'}>{i18n.LENGTH_OF_MARCH}: {totalMarchDistance.toFixed(1)} км</span>
+      <span className={'march-title-value'}>{i18n.TIME}: {formatTotalTime}</span>
     </div>
   </>
 }

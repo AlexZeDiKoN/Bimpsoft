@@ -50,15 +50,14 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   const { time: refTime, distance: refDistance } = referenceData
 
   let s = 0
-  let v = 0
-  let index = 0
   let totalTime = refTime
   let totalDistance = refDistance
   let currentCoord = startingPoint.coord
   const childSegments = []
 
-  for (; index < children.length; index++) {
+  for (let index = 0; index < children.length; index++) {
     s = getDistance(startingPoint.coord, children[index].coord)
+    let v = 0
 
     if (s === 0) {
       childSegments.push({
@@ -138,13 +137,12 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
   } = dataMarch
 
   let s = 0
-  let index = 0
   const childSegments = []
   let totalTime = refTime
   let totalDistance = refDistance
   let currentCoord = startingPoint.coord
 
-  for (; index < children.length; index++) {
+  for (let index = 0; index < children.length; index++) {
     s = getDistance(currentCoord, children[index].coord)
 
     if (s === 0) {
@@ -216,31 +214,33 @@ const getSegmentDetails = (...args) => {
   }
 }
 
-const getTotalMarchDetails = (segments, dataMarch) => {
+const getMarchDetails = (segments = [], dataMarch = {}) => {
   const totalData = {
     totalMarchTime: 0,
     totalMarchDistance: 0,
+    segments: [],
   }
+  let currentSegment = segments[0]
 
-  segments.forEach((segment, index) => {
-    if (index === segments.length - 1) {
-      return
+  for (let index = 0; index < segments.length - 1; index++) {
+    if (segments[index].segmentType) {
+      const segmentDetails = getSegmentDetails(currentSegment, segments[index + 1], dataMarch)
+
+      totalData.segments.push(segmentDetails)
+
+      if (segmentDetails.totalDistance) {
+        totalData.totalMarchTime += segmentDetails.totalTime
+        totalData.totalMarchDistance += segmentDetails.totalDistance
+
+        currentSegment = segments[index + 1]
+      }
     }
-
-    if (segment.segmentType) {
-      const segmentDetails = getSegmentDetails(segment, segments[index + 1], dataMarch)
-
-      totalData.totalMarchTime += segmentDetails.totalTime
-      totalData.totalMarchDistance += segmentDetails.totalDistance
-    }
-  })
+  }
 
   return totalData
 }
 
 export default {
-  getTruckSegmentDetails,
-  getVehiclesSegmentDetails,
-  getTotalMarchDetails,
+  getMarchDetails,
   getSegmentDetails,
 }

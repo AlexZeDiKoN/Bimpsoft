@@ -132,9 +132,6 @@ export default function reducer (state = initState, action) {
     }
     case march.ADD_SEGMENT: {
       const firstPoint = { ...defaultChild }
-      firstPoint.required = true
-      firstPoint.editableName = false
-      firstPoint.name = 'Вихідний рубіж'
 
       return { ...state,
         segments: state.segments.insert(payload + 1,

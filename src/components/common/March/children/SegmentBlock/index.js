@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
+import i18n from './../../../../../i18n'
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, segmentDetails } = props
@@ -38,7 +39,7 @@ const SegmentBlock = (props) => {
 
   const childrenIsPresent = children && children.length > 0
 
-  return (<div className={'segment'} style={{ backgroundColor: color}}>
+  return (<div className={'segment'} style={{ backgroundColor: color }}>
     {segmentId !== 0
       ? <div className={'time-distance'} style={ { height: '35px' } }>
         <span>{getFormatTime(refTime)}</span>
@@ -65,7 +66,7 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <Tooltip placement='topRight' title={'Додати ділянку'}>
+      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT}>
         <div className={'add-segment-button'} onClick={() => addSegment(segmentId)}/>
       </Tooltip>
     </div>
