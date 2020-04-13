@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Tooltip } from 'antd'
 import {
   ColorTypes,
   IButton,
@@ -34,12 +35,15 @@ const InputButton = (props) => {
               setShowSearch(false)
             }}/>}
         </Input>
-        {!showSearch && <IButton
-          icon={IconNames.MENU_SEARCH}
-          title={placeholder}
-          colorType={ColorTypes.WHITE}
-          disabled={disabled}
-          onClick={() => setShowSearch(true)}/>}
+        {!showSearch &&
+        <Tooltip title={placeholder} placement='topRight'>
+          <IButton
+            icon={IconNames.MENU_SEARCH}
+            colorType={ColorTypes.WHITE}
+            disabled={disabled}
+            onClick={() => setShowSearch(true)}
+          />
+        </Tooltip>}
       </div>
     </div>
   )

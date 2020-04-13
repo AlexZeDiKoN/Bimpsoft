@@ -41,7 +41,6 @@ export default class Index extends React.Component {
           title={i18n.EXTRA_FUNCTIONS}
           colorType={ColorTypes.WHITE}
           type={ButtonTypes.WITH_BG}
-          buttonType={ButtonTypes.WITH_BG}
           icon={IconNames.TABLE_SETING}
         />
       </Dropdown>

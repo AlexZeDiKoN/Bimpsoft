@@ -5,6 +5,7 @@ import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
+import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
 import i18n from '../../i18n'
 import {
   AreaForm,
@@ -15,7 +16,16 @@ import {
   SquareForm,
   TextForm,
   ContourForm,
+  SophisticatedForm,
+  AirborneForm,
+  ManoeuvreForm,
+  MinedAreaForm,
+  SectorsForm,
+  PollutionCircleForm,
+  MineFieldForm,
+  CircularZoneForm, AttackForm,
 } from './forms'
+// import  from './forms/CircularZoneForm'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -88,6 +98,70 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.SOPHISTICATED]: {
+    title: i18n.SOPHISTICATED,
+    component: SophisticatedForm,
+    minHeight: 330,
+    maxHeight: 630,
+    minWidth: 415,
+  },
+  [SelectionTypes.ATTACK]: {
+    title: i18n.ATTACK,
+    component: AttackForm,
+    minHeight: 330,
+    maxHeight: 630,
+    minWidth: 415,
+  },
+  [SelectionTypes.AIRBORNE]: {
+    title: i18n.SHAPE_AIRBORNE,
+    component: AirborneForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MANOEUVRE]: {
+    title: i18n.SHAPE_MANOEUVRE,
+    component: ManoeuvreForm,
+    minHeight: 795,
+    minWidth: 900,
+    maxHeight: 805,
+  },
+  [SelectionTypes.MINEDAREA]: {
+    title: i18n.SHAPE_MINEDAREA,
+    component: MinedAreaForm,
+    minHeight: 645,
+    minWidth: 800,
+    maxHeight: 655,
+    maxWidth: 950,
+  },
+  [SelectionTypes.SECTORS]: {
+    title: i18n.SHAPE_SECTORS,
+    component: SectorsForm,
+    minHeight: 640,
+    minWidth: 900,
+    maxHeight: 800,
+  },
+  [SelectionTypes.POLLUTION_CIRCLE]: {
+    title: i18n.SHAPE_POLLUTINCIRCLE,
+    component: PollutionCircleForm,
+    minHeight: 545,
+    minWidth: 600,
+    maxHeight: 545,
+  },
+  [SelectionTypes.CIRCULAR_ZONE]: {
+    title: i18n.SHAPE_CIRCULARZONE,
+    component: CircularZoneForm,
+    minHeight: 645,
+    minWidth: 550,
+    maxHeight: 645,
+  },
+  [SelectionTypes.MINE_FIELD]: {
+    title: i18n.SHAPE_MINEFIELD,
+    component: MineFieldForm,
+    minHeight: 420,
+    minWidth: 750,
+    maxHeight: 420,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -118,43 +192,72 @@ export default class SelectionForm extends React.Component {
     if (data === null || !forms[data.type]) {
       return null
     }
+    let formType
+    if (data.type !== SelectionTypes.SOPHISTICATED) {
+      formType = data.type
+    } else {
+      switch (extractLineCode(data.code)) {
+        case '017076':
+          formType = SelectionTypes.SECTORS
+          break
+        case '272100':
+          formType = SelectionTypes.POLLUTION_CIRCLE
+          break
+        case '017019':
+          formType = SelectionTypes.CIRCULAR_ZONE
+          break
+        case '270701':
+          formType = SelectionTypes.MINE_FIELD
+          break
+        case '140601':
+        case '140602':
+        case '140603':
+        case '140605':
+          formType = SelectionTypes.ATTACK
+          break
+        case '270800':
+          formType = SelectionTypes.MINEDAREA
+          break
+        default: formType = SelectionTypes.SOPHISTICATED
+      }
+    }
     const {
       title,
       minHeight,
       maxHeight,
       minWidth,
       component: Component,
-    } = forms[data.type]
+    } = forms[formType]
 
     const { wrapper: Wrapper } = this.props
     return (
       <>
-      <NotClickableArea/>
-      <Wrapper
-        title={title}
-        onClose={onCancel}
-        minWidth={minWidth}
-        maxHeight={maxHeight}
-        minHeight={minHeight}
-      >
-        <FocusTrap>
-          <HotKeysContainer>
-            <Component
-              data={data}
-              canEdit={canEdit}
-              orgStructures={orgStructures}
-              onOk={onOk}
-              onChange={this.changeHandler}
-              onClose={onCancel}
-              onAddToTemplates={this.addToTemplateHandler}
-              onCoordinateFocusChange={onCoordinateFocusChange}
-              ovtData={ovtData}
-            />
-            <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-          </HotKeysContainer>
-        </FocusTrap>
-      </Wrapper>
-    </>
+        <NotClickableArea/>
+        <Wrapper
+          title={title}
+          onClose={onCancel}
+          minWidth={minWidth}
+          maxHeight={maxHeight}
+          minHeight={minHeight}
+        >
+          <FocusTrap>
+            <HotKeysContainer>
+              <Component
+                data={data}
+                canEdit={canEdit}
+                orgStructures={orgStructures}
+                onOk={onOk}
+                onChange={this.changeHandler}
+                onClose={onCancel}
+                onAddToTemplates={this.addToTemplateHandler}
+                onCoordinateFocusChange={onCoordinateFocusChange}
+                ovtData={ovtData}
+              />
+              <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
+            </HotKeysContainer>
+          </FocusTrap>
+        </Wrapper>
+      </>
     )
   }
 }

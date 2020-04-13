@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -28,7 +28,9 @@ function getRadiusFromCoordinatesArray (coordinatesArray) {
 }
 
 const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponent extends CoordinatesMixin(Component) {
-  state = { radiusText: null }
+  state = {
+    radiusText: null,
+  }
 
   coordinateChangeHandler = async (index, value) => {
     await this.onCoordinateExitWithChangeHandler(index, value)

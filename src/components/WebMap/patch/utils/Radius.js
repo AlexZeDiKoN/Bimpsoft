@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 L.CRS.Earth = L.Util.extend(L.CRS.Earth, {
   calcPairRight: function (latLng, distance) {

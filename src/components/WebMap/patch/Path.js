@@ -55,7 +55,7 @@ export default L.Path.include({
   getMask: function () {
     if (!this._mask) {
       this._mask = L.SVG.create('mask')
-      this._mask.setAttribute('id', `mask-${this.object.id}`)
+      this._mask.setAttribute('id', `mask-${this.object?.id ?? 'NewObject'}`)
       this._renderer._rootGroup.appendChild(this._mask)
     }
     return this._mask

@@ -42,7 +42,6 @@ LayersControlsComponent.propTypes = {
   onChangeBackOpacity: PropTypes.func,
   hiddenOpacity: PropTypes.number,
   onChangeHiddenOpacity: PropTypes.func,
-  onCloseAllMaps: PropTypes.func,
   showCloseForm: PropTypes.bool,
   okCloseHandler: PropTypes.func,
   cancelCloseHandler: PropTypes.func,

@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Tooltip } from 'antd'
 import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import './style.css'
 
@@ -19,11 +20,13 @@ const VisibilityButton = (props) => {
     : (visible ? classNames.push('closed') : classNames.push('unClosed'))
 
   return (
-    <div className={classNames.join(' ')} onClick={clickHandler}>
-      <IButton
-        title={title}
-        icon={IconNames.DARK_EYE_ON}
-      />
+    <div className={classNames.join(' ')}>
+      <Tooltip title={title} placement='topRight'>
+        <IButton
+          onClick={clickHandler}
+          icon={IconNames.DARK_EYE_ON}
+        />
+      </Tooltip>
     </div>
   )
 }
