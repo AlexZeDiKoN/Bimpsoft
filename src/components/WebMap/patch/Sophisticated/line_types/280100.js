@@ -43,8 +43,6 @@ lineDefinitions['280100'] = {
       rotate(a0)
     )
     const q2 = applyToPoint(t, { x: EDGE_WIDTH * scale, y: -EDGE_HEIGHT * scale })
-    drawLine(result, p0, q1)
-    drawLine(result, q1, q2)
-    drawLine(result, q2, p1)
+    drawLine(result, p0, q1, q2, p1)
   }
 }
