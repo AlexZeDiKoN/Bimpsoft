@@ -1745,7 +1745,7 @@ export const symbols = [
       {
         hint: 'Район підрозділу зі складу руху опору',
         code: '10032500000170520000',
-        amp: { isSvg: true, type: entityKind.AREA },
+        amp: { isSvg: true, type: entityKind.AREA, lineType: types.solidWithDots.value },
       },
       {
         hint: 'Район виконання завдань Гр СпП ССпО',
