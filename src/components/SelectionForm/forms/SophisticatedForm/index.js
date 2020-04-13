@@ -13,6 +13,7 @@ import {
   WithStatus,
   WithStrokeWidth,
   WithColor,
+  WithAmplifiers,
   WithCoordinates,
 } from '../../parts'
 
@@ -29,12 +30,14 @@ export default class SophisticatedForm extends compose(
   WithStatus,
   WithStrokeWidth,
   WithColor,
+  WithAmplifiers,
   WithCoordinates,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     const useStatus = lineDefinitions[extractLineCode(this.props.data.code)]?.useStatus
+    const useAmplifiers = lineDefinitions[extractLineCode(this.props.data.code)]?.useAmplifiers
     return (
       <div className="contour-container">
         <div className="contour-container--firstSection">
@@ -56,6 +59,7 @@ export default class SophisticatedForm extends compose(
               {this.renderColor()}
             </FormRow>
           </div>
+          {useAmplifiers && this.renderAmplifiers(useAmplifiers)}
           <div className="contour-container__item">
             <FormDarkPart>
               {this.renderCoordinates()}

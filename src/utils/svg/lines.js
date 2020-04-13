@@ -1,6 +1,7 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
+import { evaluateColor } from '../../constants/colors'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import { extractTextSVG } from './text'
 
@@ -36,6 +37,8 @@ export const settings = {
   DRAW_PARTIAL_WAVES: true,
   MIN_ZOOM: 0,
   MAX_ZOOM: 20,
+  STROKE_WIDTH: 5,
+  CROSS_SIZE: 48,
 }
 
 class Segment {
@@ -1109,4 +1112,23 @@ export const getLineEnds = (points, objectAttributes, bezier, scale) => {
       scale,
     ),
   }
+}
+
+export const drawLineHatch = (layer, scale) => {
+  const cs = settings.CROSS_SIZE * scale
+  const sw = settings.STROKE_WIDTH * scale
+  const code = layer.object.id
+  const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
+  const fillId = `SVG-fill-pattern-${code}`
+  const fillColor = `url('#${fillId}')`
+  // const color = result.layer._path.getAttribute('stroke')
+  layer._path.setAttribute('fill', fillColor)
+  layer._path.setAttribute('fill-opacity', 1)
+  layer._path.setAttribute('width', 100)
+  layer.options.fillColor = fillColor
+  layer.options.fillOpacity = 1
+  return ` 
+      <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
+      </pattern>`
 }

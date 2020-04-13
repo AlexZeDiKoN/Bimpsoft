@@ -12,7 +12,8 @@ const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 
 lineDefinitions['017063'] = {
-  useAmplifiers: true,
+  // Амплификатори лінії
+  useAmplifiers: [ { id: 'middle', name: 'T' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 

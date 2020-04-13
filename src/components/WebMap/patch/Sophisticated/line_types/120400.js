@@ -13,6 +13,8 @@ const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30
 
 lineDefinitions['120400'] = {
+  // амплификатор
+  useAmplifiers: [ { id: 'middle', name: 'H' } ],
   // Спеціальний випадок
   isArea: true,
 

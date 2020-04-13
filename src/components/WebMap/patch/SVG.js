@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
-import { getAmplifiers, stroked, waved, getLineEnds, blockage } from '../../../utils/svg/lines'
+import { getAmplifiers, stroked, waved, getLineEnds, blockage, drawLineHatch } from '../../../utils/svg/lines'
 import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue } from './utils/helpers'
@@ -378,6 +378,11 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
     }, layer.object)
+
+    if (layer.object?.attributes?.hatch) {
+      amplifiers.group += drawLineHatch(layer, scaleValue(1000, layer) / 1000)
+    }
+
     this._setMask(layer, amplifiers.group, amplifiers.maskPath)
   },
 
