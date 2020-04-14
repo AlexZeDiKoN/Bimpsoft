@@ -1114,21 +1114,29 @@ export const getLineEnds = (points, objectAttributes, bezier, scale) => {
   }
 }
 
-export const drawLineHatch = (layer, scale) => {
-  const cs = settings.CROSS_SIZE * scale
-  const sw = settings.STROKE_WIDTH * scale
-  const code = layer.object.id
-  const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
-  const fillId = `SVG-fill-pattern-${code}`
-  const fillColor = `url('#${fillId}')`
-  // const color = result.layer._path.getAttribute('stroke')
-  layer._path.setAttribute('fill', fillColor)
-  layer._path.setAttribute('fill-opacity', 1)
-  layer._path.setAttribute('width', 100)
-  layer.options.fillColor = fillColor
-  layer.options.fillOpacity = 1
-  return ` 
+export const drawLineHatch = (layer, scale, hatch) => {
+  if (hatch === 'left-to-right') {
+    const cs = settings.CROSS_SIZE * scale
+    const sw = settings.STROKE_WIDTH * scale
+    const code = layer.object.id
+    const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
+    const fillId = `SVG-fill-pattern-${code}`
+    const fillColor = `url('#${fillId}')`
+    // const color = result.layer._path.getAttribute('stroke')
+    layer._path.setAttribute('fill', fillColor)
+    layer._path.setAttribute('fill-opacity', 1)
+    layer._path.setAttribute('width', 100)
+    layer.options.fillColor = fillColor
+    layer.options.fillOpacity = 1
+    return ` 
       <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
       </pattern>`
+  } else {
+    layer._path.setAttribute('fill', evaluateColor(layer.object?.attributes?.fill) || 'transparent')
+    layer._path.setAttribute('fill-opacity', 0.2)
+    layer.options.fillColor = layer.object?.attributes?.fill || 'transparent'
+    layer.options.fillOpacity = 0.2
+  }
+  return ''
 }

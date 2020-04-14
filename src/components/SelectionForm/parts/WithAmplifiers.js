@@ -3,6 +3,7 @@ import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 // import { typeOption } from './render'
+import { amps } from '../../../constants/symbols'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const { FormRow } = components.form
@@ -33,8 +34,10 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                 value={currentValue[id] ?? ''}
                 onChange={this.createAmplifierHandler(id)}
                 disabled={!canEdit}
-                rows={1}
-                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                rows={id === amps.A ? 6 : 1}
+                maxLength={id === amps.A
+                  ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXTMULTILINE
+                  : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
               />
             </FormRow>
           </div>

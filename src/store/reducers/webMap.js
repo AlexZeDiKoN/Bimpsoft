@@ -29,6 +29,7 @@ const LineAmplifier = Record({
   top: null,
   middle: null,
   bottom: null,
+  center: null,
   additional: null,
 })
 

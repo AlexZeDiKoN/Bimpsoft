@@ -25,6 +25,7 @@ export const amps = {
   // Если что, в формах любых линий есть топ, ботом и мидл, но лейбл у них разный, например W и H это ботом
   T: 'top', // --||--
   W: 'bottom', // --||--
+  B: 'center',
   A: 'additional',
 }
 
@@ -308,7 +309,7 @@ export const symbols = [
       {
         hint: 'Район базування військової частини, підрозділу авіації',
         code: '10032500001204000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { H: 'H' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [amps.N]: 'H' } },
       },
       { hint: 'Базовий табір бригади', code: '10031000181409000000', amp: {} },
       {
@@ -648,7 +649,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { N: 'N', B: 'B', T: 'T' },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T' },
         },
       },
       {
@@ -666,7 +667,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T' },
+          pointAmplifier: { [amps.T]: 'T', [amps.N]: '101' },
           params: { count: 5, number: 101 },
         },
       },
@@ -676,7 +677,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { N: 'N' },
+          pointAmplifier: { [amps.N]: '№' },
         },
       },
       {
@@ -1347,7 +1348,9 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { T: 'T', AM: 'AM', X: 'X', X1: 'X1', W: 'W', W1: 'W1' },
+          pointAmplifier: {
+            [amps.T]: 'T',
+            [amps.A]: `NAME:\nWIDTH:\nMIN ALT:\nMAX ALT:\nDTG START:\nDTG END:` },
         },
       },
       {
