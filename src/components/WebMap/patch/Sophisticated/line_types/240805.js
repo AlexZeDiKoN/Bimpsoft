@@ -3,6 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: ЗОНА ЦІЛІ
 // task code: DZVIN-5994
@@ -11,6 +12,8 @@ import {
 const EDGE = 48
 
 lineDefinitions['240805'] = {
+  // Ампліфікатори лінії
+  useAmplifiers: [ { id: amps.N, name: 'N' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -41,7 +44,7 @@ lineDefinitions['240805'] = {
       result,
       applyVector(p2, setVectorLength(getVector(p0, p2), EDGE * scale)),
       angleOf(p2, p1),
-      result.layer?.options?.textAmplifiers?.N ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
     )
   },
 }
