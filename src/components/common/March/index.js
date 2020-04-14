@@ -36,9 +36,10 @@ const getMemoGeoLandmarks = (() => {
 
 const March = (props) => {
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+  const segments = props.segmentList.toArray()
 
   const renderDotsForms = () => {
-    const { segments, editFormField, addChild, deleteChild, setCoordMode, dataMarch } = props
+    const { editFormField, addChild, deleteChild, setCoordMode, dataMarch } = props
     const handlers = {
       editFormField,
       addChild,
@@ -97,7 +98,7 @@ const March = (props) => {
     </div>
   }
 
-  const marchDetails = getMarchDetails(props.segments, props.dataMarch)
+  const marchDetails = getMarchDetails(segments, props.dataMarch)
 
   return <div className={'march-container'}>
     <div className={'march-header'}>
@@ -108,7 +109,7 @@ const March = (props) => {
       />
     </div>
     <div className={'march-main'}>
-      <div style={{ width: '100%' }}>{renderDotsForms()}</div>
+      <div className={'dot-form-container'}>{renderDotsForms()}</div>
     </div>
   </div>
 }
@@ -121,7 +122,10 @@ March.propTypes = {
   deleteChild: PropTypes.func.isRequired,
   setCoordMode: PropTypes.func.isRequired,
   dataMarch: PropTypes.shape({}).isRequired,
+  segmentList: PropTypes.shape({
+    toArray: PropTypes.func.isRequired,
+  }).isRequired,
   segments: PropTypes.array.isRequired,
 }
 
-export default March
+export default React.memo(March)

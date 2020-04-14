@@ -90,7 +90,7 @@ const PopupPanel = (props) => {
 
     <div className={'speed-block'}>
       <span>{i18n.AVERAGE_SPEED}: </span>
-      <Input onChange={onChangeVelocity} value={velocity} maxLength={10} style={{ width: '60px' }}/>
+      <Input onChange={onChangeVelocity} value={velocity} maxLength={10} className={'velocity-input'}/>
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>

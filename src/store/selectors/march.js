@@ -15,12 +15,13 @@ const getSegmentColor = (segmentType) => {
   }
 }
 
-const marchDotsSelector = ({ march: { segments } }) => segments.toArray()
+const marchDotsSelector = ({ march: { segments } }) => segments
 
 export const marchDots = createSelector(
   marchDotsSelector,
   (segments) => {
     const coordArray = []
+    segments = segments.toArray()
 
     segments.forEach((it) => {
       if (it.coord.lat || it.coord.lng) {

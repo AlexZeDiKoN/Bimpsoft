@@ -41,11 +41,11 @@ const SegmentBlock = (props) => {
 
   return (<div className={'segment'} style={{ backgroundColor: color }}>
     {segmentId !== 0
-      ? <div className={'time-distance'} style={ { height: '35px' } }>
+      ? <div className={'time-distance height-segment'}>
         <span>{getFormatTime(refTime)}</span>
         <span className={'distance'}>{refDistance.toFixed(1)} км</span>
       </div>
-      : <div style={ { height: '35px' } }/>
+      : <div className={'height-segment'}/>
     }
 
     <SegmentButtonPopover

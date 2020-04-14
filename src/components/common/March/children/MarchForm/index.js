@@ -34,7 +34,7 @@ const getFormattedGeoLandmarks = (geoLandmarks) => {
     const distanceInKm = (distance / 1000).toFixed(0)
     const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
-    return `${distanceInKm} км на ${cardinalDirection} від м. ${name}`
+    return `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
   })
 }
 
@@ -227,7 +227,7 @@ const MarchForm = (props) => {
               }
             </Tooltip>
           </div>
-          : <div className={'vertical-block'} style={{ borderColor: 'transparent' }}/>
+          : <div className={'vertical-block last-block'}/>
         }
       </div>
       <div className={'dot-form'}>
@@ -238,7 +238,7 @@ const MarchForm = (props) => {
             onExitWithChange={onBlurCoordinates}
           />
           <Tooltip placement='topRight' title={i18n.POINT_ON_MAP}>
-            <a href='#' className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
+            <div className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
           </Tooltip>
         </div>
         <Tooltip placement='left' title={i18n.GEOGRAPHICAL_LANDMARK}>
@@ -261,8 +261,8 @@ const MarchForm = (props) => {
               >{geoLandmark}</Select.Option>
             ))}
             <Select.Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
-              <Divider style={{ margin: '4px 0' }}/>
-              <div style={{ display: 'flex', justifyContent: 'center', background: '#E6FBFF' }}>
+              <Divider className={'march-divider'}/>
+              <div className={'march-own-variant'}>
                 <span><strong>+ {i18n.OWN_VARIANT}</strong></span>
               </div>
             </Select.Option>
@@ -298,7 +298,7 @@ const MarchForm = (props) => {
                 onBlur={onBlurTime}
                 value={pointTime}
                 maxLength={10}
-                style={{ width: '50px' }}
+                className={'time-input'}
               />
             </div>
             : <div/>

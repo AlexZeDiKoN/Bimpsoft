@@ -5,7 +5,7 @@ import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = ({ march: { indicators, segments, integrity, dataMarch } }) => ({
   indicators,
-  segments: segments.toArray(),
+  segmentList: segments,
   integrity,
   dataMarch,
 })
