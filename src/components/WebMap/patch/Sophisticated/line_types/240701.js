@@ -42,9 +42,7 @@ lineDefinitions['240701'] = {
     continueLine(result, p0, p1, 0, -len)
 
     const angle = angleOf(p0, p1) - Math.PI / 2
-    // const angleArrow = angle3Points(mid, p0, p2)
     const top = angleOf(p0, p1) < 0
-    // const left = top ? angleArrow < 0 : angleArrow >= 0
 
     drawText(
       result,
@@ -59,7 +57,6 @@ lineDefinitions['240701'] = {
     drawText(
       result,
       getPointAt(p1, p0, Math.PI / 2, len),
-      // applyVector(p0, setVectorLength(getVector(p1, p0), -len)),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
