@@ -38,7 +38,7 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
       {maskEl}
       <path
         fill={colors.evaluateColor(fill)}
-        fillOpacity={fillOpacity ?? 0.22}
+        fillOpacity={fillOpacity ?? 0.2}
         d={d}
       />
       {Boolean(outlineColor) && <path
