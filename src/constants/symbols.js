@@ -27,6 +27,7 @@ export const amps = {
   T: 'top', // --||--
   W: 'bottom', // --||--
   A: 'additional',
+  B: 'center',
 }
 
 export const MINE_TYPES = {
@@ -315,7 +316,7 @@ export const symbols = [
       {
         hint: 'Район базування військової частини, підрозділу авіації',
         code: '10032500001204000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { H: 'H' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { [amps.N]: 'H' } },
       },
       { hint: 'Базовий табір бригади', code: '10031000181409000000', amp: {} },
       {
@@ -1270,7 +1271,7 @@ export const symbols = [
       {
         hint: 'Завдання повітряного удару',
         code: '10032500000170430000',
-        amp: { isSvg: true, type: entityKind.CURVE, right: ENDS_ARROW2 },
+        amp: { type: entityKind.CURVE, right: ENDS_ARROW2 },
       },
       {
         hint: 'Напрямок дій авіації / повітряного десанту',
@@ -1354,6 +1355,10 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          pointAmplifier: {
+            [amps.T]: 'T',
+            [amps.A]: `NAME:\nWIDTH:\nMIN ALT:\nDTG START:\nDTG END:`,
+          },
           textAmplifiers: { T: 'T', AM: 'AM', X: 'X', X1: 'X1', W: 'W', W1: 'W1' },
         },
       },

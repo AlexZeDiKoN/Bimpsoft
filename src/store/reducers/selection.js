@@ -3,6 +3,7 @@ import { FormTypes } from '../../constants'
 
 const EMPTY_OBJECT = {}
 Object.freeze(EMPTY_OBJECT)
+const pencilCode = '10032500002818000000'
 
 const initState = {
   showForm: null,
@@ -55,7 +56,7 @@ export default function reducer (state = initState, action) {
       if (preview) {
         res.list = [ preview.id || null ]
       }
-      if (res.code === '10032500002818000000' && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
+      if (res.code === pencilCode && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
         res.attributes.uniqueDesignation1 = res.attributes.staffComments
       }
       return res
