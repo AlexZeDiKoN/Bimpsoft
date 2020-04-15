@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^13.1.450":
-  version "13.1.450"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-13.1.450.tgz#18ba25085dff966b1820e10ca210a020e1b079b7"
-  integrity sha512-aoOXNB+UdVh8ROPnqVv9EEYR+Gsb8Z7P1xrydYfoZF0dvxb4BFvZSP2DJsrA8kN/+eLf9E2M1s2OBxHyKARJ8w==
+"@DZVIN/CommonComponents@^13.2.451":
+  version "13.2.451"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-13.2.451.tgz#60b9624f2358e4565eef2cb85f5b47a6a807f68f"
+  integrity sha512-KHXDe1uWzSIPYO3BpuYqGFIwy7NBX9BAbTkdbQb2qNjL08R8pPZ76ecVfaEPWbaPdfLOEIeR+tDZfWXXuGt/OQ==
   dependencies:
     "@DZVIN/validators" "^1.0.9"
     classnames "^2.2.6"
@@ -29,10 +29,10 @@
   dependencies:
     "@DZVIN/milsymbol" ">=0.0.5"
 
-"@DZVIN/components@^13.1.560":
-  version "13.1.560"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-13.1.560.tgz#d03e51170adddd85b09274f9a28a249210454243"
-  integrity sha512-OZ1KN1kjK96Yz7eGXisYXOS8jMdh8ZaVkkDikq8AaSaXOjdwyVD5oIXLTyy0s3p3ik6KdUmkQE6ChCQVZmCCBg==
+"@DZVIN/components@^13.2.561":
+  version "13.2.561"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-13.2.561.tgz#a50c9b79386aa70692bc116adbf67dd144c6223f"
+  integrity sha512-IvnjMcqSqlzExNfS/sc+IG2ceEv5zHiQ2nlqtwb6tAP4tzHG82rQarxSPqYVi7mQZVejT9Ja4PZYA6IjBhWRjA==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"
