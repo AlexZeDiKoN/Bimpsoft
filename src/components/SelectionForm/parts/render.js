@@ -88,6 +88,24 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             />
           </>,
         )
+      case 'arrow':
+        return optionsSvg(
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="none"
+            d="M0,10 h56 m-24,8l-8-8l8-8"
+          />,
+        )
+      case 'arrowfilled':
+        return optionsSvg(
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="rgba(0,0,0,1)"
+            d="M0,10 h56 m-24,4l-12-4l12-4z"
+          />,
+        )
       case 'solidWithDots':
       case 'stroked':
       case 'waved':
@@ -112,7 +130,6 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
         return optionsSvg(
           <>
             <path
-              mask="url(#sign)"
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
               fill={TYPE_LINE_PATH[borderStyle]?.fill || ''}

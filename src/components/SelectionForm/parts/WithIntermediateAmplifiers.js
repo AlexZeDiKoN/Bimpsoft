@@ -20,12 +20,16 @@ const TYPES = {
   NONE: 'none',
   LEVEL: 'level',
   TEXT: 'text',
+  ARROW: 'arrow',
+  ARROW_FILED: 'arrowfilled',
 }
 
 const TYPE_LIST = [
   { id: '0', text: i18n.NO_ONE, value: TYPES.NONE },
   { id: '1', text: i18n.TEXT_2, value: TYPES.TEXT },
   { id: '2', text: i18n.SHOW_LEVEL, value: TYPES.LEVEL },
+  { id: '3', text: i18n.ARROW_FILLED, value: TYPES.ARROW_FILED },
+  { id: '4', text: i18n.ARROW_LEFT, value: TYPES.ARROW },
 ]
 
 export const PATH = [ 'attributes', 'intermediateAmplifier' ]
@@ -75,9 +79,18 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
               >{TYPE_LIST.map(({ text, value }) => {
-                const level = value === TYPES.LEVEL ? subordinationLevel : null
-                return typeOption(value, 'solid', text, level)
-              })}
+                  const level = value === TYPES.LEVEL ? subordinationLevel : null
+                  let borderStyle
+                  switch (value) {
+                    case TYPES.ARROW:
+                    case TYPES.ARROW_FILED:
+                      borderStyle = value
+                      break
+                    default:
+                      borderStyle = 'solid'
+                  }
+                  return typeOption(value, borderStyle, text, level)
+                })}
               </Select>
               <Input
                 disabled={!canEdit || type !== TYPES.TEXT}
