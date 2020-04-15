@@ -18,6 +18,7 @@ const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 
 lineDefinitions['017015'] = {
+  // Ампліфікатори, що використовуються на лінії
   useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
