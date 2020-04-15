@@ -55,6 +55,9 @@ export default function reducer (state = initState, action) {
       if (preview) {
         res.list = [ preview.id || null ]
       }
+      if (res.code === '10032500002818000000' && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
+        res.attributes.uniqueDesignation1 = res.attributes.staffComments
+      }
       return res
     }
     case actions.SET_PREVIEW_COORDINATE: {

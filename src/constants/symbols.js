@@ -1896,7 +1896,7 @@ export const symbols = [
       {
         hint: 'Пункт спеціальної обробки (ПуСО)',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО', [amps.staffComments]: 'ПуСО' },
       },
       // TODO when done karandash
       { hint: 'Дегазаційний пункт (ДП)', code: '10032500002818000000', amp: { isSvg: true, type: '', [amps.T]: 'ДП' } },
