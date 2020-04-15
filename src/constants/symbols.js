@@ -10,7 +10,6 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
-import {END} from "@DZVIN/components/build/i18n/ua";
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
