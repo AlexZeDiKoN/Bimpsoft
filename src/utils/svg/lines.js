@@ -1161,7 +1161,6 @@ export const drawLineHatch = (layer, scale, hatch) => {
 
 const drawIntermediateArrow = (amplifierType, graphicSize) => {
   const scale = graphicSize / 24
-  // console.log('g_amp_scale', width)
   switch (amplifierType) {
     case 'arrow':
       return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
