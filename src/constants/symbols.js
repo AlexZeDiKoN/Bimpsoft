@@ -15,6 +15,7 @@ export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
   higherFormation: 'higherFormation', // 1Вище формування
   uniqueDesignation: 'uniqueDesignation', // 1Призначення
+  uniqueDesignation1: 'uniqueDesignation1', // 1Призначення
   additionalInformation: 'additionalInformation', // 1Додаткова інформація
   reinforcedReduced: 'reinforcedReduced', // 1Посилення/Послаблення
   staffComments: 'staffComments', // 1Коментар
@@ -607,7 +608,7 @@ export const symbols = [
       { hint: 'Розвідувальний артилерійський дивізіон', code: '10031000161303030000', amp: {} },
       { hint: 'Ракетний дивізіон', code: '10031000161307000000', amp: {} },
       { hint: 'Гаубична самохідна артилерійська батарея', code: '10031000151303010000', amp: {} },
-      { hint: 'Артилерійська батарея', code: '1003100151303000000', amp: {} },
+      { hint: 'Артилерійська батарея', code: '10031000151303000000', amp: {} },
       { hint: 'Реактивна артилерійська батарея', code: '10031000151303004100', amp: {} },
       { hint: 'Стартова батарея', code: '10031000151307000000', amp: {} },
       { hint: 'Протитанкова артилерійська батарея', code: '10031000151204000000', amp: {} },
@@ -2227,7 +2228,7 @@ export const symbols = [
       {
         hint: 'Пункт спеціальної обробки (ПуСО)',
         code: '10032500002818000000',
-        amp: { isSvg: true, type: '', [amps.T]: 'ПуСО' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО' },
       },
       // TODO when done karandash
       { hint: 'Дегазаційний пункт (ДП)', code: '10032500002818000000', amp: { isSvg: true, type: '', [amps.T]: 'ДП' } },
