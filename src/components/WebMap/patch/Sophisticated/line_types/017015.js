@@ -71,7 +71,7 @@ lineDefinitions['017015'] = {
 
     drawText(
       result,
-      applyVector(p0, setVectorLength(getVector(mid, p2), -INDENT * scale)),
+      applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
