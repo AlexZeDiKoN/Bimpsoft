@@ -41,26 +41,6 @@ lineDefinitions['240701'] = {
     continueLine(result, p0, p1, 0, len)
     continueLine(result, p0, p1, 0, -len)
 
-    // drawText(
-    //   result,
-    //   applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-    //   Math.PI,
-    //   result.layer?.options?.textAmplifiers?.N ?? '',
-    //   1,
-    //   'middle',
-    //   'black'
-    // )
-    //
-    // drawText(
-    //   result,
-    //   getPointAt(p1, p0, 90, 1.5 * EDGE * scale),
-    //   Math.PI,
-    //   result.layer?.options?.textAmplifiers?.B ?? '',
-    //   1,
-    //   angleOf(p0, p1) < 0 ? 'start' : 'end',
-    //   'black'
-    // )
-
     const angle = angleOf(p0, p1) - Math.PI / 2
     // const angleArrow = angle3Points(mid, p0, p2)
     const top = angleOf(p0, p1) < 0
