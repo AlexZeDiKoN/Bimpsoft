@@ -16,6 +16,8 @@ export const settings = {
   // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
   // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
   NODES_SIZE: { min: 12, max: 120 }, // (пікселів) розмір вузлової точки (діаметр перекресленого кола, сторона квадрата)
+  TEXT_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір текстових ампліфікаторів лінійних/площинних знаків'
+  GRAPHIC_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір графічних ампліфікаторів лінійних/площинних знаків'
   // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
   // була строго кратною WAVE_SIZE
   WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
@@ -786,7 +788,8 @@ const getTextAmplifiers = ({
   scale,
   zoom,
 }) => {
-  const fontSize = interpolateSize(zoom, settings.LINE_AMPLIFIER_TEXT_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
   const result = {
     maskPath: [],
@@ -803,13 +806,13 @@ const getTextAmplifiers = ({
       if (type === 'middle' && amplifierType === 'level' && level) {
         return [ type, [ extractSubordinationLevelSVG(
           level,
-          settings.AMPLIFIERS_SIZE * scale,
+          graphicSize,
           settings.AMPLIFIERS_WINDOW_MARGIN * scale,
         ) ] ]
       }
 
       if (type === 'middle' && (amplifierType === 'arrow' || amplifierType === 'arrowfilled') && level) {
-        return [ type, drawIntermediateArrow(amplifierType, fontSize) ]
+        return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
       }
 
       if (!value) {
@@ -1156,13 +1159,14 @@ export const drawLineHatch = (layer, scale, hatch) => {
   return ''
 }
 
-const drawIntermediateArrow = (amplifierType, width) => {
-  const scale = width / 32
+const drawIntermediateArrow = (amplifierType, graphicSize) => {
+  const scale = graphicSize / 24
+  // console.log('g_amp_scale', width)
   switch (amplifierType) {
     case 'arrow':
-      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ] // maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
     case 'arrowfilled':
-      return [ { sign: `<path transform="scale(${scale})" d="M24,8l-24-8l24-8z"/>` } ] //, maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+      return [ { sign: `<path transform="scale(${scale})" d="M24,8l-24-8l24-8z"/>` } ]
     default:
   }
   return null

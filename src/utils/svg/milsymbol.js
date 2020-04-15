@@ -51,8 +51,7 @@ export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth =
     const r = +circle.getAttribute('r')
     extendRect(b, [ x - r, y - r, x + r, y + r ])
   })
-  const scale = maxWidth / 200
-
+  const scale = maxWidth / 40
   const width = (b[2] - b[0]) * scale
   const height = (b[3] - b[1]) * scale
 
