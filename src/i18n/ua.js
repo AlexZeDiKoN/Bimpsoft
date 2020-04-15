@@ -170,6 +170,8 @@ export const LINE_NODES = 'Вузлова точка'
 
 export const NO_ONE = 'Немає'
 export const SHOW_LEVEL = 'Рівень'
+export const ARROW_FILLED = 'Стрілка 1'
+export const ARROW_LEFT = 'Стрілка 2'
 
 export const LINE_STYLE = 'Стиль лінії'
 export const LINE_STYLE_WAVE = 'Хвиляста'

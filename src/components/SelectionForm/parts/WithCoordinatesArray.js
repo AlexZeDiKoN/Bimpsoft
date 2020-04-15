@@ -47,7 +47,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
   )
 
-  renderCoordinatesArray () {
+  renderCoordinatesArray (lock = false) {
     const { editCoordinates } = this.state
     const formStore = this.getResult()
 
@@ -114,7 +114,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                       />
                     </td>
                   </tr>
-                  {index !== coordinatesLength - 1 ? (
+                  {index !== coordinatesLength - (lock ? 0 : 1) ? (
                     <tr>
                       <td><Checkbox
                         disabled={!canEdit}

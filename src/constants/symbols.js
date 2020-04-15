@@ -294,7 +294,13 @@ export const symbols = [
       {
         hint: 'Рубіж загороджувального вогню',
         code: '10032500002407010000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, left: ENDS_STROKE1, right: ENDS_STROKE1 },
+        amp: {
+          isSvg: true,
+          type: entityKind.SOPHISTICATED,
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B' },
+          left: ENDS_STROKE1,
+          right: ENDS_STROKE1,
+        },
       },
       {
         hint: 'Рубіж дії бойових підрозділу',
@@ -641,7 +647,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { N: 'N', B: 'B' },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B' },
         },
       },
       {

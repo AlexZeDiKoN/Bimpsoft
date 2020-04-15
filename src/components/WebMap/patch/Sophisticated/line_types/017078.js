@@ -45,10 +45,13 @@ lineDefinitions['017078'] = {
     continueLine(result, p0, p1, 0, len)
     continueLine(result, p0, p1, 0, -len)
 
+    const angle = angleOf(p0, p1) - Math.PI / 2
+    const top = angleOf(p0, p1) < 0
+
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      Math.PI,
+      angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
@@ -57,12 +60,13 @@ lineDefinitions['017078'] = {
 
     drawText(
       result,
-      getPointAt(p1, p0, 90, 1.5 * EDGE * scale),
-      Math.PI,
+      getPointAt(p1, p0, Math.PI / 2, len),
+      angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
-      angleOf(p0, p1) < 0 ? 'start' : 'end',
+      top ? 'start' : 'end',
       'black',
+      top ? 'before-edge' : 'after-edge',
     )
   },
 }

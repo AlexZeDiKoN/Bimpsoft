@@ -83,7 +83,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
         </div>
         {this.renderIntermediateAmplifiers()}
         {this.renderPointAmplifiers()}
-        {this.renderCoordinatesArray()}
+        {this.renderCoordinatesArray(true)}
       </div>
     )
   }

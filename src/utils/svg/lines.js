@@ -808,6 +808,10 @@ const getTextAmplifiers = ({
         ) ] ]
       }
 
+      if (type === 'middle' && (amplifierType === 'arrow' || amplifierType === 'arrowfilled') && level) {
+        return [ type, drawIntermediateArrow(amplifierType, fontSize) ]
+      }
+
       if (!value) {
         return null // canceling render of a text amplifier
       }
@@ -824,16 +828,18 @@ const getTextAmplifiers = ({
     amplifiers.forEach(([ type, amplifiers ]) => {
       amplifiers.forEach((amplifier) => {
         let { x, y, r } = point
-        r = getRotate?.(type, r) ?? r
-        result.maskPath.push(
-          pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
-            const movedPoint = add(point, x, y)
-            if (R.isNil(r) || r === 0) {
-              return movedPoint
-            }
-            return rotate(movedPoint, x, y, r)
-          }), true),
-        )
+        r = getRotate?.(type, r, amplifierType) ?? r
+        if (amplifier.maskRect) {
+          result.maskPath.push(
+            pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+              const movedPoint = add(point, x, y)
+              if (R.isNil(r) || r === 0) {
+                return movedPoint
+              }
+              return rotate(movedPoint, x, y, r)
+            }), true),
+          )
+        }
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
@@ -889,6 +895,15 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
   }
 }
 
+const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermediateType) => {
+  if (amplifierType === 'middle' && (intermediateType === 'arrow' || intermediateType === 'arrowfilled')) {
+    return pointRotate
+  }
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
 export const getAmplifiers = ({
   points,
   bezier,
@@ -936,7 +951,7 @@ export const getAmplifiers = ({
         locked,
       ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
-      getRotate: getRotateForLineAmplifier,
+      getRotate: getRotateForIntermediateAmplifier,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -1139,4 +1154,16 @@ export const drawLineHatch = (layer, scale, hatch) => {
     layer.options.fillOpacity = 0.2
   }
   return ''
+}
+
+const drawIntermediateArrow = (amplifierType, width) => {
+  const scale = width / 32
+  switch (amplifierType) {
+    case 'arrow':
+      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ] // maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+    case 'arrowfilled':
+      return [ { sign: `<path transform="scale(${scale})" d="M24,8l-24-8l24-8z"/>` } ] //, maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+    default:
+  }
+  return null
 }
