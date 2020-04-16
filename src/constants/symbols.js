@@ -316,7 +316,7 @@ export const symbols = [
       {
         hint: 'Район базування військової частини, підрозділу авіації',
         code: '10032500001204000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifiers: { [amps.N]: 'H' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [amps.N]: 'H' } },
       },
       { hint: 'Базовий табір бригади', code: '10031000181409000000', amp: {} },
       {
