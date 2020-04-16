@@ -2,6 +2,8 @@ import L from 'leaflet'
 import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
+import { interpolateSize } from '../utils/helpers'
+import { settings } from '../../../../utils/svg/lines'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -239,10 +241,12 @@ export const drawBezierSpline = (result, points, locked) => (result.d += prepare
 // === Utils ===
 
 // Визначення піксельних розмірів текстового блоку
-export const textBBox = (text, layer, sizeFactor = 1) => {
+export const textBBox = (text, layer, sizeFactor = 1, fontSize) => {
   const element = L.SVG.create('text')
+  // eslint-disable-next-line max-len
+  const font = fontSize || interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
   element.setAttribute('font-family', CONFIG.FONT_FAMILY)
-  element.setAttribute('font-size', `${Math.round(Number(CONFIG.FONT_SIZE) * sizeFactor)}em`)
+  element.setAttribute('font-size', `${font}`)
   element.setAttribute('font-weight', CONFIG.FONT_WEIGHT)
   element.innerHTML = text
   layer._renderer._rootGroup.appendChild(element)
@@ -494,13 +498,14 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
     return
   }
   // Обчислення розміру
-  const key = `${sizeFactor}:${text}`
+  const zoom = result.layer._map.getZoom()
+  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const key = `${fontSize}:${text}`
   let box = textSizeCache[key]
   if (!box) {
-    box = textBBox(text, result.layer, sizeFactor)
+    box = textBBox(text, result.layer, sizeFactor, fontSize)
     textSizeCache[key] = box
   }
-
   // Ампліфікатор
   const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
@@ -510,13 +515,13 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
     fill="${color || result.layer._path.getAttribute('stroke')}" 
     text-anchor="${textAnchor}" 
     font-family="${CONFIG.FONT_FAMILY}"
-    font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
+    font-size="${fontSize}"
     font-weight="${CONFIG.FONT_WEIGHT}"
     alignment-baseline="${textAlign}" 
   >${text}</text>`
   return [ transform, box ]
 }
-
+// font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
 // eslint-disable-next-line max-len
 export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle') => {
@@ -549,7 +554,7 @@ export const addPathAmplifier = (result, amplifier, closed, dash) => {
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
   result.amplifiers += `<path 
-    stroke="${color}"${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
+    stroke="${color}" ${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
     d="${amplifier.d}" 
   />`
 }
