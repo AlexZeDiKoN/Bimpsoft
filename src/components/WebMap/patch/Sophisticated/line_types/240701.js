@@ -13,6 +13,7 @@ const TIP_LENGTH = 50
 const EDGE = 40
 
 lineDefinitions['240701'] = {
+  // Ампліфікатори, що використовуються на лінії
   useAmplifiers: [ { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
