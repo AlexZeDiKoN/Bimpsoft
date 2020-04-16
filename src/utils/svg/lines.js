@@ -1,6 +1,7 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
+import { evaluateColor } from '../../constants/colors'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import { extractTextSVG } from './text'
 
@@ -36,6 +37,8 @@ export const settings = {
   DRAW_PARTIAL_WAVES: true,
   MIN_ZOOM: 0,
   MAX_ZOOM: 20,
+  STROKE_WIDTH: 5,
+  CROSS_SIZE: 48,
 }
 
 class Segment {
@@ -805,6 +808,10 @@ const getTextAmplifiers = ({
         ) ] ]
       }
 
+      if (type === 'middle' && (amplifierType === 'arrow' || amplifierType === 'arrowfilled') && level) {
+        return [ type, drawIntermediateArrow(amplifierType, fontSize) ]
+      }
+
       if (!value) {
         return null // canceling render of a text amplifier
       }
@@ -821,16 +828,18 @@ const getTextAmplifiers = ({
     amplifiers.forEach(([ type, amplifiers ]) => {
       amplifiers.forEach((amplifier) => {
         let { x, y, r } = point
-        r = getRotate?.(type, r) ?? r
-        result.maskPath.push(
-          pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
-            const movedPoint = add(point, x, y)
-            if (R.isNil(r) || r === 0) {
-              return movedPoint
-            }
-            return rotate(movedPoint, x, y, r)
-          }), true),
-        )
+        r = getRotate?.(type, r, amplifierType) ?? r
+        if (amplifier.maskRect) {
+          result.maskPath.push(
+            pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+              const movedPoint = add(point, x, y)
+              if (R.isNil(r) || r === 0) {
+                return movedPoint
+              }
+              return rotate(movedPoint, x, y, r)
+            }), true),
+          )
+        }
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
@@ -886,6 +895,15 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
   }
 }
 
+const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermediateType) => {
+  if (amplifierType === 'middle' && (intermediateType === 'arrow' || intermediateType === 'arrowfilled')) {
+    return pointRotate
+  }
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
 export const getAmplifiers = ({
   points,
   bezier,
@@ -933,7 +951,7 @@ export const getAmplifiers = ({
         locked,
       ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
-      getRotate: getRotateForLineAmplifier,
+      getRotate: getRotateForIntermediateAmplifier,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -1109,4 +1127,43 @@ export const getLineEnds = (points, objectAttributes, bezier, scale) => {
       scale,
     ),
   }
+}
+
+export const drawLineHatch = (layer, scale, hatch) => {
+  if (hatch === 'left-to-right') {
+    const cs = settings.CROSS_SIZE * scale
+    const sw = settings.STROKE_WIDTH * scale
+    const code = layer.object.id
+    const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
+    const fillId = `SVG-fill-pattern-${code}`
+    const fillColor = `url('#${fillId}')`
+    // const color = result.layer._path.getAttribute('stroke')
+    layer._path.setAttribute('fill', fillColor)
+    layer._path.setAttribute('fill-opacity', 1)
+    layer._path.setAttribute('width', 100)
+    layer.options.fillColor = fillColor
+    layer.options.fillOpacity = 1
+    return ` 
+      <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
+      </pattern>`
+  } else {
+    layer._path.setAttribute('fill', evaluateColor(layer.object?.attributes?.fill) || 'transparent')
+    layer._path.setAttribute('fill-opacity', 0.2)
+    layer.options.fillColor = layer.object?.attributes?.fill || 'transparent'
+    layer.options.fillOpacity = 0.2
+  }
+  return ''
+}
+
+const drawIntermediateArrow = (amplifierType, width) => {
+  const scale = width / 32
+  switch (amplifierType) {
+    case 'arrow':
+      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ] // maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+    case 'arrowfilled':
+      return [ { sign: `<path transform="scale(${scale})" d="M24,8l-24-8l24-8z"/>` } ] //, maskRect: { x: 0, y: 0, width: 0, height: 0 } } ]
+    default:
+  }
+  return null
 }

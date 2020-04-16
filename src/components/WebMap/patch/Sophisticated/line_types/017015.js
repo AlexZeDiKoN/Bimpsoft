@@ -2,8 +2,10 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, continueLine, drawArrow, drawText, setVectorLength, getVector,
-  oppositeVector,
+  angleOf,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
+import { angle3Points } from '../arrowLib'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -11,10 +13,12 @@ import {
 
 const TIP_LENGTH = 50
 const EDGE = 40
+const INDENT = 16
 const ARROW_LENGTH = 36
 const ARROW_WIDTH = 18
 
 lineDefinitions['017015'] = {
+  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -50,34 +54,41 @@ lineDefinitions['017015'] = {
 
     drawArrow(result, mid, a, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
 
+    const angle = angleOf(p0, p1) - Math.PI / 2
+    const angleArrow = angle3Points(mid, p0, p2)
+    const top = angleOf(p0, p1) < 0
+    const left = top ? angleArrow < 0 : angleArrow >= 0
+
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.N ?? '',
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      'black'
+      'black',
     )
 
     drawText(
       result,
-      applyVector(segmentBy(p0, mid, 0.1), setVectorLength(oppositeVector(norm), 2 * EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.B ?? '',
+      applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
-      'middle',
-      'black'
+      left ? 'start' : 'end',
+      'black',
+      top ? 'before-edge' : 'after-edge',
     )
 
     drawText(
       result,
-      applyVector(segmentBy(p0, mid, 0.8), setVectorLength(norm, 2 * EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.T ?? '',
+      applyVector(mid, setVectorLength(getVector(mid, p2), INDENT * scale)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
       1,
-      'middle',
-      'black'
+      left ? 'end' : 'start',
+      'black',
+      top ? 'after-edge' : 'before-edge',
     )
   },
 }

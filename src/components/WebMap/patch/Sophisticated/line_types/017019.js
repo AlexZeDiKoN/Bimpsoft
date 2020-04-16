@@ -56,9 +56,9 @@ lineDefinitions['017019'] = {
         const color = sectorsInfo[ind]?.color ?? COLORS[ind]
         const fillColor = colors.values[sectorsInfo[ind]?.fill] ?? 'transparent'
         drawCircle(result, pO, radius + !ind * 2)
-        result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
         result.amplifiers += `<path fill-rule="evenodd" stroke-width="0" fill="${fillColor}" fill-rule="nonzero" fill-opacity="0.25" 
             d="M${elm.x} ${elm.y} a${radius} ${radius} 0 1 1 0.01 0 M${pP.x} ${pP.y} a${radiusP} ${radiusP} 0 1 1 0.01 0"/>`
+        result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
         radiusP = radius
         pP = elm
         const radiusM = Earth.distance(pgO, coordArray[ind]).toFixed(0)

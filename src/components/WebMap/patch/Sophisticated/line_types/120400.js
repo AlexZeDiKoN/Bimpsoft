@@ -4,6 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, drawBezierSpline, drawMaskedText,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: AIRFIELD ZONE
 // task code: DZVIN-5791
@@ -13,6 +14,8 @@ const SIGN_RADIUS = 80
 const SIGN_ANGLE = 30
 
 lineDefinitions['120400'] = {
+  // амплификатор
+  useAmplifiers: [ { id: amps.N, name: 'H' } ],
   // Спеціальний випадок
   isArea: true,
 
@@ -58,6 +61,6 @@ lineDefinitions['120400'] = {
     line(0)
     line(-SIGN_ANGLE)
 
-    drawMaskedText(result, ampl, 0, result.layer?.options?.textAmplifiers?.H ?? '')
+    drawMaskedText(result, ampl, 0, result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '')
   },
 }

@@ -5,6 +5,7 @@ import {
   drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo, getPointAt, drawText,
   setVectorLength, getVector, setToSegment, oppositeVector,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -15,6 +16,8 @@ const BORDER = 48
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
+  // Ампліфікатори лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'Початковий номер' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -64,7 +67,7 @@ lineDefinitions['017016'] = {
         )
         nextPoints[ch + 1] = applyVector(
           prevPoints[ch + 1],
-          getVector(prevPoints[ch], nextPoints[ch])
+          getVector(prevPoints[ch], nextPoints[ch]),
         )
       } else {
         const corner = applyToPoint(compose(
@@ -89,7 +92,7 @@ lineDefinitions['017016'] = {
     const c = options?.params?.count
     const ih = 0.5 / c
     const result = [
-      { x: 0.50, y: 0.25 }
+      { x: 0.50, y: 0.25 },
     ]
     for (let i = 0; i < c; i++) {
       result.push(
@@ -139,7 +142,7 @@ lineDefinitions['017016'] = {
     drawBorder(c - 1, c)
 
     // Варіант для демонстрації
-    const text = result.layer?.options?.textAmplifiers?.T ?? ''
+    const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
     if (text) {
       drawText(
         result,
@@ -150,14 +153,14 @@ lineDefinitions['017016'] = {
     }
 
     // Варіант для демонстрації
-    const number = result.layer?.options?.params?.number ?? 0
+    const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
     if (number >= 0) {
       for (let i = 0; i < c; i++) {
         drawText(
           result,
           points[i * 3 + 1],
           angleOf(points[i * 3 + 3], points[i * 3]) + Math.PI / 2,
-          number + i,
+          (number + i).toFixed(0),
           NUMBERS_SIZE,
         )
       }

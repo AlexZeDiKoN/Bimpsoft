@@ -4,6 +4,7 @@ import {
   drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
   emptyPath,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -13,6 +14,7 @@ const TIP_LENGTH = 50
 const EDGE = 40
 
 lineDefinitions['017078'] = {
+  useAmplifiers: [ { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -43,24 +45,28 @@ lineDefinitions['017078'] = {
     continueLine(result, p0, p1, 0, len)
     continueLine(result, p0, p1, 0, -len)
 
+    const angle = angleOf(p0, p1) - Math.PI / 2
+    const top = angleOf(p0, p1) < 0
+
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.N ?? '',
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      'black'
+      'black',
     )
 
     drawText(
       result,
-      getPointAt(p1, p0, 90, 1.5 * EDGE * scale),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.B ?? '',
+      getPointAt(p1, p0, Math.PI / 2, len),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
-      angleOf(p0, p1) < 0 ? 'start' : 'end',
-      'black'
+      top ? 'start' : 'end',
+      'black',
+      top ? 'before-edge' : 'after-edge',
     )
   },
 }
