@@ -448,7 +448,7 @@ L.SVG.include({
   },
 
   _updateLineEnds: function (layer, bezier) {
-    const { options: { weight }, strokeWidth } = layer
+    // const { options: { weight }, strokeWidth } = layer
     // const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
     const { left, right } = getLineEnds(
       layer._rings[0],
