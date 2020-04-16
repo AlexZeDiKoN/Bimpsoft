@@ -56,6 +56,7 @@ const webMapAttributesInitValues = {
   taskId: null,
   lineClassifier: UNDEFINED_CLASSIFIER,
   status: STATUSES.EXISTING,
+  uniqueDesignation1: '',
 }
 
 for (const key of Object.keys(symbolOptions)) {
