@@ -1098,9 +1098,10 @@ export const getStylesForLineType = (type, scale = 1) => {
   return styles
 }
 
-export const getLineEnds = (points, objectAttributes, bezier, scale) => {
+export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
+  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1, settings.MIN_ZOOM, settings.MAX_ZOOM) / 12
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
@@ -1121,13 +1122,13 @@ export const getLineEnds = (points, objectAttributes, bezier, scale) => {
       leftEndType,
       points[0],
       angle(vector(points[0], leftPlus)),
-      scale,
+      graphicSize,
     ),
     right: drawLineEnd(
       rightEndType,
       points[points.length - 1],
       angle(vector(points[points.length - 1], rightMinus)),
-      scale,
+      graphicSize,
     ),
   }
 }
