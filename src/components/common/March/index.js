@@ -8,7 +8,7 @@ import utilsMarch from './utilsMarch'
 
 import './style.css'
 
-const { getSegmentDetails, getMarchDetails } = utilsMarch.formulas
+const { getMarchDetails } = utilsMarch.formulas
 
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
@@ -36,10 +36,12 @@ const getMemoGeoLandmarks = (() => {
 
 const March = (props) => {
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+
   const segments = props.segmentList.toArray()
+  const marchDetails = getMarchDetails(segments, props.dataMarch)
 
   const renderDotsForms = () => {
-    const { editFormField, addChild, deleteChild, setCoordMode, dataMarch } = props
+    const { editFormField, addChild, deleteChild, setCoordMode } = props
     const handlers = {
       editFormField,
       addChild,
@@ -47,20 +49,11 @@ const March = (props) => {
       setCoordMode,
       getMemoGeoLandmarks,
     }
-    const referenceData = {
-      time: 0,
-      distance: 0,
-    }
 
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
         const { children } = segment
-        const segmentDetails = getSegmentDetails(segment, segments[segmentId + 1], dataMarch, { ...referenceData })
-
-        if (timeDistanceView) {
-          referenceData.time += segmentDetails.totalTime
-          referenceData.distance += segmentDetails.totalDistance
-        }
+        const segmentDetails = marchDetails.segments[segmentId]
 
         return (<div key={segmentId} className={'segment-with-form'}>
           <div className={'segment-block'}>
@@ -98,14 +91,14 @@ const March = (props) => {
     </div>
   }
 
-  const marchDetails = getMarchDetails(segments, props.dataMarch)
-
   return <div className={'march-container'}>
     <div className={'march-header'}>
       <Header
         marchDetails={marchDetails}
         changeTimeDistanceView={changeTimeDistanceView}
         timeDistanceView={timeDistanceView}
+        totalMarchTime={marchDetails.totalMarchTime}
+        totalMarchDistance={marchDetails.totalMarchDistance}
       />
     </div>
     <div className={'march-main'}>

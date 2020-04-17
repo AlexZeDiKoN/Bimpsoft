@@ -22,13 +22,12 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
   const { deleteSegment, segmentId, segmentType, required, terrain, velocity, segmentDetails } = propData
-  const { totalTime, totalDistance, referenceData } = segmentDetails
+  const { totalTime, totalDistance } = segmentDetails
 
-  const distance = (totalDistance - referenceData.distance).toFixed(1)
-  const time = totalTime - referenceData.time
-  const hour = time.toFixed(0)
-  const minutes = ((time % 1) * 60).toFixed(0)
-  const formatTotalTime = time === Infinity ? '--/--' : `${hour}:${minutes} ${i18n.HOURS}`
+  const distance = totalDistance.toFixed(1)
+  const hour = totalTime.toFixed(0)
+  const minutes = ((totalTime % 1) * 60).toFixed(0)
+  const formatTotalTime = totalTime === Infinity ? '--/--' : `${hour}:${minutes} ${i18n.HOURS}`
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,
@@ -72,11 +71,8 @@ const PopupPanel = (props) => {
         >
           {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
         </Select>
-
       }
-
     </Tooltip>
-
     {(segmentType === 41) &&
     <Tooltip placement='left' title={i18n.NATURE_OF_TERRAIN}>
       <Select
@@ -111,10 +107,6 @@ PopupPanel.propTypes = {
     segmentDetails: PropTypes.shape({
       totalTime: PropTypes.number.isRequired,
       totalDistance: PropTypes.number.isRequired,
-      referenceData: PropTypes.shape({
-        distance: PropTypes.number.isRequired,
-        time: PropTypes.number.isRequired,
-      }).isRequired,
     }).isRequired,
   }).isRequired,
   MB001: PropTypes.shape({

@@ -340,4 +340,4 @@ MarchForm.propTypes = {
   restTime: PropTypes.number,
 }
 
-export default MarchForm
+export default React.memo(MarchForm)

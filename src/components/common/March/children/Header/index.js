@@ -4,8 +4,7 @@ import PropTypes from 'prop-types'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, marchDetails } = props
-  const { totalMarchTime, totalMarchDistance } = marchDetails
+  const { changeTimeDistanceView, timeDistanceView, totalMarchTime, totalMarchDistance } = props
 
   const hour = totalMarchTime.toFixed(0)
   const minutes = ((totalMarchTime % 1) * 60).toFixed(0)
@@ -37,12 +36,10 @@ const Header = (props) => {
 }
 
 Header.propTypes = {
-  marchDetails: PropTypes.shape({
-    totalMarchTime: PropTypes.number.isRequired,
-    totalMarchDistance: PropTypes.number.isRequired,
-  }).isRequired,
   changeTimeDistanceView: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,
+  totalMarchTime: PropTypes.number.isRequired,
+  totalMarchDistance: PropTypes.number.isRequired,
 }
 
-export default Header
+export default React.memo(Header)

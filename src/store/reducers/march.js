@@ -26,7 +26,7 @@ const initState = {
     loadingTimes: [ 30, 50, 120, 60, 180 ],
     uploadingTimes: [ 20, 40, 110, 40, 160 ],
     intervalEchelon: 1,
-    numberEchelons: 1,
+    numberEchelons: 2,
   },
   segments: List([
     {

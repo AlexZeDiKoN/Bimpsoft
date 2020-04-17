@@ -47,16 +47,15 @@ const getColumnLength = (dataMarch) => {
 
 const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceData = defaultReferenceData) => {
   const { velocity, children = [] } = startingPoint
-  const { time: refTime, distance: refDistance } = referenceData
 
   let s = 0
-  let totalTime = refTime
-  let totalDistance = refDistance
+  let totalTime = 0
+  let totalDistance = 0
   let currentCoord = startingPoint.coord
   const childSegments = []
 
   for (let index = 0; index < children.length; index++) {
-    s = getDistance(startingPoint.coord, children[index].coord)
+    s = getDistance(currentCoord, children[index].coord)
     let v = 0
 
     if (s === 0) {
@@ -64,10 +63,11 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
         distance: +totalDistance.toFixed(1),
         time: +totalTime.toFixed(2),
       })
+      currentCoord = children[index].coord
       continue
     }
 
-    if (children[index].required) {
+    if (index === 0) {
       v = 0.8 * velocity
     } else {
       v = velocity
@@ -87,9 +87,9 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
     currentCoord = children[index].coord
   }
 
-  s = getDistance(currentCoord, nextPoint && nextPoint.coord)
+  s = getDistance(currentCoord, nextPoint.coord)
 
-  const t = s / velocity
+  const t = s === 0 ? 0 : s / velocity
 
   const columnLength = getColumnLength(dataMarch)
   const vFinish = 0.7 * velocity
@@ -98,11 +98,22 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   totalTime += t + tFinish
   totalDistance += s
 
+  const untilPreviousSegment = {
+    time: 0,
+    distance: 0,
+  }
+  const untilNextSegment = {
+    time: t + tFinish,
+    distance: s,
+  }
+
   return {
     totalTime,
     totalDistance,
     childSegments,
     referenceData,
+    untilPreviousSegment,
+    untilNextSegment,
   }
 }
 
@@ -123,7 +134,6 @@ const getLoadUnloadTime = (data) => {
 
 const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceData = defaultReferenceData) => {
   const { velocity, children = [] } = startingPoint
-  const { time: refTime, distance: refDistance } = referenceData
   const {
     loadingTimes = [],
     uploadingTimes = [],
@@ -136,11 +146,27 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
     workInGasMasksFactor,
   } = dataMarch
 
+  const loadUnloadData = {
+    timeIncreaseFactor,
+    timeCorrectionFactor,
+    mountingFactor,
+    workInDarkFactor,
+    workInGasMasksFactor,
+  }
+
   let s = 0
+  let t = 0
   const childSegments = []
-  let totalTime = refTime
-  let totalDistance = refDistance
+  let totalTime = 0
+  let totalDistance = 0
   let currentCoord = startingPoint.coord
+
+  const tp = getLoadUnloadTime({
+    ...loadUnloadData,
+    loadUploadTimes: loadingTimes,
+  })
+
+  totalTime += tp
 
   for (let index = 0; index < children.length; index++) {
     s = getDistance(currentCoord, children[index].coord)
@@ -150,10 +176,11 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
         distance: +totalDistance.toFixed(1),
         time: +totalTime.toFixed(2),
       })
+      currentCoord = children[index].coord
       continue
     }
 
-    const t = s / velocity
+    t = s / velocity
 
     totalTime += t
     totalDistance += s
@@ -166,33 +193,37 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
     currentCoord = children[index].coord
   }
 
-  totalDistance += getDistance(currentCoord, nextPoint.coord)
-  totalTime += totalDistance / velocity
+  s = getDistance(currentCoord, nextPoint.coord)
+  t = s === 0 ? 0 : s / velocity
 
-  const loadUnloadData = {
-    timeIncreaseFactor,
-    timeCorrectionFactor,
-    mountingFactor,
-    workInDarkFactor,
-    workInGasMasksFactor,
-  }
+  totalDistance += s
+  totalTime += t
 
-  const tp = getLoadUnloadTime({
-    ...loadUnloadData,
-    loadUploadTimes: loadingTimes,
-  })
   const tv = getLoadUnloadTime({
     ...loadUnloadData,
     loadUploadTimes: uploadingTimes,
   })
 
-  totalTime += tp + tv + ti * (k - 1)
+  const tFinish = tv + ti * (k - 1)
+
+  totalTime += tFinish
+
+  const untilPreviousSegment = {
+    time: 0,
+    distance: 0,
+  }
+  const untilNextSegment = {
+    time: t + tFinish,
+    distance: s,
+  }
 
   return {
     totalTime,
     totalDistance,
     childSegments,
     referenceData,
+    untilPreviousSegment,
+    untilNextSegment,
   }
 }
 
@@ -210,6 +241,8 @@ const getSegmentDetails = (...args) => {
         time: 0,
         distance: 0,
       },
+      untilNextSegment: { time: 0, distance: 0 },
+      untilPreviousSegment: { time: 0, distance: 0 },
     }
   }
 }
@@ -220,27 +253,38 @@ const getMarchDetails = (segments = [], dataMarch = {}) => {
     totalMarchDistance: 0,
     segments: [],
   }
-  let currentSegment = segments[0]
 
   for (let index = 0; index < segments.length - 1; index++) {
     if (segments[index].segmentType) {
-      const segmentDetails = getSegmentDetails(currentSegment, segments[index + 1], dataMarch)
+      const referenceData = {
+        time: totalData.totalMarchTime,
+        distance: totalData.totalMarchDistance,
+      }
+      const segmentDetails = getSegmentDetails(segments[index], segments[index + 1], dataMarch, referenceData)
+
+      if (index) {
+        const prevSegment = totalData.segments[index - 1]
+        const { time: prevTime = 0, distance: prevDistance = 0 } = prevSegment.untilNextSegment
+
+        segmentDetails.untilPreviousSegment.time = prevTime
+        segmentDetails.untilPreviousSegment.distance = prevDistance
+      }
 
       totalData.segments.push(segmentDetails)
 
       if (segmentDetails.totalDistance) {
         totalData.totalMarchTime += segmentDetails.totalTime
         totalData.totalMarchDistance += segmentDetails.totalDistance
-
-        currentSegment = segments[index + 1]
       }
     }
   }
+
+  const segmentDetails = getSegmentDetails(segments[segments.length - 1])
+  totalData.segments.push(segmentDetails)
 
   return totalData
 }
 
 export default {
   getMarchDetails,
-  getSegmentDetails,
 }

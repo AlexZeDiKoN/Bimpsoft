@@ -6,9 +6,10 @@ import SegmentButtonPopover from '../SegmentButtonPopover'
 import i18n from './../../../../../i18n'
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId, segmentDetails } = props
+  const { segment, addSegment, deleteSegment, segmentId, segmentDetails, timeDistanceView } = props
   const { segmentType, children } = segment
-  const { time: refTime, distance: refDistance } = segmentDetails.referenceData
+  const { time: refTime = 0, distance: refDistance = 0 } = segmentDetails.referenceData
+  const { time: prevTime, distance: prevDistance } = segmentDetails.untilPreviousSegment
 
   if (segmentType === 0) {
     return null
@@ -31,6 +32,13 @@ const SegmentBlock = (props) => {
       break
   }
 
+  const timeOffset = timeDistanceView ? refTime : 0
+  const distanceOffset = timeDistanceView ? refDistance : 0
+  const startingPoint = {
+    time: timeDistanceView ? refTime : prevTime,
+    distance: (timeDistanceView ? refDistance : prevDistance).toFixed(1),
+  }
+
   const getFormatTime = (time) => {
     const hour = time.toFixed(0)
     const minutes = ((time % 1) * 60).toFixed(0)
@@ -42,8 +50,8 @@ const SegmentBlock = (props) => {
   return (<div className={'segment'} style={{ backgroundColor: color }}>
     {segmentId !== 0
       ? <div className={'time-distance height-segment'}>
-        <span>{getFormatTime(refTime)}</span>
-        <span className={'distance'}>{refDistance.toFixed(1)} км</span>
+        <span>{getFormatTime(startingPoint.time)}</span>
+        <span className={'distance'}>{startingPoint.distance} км</span>
       </div>
       : <div className={'height-segment'}/>
     }
@@ -55,12 +63,13 @@ const SegmentBlock = (props) => {
 
     {childrenIsPresent && children.map((child, id) => {
       const { distance, time } = segmentDetails.childSegments[id]
-      const formatTotalTime = getFormatTime(time)
+      const formatTotalTime = getFormatTime(time + timeOffset)
+      const distanceWithOffset = (distance + distanceOffset).toFixed(1)
 
       return (
         <div key={id} className={'time-distance'}>
           <span>{formatTotalTime}</span>
-          <span className={'distance'}>{distance} км</span>
+          <span className={'distance'}>{distanceWithOffset} км</span>
         </div>
       )
     })}
@@ -87,6 +96,10 @@ SegmentBlock.propTypes = {
       time: PropTypes.number.isRequired,
       distance: PropTypes.number.isRequired,
     }).isRequired,
+    untilPreviousSegment: PropTypes.shape({
+      time: PropTypes.number.isRequired,
+      distance: PropTypes.number.isRequired,
+    }).isRequired,
   }),
   referenceData: PropTypes.shape({
     time: PropTypes.array.isRequired,
@@ -97,4 +110,4 @@ SegmentBlock.propTypes = {
   timeDistanceView: PropTypes.bool.isRequired,
 }
 
-export default SegmentBlock
+export default React.memo(SegmentBlock)
