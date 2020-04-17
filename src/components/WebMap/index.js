@@ -209,6 +209,7 @@ const setScaleOptions = (layer, params) => {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
+        case entityKind.GROUPED_REGION:
           layer.setScaleOptions(pointSizes)
           break
         case entityKind.TEXT:
@@ -1151,8 +1152,14 @@ export default class WebMap extends React.PureComponent {
           }
         }
       })
+      const regions = []
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
+        if (object.parent && objects.get(object.parent)?.type === entityKind.GROUPED_REGION) {
+          if (!regions.includes(object.parent)) {
+            regions.push(object.parent)
+          }
+        }
         const newLayer = this.addObject(object, layer)
         if (newLayer !== layer) {
           setLayerSelected(layer, false, false)
@@ -1180,6 +1187,29 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = null
         }
       }
+      this.map.eachLayer((layer) => {
+        if (layer._groupChildren) {
+          layer._groupChildren = []
+        }
+      })
+      objects.forEach((object, id) => {
+        const parent = object.parent
+        if (parent) {
+          const layer = this.findLayerById(id)
+          const parentLayer = this.findLayerById(parent)
+          if (layer && parentLayer) {
+            if (!parentLayer._groupChildren) {
+              parentLayer._groupChildren = []
+            }
+            parentLayer._groupChildren.push(layer)
+          }
+          layer._groupParent = parentLayer
+        }
+      })
+      regions.forEach((region) => {
+        const layer = this.findLayerById(region)
+        layer && layer._update()
+      })
     }
   }
 
@@ -1483,6 +1513,7 @@ export default class WebMap extends React.PureComponent {
           return this.props.onMoveContour(layer.id, shift)
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
+        case entityKind.GROUPED_REGION:
           return this.props.onMoveGroup(layer.id, shift)
         default:
           return this.checkSaveObject(false)

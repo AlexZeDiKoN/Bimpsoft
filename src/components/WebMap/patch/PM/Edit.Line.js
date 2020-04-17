@@ -56,6 +56,7 @@ L.PM.Edit.Line.include({
       case entityKind.SQUARE:
       case entityKind.GROUPED_HEAD:
       case entityKind.GROUPED_LAND:
+      case entityKind.GROUPED_REGION:
         break // для певних типів знаків заброняємо видалення вершин
       case entityKind.AREA: // для площинних знаків
         if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох

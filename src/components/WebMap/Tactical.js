@@ -116,6 +116,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
+    case entityKind.GROUPED_REGION:
+      return createGroup(entityKind.GROUPED_REGION, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
     default:
@@ -374,6 +376,7 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
@@ -431,6 +434,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:
