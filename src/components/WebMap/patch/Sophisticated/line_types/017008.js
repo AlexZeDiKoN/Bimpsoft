@@ -1,16 +1,15 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
-  drawMaskedText,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
+  drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ДЕМОНСТРУВАТИ
 // task code: DZVIN-5778
 // hint: 'Демонструвати - ввести противника в оману демонстрацією сили без контакту з противником.'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const TEXT = 'D'
 
 lineDefinitions['017008'] = {
@@ -41,9 +40,10 @@ lineDefinitions['017008'] = {
 
     const norm1 = normalVectorTo(p1, p2, p3)
     const a1 = applyVector(p2, norm1)
-    drawArrow(result, p2, a1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLineMark(result, MARK_TYPE.ARROW_45, a1, angleOf(p2, a1), 1)
+    drawLine(result, p2, a1)
 
-    const r = segmentLength(p1,p2) / 2
+    const r = segmentLength(p1, p2) / 2
     drawArc(result, p1, p2, r, 0, 0, halfPlane(p0, p1, p2))
 
     drawMaskedText(

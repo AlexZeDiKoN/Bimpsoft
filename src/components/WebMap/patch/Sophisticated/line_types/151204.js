@@ -4,15 +4,14 @@ import { TEXTS } from '../index'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText,
-  drawArrow,
+  drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: CONTAIN
 // task code: DZVIN-5523
 // hint: 'Сковування противника'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const FRACTIONS = 10
 const TEXT = 'C'
 
@@ -41,7 +40,8 @@ lineDefinitions['151204'] = {
     const centerPoint = segmentBy(p0, p1, 0.5)
     const norm = normalVectorTo(p0, p1, p2)
     const startPoint = applyVector(centerPoint, norm)
-    drawArrow(result, startPoint, centerPoint, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLine(result, startPoint, centerPoint)
+    drawLineMark(result, MARK_TYPE.ARROW_45, centerPoint, angleOf(startPoint, centerPoint), 1)
     drawMaskedText(
       result,
       segmentBy(startPoint, centerPoint, 0.5),
@@ -62,7 +62,7 @@ lineDefinitions['151204'] = {
       for (let i = 0; i <= da; i++) {
         const t = compose(
           translate(centerPoint.x, centerPoint.y),
-          rotate(a0 + Math.PI / 2 - Math.PI * (i / da))
+          rotate(a0 + Math.PI / 2 - Math.PI * (i / da)),
         )
         const pr = applyToPoint(t, { x: r, y: 0 })
         const ppr = segmentBy(centerPoint, pr, dr)

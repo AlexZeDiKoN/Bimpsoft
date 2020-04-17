@@ -3,7 +3,7 @@ import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
-import { settings } from '../../../../utils/svg/lines'
+import { MARK_TYPE, drawLineEnd, settings } from '../../../../utils/svg/lines'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -168,11 +168,21 @@ export const halfPlane = (p0, p1, p2) => {
 export const neg = (value) => value * 2 - 1
 
 // Обчислити координати точки, яку отримаємо, якщо рухаючись із точки p1 до p2
-// повернемо на вказаний кут і пройдемо ще вказану відстань
+// перенесемо на вказану відстань під заданим кутом
 export const getPointAt = (p1, p2, angle, length) => applyToPoint(
   compose(
     translate(p2.x, p2.y),
     rotate(angleOf(p2, p1) + angle),
+  ),
+  { x: length, y: 0 },
+)
+
+// Обчислити координати точки, яку отримаємо, якщо точку p1
+// переповернемо на вказаний кут і пройдемо ще вказану відстань
+export const getPointMove = (p, angle, length) => applyToPoint(
+  compose(
+    translate(p.x, p.y),
+    rotate(angle),
   ),
   { x: length, y: 0 },
 )
@@ -607,4 +617,45 @@ function getLeftPoint (points, lP, nP) {
     }
   })
   return indexR
+}
+
+export const drawLineMark = (result, markType, point, angle, scale) => {
+  const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+  let da
+  switch (markType) {
+    case MARK_TYPE.SERIF:
+      drawLine(result,
+        getPointMove(point, angle - Math.PI / 2, graphicSize / 2),
+        getPointMove(point, angle + Math.PI / 2, graphicSize / 2))
+      return
+    case MARK_TYPE.ARROW_90:
+      da = Math.PI / 4
+      break
+    case MARK_TYPE.ARROW_60:
+      da = Math.PI / 6
+      break
+    case MARK_TYPE.ARROW_45:
+      da = Math.PI / 8
+      break
+    case MARK_TYPE.ARROW_30:
+      da = Math.PI / 12
+      break
+    default: // для стрілок з заливкою
+      // eslint-disable-next-line max-len
+      result.amplifiers += drawLineEnd(markType, point, angle, graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
+      return
+  }
+  const pL = applyToPoint(
+    compose(
+      translate(point.x, point.y),
+      rotate(angle - da),
+    ),
+    { x: graphicSize, y: 0 })
+  const pR = applyToPoint(
+    compose(
+      translate(point.x, point.y),
+      rotate(angle + da),
+    ),
+    { x: graphicSize, y: 0 })
+  drawLine(result, pL, point, pR)
 }
