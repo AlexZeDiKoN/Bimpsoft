@@ -3,7 +3,7 @@ import { rotate, translate, compose, applyToPoint } from 'transformation-matrix'
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
-import { settings } from '../../../../utils/svg/lines'
+import { drawLineEnd, settings } from '../../../../utils/svg/lines'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -607,4 +607,10 @@ function getLeftPoint (points, lP, nP) {
     }
   })
   return indexR
+}
+
+export const drawLineMark = (result, markType, point, angle, scale) => {
+  const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+  // eslint-disable-next-line max-len
+  result.amplifiers += drawLineEnd(markType, point, angle, graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
 }

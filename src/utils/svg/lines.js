@@ -788,8 +788,8 @@ const getTextAmplifiers = ({
   scale,
   zoom,
 }) => {
-  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale)
+  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
   const result = {
     maskPath: [],
@@ -1039,9 +1039,21 @@ export const getAmplifiers = ({
   return result
 }
 
-const drawLineEnd = (type, { x, y }, angle, scale) => {
-  let res = `<g stroke-width="3" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strokeColor = 'black') => {
+  let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
+    case 'arrow90':
+      res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
+      break
+    case 'arrow45':
+      res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
+      break
+    case 'arrow30':
+      res += `<path fill="none" d="M12-3 l-12,3 12,3"/>`
+      break
+    case 'arrow30fill':
+      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-3v6z"/>`
+      break
     case 'arrow1':
       res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
       break
@@ -1101,7 +1113,7 @@ export const getStylesForLineType = (type, scale = 1) => {
 export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
-  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1, settings.MIN_ZOOM, settings.MAX_ZOOM) / 12
+  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1) / 12
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
