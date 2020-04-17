@@ -6,13 +6,12 @@ import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText,
   drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: CONTAIN
 // task code: DZVIN-5523
 // hint: 'Сковування противника'
 
-// const ARROW_LENGTH = 36
-// const ARROW_WIDTH = 18
 const FRACTIONS = 10
 const TEXT = 'C'
 
@@ -42,7 +41,7 @@ lineDefinitions['151204'] = {
     const norm = normalVectorTo(p0, p1, p2)
     const startPoint = applyVector(centerPoint, norm)
     drawLine(result, startPoint, centerPoint)
-    drawLineMark(result, 'arrow30fill', centerPoint, angleOf(startPoint, centerPoint), 1)
+    drawLineMark(result, MARK_TYPE.ARROW_45, centerPoint, angleOf(startPoint, centerPoint), 1)
     drawMaskedText(
       result,
       segmentBy(startPoint, centerPoint, 0.5),

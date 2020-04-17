@@ -1,21 +1,20 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, continueLine, drawArrow, drawText, setVectorLength, getVector,
-  angleOf,
+  drawLine, normalVectorTo, applyVector, segmentBy, drawText, setVectorLength, getVector,
+  angleOf, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { angle3Points } from '../arrowLib'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
-const TIP_LENGTH = 50
 const EDGE = 40
 const INDENT = 16
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 
 lineDefinitions['017015'] = {
   // Ампліфікатори, що використовуються на лінії
@@ -44,16 +43,13 @@ lineDefinitions['017015'] = {
 
     const mid = segmentBy(p0, p1, 0.5)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, p1, p0, 0, len)
-    continueLine(result, p1, p0, 0, -len)
-    continueLine(result, p0, p1, 0, len)
-    continueLine(result, p0, p1, 0, -len)
+    drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0), 1)
+    drawLineMark(result, MARK_TYPE.SERIF, p1, angleOf(p0, p1), 1)
 
     const norm = normalVectorTo(p0, p1, p2)
     const a = applyVector(mid, norm)
-
-    drawArrow(result, mid, a, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLineMark(result, MARK_TYPE.ARROW_45, a, angleOf(mid, a), 1)
+    drawLine(result, mid, a)
 
     const angle = angleOf(p0, p1) - Math.PI / 2
     const angleArrow = angle3Points(mid, p0, p2)
@@ -70,6 +66,7 @@ lineDefinitions['017015'] = {
       'black',
     )
 
+    const len = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(mid, p2), -len)),

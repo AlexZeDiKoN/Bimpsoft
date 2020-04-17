@@ -43,6 +43,16 @@ export const settings = {
   CROSS_SIZE: 48,
 }
 
+export const MARK_TYPE = {
+  ARROW_90: 'arrow90',
+  ARROW_60: 'arrow60',
+  ARROW_45: 'arrow45',
+  ARROW_30: 'arrow30',
+  ARROW_30_FILL: 'arrow30fill',
+  SERIF: 'serif',
+  SERIF_CROSS: 'serif_cross',
+}
+
 class Segment {
   constructor (start, finish) {
     this.start = start
@@ -1042,17 +1052,17 @@ export const getAmplifiers = ({
 export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strokeColor = 'black') => {
   let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
-    case 'arrow90':
+    case MARK_TYPE.ARROW_90:
       res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
       break
-    case 'arrow45':
+    case MARK_TYPE.ARROW_45:
       res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
       break
-    case 'arrow30':
+    case MARK_TYPE.ARROW_30:
       res += `<path fill="none" d="M12-3 l-12,3 12,3"/>`
       break
-    case 'arrow30fill':
-      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-3v6z"/>`
+    case MARK_TYPE.ARROW_30_FILL:
+      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-4v8z"/>`
       break
     case 'arrow1':
       res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
