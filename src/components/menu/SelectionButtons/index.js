@@ -7,7 +7,7 @@ import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-import entityKind, { entityKindOutlinable, GROUPS } from '../../WebMap/entityKind'
+import entityKind, { entityKindOutlinable /*, GROUPS */ } from '../../WebMap/entityKind'
 // import { determineGroupType } from '../../../store/utils'
 import DeleteSelectionForm from './DeleteSelectionForm'
 
