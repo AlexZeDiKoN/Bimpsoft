@@ -8,7 +8,7 @@ import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
 import entityKind, { entityKindOutlinable, GROUPS } from '../../WebMap/entityKind'
-import { determineGroupType } from '../../../store/utils'
+// import { determineGroupType } from '../../../store/utils'
 import DeleteSelectionForm from './DeleteSelectionForm'
 
 import './style.css'
@@ -60,9 +60,9 @@ export default class SelectionButtons extends React.Component {
       onMirrorImage,
       onContour,
       onDecontour,
-      onGroup,
+      // onGroup,
       onGroupRegion,
-      onUngroup,
+      // onUngroup,
     } = this.props
 
     const nSelected = list.length
@@ -71,11 +71,11 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
     const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
-    const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
-      determineGroupType(selectedPoints)
+    /* const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
+      determineGroupType(selectedPoints) */
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length
-    const canUngroup = selectedTypes.length === 1 && GROUPS.GROUPED.includes(selectedTypes[0]) &&
-      selectedTypes[0] !== entityKind.GROUPED_REGION
+    /* const canUngroup = selectedTypes.length === 1 && GROUPS.GROUPED.includes(selectedTypes[0]) &&
+      selectedTypes[0] !== entityKind.GROUPED_REGION */
     const deleteHandler = () => {
       if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
         onDelete()
