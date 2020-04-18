@@ -2,14 +2,19 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, square, emptyPath, getPointAt, addPathAmplifier,
+  drawLine,
+  segmentBy,
+  angleOf,
+  segmentLength,
+  drawMaskedText,
+  square,
+  drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: FOLLOW AND SUPPORT
 // task code: DZVIN-5533
 // hint: 'Просування та підтримка підрозділів – рух за першим ешелоном та підтримка його дії'
-
-const ARROW_WIDTH = 36
 
 lineDefinitions['341300'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -31,7 +36,6 @@ lineDefinitions['341300'] = {
   render: (result, points, scale) => {
     const [ p0, p1 ] = points
     const SIDE_LENGTH = 50 * scale
-    const arrow = emptyPath()
 
     const k = Math.sqrt(square(SIDE_LENGTH) / 2)
     const a0 = angleOf(applyToPoint(translate(-p0.x, -p0.y), p1))
@@ -54,16 +58,11 @@ lineDefinitions['341300'] = {
     drawMaskedText(result, segmentBy(p0, center, 0.4), a0, result.layer?.options?.textAmplifiers?.T ?? '')
 
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {
-      const pa1 = getPointAt(center, anchor, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-      const pa2 = getPointAt(center, anchor, -5 * Math.PI / 6, ARROW_WIDTH * scale)
       drawLine(result, center, anchor)
-      drawLine(arrow, anchor, pa1, pa2)
+      drawLineMark(result, MARK_TYPE.ARROW_60_FILL, anchor, angleOf(p0, anchor))
     } else {
-      const pa1 = getPointAt(center, p1, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-      const pa2 = getPointAt(center, p1, -5 * Math.PI / 6, ARROW_WIDTH * scale)
       drawLine(result, center, p1)
-      drawLine(arrow, p1, pa1, pa2)
+      drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p1, angleOf(p0, p1))
     }
-    addPathAmplifier(result, arrow, true)
-  }
+  },
 }

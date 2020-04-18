@@ -2,15 +2,23 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, rad, drawArrow, square,
+  drawLine,
+  normalVectorTo,
+  applyVector,
+  segmentBy,
+  halfPlane,
+  drawArc,
+  angleOf,
+  segmentLength,
+  rad,
+  square,
+  drawLineMark, getPointMove,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: AMBUSH
 // task code: DZVIN-5521
 // hint: 'Розвідувальні (спеціальні) завдання засідкою'
-
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 
 lineDefinitions['141700'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -30,7 +38,7 @@ lineDefinitions['141700'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const defAngle = rad(90) // deg, 2pi/3 rad
@@ -44,15 +52,17 @@ lineDefinitions['141700'] = {
     drawArc(result, p1, p0, r, 0, 0, halfPlane(p0, p1, p2))
     const t = compose(
       translate(startPoint.x, startPoint.y),
-      rotate(angleOf(p2, startPoint))
+      rotate(angleOf(p2, startPoint)),
     )
     const move = r * Math.cos(defAngle / 2)
+    const angleArrow = angleOf(startPoint, p2)
     if (aLength < segmentLength(startPoint, centerPoint)) {
-      drawArrow(result, startPoint, centerPoint, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+      drawLine(result, startPoint, centerPoint)
+      drawLineMark(result, MARK_TYPE.ARROW_45, p2, angleArrow)
     } else {
-      drawArrow(result, startPoint, applyToPoint(t, { x: aLength, y: 0 }), ARROW_LENGTH * scale, ARROW_WIDTH * scale)
-
+      drawLineMark(result, MARK_TYPE.ARROW_45, getPointMove(startPoint, angleArrow, -aLength), angleArrow)
     }
+
     const count = Math.trunc(bLength / h) + 1
     for (let i = 0; i < count; i++) {
       const y = h * i
@@ -64,5 +74,5 @@ lineDefinitions['141700'] = {
       drawLine(result, p00, p01)
       drawLine(result, p10, p11)
     }
-  }
+  },
 }

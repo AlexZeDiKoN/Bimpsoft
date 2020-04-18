@@ -49,6 +49,7 @@ export const MARK_TYPE = {
   ARROW_45: 'arrow45',
   ARROW_30: 'arrow30',
   ARROW_30_FILL: 'arrow30fill',
+  ARROW_60_FILL: 'arrow60fill',
   ARROW1: 'arrow1',
   ARROW2: 'arrow2',
   ARROW3: 'arrow3',
@@ -1064,6 +1065,9 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strok
     case MARK_TYPE.ARROW_90:
       res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
       break
+    case MARK_TYPE.ARROW_60:
+      res += `<path fill="none" d="M11-6 l-11,6 11,6"/>`
+      break
     case MARK_TYPE.ARROW_45:
       res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
       break
@@ -1072,6 +1076,9 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strok
       break
     case MARK_TYPE.ARROW_30_FILL:
       res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-4v8z"/>`
+      break
+    case MARK_TYPE.ARROW_60_FILL:
+      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l12-6v12z"/>`
       break
     case MARK_TYPE.ARROW1:
       res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`

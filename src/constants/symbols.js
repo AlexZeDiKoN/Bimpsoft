@@ -525,7 +525,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.T]: '', [amps.W]: '' },
+          pointAmplifier: { [amps.T]: 'AVON', [amps.W]: '' },
         },
       },
       {
@@ -736,7 +736,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.A]: '' },
+          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '' },
         },
       },
       {
@@ -2241,7 +2241,9 @@ export const symbols = [
         amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО', [amps.staffComments]: 'ПуСО' },
       },
       // TODO when done karandash (done)
-      { hint: 'Дегазаційний пункт (ДП)', code: '10032500002818000000', amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ДП', [amps.staffComments]: 'ДП' } },
+      { hint: 'Дегазаційний пункт (ДП)',
+        code: '10032500002818000000',
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ДП', [amps.staffComments]: 'ДП' } },
       {
         hint: 'Район спеціальної обробки  (РСО)',
         code: '10032500001501000000',
@@ -2993,7 +2995,11 @@ export const symbols = [
         code: '10032500002818000000',
         amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППОС', [amps.staffComments]: 'ППОС' },
       },
-      { hint: 'Пункт прийому техніки', code: '10032500002818000000', amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППТ', [amps.staffComments]: 'ППТ' } },
+      {
+        hint: 'Пункт прийому техніки',
+        code: '10032500002818000000',
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППТ', [amps.staffComments]: 'ППТ' },
+      },
       {
         hint: 'Пункт зустрічі поповнення',
         code: '10032500002818000000',
@@ -3014,7 +3020,11 @@ export const symbols = [
         code: '10032500002818000000',
         amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗСР', [amps.staffComments]: 'ПЗСР' },
       },
-      { hint: 'Штаб оповіщення', code: '10032500002818000000', amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ШО', [amps.staffComments]: 'ШО' } },
+      {
+        hint: 'Штаб оповіщення',
+        code: '10032500002818000000',
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ШО', [amps.staffComments]: 'ШО' },
+      },
       // TODO end
     ],
   },
