@@ -282,6 +282,7 @@ export const paste = () => withNotification((dispatch, getState) => {
             )
           case entityKind.GROUPED_HEAD:
           case entityKind.GROUPED_LAND:
+          case entityKind.GROUPED_REGION:
             return webMap.copyGroup(
               id,
               layer,
