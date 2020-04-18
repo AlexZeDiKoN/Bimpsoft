@@ -505,7 +505,7 @@ export const continueLine = (result, p1, p2, x, y) => {
 // eslint-disable-next-line max-len
 export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null, textAlign = 'middle') => {
   if (!text || !text.length) {
-    return
+    return [ '', { width: 0, height: 0 } ]
   }
   // Обчислення розміру
   const zoom = result.layer._map.getZoom()
@@ -628,6 +628,14 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
         getPointMove(point, angle - Math.PI / 2, graphicSize / 2),
         getPointMove(point, angle + Math.PI / 2, graphicSize / 2))
       return
+    case MARK_TYPE.CROSS:
+      drawLine(result,
+        getPointMove(point, angle - Math.PI / 3, graphicSize),
+        getPointMove(point, angle - Math.PI / 3, -graphicSize))
+      drawLine(result,
+        getPointMove(point, angle + Math.PI / 3, graphicSize),
+        getPointMove(point, angle + Math.PI / 3, -graphicSize))
+      return
     case MARK_TYPE.ARROW_90:
       da = Math.PI / 4
       break
@@ -642,20 +650,8 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       break
     default: // для стрілок з заливкою
       // eslint-disable-next-line max-len
-      result.amplifiers += drawLineEnd(markType, point, angle, graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
+      result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
       return
   }
-  const pL = applyToPoint(
-    compose(
-      translate(point.x, point.y),
-      rotate(angle - da),
-    ),
-    { x: graphicSize, y: 0 })
-  const pR = applyToPoint(
-    compose(
-      translate(point.x, point.y),
-      rotate(angle + da),
-    ),
-    { x: graphicSize, y: 0 })
-  drawLine(result, pL, point, pR)
+  drawLine(result, getPointMove(point, angle - da, graphicSize), point, getPointMove(point, angle + da, graphicSize))
 }

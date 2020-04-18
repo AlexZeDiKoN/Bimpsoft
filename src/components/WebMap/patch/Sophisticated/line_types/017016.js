@@ -2,21 +2,21 @@ import { applyToPoint, applyToPoints, compose, inverse, rotate } from 'transform
 import { MIDDLE, DELETE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo, getPointAt, drawText,
-  setVectorLength, getVector, setToSegment, oppositeVector,
+  drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo, drawText,
+  setVectorLength, getVector, setToSegment, oppositeVector, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
 // hint: 'Послідовне зосередження вогню'
 
 const EDGE = 32
-const BORDER = 48
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
-  // Ампліфікатори лінії
+  // Ампліфікатори на лінії
   useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'Початковий номер' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
@@ -132,14 +132,8 @@ lineDefinitions['017016'] = {
       drawLine(result, start, middles[1])
     }
 
-    const drawBorder = (idx1, idx2) => drawLine(
-      result,
-      getPointAt(points[idx1 * 3], points[idx2 * 3], Math.PI / 2, BORDER * scale),
-      getPointAt(points[idx1 * 3], points[idx2 * 3], -Math.PI / 2, BORDER * scale),
-    )
-
-    drawBorder(1, 0)
-    drawBorder(c - 1, c)
+    drawLineMark(result, MARK_TYPE.SERIF, points[0], angleOf(points[3], points[0]))
+    drawLineMark(result, MARK_TYPE.SERIF, points[c * 3], angleOf(points[(c - 1) * 3], points[c * 3]))
 
     // Варіант для демонстрації
     const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''

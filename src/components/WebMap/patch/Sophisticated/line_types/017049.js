@@ -2,16 +2,17 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawArrow, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, angleOf, segmentLength, drawLineMark,
 } from '../utils'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: СТЕЖЕННЯ
 // task code: DZVIN-5532
 // hint: 'Стеження за противником'
 
-const ARROW_LENGTH = 16
-const SPRING_LENGTH = 16
-const SPRING_WIDTH = 16
+const SCALE_SPRING_LENGTH = 0.5
+const SCALE_SPRING_WIDTH = 0.5
 
 lineDefinitions['017049'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -30,21 +31,21 @@ lineDefinitions['017049'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
-
+    const arrowLength = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
     const l = segmentLength(p0, p1)
     if (l <= 0) {
       return
     }
 
-    const arrow = emptyPath()
-
-    if (l > (ARROW_LENGTH * 5 + SPRING_LENGTH) * scale) {
-      const p2 = segmentBy(p0, p1, ARROW_LENGTH * scale * 2 / l)
-      const fixL = ARROW_LENGTH * scale * 4
-      const num = Math.trunc((l - fixL) / SPRING_LENGTH / scale)
-      const p3 = segmentBy(p0, p1, scale * (ARROW_LENGTH * 2 + num * SPRING_LENGTH) / l)
+    if (l > (arrowLength * 6)) {
+      const p2 = segmentBy(p0, p1, arrowLength / l)
+      const fixL = arrowLength * 3
+      const springLength = arrowLength * SCALE_SPRING_LENGTH
+      const springWidth = arrowLength * SCALE_SPRING_WIDTH
+      const num = Math.trunc((l - fixL) / springLength)
+      const p3 = segmentBy(p0, p1, (arrowLength + num * springLength) / l)
       drawLine(result, p0, p2)
       drawLine(result, p3, p1)
       const t = compose(
@@ -55,25 +56,22 @@ lineDefinitions['017049'] = {
         drawLine(
           result,
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 2 + SPRING_LENGTH * i),
+            x: -(arrowLength + springLength * i),
             y: 0,
           }),
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 2 + SPRING_LENGTH * (0.5 + i)),
-            y: SPRING_WIDTH * scale * ((i % 2) * 2 - 1),
+            x: -(arrowLength + springLength * (0.5 + i)),
+            y: springWidth * ((i % 2) * 2 - 1),
           }),
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 2 + SPRING_LENGTH * (1 + i)),
+            x: -(arrowLength + springLength * (1 + i)),
             y: 0,
           }),
         )
       }
     } else {
-      drawArrow(result, p0, p1)
+      drawLine(result, p0, p1)
     }
-    const pa1 = getPointAt(p0, p1, 5 * Math.PI / 6, ARROW_LENGTH * scale)
-    const pa2 = getPointAt(p0, p1, -5 * Math.PI / 6, ARROW_LENGTH * scale)
-    drawLine(arrow, p1, pa1, pa2)
-    addPathAmplifier(result, arrow, true)
+    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
   },
 }

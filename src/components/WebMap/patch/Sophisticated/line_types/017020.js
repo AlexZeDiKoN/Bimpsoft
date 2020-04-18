@@ -4,6 +4,7 @@ import {
   addPathAmplifier, drawCircle, drawText, emptyPath, drawLine,
 } from '../utils'
 import { interpolateSize } from '../../utils/helpers'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: Ракетний удар
 // task code: DZVIN-6009
@@ -13,6 +14,13 @@ const TEXT_SIZE = 1
 const TEXT_COLOR = 'black'
 
 lineDefinitions['017020'] = {
+  // Ампліфікатори на лінії
+  useAmplifiers: [
+    { id: amps.T, name: 'T' },
+    { id: amps.N, name: 'N' },
+    { id: amps.W, name: 'W' },
+    { id: amps.B, name: 'A' },
+  ],
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.none,
 
@@ -39,13 +47,12 @@ lineDefinitions['017020'] = {
     const amplifier = emptyPath()
     drawCircle(amplifier, p0, r / 4)
     addPathAmplifier(result, amplifier, true)
-
     // Ампліфікатори
     const [ , b1 ] = drawText(
       result,
       { x: p0.x - r * 1.4, y: p0.y - r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.middle ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       TEXT_SIZE,
       'end',
       TEXT_COLOR,
@@ -55,7 +62,7 @@ lineDefinitions['017020'] = {
       result,
       { x: p0.x - r * 1.4, y: p0.y + r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.top ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
       TEXT_SIZE,
       'end',
       TEXT_COLOR,
@@ -63,9 +70,9 @@ lineDefinitions['017020'] = {
     )
     const [ , b3 ] = drawText(
       result,
-      { x: p0.x + r * 1.4, y: p0.y - r / 5},
+      { x: p0.x + r * 1.4, y: p0.y - r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.bottom ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.W] ?? '',
       TEXT_SIZE,
       'start',
       TEXT_COLOR,
@@ -75,7 +82,7 @@ lineDefinitions['017020'] = {
       result,
       { x: p0.x + r * 1.4, y: p0.y + r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.additional ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       TEXT_SIZE,
       'start',
       TEXT_COLOR,
