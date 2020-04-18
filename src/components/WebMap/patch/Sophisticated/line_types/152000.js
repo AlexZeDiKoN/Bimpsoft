@@ -1,16 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArrow, continueLine,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, continueLine, drawLineMark, angleOf,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ATTACK BY FIRE POSITION
 // task code: DZVIN-5517
 // hint: 'Розвідувальні (спеціальні) завдання нападом'
-
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
-const EDGE_LENGTH = 60
 
 lineDefinitions['152000'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -30,16 +27,17 @@ lineDefinitions['152000'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const mid = segmentBy(p0, p1, 0.5)
     const norm = normalVectorTo(p0, p1, p2)
     const endPoint = applyVector(mid, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
-    drawArrow(result, mid, endPoint, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLine(result, mid, p2)
+    const graphicSize = drawLineMark(result, MARK_TYPE.ARROW_60, p2, angleOf(mid, endPoint))
     drawLine(result, p0, p1)
-    const len = EDGE_LENGTH * scale
+    const len = graphicSize
     continueLine(result, p0, p1, len, hp * len)
     continueLine(result, p1, p0, len, -hp * len)
   },
