@@ -525,7 +525,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.T]: '', [amps.W]: '' },
+          pointAmplifier: { [amps.T]: 'AVON', [amps.W]: '' },
         },
       },
       {
