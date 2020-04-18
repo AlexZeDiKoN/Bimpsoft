@@ -627,7 +627,7 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       drawLine(result,
         getPointMove(point, angle - Math.PI / 2, graphicSize / 2),
         getPointMove(point, angle + Math.PI / 2, graphicSize / 2))
-      return
+      return graphicSize
     case MARK_TYPE.CROSS:
       drawLine(result,
         getPointMove(point, angle - Math.PI / 3, graphicSize),
@@ -635,7 +635,7 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       drawLine(result,
         getPointMove(point, angle + Math.PI / 3, graphicSize),
         getPointMove(point, angle + Math.PI / 3, -graphicSize))
-      return
+      return graphicSize
     case MARK_TYPE.ARROW_90:
       da = Math.PI / 4
       break
@@ -651,7 +651,8 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
     default: // для стрілок з заливкою
       // eslint-disable-next-line max-len
       result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
-      return
+      return graphicSize
   }
   drawLine(result, getPointMove(point, angle - da, graphicSize), point, getPointMove(point, angle + da, graphicSize))
+  return graphicSize
 }
