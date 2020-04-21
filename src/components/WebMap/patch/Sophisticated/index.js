@@ -85,7 +85,7 @@ export const CONFIG = {
   TEXT_EDGE: 4,
   FONT_FAMILY: 'Arial',
   FONT_SIZE: '2', // em
-  FONT_WEIGHT: 'normal',
+  FONT_WEIGHT: 'bold',
 }
 
 export const TEXTS = {
