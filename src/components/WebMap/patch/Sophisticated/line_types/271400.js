@@ -3,12 +3,12 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, continueLine, halfPlane,
 } from '../utils'
+import { interpolateSize } from '../../utils/helpers'
+import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: BRIDGE
 // task code: DZVIN-5775
 // hint: 'Мостова переправа'
-
-const EDGE_WIDTH = 60
 
 lineDefinitions['271400'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -28,7 +28,7 @@ lineDefinitions['271400'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const norm = normalVectorTo(p0, p1, p2)
@@ -37,7 +37,7 @@ lineDefinitions['271400'] = {
     const hp = 1 - halfPlane(p0, p1, p2) * 2
     drawLine(result, p0, p1)
     drawLine(result, a, b)
-    const width = EDGE_WIDTH * scale
+    const width = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE) // EDGE_WIDTH * scale
     continueLine(result, p0, p1, width, hp * width)
     continueLine(result, p1, p0, width, -hp * width)
     continueLine(result, a, b, width, -hp * width)
