@@ -11,9 +11,6 @@ import { settings } from '../../../../../utils/svg/lines'
 // task code: DZVIN-5519
 // hint: 'Головний напрямок атаки'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 36
-
 lineDefinitions['140602'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.allowOver(1),
@@ -32,12 +29,13 @@ lineDefinitions['140602'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, ...rest ] = points
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
     const angle = angleOf(p1, p0)
+    const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
 
-    drawArrowOutline(result, p1, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawArrowOutline(result, p1, p0, graphicSize, graphicSize)
 
     if (rest.length) {
       drawLine(result, p1, ...rest)
