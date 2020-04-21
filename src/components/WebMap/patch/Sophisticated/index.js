@@ -85,7 +85,7 @@ export const CONFIG = {
   TEXT_EDGE: 4,
   FONT_FAMILY: 'Arial',
   FONT_SIZE: '2', // em
-  FONT_WEIGHT: 'bold',
+  FONT_WEIGHT: 'normal',
 }
 
 export const TEXTS = {
@@ -136,7 +136,7 @@ L.Sophisticated = L.Polyline.extend({
       this._bounds = new L.LatLngBounds()
     }
     let next = this._convertLatLngs(latlngs)
-    let firstTime = !this._prevPoints || this._prevPoints.length !== next.length
+    const firstTime = !this._prevPoints || this._prevPoints.length !== next.length
     if (firstTime) {
       this._prevPoints = next
     }
