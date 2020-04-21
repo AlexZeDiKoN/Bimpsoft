@@ -432,7 +432,7 @@ export const drawArrowOutline = (result, p1, p2, dL, dW, ddL, ddW, drawArrowLine
 }
 
 // Стрілка з пунктирною лінією
-export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
+export const drawDoubleArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
   ddL = ddL === undefined ? dL / 3 : ddL
   ddW = ddW === undefined ? dW / 3 : ddW
   drawLine(result, p1, p2)
@@ -490,6 +490,38 @@ export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
       pu,
     )
   }
+}
+
+// Стрілка з пунктирної лінії
+export const drawArrowDashes = (result, pO, angle, length) => {
+  const pd = getPointMove(pO, angle - Math.PI / 4, length)
+  const pu = getPointMove(pO, angle + Math.PI / 4, length)
+  drawLine(
+    result,
+    pd,
+    segmentBy(pd, pO, 0.2),
+  )
+  drawLine(
+    result,
+    segmentBy(pd, pO, 0.4),
+    segmentBy(pd, pO, 0.6),
+  )
+  drawLine(
+    result,
+    segmentBy(pd, pO, 0.8),
+    pO,
+    segmentBy(pu, pO, 0.8),
+  )
+  drawLine(
+    result,
+    segmentBy(pu, pO, 0.6),
+    segmentBy(pu, pO, 0.4),
+  )
+  drawLine(
+    result,
+    segmentBy(pu, pO, 0.2),
+    pu,
+  )
 }
 
 // Продовження відрізку засічкою вказаного розміру
@@ -648,6 +680,9 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
     case MARK_TYPE.ARROW_30:
       da = Math.PI / 12
       break
+    case MARK_TYPE.ARROW_90_DASHES:
+      drawArrowDashes(result, point, angle, graphicSize)
+      return graphicSize
     default: // для стрілок з заливкою
       // eslint-disable-next-line max-len
       result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)

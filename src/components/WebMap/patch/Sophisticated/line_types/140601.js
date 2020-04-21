@@ -37,6 +37,7 @@ lineDefinitions['140601'] = {
     const l = segmentLength(p0, p1)
     const h = BUT_HEIGHT * scale / 2
     const d = h * Math.sqrt(3)
+    const angle = angleOf(p1, p0)
 
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
     const p0e = segmentBy(p0, p1, 2 / 3 - d / l)
@@ -58,7 +59,7 @@ lineDefinitions['140601'] = {
       drawLine(result, p1, p0)
     }
 
-    drawLineMark(result, MARK_TYPE.ARROW_90, p0, angleOf(p1, p0))
+    drawLineMark(result, MARK_TYPE.ARROW_90, p0, angle)
 
     if (rest.length) {
       drawLine(result, p1, ...rest)
@@ -67,14 +68,15 @@ lineDefinitions['140601'] = {
     drawMaskedText(
       result,
       segmentBy(p0, p0e, 0.6),
-      angleOf(p1, p0),
+      angle,
       amplifiersInfo[amps.T] ?? '',
     )
 
+    const pW = getPointAt(p1, p0e, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, h * 1.1)
     drawMaskedText(
       result,
-      getPointAt(p1, p0e, Math.PI / 2, h),
-      angleOf(p1, p0),
+      pW, // getPointAt(p1, p0e, Math.PI / 2, h),
+      angle,
       amplifiersInfo[amps.W] ?? '',
       0.75, 'middle', 'before-edge',
     )
