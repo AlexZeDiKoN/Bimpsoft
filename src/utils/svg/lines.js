@@ -50,6 +50,7 @@ export const MARK_TYPE = {
   ARROW_30: 'arrow30',
   ARROW_30_FILL: 'arrow30fill',
   ARROW_60_FILL: 'arrow60fill',
+  ARROW_90_DASHES: 'arrow90dashes',
   ARROW1: 'arrow1',
   ARROW2: 'arrow2',
   ARROW3: 'arrow3',
