@@ -4,6 +4,7 @@ import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
 import { MARK_TYPE, drawLineEnd, settings } from '../../../../utils/svg/lines'
+import { FONT_FAMILY, FONT_WEIGHT } from '../../../../utils/svg'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -549,16 +550,18 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
     textSizeCache[key] = box
   }
   // Ампліфікатор
+  // font-weight="${CONFIG.FONT_WEIGHT}"
+  // fill="${color || result.layer._path.getAttribute('stroke')}"
   const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
+    font-family="${FONT_FAMILY}"
+    font-weight="${FONT_WEIGHT}"
+    stroke="none" 
     transform="${transform}"
     x="${0}" 
     y="${0}" 
-    fill="${color || result.layer._path.getAttribute('stroke')}" 
     text-anchor="${textAnchor}" 
-    font-family="${CONFIG.FONT_FAMILY}"
     font-size="${fontSize}"
-    font-weight="${CONFIG.FONT_WEIGHT}"
     alignment-baseline="${textAlign}" 
   >${text}</text>`
   return [ transform, box ]

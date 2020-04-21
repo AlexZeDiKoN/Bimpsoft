@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
 import { extractSubordinationLevelSVG } from './milsymbol'
-import { extractTextSVG } from './text'
+import { extractTextSVG, FONT_WEIGHT } from './text'
 
 export const settings = {
   LINE_WIDTH: 2, // (пікселів) товщина ліній
@@ -867,7 +867,7 @@ const getTextAmplifiers = ({
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
-          font-weight="bold"
+          font-weight="${FONT_WEIGHT}"
        >${amplifier.sign}</g>`
       })
     })
