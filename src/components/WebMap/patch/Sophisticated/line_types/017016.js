@@ -34,6 +34,19 @@ lineDefinitions['017016'] = {
   // Вершини, які дозволено вилучати
   allowDelete: DELETE.none,
 
+  // Вершини, які дозволено вилучати на формі налаштування
+  // вилучаєм початкову точку блоку зосередження вогню
+  // має залишитися мінімум 2 блоки
+  allowDeleteForm: (index, count) => ((index < count - 2) && (index % 3 === 1) && (count > 9)),
+
+  // індекси вершин, які треба видалити
+  deleteCoordinatesForm: (index, count) => {
+    if ((index < count - 2) && (index % 3 === 1) && (count > 9)) {
+      return { index, count: 3 }
+    }
+    return { index, count: 0 }
+  },
+
   // Додавання вершин
   addCoordinatesLL: (coordinates, index) => {
     if (index < 3 || coordinates.length <= index) {
@@ -60,7 +73,6 @@ lineDefinitions['017016'] = {
     // Варіант для демонстрації
     const indEnd = nextPoints.length - 1
     const c = (indEnd / 3) | 0
-    // const c = layer?.options?.params?.count
     for (const ch of changed) {
       const role = ch % 3
       if (role === 0) {
