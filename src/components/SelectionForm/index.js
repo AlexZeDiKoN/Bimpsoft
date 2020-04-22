@@ -23,7 +23,9 @@ import {
   SectorsForm,
   PollutionCircleForm,
   MineFieldForm,
-  CircularZoneForm, AttackForm,
+  CircularZoneForm,
+  AttackForm,
+  ConcentrationOfFireForm,
 } from './forms'
 // import  from './forms/CircularZoneForm'
 
@@ -162,6 +164,13 @@ const forms = {
     minWidth: 750,
     maxHeight: 420,
   },
+  [SelectionTypes.CONCENTRATION_FIRE]: {
+    title: i18n.CONCENTRATION_FIRE,
+    component: ConcentrationOfFireForm,
+    minHeight: 330,
+    maxHeight: 630,
+    minWidth: 415,
+  },
 }
 
 export default class SelectionForm extends React.Component {
@@ -217,6 +226,9 @@ export default class SelectionForm extends React.Component {
           break
         case '270800':
           formType = SelectionTypes.MINEDAREA
+          break
+        case '017016':
+          formType = SelectionTypes.CONCENTRATION_FIRE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }
