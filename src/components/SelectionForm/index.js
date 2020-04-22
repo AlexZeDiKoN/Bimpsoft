@@ -100,6 +100,13 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.GROUPED_REGION]: {
+    title: i18n.CONTOUR_REGION_UNIT,
+    component: ContourForm,
+    minHeight: 330,
+    maxHeight: 330,
+    minWidth: 415,
+  },
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.SOPHISTICATED,
     component: SophisticatedForm,

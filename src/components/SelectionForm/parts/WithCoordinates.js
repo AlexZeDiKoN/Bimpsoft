@@ -17,11 +17,23 @@ const { icons: { IconHovered, names: iconNames } } = components
 const WithCoordinates = (Component) => class CoordinatesComponent extends CoordinatesMixin(Component) {
   state = { editCoordinates: false }
 
-  coordinateRemoveHandler = (index) => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
-      coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
-    ),
-  )
+  coordinateRemoveHandler = (index) => {
+    const count = this.getResult().getIn(COORDINATE_PATH).size
+    const lineCode = extractLineCode(this.props.data.code)
+    if (lineDefinitions[lineCode]?.deleteCoordinatesForm) {
+      const removeCoord = lineDefinitions[lineCode]?.deleteCoordinatesForm(index, count)
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH,
+          (coordinatesArray) => coordinatesArray.splice(removeCoord.index, removeCoord.count)),
+      )
+    } else {
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
+          coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
+        ),
+      )
+    }
+  }
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
     editCoordinates: !state.editCoordinates,
@@ -56,7 +68,9 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const canEdit = this.isCanEdit()
     const canEditCoord = canEdit && editCoordinates
     const codeLine = extractLineCode(this.props.data.code)
-    const allowDelete = lineDefinitions[codeLine]?.allowDelete
+    const allowDelete = lineDefinitions[codeLine]?.allowDeleteForm
+      ? lineDefinitions[codeLine]?.allowDeleteForm
+      : lineDefinitions[codeLine]?.allowDelete
     const allowMiddle = lineDefinitions[codeLine]?.allowMiddle
     const countCoordinates = coordinatesArray.length
     return (

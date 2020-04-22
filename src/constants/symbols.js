@@ -675,7 +675,7 @@ export const symbols = [
           isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: 'T', [amps.N]: '101' },
-          params: { count: 5, number: 101 },
+          params: { count: 2, number: 101 },
         },
       },
       {
