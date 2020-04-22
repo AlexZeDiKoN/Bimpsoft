@@ -3,11 +3,12 @@ import WrappedMarch from '../components/common/March'
 import { march } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = ({ march: { indicators, segments, integrity, dataMarch } }) => ({
+const mapStateToProps = ({ march: { indicators, segments, integrity, dataMarch, pointType } }) => ({
   indicators,
   segmentList: segments,
   integrity,
   dataMarch,
+  pointType,
 })
 
 const mapDispatchToProps = catchErrors({

@@ -1,6 +1,5 @@
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
-import { asyncAction } from './index'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')

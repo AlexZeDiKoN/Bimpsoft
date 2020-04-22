@@ -34,11 +34,28 @@ const getMemoGeoLandmarks = (() => {
   }
 })()
 
-const March = (props) => {
-  const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+const getMarchPoints = (pointType, dataMarch) => {
+  const { pointRestTime, dayNightRestTime, dailyRestTime } = dataMarch
 
-  const segments = props.segmentList.toArray()
-  const marchDetails = getMarchDetails(segments, props.dataMarch)
+  const MarchPoints = [
+    { rest: false, time: 0 },
+    { rest: true, time: pointRestTime },
+    { rest: true, time: dayNightRestTime },
+    { rest: true, time: dailyRestTime },
+    { rest: true, time: 0, notEditableTime: true },
+    { rest: false, time: 0 },
+  ]
+
+  return MarchPoints.map((point, id) => ({ ...point, ...pointType[id] }))
+}
+
+const March = (props) => {
+  const { pointType, dataMarch, segmentList } = props
+  const segments = segmentList.toArray()
+
+  const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+  const marchDetails = getMarchDetails(segments, dataMarch)
+  const marchPoints = getMarchPoints(pointType, dataMarch)
 
   const renderDotsForms = () => {
     const { editFormField, addChild, deleteChild, setCoordMode } = props
@@ -74,6 +91,7 @@ const March = (props) => {
               refPoint={''}
               {...segment}
               isLast={segments.length - 1 === segmentId}
+              marchPoints={marchPoints}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -81,6 +99,7 @@ const March = (props) => {
                 segmentId={segmentId}
                 childId={childId}
                 handlers={handlers}
+                marchPoints={marchPoints}
                 {...segment}
                 {...child}
               />
@@ -118,7 +137,7 @@ March.propTypes = {
   segmentList: PropTypes.shape({
     toArray: PropTypes.func.isRequired,
   }).isRequired,
-  segments: PropTypes.array.isRequired,
+  pointType: PropTypes.array.isRequired,
 }
 
 export default React.memo(March)

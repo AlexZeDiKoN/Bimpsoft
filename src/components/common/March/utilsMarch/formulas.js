@@ -53,6 +53,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   let totalDistance = 0
   let currentCoord = startingPoint.coord
   const childSegments = []
+  const { extractionInColumnFactor, extractionColumnFactor } = dataMarch
 
   for (let index = 0; index < children.length; index++) {
     s = getDistance(currentCoord, children[index].coord)
@@ -68,7 +69,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
     }
 
     if (index === 0) {
-      v = 0.8 * velocity
+      v = extractionInColumnFactor * velocity
     } else {
       v = velocity
     }
@@ -92,7 +93,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   const t = s === 0 ? 0 : s / velocity
 
   const columnLength = getColumnLength(dataMarch)
-  const vFinish = 0.7 * velocity
+  const vFinish = extractionColumnFactor * velocity
   const tFinish = columnLength / vFinish
 
   totalTime += t + tFinish

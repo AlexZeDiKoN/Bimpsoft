@@ -14,16 +14,7 @@ const {
 
 const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
 
-const marchPoints = [
-  { name: i18n.STARTING_LINE, rest: false, time: 0 },
-  { name: i18n.POINT_ON_MARCH, rest: false, time: 0 },
-  { name: i18n.REST_POINT, rest: true, time: 1 },
-  { name: i18n.DAY_NIGHT_REST_POINT, rest: true, time: 8 },
-  { name: i18n.DAILY_REST_POINT, rest: true, time: 24 },
-  { name: i18n.POINT_OF_REGULATION, rest: true, time: 0, notEditableTime: true },
-]
-
-const getPointByName = (name) => marchPoints.find((point) => point.name === name) || marchPoints[0]
+const getPointById = (marchPoints, id) => marchPoints.find((point) => point.id === id) || marchPoints[0]
 
 const getFormattedGeoLandmarks = (geoLandmarks) => {
   const { features = [] } = geoLandmarks
@@ -48,6 +39,8 @@ const MarchForm = (props) => {
     childId,
     isLast,
     restTime,
+    marchPoints,
+    pointType,
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
 
@@ -78,7 +71,7 @@ const MarchForm = (props) => {
     await changeIsLoadingGeoLandmarks(false)
   }
 
-  const point = getPointByName(name)
+  const point = getPointById(marchPoints, pointType)
 
   const onChangeTime = (e) => {
     if (point.notEditableTime) {
@@ -96,10 +89,10 @@ const MarchForm = (props) => {
       val: value,
       segmentId,
       childId,
-      fieldName: 'name',
+      fieldName: 'pointType',
     })
 
-    const point = getPointByName(value)
+    const point = getPointById(marchPoints, value)
 
     editFormField({
       val: point.time,
@@ -175,17 +168,23 @@ const MarchForm = (props) => {
   }
 
   let pointTypeName
+  const staticPointName = {
+    pointOnMarch: marchPoints[0].name,
+    startingLine: marchPoints[5].name,
+  }
+  const { pointOnMarch, startingLine } = staticPointName
+
   if (segmentType === 41) {
     if (childId === undefined && segmentId !== 0) {
-      pointTypeName = i18n.POINT_ON_MARCH
+      pointTypeName = pointOnMarch
     } else {
-      pointTypeName = childId === 0 ? i18n.STARTING_LINE : name
+      pointTypeName = childId === 0 ? startingLine : getPointById(marchPoints, pointType).name
     }
   } else {
     if (childId === undefined) {
-      pointTypeName = segmentType === 0 || segmentId === 0 ? name : i18n.POINT_ON_MARCH
+      pointTypeName = segmentType === 0 || segmentId === 0 ? name : pointOnMarch
     } else {
-      pointTypeName = i18n.POINT_ON_MARCH
+      pointTypeName = pointOnMarch
     }
   }
 
@@ -281,7 +280,7 @@ const MarchForm = (props) => {
               onChange={onChangeMarchPointType}
             >
               {marchPoints.map(({ name }, id) => (
-                <Select.Option key={id} value={name}>
+                <Select.Option key={id} value={id}>
                   {name}
                 </Select.Option>
               ))}
@@ -338,6 +337,8 @@ MarchForm.propTypes = {
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
+  marchPoints: PropTypes.array.isRequired,
+  pointType: PropTypes.number,
 }
 
 export default React.memo(MarchForm)
