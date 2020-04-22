@@ -1191,10 +1191,8 @@ export const drawLineHatch = (layer, scale, hatch) => {
         <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
       </pattern>`
   } else {
-    layer._path.setAttribute('fill', evaluateColor(layer.object?.attributes?.fill) || 'transparent')
-    layer._path.setAttribute('fill-opacity', 0.2)
-    layer.options.fillColor = layer.object?.attributes?.fill || 'transparent'
-    layer.options.fillOpacity = 0.2
+    layer.options.fillColor = evaluateColor(layer.object?.attributes?.fill) || 'transparent'
+    layer.options.fillOpacity = 0.22
   }
   return ''
 }
