@@ -15,6 +15,7 @@ import SectorsForms from './SectorsForm'
 import PollutionCircleForms from './PollutionCircleForm'
 import CircularZoneForms from './CircularZoneForm'
 import AttackForms from './AttackForm'
+import ConcentrationOfFireForms from './ConcentrationOfFireForm'
 
 export const AreaForm = AreaForms
 export const CircleForm = CircleForms
@@ -33,3 +34,4 @@ export const SectorsForm = SectorsForms
 export const PollutionCircleForm = PollutionCircleForms
 export const CircularZoneForm = CircularZoneForms
 export const AttackForm = AttackForms
+export const ConcentrationOfFireForm = ConcentrationOfFireForms

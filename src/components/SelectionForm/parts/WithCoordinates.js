@@ -31,15 +31,22 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const formStore = this.getResult()
     const coordArray = formStore.getIn(COORDINATE_PATH).toJS()
     const count = coordArray.length
-    const amplCount = lineDefinitions[extractLineCode(this.props.data.code)]?.amplCount ?? 0
-    const index2 = (index + 1) % (count - amplCount)
-    // вставка между опорными точками
-    const coordNew = {
-      lat: (coordArray[index2].lat + coordArray[index].lat) / 2,
-      lng: (coordArray[index2].lng + coordArray[index].lng) / 2,
+    const lineCode = extractLineCode(this.props.data.code)
+    if (lineDefinitions[lineCode]?.addCoordinatesLL) {
+      const addCoords = lineDefinitions[lineCode]?.addCoordinatesLL(coordArray, index)
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.splice(index + 1, 0, ...addCoords)))
+    } else {
+      const amplCount = lineDefinitions[extractLineCode(this.props.data.code)]?.amplCount ?? 0
+      const index2 = (index + 1) % (count - amplCount)
+      // вставка между опорными точками
+      const coordNew = {
+        lat: (coordArray[index2].lat + coordArray[index].lat) / 2,
+        lng: (coordArray[index2].lng + coordArray[index].lng) / 2,
+      }
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
     }
-    this.setResult((result) =>
-      result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
   }
 
   renderCoordinates () {

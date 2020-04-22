@@ -493,6 +493,9 @@ export const MIDDLE = {
   // Лінія з кількома ампліфікаторми (ампліфікатори в кінці списку)
   lineWithAmplifiers: (amplCount) =>
     (index1, index2, total) => total - index2 > amplCount,
+
+  // Дозволено в кінець
+  end: (index1, index2, total) => (index1 === total - 1) && (index2 === total),
 }
 
 export const DELETE = {
