@@ -1210,7 +1210,7 @@ const drawIntermediateArrow = (amplifierType, graphicSize) => {
     case MARK_TYPE.ARROW_90:
       return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
     case MARK_TYPE.ARROW_30_FILL:
-      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M32,12l-32-12l32-12z"/>` } ]
+      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
     default:
   }
   return null
