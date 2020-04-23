@@ -1,16 +1,16 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt,
+  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Одинарний нерухомий загороджувальний вогонь'
 
-const TIP_LENGTH = 50
-const EDGE = 40
+const EDGE = 4
 
 lineDefinitions['240701'] = {
   // Ампліфікатори, що використовуються на лінії
@@ -35,15 +35,12 @@ lineDefinitions['240701'] = {
     const [ p0, p1 ] = points
 
     drawLine(result, p0, p1)
+    let angle = angleOf(p0, p1)
+    const len = drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0)) / 2
+    drawLineMark(result, MARK_TYPE.SERIF, p1, angle)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, p1, p0, 0, len)
-    continueLine(result, p1, p0, 0, -len)
-    continueLine(result, p0, p1, 0, len)
-    continueLine(result, p0, p1, 0, -len)
-
-    const angle = angleOf(p0, p1) - Math.PI / 2
-    const top = angleOf(p0, p1) < 0
+    const top = angle < 0
+    angle -= Math.PI / 2
 
     drawText(
       result,
@@ -53,6 +50,7 @@ lineDefinitions['240701'] = {
       1,
       'middle',
       'black',
+      top ? 'after-edge' : 'before-edge',
     )
 
     drawText(

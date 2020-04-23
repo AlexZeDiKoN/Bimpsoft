@@ -23,7 +23,9 @@ import {
   SectorsForm,
   PollutionCircleForm,
   MineFieldForm,
-  CircularZoneForm, AttackForm,
+  CircularZoneForm,
+  AttackForm,
+  ConcentrationOfFireForm,
 } from './forms'
 // import  from './forms/CircularZoneForm'
 
@@ -98,6 +100,13 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.GROUPED_REGION]: {
+    title: i18n.CONTOUR_REGION_UNIT,
+    component: ContourForm,
+    minHeight: 330,
+    maxHeight: 330,
+    minWidth: 415,
+  },
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.SOPHISTICATED,
     component: SophisticatedForm,
@@ -127,7 +136,7 @@ const forms = {
     maxHeight: 805,
   },
   [SelectionTypes.MINEDAREA]: {
-    title: i18n.SHAPE_MINEDAREA,
+    title: i18n.SHAPE_MINED_AREA,
     component: MinedAreaForm,
     minHeight: 645,
     minWidth: 800,
@@ -142,14 +151,14 @@ const forms = {
     maxHeight: 800,
   },
   [SelectionTypes.POLLUTION_CIRCLE]: {
-    title: i18n.SHAPE_POLLUTINCIRCLE,
+    title: i18n.SHAPE_POLLUTION_CIRCLE,
     component: PollutionCircleForm,
     minHeight: 545,
     minWidth: 600,
     maxHeight: 545,
   },
   [SelectionTypes.CIRCULAR_ZONE]: {
-    title: i18n.SHAPE_CIRCULARZONE,
+    title: i18n.SHAPE_CIRCULAR_ZONE,
     component: CircularZoneForm,
     minHeight: 645,
     minWidth: 550,
@@ -161,6 +170,13 @@ const forms = {
     minHeight: 420,
     minWidth: 750,
     maxHeight: 420,
+  },
+  [SelectionTypes.CONCENTRATION_FIRE]: {
+    title: i18n.CONCENTRATION_FIRE,
+    component: ConcentrationOfFireForm,
+    minHeight: 670,
+    maxHeight: 680,
+    minWidth: 415,
   },
 }
 
@@ -217,6 +233,9 @@ export default class SelectionForm extends React.Component {
           break
         case '270800':
           formType = SelectionTypes.MINEDAREA
+          break
+        case '017016':
+          formType = SelectionTypes.CONCENTRATION_FIRE
           break
         default: formType = SelectionTypes.SOPHISTICATED
       }

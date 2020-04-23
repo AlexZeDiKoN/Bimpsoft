@@ -2,15 +2,15 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, drawArc, angleOf, segmentLength,
+  drawLine, segmentBy, drawArc, angleOf, segmentLength, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ISOLATE
 // task code: DZVIN-5534
 // hint: 'Ізолювання противника'
 
-const ARROW_LENGTH = 48
-const FRACTIONS = 20
+// const FRACTIONS = 20
 const FRACTION_WIDTH = 0.3
 
 lineDefinitions['341500'] = {
@@ -30,7 +30,7 @@ lineDefinitions['341500'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const r = segmentLength(p0, p1)
@@ -53,17 +53,16 @@ lineDefinitions['341500'] = {
     drawArc(result, p1, p, r, 0, 1, 1)
 
     // arrow
+    const arrowLength = drawLineMark(result, MARK_TYPE.ARROW_90, p, angle + Math.PI / 3.1)
     const arrow = {
-      x: ARROW_LENGTH * scale,
-      y: 0
+      x: arrowLength, // ARROW_LENGTH * scale,
+      y: 0,
     }
     const a1 = applyToPoint(ang2(100), arrow)
     const a2 = applyToPoint(ang2(10), arrow)
-    drawLine(result, p, a1)
-    drawLine(result, p, a2)
 
     // teeth
-    const da = Math.trunc(r / FRACTIONS / scale)
+    const da = Math.trunc(r / (arrowLength / 2)) // FRACTIONS / scale)
     const a3 = segmentBy(a1, a2, 0.5)
     const x1 = angle * 180 / Math.PI
     const x2 = angleOf(p0, a3) * 180 / Math.PI
@@ -88,17 +87,17 @@ lineDefinitions['341500'] = {
 
         const ppr = applyToPoint(t, {
           x: r2,
-          y: 0
+          y: 0,
         })
 
         const pr2 = applyToPoint(t2, {
           x: r,
-          y: 0
+          y: 0,
         })
 
         const pr3 = applyToPoint(t3, {
           x: r,
-          y: 0
+          y: 0,
         })
 
         drawLine(result, pr2, ppr, pr3)

@@ -1,33 +1,105 @@
 import { applyToPoint, applyToPoints, compose, inverse, rotate } from 'transformation-matrix'
-import { MIDDLE, DELETE } from '../strategies'
+import { DELETE, MIDDLE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, angleOf, segmentLength, translateFrom, translateTo, getPointAt, drawText,
-  setVectorLength, getVector, setToSegment, oppositeVector,
+  angleOf,
+  applyVector,
+  drawLine,
+  drawLineMark,
+  drawText,
+  getVector,
+  normalVectorTo,
+  oppositeVector,
+  segmentLength,
+  setToSegment,
+  setVectorLength,
+  translateFrom,
+  translateTo,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
 // hint: 'Послідовне зосередження вогню'
 
 const EDGE = 32
-const BORDER = 48
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
-  // Ампліфікатори лінії
-  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'Початковий номер' } ],
+  // Ампліфікатори на лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'Початковий номер', type: 'num' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
-  allowMiddle: MIDDLE.none,
-
+  allowMiddle: MIDDLE.end,
   // Вершини, які дозволено вилучати
   allowDelete: DELETE.none,
 
+  // Вершини, які дозволено вилучати на формі налаштування
+  // вилучаєм початкову точку блоку зосередження вогню
+  // має залишитися мінімум 2 блоки
+  allowDeleteForm: (index, count) => ((index < count - 2) && (index % 3 === 1) && (count > 9)),
+
+  // індекси вершин, які треба видалити
+  deleteCoordinatesForm: (index, count) => {
+    if ((index < count - 2) && (index % 3 === 1) && (count > 9)) {
+      return { index, count: 3 }
+    }
+    return { index, count: 0 }
+  },
+
+  // Додавання вершин
+  addCoordinatesLL: (coordinates, index) => {
+    if (index < 3 || coordinates.length <= index) {
+      return []
+    }
+    return [
+      {
+        lat: coordinates[index].lat + coordinates[index - 2].lat - coordinates[index - 3].lat,
+        lng: coordinates[index].lng + coordinates[index - 2].lng - coordinates[index - 3].lng,
+      },
+      {
+        lat: coordinates[index].lat + coordinates[index - 1].lat - coordinates[index - 3].lat,
+        lng: coordinates[index].lng + coordinates[index - 1].lng - coordinates[index - 3].lng,
+      },
+      {
+        lat: coordinates[index].lat + coordinates[index].lat - coordinates[index - 3].lat,
+        lng: coordinates[index].lng + coordinates[index].lng - coordinates[index - 3].lng,
+      },
+    ]
+  },
+
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-  adjust: (prevPoints, nextPoints, changed, layer) => {
+  // для обробки видалення блоку зосередження вогню
+  // Обробка географічних координат
+  adjustForm: (prevPoints, nextPoints, changed) => {
+    const indEnd = prevPoints.length - 1
+    for (const ch of changed) {
+      const role = ch % 3
+      if ((role === 1) && ((ch + 2) < indEnd)) { // обрабатываем изменение только центральных точек блоков
+        // обработка центральной точки блока
+        const s1 = prevPoints[ch - 1]
+        const p3 = prevPoints[ch + 2]
+        const p0 = prevPoints[ch]
+        const p1 = prevPoints[ch + 1]
+        nextPoints[ch] = { // опорную точку блока перемещаем на середину вновь образованого сегмента
+          lat: s1.lat + (p3.lat - s1.lat) / 2,
+          lng: s1.lng + (p3.lng - s1.lng) / 2,
+        }
+        // перенос боковой точки блока
+        const move = distanceAzimuth(p0, p1)
+        const dAngle = distanceAzimuth(p3, p0).angledeg - distanceAzimuth(p3, nextPoints[ch]).angledeg
+        move.angledeg -= dAngle
+        nextPoints[ch + 1] = moveCoordinate(nextPoints[ch], move)
+      }
+    }
+  },
+
+  // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
+  adjust: (prevPoints, nextPoints, changed) => {
     // Варіант для демонстрації
-    const c = layer?.options?.params?.count
+    const indEnd = nextPoints.length - 1
+    const c = (indEnd / 3) | 0
     for (const ch of changed) {
       const role = ch % 3
       if (role === 0) {
@@ -106,7 +178,8 @@ lineDefinitions['017016'] = {
 
   // Рендер-функція
   render: (result, points, scale) => {
-    const c = result.layer?.options?.params?.count ?? 0
+    const indEnd = points.length - 1
+    const c = (indEnd / 3) | 0
     let start = points[0]
     for (let i = 0; i < c; i++) {
       const t = compose(
@@ -132,14 +205,8 @@ lineDefinitions['017016'] = {
       drawLine(result, start, middles[1])
     }
 
-    const drawBorder = (idx1, idx2) => drawLine(
-      result,
-      getPointAt(points[idx1 * 3], points[idx2 * 3], Math.PI / 2, BORDER * scale),
-      getPointAt(points[idx1 * 3], points[idx2 * 3], -Math.PI / 2, BORDER * scale),
-    )
-
-    drawBorder(1, 0)
-    drawBorder(c - 1, c)
+    drawLineMark(result, MARK_TYPE.SERIF, points[0], angleOf(points[3], points[0]))
+    drawLineMark(result, MARK_TYPE.SERIF, points[indEnd], angleOf(points[indEnd - 3], points[indEnd]))
 
     // Варіант для демонстрації
     const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''

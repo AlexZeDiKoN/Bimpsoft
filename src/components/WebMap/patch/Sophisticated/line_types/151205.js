@@ -2,14 +2,14 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, drawArc, angleOf, segmentLength, drawMaskedText,
+  drawLine, drawArc, angleOf, segmentLength, drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: RETAIN
 // task code: DZVIN-5524
 // hint: 'Запобігти захопленню визначеної ділянки місцевості (об’єкту) противником'
 
-const ARROW_LENGTH = 48
 const FRACTIONS = 8
 const TEXT = 'R'
 
@@ -53,15 +53,12 @@ lineDefinitions['151205'] = {
     drawArc(result, p1, p, r, 0, 1, 1)
 
     // arrow
-    const arrow = { x: ARROW_LENGTH * scale, y: 0 }
-    const a1 = applyToPoint(ang2(100), arrow)
-    const a2 = applyToPoint(ang2(10), arrow)
-    drawLine(result, p, a1)
-    drawLine(result, p, a2)
+    const arrowLength = drawLineMark(result, MARK_TYPE.ARROW_60, p, angle + Math.PI / 3.1)
+    const arrow = { x: arrowLength * 1.2, y: 0 }
 
     // tips
     const da = Math.trunc(r / FRACTIONS / scale)
-    const a3 = segmentBy(a1, a2, 0.5)
+    const a3 = applyToPoint(ang2(55), arrow)
     const x1 = angle * 180 / Math.PI
     const x2 = angleOf(p0, a3) * 180 / Math.PI
     const da1 = da * ((360 - ((x1 - x2) % 360)) / 180)

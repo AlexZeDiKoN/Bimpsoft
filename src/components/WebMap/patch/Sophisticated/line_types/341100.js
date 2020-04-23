@@ -2,16 +2,17 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: FIX
 // task code: DZVIN-5532
-// hint: `Ефект затримання  спрямований на планування вогню і загороджень для затримання атакуючих у певній зоні, зазвичай в зоні бойових дій`
+// hint: `Ефект затримання  спрямований на планування вогню і загороджень для затримання атакуючих у певній зоні,
+// зазвичай в зоні бойових дій`
 
-const ARROW_LENGTH = 24
-const ARROW_WIDTH = 24
-const SPRING_LENGTH = 18
+const SCALE_WIDTH = 0.5
+const SCALE_SPRING = 0.5
 const TEXT = 'F'
 
 lineDefinitions['341100'] = {
@@ -31,20 +32,22 @@ lineDefinitions['341100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
-
+    const arrowLength = drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
+    const arrowWidth = arrowLength * SCALE_WIDTH
+    const springLength = arrowLength * SCALE_SPRING
     const l = segmentLength(p0, p1)
     if (l <= 0) {
       return
     }
-    if (l > (ARROW_LENGTH * 5 + SPRING_LENGTH) * scale) {
-      const p2 = segmentBy(p0, p1, ARROW_LENGTH * scale * 3 / l)
-      const fixL = ARROW_LENGTH * scale * 5
-      const num = Math.trunc((l - fixL) / SPRING_LENGTH / scale)
-      const p3 = segmentBy(p0, p1, scale * (ARROW_LENGTH * 3 + num * SPRING_LENGTH) / l)
+    if (l > (arrowLength * 5 + springLength)) {
+      const p2 = segmentBy(p0, p1, arrowLength * 3 / l)
+      const fixL = arrowLength * 5
+      const num = Math.trunc((l - fixL) / springLength)
+      const p3 = segmentBy(p0, p1, (arrowLength * 3 + num * springLength) / l)
       drawLine(result, p0, p2)
-      drawArrow(result, p3, p1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+      drawLine(result, p3, p1)
       const t = compose(
         translate(p0.x, p0.y),
         rotate(angleOf(p0, p1)),
@@ -53,25 +56,26 @@ lineDefinitions['341100'] = {
         drawLine(
           result,
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * i),
+            x: -(arrowLength * 3 + springLength * i),
             y: 0,
           }),
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * (0.5 + i)),
-            y: ARROW_WIDTH * scale * ((i % 2) * 2 - 1),
+            x: -(arrowLength * 3 + springLength * (0.5 + i)),
+            y: arrowWidth * ((i % 2) * 2 - 1),
           }),
           applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * (1 + i)),
+            x: -(arrowLength * 3 + springLength * (1 + i)),
             y: 0,
           }),
         )
       }
     } else {
-      drawArrow(result, p0, p1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+      drawLine(result, p0, p1)
     }
+
     drawMaskedText(
       result,
-      segmentBy(p0, p1, ARROW_LENGTH * scale * 1.5 / l),
+      segmentBy(p0, p1, arrowLength * 1.5 / l),
       angleOf(p1, p0),
       TEXT,
     )

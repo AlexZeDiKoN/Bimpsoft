@@ -1,9 +1,10 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier, emptyPath, getPointAt,
-  setVectorLength,
+  drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier, emptyPath,
+  setVectorLength, drawLineMark, angleOf,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: Підрозділ (група), який проводить пошук (наліт), із зазначенням належності
 // task code: DZVIN-6010
@@ -34,7 +35,7 @@ lineDefinitions['017024'] = {
     const [ p0, p1, p2, p3 ] = points
 
     const dashed = emptyPath()
-    const arrows = emptyPath()
+    // const arrows = emptyPath()
 
     const norm = normalVectorTo(p1, p2, p0)
     const a = applyVector(p1, norm)
@@ -42,22 +43,15 @@ lineDefinitions['017024'] = {
 
     const norm1 = normalVectorTo(p1, p2, p3)
     const norm2 = setVectorLength(norm1, segmentLength(norm1) - ARROW_WIDTH * scale / 2)
-    const a1 = applyVector(p2, norm1)
+    // const a1 = applyVector(p2, norm1)
     const a2 = applyVector(p2, norm2)
     drawLine(dashed, a2, p2)
 
     const r = segmentLength(p1, p2) / 2
     drawArc(dashed, p1, p2, r, 0, 0, halfPlane(p0, p1, p2))
-
-    const pa11 = getPointAt(p2, a1, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-    const pa12 = getPointAt(p2, a1, -5 * Math.PI / 6, ARROW_WIDTH * scale)
-    drawLine(arrows, a1, pa11, pa12)
-
-    const pa21 = getPointAt(a, p1, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-    const pa22 = getPointAt(a, p1, -5 * Math.PI / 6, ARROW_WIDTH * scale)
-    drawLine(arrows, p1, pa21, pa22)
-
     addPathAmplifier(result, dashed, false, 20)
-    addPathAmplifier(result, arrows, true, false)
+
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p3, angleOf(p2, p3))
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p1, angleOf(p0, p1))
   },
 }

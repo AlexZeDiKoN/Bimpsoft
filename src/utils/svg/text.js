@@ -4,6 +4,7 @@ import { Align } from '../../constants'
 import { pointsToD, rectToPoints } from './lines'
 
 export const FONT_FAMILY = 'Arial'
+export const FONT_WEIGHT = 'bold'
 const LINE_COEFFICIENT = 1.2
 
 let ctx = null

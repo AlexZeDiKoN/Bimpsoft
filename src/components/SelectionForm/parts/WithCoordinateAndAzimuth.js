@@ -78,7 +78,7 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
                 onSearch={placeSearch}
               />
             </FormItem>
-            <FormRow label={i18n.AZIMUT}>
+            <FormRow label={i18n.AZIMUTH}>
               <InputWithSuffix
                 readOnly={!canEdit}
                 value={azimuth}

@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import { List } from 'immutable'
 import i18n from '../../../i18n'
 import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
@@ -17,11 +18,31 @@ const { icons: { IconHovered, names: iconNames } } = components
 const WithCoordinates = (Component) => class CoordinatesComponent extends CoordinatesMixin(Component) {
   state = { editCoordinates: false }
 
-  coordinateRemoveHandler = (index) => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
-      coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
-    ),
-  )
+  coordinateRemoveHandler = (index) => {
+    const count = this.getResult().getIn(COORDINATE_PATH).size
+    const lineCode = extractLineCode(this.props.data.code)
+    if (lineDefinitions[lineCode]?.deleteCoordinatesForm) {
+      // определяем какие опорные точки нужно удалить вместе с выбранной
+      const removeCoord = lineDefinitions[lineCode].deleteCoordinatesForm(index, count)
+      if (lineDefinitions[lineCode]?.adjustForm) { // приводим в порядок опорные точки, если есть обработчик
+        const prevPoint = this.getResult().getIn(COORDINATE_PATH).splice(removeCoord.index, removeCoord.count).toJS()
+        const nextPoint = [ ...prevPoint ]
+        lineDefinitions[lineCode].adjustForm(prevPoint, nextPoint, [ removeCoord.index ])
+        this.setResult((result) => result.setIn(COORDINATE_PATH, List(nextPoint)))
+      } else { // просто удаляем
+        this.setResult((result) =>
+          result.updateIn(COORDINATE_PATH,
+            (coordinatesArray) => coordinatesArray.splice(removeCoord.index, removeCoord.count)),
+        )
+      }
+    } else { // удаляем только выбранную опорную точку
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
+          coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
+        ),
+      )
+    }
+  }
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
     editCoordinates: !state.editCoordinates,
@@ -31,15 +52,22 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const formStore = this.getResult()
     const coordArray = formStore.getIn(COORDINATE_PATH).toJS()
     const count = coordArray.length
-    const amplCount = lineDefinitions[extractLineCode(this.props.data.code)]?.amplCount ?? 0
-    const index2 = (index + 1) % (count - amplCount)
-    // вставка между опорными точками
-    const coordNew = {
-      lat: (coordArray[index2].lat + coordArray[index].lat) / 2,
-      lng: (coordArray[index2].lng + coordArray[index].lng) / 2,
+    const lineCode = extractLineCode(this.props.data.code)
+    if (lineDefinitions[lineCode]?.addCoordinatesLL) {
+      const addCoords = lineDefinitions[lineCode]?.addCoordinatesLL(coordArray, index)
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinates) => coordinates.splice(index + 1, 0, ...addCoords)))
+    } else {
+      const amplCount = lineDefinitions[extractLineCode(this.props.data.code)]?.amplCount ?? 0
+      const index2 = (index + 1) % (count - amplCount)
+      // вставка между опорными точками
+      const coordNew = {
+        lat: (coordArray[index2].lat + coordArray[index].lat) / 2,
+        lng: (coordArray[index2].lng + coordArray[index].lng) / 2,
+      }
+      this.setResult((result) =>
+        result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
     }
-    this.setResult((result) =>
-      result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.insert(index + 1, coordNew)))
   }
 
   renderCoordinates () {
@@ -49,7 +77,9 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const canEdit = this.isCanEdit()
     const canEditCoord = canEdit && editCoordinates
     const codeLine = extractLineCode(this.props.data.code)
-    const allowDelete = lineDefinitions[codeLine]?.allowDelete
+    const allowDelete = lineDefinitions[codeLine]?.allowDeleteForm
+      ? lineDefinitions[codeLine]?.allowDeleteForm
+      : lineDefinitions[codeLine]?.allowDelete
     const allowMiddle = lineDefinitions[codeLine]?.allowMiddle
     const countCoordinates = coordinatesArray.length
     return (

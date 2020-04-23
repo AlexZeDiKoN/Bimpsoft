@@ -3,15 +3,15 @@ import { MIDDLE, DELETE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import { calcControlPoint } from '../../utils/Bezier'
 import {
-  drawLine, applyVector, segmentBy, angleOf, segmentLength, drawMaskedText, rad, setVectorLength, getVector, getPointAt,
-  drawBezier, drawCircle,
+  applyVector, segmentBy, angleOf, segmentLength, drawMaskedText, setVectorLength, getVector, getPointAt,
+  drawBezier, drawCircle, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: SEIZE
 // task code: DZVIN-5771
 // hint: 'Захоплення ‒ знищити противника у визначеному районі, захопити його'
 
-const ARROW_LENGTH = 36
 const TEXT = 'S'
 
 lineDefinitions['342300'] = {
@@ -27,14 +27,14 @@ lineDefinitions['342300'] = {
       if (changed[0] === 1) {
         const vector = setVectorLength(
           getVector(nextPoints[0], nextPoints[1]),
-          segmentLength(nextPoints[0], nextPoints[2]) - 5
+          segmentLength(nextPoints[0], nextPoints[2]) - 5,
         )
         nextPoints[1] = applyVector(prevPoints[0], vector)
       }
       if (changed[0] === 2) {
         const vector = setVectorLength(
           getVector(nextPoints[0], nextPoints[2]),
-          segmentLength(nextPoints[0], nextPoints[1]) - 5
+          segmentLength(nextPoints[0], nextPoints[1]) - 5,
         )
         nextPoints[2] = applyVector(prevPoints[0], vector)
       }
@@ -45,7 +45,7 @@ lineDefinitions['342300'] = {
       if (changed[0] === 0) {
         const vector = setVectorLength(
           getVector(prevPoints[0], prevPoints[1]),
-          segmentLength(prevPoints[0], prevPoints[1])
+          segmentLength(prevPoints[0], prevPoints[1]),
         )
         nextPoints[1] = applyVector(nextPoints[0], vector)
 
@@ -69,7 +69,7 @@ lineDefinitions['342300'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2, p3 ] = points
     const r = segmentLength(p0, p1)
     drawCircle(result, p0, r)
@@ -92,12 +92,9 @@ lineDefinitions['342300'] = {
     const scp = curve.split(indexOfMin / 1000, 1).points
     const curve2 = new Bezier(p2.x, p2.y, cp1[0], cp1[1], p3.x, p3.y, p3.x, p3.y)
     const curveDerivative = curve2.derivative(1)
-    const aP1 = getPointAt(applyVector(p3, curveDerivative), p3, rad(45), ARROW_LENGTH * scale)
-    const aP2 = getPointAt(aP1, p3, rad(90), ARROW_LENGTH * scale)
-    drawLine(result, p3, aP1)
-    drawLine(result, p3, aP2)
+    drawLineMark(result, MARK_TYPE.ARROW_90, p3, angleOf(p3, applyVector(p3, curveDerivative)))
     drawBezier(result, scp[0], scp[1], scp[2], scp[3], { x: cp1[0], y: cp1[1] }, p3, p3)
 
     drawMaskedText(result, p2, 0, TEXT)
-  }
+  },
 }

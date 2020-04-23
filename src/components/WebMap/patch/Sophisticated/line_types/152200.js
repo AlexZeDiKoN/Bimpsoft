@@ -1,14 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, segmentLength, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, segmentLength, getPointAt, drawLineMark, angleOf,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: SEARCH AREA
 // task code: DZVIN-5526
 // hint: 'Район (сектор) РХБ розвідки'
 
-const ARROW_WIDTH = 24
 const Z_WIDTH = 16
 
 lineDefinitions['152200'] = {
@@ -32,8 +32,6 @@ lineDefinitions['152200'] = {
   render: (result, points, scale) => {
     const [ p0, p1, p2 ] = points
 
-    const arrows = emptyPath()
-
     const drawZArrow = (pStart, pEnd, flip) => {
       const l = segmentLength(pStart, pEnd)
       let p = pStart
@@ -48,13 +46,9 @@ lineDefinitions['152200'] = {
       } else {
         drawLine(result, pStart, pEnd)
       }
-      const pa1 = getPointAt(p, pEnd, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-      const pa2 = getPointAt(p, pEnd, -5 * Math.PI / 6, ARROW_WIDTH * scale)
-      drawLine(arrows, pEnd, pa1, pa2)
+      drawLineMark(result, MARK_TYPE.ARROW_60_FILL, pEnd, angleOf(p, pEnd))
     }
-
     drawZArrow(p0, p1, true)
     drawZArrow(p0, p2, false)
-    addPathAmplifier(result, arrows, true)
   },
 }

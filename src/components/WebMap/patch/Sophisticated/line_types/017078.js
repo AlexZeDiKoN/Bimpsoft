@@ -1,17 +1,17 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
-  emptyPath,
+  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
+  emptyPath, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
-const TIP_LENGTH = 50
-const EDGE = 40
+const EDGE = 20
 
 lineDefinitions['017078'] = {
   // Ампліфікатори, що використовуються на лінії
@@ -40,14 +40,12 @@ lineDefinitions['017078'] = {
 
     addPathAmplifier(result, dashed, false, 20)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, p1, p0, 0, len)
-    continueLine(result, p1, p0, 0, -len)
-    continueLine(result, p0, p1, 0, len)
-    continueLine(result, p0, p1, 0, -len)
-
-    const angle = angleOf(p0, p1) - Math.PI / 2
+    const angleSerif = angleOf(p0, p1)
+    const angle = angleSerif - Math.PI / 2
     const top = angleOf(p0, p1) < 0
+
+    drawLineMark(result, MARK_TYPE.SERIF, p0, angleSerif)
+    const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
 
     drawText(
       result,
@@ -61,7 +59,7 @@ lineDefinitions['017078'] = {
 
     drawText(
       result,
-      getPointAt(p1, p0, Math.PI / 2, len),
+      getPointAt(p1, p0, Math.PI / 2, graphicSize / 2),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,

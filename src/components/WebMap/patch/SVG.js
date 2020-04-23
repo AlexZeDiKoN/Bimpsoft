@@ -1,10 +1,11 @@
 import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds, blockage, drawLineHatch } from '../../../utils/svg/lines'
-import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
+import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
+import { evaluateColor } from '../../../constants/colors'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
@@ -173,13 +174,24 @@ L.SVG.include({
         this._setMask(layer, container.amplifiers, container.mask)
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
-      const parts = []
-      const line = layer._rings[0]
-      result = parts.length === 0
-        ? ''
-        : kind === entityKind.GROUPED_HEAD
-          ? makeHeadGroup(line, parts)
-          : makeLandGroup(line, parts)
+      result = 'm0,0'
+      if (layer._groupChildren) {
+        switch (kind) {
+          case entityKind.GROUPED_REGION: {
+            result = makeRegionGroup(layer)
+            break
+          }
+          case entityKind.GROUPED_HEAD: {
+            result = makeHeadGroup()
+            break
+          }
+          case entityKind.GROUPED_LAND: {
+            result = makeLandGroup()
+            break
+          }
+          default:
+        }
+      }
     } else if (fullPolygon) {
       switch (lineType) {
         case 'waved':
@@ -437,7 +449,7 @@ L.SVG.include({
 
     const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
-    return `<path fill="${colorLine}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
+    return `<path fill="${evaluateColor(colorLine)}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
   },
 
   _updateLineFilled: function (layer, rezultFilled) {
