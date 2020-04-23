@@ -2,6 +2,7 @@ import React from 'react'
 import { Select, Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import { MARK_TYPE } from '../../../utils/svg/lines'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
@@ -20,8 +21,8 @@ const TYPES = {
   NONE: 'none',
   LEVEL: 'level',
   TEXT: 'text',
-  ARROW: 'arrow',
-  ARROW_FILED: 'arrowfilled',
+  ARROW: MARK_TYPE.ARROW_90,
+  ARROW_FILED: MARK_TYPE.ARROW_30_FILL,
 }
 
 const TYPE_LIST = [

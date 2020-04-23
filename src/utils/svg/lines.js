@@ -808,10 +808,12 @@ const getTextAmplifiers = ({
   level,
   scale,
   zoom,
+  color,
 }) => {
   const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale)
   const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
+  const fillColor = color ? `fill="${color}"` : ``
   const result = {
     maskPath: [],
     group: '',
@@ -824,22 +826,24 @@ const getTextAmplifiers = ({
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle' && amplifierType === 'level' && level) {
-        return [ type, [ extractSubordinationLevelSVG(
-          level,
-          graphicSize,
-          settings.AMPLIFIERS_WINDOW_MARGIN * scale,
-        ) ] ]
-      }
-
-      if (type === 'middle' && (amplifierType === 'arrow' || amplifierType === 'arrowfilled') && level) {
-        return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
+      if (type === 'middle' && level) {
+        if (amplifierType === 'level') {
+          return [ type, [ extractSubordinationLevelSVG(
+            level,
+            graphicSize,
+            settings.AMPLIFIERS_WINDOW_MARGIN * scale,
+          ) ] ]
+        }
+        // стрелки на промежуточных точкакх
+        if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
+          return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
+        }
       }
 
       if (!value) {
         return null // canceling render of a text amplifier
       }
-
+      // текстовый амплификатор
       return [ type, extractTextSVG({
         string: value,
         fontSize,
@@ -868,6 +872,7 @@ const getTextAmplifiers = ({
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
           font-weight="${FONT_WEIGHT}"
+          ${fillColor}
        >${amplifier.sign}</g>`
       })
     })
@@ -920,7 +925,8 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
 }
 
 const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermediateType) => {
-  if (amplifierType === 'middle' && (intermediateType === 'arrow' || intermediateType === 'arrowfilled')) {
+  if (amplifierType === 'middle' &&
+    (intermediateType === MARK_TYPE.ARROW_90 || intermediateType === MARK_TYPE.ARROW_30_FILL)) {
     return pointRotate
   }
   if (Math.abs(pointRotate) > 90) {
@@ -950,9 +956,9 @@ export const getAmplifiers = ({
     shownNodalPointAmplifiers,
     pointAmplifier,
     nodalPointIcon,
+    color,
   } = object.attributes
   const { level } = object
-
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
@@ -976,6 +982,7 @@ export const getAmplifiers = ({
       ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForIntermediateAmplifier,
+      color,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -1081,8 +1088,8 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strok
     case MARK_TYPE.ARROW_60_FILL:
       res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l12-6v12z"/>`
       break
-    case MARK_TYPE.ARROW1:
-      res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
+    case MARK_TYPE.ARROW1: // 90
+      res += `<path fill="none" d="M7,-8 l-8,8 8,8"/>`
       break
     case MARK_TYPE.ARROW2:
       res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
@@ -1200,10 +1207,10 @@ export const drawLineHatch = (layer, scale, hatch) => {
 const drawIntermediateArrow = (amplifierType, graphicSize) => {
   const scale = graphicSize / 24
   switch (amplifierType) {
-    case 'arrow':
+    case MARK_TYPE.ARROW_90:
       return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
-    case 'arrowfilled':
-      return [ { sign: `<path transform="scale(${scale})" d="M24,8l-24-8l24-8z"/>` } ]
+    case MARK_TYPE.ARROW_30_FILL:
+      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
     default:
   }
   return null
