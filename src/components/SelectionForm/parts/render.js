@@ -50,7 +50,7 @@ const optionsSvg = (children) => (
 
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   const dash = getStylesForLineType(borderStyle)
-  const amplifier = level ? extractSubordinationLevelSVG(level, 36, 4, 56, 20) : null
+  const amplifier = level ? extractSubordinationLevelSVG(level, 16, 4, 56, 20) : null
   if (amplifier) {
     return optionsSvg(
       <>

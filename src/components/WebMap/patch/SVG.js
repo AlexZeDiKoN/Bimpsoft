@@ -62,7 +62,6 @@ L.SVG.include({
     const {
       options: {
         shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
-        fillColor, fillOpacity, fillRule,
       },
       _shadowPath,
       _amplifierGroup,
@@ -77,10 +76,6 @@ L.SVG.include({
         _shadowPath.setAttribute('fill', 'none')
         _shadowPath.setAttribute('stroke-linejoin', 'round')
         _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
-
-        _shadowPath.setAttribute('fill', fillColor || color)
-        _shadowPath.setAttribute('fill-opacity', fillOpacity)
-        _shadowPath.setAttribute('fill-rule', fillRule || 'evenodd')
       } else {
         _shadowPath.setAttribute('display', 'none')
       }
@@ -453,13 +448,14 @@ L.SVG.include({
   },
 
   _updateLineEnds: function (layer, bezier) {
-    const { options: { weight }, strokeWidth } = layer
-    const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
+    // const { options: { weight }, strokeWidth } = layer
+    // const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
     const { left, right } = getLineEnds(
       layer._rings[0],
       layer.object?.attributes,
       bezier,
-      scale,
+      1,
+      layer._map.getZoom(),
     )
     if (!left && !right) {
       return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()

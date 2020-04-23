@@ -1056,6 +1056,10 @@ export default class WebMap extends React.PureComponent {
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
     settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
+    settings.TEXT_AMPLIFIER_SIZE.max = params[paramsNames.TEXT_AMPLIFIER_SIZE_MAX]
+    settings.TEXT_AMPLIFIER_SIZE.min = params[paramsNames.TEXT_AMPLIFIER_SIZE_MIN]
+    settings.GRAPHIC_AMPLIFIER_SIZE.max = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX]
+    settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
