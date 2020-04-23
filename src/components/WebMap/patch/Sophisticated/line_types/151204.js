@@ -47,7 +47,6 @@ lineDefinitions['151204'] = {
       segmentBy(startPoint, centerPoint, 0.5),
       angleOf(startPoint, centerPoint),
       TEXTS.ENY,
-      0.5,
     )
 
     // arc

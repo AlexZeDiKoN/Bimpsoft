@@ -174,8 +174,8 @@ const forms = {
   [SelectionTypes.CONCENTRATION_FIRE]: {
     title: i18n.CONCENTRATION_FIRE,
     component: ConcentrationOfFireForm,
-    minHeight: 330,
-    maxHeight: 630,
+    minHeight: 670,
+    maxHeight: 680,
     minWidth: 415,
   },
 }
