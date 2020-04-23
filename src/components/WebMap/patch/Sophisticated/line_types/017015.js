@@ -13,9 +13,6 @@ import { interpolateSize } from '../../utils/helpers'
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
-const EDGE = 40
-const INDENT = 16
-
 lineDefinitions['017015'] = {
   // Ампліфікатори, що використовуються на лінії
   useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
@@ -36,14 +33,14 @@ lineDefinitions['017015'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     drawLine(result, p0, p1)
 
     const mid = segmentBy(p0, p1, 0.5)
 
-    drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0), 1)
+    const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0), 1)
     drawLineMark(result, MARK_TYPE.SERIF, p1, angleOf(p0, p1), 1)
 
     const norm = normalVectorTo(p0, p1, p2)
@@ -55,18 +52,26 @@ lineDefinitions['017015'] = {
     const angleArrow = angle3Points(mid, p0, p2)
     const top = angleOf(p0, p1) < 0
     const left = top ? angleArrow < 0 : angleArrow >= 0
+    const fontSize = interpolateSize(
+      result.layer._map.getZoom(),
+      settings.TEXT_AMPLIFIER_SIZE,
+      1,
+      settings.MIN_ZOOM,
+      settings.MAX_ZOOM,
+    )
 
     drawText(
       result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
+      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      'black',
+      null,
+      top ? 'after-edge' : 'before-edge',
     )
 
-    const len = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+    const len = graphicSize / 2
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
@@ -74,18 +79,18 @@ lineDefinitions['017015'] = {
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
       left ? 'start' : 'end',
-      'black',
+      null,
       top ? 'before-edge' : 'after-edge',
     )
 
     drawText(
       result,
-      applyVector(mid, setVectorLength(getVector(mid, p2), INDENT * scale)),
+      applyVector(mid, setVectorLength(getVector(mid, p2), fontSize / 10)),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
       1,
       left ? 'end' : 'start',
-      'black',
+      null,
       top ? 'after-edge' : 'before-edge',
     )
   },

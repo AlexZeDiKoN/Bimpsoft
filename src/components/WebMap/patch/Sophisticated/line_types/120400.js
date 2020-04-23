@@ -1,8 +1,8 @@
-import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
+import { Symbol } from '@DZVIN/milsymbol'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawBezierSpline, drawMaskedText,
+  drawBezierSpline, drawMaskedText,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 
@@ -10,8 +10,8 @@ import { amps } from '../../../../../constants/symbols'
 // task code: DZVIN-5791
 // hint: 'Район базування військової частини, підрозділу авіації'
 
-const SIGN_RADIUS = 80
-const SIGN_ANGLE = 30
+const CODE = '10032500001319000000'
+const SIZE = 96
 
 lineDefinitions['120400'] = {
   // амплификатор
@@ -48,18 +48,9 @@ lineDefinitions['120400'] = {
 
     drawBezierSpline(result, area, true)
 
-    const ang = (a) => compose(
-      translate(sign.x, sign.y),
-      rotate(a * Math.PI / 180),
-    )
-    const line = (d) => drawLine(
-      result,
-      applyToPoint(ang(d), { x: SIGN_RADIUS * scale * 1.667, y: 0 }),
-      applyToPoint(ang(d + 180), { x: SIGN_RADIUS * scale, y: 0 }),
-    )
-
-    line(0)
-    line(-SIGN_ANGLE)
+    const symbol = new Symbol(CODE, { size: SIZE * scale }).asSVG()
+    const d = SIZE * scale / 2
+    result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
 
     drawMaskedText(result, ampl, 0, result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '')
   },
