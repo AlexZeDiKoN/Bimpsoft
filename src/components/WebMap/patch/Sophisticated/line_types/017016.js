@@ -18,6 +18,7 @@ import {
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -66,6 +67,32 @@ lineDefinitions['017016'] = {
         lng: coordinates[index].lng + coordinates[index].lng - coordinates[index - 3].lng,
       },
     ]
+  },
+
+  // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
+  // для обробки видалення блоку зосередження вогню
+  // Обробка географічних координат
+  adjustForm: (prevPoints, nextPoints, changed) => {
+    const indEnd = prevPoints.length - 1
+    for (const ch of changed) {
+      const role = ch % 3
+      if ((role === 1) && ((ch + 2) < indEnd)) { // обрабатываем изменение только центральных точек блоков
+        // обработка центральной точки блока
+        const s1 = prevPoints[ch - 1]
+        const p3 = prevPoints[ch + 2]
+        const p0 = prevPoints[ch]
+        const p1 = prevPoints[ch + 1]
+        nextPoints[ch] = { // опорную точку блока перемещаем на середину вновь образованого сегмента
+          lat: s1.lat + (p3.lat - s1.lat) / 2,
+          lng: s1.lng + (p3.lng - s1.lng) / 2,
+        }
+        // перенос боковой точки блока
+        const move = distanceAzimuth(p0, p1)
+        const dAngle = distanceAzimuth(p3, p0).angledeg - distanceAzimuth(p3, nextPoints[ch]).angledeg
+        move.angledeg -= dAngle
+        nextPoints[ch + 1] = moveCoordinate(nextPoints[ch], move)
+      }
+    }
   },
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)

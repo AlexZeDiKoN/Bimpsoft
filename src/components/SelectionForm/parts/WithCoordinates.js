@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import { List } from 'immutable'
 import i18n from '../../../i18n'
 import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
@@ -21,12 +22,20 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const count = this.getResult().getIn(COORDINATE_PATH).size
     const lineCode = extractLineCode(this.props.data.code)
     if (lineDefinitions[lineCode]?.deleteCoordinatesForm) {
-      const removeCoord = lineDefinitions[lineCode]?.deleteCoordinatesForm(index, count)
-      this.setResult((result) =>
-        result.updateIn(COORDINATE_PATH,
-          (coordinatesArray) => coordinatesArray.splice(removeCoord.index, removeCoord.count)),
-      )
-    } else {
+      // определяем какие опорные точки нужно удалить вместе с выбранной
+      const removeCoord = lineDefinitions[lineCode].deleteCoordinatesForm(index, count)
+      if (lineDefinitions[lineCode]?.adjustForm) { // приводим в порядок опорные точки, если есть обработчик
+        const prevPoint = this.getResult().getIn(COORDINATE_PATH).splice(removeCoord.index, removeCoord.count).toJS()
+        const nextPoint = [ ...prevPoint ]
+        lineDefinitions[lineCode].adjustForm(prevPoint, nextPoint, [ removeCoord.index ])
+        this.setResult((result) => result.setIn(COORDINATE_PATH, List(nextPoint)))
+      } else { // просто удаляем
+        this.setResult((result) =>
+          result.updateIn(COORDINATE_PATH,
+            (coordinatesArray) => coordinatesArray.splice(removeCoord.index, removeCoord.count)),
+        )
+      }
+    } else { // удаляем только выбранную опорную точку
       this.setResult((result) =>
         result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
           coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
