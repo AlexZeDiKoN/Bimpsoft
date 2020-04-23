@@ -16,10 +16,10 @@ const TEXT_COLOR = 'black'
 lineDefinitions['017020'] = {
   // Ампліфікатори на лінії
   useAmplifiers: [
-    { id: amps.T, name: 'T' },
-    { id: amps.N, name: 'N' },
-    { id: amps.W, name: 'W' },
-    { id: amps.B, name: 'A' },
+    { id: amps.T, name: 'T1' },
+    { id: amps.N, name: 'T2' },
+    { id: amps.W, name: 'T3' },
+    { id: amps.B, name: 'T4' },
   ],
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.none,
