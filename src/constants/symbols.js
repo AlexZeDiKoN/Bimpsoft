@@ -563,7 +563,6 @@ export const symbols = [
           color: '#ff0404',
           lineType: types.dashed.value,
           right: ENDS_ARROW2,
-          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -640,7 +639,7 @@ export const symbols = [
       {
         hint: 'Зосереджений вогонь',
         code: '10032500002408020000',
-        amp: { isSvg: true, type: entityKind.RECTANGLE, pointAmplifier: { [amps.W]: '№' }, shownIntermediateAmplifiers: [ 0 ], },
+        amp: { isSvg: true, type: entityKind.RECTANGLE, pointAmplifier: { [amps.W]: '№' } },
       },
       {
         hint: 'Одинарний нерухомий загороджувальний вогонь',
@@ -706,12 +705,12 @@ export const symbols = [
       {
         hint: 'Район особливої уваги (РОУ)',
         code: '10032500001202000000',
-        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.T]: 'POУ' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.T]: 'POУ' } },
       },
       {
         hint: 'Основний напрямок стрільби (пуску)',
         code: '10032500000170790000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, right: ENDS_ARROW2, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.POLYLINE, right: ENDS_ARROW2 },
       },
       { hint: 'Вогнева позиція', code: '10032500002501000000', amp: {} },
       { hint: 'Стартова позиція', code: '10032500002503000000', amp: {} },
@@ -719,12 +718,12 @@ export const symbols = [
       {
         hint: 'Район вогневих позицій',
         code: '10032500002405000000rvp',
-        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'РВП' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'РВП' } },
       },
       {
         hint: 'Основний позиційний район',
         code: '10032500002405000000opr',
-        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'ОПР' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'ОПР' } },
       },
       {
         hint: 'Рубіж досяжності вогневих засобів',
@@ -772,13 +771,13 @@ export const symbols = [
       {
         hint: 'Район висадки розвідувальної групи із зазначенням складу, часу і дати висадки та способу висадки',
         code: '10032500000170260000',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'П(В)' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'П(В)' } },
       },
       { hint: 'Пункт збору військовополонених', code: '10032500003208000000', amp: {} },
       {
         hint: 'Район зосередження військовополонених',
         code: '10032500003102000000',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'EPWHA' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'EPWHA' } },
       },
       { hint: 'Пускова установка БПЛА (АПП)', code: '10031000001219000021', amp: {} },
       {
@@ -824,7 +823,7 @@ export const symbols = [
       {
         hint: 'Зона суцільного багатошарового протитанкового і стрілецького вогню',
         code: '10032500000170310000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, lineType: types.chain.value, shownIntermediateAmplifiers: [ 0 ] },
+        amp: { isSvg: true, type: entityKind.POLYLINE, lineType: types.chain.value },
       },
     ],
   },
@@ -1932,7 +1931,7 @@ export const symbols = [
       {
         hint: 'Протитанковий рів в процесі обладнання',
         code: '10032500002902010000',
-        amp: { isSvg: true, type: entityKind.POLYLIN },
+        amp: { isSvg: true, type: entityKind.POLYLINE },
       },
       {
         hint: 'Лінія загороджень (яка поєднує в собі різні типи загороджень)',
