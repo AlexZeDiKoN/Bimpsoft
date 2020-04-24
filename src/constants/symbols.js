@@ -753,12 +753,22 @@ export const symbols = [
       {
         hint: 'Зона оглядової розвідки бригади',
         code: '10032500000170220000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, pointAmplifier: { [amps.B]: 'ЗОР' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          pointAmplifier: { [amps.B]: 'ЗОР' },
+          shownIntermediateAmplifiers: [ 0 ],
+        },
       },
       {
         hint: 'Зона детальної розвідки бригади',
         code: '10032500000170230000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, pointAmplifier: { [amps.B]: 'ЗДР' }, shownIntermediateAmplifiers: [ 0 ] },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          pointAmplifier: { [amps.B]: 'ЗДР' },
+          shownIntermediateAmplifiers: [ 0 ],
+        },
       },
       { hint: 'Розвідка боєм', code: '10032500001520000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
@@ -873,7 +883,13 @@ export const symbols = [
       {
         hint: 'Кочуюча БМ (ЗСУ, підрозділ)',
         code: '10032500000170330000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: {
+          isSvg: true,
+          type: entityKind.CURVE,
+          lineType: types.dashed.value,
+          right: ENDS_ARROW2,
+          left: ENDS_ARROW2,
+        },
       },
       {
         hint: 'Зона розвідки повітряного противника',
@@ -1941,7 +1957,7 @@ export const symbols = [
       {
         hint: 'Однорядне дротяне загородження',
         code: '10032500002903020000',
-        amp: { isSvg: true, type: entityKind.POLYLINE},
+        amp: { isSvg: true, type: entityKind.POLYLINE },
       },
       {
         hint: 'Дворядне дротяне загородження',
@@ -2661,7 +2677,12 @@ export const symbols = [
       {
         hint: 'Запасний збірний пункт пошкоджених машин',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ', [amps.dtg]: 'З', [amps.staffComments]: 'ЗППМ' },
+        amp: {
+          type: entityKind.POINT,
+          [amps.uniqueDesignation1]: 'ЗППМ',
+          [amps.dtg]: 'З',
+          [amps.staffComments]: 'ЗППМ',
+        },
       },
       // TODO end
       {
