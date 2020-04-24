@@ -17,14 +17,14 @@ import {
   translateTo,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
 // hint: 'Послідовне зосередження вогню'
 
-const EDGE = 32
 const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
@@ -177,7 +177,7 @@ lineDefinitions['017016'] = {
   },
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const indEnd = points.length - 1
     const c = (indEnd / 3) | 0
     let start = points[0]
@@ -205,21 +205,34 @@ lineDefinitions['017016'] = {
       drawLine(result, start, middles[1])
     }
 
-    drawLineMark(result, MARK_TYPE.SERIF, points[0], angleOf(points[3], points[0]))
+    start = points[0]
+    drawLineMark(result, MARK_TYPE.SERIF, start, angleOf(points[3], start))
     drawLineMark(result, MARK_TYPE.SERIF, points[indEnd], angleOf(points[indEnd - 3], points[indEnd]))
 
-    // Варіант для демонстрації
+    const angle = angleOf(start, points[3])
+    const top = angle < 0
+    const fontSize = interpolateSize(
+      result.layer._map.getZoom(),
+      settings.TEXT_AMPLIFIER_SIZE,
+      1,
+      settings.MIN_ZOOM,
+      settings.MAX_ZOOM,
+    )
+
     const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
     if (text) {
       drawText(
         result,
-        applyVector(points[0], setVectorLength(getVector(points[3], points[0]), EDGE * scale)),
-        angleOf(points[3], points[0]) + Math.PI / 2,
+        applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),
+        angle - Math.PI / 2,
         text,
+        1,
+        'middle',
+        null,
+        top ? 'after-edge' : 'before-edge',
       )
     }
 
-    // Варіант для демонстрації
     const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
     if (number >= 0) {
       for (let i = 0; i < c; i++) {

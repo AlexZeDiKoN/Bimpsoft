@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
-import { getStylesForLineType, settings } from '../../../utils/svg/lines'
+import { getStylesForLineType, MARK_TYPE, settings } from '../../../utils/svg/lines'
 import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
@@ -88,7 +88,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             />
           </>,
         )
-      case 'arrow':
+      case MARK_TYPE.ARROW_90:
         return optionsSvg(
           <path
             stroke="rgba(0,0,0,1)"
@@ -97,7 +97,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             d="M0,10 h56 m-24,8l-8-8l8-8"
           />,
         )
-      case 'arrowfilled':
+      case MARK_TYPE.ARROW_30_FILL:
         return optionsSvg(
           <path
             stroke="rgba(0,0,0,1)"

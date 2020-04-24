@@ -5,13 +5,12 @@ import {
   emptyPath, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
-
-const EDGE = 20
 
 lineDefinitions['017078'] = {
   // Ампліфікатори, що використовуються на лінії
@@ -32,7 +31,7 @@ lineDefinitions['017078'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const dashed = emptyPath()
@@ -46,15 +45,22 @@ lineDefinitions['017078'] = {
 
     drawLineMark(result, MARK_TYPE.SERIF, p0, angleSerif)
     const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
-
+    const fontSize = interpolateSize(
+      result.layer._map.getZoom(),
+      settings.TEXT_AMPLIFIER_SIZE,
+      1,
+      settings.MIN_ZOOM,
+      settings.MAX_ZOOM,
+    )
     drawText(
       result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
+      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
       angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
       'black',
+      top ? 'after-edge' : 'before-edge',
     )
 
     drawText(
