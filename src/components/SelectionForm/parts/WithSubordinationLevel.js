@@ -2,6 +2,7 @@ import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import SubordinationLevelSelect from '../../SubordinationLevelSelect'
+import { SubordinationLevel } from '../../../constants'
 import { propTypes } from './AbstractShapeForm'
 
 const { FormRow } = components.form
@@ -28,7 +29,7 @@ const WithSubordinationLevel = (Component) => class SubordinationLevelComponent 
 
   renderSubordinationLevel () {
     const canEdit = this.isCanEdit()
-    const subordinationLevel = this.getResult()[SUBORDINATION_LEVEL_PATH]
+    const subordinationLevel = this.getResult()[SUBORDINATION_LEVEL_PATH] || SubordinationLevel.UNDEFINED
 
     return (
       <FormRow label={i18n.SUBORDINATION_LEVEL}>
