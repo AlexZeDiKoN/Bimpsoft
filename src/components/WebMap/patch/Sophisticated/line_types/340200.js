@@ -37,9 +37,7 @@ lineDefinitions['340200'] = {
     const b = applyVector(p1, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
 
-    drawLine(result, a, b)
-    drawLine(result, p0, a)
-    drawLine(result, p1, b)
+    drawLine(result, p0, a, b, p1)
 
     const len = TIP_LENGTH * scale
     continueLine(result, a, p0, len, -hp * len)

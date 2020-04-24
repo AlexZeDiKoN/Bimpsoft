@@ -78,6 +78,10 @@ export const GROUPS = {
     entityKind.POINT,
     entityKind.TEXT,
   ],
+  GENERALIZE: [
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
   GROUPED: [
     entityKind.GROUPED_HEAD,
     entityKind.GROUPED_LAND,
