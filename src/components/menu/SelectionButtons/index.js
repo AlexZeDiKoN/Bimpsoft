@@ -7,8 +7,8 @@ import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-import entityKind, { entityKindOutlinable /*, GROUPS */ } from '../../WebMap/entityKind'
-// import { determineGroupType } from '../../../store/utils'
+import entityKind, { entityKindOutlinable, GROUPS } from '../../WebMap/entityKind'
+import { determineGroupType, emptyParent } from '../../../store/utils'
 import DeleteSelectionForm from './DeleteSelectionForm'
 
 import './style.css'
@@ -60,9 +60,9 @@ export default class SelectionButtons extends React.Component {
       onMirrorImage,
       onContour,
       onDecontour,
-      // onGroup,
+      onGroup,
       onGroupRegion,
-      // onUngroup,
+      onUngroup,
     } = this.props
 
     const nSelected = list.length
@@ -71,11 +71,11 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
     const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
-    /* const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
-      determineGroupType(selectedPoints) */
-    const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length
-    /* const canUngroup = selectedTypes.length === 1 && GROUPS.GROUPED.includes(selectedTypes[0]) &&
-      selectedTypes[0] !== entityKind.GROUPED_REGION */
+    const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
+      determineGroupType(selectedPoints)
+    const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
+      emptyParent(selectedPoints)
+    const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
       if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
         onDelete()
@@ -155,27 +155,21 @@ export default class SelectionButtons extends React.Component {
             disabled={!canContour && !canDecontour}
             onClick={canContour ? onContour : onDecontour}
           />
-          {/* <IconButton
+          {<IconButton
             placement={'bottomLeft'}
-            title={i18n.GROUPING}
-            icon={iconNames.NONE_ICON}
-            disabled={!canGroup}
-            onClick={onGroup}
-          /> */}
+            title={canGroup ? i18n.GROUPING : i18n.UNGROUPING}
+            icon={iconNames.GROUP_UNIT_2}
+            checked={canUngroup}
+            disabled={!canGroup && !canUngroup}
+            onClick={canGroup ? onGroup : onUngroup}
+          />}
           <IconButton
             placement={'bottomLeft'}
             title={i18n.GROUPING_REGION}
-            icon={iconNames.NONE_ICON}
+            icon={iconNames.POSITION_AREA_UNIT}
             disabled={!canGroupRegion}
             onClick={onGroupRegion}
           />
-          {/* <IconButton
-            placement={'bottomLeft'}
-            title={i18n.UNGROUPING}
-            icon={iconNames.NONE_ICON}
-            disabled={!canUngroup}
-            onClick={onUngroup}
-          /> */}
         </>)}
       </>
     )
