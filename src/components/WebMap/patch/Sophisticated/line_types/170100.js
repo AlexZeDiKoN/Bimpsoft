@@ -14,7 +14,7 @@ const LARGE_TEXT_SIZE = 1.5
 const SMALL_TEXT_SIZE = 0.67
 const INTERLINE = 1.3
 
-lineDefinitions['170101'] = {
+lineDefinitions['170100'] = {
   // Ампліфікатори лінії
   useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.A, name: 'N' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
