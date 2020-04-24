@@ -819,7 +819,7 @@ export const symbols = [
       {
         hint: 'Рубіж відкриття вогню (танків, БМП, стрілецької зброї)',
         code: '10032500000170300000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.POLYLINE },
       },
       {
         hint: 'Зона суцільного багатошарового протитанкового і стрілецького вогню',
