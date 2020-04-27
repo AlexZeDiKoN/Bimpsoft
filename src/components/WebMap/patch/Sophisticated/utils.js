@@ -663,6 +663,11 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
         getPointMove(point, angle - Math.PI / 2, graphicSize / 2),
         getPointMove(point, angle + Math.PI / 2, graphicSize / 2))
       return graphicSize
+    case MARK_TYPE.ANGLE:
+      drawLine(result,
+        point,
+        getPointMove(point, angle, graphicSize))
+      return graphicSize
     case MARK_TYPE.CROSS:
       drawLine(result,
         getPointMove(point, angle - Math.PI / 3, graphicSize),

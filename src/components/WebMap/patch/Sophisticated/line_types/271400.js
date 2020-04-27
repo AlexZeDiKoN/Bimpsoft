@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, continueLine, halfPlane,
+  drawLine, normalVectorTo, applyVector, halfPlane, getPointMove, angleOf,
 } from '../utils'
 import { interpolateSize } from '../../utils/helpers'
 import { settings } from '../../../../../utils/svg/lines'
@@ -35,12 +35,14 @@ lineDefinitions['271400'] = {
     const a = applyVector(p0, norm)
     const b = applyVector(p1, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
-    drawLine(result, p0, p1)
-    drawLine(result, a, b)
-    const width = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE) // EDGE_WIDTH * scale
-    continueLine(result, p0, p1, width, hp * width)
-    continueLine(result, p1, p0, width, -hp * width)
-    continueLine(result, a, b, width, -hp * width)
-    continueLine(result, b, a, width, hp * width)
+
+    const markSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const aTop = getPointMove(p0, angleOf(p0, p1) - Math.PI / 4 * hp, markSize)
+    const aBottom = getPointMove(p1, angleOf(p1, p0) + Math.PI / 4 * hp, markSize)
+    const bTop = getPointMove(a, angleOf(a, b) + Math.PI / 4 * hp, markSize)
+    const bBottom = getPointMove(b, angleOf(b, a) - Math.PI / 4 * hp, markSize)
+
+    drawLine(result, aTop, p0, p1, aBottom)
+    drawLine(result, bTop, a, b, bBottom)
   },
 }
