@@ -36,9 +36,7 @@ lineDefinitions['017063'] = {
 
     const len = segmentLength(p0, p1)
 
-    drawLine(result, p1, p2)
-
-    drawLine(result, p1, p0)
+    drawLine(result, p0, p1, p2)
 
     const point1 = getPointAt(p1, p0, Math.PI * 2 / 3, len / 2)
     const point12 = getPointAt(p0, point1, -Math.PI * 2 / 3, len)

@@ -1,14 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, continueLine,
+  drawLine, getPointMove, angleOf,
 } from '../utils'
+import { interpolateSize } from '../../utils/helpers'
+import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: ASSAULT CROSSING
 // task code: DZVIN-5765
 // hint: 'Ділянка форсування'
-
-const EDGE_WIDTH = 60
 
 lineDefinitions['271300'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -29,15 +29,15 @@ lineDefinitions['271300'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2, p3 ] = points
+    const markSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const aTop = getPointMove(p0, angleOf(p0, p2) + Math.PI / 4, markSize)
+    const aBottom = getPointMove(p2, angleOf(p2, p0) - Math.PI / 4, markSize)
+    const bTop = getPointMove(p1, angleOf(p1, p3) - Math.PI / 4, markSize)
+    const bBottom = getPointMove(p3, angleOf(p3, p1) + Math.PI / 4, markSize)
 
-    drawLine(result, p0, p2)
-    drawLine(result, p1, p3)
-    const width = EDGE_WIDTH * scale
-    continueLine(result, p0, p2, width, -width)
-    continueLine(result, p2, p0, width, width)
-    continueLine(result, p1, p3, width, width)
-    continueLine(result, p3, p1, width, -width)
+    drawLine(result, aTop, p0, p2, aBottom)
+    drawLine(result, bTop, p1, p3, bBottom)
   },
 }

@@ -61,6 +61,7 @@ export const MARK_TYPE = {
   FORK: 'fork',
   CROSS: 'cross',
   SERIF: 'serif',
+  ANGLE: 'angle',
   SERIF_CROSS: 'serif_cross',
 }
 
