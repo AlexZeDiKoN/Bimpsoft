@@ -4,11 +4,11 @@ import webmapApi from '../../../server/api.webmap'
 import Header from './children/Header'
 import SegmentBlock from './children/SegmentBlock'
 import MarchForm from './children/MarchForm'
-import utilsMarch from './utilsMarch'
+import convertUnits from './utilsMarch/convertUnits'
 
 import './style.css'
 
-const { getMarchDetails } = utilsMarch.formulas
+const { hoursToMs } = convertUnits
 
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
@@ -19,11 +19,13 @@ const getMemoGeoLandmarks = (() => {
 
     let geoLandmark = memoGeoLandmark[geoKey]
 
+    const fixedCoord = {}
+    fixedCoord.lat = lat || 0.00001
+    fixedCoord.lng = lng || 0.00001
+
     if (!geoLandmark) {
       try {
-        coord.lat = lat || 0.00001
-        coord.lng = lng || 0.00001
-        geoLandmark = await webmapApi.nearestSettlement(coord)
+        geoLandmark = await webmapApi.nearestSettlement(fixedCoord)
         memoGeoLandmark[geoKey] = geoLandmark
       } catch (e) {
         geoLandmark = {}
@@ -39,9 +41,9 @@ const getMarchPoints = (pointType, dataMarch) => {
 
   const MarchPoints = [
     { rest: false, time: 0 },
-    { rest: true, time: pointRestTime },
-    { rest: true, time: dayNightRestTime },
-    { rest: true, time: dailyRestTime },
+    { rest: true, time: hoursToMs(pointRestTime) },
+    { rest: true, time: hoursToMs(dayNightRestTime) },
+    { rest: true, time: hoursToMs(dailyRestTime) },
     { rest: true, time: 0, notEditableTime: true },
     { rest: false, time: 0 },
   ]
@@ -50,11 +52,9 @@ const getMarchPoints = (pointType, dataMarch) => {
 }
 
 const March = (props) => {
-  const { pointType, dataMarch, segmentList } = props
+  const { pointType, dataMarch, segmentList, totalMarchTime, totalMarchDistance } = props
   const segments = segmentList.toArray()
-
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
-  const marchDetails = getMarchDetails(segments, dataMarch)
   const marchPoints = getMarchPoints(pointType, dataMarch)
 
   const renderDotsForms = () => {
@@ -69,14 +69,13 @@ const March = (props) => {
 
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
-        const { children } = segment
-        const segmentDetails = marchDetails.segments[segmentId]
+        const { children, metric } = segment
 
         return (<div key={segmentId} className={'segment-with-form'}>
           <div className={'segment-block'}>
             <SegmentBlock
               segment={segment}
-              segmentDetails={segmentDetails}
+              segmentDetails={metric}
               segmentId={segmentId}
               timeDistanceView={timeDistanceView}
               addSegment={props.addSegment}
@@ -113,11 +112,11 @@ const March = (props) => {
   return <div className={'march-container'}>
     <div className={'march-header'}>
       <Header
-        marchDetails={marchDetails}
+        // marchDetails={marchDetails}
         changeTimeDistanceView={changeTimeDistanceView}
         timeDistanceView={timeDistanceView}
-        totalMarchTime={marchDetails.totalMarchTime}
-        totalMarchDistance={marchDetails.totalMarchDistance}
+        totalMarchTime={totalMarchTime}
+        totalMarchDistance={totalMarchDistance}
       />
     </div>
     <div className={'march-main'}>
@@ -138,6 +137,8 @@ March.propTypes = {
     toArray: PropTypes.func.isRequired,
   }).isRequired,
   pointType: PropTypes.array.isRequired,
+  totalMarchTime: PropTypes.number.isRequired,
+  totalMarchDistance: PropTypes.number.isRequired,
 }
 
 export default React.memo(March)

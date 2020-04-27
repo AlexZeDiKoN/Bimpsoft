@@ -12,7 +12,7 @@ const {
   form: { Coordinates },
 } = components
 
-const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
+const { getFilteredGeoLandmarks, azimuthToCardinalDirection, hoursToMs, msToHours } = utilsMarch.convertUnits
 
 const getPointById = (marchPoints, id) => marchPoints.find((point) => point.id === id) || marchPoints[0]
 
@@ -38,13 +38,13 @@ const MarchForm = (props) => {
     segmentId,
     childId,
     isLast,
-    restTime,
+    restTime = 0,
     marchPoints,
     pointType,
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
 
-  const [ pointTime, setPointTime ] = useState(+restTime)
+  const [ pointTime, setPointTime ] = useState(msToHours(restTime))
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
@@ -85,23 +85,16 @@ const MarchForm = (props) => {
   }
 
   const onChangeMarchPointType = (value) => {
-    editFormField({
-      val: value,
-      segmentId,
-      childId,
-      fieldName: 'pointType',
-    })
-
-    const point = getPointById(marchPoints, value)
+    const { time: msTime } = getPointById(marchPoints, value)
 
     editFormField({
-      val: point.time,
+      val: [ value, msTime ],
       segmentId,
       childId,
-      fieldName: 'restTime',
+      fieldName: [ 'pointType', 'restTime' ],
     })
 
-    setPointTime(point.time)
+    setPointTime(msToHours(msTime))
   }
 
   const onChangeRefPoint = (value, option) => {
@@ -121,7 +114,7 @@ const MarchForm = (props) => {
 
   const onBlurTime = (e) => {
     editFormField({
-      val: +e.target.value,
+      val: +hoursToMs(e.target.value),
       segmentId,
       childId,
       fieldName: 'restTime',

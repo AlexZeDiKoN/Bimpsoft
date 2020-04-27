@@ -59,7 +59,31 @@ const getFilteredGeoLandmarks = (features) => {
   return Object.values(filteredGeoLandmarks)
 }
 
+const hoursToMs = (hours) => hours * 3600000
+
+const msToHours = (ms) => {
+  if (!ms) {
+    return 0
+  }
+  const hours = ms / 3600000
+
+  return hours.toFixed(0)
+}
+
+const msToTime = (duration) => {
+  let minutes = Math.floor((duration / (1000 * 60)) % 60)
+  let hours = Math.floor(duration / (1000 * 60 * 60))
+
+  hours = (hours < 10) ? '0' + hours : hours
+  minutes = (minutes < 10) ? '0' + minutes : minutes
+
+  return hours + ':' + minutes
+}
+
 export default {
   azimuthToCardinalDirection,
   getFilteredGeoLandmarks,
+  hoursToMs,
+  msToTime,
+  msToHours,
 }

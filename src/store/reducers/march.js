@@ -1,5 +1,41 @@
 import { List } from 'immutable'
 import { march } from '../actions'
+import utilsMarch from '../../components/common/March/utilsMarch'
+
+const getMarchDetails = utilsMarch.formulas
+
+const updateMetric = (segments, state) => {
+  const marchDetails = getMarchDetails(segments.toArray(), state.dataMarch)
+  const { totalMarchTime, totalMarchDistance } = marchDetails
+
+  const segmentsWithUpdateMetrics = segments.map((segment, id) => {
+    segment.metric = { ...marchDetails.segments[id] }
+
+    segment.children = segment.children && segment.children.map((child, childId) => {
+      child.metric = marchDetails.segments[id].childSegments[childId]
+      return child
+    })
+
+    return segment
+  })
+
+  return {
+    segments: segmentsWithUpdateMetrics,
+    totalMarchTime,
+    totalMarchDistance,
+  }
+}
+
+const getDefaultMetric = (emptyChild = false) => {
+  return {
+    totalTime: 0,
+    totalDistance: 0,
+    childSegments: emptyChild ? [] : [ { distance: 0, time: 0 } ],
+    referenceData: { time: 0, distance: 0 },
+    untilPreviousSegment: { time: 0, distance: 0 },
+    untilNextSegment: { time: 0, distance: 0 },
+  }
+}
 
 const initState = {
   marchEdit: true,
@@ -7,6 +43,8 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  totalMarchTime: 0,
+  totalMarchDistance: 0,
   pointType: [
     { id: 0, name: 'Пункт на маршруті' },
     { id: 1, name: 'Пункт привалу' },
@@ -51,6 +89,7 @@ const initState = {
       coord: {},
       required: true,
       editableName: false,
+      metric: getDefaultMetric(),
       children: [
         {
           pointType: 5, // Вихідний рубіж
@@ -59,7 +98,11 @@ const initState = {
           refPoint: '',
           required: true,
           editableName: true,
-          restTime: null,
+          restTime: 0,
+          metric: {
+            time: 0,
+            distance: 0,
+          },
         },
       ],
     },
@@ -69,13 +112,14 @@ const initState = {
       name: 'Пункт призначення',
       required: true,
       editableName: false,
+      metric: getDefaultMetric(true),
     },
   ]),
   existingSegmentsById: {},
   landmarks: [],
 }
 
-const defaultSegment = {
+const defaultSegment = () => ({
   name: '',
   refPoint: '',
   segmentType: 41, // Своїм ходом
@@ -84,11 +128,11 @@ const defaultSegment = {
   coord: {},
   required: false,
   editableName: false,
-  // eslint-disable-next-line
-  //children: [ ],
-}
+  metric: getDefaultMetric(),
+  children: [ defaultChild() ],
+})
 
-const defaultChild = {
+const defaultChild = () => ({
   pointType: 0,
   lineType: '',
   coord: {},
@@ -96,25 +140,49 @@ const defaultChild = {
   required: false,
   editableName: true,
   restTime: 0,
-}
+  metric: {
+    time: 0,
+    distance: 0,
+  },
+})
 
 // eslint-disable-next-line
 export const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
 
 const editFormField = (state, payload) => {
-  const { val, fieldName, segmentId, childId } = payload
+  const { segmentId, childId } = payload
+  let { val, fieldName } = payload
 
-  let newSegments
-  if (childId || childId === 0) {
-    newSegments = state.segments.update(segmentId, (segment) => ({
-      ...segment,
-      children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName]: val } : it),
-    }))
-  } else {
-    newSegments = state.segments.update(segmentId, (segment) => ({ ...segment, [fieldName]: val }))
+  if (!Array.isArray(fieldName)) {
+    fieldName = [ fieldName ]
+    val = [ val ]
+  }
+  if (fieldName.length !== val.length) {
+    return state
   }
 
-  return { ...state, segments: newSegments, coordMode: false }
+  let newSegments = state.segments
+
+  for (let i = 0; i < fieldName.length; i++) {
+    if (childId || childId === 0) {
+      newSegments = newSegments.update(segmentId, (segment) => ({
+        ...segment,
+        children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName[i]]: val[i] } : it),
+      }))
+    } else {
+      newSegments = newSegments.update(segmentId, (segment) => ({ ...segment, [fieldName[i]]: val[i] }))
+    }
+  }
+
+  const { segments, totalMarchTime, totalMarchDistance } = updateMetric(newSegments, state)
+
+  return {
+    ...state,
+    segments,
+    coordMode: false,
+    totalMarchTime,
+    totalMarchDistance,
+  }
 }
 
 export default function reducer (state = initState, action) {
@@ -144,27 +212,31 @@ export default function reducer (state = initState, action) {
       return editFormField(state, payload)
     }
     case march.ADD_SEGMENT: {
-      const firstPoint = { ...defaultChild }
+      const updateSegments = state.segments.insert(payload + 1, defaultSegment())
+      const { segments, totalMarchTime, totalMarchDistance } = updateMetric(updateSegments, state)
 
-      return { ...state,
-        segments: state.segments.insert(payload + 1,
-          { ...defaultSegment, children: [ firstPoint ] }),
-      }
+      return { ...state, segments, totalMarchTime, totalMarchDistance }
     }
     case march.DELETE_SEGMENT: {
-      return { ...state, segments: state.segments.delete(payload) }
+      const updateSegments = state.segments.delete(payload)
+      const { segments, totalMarchTime, totalMarchDistance } = updateMetric(updateSegments, state)
+
+      return { ...state, segments, totalMarchTime, totalMarchDistance }
     }
     case march.ADD_CHILD: {
       const { segmentId, childId } = payload
       const children = state.segments.get(segmentId).children
 
-      children.splice((childId || childId === 0) ? childId + 1 : 0, 0, defaultChild)
+      children.splice((childId || childId === 0) ? childId + 1 : 0, 0, defaultChild())
 
-      return { ...state,
-        segments: state.segments.update(segmentId, (segment) => ({
-          ...segment,
-          children,
-        })) }
+      const updateSegments = state.segments.update(segmentId, (segment) => ({
+        ...segment,
+        children,
+      }))
+
+      const { segments, totalMarchTime, totalMarchDistance } = updateMetric(updateSegments, state)
+
+      return { ...state, segments, totalMarchTime, totalMarchDistance }
     }
     case march.DELETE_CHILD: {
       const { segmentId, childId } = payload
@@ -172,11 +244,14 @@ export default function reducer (state = initState, action) {
 
       children.splice(childId, 1)
 
-      return { ...state,
-        segments: state.segments.update(segmentId, (segment) => ({
-          ...segment,
-          children,
-        })) }
+      const updateSegments = state.segments.update(segmentId, (segment) => ({
+        ...segment,
+        children,
+      }))
+
+      const { segments, totalMarchTime, totalMarchDistance } = updateMetric(updateSegments, state)
+
+      return { ...state, segments, totalMarchTime, totalMarchDistance }
     }
     case march.SET_COORD_MODE: {
       return { ...state, coordMode: !state.coordMode, coordModeData: payload }

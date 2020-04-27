@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
 import { isNumberSymbols } from '../../../../../utils/validation/number'
+import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
 const { confirm } = Modal
 
@@ -23,11 +24,7 @@ const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
   const { deleteSegment, segmentId, segmentType, required, terrain, velocity, segmentDetails } = propData
   const { totalTime, totalDistance } = segmentDetails
-
   const distance = totalDistance.toFixed(1)
-  const hour = totalTime.toFixed(0)
-  const minutes = ((totalTime % 1) * 60).toFixed(0)
-  const formatTotalTime = totalTime === Infinity ? '--/--' : `${hour}:${minutes} ${i18n.HOURS}`
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,
@@ -90,7 +87,7 @@ const PopupPanel = (props) => {
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
-      <div><span>{i18n.TIME_OF_PASSING}: </span> {formatTotalTime}</div>
+      <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(totalTime)}</div>
       { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
     </div>
   </div>

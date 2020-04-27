@@ -3,7 +3,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
+import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
+
+const { msToTime } = convertUnits
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, segmentDetails, timeDistanceView } = props
@@ -35,14 +38,8 @@ const SegmentBlock = (props) => {
   const timeOffset = timeDistanceView ? refTime : 0
   const distanceOffset = timeDistanceView ? refDistance : 0
   const startingPoint = {
-    time: timeDistanceView ? refTime : prevTime,
+    time: msToTime(timeDistanceView ? refTime : prevTime),
     distance: (timeDistanceView ? refDistance : prevDistance).toFixed(1),
-  }
-
-  const getFormatTime = (time) => {
-    const hour = time.toFixed(0)
-    const minutes = ((time % 1) * 60).toFixed(0)
-    return time === Infinity ? '-- / --' : `${hour}:${minutes}`
   }
 
   const childrenIsPresent = children && children.length > 0
@@ -50,7 +47,7 @@ const SegmentBlock = (props) => {
   return (<div className={'segment'} style={{ backgroundColor: color }}>
     {segmentId !== 0
       ? <div className={'time-distance height-segment'}>
-        <span>{getFormatTime(startingPoint.time)}</span>
+        <span>{startingPoint.time}</span>
         <span className={'distance'}>{startingPoint.distance} км</span>
       </div>
       : <div className={'height-segment'}/>
@@ -63,12 +60,12 @@ const SegmentBlock = (props) => {
 
     {childrenIsPresent && children.map((child, id) => {
       const { distance, time } = segmentDetails.childSegments[id]
-      const formatTotalTime = getFormatTime(time + timeOffset)
+      const timeWithOffset = msToTime(time + timeOffset)
       const distanceWithOffset = (distance + distanceOffset).toFixed(1)
 
       return (
         <div key={id} className={'time-distance'}>
-          <span>{formatTotalTime}</span>
+          <span>{timeWithOffset}</span>
           <span className={'distance'}>{distanceWithOffset} км</span>
         </div>
       )
