@@ -54,9 +54,8 @@ export default class AbstractShapeForm extends React.Component {
       <Form className="shape-form">
         {this.renderContent()}
         <FormItem>
-          {canEdit && buttonClose(onClose)}
+          {buttonClose(onClose)}
           {canEdit && buttonApply(onOk)}
-          {!canEdit && buttonClose(onClose)}
         </FormItem>
       </Form>
     )
