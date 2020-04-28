@@ -562,7 +562,8 @@ export const symbols = [
           type: entityKind.AREA,
           color: '#ff0404',
           lineType: types.dashed.value,
-          right: ENDS_ARROW2,
+          intermediateAmplifierType: 'arrow30fill',
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -647,7 +648,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', showIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', shownIntermediateAmplifiers: [ 0 ] },
         },
       },
       {
@@ -656,7 +657,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T', showIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T', shownIntermediateAmplifiers: [ 0 ] },
         },
       },
       {
@@ -736,7 +737,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '', showIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '', shownIntermediateAmplifiers: [ 0 ] },
         },
       },
       {
@@ -1787,12 +1788,12 @@ export const symbols = [
       {
         hint: 'Виведення через державний кордон',
         code: '10032500000170540000',
-        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.W]: 'Bx' }, right: ENDS_ARROW2 },
+        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.B]: 'Bx' }, right: ENDS_ARROW2 },
       },
       {
         hint: 'Повернення через лінію зіткнення військ',
         code: '10032500000170550000',
-        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.W]: 'Вих' }, right: ENDS_ARROW2 },
+        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.B]: 'Вих' }, right: ENDS_ARROW2 },
       },
       {
         hint: 'Pозвідувальні завдання пошуком',
