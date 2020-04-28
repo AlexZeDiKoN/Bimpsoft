@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, continueLine, drawLineMark, angleOf,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawLineMark, angleOf, getPointMove,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
@@ -35,10 +35,9 @@ lineDefinitions['152000'] = {
     const endPoint = applyVector(mid, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
     drawLine(result, mid, p2)
-    const graphicSize = drawLineMark(result, MARK_TYPE.ARROW_60, p2, angleOf(mid, endPoint))
-    drawLine(result, p0, p1)
-    const len = graphicSize
-    continueLine(result, p0, p1, len, hp * len)
-    continueLine(result, p1, p0, len, -hp * len)
+    const markSize = drawLineMark(result, MARK_TYPE.ARROW_60, p2, angleOf(mid, endPoint))
+    const aTop = getPointMove(p0, angleOf(p0, p1) - Math.PI / 4 * hp, markSize)
+    const aBottom = getPointMove(p1, angleOf(p1, p0) + Math.PI / 4 * hp, markSize)
+    drawLine(result, aTop, p0, p1, aBottom)
   },
 }

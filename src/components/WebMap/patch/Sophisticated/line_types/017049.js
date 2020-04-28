@@ -34,41 +34,30 @@ lineDefinitions['017049'] = {
   render: (result, points) => {
     const [ p0, p1 ] = points
     const arrowLength = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const springWidth = arrowLength * SCALE_SPRING_WIDTH
+    const springLength = arrowLength * SCALE_SPRING_LENGTH
     const l = segmentLength(p0, p1)
     if (l <= 0) {
       return
     }
 
-    if (l > (arrowLength * 6)) {
+    if (l > (arrowLength * 3 + springLength * 2)) {
       const p2 = segmentBy(p0, p1, arrowLength / l)
-      const fixL = arrowLength * 3
-      const springLength = arrowLength * SCALE_SPRING_LENGTH
-      const springWidth = arrowLength * SCALE_SPRING_WIDTH
-      const num = Math.trunc((l - fixL) / springLength)
+      const fixL = arrowLength * 3 // длина прямых участков линии
+      const num = Math.trunc((l - fixL) / springLength) // кол-во зубцов
       const p3 = segmentBy(p0, p1, (arrowLength + num * springLength) / l)
-      drawLine(result, p0, p2)
-      drawLine(result, p3, p1)
+      const linePoints = []
       const t = compose(
-        translate(p0.x, p0.y),
+        translate(p2.x, p2.y),
         rotate(angleOf(p0, p1)),
       )
       for (let i = 0; i < num; i++) {
-        drawLine(
-          result,
-          applyToPoint(t, {
-            x: -(arrowLength + springLength * i),
-            y: 0,
-          }),
-          applyToPoint(t, {
-            x: -(arrowLength + springLength * (0.5 + i)),
-            y: springWidth * ((i % 2) * 2 - 1),
-          }),
-          applyToPoint(t, {
-            x: -(arrowLength + springLength * (1 + i)),
-            y: 0,
-          }),
+        linePoints.push(applyToPoint(t, {
+          x: -(springLength * (0.5 + i)),
+          y: springWidth * ((i % 2) * 2 - 1) }),
         )
       }
+      drawLine(result, p0, p2, ...linePoints, p3, p1)
     } else {
       drawLine(result, p0, p1)
     }
