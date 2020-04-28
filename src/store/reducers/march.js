@@ -51,7 +51,6 @@ const initState = {
     { id: 2, name: 'Пункт денного (нічного) відпочинку' },
     { id: 3, name: 'Пункт добового відпочинку' },
     { id: 4, name: 'Рубіж регулювання' },
-    { id: 5, name: 'Вихідний рубіж' },
   ],
   dataMarch: {
     vehiclesLength: 0,
@@ -75,9 +74,9 @@ const initState = {
     numberEchelons: 1,
     extractionInColumnFactor: 0.8,
     extractionColumnFactor: 0.7,
-    pointRestTime: 1,
-    dayNightRestTime: 8,
-    dailyRestTime: 24,
+    pointRestTime: 1, // hour
+    dayNightRestTime: 8, // hour
+    dailyRestTime: 24, // hour
   },
   segments: List([
     {

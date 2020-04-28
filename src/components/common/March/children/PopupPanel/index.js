@@ -1,10 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Input, Select, Modal, Tooltip } from 'antd'
+import { Input, InputNumber, Select, Modal, Tooltip } from 'antd'
 import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
-import { isNumberSymbols } from '../../../../../utils/validation/number'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
 const { confirm } = Modal
@@ -32,11 +31,8 @@ const PopupPanel = (props) => {
     val: id,
   })
 
-  const onChangeVelocity = (e) => {
-    const { value } = e.target
-    const numberVal = value ? (isNumberSymbols(value) && value) || velocity : ''
-
-    onEditFormField('velocity')(+numberVal)
+  const onChangeVelocity = (value) => {
+    onEditFormField('velocity')(+value)
   }
 
   const showDeleteConfirm = () => {
@@ -83,7 +79,7 @@ const PopupPanel = (props) => {
 
     <div className={'speed-block'}>
       <span>{i18n.AVERAGE_SPEED}: </span>
-      <Input onChange={onChangeVelocity} value={velocity} maxLength={10} className={'velocity-input'}/>
+      <InputNumber min={0} onChange={onChangeVelocity} value={velocity} maxLength={10} className={'velocity-input'}/>
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>

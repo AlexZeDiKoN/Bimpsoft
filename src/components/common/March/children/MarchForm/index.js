@@ -3,16 +3,17 @@ import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import placeSearch from '../../../../../server/places'
-import { isNumberSymbols } from '../../../../../utils/validation/number'
 import utilsMarch from '../../utilsMarch'
+import TimeInput from '../TimeInput'
 import i18n from './../../../../../i18n'
+
 const { confirm } = Modal
 
 const {
   form: { Coordinates },
 } = components
 
-const { getFilteredGeoLandmarks, azimuthToCardinalDirection, hoursToMs, msToHours } = utilsMarch.convertUnits
+const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
 
 const getPointById = (marchPoints, id) => marchPoints.find((point) => point.id === id) || marchPoints[0]
 
@@ -44,7 +45,7 @@ const MarchForm = (props) => {
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
 
-  const [ pointTime, setPointTime ] = useState(msToHours(restTime))
+  const [ pointTime, setPointTime ] = useState(restTime)
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
@@ -73,15 +74,13 @@ const MarchForm = (props) => {
 
   const point = getPointById(marchPoints, pointType)
 
-  const onChangeTime = (e) => {
+  const onChangeTime = (value) => {
     if (point.notEditableTime) {
       setPointTime(0)
       return pointTime
     }
-    const { value } = e.target
-    const numberVal = value ? (isNumberSymbols(value) && value) || pointTime : ''
 
-    setPointTime(+numberVal)
+    setPointTime(+value)
   }
 
   const onChangeMarchPointType = (value) => {
@@ -94,7 +93,7 @@ const MarchForm = (props) => {
       fieldName: [ 'pointType', 'restTime' ],
     })
 
-    setPointTime(msToHours(msTime))
+    setPointTime(msTime)
   }
 
   const onChangeRefPoint = (value, option) => {
@@ -112,9 +111,9 @@ const MarchForm = (props) => {
     changeRefPoint(value)
   }
 
-  const onBlurTime = (e) => {
+  const onBlurTime = (value) => {
     editFormField({
-      val: +hoursToMs(e.target.value),
+      val: +value,
       segmentId,
       childId,
       fieldName: 'restTime',
@@ -161,17 +160,13 @@ const MarchForm = (props) => {
   }
 
   let pointTypeName
-  const staticPointName = {
-    pointOnMarch: marchPoints[0].name,
-    startingLine: marchPoints[5].name,
-  }
-  const { pointOnMarch, startingLine } = staticPointName
+  const pointOnMarch = marchPoints[0].name
 
   if (segmentType === 41) {
-    if (childId === undefined && segmentId !== 0) {
-      pointTypeName = pointOnMarch
+    if (childId === undefined) {
+      pointTypeName = segmentId === 0 ? name : pointOnMarch
     } else {
-      pointTypeName = childId === 0 ? startingLine : getPointById(marchPoints, pointType).name
+      pointTypeName = childId === 0 ? i18n.STARTING_LINE : getPointById(marchPoints, pointType).name
     }
   } else {
     if (childId === undefined) {
@@ -182,7 +177,10 @@ const MarchForm = (props) => {
   }
 
   let isStaticPointType
-  if (segmentType === 0 || (segmentId === 0 && childId === undefined) || segmentType !== 41) {
+  if (segmentType === 0 ||
+    (segmentId === 0 && childId === undefined) ||
+    segmentType !== 41 ||
+    (segmentType === 41 && childId === undefined)) {
     isStaticPointType = true
   } else {
     isStaticPointType = childId === 0
@@ -285,7 +283,7 @@ const MarchForm = (props) => {
           {segmentType === 41
             ? <div className={'time-block'}>
               <div className={'logo-time'}/>
-              <Input
+              <TimeInput
                 onChange={onChangeTime}
                 onBlur={onBlurTime}
                 value={pointTime}
