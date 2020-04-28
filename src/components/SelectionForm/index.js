@@ -82,8 +82,8 @@ const forms = {
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
     component: SquareForm,
-    minHeight: 550,
-    maxHeight: 550,
+    minHeight: 760,
+    maxHeight: 760,
     minWidth: 560,
   },
   [SelectionTypes.TEXT]: {
