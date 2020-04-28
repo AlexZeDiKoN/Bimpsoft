@@ -12,9 +12,10 @@ const PATH = [ 'attributes', 'fill' ]
 const WithFill = (Component) => class FillComponent extends Component {
   fillChangeHandler = (fill) => this.setResult((result) => result.setIn(PATH, fill))
 
-  renderFill () {
+  renderFill (useHatch = false) {
     const fill = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
+    const hatch = useHatch ? `/${i18n.HATCH_COLOR}` : ''
     const value = canEdit ? (
       <Select value={fill} onChange={this.fillChangeHandler}>
         {colorOption(colors.TRANSPARENT)}
@@ -28,7 +29,7 @@ const WithFill = (Component) => class FillComponent extends Component {
     ) : colorDiv(fill)
 
     return (
-      <FormRow label={i18n.FILLING}>
+      <FormRow label={`${i18n.FILL_COLOR}${hatch}`}>
         {value}
       </FormRow>
     )
