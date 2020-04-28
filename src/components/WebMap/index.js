@@ -1938,7 +1938,7 @@ export default class WebMap extends React.PureComponent {
           x: x - w + dx * w * 2,
           y: y - w + dy * w * 2,
         })).map(c2g)
-      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
+      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA || amp.type === entityKind.POLYGON) {
         const p0 = { x: x + sw, y }
         const p1 = { x: x - sw, y: y - sw }
         const p2 = { x: x - sw, y: y + sw }
