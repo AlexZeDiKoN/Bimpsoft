@@ -49,7 +49,7 @@ const forms = {
     component: LineForm,
     minHeight: 670,
     maxHeight: 750,
-    minWidth: 900,
+    minWidth: 660,
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
@@ -68,9 +68,9 @@ const forms = {
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
     component: RectangleForm,
-    minHeight: 490,
-    maxHeight: 490,
-    minWidth: 415,
+    minHeight: 700,
+    maxHeight: 700,
+    minWidth: 520,
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
