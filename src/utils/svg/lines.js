@@ -887,6 +887,7 @@ const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, n
     case 'top':
       return { y: -lineHeight * numberOfLines - lineHeight / 2 }
     case 'middle':
+    case 'center':
       return { y: -lineHeight * numberOfLines / 2 }
     case 'bottom':
       return { y: lineHeight / 2 }
@@ -906,10 +907,10 @@ const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHe
     case 'top':
       offsetObject.x = half * t
       break
-    case 'middle': {
+    case 'middle':
+    case 'center':
       offsetObject.x = -(half + lineHeight / 3) * t
       break
-    }
     case 'bottom':
       offsetObject.x = half * t
       break
