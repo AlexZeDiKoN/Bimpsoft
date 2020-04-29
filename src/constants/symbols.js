@@ -27,7 +27,8 @@ export const amps = {
   T: 'top', // --||--
   W: 'bottom', // --||--
   A: 'additional',
-  B: 'center',
+  B: 'center', //  это для сложных линий
+  // в простіх линиях для амплификатор "B" между опорніми точками (intermediateAmplifier) используйте "N"
 }
 
 export const MINE_TYPES = {
@@ -737,7 +738,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '', shownIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '' },
         },
       },
       {
@@ -1788,12 +1789,22 @@ export const symbols = [
       {
         hint: 'Виведення через державний кордон',
         code: '10032500000170540000',
-        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.B]: 'Bx' }, right: ENDS_ARROW2 },
+        amp: {
+          isSvg: true,
+          type: entityKind.CURVE,
+          intermediateAmplifier: { [amps.N]: 'Bx' },
+          shownIntermediateAmplifiers: [ 0 ],
+          right: ENDS_ARROW2 },
       },
       {
         hint: 'Повернення через лінію зіткнення військ',
         code: '10032500000170550000',
-        amp: { isSvg: true, type: entityKind.CURVE, pointAmplifier: { [amps.B]: 'Вих' }, right: ENDS_ARROW2 },
+        amp: {
+          isSvg: true,
+          type: entityKind.CURVE,
+          intermediateAmplifier: { [amps.N]: 'Вих' },
+          shownIntermediateAmplifiers: [ 0 ],
+          right: ENDS_ARROW2 },
       },
       {
         hint: 'Pозвідувальні завдання пошуком',

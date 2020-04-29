@@ -127,8 +127,7 @@ export const extractTextSVG = ({
     const width = getTextWidth(line, getFont(fontSize, false))
     const widthWithMargin = width + 2 * margin
     const height = fontSize * LINE_COEFFICIENT
-
-    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : {}
+    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : { y: 0, x: 0 }
     const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
     const top = height * index + y
     return {

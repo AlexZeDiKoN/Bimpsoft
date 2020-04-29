@@ -43,15 +43,16 @@ lineDefinitions['270502'] = {
     const pa = segmentsBy(p0, p1, [ 1, 0.5, 0 ])
     const norm = normalVectorTo(p0, p1, p2)
     const antiNorm = oppositeVector(norm)
+    let endPoint = p0
     pa.forEach((point, index) => {
       const p = applyVector(point, norm)
-      let endPoint = segmentBy(point, p, (4 - index) / 4)
-      drawLine(result, point, endPoint)
+      endPoint = segmentBy(point, p, (4 - index) / 4)
       drawLineMark(result, MARK_TYPE.ARROW_45, endPoint, angleOf(point, endPoint))
       if (index === 1) {
-        endPoint = segmentBy(point, applyVector(point, antiNorm), 0.25)
-        drawLine(result, point, endPoint)
+        const startPoint = segmentBy(point, applyVector(point, antiNorm), 0.25)
+        drawLine(result, startPoint, endPoint)
       }
     })
+    drawLine(result, endPoint, ...points)
   },
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 import { compose } from 'redux'
 import { components } from '@DZVIN/CommonComponents'
-import { Checkbox } from 'antd'
 import i18n from '../../../../i18n'
 
 import {
@@ -16,14 +15,13 @@ import {
   WithHatch,
   WithIntermediateAmplifiers,
   WithPointAmplifiers,
+  WithIntermediateAmplifiersTune,
   WithCoordinateAndWidth,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SquareForm.css'
-import { NAME_OF_AMPLIFIERS } from '../../parts/WithIntermediateAmplifiers'
 
 const { FormRow, FormDarkPart } = components.form
-const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
 
 export default class SquareForm extends
   compose(
@@ -38,21 +36,12 @@ export default class SquareForm extends
     WithHatch,
     WithIntermediateAmplifiers,
     WithPointAmplifiers,
+    WithIntermediateAmplifiersTune,
     WithCoordinateAndWidth,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
-  setAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
-    result.updateIn(path, (showedSet) =>
-      showedSet.has(index) ? showedSet.delete(index) : showedSet.add(index),
-    ),
-  )
-
   renderContent () {
-    const intermediateArray = [ i18n.AMP_LEFT, i18n.AMP_TOP, i18n.AMP_RIGHT, i18n.AMP_BOTTOM ]
-    const canEdit = this.isCanEdit()
-    const formStore = this.getResult()
-    const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
     return (
       <div className="square-container">
         <div className="square-container--firstSection">
@@ -88,27 +77,7 @@ export default class SquareForm extends
             <FormDarkPart>
               <FormRow label={i18n.AMPLIFIERS_DISPLAY}>
               </FormRow>
-              <table className="on_intermediate_table">
-                {intermediateArray.map((name, index) => (
-                  <tr key={index}>
-                    <td>
-                      {name}
-                    </td>
-                    <td>
-                      <div className="icon-option">
-                        <Checkbox
-                          disabled={!canEdit}
-                          name={NAME_OF_AMPLIFIERS}
-                          onChange={this.setAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
-                          checked={shownIntermediateAmplifiersSet.has(index)}
-                        />
-                        <span>&nbsp;&laquo;{NAME_OF_AMPLIFIERS}&raquo;</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-                }
-              </table>
+              {this.renderIntermediateAmplifiersTune()}
             </FormDarkPart>
           </div>
           <div className="square-container__itemWidth50">

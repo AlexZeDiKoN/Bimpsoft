@@ -18,6 +18,7 @@ import {
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './areaForm.css'
+import SelectionTypes from '../../../../constants/SelectionTypes'
 
 const Extenders = compose(
   UnitSelect, // Підрозділ
@@ -36,26 +37,68 @@ const Extenders = compose(
   WithPointAmplifiers,
 )
 
-const SVG_AREA = <svg viewBox="0 0 1024 600">
+const SVG_AREA = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 560">
   <path fill="none" stroke="#000" strokeLinejoin="bevel" strokeWidth="8"
-    d="M432 72h160v160h-160zm48 48h64m-32 0v72
-   M432 232h160v160h-160zm52 48v72m0-36h56v36v-72
-   M432 392h160v160h-160zm40 48l20 72l20-72l20 72l20-72
-   M16 232h160v160h-160zm52 44v72h32a20 20 0 0 0 0-40h-32h28a16 16 0 0 0 0-32z
-   M840 232h160v160h-160zm52 44v72h32a20 20 0 0 0 0-40h-32h28a16 16 0 0 0 0-32z
-   M96,400C96,480 240,580 520,580M520,580C840,580 920,480 920,400
-   M920,228C900,80 600,40 520,40M520,40C380,40 160,80 88,228"/>
+    d="M120,328C120,400 240,480 360,480C440,480 670,580 656,328
+   M648,228C620,60 420,40 380,40C280,40 140,40 120,228"
+  />
+  <path fill="none" stroke="#000" strokeLinejoin="bevel" strokeWidth="2"
+    d="M352 160h80v80h-80zM352 240h80v80h-80zM352 320h80v80h-80zM16 240h80v80h-80zM96 240h80v80h-80z
+       M176 240h80v80h-80zM528 240h80v80h-80zM608 240h80v80h-80zM688 240h80v80h-80z"
+  />
+  <g textAnchor="middle" fontSize="52" fontFamily="Arial" fontWeight="bold" strokeWidth="0" fill="black">
+    <text alignmentBaseline="central" x="136" y="280">B</text>
+    <text alignmentBaseline="central" x="56" y="280">H1</text>
+    <text alignmentBaseline="central" x="216" y="280">H2</text>
+    <text alignmentBaseline="central" x="648" y="280">B</text>
+    <text alignmentBaseline="central" x="568" y="280">H1</text>
+    <text alignmentBaseline="central" x="728" y="280">H2</text>
+    <text alignmentBaseline="central" x="392" y="200">T</text>
+    <text alignmentBaseline="central" x="392" y="280">N</text>
+    <text alignmentBaseline="central" x="392" y="360">W</text>
+  </g>
 </svg>
+
+const SVG_POLYGON = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 560">
+  <path fill="none" stroke="#000" strokeLinejoin="bevel" strokeWidth="8"
+    d="M120,328 L120,400 L340,540 L540 540 L616 448
+   M120,228L120 16L400 20L500 80
+   M696 348 L780 256L640 176"
+
+  />
+  <path fill="none" stroke="#000" strokeLinejoin="bevel" strokeWidth="2"
+    d="M352 160h80v80h-80zM352 240h80v80h-80zM352 320h80v80h-80zM16 240h80v80h-80zM96 240h80v80h-80zM176 240h80v80h-80z
+      M480 88h80v80h-80zM560 88h80v80h-80zM640 88h80v80h-80z
+      M528 360h80v80h-80zM608 360h80v80h-80zM688 360h80v80h-80z"
+  />
+  <g textAnchor="middle" fontSize="52" fontFamily="Arial" fontWeight="bold" strokeWidth="0" fill="black">
+    <text alignmentBaseline="central" x="136" y="280">B</text>
+    <text alignmentBaseline="central" x="56" y="280">H1</text>
+    <text alignmentBaseline="central" x="216" y="280">H2</text>
+    <text alignmentBaseline="central" x="648" y="400">B</text>
+    <text alignmentBaseline="central" x="568" y="400">H1</text>
+    <text alignmentBaseline="central" x="728" y="400">H2</text>
+    <text alignmentBaseline="central" x="600" y="128">B</text>
+    <text alignmentBaseline="central" x="520" y="128">H1</text>
+    <text alignmentBaseline="central" x="680" y="128">H2</text>
+    <text alignmentBaseline="central" x="392" y="200">T</text>
+    <text alignmentBaseline="central" x="392" y="280">N</text>
+    <text alignmentBaseline="central" x="392" y="360">W</text>
+  </g>
+</svg>
+
+const TYPE_PATH = [ 'type' ]
 
 export default class AreaForm extends Extenders(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
     return (
       <div className="area-container">
         <div className="area-container--firstSection">
           <div className="area-container__itemWidth-left">
-            {SVG_AREA}
+            {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
           </div>
           <div className="area-container__itemWidth-right">
             <div className="area-container__itemWidth">

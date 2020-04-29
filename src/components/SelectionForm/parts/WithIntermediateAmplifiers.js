@@ -7,6 +7,8 @@ import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
+import './WithIntermediateAmplifiers.css'
+
 const { FormRow } = components.form
 
 const PAIRS = {
@@ -71,9 +73,9 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     )
 
     return (
-      <div className="line-container__item">
-        <div className="line-container__itemWidth">
-          <div className="line-container__item-amplifier">
+      <div className="intermediate-amplifiers__item">
+        <div className="intermediate-amplifiers__itemWidth">
+          <div className="intermediate-amplifiers__item-B">
             <FormRow label={`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
               <Select
                 value={type}
