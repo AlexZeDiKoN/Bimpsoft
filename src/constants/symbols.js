@@ -649,7 +649,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', shownIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B' },
         },
       },
       {
@@ -658,7 +658,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T', shownIntermediateAmplifiers: [ 0 ] },
+          pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T' },
         },
       },
       {
@@ -667,7 +667,6 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { N: 'N', B: 'B' },
         },
       },
       {
@@ -758,8 +757,9 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.POLYLINE,
-          pointAmplifier: { [amps.B]: 'ЗОР' },
+          intermediateAmplifier: { [amps.N]: 'ЗОР' },
           shownIntermediateAmplifiers: [ 0 ],
+          intermediateAmplifierType: 'text',
         },
       },
       {
@@ -768,8 +768,9 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.POLYLINE,
-          pointAmplifier: { [amps.B]: 'ЗДР' },
+          intermediateAmplifier: { [amps.N]: 'ЗДР' },
           shownIntermediateAmplifiers: [ 0 ],
+          intermediateAmplifierType: 'text',
         },
       },
       { hint: 'Розвідка боєм', code: '10032500001520000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
@@ -955,6 +956,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'РЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -965,6 +967,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'ТрЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -975,6 +978,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'РРЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -985,6 +989,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'TРЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -995,6 +1000,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'CЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -1005,6 +1011,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: 'ПрЗ' },
+          shownIntermediateAmplifiers: [ 0 ],
         },
       },
       {
@@ -1015,6 +1022,7 @@ export const symbols = [
           type: entityKind.POLYLINE,
           intermediateAmplifierType: 'text',
           intermediateAmplifier: { [amps.N]: '2E1' },
+          shownIntermediateAmplifiers: [ 0 ],
           strokeWidth: 16,
         },
       },
@@ -1794,6 +1802,7 @@ export const symbols = [
           type: entityKind.CURVE,
           intermediateAmplifier: { [amps.N]: 'Bx' },
           shownIntermediateAmplifiers: [ 0 ],
+          intermediateAmplifierType: 'text',
           right: ENDS_ARROW2 },
       },
       {
@@ -1804,6 +1813,7 @@ export const symbols = [
           type: entityKind.CURVE,
           intermediateAmplifier: { [amps.N]: 'Вих' },
           shownIntermediateAmplifiers: [ 0 ],
+          intermediateAmplifierType: 'text',
           right: ENDS_ARROW2 },
       },
       {
