@@ -10,6 +10,7 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
+import { MARK_TYPE } from '../utils/svg/lines'
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
@@ -563,7 +564,7 @@ export const symbols = [
           type: entityKind.AREA,
           color: '#ff0404',
           lineType: types.dashed.value,
-          intermediateAmplifierType: 'arrow30fill',
+          intermediateAmplifierType: MARK_TYPE.ARROW_30_FILL,
           shownIntermediateAmplifiers: [ 0 ],
         },
       },

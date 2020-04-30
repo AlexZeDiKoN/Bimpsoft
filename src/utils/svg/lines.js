@@ -827,8 +827,8 @@ const getTextAmplifiers = ({
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle' && level) {
-        if (amplifierType === 'level') {
+      if (type === 'middle') {
+        if (amplifierType === 'level' && level) {
           return [ type, [ extractSubordinationLevelSVG(
             level,
             graphicSize,
@@ -1212,7 +1212,7 @@ const drawIntermediateArrow = (amplifierType, graphicSize) => {
     case MARK_TYPE.ARROW_90:
       return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
     case MARK_TYPE.ARROW_30_FILL:
-      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
+      return [ { sign: `<path stroke-width="1" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
     default:
   }
   return null
