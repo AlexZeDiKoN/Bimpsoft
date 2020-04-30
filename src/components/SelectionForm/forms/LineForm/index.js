@@ -49,8 +49,8 @@ export default class LineForm extends compose(
             </div>
             <div className="line-container__itemWidth-right">
               <div className='line-container__itemWidth--section1'>
-                {this.renderOrgStructureSelect()}
                 {this.renderSubordinationLevel()}
+                {this.renderOrgStructureSelect()}
               </div>
               <div className='line-container__itemWidth--section1'>
                 {this.renderAffiliation()}
