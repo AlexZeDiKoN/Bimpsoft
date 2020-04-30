@@ -1,15 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, angleOf, drawMaskedText, drawArrow,
+  drawLine, normalVectorTo, applyVector, segmentBy, angleOf, drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: PENETRATE
 // task code: DZVIN-5536
 // hint: 'Вклинення'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const TEXT = 'P'
 
 lineDefinitions['341800'] = {
@@ -30,14 +29,15 @@ lineDefinitions['341800'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const mid = segmentBy(p0, p1, 0.5)
     const norm = normalVectorTo(p0, p1, p2)
     const startPoint = applyVector(mid, norm)
     drawLine(result, p0, p1)
-    drawArrow(result, startPoint, mid, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLine(result, startPoint, mid)
+    drawLineMark(result, MARK_TYPE.ARROW_45, mid, angleOf(startPoint, mid))
     drawMaskedText(
       result,
       segmentBy(startPoint, mid, 0.5),

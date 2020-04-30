@@ -30,6 +30,7 @@ const LineAmplifier = Record({
   top: null,
   middle: null,
   bottom: null,
+  center: null,
   additional: null,
 })
 
@@ -56,6 +57,7 @@ const webMapAttributesInitValues = {
   taskId: null,
   lineClassifier: UNDEFINED_CLASSIFIER,
   status: STATUSES.EXISTING,
+  uniqueDesignation1: '',
 }
 
 for (const key of Object.keys(symbolOptions)) {

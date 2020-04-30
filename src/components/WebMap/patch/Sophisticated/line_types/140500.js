@@ -1,15 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, segmentLength, drawArrow, getPointAt,
+  drawLine, segmentBy, segmentLength, getPointAt, drawLineMark, angleOf,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: PRINCIPAL DIRECTION OF FIRE
 // task code: DZVIN-5516
 // hint: 'Межа смуги вогню основного сектора обстрілу'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const WEIGHT = 5
 
 lineDefinitions['140500'] = {
@@ -30,11 +29,13 @@ lineDefinitions['140500'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
-    drawArrow(result, p0, p1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
-    drawArrow(result, p0, p2, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLine(result, p0, p1)
+    drawLine(result, p0, p2)
+    drawLineMark(result, MARK_TYPE.ARROW_45, p1, angleOf(p0, p1))
+    drawLineMark(result, MARK_TYPE.ARROW_45, p2, angleOf(p0, p2))
 
     const l = segmentLength(p0, p1)
     if (!l) {

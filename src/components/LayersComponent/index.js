@@ -134,17 +134,8 @@ export default class LayersComponent extends React.Component {
               </Tooltip>
             </div>
           </div>
-          <div className='interval-control-container' style={{ height: showPeriod ? 52 : 0 }}>
-            <IntervalControl
-              showPeriod={showPeriod}
-              from={timelineFrom}
-              to={timelineTo}
-              onChangeFrom={onChangeTimeLineFrom}
-              onChangeTo={onChangeTimeLineTo}
-            />
-          </div>
           {(!is3DMapMode) &&
-            <div className={'container-layers-controls'} style={{ height: showLayers ? 52 : 0 }}>
+            <div className={'container-layers-controls'} style={{ height: showLayers ? 46 : 0 }}>
               <LayersControlsComponent
                 backOpacity={backOpacity}
                 cancelCloseHandler={this.cancelCloseHandler}
@@ -156,6 +147,15 @@ export default class LayersComponent extends React.Component {
               />
             </div>
           }
+          <div className='interval-control-container' style={{ height: showPeriod ? 48 : 0 }}>
+            <IntervalControl
+              showPeriod={showPeriod}
+              from={timelineFrom}
+              to={timelineTo}
+              onChangeFrom={onChangeTimeLineFrom}
+              onChangeTo={onChangeTimeLineTo}
+            />
+          </div>
           <div className="tree-layers-container">
             <TreeComponentUncontrolled
               className="tree-layers"

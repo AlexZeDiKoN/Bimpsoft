@@ -1,5 +1,6 @@
 import { MIDDLE, DELETE } from '../strategies'
 import { STRATEGY_ARROW, buildingArrow } from '../arrowLib'
+import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from '../lineDefinitions'
 
 // sign name: SUPPORTING ATTACK
@@ -11,6 +12,8 @@ const BINDING_TYPE = 'round'
 const LINE_TYPE = 'L'
 
 lineDefinitions['151404'] = {
+  useStatus: true,
+
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.allowOverAndNotEnd(POINTS - 2),
 
@@ -29,7 +32,11 @@ lineDefinitions['151404'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
+    const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
+    if (status === STATUSES.PLANNED) {
+      result.layer._path.setAttribute('stroke-dasharray', 20 * scale)
+    }
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }

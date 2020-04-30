@@ -13,6 +13,7 @@ const PAIRS = {
 
 export const MAX_LENGTH_TEXT_AMPLIFIERS = {
   TEXTAREA: 30,
+  TEXTMULTILINE: 128,
   INPUT: 15,
 }
 

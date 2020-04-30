@@ -12,6 +12,15 @@ export const createGroup = () =>
     return groupCreate(type, objects, layer, scale)
   })
 
+export const createGroupRegion = () =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { groupCreate } }) => {
+      const state = getState()
+      const objects = selectedList(state)
+      const layer = selectedLayerId(state)
+      const scale = state.webMap.zoom
+      return groupCreate('region', objects, layer, scale)
+  })
+
 export const dropGroup = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { groupDrop } }) => {
     const state = getState()

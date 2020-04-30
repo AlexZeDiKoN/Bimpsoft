@@ -21,7 +21,7 @@ const PointIcon = L.Icon.extend({
       data !== state.data
   },
 
-  createIcon: function (oldIcon) {
+  createIcon: function () { // (oldIcon)
     const { data, zoom, scaleOptions, showAmplifiers } = this.options
     const { code = '', attributes } = data
     const scale = this.getScale(zoom, scaleOptions)
