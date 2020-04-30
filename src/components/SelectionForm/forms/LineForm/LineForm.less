@@ -208,28 +208,34 @@
 
     .headerSiding {
       position: relative;  /* нужна нестатическая позиция */
-      padding-top :  1.9em ; /* место для фиксированного заголовка */
+      padding-top : 28px ; /* место для фиксированного заголовка */
+      margin-top: 0.25em;
     }
 
     .shape-form-scrollable {
       height: 160px;
-      padding-left: 1.1em;
+      padding-left: 1em;
       overflow :  auto ; /* показывать полосу прокрутки при необходимости */
       overflow-x: hidden;
       .coordinatesModal{
         margin-bottom: 5px;
       }
       .col-add {
-        width: 40px;
+        width: 48px;
       }
 
-      th  div {
+      th div {
         position :  absolute ; /* закреплено за следующим нестатичным родителем */
         top :  0 ; /* наверху родителя */
+
+        label {
+          position: relative;
+        }
       }
 
     }
   }
+
   .ant-select-open {
     .ant-select-arrow {
       transform: rotate(180deg) scale(0.6);

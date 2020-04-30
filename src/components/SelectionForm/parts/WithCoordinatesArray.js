@@ -87,7 +87,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         <div className="headerSiding">
           <div className="shape-form-scrollable">
             <table>
-              <thead>
+              <tbody>
                 <tr>
                   <th>
                     <div>
@@ -96,21 +96,20 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   </th>
                   <th>
                     <div>
-                      <FormRow label={i18n.COORDINATES}>
-                      </FormRow>
+                      <FormRow label={i18n.COORDINATES}/>
                     </div>
                   </th>
                   <th className="col-add">
-                    {canEdit && editCoordinates && <IconHovered
-                      icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-                      hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-                      onClick={this.coordinateAddHandler}
-                    />}
+                    <div>
+                      {canEdit && editCoordinates && <IconHovered
+                        icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                        hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                        onClick={this.coordinateAddHandler}
+                      />}
                     &nbsp;
+                    </div>
                   </th>
                 </tr>
-              </thead>
-              <tbody>
                 {coordinatesArray.map((coordinate, index) => (
                   <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
                     <tr>

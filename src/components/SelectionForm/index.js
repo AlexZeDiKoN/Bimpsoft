@@ -62,7 +62,7 @@ const forms = {
     title: i18n.SHAPE_AREA,
     component: AreaForm,
     minHeight: 750,
-    maxHeight: 750,
+    maxHeight: 800,
     minWidth: 415,
   },
   [SelectionTypes.RECTANGLE]: {
