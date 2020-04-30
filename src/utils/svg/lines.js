@@ -827,8 +827,8 @@ const getTextAmplifiers = ({
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle' && level) {
-        if (amplifierType === 'level') {
+      if (type === 'middle') {
+        if (amplifierType === 'level' && level) {
           return [ type, [ extractSubordinationLevelSVG(
             level,
             graphicSize,
