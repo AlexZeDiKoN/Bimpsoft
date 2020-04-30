@@ -39,7 +39,7 @@ const azimuthToCardinalDirection = (azimuth) => {
 const getFilteredGeoLandmarks = (features) => {
   const filteredGeoLandmarks = {}
 
-  features.forEach(({ properties }) => {
+  features.forEach(({ properties, geometry }) => {
     const { name, distance } = properties
 
     if (!name) {
@@ -49,10 +49,10 @@ const getFilteredGeoLandmarks = (features) => {
     const filteredLandmark = filteredGeoLandmarks[name]
     if (filteredLandmark) {
       if (distance < filteredLandmark.distance) {
-        filteredGeoLandmarks[name] = properties
+        filteredGeoLandmarks[name] = { properties, geometry }
       }
     } else {
-      filteredGeoLandmarks[name] = properties
+      filteredGeoLandmarks[name] = { properties, geometry }
     }
   })
 

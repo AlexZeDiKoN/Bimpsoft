@@ -22,11 +22,13 @@ const getFormattedGeoLandmarks = (geoLandmarks) => {
 
   const filteredGeoLandmarks = getFilteredGeoLandmarks(features)
 
-  return filteredGeoLandmarks.map(({ name, distance, azimuth }) => {
+  return filteredGeoLandmarks.map((itemGeoLandmark) => {
+    const { name, distance, azimuth } = itemGeoLandmark.properties
     const distanceInKm = (distance / 1000).toFixed(0)
     const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
-    return `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    return itemGeoLandmark
   })
 }
 
@@ -68,6 +70,8 @@ const MarchForm = (props) => {
     await changeIsLoadingGeoLandmarks(true)
     changeGeoLandmarks({})
     const res = await getMemoGeoLandmarks(coord)
+
+    console.log('-------------', res)
     changeGeoLandmarks(res)
     await changeIsLoadingGeoLandmarks(false)
   }
@@ -203,6 +207,10 @@ const MarchForm = (props) => {
     )
   }
 
+  const handleMouseOver = (e, a) => {
+    console.log("Mouse Over!", e, a)
+  }
+
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
@@ -239,16 +247,25 @@ const MarchForm = (props) => {
             loading={isLoadingGeoLandmarks}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
+
+            getPopupContainer={(trigger) => trigger.parentNode}
+            onMouseEnter={() => console.log('4')}
+            onPopupScroll={(e) => console.log('1', e)}
+            onSearch={() => console.log('2')}
+            onSelect={() => console.log('3')}
           >
             {ownRefPointMarch &&
             <Select.Option key={'ownGeoLandmark'} value={ownRefPointMarch}>
               {ownRefPointMarch}
             </Select.Option>}
-            {getFormattedGeoLandmarks(geoLandmarks).map((geoLandmark, id) => (
+            {getFormattedGeoLandmarks(geoLandmarks).map(({ propertiesText, geometry }, id) => (
               <Select.Option
                 key={id}
-                value={geoLandmark}
-              >{geoLandmark}</Select.Option>
+                value={propertiesText}
+
+              >
+                <div key={id} onMouseOver={handleMouseOver}>{propertiesText}</div>
+              </Select.Option>
             ))}
             <Select.Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
               <Divider className={'march-divider'}/>
