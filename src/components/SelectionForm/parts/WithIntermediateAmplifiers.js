@@ -2,9 +2,12 @@ import React from 'react'
 import { Select, Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import { MARK_TYPE } from '../../../utils/svg/lines'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
+
+import './WithIntermediateAmplifiers.css'
 
 const { FormRow } = components.form
 
@@ -20,12 +23,16 @@ const TYPES = {
   NONE: 'none',
   LEVEL: 'level',
   TEXT: 'text',
+  ARROW: MARK_TYPE.ARROW_90,
+  ARROW_FILED: MARK_TYPE.ARROW_30_FILL,
 }
 
 const TYPE_LIST = [
   { id: '0', text: i18n.NO_ONE, value: TYPES.NONE },
   { id: '1', text: i18n.TEXT_2, value: TYPES.TEXT },
   { id: '2', text: i18n.SHOW_LEVEL, value: TYPES.LEVEL },
+  { id: '3', text: i18n.ARROW_FILLED, value: TYPES.ARROW_FILED },
+  { id: '4', text: i18n.ARROW_LEFT, value: TYPES.ARROW },
 ]
 
 export const PATH = [ 'attributes', 'intermediateAmplifier' ]
@@ -66,18 +73,27 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     )
 
     return (
-      <div className="line-container__item">
-        <div className="line-container__itemWidth">
-          <div className="line-container__item-amplifier">
+      <div className="intermediate-amplifiers__item">
+        <div className="intermediate-amplifiers__itemWidth">
+          <div className="intermediate-amplifiers__item-B">
             <FormRow label={`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
               <Select
                 value={type}
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
               >{TYPE_LIST.map(({ text, value }) => {
-                const level = value === TYPES.LEVEL ? subordinationLevel : null
-                return typeOption(value, 'solid', text, level)
-              })}
+                  const level = value === TYPES.LEVEL ? subordinationLevel : null
+                  let borderStyle
+                  switch (value) {
+                    case TYPES.ARROW:
+                    case TYPES.ARROW_FILED:
+                      borderStyle = value
+                      break
+                    default:
+                      borderStyle = 'solid'
+                  }
+                  return typeOption(value, borderStyle, text, level)
+                })}
               </Select>
               <Input
                 disabled={!canEdit || type !== TYPES.TEXT}

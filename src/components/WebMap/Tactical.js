@@ -34,6 +34,9 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
+  if (layer.options.tsType === entityKind.GROUPED_REGION) {
+    return
+  }
   if (GROUPS.COMBINED.includes(layer.options.tsType)) {
     layer.pm.enable()
   } else {
@@ -116,6 +119,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
+    case entityKind.GROUPED_REGION:
+      return createGroup(entityKind.GROUPED_REGION, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
     default:
@@ -211,13 +216,24 @@ function createSegment (data) {
   return L.polyline(points, options)
 }
 
-function createGroup (kind, data) {
+function createGroup (kind, data, layer) {
   const { geometry, attributes } = data
   const points = geometry.toJS()
   const { scale } = attributes
   const options = prepareOptions(kind)
   options.tsScale = scale
-  return L.polyline(points, options)
+  switch (kind) {
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND: {
+      const data = layer
+        ? layer._groupChildren.map(({ object: { code, attributes } }) => ({ code, attributes }))
+        : []
+      const icon = new L.GroupIcon({ data })
+      return createMarker(points[0], icon, layer)
+    }
+    default:
+      return L.polyline(points, options)
+  }
 }
 
 function createPolygon (type, data, layer) {
@@ -374,6 +390,7 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
@@ -431,6 +448,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:

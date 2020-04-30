@@ -7,6 +7,8 @@ import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
+import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
+import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -18,7 +20,7 @@ const {
 
 const { Coordinates: Coord } = utils
 const MARKER = [ '', MINIMUM, EFFECTIVE, MAXIMUM ]
-const PATH_S_INFO = [ 'attributes', 'sectorsInfo' ]
+const PATH_SECTORS_INFO = [ 'attributes', 'sectorsInfo' ]
 const PRESET_COLORS = Object.values(colors.values)
 const COLOR_PICKER_Z_INDEX = 2000
 
@@ -78,7 +80,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
 
   changeSectorsInfo = (info) => {
     this.setResult((result) => (
-      result.updateIn([ ...PATH_S_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
+      result.updateIn([ ...PATH_SECTORS_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
     ))
   }
 
@@ -102,24 +104,25 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     const canEdit = this.isCanEdit()
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
-    const sectorsInfo = formStore.getIn(PATH_S_INFO).toJS()
+    const sectorsInfo = formStore.getIn(PATH_SECTORS_INFO).toJS()
     const coordO = coordinatesArray[0]
     const indexEnd = coordinatesArray.length - 1
+    const presetColor = lineDefinitions[extractLineCode(this.props.data.code)]?.presetColor
     const { radiiText = [] } = this.state
     return (
       coordinatesArray.map((elm, index) => {
         const radius = radiiText[index] ? radiiText[index]
           : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
+        const radiusIsGood = Number.isFinite(Number(radius))
         const sectorInfo = sectorsInfo[index] ?? {}
         const amplifierT = sectorInfo?.amplifier || ''
-        const color = sectorInfo?.color || '#000000'
+        const color = sectorInfo?.color || (presetColor && presetColor[index]) || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
-        const radiusIsGood = Number.isFinite(Number(radius))
         return (index !== 0) ? (
           <div key={index}>
             <div className="circularzone-container__itemWidth">
               <div className="container__itemWidth50">
-                <FormRow label={`${MARKER[index]} радіус`} >
+                <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
                   <InputWithSuffix
                     readOnly={!canEdit}
                     value={radius}
@@ -130,7 +133,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                     error={!radiusIsGood}
                   />
                 </FormRow>
-                <FormRow label={`Ампліфікатор «Т${index}»`} >
+                <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
                   <Input.TextArea
                     value={amplifierT}
                     name={'amplifier'}

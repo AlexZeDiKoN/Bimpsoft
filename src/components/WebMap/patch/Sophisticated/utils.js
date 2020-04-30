@@ -1,7 +1,12 @@
 import L from 'leaflet'
 import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
+import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
+import { interpolateSize } from '../utils/helpers'
+import { MARK_TYPE, drawLineEnd, settings } from '../../../../utils/svg/lines'
+import { FONT_FAMILY, FONT_WEIGHT } from '../../../../utils/svg'
 import lineDefinitions from './lineDefinitions'
+import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
 
 const EPSILON = 1e-12
@@ -164,11 +169,21 @@ export const halfPlane = (p0, p1, p2) => {
 export const neg = (value) => value * 2 - 1
 
 // Обчислити координати точки, яку отримаємо, якщо рухаючись із точки p1 до p2
-// повернемо на вказаний кут і пройдемо ще вказану відстань
+// перенесемо на вказану відстань під заданим кутом
 export const getPointAt = (p1, p2, angle, length) => applyToPoint(
   compose(
     translate(p2.x, p2.y),
     rotate(angleOf(p2, p1) + angle),
+  ),
+  { x: length, y: 0 },
+)
+
+// Обчислити координати точки, яку отримаємо, якщо точку p1
+// переповернемо на вказаний кут і пройдемо ще вказану відстань
+export const getPointMove = (p, angle, length) => applyToPoint(
+  compose(
+    translate(p.x, p.y),
+    rotate(angle),
   ),
   { x: length, y: 0 },
 )
@@ -237,10 +252,12 @@ export const drawBezierSpline = (result, points, locked) => (result.d += prepare
 // === Utils ===
 
 // Визначення піксельних розмірів текстового блоку
-export const textBBox = (text, layer, sizeFactor = 1) => {
+export const textBBox = (text, layer, sizeFactor = 1, fontSize) => {
   const element = L.SVG.create('text')
+  // eslint-disable-next-line max-len
+  const font = fontSize || interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
   element.setAttribute('font-family', CONFIG.FONT_FAMILY)
-  element.setAttribute('font-size', `${Math.round(Number(CONFIG.FONT_SIZE) * sizeFactor)}em`)
+  element.setAttribute('font-size', `${font}`)
   element.setAttribute('font-weight', CONFIG.FONT_WEIGHT)
   element.innerHTML = text
   layer._renderer._rootGroup.appendChild(element)
@@ -313,6 +330,32 @@ export const drawRectangleC = (result, center, widthR, heightR) => {
     },
     p1,
   )
+}
+
+export const drawRectangleCz = (result, center, widthR, heightR) => {
+  const dx = widthR / 2
+  const dy = heightR / 2
+  const p1 = {
+    x: center.x - dx,
+    y: center.y - dy,
+  }
+  drawLine(
+    result,
+    p1,
+    {
+      x: center.x + dx,
+      y: center.y - dy,
+    },
+    {
+      x: center.x + dx,
+      y: center.y + dy,
+    },
+    {
+      x: center.x - dx,
+      y: center.y + dy,
+    },
+  )
+  result.d += 'z'
 }
 
 export const drawBezier = (result, p1, ...rest) => {
@@ -390,7 +433,7 @@ export const drawArrowOutline = (result, p1, p2, dL, dW, ddL, ddW, drawArrowLine
 }
 
 // Стрілка з пунктирною лінією
-export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
+export const drawDoubleArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
   ddL = ddL === undefined ? dL / 3 : ddL
   ddW = ddW === undefined ? dW / 3 : ddW
   drawLine(result, p1, p2)
@@ -450,6 +493,38 @@ export const drawArrowDashes = (result, p1, p2, dL, dW, ddL, ddW) => {
   }
 }
 
+// Стрілка з пунктирної лінії
+export const drawArrowDashes = (result, pO, angle, length) => {
+  const pd = getPointMove(pO, angle - Math.PI / 4, length)
+  const pu = getPointMove(pO, angle + Math.PI / 4, length)
+  drawLine(
+    result,
+    pd,
+    segmentBy(pd, pO, 0.2),
+  )
+  drawLine(
+    result,
+    segmentBy(pd, pO, 0.4),
+    segmentBy(pd, pO, 0.6),
+  )
+  drawLine(
+    result,
+    segmentBy(pd, pO, 0.8),
+    pO,
+    segmentBy(pu, pO, 0.8),
+  )
+  drawLine(
+    result,
+    segmentBy(pu, pO, 0.6),
+    segmentBy(pu, pO, 0.4),
+  )
+  drawLine(
+    result,
+    segmentBy(pu, pO, 0.2),
+    pu,
+  )
+}
+
 // Продовження відрізку засічкою вказаного розміру
 export const continueLine = (result, p1, p2, x, y) => {
   const t = compose(
@@ -463,32 +538,35 @@ export const continueLine = (result, p1, p2, x, y) => {
 // eslint-disable-next-line max-len
 export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null, textAlign = 'middle') => {
   if (!text || !text.length) {
-    return
+    return [ '', { width: 0, height: 0 } ]
   }
   // Обчислення розміру
-  const key = `${sizeFactor}:${text}`
+  const zoom = result.layer._map.getZoom()
+  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const key = `${fontSize}:${text}`
   let box = textSizeCache[key]
   if (!box) {
-    box = textBBox(text, result.layer, sizeFactor)
+    box = textBBox(text, result.layer, sizeFactor, fontSize)
     textSizeCache[key] = box
   }
-
   // Ампліфікатор
+  // font-weight="${CONFIG.FONT_WEIGHT}"
+  // fill="${color || result.layer._path.getAttribute('stroke')}"
   const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
+    font-family="${FONT_FAMILY}"
+    font-weight="${FONT_WEIGHT}"
+    stroke="none" 
     transform="${transform}"
     x="${0}" 
     y="${0}" 
-    fill="${color || result.layer._path.getAttribute('stroke')}" 
     text-anchor="${textAnchor}" 
-    font-family="${CONFIG.FONT_FAMILY}"
-    font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
-    font-weight="${CONFIG.FONT_WEIGHT}"
+    font-size="${fontSize}"
     alignment-baseline="${textAlign}" 
   >${text}</text>`
   return [ transform, box ]
 }
-
+// font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
 // eslint-disable-next-line max-len
 export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle') => {
@@ -521,7 +599,103 @@ export const addPathAmplifier = (result, amplifier, closed, dash) => {
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
   result.amplifiers += `<path 
-    stroke="${color}"${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
+    stroke="${color}" ${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
     d="${amplifier.d}" 
   />`
+}
+
+export const getMaxPolygon = (points) => {
+  const polygon = []
+  let beginPoint = points[0]
+  let beginIndex = 0
+  if (points.length < 3) {
+    return [ ...points ]
+  }
+  points.forEach((point, index) => {
+    if (point.x < beginPoint.x || (point.x === beginPoint.x && point.y < beginPoint.y)) {
+      beginPoint = point
+      beginIndex = index
+    }
+  })
+  polygon.push(beginPoint)
+  const degradation = points.filter((e, index) => (index !== beginIndex))
+  const nextPoint = degradation[0]
+  const indexR = getLeftPoint(degradation, beginPoint, nextPoint)
+  polygon.push(degradation[indexR]) // есть вторая точка многоугольника
+  degradation.splice(indexR, 1)
+  degradation.push(beginPoint)
+  while (degradation.length) {
+    const endIndex = polygon.length - 1
+    const indexR = getLeftPoint(degradation, polygon[endIndex], polygon[endIndex - 1])
+    if (indexR < 0) { // чето не срослось
+      break
+    }
+    if (indexR === degradation.length - 1) { // пришли в начало
+      break
+    }
+    polygon.push(degradation[indexR])
+    degradation.splice(indexR, 1)
+  }
+  return polygon
+}
+
+function getLeftPoint (points, lP, nP) {
+  let angle = -Math.PI
+  let indexR = -1
+  let distance = infinity
+  points.forEach((point, index) => {
+    const pP = coordinatesToPolar(lP, nP, point)
+    if ((angle < pP.angle) || (angle === pP.angle && distance > pP.beamLength)) {
+      angle = pP.angle
+      indexR = index
+      distance = pP.beamLength
+    }
+  })
+  return indexR
+}
+
+export const drawLineMark = (result, markType, point, angle, scale) => {
+  const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+  let da
+  switch (markType) {
+    case MARK_TYPE.SERIF:
+      drawLine(result,
+        getPointMove(point, angle - Math.PI / 2, graphicSize / 2),
+        getPointMove(point, angle + Math.PI / 2, graphicSize / 2))
+      return graphicSize
+    case MARK_TYPE.ANGLE:
+      drawLine(result,
+        point,
+        getPointMove(point, angle, graphicSize))
+      return graphicSize
+    case MARK_TYPE.CROSS:
+      drawLine(result,
+        getPointMove(point, angle - Math.PI / 3, graphicSize),
+        getPointMove(point, angle - Math.PI / 3, -graphicSize))
+      drawLine(result,
+        getPointMove(point, angle + Math.PI / 3, graphicSize),
+        getPointMove(point, angle + Math.PI / 3, -graphicSize))
+      return graphicSize
+    case MARK_TYPE.ARROW_90:
+      da = Math.PI / 4
+      break
+    case MARK_TYPE.ARROW_60:
+      da = Math.PI / 6
+      break
+    case MARK_TYPE.ARROW_45:
+      da = Math.PI / 8
+      break
+    case MARK_TYPE.ARROW_30:
+      da = Math.PI / 12
+      break
+    case MARK_TYPE.ARROW_90_DASHES:
+      drawArrowDashes(result, point, angle, graphicSize)
+      return graphicSize
+    default: // для стрілок з заливкою
+      // eslint-disable-next-line max-len
+      result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
+      return graphicSize
+  }
+  drawLine(result, getPointMove(point, angle - da, graphicSize), point, getPointMove(point, angle + da, graphicSize))
+  return graphicSize
 }

@@ -2,12 +2,13 @@ import { utils } from '@DZVIN/CommonComponents'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, emptyPath, addPathAmplifier, getPointAt, drawMaskedText,
+  drawLine, drawArc, drawMaskedText, drawLineMark, angleOf,
 } from '../utils'
 import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAzimuth } from '../../utils/sectors'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 const { Coordinates: Coord } = utils
 
@@ -16,7 +17,6 @@ const { Coordinates: Coord } = utils
 // hint: 'Зона ураження / виявлення (сектор)'
 
 const DEF_COUNT = 2
-const ARROW_LENGTH = 60
 
 lineDefinitions['017076'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -55,7 +55,7 @@ lineDefinitions['017076'] = {
   },
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const pO = points[0]
     const pE = points[1]
     if (!isDefPoint(pO) || !isDefPoint(pE)) {
@@ -79,14 +79,10 @@ lineDefinitions['017076'] = {
         })
       }
     }
-    const arrows = emptyPath()
     // вывод азимута
     drawLine(result, pO, pE)
-    const pa1 = getPointAt(pO, pE, Math.PI / 12, -ARROW_LENGTH * scale)
-    const pa2 = getPointAt(pO, pE, -Math.PI / 12, -ARROW_LENGTH * scale)
     // стрелка азимута
-    drawLine(arrows, pE, pa1, pa2)
-    addPathAmplifier(result, arrows, true)
+    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, pE, angleOf(pO, pE))
     if (points.length < 4) {
       return
     }

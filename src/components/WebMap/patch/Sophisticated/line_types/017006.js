@@ -1,16 +1,24 @@
+import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArrow, normalVectorTo, applyVector, segmentBy, halfPlane, setVectorLength, drawArc, oppositeVector
+  drawLine,
+  normalVectorTo,
+  applyVector,
+  segmentBy,
+  halfPlane,
+  setVectorLength,
+  drawArc,
+  oppositeVector,
+  drawLineMark,
+  angleOf,
 } from '../utils'
-import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986
 // hint: 'Атакувати вогнем – вогневе ураження противника без зближення та захоплення його об’єктів'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const EDGE_LENGTH = 60
 
 lineDefinitions['017006'] = {
@@ -38,7 +46,8 @@ lineDefinitions['017006'] = {
     const norm = normalVectorTo(p0, p1, p2)
     const endPoint = applyVector(mid, norm)
     const hp = halfPlane(p0, p1, p2)
-    drawArrow(result, mid, endPoint, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLineMark(result, MARK_TYPE.ARROW_45, endPoint, angleOf(mid, endPoint), 1)
+    drawLine(result, mid, endPoint)
     drawLine(result, p0, p1)
 
     const len = EDGE_LENGTH * scale

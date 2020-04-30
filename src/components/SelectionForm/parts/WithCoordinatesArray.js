@@ -47,7 +47,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
   )
 
-  renderCoordinatesArray () {
+  renderCoordinatesArray (lock = false) {
     const { editCoordinates } = this.state
     const formStore = this.getResult()
 
@@ -70,63 +70,71 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
           />)}
         </FormRow>
         <FormDivider/>
-        <div className="shape-form-scrollable">
-          <table>
-            <tbody>
-              <tr>
-                <th>
-                  <FormRow label={i18n.AMPLIFIERS}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.COORDINATES}>
-                    {canEdit && editCoordinates && <IconHovered
-                      icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-                      hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-                      onClick={this.coordinateAddHandler}
-                    />}
-                  </FormRow>
-                </th>
-              </tr>
-              {coordinatesArray.map((coordinate, index) => (
-                <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
-                  <tr>
-                    <td>
-                      <div className="icon-option">
-                        <Checkbox
-                          disabled={!canEdit || noNodalPointAmplifier}
-                          checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
-                          onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
-                        />
-                        {nodalPointIconPreview}
-                      </div>
-                    </td>
-                    <td>
-                      <CoordinateItem
-                        key={index}
-                        coordinate={coordinate}
-                        index={index}
-                        readOnly={!canEdit || !editCoordinates}
-                        canRemove={coordinatesArray.size > 2}
-                        onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
-                        onRemove={this.coordinateRemoveHandler}
-                        onFocus={this.onCoordinateFocusHandler}
-                        onBlur={this.onCoordinateBlurHandler}
-                      />
-                    </td>
-                  </tr>
-                  {index !== coordinatesLength - 1 ? (
+        <div className="headerSiding">
+          <div className="shape-form-scrollable">
+            <table>
+              <thead>
+                <tr>
+                  <th>
+                    <div>
+                      <FormRow label={i18n.AMPLIFIERS}/>
+                    </div>
+                  </th>
+                  <th>
+                    <div>
+                      <FormRow label={i18n.COORDINATES}>
+                        {canEdit && editCoordinates && <IconHovered
+                          icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                          hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                          onClick={this.coordinateAddHandler}
+                        />}
+                      </FormRow>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {coordinatesArray.map((coordinate, index) => (
+                  <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
                     <tr>
-                      <td><Checkbox
-                        disabled={!canEdit}
-                        onChange={this.createAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
-                        checked={shownIntermediateAmplifiersSet.has(index)}
-                      /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
+                      <td>
+                        <div className="icon-option">
+                          <Checkbox
+                            disabled={!canEdit || noNodalPointAmplifier}
+                            checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
+                            onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
+                          />
+                          {nodalPointIconPreview}
+                        </div>
+                      </td>
+                      <td>
+                        <CoordinateItem
+                          key={index}
+                          coordinate={coordinate}
+                          index={index}
+                          readOnly={!canEdit || !editCoordinates}
+                          canRemove={coordinatesArray.size > 2}
+                          onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+                          onRemove={this.coordinateRemoveHandler}
+                          onFocus={this.onCoordinateFocusHandler}
+                          onBlur={this.onCoordinateBlurHandler}
+                        />
+                      </td>
                     </tr>
-                  ) : null}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+                    {index !== coordinatesLength - (lock ? 0 : 1) ? (
+                      <tr>
+                        <td><Checkbox
+                          disabled={!canEdit}
+                          onChange={this.createAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
+                          checked={shownIntermediateAmplifiersSet.has(index)}
+                        /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </FormDarkPart>
     )

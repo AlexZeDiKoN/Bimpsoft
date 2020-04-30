@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 560">
+    <path fill="none" stroke="#000" stroke-linejoin="bevel" stroke-width="8"
+          d="M120,328 L120,400 L340,540 L540 540 L616 448
+   M120,228L120 16L400 20L500 80
+   M696 348 L780 256L640 176"
+
+    />
+    <path fill="none" stroke="#000" stroke-linejoin="bevel" stroke-width="2"
+          d="M352 160h80v80h-80zM352 240h80v80h-80zM352 320h80v80h-80zM16 240h80v80h-80zM96 240h80v80h-80zM176 240h80v80h-80z
+      M480 88h80v80h-80zM560 88h80v80h-80zM640 88h80v80h-80z
+      M528 360h80v80h-80zM608 360h80v80h-80zM688 360h80v80h-80z"
+    />
+    <g text-anchor="middle" font-size="52" font-family="Arial" font-weight="bold" stroke-width="0" fill="black">
+        <text alignment-baseline="central" x="136" y="280">B</text>
+        <text alignment-baseline="central" x="56" y="280">H1</text>
+        <text alignment-baseline="central" x="216" y="280">H2</text>
+        <text alignment-baseline="central" x="648" y="400">B</text>
+        <text alignment-baseline="central" x="568" y="400">H1</text>
+        <text alignment-baseline="central" x="728" y="400">H2</text>
+        <text alignment-baseline="central" x="600" y="128">B</text>
+        <text alignment-baseline="central" x="520" y="128">H1</text>
+        <text alignment-baseline="central" x="680" y="128">H2</text>
+        <text alignment-baseline="central" x="392" y="200">T</text>
+        <text alignment-baseline="central" x="392" y="280">N</text>
+        <text alignment-baseline="central" x="392" y="360">W</text>
+    </g>
+</svg>

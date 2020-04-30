@@ -26,3 +26,5 @@ export const determineGroupType = (objects) => {
     }
   }
 }
+
+export const emptyParent = (objects) => !objects.some(({ parent }) => parent)

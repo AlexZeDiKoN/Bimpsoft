@@ -12,19 +12,17 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
 
   renderOrgStructureSelect () {
     const canEdit = this.isCanEdit()
-    const { unit } = this.getResult()
+    const unit = this.getResult().getIn(UNIT_PATH)
     const orgStructures = this.getOrgStructures()
     return (
-      <div className={!canEdit ? 'hideArrow' : ''}>
-        <FormRow label={i18n.UNIT}>
-          <OrgStructureSelect
-            values={orgStructures}
-            onChange={this.unitChangeHandler}
-            id={unit}
-            readOnly={!canEdit}
-          />
-        </FormRow>
-      </div>
+      <FormRow label={i18n.UNIT}>
+        <OrgStructureSelect
+          values={orgStructures}
+          onChange={this.unitChangeHandler}
+          id={unit}
+          readOnly={!canEdit}
+        />
+      </FormRow>
     )
   }
 }

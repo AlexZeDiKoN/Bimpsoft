@@ -36,6 +36,7 @@ const mapDispatchToProps = {
   onContour: selectionActions.createContour,
   onDecontour: selectionActions.dropContour,
   onGroup: groupsActions.createGroup,
+  onGroupRegion: groupsActions.createGroupRegion,
   onUngroup: groupsActions.dropGroup,
 }
 

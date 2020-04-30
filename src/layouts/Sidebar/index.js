@@ -15,9 +15,9 @@ import { TabsPanel, PrintPanel } from '../../components/common'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 
 const { common: { ValueSwiper } } = components
-const SIDEBAR_SIZE_DEFAULT = 320
-const SIDEBAR_SIZE_MARCH_DEFAULT = 405
-const SIDEBAR_SIZE_MIN = 320
+const SIDEBAR_SIZE_DEFAULT = 385
+const SIDEBAR_SIZE_MARCH_DEFAULT = 450
+const SIDEBAR_SIZE_MIN = 385
 const SIDEBAR_CLOSED_SIZE = 40
 const SIDEBAR_OPEN_MIN_SIZE = 275
 
