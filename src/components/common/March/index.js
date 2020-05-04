@@ -58,13 +58,14 @@ const March = (props) => {
   const marchPoints = getMarchPoints(pointType, dataMarch)
 
   const renderDotsForms = () => {
-    const { editFormField, addChild, deleteChild, setCoordMode } = props
+    const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap } = props
     const handlers = {
       editFormField,
       addChild,
       deleteChild,
       setCoordMode,
       getMemoGeoLandmarks,
+      setRefPointOnMap,
     }
 
     return <div className={'dots-forms'}>
@@ -132,6 +133,7 @@ March.propTypes = {
   addChild: PropTypes.func.isRequired,
   deleteChild: PropTypes.func.isRequired,
   setCoordMode: PropTypes.func.isRequired,
+  setRefPointOnMap: PropTypes.func.isRequired,
   dataMarch: PropTypes.shape({}).isRequired,
   segmentList: PropTypes.shape({
     toArray: PropTypes.func.isRequired,

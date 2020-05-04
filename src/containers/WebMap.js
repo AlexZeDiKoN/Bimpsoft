@@ -54,6 +54,7 @@ const WebMapContainer = connect(
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
     marchDots: marchDots(state),
+    marchRefPoint: state.march.coordRefPoint,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,

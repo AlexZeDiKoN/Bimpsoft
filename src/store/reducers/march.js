@@ -45,6 +45,7 @@ const initState = {
   coordModeData: { },
   totalMarchTime: 0,
   totalMarchDistance: 0,
+  coordRefPoint: null,
   pointType: [
     { id: 0, name: 'Пункт на маршруті' },
     { id: 1, name: 'Пункт привалу' },
@@ -259,6 +260,9 @@ export default function reducer (state = initState, action) {
       const { coordModeData: data } = state
 
       return editFormField(state, { ...data, val: payload, fieldName: 'coord' })
+    }
+    case march.SET_REF_POINT_ON_MAP: {
+      return { ...state, coordRefPoint: payload }
     }
     default:
       return state

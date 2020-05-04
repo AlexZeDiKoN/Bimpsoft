@@ -356,6 +356,7 @@ export default class WebMap extends React.PureComponent {
     getCoordForMarch: PropTypes.func,
     marchMode: PropTypes.bool,
     marchDots: PropTypes.array,
+    marchRefPoint: PropTypes.shape({}),
   }
 
   constructor (props) {
@@ -366,6 +367,7 @@ export default class WebMap extends React.PureComponent {
     }
     this.activeLayer = null
     this.marchMarkers = []
+    this.marchRefPoint = null
   }
 
   async componentDidMount () {
@@ -398,7 +400,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects, marchDots, marchMode,
+      targetingObjects, marchDots, marchMode, marchRefPoint,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -481,6 +483,7 @@ export default class WebMap extends React.PureComponent {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
+    this.updateMarchRefPoint(marchRefPoint)
   }
 
   componentWillUnmount () {
@@ -909,6 +912,20 @@ export default class WebMap extends React.PureComponent {
         }
       }
     }
+  }
+
+  updateMarchRefPoint = (marchRefPoint) => {
+    if (this.marchRefPoint) {
+      this.marchRefPoint.removeFrom(this.map)
+    }
+
+    let marker = null
+    if (marchRefPoint) {
+      marker = createSearchMarker(marchRefPoint, false)
+      marker.addTo(this.map)
+    }
+
+    this.marchRefPoint = marker
   }
 
   addTopographicMarker = (point) => {

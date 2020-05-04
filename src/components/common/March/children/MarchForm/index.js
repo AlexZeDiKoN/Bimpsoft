@@ -8,6 +8,7 @@ import TimeInput from '../TimeInput'
 import i18n from './../../../../../i18n'
 
 const { confirm } = Modal
+const { Option } = Select
 
 const {
   form: { Coordinates },
@@ -32,6 +33,29 @@ const getFormattedGeoLandmarks = (geoLandmarks) => {
   })
 }
 
+const GeoLandmarkItem = (props) => {
+  const { data, id, setRefPointOnMap, isSelectGeoLandmarksVisible } = props
+  const { name, geometry } = data
+
+  const onMouseOver = () => {
+    if (isSelectGeoLandmarksVisible) {
+      const [ lng, lat ] = geometry.coordinates
+
+      const coordRefPoint = {
+        lat,
+        lng,
+      }
+      setRefPointOnMap(coordRefPoint)
+    }
+  }
+
+  return (
+    <div key={id} onMouseOver={onMouseOver}>
+      {name}
+    </div>
+  )
+}
+
 const MarchForm = (props) => {
   const {
     name,
@@ -45,7 +69,7 @@ const MarchForm = (props) => {
     marchPoints,
     pointType,
   } = props
-  const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks } = props.handlers
+  const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks, setRefPointOnMap } = props.handlers
 
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
@@ -53,6 +77,7 @@ const MarchForm = (props) => {
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
   const [ isModalVisible, changeIsModalVisible ] = useState(false)
   const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
+  const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
   const showOwnRefPointModal = () => {
     changeIsModalVisible(true)
@@ -70,8 +95,6 @@ const MarchForm = (props) => {
     await changeIsLoadingGeoLandmarks(true)
     changeGeoLandmarks({})
     const res = await getMemoGeoLandmarks(coord)
-
-    console.log('-------------', res)
     changeGeoLandmarks(res)
     await changeIsLoadingGeoLandmarks(false)
   }
@@ -136,7 +159,10 @@ const MarchForm = (props) => {
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
       getGeoLandmarks(coord)
+    } else {
+      setRefPointOnMap()
     }
+    changeSelectGeoLandmarksVisible(isOpen)
   }
 
   const onHandlerOwnGeoLandmark = () => {
@@ -207,10 +233,6 @@ const MarchForm = (props) => {
     )
   }
 
-  const handleMouseOver = (e, a) => {
-    console.log("Mouse Over!", e, a)
-  }
-
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
@@ -247,32 +269,32 @@ const MarchForm = (props) => {
             loading={isLoadingGeoLandmarks}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
-
-            getPopupContainer={(trigger) => trigger.parentNode}
-            onMouseEnter={() => console.log('4')}
-            onPopupScroll={(e) => console.log('1', e)}
-            onSearch={() => console.log('2')}
-            onSelect={() => console.log('3')}
           >
             {ownRefPointMarch &&
-            <Select.Option key={'ownGeoLandmark'} value={ownRefPointMarch}>
-              {ownRefPointMarch}
-            </Select.Option>}
+            <Option key={'ownGeoLandmark'} value={ownRefPointMarch}>
+              <div onMouseOver={() => setRefPointOnMap()}>
+                {ownRefPointMarch}
+              </div>
+            </Option>}
             {getFormattedGeoLandmarks(geoLandmarks).map(({ propertiesText, geometry }, id) => (
-              <Select.Option
+              <Option
                 key={id}
                 value={propertiesText}
-
               >
-                <div key={id} onMouseOver={handleMouseOver}>{propertiesText}</div>
-              </Select.Option>
+                <GeoLandmarkItem
+                  id={id}
+                  data={{ name: propertiesText, geometry }}
+                  isSelectGeoLandmarksVisible={isSelectGeoLandmarksVisible}
+                  setRefPointOnMap={setRefPointOnMap}
+                />
+              </Option>
             ))}
-            <Select.Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
-              <Divider className={'march-divider'}/>
-              <div className={'march-own-variant'}>
+            <Option key={'addItem'} onClick={onHandlerOwnGeoLandmark}>
+              <Divider className={'march-divider'} onMouseOver={() => setRefPointOnMap()}/>
+              <div className={'march-own-variant'} onMouseOver={() => setRefPointOnMap()}>
                 <span><strong>+ {i18n.OWN_VARIANT}</strong></span>
               </div>
-            </Select.Option>
+            </Option>
           </Select>
         </Tooltip>
         <br/>
@@ -288,9 +310,9 @@ const MarchForm = (props) => {
               onChange={onChangeMarchPointType}
             >
               {marchPoints.map(({ name }, id) => (
-                <Select.Option key={id} value={id}>
+                <Option key={id} value={id}>
                   {name}
-                </Select.Option>
+                </Option>
               ))}
             </Select>
           }
@@ -342,11 +364,24 @@ MarchForm.propTypes = {
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
     getMemoGeoLandmarks: PropTypes.func.isRequired,
+    setRefPointOnMap: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
   marchPoints: PropTypes.array.isRequired,
   pointType: PropTypes.number,
+}
+
+GeoLandmarkItem.propTypes = {
+  id: PropTypes.number.isRequired,
+  setRefPointOnMap: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    geometry: PropTypes.shape({
+      coordinates: PropTypes.array.isRequired,
+    }).isRequired,
+  }).isRequired,
+  isSelectGeoLandmarksVisible: PropTypes.bool.isRequired,
 }
 
 export default React.memo(MarchForm)

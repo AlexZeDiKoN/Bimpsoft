@@ -11,6 +11,7 @@ export const ADD_CHILD = action('ADD_CHILD')
 export const DELETE_CHILD = action('DELETE_CHILD')
 export const SET_COORD_MODE = action('SET_COORD_MODE')
 export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
+export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 
 export const getIndicator = () =>
   async (dispatch, getState, { marchApi: { getTypeKinds } }) => {
@@ -72,4 +73,9 @@ export const setCoordMode = (data) => ({
 export const setCoordFromMap = (coord) => ({
   type: SET_COORD_FROM_MAP,
   payload: coord,
+})
+
+export const setRefPointOnMap = (data = null) => ({
+  type: SET_REF_POINT_ON_MAP,
+  payload: data,
 })

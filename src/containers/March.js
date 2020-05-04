@@ -29,6 +29,7 @@ const mapDispatchToProps = catchErrors({
   addChild: march.addChild,
   deleteChild: march.deleteChild,
   setCoordMode: march.setCoordMode,
+  setRefPointOnMap: march.setRefPointOnMap,
 })
 
 const MarchContainer = connect(
