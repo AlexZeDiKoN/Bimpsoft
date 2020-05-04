@@ -111,14 +111,14 @@ export default class LeftMenu extends React.Component {
           onClick={this.clickEditModeHandler}
           disabled={is3DMapMode}
         />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.TARGETING}
+          icon={iconNames.AIM}
+          checked={targetingMode}
+          onClick={this.clickTargetingModeHandler}
+        />
         {isMapCOP && <>
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.TARGETING}
-            icon={iconNames.AIM}
-            checked={targetingMode}
-            onClick={this.clickTargetingModeHandler}
-          />
           <IconButton
             placement={'bottomLeft'}
             title={i18n.CREATE_TASK}
