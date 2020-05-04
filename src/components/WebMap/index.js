@@ -1030,8 +1030,11 @@ export default class WebMap extends React.PureComponent {
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = list.includes(item.id)
-      const hidden = !isSelectedItem && (itemLevel < levelEdge ||
-        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId))
+      const hidden = !isSelectedItem && (
+        (itemLevel < levelEdge) ||
+        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
+        (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
+      )
 
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
@@ -1238,11 +1241,6 @@ export default class WebMap extends React.PureComponent {
             }
             parentLayer._groupChildren.push(layer)
             layer._groupParent = parentLayer
-            if (GROUPS.GENERALIZE.includes(parentLayer.object.type)) {
-              if (layer._icon) {
-                L.DomUtil.addClass(layer._icon, 'invisible')
-              }
-            }
           }
         }
       })
