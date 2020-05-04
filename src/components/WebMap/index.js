@@ -189,6 +189,10 @@ const serializeCoordinate = (mode, lat, lng) => {
   const serialized = mode === indicateModes.WGSI
     ? `${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}`
     : Coord.stringify({ type, lat, lng })
+  if (type === Coord.types.UCS_2000 || type === Coord.types.CS_42) {
+    const coord = serialized.split(' ', 2)
+    return `${Coord.names[type]}: X=${coord[0]} Y=${coord[1]}`.replace(' ', '\xA0')
+  }
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
