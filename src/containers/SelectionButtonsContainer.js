@@ -12,14 +12,26 @@ const mapStateToProps = (store) => {
       list,
       clipboard,
     },
+    orgStructures,
+    layers: { selectedId: layerId = null },
   } = store
+
+  const getSameObjects = (layer, unit, code, type) =>
+    (store.webMap.objects.filter((value) => (value.type === type &&
+      value.layer === layer &&
+      value.unit === unit &&
+      value.code === code)))
 
   return {
     isEditMode: canEditSelector(store),
     layerName: layerNameSelector(store),
     showDelForm: showForm === FormTypes.DEL,
+    showErrorPasteForm: showForm === FormTypes.ERROR_PAST,
     list,
     clipboard,
+    orgStructures,
+    getSameObjects,
+    layerId,
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
   }
@@ -29,6 +41,9 @@ const mapDispatchToProps = {
   onCut: selectionActions.cut,
   onCopy: selectionActions.copy,
   onPaste: selectionActions.paste,
+  onPasteError: selectionActions.showErrorPasteForm,
+  onPasteOk: selectionActions.paste,
+  onPasteCancel: selectionActions.hideForm,
   onDelete: selectionActions.showDeleteForm,
   onDeleteOk: selectionActions.deleteSelected,
   onDeleteCancel: selectionActions.hideForm,
@@ -42,7 +57,7 @@ const mapDispatchToProps = {
 
 const SelectionButtonsContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(SelectionButtons)
 
 export default SelectionButtonsContainer
