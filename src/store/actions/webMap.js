@@ -65,6 +65,14 @@ export const actionNames = {
   TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
   SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM'),
   MOVE_OBJECTS: action(`MOVE_OBJECTS`),
+  ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
+  UNDO: action('UNDO'),
+  REDO: action('REDO'),
+}
+
+export const changeTypes = {
+  UPDATE_OBJECT: '(1) Update entire object',
+  UPDATE_GEOMETRY: '(2) Update object geometry only',
 }
 
 export const setCoordinatesType = (value) => {
@@ -302,10 +310,21 @@ export const allocateObjectsByLayerId = (layerId) => ({
   payload: layerId,
 })
 
-export const updateObjectGeometry = (id, geometry) =>
+export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
     let payload = await objUpdateGeometry(id, geometry)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.UPDATE_GEOMETRY,
+          id,
+          geometry,
+        }
+      })
+    }
 
     payload = fixServerObject(payload)
 
@@ -481,9 +500,40 @@ export const selectTopographicItem = (index) => ({
 export const getTopographicObjects = (data) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { getTopographicObjects } }) => {
     const topographicObject = await getTopographicObjects(data)
-    dispatch({
+    return dispatch({
       type: actionNames.GET_TOPOGRAPHIC_OBJECTS,
       payload: topographicObject,
+    })
+  })
+
+async function performAction (record, direction, api, dispatch) {
+  const { changeType, id, oldData, newData } = record
+  const data = direction === 'undo' ? oldData : newData
+  switch (changeType) {
+    case changeTypes.UPDATE_GEOMETRY:
+      return dispatch(updateObjectGeometry(id, data, false))
+    default:
+      console.warn(`Unknown change type: ${changeType}`)
+  }
+}
+
+export const undo = () =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+    const state = getState()
+    const undoRecord = state.webMap.undoRecords.get(state.webMap.undoPosition - 1)
+    await performAction(undoRecord, 'undo', webmapApi, dispatch)
+    return dispatch({
+      type: actionNames.UNDO,
+    })
+  })
+
+export const redo = () =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+    const state = getState()
+    const undoRecord = state.webMap.undoRecords.get(state.webMap.undoPosition)
+    await performAction(undoRecord, 'redo', webmapApi, dispatch)
+    return dispatch({
+      type: actionNames.REDO,
     })
   })
 

@@ -1437,9 +1437,15 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update?.()
+        if (layer.pm?.enabled?.()) {
+          layer.pm.disable()
+          layer.pm.enable()
+        }
+      } else {
+        layer.addTo(this.map)
+      }
 
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)

@@ -7,6 +7,8 @@ import SelectionTypes from '../../../constants/SelectionTypes'
 import LinesList from '../../LinesList'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
+import { shortcuts } from '../../../constants'
+import { HotKey } from '../../common/HotKeys'
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -20,9 +22,16 @@ export default class CreateButtons extends React.PureComponent {
     isEditMode: PropTypes.bool,
     isShowLines: PropTypes.bool,
     newShape: PropTypes.object,
+    undoInfo: PropTypes.shape({
+      canUndo: PropTypes.bool,
+      canRedo: PropTypes.bool,
+    }),
+
     onClickLineSign: PropTypes.func,
     onNewShapeChange: PropTypes.func,
     onLinesListClose: PropTypes.func,
+    undo: PropTypes.func,
+    redo: PropTypes.func,
   }
 
   selectLineHandler = (type) => {
@@ -46,6 +55,9 @@ export default class CreateButtons extends React.PureComponent {
       isShowLines,
       newShape = {},
       onClickLineSign,
+      undoInfo: { canUndo, canRedo },
+      undo,
+      redo,
     } = this.props
 
     if (!isEditMode) {
@@ -53,6 +65,21 @@ export default class CreateButtons extends React.PureComponent {
     }
     return (
       <>
+        <MenuDivider />
+        <HotKey selector={shortcuts.UNDO} onKey={canUndo ? undo : null} />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.UNDO}
+          icon={iconNames.MENU_BACK_DEFAULT}
+          disabled={!canUndo}
+        />
+        <HotKey selector={shortcuts.REDO} onKey={canRedo ? redo : null} />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.REDO}
+          icon={iconNames.MENU_NEXT_DEFAULT}
+          disabled={!canRedo}
+        />
         <MenuDivider />
         <IconButton
           placement={'bottomLeft'}
