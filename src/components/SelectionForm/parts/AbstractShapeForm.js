@@ -3,6 +3,7 @@ import { components } from '@DZVIN/CommonComponents'
 import React from 'react'
 import './style.css'
 import SelectionTypes from '../../../constants/SelectionTypes'
+import { sameObjects } from '../../../store/selectors'
 
 const {
   default: Form,
@@ -21,7 +22,8 @@ export const propTypes = {
   onError: PropTypes.func,
   onSaveError: PropTypes.func,
   orgStructures: PropTypes.object,
-  sameObjects: PropTypes.func,
+  objectsMap: PropTypes.object,
+  layerId: PropTypes.string,
 }
 
 export default class AbstractShapeForm extends React.Component {
@@ -54,9 +56,10 @@ export default class AbstractShapeForm extends React.Component {
     const { type } = this.props.data
     if (type === SelectionTypes.POINT) {
       const { code, unit, id } = this.props.data
+      const { layerId, objectsMap } = this.props
       //  перевірка коду знака, підрозділу на дублювання
-      const { sameObjects } = this.props
-      const ident = sameObjects({ code, unit, type }).filter((symbol, index) => (Number(index) !== Number(id)))
+      const ident = sameObjects({ code, unit, type, layerId }, objectsMap).filter(
+        (symbol, index) => (Number(index) !== Number(id)))
       if (ident && ident.size > 0) {
         this.setState({ showSaveForm: true })
         const { onSaveError } = this.props

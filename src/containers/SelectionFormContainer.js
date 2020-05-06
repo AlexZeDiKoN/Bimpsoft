@@ -1,12 +1,17 @@
 import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import { selection, ovt as ovtActions } from '../store/actions'
-import { canEditSelector, sameObjects } from '../store/selectors'
+import { canEditSelector } from '../store/selectors'
 import { FormTypes } from '../constants'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
-  const { selection: { preview, showForm }, orgStructures, ovt: ovtReducer } = store
+  const {
+    selection: { preview, showForm },
+    orgStructures, ovt: ovtReducer,
+    webMap: { objects },
+    layers: { selectedId },
+  } = store
   const canEdit = canEditSelector(store)
   const showFormTypes = preview && preview.id ? FormTypes.EDIT : FormTypes.CREATE
   const showErrorSave = showForm === FormTypes.ERROR_SAVE
@@ -18,7 +23,8 @@ const mapStateToProps = (store) => {
     orgStructures,
     ovtData: ovtReducer.ovtData,
     ovtLoaded: ovtReducer.loaded,
-    sameObjects: sameObjects(store),
+    layerId: selectedId,
+    objectsMap: objects,
   }
 }
 

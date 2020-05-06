@@ -11,6 +11,7 @@ import entityKind, { entityKindOutlinable, GROUPS } from '../../WebMap/entityKin
 import { determineGroupType, emptyParent } from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
 import SelectionTypes from '../../../constants/SelectionTypes'
+import { sameObjects } from '../../../store/selectors'
 import DeleteSelectionForm from './DeleteSelectionForm'
 import './style.css'
 
@@ -22,10 +23,11 @@ export default class SelectionButtons extends React.Component {
     showDelForm: PropTypes.bool,
     showErrorPasteForm: PropTypes.bool,
     layerName: PropTypes.string,
+    layerId: PropTypes.string,
     list: PropTypes.array,
     clipboard: PropTypes.array,
     orgStructures: PropTypes.object,
-    sameObjects: PropTypes.func,
+    objectsMap: PropTypes.string,
     selectedTypes: PropTypes.arrayOf(
       PropTypes.number,
     ),
@@ -55,11 +57,11 @@ export default class SelectionButtons extends React.Component {
   }
 
   onPasteObject = () => {
-    const { onPasteError, onPaste, clipboard, sameObjects } = this.props
+    const { onPasteError, onPaste, clipboard, objectsMap, layerId } = this.props
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
       if (type === SelectionTypes.POINT) {
-        const symbols = sameObjects({ code, unit, type })
+        const symbols = sameObjects({ code, unit, type, layerId }, objectsMap)
         if (symbols.size > 0) {
           this.setState({ unit, code })
           return object

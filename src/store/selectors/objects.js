@@ -60,10 +60,9 @@ export const targetObjects = createSelector(
   },
 )
 
-export const sameObjects = (store) => (rules) => {
-  const layer = activeLayer(store)
-  return objects(store).filter((value) => (
-    value.layer === layer &&
+export const sameObjects = (rules, objects) => {
+  return objects.filter((value) => (
+    value.layer === rules.layerId &&
     value.type === rules.type &&
     value.unit === rules.unit &&
     value.code === rules.code

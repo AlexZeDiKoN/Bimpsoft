@@ -6,7 +6,6 @@ import {
   layerNameSelector,
   selectedTypes,
   selectedPoints,
-  sameObjects,
 } from '../store/selectors'
 import { selection as selectionActions, groups as groupsActions } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
@@ -19,11 +18,14 @@ const mapStateToProps = (store) => {
       clipboard,
     },
     orgStructures,
+    webMap: { objects },
+    layers: { selectedId },
   } = store
 
   return {
     isEditMode: canEditSelector(store),
-    sameObjects: sameObjects(store),
+    layerId: selectedId,
+    objectsMap: objects,
     layerName: layerNameSelector(store),
     showDelForm: showForm === FormTypes.DEL,
     showErrorPasteForm: showForm === FormTypes.ERROR_PAST,
