@@ -7,8 +7,6 @@ import SelectionTypes from '../../../constants/SelectionTypes'
 import LinesList from '../../LinesList'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
-import { shortcuts } from '../../../constants'
-import { HotKey } from '../../common/HotKeys'
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -66,19 +64,19 @@ export default class CreateButtons extends React.PureComponent {
     return (
       <>
         <MenuDivider />
-        <HotKey selector={shortcuts.UNDO} onKey={canUndo ? undo : null} />
         <IconButton
           placement={'bottomLeft'}
           title={i18n.UNDO}
           icon={iconNames.MENU_BACK_DEFAULT}
-          disabled={!canUndo}
+          disabled={!isEditMode || !canUndo}
+          onClick={undo}
         />
-        <HotKey selector={shortcuts.REDO} onKey={canRedo ? redo : null} />
         <IconButton
           placement={'bottomLeft'}
           title={i18n.REDO}
           icon={iconNames.MENU_NEXT_DEFAULT}
-          disabled={!canRedo}
+          disabled={!isEditMode || !canRedo}
+          onClick={redo}
         />
         <MenuDivider />
         <IconButton
