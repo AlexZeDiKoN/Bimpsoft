@@ -26,7 +26,7 @@ export default class SelectionButtons extends React.Component {
     list: PropTypes.array,
     clipboard: PropTypes.array,
     orgStructures: PropTypes.object,
-    getSameObjects: PropTypes.func,
+    sameObjects: PropTypes.func,
     selectedTypes: PropTypes.arrayOf(
       PropTypes.number,
     ),
@@ -56,11 +56,15 @@ export default class SelectionButtons extends React.Component {
   }
 
   onPasteObject = () => {
-    const { onPasteError, onPaste, clipboard, layerId, getSameObjects } = this.props
+    const { onPasteError, onPaste, clipboard, sameObjects } = this.props
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
       if (type === SelectionTypes.POINT) {
-        const symbols = getSameObjects(layerId, unit, code, SelectionTypes.POINT)
+        const symbols = sameObjects.filter((value) => (
+          value.type === type &&
+          value.unit === unit &&
+          value.code === code))
+        // getSameObjects(layerId, unit, code, SelectionTypes.POINT)
         if (symbols.size > 0) {
           this.setState({ unit, code })
           return object

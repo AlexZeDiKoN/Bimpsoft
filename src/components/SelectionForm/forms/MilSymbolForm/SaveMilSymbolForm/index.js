@@ -13,24 +13,25 @@ export default class SaveMilSymbolForm extends React.Component {
   static propTypes = {
     unit: PropTypes.string,
     code: PropTypes.string,
+    notClickable: PropTypes.bool,
     onApply: PropTypes.func,
     onCancel: PropTypes.func,
   }
 
   render () {
-    const { code, unit, onApply, onCancel } = this.props
+    const { code, unit, onApply, onCancel, notClickable = true } = this.props
     return (
       <>
-        <div className="not-clickable-area"> </div>
+        { notClickable ? <div className="not-clickable-area"> </div> : <></> }
         <FocusTrap className="confirm-save-overflow">
           <HotKeysContainer>
             <Form className="confirm-save">
               <FormItem>
                 <div className="confirm-icon-warning">!</div>
                 <div className="confirm-modal-window">
-                  <div className="confirm-title">{i18n.ERROR_CODE_SIGNS}</div>
+                  {notClickable ? <div className="confirm-title">{i18n.ERROR_CODE_SIGNS}</div> : <></>}
                   <div className="confirm-text">{i18n.OBJECT} : {unit} ({code}) {i18n.OBJECT_EXIST}</div>
-                  <div className="confirm-text">{i18n.CONTINUE_STORAGE}</div>
+                  <div className="confirm-text">{i18n.CONTINUE}</div>
                 </div>
               </FormItem>
               <FormItem>

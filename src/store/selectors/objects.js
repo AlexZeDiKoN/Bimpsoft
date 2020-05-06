@@ -59,3 +59,11 @@ export const targetObjects = createSelector(
     return result
   },
 )
+
+export const sameObjects = createSelector(
+  activeLayer,
+  objects,
+  (layer, objects) => {
+    return objects.filter((value) => (value.layer === layer))
+  },
+)

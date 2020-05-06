@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import SelectionButtons from '../components/menu/SelectionButtons'
 import { FormTypes } from '../constants'
-import { canEditSelector, layerNameSelector, selectedTypes, selectedPoints } from '../store/selectors'
+import { canEditSelector, layerNameSelector, selectedTypes, selectedPoints, sameObjects } from '../store/selectors'
 import { selection as selectionActions, groups as groupsActions } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -16,21 +16,15 @@ const mapStateToProps = (store) => {
     layers: { selectedId: layerId = null },
   } = store
 
-  const getSameObjects = (layer, unit, code, type) =>
-    (store.webMap.objects.filter((value) => (value.type === type &&
-      value.layer === layer &&
-      value.unit === unit &&
-      value.code === code)))
-
   return {
     isEditMode: canEditSelector(store),
+    sameObjects: sameObjects(store),
     layerName: layerNameSelector(store),
     showDelForm: showForm === FormTypes.DEL,
     showErrorPasteForm: showForm === FormTypes.ERROR_PAST,
     list,
     clipboard,
     orgStructures,
-    getSameObjects,
     layerId,
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
