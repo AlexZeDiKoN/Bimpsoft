@@ -40,9 +40,7 @@ export function MilSymbolGroup (symbols) {
 			const Geometry = L.SVG.create('g')
 			Geometry.setAttribute('transform', `translate(${maxX - symbol.symbolAnchor.x},${height})`)
 			Geometry.setAttribute('overflow', 'visible')
-			const node = symbol.asDOM();
-			[].forEach.call(node, (el) => L.DomUtil.addClass(el, 'leaflet-interactive'))
-			Geometry.appendChild(node)
+			Geometry.appendChild(symbol.asDOM())
 			object.appendChild(Geometry)
 
 			// Getting the height of all symbols, but we want them to overlap a bit
@@ -60,11 +58,9 @@ export function MilSymbolGroup (symbols) {
 		const paddingLeft = size
 		for (const symbol of symbols){
 			const Geometry = L.SVG.create('g')
-			Geometry.setAttribute('transform', `translate(${maxX - symbol.symbolAnchor.x + paddingLeft},${height})`)
+			Geometry.setAttribute('transform', `translate(${maxX - symbol.symbolAnchor.x + paddingLeft},${height + 5})`)
 			Geometry.setAttribute('overflow', 'visible')
-			const node = symbol.asDOM();
-			[].forEach.call(node, (el) => L.DomUtil.addClass(el, 'leaflet-interactive'))
-			Geometry.appendChild(node)
+			Geometry.appendChild(symbol.asDOM())
 			object.appendChild(Geometry)
 
 			// Getting the height of all symbols
