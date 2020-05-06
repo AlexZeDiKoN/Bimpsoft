@@ -10,15 +10,19 @@ export default {
   objUpdateGeometry: (id, data) =>
     getDirect(`${webmapUrl}/obj/geom`, { id, ...data }), // (2) Update object geometry only
   objUpdateAttr: (id, attributes) =>
-    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }), ///---(3)
+    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }), // (3) Update object attributes only
   objUpdatePartially: (id, data) =>
-    getDirect(`${webmapUrl}/obj/upd`, { id, ...data }), ///---(4)
+    getDirect(`${webmapUrl}/obj/upd`, { id, ...data }), // (4) Update object attributes and geometry only
   objInsert: (data) =>
-    getDirect(`${webmapUrl}/obj/add`, data), ///---(5)
+    getDirect(`${webmapUrl}/obj/add`, data), // (5) Add new object
   objDelete: (id = 0) =>
-    getDirect(`${webmapUrl}/obj/${id}/del`, false), ///---(6)
+    getDirect(`${webmapUrl}/obj/${id}/del`, false), // (6) Delete existing object
+  objRestore: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/restore`, false),
   objDeleteList: (list = []) =>
     getDirect(`${webmapUrl}/obj/del`, { list }), ///---(7)
+  objRestoreList: (list = []) =>
+    getDirect(`${webmapUrl}/obj/restore`, { list }),
   objRefresh: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
   objLock: (id = 0) =>

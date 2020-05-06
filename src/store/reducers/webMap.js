@@ -232,24 +232,42 @@ const simpleSetField = (actionName) => findField(actionName, simpleSetFields)
 const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 
 function addUndoRecord (state, payload) {
-  const { changeType, id, geometry } = payload
-  let newRecord
+  let objData, oldData, newData
+
+  const { changeType, id, geometry, object } = payload
+  const newRecord = { changeType }
+  if (id) {
+    newRecord.id = id
+    objData = state.getIn([ 'objects', id ])
+  }
+
   switch (changeType) {
-    case changeTypes.UPDATE_GEOMETRY: {
-      const oldData = {}
-      const objData = state.getIn([ 'objects', id ])
-      oldData.point = objData.get('point').toJS()
-      oldData.geometry = objData.get('geometry').toJS()
-      newRecord = {
-        changeType,
-        id,
-        oldData,
-        newData: geometry,
-      }
+    case changeTypes.UPDATE_OBJECT: {
+      const { id, ...rest } = objData.toJS()
+      oldData = rest
+      newData = object
       break
     }
+    case changeTypes.UPDATE_GEOMETRY: {
+      oldData = {
+        point: objData.get('point').toJS(),
+        geometry: objData.get('geometry').toJS(),
+      }
+      newData = geometry
+      break
+    }
+    case changeTypes.INSERT_OBJECT:
+    case changeTypes.DELETE_OBJECT:
+      break
     default:
       return state
+  }
+  if (oldData && newData) {
+    if (JSON.stringify(oldData) === JSON.stringify(newData)) {
+      return state
+    }
+    newRecord.oldData = oldData
+    newRecord.newData = newData
   }
   let list = state.get('undoRecords')
   const undoPosition = state.get('undoPosition')

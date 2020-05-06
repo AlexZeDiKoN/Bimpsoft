@@ -73,6 +73,10 @@ export const actionNames = {
 export const changeTypes = {
   UPDATE_OBJECT: '(1) Update entire object',
   UPDATE_GEOMETRY: '(2) Update object geometry only',
+  UPDATE_ATTRIBUTES: '(3) Update object attributes only', // TODO: used only in FlexGrid
+  UPDATE_PARTIALLY: '(4) Update object attributes and geometry only', // TODO: used only in FlexGrid
+  INSERT_OBJECT: '(5) Add new object',
+  DELETE_OBJECT: '(6) Delete existing object',
 }
 
 export const setCoordinatesType = (value) => {
@@ -161,18 +165,28 @@ export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   type: type !== null ? Number(type) : null,
 })
 
-export const addObject = (object) =>
+export const addObject = (object, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objInsert } }) => {
     validateObject(object)
 
     let payload = await objInsert(object)
-
     payload = fixServerObject(payload)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.INSERT_OBJECT,
+          id: payload.id,
+        }
+      })
+    }
 
     dispatch({
       type: actionNames.ADD_OBJECT,
       payload,
     })
+
     return payload.id
   })
 
@@ -206,10 +220,31 @@ export const moveObjList = (ids, shift) =>
     payload: await objListMove(ids, shift),
   }))
 
-export const deleteObject = (id) =>
+const restoreObject = (id) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRestore } }) => {
+    const payload = fixServerObject(await objRestore(id))
+
+    return dispatch({
+      type: actionNames.ADD_OBJECT,
+      payload,
+    })
+  })
+
+export const deleteObject = (id, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDelete } }) => {
     await objDelete(id)
-    dispatch({
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.DELETE_OBJECT,
+          id,
+        }
+      })
+    }
+
+    return dispatch({
       type: actionNames.DEL_OBJECT,
       payload: id,
     })
@@ -228,6 +263,17 @@ export const removeObjects = (ids) => ({
   type: actionNames.DEL_OBJECTS,
   payload: ids,
 })
+
+export const restoreObjects = (ids) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
+    for (const id of ids) {
+      const object = fixServerObject(await objRefresh(id))
+      await dispatch({
+        type: actionNames.REFRESH_OBJECT,
+        payload: { id, object },
+      })
+    }
+  })
 
 export const refreshObject = (id, type, layer) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
@@ -270,14 +316,23 @@ export const refreshObject = (id, type, layer) =>
     }
   })
 
-export const updateObject = ({ id, ...object }) =>
+export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     stopHeartBeat()
     validateObject(object)
 
-    let payload = await objUpdate(id, object)
+    const payload = fixServerObject(await objUpdate(id, object))
 
-    payload = fixServerObject(payload)
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.UPDATE_OBJECT,
+          id,
+          object,
+        }
+      })
+    }
 
     dispatch({
       type: actionNames.UPD_OBJECT,
@@ -313,7 +368,8 @@ export const allocateObjectsByLayerId = (layerId) => ({
 export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
-    let payload = await objUpdateGeometry(id, geometry)
+
+    const payload = fixServerObject(await objUpdateGeometry(id, geometry))
 
     if (addUndoRecord) {
       dispatch({
@@ -325,8 +381,6 @@ export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
         }
       })
     }
-
-    payload = fixServerObject(payload)
 
     return dispatch({
       type: actionNames.UPD_OBJECT,
@@ -510,8 +564,24 @@ async function performAction (record, direction, api, dispatch) {
   const { changeType, id, oldData, newData } = record
   const data = direction === 'undo' ? oldData : newData
   switch (changeType) {
+    case changeTypes.UPDATE_OBJECT:
+      return dispatch(updateObject({ id, ...data }, false))
     case changeTypes.UPDATE_GEOMETRY:
       return dispatch(updateObjectGeometry(id, data, false))
+    case changeTypes.INSERT_OBJECT: {
+      if (direction === 'undo') {
+        return dispatch(deleteObject(id, false))
+      } else {
+        return dispatch(restoreObject(id))
+      }
+    }
+    case changeTypes.DELETE_OBJECT: {
+      if (direction === 'undo') {
+        return dispatch(restoreObject(id))
+      } else {
+        return dispatch(deleteObject(id, false))
+      }
+    }
     default:
       console.warn(`Unknown change type: ${changeType}`)
   }
