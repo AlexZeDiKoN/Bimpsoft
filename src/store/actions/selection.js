@@ -19,6 +19,8 @@ export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
 export const SHOW_DELETE_FORM = action('SHOW_DELETE_FORM')
+export const SHOW_ERROR_PASTE_FORM = action('SHOW_ERROR_PASTE_FORM')
+export const SHOW_ERROR_SAVE_FORM = action('SHOW_ERROR_SAVE_FORM')
 export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
@@ -254,6 +256,7 @@ export const cut = () => withNotification((dispatch) => {
 })
 
 export const paste = () => withNotification((dispatch, getState) => {
+  dispatch(hideForm())
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -327,6 +330,14 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
 
 export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
+})
+
+export const showErrorPasteForm = () => ({
+  type: SHOW_ERROR_PASTE_FORM,
+})
+
+export const showErrorSaveForm = () => ({
+  type: SHOW_ERROR_SAVE_FORM,
 })
 
 export const showDivideForm = () => ({

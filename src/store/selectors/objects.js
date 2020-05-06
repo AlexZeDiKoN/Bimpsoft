@@ -59,3 +59,12 @@ export const targetObjects = createSelector(
     return result
   },
 )
+
+export const sameObjects = (rules, objects) => {
+  return objects.filter((value) => (
+    value.layer === rules.layerId &&
+    value.type === rules.type &&
+    value.unit === rules.unit &&
+    value.code === rules.code
+  ))
+}

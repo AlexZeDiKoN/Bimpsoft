@@ -1,6 +1,8 @@
 export const CREATE = 'create'
 export const EDIT = 'edit'
 export const DEL = 'del'
+export const ERROR_PAST = 'error_past'
+export const ERROR_SAVE = 'error_save'
 export const DIVIDE_DIR = 'divide_direction'
 export const COMBINE_DIR = 'combine_directions'
 export const ZONE = 'zone'

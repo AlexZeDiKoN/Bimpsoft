@@ -27,7 +27,7 @@ import {
   AttackForm,
   ConcentrationOfFireForm,
 } from './forms'
-// import  from './forms/CircularZoneForm'
+import SaveMilSymbolForm from './forms/MilSymbolForm/SaveMilSymbolForm'
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -202,7 +202,11 @@ export default class SelectionForm extends React.Component {
       ovtData,
       canEdit,
       onCancel,
+      onSaveError,
+      showErrorSave,
       orgStructures,
+      objectsMap,
+      layerId,
       onCoordinateFocusChange,
     } = this.props
     if (data === null || !forms[data.type]) {
@@ -248,9 +252,29 @@ export default class SelectionForm extends React.Component {
       component: Component,
     } = forms[formType]
 
+    const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
+    const errorSaveMilSymbolForm = () => {
+      const { unit, code } = this.props.data
+      const { orgStructures, onCloseSaveError } = this.props
+      const unitText = orgStructures.byIds && orgStructures.byIds[unit]
+        ? orgStructures.byIds[unit].fullName : ''
+      return (
+        <Wrapper
+          title={i18n.ERROR_CODE_SIGNS}>
+          <SaveMilSymbolForm
+            unit={unitText}
+            code={code}
+            notClickable={false}
+            onApply={() => { onCloseSaveError(); onOk() }}
+            onCancel={() => { onCloseSaveError() }}
+          />
+        </Wrapper>)
+    }
+
     const { wrapper: Wrapper } = this.props
-    return (
-      <>
+    return (showErrorMilSymbolForm
+      ? errorSaveMilSymbolForm()
+      : <>
         <NotClickableArea/>
         <Wrapper
           title={title}
@@ -265,9 +289,12 @@ export default class SelectionForm extends React.Component {
                 data={data}
                 canEdit={canEdit}
                 orgStructures={orgStructures}
+                objectsMap={objectsMap}
+                layerId={layerId}
                 onOk={onOk}
                 onChange={this.changeHandler}
                 onClose={onCancel}
+                onSaveError={onSaveError}
                 onAddToTemplates={this.addToTemplateHandler}
                 onCoordinateFocusChange={onCoordinateFocusChange}
                 ovtData={ovtData}
@@ -285,10 +312,13 @@ SelectionForm.propTypes = {
   data: PropTypes.object,
   canEdit: PropTypes.bool,
   showForm: PropTypes.string,
+  showErrorSave: PropTypes.bool,
   onChange: PropTypes.func,
   onOk: PropTypes.func,
   onCancel: PropTypes.func,
   onError: PropTypes.func,
+  onSaveError: PropTypes.func,
+  onCloseSaveError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   onCoordinateFocusChange: PropTypes.func,
   wrapper: PropTypes.oneOf([ MovablePanel ]),
@@ -296,4 +326,6 @@ SelectionForm.propTypes = {
   ovtData: PropTypes.object,
   ovtLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
+  objectsMap: PropTypes.object,
+  layerId: PropTypes.string,
 }
