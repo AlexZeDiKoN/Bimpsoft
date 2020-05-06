@@ -1,7 +1,13 @@
 import { connect } from 'react-redux'
 import SelectionButtons from '../components/menu/SelectionButtons'
 import { FormTypes } from '../constants'
-import { canEditSelector, layerNameSelector, selectedTypes, selectedPoints, sameObjects } from '../store/selectors'
+import {
+  canEditSelector,
+  layerNameSelector,
+  selectedTypes,
+  selectedPoints,
+  sameObjects,
+} from '../store/selectors'
 import { selection as selectionActions, groups as groupsActions } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
@@ -13,7 +19,6 @@ const mapStateToProps = (store) => {
       clipboard,
     },
     orgStructures,
-    layers: { selectedId: layerId = null },
   } = store
 
   return {
@@ -25,7 +30,6 @@ const mapStateToProps = (store) => {
     list,
     clipboard,
     orgStructures,
-    layerId,
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
   }

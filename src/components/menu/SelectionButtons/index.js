@@ -22,7 +22,6 @@ export default class SelectionButtons extends React.Component {
     showDelForm: PropTypes.bool,
     showErrorPasteForm: PropTypes.bool,
     layerName: PropTypes.string,
-    layerId: PropTypes.string,
     list: PropTypes.array,
     clipboard: PropTypes.array,
     orgStructures: PropTypes.object,
@@ -64,7 +63,6 @@ export default class SelectionButtons extends React.Component {
           value.type === type &&
           value.unit === unit &&
           value.code === code))
-        // getSameObjects(layerId, unit, code, SelectionTypes.POINT)
         if (symbols.size > 0) {
           this.setState({ unit, code })
           return object
