@@ -59,10 +59,7 @@ export default class SelectionButtons extends React.Component {
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
       if (type === SelectionTypes.POINT) {
-        const symbols = sameObjects.filter((value) => (
-          value.type === type &&
-          value.unit === unit &&
-          value.code === code))
+        const symbols = sameObjects({ code, unit, type })
         if (symbols.size > 0) {
           this.setState({ unit, code })
           return object

@@ -21,7 +21,7 @@ export const propTypes = {
   onError: PropTypes.func,
   onSaveError: PropTypes.func,
   orgStructures: PropTypes.object,
-  sameObjects: PropTypes.object,
+  sameObjects: PropTypes.func,
 }
 
 export default class AbstractShapeForm extends React.Component {
@@ -56,11 +56,7 @@ export default class AbstractShapeForm extends React.Component {
       const { code, unit, id } = this.props.data
       //  перевірка коду знака, підрозділу на дублювання
       const { sameObjects } = this.props
-      const ident = sameObjects.filter((symbol, index) => (
-        symbol.type === type &&
-        symbol.unit === unit &&
-        symbol.code === code &&
-        Number(index) !== Number(id)))
+      const ident = sameObjects({ code, unit, type }).filter((symbol, index) => (Number(index) !== Number(id)))
       if (ident && ident.size > 0) {
         this.setState({ showSaveForm: true })
         const { onSaveError } = this.props

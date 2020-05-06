@@ -30,8 +30,10 @@ export default class SaveMilSymbolForm extends React.Component {
                 <div className="confirm-icon-warning">!</div>
                 <div className="confirm-modal-window">
                   {notClickable ? <div className="confirm-title">{i18n.ERROR_CODE_SIGNS}</div> : <></>}
-                  <div className="confirm-text">{i18n.OBJECT} : {unit} ({code}) {i18n.OBJECT_EXIST}</div>
-                  <div className="confirm-text">{i18n.CONTINUE}</div>
+                  <div className="confirm-text">{i18n.ERROR_MESSAGE_1} {code}</div>
+                  <div className="confirm-text">{i18n.ERROR_MESSAGE_2} {unit}</div>
+                  <br/>
+                  <div className="confirm-text">{i18n.QUESTION_1}</div>
                 </div>
               </FormItem>
               <FormItem>
