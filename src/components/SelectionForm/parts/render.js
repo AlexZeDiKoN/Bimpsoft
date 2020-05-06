@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { TRANSPARENT } from '../../../constants/colors'
-import { getStylesForLineType, settings } from '../../../utils/svg/lines'
+import { getStylesForLineType, MARK_TYPE, settings } from '../../../utils/svg/lines'
 import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
@@ -50,7 +50,7 @@ const optionsSvg = (children) => (
 
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   const dash = getStylesForLineType(borderStyle)
-  const amplifier = level ? extractSubordinationLevelSVG(level, 36, 4, 56, 20) : null
+  const amplifier = level ? extractSubordinationLevelSVG(level, 16, 4, 56, 20) : null
   if (amplifier) {
     return optionsSvg(
       <>
@@ -88,6 +88,24 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             />
           </>,
         )
+      case MARK_TYPE.ARROW_90:
+        return optionsSvg(
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="none"
+            d="M0,10 h56 m-24,8l-8-8l8-8"
+          />,
+        )
+      case MARK_TYPE.ARROW_30_FILL:
+        return optionsSvg(
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="rgba(0,0,0,1)"
+            d="M0,10 h56 m-24,4l-12-4l12-4z"
+          />,
+        )
       case 'solidWithDots':
       case 'stroked':
       case 'waved':
@@ -112,7 +130,6 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
         return optionsSvg(
           <>
             <path
-              mask="url(#sign)"
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
               fill={TYPE_LINE_PATH[borderStyle]?.fill || ''}

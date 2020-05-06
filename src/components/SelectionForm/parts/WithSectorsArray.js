@@ -169,10 +169,10 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
                   <FormRow label={i18n.RADIUS}/>
                 </th>
                 <th>
-                  <FormRow label={i18n.AZIMUT1}/>
+                  <FormRow label={i18n.AZIMUTH1}/>
                 </th>
                 <th>
-                  <FormRow label={i18n.AZIMUT2}/>
+                  <FormRow label={i18n.AZIMUTH2}/>
                 </th>
                 <th>
                   <FormRow label={i18n.AMPLIFIER_T}/>

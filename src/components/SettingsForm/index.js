@@ -164,6 +164,22 @@ export default class SettingsForm extends React.Component {
                   </div>
 
                   <div className="containerSign">
+                    <FormRow label={i18n.TEXT_AMPLIFIER_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.TEXT_AMPLIFIER_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.TEXT_AMPLIFIER_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.GRAPHIC_AMPLIFIER_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
                     <FormRow label={i18n.WAVE_SIGN_SIZE}/>
                     <FormDarkPart>
                       <FormRow>{this.renderScaleControl(paramsNames.WAVE_SIZE_MIN)}</FormRow>

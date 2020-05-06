@@ -1,14 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, angleOf, drawMaskedText, continueLine,
+  drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, angleOf, drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: BREACH
 // task code: DZVIN-5764
 // hint: 'Ділянка прориву'
 
-const TIP_LENGTH = 10
 const TEXT = 'B'
 
 lineDefinitions['340200'] = {
@@ -29,7 +29,7 @@ lineDefinitions['340200'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const norm = normalVectorTo(p0, p1, p2)
@@ -37,15 +37,10 @@ lineDefinitions['340200'] = {
     const b = applyVector(p1, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
 
-    drawLine(result, a, b)
-    drawLine(result, p0, a)
-    drawLine(result, p1, b)
+    drawLine(result, p0, a, b, p1)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, a, p0, len, -hp * len)
-    continueLine(result, a, p0, -len, hp * len)
-    continueLine(result, b, p1, -len, -hp * len)
-    continueLine(result, b, p1, len, hp * len)
+    drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(a, p0) + Math.PI / 4 * hp)
+    drawLineMark(result, MARK_TYPE.SERIF, p1, angleOf(b, p1) - Math.PI / 4 * hp)
 
     drawMaskedText(
       result,

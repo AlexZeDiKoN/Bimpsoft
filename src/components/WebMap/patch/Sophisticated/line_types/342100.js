@@ -2,14 +2,14 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, angleOf, segmentLength, drawMaskedText, rad,
+  drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: SECURE
 // task code: DZVIN-5538
 // hint: 'Взяти під контроль'
 
-const CROSS_LENGTH = 48
 const TEXT = 'S'
 
 lineDefinitions['342100'] = {
@@ -29,7 +29,7 @@ lineDefinitions['342100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const r = segmentLength(p0, p1)
@@ -44,16 +44,9 @@ lineDefinitions['342100'] = {
 
     const angle = angleOf(p1, p0)
 
-    const ang2 = (delta) => compose(
-      translate(p.x, p.y),
-      rotate(angle + Math.PI + rad(delta)),
-    )
-
     drawArc(result, p1, p, r, 0, 1, 1)
 
-    const cross = { x: CROSS_LENGTH * scale, y: 0 }
-    drawLine(result, p, applyToPoint(ang2(100), cross))
-    drawLine(result, applyToPoint(ang2(10), cross), p)
+    drawLineMark(result, MARK_TYPE.ARROW_90, p, angle + Math.PI + Math.PI / 3.1)
 
     drawMaskedText(
       result,

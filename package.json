@@ -1,11 +1,11 @@
 {
   "name": "web-map",
-  "version": "13.01.679",
+  "version": "13.03.767",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^13.1.446",
-    "@DZVIN/MilSymbolEditor": "^11.3.256",
-    "@DZVIN/components": "^12.1.556",
+    "@DZVIN/CommonComponents": "^13.3.465",
+    "@DZVIN/MilSymbolEditor": "^13.2.262",
+    "@DZVIN/components": "^13.2.563",
     "@DZVIN/leaflet-measure-custom": "0.0.2",
     "@DZVIN/milsymbol": "^0.0.5",
     "antd": "^3.12.4",

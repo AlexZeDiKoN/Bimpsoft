@@ -1,18 +1,20 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, continueLine, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
-  emptyPath,
+  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
+  emptyPath, drawLineMark,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
-const TIP_LENGTH = 50
-const EDGE = 40
-
 lineDefinitions['017078'] = {
+  // Ампліфікатори, що використовуються на лінії
+  useAmplifiers: [ { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -29,7 +31,7 @@ lineDefinitions['017078'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const dashed = emptyPath()
@@ -37,30 +39,39 @@ lineDefinitions['017078'] = {
 
     addPathAmplifier(result, dashed, false, 20)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, p1, p0, 0, len)
-    continueLine(result, p1, p0, 0, -len)
-    continueLine(result, p0, p1, 0, len)
-    continueLine(result, p0, p1, 0, -len)
+    const angleSerif = angleOf(p0, p1)
+    const angle = angleSerif - Math.PI / 2
+    const top = angleOf(p0, p1) < 0
 
+    drawLineMark(result, MARK_TYPE.SERIF, p0, angleSerif)
+    const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
+    const fontSize = interpolateSize(
+      result.layer._map.getZoom(),
+      settings.TEXT_AMPLIFIER_SIZE,
+      1,
+      settings.MIN_ZOOM,
+      settings.MAX_ZOOM,
+    )
     drawText(
       result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.N ?? '',
+      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      'black'
+      'black',
+      top ? 'after-edge' : 'before-edge',
     )
 
     drawText(
       result,
-      getPointAt(p1, p0, 90, 1.5 * EDGE * scale),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.B ?? '',
+      getPointAt(p1, p0, Math.PI / 2, graphicSize / 2),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
-      angleOf(p0, p1) < 0 ? 'start' : 'end',
-      'black'
+      top ? 'start' : 'end',
+      'black',
+      top ? 'before-edge' : 'after-edge',
     )
   },
 }

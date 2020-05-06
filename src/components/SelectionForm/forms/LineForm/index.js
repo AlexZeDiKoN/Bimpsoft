@@ -48,16 +48,13 @@ export default class LineForm extends compose(
               <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
             </div>
             <div className="line-container__itemWidth-right">
-              {/* {this.renderLineClassifier()} */}
               <div className='line-container__itemWidth--section1'>
-                <div>
-                  {this.renderOrgStructureSelect()}
-                  {this.renderSubordinationLevel()}
-                </div>
-                <div>
-                  {this.renderAffiliation()}
-                  {this.renderStatus()}
-                </div>
+                {this.renderSubordinationLevel()}
+                {this.renderOrgStructureSelect()}
+              </div>
+              <div className='line-container__itemWidth--section1'>
+                {this.renderAffiliation()}
+                {this.renderStatus()}
               </div>
             </div>
           </div>

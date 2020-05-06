@@ -2,16 +2,18 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrow,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawLineMark,
 } from '../utils'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { interpolateSize } from '../../utils/helpers'
 
 // sign name: FIX
 // task code: DZVIN-5532
-// hint: `Ефект затримання  спрямований на планування вогню і загороджень для затримання атакуючих у певній зоні, зазвичай в зоні бойових дій`
+// hint: `Ефект затримання  спрямований на планування вогню і загороджень для затримання атакуючих у певній зоні,
+// зазвичай в зоні бойових дій`
 
-const ARROW_LENGTH = 24
-const ARROW_WIDTH = 24
-const SPRING_LENGTH = 18
+const SCALE_SPRING_LENGTH = 0.5
+const SCALE_SPRING_WIDTH = 0.5
 const TEXT = 'F'
 
 lineDefinitions['341100'] = {
@@ -31,47 +33,40 @@ lineDefinitions['341100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
-
+    const arrowLength = drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
+    const textSize = interpolateSize(result.layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE) * TEXT.length
+    const springWidth = arrowLength * SCALE_SPRING_WIDTH
+    const springLength = arrowLength * SCALE_SPRING_LENGTH
     const l = segmentLength(p0, p1)
     if (l <= 0) {
       return
     }
-    if (l > (ARROW_LENGTH * 5 + SPRING_LENGTH) * scale) {
-      const p2 = segmentBy(p0, p1, ARROW_LENGTH * scale * 3 / l)
-      const fixL = ARROW_LENGTH * scale * 5
-      const num = Math.trunc((l - fixL) / SPRING_LENGTH / scale)
-      const p3 = segmentBy(p0, p1, scale * (ARROW_LENGTH * 3 + num * SPRING_LENGTH) / l)
-      drawLine(result, p0, p2)
-      drawArrow(result, p3, p1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    if (l > (arrowLength * 4 + springLength + textSize)) {
+      const p2 = segmentBy(p0, p1, (arrowLength * 2 + textSize) / l)
+      const fixL = arrowLength * 4 + textSize
+      const num = Math.trunc((l - fixL) / springLength)
+      const p3 = segmentBy(p0, p1, (arrowLength * 2 + textSize + num * springLength) / l)
+      const linePoints = []
       const t = compose(
         translate(p0.x, p0.y),
         rotate(angleOf(p0, p1)),
       )
       for (let i = 0; i < num; i++) {
-        drawLine(
-          result,
-          applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * i),
-            y: 0,
-          }),
-          applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * (0.5 + i)),
-            y: ARROW_WIDTH * scale * ((i % 2) * 2 - 1),
-          }),
-          applyToPoint(t, {
-            x: -scale * (ARROW_LENGTH * 3 + SPRING_LENGTH * (1 + i)),
-            y: 0,
-          }),
+        linePoints.push(applyToPoint(t, {
+          x: -(arrowLength * 2 + textSize + springLength * (0.5 + i)),
+          y: springWidth * ((i % 2) * 2 - 1) }),
         )
       }
+      drawLine(result, p0, p2, ...linePoints, p3, p1)
     } else {
-      drawArrow(result, p0, p1, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+      drawLine(result, p0, p1)
     }
+
     drawMaskedText(
       result,
-      segmentBy(p0, p1, ARROW_LENGTH * scale * 1.5 / l),
+      segmentBy(p0, p1, (arrowLength + textSize * 0.5) / l),
       angleOf(p1, p0),
       TEXT,
     )

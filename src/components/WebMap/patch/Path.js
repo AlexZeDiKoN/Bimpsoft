@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import { getStylesForLineType } from '../../../utils/svg/lines'
 import { interpolateSize } from './utils/helpers'
 

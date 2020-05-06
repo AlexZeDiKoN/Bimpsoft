@@ -93,7 +93,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     zoom,
   }, { ...data, attributes })
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
-  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale * 2)
+  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale, zoom)
   return (
     <>
       {Boolean(amplifiers.group) && (

@@ -1,45 +1,89 @@
 import React from 'react'
 import { compose } from 'redux'
+import { components } from '@DZVIN/CommonComponents'
+import i18n from '../../../../i18n'
+
 import {
+  UnitSelect,
+  WithSubordinationLevel,
+  WithAffiliation,
+  WithStatus,
   WithColor,
   WithFill,
-  WithCoordinateAndWidth,
-  WithSubordinationLevel,
   WithLineType,
   WithStrokeWidth,
-  UnitSelect,
+  WithHatch,
+  WithIntermediateAmplifiers,
+  WithPointAmplifiers,
+  WithIntermediateAmplifiersTune,
+  WithCoordinateAndWidth,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SquareForm.css'
 
+const { FormRow, FormDarkPart } = components.form
+
 export default class SquareForm extends
   compose(
+    UnitSelect,
     WithSubordinationLevel,
-    WithCoordinateAndWidth,
-    WithColor,
-    WithFill,
+    WithAffiliation,
+    WithStatus,
     WithLineType,
     WithStrokeWidth,
-    UnitSelect,
+    WithColor,
+    WithFill,
+    WithHatch,
+    WithIntermediateAmplifiers,
+    WithPointAmplifiers,
+    WithIntermediateAmplifiersTune,
+    WithCoordinateAndWidth,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     return (
       <div className="square-container">
-        <div className="square-container__item">
+        <div className="square-container--firstSection">
+          <div className="square-container__itemSchema">
+            <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
+          </div>
           <div className="square-container__itemWidth">
             {this.renderSubordinationLevel()}
-            {this.renderColor()}
-            {this.renderStrokeWidth()}
+            {this.renderOrgStructureSelect()}
           </div>
           <div className="square-container__itemWidth">
-            {this.renderOrgStructureSelect()}
-            {this.renderFill()}
-            {this.renderLineType(true)}
+            {this.renderAffiliation()}
+            {this.renderStatus()}
           </div>
         </div>
-        {this.renderCoordinateAndWidth()}
+        <div className="square-container--secondSection">
+          <div className="square-container__itemWidth">
+            {this.renderLineType(true)}
+            {this.renderStrokeWidth()}
+            <FormRow label={i18n.LINE_COLOR}>
+              {this.renderColor()}
+            </FormRow>
+          </div>
+          <div className="square-container__itemWidth">
+            {this.renderFill(true)}
+            {this.renderHatch()}
+          </div>
+        </div>
+        {this.renderIntermediateAmplifiers()}
+        {this.renderPointAmplifiers()}
+        <div className="square-container__item">
+          <div className="square-container__itemWidth50">
+            <FormDarkPart>
+              <FormRow label={i18n.AMPLIFIERS_DISPLAY}>
+              </FormRow>
+              {this.renderIntermediateAmplifiersTune()}
+            </FormDarkPart>
+          </div>
+          <div className="square-container__itemWidth50">
+            {this.renderCoordinateAndWidth()}
+          </div>
+        </div>
       </div>
     )
   }

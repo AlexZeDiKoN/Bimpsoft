@@ -5,13 +5,12 @@ import classNames from 'classnames'
 import { Checkboard } from 'react-color/lib/components/common'
 import './style.css'
 import { IButton } from '@DZVIN/CommonComponents'
-import { colors } from '../../../constants'
 import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import ColorPickerPopup from './ColorPickerPopup'
 
 const PRESENT_COLORS = [
-  colors.TRANSPARENT,
+  'transparent',
   '#ffffff', // '#FFFFFFaa',
   '#ff999c', // '#ff666baa',
   '#ffbe99', // '#ff9e66aa',

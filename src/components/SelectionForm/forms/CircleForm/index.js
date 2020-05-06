@@ -8,6 +8,7 @@ import {
   WithLineType,
   WithStrokeWidth,
   UnitSelect,
+  WithPointAmplifiers,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './CircleForm.css'
@@ -21,6 +22,7 @@ export default class SquareForm extends
     WithLineType,
     WithStrokeWidth,
     UnitSelect,
+    WithPointAmplifiers,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -39,6 +41,7 @@ export default class SquareForm extends
             {this.renderLineType(true)}
           </div>
         </div>
+        {this.renderPointAmplifiers()}
         {this.renderCoordinateAndRadius()}
       </div>
     )

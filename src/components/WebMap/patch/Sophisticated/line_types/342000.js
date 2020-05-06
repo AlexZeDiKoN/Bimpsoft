@@ -1,15 +1,23 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength, drawMaskedText, drawArrow,
+  normalVectorTo,
+  applyVector,
+  segmentBy,
+  halfPlane,
+  drawArc,
+  angleOf,
+  segmentLength,
+  drawMaskedText,
+  drawLine,
+  drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: RETIRE/RETIREMENT
 // task code: DZVIN-5769 (part 2)
 // hint: 'Відхід – здійснення відходу без контакту з противником'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const TEXT = 'R'
 
 lineDefinitions['342000'] = {
@@ -30,10 +38,11 @@ lineDefinitions['342000'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
-    drawArrow(result, p1, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLine(result, p1, p0)
+    drawLineMark(result, MARK_TYPE.ARROW_60, p0, angleOf(p1, p0))
     const norm = normalVectorTo(p0, p1, p2)
     const a = applyVector(p1, norm)
     const r = segmentLength(p1, a) / 2
