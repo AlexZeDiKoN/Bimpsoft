@@ -203,10 +203,9 @@ export default class SelectionForm extends React.Component {
       canEdit,
       onCancel,
       onSaveError,
+      onCheckSave,
       showErrorSave,
       orgStructures,
-      objectsMap,
-      layerId,
       onCoordinateFocusChange,
     } = this.props
     if (data === null || !forms[data.type]) {
@@ -289,12 +288,11 @@ export default class SelectionForm extends React.Component {
                 data={data}
                 canEdit={canEdit}
                 orgStructures={orgStructures}
-                objectsMap={objectsMap}
-                layerId={layerId}
                 onOk={onOk}
                 onChange={this.changeHandler}
                 onClose={onCancel}
                 onSaveError={onSaveError}
+                onCheckSave={onCheckSave}
                 onAddToTemplates={this.addToTemplateHandler}
                 onCoordinateFocusChange={onCoordinateFocusChange}
                 ovtData={ovtData}
@@ -318,6 +316,7 @@ SelectionForm.propTypes = {
   onCancel: PropTypes.func,
   onError: PropTypes.func,
   onSaveError: PropTypes.func,
+  onCheckSave: PropTypes.func,
   onCloseSaveError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   onCoordinateFocusChange: PropTypes.func,
@@ -326,6 +325,4 @@ SelectionForm.propTypes = {
   ovtData: PropTypes.object,
   ovtLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
-  objectsMap: PropTypes.object,
-  layerId: PropTypes.string,
 }
