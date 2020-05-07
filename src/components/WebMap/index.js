@@ -415,7 +415,7 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
-      this.map?._container?.focus()
+      this.map._container.focus()
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -1445,8 +1445,8 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexadded', this.onVertexAdded)
 
       if (layer === prevLayer) {
-        layer.update?.()
-        if (layer.pm?.enabled?.()) {
+        layer.update && layer.update()
+        if (layer.pm && layer.pm.enabled()) {
           layer.pm.disable()
           layer.pm.enable()
         }
