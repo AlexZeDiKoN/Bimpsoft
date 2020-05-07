@@ -9,8 +9,6 @@ const mapStateToProps = (store) => {
   const {
     selection: { preview, showForm },
     orgStructures, ovt: ovtReducer,
-    webMap: { objects },
-    layers: { selectedId },
   } = store
   const canEdit = canEditSelector(store)
   const showFormTypes = preview && preview.id ? FormTypes.EDIT : FormTypes.CREATE
@@ -23,8 +21,6 @@ const mapStateToProps = (store) => {
     orgStructures,
     ovtData: ovtReducer.ovtData,
     ovtLoaded: ovtReducer.loaded,
-    layerId: selectedId,
-    objectsMap: objects,
   }
 }
 
