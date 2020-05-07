@@ -4,7 +4,7 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector, taskModeSelector, targetingModeSelector } from '../selectors'
+import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects } from '../selectors'
 import entityKind, { GROUPS } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
@@ -19,6 +19,8 @@ export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
 export const SHOW_DELETE_FORM = action('SHOW_DELETE_FORM')
+export const SHOW_ERROR_PASTE_FORM = action('SHOW_ERROR_PASTE_FORM')
+export const SHOW_ERROR_SAVE_FORM = action('SHOW_ERROR_SAVE_FORM')
 export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
@@ -254,6 +256,7 @@ export const cut = () => withNotification((dispatch) => {
 })
 
 export const paste = () => withNotification((dispatch, getState) => {
+  dispatch(hideForm())
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -329,6 +332,14 @@ export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
 })
 
+export const showErrorPasteForm = () => ({
+  type: SHOW_ERROR_PASTE_FORM,
+})
+
+export const showErrorSaveForm = () => ({
+  type: SHOW_ERROR_SAVE_FORM,
+})
+
 export const showDivideForm = () => ({
   type: SHOW_DIVIDE_FORM,
 })
@@ -376,4 +387,24 @@ export const dropContour = () => withNotification(async (dispatch, getState, { w
     webMap.tryUnlockObject(contour),
     selectedList(objects),
   ]))
+})
+
+// Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
+// при зберіганні об’єкту обстановки
+export const checkSaveSymbol = () => withNotification((dispatch, getState) => {
+  const {
+    selection: { preview },
+    webMap: { objects },
+    layers: { selectedId },
+  } = getState()
+  const { type } = preview
+  if (type === SelectionTypes.POINT && objects && preview) {
+    const { unit, code, id } = preview
+    const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
+      (symbol, index) => (Number(index) !== Number(id)))
+    if (ident && ident.size > 0) {
+      return dispatch(showErrorSaveForm())
+    }
+  }
+  return dispatch(savePreview())
 })

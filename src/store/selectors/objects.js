@@ -71,3 +71,12 @@ export const undoInfo = createSelector(
     canRedo: position < size,
   })
 )
+
+export const sameObjects = (rules, objects) => {
+  return objects.filter((value) => (
+    value.layer === rules.layerId &&
+    value.type === rules.type &&
+    value.unit === rules.unit &&
+    value.code === rules.code
+  ))
+}
