@@ -20,7 +20,7 @@ export default {
   objRestore: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/restore`, false),
   objDeleteList: (list = []) =>
-    getDirect(`${webmapUrl}/obj/del`, { list }), ///---(7)
+    getDirect(`${webmapUrl}/obj/del`, { list }), // (7) Delete list of objects
   objRestoreList: (list = []) =>
     getDirect(`${webmapUrl}/obj/restore`, { list }),
   objRefresh: (id = 0) =>

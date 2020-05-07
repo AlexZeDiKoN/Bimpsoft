@@ -43,7 +43,7 @@ const deleteObjects = (dispatch) => (ids) => {
 }
 
 const restoreObjects = (dispatch) => (ids) => {
-  catchError(webMapActions.restoreObjects)(ids)(dispatch)
+  catchError(webMapActions.refreshObjects)(ids)(dispatch)
 }
 
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {

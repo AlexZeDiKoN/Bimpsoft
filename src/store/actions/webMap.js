@@ -77,6 +77,7 @@ export const changeTypes = {
   UPDATE_PARTIALLY: '(4) Update object attributes and geometry only', // TODO: used only in FlexGrid
   INSERT_OBJECT: '(5) Add new object',
   DELETE_OBJECT: '(6) Delete existing object',
+  DELETE_LIST: '(7) Delete list of objects',
 }
 
 export const setCoordinatesType = (value) => {
@@ -250,9 +251,20 @@ export const deleteObject = (id, addUndoRecord = true) =>
     })
   })
 
-export const deleteObjects = (list) =>
+export const deleteObjects = (list, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDeleteList } }) => {
     await objDeleteList(list)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.DELETE_LIST,
+          list,
+        }
+      })
+    }
+
     dispatch({
       type: actionNames.DEL_OBJECTS,
       payload: list,
@@ -264,7 +276,10 @@ export const removeObjects = (ids) => ({
   payload: ids,
 })
 
-export const restoreObjects = (ids) =>
+const restoreObjects = (ids) =>
+  asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
+
+export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
     for (const id of ids) {
       const object = fixServerObject(await objRefresh(id))
@@ -561,7 +576,7 @@ export const getTopographicObjects = (data) =>
   })
 
 async function performAction (record, direction, api, dispatch) {
-  const { changeType, id, oldData, newData } = record
+  const { changeType, id, list, oldData, newData } = record
   const data = direction === 'undo' ? oldData : newData
   switch (changeType) {
     case changeTypes.UPDATE_OBJECT:
@@ -580,6 +595,13 @@ async function performAction (record, direction, api, dispatch) {
         return dispatch(restoreObject(id))
       } else {
         return dispatch(deleteObject(id, false))
+      }
+    }
+    case changeTypes.DELETE_LIST: {
+      if (direction === 'undo') {
+        return dispatch(restoreObjects(list))
+      } else {
+        return dispatch(deleteObjects(list, false))
       }
     }
     default:

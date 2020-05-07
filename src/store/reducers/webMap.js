@@ -234,11 +234,14 @@ const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
-  const { changeType, id, geometry, object } = payload
+  const { changeType, id, list, geometry, object } = payload
   const newRecord = { changeType }
   if (id) {
     newRecord.id = id
     objData = state.getIn([ 'objects', id ])
+  }
+  if (list) {
+    newRecord.list = list
   }
 
   switch (changeType) {
@@ -258,6 +261,7 @@ function addUndoRecord (state, payload) {
     }
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
+    case changeTypes.DELETE_LIST:
       break
     default:
       return state
@@ -269,13 +273,13 @@ function addUndoRecord (state, payload) {
     newRecord.oldData = oldData
     newRecord.newData = newData
   }
-  let list = state.get('undoRecords')
+  let records = state.get('undoRecords')
   const undoPosition = state.get('undoPosition')
-  if (undoPosition < list.size) {
-    list = list.skipLast(list.size - undoPosition)
+  if (undoPosition < records.size) {
+    records = records.skipLast(records.size - undoPosition)
   }
   return state
-    .set('undoRecords', list.push(newRecord))
+    .set('undoRecords', records.push(newRecord))
     .set('undoPosition', undoPosition + 1)
 }
 
