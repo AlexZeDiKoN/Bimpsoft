@@ -8,6 +8,10 @@ import { canEditSelector, layersById, currentMapLayers } from './layersSelector'
 const selectedObject = ({ selection: { list } }) => list.length === 1 && list[0]
 const activeLayer = ({ layers: { selectedId } }) => selectedId
 const objects = ({ webMap: { objects } }) => objects
+const undo = ({ webMap: { undoRecords, undoPosition } }) => ({
+  size: undoRecords.size,
+  position: undoPosition,
+})
 
 export const activeObjectId = createSelector(
   canEditSelector,
@@ -58,6 +62,14 @@ export const targetObjects = createSelector(
     }
     return result
   },
+)
+
+export const undoInfo = createSelector(
+  undo,
+  ({ size, position }) => ({
+    canUndo: position > 0,
+    canRedo: position < size,
+  })
 )
 
 export const sameObjects = (rules, objects) => {

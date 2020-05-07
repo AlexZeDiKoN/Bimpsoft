@@ -10,7 +10,7 @@ const MarkerDrag = L.Handler.extend({
   },
 
   addHooks: function () {
-    var icon = this._marker._icon
+    const icon = this._marker._icon
     if (!this._draggable) {
       this._draggable = new Draggable(icon, icon, true)
     }

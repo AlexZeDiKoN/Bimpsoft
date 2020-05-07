@@ -328,6 +328,10 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
+    undoInfo: PropTypes.shape({
+      canUndo: PropTypes.bool,
+      canRedo: PropTypes.bool,
+    }),
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -363,6 +367,8 @@ export default class WebMap extends React.PureComponent {
     dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
+    undo: PropTypes.func,
+    redo: PropTypes.func,
   }
 
   constructor (props) {
@@ -409,6 +415,7 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
+      this.map._container.focus()
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -1437,9 +1444,15 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+        if (layer.pm && layer.pm.enabled()) {
+          layer.pm.disable()
+          layer.pm.enable()
+        }
+      } else {
+        layer.addTo(this.map)
+      }
 
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)
@@ -1995,6 +2008,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  undoHandler = () => {
+    const { edit, undoInfo: { canUndo }, undo } = this.props
+    edit && canUndo && undo && undo()
+  }
+
+  redoHandler = () => {
+    const { edit, undoInfo: { canRedo }, redo } = this.props
+    edit && canRedo && redo && redo()
+  }
+
   render () {
     return (
       <div
@@ -2007,6 +2030,8 @@ export default class WebMap extends React.PureComponent {
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler}/>
+        <HotKey selector={shortcuts.UNDO} onKey={this.undoHandler} />
+        <HotKey selector={shortcuts.REDO} onKey={this.redoHandler} />
         {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
         {this.props.flexGridVisible && (
           <FlexGridToolTip

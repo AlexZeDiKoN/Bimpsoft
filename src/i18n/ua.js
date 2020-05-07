@@ -404,3 +404,6 @@ export const MINE_MARINE_ANCHORS = 'Морські якірні міни'
 export const MINE_UNCONTROLLED = 'Не вказано'
 export const MINE_RADIO = 'По радіо'
 export const MINE_WIRED = 'По проводам'
+
+export const UNDO = 'Скасувати останню дію'
+export const REDO = 'Повторити останню скасовану дію'

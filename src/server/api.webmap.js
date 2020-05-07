@@ -6,19 +6,23 @@ export default {
   objGetList: (layer = null) =>
     getDirect(`${webmapUrl}/obj/${layer}/get`, false),
   objUpdate: (id, data) =>
-    getDirect(`${webmapUrl}/obj/set`, { id, ...data }),
+    getDirect(`${webmapUrl}/obj/set`, { id, ...data }), // (1) Update entire object
   objUpdateGeometry: (id, data) =>
-    getDirect(`${webmapUrl}/obj/geom`, { id, ...data }),
+    getDirect(`${webmapUrl}/obj/geom`, { id, ...data }), // (2) Update object geometry only
   objUpdateAttr: (id, attributes) =>
-    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }),
+    getDirect(`${webmapUrl}/obj/attr`, { id, attributes }), // (3) Update object attributes only
   objUpdatePartially: (id, data) =>
-    getDirect(`${webmapUrl}/obj/upd`, { id, ...data }),
+    getDirect(`${webmapUrl}/obj/upd`, { id, ...data }), // (4) Update object attributes and geometry only
   objInsert: (data) =>
-    getDirect(`${webmapUrl}/obj/add`, data),
+    getDirect(`${webmapUrl}/obj/add`, data), // (5) Add new object
   objDelete: (id = 0) =>
-    getDirect(`${webmapUrl}/obj/${id}/del`, false),
+    getDirect(`${webmapUrl}/obj/${id}/del`, false), // (6) Delete existing object
+  objRestore: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/restore`, false),
   objDeleteList: (list = []) =>
-    getDirect(`${webmapUrl}/obj/del`, { list }),
+    getDirect(`${webmapUrl}/obj/del`, { list }), // (7) Delete list of objects
+  objRestoreList: (list = []) =>
+    getDirect(`${webmapUrl}/obj/restore`, { list }),
   objRefresh: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
   objLock: (id = 0) =>
@@ -48,7 +52,7 @@ export default {
   layerGetColor: (layerId) =>
     getDirect(`${webmapUrl}/layer/${layerId}/color`, false),
   layerSetColor: (layerId, color) =>
-    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }),
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }), ///---(8)
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
   getPrintBounds: (data) =>
@@ -71,23 +75,23 @@ export default {
   getTopographicObjects: (data) =>
     getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
   contourCreate: (layer, objects) =>
-    getDirect(`${webmapUrl}/contour/create`, { layer, objects }),
+    getDirect(`${webmapUrl}/contour/create`, { layer, objects }), ///---(9)
   contourDelete: (layer, contour) =>
-    getDirect(`${webmapUrl}/contour/drop`, { layer, contour }),
+    getDirect(`${webmapUrl}/contour/drop`, { layer, contour }), ///---(10)
   contourCopy: (id, layer, shift) =>
-    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }),
+    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), ///---(11)
   contourMove: (id, shift) =>
-    getDirect(`${webmapUrl}/contour/move`, { id, shift }),
+    getDirect(`${webmapUrl}/contour/move`, { id, shift }), ///---(12)
   objListMove: (ids, shift) =>
-    getDirect(`${webmapUrl}/obj/move`, { ids, shift }),
+    getDirect(`${webmapUrl}/obj/move`, { ids, shift }), ///---(13)
   buildZone: (objects, enemy) =>
     getDirect(`${webmapUrl}/zone/build`, { objects, enemy }),
   groupCreate: (type, objects, layer, scale) =>
-    getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }),
+    getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }), ///---(14)
   groupDrop: (group, layer) =>
-    getDirect(`${webmapUrl}/group/drop`, { group, layer }),
+    getDirect(`${webmapUrl}/group/drop`, { group, layer }), ///---(15)
   groupCopy: (id, layer, shift) =>
-    getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }),
+    getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }), ///---(16)
   groupMove: (id, shift) =>
-    getDirect(`${webmapUrl}/group/move`, { id, shift }),
+    getDirect(`${webmapUrl}/group/move`, { id, shift }), ///---(17)
 }
