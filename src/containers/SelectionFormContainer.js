@@ -33,6 +33,7 @@ const mapDispatchToProps = {
   onOk: selection.savePreview,
   onCancel: selection.clearPreview,
   onSaveError: selection.showErrorSaveForm,
+  onCheckSave: selection.checkSaveSymbol,
   onCloseSaveError: selection.hideForm,
   onCoordinateFocusChange: selection.setPreviewCoordinate,
   getOvtList: ovtActions.getOvtList,

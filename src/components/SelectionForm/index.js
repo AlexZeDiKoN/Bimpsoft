@@ -203,6 +203,7 @@ export default class SelectionForm extends React.Component {
       canEdit,
       onCancel,
       onSaveError,
+      onCheckSave,
       showErrorSave,
       orgStructures,
       objectsMap,
@@ -295,6 +296,7 @@ export default class SelectionForm extends React.Component {
                 onChange={this.changeHandler}
                 onClose={onCancel}
                 onSaveError={onSaveError}
+                onCheckSave={onCheckSave}
                 onAddToTemplates={this.addToTemplateHandler}
                 onCoordinateFocusChange={onCoordinateFocusChange}
                 ovtData={ovtData}
@@ -318,6 +320,7 @@ SelectionForm.propTypes = {
   onCancel: PropTypes.func,
   onError: PropTypes.func,
   onSaveError: PropTypes.func,
+  onCheckSave: PropTypes.func,
   onCloseSaveError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   onCoordinateFocusChange: PropTypes.func,
