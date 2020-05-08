@@ -1,9 +1,11 @@
 import { connect } from 'react-redux'
-import { batchActions } from 'redux-batched-actions/lib/index'
+import { batchActions } from 'redux-batched-actions'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import { viewModes, layers, webMap, task, selection } from '../store/actions'
-import { canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector } from '../store/selectors'
+import {
+  canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector,
+} from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 import { MapModes } from '../constants'
 
