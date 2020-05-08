@@ -52,7 +52,7 @@ export default {
   layerGetColor: (layerId) =>
     getDirect(`${webmapUrl}/layer/${layerId}/color`, false),
   layerSetColor: (layerId, color) =>
-    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }), ///---(8)
+    getDirect(`${webmapUrl}/layer/${layerId}/color`, { color }), // (8) Set Layer highlight color
   getMapSources: () =>
     getDirect(`/tiles/index.json`, false, ''),
   getPrintBounds: (data) =>
