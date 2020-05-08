@@ -259,6 +259,11 @@ function addUndoRecord (state, payload) {
       newData = geometry
       break
     }
+    case changeTypes.LAYER_COLOR: {
+      oldData = payload.oldColor
+      newData = payload.newColor
+      break
+    }
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:

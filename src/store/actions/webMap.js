@@ -11,6 +11,7 @@ import * as viewModesKeys from '../../constants/viewModesKeys'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid } from './index'
+import { UPDATE_LAYER } from './layers'
 
 const { settings } = utils
 
@@ -78,6 +79,7 @@ export const changeTypes = {
   INSERT_OBJECT: '(5) Add new object',
   DELETE_OBJECT: '(6) Delete existing object',
   DELETE_LIST: '(7) Delete list of objects',
+  LAYER_COLOR: '(8) Set Layer highlight color',
 }
 
 export const setCoordinatesType = (value) => {
@@ -603,6 +605,16 @@ async function performAction (record, direction, api, dispatch) {
       } else {
         return dispatch(deleteObjects(list, false))
       }
+    }
+    case changeTypes.LAYER_COLOR: {
+      await api.layerSetColor(id, data)
+      return dispatch({
+        type: UPDATE_LAYER,
+        layerData: {
+          laterId: id,
+          color: data,
+        },
+      })
     }
     default:
       console.warn(`Unknown change type: ${changeType}`)

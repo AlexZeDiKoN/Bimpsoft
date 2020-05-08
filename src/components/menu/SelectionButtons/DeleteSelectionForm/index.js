@@ -34,6 +34,7 @@ export default class DeleteSelectionForm extends React.Component {
                 </div>
               </FormItem>
               <FormItem>
+                <HotKey selector={shortcuts.ENTER} onKey={onOk} />
                 {buttonYes(onOk)}
                 <HotKey selector={shortcuts.ESC} onKey={onCancel} />
                 {buttonNo(onCancel)}
