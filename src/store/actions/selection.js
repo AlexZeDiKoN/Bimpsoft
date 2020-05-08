@@ -366,45 +366,72 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   },
 }) */
 
-export const createContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
-  const {
-    selection: { list },
-    layers: { selectedId: layer },
-  } = getState()
+export const createContour = () =>
+  withNotification(async (dispatch, getState, { webmapApi }) => {
+    const {
+      selection: { list },
+      layers: { selectedId: layer },
+    } = getState()
 
-  const contour = await webmapApi.contourCreate(layer, list)
-  contour && dispatch(selectedList([ contour.id ]))
-})
+    const contour = await webmapApi.contourCreate(layer, list)
 
-export const dropContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
-  const {
-    selection: { list: [ contour ] },
-    layers: { selectedId: layer },
-  } = getState()
+    if (contour) {
+      dispatch(selectedList([ contour.id ]))
+      dispatch({
+        type: webMap.actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: webMap.changeTypes.CREATE_CONTOUR,
+          id: contour.id,
+          list,
+          layer,
+        },
+      })
+    }
+  })
 
-  const objects = await webmapApi.contourDelete(layer, contour)
-  objects && dispatch(batchActions([
-    webMap.tryUnlockObject(contour),
-    selectedList(objects),
-  ]))
-})
+export const dropContour = () =>
+  withNotification(async (dispatch, getState, { webmapApi }) => {
+    const {
+      selection: { list: [ contour ] },
+      layers: { selectedId: layer },
+    } = getState()
+
+    const list = await webmapApi.contourDelete(layer, contour)
+
+    if (list) {
+      dispatch(batchActions([
+        webMap.tryUnlockObject(contour),
+        selectedList(list),
+        {
+          type: webMap.actionNames.ADD_UNDO_RECORD,
+          payload: {
+            changeType: webMap.changeTypes.DELETE_CONTOUR,
+            id: contour,
+            list,
+            layer,
+          },
+        }
+      ]))
+    }
+  })
 
 // Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
 // при зберіганні об’єкту обстановки
-export const checkSaveSymbol = () => withNotification((dispatch, getState) => {
-  const {
-    selection: { preview },
-    webMap: { objects },
-    layers: { selectedId },
-  } = getState()
-  const { type } = preview
-  if (type === SelectionTypes.POINT && objects && preview) {
-    const { unit, code, id } = preview
-    const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
-      (symbol, index) => (Number(index) !== Number(id)))
-    if (ident && ident.size > 0) {
-      return dispatch(showErrorSaveForm())
+export const checkSaveSymbol = () =>
+  withNotification((dispatch, getState) => {
+    const {
+      selection: { preview },
+      webMap: { objects },
+      layers: { selectedId },
+    } = getState()
+    const { type } = preview
+    if (type === SelectionTypes.POINT && objects && preview) {
+      const { unit, code, id } = preview
+      const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
+        (symbol, index) => (Number(index) !== Number(id)))
+      if (ident && ident.size > 0) {
+        return dispatch(showErrorSaveForm())
+      }
     }
-  }
-  return dispatch(savePreview())
-})
+    return dispatch(savePreview())
+  })

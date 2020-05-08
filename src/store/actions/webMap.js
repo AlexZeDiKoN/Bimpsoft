@@ -10,8 +10,7 @@ import { activeMapSelector } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
-import { asyncAction, flexGrid } from './index'
-import { UPDATE_LAYER } from './layers'
+import { asyncAction, flexGrid, layers, selection } from './'
 
 const { settings } = utils
 
@@ -72,7 +71,7 @@ export const actionNames = {
 }
 
 export const changeTypes = {
-  UPDATE_OBJECT: '(1) Update entire object',
+  UPDATE_OBJECT: '(1) Update entire object', // TODO: FlexGrid implementation
   UPDATE_GEOMETRY: '(2) Update object geometry only',
   UPDATE_ATTRIBUTES: '(3) Update object attributes only', // TODO: used only in FlexGrid
   UPDATE_PARTIALLY: '(4) Update object attributes and geometry only', // TODO: used only in FlexGrid
@@ -80,6 +79,8 @@ export const changeTypes = {
   DELETE_OBJECT: '(6) Delete existing object',
   DELETE_LIST: '(7) Delete list of objects',
   LAYER_COLOR: '(8) Set Layer highlight color',
+  CREATE_CONTOUR: '(9) Create contour',
+  DELETE_CONTOUR: '(10) Delete contour',
 }
 
 export const setCoordinatesType = (value) => {
@@ -222,6 +223,20 @@ export const moveObjList = (ids, shift) =>
     type: actionNames.MOVE_OBJECTS,
     payload: await objListMove(ids, shift),
   }))
+
+const deleteContour = (layer, contour) =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) =>
+    dispatch(batchActions([
+      tryUnlockObject(contour),
+      selection.selectedList(await webmapApi.contourDelete(layer, contour)),
+    ]))
+  )
+
+const restoreContour = (layer, contour, objects) =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+    await webmapApi.contourRestore(layer, contour, objects)
+    return dispatch(selection.selectedList([ contour ]))
+  })
 
 const restoreObject = (id) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRestore } }) => {
@@ -578,7 +593,7 @@ export const getTopographicObjects = (data) =>
   })
 
 async function performAction (record, direction, api, dispatch) {
-  const { changeType, id, list, oldData, newData } = record
+  const { changeType, id, list, layer, oldData, newData } = record
   const data = direction === 'undo' ? oldData : newData
   switch (changeType) {
     case changeTypes.UPDATE_OBJECT:
@@ -609,12 +624,26 @@ async function performAction (record, direction, api, dispatch) {
     case changeTypes.LAYER_COLOR: {
       await api.layerSetColor(id, data)
       return dispatch({
-        type: UPDATE_LAYER,
+        type: layers.UPDATE_LAYER,
         layerData: {
           laterId: id,
           color: data,
         },
       })
+    }
+    case changeTypes.CREATE_CONTOUR: {
+      if (direction === 'undo') {
+        return dispatch(deleteContour(layer, id))
+      } else {
+        return dispatch(restoreContour(layer, id, list))
+      }
+    }
+    case changeTypes.DELETE_CONTOUR: {
+      if (direction === 'undo') {
+        return dispatch(restoreContour(layer, id, list))
+      } else {
+        return dispatch(deleteContour(layer, id))
+      }
     }
     default:
       console.warn(`Unknown change type: ${changeType}`)

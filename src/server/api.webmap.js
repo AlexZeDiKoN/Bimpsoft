@@ -75,9 +75,11 @@ export default {
   getTopographicObjects: (data) =>
     getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
   contourCreate: (layer, objects) =>
-    getDirect(`${webmapUrl}/contour/create`, { layer, objects }), ///---(9)
+    getDirect(`${webmapUrl}/contour/create`, { layer, objects }), // (9) Create contour
   contourDelete: (layer, contour) =>
-    getDirect(`${webmapUrl}/contour/drop`, { layer, contour }), ///---(10)
+    getDirect(`${webmapUrl}/contour/drop`, { layer, contour }), // (10) Delete contour
+  contourRestore: (layer, contour, objects) =>
+    getDirect(`${webmapUrl}/contour/restore`, { layer, contour, objects }),
   contourCopy: (id, layer, shift) =>
     getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), ///---(11)
   contourMove: (id, shift) =>

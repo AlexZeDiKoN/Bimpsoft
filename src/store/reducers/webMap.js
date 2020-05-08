@@ -234,7 +234,7 @@ const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
-  const { changeType, id, list, geometry, object } = payload
+  const { changeType, id, list, layer, geometry, object } = payload
   const newRecord = { changeType }
   if (id) {
     newRecord.id = id
@@ -242,6 +242,9 @@ function addUndoRecord (state, payload) {
   }
   if (list) {
     newRecord.list = list
+  }
+  if (layer) {
+    newRecord.layer = layer
   }
 
   switch (changeType) {
@@ -267,6 +270,8 @@ function addUndoRecord (state, payload) {
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:
+    case changeTypes.CREATE_CONTOUR:
+    case changeTypes.DELETE_CONTOUR:
       break
     default:
       return state
