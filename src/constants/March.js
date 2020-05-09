@@ -21,7 +21,7 @@ export const MARCH_INDICATORS_GROUP = {
   terrainType: 'МШВ007',
 }
 
-const MARCH_TYPES = {
+export const MARCH_TYPES = {
   OWN_RESOURCES: 41,
   BY_RAILROAD: 42,
   BY_SHIPS: 43,

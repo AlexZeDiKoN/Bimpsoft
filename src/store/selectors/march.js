@@ -21,16 +21,16 @@ export const marchDots = createSelector(
   marchDotsSelector,
   (segments) => {
     const coordArray = []
-    segments = segments.toArray()
+    segments = segments ? segments.toArray() : []
 
     segments.forEach((it) => {
-      if (it.coord.lat || it.coord.lng) {
-        coordArray.push({ coord: it.coord, options: { color: getSegmentColor(it.segmentType) } })
+      if (it.coordinate.lat || it.coordinate.lng) {
+        coordArray.push({ coordinate: it.coordinate, options: { color: getSegmentColor(it.segmentType) } })
       }
       if (it.children && it.children.length > 0) {
         it.children.forEach((it2) => {
-          if (it2.coord.lat || it2.coord.lng) {
-            coordArray.push({ coord: it2.coord, options: { color: getSegmentColor(it.segmentType) } })
+          if (it2.coordinate.lat || it2.coordinate.lng) {
+            coordArray.push({ coordinate: it2.coordinate, options: { color: getSegmentColor(it.segmentType) } })
           }
         })
       }

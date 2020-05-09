@@ -8,19 +8,19 @@ const mapStateToProps = ({ march: {
   segments,
   integrity,
   dataMarch,
-  pointType,
-  totalMarchTime,
-  totalMarchDistance } }) => ({
+  pointsTypes,
+  time,
+  distance } }) => ({
   indicators,
   segmentList: segments,
   integrity,
   dataMarch,
-  pointType,
-  totalMarchTime,
-  totalMarchDistance,
+  pointsTypes,
+  time,
+  distance,
 })
 
-const mapDispatchToProps = catchErrors({
+const mapDispatchToProps = {
   setMarchParams: march.setMarchParams,
   setIntegrity: march.setIntegrity,
   editFormField: march.editFormField,
@@ -30,7 +30,8 @@ const mapDispatchToProps = catchErrors({
   deleteChild: march.deleteChild,
   setCoordMode: march.setCoordMode,
   setRefPointOnMap: march.setRefPointOnMap,
-})
+  initMarch: march.initMarch,
+}
 
 const MarchContainer = connect(
   mapStateToProps,

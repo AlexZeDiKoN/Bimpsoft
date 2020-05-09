@@ -80,10 +80,96 @@ const msToTime = (duration) => {
   return hours + ':' + minutes
 }
 
+const getDefaultCoefficients = (segmentType) => {
+  const common = {
+    velocity: 30,
+    distance: null,
+  }
+
+  let coefficients
+  switch (segmentType) {
+    case 41 : {
+      coefficients = {
+        terrain: 69, // Рівнина
+        MARCH100: 0.8, // Коф витягування
+        MARCH101: 0.7, // Коф втягування
+        distanceVehicles: 50,
+        distanceCompanies: 100,
+        distanceBattalions: 2000,
+        distanceBrigades: 3000,
+        distanceGSLZ: 3000,
+      }
+      break
+    }
+    case 42 : {
+      const loadingUploading = {
+        platformId: 0,
+        workInDark: false,
+        workInGasMasks: false,
+      }
+      coefficients = {
+        mountingWithServiceDevices: true,
+        numberOfEchelonsPerDay: 4,
+        numberOfTrainCarsInEchelon: 30,
+        requiredNumberOfTrainCars: 0,
+        requiredNumberOfShips: 4,
+        loading: loadingUploading,
+        uploading: loadingUploading,
+      }
+      break
+    }
+    case 43 : {
+      const loadingUploading = {
+        technologyId: 0, // OWN_MOVEMENT
+        conditionId: 0, // IN_PORT__DAY
+        teamReadinessId: 1, // good
+      }
+      coefficients = {
+        mountingWithServiceDevices: true,
+        numberOfEchelonsPerDay: 4,
+        numberOfTrainCarsInEchelon: 30,
+        requiredNumberOfTrainCars: 0,
+        requiredNumberOfShips: 4,
+        loading: loadingUploading,
+        uploading: loadingUploading,
+      }
+      break
+    }
+    default:
+      return
+  }
+  return Object.assign(common, coefficients)
+}
+
+const convertSegmentsForExplorer = (segments) => {
+  const segmentsArray = segments.toArray()
+  const convertSegments = []
+
+  for (let i = 0; i < segmentsArray.length; i++) {
+    const currentSegment = segmentsArray[i]
+    const currentChildren = currentSegment.children || []
+
+    const segment = { ...currentSegment }
+    segment.children = []
+    delete segment.metric
+
+    for (let j = 0; j < currentChildren.length; j++) {
+      const child = { ...currentChildren[j] }
+      delete child.metric
+      segment.children.push(child)
+    }
+
+    convertSegments.push(segment)
+  }
+
+  return convertSegments
+}
+
 export default {
   azimuthToCardinalDirection,
   getFilteredGeoLandmarks,
   hoursToMs,
   msToTime,
   msToHours,
+  convertSegmentsForExplorer,
 }

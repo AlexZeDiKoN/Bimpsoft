@@ -66,12 +66,12 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
   let s = 0
   let totalTime = 0
   let totalDistance = 0
-  let currentCoord = startingPoint.coord
+  let currentCoord = startingPoint.coordinate
   const childSegments = []
   const { extractionInColumnFactor, extractionColumnFactor } = dataMarch
 
   for (let index = 0; index < children.length; index++) {
-    s = getDistance(currentCoord, children[index].coord)
+    s = getDistance(currentCoord, children[index].coordinate)
     let v = 0
 
     if (s === 0) {
@@ -80,7 +80,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
         time: +totalTime,
       })
       if (Object.keys(currentCoord).length === 0) {
-        currentCoord = children[index].coord
+        currentCoord = children[index].coordinate
       }
       continue
     }
@@ -102,10 +102,10 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, referenceDa
     })
 
     totalTime += children[index].restTime
-    currentCoord = children[index].coord
+    currentCoord = children[index].coordinate
   }
 
-  s = getDistance(currentCoord, nextPoint.coord)
+  s = getDistance(currentCoord, nextPoint.coordinate)
 
   const t = s === 0 ? 0 : hoursToMs(s / velocity)
 
@@ -179,7 +179,7 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
   const childSegments = []
   let totalTime = 0
   let totalDistance = 0
-  let currentCoord = startingPoint.coord
+  let currentCoord = startingPoint.coordinate
 
   const tp = getLoadUnloadTime({
     ...loadUnloadData,
@@ -189,7 +189,7 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
   totalTime += hoursToMs(tp)
 
   for (let index = 0; index < children.length; index++) {
-    s = getDistance(currentCoord, children[index].coord)
+    s = getDistance(currentCoord, children[index].coordinate)
 
     if (s === 0) {
       childSegments.push({
@@ -197,7 +197,7 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
         time: +totalTime,
       })
       if (Object.keys(currentCoord).length === 0) {
-        currentCoord = children[index].coord
+        currentCoord = children[index].coordinate
       }
       continue
     }
@@ -212,10 +212,10 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
       time: +totalTime,
     })
 
-    currentCoord = children[index].coord
+    currentCoord = children[index].coordinate
   }
 
-  s = getDistance(currentCoord, nextPoint.coord)
+  s = getDistance(currentCoord, nextPoint.coordinate)
   t = s === 0 ? 0 : hoursToMs(s / velocity)
 
   totalDistance += s
@@ -261,8 +261,8 @@ const getSegmentDetails = (...args) => {
 
 const getMarchDetails = (segments = [], dataMarch = {}) => {
   const totalData = {
-    totalMarchTime: 0,
-    totalMarchDistance: 0,
+    time: 0,
+    distance: 0,
     segments: [],
   }
   let indexNotEmptySegment = 0
@@ -271,8 +271,8 @@ const getMarchDetails = (segments = [], dataMarch = {}) => {
     const currentSegment = segments[index]
     if (currentSegment.segmentType) {
       const referenceData = {
-        time: totalData.totalMarchTime,
-        distance: totalData.totalMarchDistance,
+        time: totalData.time,
+        distance: totalData.distance,
       }
       const segmentDetails = getSegmentDetails(currentSegment, segments[index + 1], dataMarch, referenceData)
 
@@ -287,8 +287,8 @@ const getMarchDetails = (segments = [], dataMarch = {}) => {
       totalData.segments.push(segmentDetails)
 
       if (segmentDetails.totalDistance) {
-        totalData.totalMarchTime += segmentDetails.totalTime
-        totalData.totalMarchDistance += segmentDetails.totalDistance
+        totalData.time += segmentDetails.totalTime
+        totalData.distance += segmentDetails.totalDistance
 
         indexNotEmptySegment = index
       } else {
@@ -302,8 +302,8 @@ const getMarchDetails = (segments = [], dataMarch = {}) => {
 
         const { totalTime, totalDistance } = correctSegmentDetails
 
-        totalData.totalMarchTime += totalTime - notEmptySegment.totalTime
-        totalData.totalMarchDistance += totalDistance - notEmptySegment.totalDistance
+        totalData.time += totalTime - notEmptySegment.totalTime
+        totalData.distance += totalDistance - notEmptySegment.totalDistance
 
         totalData.segments[indexNotEmptySegment] = correctSegmentDetails
       }

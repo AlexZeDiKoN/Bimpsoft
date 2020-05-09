@@ -13,8 +13,8 @@ const { hoursToMs } = convertUnits
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
 
-  return async (coord = {}) => {
-    const { lat, lng } = coord
+  return async (coordinate = {}) => {
+    const { lat, lng } = coordinate
     const geoKey = `${lat}:${lng}`
 
     let geoLandmark = memoGeoLandmark[geoKey]
@@ -36,7 +36,7 @@ const getMemoGeoLandmarks = (() => {
   }
 })()
 
-const getMarchPoints = (pointType, dataMarch) => {
+const getMarchPoints = (pointsTypes, dataMarch) => {
   const { pointRestTime, dayNightRestTime, dailyRestTime } = dataMarch
 
   const MarchPoints = [
@@ -48,14 +48,17 @@ const getMarchPoints = (pointType, dataMarch) => {
     { rest: false, time: 0 },
   ]
 
-  return MarchPoints.map((point, id) => ({ ...point, ...pointType[id] }))
+  return MarchPoints.map((point, id) => ({ ...point, ...pointsTypes[id] }))
 }
 
 const March = (props) => {
-  const { pointType, dataMarch, segmentList, totalMarchTime, totalMarchDistance } = props
+  const { pointsTypes, dataMarch, segmentList, time, distance, initMarch } = props
+
+  console.log('CONVERT--------', convertUnits.convertSegmentsForExplorer(segmentList))
+
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
-  const marchPoints = getMarchPoints(pointType, dataMarch)
+  const marchPoints = getMarchPoints(pointsTypes, dataMarch)
 
   const renderDotsForms = () => {
     const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap } = props
@@ -72,7 +75,7 @@ const March = (props) => {
       { segments.map((segment, segmentId) => {
         const { children, metric } = segment
 
-        return (<div key={segmentId} className={'segment-with-form'}>
+        return (<div key={segment.id} className={'segment-with-form'}>
           <div className={'segment-block'}>
             <SegmentBlock
               segment={segment}
@@ -85,7 +88,7 @@ const March = (props) => {
           </div>
           <div className={'form-container'}>
             <MarchForm
-              key={`segment${segmentId}`}
+              key={segment.id}
               segmentId={segmentId}
               handlers={handlers}
               refPoint={''}
@@ -95,7 +98,7 @@ const March = (props) => {
             />
             {children && children.map((child, childId) => {
               return <MarchForm
-                key={`child${childId}`}
+                key={child.id}
                 segmentId={segmentId}
                 childId={childId}
                 handlers={handlers}
@@ -116,8 +119,9 @@ const March = (props) => {
         // marchDetails={marchDetails}
         changeTimeDistanceView={changeTimeDistanceView}
         timeDistanceView={timeDistanceView}
-        totalMarchTime={totalMarchTime}
-        totalMarchDistance={totalMarchDistance}
+        time={time}
+        distance={distance}
+        initMarch={initMarch}
       />
     </div>
     <div className={'march-main'}>
@@ -138,9 +142,9 @@ March.propTypes = {
   segmentList: PropTypes.shape({
     toArray: PropTypes.func.isRequired,
   }).isRequired,
-  pointType: PropTypes.array.isRequired,
-  totalMarchTime: PropTypes.number.isRequired,
-  totalMarchDistance: PropTypes.number.isRequired,
+  pointsTypes: PropTypes.array.isRequired,
+  time: PropTypes.number.isRequired,
+  distance: PropTypes.number.isRequired,
 }
 
 export default React.memo(March)
