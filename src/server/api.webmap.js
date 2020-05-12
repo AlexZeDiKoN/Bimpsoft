@@ -81,7 +81,7 @@ export default {
   contourRestore: (layer, contour, objects) =>
     getDirect(`${webmapUrl}/contour/restore`, { layer, contour, objects }),
   contourCopy: (id, layer, shift) =>
-    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), ///---(11)
+    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), // (11) Copy contour
   contourMove: (id, shift) =>
     getDirect(`${webmapUrl}/contour/move`, { id, shift }), ///---(12)
   objListMove: (ids, shift) =>

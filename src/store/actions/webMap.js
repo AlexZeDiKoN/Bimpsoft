@@ -81,6 +81,7 @@ export const changeTypes = {
   LAYER_COLOR: '(8) Set Layer highlight color',
   CREATE_CONTOUR: '(9) Create contour',
   DELETE_CONTOUR: '(10) Delete contour',
+  COPY_CONTOUR: '(11) Copy contour',
 }
 
 export const setCoordinatesType = (value) => {
