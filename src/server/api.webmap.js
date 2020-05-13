@@ -85,7 +85,7 @@ export default {
   contourMove: (id, shift) =>
     getDirect(`${webmapUrl}/contour/move`, { id, shift }), // (12) Move contour
   objListMove: (ids, shift) =>
-    getDirect(`${webmapUrl}/obj/move`, { ids, shift }), ///---(13)
+    getDirect(`${webmapUrl}/obj/move`, { ids, shift }), // (13) Move list of objects
   buildZone: (objects, enemy) =>
     getDirect(`${webmapUrl}/zone/build`, { objects, enemy }),
   groupCreate: (type, objects, layer, scale) =>
