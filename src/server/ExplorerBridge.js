@@ -1,4 +1,4 @@
-import { maps, webMap, task } from '../store/actions'
+import { maps, webMap, task, march } from '../store/actions'
 import { getExplorerOrigin } from '../utils/services'
 import { catchError } from '../store/actions/asyncAction'
 
@@ -26,6 +26,8 @@ const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 const ACTION_OPEN_COORDINATE = 'open coordinate'
 const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
+const ACTION_INIT_MARCH = 'initialisation march'
+const SAVE_MARSH = 'save marsh'
 
 export default class ExplorerBridge {
   constructor (store) {
@@ -118,6 +120,10 @@ export default class ExplorerBridge {
           catchError(maps.openMapByObject)(mapId, object)(this.store.dispatch)
           break
         }
+        case ACTION_INIT_MARCH: {
+          catchError(march.initMarch)(data.payload)(this.store.dispatch)
+          break
+        }
         default:
       }
     }
@@ -141,4 +147,6 @@ export default class ExplorerBridge {
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
     window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)
+
+  saveMarch = (data = {}) => this.send({ action: SAVE_MARSH, payload: data })
 }

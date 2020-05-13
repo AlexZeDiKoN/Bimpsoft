@@ -31,6 +31,7 @@ const mapDispatchToProps = {
   setCoordMode: march.setCoordMode,
   setRefPointOnMap: march.setRefPointOnMap,
   initMarch: march.initMarch,
+  sendMarchToExplorer: march.sendMarchToExplorer,
 }
 
 const MarchContainer = connect(

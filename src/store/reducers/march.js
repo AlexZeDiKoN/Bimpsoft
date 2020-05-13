@@ -15,7 +15,7 @@ const updateMetric = (segments, state) => {
     segment.metric = { ...marchDetails.segments[id] }
 
     segment.children = segment.children && segment.children.map((child, childId) => {
-      child.metric = marchDetails.segments[id].childSegments[childId]
+      child.metric = marchDetails.segments[id].children[childId]
       return child
     })
 
@@ -72,6 +72,7 @@ const initState = {
     dayNightRestTime: 8, // hour
     dailyRestTime: 24, // hour
   },
+  indicatorsICT: undefined,
   segments: List([
     {
       id: uuid(),

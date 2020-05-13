@@ -9,10 +9,10 @@ import i18n from './../../../../../i18n'
 const { msToTime } = convertUnits
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId, segmentDetails, timeDistanceView } = props
-  const { segmentType, children } = segment
-  const { time: refTime = 0, distance: refDistance = 0 } = segmentDetails.referenceData
-  const { time: prevTime, distance: prevDistance } = segmentDetails.untilPreviousSegment
+  const { segment, addSegment, deleteSegment, segmentId, timeDistanceView } = props
+  const { segmentType, children, metric } = segment
+  const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
+  const { time: prevTime, distance: prevDistance } = metric.untilPrevios
 
   if (segmentType === 0) {
     return null
@@ -55,11 +55,11 @@ const SegmentBlock = (props) => {
 
     <SegmentButtonPopover
       segmentType={segmentType}
-      content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment, segmentDetails }} /> }
+      content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment, metric }} /> }
     />
 
     {childrenIsPresent && children.map((child, id) => {
-      const { distance, time } = segmentDetails.childSegments[id]
+      const { distance, time } = metric.children[id]
       const timeWithOffset = msToTime(time + timeOffset)
       const distanceWithOffset = (distance + distanceOffset).toFixed(1)
 
@@ -85,20 +85,22 @@ SegmentBlock.propTypes = {
     segmentType: PropTypes.number.isRequired,
     children: PropTypes.array,
   }).isRequired,
-  segmentDetails: PropTypes.shape({
-    childSegments: PropTypes.array.isRequired,
-    totalTime: PropTypes.number.isRequired,
-    totalDistance: PropTypes.number.isRequired,
-    referenceData: PropTypes.shape({
+  metric: PropTypes.shape({
+    children: PropTypes.arrayOf(
+      PropTypes.shape({
+        time: PropTypes.number.isRequired,
+        distance: PropTypes.number.isRequired,
+      })).isRequired,
+    reference: PropTypes.shape({
       time: PropTypes.number.isRequired,
       distance: PropTypes.number.isRequired,
     }).isRequired,
-    untilPreviousSegment: PropTypes.shape({
+    untilPrevios: PropTypes.shape({
       time: PropTypes.number.isRequired,
       distance: PropTypes.number.isRequired,
     }).isRequired,
   }),
-  referenceData: PropTypes.shape({
+  reference: PropTypes.shape({
     time: PropTypes.array.isRequired,
     distance: PropTypes.number.isRequired,
   }),

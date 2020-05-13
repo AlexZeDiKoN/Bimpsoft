@@ -21,9 +21,9 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
-  const { deleteSegment, segmentId, segmentType, required, terrain, velocity, segmentDetails } = propData
-  const { totalTime, totalDistance } = segmentDetails
-  const distance = totalDistance.toFixed(1)
+  const { deleteSegment, segmentId, segmentType, required, terrain, velocity, metric } = propData
+  const { time } = metric
+  const distance = metric.distance.toFixed(1)
 
   const onEditFormField = (fieldName) => (id) => editFormField({
     segmentId,
@@ -83,7 +83,7 @@ const PopupPanel = (props) => {
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
-      <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(totalTime)}</div>
+      <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(time)}</div>
       { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
     </div>
   </div>
@@ -97,9 +97,9 @@ PopupPanel.propTypes = {
     terrain: PropTypes.number.isRequired,
     velocity: PropTypes.number.isRequired,
     segmentId: PropTypes.number.isRequired,
-    segmentDetails: PropTypes.shape({
-      totalTime: PropTypes.number.isRequired,
-      totalDistance: PropTypes.number.isRequired,
+    metric: PropTypes.shape({
+      time: PropTypes.number.isRequired,
+      distance: PropTypes.number.isRequired,
     }).isRequired,
   }).isRequired,
   MB001: PropTypes.shape({

@@ -1,7 +1,9 @@
 import { List } from 'immutable'
+import api from '../../server/api.march'
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
+import i18n from './../../i18n'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
@@ -16,36 +18,148 @@ export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
 export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
 
+const { getMarchMetric } = api
 const getMarchDetails = utilsMarch.formulas
+const { convertSegmentsForExplorer } = utilsMarch.convertUnits
+const { getDefaultMetric, getDefaultLoadUploadData, defaultChild, defaultSegment, uuid } = utilsMarch.reducersHelpers
 
-const { getDefaultMetric, getDefaultLoadUploadData, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
+const initDefaultSegments = () => ([
+  {
+    id: uuid(),
+    name: i18n.POINT_OF_DEPARTURE,
+    refPoint: i18n.BASE,
+    segmentType: 41,
+    terrain: 69,
+    velocity: 30,
+    coordinate: {},
+    required: true,
+    editableName: false,
+    metric: getDefaultMetric(),
+    children: [
+      {
+        id: uuid(),
+        type: 5,
+        lineType: '',
+        coordinate: {},
+        refPoint: '',
+        required: true,
+        editableName: true,
+        restTime: 0,
+        metric: {
+          time: 0,
+          distance: 0,
+        },
+      },
+    ],
+    loading: getDefaultLoadUploadData(),
+    uploading: getDefaultLoadUploadData(),
+  },
+  {
+    id: uuid(),
+    segmentType: 0,
+    coordinate: {},
+    name: i18n.DESTINATION,
+    required: true,
+    editableName: false,
+    metric: getDefaultMetric(true),
+  },
+])
 
-const updateMetric = (segments, dataMarch) => {
-  const pr = new Promise((resolve) => {
-    setTimeout(() => {
-      const marchDetails = getMarchDetails(segments.toArray(), dataMarch)
-      const { time, distance } = marchDetails
+const updateMetric = async (segments, values, indicatorsICT) => {
+//   const dataMarch = {
+//     vehiclesLength: 0,
+//     distanceVehicle: 50,
+//     distanceRots: 100,
+//     distanceBats: 2000,
+//     distanceBrg: 3000,
+//     distanceGslz: 3000,
+//     vehiclesCount: 1,
+//     rotsCount: 0,
+//     batsCount: 0,
+//     brgCount: 0,
+//     timeIncreaseFactor: 1,
+//     timeCorrectionFactor: 1,
+//     mountingFactor: 1,
+//     workInDarkFactor: 0,
+//     workInGasMasksFactor: 0,
+//     loadingTimes: [],
+//     uploadingTimes: [],
+//     intervalEchelon: 1,
+//     numberEchelons: 1,
+//     extractionInColumnFactor: 0.8,
+//     extractionColumnFactor: 0.7,
+//     pointRestTime: 1, // hour
+//     dayNightRestTime: 8, // hour
+//     dailyRestTime: 24, // hour
+//   }
+//
+//   const marchDetails = getMarchDetails(segments.toArray(), dataMarch)
+//   const { time, distance } = marchDetails
+//
+//   const segmentsWithUpdateMetrics = segments.map((segment, id) => {
+//     segment.metric = { ...marchDetails.segments[id] }
+//
+//     segment.children = segment.children && segment.children.map((child, childId) => {
+//       child.metric = marchDetails.segments[id].children[childId]
+//       return child
+//     })
+//
+//     return segment
+//   })
+//
+//   return {
+//     segments: segmentsWithUpdateMetrics,
+//     time,
+//     distance,
+//   }
 
-      const segmentsWithUpdateMetrics = segments.map((segment, id) => {
-        segment.metric = { ...marchDetails.segments[id] }
+  //
+  // return pr
+  // { marchApi: { getMarchMetric } }
+  //* *****************************************************
 
-        segment.children = segment.children && segment.children.map((child, childId) => {
-          child.metric = marchDetails.segments[id].childSegments[childId]
-          return child
-        })
+  const dataMarch = {
+    segments: segments.toArray(),
+    indicators: indicatorsICT,
+    values,
+  }
 
-        return segment
-      })
+  console.log('GET METRIC ----------------1 indicators', indicatorsICT)
+  const res = await getMarchMetric(dataMarch)
 
-      resolve({
-        segments: segmentsWithUpdateMetrics,
-        time,
-        distance,
-      })
-    }, 1000)
+  const marchDetails = res.payload
+  const { time = 0, distance = 0, segments: segmentsDetails } = marchDetails
+
+  const segmentsWithUpdateMetrics = segments.map((segment, id) => {
+    const {
+      children,
+      reference = { time: 0, distance: 0 },
+      untilPrevios = { time: 0, distance: 0 },
+    } = segmentsDetails[id]
+    let { distance, time } = segmentsDetails[id]
+    distance = distance || 0
+    time = time || 0
+
+    segment.metric = { children, distance, time, reference, untilPrevios }
+    segment.children = segment.children && segment.children.map((child, childId) => {
+      let { distance, time } = segmentsDetails[id].children[childId]
+      distance = distance || 0
+      time = time || 0
+
+      child.metric = { distance, time }
+      return child
+    })
+
+    return segment
   })
+  console.log('GET METRIC ----------------5', res)
+  console.log('GET METRIC ----------------', segmentsWithUpdateMetrics.toArray())
 
-  return pr
+  return {
+    segments: segmentsWithUpdateMetrics, // segmentsWithUpdateMetrics,
+    time,
+    distance,
+  }
 }
 
 const getUpdateSegments = (segments, data) => {
@@ -98,11 +212,10 @@ export const setIntegrity = (data) => ({
 
 export const editFormField = (data) =>
   async (dispatch, getState) => {
-    const { march: stateMarch } = getState()
-    const { dataMarch, segments } = stateMarch
+    const { march: { indicatorsICT, values, segments } } = getState()
     const newSegments = getUpdateSegments(segments, data)
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, coordMode: false, time, distance }
 
@@ -114,11 +227,11 @@ export const editFormField = (data) =>
 
 export const addSegment = (segmentId) =>
   async (dispatch, getState) => {
-    const { march: { dataMarch, segments } } = getState()
+    const { march: { indicatorsICT, values, segments } } = getState()
 
     const updateSegments = segments.insert(segmentId + 1, defaultSegment())
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, time, distance }
 
@@ -130,11 +243,11 @@ export const addSegment = (segmentId) =>
 
 export const deleteSegment = (segmentId) =>
   async (dispatch, getState) => {
-    const { march: { dataMarch, segments } } = getState()
+    const { march: { indicatorsICT, values, segments } } = getState()
 
     const updateSegments = segments.delete(segmentId)
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, time, distance }
 
@@ -146,7 +259,7 @@ export const deleteSegment = (segmentId) =>
 
 export const addChild = (segmentId, childId) =>
   async (dispatch, getState) => {
-    const { march: { dataMarch, segments } } = getState()
+    const { march: { indicatorsICT, values, segments } } = getState()
 
     const children = segments.get(segmentId).children
     children.splice((childId || childId === 0) ? childId + 1 : 0, 0, defaultChild())
@@ -156,7 +269,7 @@ export const addChild = (segmentId, childId) =>
       children,
     }))
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, time, distance }
 
@@ -168,7 +281,7 @@ export const addChild = (segmentId, childId) =>
 
 export const deleteChild = (segmentId, childId) =>
   async (dispatch, getState) => {
-    const { march: { dataMarch, segments } } = getState()
+    const { march: { indicatorsICT, values, segments } } = getState()
 
     const children = segments.get(segmentId).children
     children.splice(childId, 1)
@@ -178,7 +291,7 @@ export const deleteChild = (segmentId, childId) =>
       children,
     }))
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, time, distance }
 
@@ -197,11 +310,11 @@ export const setCoordMode = (data) => ({
 export const setCoordFromMap = (value) =>
   async (dispatch, getState) => {
     const { march: stateMarch } = getState()
-    const { dataMarch, segments, coordModeData } = stateMarch
+    const { values, indicatorsICT, segments, coordModeData } = stateMarch
     const data = { ...coordModeData, val: value, fieldName: 'coordinate' }
     const newSegments = getUpdateSegments(segments, data)
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, dataMarch)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, values, indicatorsICT)
 
     const payload = { segments: segmentsWithMetric, coordMode: false, time, distance }
 
@@ -218,20 +331,33 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const initMarch = (data) =>
   async (dispatch, getState) => {
-    const { march: { dataMarch } } = getState()
+    // const { march: { dataMarch } } = getState()
 
-    console.log('*******', data)
-    if (!data) {
-      return
+    const { values, indicators } = data
+    let segments
+    if (!data || !data.segments || !data.segments.length) {
+      segments = initDefaultSegments()
+    } else {
+      segments = data.segments
     }
-    data.segments = List(data.segments)
 
-    const { segments: segmentsWithMetric, time, distance } = await updateMetric(data.segments, dataMarch)
+    segments = List(segments)
 
-    const payload = { segments: segmentsWithMetric, time, distance }
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, values, indicators)
+
+    const payload = { segments: segmentsWithMetric, time, distance, values, indicatorsICT: indicators }
 
     dispatch({
       type: INIT_MARCH,
       payload,
     })
+  }
+
+export const sendMarchToExplorer = (data) =>
+  async (dispatch, getState) => {
+    const { march: { segments } } = getState()
+
+    const segmentsForExplorer = convertSegmentsForExplorer(segments)
+
+    window.explorerBridge.saveMarch(segmentsForExplorer)
   }
