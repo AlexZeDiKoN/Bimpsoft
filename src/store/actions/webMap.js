@@ -81,6 +81,9 @@ export const changeTypes = {
   LAYER_COLOR: '(8) Set Layer highlight color',
   CREATE_CONTOUR: '(9) Create contour',
   DELETE_CONTOUR: '(10) Delete contour',
+  COPY_CONTOUR: '(11) Copy contour',
+  MOVE_CONTOUR: '(12) Move contour',
+  MOVE_LIST: '(13) Move list of objects',
 }
 
 export const setCoordinatesType = (value) => {
@@ -194,11 +197,25 @@ export const addObject = (object, addUndoRecord = true) =>
     return payload.id
   })
 
-export const copyContour = (id, layer, shift) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourCopy } }) => dispatch({
-    type: actionNames.ADD_OBJECT,
-    payload: fixServerObject(await contourCopy(id, layer, shift)),
-  }))
+export const copyContour = (id, layer, shift, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourCopy } }) => {
+    const payload = fixServerObject(await contourCopy(id, layer, shift))
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.COPY_CONTOUR,
+          id: payload.id,
+        }
+      })
+    }
+
+    return dispatch({
+      type: actionNames.ADD_OBJECT,
+      payload,
+    })
+  })
 
 export const copyGroup = (id, layer, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupCopy } }) => dispatch({
@@ -206,22 +223,52 @@ export const copyGroup = (id, layer, shift) =>
     payload: fixServerObject(await groupCopy(id, layer, shift)),
   }))
 
-export const moveContour = (id, shift) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => dispatch({
-    type: actionNames.ADD_OBJECT,
-    payload: fixServerObject(await contourMove(id, shift)),
-  }))
+export const moveContour = (id, shift, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => {
+    const payload = fixServerObject(await contourMove(id, shift))
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.MOVE_CONTOUR,
+          id,
+          shift,
+        }
+      })
+    }
+
+    return dispatch({
+      type: actionNames.ADD_OBJECT,
+      payload,
+    })
+  })
+
+export const moveObjList = (ids, shift, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => {
+    const payload = await objListMove(ids, shift)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.MOVE_LIST,
+          list: ids,
+          shift,
+        }
+      })
+    }
+
+    return dispatch({
+      type: actionNames.MOVE_OBJECTS,
+      payload,
+    })
+  })
 
 export const moveGroup = (id, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupMove } }) => dispatch({
     type: actionNames.ADD_OBJECT,
     payload: fixServerObject(await groupMove(id, shift)),
-  }))
-
-export const moveObjList = (ids, shift) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => dispatch({
-    type: actionNames.MOVE_OBJECTS,
-    payload: await objListMove(ids, shift),
   }))
 
 const deleteContour = (layer, contour) =>
@@ -600,7 +647,8 @@ async function performAction (record, direction, api, dispatch) {
       return dispatch(updateObject({ id, ...data }, false))
     case changeTypes.UPDATE_GEOMETRY:
       return dispatch(updateObjectGeometry(id, data, false))
-    case changeTypes.INSERT_OBJECT: {
+    case changeTypes.INSERT_OBJECT:
+    case changeTypes.COPY_CONTOUR: {
       if (direction === 'undo') {
         return dispatch(deleteObject(id, false))
       } else {
@@ -645,6 +693,10 @@ async function performAction (record, direction, api, dispatch) {
         return dispatch(deleteContour(layer, id))
       }
     }
+    case changeTypes.MOVE_CONTOUR:
+      return dispatch(moveContour(id, data, false))
+    case changeTypes.MOVE_LIST:
+      return dispatch(moveObjList(list, data, false))
     default:
       console.warn(`Unknown change type: ${changeType}`)
   }

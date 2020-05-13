@@ -81,11 +81,11 @@ export default {
   contourRestore: (layer, contour, objects) =>
     getDirect(`${webmapUrl}/contour/restore`, { layer, contour, objects }),
   contourCopy: (id, layer, shift) =>
-    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), ///---(11)
+    getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), // (11) Copy contour
   contourMove: (id, shift) =>
-    getDirect(`${webmapUrl}/contour/move`, { id, shift }), ///---(12)
+    getDirect(`${webmapUrl}/contour/move`, { id, shift }), // (12) Move contour
   objListMove: (ids, shift) =>
-    getDirect(`${webmapUrl}/obj/move`, { ids, shift }), ///---(13)
+    getDirect(`${webmapUrl}/obj/move`, { ids, shift }), // (13) Move list of objects
   buildZone: (objects, enemy) =>
     getDirect(`${webmapUrl}/zone/build`, { objects, enemy }),
   groupCreate: (type, objects, layer, scale) =>
