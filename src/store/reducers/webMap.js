@@ -261,6 +261,12 @@ function addUndoRecord (state, payload) {
       newData = payload.newColor
       break
     }
+    case changeTypes.MOVE_CONTOUR: {
+      const { x, y } = payload.shift
+      oldData = { x: -x, y: -y }
+      newData = { x, y }
+      break
+    }
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:

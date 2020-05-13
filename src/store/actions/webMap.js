@@ -82,6 +82,7 @@ export const changeTypes = {
   CREATE_CONTOUR: '(9) Create contour',
   DELETE_CONTOUR: '(10) Delete contour',
   COPY_CONTOUR: '(11) Copy contour',
+  MOVE_CONTOUR: '(12) Move contour',
 }
 
 export const setCoordinatesType = (value) => {
@@ -221,11 +222,26 @@ export const copyGroup = (id, layer, shift) =>
     payload: fixServerObject(await groupCopy(id, layer, shift)),
   }))
 
-export const moveContour = (id, shift) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => dispatch({
-    type: actionNames.ADD_OBJECT,
-    payload: fixServerObject(await contourMove(id, shift)),
-  }))
+export const moveContour = (id, shift, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourMove } }) => {
+    const payload = fixServerObject(await contourMove(id, shift))
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.MOVE_CONTOUR,
+          id,
+          shift,
+        }
+      })
+    }
+
+    return dispatch({
+      type: actionNames.ADD_OBJECT,
+      payload,
+    })
+  })
 
 export const moveGroup = (id, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupMove } }) => dispatch({
@@ -661,6 +677,8 @@ async function performAction (record, direction, api, dispatch) {
         return dispatch(deleteContour(layer, id))
       }
     }
+    case changeTypes.MOVE_CONTOUR:
+      return dispatch(moveContour(id, data, false))
     default:
       console.warn(`Unknown change type: ${changeType}`)
   }

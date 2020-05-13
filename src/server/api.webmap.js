@@ -83,7 +83,7 @@ export default {
   contourCopy: (id, layer, shift) =>
     getDirect(`${webmapUrl}/contour/copy`, { id, layer, shift }), // (11) Copy contour
   contourMove: (id, shift) =>
-    getDirect(`${webmapUrl}/contour/move`, { id, shift }), ///---(12)
+    getDirect(`${webmapUrl}/contour/move`, { id, shift }), // (12) Move contour
   objListMove: (ids, shift) =>
     getDirect(`${webmapUrl}/obj/move`, { ids, shift }), ///---(13)
   buildZone: (objects, enemy) =>
