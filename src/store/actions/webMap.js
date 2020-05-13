@@ -195,11 +195,25 @@ export const addObject = (object, addUndoRecord = true) =>
     return payload.id
   })
 
-export const copyContour = (id, layer, shift) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourCopy } }) => dispatch({
-    type: actionNames.ADD_OBJECT,
-    payload: fixServerObject(await contourCopy(id, layer, shift)),
-  }))
+export const copyContour = (id, layer, shift, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { contourCopy } }) => {
+    const payload = fixServerObject(await contourCopy(id, layer, shift))
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.COPY_CONTOUR,
+          id: payload.id,
+        }
+      })
+    }
+
+    return dispatch({
+      type: actionNames.ADD_OBJECT,
+      payload,
+    })
+  })
 
 export const copyGroup = (id, layer, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupCopy } }) => dispatch({
@@ -601,7 +615,8 @@ async function performAction (record, direction, api, dispatch) {
       return dispatch(updateObject({ id, ...data }, false))
     case changeTypes.UPDATE_GEOMETRY:
       return dispatch(updateObjectGeometry(id, data, false))
-    case changeTypes.INSERT_OBJECT: {
+    case changeTypes.INSERT_OBJECT:
+    case changeTypes.COPY_CONTOUR: {
       if (direction === 'undo') {
         return dispatch(deleteObject(id, false))
       } else {
