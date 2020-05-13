@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import * as R from 'ramda'
 import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
@@ -234,21 +235,17 @@ const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
-  const { changeType, id, list, geometry, object } = payload
-  const newRecord = { changeType }
+  const { changeType, id } = payload
+  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload) }
   if (id) {
-    newRecord.id = id
     objData = state.getIn([ 'objects', id ])
-  }
-  if (list) {
-    newRecord.list = list
   }
 
   switch (changeType) {
     case changeTypes.UPDATE_OBJECT: {
       const { id, ...rest } = objData.toJS()
       oldData = rest
-      newData = object
+      newData = payload.object
       break
     }
     case changeTypes.UPDATE_GEOMETRY: {
@@ -256,7 +253,7 @@ function addUndoRecord (state, payload) {
         point: objData.get('point').toJS(),
         geometry: objData.get('geometry').toJS(),
       }
-      newData = geometry
+      newData = payload.geometry
       break
     }
     case changeTypes.LAYER_COLOR: {
@@ -264,9 +261,19 @@ function addUndoRecord (state, payload) {
       newData = payload.newColor
       break
     }
+    case changeTypes.MOVE_CONTOUR:
+    case changeTypes.MOVE_LIST: {
+      const { x, y } = payload.shift
+      oldData = { x: -x, y: -y }
+      newData = { x, y }
+      break
+    }
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:
+    case changeTypes.CREATE_CONTOUR:
+    case changeTypes.DELETE_CONTOUR:
+    case changeTypes.COPY_CONTOUR:
       break
     default:
       return state
