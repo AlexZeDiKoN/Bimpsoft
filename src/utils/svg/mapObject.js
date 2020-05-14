@@ -195,8 +195,8 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const scaleXY = size / 100
   const { x, y } = symbol.getAnchor() // точка привязки в символе
   // смещение центра символа от точки (0,0) символа
-  const dx = (bbox.x1 + x / scaleXY - MERGE_SYMBOL) // * scaleSymbol
-  const dy = (bbox.y1 + y / scaleXY - MERGE_SYMBOL) // * scaleSymbol
+  const dx = (bbox.x1 + x / scaleXY - MERGE_SYMBOL) * scaleSymbol
+  const dy = (bbox.y1 + y / scaleXY - MERGE_SYMBOL) * scaleSymbol
   const inBounds = getInBounds({ x: pointD.x - dx, y: pointD.y - dy }, bbox, bounds)
   if (!inBounds) {
     return (<></>)
