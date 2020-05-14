@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { Symbol } from '@DZVIN/milsymbol'
 import { model } from '@DZVIN/MilSymbolEditor'
-import { filterSet } from '../../components/WebMap/patch/SvgIcon/utils'
+import { filterSetEmpty } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
@@ -18,6 +18,21 @@ import {
 import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
+
+// Размер точечных знаков(мм) в зависимости от маштаба карты
+const pointSize = new Map([
+  [ 25000, 12 ],
+  [ 50000, 11 ],
+  [ 100000, 9 ],
+  [ 200000, 7 ],
+  [ 500000, 6 ],
+  [ 1000000, 5 ],
+])
+const POINT_SIZE_DEFAULT = 12
+const DPI96 = 3.78 // количество пикселей в 1мм
+const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
+const MERGE_SYMBOL = 5 // отступы при генерации символов
+
 let lastMaskId = 1
 
 const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, maskD) => {
@@ -61,6 +76,18 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
 const svgToG = (svg) => svg
   .replace(/^(\r|\n|.)*?<svg\b/i, '<g ')
   .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
+
+// для вставки в общий SVG
+// тело svg тега оборачиваем в тег <g>
+const gFromSvg = (svg) => svg
+  .replace(/<(\/?)svg(.*?)>/, '<g>')
+  .replace(/<\/svg>/, '</g>')
+
+// проверка вхождения элемента в границы вывода
+const getInBounds = (point, box, bounds) => {
+  return ((point.x + box.x2) > bounds.min.x && (point.y + box.y2) > bounds.min.y) &&
+    ((point.x + box.x1) < bounds.max.x && (point.y + box.y1) < bounds.max.y)
+}
 
 const getLineSvg = (points, attributes, data, layerData, zoom) => {
   const {
@@ -144,25 +171,40 @@ const getContourBuilder = () => (commonData, data, layerData) => {
 
 mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { showAmplifiers, coordToPixels } = commonData
-  let { code = '', attributes, point } = data
+  const {
+    showAmplifiers,
+    coordToPixels,
+    printScale, // масштаб карты
+    bounds,
+    scale, // масштаб к DPI 96
+    dpi, // разрешение печати
+  } = commonData
+  const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
+  const mmSize = pointSize.get(printScale) || POINT_SIZE_DEFAULT
+  const size = mmSize * 5
+  const pointD = coordToPixels(point)
   const symbol = new Symbol(code, {
     ...(color ? { outlineWidth: 3, outlineColor: color } : {}),
-    ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
-    size: 18,
+    ...(showAmplifiers ? model.parseAmplifiersConstants(filterSetEmpty(attributes)) : {}),
+    size, // размер символа в %, влияет на толщину линий в знаке, размер элемента(атрибуты width, height svg) и Anchor
   })
-  let { x, y } = symbol.getAnchor()
   const { bbox } = symbol
-  const marginX = (symbol.width - (bbox.x2 - bbox.x1)) / 2
-  const marginY = (symbol.height - (bbox.y2 - bbox.y1)) / 2
-  x += bbox.x1 - marginX
-  y += bbox.y1 - marginY
-  point = coordToPixels(point)
+  // ручное масштабирование символа после удаления тега <svg>
+  const scaleSymbol = DPI96 * scale * mmSize / HEIGHT_SYMBOL
+  const scaleXY = size / 100
+  const { x, y } = symbol.getAnchor() // точка привязки в символе
+  // смещение центра символа от точки (0,0) символа
+  const dx = (bbox.x1 + x / scaleXY - MERGE_SYMBOL) * scaleSymbol
+  const dy = (bbox.y1 + y / scaleXY - MERGE_SYMBOL) * scaleSymbol
+  const inBounds = getInBounds({ x: pointD.x - dx, y: pointD.y - dy }, bbox, bounds)
+  if (!inBounds) {
+    return (<></>)
+  }
   return (
     <g
-      transform={`translate(${Math.round(point.x - x)},${Math.round(point.y - y)})`}
-      dangerouslySetInnerHTML={{ __html: svgToG(symbol.asSVG()) }}
+      transform={`matrix(${scaleSymbol},0,0,${scaleSymbol},${Math.round(pointD.x - dx)},${Math.round(pointD.y - dy)})`}
+      dangerouslySetInnerHTML={{ __html: gFromSvg(symbol.asSVG()) }}
     />
   )
 })
