@@ -36,7 +36,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="line-container__item">
-        {amplifiersPairs.map(({ id, name, type }) => (
+        {amplifiersPairs.map(({ id, name, type, maxRows }) => (
           <div className="line-container__itemWidth" key={id}>
             {type !== TYPE_AMPLIFIER_NUM ? (
               <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
@@ -45,6 +45,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   onChange={this.createAmplifierHandler(id)}
                   disabled={!canEdit}
                   rows={id === amps.A ? 6 : 1}
+                  autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
                   maxLength={id === amps.A
                     ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXTMULTILINE
                     : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
