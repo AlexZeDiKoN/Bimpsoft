@@ -4,6 +4,7 @@ import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import i18n from './../../i18n'
+import { openMapFolder } from './maps'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
@@ -80,13 +81,13 @@ const updateMetric = async (segments, values, indicatorsICT) => {
     const {
       children,
       reference = { time: 0, distance: 0 },
-      untilPrevios = { time: 0, distance: 0 },
+      untilPrevious = { time: 0, distance: 0 },
     } = segmentsDetails[id]
     let { distance, time } = segmentsDetails[id]
     distance = distance || 0
     time = time || 0
 
-    segment.metric = { children, distance, time, reference, untilPrevios }
+    segment.metric = { children, distance, time, reference, untilPrevious }
     segment.children = segment.children && segment.children.map((child, childId) => {
       let { distance, time } = segmentsDetails[id].children[childId]
       distance = distance || 0
@@ -277,8 +278,10 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const initMarch = (data) =>
   async (dispatch, getState) => {
+    const { mapId, values = {}, indicators = [] } = data
 
-    const { values = {}, indicators = [] } = data
+    dispatch(openMapFolder(mapId, null, true))
+
     let segments
     if (!data || !data.segments || !data.segments.length) {
       segments = initDefaultSegments()

@@ -17,7 +17,7 @@ const defaultSegmentData = () => ({
     distance: 0,
   },
   untilNextSegment: { time: 0, distance: 0 },
-  untilPrevios: { time: 0, distance: 0 },
+  untilPrevious: { time: 0, distance: 0 },
 })
 
 const getDistance = (from, to) => {
@@ -118,7 +118,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, reference =
   const fixedTime = s === 0 ? 0 : t + tFinish
   time = distance === 0 ? 0 : time + fixedTime
 
-  const untilPrevios = {
+  const untilPrevious = {
     time: 0,
     distance: 0,
   }
@@ -132,7 +132,7 @@ const getTruckSegmentDetails = (startingPoint, nextPoint, dataMarch, reference =
     distance,
     children: childSegments,
     reference,
-    untilPrevios,
+    untilPrevious,
     untilNextSegment,
   }
 }
@@ -230,7 +230,7 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
 
   time = distance === 0 ? 0 : time + fixedTime
 
-  const untilPrevios = {
+  const untilPrevious = {
     time: 0,
     distance: 0,
   }
@@ -244,7 +244,7 @@ const getVehiclesSegmentDetails = (startingPoint, nextPoint, dataMarch, referenc
     distance,
     children: childSegments,
     reference,
-    untilPrevios,
+    untilPrevious,
     untilNextSegment,
   }
 }
@@ -280,8 +280,8 @@ const getMarchDetails = (segments = [], dataMarch = {}) => {
         const prevSegment = totalData.segments[index - 1]
         const { time: prevTime = 0, distance: prevDistance = 0 } = prevSegment.untilNextSegment
 
-        segmentDetails.untilPrevios.time = prevTime
-        segmentDetails.untilPrevios.distance = prevDistance
+        segmentDetails.untilPrevious.time = prevTime
+        segmentDetails.untilPrevious.distance = prevDistance
       }
 
       totalData.segments.push(segmentDetails)

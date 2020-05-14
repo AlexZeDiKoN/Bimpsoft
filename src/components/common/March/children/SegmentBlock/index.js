@@ -12,7 +12,7 @@ const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, timeDistanceView } = props
   const { segmentType, children, metric } = segment
   const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
-  const { time: prevTime, distance: prevDistance } = metric.untilPrevios
+  const { time: prevTime, distance: prevDistance } = metric.untilPrevious
 
   if (segmentType === 0) {
     return null
@@ -94,7 +94,7 @@ SegmentBlock.propTypes = {
         time: PropTypes.number.isRequired,
         distance: PropTypes.number.isRequired,
       }).isRequired,
-      untilPrevios: PropTypes.shape({
+      untilPrevious: PropTypes.shape({
         time: PropTypes.number.isRequired,
         distance: PropTypes.number.isRequired,
       }).isRequired,
