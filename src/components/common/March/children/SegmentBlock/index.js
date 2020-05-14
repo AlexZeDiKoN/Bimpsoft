@@ -84,26 +84,26 @@ SegmentBlock.propTypes = {
   segment: PropTypes.shape({
     segmentType: PropTypes.number.isRequired,
     children: PropTypes.array,
-  }).isRequired,
-  metric: PropTypes.shape({
-    children: PropTypes.arrayOf(
-      PropTypes.shape({
+    metric: PropTypes.shape({
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          time: PropTypes.number,
+          distance: PropTypes.number,
+        })).isRequired,
+      reference: PropTypes.shape({
         time: PropTypes.number.isRequired,
         distance: PropTypes.number.isRequired,
-      })).isRequired,
-    reference: PropTypes.shape({
-      time: PropTypes.number.isRequired,
-      distance: PropTypes.number.isRequired,
+      }).isRequired,
+      untilPrevios: PropTypes.shape({
+        time: PropTypes.number.isRequired,
+        distance: PropTypes.number.isRequired,
+      }).isRequired,
     }).isRequired,
-    untilPrevios: PropTypes.shape({
-      time: PropTypes.number.isRequired,
-      distance: PropTypes.number.isRequired,
-    }).isRequired,
-  }),
-  reference: PropTypes.shape({
-    time: PropTypes.array.isRequired,
-    distance: PropTypes.number.isRequired,
-  }),
+  }).isRequired,
+  // reference: PropTypes.shape({
+  //   time: PropTypes.array.isRequired,
+  //   distance: PropTypes.number.isRequired,
+  // }),
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,

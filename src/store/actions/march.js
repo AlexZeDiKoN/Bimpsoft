@@ -51,8 +51,6 @@ const initDefaultSegments = () => ([
         },
       },
     ],
-    loading: getDefaultLoadUploadData(),
-    uploading: getDefaultLoadUploadData(),
   },
   {
     id: uuid(),
@@ -66,65 +64,13 @@ const initDefaultSegments = () => ([
 ])
 
 const updateMetric = async (segments, values, indicatorsICT) => {
-//   const dataMarch = {
-//     vehiclesLength: 0,
-//     distanceVehicle: 50,
-//     distanceRots: 100,
-//     distanceBats: 2000,
-//     distanceBrg: 3000,
-//     distanceGslz: 3000,
-//     vehiclesCount: 1,
-//     rotsCount: 0,
-//     batsCount: 0,
-//     brgCount: 0,
-//     timeIncreaseFactor: 1,
-//     timeCorrectionFactor: 1,
-//     mountingFactor: 1,
-//     workInDarkFactor: 0,
-//     workInGasMasksFactor: 0,
-//     loadingTimes: [],
-//     uploadingTimes: [],
-//     intervalEchelon: 1,
-//     numberEchelons: 1,
-//     extractionInColumnFactor: 0.8,
-//     extractionColumnFactor: 0.7,
-//     pointRestTime: 1, // hour
-//     dayNightRestTime: 8, // hour
-//     dailyRestTime: 24, // hour
-//   }
-//
-//   const marchDetails = getMarchDetails(segments.toArray(), dataMarch)
-//   const { time, distance } = marchDetails
-//
-//   const segmentsWithUpdateMetrics = segments.map((segment, id) => {
-//     segment.metric = { ...marchDetails.segments[id] }
-//
-//     segment.children = segment.children && segment.children.map((child, childId) => {
-//       child.metric = marchDetails.segments[id].children[childId]
-//       return child
-//     })
-//
-//     return segment
-//   })
-//
-//   return {
-//     segments: segmentsWithUpdateMetrics,
-//     time,
-//     distance,
-//   }
-
-  //
-  // return pr
-  // { marchApi: { getMarchMetric } }
-  //* *****************************************************
-
   const dataMarch = {
     segments: segments.toArray(),
     indicators: indicatorsICT,
     values,
   }
 
-  console.log('GET METRIC ----------------1 indicators', indicatorsICT)
+  //console.log('GET METRIC ----------------1 indicators', indicatorsICT)
   const res = await getMarchMetric(dataMarch)
 
   const marchDetails = res.payload
@@ -152,8 +98,8 @@ const updateMetric = async (segments, values, indicatorsICT) => {
 
     return segment
   })
-  console.log('GET METRIC ----------------5', res)
-  console.log('GET METRIC ----------------', segmentsWithUpdateMetrics.toArray())
+  //console.log('GET METRIC ----------------5', res)
+  //console.log('GET METRIC ----------------', segmentsWithUpdateMetrics.toArray())
 
   return {
     segments: segmentsWithUpdateMetrics, // segmentsWithUpdateMetrics,
@@ -331,9 +277,8 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const initMarch = (data) =>
   async (dispatch, getState) => {
-    // const { march: { dataMarch } } = getState()
 
-    const { values, indicators } = data
+    const { values = {}, indicators = [] } = data
     let segments
     if (!data || !data.segments || !data.segments.length) {
       segments = initDefaultSegments()
