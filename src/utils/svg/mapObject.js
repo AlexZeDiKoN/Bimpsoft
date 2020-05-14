@@ -73,10 +73,6 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
   )
 }
 
-const svgToG = (svg) => svg
-  .replace(/^(\r|\n|.)*?<svg\b/i, '<g ')
-  .replace(/\bsvg>(\r|\n|.)*?$/i, 'g>')
-
 // для вставки в общий SVG
 // тело svg тега оборачиваем в тег <g>
 const gFromSvg = (svg) => svg
@@ -177,7 +173,6 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
     printScale, // масштаб карты
     bounds,
     scale, // масштаб к DPI 96
-    dpi, // разрешение печати
   } = commonData
   const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
