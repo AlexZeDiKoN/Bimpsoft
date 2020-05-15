@@ -101,7 +101,7 @@ export const getMapSvg = (
   ))
   const scale = dpi / 96
 
-  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers, zoom }
+  const commonData = { bounds, dpi, coordToPixels, scale, printScale, layersById, showAmplifiers, zoom }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
   return ReactDOMServer.renderToStaticMarkup(<svg

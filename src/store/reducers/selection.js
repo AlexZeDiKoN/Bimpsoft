@@ -37,6 +37,12 @@ export default function reducer (state = initState, action) {
     case actions.SHOW_DELETE_FORM: {
       return { ...state, showForm: FormTypes.DEL }
     }
+    case actions.SHOW_ERROR_PASTE_FORM: {
+      return { ...state, showForm: FormTypes.ERROR_PAST }
+    }
+    case actions.SHOW_ERROR_SAVE_FORM: {
+      return { ...state, showForm: FormTypes.ERROR_SAVE }
+    }
     case actions.HIDE_FORM: {
       return { ...state, showForm: null, newShape: EMPTY_OBJECT }
     }

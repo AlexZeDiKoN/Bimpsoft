@@ -3,7 +3,7 @@ import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'
 import { isFriendObject } from '../../utils/affiliations'
-import { mapCOP, currentMapLayers } from './layersSelector'
+import { currentMapLayers } from './layersSelector'
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
@@ -40,20 +40,19 @@ const currentMapPointLowLevelObjects = createSelector(
   currentMapLayers,
   (objects, layers) => objects
     .filter((object) => object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW &&
-      layers.includes(object.layer))
+      layers.includes(object.layer)),
 )
 
 export const targetingObjects = createSelector(
   targetingModeSelector,
-  mapCOP,
   unitId,
   objects,
   currentMapPointLowLevelObjects,
   defaultOrgStructure,
   selectedList,
-  (targetingMode, mapCOP, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
+  (targetingMode, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
     let predicate = () => false
-    if (targetingMode && mapCOP && unitId && allObjects && pointObjects && orgStructure) {
+    if (targetingMode && unitId && allObjects && pointObjects && orgStructure) {
       // const mySubList = myList(orgStructure.tree, unitId)
       const one = selectedOur(allObjects, selectedList)
       const oneSubList = one
@@ -62,5 +61,5 @@ export const targetingObjects = createSelector(
       predicate = (object) => /* mySubList.includes(object.unit) && ( */oneSubList && oneSubList.includes(object.unit)/* ) */
     }
     return pointObjects.filter(predicate)
-  }
+  },
 )

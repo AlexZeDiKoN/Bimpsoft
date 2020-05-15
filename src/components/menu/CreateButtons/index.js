@@ -20,9 +20,16 @@ export default class CreateButtons extends React.PureComponent {
     isEditMode: PropTypes.bool,
     isShowLines: PropTypes.bool,
     newShape: PropTypes.object,
+    undoInfo: PropTypes.shape({
+      canUndo: PropTypes.bool,
+      canRedo: PropTypes.bool,
+    }),
+
     onClickLineSign: PropTypes.func,
     onNewShapeChange: PropTypes.func,
     onLinesListClose: PropTypes.func,
+    undo: PropTypes.func,
+    redo: PropTypes.func,
   }
 
   selectLineHandler = (type) => {
@@ -46,6 +53,9 @@ export default class CreateButtons extends React.PureComponent {
       isShowLines,
       newShape = {},
       onClickLineSign,
+      undoInfo: { canUndo, canRedo },
+      undo,
+      redo,
     } = this.props
 
     if (!isEditMode) {
@@ -53,6 +63,21 @@ export default class CreateButtons extends React.PureComponent {
     }
     return (
       <>
+        <MenuDivider />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.UNDO}
+          icon={iconNames.MENU_BACK_DEFAULT}
+          disabled={!isEditMode || !canUndo}
+          onClick={undo}
+        />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.REDO}
+          icon={iconNames.MENU_NEXT_DEFAULT}
+          disabled={!isEditMode || !canRedo}
+          onClick={redo}
+        />
         <MenuDivider />
         <IconButton
           placement={'bottomLeft'}

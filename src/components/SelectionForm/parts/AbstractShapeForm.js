@@ -18,6 +18,8 @@ export const propTypes = {
   onChange: PropTypes.func,
   onClose: PropTypes.func,
   onError: PropTypes.func,
+  onSaveError: PropTypes.func,
+  onCheckSave: PropTypes.func,
   orgStructures: PropTypes.object,
 }
 
@@ -49,13 +51,13 @@ export default class AbstractShapeForm extends React.Component {
 
   render () {
     const canEdit = this.isCanEdit()
-    const { onClose, onOk } = this.props
+    const { onClose, onCheckSave } = this.props
     return (
       <Form className="shape-form">
-        {this.renderContent()}
+        { this.renderContent() }
         <FormItem>
           {buttonClose(onClose)}
-          {canEdit && buttonApply(onOk)}
+          {canEdit && buttonApply(onCheckSave)}
         </FormItem>
       </Form>
     )

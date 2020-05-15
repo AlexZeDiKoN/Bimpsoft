@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
+import * as R from 'ramda'
 import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge, eq } from '../../utils/immutable'
-import { actionNames } from '../actions/webMap'
+import { actionNames, changeTypes } from '../actions/webMap'
 import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import { IDENTITIES } from '../../utils/affiliations'
@@ -114,6 +115,8 @@ const WebMapState = Record({
   scaleToSelection: false,
   marker: null,
   topographicObjects: {},
+  undoRecords: List(),
+  undoPosition: 0,
 })
 
 const checkLevel = (object) => {
@@ -230,6 +233,69 @@ const simpleSetField = (actionName) => findField(actionName, simpleSetFields)
 
 const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 
+function addUndoRecord (state, payload) {
+  let objData, oldData, newData
+
+  const { changeType, id } = payload
+  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload) }
+  if (id) {
+    objData = state.getIn([ 'objects', id ])
+  }
+
+  switch (changeType) {
+    case changeTypes.UPDATE_OBJECT: {
+      const { id, ...rest } = objData.toJS()
+      oldData = rest
+      newData = payload.object
+      break
+    }
+    case changeTypes.UPDATE_GEOMETRY: {
+      oldData = {
+        point: objData.get('point').toJS(),
+        geometry: objData.get('geometry').toJS(),
+      }
+      newData = payload.geometry
+      break
+    }
+    case changeTypes.LAYER_COLOR: {
+      oldData = payload.oldColor
+      newData = payload.newColor
+      break
+    }
+    case changeTypes.MOVE_CONTOUR:
+    case changeTypes.MOVE_LIST: {
+      const { x, y } = payload.shift
+      oldData = { x: -x, y: -y }
+      newData = { x, y }
+      break
+    }
+    case changeTypes.INSERT_OBJECT:
+    case changeTypes.DELETE_OBJECT:
+    case changeTypes.DELETE_LIST:
+    case changeTypes.CREATE_CONTOUR:
+    case changeTypes.DELETE_CONTOUR:
+    case changeTypes.COPY_CONTOUR:
+      break
+    default:
+      return state
+  }
+  if (oldData && newData) {
+    if (JSON.stringify(oldData) === JSON.stringify(newData)) {
+      return state
+    }
+    newRecord.oldData = oldData
+    newRecord.newData = newData
+  }
+  let records = state.get('undoRecords')
+  const undoPosition = state.get('undoPosition')
+  if (undoPosition < records.size) {
+    records = records.skipLast(records.size - undoPosition)
+  }
+  return state
+    .set('undoRecords', records.push(newRecord))
+    .set('undoPosition', undoPosition + 1)
+}
+
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
   switch (type) {
@@ -268,6 +334,14 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_MAP_MODE: {
       return state.mode === payload ? state : state.set('mode', payload)
     }
+    case actionNames.ADD_UNDO_RECORD:
+      return addUndoRecord(state, payload)
+    case actionNames.UNDO:
+      return update(state, 'undoPosition',
+        (position) => Math.max(position - 1, 0))
+    case actionNames.REDO:
+      return update(state, 'undoPosition',
+        (position) => Math.min(position + 1, state.get('undoRecords').size))
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))

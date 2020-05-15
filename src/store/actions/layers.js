@@ -7,6 +7,7 @@ import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
 import { asyncAction, orgStructures, webMap, selection, flexGrid } from './index'
+import { actionNames, changeTypes } from './webMap'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -68,6 +69,15 @@ export const updateLayer = (layerData) =>
     })
 
     if (layerData.hasOwnProperty('color')) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.LAYER_COLOR,
+          id: layerData.layerId,
+          oldColor: allLayersById[layerData.layerId].color,
+          newColor: layerData.color,
+        },
+      })
       await layerSetColor(layerData.layerId, layerData.color)
     }
     if (layerData.hasOwnProperty('visible') && !layerData.visible) {
