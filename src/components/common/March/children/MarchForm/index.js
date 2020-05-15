@@ -72,7 +72,6 @@ const MarchForm = (props) => {
     type,
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks, setRefPointOnMap } = props.handlers
-console.log('***', OWN_RESOURCES)
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ refPointMarch, changeRefPoint ] = useState(refPoint)
   const [ geoLandmarks, changeGeoLandmarks ] = useState({})

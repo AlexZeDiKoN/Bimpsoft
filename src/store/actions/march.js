@@ -19,47 +19,32 @@ export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
 
 const { getMarchMetric } = api
-const getMarchDetails = utilsMarch.formulas
 const { convertSegmentsForExplorer } = utilsMarch.convertUnits
-const { getDefaultMetric, getDefaultLoadUploadData, defaultChild, defaultSegment, uuid } = utilsMarch.reducersHelpers
+const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
 
 const initDefaultSegments = () => ([
   {
-    id: uuid(),
+    ...defaultSegment(),
     name: i18n.POINT_OF_DEPARTURE,
     refPoint: i18n.BASE,
-    segmentType: 41,
-    terrain: 69,
-    velocity: 30,
-    coordinate: {},
     required: true,
     editableName: false,
-    metric: getDefaultMetric(),
     children: [
       {
-        id: uuid(),
+        ...defaultChild(),
         type: 5,
-        lineType: '',
-        coordinate: {},
-        refPoint: '',
         required: true,
-        editableName: true,
-        restTime: 0,
-        metric: {
-          time: 0,
-          distance: 0,
-        },
       },
     ],
   },
   {
-    id: uuid(),
+    ...defaultSegment(),
     segmentType: 0,
-    coordinate: {},
     name: i18n.DESTINATION,
     required: true,
     editableName: false,
     metric: getDefaultMetric(true),
+    children: [],
   },
 ])
 
@@ -70,7 +55,6 @@ const updateMetric = async (segments, values, indicatorsICT) => {
     values,
   }
 
-  //console.log('GET METRIC ----------------1 indicators', indicatorsICT)
   const res = await getMarchMetric(dataMarch)
 
   const marchDetails = res.payload
@@ -87,6 +71,7 @@ const updateMetric = async (segments, values, indicatorsICT) => {
     time = time || 0
 
     segment.metric = { children, distance, time, reference, untilPrevios }
+
     segment.children = segment.children && segment.children.map((child, childId) => {
       let { distance, time } = segmentsDetails[id].children[childId]
       distance = distance || 0
@@ -98,11 +83,9 @@ const updateMetric = async (segments, values, indicatorsICT) => {
 
     return segment
   })
-  //console.log('GET METRIC ----------------5', res)
-  //console.log('GET METRIC ----------------', segmentsWithUpdateMetrics.toArray())
 
   return {
-    segments: segmentsWithUpdateMetrics, // segmentsWithUpdateMetrics,
+    segments: segmentsWithUpdateMetrics,
     time,
     distance,
   }
@@ -276,8 +259,7 @@ export const setRefPointOnMap = (data = null) => ({
 })
 
 export const initMarch = (data) =>
-  async (dispatch, getState) => {
-
+  async (dispatch) => {
     const { values = {}, indicators = [] } = data
     let segments
     if (!data || !data.segments || !data.segments.length) {
@@ -287,9 +269,7 @@ export const initMarch = (data) =>
     }
 
     segments = List(segments)
-
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, values, indicators)
-
     const payload = { segments: segmentsWithMetric, time, distance, values, indicatorsICT: indicators }
 
     dispatch({
@@ -298,7 +278,7 @@ export const initMarch = (data) =>
     })
   }
 
-export const sendMarchToExplorer = (data) =>
+export const sendMarchToExplorer = () =>
   async (dispatch, getState) => {
     const { march: { segments } } = getState()
 

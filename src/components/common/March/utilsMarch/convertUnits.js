@@ -1,9 +1,8 @@
 import i18n from './../../../../i18n'
 
-const { CD_N, CD_NE, CD_E, CD_SE, CD_S, CD_SW, CD_W, CD_NW } = i18n
-
 const azimuthToCardinalDirection = (azimuth) => {
   let cardinalDirection = ''
+  const { CD_N, CD_NE, CD_E, CD_SE, CD_S, CD_SW, CD_W, CD_NW } = i18n
 
   switch (true) {
     case (azimuth > 337.5 || azimuth < 22.5):

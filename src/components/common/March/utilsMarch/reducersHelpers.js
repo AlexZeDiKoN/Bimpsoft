@@ -8,17 +8,8 @@ const getDefaultMetric = (emptyChild = false) => {
     children: emptyChild ? [] : [ { distance: 0, time: 0 } ],
     reference: { time: 0, distance: 0 },
     untilPrevios: { time: 0, distance: 0 },
-    untilNextSegment: { time: 0, distance: 0 },
   }
 }
-
-const getDefaultLoadUploadData = () => ({
-  technologyId: 0,
-  conditionId: 1,
-  teamReadinessId: 1,
-  workInDark: false,
-  workInGasMasks: false,
-})
 
 const defaultChild = () => ({
   id: uuid(),
@@ -39,21 +30,18 @@ const defaultSegment = () => ({
   id: uuid(),
   name: '',
   refPoint: '',
-  segmentType: 41, // Своїм ходом
-  terrain: 69, // Рівнинна
+  segmentType: 41,
+  terrain: 69,
   velocity: 30,
   coordinate: {},
   required: false,
-  editableName: false,
+  editableName: true,
   metric: getDefaultMetric(),
   children: [ defaultChild() ],
-  loading: getDefaultLoadUploadData(),
-  uploading: getDefaultLoadUploadData(),
 })
 
 export default {
   getDefaultMetric,
-  getDefaultLoadUploadData,
   defaultChild,
   defaultSegment,
   uuid,

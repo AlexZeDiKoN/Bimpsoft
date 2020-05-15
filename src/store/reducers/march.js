@@ -13,11 +13,6 @@ const initState = {
   time: 0,
   distance: 0,
   coordRefPoint: null,
-  dataMarch: {
-    pointRestTime: 1, // hour
-    dayNightRestTime: 8, // hour
-    dailyRestTime: 24, // hour
-  },
   pointsTypes: [
     { id: 0, name: 'Пункт на маршруті' },
     { id: 1, name: 'Пункт привалу' },

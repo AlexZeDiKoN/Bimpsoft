@@ -100,10 +100,6 @@ SegmentBlock.propTypes = {
       }).isRequired,
     }).isRequired,
   }).isRequired,
-  // reference: PropTypes.shape({
-  //   time: PropTypes.array.isRequired,
-  //   distance: PropTypes.number.isRequired,
-  // }),
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,

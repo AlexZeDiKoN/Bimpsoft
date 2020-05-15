@@ -10,6 +10,12 @@ import './style.css'
 
 const { hoursToMs } = convertUnits
 
+const defaultRestTimeInHours = {
+  point: 1,
+  dayNight: 8,
+  daily: 24,
+}
+
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
 
@@ -36,14 +42,14 @@ const getMemoGeoLandmarks = (() => {
   }
 })()
 
-const getMarchPoints = (pointsTypes, dataMarch) => {
-  const { pointRestTime, dayNightRestTime, dailyRestTime } = dataMarch
+const getMarchPoints = (pointsTypes) => {
+  const { point, dayNight, daily } = defaultRestTimeInHours
 
   const MarchPoints = [
     { rest: false, time: 0 },
-    { rest: true, time: hoursToMs(pointRestTime) },
-    { rest: true, time: hoursToMs(dayNightRestTime) },
-    { rest: true, time: hoursToMs(dailyRestTime) },
+    { rest: true, time: hoursToMs(point) },
+    { rest: true, time: hoursToMs(dayNight) },
+    { rest: true, time: hoursToMs(daily) },
     { rest: true, time: 0, notEditableTime: true },
     { rest: false, time: 0 },
   ]
@@ -52,10 +58,10 @@ const getMarchPoints = (pointsTypes, dataMarch) => {
 }
 
 const March = (props) => {
-  const { pointsTypes, dataMarch, segmentList, time, distance, initMarch, sendMarchToExplorer } = props
+  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
-  const marchPoints = getMarchPoints(pointsTypes, dataMarch)
+  const marchPoints = getMarchPoints(pointsTypes)
 
   const renderDotsForms = () => {
     const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap } = props
@@ -113,12 +119,10 @@ const March = (props) => {
   return <div className={'march-container'}>
     <div className={'march-header'}>
       <Header
-        // marchDetails={marchDetails}
         changeTimeDistanceView={changeTimeDistanceView}
         timeDistanceView={timeDistanceView}
         time={time}
         distance={distance}
-        initMarch={initMarch}
         sendMarchToExplorer={sendMarchToExplorer}
       />
     </div>
@@ -136,7 +140,6 @@ March.propTypes = {
   deleteChild: PropTypes.func.isRequired,
   setCoordMode: PropTypes.func.isRequired,
   setRefPointOnMap: PropTypes.func.isRequired,
-  dataMarch: PropTypes.shape({}).isRequired,
   segmentList: PropTypes.shape({
     toArray: PropTypes.func.isRequired,
   }).isRequired,
