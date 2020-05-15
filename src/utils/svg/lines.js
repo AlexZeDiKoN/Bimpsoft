@@ -810,9 +810,10 @@ const getTextAmplifiers = ({
   scale,
   zoom,
   color,
+  fontColor,
+  fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
+  graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
 }) => {
-  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale)
-  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
   const fillColor = color ? `fill="${color}"` : ``
   const result = {
@@ -848,8 +849,8 @@ const getTextAmplifiers = ({
       return [ type, extractTextSVG({
         string: value,
         fontSize,
+        fontColor,
         margin: amplifierMargin,
-        scale,
         getOffset: getOffset.bind(null, type, point),
       }) ]
     }).filter(Boolean)
@@ -943,6 +944,9 @@ export const getAmplifiers = ({
   bounds,
   scale = 1,
   zoom = -1,
+  fontColor,
+  fontSize,
+  graphicSize,
 }, object) => {
   const result = {
     maskPath: [],
@@ -985,6 +989,9 @@ export const getAmplifiers = ({
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForIntermediateAmplifier,
       color,
+      fontColor,
+      fontSize,
+      graphicSize,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -1027,6 +1034,8 @@ export const getAmplifiers = ({
         zoom,
         amplifier: pointAmplifier,
         ...amplifierOptions,
+        fontColor,
+        fontSize,
       })
       result.maskPath.push(...maskPath)
       result.group += group
