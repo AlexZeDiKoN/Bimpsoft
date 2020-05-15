@@ -7,7 +7,7 @@ const getDefaultMetric = (emptyChild = false) => {
     distance: 0,
     children: emptyChild ? [] : [ { distance: 0, time: 0 } ],
     reference: { time: 0, distance: 0 },
-    untilPrevios: { time: 0, distance: 0 },
+    untilPrevious: { time: 0, distance: 0 },
   }
 }
 
