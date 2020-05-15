@@ -28,10 +28,27 @@ const pointSize = new Map([
   [ 500000, 6 ],
   [ 1000000, 5 ],
 ])
+export const fontSizeFromScale = new Map([
+  [ 25000, 9 ],
+  [ 50000, 8 ],
+  [ 100000, 7 ],
+  [ 200000, 7 ],
+  [ 500000, 6 ],
+  [ 1000000, 5 ],
+])
+export const graphicSizeFromScale = new Map([
+  [ 25000, 7 ],
+  [ 50000, 6 ],
+  [ 100000, 5 ],
+  [ 200000, 5 ],
+  [ 500000, 5 ],
+  [ 1000000, 5 ],
+])
 const POINT_SIZE_DEFAULT = 12
 const DPI96 = 3.78 // количество пикселей в 1мм
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
+const MM_IN_INCH = 25.4
 
 let lastMaskId = 1
 
@@ -97,6 +114,8 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     bezier,
     locked,
     scale,
+    printScale,
+    dpi,
   } = data
   let d
   if (lineType === 'waved') {
@@ -107,6 +126,11 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
       d += stroked(points, attributes, bezier, locked, bounds, scale, zoom)
     }
   }
+
+  const mmInPixel = MM_IN_INCH / dpi
+  const fontColor = '#000000'
+  const fontSize = fontSizeFromScale.get(printScale) / mmInPixel
+  const graphicSize = graphicSizeFromScale.get(printScale) / mmInPixel
   const amplifiers = getAmplifiers({
     points,
     bezier,
@@ -114,6 +138,9 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     bounds,
     scale,
     zoom,
+    fontColor,
+    fontSize,
+    graphicSize,
   }, { ...data, attributes })
   const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale, zoom)
@@ -127,6 +154,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
       )}
       {(Boolean(leftSvg) || Boolean(rightSvg)) && (
         <g
+          fill={colors.evaluateColor(color)}
           stroke={colors.evaluateColor(color)}
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
@@ -137,7 +165,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerData) => {
-  const { coordToPixels, bounds, scale, zoom } = commonData
+  const { coordToPixels, bounds, scale, zoom, printScale, dpi } = commonData
   const { attributes, geometry, level } = data
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -147,7 +175,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
     return getLineSvg(
       points,
       attributes,
-      { level, bounds, scale, bezier, locked },
+      { level, bounds, scale, printScale, dpi, bezier, locked },
       layerData,
       zoom,
     )
