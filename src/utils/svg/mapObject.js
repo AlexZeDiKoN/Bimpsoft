@@ -48,7 +48,7 @@ const POINT_SIZE_DEFAULT = 12
 const DPI96 = 3.78 // количество пикселей в 1мм
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
-const DPI_1 = 25.4
+const MM_IN_INCH = 25.4
 
 let lastMaskId = 1
 
@@ -127,7 +127,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     }
   }
 
-  const mmInPixel = DPI_1 / dpi
+  const mmInPixel = MM_IN_INCH / dpi
   const fontColor = '#000000'
   const fontSize = fontSizeFromScale.get(printScale) / mmInPixel
   const graphicSize = graphicSizeFromScale.get(printScale) / mmInPixel
