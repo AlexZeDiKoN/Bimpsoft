@@ -52,41 +52,48 @@ const MM_IN_INCH = 25.4
 
 let lastMaskId = 1
 
-const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, maskD) => {
+const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, mask, bounds) => {
   const { color: outlineColor, fillOpacity } = layerData
-  let mask
   const styles = getStylesForLineType(lineType, scale)
   let maskEl = null
-  if (maskD) {
+  let maskUrl = null
+  if (Array.isArray(mask)) {
+    maskEl = mask.length ? <path fill="black" fillRule="nonzero" d={mask.join(' ')}/> : null
+  }
+  if (maskEl) {
+    const vb = bounds ? [ bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ] : [ 0, 0, '100%', '100%' ]
     const maskId = lastMaskId++
-    mask = `url(#mask-${maskId})`
+    maskUrl = `url(#mask-${maskId})`
     maskEl = <mask id={`mask-${maskId}`}>
-      <path fillRule="nonzero" fill="#ffffff" d={maskD}/>
+      <rect fill="white" x={vb[0]} y={vb[1]} width={vb[2]} height={vb[3]} />
+      {maskEl}
     </mask>
   }
 
   return (
-    <g mask={mask}>
+    <>
       {maskEl}
-      <path
-        fill={colors.evaluateColor(fill)}
-        fillOpacity={fillOpacity ?? 0.2}
-        d={d}
-      />
-      {Boolean(outlineColor) && <path
-        stroke={outlineColor}
-        strokeWidth={strokeWidth * scale * 2}
-        fill="none"
-        d={d}
-      />}
-      <path
-        stroke={colors.evaluateColor(color)}
-        strokeWidth={strokeWidth * scale}
-        {...styles}
-        fill="none"
-        d={d}
-      />
-    </g>
+      <g mask={maskUrl}>
+        <path
+          fill={colors.evaluateColor(fill)}
+          fillOpacity={fillOpacity ?? 0.2}
+          d={d}
+        />
+        {Boolean(outlineColor) && <path
+          stroke={outlineColor}
+          strokeWidth={strokeWidth * scale * 2}
+          fill="none"
+          d={d}
+        />}
+        <path
+          stroke={colors.evaluateColor(color)}
+          strokeWidth={strokeWidth * scale}
+          {...styles}
+          fill="none"
+          d={d}
+        />
+      </g>
+    </>
   )
 }
 
@@ -126,7 +133,6 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
       d += stroked(points, attributes, bezier, locked, bounds, scale, zoom)
     }
   }
-
   const mmInPixel = MM_IN_INCH / dpi
   const fontColor = '#000000'
   const fontSize = fontSizeFromScale.get(printScale) / mmInPixel
@@ -142,7 +148,6 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     fontSize,
     graphicSize,
   }, { ...data, attributes })
-  const mask = amplifiers.maskPath.length ? amplifiers.maskPath.join(' ') : null
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale, zoom)
   return (
     <>
@@ -159,7 +164,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(d, attributes, layerData, scale, mask)}
+      {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds)}
     </>
   )
 }
