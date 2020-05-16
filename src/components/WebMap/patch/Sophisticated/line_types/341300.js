@@ -6,11 +6,11 @@ import {
   segmentBy,
   angleOf,
   segmentLength,
-  drawMaskedText,
   square,
-  drawLineMark,
+  drawLineMark, drawText,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: FOLLOW AND SUPPORT
 // task code: DZVIN-5533
@@ -25,6 +25,9 @@ lineDefinitions['341300'] = {
 
   // Взаємозв'яок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,
+
+  // Ампліфікатори на лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' } ],
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => [
@@ -55,7 +58,8 @@ lineDefinitions['341300'] = {
     const anchor = applyToPoint(qp0, { x: SIDE_LENGTH * 2 + k * 2, y: 0 })
 
     drawLine(result, a, p0, b, c, center, d, a)
-    drawMaskedText(result, segmentBy(p0, center, 0.4), a0, result.layer?.options?.textAmplifiers?.T ?? '')
+    drawText(result, segmentBy(p0, center, 0.4), a0,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
 
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {
       drawLine(result, center, anchor)

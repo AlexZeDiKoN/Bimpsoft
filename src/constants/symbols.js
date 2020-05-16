@@ -481,12 +481,12 @@ export const symbols = [
       {
         hint: 'Просування та заміна  – рух за першим ешелоном в готовності до його заміни',
         code: '10032500003412000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { T: 'T' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [ amps.T ]: '' } },
       },
       {
         hint: 'Просування та підтримка підрозділів – рух за першим ешелоном та підтримка його дії',
         code: '10032500003413000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { T: 'T' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [ amps.T ]: '' } },
       },
       { hint: 'Знищити', code: '10032500003409000000', amp: {} },
       { hint: 'Подавити (нейтралізувати)', code: '10032500003416000000', amp: {} },
