@@ -938,7 +938,7 @@ export default class WebMap extends React.PureComponent {
 
     let marker = null
     if (marchRefPoint) {
-      marker = createSearchMarker(marchRefPoint, false)
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
       marker.addTo(this.map)
     }
 
