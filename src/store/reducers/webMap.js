@@ -116,6 +116,7 @@ const WebMapState = Record({
   topographicObjects: {},
   undoRecords: List(),
   undoPosition: 0,
+  reportMap: {},
 })
 
 const checkLevel = (object) => {
@@ -419,6 +420,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
+    }
+    case actionNames.TOGGLE_REPORT_MAP_MODAL: {
+      return update(state, 'reportMap', { ...state.reportMap, visible: payload })
     }
     default: {
       const setField = simpleSetField(type)

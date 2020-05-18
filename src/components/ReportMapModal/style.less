@@ -1,0 +1,57 @@
+.topographicCard {
+  position: fixed;
+  z-index: 1001;
+  right: 150px;
+  top: 85px;
+  margin-top: 180px;
+
+  .objInfoContainer {
+    max-width: 300px;
+
+    .propertiesContainer {
+      display: flex;
+      flex-direction: column;
+      border-top: 2px solid #a9b06c;
+      background: #fff;
+
+      .mainPropertiesContainer {
+        border-bottom: 1px solid #a9b06c;
+
+        .mainProperties {
+          text-align: start;
+          padding: 3px;
+        }
+      }
+
+      .secondaryPropertiesContainer {
+        background: #fff;
+
+        .secondaryProperties {
+          text-align: start;
+          padding: 3px;
+        }
+      }
+    }
+  }
+  .elementListContainer {
+    display: flex;
+    min-width: 300px;
+    flex-direction: column;
+    cursor: pointer;
+    background: #eee;
+
+    .element {
+      padding: 3px;
+      border-bottom: 1px solid lightgray;
+    }
+
+    .element:hover {
+      background: lightgrey;
+    }
+
+    .element.active {
+      color: #a9b06c;
+      font-weight: 500;
+    }
+  }
+}

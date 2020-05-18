@@ -68,6 +68,7 @@ export const actionNames = {
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
+  TOGGLE_REPORT_MAP_MODAL: action('TOGGLE_REPORT_MAP_MODAL'),
 }
 
 export const changeTypes = {
@@ -638,6 +639,11 @@ export const getTopographicObjects = (data) =>
       payload: topographicObject,
     })
   })
+
+export const toggleReportMapModal = (isOpen) => ({
+  type: actionNames.TOGGLE_REPORT_MAP_MODAL,
+  payload: isOpen,
+})
 
 async function performAction (record, direction, api, dispatch) {
   const { changeType, id, list, layer, oldData, newData } = record
