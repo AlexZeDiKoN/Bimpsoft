@@ -44,11 +44,21 @@ export const graphicSizeFromScale = new Map([
   [ 500000, 5 ],
   [ 1000000, 5 ],
 ])
+
+export const frameMapSize = new Map([
+  [ 25000, 10 ],
+  [ 50000, 10 ],
+  [ 100000, 10 ],
+  [ 200000, 9.3 ],
+  [ 500000, 8.5 ],
+  [ 1000000, 8.5 ],
+])
+
 const POINT_SIZE_DEFAULT = 12
 const DPI96 = 3.78 // количество пикселей в 1мм
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
-const MM_IN_INCH = 25.4
+export const MM_IN_INCH = 25.4
 
 let lastMaskId = 1
 
