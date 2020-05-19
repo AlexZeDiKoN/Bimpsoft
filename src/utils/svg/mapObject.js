@@ -83,7 +83,7 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType, hatch }, layerData,
   }
 
   // заливка или штриховка
-  let fillOption = ''
+  let fillOption
   if (hatch === 'left-to-right') {
     const cs = settings.CROSS_SIZE * scale
     const sw = settings.STROKE_WIDTH * scale
@@ -194,6 +194,8 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
         result = stroked(points, attributes, bezier, locked, bounds, scale, zoom)
         // eslint-disable-next-line no-fallthrough
       case 'solid':
+      case 'dashed':
+      case 'chain':
         result = prepareD() + result
         break
       case 'blockage':
