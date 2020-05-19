@@ -422,7 +422,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     case actionNames.TOGGLE_REPORT_MAP_MODAL: {
-      return update(state, 'reportMap', { ...state.reportMap, visible: payload })
+      return update(state, 'reportMap', { ...state.reportMap, ...payload })
     }
     default: {
       const setField = simpleSetField(type)

@@ -10,7 +10,7 @@ const ItemTemplate = (props) =>
   props.data.id[0] === 'm' ? <MapItemComponent {...props} /> : <LayerItemComponent {...props}/>
 
 const mapDispatchToProps = {
-  onOpenReportMap: () => webMap.toggleReportMapModal(true),
+  onOpenReportMap: (dataMap) => webMap.toggleReportMapModal(true, dataMap),
 }
 
 export default connect(null, catchErrors(mapDispatchToProps))(ItemTemplate)

@@ -640,9 +640,12 @@ export const getTopographicObjects = (data) =>
     })
   })
 
-export const toggleReportMapModal = (isOpen) => ({
+export const toggleReportMapModal = (visible, dataMap = null) => ({
   type: actionNames.TOGGLE_REPORT_MAP_MODAL,
-  payload: isOpen,
+  payload: {
+    visible,
+    dataMap,
+  },
 })
 
 async function performAction (record, direction, api, dispatch) {

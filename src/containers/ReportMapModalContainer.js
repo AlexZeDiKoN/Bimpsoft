@@ -4,14 +4,13 @@ import * as actions from '../store/actions/webMap'
 
 const mapStateToProps = (store) => ({
   reportMap: store.webMap.reportMap,
-  //topographicObjects: store.webMap.topographicObjects,
-  //serviceStatus: store.webMap.isTopographicObjectsOn,
+  maps: store.maps,
+  layers: store.layers,
 })
 
 const mapDispatchToProps = {
   onOpen: () => actions.toggleReportMapModal(true),
   onClose: () => actions.toggleReportMapModal(false),
-  // selectTopographicItem: actions.selectTopographicItem,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReportMapModal)

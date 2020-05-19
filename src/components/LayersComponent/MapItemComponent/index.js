@@ -43,10 +43,8 @@ export default class MapItemComponent extends React.Component {
     onPrintMap && onPrintMap(mapId, name)
   }
 
-  onShowReportMapModal = () => {
-
-    console.log('-------', this.props)
-    this.props.onOpenReportMap()
+  onShowReportMapModal = (dataMap) => {
+    this.props.onOpenReportMap(dataMap)
   }
 
   render () {
@@ -58,7 +56,7 @@ export default class MapItemComponent extends React.Component {
     } = this.props
     return (
       <div className={'map-item-component ' + (showColor ? 'map-item-component-hover' : '')}>
-        прпарп
+        прпарп{name}
         <div className={'color-container'} style={{ background: color }}>
           <VisibilityButton
             title={i18n.MAP_VISIBILITY}
@@ -90,7 +88,7 @@ export default class MapItemComponent extends React.Component {
           <Tooltip title={i18n.CREATE_BTN_TITLE} placement='topRight'>
             <IButton
               icon={IconNames.BAR_2_SAVE}
-              onClick={this.onShowReportMapModal}
+              onClick={() => this.onShowReportMapModal(this.props.data)}
             />
           </Tooltip>
           <Tooltip title={i18n.PRINT_BUTTON} placement='topRight'>
