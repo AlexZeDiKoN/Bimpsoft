@@ -17,7 +17,10 @@ export default class SubordinationLevelSelect extends React.Component {
     const { value, onChange, readOnly } = this.props
     if (readOnly) {
       const levelInfo = SubordinationLevel.list.find((level) => value === level.value)
-      return (<Input value={levelInfo ? levelInfo.title : null} readOnly={true} />)
+      return (<Input style={{
+        background: '#f5f5f5',
+        color: '5e6269',
+      }} value={levelInfo ? levelInfo.title : null} readOnly={true} />)
     } else {
       return (
         <Select value={ value } onChange={onChange}>
