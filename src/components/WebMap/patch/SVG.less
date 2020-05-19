@@ -11,12 +11,14 @@
   stroke-width: 10px;
 }
 
-.dzvin-path-shadow{
-
+.dzvin-path-shadow {
 }
 
 .dzvin-path-selected {
   stroke: @svg-select-stroke;
+  &>text {
+    fill: @svg-select-stroke;
+  }
   &:not([fill="none"]) {
     fill: @svg-select-fill;
   }
@@ -24,6 +26,9 @@
 
 .dzvin-path-selected-on-active-layer {
   stroke: @svg-select-stroke-active-layer;
+  &>text {
+    fill: @svg-select-stroke-active-layer;
+  }
   &:not([fill="none"]) &:not([fill="transparent"]) {
     fill: @svg-select-fill-active-layer;
   }
@@ -55,6 +60,9 @@
 
 &.dzvin-path-locked {
   stroke: @svg-locked-stroke;
+  &>text {
+    fill: @svg-locked-stroke;
+  }
   &:not([fill="none"]) {
     fill: @svg-locked-fill;
   }
