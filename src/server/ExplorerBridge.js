@@ -26,7 +26,7 @@ const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 const ACTION_OPEN_COORDINATE = 'open coordinate'
 const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
-const ACTION_INIT_MARCH = 'initialisation march'
+const ACTION_OPEN_MARCH = 'open march'
 const SAVE_MARSH = 'save marsh'
 
 export default class ExplorerBridge {
@@ -120,8 +120,8 @@ export default class ExplorerBridge {
           catchError(maps.openMapByObject)(mapId, object)(this.store.dispatch)
           break
         }
-        case ACTION_INIT_MARCH: {
-          catchError(march.initMarch)(data.payload)(this.store.dispatch)
+        case ACTION_OPEN_MARCH: {
+          catchError(march.openMarch)(data.payload)(this.store.dispatch)
           break
         }
         default:

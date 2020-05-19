@@ -28,7 +28,7 @@ const mapDispatchToProps = {
   deleteChild: march.deleteChild,
   setCoordMode: march.setCoordMode,
   setRefPointOnMap: march.setRefPointOnMap,
-  initMarch: march.initMarch,
+  openMarch: march.openMarch,
   sendMarchToExplorer: march.sendMarchToExplorer,
 }
 

@@ -20,7 +20,7 @@ const initState = {
     { id: 3, name: 'Пункт добового відпочинку' },
     { id: 4, name: 'Рубіж регулювання' },
   ],
-  indicatorsICT: [],
+  payload: null,
   segments: List([]),
   existingSegmentsById: {},
   landmarks: [],
