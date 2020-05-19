@@ -681,7 +681,7 @@ const addUnitLine = (
   return result
 }
 // -----------------------------------------------------------------------------------------------------------------
-// построение типовой линии
+// построение типовой линии (загрождения)
 export const blockage = (points, objectAttributes, bezier, locked, bounds, scaleOptions, zoom = -1, inverse = false,
   lineType = 'blockage', setEnd = false) => {
   if (zoom < 0) {
