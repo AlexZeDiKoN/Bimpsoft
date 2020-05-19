@@ -55,10 +55,30 @@ export default class ReportMapModal extends React.Component {
     serviceStatus: PropTypes.bool,
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      dateTimeMap: moment(Date.now()),
+      nameMap: 'test',
+    }
+  }
+
+  onChangeDateTimeMap = (dateInMoment, d) => {
+    this.setState({ dateTimeMap: dateInMoment })
+  }
+
+  onChangeNameMap = (e) => {
+    this.setState({ nameMap: e.target.value })
+  }
+
+  // dateString = moment(Date.now())
+
   render () {
     if (!this.props.reportMap.visible /* || !this.props.serviceStatus */) {
       return null
     }
+
+    const { dateTimeMap, nameMap } = this.state
 
     const {
       wrapper: Wrapper,
@@ -81,12 +101,14 @@ export default class ReportMapModal extends React.Component {
           <div className='content'>
             <div className='input-name'>
               <div>{i18n.NAME_OF_DOCUMENT}</div>
-              <Input value={'name'} />
+              <Input value={nameMap} onChange={this.onChangeNameMap}/>
             </div>
 
             <div className='input-as-of'>
               <div>{i18n.AS_OF}</div>
               <DatePicker
+                value={dateTimeMap}
+                onChange={this.onChangeDateTimeMap}
                 format="DD.MM.YYYY HH:mm"
                 // disabledDate={disabledDate}
                 // disabledTime={disabledDateTime}
