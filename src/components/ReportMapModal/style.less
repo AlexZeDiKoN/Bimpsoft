@@ -1,16 +1,24 @@
-.topographicCard {
-  position: fixed;
-  z-index: 1001;
-  right: 150px;
-  top: 85px;
-  margin-top: 180px;
+.content {
+  //position: fixed;
+  //z-index: 1001;
+  //right: 150px;
+  //top: 85px;
+  margin: 10px;
+  width: 300px;
+  //max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;//flex-start
 
-  .objInfoContainer {
-    max-width: 300px;
+  .input-name {
+    //alignment: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 
     .propertiesContainer {
-      display: flex;
-      flex-direction: column;
+
+
       border-top: 2px solid #a9b06c;
       background: #fff;
 
@@ -33,25 +41,42 @@
       }
     }
   }
-  .elementListContainer {
+  .input-as-of {
+    //display: flex;
+    //min-width: 300px;
+    //flex-direction: column;
+    //cursor: pointer;
+    //background: #eee;
+    padding-top: 10px;
     display: flex;
-    min-width: 300px;
     flex-direction: column;
-    cursor: pointer;
-    background: #eee;
+    align-items: flex-start;
 
-    .element {
-      padding: 3px;
-      border-bottom: 1px solid lightgray;
-    }
+    //.element {
+    //  padding: 3px;
+    //  border-bottom: 1px solid lightgray;
+    //}
+    //
+    //.element:hover {
+    //  background: lightgrey;
+    //}
+    //
+    //.element.active {
+    //  color: #a9b06c;
+    //  font-weight: 500;
+    //}
+  }
 
-    .element:hover {
-      background: lightgrey;
-    }
-
-    .element.active {
-      color: #a9b06c;
-      font-weight: 500;
-    }
+  .buttons {
+    //display: flex;
+    //min-width: 300px;
+    //flex-direction: column;
+    //cursor: pointer;
+    //background: #eee;
+    padding-top: 10px;
+    display: flex;
+    //flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
   }
 }
