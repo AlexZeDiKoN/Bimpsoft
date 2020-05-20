@@ -1,20 +1,21 @@
 import { createSelector } from 'reselect'
-import { MARCH_TYPES } from '../../constants/March'
+import { MARCH_TYPES, MARCH_COLOR } from '../../constants/March'
 
 const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
+const { OWN_RESOURCES_LINE, BY_RAILROAD_LINE, BY_SHIPS_LINE, COMBINED_LINE, DEFAULT_LINE } = MARCH_COLOR
 
 const getSegmentColor = (segmentType) => {
   switch (segmentType) {
     case (OWN_RESOURCES):
-      return '#7d8160'
+      return OWN_RESOURCES_LINE
     case (BY_RAILROAD):
-      return '#e58850'
+      return BY_RAILROAD_LINE
     case (BY_SHIPS):
-      return '#94D8FF'
+      return BY_SHIPS_LINE
     case (COMBINED):
-      return '#5bb24e'
+      return COMBINED_LINE
     default:
-      return '#DFE3B4'
+      return DEFAULT_LINE
   }
 }
 

@@ -370,7 +370,7 @@ export default class WebMap extends React.PureComponent {
     getCoordForMarch: PropTypes.func,
     marchMode: PropTypes.bool,
     marchDots: PropTypes.array,
-    marchRefPoint: PropTypes.shape({}),
+    marchRefPoint: PropTypes.object,
     undo: PropTypes.func,
     redo: PropTypes.func,
   }
@@ -402,6 +402,7 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
+    this.updateMarchDots(this.props.marchDots, [])
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {

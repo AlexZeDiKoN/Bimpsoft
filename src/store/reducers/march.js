@@ -2,6 +2,8 @@ import { List } from 'immutable'
 import { march } from '../actions'
 import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
 
+import i18n from './../../i18n'
+
 const initState = {
   marchEdit: true,
   indicators: undefined,
@@ -12,11 +14,11 @@ const initState = {
   distance: 0,
   coordRefPoint: null,
   pointsTypes: [
-    { id: 0, name: 'Пункт на маршруті' },
-    { id: 1, name: 'Пункт привалу' },
-    { id: 2, name: 'Пункт денного (нічного) відпочинку' },
-    { id: 3, name: 'Пункт добового відпочинку' },
-    { id: 4, name: 'Рубіж регулювання' },
+    { id: 0, name: i18n.POINT_ON_MARCH },
+    { id: 1, name: i18n.REST_POINT },
+    { id: 2, name: i18n.DAY_NIGHT_REST_POINT },
+    { id: 3, name: i18n.DAILY_REST_POINT },
+    { id: 4, name: i18n.LINE_OF_REGULATION },
   ],
   payload: null,
   segments: List([]),
