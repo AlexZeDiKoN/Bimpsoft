@@ -4,9 +4,11 @@ import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
+import { MARCH_TYPES } from '../../../../../constants/March'
 import i18n from './../../../../../i18n'
 
 const { msToTime } = convertUnits
+const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, timeDistanceView } = props
@@ -19,16 +21,16 @@ const SegmentBlock = (props) => {
   }
   let color = ''
   switch (segmentType) {
-    case (41):
+    case (OWN_RESOURCES):
       color = '#DFE3B4'
       break
-    case (42):
+    case (BY_RAILROAD):
       color = '#FFE0A4'
       break
-    case (43):
+    case (BY_SHIPS):
       color = '#94D8FF'
       break
-    case (44):
+    case (COMBINED):
       color = '#5bb24e'
       break
     default:

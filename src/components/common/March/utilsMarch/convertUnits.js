@@ -1,38 +1,28 @@
 import i18n from './../../../../i18n'
 
 const azimuthToCardinalDirection = (azimuth) => {
-  let cardinalDirection = ''
   const { CD_N, CD_NE, CD_E, CD_SE, CD_S, CD_SW, CD_W, CD_NW } = i18n
 
   switch (true) {
     case (azimuth > 337.5 || azimuth < 22.5):
-      cardinalDirection = CD_N
-      break
+      return CD_N
     case (azimuth > 22.5 && azimuth < 67.5):
-      cardinalDirection = CD_NE
-      break
+      return CD_NE
     case (azimuth > 67.5 && azimuth < 112.5):
-      cardinalDirection = CD_E
-      break
+      return CD_E
     case (azimuth > 112.5 && azimuth < 157.5):
-      cardinalDirection = CD_SE
-      break
+      return CD_SE
     case (azimuth > 157.5 && azimuth < 202.5):
-      cardinalDirection = CD_S
-      break
+      return CD_S
     case (azimuth > 202.5 && azimuth < 247.5):
-      cardinalDirection = CD_SW
-      break
+      return CD_SW
     case (azimuth > 247.5 && azimuth < 292.5):
-      cardinalDirection = CD_W
-      break
+      return CD_W
     case (azimuth > 292.5 && azimuth < 337.5):
-      cardinalDirection = CD_NW
-      break
+      return CD_NW
     default:
+      return ''
   }
-
-  return cardinalDirection
 }
 
 const getFilteredGeoLandmarks = (features) => {
@@ -73,26 +63,25 @@ const msToTime = (duration) => {
   let minutes = Math.floor((duration / (1000 * 60)) % 60)
   let hours = Math.floor(duration / (1000 * 60 * 60))
 
-  hours = (hours < 10) ? '0' + hours : hours
+  hours = `0${hours}`.slice(-2)
   minutes = (minutes < 10) ? '0' + minutes : minutes
 
-  return hours + ':' + minutes
+  return `${hours}:${minutes}`
 }
 
 const convertSegmentsForExplorer = (segments) => {
   const segmentsArray = segments.toArray()
   const convertSegments = []
 
-  for (let i = 0; i < segmentsArray.length; i++) {
-    const currentSegment = segmentsArray[i]
+  for (const currentSegment of segmentsArray) {
     const currentChildren = currentSegment.children || []
 
     const segment = { ...currentSegment }
     segment.children = []
     delete segment.metric
 
-    for (let j = 0; j < currentChildren.length; j++) {
-      const child = { ...currentChildren[j] }
+    for (const currentChild of currentChildren) {
+      const child = { ...currentChild }
       delete child.metric
       segment.children.push(child)
     }

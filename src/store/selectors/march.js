@@ -1,14 +1,17 @@
 import { createSelector } from 'reselect'
+import { MARCH_TYPES } from '../../constants/March'
+
+const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
 
 const getSegmentColor = (segmentType) => {
   switch (segmentType) {
-    case (41):
+    case (OWN_RESOURCES):
       return '#7d8160'
-    case (42):
+    case (BY_RAILROAD):
       return '#e58850'
-    case (43):
+    case (BY_SHIPS):
       return '#94D8FF'
-    case (44):
+    case (COMBINED):
       return '#5bb24e'
     default:
       return '#DFE3B4'

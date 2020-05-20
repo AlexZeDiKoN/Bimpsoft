@@ -10,7 +10,7 @@ import i18n from './../../../../../i18n'
 
 const { confirm } = Modal
 const { Option } = Select
-const { OWN_RESOURCES } = MARCH_TYPES
+const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS } = MARCH_TYPES
 
 const {
   form: { Coordinates },
@@ -180,10 +180,10 @@ const MarchForm = (props) => {
 
   let lineColorClass
   switch (segmentType) {
-    case 42:
+    case BY_RAILROAD:
       lineColorClass = 'line-orange'
       break
-    case 43:
+    case BY_SHIPS:
       lineColorClass = 'line-blue'
       break
     default:

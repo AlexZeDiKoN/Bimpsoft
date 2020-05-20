@@ -1,8 +1,6 @@
 import { List } from 'immutable'
 import { march } from '../actions'
-import utilsMarch from '../../components/common/March/utilsMarch'
-
-const { uuid } = utilsMarch.reducersHelpers
+import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
 
 const initState = {
   marchEdit: true,

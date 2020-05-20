@@ -5,6 +5,7 @@ import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import i18n from './../../i18n'
 import { openMapFolder } from './maps'
+import { asyncAction } from './index'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
 export const SET_MARCH_PARAMS = action('SET_MARCH_PARAMS')
@@ -136,7 +137,7 @@ export const setIntegrity = (data) => ({
   payload: data,
 })
 
-export const editFormField = (data) =>
+export const editFormField = (data) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
     const newSegments = getUpdateSegments(march.segments, data)
@@ -149,9 +150,9 @@ export const editFormField = (data) =>
       type: EDIT_FORM_FIELD,
       payload,
     })
-  }
+  })
 
-export const addSegment = (segmentId) =>
+export const addSegment = (segmentId) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
@@ -165,9 +166,9 @@ export const addSegment = (segmentId) =>
       type: ADD_SEGMENT,
       payload,
     })
-  }
+  })
 
-export const deleteSegment = (segmentId) =>
+export const deleteSegment = (segmentId) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
@@ -181,9 +182,9 @@ export const deleteSegment = (segmentId) =>
       type: DELETE_SEGMENT,
       payload,
     })
-  }
+  })
 
-export const addChild = (segmentId, childId) =>
+export const addChild = (segmentId, childId) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
@@ -203,9 +204,9 @@ export const addChild = (segmentId, childId) =>
       type: ADD_CHILD,
       payload,
     })
-  }
+  })
 
-export const deleteChild = (segmentId, childId) =>
+export const deleteChild = (segmentId, childId) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
@@ -225,7 +226,7 @@ export const deleteChild = (segmentId, childId) =>
       type: DELETE_CHILD,
       payload,
     })
-  }
+  })
 
 // data = { segmentId <, childId> }
 export const setCoordMode = (data) => ({
@@ -233,7 +234,7 @@ export const setCoordMode = (data) => ({
   payload: data,
 })
 
-export const setCoordFromMap = (value) =>
+export const setCoordFromMap = (value) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
     const { segments, coordModeData } = march
@@ -248,39 +249,40 @@ export const setCoordFromMap = (value) =>
       type: SET_COORD_FROM_MAP,
       payload,
     })
-  }
+  })
 
 export const setRefPointOnMap = (data = null) => ({
   type: SET_REF_POINT_ON_MAP,
   payload: data,
 })
 
-export const openMarch = (data) => async (dispatch) => {
-  const { mapId } = data
+export const openMarch = (data) => asyncAction.withNotification(
+  async (dispatch) => {
+    const { mapId } = data
 
-  dispatch(openMapFolder(mapId, null, true))
-  let segments
-  if (!data || !data.segments || !data.segments.length) {
-    segments = initDefaultSegments()
-  } else {
-    segments = data.segments
-  }
+    dispatch(openMapFolder(mapId, null, true))
+    let segments
+    if (!data || !data.segments || !data.segments.length) {
+      segments = initDefaultSegments()
+    } else {
+      segments = data.segments
+    }
 
-  segments = List(segments)
-  const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, data.payload)
-  const payload = { segments: segmentsWithMetric, time, distance, payload: data.payload }
+    segments = List(segments)
+    const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, data.payload)
+    const payload = { segments: segmentsWithMetric, time, distance, payload: data.payload }
 
-  dispatch({
-    type: INIT_MARCH,
-    payload,
+    dispatch({
+      type: INIT_MARCH,
+      payload,
+    })
   })
-}
 
 export const sendMarchToExplorer = () =>
-  async (dispatch, getState) => {
+  (dispatch, getState) => {
     const { march: { segments } } = getState()
 
     const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
-    window.explorerBridge.saveMarch(segmentsForExplorer)
+    return window.explorerBridge.saveMarch(segmentsForExplorer)
   }

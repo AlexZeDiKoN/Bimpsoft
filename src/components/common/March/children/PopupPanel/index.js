@@ -6,7 +6,10 @@ import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
+import { MARCH_TYPES } from '../../../../../constants/March'
 const { confirm } = Modal
+
+const { OWN_RESOURCES } = MARCH_TYPES
 
 const mapStateToProps = ({ march: { indicators } }) => ({
   MB001: (indicators && indicators['МШВ001']) || {},
@@ -66,7 +69,7 @@ const PopupPanel = (props) => {
         </Select>
       }
     </Tooltip>
-    {(segmentType === 41) &&
+    {(segmentType === OWN_RESOURCES) &&
     <Tooltip placement='left' title={i18n.NATURE_OF_TERRAIN}>
       <Select
         defaultValue={nameTypeById(MB007, terrain).name}
