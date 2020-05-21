@@ -74,12 +74,14 @@ export default class LayerItemComponent extends React.Component {
               onChange={this.changeColorHandler}
             />
           </div>
-          {readOnly && <div title={i18n.ACCESS_READONLY}>
+          {readOnly && <Tooltip
+            placement='topRight'
+            title={i18n.ACCESS_READONLY}>
             <Icon
               className="layer-item-component-control"
               icon={iconNames.LOCK_ACTIVE}
             />
-          </div>}
+          </Tooltip>}
         </div>
       </div>
     )

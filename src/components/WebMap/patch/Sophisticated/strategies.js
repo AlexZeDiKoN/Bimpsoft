@@ -14,7 +14,7 @@ import {
   angleOf, oppositeVector, drawBezierSpline, getPointAt, neg,
 } from './utils'
 import {
-  shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates,
+  shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates, pointIntersecSegments,
 } from './arrowLib'
 
 export const MIN_LINE_POINTS = 2
@@ -456,6 +456,19 @@ export const STRATEGY = {
       nextPoints[0] = slice[0]
       nextPoints[1] = slice[1]
       nextPoints[nextPoints.length - 1] = slice[2]
+    }
+  },
+
+  // Відрізки не можуть перетинатися
+  doNotOverlap: (successively = true) => (prevPoints, nextPoints, changed) => {
+    if (nextPoints.length === 4 && prevPoints.length === 4) { // имеем 2 отрезка
+      if (changed.length > 3) { // переносим весь объект
+        return
+      }
+      const p = successively ? [ ...nextPoints ] : [ nextPoints[0], nextPoints[2], nextPoints[1], nextPoints[3] ]
+      if (pointIntersecSegments(...p)) { // пересечение отрезков, возвращаем точки
+        changed.forEach((ind) => { nextPoints[ind] = prevPoints[ind] })
+      }
     }
   },
 }
