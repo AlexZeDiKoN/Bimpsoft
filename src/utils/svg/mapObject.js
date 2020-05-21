@@ -13,9 +13,10 @@ import {
   stroked,
   waved,
   getLineEnds,
-  getStylesForLineType,
+  getStylesForLineType, blockage, settings,
 } from './lines'
-import { renderTextSymbol } from './index'
+import { FONT_FAMILY, renderTextSymbol } from './index'
+// import {evaluateColor} from '../../constants/colors'
 
 const mapObjectBuilders = new Map()
 
@@ -44,19 +45,30 @@ export const graphicSizeFromScale = new Map([
   [ 500000, 5 ],
   [ 1000000, 5 ],
 ])
+
+export const frameMapSize = new Map([
+  [ 25000, 10 ],
+  [ 50000, 10 ],
+  [ 100000, 10 ],
+  [ 200000, 9.3 ],
+  [ 500000, 8.5 ],
+  [ 1000000, 8.5 ],
+])
+
 const POINT_SIZE_DEFAULT = 12
 const DPI96 = 3.78 // количество пикселей в 1мм
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
-const MM_IN_INCH = 25.4
+export const MM_IN_INCH = 25.4
 
 let lastMaskId = 1
 
-const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale, mask, bounds) => {
+const getSvgPath = (d, { color, fill, strokeWidth, lineType, hatch }, layerData, scale, mask, bounds, idObject) => {
   const { color: outlineColor, fillOpacity } = layerData
   const styles = getStylesForLineType(lineType, scale)
   let maskEl = null
   let maskUrl = null
+  // сборка маски под амплификаторы линии
   if (Array.isArray(mask)) {
     maskEl = mask.length ? <path fill="black" fillRule="nonzero" d={mask.join(' ')}/> : null
   }
@@ -70,15 +82,44 @@ const getSvgPath = (d, { color, fill, strokeWidth, lineType }, layerData, scale,
     </mask>
   }
 
+  // заливка или штриховка
+  let fillOption
+  if (hatch === 'left-to-right') {
+    const cs = settings.CROSS_SIZE * scale
+    const sw = settings.STROKE_WIDTH * scale
+    const code = idObject
+    const hatchColor = colors.evaluateColor(fill) || 'black'
+    const fillId = `SVG-fill-pattern-${code}`
+    const fillColor = `url('#${fillId}')`
+    fillOption = <>
+      <pattern
+        id={fillId}
+        x="0" y="0"
+        width={cs}
+        height={cs}
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2={cs} stroke={hatchColor} strokeWidth={sw}/>
+      </pattern>
+      <path
+        fill={fillColor}
+        fillOpacity="1"
+        d={d}
+      />
+    </>
+  } else {
+    fillOption = <path
+      fill={colors.evaluateColor(fill) || 'transparent'}
+      fillOpacity={fillOpacity ?? 0.22}
+      d={d}
+    />
+  }
+
   return (
     <>
       {maskEl}
       <g mask={maskUrl}>
-        <path
-          fill={colors.evaluateColor(fill)}
-          fillOpacity={fillOpacity ?? 0.2}
-          d={d}
-        />
+        {fillOption}
         {Boolean(outlineColor) && <path
           stroke={outlineColor}
           strokeWidth={strokeWidth * scale * 2}
@@ -121,22 +162,84 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     bezier,
     locked,
     scale,
-    printScale,
-    dpi,
+    printScale, // масштаб карті
+    dpi, // разрешение печати
   } = data
-  let d
-  if (lineType === 'waved') {
-    d = waved(points, attributes, bezier, locked, bounds, scale, zoom)
-  } else {
-    d = bezier ? prepareBezierPath(points, locked, skipStart, skipEnd) : pointsToD(points, locked)
-    if (lineType === 'stroked') {
-      d += stroked(points, attributes, bezier, locked, bounds, scale, zoom)
-    }
-  }
   const mmInPixel = MM_IN_INCH / dpi
   const fontColor = '#000000'
   const fontSize = fontSizeFromScale.get(printScale) / mmInPixel
   const graphicSize = graphicSizeFromScale.get(printScale) / mmInPixel
+  const strokeColor = colors.evaluateColor(color)
+  let result = ''
+  let resultFilled = ''
+  const scaleOption = 1
+  const numberOfPoints = points.length
+
+  // функция формирования простой линии по опорным точкам
+  const prepareD = () => bezier
+    ? (locked
+      ? prepareBezierPath(points, locked)
+      : prepareBezierPath(points, locked, skipStart && numberOfPoints > 3, skipEnd && numberOfPoints > 3))
+    : pointsToD(points, locked)
+
+  if ((bezier && numberOfPoints > 2) || (!bezier && numberOfPoints > 1)) {
+    switch (lineType) {
+      case 'waved':
+        result = waved(points, attributes, bezier, locked, bounds, scale, zoom)
+        break
+      case 'waved2':
+        result = waved(points, attributes, bezier, locked, bounds, scale, zoom, true)
+        break
+      case 'stroked':
+        result = stroked(points, attributes, bezier, locked, bounds, scale, zoom)
+        // eslint-disable-next-line no-fallthrough
+      case 'solid':
+      case 'dashed':
+      case 'chain':
+        result = prepareD() + result
+        break
+      case 'blockage':
+      case 'moatAntiTankUnfin':
+      case 'trenches':
+        result = blockage(points, attributes, bezier, locked, bounds, scaleOption, zoom, false, lineType, true)
+        break
+      case 'blockageWire':
+        result = blockage(points, attributes, bezier, locked, bounds, scaleOption, zoom, false, lineType)
+        break
+        // залишаємо початкову лінію
+      case 'blockageIsolation':
+      case 'blockageWire1':
+      case 'blockageWire2':
+      case 'blockageWireFence':
+      case 'blockageWireLow':
+      case 'blockageWireHigh':
+      case 'blockageSpiral':
+      case 'blockageSpiral2':
+      case 'blockageSpiral3':
+      case 'solidWithDots':
+        result = prepareD()
+        result += blockage(points, attributes, bezier, locked, bounds, scaleOption, zoom, false, lineType)
+        break
+        // необхідна заливка
+      case 'rowMinesLand':
+      case 'moatAntiTank':
+      case 'moatAntiTankMine':
+      case 'rowMinesAntyTank': {
+        result = prepareD()
+        const d = blockage(points, attributes, bezier, locked, bounds, scaleOption, zoom, false, lineType)
+        resultFilled = <path
+          fill={strokeColor}
+          fillRule="nonzero"
+          strokeWidth="0"
+          d={d}
+        />
+        break
+      }
+      default:
+        break
+    }
+  }
+
   const amplifiers = getAmplifiers({
     points,
     bezier,
@@ -148,23 +251,25 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     fontSize,
     graphicSize,
   }, { ...data, attributes })
+
   const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, scale, zoom)
   return (
     <>
       {Boolean(amplifiers.group) && (
         <g
-          stroke={colors.evaluateColor(color)}
+          stroke={strokeColor}
           dangerouslySetInnerHTML={{ __html: amplifiers.group }}
         />
       )}
       {(Boolean(leftSvg) || Boolean(rightSvg)) && (
         <g
-          fill={colors.evaluateColor(color)}
-          stroke={colors.evaluateColor(color)}
+          fill={strokeColor}
+          stroke={strokeColor}
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds)}
+      {resultFilled}
     </>
   )
 }
@@ -248,6 +353,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
     </g>
   )
 })
+
 mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
   const { attributes, geometry } = data
@@ -262,9 +368,10 @@ mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data, layerData) => {
     return getSvgPath(d, attributes, layerData, scale)
   }
 })
+
 mapObjectBuilders.set(SelectionTypes.RECTANGLE, (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
-  const { attributes, geometry } = data
+  const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   if (point1 && point2) {
     const { x, y } = coordToPixels(point1)
@@ -273,13 +380,13 @@ mapObjectBuilders.set(SelectionTypes.RECTANGLE, (commonData, data, layerData) =>
     const dy = p2.y - y
     const points = rectToPoints({ x, y, width: dx, height: dy })
     const d = pointsToD(points, true)
-    return getSvgPath(d, attributes, layerData, scale)
+    return getSvgPath(d, attributes, layerData, scale, null, null, id)
   }
 })
 
 mapObjectBuilders.set(SelectionTypes.SQUARE, (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
-  const { attributes, geometry } = data
+  const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   if (point1 && point2) {
     const { x, y } = coordToPixels(point1)
@@ -288,18 +395,46 @@ mapObjectBuilders.set(SelectionTypes.SQUARE, (commonData, data, layerData) => {
     const dy = p2.y - y
     const points = rectToPoints({ x, y, width: Math.abs(dx) > Math.abs(dy) ? dx : dy })
     const d = pointsToD(points, true)
-    return getSvgPath(d, attributes, layerData, scale)
+    return getSvgPath(d, attributes, layerData, scale, null, null, id)
   }
 })
+
+mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, data, layerData) => {
+  const text = 'SOPHISTICATED'
+  const { coordToPixels } = commonData
+  const { point } = data
+  const { x, y } = coordToPixels(point)
+  return (
+    <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
+      <text fill="#000" fontFamily={FONT_FAMILY} fontSize={40} x={0} y={0} textAnchor="middle">
+        {text}
+      </text>
+    </g>
+  )
+})
+
+mapObjectBuilders.set(SelectionTypes.GROUPED_HEAD, () => {
+  return ''
+})
+
+mapObjectBuilders.set(SelectionTypes.GROUPED_LAND, () => {
+  return ''
+})
+
+mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, () => {
+  return ''
+})
+
 mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))
 mapObjectBuilders.set(SelectionTypes.POLYGON, getLineBuilder(false, true, 3))
 mapObjectBuilders.set(SelectionTypes.CURVE, getLineBuilder(true, false, 2))
 mapObjectBuilders.set(SelectionTypes.AREA, getLineBuilder(true, true, 3))
 mapObjectBuilders.set(SelectionTypes.CONTOUR, getContourBuilder())
 
+// Формирование элементов SVG файла, для вывода на печать объектов карты
 export const getMapObjectSvg = (commonData) => (object) => {
   const { id, type, layer } = object
-  const mapObjectBuilder = mapObjectBuilders.get(type)
+  const mapObjectBuilder = mapObjectBuilders.get(type) // выбор функции сборки элемента по типу обекта
   const { layersById } = commonData
   if (!mapObjectBuilder || !id || !Object.prototype.hasOwnProperty.call(layersById, layer)) {
     return null
