@@ -19,6 +19,7 @@ export const SET_COORD_MODE = action('SET_COORD_MODE')
 export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
 export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
+export const CLOSE_MARCH = action('CLOSE_MARCH')
 
 const { getMarchMetric } = api
 const { convertSegmentsForExplorer } = utilsMarch.convertUnits
@@ -270,7 +271,7 @@ export const openMarch = (data) => asyncAction.withNotification(
 
     segments = List(segments)
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, data.payload)
-    const payload = { segments: segmentsWithMetric, time, distance, payload: data.payload }
+    const payload = { segments: segmentsWithMetric, time, distance, payload: data.payload, marchEdit: true }
 
     dispatch({
       type: INIT_MARCH,
@@ -286,3 +287,7 @@ export const sendMarchToExplorer = () =>
 
     return window.explorerBridge.saveMarch(segmentsForExplorer)
   }
+
+export const closeMarch = () => ({
+  type: CLOSE_MARCH,
+})
