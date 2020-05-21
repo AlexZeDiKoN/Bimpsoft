@@ -5,7 +5,7 @@ import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
 import i18n from './../../i18n'
 
 const initState = {
-  marchEdit: true,
+  marchEdit: false,
   indicators: undefined,
   integrity: false,
   coordMode: false,
@@ -62,6 +62,9 @@ export default function reducer (state = initState, action) {
     }
     case march.SET_REF_POINT_ON_MAP: {
       return { ...state, coordRefPoint: payload }
+    }
+    case march.CLOSE_MARCH: {
+      return { ...state, marchEdit: false }
     }
     default:
       return state
