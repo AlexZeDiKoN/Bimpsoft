@@ -5,14 +5,14 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, totalMarchTime, totalMarchDistance } = props
+  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer } = props
 
   return <>
     <div className={'march-title-top'}>
       <div className={'march-title'}>
         {i18n.MARCH_TITLE}
       </div>
-      <div className={'march-save-button'}/>
+      <div onClick={sendMarchToExplorer} className={'march-save-button'}/>
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip
@@ -26,8 +26,8 @@ const Header = (props) => {
           onChange={changeTimeDistanceView}
         />
       </Tooltip>
-      <span className={'march-title-value'}>{i18n.LENGTH_OF_MARCH}: {totalMarchDistance.toFixed(1)} км</span>
-      <span className={'march-title-value'}>{i18n.TIME}: {convertUnits.msToTime(totalMarchTime)}</span>
+      <span className={'march-title-value'}>{i18n.LENGTH_OF_MARCH}: {distance.toFixed(1)} км</span>
+      <span className={'march-title-value'}>{i18n.TIME}: {convertUnits.msToTime(time)}</span>
     </div>
   </>
 }
@@ -35,8 +35,9 @@ const Header = (props) => {
 Header.propTypes = {
   changeTimeDistanceView: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,
-  totalMarchTime: PropTypes.number.isRequired,
-  totalMarchDistance: PropTypes.number.isRequired,
+  time: PropTypes.number.isRequired,
+  distance: PropTypes.number.isRequired,
+  sendMarchToExplorer: PropTypes.func.isRequired,
 }
 
 export default React.memo(Header)

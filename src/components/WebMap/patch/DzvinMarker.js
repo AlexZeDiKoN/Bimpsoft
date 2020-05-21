@@ -10,7 +10,7 @@ const MarkerDrag = L.Handler.extend({
   },
 
   addHooks: function () {
-    var icon = this._marker._icon
+    const icon = this._marker._icon
     if (!this._draggable) {
       this._draggable = new Draggable(icon, icon, true)
     }
@@ -132,15 +132,18 @@ const DzvinMarker = L.Marker.extend({
     el.classList.add('dzvin-marker')
   },
 
+  _makeInteractive: function (node) {
+    L.DomUtil.addClass(node, 'leaflet-interactive')
+    this.addInteractiveTarget(node)
+    Array.from(node.children).forEach(this._makeInteractive.bind(this))
+  },
+
   _initInteraction: function () {
     if (!this.options.interactive) {
       return
     }
 
-    Array.from(this._icon.children).forEach((child) => {
-      L.DomUtil.addClass(child, 'leaflet-interactive')
-      this.addInteractiveTarget(child)
-    })
+    this._makeInteractive(this._icon)
 
     let draggable = this.options.draggable
     if (this.dragging) {

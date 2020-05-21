@@ -28,7 +28,7 @@ const getFilteredTime = (time) => {
       minutes = minutes.slice(0, 2)
     }
 
-    hours = hours.length < 2 ? '0' + hours : hours
+    hours = `0${hours}`.slice(-2)
     minutes = minutes.length < 2 ? minutes + '0' : minutes
 
     formatTime = `${hours}:${minutes}`
@@ -45,7 +45,7 @@ const timeToMs = (formatTime) => {
 
   minutes = minutes.length > 2 ? minutes.slice(0, 2) : minutes
 
-  const hoursInMs = hoursToMs(+hours)
+  const hoursInMs = hoursToMs(Number(hours))
   const minutesInMs = +minutes * 60000
 
   return hoursInMs + minutesInMs
@@ -64,7 +64,7 @@ const TimeInput = (props) => {
   }
 
   const onChange = (e) => {
-    const milliseconds = +timeToMs(e.target.value)
+    const milliseconds = Number(timeToMs(e.target.value))
 
     if (milliseconds >= 0) {
       props.onChange(milliseconds)

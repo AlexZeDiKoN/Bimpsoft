@@ -10,12 +10,14 @@ import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 const { FormRow } = components.form
 
 const PAIRS_DEFAULT = [
-  { id: 'middle', name: 'N_' },
-  { id: 'top', name: 'H1_' },
-  { id: 'bottom', name: 'H2_' },
+  { id: amps.N, name: 'N_' },
+  { id: amps.T, name: 'H1_' },
+  { id: amps.W, name: 'H2_' },
 ]
 
 export const PATH_AMPLIFIERS = [ 'attributes', 'pointAmplifier' ]
+export const TYPE_AMPLIFIER_NUM = 'num'
+export const TYPE_AMPLIFIER_TEXT = 'text'
 
 const WithAmplifiers = (Component) => class AmplifiersComponent extends Component {
   createAmplifierHandler = (id) => (event) => (
@@ -34,15 +36,16 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="line-container__item">
-        {amplifiersPairs.map(({ id, name, type }) => (
+        {amplifiersPairs.map(({ id, name, type, maxRows }) => (
           <div className="line-container__itemWidth" key={id}>
-            {type !== 'num' ? (
+            {type !== TYPE_AMPLIFIER_NUM ? (
               <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
                 <Input.TextArea
                   value={currentValue[id] ?? ''}
                   onChange={this.createAmplifierHandler(id)}
                   disabled={!canEdit}
                   rows={id === amps.A ? 6 : 1}
+                  autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
                   maxLength={id === amps.A
                     ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXTMULTILINE
                     : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}

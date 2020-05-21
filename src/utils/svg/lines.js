@@ -681,7 +681,7 @@ const addUnitLine = (
   return result
 }
 // -----------------------------------------------------------------------------------------------------------------
-// построение типовой линии
+// построение типовой линии (загрождения)
 export const blockage = (points, objectAttributes, bezier, locked, bounds, scaleOptions, zoom = -1, inverse = false,
   lineType = 'blockage', setEnd = false) => {
   if (zoom < 0) {
@@ -810,9 +810,10 @@ const getTextAmplifiers = ({
   scale,
   zoom,
   color,
+  fontColor,
+  fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
+  graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
 }) => {
-  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale)
-  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
   const fillColor = color ? `fill="${color}"` : ``
   const result = {
@@ -827,8 +828,8 @@ const getTextAmplifiers = ({
   points.forEach((point, index) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle' && level) {
-        if (amplifierType === 'level') {
+      if (type === 'middle') {
+        if (amplifierType === 'level' && level) {
           return [ type, [ extractSubordinationLevelSVG(
             level,
             graphicSize,
@@ -848,8 +849,8 @@ const getTextAmplifiers = ({
       return [ type, extractTextSVG({
         string: value,
         fontSize,
+        fontColor,
         margin: amplifierMargin,
-        scale,
         getOffset: getOffset.bind(null, type, point),
       }) ]
     }).filter(Boolean)
@@ -943,6 +944,9 @@ export const getAmplifiers = ({
   bounds,
   scale = 1,
   zoom = -1,
+  fontColor,
+  fontSize, // для печати
+  graphicSize, // для печати
 }, object) => {
   const result = {
     maskPath: [],
@@ -964,10 +968,11 @@ export const getAmplifiers = ({
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const interpolatedNodeSize = interpolateSize(zoom, settings.NODES_SIZE, scale)
-  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
+  const interpolatedNodeSize = graphicSize || interpolateSize(zoom, settings.NODES_SIZE, scale)
+  const step = fontSize || settings.AMPLIFIERS_SIZE * scale
+  const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
 
-  {
+  { // межузловые амплификаторы
     const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
     const { maskPath, group } = getTextAmplifiers({
       level,
@@ -981,28 +986,31 @@ export const getAmplifiers = ({
         () => 0.5,
         bezier,
         locked,
-      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
+      ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
       getOffset: getOffsetForIntermediateAmplifier,
       getRotate: getRotateForIntermediateAmplifier,
       color,
+      fontColor,
+      fontSize,
+      graphicSize,
     })
     result.maskPath.push(...maskPath)
     result.group += group
   }
 
-  {
+  { // формирование pointAmplifiers
     const segments = [ 0, points.length - Number(!locked) - 1 ]
 
     let amplifierOptions
 
-    if (locked) {
+    if (locked) { // замкнутая линия, pointAmplifiers в центре
       const centroid = getPolygonCentroid(points)
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
         getOffset: getOffsetForIntermediateAmplifier,
       }
-    } else {
+    } else { // pointAmplifiers на краях линии
       amplifierOptions = {
         points: buildPoints(
           points,
@@ -1015,7 +1023,7 @@ export const getAmplifiers = ({
         getRotate: (amplifierType, pointRotate) => {
           return amplifierType !== 'middle'
             ? getRotateForLineAmplifier(amplifierType, pointRotate)
-            : 0
+            : 0 // Амплификатор N выводится горизонтально
         },
       }
     }
@@ -1027,35 +1035,39 @@ export const getAmplifiers = ({
         zoom,
         amplifier: pointAmplifier,
         ...amplifierOptions,
+        fontColor,
+        fontSize,
       })
       result.maskPath.push(...maskPath)
       result.group += group
     }
   }
 
-  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers.has(index))
+  const insideMapNodal = getBoundsFunc(bounds, interpolatedNodeSize) // функция проверки попадания узлового амплификатора в область вывода
+  points = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
 
   switch (nodalPointIcon) {
     case 'cross-circle': {
-      const d = Number((interpolatedNodeSize * Math.sqrt(2) * scale / 4).toFixed(2))
+      const d = Number((interpolatedNodeSize * Math.sqrt(2) / 4).toFixed(2))
+      const dx2 = d * 2
       points.forEach(({ x, y }) => {
-        result.maskPath.push(circleToD(interpolatedNodeSize * scale / 2, x, y))
+        result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
         result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${interpolatedNodeSize * scale / 2}" />
-            <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
+            <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
+            <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = interpolatedNodeSize * scale / 2
+      const d = interpolatedNodeSize / 2
       points.forEach(({ x, y }) => {
         result.maskPath.push(pointsToD(
-          rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
+          rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
           true,
         ))
         result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
+            <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
       })
       break

@@ -4,34 +4,38 @@ import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
+import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
 import i18n from './../../../../../i18n'
 
 const { msToTime } = convertUnits
+const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
+const { OWN_RESOURCES_BRUSH, BY_RAILROAD_BRUSH, BY_SHIPS_BRUSH, COMBINED_BRUSH, DEFAULT_BRUSH } = MARCH_COLOR
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId, segmentDetails, timeDistanceView } = props
-  const { segmentType, children } = segment
-  const { time: refTime = 0, distance: refDistance = 0 } = segmentDetails.referenceData
-  const { time: prevTime, distance: prevDistance } = segmentDetails.untilPreviousSegment
+  const { segment, addSegment, deleteSegment, segmentId, timeDistanceView } = props
+  const { segmentType, children, metric } = segment
+  const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
+  const { time: prevTime, distance: prevDistance } = metric.untilPrevious
 
   if (segmentType === 0) {
     return null
   }
   let color = ''
   switch (segmentType) {
-    case (41):
-      color = '#DFE3B4'
+    case (OWN_RESOURCES):
+      color = OWN_RESOURCES_BRUSH
       break
-    case (42):
-      color = '#FFE0A4'
+    case (BY_RAILROAD):
+      color = BY_RAILROAD_BRUSH
       break
-    case (43):
-      color = '#94D8FF'
+    case (BY_SHIPS):
+      color = BY_SHIPS_BRUSH
       break
-    case (44):
-      color = '#5bb24e'
+    case (COMBINED):
+      color = COMBINED_BRUSH
       break
     default:
+      color = DEFAULT_BRUSH
       break
   }
 
@@ -55,11 +59,11 @@ const SegmentBlock = (props) => {
 
     <SegmentButtonPopover
       segmentType={segmentType}
-      content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment, segmentDetails }} /> }
+      content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment, metric }} /> }
     />
 
     {childrenIsPresent && children.map((child, id) => {
-      const { distance, time } = segmentDetails.childSegments[id]
+      const { distance, time } = metric.children[id]
       const timeWithOffset = msToTime(time + timeOffset)
       const distanceWithOffset = (distance + distanceOffset).toFixed(1)
 
@@ -84,24 +88,22 @@ SegmentBlock.propTypes = {
   segment: PropTypes.shape({
     segmentType: PropTypes.number.isRequired,
     children: PropTypes.array,
+    metric: PropTypes.shape({
+      children: PropTypes.arrayOf(
+        PropTypes.shape({
+          time: PropTypes.number,
+          distance: PropTypes.number,
+        })).isRequired,
+      reference: PropTypes.shape({
+        time: PropTypes.number.isRequired,
+        distance: PropTypes.number.isRequired,
+      }).isRequired,
+      untilPrevious: PropTypes.shape({
+        time: PropTypes.number.isRequired,
+        distance: PropTypes.number.isRequired,
+      }).isRequired,
+    }).isRequired,
   }).isRequired,
-  segmentDetails: PropTypes.shape({
-    childSegments: PropTypes.array.isRequired,
-    totalTime: PropTypes.number.isRequired,
-    totalDistance: PropTypes.number.isRequired,
-    referenceData: PropTypes.shape({
-      time: PropTypes.number.isRequired,
-      distance: PropTypes.number.isRequired,
-    }).isRequired,
-    untilPreviousSegment: PropTypes.shape({
-      time: PropTypes.number.isRequired,
-      distance: PropTypes.number.isRequired,
-    }).isRequired,
-  }),
-  referenceData: PropTypes.shape({
-    time: PropTypes.array.isRequired,
-    distance: PropTypes.number.isRequired,
-  }),
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,

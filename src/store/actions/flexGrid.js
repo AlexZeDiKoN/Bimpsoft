@@ -66,16 +66,18 @@ export const flexGridCreated = (mapId, geometry, attributes) =>
       ...geometry,
       attributes,
     })
-    dispatch(getFlexGrid(mapId))
+    return dispatch(getFlexGrid(mapId))
   })
 
 export const flexGridChanged = (id, mapId, geometry, attributes) =>
-  asyncAction.withNotification((dispatch, _, { webmapApi: { objUpdate } }) => objUpdate(id, {
-    type: entityKind.FLEXGRID,
-    layer: mapId,
-    ...geometry,
-    attributes,
-  }))
+  asyncAction.withNotification((dispatch, _, { webmapApi: { objUpdate } }) => {
+    return objUpdate(id, {
+      type: entityKind.FLEXGRID,
+      layer: mapId,
+      ...geometry,
+      attributes,
+    })
+  })
 
 export const flexGridDeleted = () => ({
   type: FLEX_GRID_DELETED,

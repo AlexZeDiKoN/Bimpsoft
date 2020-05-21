@@ -3,13 +3,15 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawBezierSpline,
 } from '../utils'
+import { interpolateSize } from '../../utils/helpers'
+import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
 // hint: 'Район розповсюдження агітаційного матеріалу'
 
-const STROKE_WIDTH = 5
-const CROSS_SIZE = 48
+const STROKE_SCALE = 0.15
+const CROSS_SCALE = 1.5
 
 const CODE = '017018'
 
@@ -30,15 +32,15 @@ lineDefinitions[CODE] = {
   init: () => [
     { x: 0.25, y: 0.75 },
     { x: 0.50, y: 0.25 },
-    { x: 0.75, y: 0.75 }
+    { x: 0.75, y: 0.75 },
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     drawBezierSpline(result, points, true)
-
-    const cs = CROSS_SIZE * scale
-    const sw = STROKE_WIDTH * scale
+    const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const cs = graphicSize * CROSS_SCALE // CROSS_SIZE * scale
+    const sw = graphicSize * STROKE_SCALE // STROKE_WIDTH * scale
     const fillId = `SVG-fill-pattern-${CODE}`
     const fillColor = `url('#${fillId}')`
     const color = result.layer._path.getAttribute('stroke')

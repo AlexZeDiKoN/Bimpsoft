@@ -117,8 +117,8 @@ export const renderTextSymbol = ({
 export const extractTextSVG = ({
   string,
   fontSize,
+  fontColor,
   margin,
-  scale,
   getOffset,
 }) => {
   const lines = string.split('\n')
@@ -130,11 +130,13 @@ export const extractTextSVG = ({
     const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : { y: 0, x: 0 }
     const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
     const top = height * index + y
+    const fillColor = fontColor ? `fill="${fontColor}"` : ``
     return {
       // 'dy' for top vertical align
       sign: `<text
         font-family="${FONT_FAMILY}"
         stroke="none"
+        ${fillColor}
         transform="translate(${left}, ${top}) translate(${x})"
         font-size="${fontSize}"
         dy="${fontSize * 0.95}"

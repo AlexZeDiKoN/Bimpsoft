@@ -10,6 +10,7 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
+import { MARK_TYPE } from '../utils/svg/lines'
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
@@ -480,12 +481,12 @@ export const symbols = [
       {
         hint: 'Просування та заміна  – рух за першим ешелоном в готовності до його заміни',
         code: '10032500003412000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { T: 'T' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [ amps.T ]: '' } },
       },
       {
         hint: 'Просування та підтримка підрозділів – рух за першим ешелоном та підтримка його дії',
         code: '10032500003413000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, textAmplifiers: { T: 'T' } },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, pointAmplifier: { [ amps.T ]: '' } },
       },
       { hint: 'Знищити', code: '10032500003409000000', amp: {} },
       { hint: 'Подавити (нейтралізувати)', code: '10032500003416000000', amp: {} },
@@ -563,7 +564,7 @@ export const symbols = [
           type: entityKind.AREA,
           color: '#ff0404',
           lineType: types.dashed.value,
-          intermediateAmplifierType: 'arrow30fill',
+          intermediateAmplifierType: MARK_TYPE.ARROW_30_FILL,
           shownIntermediateAmplifiers: [ 0 ],
         },
       },
@@ -1927,7 +1928,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          textAmplifiers: { N: 'N', H1: 'H1', H2: 'H2' },
+          pointAmplifiers: { [amps.N]: '', [amps.T]: '', [amps.W]: '' },
           params: {
             mineType: MINE_TYPES.ANTI_TANK,
             controlType: CONTROL_TYPES.UNCONTROLLED,

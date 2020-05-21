@@ -44,7 +44,20 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   }))
 
   coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' })),
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) => {
+      const endIndex = coordinatesArray.size - 1
+      if (endIndex > 0) {
+        const end = coordinatesArray.get(endIndex)
+        if (endIndex === 0) {
+          return coordinatesArray.push(end)
+        }
+        const prevEnd = coordinatesArray.get(endIndex - 1)
+        const coordNew = end.set('lat', 2 * end.lat - prevEnd.lat).set('lng', 2 * end.lng - prevEnd.lng)
+        return coordinatesArray.push(coordNew)
+      } else {
+        return coordinatesArray.push({ text: '' })
+      }
+    }),
   )
 
   renderCoordinatesArray (lock = false) {
@@ -57,6 +70,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
+    const readOnly = !canEdit || !editCoordinates
     const nodalPointIconPreview = renderNodes(nodalPointIcon)
     const coordinatesLength = coordinatesArray.length
     const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_ICONS.NONE
@@ -73,7 +87,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         <div className="headerSiding">
           <div className="shape-form-scrollable">
             <table>
-              <thead>
+              <tbody>
                 <tr>
                   <th>
                     <div>
@@ -82,18 +96,20 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   </th>
                   <th>
                     <div>
-                      <FormRow label={i18n.COORDINATES}>
-                        {canEdit && editCoordinates && <IconHovered
-                          icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-                          hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-                          onClick={this.coordinateAddHandler}
-                        />}
-                      </FormRow>
+                      <FormRow label={i18n.COORDINATES}/>
+                    </div>
+                  </th>
+                  <th className="col-add">
+                    <div>
+                      {canEdit && editCoordinates && <IconHovered
+                        icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                        hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                        onClick={this.coordinateAddHandler}
+                      />}
+                    &nbsp;
                     </div>
                   </th>
                 </tr>
-              </thead>
-              <tbody>
                 {coordinatesArray.map((coordinate, index) => (
                   <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
                     <tr>
@@ -112,8 +128,8 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                           key={index}
                           coordinate={coordinate}
                           index={index}
-                          readOnly={!canEdit || !editCoordinates}
-                          canRemove={coordinatesArray.size > 2}
+                          readOnly={readOnly}
+                          canRemove={coordinatesLength > 2 && !readOnly}
                           onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
                           onRemove={this.coordinateRemoveHandler}
                           onFocus={this.onCoordinateFocusHandler}
