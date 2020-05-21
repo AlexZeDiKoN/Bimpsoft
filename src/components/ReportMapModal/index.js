@@ -1,11 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MovablePanel } from '@DZVIN/CommonComponents'
+import { MovablePanel, components } from '@DZVIN/CommonComponents'
 import { Input, Button, DatePicker } from 'antd'
 import moment from 'moment'
+
 import i18n from '../../i18n'
 
 import './style.css'
+
+const { form: { ButtonYes, ButtonNo } } = components
 
 export default class ReportMapModal extends React.Component {
   static propTypes = {
@@ -69,8 +72,8 @@ export default class ReportMapModal extends React.Component {
               />
             </div>
             <div className='buttons'>
-              <Button onClick={onClose} style={{ minWidth: '100px' }}>{i18n.YES}</Button>
-              <Button onClick={onClose} style={{ minWidth: '100px' }}>{i18n.NO}</Button>
+              <ButtonYes onClick={onClose} style={{ minWidth: '100px' }} />
+              <ButtonNo onClick={onClose} style={{ minWidth: '100px' }} />
             </div>
           </div>
         </Wrapper>
