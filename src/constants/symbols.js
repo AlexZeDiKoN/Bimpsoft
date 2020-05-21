@@ -1788,7 +1788,7 @@ export const symbols = [
       {
         hint: 'Район виконання завдань Гр СпП ССпО',
         code: '100325000012000000000spr',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.W]: 'СпР' } },
+        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.B]: 'СпР' } },
       },
       {
         hint: 'Район евакуації',
@@ -1920,7 +1920,7 @@ export const symbols = [
       {
         hint: 'Рубіж мінування',
         code: '10032500000170600000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, lineType: types.dashed.value, right: ENDS_STROKE1 },
+        amp: { isSvg: true, type: entityKind.POLYLINE, lineType: types.dashed.value, right: ENDS_STROKE1, left: ENDS_STROKE1 },
       },
       {
         hint: 'Мінне поле (Мінне загородження)',
