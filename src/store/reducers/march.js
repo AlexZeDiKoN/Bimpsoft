@@ -1,27 +1,30 @@
-import { omit, remove, update, insert, flatten, pick, assoc, compose } from 'ramda'
+import { List } from 'immutable'
 import { march } from '../actions'
-import {
-  MARCH_SEGMENT_KEYS,
-  FIELDS_TYPE,
-  DEFAULT_SEGMENT_ID,
-} from '../../constants/March'
-import i18n from '../../i18n'
+import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
+
+import i18n from './../../i18n'
 
 const initState = {
-  marchEdit: false,
+  marchEdit: true,
   indicators: undefined,
   integrity: false,
-  params: {
-    segments: [],
-  },
+  coordMode: false,
+  coordModeData: { },
+  time: 0,
+  distance: 0,
+  coordRefPoint: null,
+  pointsTypes: [
+    { id: 0, name: i18n.POINT_ON_MARCH },
+    { id: 1, name: i18n.REST_POINT },
+    { id: 2, name: i18n.DAY_NIGHT_REST_POINT },
+    { id: 3, name: i18n.DAILY_REST_POINT },
+    { id: 4, name: i18n.LINE_OF_REGULATION },
+  ],
+  payload: null,
+  segments: List([]),
   existingSegmentsById: {},
   landmarks: [],
 }
-
-// eslint-disable-next-line
-export const uuid = () => ([ 1e7 ] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
-
-const resetSegment = (segment) => assoc('id', uuid(), pick([ 'required', 'possibleTypes', 'id' ], segment))
 
 export default function reducer (state = initState, action) {
   const { type, payload } = action
@@ -43,64 +46,22 @@ export default function reducer (state = initState, action) {
         return { ...state, params }
       }
     }
-    case march.ADD_POINT: {
-      const { segments } = state.params
-      const { index, optional } = payload
-      const position = index === 2 ? index + 1 : index
-
-      const nextSegment = resetSegment(segments[ position ])
-
-      const options = optional.map((val) => ({ ...val, id: uuid() }))
-      const updatedSegments = compose(
-        flatten,
-        insert(position, options),
-        update(position, nextSegment),
-      )(segments)
-      const params = { ...state.params, segments: updatedSegments }
-
-      return { ...state, params, integrity: false }
-    }
-    case march.DELETE_POINT: {
-      const { segments } = state.params
-      const nextSegmentIndex = payload + 1
-      const previousSegmentIndex = payload - 1
-
-      const nextSegment = resetSegment(segments[ nextSegmentIndex ])
-
-      const updatedSegments = compose(
-        remove(previousSegmentIndex, 2),
-        update(nextSegmentIndex, nextSegment),
-      )(segments)
-      const params = { ...state.params, segments: updatedSegments }
-      return { ...state, params, integrity: false }
-    }
-    case march.DELETE_SEGMENT: {
-      const { segments } = state.params
-      const updatedSegment = assoc('id', uuid(), omit(
-        [ MARCH_SEGMENT_KEYS.SEGMENT, MARCH_SEGMENT_KEYS.SEGMENT_NAME ],
-        segments[ payload ]))
-
-      const updatedSegments = update(payload, updatedSegment, segments)
-      const params = { ...state.params, segments: updatedSegments }
-      return { ...state, params, integrity: false }
-    }
     case march.SET_INTEGRITY: {
       return { ...state, integrity: payload }
     }
-    case march.GET_EXISTING_SEGMENTS: {
-      const byId = payload
-        .filter((item) => item.type !== FIELDS_TYPE.POINT)
-        .reduce(
-          (acc, curr) => ({ ...acc, [curr.id]: curr }), {})
-      return {
-        ...state,
-        existingSegmentsById: {
-          [DEFAULT_SEGMENT_ID]: { id: DEFAULT_SEGMENT_ID, name: i18n.DEFAULT_SEGMENT_NAME }, ...byId,
-        },
-      }
+    case march.EDIT_FORM_FIELD:
+    case march.ADD_SEGMENT:
+    case march.DELETE_SEGMENT:
+    case march.ADD_CHILD:
+    case march.DELETE_CHILD:
+    case march.SET_COORD_FROM_MAP:
+    case march.INIT_MARCH:
+      return { ...state, ...payload }
+    case march.SET_COORD_MODE: {
+      return { ...state, coordMode: !state.coordMode, coordModeData: payload }
     }
-    case march.GET_LANDMARKS: {
-      return { ...state, landmarks: payload }
+    case march.SET_REF_POINT_ON_MAP: {
+      return { ...state, coordRefPoint: payload }
     }
     default:
       return state

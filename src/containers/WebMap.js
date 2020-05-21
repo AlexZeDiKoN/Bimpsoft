@@ -2,11 +2,12 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
-  canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData, inICTMode,
-  activeMapSelector, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore, undoInfo,
+  canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
+  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
+  marchDots, undoInfo,
 } from '../store/selectors'
 import {
-  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups,
+  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups, march,
 } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -51,6 +52,9 @@ const WebMapContainer = connect(
     catalogs: state.catalogs.byIds,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
+    marchMode: state.march.coordMode,
+    marchDots: marchDots(state),
+    marchRefPoint: state.march.coordRefPoint,
     undoInfo: undoInfo(state),
   }),
   catchErrors({
@@ -133,6 +137,7 @@ const WebMapContainer = connect(
     dropGroup: groups.dropGroup,
     newShapeFromSymbol: selection.newShapeFromSymbol,
     newShapeFromLine: selection.newShapeFromLine,
+    getCoordForMarch: march.setCoordFromMap,
     undo: webMap.undo,
     redo: webMap.redo,
   }),
