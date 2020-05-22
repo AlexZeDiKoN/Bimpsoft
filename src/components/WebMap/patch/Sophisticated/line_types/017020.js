@@ -1,7 +1,10 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  addPathAmplifier, drawCircle, drawText, emptyPath, drawLine, getPointSize,
+  drawCircle,
+  drawText,
+  drawLine,
+  getPointSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 
@@ -44,9 +47,8 @@ lineDefinitions['017020'] = {
     // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
     const r = getPointSize(result.layer)
     drawCircle(result, p0, r)
-    const amplifier = emptyPath()
-    drawCircle(amplifier, p0, r / 4)
-    addPathAmplifier(result, amplifier, true)
+    const color = result.layer.object?.attributes?.color ?? 'black'
+    result.amplifiers += `<circle stroke-width="0" stroke="none" fill="${color}" cx="${p0.x}" cy="${p0.y}" r="${r / 4}"/> `
     // Ампліфікатори
     const [ , b1 ] = drawText(
       result,
