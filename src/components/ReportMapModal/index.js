@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MovablePanel, components } from '@DZVIN/CommonComponents'
-import { Input, Button, DatePicker } from 'antd'
+import { Input, DatePicker } from 'antd'
 import moment from 'moment'
 
 import i18n from '../../i18n'
