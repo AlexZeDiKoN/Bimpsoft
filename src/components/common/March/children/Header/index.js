@@ -6,7 +6,7 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer, closeMarch } = props
+  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer } = props // , closeMarch
 
   return <>
     <div className={'march-title-top'}>
