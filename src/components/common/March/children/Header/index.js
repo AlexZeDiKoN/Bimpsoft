@@ -5,14 +5,20 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer, closeMarch } = props
+  const { changeTimeDistanceView,
+    timeDistanceView,
+    time,
+    distance,
+    sendMarchToExplorer,
+    closeMarch,
+    isCoordFilled } = props
 
   return <>
     <div className={'march-title-top'}>
       <div className={'march-title'}>
         {i18n.MARCH_TITLE}
       </div>
-      <div onClick={sendMarchToExplorer} className={'march-save-button'}/>
+      <div onClick={sendMarchToExplorer} className={`march-save-button ${!isCoordFilled || 'march-save-button-inactive'}`}/>
       <div onClick={closeMarch} className={'march-close-button'}/>
     </div>
     <div className={'march-title-bottom'}>
@@ -40,6 +46,7 @@ Header.propTypes = {
   distance: PropTypes.number.isRequired,
   sendMarchToExplorer: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
+  isCoordFilled: PropTypes.bool.isRequired,
 }
 
 export default React.memo(Header)

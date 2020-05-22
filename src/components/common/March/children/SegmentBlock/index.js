@@ -1,21 +1,27 @@
 import { Tooltip } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
 import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
+import AddSegmentContextMenu from '../AddSegmentContextMenu'
+import utilsMarch from '../../utilsMarch'
+
 import i18n from './../../../../../i18n'
+
+const { getAllowedTypeSegments } = utilsMarch.reducersHelpers
 
 const { msToTime } = convertUnits
 const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
 const { OWN_RESOURCES_BRUSH, BY_RAILROAD_BRUSH, BY_SHIPS_BRUSH, COMBINED_BRUSH, DEFAULT_BRUSH } = MARCH_COLOR
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId, timeDistanceView } = props
+  const { segment, addSegment, deleteSegment, segmentId, timeDistanceView, segments } = props
   const { segmentType, children, metric } = segment
   const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
   const { time: prevTime, distance: prevDistance } = metric.untilPrevious
+  const [ isViewContextMenu, changeViewContextMenu ] = useState(false)
 
   if (segmentType === 0) {
     return null
@@ -48,6 +54,21 @@ const SegmentBlock = (props) => {
 
   const childrenIsPresent = children && children.length > 0
 
+  const onAddSegment = (segmentId) => {
+    const allowedTypeSegments = getAllowedTypeSegments(segments, segmentId)
+    const typeLength = allowedTypeSegments.length
+
+    if (typeLength === 0) {
+      return
+    }
+
+    if (typeLength.length > 1) {
+      changeViewContextMenu(true)
+    } else {
+      addSegment(segmentId, allowedTypeSegments[0].segmentType)
+    }
+  }
+
   return (<div className={'segment'} style={{ backgroundColor: color }}>
     {segmentId !== 0
       ? <div className={'time-distance height-segment'}>
@@ -77,7 +98,12 @@ const SegmentBlock = (props) => {
 
     <div className={'hover-add-segment-button'}>
       <Tooltip placement='topRight' title={i18n.ADD_SEGMENT}>
-        <div className={'add-segment-button'} onClick={() => addSegment(segmentId)}/>
+        <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
+        {isViewContextMenu && <AddSegmentContextMenu
+          changeViewContextMenu={changeViewContextMenu}
+          addSegment={addSegment}
+          allowedSegments={'allowedSegments'}
+        />}
       </Tooltip>
     </div>
   </div>)

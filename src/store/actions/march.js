@@ -25,6 +25,21 @@ const { getMarchMetric } = api
 const { convertSegmentsForExplorer } = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
 
+const isEmptyMarchCoordinates = (segments) => {
+  /*
+  const checkCoordinates = (Coordinates) => Coordinates !== undefined
+
+  for (const segment of segments) {
+    const { coordinate, children } = segment
+
+
+
+  }
+
+  return true
+  */
+}
+
 const initDefaultSegments = () => ([
   {
     ...defaultSegment(),
@@ -153,11 +168,11 @@ export const editFormField = (data) => asyncAction.withNotification(
     })
   })
 
-export const addSegment = (segmentId) => asyncAction.withNotification(
+export const addSegment = (segmentId, segmentType) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
-    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment())
+    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(segmentType))
 
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, march.payload)
 
