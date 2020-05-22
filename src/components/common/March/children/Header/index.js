@@ -6,7 +6,7 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer } = props // , closeMarch
+  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer, closeMarch } = props
 
   return <>
     <div className={'march-title-top'}>
@@ -17,10 +17,10 @@ const Header = (props) => {
         onClick={sendMarchToExplorer}
         colorType={ColorTypes.WHITE}
         icon={IconNames.BAR_2_SAVE} />
-      {/* <IButton */}
-      {/*  onClick={closeMarch} */}
-      {/*  colorType={ColorTypes.WHITE} */}
-      {/*  icon={IconNames.CLOSE_ONE} /> */}
+      <IButton
+        onClick={closeMarch}
+        colorType={ColorTypes.WHITE}
+        icon={IconNames.CLOSE_ONE} />
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip
