@@ -1,9 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  addPathAmplifier, drawCircle, drawText, emptyPath, drawLine,
+  addPathAmplifier, drawCircle, drawText, emptyPath, drawLine, getPointSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
 import { amps } from '../../../../../constants/symbols'
 
 // sign name: Ракетний удар
@@ -42,7 +41,8 @@ lineDefinitions['017020'] = {
     const [ p0 ] = points
 
     // Кола
-    const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
+    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
+    const r = getPointSize(result.layer)
     drawCircle(result, p0, r)
     const amplifier = emptyPath()
     drawCircle(amplifier, p0, r / 4)

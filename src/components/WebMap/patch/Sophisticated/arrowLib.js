@@ -435,7 +435,7 @@ export function angle3Points (t1, t2, t3) {
     (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
 }
 
-function angle4Points (t1, t2, t3, t4) {
+export function angle4Points (t1, t2, t3, t4) {
   const l1 = straight(t1, t2)
   const l2 = straight(t3, t4)
   return Math.atan2((l1.A * l2.B - l2.A * l1.B), (l1.A * l2.A + l1.B * l2.B))
