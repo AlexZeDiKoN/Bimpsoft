@@ -1,177 +1,154 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Form, Icon, Input, Button, Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
-import i18n from '../../../i18n'
-import { MarchKeys } from '../../../constants'
+import webmapApi from '../../../server/api.webmap'
+import Header from './children/Header'
+import SegmentBlock from './children/SegmentBlock'
+import MarchForm from './children/MarchForm'
+import convertUnits from './utilsMarch/convertUnits'
+
 import './style.css'
-import SegmentContainer from './children/Segment'
 
-const { names: iconNames, IconButton } = components.icons
+const { hoursToMs } = convertUnits
 
-class March extends Component {
-  static propTypes = {
-    form: PropTypes.object.isRequired,
-    indicators: PropTypes.object,
-    params: PropTypes.object,
-    integrity: PropTypes.bool,
-    setMarchParams: PropTypes.func,
-    setIntegrity: PropTypes.func,
-  }
-
-  indicatorItemObj = (target, indicator) => {
-    const activeItem = indicator.typeValues.filter((item) => item.id === Number(target))
-    return {
-      indicatorId: indicator.id,
-      id: activeItem[ 0 ].id,
-      name: activeItem[ 0 ].name,
-    }
-  }
-
-  handleMarchType = (target, key) => {
-    const { setMarchParams, indicators } = this.props
-    const { MARCH_TEMPLATES, MARCH_INDICATORS_GROUP } = MarchKeys
-    const template = MARCH_TEMPLATES[ target ].required
-    const targetObj = this.indicatorItemObj(target,
-      indicators[ MARCH_INDICATORS_GROUP.movementType ])
-    setMarchParams({
-      [ key ]: targetObj,
-      template,
-    })
-  }
-
-  createSelectChildren = (incomeData) => incomeData
-    .map((item) => <Select.Option key={item.id}>{item.name}</Select.Option>)
-
-  checkIntegrityOfMarch = () => {
-    const { form, setIntegrity } = this.props
-    form.validateFields((err) => setIntegrity(!err))
-  }
-
-  handleSubmitForm = (event) => {
-    event.preventDefault()
-    const { form, params } = this.props
-    form.validateFields((err) => {
-      if (!err) {
-        const segments = this.setSegmentCoords()
-        // TODO: send request to server, delete localStorage
-        localStorage.setItem('march:storage', JSON.stringify({ ...params, segments }))
-      }
-    })
-  }
-
-  setSegmentCoords = () => {
-    const { params: { segments } } = this.props
-    const { FIELDS_TYPE } = MarchKeys
-    return segments.reduce((acc, curr, i, seg) => {
-      if (curr.type !== FIELDS_TYPE.POINT) {
-        const { coordinate: coordStart } = seg[i - 1]
-        const { coordinate: coordEnd } = seg[i + 1]
-        return [ ...acc, { ...curr, coordStart, coordEnd } ]
-      }
-      return [ ...acc, curr ]
-    }, [])
-  }
-
-  render () {
-    const {
-      form,
-      form: { getFieldDecorator },
-      indicators,
-      setMarchParams,
-      params: { segments },
-      integrity,
-    } = this.props
-    const { FormRow } = components.form
-    const { MARCH_KEYS, MARCH_INDICATORS_GROUP } = MarchKeys
-    return (
-      <div className="march_container">
-        <div className="march_title">{i18n.MARCH_TITLE}</div>
-        <div className="march_link-bl">
-          <a href="#/" title="Варіант маршруту">
-            {i18n.MARCH_LINK} -{' '}
-          </a>
-        </div>
-        {indicators && (
-          <Form
-            className="march_form"
-            onBlur={this.checkIntegrityOfMarch}
-            onSubmit={this.handleSubmitForm}
-          >
-            <div className="march_name">
-              <div className="march_name-indicator">
-                <Icon type="branches"
-                  className={`march_icon-${integrity ? 'success' : 'error'}`}/>
-              </div>
-              <div className="march_name-form">
-                <FormRow>
-                  {getFieldDecorator(MARCH_KEYS.MARCH_NAME,
-                    { rules: [ { required: true } ] })(
-                    <Input
-                      className="march_name-title"
-                      placeholder={i18n.MARCH_NAME}
-                      onChange={({ target }) =>
-                        setMarchParams({
-                          [ MARCH_KEYS.MARCH_NAME ]: target.value,
-                        })
-                      }
-                    />,
-                  )}
-                </FormRow>
-                <FormRow>
-                  {getFieldDecorator(MARCH_KEYS.MARCH_TYPE,
-                    { rules: [ { required: true } ] })(
-                    <Select
-                      placeholder={i18n.MARCH_TYPE}
-                      onChange={(e) =>
-                        this.handleMarchType(e, MARCH_KEYS.MARCH_TYPE)
-                      }
-                    >
-                      {this.createSelectChildren(
-                        indicators[ MARCH_INDICATORS_GROUP.movementType ].typeValues,
-                      )}
-                    </Select>,
-                  )}
-                </FormRow>
-              </div>
-              <div className="march_name-load">
-                <IconButton
-                  title={i18n.OPEN_MARCH_FILE}
-                  icon={iconNames.PACK_DEFAULT}
-                  hoverIcon={iconNames.PACK_HOVER}
-                  onClick={() => console.info('open file')}
-                />
-              </div>
-            </div>
-            <div className="march_track">
-              {segments.map((item, i) => (
-                <SegmentContainer key={item.id} index={i} form={form}/>
-              ))}
-            </div>
-            <div className="march_total_distance">{i18n.MARCH_DISTANCE}: {0} км</div>
-            <div className="march_buttonBlock">
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="march_button-submit"
-              >
-                {i18n.CREATE_BTN_TITLE}
-              </Button>
-              <Button
-                htmlType="reset"
-                className="march_button-cancel"
-                onClick={() => console.info('cancel')}
-              >
-                {i18n.CANCEL_BTN_TITLE}
-              </Button>
-            </div>
-          </Form>
-        )}
-      </div>
-    )
-  }
+const defaultRestTimeInHours = {
+  point: 1,
+  dayNight: 8,
+  daily: 24,
 }
 
-const WrappedMarch = Form.create()(March)
+const getMemoGeoLandmarks = (() => {
+  const memoGeoLandmark = {}
 
-export default WrappedMarch
+  return async (coordinate = {}) => {
+    const { lat, lng } = coordinate
+    const geoKey = `${lat}:${lng}`
+
+    let geoLandmark = memoGeoLandmark[geoKey]
+
+    const fixedCoord = {}
+    fixedCoord.lat = lat || 0.00001
+    fixedCoord.lng = lng || 0.00001
+
+    if (!geoLandmark) {
+      try {
+        geoLandmark = await webmapApi.nearestSettlement(fixedCoord)
+        memoGeoLandmark[geoKey] = geoLandmark
+      } catch (e) {
+        geoLandmark = {}
+      }
+    }
+
+    return geoLandmark
+  }
+})()
+
+const getMarchPoints = (pointsTypes) => {
+  const { point, dayNight, daily } = defaultRestTimeInHours
+
+  const MarchPoints = [
+    { rest: false, time: 0 },
+    { rest: true, time: hoursToMs(point) },
+    { rest: true, time: hoursToMs(dayNight) },
+    { rest: true, time: hoursToMs(daily) },
+    { rest: true, time: 0, notEditableTime: true },
+    { rest: false, time: 0 },
+  ]
+
+  return MarchPoints.map((point, id) => ({ ...point, ...pointsTypes[id] }))
+}
+
+const March = (props) => {
+  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer, closeMarch } = props
+  const segments = segmentList.toArray()
+  const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
+  const marchPoints = getMarchPoints(pointsTypes)
+
+  const renderDotsForms = () => {
+    const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap } = props
+    const handlers = {
+      editFormField,
+      addChild,
+      deleteChild,
+      setCoordMode,
+      getMemoGeoLandmarks,
+      setRefPointOnMap,
+    }
+
+    return <div className={'dots-forms'}>
+      { segments.map((segment, segmentId) => {
+        const { children, metric } = segment
+
+        return (<div key={segment.id} className={'segment-with-form'}>
+          <div className={'segment-block'}>
+            <SegmentBlock
+              segment={segment}
+              segmentDetails={metric}
+              segmentId={segmentId}
+              timeDistanceView={timeDistanceView}
+              addSegment={props.addSegment}
+              deleteSegment={props.deleteSegment}
+            />
+          </div>
+          <div className={'form-container'}>
+            <MarchForm
+              key={segment.id}
+              segmentId={segmentId}
+              handlers={handlers}
+              refPoint={''}
+              {...segment}
+              isLast={segments.length - 1 === segmentId}
+              marchPoints={marchPoints}
+            />
+            {children && children.map((child, childId) => {
+              return <MarchForm
+                key={child.id}
+                segmentId={segmentId}
+                childId={childId}
+                handlers={handlers}
+                marchPoints={marchPoints}
+                {...segment}
+                {...child}
+              />
+            })}
+          </div>
+        </div>)
+      })}
+    </div>
+  }
+
+  return <div className={'march-container'}>
+    <div className={'march-header'}>
+      <Header
+        changeTimeDistanceView={changeTimeDistanceView}
+        timeDistanceView={timeDistanceView}
+        time={time}
+        distance={distance}
+        sendMarchToExplorer={sendMarchToExplorer}
+        closeMarch={closeMarch}
+      />
+    </div>
+    <div className={'march-main'}>
+      <div className={'dot-form-container'}>{renderDotsForms()}</div>
+    </div>
+  </div>
+}
+
+March.propTypes = {
+  addSegment: PropTypes.func.isRequired,
+  deleteSegment: PropTypes.func.isRequired,
+  editFormField: PropTypes.func.isRequired,
+  addChild: PropTypes.func.isRequired,
+  deleteChild: PropTypes.func.isRequired,
+  setCoordMode: PropTypes.func.isRequired,
+  setRefPointOnMap: PropTypes.func.isRequired,
+  segmentList: PropTypes.shape({
+    toArray: PropTypes.func.isRequired,
+  }).isRequired,
+  pointsTypes: PropTypes.array.isRequired,
+  time: PropTypes.number.isRequired,
+  distance: PropTypes.number.isRequired,
+  sendMarchToExplorer: PropTypes.func.isRequired,
+  closeMarch: PropTypes.func.isRequired,
+}
+
+export default React.memo(March)
