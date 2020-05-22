@@ -22,6 +22,7 @@ const SegmentBlock = (props) => {
   const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
   const { time: prevTime, distance: prevDistance } = metric.untilPrevious
   const [ isViewContextMenu, changeViewContextMenu ] = useState(false)
+  const [ allowedTypeSegments, changeAllowedTypeSegments ] = useState([])
 
   if (segmentType === 0) {
     return null
@@ -56,14 +57,16 @@ const SegmentBlock = (props) => {
 
   const onAddSegment = (segmentId) => {
     const allowedTypeSegments = getAllowedTypeSegments(segments, segmentId)
-    const typeLength = allowedTypeSegments.length
+    const typesLength = allowedTypeSegments.length
 
-    if (typeLength === 0) {
+    if (typesLength === 0) {
       return
     }
 
-    if (typeLength.length > 1) {
+    if (typesLength.length > 1) {
       changeViewContextMenu(true)
+
+      //changeAllowedTypeSegments(allowedTypeSegments)
     } else {
       addSegment(segmentId, allowedTypeSegments[0].segmentType)
     }
@@ -102,7 +105,7 @@ const SegmentBlock = (props) => {
         {isViewContextMenu && <AddSegmentContextMenu
           changeViewContextMenu={changeViewContextMenu}
           addSegment={addSegment}
-          allowedSegments={'allowedSegments'}
+          allowedTypeSegments={allowedTypeSegments}
         />}
       </Tooltip>
     </div>

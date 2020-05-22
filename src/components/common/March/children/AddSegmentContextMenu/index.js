@@ -4,7 +4,7 @@ import useOutsideClick from '../useOutsideClick'
 const { ContextMenu } = components.common
 
 const AddSegmentContextMenu = (props) => {
-  const { changeViewContextMenu, addSegment } = props
+  const { changeViewContextMenu, addSegment, allowedTypeSegments } = props
   const ref = useRef()
 
   useOutsideClick(ref, () => {
