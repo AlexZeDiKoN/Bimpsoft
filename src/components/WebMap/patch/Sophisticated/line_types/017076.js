@@ -144,11 +144,8 @@ lineDefinitions['017076'] = {
       sectorTop.sort((elm1, elm2) => (angle3Points(pO, pE, elm1) - angle3Points(pO, pE, elm2)))
       let lastPoint = null
       sectorTop.forEach((point) => {
-        // if (ind !== 0) {
         arcTo(result, point, heightSector, heightSector, 0, 0, 1)
         lastPoint = point
-        // drawArc(result, sector[ind - 1], point, heightSector, 0, 0, 1)
-        // }
       })
       // правый бок сектора
       if (lastPoint === s2top) {
@@ -174,7 +171,6 @@ lineDefinitions['017076'] = {
       sectorTop.forEach(drawSector(s1top, s2top, heightSector, 1))
       lineTo(sectorFill, s2bottom)
       // достраиваем область заливки ( низ сектора )
-      // const sectorColor = { ...sectorFill }
       sectorTop.reverse()
       if (heightSectorPrev > 0) { // у пераого сектора низ - точка
         startDraw = false
