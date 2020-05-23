@@ -2,10 +2,9 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawLineMark,
+  drawLine, segmentBy, angleOf, segmentLength, drawLineMark, getGraphicSize,
 } from '../utils'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: СТЕЖЕННЯ
 // task code: DZVIN-5532
@@ -33,7 +32,7 @@ lineDefinitions['017049'] = {
   // Рендер-функція
   render: (result, points) => {
     const [ p0, p1 ] = points
-    const arrowLength = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const arrowLength = getGraphicSize(result.layer)
     const springWidth = arrowLength * SCALE_SPRING_WIDTH
     const springLength = arrowLength * SCALE_SPRING_LENGTH
     const l = segmentLength(p0, p1)

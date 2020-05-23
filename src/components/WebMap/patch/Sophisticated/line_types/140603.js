@@ -1,11 +1,10 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark,
+  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: FRIENDLY DIRECTION OF SUPPORTING ATTACK
 // task code: DZVIN-5519
@@ -45,7 +44,7 @@ lineDefinitions['140603'] = {
       angle,
       amplifiersInfo[amps.T] ?? '',
     )
-    const textSize = interpolateSize(result.layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE)
+    const textSize = getFontSize(result.layer)
     const p05 = segmentBy(p0, p1, 1 / 2)
     const pW = getPointAt(p1, p05, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, textSize * 1.1)
     drawMaskedText(

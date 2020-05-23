@@ -15,6 +15,7 @@ export const settings = {
   NODES_SPACE: 36, // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
   // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
   // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
+  POINT_SYMBOL_SIZE: { min: 9, max: 100 }, // (пікселів) розмір точкового знаку
   NODES_SIZE: { min: 12, max: 120 }, // (пікселів) розмір вузлової точки (діаметр перекресленого кола, сторона квадрата)
   TEXT_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір текстових ампліфікаторів лінійних/площинних знаків'
   GRAPHIC_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір графічних ампліфікаторів лінійних/площинних знаків'
@@ -825,7 +826,7 @@ const getTextAmplifiers = ({
     return result
   }
 
-  points.forEach((point, index) => {
+  points.forEach((point) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
       if (type === 'middle') {

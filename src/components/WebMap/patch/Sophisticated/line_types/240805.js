@@ -1,11 +1,9 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength,
+  drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { interpolateSize } from '../../utils/helpers'
-import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: ЗОНА ЦІЛІ
 // task code: DZVIN-5994
@@ -40,13 +38,7 @@ lineDefinitions['240805'] = {
     const v3 = applyVector(p0, getVector(v1, p0))
     drawLine(result, v0, v1, v2, v3, v0)
 
-    const fontSize = interpolateSize(
-      result.layer._map.getZoom(),
-      settings.TEXT_AMPLIFIER_SIZE,
-      1,
-      settings.MIN_ZOOM,
-      settings.MAX_ZOOM,
-    )
+    const fontSize = getFontSize(result.layer)
     const angle = angleOf(p0, p2)
 
     drawText(

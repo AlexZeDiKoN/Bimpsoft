@@ -41,7 +41,6 @@ lineDefinitions['340500'] = {
     if (!len) {
       return
     }
-
     drawLine(result, p0, p1)
     const buf = len < EDGE * scale * 4 ? len / 4 : EDGE * scale
     const pa = segmentsBy(p0, p1, [ buf / len, 0.5, 1 - buf / len ])
