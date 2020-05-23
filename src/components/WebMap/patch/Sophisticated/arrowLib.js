@@ -47,7 +47,7 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
   let pointSide // Боковая опорная точка
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
-  } else { // координаты опорной стрелки рассчитываем по имеющимся данным
+  } else { // координаты стрелки рассчитываем по имеющимся данным
     const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
@@ -303,6 +303,9 @@ export const STRATEGY_ARROW = {
       if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 1)) { // Обрабатываем изменения контрольных точек головы стрелки
         const referencePT = { x: nextPoints[indEnd].x, y: nextPoints[indEnd].y }
         const polarPoint = coordinatesToPolar(prevPoints[0], prevPoints[1], referencePT)
+        if (polarPoint.angle < 0) {
+          polarPoint.angle = -polarPoint.angle
+        }
         const coordinates = referencePoint(nextPoints[0], nextPoints[1], polarPoint.angle, polarPoint.beamLength)
         nextPoints[indEnd] = { x: coordinates.x, y: coordinates.y }
       }
