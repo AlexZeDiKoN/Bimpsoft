@@ -3,7 +3,6 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine,
-  drawArc,
   drawMaskedText,
   drawLineMark,
   angleOf,
@@ -118,9 +117,6 @@ lineDefinitions['017076'] = {
       const s1bottom = s1bottomNext
       const s2bottom = s2bottomNext
       sectorBottom = [ ...sectorTop ]
-      // бока сектора
-      drawLine(result, s1bottom, s1top)
-      drawLine(result, s2bottom, s2top)
       // відображення азимутів
       const pA1 = { x: (s1bottom.x + s1top.x) / 2, y: (s1bottom.y + s1top.y) / 2 }
       const pA2 = { x: (s2bottom.x + s2top.x) / 2, y: (s2bottom.y + s2top.y) / 2 }
@@ -142,13 +138,24 @@ lineDefinitions['017076'] = {
         s1bottomNext = s2bottomNext = null
         sectorTop = [ s1top, s2top ]
       }
+      // левый бок сектора
+      drawLine(result, s1bottom, s1top)
       // сортировка точек
       sectorTop.sort((elm1, elm2) => (angle3Points(pO, pE, elm1) - angle3Points(pO, pE, elm2)))
-      sectorTop.forEach((point, ind, sector) => {
-        if (ind !== 0) {
-          drawArc(result, sector[ind - 1], point, heightSector, 0, 0, 1)
-        }
+      let lastPoint = null
+      sectorTop.forEach((point) => {
+        // if (ind !== 0) {
+        arcTo(result, point, heightSector, heightSector, 0, 0, 1)
+        lastPoint = point
+        // drawArc(result, sector[ind - 1], point, heightSector, 0, 0, 1)
+        // }
       })
+      // правый бок сектора
+      if (lastPoint === s2top) {
+        lineTo(result, s2bottom)
+      } else {
+        drawLine(result, s2top, s2bottom)
+      }
       const sectorFill = { d: '' }
       drawLine(sectorFill, s1bottom, s1top)
       const drawSector = (pointStart, pointEnd, radius, sf) => (point) => {
