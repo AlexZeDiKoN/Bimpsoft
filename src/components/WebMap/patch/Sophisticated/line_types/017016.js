@@ -6,7 +6,7 @@ import {
   applyVector,
   drawLine,
   drawLineMark,
-  drawText,
+  drawText, getFontSize,
   getVector,
   normalVectorTo,
   oppositeVector,
@@ -17,9 +17,8 @@ import {
   translateTo,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
-import { interpolateSize } from '../../utils/helpers'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -211,13 +210,7 @@ lineDefinitions['017016'] = {
 
     const angle = angleOf(start, points[3])
     const top = angle < 0
-    const fontSize = interpolateSize(
-      result.layer._map.getZoom(),
-      settings.TEXT_AMPLIFIER_SIZE,
-      1,
-      settings.MIN_ZOOM,
-      settings.MAX_ZOOM,
-    )
+    const fontSize = getFontSize(result.layer)
 
     const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
     if (text) {

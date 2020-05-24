@@ -1,10 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, halfPlane, getPointMove, angleOf,
+  drawLine, normalVectorTo, applyVector, halfPlane, getPointMove, angleOf, getGraphicSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
-import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: BRIDGE
 // task code: DZVIN-5775
@@ -36,7 +34,7 @@ lineDefinitions['271400'] = {
     const b = applyVector(p1, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
 
-    const markSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const markSize = getGraphicSize(result.layer)
     const aTop = getPointMove(p0, angleOf(p0, p1) - Math.PI / 4 * hp, markSize)
     const aBottom = getPointMove(p1, angleOf(p1, p0) + Math.PI / 4 * hp, markSize)
     const bTop = getPointMove(a, angleOf(a, b) + Math.PI / 4 * hp, markSize)
