@@ -22,7 +22,8 @@ const Header = (props) => {
       <IButton
         onClick={sendMarchToExplorer}
         colorType={ColorTypes.WHITE}
-        icon={IconNames.BAR_2_SAVE} />
+        icon={IconNames.BAR_2_SAVE}
+        disabled={!isCoordFilled}/>
       <IButton
         onClick={closeMarch}
         colorType={ColorTypes.WHITE}
