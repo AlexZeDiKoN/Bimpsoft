@@ -18,7 +18,7 @@ const Header = (props) => {
       <div className={'march-title'}>
         {i18n.MARCH_TITLE}
       </div>
-      <div onClick={sendMarchToExplorer} className={`march-save-button ${!isCoordFilled || 'march-save-button-inactive'}`}/>
+      <div onClick={sendMarchToExplorer} className={`march-save-button ${!isCoordFilled && 'march-save-button-inactive'}`}/>
       <div onClick={closeMarch} className={'march-close-button'}/>
     </div>
     <div className={'march-title-bottom'}>

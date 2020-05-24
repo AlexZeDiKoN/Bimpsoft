@@ -1,4 +1,3 @@
-import { Tooltip } from 'antd'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import PopupPanel from '../PopupPanel'
@@ -7,8 +6,6 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
 import AddSegmentContextMenu from '../AddSegmentContextMenu'
 import utilsMarch from '../../utilsMarch'
-
-import i18n from './../../../../../i18n'
 
 const { getAllowedTypeSegments } = utilsMarch.reducersHelpers
 
@@ -27,7 +24,7 @@ const SegmentBlock = (props) => {
   if (segmentType === 0) {
     return null
   }
-  let color = ''
+  let color
   switch (segmentType) {
     case (OWN_RESOURCES):
       color = OWN_RESOURCES_BRUSH
@@ -63,12 +60,11 @@ const SegmentBlock = (props) => {
       return
     }
 
-    if (typesLength.length > 1) {
+    if (typesLength > 1) {
       changeViewContextMenu(true)
-
-      //changeAllowedTypeSegments(allowedTypeSegments)
+      changeAllowedTypeSegments(allowedTypeSegments)
     } else {
-      addSegment(segmentId, allowedTypeSegments[0].segmentType)
+      addSegment(segmentId, allowedTypeSegments[0])
     }
   }
 
@@ -100,15 +96,15 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT}>
-        <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
-        {isViewContextMenu && <AddSegmentContextMenu
-          changeViewContextMenu={changeViewContextMenu}
-          addSegment={addSegment}
-          allowedTypeSegments={allowedTypeSegments}
-        />}
-      </Tooltip>
+      <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
+      {isViewContextMenu && <AddSegmentContextMenu
+        changeViewContextMenu={changeViewContextMenu}
+        addSegment={addSegment}
+        typeSegments={allowedTypeSegments}
+        segmentId={segmentId}
+      />}
     </div>
+
   </div>)
 }
 
@@ -128,14 +124,21 @@ SegmentBlock.propTypes = {
         distance: PropTypes.number.isRequired,
       }).isRequired,
       untilPrevious: PropTypes.shape({
-        time: PropTypes.number.isRequired,
-        distance: PropTypes.number.isRequired,
+        time: PropTypes.oneOfType([
+          PropTypes.number,
+          PropTypes.instanceOf(null),
+        ]),
+        distance: PropTypes.oneOfType([
+          PropTypes.number,
+          PropTypes.instanceOf(null),
+        ]),
       }).isRequired,
     }).isRequired,
   }).isRequired,
   addSegment: PropTypes.func.isRequired,
   deleteSegment: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,
+  segments: PropTypes.array.isRequired,
 }
 
 export default React.memo(SegmentBlock)

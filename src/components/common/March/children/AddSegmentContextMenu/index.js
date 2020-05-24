@@ -1,32 +1,63 @@
-import React, { useState, useRef } from 'react'
+import React, { useRef } from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import useOutsideClick from '../useOutsideClick'
+
 const { ContextMenu } = components.common
 
+const mapStateToProps = ({ march: { indicators } }) => ({
+  MB001: (indicators && indicators['МШВ001']) || {},
+})
+
+const typeSegmentToName = (type, typeValues) => {
+  for (const typeValue of typeValues) {
+    const { id, name } = typeValue
+
+    if (type === id) {
+      return name
+    }
+  }
+
+  return ''
+}
+
 const AddSegmentContextMenu = (props) => {
-  const { changeViewContextMenu, addSegment, allowedTypeSegments } = props
+  const { changeViewContextMenu, addSegment, typeSegments, segmentId, MB001 } = props
   const ref = useRef()
 
   useOutsideClick(ref, () => {
     changeViewContextMenu(false)
   })
 
+  const onSelectType = (typeSegment) => {
+    addSegment(segmentId, typeSegment)
+    changeViewContextMenu(false)
+  }
+
   return (
-    <div ref={ref}><ContextMenu>
-      <ContextMenu.Item
-        text="item 1"
-        onClick={() => changeViewContextMenu(false)}
-      />
-      <ContextMenu.Item
-        text="item 2"
-      />
-      <ContextMenu.Item
-        icon="clip-default"
-        hoverIcon="clip-hover"
-        text="item 3"
-      />
-    </ContextMenu></div>
+    <div ref={ref}>
+      <ContextMenu>
+        {typeSegments.map((typeSegment) =>
+          <ContextMenu.Item
+            text={typeSegmentToName(typeSegment, MB001.typeValues)}
+            onClick={() => onSelectType(typeSegment)}
+            key={typeSegment}
+          />,
+        )}
+      </ContextMenu>
+    </div>
   )
 }
 
-export default AddSegmentContextMenu
+AddSegmentContextMenu.propTypes = {
+  MB001: PropTypes.shape({
+    typeValues: PropTypes.array.isRequired,
+  }),
+  typeSegments: PropTypes.array.isRequired,
+  changeViewContextMenu: PropTypes.func.isRequired,
+  segmentId: PropTypes.number.isRequired,
+  addSegment: PropTypes.func.isRequired,
+}
+
+export default connect(mapStateToProps)(AddSegmentContextMenu)
