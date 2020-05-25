@@ -17,8 +17,6 @@ export const extractLineCode = (code) => code.slice(10, 16)
 export const findDefinition = (code) => lineDefinitions[extractLineCode(code)]
 
 // === Math ===
-export const DegToRad = Math.PI / 180
-export const RadToDeg = 180 / Math.PI
 
 // Квадрат (для зручності просто)
 export const square = (x) => x * x
@@ -706,7 +704,7 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       const colorFill = evaluateColor(result.layer.object.attributes.color) || 'black'
       result.amplifiers += drawLineEnd(markType,
         point,
-        Math.round(angle * RadToDeg),
+        Math.round(deg(angle)),
         graphicSize / 12,
         result.layer.strokeWidth,
         colorFill)
