@@ -187,6 +187,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     scale,
     fontSize,
     graphicSize,
+    id,
   } = data
   const fontColor = '#000000'
   const strokeColor = colors.evaluateColor(color)
@@ -288,7 +289,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id)}
       {resultFilled}
     </>
   )
@@ -296,7 +297,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerData) => {
   const { coordToPixels, bounds, scale, zoom, fontSize, graphicSize } = commonData
-  const { attributes, geometry, level } = data
+  const { attributes, geometry, level, id } = data
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
     if (bezier) {
@@ -305,7 +306,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
     return getLineSvg(
       points,
       attributes,
-      { level, bounds, scale, fontSize, graphicSize, bezier, locked },
+      { level, bounds, scale, fontSize, graphicSize, bezier, locked, id },
       layerData,
       zoom,
     )
