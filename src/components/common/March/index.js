@@ -58,7 +58,7 @@ const getMarchPoints = (pointsTypes) => {
 }
 
 const March = (props) => {
-  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer } = props
+  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer, closeMarch, isCoordFilled } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
   const marchPoints = getMarchPoints(pointsTypes)
@@ -87,6 +87,7 @@ const March = (props) => {
               timeDistanceView={timeDistanceView}
               addSegment={props.addSegment}
               deleteSegment={props.deleteSegment}
+              segments={segments}
             />
           </div>
           <div className={'form-container'}>
@@ -124,6 +125,8 @@ const March = (props) => {
         time={time}
         distance={distance}
         sendMarchToExplorer={sendMarchToExplorer}
+        closeMarch={closeMarch}
+        isCoordFilled={isCoordFilled}
       />
     </div>
     <div className={'march-main'}>
@@ -147,6 +150,8 @@ March.propTypes = {
   time: PropTypes.number.isRequired,
   distance: PropTypes.number.isRequired,
   sendMarchToExplorer: PropTypes.func.isRequired,
+  closeMarch: PropTypes.func.isRequired,
+  isCoordFilled: PropTypes.bool.isRequired,
 }
 
 export default React.memo(March)

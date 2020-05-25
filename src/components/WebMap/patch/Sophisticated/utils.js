@@ -1,10 +1,11 @@
 import L from 'leaflet'
-import { rotate, translate, compose, applyToPoint } from 'transformation-matrix' // inverse, applyToPoints,
+import { applyToPoint, compose, rotate, translate } from 'transformation-matrix' // inverse, applyToPoints,
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
-import { MARK_TYPE, drawLineEnd, settings } from '../../../../utils/svg/lines'
-import { FONT_FAMILY, FONT_WEIGHT } from '../../../../utils/svg'
+import { drawLineEnd, MARK_TYPE, settings } from '../../../../utils/svg/lines'
+import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg'
+import { evaluateColor } from '../../../../constants/colors'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -252,18 +253,22 @@ export const drawBezierSpline = (result, points, locked) => (result.d += prepare
 // === Utils ===
 
 // Визначення піксельних розмірів текстового блоку
-export const textBBox = (text, layer, sizeFactor = 1, fontSize) => {
+export const textBBox = (text, layer, sizeFactor = 1) => {
   const element = L.SVG.create('text')
-  // eslint-disable-next-line max-len
-  const font = fontSize || interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const fontSize = getFontSize(layer, sizeFactor)
   element.setAttribute('font-family', CONFIG.FONT_FAMILY)
-  element.setAttribute('font-size', `${font}`)
+  element.setAttribute('font-size', `${fontSize}`)
   element.setAttribute('font-weight', CONFIG.FONT_WEIGHT)
   element.innerHTML = text
-  layer._renderer._rootGroup.appendChild(element)
-  const result = element.getBBox()
-  element.remove()
-  return result
+  if (layer?._renderer?._rootGroup) {
+    layer._renderer._rootGroup.appendChild(element)
+    const result = element.getBBox()
+    element.remove()
+    return result
+  }
+  // для друку
+  const fontConfig = `${CONFIG.FONT_WEIGHT} ${Math.round(fontSize)}px ${CONFIG.FONT_FAMILY}`
+  return { width: getTextWidth(text, fontConfig), height: fontSize }
 }
 
 // === Draw ===
@@ -540,9 +545,7 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
   if (!text || !text.length) {
     return [ '', { width: 0, height: 0 } ]
   }
-  // Обчислення розміру
-  const zoom = result.layer._map.getZoom()
-  const fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, sizeFactor, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const fontSize = getFontSize(result.layer, sizeFactor) // Обчислення розміру шрифту
   const key = `${fontSize}:${text}`
   let box = textSizeCache[key]
   if (!box) {
@@ -551,12 +554,13 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
   }
   // Ампліфікатор
   // font-weight="${CONFIG.FONT_WEIGHT}"
-  // fill="${color || result.layer._path.getAttribute('stroke')}"
+  const fill = color ? `fill = "${color}"` : `fill="black"`
   const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
     font-family="${FONT_FAMILY}"
     font-weight="${FONT_WEIGHT}"
     stroke="none" 
+    ${fill}
     transform="${transform}"
     x="${0}" 
     y="${0}" 
@@ -569,11 +573,11 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
 // font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
 // eslint-disable-next-line max-len
-export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle') => {
+export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle', color) => {
   if (!text || !text.length) {
     return
   }
-  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, null, textAlign)
+  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, color, textAlign)
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
@@ -596,8 +600,13 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
 }
 
 export const addPathAmplifier = (result, amplifier, closed, dash) => {
-  const color = result.layer._path.getAttribute('stroke')
-  const width = result.layer._path.getAttribute('stroke-width')
+  const color = result.layer._path
+    ? result.layer._path.getAttribute('stroke')
+    : result.layer.object.attributes.color
+  const width = result.layer._path
+    ? result.layer._path.getAttribute('stroke-width')
+    : result.layer.object.attributes.strokeWidth
+
   result.amplifiers += `<path 
     stroke="${color}" ${closed ? ` fill="${color}"` : ` fill="none" stroke-width="${width}"`}${dash ? ` stroke-dasharray="${dash}"` : ''} 
     d="${amplifier.d}" 
@@ -655,7 +664,7 @@ function getLeftPoint (points, lP, nP) {
 }
 
 export const drawLineMark = (result, markType, point, angle, scale) => {
-  const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+  const graphicSize = getGraphicSize(result.layer, scale)
   let da
   switch (markType) {
     case MARK_TYPE.SERIF:
@@ -691,11 +700,44 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
     case MARK_TYPE.ARROW_90_DASHES:
       drawArrowDashes(result, point, angle, graphicSize)
       return graphicSize
-    default: // для стрілок з заливкою
-      // eslint-disable-next-line max-len
-      result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, result.layer.options.color)
+    default: { // для стрілок з заливкою
+      const colorFill = evaluateColor(result.layer.object.attributes.color) || 'black'
+      result.amplifiers += drawLineEnd(markType,
+        point,
+        Math.round(deg(angle)),
+        graphicSize / 12,
+        result.layer.strokeWidth,
+        colorFill)
       return graphicSize
+    }
   }
   drawLine(result, getPointMove(point, angle - da, graphicSize), point, getPointMove(point, angle + da, graphicSize))
   return graphicSize
+}
+
+// Обчислення розміру шрифту
+export const getFontSize = (layer, scale = 1) => {
+  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
+    return interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, scale)
+  }
+  // статичний розмір (для друку)
+  return Math.round(layer.fontSize * scale) || 1
+}
+
+// Обчислення розміру маркера
+export const getGraphicSize = (layer, scale = 1) => {
+  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
+    return interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+  }
+  // статичний розмір (для друку)
+  return layer.graphicSize * scale || 1
+}
+
+// Обчислення розміру точкового знаку
+export const getPointSize = (layer, scale = 1) => {
+  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
+    return interpolateSize(layer._map.getZoom(), settings.POINT_SYMBOL_SIZE, scale)
+  }
+  // статичний розмір (для друку)
+  return layer.pointSymbolSize * scale || 10
 }

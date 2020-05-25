@@ -9,13 +9,16 @@ const mapStateToProps = ({ march: {
   integrity,
   pointsTypes,
   time,
-  distance } }) => ({
+  distance,
+  isCoordFilled } }) => ({
   indicators,
   segmentList: segments,
   integrity,
   pointsTypes,
   time,
   distance,
+  isCoordFilled,
+
 })
 
 const mapDispatchToProps = {
@@ -30,6 +33,7 @@ const mapDispatchToProps = {
   setRefPointOnMap: march.setRefPointOnMap,
   openMarch: march.openMarch,
   sendMarchToExplorer: march.sendMarchToExplorer,
+  closeMarch: march.closeMarch,
 }
 
 const MarchContainer = connect(

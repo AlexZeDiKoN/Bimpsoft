@@ -2,10 +2,8 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, angleOf, segmentLength,
+  drawLine, angleOf, segmentLength, getGraphicSize,
 } from '../utils'
-import { settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
 
 // sign name: FIX
 // task code: DZVIN-7286
@@ -33,7 +31,7 @@ lineDefinitions['271600'] = {
   // Рендер-функція
   render: (result, points) => {
     const [ p0, p1 ] = points
-    const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const graphicSize = getGraphicSize(result.layer)
     const arrowWidth = graphicSize * SCALE_WIDTH
     const springLength = graphicSize * SCALE_SPRING
     const l = segmentLength(p0, p1)

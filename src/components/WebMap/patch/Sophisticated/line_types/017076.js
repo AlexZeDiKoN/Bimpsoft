@@ -2,13 +2,19 @@ import { utils } from '@DZVIN/CommonComponents'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, drawMaskedText, drawLineMark, angleOf,
+  drawLine,
+  drawMaskedText,
+  drawLineMark,
+  angleOf,
+  arcTo,
+  lineTo,
 } from '../utils'
 import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAzimuth } from '../../utils/sectors'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { evaluateColor } from '../../../../../constants/colors'
 
 const { Coordinates: Coord } = utils
 
@@ -62,7 +68,8 @@ lineDefinitions['017076'] = {
       return
     }
     // ---------------------------------------------------------------
-    const sectorInfo = result.layer?.object?.attributes?.sectorsInfo.toJS()
+    const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
+    const strokeWidth = result.layer._path.getAttribute('stroke-width') || settings.STROKE_WIDTH
     const coordArray = result.layer?.getLatLngs?.()
     const infoArray = []
     if (coordArray) {
@@ -81,64 +88,108 @@ lineDefinitions['017076'] = {
     }
     // вывод азимута
     drawLine(result, pO, pE)
+    const arrowPath = `<path fill="none" stroke-width="${strokeWidth}" d="M${pO.x} ${pO.y}L ${pE.x} ${pE.y}"/>`
     // стрелка азимута
     drawLineMark(result, MARK_TYPE.ARROW_30_FILL, pE, angleOf(pO, pE))
     if (points.length < 4) {
       return
     }
     // построения секторов
+    const sectorsPath = []
     // бока первого сектора
-    let s1top = points[2]
-    let s2top = points[3]
-    if (!isDefPoint(s1top) || !isDefPoint(s2top)) {
-      return
-    }
-    drawLine(result, pO, s1top)
-    drawLine(result, pO, s2top)
-    // відображення азимутів
-    const pA1 = { x: (pO.x + s1top.x) / 2, y: (pO.y + s1top.y) / 2 }
-    const pA2 = { x: (pO.x + s2top.x) / 2, y: (pO.y + s2top.y) / 2 }
+    let s1top = pO
+    let s2top = pO
     const amplifSize = 0.667 // scale * 2
-    drawMaskedText(result, pA1, 0, infoArray[0]?.azimut1, amplifSize)
-    drawMaskedText(result, pA2, 0, infoArray[0]?.azimut2, amplifSize)
-    // відображення радіусу
-    const heightPreviousSector = lengthLine(pO, s1top) // heightSector
-    const pR = pointsToSegment(pO, pE, heightPreviousSector)
-    drawMaskedText(result, pR, 0, infoArray[0]?.radius, amplifSize, 'middle', 'after-edge')
-    drawMaskedText(result, pR, 0, sectorInfo[0]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
-    let s1topPrev, s2topPrev
-    // построения последующих секторов
-    for (let i = 4, iA = 1; i < points.length; i += 2, iA++) {
-      const heightPreviousSector = lengthLine(pO, s1top) // heightSector
+    let sectorTop = [ pO ]
+    let sectorBottom = []
+    let s1topNext, s2topNext
+    let s1bottomNext = pO
+    let s2bottomNext = pO
+    let heightSectorPrev = 0
+    // построения секторов
+    for (let i = 2, iA = 0; i < points.length; i += 2, iA++) {
       if (!isDefPoint(points[i]) || !isDefPoint(points[i + 1])) {
         continue
       }
-      s1topPrev = s1top
-      s2topPrev = s2top
       s1top = points[i]
       s2top = points[i + 1]
-      const s1bottom = pointsToSegment(pO, s1top, heightPreviousSector)
-      const s2bottom = pointsToSegment(pO, s2top, heightPreviousSector)
-      // бока сектора
-      drawLine(result, s1bottom, s1top)
-      drawLine(result, s2bottom, s2top)
+      const heightSector = lengthLine(pO, s1top)
+      const s1bottom = s1bottomNext
+      const s2bottom = s2bottomNext
+      sectorBottom = [ ...sectorTop ]
       // відображення азимутів
       const pA1 = { x: (s1bottom.x + s1top.x) / 2, y: (s1bottom.y + s1top.y) / 2 }
       const pA2 = { x: (s2bottom.x + s2top.x) / 2, y: (s2bottom.y + s2top.y) / 2 }
       drawMaskedText(result, pA1, 0, infoArray[iA]?.azimut1, amplifSize)
       drawMaskedText(result, pA2, 0, infoArray[iA]?.azimut2, amplifSize)
       // відображення радіусу та ампліфікатору
-      const pR = pointsToSegment(pO, pE, lengthLine(pO, s1top))
+      const pR = pointsToSegment(pO, pE, heightSector)
       drawMaskedText(result, pR, 0, infoArray[iA]?.radius, amplifSize, 'middle', 'after-edge')
-      drawMaskedText(result, pR, 0, sectorInfo[iA]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
+      drawMaskedText(result, pR, 0, sectorsInfo[iA]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
+
       // построение верха секторов
-      const mP = [ s1topPrev, s2topPrev, s1bottom, s2bottom ]
+      s1topNext = points[i + 2]
+      s2topNext = points[i + 3]
+      if (s1topNext !== undefined && s2topNext !== undefined) {
+        s1bottomNext = pointsToSegment(pO, s1topNext, heightSector)
+        s2bottomNext = pointsToSegment(pO, s2topNext, heightSector)
+        sectorTop = [ s1top, s2top, s1bottomNext, s2bottomNext ]
+      } else {
+        s1bottomNext = s2bottomNext = null
+        sectorTop = [ s1top, s2top ]
+      }
+      // левый бок сектора
+      drawLine(result, s1bottom, s1top)
       // сортировка точек
-      mP.sort((elm1, elm2) => (angle3Points(pO, pE, elm1) - angle3Points(pO, pE, elm2)))
-      drawArc(result, mP[0], mP[1], heightPreviousSector, 0, 0, 1)
-      drawArc(result, mP[1], mP[2], heightPreviousSector, 0, 0, 1)
-      drawArc(result, mP[2], mP[3], heightPreviousSector, 0, 0, 1)
+      sectorTop.sort((elm1, elm2) => (angle3Points(pO, pE, elm1) - angle3Points(pO, pE, elm2)))
+      let lastPoint = null
+      sectorTop.forEach((point) => {
+        arcTo(result, point, heightSector, heightSector, 0, 0, 1)
+        lastPoint = point
+      })
+      // правый бок сектора
+      if (lastPoint === s2top) {
+        lineTo(result, s2bottom)
+      } else {
+        drawLine(result, s2top, s2bottom)
+      }
+      const sectorFill = { d: '' }
+      drawLine(sectorFill, s1bottom, s1top)
+      const drawSector = (pointStart, pointEnd, radius, sf) => (point) => {
+        if (startDraw && !endDraw) {
+          arcTo(sectorFill, point, radius, radius, 0, 0, sf)
+        }
+        if (point === pointStart) {
+          startDraw = true
+        }
+        if (point === pointEnd) {
+          endDraw = true
+        }
+      }
+      let startDraw = false
+      let endDraw = false
+      sectorTop.forEach(drawSector(s1top, s2top, heightSector, 1))
+      lineTo(sectorFill, s2bottom)
+      // достраиваем область заливки ( низ сектора )
+      sectorTop.reverse()
+      if (heightSectorPrev > 0) { // у пераого сектора низ - точка
+        startDraw = false
+        endDraw = false
+        sectorBottom.forEach(drawSector(s2bottom, s1bottom, heightSectorPrev, 0))
+      }
+      sectorFill.d += 'z'
+      const color = evaluateColor(sectorsInfo[iA]?.color) ?? 'black'
+      const fillColor = evaluateColor(sectorsInfo[iA]?.fill) ?? 'transparent'
+      sectorsPath.push(`<path stroke="${color}" stroke-width="${strokeWidth}"
+        fill-rule="evenodd" fill="${fillColor}" fill-opacity="0.22"
+        d="${sectorFill.d}"/>`)
+      heightSectorPrev = heightSector
     }
-    drawArc(result, s1top, s2top, lengthLine(pO, s1top), 0, 0, 1)
+    sectorsPath.reverse()
+    const id = result.layer.object.id
+    result.amplifiers += `<g mask="url(#mask-${id})">${arrowPath}`
+    sectorsPath.forEach((sector) => { result.amplifiers += sector })
+    result.amplifiers += `</g>`
+    result.layer._path.setAttribute('stroke-opacity', 0)
   },
 }
