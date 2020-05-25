@@ -1,11 +1,11 @@
 import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
 import { getAmplifiers, stroked, waved, getLineEnds, blockage, drawLineHatch } from '../../../utils/svg/lines'
+import { evaluateColor } from '../../../constants/colors'
 import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
-import { evaluateColor } from '../../../constants/colors'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
