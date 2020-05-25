@@ -10,6 +10,7 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  isCoordFilled: false,
   time: 0,
   distance: 0,
   coordRefPoint: null,
@@ -62,6 +63,9 @@ export default function reducer (state = initState, action) {
     }
     case march.SET_REF_POINT_ON_MAP: {
       return { ...state, coordRefPoint: payload }
+    }
+    case march.CLOSE_MARCH: {
+      return { ...state, marchEdit: false }
     }
     default:
       return state

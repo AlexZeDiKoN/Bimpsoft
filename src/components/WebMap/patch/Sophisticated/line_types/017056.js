@@ -8,9 +8,9 @@ import {
   setVectorLength,
   applyVector,
   drawArc,
-  drawLineMark, angleOf,
+  drawLineMark,
+  angleOf, getPointSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
 import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: Розвідувальні завдання пошуком
@@ -39,9 +39,9 @@ lineDefinitions['017056'] = {
   render: (result, points, scale) => {
     let [ p0, p1 ] = points
 
-    const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes) * 1.2
+    const r = getPointSize(result.layer) * 1.2
+    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes) * 1.2
     const d = r * Math.sqrt(2)
-
     const pv = getVector(p1, p0)
     p0 = applyVector(p1, setVectorLength(pv, segmentLength(pv) - r))
     const v = getVector(p0, p1)

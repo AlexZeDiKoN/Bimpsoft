@@ -19,10 +19,41 @@ export const SET_COORD_MODE = action('SET_COORD_MODE')
 export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
 export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
+export const CLOSE_MARCH = action('CLOSE_MARCH')
 
 const { getMarchMetric } = api
 const { convertSegmentsForExplorer } = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
+
+const isFilledMarchCoordinates = (segments) => {
+  const isFilledCoordinate = (coordinates) => {
+    if (coordinates !== undefined) {
+      const { lat, lng } = coordinates
+      if (lat !== undefined && lng !== undefined) {
+        return true
+      }
+    }
+    return false
+  }
+
+  for (const segment of segments) {
+    const { coordinate, children } = segment
+
+    if (!isFilledCoordinate(coordinate)) {
+      return false
+    }
+
+    if (children !== undefined && children.length > 0) {
+      for (const child of children) {
+        if (!isFilledCoordinate(child.coordinate)) {
+          return false
+        }
+      }
+    }
+  }
+
+  return true
+}
 
 const initDefaultSegments = () => ([
   {
@@ -142,9 +173,11 @@ export const editFormField = (data) => asyncAction.withNotification(
     const { march } = getState()
     const newSegments = getUpdateSegments(march.segments, data)
 
+    const isCoordFilled = isFilledMarchCoordinates(newSegments.toArray())
+
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance }
+    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance, isCoordFilled }
 
     dispatch({
       type: EDIT_FORM_FIELD,
@@ -152,15 +185,17 @@ export const editFormField = (data) => asyncAction.withNotification(
     })
   })
 
-export const addSegment = (segmentId) => asyncAction.withNotification(
+export const addSegment = (segmentId, segmentType) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
-    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment())
+    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(segmentType))
+
+    const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
 
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, time, distance }
+    const payload = { segments: segmentsWithMetric, time, distance, isCoordFilled }
 
     dispatch({
       type: ADD_SEGMENT,
@@ -174,9 +209,11 @@ export const deleteSegment = (segmentId) => asyncAction.withNotification(
 
     const updateSegments = march.segments.delete(segmentId)
 
+    const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
+
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, time, distance }
+    const payload = { segments: segmentsWithMetric, time, distance, isCoordFilled }
 
     dispatch({
       type: DELETE_SEGMENT,
@@ -196,9 +233,11 @@ export const addChild = (segmentId, childId) => asyncAction.withNotification(
       children,
     }))
 
+    const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
+
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, time, distance }
+    const payload = { segments: segmentsWithMetric, time, distance, isCoordFilled }
 
     dispatch({
       type: ADD_CHILD,
@@ -218,9 +257,11 @@ export const deleteChild = (segmentId, childId) => asyncAction.withNotification(
       children,
     }))
 
+    const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
+
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(updateSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, time, distance }
+    const payload = { segments: segmentsWithMetric, time, distance, isCoordFilled }
 
     dispatch({
       type: DELETE_CHILD,
@@ -241,9 +282,11 @@ export const setCoordFromMap = (value) => asyncAction.withNotification(
     const data = { ...coordModeData, val: value, fieldName: 'coordinate' }
     const newSegments = getUpdateSegments(segments, data)
 
+    const isCoordFilled = isFilledMarchCoordinates(newSegments)
+
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance }
+    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance, isCoordFilled }
 
     dispatch({
       type: SET_COORD_FROM_MAP,
@@ -268,9 +311,16 @@ export const openMarch = (data) => asyncAction.withNotification(
       segments = data.segments
     }
 
+    const isCoordFilled = isFilledMarchCoordinates(segments)
+
     segments = List(segments)
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, data.payload)
-    const payload = { segments: segmentsWithMetric, time, distance, payload: data.payload }
+    const payload = { segments: segmentsWithMetric,
+      time,
+      distance,
+      payload: data.payload,
+      marchEdit: true,
+      isCoordFilled }
 
     dispatch({
       type: INIT_MARCH,
@@ -280,9 +330,17 @@ export const openMarch = (data) => asyncAction.withNotification(
 
 export const sendMarchToExplorer = () =>
   (dispatch, getState) => {
-    const { march: { segments } } = getState()
+    const { march: { segments, isCoordFilled } } = getState()
 
-    const segmentsForExplorer = convertSegmentsForExplorer(segments)
+    if (isCoordFilled) {
+      const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
-    return window.explorerBridge.saveMarch(segmentsForExplorer)
+      return window.explorerBridge.saveMarch(segmentsForExplorer)
+    }
+
+    return null
   }
+
+export const closeMarch = () => ({
+  type: CLOSE_MARCH,
+})

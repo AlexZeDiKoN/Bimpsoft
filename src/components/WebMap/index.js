@@ -1169,6 +1169,8 @@ export default class WebMap extends React.PureComponent {
     settings.TEXT_AMPLIFIER_SIZE.min = params[paramsNames.TEXT_AMPLIFIER_SIZE_MIN]
     settings.GRAPHIC_AMPLIFIER_SIZE.max = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX]
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
+    settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
+    settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
     this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
@@ -2038,10 +2040,11 @@ export default class WebMap extends React.PureComponent {
       const c2g = (p) => this.map.containerPointToLatLng(p)
       let geometry = []
       if (amp.type === entityKind.SOPHISTICATED) {
-        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
-          x: x - w + dx * w * 2,
-          y: y - w + dy * w * 2,
-        })).map(c2g)
+        geometry = (geometry && geometry.length) ||
+          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+            x: x - w + dx * w * 2,
+            y: y - w + dy * w * 2,
+          })).map(c2g)
       } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA || amp.type === entityKind.POLYGON) {
         const p0 = { x: x + sw, y }
         const p1 = { x: x - sw, y: y - sw }

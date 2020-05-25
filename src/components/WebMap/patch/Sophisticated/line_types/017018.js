@@ -1,17 +1,15 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline,
+  drawBezierSpline, getGraphicSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
-import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
 // hint: 'Район розповсюдження агітаційного матеріалу'
 
-const STROKE_SCALE = 0.15
-const CROSS_SCALE = 1.5
+const STROKE_WIDTH_SCALE = 0.1
+const CROSS_SCALE = 1
 
 const CODE = '017018'
 
@@ -38,12 +36,12 @@ lineDefinitions[CODE] = {
   // Рендер-функція
   render: (result, points) => {
     drawBezierSpline(result, points, true)
-    const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const graphicSize = getGraphicSize(result.layer)
     const cs = graphicSize * CROSS_SCALE // CROSS_SIZE * scale
-    const sw = graphicSize * STROKE_SCALE // STROKE_WIDTH * scale
-    const fillId = `SVG-fill-pattern-${CODE}`
+    const sw = graphicSize * STROKE_WIDTH_SCALE // STROKE_WIDTH * scale
+    const fillId = `SVG-fill-pattern-${result.layer.object.id}`
     const fillColor = `url('#${fillId}')`
-    const color = result.layer._path.getAttribute('stroke')
+    const color = result.layer.object.attributes.color // _path.getAttribute('stroke')
     result.layer._path.setAttribute('fill', fillColor)
     result.layer._path.setAttribute('fill-opacity', 1)
     result.layer._path.setAttribute('width', 100)
@@ -51,8 +49,8 @@ lineDefinitions[CODE] = {
     result.layer.options.fillOpacity = 1
     result.amplifiers += ` 
       <pattern id="${fillId}" x="0" y="0" width="${cs * 3}" height="${cs * 3}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="${sw}" y1="${sw}" x2=${cs - sw} y2=${cs - sw} stroke="${color}" stroke-width="${sw}" />
-        <line x1=${cs - sw} y1="${sw}" x2="${sw}" y2=${cs - sw} stroke="${color}" stroke-width="${sw}" />
+        <line x1="${sw}" y1="${sw}" x2="${cs - sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
+        <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
       </pattern>`
   },
 }
