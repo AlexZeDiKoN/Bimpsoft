@@ -9,13 +9,16 @@ const mapStateToProps = ({ march: {
   integrity,
   pointsTypes,
   time,
-  distance } }) => ({
+  distance,
+  isCoordFilled } }) => ({
   indicators,
   segmentList: segments,
   integrity,
   pointsTypes,
   time,
   distance,
+  isCoordFilled,
+
 })
 
 const mapDispatchToProps = {
