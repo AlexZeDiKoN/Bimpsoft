@@ -10,17 +10,7 @@ const mapStateToProps = ({ march: { indicators } }) => ({
   MB001: (indicators && indicators['МШВ001']) || {},
 })
 
-const typeSegmentToName = (type, typeValues) => {
-  for (const typeValue of typeValues) {
-    const { id, name } = typeValue
-
-    if (type === id) {
-      return name
-    }
-  }
-
-  return ''
-}
+const typeSegmentToName = (type, typeValues) => typeValues.find(({ id }) => id === type)?.name || ''
 
 const AddSegmentContextMenu = (props) => {
   const { changeViewContextMenu, addSegment, typeSegments, segmentId, MB001 } = props
