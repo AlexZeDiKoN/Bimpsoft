@@ -9,6 +9,7 @@ import {
   CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
+  LogMapContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 
@@ -63,6 +64,7 @@ export default class Sidebar extends React.Component {
                 !is3DMapMode && CatalogsContainer,
                 isMapCOP ? TargetCatalogContainer : null,
                 SymbolsContainer,
+                LogMapContainer,
               ].filter(Boolean)}
             />
           </div>
