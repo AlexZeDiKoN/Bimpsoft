@@ -346,7 +346,7 @@ export const symbols = [
       {
         hint: 'Зона приземлення (для евакуації розвідгруп)',
         code: '10032500001507000000',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.W]: 'Евак' } },
+        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'Евак' } },
       },
       {
         hint: 'Вихідний район десантування (район завантаження)',
@@ -2970,7 +2970,7 @@ export const symbols = [
       {
         hint: 'Район компактного проживання національних меншин',
         code: '10032500001200000000kpnm',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'КПНМ' } },
+        amp: { isSvg: true, type: entityKind.AREA, hatch: 'left-to-right', pointAmplifier: { [amps.T]: 'КПНМ' } },
       },
       {
         hint: 'Масові заворушення (бунт), акції, демонстрації, мітинги, акти непокори цивільного населення',
