@@ -5,6 +5,7 @@ import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
 import { drawLineEnd, MARK_TYPE, settings } from '../../../../utils/svg/lines'
 import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg'
+import { evaluateColor } from '../../../../constants/colors'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -16,6 +17,8 @@ export const extractLineCode = (code) => code.slice(10, 16)
 export const findDefinition = (code) => lineDefinitions[extractLineCode(code)]
 
 // === Math ===
+export const DegToRad = Math.PI / 180
+export const RadToDeg = 180 / Math.PI
 
 // Квадрат (для зручності просто)
 export const square = (x) => x * x
@@ -700,9 +703,13 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       drawArrowDashes(result, point, angle, graphicSize)
       return graphicSize
     default: { // для стрілок з заливкою
-      const colorFill = result.layer.object.attributes.color
-      // eslint-disable-next-line max-len
-      result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, colorFill)
+      const colorFill = evaluateColor(result.layer.object.attributes.color) || 'black'
+      result.amplifiers += drawLineEnd(markType,
+        point,
+        Math.round(angle * RadToDeg),
+        graphicSize / 12,
+        result.layer.strokeWidth,
+        colorFill)
       return graphicSize
     }
   }

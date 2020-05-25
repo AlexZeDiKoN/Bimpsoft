@@ -72,7 +72,7 @@ export const getPointSizeByDpi = (printScale, dpi) => {
   return Math.round(pointSizeFromScale.get(printScale) / getmmInPixel(dpi))
 }
 
-let lastMaskId = 1
+// let lastMaskId = 1
 
 const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject) => {
   const { color, fill, strokeWidth, lineType, hatch, fillOpacity, fillColor } = attributes
@@ -83,7 +83,7 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject) => 
   // сборка маски под амплификаторы линии
   if (mask) {
     const vb = bounds ? [ bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ] : [ 0, 0, '100%', '100%' ]
-    const maskId = lastMaskId++
+    const maskId = idObject
     maskUrl = `url(#mask-${maskId})`
     if (Array.isArray(mask)) {
       maskBody = mask.length ? <mask id={`mask-${maskId}`}>
@@ -441,6 +441,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
         graphicSize,
         fontSize,
         pointSymbolSize,
+        strokeWidth,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
         options,
         getLatLngs: () => geometry.toJS(),
