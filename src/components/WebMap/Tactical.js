@@ -277,7 +277,7 @@ function createCircle (type, data, map, layer) {
     layer.setRadius(radius)
     layer.setStyle({ tsType: type })
   } else {
-    const options = prepareOptions(entityKind.CIRCLE)
+    const options = prepareOptions(type)
     options.radius = radius
     layer = L.circle(point1, options)
   }
