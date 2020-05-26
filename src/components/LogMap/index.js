@@ -52,7 +52,7 @@ const SymbolsTab = (props) => {
     onChange(value)
   }
 
-  const partsJSX = symbols.map((part, index) => {
+  const partsJSX = []/*symbols.map((part, index) => {
     const sortedPart = (search !== '')
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
       : part.children
@@ -109,33 +109,19 @@ const SymbolsTab = (props) => {
         </Collapse>
       </FormBlock>
     </div>
-  })
+  })*/
 
   return <Wrapper
     icon={IconNames.SYMBOLS}
-    title={i18n.SYMBOLS}
+    title={i18n.LOG_MAP}
   >
     <div className='symbols-wrapper'>
       <div className='symbols-header'>
         <InputButton
           onChange={onChangeSearch}
           value={search}
-          title={i18n.SYMBOLS}
+          title={i18n.LOG_MAP}
         />
-        <IButton
-          active={!listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(false)}
-          title={i18n.GRID}
-          icon={IconNames.GRID}/>
-        <IButton
-          active={listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(true)}
-          title={i18n.LIST}
-          icon={IconNames.LIST}/>
       </div>
       <Scrollbar className='parts-container'>
         {partsJSX}

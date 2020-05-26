@@ -299,6 +299,7 @@ export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'
+export const LOG_MAP = 'Журнал подій'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`
