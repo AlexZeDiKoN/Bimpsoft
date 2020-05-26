@@ -53,7 +53,10 @@ const PopupPanel = (props) => {
     )
   }
 
-  const typeOfMove = nameTypeById(MB001, segmentType).name
+  const corectedMB001 = [ ...MB001 ]
+  corectedMB001.pop()
+
+  const typeOfMove = nameTypeById(corectedMB001, segmentType).name
 
   return <div className={'march-popup-form'}>
     <Tooltip placement='left' title={i18n.TYPE_OF_MOVE}>
@@ -65,7 +68,7 @@ const PopupPanel = (props) => {
           defaultValue={typeOfMove}
           onChange={onEditFormField('segmentType')}
         >
-          {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+          {corectedMB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
         </Select>
       }
     </Tooltip>

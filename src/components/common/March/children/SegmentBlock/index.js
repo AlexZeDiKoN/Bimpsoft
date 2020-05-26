@@ -15,11 +15,17 @@ const { OWN_RESOURCES_BRUSH, BY_RAILROAD_BRUSH, BY_SHIPS_BRUSH, COMBINED_BRUSH, 
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, timeDistanceView, segments } = props
-  const { segmentType, children, metric } = segment
-  const { time: refTime = 0, distance: refDistance = 0 } = metric.reference
-  const { time: prevTime, distance: prevDistance } = metric.untilPrevious
+  const { segmentType, children, metric = {} } = segment
   const [ isViewContextMenu, changeViewContextMenu ] = useState(false)
   const [ allowedTypeSegments, changeAllowedTypeSegments ] = useState([])
+
+  let { time: refTime, distance: refDistance } = metric.reference
+  let { time: prevTime, distance: prevDistance } = metric.untilPrevious
+
+  refTime = refTime || 0
+  refDistance = refDistance || 0
+  prevTime = prevTime || 0
+  prevDistance = prevDistance || 0
 
   if (segmentType === 0) {
     return null
@@ -45,6 +51,7 @@ const SegmentBlock = (props) => {
 
   const timeOffset = timeDistanceView ? refTime : 0
   const distanceOffset = timeDistanceView ? refDistance : 0
+
   const startingPoint = {
     time: msToTime(timeDistanceView ? refTime : prevTime),
     distance: (timeDistanceView ? refDistance : prevDistance).toFixed(1),
