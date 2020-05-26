@@ -274,28 +274,20 @@ export const NO_OBJECTS = 'Топографічних об\'єктів не зн
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
+export const SCALE_PRINT = `Масштаб друку 1:`
 export const DPI = 'Роздільна здатність (DPI)'
 export const COORDINATES_TYPE = 'Система координат'
-export const MAP_LABEL = `Гриф`
 export const MAP_COPY = 'Прим. № __'
-export const FIRST_ROW = `Рядок 1`
-export const SECOND_ROW = `Рядок 2`
-export const THIRD_ROW = `Рядок 3`
-export const FOURTH_ROW = `Рядок 4`
-export const FIFTH_ROW = `Рядок 5`
 export const START = `Почата`
 export const FINISH = `Закінчена`
-export const CONFIRM_DATE = `Дата підпису`
 // заголовки
 export const DOC_HEADER = `Заголовок документа`
+export const DOC_HEADER_SUBTITLE = `Підзаголовок документа`
 export const MAIN_INDICATORS = `Основні показники`
 export const LEGEND = `Умовні позначення`
 export const SIGN = `Знак`
 export const SIGN_CONTENT = `Зміст знаку`
 export const DOCUMENT_SIGNATORIES = `Підпис документа`
-export const POSITION = `Посада`
-export const RANG = `Звання`
-export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'

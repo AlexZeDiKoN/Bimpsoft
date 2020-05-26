@@ -298,7 +298,6 @@ const MarchForm = (props) => {
             </Option>
           </Select>
         </Tooltip>
-        <br/>
         <Tooltip placement='left' title={i18n.POINT_TYPE}>
           {isStaticPointType
             ? <Input

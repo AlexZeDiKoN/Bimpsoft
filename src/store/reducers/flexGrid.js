@@ -80,7 +80,7 @@ export default function reducer (state = FlexGridState(), action) {
       return update(state, 'options', false)
     }
     case actions.GET_FLEXGRID: {
-      if (payload) { // Без цієї умови деструктуризація нижче кине ексепш
+      if (payload && typeof payload !== 'string') { // Без цієї умови деструктуризація нижче кине ексепш
         const {
           id,
           deleted,
