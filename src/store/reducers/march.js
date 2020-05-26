@@ -10,6 +10,7 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  isCoordFilled: false,
   time: 0,
   distance: 0,
   coordRefPoint: null,

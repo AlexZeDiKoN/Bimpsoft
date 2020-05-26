@@ -1,6 +1,6 @@
 import { MARCH_TYPES } from '../../../../constants/March'
 import { uuid } from '../../../../components/WebMap/patch/Sophisticated/utils'
-const { OWN_RESOURCES } = MARCH_TYPES
+const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS } = MARCH_TYPES
 
 const getDefaultMetric = (emptyChild = false) => {
   return {
@@ -27,22 +27,59 @@ const defaultChild = () => ({
   },
 })
 
-const defaultSegment = () => ({
-  id: uuid(),
-  name: '',
-  refPoint: '',
-  segmentType: OWN_RESOURCES,
-  terrain: 69,
-  velocity: 30,
-  coordinate: {},
-  required: false,
-  editableName: true,
-  metric: getDefaultMetric(),
-  children: [ defaultChild() ],
-})
+const defaultSegment = (segmentType) => {
+  const specificFields = {}
+
+  switch (segmentType) {
+    case OWN_RESOURCES:
+      specificFields.segmentType = OWN_RESOURCES
+      specificFields.children = [ defaultChild() ]
+      break
+    case BY_RAILROAD:
+      specificFields.segmentType = BY_RAILROAD
+      break
+    case BY_SHIPS:
+      specificFields.segmentType = BY_SHIPS
+      break
+    default:
+      specificFields.segmentType = OWN_RESOURCES
+      specificFields.children = [ defaultChild() ]
+  }
+
+  return {
+    id: uuid(),
+    name: '',
+    refPoint: '',
+    terrain: 69,
+    velocity: 30,
+    coordinate: {},
+    required: false,
+    editableName: true,
+    metric: getDefaultMetric(),
+    children: [],
+    ...specificFields,
+  }
+}
+
+const getAllowedTypeSegments = (segments, segmentId) => {
+  const allowedType = {
+    [OWN_RESOURCES]: OWN_RESOURCES,
+    [BY_RAILROAD]: BY_RAILROAD,
+    [BY_SHIPS]: BY_SHIPS,
+  }
+
+  const prevSegment = segments[segmentId]
+  const nextSegment = segments[segmentId + 1]
+
+  delete allowedType[prevSegment.segmentType]
+  delete allowedType[nextSegment.segmentType]
+
+  return Object.values(allowedType)
+}
 
 export default {
   getDefaultMetric,
   defaultChild,
   defaultSegment,
+  getAllowedTypeSegments,
 }
