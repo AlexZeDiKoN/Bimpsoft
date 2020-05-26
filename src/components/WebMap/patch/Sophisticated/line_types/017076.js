@@ -181,7 +181,7 @@ lineDefinitions['017076'] = {
       const color = evaluateColor(sectorsInfo[iA]?.color) ?? 'black'
       const fillColor = evaluateColor(sectorsInfo[iA]?.fill) ?? 'transparent'
       sectorsPath.push(`<path stroke="${color}" stroke-width="${strokeWidth}"
-        fill-rule="evenodd" stroke-width="0" fill="${fillColor}" fill-opacity="0.22"
+        fill-rule="evenodd" fill="${fillColor}" fill-opacity="0.22"
         d="${sectorFill.d}"/>`)
       heightSectorPrev = heightSector
     }

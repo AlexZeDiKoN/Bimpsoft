@@ -6,7 +6,13 @@ import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 
 const Header = (props) => {
-  const { changeTimeDistanceView, timeDistanceView, time, distance, sendMarchToExplorer, closeMarch } = props
+  const { changeTimeDistanceView,
+    timeDistanceView,
+    time,
+    distance,
+    sendMarchToExplorer,
+    closeMarch,
+    isCoordFilled } = props
 
   return <>
     <div className={'march-title-top'}>
@@ -16,7 +22,8 @@ const Header = (props) => {
       <IButton
         onClick={sendMarchToExplorer}
         colorType={ColorTypes.WHITE}
-        icon={IconNames.BAR_2_SAVE} />
+        icon={IconNames.BAR_2_SAVE}
+        disabled={!isCoordFilled}/>
       <IButton
         onClick={closeMarch}
         colorType={ColorTypes.WHITE}
@@ -53,6 +60,7 @@ Header.propTypes = {
   distance: PropTypes.number.isRequired,
   sendMarchToExplorer: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
+  isCoordFilled: PropTypes.bool.isRequired,
 }
 
 export default React.memo(Header)

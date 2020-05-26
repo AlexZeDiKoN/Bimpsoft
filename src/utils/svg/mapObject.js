@@ -72,7 +72,7 @@ export const getPointSizeByDpi = (printScale, dpi) => {
   return Math.round(pointSizeFromScale.get(printScale) / getmmInPixel(dpi))
 }
 
-let lastMaskId = 1
+// let lastMaskId = 1
 
 const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject) => {
   const { color, fill, strokeWidth, lineType, hatch, fillOpacity, fillColor } = attributes
@@ -83,7 +83,7 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject) => 
   // сборка маски под амплификаторы линии
   if (mask) {
     const vb = bounds ? [ bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ] : [ 0, 0, '100%', '100%' ]
-    const maskId = lastMaskId++
+    const maskId = idObject
     maskUrl = `url(#mask-${maskId})`
     if (Array.isArray(mask)) {
       maskBody = mask.length ? <mask id={`mask-${maskId}`}>
@@ -187,6 +187,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
     scale,
     fontSize,
     graphicSize,
+    id,
   } = data
   const fontColor = '#000000'
   const strokeColor = colors.evaluateColor(color)
@@ -288,7 +289,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id)}
       {resultFilled}
     </>
   )
@@ -296,7 +297,7 @@ const getLineSvg = (points, attributes, data, layerData, zoom) => {
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerData) => {
   const { coordToPixels, bounds, scale, zoom, fontSize, graphicSize } = commonData
-  const { attributes, geometry, level } = data
+  const { attributes, geometry, level, id } = data
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
     if (bezier) {
@@ -305,7 +306,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
     return getLineSvg(
       points,
       attributes,
-      { level, bounds, scale, fontSize, graphicSize, bezier, locked },
+      { level, bounds, scale, fontSize, graphicSize, bezier, locked, id },
       layerData,
       zoom,
     )
@@ -441,6 +442,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
         graphicSize,
         fontSize,
         pointSymbolSize,
+        strokeWidth,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
         options,
         getLatLngs: () => geometry.toJS(),

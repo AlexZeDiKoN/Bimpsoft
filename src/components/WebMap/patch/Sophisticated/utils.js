@@ -5,6 +5,7 @@ import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
 import { drawLineEnd, MARK_TYPE, settings } from '../../../../utils/svg/lines'
 import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg'
+import { evaluateColor } from '../../../../constants/colors'
 import lineDefinitions from './lineDefinitions'
 import { coordinatesToPolar } from './arrowLib'
 import { CONFIG } from '.'
@@ -700,9 +701,13 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       drawArrowDashes(result, point, angle, graphicSize)
       return graphicSize
     default: { // для стрілок з заливкою
-      const colorFill = result.layer.object.attributes.color
-      // eslint-disable-next-line max-len
-      result.amplifiers += drawLineEnd(markType, point, Math.round(angle / Math.PI * 180), graphicSize / 12, result.layer.strokeWidth, colorFill)
+      const colorFill = evaluateColor(result.layer.object.attributes.color) || 'black'
+      result.amplifiers += drawLineEnd(markType,
+        point,
+        Math.round(deg(angle)),
+        graphicSize / 12,
+        result.layer.strokeWidth,
+        colorFill)
       return graphicSize
     }
   }
