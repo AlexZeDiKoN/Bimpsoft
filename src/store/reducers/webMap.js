@@ -236,7 +236,7 @@ function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
   const { changeType, id } = payload
-  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload) }
+  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload), timestamp: Date.now() }
   if (id) {
     objData = state.getIn([ 'objects', id ])
   }
