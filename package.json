@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "14.01.819",
+  "version": "14.01.821",
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^14.1.474",
