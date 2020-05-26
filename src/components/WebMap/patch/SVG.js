@@ -149,7 +149,10 @@ L.SVG.include({
     const fullPolyline = kind === entityKind.POLYLINE && length >= 2
     const fullArea = kind === entityKind.AREA && length >= 3
     const fullCurve = kind === entityKind.CURVE && length >= 2
-    if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
+    const simpleFigures = (kind === entityKind.RECTANGLE || kind === entityKind.SQUARE || kind === entityKind.CIRCLE)
+    if (simpleFigures) {
+      this._updateMask(layer, false, true)
+    } else if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
@@ -384,6 +387,7 @@ L.SVG.include({
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
+      tsType: layer.options.tsType,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {
