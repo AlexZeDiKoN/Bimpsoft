@@ -2,6 +2,7 @@ import Bezier from 'bezier-js'
 import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
+import entityKind from '../../components/WebMap/entityKind'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import { extractTextSVG, FONT_WEIGHT } from './text'
 
@@ -948,6 +949,7 @@ export const getAmplifiers = ({
   fontColor,
   fontSize, // для печати
   graphicSize, // для печати
+  tsType, // тип линии
 }, object) => {
   const result = {
     maskPath: [],
@@ -1005,7 +1007,12 @@ export const getAmplifiers = ({
     let amplifierOptions
 
     if (locked) { // замкнутая линия, pointAmplifiers в центре
-      const centroid = getPolygonCentroid(points)
+      let centroid
+      if (tsType === entityKind.CIRCLE) {
+        centroid = points[0]
+      } else {
+        centroid = getPolygonCentroid(points)
+      }
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],

@@ -101,6 +101,7 @@ export const GROUPS = {
     entityKind.SEGMENT,
     entityKind.RECTANGLE,
     entityKind.SQUARE,
+    entityKind.CIRCLE,
     entityKind.GROUPED_HEAD,
     entityKind.GROUPED_LAND,
     entityKind.GROUPED_REGION,
