@@ -4,6 +4,7 @@ import { Align } from '../../constants'
 import { pointsToD, rectToPoints } from './lines'
 
 export const FONT_FAMILY = 'Arial'
+export const FONT_WEIGHT = 'bold'
 const LINE_COEFFICIENT = 1.2
 
 let ctx = null
@@ -116,8 +117,8 @@ export const renderTextSymbol = ({
 export const extractTextSVG = ({
   string,
   fontSize,
+  fontColor,
   margin,
-  scale,
   getOffset,
 }) => {
   const lines = string.split('\n')
@@ -126,15 +127,16 @@ export const extractTextSVG = ({
     const width = getTextWidth(line, getFont(fontSize, false))
     const widthWithMargin = width + 2 * margin
     const height = fontSize * LINE_COEFFICIENT
-
-    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : {}
+    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : { y: 0, x: 0 }
     const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
     const top = height * index + y
+    const fillColor = fontColor ? `fill="${fontColor}"` : ``
     return {
       // 'dy' for top vertical align
       sign: `<text
         font-family="${FONT_FAMILY}"
         stroke="none"
+        ${fillColor}
         transform="translate(${left}, ${top}) translate(${x})"
         font-size="${fontSize}"
         dy="${fontSize * 0.95}"

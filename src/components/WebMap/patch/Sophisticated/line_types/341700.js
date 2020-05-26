@@ -2,14 +2,14 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, angleOf, segmentLength, drawMaskedText, rad,
+  drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: OCCUPY
 // task code: DZVIN-5535
 // hint: 'Зайняття визначеного району без вогневого контакту з противником'
 
-const CROSS_LENGTH = 48
 const TEXT = 'O'
 
 lineDefinitions['341700'] = {
@@ -29,7 +29,7 @@ lineDefinitions['341700'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const r = segmentLength(p0, p1)
@@ -44,16 +44,10 @@ lineDefinitions['341700'] = {
 
     const angle = angleOf(p1, p0)
 
-    const ang2 = (delta) => compose(
-      translate(p.x, p.y),
-      rotate(angle + Math.PI + rad(delta)),
-    )
-
     drawArc(result, p1, p, r, 0, 1, 1)
 
-    const cross = { x: CROSS_LENGTH * scale, y: 0 }
-    drawLine(result, applyToPoint(ang2(-60), cross), applyToPoint(ang2(120), cross))
-    drawLine(result, applyToPoint(ang2(0), cross), applyToPoint(ang2(180), cross))
+    const angleCross = angleOf(p, p0) + Math.PI / 2
+    drawLineMark(result, MARK_TYPE.CROSS, p, angleCross)
 
     drawMaskedText(
       result,

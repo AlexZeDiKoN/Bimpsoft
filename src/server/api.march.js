@@ -6,6 +6,9 @@ const namespace = '/hub/explorer/v2'
 export default {
   getTypeKinds: (typeCode = requiredParam('typeCode')) =>
     getDirect(`${namespace}/map/GetTypeKinds`, { typeCode }),
+  getMarchMetric: (dataMarch) => {
+    return getDirect('/ict/march/getRouteDetails', dataMarch)
+  },
   // TODO: fetch segments from server
   getSegments: (startCoord, possibleTypes) => new Promise((resolve) => {
     const march = localStorage.getItem('march:storage')

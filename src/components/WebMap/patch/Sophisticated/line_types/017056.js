@@ -1,9 +1,17 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentLength, getPointAt, addPathAmplifier, emptyPath, getVector, setVectorLength, applyVector, drawArc,
+  drawLine,
+  segmentLength,
+  getPointAt,
+  getVector,
+  setVectorLength,
+  applyVector,
+  drawArc,
+  drawLineMark,
+  angleOf, getPointSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: Розвідувальні завдання пошуком
 // task code: DZVIN-6012
@@ -31,9 +39,9 @@ lineDefinitions['017056'] = {
   render: (result, points, scale) => {
     let [ p0, p1 ] = points
 
-    const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes) * 1.2
+    const r = getPointSize(result.layer) * 1.2
+    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes) * 1.2
     const d = r * Math.sqrt(2)
-
     const pv = getVector(p1, p0)
     p0 = applyVector(p1, setVectorLength(pv, segmentLength(pv) - r))
     const v = getVector(p0, p1)
@@ -43,10 +51,6 @@ lineDefinitions['017056'] = {
     drawLine(result, p0, applyVector(p0, mainLine))
     drawArc(result, getPointAt(p1, p0, Math.PI / 4, d), getPointAt(p1, p0, -Math.PI / 4, d), r, 0, 0, 1)
 
-    const arrow = emptyPath()
-    const pa1 = getPointAt(p0, p1, 5 * Math.PI / 6, ARROW_LENGTH * scale)
-    const pa2 = getPointAt(p0, p1, -5 * Math.PI / 6, ARROW_LENGTH * scale)
-    drawLine(arrow, p1, pa1, pa2)
-    addPathAmplifier(result, arrow, true)
+    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
   },
 }

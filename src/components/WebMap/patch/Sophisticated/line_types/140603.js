@@ -1,16 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, drawArrow, getPointAt,
+  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: FRIENDLY DIRECTION OF SUPPORTING ATTACK
 // task code: DZVIN-5519
 // hint: 'Підтримка атаки'
-
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 36
 
 lineDefinitions['140603'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -30,12 +28,12 @@ lineDefinitions['140603'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, ...rest ] = points
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
-
-    drawArrow(result, p1, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
-
+    const angle = angleOf(p1, p0)
+    drawLine(result, p1, p0)
+    drawLineMark(result, MARK_TYPE.ARROW_90, p0, angle)
     if (rest.length) {
       drawLine(result, p1, ...rest)
     }
@@ -43,16 +41,16 @@ lineDefinitions['140603'] = {
     drawMaskedText(
       result,
       segmentBy(p0, p1, 1 / 3),
-      angleOf(p1, p0),
+      angle,
       amplifiersInfo[amps.T] ?? '',
     )
-
+    const textSize = getFontSize(result.layer)
     const p05 = segmentBy(p0, p1, 1 / 2)
-    const pW = getPointAt(p1, p05, Math.PI / 2, ARROW_WIDTH * scale)
+    const pW = getPointAt(p1, p05, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, textSize * 1.1)
     drawMaskedText(
       result,
       pW,
-      angleOf(p1, p0),
+      angle,
       amplifiersInfo[amps.W] ?? '',
       0.75,
     )

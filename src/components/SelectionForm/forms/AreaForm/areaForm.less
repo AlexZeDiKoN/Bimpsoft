@@ -5,6 +5,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  .dzvin-form-divider{
+    margin: 2px 0;
+  }
+
+  .container-color-picker{
+    margin: 8px 14px;
+    padding-top: 12px;
+    height: auto;
+  }
+
   &__item {
     display: flex;
     justify-content: space-between;
@@ -13,7 +24,6 @@
     .dzvin-form-row {
       display: flex;
       flex-direction: column;
-      height: 68px;
       align-items: flex-start;
 
       .dzvin-form-input {
@@ -109,21 +119,47 @@
   .dzvin-form-dark-part {
     min-height: 250px;
     height: 100%;
-    margin: 0;
+    margin-bottom: 8px;
 
     .dzvin-form-row{
       padding: 5px 10px;
       flex: 0 0 auto;
     }
 
+    .headerSiding {
+      position: relative;  /* нужна нестатическая позиция */
+      padding-top : 28px ; /* место для фиксированного заголовка */
+      margin-top: 0.25em;
+    }
+
     .shape-form-scrollable {
       height: 185px;
+      padding-left: 1em;
+      overflow :  auto ; /* показывать полосу прокрутки при необходимости */
+      overflow-x: hidden;
+      .coordinatesModal{
+        margin-bottom: 5px;
+      }
+      .col-add {
+        width: 48px;
+      }
+
+      th div {
+          position: absolute; /* закреплено за следующим нестатичным родителем */
+          top: 0; /* наверху родителя */
+
+        label {
+          position: relative;
+        }
+      }
     }
   }
+
   .ant-select-open {
     .ant-select-arrow {
       transform: rotate(180deg) scale(0.6);
     }
+
   }
 
   .ant-select-arrow {
@@ -139,6 +175,73 @@
 
     .anticon {
       display: none;
+    }
+  }
+
+  &--firstSection {
+    display: flex;
+    margin-top: 1px;
+    border-bottom: 2px solid rgba(159,166,89,.54);
+
+    .area-container__itemWidth-left {
+      width: 35%;
+      border: 6px solid #eaeaea;
+      margin: 6px;
+      max-height: 136px;
+      height: auto;
+
+      svg{
+        width: 100%;
+        height: 100%;
+      }
+      //img {
+      //  height: 156px;
+      //  transform: scale(1.8);
+      //}
+    }
+
+    .area-container__itemWidth-right {
+      width: 65%;
+      display: flex;
+
+      .dzvin-form-row {
+        display: flex;
+        flex-direction: column;
+        margin: 0.9em 1em;
+        align-items: flex-start;
+      }
+
+      .dzvin-form-input {
+        width: 100%;
+
+        .symbol {
+          height: inherit;
+          margin-top: 5px;
+          margin-right: 5px;
+        }
+
+        .ant-select{
+          width: 100%;
+        }
+
+      }
+
+      .line-container__itemWidth--section1 {
+        display: flex;
+        .dzvin-input{
+          input{
+            width: 139px;
+          }
+        }
+
+        & > div {
+          width: 50%;
+        }
+
+        & > div:first-child {
+          width: 49%;
+        }
+      }
     }
   }
 }

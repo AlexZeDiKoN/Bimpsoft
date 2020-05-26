@@ -37,7 +37,12 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
-import entityKind, { entityKindFillable, entityKindMultipointCurves, entityKindMultipointAreas } from './entityKind'
+import entityKind, {
+  entityKindFillable,
+  entityKindMultipointCurves,
+  entityKindMultipointAreas,
+  GROUPS,
+} from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -181,9 +186,13 @@ const toGMS = (value, pos, neg) => {
 
 const serializeCoordinate = (mode, lat, lng) => {
   const type = mode2type(mode)
-  const serialized = mode === indicateModes.WGSI
+  let serialized = mode === indicateModes.WGSI
     ? `${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}`
     : Coord.stringify({ type, lat, lng })
+  if (type === Coord.types.UCS_2000 || type === Coord.types.CS_42) {
+    const coord = serialized.split(' ', 2)
+    serialized = `X=${coord[0]} Y=${coord[1]}`
+  }
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
@@ -209,6 +218,7 @@ const setScaleOptions = (layer, params) => {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
+        case entityKind.GROUPED_REGION:
           layer.setScaleOptions(pointSizes)
           break
         case entityKind.TEXT:
@@ -318,6 +328,10 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
+    undoInfo: PropTypes.shape({
+      canUndo: PropTypes.bool,
+      canRedo: PropTypes.bool,
+    }),
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -353,6 +367,12 @@ export default class WebMap extends React.PureComponent {
     dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
+    getCoordForMarch: PropTypes.func,
+    marchMode: PropTypes.bool,
+    marchDots: PropTypes.array,
+    marchRefPoint: PropTypes.object,
+    undo: PropTypes.func,
+    redo: PropTypes.func,
   }
 
   constructor (props) {
@@ -362,6 +382,8 @@ export default class WebMap extends React.PureComponent {
       zoom: 0,
     }
     this.activeLayer = null
+    this.marchMarkers = []
+    this.marchRefPoint = null
   }
 
   async componentDidMount () {
@@ -380,6 +402,7 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
+    this.updateMarchDots(this.props.marchDots, [])
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -394,11 +417,12 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects,
+      targetingObjects, marchDots, marchMode, marchRefPoint,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
+      this.map._container.focus()
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -472,10 +496,12 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
+    this.updateMarchDots(marchDots, prevProps.marchDots)
+    this.updateMarchRefPoint(marchRefPoint)
   }
 
   componentWillUnmount () {
@@ -594,7 +620,7 @@ export default class WebMap extends React.PureComponent {
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
-            this.markers = [ createSearchMarker(point, text) ]
+            this.markers = [ createSearchMarker(point) ]
             this.markers[0].addTo(this.map)
             setTimeout(() => this.markers && this.markers[0].bindPopup(text).openPopup(), 1000)
           }, 500)
@@ -607,9 +633,9 @@ export default class WebMap extends React.PureComponent {
       } else {
         if (marker) {
           let { point, text } = marker
-          text = this.createSearchMarkerText(point, text)
+          text = this.createSearchMarkerText(point)
           setTimeout(() => {
-            const searchMarker = createSearchMarker(point, text)
+            const searchMarker = createSearchMarker(point)
             searchMarker.addTo(this.map)
             this.markers.push(searchMarker)
             setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
@@ -837,11 +863,87 @@ export default class WebMap extends React.PureComponent {
   addUserMarker = (point) => {
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
-      const marker = createSearchMarker(point, text)
+      const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
       setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
     }, 50)
+  }
+
+  updateMarchDots = (marchDots, prevMarchDots) => {
+    const drawMarchLine = () => {
+      if (!this.marchLines) {
+        this.marchLines = []
+      }
+      if (this.marchLines.length > 0) {
+        this.marchLines.forEach((line) => {
+          line.removeFrom(this.map)
+        })
+        this.marchLines = []
+      }
+      marchDots.forEach((dot, id) => {
+        if (id !== marchDots.length - 1) {
+          const marchLine = L.polyline([ dot.coordinate, marchDots[id + 1].coordinate ], dot.options)
+          marchLine.addTo(this.map)
+          this.marchLines.push(marchLine)
+        }
+      })
+    }
+
+    if (marchDots.length !== prevMarchDots.length) {
+      if (this.marchMarkers.length !== 0) {
+        this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
+        this.marchMarkers = []
+      }
+      marchDots.forEach((dot) => {
+        const marker = createSearchMarker(dot.coordinate, false)
+        marker.addTo(this.map)
+        this.marchMarkers.push(marker)
+      })
+      if (marchDots.length > 1) {
+        drawMarchLine()
+      }
+    } else {
+      if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
+        let redrawLine = false
+        marchDots.forEach((dot, id) => {
+          if (
+            dot.coordinate.lat !== prevMarchDots[id].coordinate.lat ||
+            dot.coordinate.lng !== prevMarchDots[id].coordinate.lng ||
+            dot.options.color !== prevMarchDots[id].options.color
+          ) {
+            redrawLine = true
+            const marker = createSearchMarker(dot.coordinate, false)
+            marker.addTo(this.map)
+            if (this.marchMarkers.length && this.marchMarkers[id]) {
+              this.marchMarkers[id].removeFrom(this.map)
+              this.marchMarkers[id] = marker
+            } else {
+              this.marchMarkers.push(marker)
+            }
+          }
+        })
+        if (marchDots.length > 1) {
+          if (redrawLine) {
+            drawMarchLine()
+          }
+        }
+      }
+    }
+  }
+
+  updateMarchRefPoint = (marchRefPoint) => {
+    if (this.marchRefPoint) {
+      this.marchRefPoint.removeFrom(this.map)
+    }
+
+    let marker = null
+    if (marchRefPoint) {
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
+      marker.addTo(this.map)
+    }
+
+    this.marchRefPoint = marker
   }
 
   addTopographicMarker = (point) => {
@@ -903,7 +1005,7 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    const { selection: { newShape, preview }, printStatus, onClick } = this.props
+    const { selection: { newShape, preview }, printStatus, onClick, marchMode, getCoordForMarch } = this.props
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -920,6 +1022,10 @@ export default class WebMap extends React.PureComponent {
         }
         getTopographicObjects(location)
       }
+    }
+
+    if (marchMode) {
+      getCoordForMarch(e.latlng)
     }
 
     onClick(e.latlng)
@@ -1020,8 +1126,11 @@ export default class WebMap extends React.PureComponent {
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = list.includes(item.id)
-      const hidden = !isSelectedItem && (itemLevel < levelEdge ||
-        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId))
+      const hidden = !isSelectedItem && (
+        (itemLevel < levelEdge) ||
+        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
+        (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
+      )
 
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
@@ -1056,6 +1165,12 @@ export default class WebMap extends React.PureComponent {
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
     settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
+    settings.TEXT_AMPLIFIER_SIZE.max = params[paramsNames.TEXT_AMPLIFIER_SIZE_MAX]
+    settings.TEXT_AMPLIFIER_SIZE.min = params[paramsNames.TEXT_AMPLIFIER_SIZE_MIN]
+    settings.GRAPHIC_AMPLIFIER_SIZE.max = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX]
+    settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
+    settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
+    settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
     this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
@@ -1131,6 +1246,10 @@ export default class WebMap extends React.PureComponent {
     if (this.map) {
       const existsIds = new Set()
       const changes = []
+      const regions = []
+      const groups = []
+      const groupItems = []
+
       this.map.eachLayer((layer) => {
         const { id, options: { tsType: type } } = layer
         if (id && type !== entityKind.FLEXGRID) {
@@ -1147,6 +1266,31 @@ export default class WebMap extends React.PureComponent {
           }
         }
       })
+
+      objects.forEach((object) => {
+        if (object.parent) {
+          switch (objects.get(object.parent)?.type) {
+            case entityKind.GROUPED_REGION: {
+              if (!regions.includes(object.parent)) {
+                regions.push(object.parent)
+              }
+              break
+            }
+            case entityKind.GROUPED_LAND:
+            case entityKind.GROUPED_HEAD: {
+              if (!groups.includes(object.parent)) {
+                groups.push(object.parent)
+              }
+              if (!groupItems.includes(object.id)) {
+                groupItems.push(object.id)
+              }
+              break
+            }
+            default:
+          }
+        }
+      })
+
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addObject(object, layer)
@@ -1158,11 +1302,13 @@ export default class WebMap extends React.PureComponent {
           layer.pm?.disable()
         }
       }
+
       objects.forEach((object, id) => {
         if (!existsIds.has(id)) {
           this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
+
       const isNew = Boolean(preview && !preview.id)
       if (isNew === Boolean(this.newLayer)) {
         isNew && this.addObject(preview, this.newLayer)
@@ -1176,6 +1322,50 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = null
         }
       }
+      this.map.eachLayer((layer) => {
+        if (layer._groupChildren) {
+          layer._groupChildren = []
+        }
+      })
+
+      objects.forEach((object, id) => {
+        const parent = object.parent
+        if (parent) {
+          const layer = this.findLayerById(id)
+          const parentLayer = this.findLayerById(parent)
+          if (layer && parentLayer) {
+            if (!parentLayer._groupChildren) {
+              parentLayer._groupChildren = []
+            }
+            parentLayer._groupChildren.push(layer)
+            layer._groupParent = parentLayer
+          }
+        }
+      })
+
+      objects.forEach((object, id) => {
+        if (GROUPS.GENERALIZE.includes(object.type)) {
+          const layer = this.findLayerById(id)
+          if (layer.options.icon) {
+            layer.options.icon.options.data = layer._groupChildren.map(({ object }) => object)
+          }
+        }
+      })
+
+      regions.forEach((item) => {
+        const layer = this.findLayerById(item)
+        if (layer) {
+          layer._update()
+        }
+      })
+
+      groups.forEach((item) => {
+        const layer = this.findLayerById(item)
+        if (layer) {
+          layer._reinitIcon()
+          layer.update()
+        }
+      })
     }
   }
 
@@ -1345,9 +1535,15 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+        if (layer.pm && layer.pm.enabled()) {
+          layer.pm.disable()
+          layer.pm.enable()
+        }
+      } else {
+        layer.addTo(this.map)
+      }
 
       const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)
@@ -1479,6 +1675,7 @@ export default class WebMap extends React.PureComponent {
           return this.props.onMoveContour(layer.id, shift)
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
+        case entityKind.GROUPED_REGION:
           return this.props.onMoveGroup(layer.id, shift)
         default:
           return this.checkSaveObject(false)
@@ -1843,11 +2040,12 @@ export default class WebMap extends React.PureComponent {
       const c2g = (p) => this.map.containerPointToLatLng(p)
       let geometry = []
       if (amp.type === entityKind.SOPHISTICATED) {
-        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
-          x: x - w + dx * w * 2,
-          y: y - w + dy * w * 2,
-        })).map(c2g)
-      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA) {
+        geometry = (geometry && geometry.length) ||
+          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+            x: x - w + dx * w * 2,
+            y: y - w + dy * w * 2,
+          })).map(c2g)
+      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA || amp.type === entityKind.POLYGON) {
         const p0 = { x: x + sw, y }
         const p1 = { x: x - sw, y: y - sw }
         const p2 = { x: x - sw, y: y + sw }
@@ -1922,6 +2120,16 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  undoHandler = () => {
+    const { edit, undoInfo: { canUndo }, undo } = this.props
+    edit && canUndo && undo && undo()
+  }
+
+  redoHandler = () => {
+    const { edit, undoInfo: { canRedo }, redo } = this.props
+    edit && canRedo && redo && redo()
+  }
+
   render () {
     return (
       <div
@@ -1934,6 +2142,8 @@ export default class WebMap extends React.PureComponent {
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler}/>
+        <HotKey selector={shortcuts.UNDO} onKey={this.undoHandler} />
+        <HotKey selector={shortcuts.REDO} onKey={this.redoHandler} />
         {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
         {this.props.flexGridVisible && (
           <FlexGridToolTip

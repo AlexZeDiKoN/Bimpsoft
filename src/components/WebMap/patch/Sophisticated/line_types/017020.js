@@ -1,9 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  addPathAmplifier, drawCircle, drawText, emptyPath, drawLine,
+  drawCircle,
+  drawText,
+  drawLine,
+  getPointSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: Ракетний удар
 // task code: DZVIN-6009
@@ -13,6 +16,13 @@ const TEXT_SIZE = 1
 const TEXT_COLOR = 'black'
 
 lineDefinitions['017020'] = {
+  // Ампліфікатори на лінії
+  useAmplifiers: [
+    { id: amps.T, name: 'T1' },
+    { id: amps.N, name: 'T2' },
+    { id: amps.W, name: 'T3' },
+    { id: amps.B, name: 'T4' },
+  ],
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.none,
 
@@ -34,18 +44,17 @@ lineDefinitions['017020'] = {
     const [ p0 ] = points
 
     // Кола
-    const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
+    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
+    const r = getPointSize(result.layer)
     drawCircle(result, p0, r)
-    const amplifier = emptyPath()
-    drawCircle(amplifier, p0, r / 4)
-    addPathAmplifier(result, amplifier, true)
-
+    const color = result.layer.object?.attributes?.color ?? 'black'
+    result.amplifiers += `<circle stroke-width="0" stroke="none" fill="${color}" cx="${p0.x}" cy="${p0.y}" r="${r / 4}"/> `
     // Ампліфікатори
     const [ , b1 ] = drawText(
       result,
       { x: p0.x - r * 1.4, y: p0.y - r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.middle ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       TEXT_SIZE,
       'end',
       TEXT_COLOR,
@@ -55,7 +64,7 @@ lineDefinitions['017020'] = {
       result,
       { x: p0.x - r * 1.4, y: p0.y + r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.top ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
       TEXT_SIZE,
       'end',
       TEXT_COLOR,
@@ -63,9 +72,9 @@ lineDefinitions['017020'] = {
     )
     const [ , b3 ] = drawText(
       result,
-      { x: p0.x + r * 1.4, y: p0.y - r / 5},
+      { x: p0.x + r * 1.4, y: p0.y - r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.bottom ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.W] ?? '',
       TEXT_SIZE,
       'start',
       TEXT_COLOR,
@@ -75,7 +84,7 @@ lineDefinitions['017020'] = {
       result,
       { x: p0.x + r * 1.4, y: p0.y + r / 5 },
       0,
-      result.layer?.options?.pointAmplifier?.additional ?? '',
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       TEXT_SIZE,
       'start',
       TEXT_COLOR,

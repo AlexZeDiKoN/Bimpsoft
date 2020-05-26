@@ -1,16 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, drawArrowDashes, getPointAt,
+  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getPointMove, getGraphicSize, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519
 // hint: 'Хибна атака'
-
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 36
 
 lineDefinitions['140605'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -30,29 +28,37 @@ lineDefinitions['140605'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, ...rest ] = points
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
 
-    drawArrowDashes(result, p1, p0, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    drawLineMark(result, MARK_TYPE.ARROW_90, p0, angleOf(p1, p0))
+    const graphicSize = getGraphicSize(result.layer)
+    const angle = angleOf(p1, p0)
+    const offset = graphicSize / 5 + result.layer.options.weight
+    const scaleDashes = 1 + (offset) * 2 / graphicSize
+    drawLineMark(result,
+      MARK_TYPE.ARROW_90_DASHES,
+      getPointMove(p0, angle, -offset * 1.4),
+      angle,
+      scaleDashes)
 
-    if (rest.length) {
-      drawLine(result, p1, ...rest)
-    }
+    drawLine(result, p0, p1, ...rest)
 
     drawMaskedText(
       result,
       segmentBy(p0, p1, 1 / 3),
-      angleOf(p1, p0),
+      angle,
       amplifiersInfo[amps.T] ?? '',
     )
 
+    const textSize = getFontSize(result.layer)
     const p05 = segmentBy(p0, p1, 1 / 2)
-    const pW = getPointAt(p1, p05, Math.PI / 2, ARROW_WIDTH * scale)
+    const pW = getPointAt(p1, p05, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, textSize * 1.1)
     drawMaskedText(
       result,
       pW,
-      angleOf(p1, p0),
+      angle,
       amplifiersInfo[amps.W] ?? '',
       0.75,
     )

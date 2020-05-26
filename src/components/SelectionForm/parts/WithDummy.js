@@ -16,7 +16,7 @@ const WithDummy = (Component) => class DummyComponent extends Component {
     const dummy = params.dummy ?? false
     const isReadOnly = !this.isCanEdit()
     return (
-      <FormRow label='.'>
+      <FormRow label="&nbsp;">
         <div className='minefield-checkbox'>
           <label>
             <input

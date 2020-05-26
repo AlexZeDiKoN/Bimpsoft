@@ -1,17 +1,18 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentLength, drawArrow, getPointAt,
+  drawLine, segmentLength, getPointAt, drawLineMark, angleOf, drawText, getPointMove, segmentBy, getFontSize,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: Створення активних перешкод
 // task code: DZVIN-5990
 // hint: 'Створення активних перешкод радіоелектронним засобам противника'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
-
 lineDefinitions['017063'] = {
+  // Амплификатори лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -23,31 +24,40 @@ lineDefinitions['017063'] = {
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => [
-    { x: 0.2, y: 0.25 },
-    { x: 0.3, y: 0.25 },
-    { x: 0.6, y: 0.25 },
+    { x: 0.34, y: 0.55 },
+    { x: 0.4, y: 0.45 },
+    { x: 0.7, y: 0.45 },
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const len = segmentLength(p0, p1)
 
-    drawLine(result, p1, p2)
-
-    drawLine(result, p1, p0)
+    drawLine(result, p0, p1, p2)
 
     const point1 = getPointAt(p1, p0, Math.PI * 2 / 3, len / 2)
-    drawLine(result, point1, p0)
-
     const point12 = getPointAt(p0, point1, -Math.PI * 2 / 3, len)
-    drawArrow(result, point1, point12, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
-
     const point2 = getPointAt(p1, p0, -Math.PI * 2 / 3, len / 2)
-    drawLine(result, point2, p0)
-
     const point22 = getPointAt(p0, point2, Math.PI * 2 / 3, len)
-    drawArrow(result, point2, point22, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+
+    drawLine(result, point12, point1, p0, point2, point22)
+
+    drawLineMark(result, MARK_TYPE.ARROW_60, point12, angleOf(point1, point12))
+    drawLineMark(result, MARK_TYPE.ARROW_60, point22, angleOf(point2, point22))
+
+    const fontSize = getFontSize(result.layer)
+    const text = result.layer.object.attributes.pointAmplifier?.[amps.T] ?? ''
+    const angle = angleOf(p1, p2)
+    const pointAmp = segmentBy(p1, p2)
+    drawText(result,
+      getPointMove(pointAmp, angle + (Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2), fontSize / 10),
+      angle,
+      text,
+      1,
+      'middle',
+      null,
+      'after-edge')
   },
 }

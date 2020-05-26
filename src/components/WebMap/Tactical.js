@@ -34,6 +34,9 @@ const getMarkers = (layer) => {
 }
 
 export const enableEdit = (layer) => {
+  if (layer.options.tsType === entityKind.GROUPED_REGION) {
+    return
+  }
   if (GROUPS.COMBINED.includes(layer.options.tsType)) {
     layer.pm.enable()
   } else {
@@ -105,9 +108,9 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.POLYLINE:
       return createPolyline(entityKind.POLYLINE, data, prevLayer)
     case entityKind.CIRCLE:
-      return createCircle(data, map, prevLayer)
+      return createCircle(entityKind.CIRCLE, data, map, prevLayer)
     case entityKind.RECTANGLE:
-      return createRectangle(data, prevLayer)
+      return createRectangle(entityKind.RECTANGLE, data, prevLayer)
     case entityKind.SQUARE:
       return createSquare(data, map, prevLayer)
     case entityKind.CONTOUR:
@@ -116,6 +119,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_HEAD, data, prevLayer)
     case entityKind.GROUPED_LAND:
       return createGroup(entityKind.GROUPED_LAND, data, prevLayer)
+    case entityKind.GROUPED_REGION:
+      return createGroup(entityKind.GROUPED_REGION, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
     default:
@@ -124,9 +129,16 @@ export function createTacticalSign (data, map, prevLayer) {
   }
 }
 
-export function createSearchMarker (point) {
-  const icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
-  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: true })
+export function createSearchMarker (point, bounce = true, iconName) {
+  let icon
+
+  if (iconName) {
+    icon = new L.Icon({ iconUrl: `${process.env.REACT_APP_PREFIX}/images/${iconName}` })
+  } else {
+    icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
+  }
+
+  return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: bounce })
 }
 
 export function createCoordinateMarker (point) {
@@ -211,13 +223,24 @@ function createSegment (data) {
   return L.polyline(points, options)
 }
 
-function createGroup (kind, data) {
+function createGroup (kind, data, layer) {
   const { geometry, attributes } = data
   const points = geometry.toJS()
   const { scale } = attributes
   const options = prepareOptions(kind)
   options.tsScale = scale
-  return L.polyline(points, options)
+  switch (kind) {
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND: {
+      const data = layer
+        ? layer._groupChildren.map(({ object: { code, attributes } }) => ({ code, attributes }))
+        : []
+      const icon = new L.GroupIcon({ data })
+      return createMarker(points[0], icon, layer)
+    }
+    default:
+      return L.polyline(points, options)
+  }
 }
 
 function createPolygon (type, data, layer) {
@@ -242,15 +265,23 @@ function createPolyline (type, data, layer) {
   return layer
 }
 
-function createCircle (data, map) {
+function createCircle (type, data, map, layer) {
   const [ point1, point2 ] = data.geometry.toJS()
   if (!point1 || !point2) {
     console.error('createCircle: немає координат для круга')
-    return
+    return null
   }
-  const options = prepareOptions(entityKind.CIRCLE)
-  options.radius = map.distance(point1, point2)
-  return L.circle(point1, options)
+  const radius = map.distance(point1, point2)
+  if (layer && (layer instanceof L.Circle)) {
+    layer.setLatLng(point1)
+    layer.setRadius(radius)
+    layer.setStyle({ tsType: type })
+  } else {
+    const options = prepareOptions(type)
+    options.radius = radius
+    layer = L.circle(point1, options)
+  }
+  return layer
 }
 
 const geoJSONLayer = (coordinates, type, tsType, style, geomData) => L.geoJSON(geomData
@@ -312,12 +343,12 @@ export const createTargeting = (data, layer) => createGeoJSONLayer(data, layer, 
   fillOpacity: 0.2,
 }, true)
 
-function createRectangle (data, layer) {
+function createRectangle (kind, data, layer) {
   const bounds = Array.isArray(data) ? data : data.geometry.toJS()
   if (layer && (layer instanceof L.Rectangle)) {
     layer.setBounds(bounds)
   } else {
-    const options = prepareOptions(entityKind.RECTANGLE)
+    const options = prepareOptions(kind)
     layer = L.rectangle(bounds, options)
   }
   return layer
@@ -330,7 +361,7 @@ function createSquare (data, map, layer) {
   }
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
   point2 = L.CRS.Earth.calcPairRightDown(point1, width)
-  return createRectangle([ point1, point2 ], layer)
+  return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
 }
 
 function prepareOptions (signType, color, js) {
@@ -374,6 +405,7 @@ export function getGeometry (layer) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
     case entityKind.POLYGON:
@@ -431,6 +463,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CURVE:
     case entityKind.GROUPED_HEAD:
     case entityKind.GROUPED_LAND:
+    case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
     case entityKind.POLYGON:

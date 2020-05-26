@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import { settings } from '../../../../utils/svg/lines'
 import { halfPoint } from './Bezier'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
@@ -80,7 +81,7 @@ export function setClassName (el, name, enable) {
   }
 }
 
-export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = MIN_ZOOM, maxZoom = MAX_ZOOM) {
+export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = settings.MIN_ZOOM, maxZoom = settings.MAX_ZOOM) {
   const {
     min = DEF_MIN_SIZE,
     max = DEF_MAX_SIZE,
@@ -93,5 +94,5 @@ export function interpolateSize (zoom, sizes, factor = 1.0, minZoom = MIN_ZOOM, 
   return Math.round(result * factor)
 }
 
-export const scaleValue = (value, layer) => interpolateSize(layer._map.getZoom(), { min: value * 0.0025, max: value * 2.5 },
-  1.0, layer._map.getMinZoom(), layer._map.getMaxZoom())
+export const scaleValue = (value, layer) => interpolateSize(layer._map.getZoom(),
+  { min: value * 0.0025, max: value * 2.5 }, 1.0, layer._map.getMinZoom(), layer._map.getMaxZoom())

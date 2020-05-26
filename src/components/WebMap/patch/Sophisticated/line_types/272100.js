@@ -6,7 +6,8 @@ import {
 import {
   isDefPoint, lengthLine,
 } from '../arrowLib'
-// import L from 'leaflet'
+import { settings } from '../../../../../utils/svg/lines'
+import { evaluateColor } from '../../../../../constants/colors'
 
 // sign name: Зони РХБЗ
 // task code: DZVIN-5540 (part 3)
@@ -14,8 +15,11 @@ import {
 
 const COLORS = [ 'black', 'blue', 'red', 'green' ]
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
+const TEXT_SIZE = 1 // коэфициент размера текстового амплификатора
 
 lineDefinitions['272100'] = {
+  // начальные цвета круговых секторов
+  presetColor: COLORS,
   // Кількість точок у символа (мінімальна)
   POINTS: 5,
 
@@ -75,26 +79,38 @@ lineDefinitions['272100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
-    // const arrows = emptyPath()
-    // const color = result.layer._path.getAttribute('stroke')
-    // const width = result.layer._path.getAttribute('stroke-width')
+  render: (result, points, scale) => {
     if (points.length < 1) { return }
-    const amplifSize = 1
+    const width = (result.layer.options.strokeWidth ?? settings.STROKE_WIDTH) * scale
+    const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     result.layer._path.setAttribute('stroke-width', 0.1)
     const pO = points[0]
-    points.forEach((elm, ind) => {
-      if (isDefPoint(elm)) {
-        const radius = lengthLine(pO, elm)
+    const endIndex = points.length - 1
+    points.forEach((point, ind, points) => {
+      if (isDefPoint(point)) {
+        const radius = lengthLine(pO, point)
+        if (ind > 0) {
+          // отрисовка круговых секторов в цвете и с заливко
+          const color = evaluateColor(sectorsInfo[ind]?.color) ?? COLORS[ind]
+          const fillColor = evaluateColor(sectorsInfo[ind]?.fill) ?? 'none'
+          const prevPoint = (ind < endIndex) ? points[ind + 1] : pO
+          const prevRadius = lengthLine(pO, prevPoint)
+          // заливка сектора
+          result.amplifiers += `<path fill-rule="evenodd" stroke-width="0" fill="${fillColor}" fill-opacity="0.22" 
+            d="M${point.x} ${point.y} a${radius} ${radius} 90 1 1 0 -0.01z M${prevPoint.x} ${prevPoint.y} a${prevRadius} ${prevRadius} 0 1 1 0 -0.01z"/>`
+          // цвет круга
+          result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="none" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
+          // маркер круга
+          drawText(
+            result,
+            { x: (pO.x + lengthLine(pO, point) + 2), y: pO.y },
+            0,
+            MARKER[ind],
+            TEXT_SIZE,
+            'start')
+        }
+        // отрисовка круговых секторов для выбора их на карте
         drawCircle(result, pO, radius + !ind * 2)
-        result.amplifiers += `<circle stroke-width="3" stroke="${COLORS[ind]}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
-        drawText(
-          result,
-          { x: (pO.x + lengthLine(pO, elm) + 2), y: pO.y },
-          0,
-          MARKER[ind],
-          amplifSize,
-          'start')
       }
     })
   },

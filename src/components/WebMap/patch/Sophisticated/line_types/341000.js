@@ -1,15 +1,22 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, angleOf, drawMaskedText, drawArrow, oppositeVector, segmentsBy,
+  drawLine,
+  normalVectorTo,
+  applyVector,
+  segmentBy,
+  angleOf,
+  drawMaskedText,
+  oppositeVector,
+  segmentsBy,
+  drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: DISRUPT
 // task code: DZVIN-5531
 // hint: 'Дезорганізувати - порушення бойового порядку противника'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
 const TEXT = 'D'
 
 lineDefinitions['341000'] = {
@@ -30,17 +37,18 @@ lineDefinitions['341000'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     drawLine(result, p0, p1)
+    let endPoint = p1
     const pa = segmentsBy(p0, p1, [ 1, 0.5, 0 ])
     const norm = normalVectorTo(p0, p1, p2)
     const antiNorm = oppositeVector(norm)
     pa.forEach((point, index) => {
       const p = applyVector(point, norm)
-      let endPoint = segmentBy(point, p, (4 - index) / 4)
-      drawArrow(result, point, endPoint, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+      endPoint = segmentBy(point, p, (4 - index) / 4)
+      drawLineMark(result, MARK_TYPE.ARROW_45, endPoint, angleOf(point, endPoint))
       if (index === 1) {
         drawMaskedText(
           result,
@@ -48,9 +56,10 @@ lineDefinitions['341000'] = {
           angleOf(point, endPoint),
           TEXT,
         )
-        endPoint = segmentBy(point, applyVector(point, antiNorm), 0.25)
-        drawLine(result, point, endPoint)
+        const startPoint = segmentBy(point, applyVector(point, antiNorm), 0.25)
+        drawLine(result, startPoint, endPoint)
       }
     })
+    drawLine(result, endPoint, ...points)
   },
 }

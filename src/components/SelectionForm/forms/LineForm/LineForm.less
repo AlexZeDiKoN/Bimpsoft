@@ -5,6 +5,10 @@
   flex-direction: column;
   justify-content: space-between;
 
+  .dzvin-form-row-label{
+    margin: 0.2em;
+  }
+
   .dzvin-form-row{
     display: flex;
     flex-direction: column;
@@ -19,9 +23,6 @@
       overflow: hidden;
       margin-right: 0;
       text-overflow: ellipsis;
-    }
-    textarea.ant-input{
-      min-height: 48px;
     }
   }
 
@@ -78,23 +79,18 @@
 
     &--firstSection {
       display: flex;
-      margin-top: 10px;
+      margin-top: 2px;
       border-bottom: 2px solid rgba(159,166,89,.54);
 
       .line-container__itemWidth-left {
-        width: 50%;
-        border: 7px solid #eaeaea;
-        margin: 12px;
-        height: 153px;
-
-        img {
-          height: 156px;
-          transform: scale(1.8);
-        }
+        width: 40%;
+        border: 6px solid #eaeaea;
+        margin: 6px;
+        height: auto;
       }
 
       .line-container__itemWidth-right {
-        width: 50%;
+        width: 59%;
         .dzvin-form-input {
           width: 100%;
           .ant-select{
@@ -110,7 +106,7 @@
           }
 
           & > div {
-            width: 50%;
+            width: 49%;
           }
 
           & > div:first-child {
@@ -167,7 +163,7 @@
   }
 
   &__itemWidth {
-    width: 50%;
+    width: 33%;
 
     .dzvin-form-row-label{
       flex: 0 0 auto;
@@ -191,30 +187,55 @@
   }
 
   .dzvin-form-dark-part {
-    min-height: 250px;
+    //min-height: 250px;
     height: 100%;
-    margin: 0;
 
     .dzvin-form-row{
-      padding: 5px 10px;
+      padding: 0 10px;
       flex: 0 0 auto;
       height: fit-content;
       justify-content: space-between;
       flex-direction: row;
     }
 
+    .dzvin-form-row-label {
+    padding-top: 4px;
+    }
+
     .dzvin-form-divider{
-      margin: 0 0 10px;
+      margin: 2px 0;
+    }
+
+    .headerSiding {
+      position: relative;  /* нужна нестатическая позиция */
+      padding-top : 28px ; /* место для фиксированного заголовка */
+      margin-top: 0.25em;
     }
 
     .shape-form-scrollable {
-      height: 185px;
-      padding-left: 1.1em;
+      height: 160px;
+      padding-left: 1em;
+      overflow :  auto ; /* показывать полосу прокрутки при необходимости */
+      overflow-x: hidden;
       .coordinatesModal{
         margin-bottom: 5px;
       }
+      .col-add {
+        width: 48px;
+      }
+
+      th div {
+        position :  absolute ; /* закреплено за следующим нестатичным родителем */
+        top :  0 ; /* наверху родителя */
+
+        label {
+          position: relative;
+        }
+      }
+
     }
   }
+
   .ant-select-open {
     .ant-select-arrow {
       transform: rotate(180deg) scale(0.6);

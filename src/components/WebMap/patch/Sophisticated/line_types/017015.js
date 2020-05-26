@@ -1,20 +1,20 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, segmentBy, continueLine, drawArrow, drawText, setVectorLength, getVector,
-  oppositeVector,
+  drawLine, normalVectorTo, applyVector, segmentBy, drawText, setVectorLength, getVector,
+  angleOf, drawLineMark, getFontSize,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
+import { angle3Points } from '../arrowLib'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Рухомий загороджувальний вогонь із зазначенням найменування вогню.'
 
-const TIP_LENGTH = 50
-const EDGE = 40
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
-
 lineDefinitions['017015'] = {
+  // Ампліфікатори, що використовуються на лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -32,52 +32,59 @@ lineDefinitions['017015'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     drawLine(result, p0, p1)
 
     const mid = segmentBy(p0, p1, 0.5)
 
-    const len = TIP_LENGTH * scale
-    continueLine(result, p1, p0, 0, len)
-    continueLine(result, p1, p0, 0, -len)
-    continueLine(result, p0, p1, 0, len)
-    continueLine(result, p0, p1, 0, -len)
+    const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0), 1)
+    drawLineMark(result, MARK_TYPE.SERIF, p1, angleOf(p0, p1), 1)
 
     const norm = normalVectorTo(p0, p1, p2)
     const a = applyVector(mid, norm)
+    drawLineMark(result, MARK_TYPE.ARROW_45, a, angleOf(mid, a), 1)
+    drawLine(result, mid, a)
 
-    drawArrow(result, mid, a, ARROW_LENGTH * scale, ARROW_WIDTH * scale)
+    const angle = angleOf(p0, p1) - Math.PI / 2
+    const angleArrow = angle3Points(mid, p0, p2)
+    const top = angleOf(p0, p1) < 0
+    const left = top ? angleArrow < 0 : angleArrow >= 0
+    const fontSize = getFontSize(result.layer)
 
     drawText(
       result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.N ?? '',
+      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      'black'
+      null,
+      top ? 'after-edge' : 'before-edge',
+    )
+
+    const len = graphicSize / 2
+    drawText(
+      result,
+      applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
+      1,
+      left ? 'start' : 'end',
+      null,
+      top ? 'before-edge' : 'after-edge',
     )
 
     drawText(
       result,
-      applyVector(segmentBy(p0, mid, 0.1), setVectorLength(oppositeVector(norm), 2 * EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.B ?? '',
+      applyVector(mid, setVectorLength(getVector(mid, p2), fontSize / 10)),
+      angle,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
       1,
-      'middle',
-      'black'
-    )
-
-    drawText(
-      result,
-      applyVector(segmentBy(p0, mid, 0.8), setVectorLength(norm, 2 * EDGE * scale)),
-      Math.PI,
-      result.layer?.options?.textAmplifiers?.T ?? '',
-      1,
-      'middle',
-      'black'
+      left ? 'end' : 'start',
+      null,
+      top ? 'after-edge' : 'before-edge',
     )
   },
 }

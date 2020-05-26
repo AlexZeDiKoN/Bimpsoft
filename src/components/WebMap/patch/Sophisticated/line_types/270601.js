@@ -1,14 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, emptyPath, getPointAt, addPathAmplifier,
+  drawLine, normalVectorTo, applyVector, drawLineMark, angleOf,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: OBSTACLE BYPASS EASY
 // task code: DZVIN-5766 (part 1)
 // hint: 'Обхід загороджень'
-
-const ARROW_LENGTH = 36
 
 lineDefinitions['270601'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -28,27 +27,16 @@ lineDefinitions['270601'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
-
-    const arrow = emptyPath()
 
     const norm = normalVectorTo(p0, p1, p2)
     const a = applyVector(p0, norm)
     const b = applyVector(p1, norm)
 
-    drawLine(result, a, b)
-    drawLine(result, p1, b)
-    drawLine(result, a, p0)
+    drawLine(result, p0, a, b, p1)
 
-    const bp1 = getPointAt(b, p1, 5 * Math.PI / 6, ARROW_LENGTH * scale)
-    const bp2 = getPointAt(b, p1, -5 * Math.PI / 6, ARROW_LENGTH * scale)
-    drawLine(arrow, p1, bp1, bp2)
-
-    const ap1 = getPointAt(a, p0, 5 * Math.PI / 6, ARROW_LENGTH * scale)
-    const ap2 = getPointAt(a, p0, -5 * Math.PI / 6, ARROW_LENGTH * scale)
-    drawLine(arrow, p0, ap1, ap2)
-
-    addPathAmplifier(result, arrow, true)
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p1, angleOf(b, p1))
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p0, angleOf(a, p0))
   },
 }

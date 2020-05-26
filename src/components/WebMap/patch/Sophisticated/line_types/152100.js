@@ -1,16 +1,13 @@
-import { MIDDLE, DELETE, STRATEGY } from '../strategies'
+import { DELETE, MIDDLE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
-import {
-  drawLine, drawArrow, continueLine,
-} from '../utils'
+import { angleOf, continueLine, drawLine, drawLineMark } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: SUPPORT BY FIRE POSITION
 // task code: DZVIN-5520
 // hint: 'Підтримка вогнем, ведення прямого вогню по противнику з метою підтримки маневру іншого підрозділу'
 
-const ARROW_LENGTH = 36
-const ARROW_WIDTH = 18
-const EDGE_WIDTH = 60
+// const EDGE_WIDTH = 60
 
 lineDefinitions['152100'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -34,12 +31,9 @@ lineDefinitions['152100'] = {
   render: (result, points, scale) => {
     const [ p0, p1, p2, p3 ] = points
 
-    drawLine(result, p0, p1)
-    const length = ARROW_LENGTH * scale
-    const width = ARROW_WIDTH * scale
-    const edge = EDGE_WIDTH * scale
-    drawArrow(result, p0, p2, length, width)
-    drawArrow(result, p1, p3, length, width)
+    drawLine(result, p2, p0, p1, p3)
+    drawLineMark(result, MARK_TYPE.ARROW_60, p2, angleOf(p0, p2))
+    const edge = drawLineMark(result, MARK_TYPE.ARROW_60, p3, angleOf(p1, p3)) // EDGE_WIDTH * scale
     continueLine(result, p0, p1, edge, edge)
     continueLine(result, p1, p0, edge, -edge)
   },

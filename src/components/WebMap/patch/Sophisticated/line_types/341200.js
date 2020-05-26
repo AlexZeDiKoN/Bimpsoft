@@ -2,8 +2,17 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawArrowOutline, square, emptyPath, addPathAmplifier,
+  drawLine,
+  segmentBy,
+  angleOf,
+  segmentLength,
+  drawArrowOutline,
+  square,
+  emptyPath,
+  addPathAmplifier,
+  drawText,
 } from '../utils'
+import { amps } from '../../../../../constants/symbols'
 
 // sign name: FOLLOW AND ASSUME
 // task code: DZVIN-5533
@@ -21,6 +30,9 @@ lineDefinitions['341200'] = {
 
   // Взаємозв'яок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.empty,
+
+  // Ампліфікатори на лінії
+  useAmplifiers: [ { id: amps.T, name: 'T' } ],
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => [
@@ -52,7 +64,8 @@ lineDefinitions['341200'] = {
     const anchor = applyToPoint(qp0, { x: SIDE_LENGTH * 2 + k * 2, y: 0 })
 
     drawLine(result, a, b, c, center, d, a)
-    drawMaskedText(result, segmentBy(p0, center, 0.4), a0, result.layer?.options?.textAmplifiers?.T ?? '')
+    drawText(result, segmentBy(p0, center, 0.4), a0,
+      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
 
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {
       drawArrowOutline(result, center, anchor, ARROW_LENGTH * scale, ARROW_WIDTH * scale, undefined, undefined, false)
@@ -62,5 +75,5 @@ lineDefinitions['341200'] = {
       drawLine(arrowLine, center, p1)
     }
     addPathAmplifier(result, arrowLine, false, SIDE_LENGTH / 2)
-  }
+  },
 }

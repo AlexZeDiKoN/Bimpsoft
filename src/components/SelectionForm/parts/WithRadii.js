@@ -6,6 +6,8 @@ import i18n from '../../../i18n'
 import { distanceAzimuth } from '../../WebMap/patch/utils/sectors'
 import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
+import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
+import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 import { colorOption } from './render'
 
@@ -18,6 +20,7 @@ const { Coordinates: Coord } = utils
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
 const PRESET_COLORS = Object.values(colors.values)
 const COLOR_PICKER_Z_INDEX = 2000
+const PATH_SECTORS_INFO = [ 'attributes', 'sectorsInfo' ]
 
 const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(Component) {
   constructor (props) {
@@ -81,9 +84,9 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
   }
 
   changeSectorsInfo (info) {
-    // this.setResult((result) => (
-    //   result.updateIn([ ...PATH_S_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
-    // ))
+    this.setResult((result) => (
+      result.updateIn([ ...PATH_SECTORS_INFO, info.index ], (value) => ({ ...value, [info.name]: info.value }))
+    ))
   }
 
   sectorAmplifierChangeHandler = (index) => ({ target: { name, value } }) => {
@@ -104,8 +107,11 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
 
   renderRadii () {
     const canEdit = this.isCanEdit()
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
+    const formStore = this.getResult()
+    const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
+    const sectorsInfo = formStore.getIn(PATH_SECTORS_INFO).toJS()
     const coordO = coordinatesArray[0]
+    const presetColor = lineDefinitions[extractLineCode(this.props.data.code)]?.presetColor
     const { radiiText = [] } = this.state
     return (
       <div>
@@ -113,8 +119,9 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
           const radius = radiiText[index] ? radiiText[index]
             : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
           const radiusIsGood = this.isGoodRadiusRight(Number(radius), coordinatesArray, index)
-          const color = 'red'
-          const fill = 'transparent'
+          const sectorInfo = sectorsInfo[index] ?? {}
+          const color = sectorInfo?.color || (presetColor && presetColor[index]) || '#000000'
+          const fill = sectorInfo?.fill || colors.TRANSPARENT
           return (index !== 0) ? (
             <div key={index} className="container__itemWidth">
               <FormRow label={`${i18n.RADIUS} «${MARKER[index]}»`}>

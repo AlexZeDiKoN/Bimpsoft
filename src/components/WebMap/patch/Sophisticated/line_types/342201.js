@@ -1,14 +1,14 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, getPointAt, addPathAmplifier, emptyPath,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, getPointAt, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: COVER
 // task code: DZVIN-5770 (part 1)
 // hint: 'Несення дозорної служби, спостереження'
 
-const ARROW_WIDTH = 24
 const Z_WIDTH = 16
 const TEXT = 'C'
 const POINT_SIGN_SIZE = 96
@@ -34,8 +34,6 @@ lineDefinitions['342201'] = {
   render: (result, points, scale) => {
     const [ p0, p1, p2 ] = points
 
-    const arrows = emptyPath()
-
     const drawZArrow = (pStart, pEnd, flip) => {
       const l = segmentLength(pStart, pEnd)
       let p = pStart
@@ -50,9 +48,7 @@ lineDefinitions['342201'] = {
       } else {
         drawLine(result, pStart, pEnd)
       }
-      const pa1 = getPointAt(p, pEnd, 5 * Math.PI / 6, ARROW_WIDTH * scale)
-      const pa2 = getPointAt(p, pEnd, -5 * Math.PI / 6, ARROW_WIDTH * scale)
-      drawLine(arrows, pEnd, pa1, pa2)
+      drawLineMark(result, MARK_TYPE.ARROW_60_FILL, pEnd, angleOf(p, pEnd))
     }
 
     const drawHalf = (p, flip) => {
@@ -69,6 +65,5 @@ lineDefinitions['342201'] = {
 
     drawHalf(p1, true)
     drawHalf(p2, false)
-    addPathAmplifier(result, arrows, true)
   },
 }

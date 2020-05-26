@@ -2,14 +2,15 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, angleOf, segmentLength, drawMaskedText, rad,
+  drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАКРІПИТИСЯ
 // task code: DZVIN-6007
-// hint: `Закріпитися – захопити (зайняти) та утримувати позицію, яку противник може використати в ході ведення бою та запобігти її руйнуванню`
+// hint: `Закріпитися – захопити (зайняти) та утримувати позицію,
+// яку противник може використати в ході ведення бою та запобігти її руйнуванню`
 
-const CROSS_LENGTH = 48
 const TEXT = 'S'
 
 lineDefinitions['017011'] = {
@@ -44,24 +45,10 @@ lineDefinitions['017011'] = {
 
     const angle = angleOf(p1, p0)
 
-    const ang2 = (delta) => compose(
-      translate(p.x, p.y),
-      rotate(angle + Math.PI + rad(delta)),
-    )
-
-    const ang3 = (delta) => compose(
-      translate(p1.x, p1.y),
-      rotate(angle + Math.PI + rad(delta)),
-    )
-
     drawArc(result, p1, p, r, 0, 1, 1)
 
-    const cross = { x: CROSS_LENGTH * scale, y: 0 }
-    drawLine(result, p, applyToPoint(ang2(100), cross))
-    drawLine(result, applyToPoint(ang2(10), cross), p)
-
-    drawLine(result, p1, applyToPoint(ang3(-125), cross))
-    drawLine(result, applyToPoint(ang3(-45), cross), p1)
+    drawLineMark(result, MARK_TYPE.ARROW_90, p, angle + Math.PI + rad(55))
+    drawLineMark(result, MARK_TYPE.ARROW_90, p1, angle + Math.PI / 2)
 
     drawMaskedText(
       result,

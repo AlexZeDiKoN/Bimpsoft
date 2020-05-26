@@ -3,7 +3,7 @@ import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
 import { pointsToD } from '../../utils/svg/lines'
-import { getMapObjectSvg } from './mapObject'
+import { getFontSizeByDpi, getGraphicSizeByDpi, getMapObjectSvg, getPointSizeByDpi } from './mapObject'
 
 const METERS_PER_INCH = 0.0254
 const SEMI_MAJOR_AXIS = 6378245
@@ -100,8 +100,23 @@ export const getMapSvg = (
     SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
   const scale = dpi / 96
-
-  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers, zoom }
+  const fontSize = getFontSizeByDpi(printScale, dpi)
+  const graphicSize = getGraphicSizeByDpi(printScale, dpi)
+  const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
+  // const frameWidth = Math.round(dpi / MM_IN_INCH * (frameMapSize.get(printScale) || 10))
+  const commonData = {
+    bounds,
+    dpi,
+    coordToPixels,
+    scale,
+    fontSize,
+    graphicSize,
+    pointSymbolSize,
+    printScale,
+    layersById,
+    showAmplifiers,
+    zoom,
+  }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
   return ReactDOMServer.renderToStaticMarkup(<svg

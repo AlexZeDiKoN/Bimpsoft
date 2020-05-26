@@ -37,16 +37,18 @@ import './line_types/151406'
 import './line_types/152000'
 import './line_types/152100'
 import './line_types/152200'
-import './line_types/170101'
+import './line_types/170100'
 import './line_types/230200'
 import './line_types/240701'
 import './line_types/240805'
 import './line_types/270501'
+import './line_types/270502'
 import './line_types/270601'
 import './line_types/270701'
 import './line_types/270800'
 import './line_types/271300'
 import './line_types/271400'
+import './line_types/271600'
 import './line_types/271700'
 import './line_types/271701'
 import './line_types/271800'
@@ -93,9 +95,6 @@ export const TEXTS = {
   RIP: 'RIP',
 }
 
-/* const { setStyle } = L.Polyline.prototype
-const parent = { setStyle } */
-
 L.Sophisticated = L.Polyline.extend({
   options: {
     tsType: entityKind.SOPHISTICATED,
@@ -111,12 +110,6 @@ L.Sophisticated = L.Polyline.extend({
     }
     this.setLatLngs(points)
   },
-
-  /* setStyle: function (style) {
-    try { throw new Error('debug') } catch (e) { console.warn(e) }
-    console.log('Sophisticated.setStyle', style)
-    parent.setStyle.call(this, style)
-  }, */
 
   _adjustPoints: function (changed, from, to) {
     const map = this._map || this._initMap
@@ -136,7 +129,7 @@ L.Sophisticated = L.Polyline.extend({
       this._bounds = new L.LatLngBounds()
     }
     let next = this._convertLatLngs(latlngs)
-    let firstTime = !this._prevPoints || this._prevPoints.length !== next.length
+    const firstTime = !this._prevPoints || this._prevPoints.length !== next.length
     if (firstTime) {
       this._prevPoints = next
     }

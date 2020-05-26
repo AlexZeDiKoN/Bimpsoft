@@ -3,6 +3,7 @@ import { FormTypes } from '../../constants'
 
 const EMPTY_OBJECT = {}
 Object.freeze(EMPTY_OBJECT)
+const pencilCode = '10032500002818000000'
 
 const initState = {
   showForm: null,
@@ -36,6 +37,12 @@ export default function reducer (state = initState, action) {
     case actions.SHOW_DELETE_FORM: {
       return { ...state, showForm: FormTypes.DEL }
     }
+    case actions.SHOW_ERROR_PASTE_FORM: {
+      return { ...state, showForm: FormTypes.ERROR_PAST }
+    }
+    case actions.SHOW_ERROR_SAVE_FORM: {
+      return { ...state, showForm: FormTypes.ERROR_SAVE }
+    }
     case actions.HIDE_FORM: {
       return { ...state, showForm: null, newShape: EMPTY_OBJECT }
     }
@@ -54,6 +61,9 @@ export default function reducer (state = initState, action) {
       }
       if (preview) {
         res.list = [ preview.id || null ]
+      }
+      if (res.code === pencilCode && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
+        res.attributes.uniqueDesignation1 = res.attributes.staffComments
       }
       return res
     }

@@ -7,6 +7,7 @@ export function angleDegCheck (angle) {
   return Number.isFinite(Number(angle)) && (Math.abs(angle) < 360)
 }
 
+// проверка азимутов сектора
 export function azimuthCheck (aO, aL, aR) {
   let azimuthL, azimuthR, azimuthO
   const PI2 = Math.PI * 2
@@ -43,6 +44,8 @@ export function alignmentAngle (angle, dAngle) {
   return da
 }
 
+// угол L p1 p0 p2
+// p0 - центр угла
 export function angleBetweenPoints (p0, p1, p2) {
   const r = Earth.R
   const a = Earth.distance(p1, p2) / r
@@ -86,7 +89,7 @@ function cartToSpher (x) {
 }
 /* Решение прямой геодезической задачи
  * Аргументы исходные:
- *     pt1  - {широта, долгота} точки Q1
+ *     pt0  - {широта, долгота} точки Q1
  *     azi  - азимут начального направления
  *     dist - расстояние 'м' метрах, переводим в сферическое
  * возвращаем  - {широта, долгота} точки Q2 */

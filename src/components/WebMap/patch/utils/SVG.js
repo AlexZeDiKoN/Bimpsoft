@@ -1,5 +1,6 @@
 /* global DOMParser */
-import { epsilon } from './helpers'
+import { drawLine, emptyPath, getMaxPolygon } from '../Sophisticated/utils'
+import { epsilon, interpolateSize } from './helpers'
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
 export function parseSvgPath (svg) {
@@ -243,6 +244,27 @@ export function makeHeadGroup (line, parts) {
 
 export function makeLandGroup (line, parts) {
   // TODO 5235
+}
+
+export function makeRegionGroup (layer) {
+  const points = layer._groupChildren.map((marker) => layer._map.latLngToLayerPoint(marker._latlng))
+  const polygon = getMaxPolygon(points)
+  const rectanglePoints = []
+
+  const dy = interpolateSize(layer._map.getZoom(), layer.scaleOptions?.pointSizes) * 0.5 * 1.2
+  const dx = dy * 1.5
+
+  polygon.forEach((elm, number) => {
+    rectanglePoints.push({ x: elm.x - dx, y: elm.y - dy, number })
+    rectanglePoints.push({ x: elm.x + dx, y: elm.y - dy, number })
+    rectanglePoints.push({ x: elm.x - dx, y: elm.y + dy, number })
+    rectanglePoints.push({ x: elm.x + dx, y: elm.y + dy, number })
+  })
+  const rectanglePolygon = getMaxPolygon(rectanglePoints)
+
+  const result = emptyPath()
+  drawLine(result, ...rectanglePolygon)
+  return `${result.d} z`
 }
 
 /* function getCentralPoint (js) {

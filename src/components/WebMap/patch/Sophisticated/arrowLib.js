@@ -47,7 +47,7 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
   let pointSide // Боковая опорная точка
   if (!isDefPoint(pt[indEnd]) || indEnd < 3) { // нет опорной точки стрелки, расчитываем ее по среднему
     pointSide = referencePoint(pt[0], pt[1])
-  } else { // координаты опорной стрелки рассчитываем по имеющимся данным
+  } else { // координаты стрелки рассчитываем по имеющимся данным
     const polarPoints = coordinatesToPolar(pt[0], pt[1], pt[indEnd])
     pointSide = referencePoint(pt[0], pt[1], polarPoints.angle, polarPoints.beamLength)
   }
@@ -303,6 +303,9 @@ export const STRATEGY_ARROW = {
       if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 1)) { // Обрабатываем изменения контрольных точек головы стрелки
         const referencePT = { x: nextPoints[indEnd].x, y: nextPoints[indEnd].y }
         const polarPoint = coordinatesToPolar(prevPoints[0], prevPoints[1], referencePT)
+        if (polarPoint.angle < 0) {
+          polarPoint.angle = -polarPoint.angle
+        }
         const coordinates = referencePoint(nextPoints[0], nextPoints[1], polarPoint.angle, polarPoint.beamLength)
         nextPoints[indEnd] = { x: coordinates.x, y: coordinates.y }
       }
@@ -402,7 +405,23 @@ function pointIntersecLine (l1p1, l1p2, l2p1, l2p2) {
   return { x: (b1 * c2 - b2 * c1) / d, y: (a2 * c1 - a1 * c2) / d }
 }
 
-// --------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------
+// Точка пересечения отрезков
+export function pointIntersecSegments (l1p1, l1p2, l2p1, l2p2) {
+  const point = pointIntersecLine(l1p1, l1p2, l2p1, l2p2)
+  if (point) {
+    const { x, y } = point
+    if (((l1p1.x <= x && x <= l1p2.x) || (l1p2.x <= x && x <= l1p1.x)) &&
+      ((l2p1.x <= x && x <= l2p2.x) || (l2p2.x <= x && x <= l2p1.x)) &&
+      ((l1p1.y <= y && y <= l1p2.y) || (l1p2.y <= y && y <= l1p1.y)) &&
+      ((l2p1.y <= y && y <= l2p2.y) || (l2p2.y <= y && y <= l2p1.y))) {
+      return { x, y }
+    }
+  }
+  return null
+}
+
+// --------------------------------------------------------------------------------------------------------------
 // полярные координаты точки
 // t1, t2 координаты отрезка
 // t3 - координаты точка
@@ -419,7 +438,7 @@ export function angle3Points (t1, t2, t3) {
     (t3.x - t1.x) * (t2.x - t1.x) + (t3.y - t1.y) * (t2.y - t1.y))
 }
 
-function angle4Points (t1, t2, t3, t4) {
+export function angle4Points (t1, t2, t3, t4) {
   const l1 = straight(t1, t2)
   const l2 = straight(t3, t4)
   return Math.atan2((l1.A * l2.B - l2.A * l1.B), (l1.A * l2.A + l1.B * l2.B))

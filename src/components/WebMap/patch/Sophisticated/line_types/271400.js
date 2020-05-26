@@ -1,14 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, normalVectorTo, applyVector, continueLine, halfPlane,
+  drawLine, normalVectorTo, applyVector, halfPlane, getPointMove, angleOf, getGraphicSize,
 } from '../utils'
 
 // sign name: BRIDGE
 // task code: DZVIN-5775
 // hint: 'Мостова переправа'
-
-const EDGE_WIDTH = 60
 
 lineDefinitions['271400'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -28,19 +26,21 @@ lineDefinitions['271400'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     const norm = normalVectorTo(p0, p1, p2)
     const a = applyVector(p0, norm)
     const b = applyVector(p1, norm)
     const hp = 1 - halfPlane(p0, p1, p2) * 2
-    drawLine(result, p0, p1)
-    drawLine(result, a, b)
-    const width = EDGE_WIDTH * scale
-    continueLine(result, p0, p1, width, hp * width)
-    continueLine(result, p1, p0, width, -hp * width)
-    continueLine(result, a, b, width, -hp * width)
-    continueLine(result, b, a, width, hp * width)
+
+    const markSize = getGraphicSize(result.layer)
+    const aTop = getPointMove(p0, angleOf(p0, p1) - Math.PI / 4 * hp, markSize)
+    const aBottom = getPointMove(p1, angleOf(p1, p0) + Math.PI / 4 * hp, markSize)
+    const bTop = getPointMove(a, angleOf(a, b) + Math.PI / 4 * hp, markSize)
+    const bBottom = getPointMove(b, angleOf(b, a) - Math.PI / 4 * hp, markSize)
+
+    drawLine(result, aTop, p0, p1, aBottom)
+    drawLine(result, bTop, a, b, bBottom)
   },
 }

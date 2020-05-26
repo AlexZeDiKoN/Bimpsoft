@@ -1,8 +1,10 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
+import { evaluateColor } from '../../constants/colors'
+import entityKind from '../../components/WebMap/entityKind'
 import { extractSubordinationLevelSVG } from './milsymbol'
-import { extractTextSVG } from './text'
+import { extractTextSVG, FONT_WEIGHT } from './text'
 
 export const settings = {
   LINE_WIDTH: 2, // (пікселів) товщина ліній
@@ -14,7 +16,10 @@ export const settings = {
   NODES_SPACE: 36, // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
   // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
   // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
+  POINT_SYMBOL_SIZE: { min: 9, max: 100 }, // (пікселів) розмір точкового знаку
   NODES_SIZE: { min: 12, max: 120 }, // (пікселів) розмір вузлової точки (діаметр перекресленого кола, сторона квадрата)
+  TEXT_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір текстових ампліфікаторів лінійних/площинних знаків'
+  GRAPHIC_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір графічних ампліфікаторів лінійних/площинних знаків'
   // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
   // була строго кратною WAVE_SIZE
   WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
@@ -36,6 +41,30 @@ export const settings = {
   DRAW_PARTIAL_WAVES: true,
   MIN_ZOOM: 0,
   MAX_ZOOM: 20,
+  STROKE_WIDTH: 5,
+  CROSS_SIZE: 48,
+}
+
+export const MARK_TYPE = {
+  ARROW_90: 'arrow90',
+  ARROW_60: 'arrow60',
+  ARROW_45: 'arrow45',
+  ARROW_30: 'arrow30',
+  ARROW_30_FILL: 'arrow30fill',
+  ARROW_60_FILL: 'arrow60fill',
+  ARROW_90_DASHES: 'arrow90dashes',
+  ARROW1: 'arrow1',
+  ARROW2: 'arrow2',
+  ARROW3: 'arrow3',
+  ARROW4: 'arrow4',
+  STROKE1: 'stroke1',
+  STROKE2: 'stroke2',
+  STROKE3: 'stroke2',
+  FORK: 'fork',
+  CROSS: 'cross',
+  SERIF: 'serif',
+  ANGLE: 'angle',
+  SERIF_CROSS: 'serif_cross',
 }
 
 class Segment {
@@ -654,7 +683,7 @@ const addUnitLine = (
   return result
 }
 // -----------------------------------------------------------------------------------------------------------------
-// построение типовой линии
+// построение типовой линии (загрождения)
 export const blockage = (points, objectAttributes, bezier, locked, bounds, scaleOptions, zoom = -1, inverse = false,
   lineType = 'blockage', setEnd = false) => {
   if (zoom < 0) {
@@ -782,9 +811,13 @@ const getTextAmplifiers = ({
   level,
   scale,
   zoom,
+  color,
+  fontColor,
+  fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
+  graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
 }) => {
-  const fontSize = interpolateSize(zoom, settings.LINE_AMPLIFIER_TEXT_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
+  const fillColor = color ? `fill="${color}"` : ``
   const result = {
     maskPath: [],
     group: '',
@@ -794,26 +827,32 @@ const getTextAmplifiers = ({
     return result
   }
 
-  points.forEach((point, index) => {
+  points.forEach((point) => {
     // const isLast = points[index] === points.length - 1
     const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle' && amplifierType === 'level' && level) {
-        return [ type, [ extractSubordinationLevelSVG(
-          level,
-          settings.AMPLIFIERS_SIZE * scale,
-          settings.AMPLIFIERS_WINDOW_MARGIN * scale,
-        ) ] ]
+      if (type === 'middle') {
+        if (amplifierType === 'level' && level) {
+          return [ type, [ extractSubordinationLevelSVG(
+            level,
+            graphicSize,
+            settings.AMPLIFIERS_WINDOW_MARGIN * scale,
+          ) ] ]
+        }
+        // стрелки на промежуточных точкакх
+        if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
+          return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
+        }
       }
 
       if (!value) {
         return null // canceling render of a text amplifier
       }
-
+      // текстовый амплификатор
       return [ type, extractTextSVG({
         string: value,
         fontSize,
+        fontColor,
         margin: amplifierMargin,
-        scale,
         getOffset: getOffset.bind(null, type, point),
       }) ]
     }).filter(Boolean)
@@ -821,20 +860,23 @@ const getTextAmplifiers = ({
     amplifiers.forEach(([ type, amplifiers ]) => {
       amplifiers.forEach((amplifier) => {
         let { x, y, r } = point
-        r = getRotate?.(type, r) ?? r
-        result.maskPath.push(
-          pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
-            const movedPoint = add(point, x, y)
-            if (R.isNil(r) || r === 0) {
-              return movedPoint
-            }
-            return rotate(movedPoint, x, y, r)
-          }), true),
-        )
+        r = getRotate?.(type, r, amplifierType) ?? r
+        if (amplifier.maskRect) {
+          result.maskPath.push(
+            pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+              const movedPoint = add(point, x, y)
+              if (R.isNil(r) || r === 0) {
+                return movedPoint
+              }
+              return rotate(movedPoint, x, y, r)
+            }), true),
+          )
+        }
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
-          font-weight="bold"
+          font-weight="${FONT_WEIGHT}"
+          ${fillColor}
        >${amplifier.sign}</g>`
       })
     })
@@ -848,6 +890,7 @@ const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, n
     case 'top':
       return { y: -lineHeight * numberOfLines - lineHeight / 2 }
     case 'middle':
+    case 'center':
       return { y: -lineHeight * numberOfLines / 2 }
     case 'bottom':
       return { y: lineHeight / 2 }
@@ -867,10 +910,10 @@ const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHe
     case 'top':
       offsetObject.x = half * t
       break
-    case 'middle': {
+    case 'middle':
+    case 'center':
       offsetObject.x = -(half + lineHeight / 3) * t
       break
-    }
     case 'bottom':
       offsetObject.x = half * t
       break
@@ -886,6 +929,16 @@ const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
   }
 }
 
+const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermediateType) => {
+  if (amplifierType === 'middle' &&
+    (intermediateType === MARK_TYPE.ARROW_90 || intermediateType === MARK_TYPE.ARROW_30_FILL)) {
+    return pointRotate
+  }
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
 export const getAmplifiers = ({
   points,
   bezier,
@@ -893,6 +946,10 @@ export const getAmplifiers = ({
   bounds,
   scale = 1,
   zoom = -1,
+  fontColor,
+  fontSize, // для печати
+  graphicSize, // для печати
+  tsType, // тип линии
 }, object) => {
   const result = {
     maskPath: [],
@@ -908,16 +965,17 @@ export const getAmplifiers = ({
     shownNodalPointAmplifiers,
     pointAmplifier,
     nodalPointIcon,
+    color,
   } = object.attributes
   const { level } = object
-
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const interpolatedNodeSize = interpolateSize(zoom, settings.NODES_SIZE, scale)
-  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
+  const interpolatedNodeSize = graphicSize || interpolateSize(zoom, settings.NODES_SIZE, scale)
+  const step = fontSize || settings.AMPLIFIERS_SIZE * scale
+  const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
 
-  {
+  { // межузловые амплификаторы
     const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
     const { maskPath, group } = getTextAmplifiers({
       level,
@@ -931,27 +989,36 @@ export const getAmplifiers = ({
         () => 0.5,
         bezier,
         locked,
-      ).filter((point, index) => insideMap(point) && shownIntermediateAmplifiers.has(index)),
+      ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
       getOffset: getOffsetForIntermediateAmplifier,
-      getRotate: getRotateForLineAmplifier,
+      getRotate: getRotateForIntermediateAmplifier,
+      color,
+      fontColor,
+      fontSize,
+      graphicSize,
     })
     result.maskPath.push(...maskPath)
     result.group += group
   }
 
-  {
+  { // формирование pointAmplifiers
     const segments = [ 0, points.length - Number(!locked) - 1 ]
 
     let amplifierOptions
 
-    if (locked) {
-      const centroid = getPolygonCentroid(points)
+    if (locked) { // замкнутая линия, pointAmplifiers в центре
+      let centroid
+      if (tsType === entityKind.CIRCLE) {
+        centroid = points[0]
+      } else {
+        centroid = getPolygonCentroid(points)
+      }
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
         getOffset: getOffsetForIntermediateAmplifier,
       }
-    } else {
+    } else { // pointAmplifiers на краях линии
       amplifierOptions = {
         points: buildPoints(
           points,
@@ -964,7 +1031,7 @@ export const getAmplifiers = ({
         getRotate: (amplifierType, pointRotate) => {
           return amplifierType !== 'middle'
             ? getRotateForLineAmplifier(amplifierType, pointRotate)
-            : 0
+            : 0 // Амплификатор N выводится горизонтально
         },
       }
     }
@@ -976,35 +1043,39 @@ export const getAmplifiers = ({
         zoom,
         amplifier: pointAmplifier,
         ...amplifierOptions,
+        fontColor,
+        fontSize,
       })
       result.maskPath.push(...maskPath)
       result.group += group
     }
   }
 
-  points = points.filter((point, index) => insideMap(point) && shownNodalPointAmplifiers.has(index))
+  const insideMapNodal = getBoundsFunc(bounds, interpolatedNodeSize) // функция проверки попадания узлового амплификатора в область вывода
+  points = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
 
   switch (nodalPointIcon) {
     case 'cross-circle': {
-      const d = Number((interpolatedNodeSize * Math.sqrt(2) * scale / 4).toFixed(2))
+      const d = Number((interpolatedNodeSize * Math.sqrt(2) / 4).toFixed(2))
+      const dx2 = d * 2
       points.forEach(({ x, y }) => {
-        result.maskPath.push(circleToD(interpolatedNodeSize * scale / 2, x, y))
+        result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
         result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${interpolatedNodeSize * scale / 2}" />
-            <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
+            <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
+            <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = interpolatedNodeSize * scale / 2
+      const d = interpolatedNodeSize / 2
       points.forEach(({ x, y }) => {
         result.maskPath.push(pointsToD(
-          rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
+          rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
           true,
         ))
         result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
+            <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
       })
       break
@@ -1018,34 +1089,52 @@ export const getAmplifiers = ({
   return result
 }
 
-const drawLineEnd = (type, { x, y }, angle, scale) => {
-  let res = `<g stroke-width="3" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strokeColor = 'black') => {
+  let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
-    case 'arrow1':
-      res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
+    case MARK_TYPE.ARROW_90:
+      res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
       break
-    case 'arrow2':
+    case MARK_TYPE.ARROW_60:
+      res += `<path fill="none" d="M11-6 l-11,6 11,6"/>`
+      break
+    case MARK_TYPE.ARROW_45:
+      res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
+      break
+    case MARK_TYPE.ARROW_30:
+      res += `<path fill="none" d="M12-3 l-12,3 12,3"/>`
+      break
+    case MARK_TYPE.ARROW_30_FILL:
+      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-4v8z"/>`
+      break
+    case MARK_TYPE.ARROW_60_FILL:
+      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l12-6v12z"/>`
+      break
+    case MARK_TYPE.ARROW1: // 90
+      res += `<path fill="none" d="M7,-8 l-8,8 8,8"/>`
+      break
+    case MARK_TYPE.ARROW2:
       res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
       break
-    case 'arrow3':
+    case MARK_TYPE.ARROW3:
       res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
       break
-    case 'arrow4':
+    case MARK_TYPE.ARROW4:
       res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
       break
-    case 'stroke1':
+    case MARK_TYPE.STROKE1:
       res += `<path d="M0,-8 v16"/>`
       break
-    case 'stroke2':
+    case MARK_TYPE.STROKE2:
       res += `<path d="M-4,-6 l6,12"/>`
       break
-    case 'stroke3':
+    case MARK_TYPE.STROKE3:
       res += `<path d="M2,-6 l-6,12"/>`
       break
-    case 'fork':
+    case MARK_TYPE.FORK:
       res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
       break
-    case 'cross':
+    case MARK_TYPE.CROSS:
       res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
       break
     default:
@@ -1077,9 +1166,10 @@ export const getStylesForLineType = (type, scale = 1) => {
   return styles
 }
 
-export const getLineEnds = (points, objectAttributes, bezier, scale) => {
+export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
+  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1) / 12
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
@@ -1100,13 +1190,50 @@ export const getLineEnds = (points, objectAttributes, bezier, scale) => {
       leftEndType,
       points[0],
       angle(vector(points[0], leftPlus)),
-      scale,
+      graphicSize,
     ),
     right: drawLineEnd(
       rightEndType,
       points[points.length - 1],
       angle(vector(points[points.length - 1], rightMinus)),
-      scale,
+      graphicSize,
     ),
   }
+}
+
+export const drawLineHatch = (layer, scale, hatch) => {
+  if (hatch === 'left-to-right') {
+    const cs = settings.CROSS_SIZE * scale
+    const sw = settings.STROKE_WIDTH * scale
+    const code = layer.object.id
+    const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
+    const fillId = `SVG-fill-pattern-${code}`
+    const fillColor = `url('#${fillId}')`
+    // const color = result.layer._path.getAttribute('stroke')
+    layer._path.setAttribute('fill', fillColor)
+    layer._path.setAttribute('fill-opacity', 1)
+    layer._path.setAttribute('width', 100)
+    layer.options.fillColor = fillColor
+    layer.options.fillOpacity = 1
+    return ` 
+      <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
+      </pattern>`
+  } else {
+    layer.options.fillColor = evaluateColor(layer.object?.attributes?.fill) || 'transparent'
+    layer.options.fillOpacity = 0.22
+  }
+  return ''
+}
+
+const drawIntermediateArrow = (amplifierType, graphicSize) => {
+  const scale = graphicSize / 24
+  switch (amplifierType) {
+    case MARK_TYPE.ARROW_90:
+      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
+    case MARK_TYPE.ARROW_30_FILL:
+      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
+    default:
+  }
+  return null
 }

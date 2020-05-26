@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 import React from 'react'
-import { components, Scrollbar } from '@DZVIN/CommonComponents'
+import { components } from '@DZVIN/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -19,16 +19,33 @@ import {
 } from '../../parts'
 
 import './MineFieldForm.css'
-import spriteUrl from '../../../Symbols/sprite.svg'
+// import spriteUrl from '../../../Symbols/sprite.svg'
 import i18n from '../../../../i18n'
+import { amps } from '../../../../constants/symbols'
 
 const { FormRow } = components.form
 
 const PAIRS_AMPLIFIERS = [
-  { id: 'middle', name: 'N' },
-  { id: 'top', name: 'H1' },
-  { id: 'bottom', name: 'H2' },
+  { id: amps.N, name: 'N', maxRows: 1 },
+  { id: amps.T, name: 'H1', maxRows: 1 },
+  { id: amps.W, name: 'H2', maxRows: 1 },
 ]
+
+const svgMines = <svg viewBox="0 0 1024 640">
+  <circle cx="332" cy="320" r="56"/>
+  <circle cx="512" cy="320" r="56"/>
+  <circle cx="692" cy="320" r="56"/>
+  <path d="M226 220h572v200h-572zM24 240h160v160h-160zM840 240h160v160h-160zM432 16h172v172h-172zM432 448h172v172h-172z"
+    fill="none" stroke="#000" strokeLinejoin="bevel" strokeWidth="12">
+  </path>
+  <g fontSize="112" fontFamily="Arial" strokeWidth="0" strokeLinecap="round" strokeLinejoin="round" fill="black"
+    textAnchor="middle" alignmentBaseline="middle">
+    <text x="104" y="364" >N</text>
+    <text x="920" y="364" >N</text>
+    <text x="520" y="144" >H1</text>
+    <text x="520" y="580" >H2</text>
+  </g>
+</svg>
 
 export default class PollutionCircleForm extends compose(
   UnitSelect,
@@ -45,49 +62,44 @@ export default class PollutionCircleForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
-    const name = this.props.data.code
     return (
-      <Scrollbar>
-        <div className="minefield-container">
-          <div className="minefield-container__item--firstSection">
-            <div className="line-container__itemWidth-left">
-              <svg key={name}>
-                <use xlinkHref={`${spriteUrl}#${name}`}/>
-              </svg>
-            </div>
-            <div className="line-container__itemWidth-right">
-              <div>
-                {this.renderSubordinationLevel()}
-                {this.renderOrgStructureSelect()}
-                {this.renderStatus()}
-              </div>
-              <div>
-                {this.renderStartingCoordinate()}
-                {this.renderAffiliation()}
-                {this.renderDummy()}
-              </div>
-            </div>
+      <div className="minefield-container">
+        <div className="minefield-container__item--firstSection">
+          <div className="line-container__itemWidth-left">
+            {svgMines}
           </div>
-          <div className="minefield-container__item--secondSection">
+          <div className="line-container__itemWidth-right">
             <div className="line-container__itemWidth">
-              <div className="line-container__itemWidth30">
-                {this.renderMineType()}
-              </div>
-              <div className="line-container__itemWidth30">
-                {this.renderControllability()}
-              </div>
-              <div className="line-container__itemWidth30">
-                <FormRow label={i18n.LINE_COLOR}>
-                  {this.renderColor()}
-                </FormRow>
-              </div>
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+              {this.renderStatus()}
             </div>
             <div className="line-container__itemWidth">
-              {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+              {this.renderStartingCoordinate()}
+              {this.renderAffiliation()}
+              {this.renderDummy()}
             </div>
           </div>
         </div>
-      </Scrollbar>
+        <div className="minefield-container__item--secondSection">
+          <div className="line-container__itemWidth">
+            <div className="line-container__itemWidth30">
+              {this.renderMineType()}
+            </div>
+            <div className="line-container__itemWidth30">
+              {this.renderControllability()}
+            </div>
+            <div className="line-container__itemWidth30">
+              <FormRow label={i18n.LINE_COLOR}>
+                {this.renderColor()}
+              </FormRow>
+            </div>
+          </div>
+          <div className="line-container__itemWidth">
+            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+          </div>
+        </div>
+      </div>
     )
   }
 }
