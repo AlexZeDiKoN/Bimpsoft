@@ -2057,7 +2057,7 @@ export default class WebMap extends React.PureComponent {
       } else if (amp.type === entityKind.FLEXGRID) {
         const { directions = 3, zones = 2 } = amp.params || {}
         const layer = new L.FlexGrid(
-          this.map.getBounds().pad(-0.2),
+          this.map.getBounds().pad(-0.4),
           {
             interactive: true,
             directions,
@@ -2065,6 +2065,7 @@ export default class WebMap extends React.PureComponent {
             vertical: false,
             hideShadow: true,
             hideCenterLine: true,
+            shadow: false,
           },
         )
         // layer.on('click', this.clickOnLayer)

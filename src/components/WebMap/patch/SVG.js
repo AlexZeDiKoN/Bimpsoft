@@ -510,27 +510,36 @@ L.SVG.include({
 
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
+    const {
+      className, shadow, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight,
+    } = grid.options
     grid._path = group
-    if (grid.options.className) {
-      L.DomUtil.addClass(group, grid.options.className)
+    if (className) {
+      L.DomUtil.addClass(group, className)
     }
-    grid._shadow = L.SVG.create('path')
+    if (shadow) {
+      grid._shadow = L.SVG.create('path')
+    }
     grid._zones = L.SVG.create('path')
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
     grid._highlighted = L.SVG.create('path')
     grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
-    if (grid.options.interactive) {
+    if (interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
-    this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
-    this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
-    this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
-    this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
-    this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
-    this._updateStyle({ _path: grid._highlighted, options: grid.options.highlight })
-    group.appendChild(grid._shadow)
+    if (shadow) {
+      this._updateStyle({ _path: grid._shadow, options: shadow })
+    }
+    this._updateStyle({ _path: grid._directions, options: directionLines })
+    this._updateStyle({ _path: grid._zones, options: shadow ? zoneLines : directionLines })
+    this._updateStyle({ _path: grid._boundary, options: shadow ? boundaryLine : directionLines })
+    this._updateStyle({ _path: grid._border, options: shadow ? borderLine : directionLines })
+    this._updateStyle({ _path: grid._highlighted, options: highlight })
+    if (shadow) {
+      group.appendChild(grid._shadow)
+    }
     grid._pathes.forEach((path) => group.appendChild(path))
     this._layers[L.Util.stamp(grid)] = grid
   },
@@ -539,7 +548,9 @@ L.SVG.include({
     const bounds = grid._map._renderer._bounds
     const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
-    grid._shadow.setAttribute('d', `${path}${border}`)
+    if (grid.options.shadow) {
+      grid._shadow.setAttribute('d', `${path}${border}`)
+    }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
