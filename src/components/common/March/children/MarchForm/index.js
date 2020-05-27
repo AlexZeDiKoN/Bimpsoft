@@ -70,6 +70,7 @@ const MarchForm = (props) => {
     restTime = 0,
     marchPoints,
     type,
+    coordTypeSystem,
   } = props
   const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks, setRefPointOnMap } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
@@ -83,6 +84,8 @@ const MarchForm = (props) => {
   const showOwnRefPointModal = () => {
     changeIsModalVisible(true)
   }
+
+  const coordinateWithType = { ...coordinate, type: coordTypeSystem }
 
   const onOkOwnRefPointModal = () => {
     changeIsModalVisible(false)
@@ -254,7 +257,7 @@ const MarchForm = (props) => {
       <div className={'dot-form'}>
         <div className={'march-coord'}>
           <Coordinates
-            coordinates={coordinate}
+            coordinates={coordinateWithType}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
           />
@@ -370,6 +373,7 @@ MarchForm.propTypes = {
   restTime: PropTypes.number,
   marchPoints: PropTypes.array.isRequired,
   type: PropTypes.number,
+  coordTypeSystem: PropTypes.string.isRequired,
 }
 
 GeoLandmarkItem.propTypes = {
