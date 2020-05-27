@@ -6,8 +6,6 @@ import { filterSetEmpty } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
-// import entityKind from '../../components/WebMap/entityKind'
-// import {scaleValue} from '../../components/WebMap/patch/utils/helpers'
 import { extractLineCode } from '../../components/WebMap/patch/Sophisticated/utils'
 import lineDefinitions from '../../components/WebMap/patch/Sophisticated/lineDefinitions'
 import {
@@ -18,7 +16,7 @@ import {
   stroked,
   waved,
   getLineEnds,
-  getStylesForLineType, blockage, settings,
+  getStylesForLineType, blockage, settings, getPointAmplifier,
 } from './lines'
 import { renderTextSymbol } from './index'
 // import {evaluateColor} from '../../constants/colors'
@@ -82,7 +80,9 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject) => 
   let maskUrl = null
   // сборка маски под амплификаторы линии
   if (mask) {
-    const vb = bounds ? [ bounds.min.x, bounds.min.y, bounds.max.x, bounds.max.y ] : [ 0, 0, '100%', '100%' ]
+    const vb = bounds
+      ? [ bounds.min.x, bounds.min.y, bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y ]
+      : [ 0, 0, '100%', '100%' ]
     const maskId = idObject
     maskUrl = `url(#mask-${maskId})`
     if (Array.isArray(mask)) {
@@ -313,6 +313,55 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, data, layerDa
   }
 }
 
+const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
+  const { coordToPixels, scale, bounds, fontSize } = commonData
+  const { attributes, geometry, id } = data
+  const [ point1, point2 ] = geometry.toJS()
+  if (point1 && point2) {
+    const { x, y } = coordToPixels(point1)
+    const p2 = coordToPixels(point2)
+    const dx = p2.x - x
+    const dy = p2.y - y
+    let amplifiers
+    let d
+    switch (kind) {
+      case SelectionTypes.CIRCLE: {
+        const r = Math.round(Math.sqrt(dx * dx + dy * dy))
+        d = circleToD(r, x, y)
+        amplifiers = getPointAmplifier(
+          { centroid: { x, y },
+            bounds,
+            fontSize,
+            amplifier: attributes.pointAmplifier,
+          },
+        )
+        break
+      }
+      case SelectionTypes.SQUARE:
+      case SelectionTypes.RECTANGLE: {
+        const points = kind === SelectionTypes.SQUARE
+          ? rectToPoints({ x, y, width: Math.abs(dx) > Math.abs(dy) ? dx : dy })
+          : rectToPoints({ x, y, width: dx, height: dy })
+        d = pointsToD(points, true)
+        amplifiers = getAmplifiers({ points, bezier: false, locked: true, bounds, tsType: kind, fontSize }, data)
+        break
+      }
+      default: return
+    }
+    const strokeColor = colors.evaluateColor(attributes.color)
+    return (
+      <>
+        {Boolean(amplifiers.group) && (
+          <g
+            fill={strokeColor}
+            dangerouslySetInnerHTML={{ __html: amplifiers.group }}
+          />
+        )}
+        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id)}
+      </>)
+  }
+}
+
 const getContourBuilder = () => (commonData, data, layerData) => {
   const { coordToPixels, scale } = commonData
   const { attributes, geometry } = data
@@ -374,51 +423,6 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
       {renderTextSymbol({ ...attributes.toJS(), outlineColor }, 10 * scale)}
     </g>
   )
-})
-
-mapObjectBuilders.set(SelectionTypes.CIRCLE, (commonData, data, layerData) => {
-  const { coordToPixels, scale } = commonData
-  const { attributes, geometry } = data
-  const [ point1, point2 ] = geometry.toJS()
-  if (point1 && point2) {
-    const { x, y } = coordToPixels(point1)
-    const p2 = coordToPixels(point2)
-    const dx = p2.x - x
-    const dy = p2.y - y
-    const r = Math.round(Math.sqrt(dx * dx + dy * dy))
-    const d = circleToD(r, x, y)
-    return getSvgPath(d, attributes, layerData, scale)
-  }
-})
-
-mapObjectBuilders.set(SelectionTypes.RECTANGLE, (commonData, data, layerData) => {
-  const { coordToPixels, scale } = commonData
-  const { attributes, geometry, id } = data
-  const [ point1, point2 ] = geometry.toJS()
-  if (point1 && point2) {
-    const { x, y } = coordToPixels(point1)
-    const p2 = coordToPixels(point2)
-    const dx = p2.x - x
-    const dy = p2.y - y
-    const points = rectToPoints({ x, y, width: dx, height: dy })
-    const d = pointsToD(points, true)
-    return getSvgPath(d, attributes, layerData, scale, null, null, id)
-  }
-})
-
-mapObjectBuilders.set(SelectionTypes.SQUARE, (commonData, data, layerData) => {
-  const { coordToPixels, scale } = commonData
-  const { attributes, geometry, id } = data
-  const [ point1, point2 ] = geometry.toJS()
-  if (point1 && point2) {
-    const { x, y } = coordToPixels(point1)
-    const p2 = coordToPixels(point2)
-    const dx = p2.x - x
-    const dy = p2.y - y
-    const points = rectToPoints({ x, y, width: Math.abs(dx) > Math.abs(dy) ? dx : dy })
-    const d = pointsToD(points, true)
-    return getSvgPath(d, attributes, layerData, scale, null, null, id)
-  }
 })
 
 mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, layerData) => {
@@ -485,6 +489,9 @@ mapObjectBuilders.set(SelectionTypes.POLYGON, getLineBuilder(false, true, 3))
 mapObjectBuilders.set(SelectionTypes.CURVE, getLineBuilder(true, false, 2))
 mapObjectBuilders.set(SelectionTypes.AREA, getLineBuilder(true, true, 3))
 mapObjectBuilders.set(SelectionTypes.CONTOUR, getContourBuilder())
+mapObjectBuilders.set(SelectionTypes.CIRCLE, getSimpleFiguresBuilder(SelectionTypes.CIRCLE))
+mapObjectBuilders.set(SelectionTypes.SQUARE, getSimpleFiguresBuilder(SelectionTypes.SQUARE))
+mapObjectBuilders.set(SelectionTypes.RECTANGLE, getSimpleFiguresBuilder(SelectionTypes.RECTANGLE))
 
 // Формирование элементов SVG файла, для вывода на печать объектов карты
 export const getMapObjectSvg = (commonData) => (object) => {

@@ -68,11 +68,11 @@ const getAllowedTypeSegments = (segments, segmentId) => {
     [BY_SHIPS]: BY_SHIPS,
   }
 
-  const prevSegment = segments[segmentId]
-  const nextSegment = segments[segmentId + 1]
+  //const prevSegment = segments[segmentId]
+  //const nextSegment = segments[segmentId + 1]
 
-  delete allowedType[prevSegment.segmentType]
-  delete allowedType[nextSegment.segmentType]
+  //delete allowedType[prevSegment.segmentType]
+  //delete allowedType[nextSegment.segmentType]
 
   return Object.values(allowedType)
 }

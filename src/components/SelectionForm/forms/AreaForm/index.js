@@ -119,7 +119,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
         <div className="area-container__item">
           {this.renderStrokeWidth()}
           {this.renderNodalPointType()}
-          {this.renderFill()}
+          {this.renderFill(true)}
           {this.renderHatch()}
         </div>
         <div className="dzvin-form-divider">
