@@ -801,7 +801,7 @@ const rotate = ({ x, y }, originX, originY, angle) => {
   }
 }
 
-export const getTextAmplifiers = ({
+const getTextAmplifiers = ({
   points,
   amplifier,
   amplifierType,
@@ -948,17 +948,18 @@ export const getPointAmplifier = ({
   amplifier,
 }) => {
   const step = fontSize || settings.AMPLIFIERS_SIZE * scale
-  const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
+  // функция проверки попадания амплификатора в область вывода.
+  const insideMap = getBoundsFunc(bounds, step) // TODO Надо переработать
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
     getOffset: getOffsetForIntermediateAmplifier,
   }
-
   return getTextAmplifiers({
     scale,
     zoom,
     amplifier,
+    fontSize,
     ...amplifierOptions,
   })
 }
