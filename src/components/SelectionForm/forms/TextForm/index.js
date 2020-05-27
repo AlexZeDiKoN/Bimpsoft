@@ -20,7 +20,9 @@ export default class TextForm extends
       return (
         <div className="textMarker-container">
           <div className="textMarker-container__item">
-            {this.renderSubordinationLevel()}
+            <div className="subordination-level">
+              {this.renderSubordinationLevel()}
+            </div>
             {this.renderOrgStructureSelect()}
           </div>
           {this.renderTexts()}

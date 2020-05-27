@@ -1,6 +1,6 @@
 /* global DOMParser */
-import { epsilon, interpolateSize } from './helpers'
 import { drawLine, emptyPath, getMaxPolygon } from '../Sophisticated/utils'
+import { epsilon, interpolateSize } from './helpers'
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
 export function parseSvgPath (svg) {
