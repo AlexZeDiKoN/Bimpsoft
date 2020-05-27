@@ -61,7 +61,8 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     const renderAmplifierInput = ({ id, name }) => (
       <div className="line-container__itemWidth" key={id}>
         <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
-          <Input.TextArea
+          <Input
+            type={'text'}
             value={currentValue[id] ?? ''}
             onChange={this.createIntermediateAmplifierHandler(id)}
             disabled={!canEdit}

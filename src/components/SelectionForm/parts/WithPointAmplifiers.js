@@ -34,7 +34,8 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
         {PAIR_LIST.map(({ id, name }) => (
           <div className="line-container__itemWidth" key={id}>
             <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
-              <Input.TextArea
+              <Input
+                type={'text'}
                 value={currentValue[id] ?? ''}
                 onChange={this.createPointAmplifierHandler(id)}
                 disabled={!canEdit}
