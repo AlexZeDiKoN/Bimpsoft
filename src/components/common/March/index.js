@@ -64,7 +64,7 @@ const March = (props) => {
   const marchPoints = getMarchPoints(pointsTypes)
 
   const renderDotsForms = () => {
-    const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap } = props
+    const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap, coordTypeSystem } = props
     const handlers = {
       editFormField,
       addChild,
@@ -99,6 +99,7 @@ const March = (props) => {
               {...segment}
               isLast={segments.length - 1 === segmentId}
               marchPoints={marchPoints}
+              coordTypeSystem={coordTypeSystem}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -107,6 +108,7 @@ const March = (props) => {
                 childId={childId}
                 handlers={handlers}
                 marchPoints={marchPoints}
+                coordTypeSystem={coordTypeSystem}
                 {...segment}
                 {...child}
               />
@@ -152,6 +154,7 @@ March.propTypes = {
   sendMarchToExplorer: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
+  coordTypeSystem: PropTypes.string.isRequired,
 }
 
 export default React.memo(March)
