@@ -65,7 +65,6 @@ export default class Sidebar extends React.Component {
                 isMapCOP ? TargetCatalogContainer : null,
                 SymbolsContainer,
                 LogMapContainer,
-
               ].filter(Boolean)}
             />
           </div>

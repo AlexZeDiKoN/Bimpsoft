@@ -1,50 +1,34 @@
 import React from 'react'
-import { Divider } from 'antd'
+import PropTypes from 'prop-types'
 
-import { components, FormDivider } from '@DZVIN/CommonComponents'
+const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-// const { Divider } = components.form
+const dateOptions = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  timeZone,
+}
+
+const timeOptions = {
+  hour: 'numeric',
+  minute: 'numeric',
+  timeZone,
+}
+
+const locales = window.navigator.language
 
 const ItemList = (props) => {
   const { time, user, event } = props
 
-  const vb = Date.now()
-
-  // const options = {
-  //   year: 'numeric',
-  //   month: 'numeric',
-  //   day: 'numeric',
-  //   hour: 'numeric',
-  //   minute: 'numeric',
-  //   timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  // }
-
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-  var dateOptions = {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    timeZone,
-  }
-
-  var timeOptions = {
-    hour: 'numeric',
-    minute: 'numeric',
-    timeZone,
-  }
-  // const formatted = date.toLocaleDateString('ru-RU', options)
-
-  const f = new Date(time).toLocaleDateString(window.navigator.language, dateOptions)// .slice(-13, -5)// 'uk-UA'
-  const f2 = new Date(time).toLocaleTimeString(window.navigator.language, timeOptions)// .slice(-13, -5)// 'uk-UA'
-
-  console.log('---------------- time', f + ' ' + f2)
+  const formatDate = new Date(time).toLocaleDateString(locales, dateOptions)
+  const formatTime = new Date(time).toLocaleTimeString(locales, timeOptions)
 
   return (
     <div className={'item-list-log'}>
       <div className={'time-user'}>
         <div className={'time'}>
-          {f + ' ' + f2}
+          {`${formatDate} ${formatTime}`}
         </div>
         <div className={'user'}>
           <div>
@@ -57,6 +41,12 @@ const ItemList = (props) => {
       </div>
     </div>
   )
+}
+
+ItemList.propTypes = {
+  time: PropTypes.number.isRequired,
+  event: PropTypes.string.isRequired,
+  user: PropTypes.string.isRequired,
 }
 
 export default ItemList

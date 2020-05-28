@@ -1,14 +1,14 @@
 import React, { Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Scrollbar, IconNames } from '@DZVIN/CommonComponents'
+import { InputButton } from '../common'
 
 import './style.css'
 import i18n from '../../i18n'
-import { InputButton } from '../common'
 import ItemList from './children/ItemList'
 
 const LogMapTab = (props) => {
-  const { wrapper: Wrapper = Fragment, userEvents } = props
+  const { wrapper: Wrapper = Fragment, userEvents, user } = props
   const [ search, onChange ] = useState('')
 
   const onChangeSearch = (value) => {
@@ -41,7 +41,7 @@ const LogMapTab = (props) => {
           <ItemList
             key={id}
             time={timestamp}
-            user={'User'}
+            user={user}
             event={event}
           />))
         }
@@ -52,7 +52,8 @@ const LogMapTab = (props) => {
 
 LogMapTab.propTypes = {
   wrapper: PropTypes.any,
-  userEvents: PropTypes.array.isRequired,
+  userEvents: PropTypes.object.isRequired,
+  user: PropTypes.string.isRequired,
 }
 
 LogMapTab.displayName = 'LogMapTab'
