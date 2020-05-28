@@ -11,6 +11,7 @@ export default class TextItem extends React.Component {
   static propTypes = {
     readOnly: PropTypes.bool,
     index: PropTypes.number,
+    maxLengthText: PropTypes.number,
     data: PropTypes.shape({
       text: PropTypes.string,
       underline: PropTypes.bool,
@@ -56,10 +57,18 @@ export default class TextItem extends React.Component {
   }
 
   render () {
-    const { data: { text, underline, bold = false, size = 12, preview }, canRemove, readOnly } = this.props
+    const {
+      data: { text, underline, bold = false, size = 12, preview },
+      canRemove,
+      readOnly,
+      maxLengthText } = this.props
     return (
       <FormItem>
-        <Input value={text} onChange={readOnly ? null : this.textChangeHandler} readOnly={readOnly} />
+        <Input
+          value={text}
+          maxLength={maxLengthText}
+          onChange={readOnly ? null : this.textChangeHandler}
+          readOnly={readOnly} />
         {!readOnly && (<IconHovered
           icon={underline ? IconNames.U_ACTIVE : IconNames.U_DEFAULT}
           hoverIcon={IconNames.U_HOVER}

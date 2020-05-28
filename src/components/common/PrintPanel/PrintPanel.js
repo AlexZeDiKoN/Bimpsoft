@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Form, Row, Col, Select, Input, DatePicker, Button, Checkbox } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { Form, Row, Col, Select, Input, DatePicker, Checkbox } from 'antd'
+import { components, ButtonTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
 import moment from 'moment'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import './style.css'
+import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+const { TextArea } = Input
 
 const COLOR_PICKER_Z_INDEX = 2000
 
@@ -203,7 +205,6 @@ class PrintPanel extends React.Component {
     const {
       form: { getFieldDecorator },
       printScale,
-      securityClassification: { classified },
       requisites,
       requisites: { legendEnabled },
     } = this.props
@@ -212,11 +213,12 @@ class PrintPanel extends React.Component {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
       DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
     } = Print
-    const { FormColumn, FormRow, ButtonCancel, ButtonSave } = components.form
+    const { FormRow, ButtonCancel, ButtonSave } = components.form
     return (
       <div className='printPanelFormInner'>
         <Form>
-          <FormRow className='printPanel_scale' label={i18n.SCALE}>
+          <div className='print-scale-container'>
+            <div>{i18n.SCALE_PRINT}</div>
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.SCALE, {
@@ -228,7 +230,7 @@ class PrintPanel extends React.Component {
                 </Select>,
               )
             }
-          </FormRow>
+          </div>
           {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
           <Row className='printPanel_dpi invisible' label={i18n.DPI}>
             {
@@ -257,78 +259,64 @@ class PrintPanel extends React.Component {
               )
             }
           </Row>
-          <FormRow label={i18n.PRINT_REQUISITES}>
+          <div className='print-requisites-container'>
+            <div>{i18n.PRINT_REQUISITES}</div>
             <Checkbox
               checked={legendEnabled}
               onChange={setRequisitesFunc.LEGEND_ENABLED}
               disabled={!requisites.legendAvailable}
             />
-          </FormRow>
-          <Row className='printPanelSecurity'>
-            <Col span={5}>
-              {i18n.MAP_LABEL}
-            </Col>
-            <Col span={19}>
-              {classified}
-            </Col>
-          </Row>
-          <h5 className='docBlock_header'>{i18n.DOC_HEADER}</h5>
+          </div>
+          <div className='docBlock_header'>{i18n.DOC_HEADER}</div>
           <div className='printPanel_docBlock'>
-            <FormColumn label={i18n.FIRST_ROW}>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FIRST_ROW, {
-                    initialValue: requisites.firstRow,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.FIRST_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormColumn>
-            <FormColumn label={i18n.SECOND_ROW}>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.SECOND_ROW, {
-                    initialValue: requisites.secondRow,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.SECOND_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormColumn>
-            <FormColumn label={i18n.THIRD_ROW}>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.THIRD_ROW, {
-                    initialValue: requisites.thirdRow,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.THIRD_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormColumn>
-            <FormColumn label={i18n.FOURTH_ROW}>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FOURTH_ROW, {
-                    initialValue: requisites.fourthRow,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.FOURTH_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormColumn>
-            <FormColumn label={i18n.FIFTH_ROW}>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.FIFTH_ROW, {
-                    initialValue: requisites.fifthRow,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.FIFTH_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormColumn>
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.FIRST_ROW, {
+                  initialValue: requisites.firstRow,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.FIRST_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+          </div>
+          <div className='docBlock_subHeader'>{i18n.DOC_HEADER_SUBTITLE}</div>
+          <div className='printPanel_docBlock'>
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.SECOND_ROW, {
+                  initialValue: requisites.secondRow,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.SECOND_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.THIRD_ROW, {
+                  initialValue: requisites.thirdRow,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.THIRD_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.FOURTH_ROW, {
+                  initialValue: requisites.fourthRow,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.FOURTH_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.FIFTH_ROW, {
+                  initialValue: requisites.fifthRow,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.FIFTH_ROW} disabled={!legendEnabled}/>,
+              )
+            }
             <div className='printData'>
               <FormRow label={i18n.START}>
                 <DatePicker
@@ -350,81 +338,62 @@ class PrintPanel extends React.Component {
               </FormRow>
             </div>
           </div>
-          <h5>{i18n.MAIN_INDICATORS}</h5>
-          <div className='printPanel_indicators'>
-            <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, {
-                    initialValue: requisites.indiFirst,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.INDICATOR_FIRST_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormRow>
-            <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, {
-                    initialValue: requisites.indiSecond,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.INDICATOR_SECOND_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormRow>
-            <FormRow>
-              {
-                getFieldDecorator(
-                  PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, {
-                    initialValue: requisites.indiThird,
-                  },
-                )(
-                  <Input onChange={setRequisitesFunc.INDICATOR_THIRD_ROW} disabled={!legendEnabled}/>,
-                )
-              }
-            </FormRow>
+          <div className='docBlock_header'>{i18n.MAIN_INDICATORS}</div>
+          <div className='printPanel_docBlock'>
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.INDICATOR_FIRST_ROW, {
+                  initialValue: requisites.indiFirst,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.INDICATOR_FIRST_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.INDICATOR_SECOND_ROW, {
+                  initialValue: requisites.indiSecond,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.INDICATOR_SECOND_ROW} disabled={!legendEnabled}/>,
+              )
+            }
+            {
+              getFieldDecorator(
+                PRINT_PANEL_KEYS.INDICATOR_THIRD_ROW, {
+                  initialValue: requisites.indiThird,
+                },
+              )(
+                <Input onChange={setRequisitesFunc.INDICATOR_THIRD_ROW} disabled={!legendEnabled}/>,
+              )
+            }
           </div>
-          <Row className='printPanel_legend'>
-            <Col span={18}>
-              <h5>{i18n.LEGEND}</h5>
-            </Col>
-            <Col
-              span={6}
+          <div className='printPanel_legend'>
+            <div className='docBlock_subHeader'>{i18n.LEGEND}</div>
+            <div
               className='printPanel_legendControl'
             >
-              <Button
-                htmlType='button'
-                type='normal'
-                icon='left'
-                size='small'
-                className={legendTableType !== 'left' ? '' : 'active'}
+              <IButton
+                icon={IconNames.DOCUMENT_BOTTOM_LEFT}
+                type={ButtonTypes.WITH_BG}
+                colorType={legendTableType === 'left' ? ColorTypes.DARK_GREEN : ColorTypes.NONE}
+                active={legendTableType === 'left'}
                 onClick={() => this.changeLegendTableType('left')}
                 disabled={!legendEnabled}
               />
-              <Button
-                htmlType='button'
-                type='normal'
-                icon='right'
-                size='small'
-                className={legendTableType === 'left' ? '' : 'active'}
+              <IButton
+                icon={IconNames.DOCUMENT_BOTTOM_RIGHT}
+                type={ButtonTypes.WITH_BG}
+                colorType={legendTableType !== 'left' ? ColorTypes.DARK_GREEN : ColorTypes.NONE}
+                active={legendTableType !== 'left'}
                 onClick={() => this.changeLegendTableType('right')}
                 disabled={!legendEnabled}
               />
-            </Col>
-          </Row>
+            </div>
+          </div>
           <div className='printPanelSign_block'>
-            <Row className='printPanelSignTitle_row'>
-              <Col span={6}>
-                {i18n.SIGN}
-              </Col>
-              <Col span={18}>
-                {i18n.SIGN_CONTENT}
-              </Col>
-            </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col span={3}>
                 <ColorPicker
                   color={colors[COLOR_PICKER_KEYS.LEGEND_FIRST_COLOR]}
                   className='PrintPanel_colorPicker'
@@ -433,7 +402,7 @@ class PrintPanel extends React.Component {
                   zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
-              <Col span={18}>
+              <Col span={21}>
                 {
                   getFieldDecorator(
                     PRINT_PANEL_KEYS.LEGEND_FIRST_CONTENT, {
@@ -446,7 +415,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col span={3}>
                 <ColorPicker
                   color={colors[COLOR_PICKER_KEYS.LEGEND_SECOND_COLOR]}
                   className='PrintPanel_colorPicker'
@@ -455,7 +424,7 @@ class PrintPanel extends React.Component {
                   zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
-              <Col span={18}>
+              <Col span={21}>
                 {
                   getFieldDecorator(
                     PRINT_PANEL_KEYS.LEGEND_SECOND_CONTENT, {
@@ -468,7 +437,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col span={3}>
                 <ColorPicker
                   color={colors[COLOR_PICKER_KEYS.LEGEND_THIRD_COLOR]}
                   className='PrintPanel_colorPicker'
@@ -477,7 +446,7 @@ class PrintPanel extends React.Component {
                   zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
-              <Col span={18}>
+              <Col span={21}>
                 {
                   getFieldDecorator(
                     PRINT_PANEL_KEYS.LEGEND_THIRD_CONTENT, {
@@ -490,7 +459,7 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
             <Row className='printPanelSign_row'>
-              <Col span={6}>
+              <Col span={3}>
                 <ColorPicker
                   color={colors[COLOR_PICKER_KEYS.LEGEND_FOURTH_COLOR]}
                   className='PrintPanel_colorPicker'
@@ -499,7 +468,7 @@ class PrintPanel extends React.Component {
                   zIndex={COLOR_PICKER_Z_INDEX}
                 />
               </Col>
-              <Col span={18}>
+              <Col span={21}>
                 {
                   getFieldDecorator(
                     PRINT_PANEL_KEYS.LEGEND_FOURTH_CONTENT, {
@@ -512,35 +481,16 @@ class PrintPanel extends React.Component {
               </Col>
             </Row>
           </div>
-          <h5>{i18n.DOCUMENT_SIGNATORIES}</h5>
+          <div className='docBlock_header'>{i18n.DOCUMENT_SIGNATORIES}</div>
           <div className='printPanel_signatories'>
-            <Row className='printPanelSignatoriesTitle_row'>
-              <Col span={10}>{i18n.POSITION}</Col>
-              <Col span={6}>{i18n.RANG}</Col>
-              <Col span={8}>{i18n.FULL_NAME}</Col>
-            </Row>
-            {requisites.signatories && requisites.signatories.map((rowData) => {
+            {requisites?.signatories?.map((rowData) => {
               const { position, role, name, date } = rowData
+              console.log(rowData)
               return (
-                <Row key={date}>
-                  <Col span={10}>{position}</Col>
-                  <Col span={6}>{role}</Col>
-                  <Col span={8}>{name}</Col>
-                </Row>
+                <TextArea key={date} rows={5} disabled value={`${position} ${role} ${name} ${date}`}/>
               )
             })}
           </div>
-          <FormRow className='printPanel_confirmDate' label={i18n.CONFIRM_DATE}>
-            {
-              getFieldDecorator(
-                PRINT_PANEL_KEYS.CONFIRM_DATE, {
-                  initialValue: requisites.confirmDate,
-                },
-              )(
-                <Input disabled onChange={setRequisitesFunc.CONFIRM_DATE}/>,
-              )
-            }
-          </FormRow>
 
           <Row className='printPanel_buttonBlock'>
             <Col span={12}>
