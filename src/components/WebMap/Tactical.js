@@ -123,6 +123,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_REGION, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
+    case entityKind.OLOVO:
+      return createOlovo(data, prevLayer, map)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -196,6 +198,23 @@ function createSophisticated (data, layer, initMap) {
       initMap,
     )
   }
+  return layer
+}
+
+function createOlovo (data, layer, initMap) {
+  layer = new L.FlexGrid(
+    initMap.pad(-0.4),
+    {
+      directions,
+      zones,
+      interactive: true,
+      vertical: false,
+      hideShadow: true,
+      hideCenterLine: true,
+      shadow: false,
+    },
+  )
+  layer.options.tsType = entityKind.OLOVO
   return layer
 }
 

@@ -98,7 +98,24 @@ L.FlexGrid = L.Layer.extend({
   initialize (box, options, id, geometry) {
     L.setOptions(this, options)
 
-    const { directions, zones, vertical } = this.options
+    this.id = id
+    this.highlightedDirections = []
+    if (geometry) {
+      this.eternals = geometry.eternals.map(copyRow)
+      this.directionSegments = geometry.directionSegments.map(copyRing)
+      this.zoneSegments = geometry.zoneSegments.map(copyRing)
+    } else {
+      const { directions, zones, vertical } = this.options
+      const { eternals, directionSegments, zoneSegments } = this.generateGeometry(zones, directions, box, vertical)
+      this.eternals = eternals
+      this.directionSegments = directionSegments
+      this.zoneSegments = zoneSegments
+    }
+
+    return this
+  },
+
+  generateGeometry (zones, directions, box, vertical = false) {
     const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
     const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
 
@@ -116,25 +133,17 @@ L.FlexGrid = L.Layer.extend({
       y: height / zones / 2,
     }
 
-    this.id = id
-    this.highlightedDirections = []
-    if (geometry) {
-      this.eternals = geometry.eternals.map(copyRow)
-      this.directionSegments = geometry.directionSegments.map(copyRing)
-      this.zoneSegments = geometry.zoneSegments.map(copyRing)
-    } else {
-      this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
+    return {
+      eternals: varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
         /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
           Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
         const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
         const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
         return vertical ? L.latLng(y, x) : L.latLng(x, y)
-      }))
-      this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
-      this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
+      })),
+      directionSegments: varr(directions + 1, () => varr(zones * 2, () => [])),
+      zoneSegments: varr(zones * 2 + 1, () => varr(directions, () => [])),
     }
-
-    return this
   },
 
   beforeAdd (map) {
