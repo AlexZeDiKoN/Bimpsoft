@@ -123,15 +123,15 @@ export default class LayersComponent extends React.Component {
                   onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
                 />
               </Tooltip>
-              <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
-                <IButton
-                  icon={IconNames.CALENDAR}
-                  colorType={ColorTypes.WHITE}
-                  type={ButtonTypes.WITH_BG}
-                  active={showPeriod}
-                  onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
-                />
-              </Tooltip>
+              {/*<Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>*/}
+              {/*  <IButton*/}
+              {/*    icon={IconNames.CALENDAR}*/}
+              {/*    colorType={ColorTypes.WHITE}*/}
+              {/*    type={ButtonTypes.WITH_BG}*/}
+              {/*    active={showPeriod}*/}
+              {/*    onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}*/}
+              {/*  />*/}
+              {/*</Tooltip>*/}
             </div>
           </div>
           {(!is3DMapMode) &&

@@ -62,7 +62,7 @@ export default class LayerItemComponent extends React.Component {
             <Tooltip title={breadCrumbs} placement='topLeft'>
               <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
             </Tooltip>
-            <div className="layer-date">{dateString}</div>
+            {/*<div className="layer-date">{dateString}</div>*/}
           </div>
           <div className='color-picker-hover'>
             <ColorPicker
