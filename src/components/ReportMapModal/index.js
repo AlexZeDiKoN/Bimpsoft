@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MovablePanel, components } from '@DZVIN/CommonComponents'
+
 import { Input, DatePicker } from 'antd'
 import moment from 'moment'
+import webmapApi from '../../server/api.webmap'
 
 import i18n from '../../i18n'
 
@@ -42,6 +44,17 @@ export default class ReportMapModal extends React.Component {
     this.setState({ nameMap: e.target.value })
   }
 
+  onSaveReport = async () => {
+    const mapName = this.state.nameMap
+    const fromMapId = this.props.reportMap.dataMap.mapId
+    const dateOn = this.state.dateTimeMap
+
+    const res = await webmapApi.createCOPReport(mapName, fromMapId, dateOn)
+    console.log('-----------------666', res, fromMapId)
+
+    //this.props.onClose()
+  }
+
   render () {
     if (!this.props.reportMap.visible) {
       return null
@@ -72,7 +85,7 @@ export default class ReportMapModal extends React.Component {
               />
             </div>
             <div className='buttons'>
-              <ButtonYes onClick={onClose} style={{ minWidth: '100px' }} />
+              <ButtonYes onClick={this.onSaveReport} style={{ minWidth: '100px' }} />
               <ButtonNo onClick={onClose} style={{ minWidth: '100px' }} />
             </div>
           </div>
