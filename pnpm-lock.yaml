@@ -1,5 +1,5 @@
 dependencies:
-  '@DZVIN/CommonComponents': 14.1.478_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/CommonComponents': 14.1.480_8163dde90d88e02f48b04383611abbfe
   '@DZVIN/MilSymbolEditor': 13.2.262
   '@DZVIN/components': 14.1.564_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 0.0.2
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/14.1.478_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/14.1.480_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -88,7 +88,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-0JRWI8amM3wi2wrbJtcIb/sB3vtonb4Hx2QXu96pCo7o8eP3BPig8+MZXKXWyPYIzAmorCmxuRpqTB4CaJHArA==
+      integrity: sha512-+EfaL56X6tkjZxHvJ/bKWilg+0I++or1fSmaJxEwVUARQ7ZoMgve3rP6ppaH8Tt+61hC9ZrOx9HhDOsLnyPXEA==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
@@ -1172,12 +1172,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-HHxmgxbIzOfFlZ+tdeRKtaxWOMUoCG5Mu3wKeUmOxjYrwb3AAHgnmtCUbPPK11/raIWLIBK250t8E2BPO0p7jA==
-  /@babel/runtime/7.10.0:
+  /@babel/runtime/7.10.1:
     dependencies:
       regenerator-runtime: 0.13.5
     dev: false
     resolution:
-      integrity: sha512-tgYb3zVApHbLHYOPWtVwg25sBqHhfBXRKeKoTIyoheIxln1nA7oBl7SfHfiTG2GhDPI8EUBkOD/0wJCP/3HN4Q==
+      integrity: sha512-nQbbCbQc9u/rpg1XCxoMYQTbSMVZjCDxErQ1ClCn9Pvcmv1lGads19ep0a2VsEiIJeHqjZley6EQGEC3Yo1xMA==
   /@babel/runtime/7.9.0:
     dependencies:
       regenerator-runtime: 0.13.5
@@ -12540,7 +12540,7 @@ packages:
       integrity: sha512-OfBnObtnGgLGfweORmdZbyEz+3dgVePQBb3zipiaDsMHV1NpWm0rDFYIVXFV/AK+x4VIIfWHhrdMIeoTLyRr2g==
   /react-clientside-effect/1.2.2_react@16.13.1:
     dependencies:
-      '@babel/runtime': 7.10.0
+      '@babel/runtime': 7.10.1
       react: 16.13.1
     dev: false
     peerDependencies:
@@ -12658,7 +12658,7 @@ packages:
       integrity: sha512-TPpfiack1/nF4uttySfpxPk4rGZTLXlaZl7ncZg/ELAk24Iq2B1UUaUioID8H8dneUXqznT83JTNDHDj+kwryw==
   /react-focus-lock/2.3.1_react@16.13.1:
     dependencies:
-      '@babel/runtime': 7.10.0
+      '@babel/runtime': 7.10.1
       focus-lock: 0.6.8
       prop-types: 15.7.2
       react: 16.13.1
@@ -15931,7 +15931,7 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^14.1.478
+  '@DZVIN/CommonComponents': ^14.1.480
   '@DZVIN/MilSymbolEditor': ^13.2.262
   '@DZVIN/components': ^14.1.564
   '@DZVIN/leaflet-measure-custom': 0.0.2
