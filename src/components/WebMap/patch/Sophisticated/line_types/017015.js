@@ -2,12 +2,11 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, drawText, setVectorLength, getVector,
-  angleOf, drawLineMark,
+  angleOf, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { angle3Points } from '../arrowLib'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -52,13 +51,7 @@ lineDefinitions['017015'] = {
     const angleArrow = angle3Points(mid, p0, p2)
     const top = angleOf(p0, p1) < 0
     const left = top ? angleArrow < 0 : angleArrow >= 0
-    const fontSize = interpolateSize(
-      result.layer._map.getZoom(),
-      settings.TEXT_AMPLIFIER_SIZE,
-      1,
-      settings.MIN_ZOOM,
-      settings.MAX_ZOOM,
-    )
+    const fontSize = getFontSize(result.layer)
 
     drawText(
       result,

@@ -15,7 +15,7 @@ export const colorDiv = (color) => (
   <div className="icon-option">
     <div
       className="icon-rect"
-      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : colors.values[color] }}
+      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${color}` }}
     />
     <div className="icon-text">{colors.titles[color]}</div>
   </div>

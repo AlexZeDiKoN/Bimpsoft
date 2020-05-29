@@ -2,11 +2,10 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
-  emptyPath, drawLineMark,
+  emptyPath, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -45,13 +44,7 @@ lineDefinitions['017078'] = {
 
     drawLineMark(result, MARK_TYPE.SERIF, p0, angleSerif)
     const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
-    const fontSize = interpolateSize(
-      result.layer._map.getZoom(),
-      settings.TEXT_AMPLIFIER_SIZE,
-      1,
-      settings.MIN_ZOOM,
-      settings.MAX_ZOOM,
-    )
+    const fontSize = getFontSize(result.layer)
     drawText(
       result,
       applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),

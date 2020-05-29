@@ -95,9 +95,6 @@ export const TEXTS = {
   RIP: 'RIP',
 }
 
-/* const { setStyle } = L.Polyline.prototype
-const parent = { setStyle } */
-
 L.Sophisticated = L.Polyline.extend({
   options: {
     tsType: entityKind.SOPHISTICATED,
@@ -113,12 +110,6 @@ L.Sophisticated = L.Polyline.extend({
     }
     this.setLatLngs(points)
   },
-
-  /* setStyle: function (style) {
-    try { throw new Error('debug') } catch (e) { console.warn(e) }
-    console.log('Sophisticated.setStyle', style)
-    parent.setStyle.call(this, style)
-  }, */
 
   _adjustPoints: function (changed, from, to) {
     const map = this._map || this._initMap

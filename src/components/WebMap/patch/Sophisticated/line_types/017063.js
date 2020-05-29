@@ -1,11 +1,10 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentLength, getPointAt, drawLineMark, angleOf, drawText, getPointMove, segmentBy,
+  drawLine, segmentLength, getPointAt, drawLineMark, angleOf, drawText, getPointMove, segmentBy, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: Створення активних перешкод
 // task code: DZVIN-5990
@@ -48,13 +47,7 @@ lineDefinitions['017063'] = {
     drawLineMark(result, MARK_TYPE.ARROW_60, point12, angleOf(point1, point12))
     drawLineMark(result, MARK_TYPE.ARROW_60, point22, angleOf(point2, point22))
 
-    const fontSize = interpolateSize(
-      result.layer._map.getZoom(),
-      settings.TEXT_AMPLIFIER_SIZE,
-      1,
-      settings.MIN_ZOOM,
-      settings.MAX_ZOOM,
-    )
+    const fontSize = getFontSize(result.layer)
     const text = result.layer.object.attributes.pointAmplifier?.[amps.T] ?? ''
     const angle = angleOf(p1, p2)
     const pointAmp = segmentBy(p1, p2)

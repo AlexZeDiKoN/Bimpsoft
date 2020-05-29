@@ -2,10 +2,9 @@ import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawLineMark,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, drawLineMark, getFontSize,
 } from '../utils'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: FIX
 // task code: DZVIN-5532
@@ -36,7 +35,7 @@ lineDefinitions['341100'] = {
   render: (result, points) => {
     const [ p0, p1 ] = points
     const arrowLength = drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
-    const textSize = interpolateSize(result.layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE) * TEXT.length
+    const textSize = getFontSize(result.layer) * TEXT.length
     const springWidth = arrowLength * SCALE_SPRING_WIDTH
     const springLength = arrowLength * SCALE_SPRING_LENGTH
     const l = segmentLength(p0, p1)

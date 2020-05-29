@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^13.3.470":
-  version "13.3.470"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-13.3.470.tgz#ca86f68cc4ee6c0bf5d357b309547013e375954b"
-  integrity sha512-OB9ENDBDsZJa6Takz9pMZzj6SBNgCSDxOe9lFOxKawh8nTNZSwxZN/ZHU3XqJHzIdEoJBDhnDF82Fvgg+w9A5g==
+"@DZVIN/CommonComponents@^14.1.479":
+  version "14.1.479"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-14.1.479.tgz#1a99355c795026d759de1903307b966bad01f053"
+  integrity sha512-J/IasugMQfmB7XxfCkwehMqb4P8qxMGPK27jUg/2pHIaILJp8OzxT4qkqeulwdhA6SClKh0bfuPevipgg8qFKQ==
   dependencies:
     "@DZVIN/validators" "^1.0.9"
     classnames "^2.2.6"
@@ -14,6 +14,7 @@
     proj4 "^2.5.0"
     react-datetime "^2.16.3"
     react-easy-swipe "0.0.16"
+    react-focus-lock "^2.2.1"
     react-rnd "^10.1.3"
     utm "^1.1.1"
 
@@ -29,10 +30,10 @@
   dependencies:
     "@DZVIN/milsymbol" ">=0.0.5"
 
-"@DZVIN/components@^13.2.563":
-  version "13.2.563"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-13.2.563.tgz#fd5068d24da72a4d2bd325399fc9ad2794977563"
-  integrity sha512-mLKEICXp9lxvq7xKvHdLxNMgJbJ/QHAilYgTrHrXsOyHV0ygKbRijkyaIWBeaJiGwgXXlavI5CW5EKi+vAge4A==
+"@DZVIN/components@^14.1.564":
+  version "14.1.564"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-14.1.564.tgz#36d17823d3b2a5c6d6b9b3aab0309a46644120bd"
+  integrity sha512-HwpW2YfCt6xRxDkyP+B+oeJRnbidGWwxux2lBgBR0KI8toakUTuuuUVyqPlORI033IEdig+srqXsnrsqAuNS1w==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"
@@ -5737,7 +5738,7 @@ flush-write-stream@^1.0.0, flush-write-stream@^1.0.2:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-focus-lock@^0.6.3:
+focus-lock@^0.6.3, focus-lock@^0.6.6:
   version "0.6.6"
   resolved "http://172.16.95.16:4873/focus-lock/-/focus-lock-0.6.6.tgz#98119a755a38cfdbeda0280eaa77e307eee850c7"
   integrity sha512-Dx69IXGCq1qsUExWuG+5wkiMqVM/zGx/reXSJSLogECwp3x6KeNQZ+NAetgxEFpnC41rD8U3+jRCW68+LNzdtw==
@@ -11500,7 +11501,7 @@ react-app-polyfill@^1.0.5:
     regenerator-runtime "^0.13.3"
     whatwg-fetch "^3.0.0"
 
-react-clientside-effect@^1.2.0:
+react-clientside-effect@^1.2.0, react-clientside-effect@^1.2.2:
   version "1.2.2"
   resolved "http://172.16.95.16:4873/react-clientside-effect/-/react-clientside-effect-1.2.2.tgz#6212fb0e07b204e714581dd51992603d1accc837"
   integrity sha512-nRmoyxeok5PBO6ytPvSjKp9xwXg9xagoTK1mMjwnQxqM9Hd7MNPl+LS1bOSOe+CV2+4fnEquc7H/S8QD3q697A==
@@ -11606,6 +11607,18 @@ react-focus-lock@^1.17.6:
     focus-lock "^0.6.3"
     prop-types "^15.6.2"
     react-clientside-effect "^1.2.0"
+
+react-focus-lock@^2.2.1:
+  version "2.2.1"
+  resolved "http://172.16.95.16:4873/react-focus-lock/-/react-focus-lock-2.2.1.tgz#1d12887416925dc53481914b7cedd39494a3b24a"
+  integrity sha512-47g0xYcCTZccdzKRGufepY8oZ3W1Qg+2hn6u9SHZ0zUB6uz/4K4xJe7yYFNZ1qT6m+2JDm82F6QgKeBTbjW4PQ==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    focus-lock "^0.6.6"
+    prop-types "^15.6.2"
+    react-clientside-effect "^1.2.2"
+    use-callback-ref "^1.2.1"
+    use-sidecar "^1.0.1"
 
 react-hot-loader@^4.12.19:
   version "4.12.19"
@@ -13611,6 +13624,11 @@ tslib@1.10.0, tslib@^1.8.1, tslib@^1.9.0:
   resolved "http://172.16.95.16:4873/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
+tslib@^1.9.3:
+  version "1.13.0"
+  resolved "http://172.16.95.16:4873/tslib/-/tslib-1.13.0.tgz#c881e13cc7015894ed914862d276436fa9a47043"
+  integrity sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q==
+
 tsutils@^3.17.1:
   version "3.17.1"
   resolved "http://172.16.95.16:4873/tsutils/-/tsutils-3.17.1.tgz#ed719917f11ca0dee586272b2ac49e015a2dd759"
@@ -13869,6 +13887,19 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
+
+use-callback-ref@^1.2.1:
+  version "1.2.1"
+  resolved "http://172.16.95.16:4873/use-callback-ref/-/use-callback-ref-1.2.1.tgz#898759ccb9e14be6c7a860abafa3ffbd826c89bb"
+  integrity sha512-C3nvxh0ZpaOxs9RCnWwAJ+7bJPwQI8LHF71LzbQ3BvzH5XkdtlkMadqElGevg5bYBDFip4sAnD4m06zAKebg1w==
+
+use-sidecar@^1.0.1:
+  version "1.0.2"
+  resolved "http://172.16.95.16:4873/use-sidecar/-/use-sidecar-1.0.2.tgz#e72f582a75842f7de4ef8becd6235a4720ad8af6"
+  integrity sha512-287RZny6m5KNMTb/Kq9gmjafi7lQL0YHO1lYolU6+tY1h9+Z3uCtkJJ3OSOq3INwYf2hBryCcDh4520AhJibMA==
+  dependencies:
+    detect-node "^2.0.4"
+    tslib "^1.9.3"
 
 use@^3.1.0:
   version "3.1.1"

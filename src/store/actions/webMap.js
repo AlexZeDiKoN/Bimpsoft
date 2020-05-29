@@ -494,13 +494,15 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 export const getAppInfo = () =>
   asyncAction.withNotification(
     async (dispatch, getState, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
-      const [ version, { contactId, positionContactId, unitId, countryId, formationId } ] =
+      const [ version, { contactId, positionContactId, unitId, countryId, formationId, contactFullName } ] =
         await Promise.all([ getVersion(), getContactId() ])
       const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
       const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
       return dispatch({
         type: actionNames.APP_INFO,
-        payload: { version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure },
+        payload: {
+          version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure, contactFullName,
+        },
       })
     })
 

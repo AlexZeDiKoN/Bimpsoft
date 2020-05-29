@@ -1,11 +1,10 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getPointMove,
+  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getPointMove, getGraphicSize, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
-import { interpolateSize } from '../../utils/helpers'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519
@@ -34,7 +33,7 @@ lineDefinitions['140605'] = {
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
 
     drawLineMark(result, MARK_TYPE.ARROW_90, p0, angleOf(p1, p0))
-    const graphicSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const graphicSize = getGraphicSize(result.layer)
     const angle = angleOf(p1, p0)
     const offset = graphicSize / 5 + result.layer.options.weight
     const scaleDashes = 1 + (offset) * 2 / graphicSize
@@ -53,7 +52,7 @@ lineDefinitions['140605'] = {
       amplifiersInfo[amps.T] ?? '',
     )
 
-    const textSize = interpolateSize(result.layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE)
+    const textSize = getFontSize(result.layer)
     const p05 = segmentBy(p0, p1, 1 / 2)
     const pW = getPointAt(p1, p05, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, textSize * 1.1)
     drawMaskedText(

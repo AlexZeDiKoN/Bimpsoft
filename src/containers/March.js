@@ -3,24 +3,37 @@ import WrappedMarch from '../components/common/March'
 import { march } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = (store) => {
-  const {
-    march: {
-      indicators,
-      params,
-      integrity,
-    },
-  } = store
-  return {
-    indicators,
-    params,
-    integrity,
-  }
-}
+const mapStateToProps = ({ march: {
+  indicators,
+  segments,
+  integrity,
+  pointsTypes,
+  time,
+  distance,
+  isCoordFilled }, webMap }) => ({
+  indicators,
+  segmentList: segments,
+  integrity,
+  pointsTypes,
+  time,
+  distance,
+  isCoordFilled,
+  coordTypeSystem: webMap.get('coordinatesType'),
+})
 
 const mapDispatchToProps = {
   setMarchParams: march.setMarchParams,
   setIntegrity: march.setIntegrity,
+  editFormField: march.editFormField,
+  addSegment: march.addSegment,
+  deleteSegment: march.deleteSegment,
+  addChild: march.addChild,
+  deleteChild: march.deleteChild,
+  setCoordMode: march.setCoordMode,
+  setRefPointOnMap: march.setRefPointOnMap,
+  openMarch: march.openMarch,
+  sendMarchToExplorer: march.sendMarchToExplorer,
+  closeMarch: march.closeMarch,
 }
 
 const MarchContainer = connect(

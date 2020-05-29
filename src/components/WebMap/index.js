@@ -367,6 +367,10 @@ export default class WebMap extends React.PureComponent {
     dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
+    getCoordForMarch: PropTypes.func,
+    marchMode: PropTypes.bool,
+    marchDots: PropTypes.array,
+    marchRefPoint: PropTypes.object,
     undo: PropTypes.func,
     redo: PropTypes.func,
   }
@@ -378,6 +382,8 @@ export default class WebMap extends React.PureComponent {
       zoom: 0,
     }
     this.activeLayer = null
+    this.marchMarkers = []
+    this.marchRefPoint = null
   }
 
   async componentDidMount () {
@@ -396,6 +402,7 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
+    this.updateMarchDots(this.props.marchDots, [])
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -410,7 +417,7 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects,
+      targetingObjects, marchDots, marchMode, marchRefPoint,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -489,10 +496,12 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
+    this.updateMarchDots(marchDots, prevProps.marchDots)
+    this.updateMarchRefPoint(marchRefPoint)
   }
 
   componentWillUnmount () {
@@ -611,7 +620,7 @@ export default class WebMap extends React.PureComponent {
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
-            this.markers = [ createSearchMarker(point, text) ]
+            this.markers = [ createSearchMarker(point) ]
             this.markers[0].addTo(this.map)
             setTimeout(() => this.markers && this.markers[0].bindPopup(text).openPopup(), 1000)
           }, 500)
@@ -624,9 +633,9 @@ export default class WebMap extends React.PureComponent {
       } else {
         if (marker) {
           let { point, text } = marker
-          text = this.createSearchMarkerText(point, text)
+          text = this.createSearchMarkerText(point)
           setTimeout(() => {
-            const searchMarker = createSearchMarker(point, text)
+            const searchMarker = createSearchMarker(point)
             searchMarker.addTo(this.map)
             this.markers.push(searchMarker)
             setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
@@ -854,11 +863,87 @@ export default class WebMap extends React.PureComponent {
   addUserMarker = (point) => {
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
-      const marker = createSearchMarker(point, text)
+      const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
       setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
     }, 50)
+  }
+
+  updateMarchDots = (marchDots, prevMarchDots) => {
+    const drawMarchLine = () => {
+      if (!this.marchLines) {
+        this.marchLines = []
+      }
+      if (this.marchLines.length > 0) {
+        this.marchLines.forEach((line) => {
+          line.removeFrom(this.map)
+        })
+        this.marchLines = []
+      }
+      marchDots.forEach((dot, id) => {
+        if (id !== marchDots.length - 1) {
+          const marchLine = L.polyline([ dot.coordinate, marchDots[id + 1].coordinate ], dot.options)
+          marchLine.addTo(this.map)
+          this.marchLines.push(marchLine)
+        }
+      })
+    }
+
+    if (marchDots.length !== prevMarchDots.length) {
+      if (this.marchMarkers.length !== 0) {
+        this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
+        this.marchMarkers = []
+      }
+      marchDots.forEach((dot) => {
+        const marker = createSearchMarker(dot.coordinate, false)
+        marker.addTo(this.map)
+        this.marchMarkers.push(marker)
+      })
+      if (marchDots.length > 1) {
+        drawMarchLine()
+      }
+    } else {
+      if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
+        let redrawLine = false
+        marchDots.forEach((dot, id) => {
+          if (
+            dot.coordinate.lat !== prevMarchDots[id].coordinate.lat ||
+            dot.coordinate.lng !== prevMarchDots[id].coordinate.lng ||
+            dot.options.color !== prevMarchDots[id].options.color
+          ) {
+            redrawLine = true
+            const marker = createSearchMarker(dot.coordinate, false)
+            marker.addTo(this.map)
+            if (this.marchMarkers.length && this.marchMarkers[id]) {
+              this.marchMarkers[id].removeFrom(this.map)
+              this.marchMarkers[id] = marker
+            } else {
+              this.marchMarkers.push(marker)
+            }
+          }
+        })
+        if (marchDots.length > 1) {
+          if (redrawLine) {
+            drawMarchLine()
+          }
+        }
+      }
+    }
+  }
+
+  updateMarchRefPoint = (marchRefPoint) => {
+    if (this.marchRefPoint) {
+      this.marchRefPoint.removeFrom(this.map)
+    }
+
+    let marker = null
+    if (marchRefPoint) {
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
+      marker.addTo(this.map)
+    }
+
+    this.marchRefPoint = marker
   }
 
   addTopographicMarker = (point) => {
@@ -920,7 +1005,7 @@ export default class WebMap extends React.PureComponent {
         this.onSelectedListChange([])
       }
     }
-    const { selection: { newShape, preview }, printStatus, onClick } = this.props
+    const { selection: { newShape, preview }, printStatus, onClick, marchMode, getCoordForMarch } = this.props
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -937,6 +1022,10 @@ export default class WebMap extends React.PureComponent {
         }
         getTopographicObjects(location)
       }
+    }
+
+    if (marchMode) {
+      getCoordForMarch(e.latlng)
     }
 
     onClick(e.latlng)
@@ -1080,6 +1169,8 @@ export default class WebMap extends React.PureComponent {
     settings.TEXT_AMPLIFIER_SIZE.min = params[paramsNames.TEXT_AMPLIFIER_SIZE_MIN]
     settings.GRAPHIC_AMPLIFIER_SIZE.max = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX]
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
+    settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
+    settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
     this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
   }
 
@@ -1949,10 +2040,11 @@ export default class WebMap extends React.PureComponent {
       const c2g = (p) => this.map.containerPointToLatLng(p)
       let geometry = []
       if (amp.type === entityKind.SOPHISTICATED) {
-        geometry = (geometry && geometry.length) || findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
-          x: x - w + dx * w * 2,
-          y: y - w + dy * w * 2,
-        })).map(c2g)
+        geometry = (geometry && geometry.length) ||
+          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+            x: x - w + dx * w * 2,
+            y: y - w + dy * w * 2,
+          })).map(c2g)
       } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA || amp.type === entityKind.POLYGON) {
         const p0 = { x: x + sw, y }
         const p1 = { x: x - sw, y: y - sw }

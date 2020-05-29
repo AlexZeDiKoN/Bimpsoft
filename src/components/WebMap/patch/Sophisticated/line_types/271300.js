@@ -1,10 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, getPointMove, angleOf,
+  drawLine, getPointMove, angleOf, getGraphicSize,
 } from '../utils'
-import { interpolateSize } from '../../utils/helpers'
-import { settings } from '../../../../../utils/svg/lines'
 import { angle3Points } from '../arrowLib'
 
 // sign name: ASSAULT CROSSING
@@ -32,7 +30,7 @@ lineDefinitions['271300'] = {
   // Рендер-функція
   render: (result, points) => {
     const [ p0, p1, p2, p3 ] = points
-    const markSize = interpolateSize(result.layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
+    const markSize = getGraphicSize(result.layer)
     const aCenter = { x: (p0.x + p2.x) / 2, y: (p0.y + p2.y) / 2 }
     const bCenter = { x: (p1.x + p3.x) / 2, y: (p1.y + p3.y) / 2 }
     const bM = angle3Points(aCenter, p1, p3) < 0 ? 1 : -1

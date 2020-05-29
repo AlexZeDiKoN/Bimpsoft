@@ -15,9 +15,9 @@ import { TabsPanel, PrintPanel } from '../../components/common'
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 
 const { common: { ValueSwiper } } = components
-const SIDEBAR_SIZE_DEFAULT = 385
-const SIDEBAR_SIZE_MARCH_DEFAULT = 450
-const SIDEBAR_SIZE_MIN = 385
+const SIDEBAR_SIZE_DEFAULT = 320
+const SIDEBAR_SIZE_MARCH_DEFAULT = 405
+const SIDEBAR_SIZE_MIN = 320
 const SIDEBAR_CLOSED_SIZE = 40
 const SIDEBAR_OPEN_MIN_SIZE = 275
 
@@ -73,7 +73,7 @@ export default class Sidebar extends React.Component {
 
   render () {
     const { sidebarWidth } = this.state
-    const { visible, sidebar } = this.props
+    const { visible, sidebar, marchEdit } = this.props
     const sidebarDisplay = visible ? '' : 'none'
     return (
       <>
@@ -86,7 +86,7 @@ export default class Sidebar extends React.Component {
           className="app-sidebar"
           style={{
             minWidth: sidebar ? SIDEBAR_OPEN_MIN_SIZE : SIDEBAR_CLOSED_SIZE,
-            width: !sidebar ? SIDEBAR_CLOSED_SIZE : sidebarWidth,
+            width: sidebar || marchEdit ? sidebarWidth : SIDEBAR_CLOSED_SIZE,
             display: sidebarDisplay }}>
           <div className="sidebar">
             {this.changeSidebarPanels()}
