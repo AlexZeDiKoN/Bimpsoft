@@ -121,7 +121,9 @@ class PrintPanel extends React.Component {
     } = Print
 
     if (!signers) {
-      return setPrintRequisites({ [SIGNATORIES]: [] })
+      return setPrintRequisites({
+        [SIGNATORIES]: [],
+      })
     }
 
     const signatories = signers.map((signer) => {
@@ -172,8 +174,14 @@ class PrintPanel extends React.Component {
       docConfirm: { signers },
       setPrintRequisites,
     } = this.props
+
     const date = signers && Math.max.apply(null, signers.map((value) => new Date(value.date)))
-    const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
+
+    const {
+      PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE },
+      DATE_FORMAT,
+    } = Print
+
     setPrintRequisites({
       [MAP_LABEL]: classified,
       [CONFIRM_DATE]: (date && isFinite(date)) ? moment(date).format(DATE_FORMAT) : '',
