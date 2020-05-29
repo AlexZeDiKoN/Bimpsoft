@@ -211,8 +211,6 @@ build-master-temp:
     - explorer-build
   script:
     - yarn
-    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
-    - cp .env .env.backup
     - rm .env 
     - cp .env.production .env
     - yarn run svg-sprite2
@@ -272,11 +270,11 @@ deploy-zip-temp:
     - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
     - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
     - 'echo Version: %version%'
-    - set pack="DarkCom-temp_v%version%.zip"
+    - set pack="WebmapFrontend-temp_v%version%.zip"
     - echo %pack%
     - del /Q build\static\css\*.map
     - del /Q build\static\js\*.map
     - copy index.json .\build
     - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
-    - call pscp -pw %SSH_PASS% %releaseDir%\DarkCom-temp_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
+    - call pscp -pw %SSH_PASS% %releaseDir%\WebmapFrontend-temp_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
 
