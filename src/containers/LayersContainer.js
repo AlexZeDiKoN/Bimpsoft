@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 import { batchActions } from 'redux-batched-actions'
 import LayersComponent from '../components/LayersComponent'
 import { layers, maps, params, print } from '../store/actions'
-import { layersTree, taskModeSelector, targetingModeSelector } from '../store/selectors'
+import { layersTree, taskModeSelector, targetingModeSelector, mapCOP } from '../store/selectors'
 import * as paramNames from '../constants/params'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as notifications from '../store/actions/notifications'
@@ -37,6 +37,8 @@ const mapStateToProps = (store) => {
 
   const { byIds, roots, visible } = layersTree(store)
   const expandedIds = expandedIdsSelector(store)
+  const isMapCOP = mapCOP(store)
+
   return {
     textFilter,
     expandedIds,
@@ -49,6 +51,7 @@ const mapStateToProps = (store) => {
     backOpacity,
     hiddenOpacity: taskModeSelector(store) || targetingModeSelector(store) ? 100 : hiddenOpacity,
     is3DMapMode,
+    isMapCOP,
   }
 }
 
