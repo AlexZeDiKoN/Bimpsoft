@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { MovablePanel, components } from '@DZVIN/CommonComponents'
-
 import { Input, DatePicker } from 'antd'
 import moment from 'moment'
 import webmapApi from '../../server/api.webmap'
@@ -19,6 +18,7 @@ export default class ReportMapModal extends React.Component {
     onClose: PropTypes.func,
     selectTopographicItem: PropTypes.func,
     serviceStatus: PropTypes.bool,
+    saveCopReport: PropTypes.func.isRequired,
   }
 
   constructor (props) {
@@ -49,10 +49,9 @@ export default class ReportMapModal extends React.Component {
     const fromMapId = this.props.reportMap.dataMap.mapId
     const dateOn = this.state.dateTimeMap
 
-    const res = await webmapApi.createCOPReport(mapName, fromMapId, dateOn)
-    console.log('-----------------666', res, fromMapId)
+    this.props.saveCopReport(mapName, fromMapId, dateOn)
 
-    //this.props.onClose()
+    this.props.onClose()
   }
 
   render () {
