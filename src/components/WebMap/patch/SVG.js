@@ -1,11 +1,19 @@
 import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
-import { getAmplifiers, stroked, waved, getLineEnds, blockage, drawLineHatch } from '../../../utils/svg/lines'
+import {
+  getAmplifiers,
+  stroked,
+  waved,
+  getLineEnds,
+  blockage,
+  drawLineHatch,
+  getPointAmplifier,
+} from '../../../utils/svg/lines'
+import { evaluateColor } from '../../../constants/colors'
 import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue } from './utils/helpers'
 import './SVG.css'
-import { evaluateColor } from '../../../constants/colors'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
@@ -16,7 +24,7 @@ const getViewBox = (element) => {
   return element && element.getAttribute('viewBox').split(' ')
 }
 
-const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
+const { _initPath, _updateStyle, _setPath, _addPath, _removePath, _updateCircle } = L.SVG.prototype
 
 L.SVG.include({
   _initPath: function (layer) {
@@ -137,6 +145,27 @@ L.SVG.include({
     layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
+  _updateCircle: function (layer) {
+    const kind = layer.options?.tsType
+    if (kind === entityKind.CIRCLE) {
+      const bounds = layer._map._renderer._bounds
+      const zoom = layer._map.getZoom()
+      const scale = 1
+      // сборка pointAmlifier в центре круга
+      const options = {
+        centroid: layer._point,
+        bounds,
+        scale,
+        zoom,
+        tsType: kind, // тип линии
+        amplifier: layer.object.attributes.pointAmplifier,
+      }
+      const amplifiers = getPointAmplifier(options)
+      this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+    }
+    _updateCircle.call(this, layer)
+  },
+
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     let rezultFilled = ''
@@ -149,7 +178,10 @@ L.SVG.include({
     const fullPolyline = kind === entityKind.POLYLINE && length >= 2
     const fullArea = kind === entityKind.AREA && length >= 3
     const fullCurve = kind === entityKind.CURVE && length >= 2
-    if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
+    const simpleFigures = (kind === entityKind.RECTANGLE || kind === entityKind.SQUARE)
+    if (simpleFigures) {
+      this._updateMask(layer, false, true)
+    } else if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
@@ -384,6 +416,7 @@ L.SVG.include({
       bounds,
       scale: 1.0,
       zoom: layer._map.getZoom(),
+      tsType: layer.options.tsType,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {

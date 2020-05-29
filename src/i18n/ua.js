@@ -224,6 +224,9 @@ export const SITUATION_DETAILS = ({ level }) => `Деталізація обст
 
 export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'
 export const EMPTY_TEXT = 'Текст пустий'
+export const ERROR_TEXTS_NULL = 'Всі текстові поля повинні бути заповнені.'
+export const ERROR_TEXT_ISSET = 'Всі рядки надпису мають бути заповнені.'
+export const ERROR_TEXT_NULL = 'текстового поля.'
 export const CANNOT_OPEN_LAYER_WO_PARENT = 'Неможливо відкрити шар, для якого не задана карта'
 export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрити шар, для якого не задана організаційна структура'
 
@@ -271,28 +274,20 @@ export const NO_OBJECTS = 'Топографічних об\'єктів не зн
 // Друк карти
 // лейбли
 export const SCALE = `Масштаб`
+export const SCALE_PRINT = `Масштаб друку 1:`
 export const DPI = 'Роздільна здатність (DPI)'
 export const COORDINATES_TYPE = 'Система координат'
-export const MAP_LABEL = `Гриф`
 export const MAP_COPY = 'Прим. № __'
-export const FIRST_ROW = `Рядок 1`
-export const SECOND_ROW = `Рядок 2`
-export const THIRD_ROW = `Рядок 3`
-export const FOURTH_ROW = `Рядок 4`
-export const FIFTH_ROW = `Рядок 5`
 export const START = `Почата`
 export const FINISH = `Закінчена`
-export const CONFIRM_DATE = `Дата підпису`
 // заголовки
 export const DOC_HEADER = `Заголовок документа`
+export const DOC_HEADER_SUBTITLE = `Підзаголовок документа`
 export const MAIN_INDICATORS = `Основні показники`
 export const LEGEND = `Умовні позначення`
 export const SIGN = `Знак`
 export const SIGN_CONTENT = `Зміст знаку`
 export const DOCUMENT_SIGNATORIES = `Підпис документа`
-export const POSITION = `Посада`
-export const RANG = `Звання`
-export const FULL_NAME = `ПІБ`
 export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'

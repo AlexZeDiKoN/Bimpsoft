@@ -345,7 +345,7 @@ function getPolygonCentroid (points) {
   return { x: x / f, y: y / f }
 }
 
-const getBoundsFunc = ({ min, max }, step) =>
+export const getBoundsFunc = ({ min, max }, step) =>
   ({ x, y }) => x > min.x - step && y > min.y - step && x < max.x + step && y < max.y + step
 
 const getLineEnd = (objectAttributes, end) => {
@@ -884,7 +884,7 @@ const getTextAmplifiers = ({
   return result
 }
 
-const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
+export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
   switch (type) {
     case 'top':
       return { y: -lineHeight * numberOfLines - lineHeight / 2 }
@@ -938,6 +938,32 @@ const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermedi
   }
 }
 
+// сборка pointAmlifier в указанной точке
+export const getPointAmplifier = ({
+  centroid,
+  bounds,
+  scale = 1,
+  zoom = -1,
+  fontSize, // для печати
+  amplifier,
+}) => {
+  const step = fontSize || settings.AMPLIFIERS_SIZE * scale
+  // функция проверки попадания амплификатора в область вывода.
+  const insideMap = getBoundsFunc(bounds, step) // TODO Надо переработать
+  centroid.r = 0 // Угол поворота текста ампливикаторов
+  const amplifierOptions = {
+    points: insideMap(centroid) ? [ centroid ] : [],
+    getOffset: getOffsetForIntermediateAmplifier,
+  }
+  return getTextAmplifiers({
+    scale,
+    zoom,
+    amplifier,
+    fontSize,
+    ...amplifierOptions,
+  })
+}
+
 export const getAmplifiers = ({
   points,
   bezier,
@@ -948,6 +974,7 @@ export const getAmplifiers = ({
   fontColor,
   fontSize, // для печати
   graphicSize, // для печати
+  tsType, // тип линии
 }, object) => {
   const result = {
     maskPath: [],

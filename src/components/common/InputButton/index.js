@@ -15,10 +15,11 @@ const InputButton = (props) => {
     onChange,
     title,
     disabled,
+    initValue,
     placeholder = i18n.FILTER,
   } = props
-  const [ value, onChangeValue ] = useState('')
-  const [ showSearch, setShowSearch ] = useState(false)
+  const [ value, onChangeValue ] = useState(initValue || '')
+  const [ showSearch, setShowSearch ] = useState(!!initValue)
   return (
     <div className='input-button'>
       {!showSearch && <div className='input-button__title'>{title}</div>}
@@ -54,6 +55,7 @@ InputButton.propTypes = {
   title: PropTypes.string,
   placeholder: PropTypes.string,
   disabled: PropTypes.bool,
+  initValue: PropTypes.string,
 }
 
 export default InputButton

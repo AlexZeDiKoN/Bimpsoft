@@ -9,7 +9,10 @@ import {
   ColorTypes,
   IButton,
   IconNames,
-  FormBlock } from '@DZVIN/CommonComponents'
+  FormBlock,
+  HighlightedText,
+  data,
+} from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
@@ -87,7 +90,7 @@ const SymbolsTab = (props) => {
                 name={`${code}`}
               />
             </div>
-            <div>{hint}</div>
+            <div><HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/></div>
           </>
             : <SymbolSvg
               name={`${code}`}
@@ -97,7 +100,7 @@ const SymbolsTab = (props) => {
       return <Tooltip
         key={`${hint}${code}`}
         mouseEnterDelay={1}
-        title={!listMode && hint}
+        title={<HighlightedText text={`${!listMode && hint}`} textFilter={data.TextFilter.create(search)}/>}
       >
         { elemToRender }
       </Tooltip>
@@ -129,7 +132,7 @@ const SymbolsTab = (props) => {
       <div className='symbols-header'>
         <InputButton
           onChange={onChangeSearch}
-          value={search}
+          initValue={search}
           title={i18n.SYMBOLS}
         />
         <IButton
