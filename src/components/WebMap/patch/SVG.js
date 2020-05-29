@@ -147,21 +147,23 @@ L.SVG.include({
 
   _updateCircle: function (layer) {
     const kind = layer.options?.tsType
-    if (kind === entityKind.CIRCLE) {
+    if (kind === entityKind.CIRCLE && layer._point) {
       const bounds = layer._map._renderer._bounds
       const zoom = layer._map.getZoom()
       const scale = 1
       // сборка pointAmlifier в центре круга
-      const options = {
-        centroid: layer._point,
-        bounds,
-        scale,
-        zoom,
-        tsType: kind, // тип линии
-        amplifier: layer.object.attributes.pointAmplifier,
+      if (layer.object?.attributes?.pointAmplifier) {
+        const options = {
+          centroid: layer._point,
+          bounds,
+          scale,
+          zoom,
+          tsType: kind, // тип линии
+          amplifier: layer.object.attributes.pointAmplifier,
+        }
+        const amplifiers = getPointAmplifier(options)
+        this._setMask(layer, amplifiers.group, amplifiers.maskPath)
       }
-      const amplifiers = getPointAmplifier(options)
-      this._setMask(layer, amplifiers.group, amplifiers.maskPath)
     }
     _updateCircle.call(this, layer)
   },
