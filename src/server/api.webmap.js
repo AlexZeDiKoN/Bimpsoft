@@ -98,4 +98,6 @@ export default {
     getDirect(`${webmapUrl}/group/move`, { id, shift }), ///---(17)
   nearestSettlement: ({ lat, lng }) => // coord = { lat, lng }
     getDirect(`${webmapUrl}/nearestSettlement`, { x: lng, y: lat }),
+  createCOPReport: (mapName, fromMapId, dateOn) =>
+    getDirect(`${webmapUrl}/createCOPReport`, { mapName, dateOn, fromMapId }),
 }
