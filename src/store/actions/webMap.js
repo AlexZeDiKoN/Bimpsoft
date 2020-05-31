@@ -10,7 +10,6 @@ import { activeMapSelector } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
-import { SAVE_COP_REPORT } from './maps'
 import { asyncAction, flexGrid, layers, selection } from './'
 
 const { settings } = utils
@@ -655,9 +654,7 @@ export const toggleReportMapModal = (visible, dataMap = null) => ({
 
 export const saveCopReport = (mapName, fromMapId, dateOn) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { createCOPReport } }) => {
-    const savedMap = await createCOPReport(mapName, fromMapId, dateOn)
-
-    console.log(`ЗВІТНА КАРТА УСПІЖНО ЗБЕРЕГЛАСЬ НА СЕРВЕРІ, ID КАРТИ - ${savedMap.createdMapId}`)
+    await createCOPReport(mapName, fromMapId, dateOn)
   })
 
 async function performAction (record, direction, api, dispatch) {

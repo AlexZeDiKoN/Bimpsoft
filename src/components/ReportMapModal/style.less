@@ -1,82 +1,53 @@
-.content {
-  //position: fixed;
-  //z-index: 1001;
-  //right: 150px;
-  //top: 85px;
-  margin: 10px;
-  width: 300px;
-  //max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;//flex-start
+.log-map-container{
+    position: fixed;
+    z-index: 1001;
 
-  .input-name {
-    //alignment: left;
+  .content {
+    margin: 10px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
 
-    .propertiesContainer {
+    .input-name {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
 
-
-      border-top: 2px solid #a9b06c;
-      background: #fff;
-
-      .mainPropertiesContainer {
-        border-bottom: 1px solid #a9b06c;
-
-        .mainProperties {
-          text-align: start;
-          padding: 3px;
-        }
-      }
-
-      .secondaryPropertiesContainer {
+      .propertiesContainer {
+        border-top: 2px solid #a9b06c;
         background: #fff;
 
-        .secondaryProperties {
-          text-align: start;
-          padding: 3px;
+        .mainPropertiesContainer {
+          border-bottom: 1px solid #a9b06c;
+
+          .mainProperties {
+            text-align: start;
+            padding: 3px;
+          }
+        }
+
+        .secondaryPropertiesContainer {
+          background: #fff;
+
+          .secondaryProperties {
+            text-align: start;
+            padding: 3px;
+          }
         }
       }
     }
-  }
-  .input-as-of {
-    //display: flex;
-    //min-width: 300px;
-    //flex-direction: column;
-    //cursor: pointer;
-    //background: #eee;
-    padding-top: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    .input-as-of {
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
-    //.element {
-    //  padding: 3px;
-    //  border-bottom: 1px solid lightgray;
-    //}
-    //
-    //.element:hover {
-    //  background: lightgrey;
-    //}
-    //
-    //.element.active {
-    //  color: #a9b06c;
-    //  font-weight: 500;
-    //}
-  }
-
-  .buttons {
-    //display: flex;
-    //min-width: 300px;
-    //flex-direction: column;
-    //cursor: pointer;
-    //background: #eee;
-    padding-top: 10px;
-    display: flex;
-    //flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-around;
+    .buttons {
+      padding-top: 10px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-around;
+    }
   }
 }

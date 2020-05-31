@@ -3,11 +3,13 @@ import PropTypes from 'prop-types'
 import { MovablePanel, components } from '@DZVIN/CommonComponents'
 import { Input, DatePicker } from 'antd'
 import moment from 'moment'
-import webmapApi from '../../server/api.webmap'
+import { SIDEBAR_SIZE_DEFAULT } from '../../layouts/Sidebar'
 
 import i18n from '../../i18n'
 
 import './style.css'
+
+const POPUP_WINDOW_WIDTH = 300
 
 const { form: { ButtonYes, ButtonNo } } = components
 
@@ -29,14 +31,15 @@ export default class ReportMapModal extends React.Component {
     }
   }
 
-  componentDidUpdate = (prevProps) => {
+  componentDidUpdate = (prevProps, prevState) => {
     const nameMap = this.props.reportMap?.dataMap?.name
+    const timeInLocal = moment.utc(prevState.dateTimeMap).local().format('DD-MM-YYYY HH:mm')
     if (nameMap !== prevProps.reportMap?.dataMap?.name) {
-      this.setState({ nameMap: `Звітна карта ${nameMap}` })
+      this.setState({ nameMap: `Звітна карта ${nameMap} (${timeInLocal})` })
     }
   }
 
-  onChangeDateTimeMap = (dateInMoment, d) => {
+  onChangeDateTimeMap = (dateInMoment) => {
     this.setState({ dateTimeMap: dateInMoment })
   }
 
@@ -63,12 +66,16 @@ export default class ReportMapModal extends React.Component {
     const { wrapper: Wrapper, onClose } = this.props
 
     return (
-      <div className='topographicCard'>
+      <div className='log-map-container'>
         <Wrapper
           title={i18n.CREATE_REPORT_MAP}
           onClose={onClose}
+          defaultPosition={{
+            x: window.screen.width - SIDEBAR_SIZE_DEFAULT - POPUP_WINDOW_WIDTH * 1.1,
+            y: window.screen.height * 0.11,
+          }}
         >
-          <div className='content'>
+          <div className='content' style={{ width: `${POPUP_WINDOW_WIDTH}px` }}>
             <div className='input-name'>
               <div>{i18n.NAME_OF_DOCUMENT}</div>
               <Input value={nameMap} onChange={this.onChangeNameMap}/>
