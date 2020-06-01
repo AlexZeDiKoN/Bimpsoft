@@ -1,7 +1,7 @@
 dependencies:
   '@DZVIN/CommonComponents': 14.1.480_8163dde90d88e02f48b04383611abbfe
-  '@DZVIN/MilSymbolEditor': 13.2.262
-  '@DZVIN/components': 14.1.564_56c0a69b77661e2a2e6d79d63bcec91c
+  '@DZVIN/MilSymbolEditor': 14.2.263
+  '@DZVIN/components': 14.2.565_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 0.0.2
   '@DZVIN/milsymbol': 0.0.5
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
@@ -89,29 +89,30 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-+EfaL56X6tkjZxHvJ/bKWilg+0I++or1fSmaJxEwVUARQ7ZoMgve3rP6ppaH8Tt+61hC9ZrOx9HhDOsLnyPXEA==
+      tarball: '@DZVIN/CommonComponents/-/CommonComponents-14.1.480.tgz'
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/13.2.262:
+  /@DZVIN/MilSymbolEditor/14.2.263:
     dependencies:
       '@DZVIN/milsymbol': 0.0.5
     dev: false
     resolution:
-      integrity: sha512-FPaHXTLw189bwxE7FxWao6Re9+gJTXiG7cuVzeZH9bou/XwnWc/2KfijXwgzNJf9P8HBhfS/I3W6fRmgn/Va3Q==
-  /@DZVIN/components/14.1.564_56c0a69b77661e2a2e6d79d63bcec91c:
+      integrity: sha512-Od3K6PT6yuvHzft68eXS/x3s0LSrFJI/71c/AR/dgrEth8E+clKn4OItctInATAIyzrAnJoFsvDwqpDDYLNMrQ==
+  /@DZVIN/components/14.2.565_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
-      draft-js: 0.11.5_react-dom@16.13.1+react@16.13.1
-      draft-js-export-html: 1.4.1_draft-js@0.11.5+immutable@3.8.2
+      draft-js: 0.11.4_react-dom@16.13.1+react@16.13.1
+      draft-js-export-html: 1.4.1_draft-js@0.11.4+immutable@3.8.2
     dev: false
     peerDependencies:
       immutable: '*'
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-HwpW2YfCt6xRxDkyP+B+oeJRnbidGWwxux2lBgBR0KI8toakUTuuuUVyqPlORI033IEdig+srqXsnrsqAuNS1w==
+      integrity: sha512-pbcJL5HZwwta5DCiJnyI4dcCrjoqJWDbQNmbrf/BgvORMI6U8E4vmskHkd4da+UpUADIRAPwd2gzcYZ4JsIPtg==
   /@DZVIN/leaflet-measure-custom/0.0.2:
     dev: false
     resolution:
@@ -4985,10 +4986,10 @@ packages:
     optional: true
     resolution:
       integrity: sha512-xqnBTVd/E+GxJVrX5/eUJiLYjCGPwMpdL+jGhGU57BvtcA7wwhtHVbXBeUk51kOpW3S7Jn3BQbN9Q1R1Km2qDQ==
-  /draft-js-export-html/1.4.1_draft-js@0.11.5+immutable@3.8.2:
+  /draft-js-export-html/1.4.1_draft-js@0.11.4+immutable@3.8.2:
     dependencies:
-      draft-js: 0.11.5_react-dom@16.13.1+react@16.13.1
-      draft-js-utils: 1.4.0_draft-js@0.11.5+immutable@3.8.2
+      draft-js: 0.11.4_react-dom@16.13.1+react@16.13.1
+      draft-js-utils: 1.4.0_draft-js@0.11.4+immutable@3.8.2
       immutable: 3.8.2
     dev: false
     peerDependencies:
@@ -4996,9 +4997,9 @@ packages:
       immutable: 3.x.x
     resolution:
       integrity: sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
-  /draft-js-utils/1.4.0_draft-js@0.11.5+immutable@3.8.2:
+  /draft-js-utils/1.4.0_draft-js@0.11.4+immutable@3.8.2:
     dependencies:
-      draft-js: 0.11.5_react-dom@16.13.1+react@16.13.1
+      draft-js: 0.11.4_react-dom@16.13.1+react@16.13.1
       immutable: 3.8.2
     dev: false
     peerDependencies:
@@ -5019,7 +5020,7 @@ packages:
       react-dom: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
     resolution:
       integrity: sha512-LE6jSCV9nkPhfVX2ggcRLA4FKs6zWq9ceuO/88BpXdNCS7mjRTgs0NsV6piUCJX9YxMsB9An33wnkMmU2sD2Zg==
-  /draft-js/0.11.5_react-dom@16.13.1+react@16.13.1:
+  /draft-js/0.11.4_react-dom@16.13.1+react@16.13.1:
     dependencies:
       fbjs: 1.0.0
       immutable: 3.7.6
@@ -5031,7 +5032,7 @@ packages:
       react: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
       react-dom: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
     resolution:
-      integrity: sha512-RlHcoDtblwCD6Bw2ay3D0dTLA6lH8862OcdJrHGnYrY5JjlitzSzGvGQwqqumVvbGUNDSZLD3FyNpSs4z5WIUg==
+      integrity: sha512-BLZ59s0vkDj/zI8UPo9Nit/hPsl11ztDejxDCQlVbvEXJSWrTXqO6ZYgdw3hXLtuojq/URqq3wTrpnb3dvzvLA==
   /duplexer/0.1.1:
     dev: true
     resolution:
@@ -15932,8 +15933,8 @@ packages:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
   '@DZVIN/CommonComponents': ^14.1.480
-  '@DZVIN/MilSymbolEditor': ^13.2.262
-  '@DZVIN/components': ^14.1.564
+  '@DZVIN/MilSymbolEditor': ^14.2.263
+  '@DZVIN/components': ^14.2.565
   '@DZVIN/leaflet-measure-custom': 0.0.2
   '@DZVIN/milsymbol': ^0.0.5
   '@craco/craco': ^5.2.1
