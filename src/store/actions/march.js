@@ -3,6 +3,7 @@ import api from '../../server/api.march'
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
+import { MARCH_TYPES } from '../../constants/March'
 import i18n from './../../i18n'
 import { openMapFolder } from './maps'
 import { asyncAction } from './index'
@@ -24,6 +25,7 @@ export const CLOSE_MARCH = action('CLOSE_MARCH')
 const { getMarchMetric } = api
 const { convertSegmentsForExplorer } = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
+const { OWN_RESOURCES } = MARCH_TYPES
 
 const isFilledMarchCoordinates = (segments) => {
   const isFilledCoordinate = (coordinates) => {
@@ -134,15 +136,44 @@ const getUpdateSegments = (segments, data) => {
   }
 
   let newSegments = segments
+  const clearCoordinate = () => ({ lng: null, lat: null })
 
   for (let i = 0; i < fieldName.length; i++) {
+    const isSegmentTypeField = fieldName[i] === 'type'
+
     if (childId || childId === 0) {
       newSegments = newSegments.update(segmentId, (segment) => ({
         ...segment,
         children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName[i]]: val[i] } : it),
       }))
     } else {
-      newSegments = newSegments.update(segmentId, (segment) => ({ ...segment, [fieldName[i]]: val[i] }))
+      let children = segments.get(segmentId).children
+      if (isSegmentTypeField) {
+        if (val[i] === OWN_RESOURCES) {
+          children = children.map((child) => ({ ...child, coordinate: clearCoordinate() }))
+          children.unshift({
+            ...defaultChild(),
+            type: 5,
+            required: true,
+          })
+        } else {
+          children = children.map((child) => ({
+            ...child,
+            type: 0,
+            required: false,
+            coordinate: clearCoordinate(),
+          }))
+        }
+      }
+
+      newSegments = newSegments.update(segmentId, (segment) => {
+        segment.coordinate = isSegmentTypeField && clearCoordinate()
+        return {
+          ...segment,
+          [fieldName[i]]: val[i],
+          children,
+        }
+      })
     }
   }
 
@@ -337,7 +368,10 @@ export const sendMarchToExplorer = () =>
     if (isCoordFilled) {
       const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
-      return window.explorerBridge.saveMarch(segmentsForExplorer)
+      const res = window.explorerBridge.saveMarch(segmentsForExplorer)
+      dispatch(closeMarch())
+
+      return res
     }
 
     return null

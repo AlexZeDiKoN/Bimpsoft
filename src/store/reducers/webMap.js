@@ -106,6 +106,7 @@ const WebMapState = Record({
   lockedObjects: Map(),
   version: null,
   contactId: null,
+  contactFullName: '',
   positionContactId: null,
   unitId: null,
   countryId: null,
@@ -376,10 +377,14 @@ export default function webMapReducer (state = WebMapState(), action) {
       return result
     }
     case actionNames.APP_INFO: {
-      const { version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure } = payload
+      const {
+        version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure, contactFullName,
+      } = payload
       console.info(`Backend version`, version)
       console.info(`Frontend version`, front)
-      console.info(`My IDs`, { contactId, positionContactId, unitId, countryId, formationId })
+      console.info(`My IDs`, {
+        contactId, positionContactId, unitId, countryId, formationId, contactFullName,
+      })
       return merge(state, {
         version,
         defOrgStructure,
@@ -388,6 +393,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         unitId: Number(unitId),
         countryId: Number(countryId),
         formationId: Number(formationId),
+        contactFullName,
       })
     }
     case actionNames.GET_LOCKED_OBJECTS: {

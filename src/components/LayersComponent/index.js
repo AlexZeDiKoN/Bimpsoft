@@ -43,7 +43,7 @@ export default class LayersComponent extends React.Component {
     showCloseForm: false,
   }
 
-  getCommonData = memoizeOne((selectedLayerId, textFilter) => {
+  getCommonData = memoizeOne((selectedLayerId, textFilter, isMapCOP) => {
     const {
       onSelectLayer,
       onChangeMapColor,
@@ -64,6 +64,7 @@ export default class LayersComponent extends React.Component {
       onPrintMap,
       onChangeLayerVisibility,
       onChangeLayerColor,
+      isMapCOP,
     }
   })
 
@@ -100,6 +101,7 @@ export default class LayersComponent extends React.Component {
       textFilter,
       is3DMapMode,
       onCloseMapSections,
+      isMapCOP,
     } = this.props
 
     const { showLayers, showPeriod, showCloseForm } = this.state
@@ -123,7 +125,7 @@ export default class LayersComponent extends React.Component {
                   onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
                 />
               </Tooltip>
-              <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
+              {!isMapCOP && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
                 <IButton
                   icon={IconNames.CALENDAR}
                   colorType={ColorTypes.WHITE}
@@ -131,7 +133,7 @@ export default class LayersComponent extends React.Component {
                   active={showPeriod}
                   onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
                 />
-              </Tooltip>
+              </Tooltip>}
             </div>
           </div>
           {(!is3DMapMode) &&
@@ -161,7 +163,7 @@ export default class LayersComponent extends React.Component {
               className="tree-layers"
               byIds={byIds}
               roots={roots}
-              commonData={this.getCommonData(selectedLayerId, textFilter)}
+              commonData={this.getCommonData(selectedLayerId, textFilter, isMapCOP)}
               itemTemplate={ItemTemplate}
               expandedKeys={expandedKeys}
               filteredIds={filteredIds}
@@ -205,6 +207,7 @@ LayersComponent.propTypes = {
   textFilter: PropTypes.instanceOf(TextFilter),
   byIds: PropTypes.object,
   roots: PropTypes.array,
+  isMapCOP: PropTypes.bool,
   onSelectLayer: PropTypes.func,
   onChangeFrom: PropTypes.func,
   expandedIds: PropTypes.object.isRequired,
