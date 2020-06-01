@@ -61,7 +61,7 @@ const GeoLandmarkItem = (props) => {
 const MarchForm = (props) => {
   const {
     name,
-    coordinate = {},
+    coordinates = {},
     refPoint,
     segmentType,
     segmentId,
@@ -92,10 +92,10 @@ const MarchForm = (props) => {
     changeIsModalVisible(false)
   }
 
-  const getGeoLandmarks = async (coordinate) => {
+  const getGeoLandmarks = async (coordinates) => {
     await changeIsLoadingGeoLandmarks(true)
     changeGeoLandmarks({})
-    const res = await getMemoGeoLandmarks(coordinate)
+    const res = await getMemoGeoLandmarks(coordinates)
     changeGeoLandmarks(res)
     await changeIsLoadingGeoLandmarks(false)
   }
@@ -150,7 +150,7 @@ const MarchForm = (props) => {
 
   const onBlurCoordinates = async ({ lat, lng }) => {
     editFormField({
-      fieldName: 'coordinate',
+      fieldName: 'coordinates',
       segmentId,
       childId,
       val: { lat, lng },
@@ -159,7 +159,7 @@ const MarchForm = (props) => {
 
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
-      getGeoLandmarks(coordinate)
+      getGeoLandmarks(coordinates)
     } else {
       setRefPointOnMap()
     }
@@ -254,7 +254,7 @@ const MarchForm = (props) => {
       <div className={'dot-form'}>
         <div className={'march-coord'}>
           <Coordinates
-            coordinates={coordinate}
+            coordinates={coordinates}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
           />
@@ -353,7 +353,7 @@ const MarchForm = (props) => {
 
 MarchForm.propTypes = {
   name: PropTypes.string.isRequired,
-  coordinate: PropTypes.shape({}).isRequired,
+  coordinates: PropTypes.shape({}).isRequired,
   children: PropTypes.array,
   refPoint: PropTypes.string.isRequired,
   segmentType: PropTypes.number.isRequired,

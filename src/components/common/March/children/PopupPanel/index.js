@@ -63,7 +63,7 @@ const PopupPanel = (props) => {
         />
         : <Select
           defaultValue={typeOfMove}
-          onChange={onEditFormField('segmentType')}
+          onChange={onEditFormField('type')}
         >
           {MB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
         </Select>

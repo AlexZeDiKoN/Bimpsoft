@@ -28,13 +28,13 @@ export const marchDots = createSelector(
     segments = segments ? segments.toArray() : []
 
     segments.forEach((it) => {
-      if (it.coordinate.lat || it.coordinate.lng) {
-        coordArray.push({ coordinate: it.coordinate, options: { color: getSegmentColor(it.segmentType) } })
+      if (it.coordinates.lat || it.coordinates.lng) {
+        coordArray.push({ coordinates: it.coordinates, options: { color: getSegmentColor(it.type) } })
       }
       if (it.children && it.children.length > 0) {
         it.children.forEach((it2) => {
-          if (it2.coordinate.lat || it2.coordinate.lng) {
-            coordArray.push({ coordinate: it2.coordinate, options: { color: getSegmentColor(it.segmentType) } })
+          if (it2.coordinates.lat || it2.coordinates.lng) {
+            coordArray.push({ coordinates: it2.coordinates, options: { color: getSegmentColor(it.type) } })
           }
         })
       }
