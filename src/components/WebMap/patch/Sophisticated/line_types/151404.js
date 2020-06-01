@@ -35,6 +35,7 @@ lineDefinitions['151404'] = {
   render: (result, points, scale) => {
     const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
     if (status === STATUSES.PLANNED) {
+      result.layer.options.dashArray = 20 * scale
       result.layer._path.setAttribute('stroke-dasharray', 20 * scale)
     }
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)

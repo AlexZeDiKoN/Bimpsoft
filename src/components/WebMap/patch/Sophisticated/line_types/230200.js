@@ -26,9 +26,10 @@ lineDefinitions['230200'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
-    drawLine(result, p0, p2, p1)
+    result.layer.options.dashArray = 20
     result.layer._path.setAttribute('stroke-dasharray', 20)
+    drawLine(result, p0, p2, p1)
   },
 }

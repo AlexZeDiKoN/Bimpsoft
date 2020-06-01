@@ -25,11 +25,12 @@ lineDefinitions['290400'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
     drawLine(result, p0, p1)
     const r = segmentLength(p0, p1) / 2
     drawArc(result, p0, p1, r)
+    result.layer.options.dashArray = 20
     result.layer._path.setAttribute('stroke-dasharray', 20)
   },
 }
