@@ -474,8 +474,6 @@ export const updateObjectAttributes = (id, attributes) =>
 
     payload = fixServerObject(payload)
 
-    console.log('COLOR--------------', payload)
-
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -733,7 +731,7 @@ window.addEventListener('beforeunload', () => {
   stopHeartBeat()
 })
 
-export const highlightObject = (id) => ({
+export const highlightObject = (id, restoreColor = null) => ({
   type: actionNames.HIGHLIGHT_OBJECT,
-  payload: { id },
+  payload: { id, restoreColor },
 })

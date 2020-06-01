@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -19,7 +19,8 @@ const timeOptions = {
 const locales = window.navigator.language
 
 const ItemList = (props) => {
-  const { time, user, event, highlightObject } = props
+  const { time, user, event, highlightObject, object, id } = props
+  const [ baseColor ] = useState(object.attributes.color)
 
   const formatDate = new Date(time).toLocaleDateString(locales, dateOptions)
   const formatTime = new Date(time).toLocaleTimeString(locales, timeOptions)
@@ -36,7 +37,11 @@ const ItemList = (props) => {
           </div>
         </div>
       </div>
-      <div className={'event'} onMouseOver={highlightObject}>
+      <div
+        className={'event'}
+        onMouseOver={() => highlightObject(id)}
+        onMouseOut={ () => highlightObject(id, baseColor)}
+      >
         {event}
       </div>
     </div>
@@ -48,6 +53,8 @@ ItemList.propTypes = {
   event: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
   highlightObject: PropTypes.func.isRequired,
+  object: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
 }
 
 export default ItemList

@@ -15,6 +15,7 @@ import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
+import { RED } from '../../constants/colors'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -427,15 +428,18 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     case actionNames.HIGHLIGHT_OBJECT: {
+      const { id, restoreColor } = payload
       const objects = state.get('objects')
-      const object = objects.get(payload.id)
+      const color = restoreColor || RED
 
-      const attributes = object.get('attributes').color
-      //const newObj = object.set('attributes', { ...attributes, color: 'app6_red' })
-      // const object = state
-      console.log('------------PPPP', attributes)
-      //return update(state, 'objects', (map) => updateObject(map, newObj))
-      return state
+      const newObjects = objects.update(id, (object) => {
+        return Record({
+          ...object.toObject(),
+          attributes: object.attributes.update('color', (attribute) => color),
+        })()
+      })
+
+      return state.set('objects', newObjects)
     }
     default: {
       const setField = simpleSetField(type)

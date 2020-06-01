@@ -43,6 +43,7 @@ export const userEvents = createSelector(
     return existingRecords.slice(-LIMIT_LOG_ITEMS).map(({ changeType, id, timestamp }) => {
       const objectById = objects.get(id)
       let objFullName = ''
+
       if (objectById) {
         const objectTypeKey = getObjectKeyByKind(objectById.type)
 
@@ -62,6 +63,7 @@ export const userEvents = createSelector(
         event,
         timestamp,
         id,
+        object: objectById.toObject(),
       }
     }).reverse()
   })

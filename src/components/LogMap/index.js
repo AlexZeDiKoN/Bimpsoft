@@ -37,13 +37,15 @@ const LogMapTab = (props) => {
         />
       </div>
       <Scrollbar>
-        {filteredEvent(search).map(({ event, timestamp, id }) => (
+        {filteredEvent(search).map(({ event, timestamp, id, object }) => (
           <ItemList
             key={id}
+            id={id}
             time={timestamp}
             user={user}
             event={event}
-            highlightObject={() => highlightObject(id)}
+            object={object}
+            highlightObject={highlightObject}
           />))
         }
       </Scrollbar>
