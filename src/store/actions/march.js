@@ -150,7 +150,7 @@ const getUpdateSegments = (segments, data) => {
       let children = segments.get(segmentId).children
       if (isSegmentTypeField) {
         if (val[i] === OWN_RESOURCES) {
-          children = children.map((child) => ({ ...child, coordinate: clearCoordinate() }))
+          children = children.map((child) => ({ ...child, coordinates: clearCoordinate() }))
           children.unshift({
             ...defaultChild(),
             type: 5,
@@ -161,13 +161,13 @@ const getUpdateSegments = (segments, data) => {
             ...child,
             type: 0,
             required: false,
-            coordinate: clearCoordinate(),
+            coordinates: clearCoordinate(),
           }))
         }
       }
 
       newSegments = newSegments.update(segmentId, (segment) => {
-        segment.coordinate = isSegmentTypeField && clearCoordinate()
+        segment.coordinates = isSegmentTypeField && clearCoordinate()
         return {
           ...segment,
           [fieldName[i]]: val[i],
