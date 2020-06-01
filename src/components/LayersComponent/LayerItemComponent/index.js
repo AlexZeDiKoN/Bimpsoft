@@ -38,8 +38,18 @@ export default class LayerItemComponent extends React.Component {
     const {
       selectedLayerId,
       textFilter,
-      data: { visible, name, readOnly, color, dateFor = null, breadCrumbs, layerId },
+      data: {
+        visible,
+        name,
+        readOnly,
+        color,
+        dateFor = null,
+        breadCrumbs,
+        layerId,
+      },
+      isMapCOP,
     } = this.props
+
     const dateString = dateFor !== null ? moment(dateFor).format(DATE_TIME_FORMAT) : ''
     const isSelected = selectedLayerId === layerId
     return (
@@ -62,7 +72,7 @@ export default class LayerItemComponent extends React.Component {
             <Tooltip title={breadCrumbs} placement='topLeft'>
               <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
             </Tooltip>
-            {/*<div className="layer-date">{dateString}</div>*/}
+            {!isMapCOP && <div className="layer-date">{dateString}</div>}
           </div>
           <div className='color-picker-hover'>
             <ColorPicker
@@ -93,6 +103,7 @@ LayerItemComponent.propTypes = {
   selectedLayerId: PropTypes.string,
   textFilter: PropTypes.instanceOf(TextFilter),
   data: PropTypes.object,
+  isMapCOP: PropTypes.bool,
   onSelectLayer: PropTypes.func,
   onChangeLayerVisibility: PropTypes.func,
   onChangeLayerColor: PropTypes.func,

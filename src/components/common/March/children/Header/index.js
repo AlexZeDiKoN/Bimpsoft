@@ -27,7 +27,7 @@ const Header = (props) => {
       <IButton
         onClick={closeMarch}
         colorType={ColorTypes.WHITE}
-        icon={IconNames.CLOSE_ONE} />
+        icon={IconNames.DARK_CLOSE_ROUND} />
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip
