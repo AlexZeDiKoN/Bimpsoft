@@ -39,15 +39,15 @@ const isFilledMarchCoordinates = (segments) => {
   }
 
   for (const segment of segments) {
-    const { coordinate, children } = segment
+    const { coordinates, children } = segment
 
-    if (!isFilledCoordinate(coordinate)) {
+    if (!isFilledCoordinate(coordinates)) {
       return false
     }
 
     if (children !== undefined && children.length > 0) {
       for (const child of children) {
-        if (!isFilledCoordinate(child.coordinate)) {
+        if (!isFilledCoordinate(child.coordinates)) {
           return false
         }
       }
@@ -74,7 +74,7 @@ const initDefaultSegments = () => ([
   },
   {
     ...defaultSegment(),
-    segmentType: 0,
+    type: 0,
     name: i18n.DESTINATION,
     required: true,
     editableName: false,
@@ -139,7 +139,7 @@ const getUpdateSegments = (segments, data) => {
   const clearCoordinate = () => ({ lng: null, lat: null })
 
   for (let i = 0; i < fieldName.length; i++) {
-    const isSegmentTypeField = fieldName[i] === 'segmentType'
+    const isSegmentTypeField = fieldName[i] === 'type'
 
     if (childId || childId === 0) {
       newSegments = newSegments.update(segmentId, (segment) => ({
@@ -216,11 +216,11 @@ export const editFormField = (data) => asyncAction.withNotification(
     })
   })
 
-export const addSegment = (segmentId, segmentType) => asyncAction.withNotification(
+export const addSegment = (segmentId, type) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
-    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(segmentType))
+    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(type))
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
 
@@ -310,7 +310,7 @@ export const setCoordFromMap = (value) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
     const { segments, coordModeData } = march
-    const data = { ...coordModeData, val: value, fieldName: 'coordinate' }
+    const data = { ...coordModeData, val: value, fieldName: 'coordinates' }
     const newSegments = getUpdateSegments(segments, data)
 
     const isCoordFilled = isFilledMarchCoordinates(newSegments)
@@ -346,12 +346,14 @@ export const openMarch = (data) => asyncAction.withNotification(
 
     segments = List(segments)
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(segments, data.payload)
-    const payload = { segments: segmentsWithMetric,
+    const payload = {
+      segments: segmentsWithMetric,
       time,
       distance,
       payload: data.payload,
       marchEdit: true,
-      isCoordFilled }
+      isCoordFilled,
+    }
 
     dispatch({
       type: INIT_MARCH,

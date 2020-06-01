@@ -15,7 +15,8 @@ const { OWN_RESOURCES_BRUSH, BY_RAILROAD_BRUSH, BY_SHIPS_BRUSH, COMBINED_BRUSH, 
 
 const SegmentBlock = (props) => {
   const { segment, addSegment, deleteSegment, segmentId, timeDistanceView, segments } = props
-  const { segmentType, children, metric = {} } = segment
+  const { type, children, metric = {} } = segment
+
   const [ isViewContextMenu, changeViewContextMenu ] = useState(false)
   const [ allowedTypeSegments, changeAllowedTypeSegments ] = useState([])
 
@@ -27,11 +28,11 @@ const SegmentBlock = (props) => {
   prevTime = prevTime || 0
   prevDistance = prevDistance || 0
 
-  if (segmentType === 0) {
+  if (type === 0) {
     return null
   }
   let color
-  switch (segmentType) {
+  switch (type) {
     case (OWN_RESOURCES):
       color = OWN_RESOURCES_BRUSH
       break
@@ -85,8 +86,8 @@ const SegmentBlock = (props) => {
     }
 
     <SegmentButtonPopover
-      segmentType={segmentType}
-      content={ <PopupPanel propData={{ ...segment, segmentId, deleteSegment, metric }} /> }
+      type={type}
+      content={ <PopupPanel propData={{ ...segment, segmentType: segment.type, segmentId, deleteSegment, metric }} /> }
     />
 
     {childrenIsPresent && children.map((child, id) => {
@@ -118,7 +119,7 @@ const SegmentBlock = (props) => {
 SegmentBlock.propTypes = {
   segmentId: PropTypes.number.isRequired,
   segment: PropTypes.shape({
-    segmentType: PropTypes.number.isRequired,
+    type: PropTypes.number.isRequired,
     children: PropTypes.array,
     metric: PropTypes.shape({
       children: PropTypes.arrayOf(
