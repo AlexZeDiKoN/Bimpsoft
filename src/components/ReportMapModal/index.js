@@ -35,7 +35,7 @@ export default class ReportMapModal extends React.Component {
     const nameMap = this.props.reportMap?.dataMap?.name
     const timeInLocal = moment.utc(prevState.dateTimeMap).local().format('DD-MM-YYYY HH:mm')
     if (nameMap !== prevProps.reportMap?.dataMap?.name) {
-      this.setState({ nameMap: `Звітна карта ${nameMap} (${timeInLocal})` })
+      this.setState({ nameMap: `Звітна карта ${nameMap} ${timeInLocal}` })
     }
   }
 
