@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import LogMap from '../components/LogMap'
 import { userEvents } from '../store/selectors'
+import { webMap } from '../store/actions'
 
 const mapStateToProps = (state) => {
   const user = state.webMap.get('contactFullName')
@@ -11,6 +12,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-const LogMapContainer = connect(mapStateToProps)(LogMap)
+const mapDispatchToProps = {
+  highlightObject: webMap.highlightObject,
+}
+
+const LogMapContainer = connect(mapStateToProps, mapDispatchToProps)(LogMap)
 
 export default LogMapContainer

@@ -19,7 +19,7 @@ const timeOptions = {
 const locales = window.navigator.language
 
 const ItemList = (props) => {
-  const { time, user, event } = props
+  const { time, user, event, highlightObject } = props
 
   const formatDate = new Date(time).toLocaleDateString(locales, dateOptions)
   const formatTime = new Date(time).toLocaleTimeString(locales, timeOptions)
@@ -36,7 +36,7 @@ const ItemList = (props) => {
           </div>
         </div>
       </div>
-      <div className={'event'}>
+      <div className={'event'} onMouseOver={highlightObject}>
         {event}
       </div>
     </div>
@@ -47,6 +47,7 @@ ItemList.propTypes = {
   time: PropTypes.number.isRequired,
   event: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
+  highlightObject: PropTypes.func.isRequired,
 }
 
 export default ItemList

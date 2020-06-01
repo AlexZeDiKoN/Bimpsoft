@@ -8,7 +8,7 @@ import i18n from '../../i18n'
 import ItemList from './children/ItemList'
 
 const LogMapTab = (props) => {
-  const { wrapper: Wrapper = Fragment, userEvents, user } = props
+  const { wrapper: Wrapper = Fragment, userEvents, user, highlightObject } = props
   const [ search, onChange ] = useState('')
 
   const onChangeSearch = (value) => {
@@ -37,12 +37,13 @@ const LogMapTab = (props) => {
         />
       </div>
       <Scrollbar>
-        {filteredEvent(search).map(({ event, timestamp }, id) => (
+        {filteredEvent(search).map(({ event, timestamp, id }) => (
           <ItemList
             key={id}
             time={timestamp}
             user={user}
             event={event}
+            highlightObject={() => highlightObject(id)}
           />))
         }
       </Scrollbar>
@@ -54,6 +55,7 @@ LogMapTab.propTypes = {
   wrapper: PropTypes.any,
   userEvents: PropTypes.object.isRequired,
   user: PropTypes.string.isRequired,
+  highlightObject: PropTypes.func.isRequired,
 }
 
 LogMapTab.displayName = 'LogMapTab'

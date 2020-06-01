@@ -426,6 +426,17 @@ export default function webMapReducer (state = WebMapState(), action) {
       const visible = !state.topographicObjects.visible
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
+    case actionNames.HIGHLIGHT_OBJECT: {
+      const objects = state.get('objects')
+      const object = objects.get(payload.id)
+
+      const attributes = object.get('attributes').color
+      //const newObj = object.set('attributes', { ...attributes, color: 'app6_red' })
+      // const object = state
+      console.log('------------PPPP', attributes)
+      //return update(state, 'objects', (map) => updateObject(map, newObj))
+      return state
+    }
     default: {
       const setField = simpleSetField(type)
       if (setField) {

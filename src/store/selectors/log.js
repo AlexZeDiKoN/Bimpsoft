@@ -3,6 +3,8 @@ import { changeTypes } from '../actions/webMap'
 import entityKind from '../../components/WebMap/entityKind'
 import i18n from '../../i18n'
 
+const LIMIT_LOG_ITEMS = 200
+
 const getChangeTypeKeyByEvent = (event) => {
   for (const key in changeTypes) {
     if (changeTypes.hasOwnProperty(key)) {
@@ -36,7 +38,9 @@ export const userEvents = createSelector(
   undoPosition,
   unitsById,
   (undoRecords, objects, undoPosition, unitsById) => {
-    return undoRecords.filter((_, index) => index < undoPosition).map(({ changeType, id, timestamp }) => {
+    const existingRecords = undoRecords.filter((_, index) => index < undoPosition)
+
+    return existingRecords.slice(-LIMIT_LOG_ITEMS).map(({ changeType, id, timestamp }) => {
       const objectById = objects.get(id)
       let objFullName = ''
       if (objectById) {
@@ -57,6 +61,7 @@ export const userEvents = createSelector(
       return {
         event,
         timestamp,
+        id,
       }
     }).reverse()
   })

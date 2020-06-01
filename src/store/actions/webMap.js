@@ -68,6 +68,7 @@ export const actionNames = {
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
+  HIGHLIGHT_OBJECT: action('HIGHLIGHT_OBJECT'),
 }
 
 export const changeTypes = {
@@ -473,6 +474,8 @@ export const updateObjectAttributes = (id, attributes) =>
 
     payload = fixServerObject(payload)
 
+    console.log('COLOR--------------', payload)
+
     return dispatch({
       type: actionNames.UPD_OBJECT,
       payload,
@@ -728,4 +731,9 @@ export const redo = () =>
 window.addEventListener('beforeunload', () => {
   dropLock && dropLock()
   stopHeartBeat()
+})
+
+export const highlightObject = (id) => ({
+  type: actionNames.HIGHLIGHT_OBJECT,
+  payload: { id },
 })
