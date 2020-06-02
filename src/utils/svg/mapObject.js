@@ -19,10 +19,9 @@ import {
   getLineEnds,
   getStylesForLineType,
   blockage,
-  getPointAmplifier,
+  getPointAmplifier, settings,
 } from './lines'
 import { renderTextSymbol } from './index'
-// import {evaluateColor} from '../../constants/colors'
 
 const mapObjectBuilders = new Map()
 const onePunkt = 0.3528 // 1 пункт в мм
@@ -32,6 +31,7 @@ const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
 export const MM_IN_INCH = 25.4
 export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
+const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
 
 // Размер точечных знаков(мм) в зависимости от маштаба карты
 const pointSizeFromScale = new Map([
@@ -107,7 +107,7 @@ const builderGroup = (idGroup, objects) => {
   return _groupChildren
 }
 
-const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, strokeWidthPrint, options = {}) => {
+const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, strokeWidthPrint, options = {}, dpi) => {
   const { color, fill, lineType, hatch, fillOpacity, fillColor, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
   const styles = { ...options, ...getStylesForLineType(lineType, scale) } // для пунктира
@@ -138,8 +138,8 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, str
   // заливка або штрихування
   let fillOption = null
   if (hatch === 'left-to-right') { // штриховка
-    const cs = strokeWidthToScale * 25 // settings.CROSS_SIZE * scale
-    const sw = strokeWidthToScale / 2
+    const cs = strokeWidthToScale + settings.CROSS_SIZE * scale
+    const sw = strokeWidthToScale
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
@@ -181,7 +181,7 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, str
         {fillOption}
         {Boolean(outlineColor) && <path
           stroke={outlineColor}
-          strokeWidth={strokeWidthToScale * 1.8}
+          strokeWidth={strokeWidthToScale + SHADOW_WIDTH / getmmInPixel(dpi)}
           fill="none"
           d={d}
         />}
@@ -227,6 +227,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
     strokeWidth,
     markerSize,
     id,
+    dpi,
   } = data
   const options = {}
   const fontColor = '#000000'
@@ -334,14 +335,14 @@ const getLineSvg = (points, attributes, data, layerData) => {
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, options)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, options, dpi)}
       {resultFilled}
     </>
   )
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layerData) => {
-  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, getStrokeWidth } = commonData
+  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, getStrokeWidth, dpi } = commonData
   const { attributes, geometry, level, id } = object
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -352,7 +353,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
     return getLineSvg(
       points,
       attributes,
-      { level, bounds, bezier, locked, scale, fontSize, graphicSize, strokeWidth, markerSize, id },
+      { level, bounds, bezier, locked, scale, fontSize, graphicSize, strokeWidth, markerSize, id, dpi },
       layerData,
     )
   }
@@ -360,7 +361,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
 
 // сборка Квадрата, Прямоугольника, Круга
 const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
-  const { coordToPixels, scale, bounds, fontSize, getStrokeWidth } = commonData
+  const { coordToPixels, scale, bounds, fontSize, getStrokeWidth, dpi } = commonData
   const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   if (point1 && point2) {
@@ -404,14 +405,14 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
             dangerouslySetInnerHTML={{ __html: amplifiers.group }}
           />
         )}
-        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth)}
+        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, null, dpi)}
       </>)
   }
 }
 
 const getContourBuilder = () => (commonData, data, layerData) => {
-  const { coordToPixels, scale, getStrokeWidth } = commonData
-  const { attributes, geometry } = data
+  const { coordToPixels, scale, getStrokeWidth, dpi } = commonData
+  const { attributes, geometry, id } = data
   if (geometry) {
     const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
     return fixedGeometry.map((coords) =>
@@ -422,7 +423,10 @@ const getContourBuilder = () => (commonData, data, layerData) => {
         scale,
         null,
         null,
-        getStrokeWidth()),
+        id,
+        getStrokeWidth(),
+        null,
+        dpi),
     )
   }
 }
@@ -482,7 +486,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
 
 // сборка сложных линий
 mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, layerData) => {
-  const { coordToPixels, bounds, getFontSize, getStrokeWidth, graphicSize, pointSymbolSize } = commonData
+  const { coordToPixels, bounds, getFontSize, getStrokeWidth, graphicSize, pointSymbolSize, dpi } = commonData
   const { geometry, attributes, id } = objectData
   const line = lineDefinitions[extractLineCode(objectData.code)]
 
@@ -521,7 +525,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     const strokeColor = colors.evaluateColor(attributes.color)
     return (
       <g id={id}>
-        {getSvgPath(container.d, options, layerData, 1, container.mask, bounds, id, options.strokeWidth)}
+        {getSvgPath(container.d, options, layerData, 1, container.mask, bounds, id, options.strokeWidth, null, dpi)}
         {Boolean(container.amplifiers) && (
           <g
             stroke={strokeColor}
@@ -549,6 +553,7 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
     scale, // масштаб к DPI 96
     objects, // все объекты карты
     getStrokeWidth,
+    dpi,
   } = commonData
   const { attributes, id } = object
   const mmSize = pointSizeFromScale.get(printScale) || POINT_SIZE_DEFAULT
@@ -579,7 +584,7 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   drawLine(result, ...rectanglePolygon)
   // return `${result.d} z`
   const attributesSet = { ...attributes, strokeWidth: getStrokeWidth(attributes.strokeWidth) }
-  return getSvgPath(result.d, attributesSet, layer, scale, null, bounds, id)
+  return getSvgPath(result.d, attributesSet, layer, scale, null, bounds, id, null, null, dpi)
 })
 
 mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))
