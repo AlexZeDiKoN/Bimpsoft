@@ -110,28 +110,62 @@ class PrintPanel extends React.Component {
   }
 
   formatApprovers = () => {
-    const { approversData, docConfirm: { signers }, setPrintRequisites } = this.props
-    const { PRINT_SIGNATORIES: { SIGNATORIES } } = Print
+    const {
+      approversData,
+      docConfirm: { signers },
+      setPrintRequisites,
+    } = this.props
+
+    const {
+      PRINT_SIGNATORIES: { SIGNATORIES },
+    } = Print
+
     if (!signers) {
-      return setPrintRequisites({ [SIGNATORIES]: [] })
+      return setPrintRequisites({
+        [SIGNATORIES]: [],
+      })
     }
+
     const signatories = signers.map((signer) => {
-      const { who, date, status } = signer
+      const {
+        who,
+        date,
+        status,
+      } = signer
+
       if (status !== 'accepted') {
         return null
       }
-      const { name, patronymic, surname, position, role } = approversData.filter((item) =>
-        Number(item.id) === who)[0] || {}
-      return { position, role, name: this.formatContactName(surname, name, patronymic), date }
-    }).filter((item) => Boolean(item)).sort((a, b) => new Date(a.date) - new Date(b.date))
-    setPrintRequisites({ [SIGNATORIES]: signatories })
+
+      const {
+        name,
+        surname,
+        position,
+        role,
+      } = approversData
+        .filter((item) => Number(item.id) === who)[0] || {}
+
+      return {
+        position,
+        role,
+        name: this.formatContactName(surname, name),
+        date,
+      }
+    })
+      .filter(Boolean)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+
+    setPrintRequisites({
+      [SIGNATORIES]: signatories,
+    })
   }
 
-  formatContactName = (surname, name, patronymic) => {
-    let result
-    name && (result = `${name.slice(0, 1)}.`)
-    patronymic && (result = `${result} ${patronymic.slice(0, 1)}.`)
-    return `${result} ${surname}`
+  formatContactName = (surname, name) => {
+    let result = surname
+    if (name) {
+      result = `${name} ${result}`
+    }
+    return result
   }
 
   addConstParameters = () => {
@@ -140,8 +174,14 @@ class PrintPanel extends React.Component {
       docConfirm: { signers },
       setPrintRequisites,
     } = this.props
+
     const date = signers && Math.max.apply(null, signers.map((value) => new Date(value.date)))
-    const { PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE }, DATE_FORMAT } = Print
+
+    const {
+      PRINT_PANEL_KEYS: { MAP_LABEL, CONFIRM_DATE },
+      DATE_FORMAT,
+    } = Print
+
     setPrintRequisites({
       [MAP_LABEL]: classified,
       [CONFIRM_DATE]: (date && isFinite(date)) ? moment(date).format(DATE_FORMAT) : '',

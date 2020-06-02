@@ -16,7 +16,7 @@ const defaultChild = () => ({
   id: uuid(),
   type: 0,
   lineType: '',
-  coordinate: {},
+  coordinates: {},
   refPoint: '',
   required: false,
   editableName: true,
@@ -27,22 +27,22 @@ const defaultChild = () => ({
   },
 })
 
-const defaultSegment = (segmentType) => {
+const defaultSegment = (type) => {
   const specificFields = {}
 
-  switch (segmentType) {
+  switch (type) {
     case OWN_RESOURCES:
-      specificFields.segmentType = OWN_RESOURCES
+      specificFields.type = OWN_RESOURCES
       specificFields.children = [ defaultChild() ]
       break
     case BY_RAILROAD:
-      specificFields.segmentType = BY_RAILROAD
+      specificFields.type = BY_RAILROAD
       break
     case BY_SHIPS:
-      specificFields.segmentType = BY_SHIPS
+      specificFields.type = BY_SHIPS
       break
     default:
-      specificFields.segmentType = OWN_RESOURCES
+      specificFields.type = OWN_RESOURCES
       specificFields.children = [ defaultChild() ]
   }
 
@@ -52,7 +52,7 @@ const defaultSegment = (segmentType) => {
     refPoint: '',
     terrain: 69,
     velocity: 30,
-    coordinate: {},
+    coordinates: {},
     required: false,
     editableName: true,
     metric: getDefaultMetric(),
@@ -71,8 +71,9 @@ const getAllowedTypeSegments = (segments, segmentId) => {
   //const prevSegment = segments[segmentId]
   //const nextSegment = segments[segmentId + 1]
 
-  //delete allowedType[prevSegment.segmentType]
-  //delete allowedType[nextSegment.segmentType]
+
+  // delete allowedType[prevSegment.type]
+  // delete allowedType[nextSegment.type]
 
   return Object.values(allowedType)
 }
