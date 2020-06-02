@@ -50,9 +50,12 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     ovtData: PropTypes.object,
   }
 
-  codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
-    result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel),
-  )
+  codeChangeHandler = (code, subordinationLevel) => this.setResult((result) => {
+    if (code.length > 20 || !code.match(/^[0-9]+$/)) {
+      return result
+    }
+    return result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+  })
 
   unitChangeHandler = (unit) => this.setResult((result) => {
     const { orgStructures: { byIds } } = this.props
