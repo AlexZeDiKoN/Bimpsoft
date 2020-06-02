@@ -480,6 +480,7 @@ L.SVG.include({
       layer._map.getZoom(), inverse)
   },
 
+  // сборка линии с засечками
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
     return stroked(
@@ -493,10 +494,20 @@ L.SVG.include({
     )
   },
 
+  // сборка остальных типов линий
   _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
-    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
-      layer._map.getZoom(), false, lineType, setEnd)
+    return blockage(
+      layer._rings[0],
+      layer.object?.attributes,
+      bezier,
+      locked,
+      bounds,
+      layer.scaleOptions, //  1.0,
+      layer._map.getZoom(),
+      false,
+      lineType,
+      setEnd)
   },
 
   _buildElementFilled: function (layer, bezier, locked, lineType, setEnd) {

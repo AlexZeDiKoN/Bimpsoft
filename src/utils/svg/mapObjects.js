@@ -2,8 +2,16 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
+// import { Map, Record } from 'immutable'
 import { pointsToD } from '../../utils/svg/lines'
-import { getFontSizeByDpi, getGraphicSizeByDpi, getMapObjectSvg, getPointSizeByDpi } from './mapObject'
+// import SelectionTypes from '../../constants/SelectionTypes'
+import {
+  getFontSizeByDpi,
+  getGraphicSizeByDpi,
+  getMapObjectSvg,
+  getPointSizeByDpi,
+  getStrokeWidthByDpi,
+} from './mapObject'
 
 const METERS_PER_INCH = 0.0254
 const SEMI_MAJOR_AXIS = 6378245
@@ -100,25 +108,30 @@ export const getMapSvg = (
     SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
   const scale = dpi / 96
-  const fontSize = getFontSizeByDpi(printScale, dpi)
+  const getFontSize = getFontSizeByDpi(printScale, dpi) // размер шрифта соответствует на карте 12 кеглю
   const graphicSize = getGraphicSizeByDpi(printScale, dpi)
   const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
-  // const frameWidth = Math.round(dpi / MM_IN_INCH * (frameMapSize.get(printScale) || 10))
+  const getStrokeWidth = getStrokeWidthByDpi(printScale, dpi)
+  const markerSize = graphicSize
   const commonData = {
     bounds,
     dpi,
     coordToPixels,
     scale,
-    fontSize,
+    getFontSize,
+    getStrokeWidth,
     graphicSize,
+    markerSize,
     pointSymbolSize,
     printScale,
     layersById,
     showAmplifiers,
     zoom,
+    objects,
   }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
+  // {/*{layerRegions.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)}*/}
   return ReactDOMServer.renderToStaticMarkup(<svg
     xmlns="http://www.w3.org/2000/svg" version="1.2"
     width={width}
