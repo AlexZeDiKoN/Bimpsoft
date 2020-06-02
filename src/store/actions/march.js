@@ -167,7 +167,10 @@ const getUpdateSegments = (segments, data) => {
       }
 
       newSegments = newSegments.update(segmentId, (segment) => {
-        segment.coordinates = isSegmentTypeField && clearCoordinate()
+        if (isSegmentTypeField) {
+          segment.coordinates = clearCoordinate()
+        }
+
         return {
           ...segment,
           [fieldName[i]]: val[i],

@@ -162,7 +162,7 @@ const MarchForm = (props) => {
 
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
-      getGeoLandmarks(coordinates)
+      getGeoLandmarks({ ...coordinates })
     } else {
       setRefPointOnMap()
     }
