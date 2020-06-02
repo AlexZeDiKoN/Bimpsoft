@@ -71,7 +71,8 @@ L.SVG.include({
     const DASHON = false
     const {
       options: {
-        shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight, dashArray, dashOffset,
+        shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
+        dashArray, dashOffset, lineCap = 'round',
       },
       _shadowPath,
       _amplifierGroup,
@@ -85,6 +86,7 @@ L.SVG.include({
         _shadowPath.setAttribute('stroke', shadowColor)
         _shadowPath.setAttribute('fill', 'none')
         _shadowPath.setAttribute('stroke-linejoin', 'round')
+        _shadowPath.setAttribute('stroke-linecap', lineCap)
         _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
 
         if (dashArray && DASHON) {

@@ -43,6 +43,7 @@ export const settings = {
   STROKE_WIDTH: 5,
   CROSS_SIZE: 48,
   DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
+  DOTS_LENGTH_FACTOR: 0.2, // коєфициент длины точки линии к толщине линии при исползовании stroke_linecap = 'round'
 }
 
 export const MARK_TYPE = {
@@ -558,10 +559,10 @@ const addUnitLine = (
   const v = vector(p1, p2)
   switch (lineType) {
     case 'solidWithDots': {
-      const vw = setLength(v, strokeWidth / 4)
-      // const r = strokeWidth / 2
+      const vw = setLength(v, strokeWidth * settings.DOTS_LENGTH_FACTOR)
+      // const r = strokeWidth / 4
       // return ` M${p1.x} ${p1.y} A${r} {r} 0 1 1 ${p1.x + 0.01} ${p1.y + 0.01}`
-      return ` M${p1.x} ${p1.y} L${p1.x + vw.x} ${p1.y + vw.y} M${p2.x} ${p2.y} L${p2.x + vw.x} ${p2.y + vw.y}`
+      return `M${p1.x} ${p1.y}L${p1.x + vw.x} ${p1.y + vw.y}M${p2.x} ${p2.y}L${p2.x + vw.x} ${p2.y + vw.y}`
     }
     case 'blockage': {
       if (halfElement) {
