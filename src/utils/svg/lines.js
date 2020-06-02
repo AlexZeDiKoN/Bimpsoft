@@ -41,7 +41,7 @@ export const settings = {
   MIN_ZOOM: 5,
   MAX_ZOOM: 20,
   STROKE_WIDTH: 5,
-  CROSS_SIZE: 48,
+  CROSS_SIZE: 24,
   DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
   DOTS_LENGTH_FACTOR: 0.2, // коєфициент длины точки линии к толщине линии при исползовании stroke_linecap = 'round'
   FACTOR_SIZE: 10, // коэффициент для интерполяции размеров
