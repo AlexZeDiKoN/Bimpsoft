@@ -353,6 +353,11 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   const { selection: { list }, webMap: { objects } } = state
   const id = list[0]
   const obj = objects.get(id)
+  const type = obj.type
+  if (type === SelectionTypes.SQUARE ||
+    type === SelectionTypes.CIRCLE) {
+    return
+  }
   const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
   const point = obj.point.toObject()
   dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
@@ -410,7 +415,7 @@ export const dropContour = () =>
             list,
             layer,
           },
-        }
+        },
       ]))
     }
   })
