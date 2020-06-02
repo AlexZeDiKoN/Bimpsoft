@@ -107,7 +107,6 @@ const updateMetric = async (segments, payload) => {
       let { distance, time } = segmentsDetails[id].children[childId]
       distance = distance || 0
       time = time || 0
-
       child.metric = { distance, time }
       return child
     })
@@ -167,7 +166,10 @@ const getUpdateSegments = (segments, data) => {
       }
 
       newSegments = newSegments.update(segmentId, (segment) => {
-        segment.coordinate = isSegmentTypeField && clearCoordinate()
+        if (isSegmentTypeField) {
+          segment.coordinate = clearCoordinate()
+        }
+
         return {
           ...segment,
           [fieldName[i]]: val[i],
