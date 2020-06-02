@@ -38,12 +38,13 @@ export const settings = {
   LUT_STEPS: 16000, // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення
   // довжин і пропорцій
   DRAW_PARTIAL_WAVES: true,
-  MIN_ZOOM: 0,
+  MIN_ZOOM: 5,
   MAX_ZOOM: 20,
   STROKE_WIDTH: 5,
   CROSS_SIZE: 48,
   DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
   DOTS_LENGTH_FACTOR: 0.2, // коєфициент длины точки линии к толщине линии при исползовании stroke_linecap = 'round'
+  FACTOR_SIZE: 10, // коэффициент для интерполяции размеров
 }
 
 export const MARK_TYPE = {
@@ -692,7 +693,7 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   }
   let size
   const strokeWidth = strokeWidthPrint ||
-    interpolateSize(zoom, scaleOptions, 10.0, 5, 20) * objectAttributes.strokeWidth / 100
+    interpolateSize(zoom, scaleOptions, settings.FACTOR_SIZE) * objectAttributes.strokeWidth / 100
   switch (lineType.slice(0, 3)) {
     case 'row':
       size = settings.ROW_MINE_SIZE // для рядів мін
