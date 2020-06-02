@@ -42,6 +42,7 @@ export const settings = {
   MAX_ZOOM: 20,
   STROKE_WIDTH: 5,
   CROSS_SIZE: 48,
+  DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
 }
 
 export const MARK_TYPE = {

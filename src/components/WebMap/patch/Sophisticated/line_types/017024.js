@@ -4,7 +4,7 @@ import {
   drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier, emptyPath,
   setVectorLength, drawLineMark, angleOf,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
 
 // sign name: Підрозділ (група), який проводить пошук (наліт), із зазначенням належності
 // task code: DZVIN-6010
@@ -49,7 +49,7 @@ lineDefinitions['017024'] = {
 
     const r = segmentLength(p1, p2) / 2
     drawArc(dashed, p1, p2, r, 0, 0, halfPlane(p0, p1, p2))
-    addPathAmplifier(result, dashed, false, 20)
+    addPathAmplifier(result, dashed, false, settings.DASHARRAY)
 
     drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p3, angleOf(p2, p3))
     drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p1, angleOf(p0, p1))
