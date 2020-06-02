@@ -65,7 +65,7 @@ export default function reducer (state = initState, action) {
       return { ...state, coordRefPoint: payload }
     }
     case march.CLOSE_MARCH: {
-      return { ...state, marchEdit: false }
+      return { ...state, marchEdit: false, segments: List([]) }
     }
     default:
       return state
