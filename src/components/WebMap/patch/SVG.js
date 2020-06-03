@@ -68,9 +68,11 @@ L.SVG.include({
   },
 
   _updateStyle: function (layer) {
+    const DASHON = false
     const {
       options: {
         shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
+        dashArray, dashOffset, lineCap = 'round',
       },
       _shadowPath,
       _amplifierGroup,
@@ -84,7 +86,20 @@ L.SVG.include({
         _shadowPath.setAttribute('stroke', shadowColor)
         _shadowPath.setAttribute('fill', 'none')
         _shadowPath.setAttribute('stroke-linejoin', 'round')
+        _shadowPath.setAttribute('stroke-linecap', lineCap)
         _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
+
+        if (dashArray && DASHON) {
+          _shadowPath.setAttribute('stroke-dasharray', dashArray)
+        } else {
+          _shadowPath.removeAttribute('stroke-dasharray')
+        }
+
+        if (dashOffset && DASHON) {
+          _shadowPath.setAttribute('stroke-dashoffset', dashOffset)
+        } else {
+          _shadowPath.removeAttribute('stroke-dashoffset')
+        }
       } else {
         _shadowPath.setAttribute('display', 'none')
       }
@@ -93,6 +108,7 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
+    // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
@@ -243,6 +259,9 @@ L.SVG.include({
           result = this._buildBlockage(layer, false, true, lineType)
           break
         // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
         case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
@@ -252,7 +271,6 @@ L.SVG.include({
         case 'blockageSpiral':
         case 'blockageSpiral2':
         case 'blockageSpiral3':
-        case 'solidWithDots':
           result += this._buildBlockage(layer, false, true, lineType)
           break
         // необхідна заливка
@@ -287,6 +305,9 @@ L.SVG.include({
           result = this._buildBlockage(layer, false, false, lineType)
           break
         // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
         case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
@@ -296,7 +317,6 @@ L.SVG.include({
         case 'blockageSpiral':
         case 'blockageSpiral2':
         case 'blockageSpiral3':
-        case 'solidWithDots':
           result += this._buildBlockage(layer, false, false, lineType)
           break
         // необхідна заливка
@@ -332,6 +352,9 @@ L.SVG.include({
           result = this._buildBlockage(layer, true, true, lineType)
           break
         // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
         case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
@@ -341,7 +364,6 @@ L.SVG.include({
         case 'blockageSpiral':
         case 'blockageSpiral2':
         case 'blockageSpiral3':
-        case 'solidWithDots':
           result += this._buildBlockage(layer, true, true, lineType)
           break
         // необхідна заливка
@@ -379,6 +401,9 @@ L.SVG.include({
           result = this._buildBlockage(layer, true, false, lineType)
           break
         // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
         case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
@@ -388,7 +413,7 @@ L.SVG.include({
         case 'blockageSpiral':
         case 'blockageSpiral2':
         case 'blockageSpiral3':
-        case 'solidWithDots':
+
           result += this._buildBlockage(layer, true, false, lineType)
           break
         // необхідна заливка
@@ -457,6 +482,7 @@ L.SVG.include({
       layer._map.getZoom(), inverse)
   },
 
+  // сборка линии с засечками
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
     return stroked(
@@ -470,13 +496,23 @@ L.SVG.include({
     )
   },
 
+  // сборка остальных типов линий
   _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
-    return blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
-      layer._map.getZoom(), false, lineType, setEnd)
+    return blockage(
+      layer._rings[0],
+      layer.object?.attributes,
+      bezier,
+      locked,
+      bounds,
+      layer.scaleOptions, //  1.0,
+      layer._map.getZoom(),
+      false,
+      lineType,
+      setEnd)
   },
 
-  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd, setStrokeWidth = false) {
+  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
     const colorLine = layer.object?.attributes?.color || 'black'
     // const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *

@@ -38,10 +38,18 @@ export const settings = {
   LUT_STEPS: 16000, // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення
   // довжин і пропорцій
   DRAW_PARTIAL_WAVES: true,
-  MIN_ZOOM: 0,
+  MIN_ZOOM: 5,
   MAX_ZOOM: 20,
   STROKE_WIDTH: 5,
-  CROSS_SIZE: 48,
+  CROSS_SIZE: 24,
+  DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
+  DOTS_LENGTH_FACTOR: 0.2, // коэффициент длины точки линии к толщине линии при исползовании stroke_linecap = 'round'
+  FACTOR_SIZE: 10, // коэффициент для интерполяции размеров
+}
+
+export const HATCH_TYPE = {
+  NONE: 'none',
+  LEFT_TO_RIGHT: 'left-to-right',
 }
 
 export const MARK_TYPE = {
@@ -557,10 +565,10 @@ const addUnitLine = (
   const v = vector(p1, p2)
   switch (lineType) {
     case 'solidWithDots': {
-      const vw = setLength(v, strokeWidth)
-      // const r = strokeWidth / 2
+      const vw = setLength(v, strokeWidth * settings.DOTS_LENGTH_FACTOR)
+      // const r = strokeWidth / 4
       // return ` M${p1.x} ${p1.y} A${r} {r} 0 1 1 ${p1.x + 0.01} ${p1.y + 0.01}`
-      return ` M${p1.x} ${p1.y} L${p1.x + vw.x} ${p1.y + vw.y} M${p2.x} ${p2.y} L${p2.x + vw.x} ${p2.y + vw.y}`
+      return `M${p1.x} ${p1.y}L${p1.x + vw.x} ${p1.y + vw.y}M${p2.x} ${p2.y}L${p2.x + vw.x} ${p2.y + vw.y}`
     }
     case 'blockage': {
       if (halfElement) {
@@ -684,26 +692,26 @@ const addUnitLine = (
 // -----------------------------------------------------------------------------------------------------------------
 // построение типовой линии (загрождения)
 export const blockage = (points, objectAttributes, bezier, locked, bounds, scaleOptions, zoom = -1, inverse = false,
-  lineType = 'blockage', setEnd = false) => {
+  lineType = 'blockage', setEnd = false, strokeWidthPrint, markerSizePrint) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
   let size
-  const strokeWidth = interpolateSize(zoom, scaleOptions, 10.0, 5, 20) * objectAttributes.strokeWidth / 100
+  const strokeWidth = strokeWidthPrint ||
+    interpolateSize(zoom, scaleOptions, settings.FACTOR_SIZE) * objectAttributes.strokeWidth / 100
   switch (lineType.slice(0, 3)) {
     case 'row':
       size = settings.ROW_MINE_SIZE // для рядів мін
       break
     case 'moa':
       size = settings.MOAT_SIZE // для рвів
-      // koefStep = 1
       break
     default:
       size = settings.BLOCKAGE_SIZE // для загороджень
   }
   // шаг интерполяции равен ширене маркера приведеной к маштабу
   const scale = 1
-  let markerSize = interpolateSize(zoom, size, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  let markerSize = markerSizePrint || interpolateSize(zoom, size, scale)
   const lineLen = lineLength(points, locked)
   let creases = `M${points[0].x} ${points[0].y}`
   if (lineLen <= markerSize * 3) { // нам нужно по крайней мере 3 маркера, чтобы было видно тип линии
@@ -749,7 +757,7 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   let creasePoints
   if (lineType === 'solidWithDots') {
     // смещаем построение точек
-    markerSize = markerSize / 2
+    markerSize = (markerSize + strokeWidth) / 2
     const verticalOffset = -markerSize / 1.5
     const shiftPoints = shiftPointsToPoints(points, verticalOffset, bezier, locked)
     creasePoints = buildPeriodicPoints(markerSize, 0, -markerSize, shiftPoints, bezier, locked, insideMap)
@@ -776,7 +784,7 @@ export const stroked = (points, objectAttributes, bezier, locked, bounds = null,
     zoom = settings.MAX_ZOOM
   }
   const strokeStep = interpolateSize(zoom, settings.STROKE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const strokeSize = strokeStep // settings.STROKE_SIZE * scale
+  const strokeSize = strokeStep / 2 // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
   const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(objectAttributes, 'left') ? -1 : -strokeStep / 2,
@@ -974,6 +982,7 @@ export const getAmplifiers = ({
   fontColor,
   fontSize, // для печати
   graphicSize, // для печати
+  strokeWidth, // для печати
   tsType, // тип линии
 }, object) => {
   const result = {
@@ -1073,6 +1082,7 @@ export const getAmplifiers = ({
 
   const insideMapNodal = getBoundsFunc(bounds, interpolatedNodeSize) // функция проверки попадания узлового амплификатора в область вывода
   points = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
+  const strokeWidthNodes = strokeWidth ? strokeWidth / 2 : settings.NODES_STROKE_WIDTH * scale
 
   switch (nodalPointIcon) {
     case 'cross-circle': {
@@ -1080,7 +1090,7 @@ export const getAmplifiers = ({
       const dx2 = d * 2
       points.forEach(({ x, y }) => {
         result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
-        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
             <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
             <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
@@ -1094,7 +1104,7 @@ export const getAmplifiers = ({
           rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
           true,
         ))
-        result.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
+        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
       })
@@ -1109,7 +1119,7 @@ export const getAmplifiers = ({
   return result
 }
 
-export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strokeColor = 'black') => {
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, strokeColor = 'black') => {
   let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
   switch (type) {
     case MARK_TYPE.ARROW_90:
@@ -1133,8 +1143,8 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 0, strok
     case MARK_TYPE.ARROW1: // 90
       res += `<path fill="none" d="M7,-8 l-8,8 8,8"/>`
       break
-    case MARK_TYPE.ARROW2:
-      res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
+    case MARK_TYPE.ARROW2: // 60 fill
+      res += `<path stroke="none" d="M9,-7 l-12,7 l12,7 Z"/>`
       break
     case MARK_TYPE.ARROW3:
       res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
@@ -1186,13 +1196,13 @@ export const getStylesForLineType = (type, scale = 1) => {
   return styles
 }
 
-export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1) => {
+export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, graphicSizePrint) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
-  const graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1) / 12
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
+  const graphicSize = (graphicSizePrint || interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1)) / 12
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]
   if (bezier) {
@@ -1206,25 +1216,30 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1) =
     rightMinus = br.get(pr)
   }
   return {
-    left: drawLineEnd(
-      leftEndType,
-      points[0],
-      angle(vector(points[0], leftPlus)),
-      graphicSize,
-    ),
-    right: drawLineEnd(
-      rightEndType,
-      points[points.length - 1],
-      angle(vector(points[points.length - 1], rightMinus)),
-      graphicSize,
-    ),
+    left: (leftEndType
+      ? drawLineEnd(
+        leftEndType,
+        points[0],
+        angle(vector(points[0], leftPlus)),
+        graphicSize,
+      )
+      : null),
+    right: (rightEndType
+      ? drawLineEnd(
+        rightEndType,
+        points[points.length - 1],
+        angle(vector(points[points.length - 1], rightMinus)),
+        graphicSize,
+      )
+      : null),
   }
 }
 
 export const drawLineHatch = (layer, scale, hatch) => {
-  if (hatch === 'left-to-right') {
-    const cs = settings.CROSS_SIZE * scale
-    const sw = settings.STROKE_WIDTH * scale
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) {
+    const strokeWidth = layer.options.weight
+    const cs = strokeWidth + settings.CROSS_SIZE * scale
+    const sw = strokeWidth // settings.STROKE_WIDTH * scale
     const code = layer.object.id
     const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
@@ -1232,7 +1247,7 @@ export const drawLineHatch = (layer, scale, hatch) => {
     // const color = result.layer._path.getAttribute('stroke')
     layer._path.setAttribute('fill', fillColor)
     layer._path.setAttribute('fill-opacity', 1)
-    layer._path.setAttribute('width', 100)
+    // layer._path.setAttribute('width', 100)
     layer.options.fillColor = fillColor
     layer.options.fillOpacity = 1
     return ` 
