@@ -3,7 +3,7 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
-import { TRANSPARENT } from '../../../constants/colors'
+import { evaluateColor, TRANSPARENT } from '../../../constants/colors'
 import { getStylesForLineType, MARK_TYPE, settings } from '../../../utils/svg/lines'
 import { TYPE_LINE_PATH } from './WithLineType'
 
@@ -15,7 +15,7 @@ export const colorDiv = (color) => (
   <div className="icon-option">
     <div
       className="icon-rect"
-      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${color}` }}
+      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${evaluateColor(color)}` }}
     />
     <div className="icon-text">{colors.titles[color]}</div>
   </div>

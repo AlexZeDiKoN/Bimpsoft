@@ -663,7 +663,7 @@ function getLeftPoint (points, lP, nP) {
   return indexR
 }
 
-export const drawLineMark = (result, markType, point, angle, scale) => {
+export const drawLineMark = (result, markType, point, angle, scale, color) => {
   const graphicSize = getGraphicSize(result.layer, scale)
   let da
   switch (markType) {
@@ -701,7 +701,7 @@ export const drawLineMark = (result, markType, point, angle, scale) => {
       drawArrowDashes(result, point, angle, graphicSize)
       return graphicSize
     default: { // для стрілок з заливкою
-      const colorFill = evaluateColor(result.layer.object.attributes.color) || 'black'
+      const colorFill = color || evaluateColor(result.layer.object.attributes.color) || 'black'
       result.amplifiers += drawLineEnd(markType,
         point,
         Math.round(deg(angle)),
@@ -730,7 +730,7 @@ export const getGraphicSize = (layer, scale = 1) => {
     return interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
   }
   // статичний розмір (для друку)
-  return layer.graphicSize * scale || 1
+  return layer.graphicSize || 1
 }
 
 // Обчислення розміру точкового знаку
