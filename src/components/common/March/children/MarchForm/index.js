@@ -27,10 +27,15 @@ const getFormattedGeoLandmarks = (geoLandmarks) => {
 
   return filteredGeoLandmarks.map((itemGeoLandmark) => {
     const { name, distance, azimuth } = itemGeoLandmark.properties
-    const distanceInKm = (distance / 1000).toFixed(0)
+    const distanceInKm = Number((distance / 1000).toFixed(0))
     const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
-    itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    if (distanceInKm) {
+      itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    } else {
+      itemGeoLandmark.propertiesText = `${i18n.CITY} ${name}`
+    }
+
     return itemGeoLandmark
   })
 }
@@ -52,7 +57,7 @@ const GeoLandmarkItem = (props) => {
   }
 
   return (
-    <div key={id} onMouseOver={onMouseOver}>
+    <div className={'selected-item-landmark'} key={id} onMouseOver={onMouseOver}>
       {name}
     </div>
   )
@@ -79,6 +84,8 @@ const MarchForm = (props) => {
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
   const [ isModalVisible, changeIsModalVisible ] = useState(false)
   const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
+  const [ ownRefPointMarchModal, changeOwnRefPointModal ] = useState('')
+
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
   const showOwnRefPointModal = () => {
@@ -88,6 +95,7 @@ const MarchForm = (props) => {
   const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
 
   const onOkOwnRefPointModal = () => {
+    changeOwnRefPoint(ownRefPointMarchModal)
     changeIsModalVisible(false)
   }
 
@@ -349,7 +357,7 @@ const MarchForm = (props) => {
         okText={i18n.ADD_BUTTON_TEXT}
         cancelText={i18n.REJECT_BUTTON_TEXT}
       >
-        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
+        <Input onChange={(e) => changeOwnRefPointModal(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
       </Modal>
     </div>
   )
