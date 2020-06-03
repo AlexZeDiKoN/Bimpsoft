@@ -47,6 +47,11 @@ export const settings = {
   FACTOR_SIZE: 10, // коэффициент для интерполяции размеров
 }
 
+export const HATCH_TYPE = {
+  NONE: 'none',
+  LEFT_TO_RIGHT: 'left-to-right',
+}
+
 export const MARK_TYPE = {
   ARROW_90: 'arrow90',
   ARROW_60: 'arrow60',
@@ -1231,7 +1236,7 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, g
 }
 
 export const drawLineHatch = (layer, scale, hatch) => {
-  if (hatch === 'left-to-right') {
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) {
     const strokeWidth = layer.options.weight
     const cs = strokeWidth + settings.CROSS_SIZE * scale
     const sw = strokeWidth // settings.STROKE_WIDTH * scale

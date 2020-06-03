@@ -10,7 +10,7 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
-import { MARK_TYPE } from '../utils/svg/lines'
+import { HATCH_TYPE, MARK_TYPE } from '../utils/svg/lines'
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
@@ -2976,7 +2976,13 @@ export const symbols = [
       {
         hint: 'Район компактного проживання національних меншин',
         code: '10032500001200000000kpnm',
-        amp: { isSvg: true, type: entityKind.AREA, hatch: 'left-to-right', pointAmplifier: { [amps.T]: 'КПНМ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.AREA,
+          hatch: HATCH_TYPE.LEFT_TO_RIGHT,
+          fill: 'black',
+          pointAmplifier: { [amps.T]: 'КПНМ' },
+        },
       },
       {
         hint: 'Масові заворушення (бунт), акції, демонстрації, мітинги, акти непокори цивільного населення',

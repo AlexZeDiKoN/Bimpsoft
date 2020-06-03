@@ -19,7 +19,7 @@ import {
   getLineEnds,
   getStylesForLineType,
   blockage,
-  getPointAmplifier, settings,
+  getPointAmplifier, settings, HATCH_TYPE,
 } from './lines'
 import { renderTextSymbol } from './index'
 
@@ -137,7 +137,7 @@ const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, str
 
   // заливка або штрихування
   let fillOption = null
-  if (hatch === 'left-to-right') { // штриховка
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
     const cs = strokeWidthToScale + settings.CROSS_SIZE * scale
     const sw = strokeWidthToScale
     const code = idObject
