@@ -422,6 +422,7 @@ export const dropContour = () =>
 
 // Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
 // при зберіганні об’єкту обстановки
+// Перевірка Підрозділу на не вибрано
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     const {
@@ -434,7 +435,7 @@ export const checkSaveSymbol = () =>
       const { unit, code, id } = preview
       const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
         (symbol, index) => (Number(index) !== Number(id)))
-      if (ident && ident.size > 0) {
+      if ((ident && ident.size > 0) || unit == null || code.length < 20) {
         return dispatch(showErrorSaveForm())
       }
     }

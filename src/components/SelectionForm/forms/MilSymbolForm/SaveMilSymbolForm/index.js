@@ -11,7 +11,8 @@ const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
 export default class SaveMilSymbolForm extends React.Component {
   static propTypes = {
-    unit: PropTypes.string,
+    unitText: PropTypes.string,
+    unit: PropTypes.number,
     code: PropTypes.string,
     notClickable: PropTypes.bool,
     onApply: PropTypes.func,
@@ -19,7 +20,9 @@ export default class SaveMilSymbolForm extends React.Component {
   }
 
   render () {
-    const { code, unit, onApply, onCancel, notClickable = true } = this.props
+    const { code, unit, unitText, onApply, onCancel, notClickable = true } = this.props
+    const errorSelectUnit = unit == null // підрозділ не обрано
+    const errorSelectCode = code.length < 20 // помилка в коді знаку
     return (
       <>
         { notClickable ? <div className="not-clickable-area"> </div> : <></> }
@@ -31,9 +34,16 @@ export default class SaveMilSymbolForm extends React.Component {
                 <div className="confirm-modal-window">
                   {notClickable ? <div className="confirm-title">{i18n.ERROR_CODE_SIGNS}</div> : <></>}
                   <div className="confirm-text">{i18n.ERROR_MESSAGE_1} {code}</div>
-                  <div className="confirm-text">{i18n.ERROR_MESSAGE_2} {unit}</div>
+                  {errorSelectUnit ? <div className="confirm-text">{i18n.ERROR_MESSAGE_3}</div> : <></>}
+                  {errorSelectCode ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div> : <></>}
+                  {!errorSelectUnit && !errorSelectCode
+                    ? <div className="confirm-text">{i18n.ERROR_MESSAGE_2} {unitText}</div>
+                    : <></>
+                  }
                   <br/>
-                  <div className="confirm-text">{i18n.QUESTION_1}</div>
+                  <div className="confirm-text">
+                    {!errorSelectUnit && !errorSelectCode ? i18n.QUESTION_1 : i18n.QUESTION_2}
+                  </div>
                 </div>
               </FormItem>
               <FormItem>
