@@ -900,9 +900,8 @@ export default class WebMap extends React.PureComponent {
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
       })
-      if (marchDots.length > 1) {
-        drawMarchLine()
-      }
+
+      drawMarchLine()
     } else {
       if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
         let redrawLine = false
