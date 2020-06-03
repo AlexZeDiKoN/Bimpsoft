@@ -10,6 +10,7 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  geoLandmarks: {},
   isCoordFilled: false,
   time: 0,
   distance: 0,
@@ -66,6 +67,9 @@ export default function reducer (state = initState, action) {
     }
     case march.CLOSE_MARCH: {
       return { ...state, marchEdit: false, segments: List([]) }
+    }
+    case march.SET_GEO_LANDMARKS: {
+      return { ...state, geoLandmarks: payload }
     }
     default:
       return state

@@ -10,7 +10,8 @@ const mapStateToProps = ({ march: {
   pointsTypes,
   time,
   distance,
-  isCoordFilled }, webMap }) => ({
+  isCoordFilled,
+  geoLandmarks }, webMap }) => ({
   indicators,
   segmentList: segments,
   integrity,
@@ -19,6 +20,7 @@ const mapStateToProps = ({ march: {
   distance,
   isCoordFilled,
   coordTypeSystem: webMap.get('coordinatesType'),
+  geoLandmarks,
 })
 
 const mapDispatchToProps = {

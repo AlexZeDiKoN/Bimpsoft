@@ -58,7 +58,16 @@ const getMarchPoints = (pointsTypes) => {
 }
 
 const March = (props) => {
-  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer, closeMarch, isCoordFilled } = props
+  const {
+    pointsTypes,
+    segmentList,
+    time,
+    distance,
+    sendMarchToExplorer,
+    closeMarch,
+    isCoordFilled,
+    geoLandmarks,
+  } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
   const marchPoints = getMarchPoints(pointsTypes)
@@ -101,6 +110,7 @@ const March = (props) => {
               isLast={segments.length - 1 === segmentId}
               marchPoints={marchPoints}
               coordTypeSystem={coordTypeSystem}
+              geoLandmarks={geoLandmarks}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -113,6 +123,7 @@ const March = (props) => {
                 {...segment}
                 segmentType={segment.type}
                 {...child}
+                geoLandmarks={geoLandmarks}
               />
             })}
           </div>
@@ -157,6 +168,7 @@ March.propTypes = {
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
   coordTypeSystem: PropTypes.string.isRequired,
+  geoLandmarks: PropTypes.object.isRequired,
 }
 
 export default React.memo(March)
