@@ -38,7 +38,7 @@ const {
   },
 } = model
 
-const LENGTH_APP6_CODE = 20 // кол-во символов в коде
+export const LENGTH_APP6_CODE = 20 // кол-во символов в коде
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({

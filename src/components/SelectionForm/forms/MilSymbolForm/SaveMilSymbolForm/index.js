@@ -6,6 +6,7 @@ import FocusTrap from 'react-focus-lock'
 import { shortcuts } from '../../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../../common/HotKeys'
 import i18n from '../../../../../i18n'
+import { LENGTH_APP6_CODE } from '../../../../../store/actions/selection'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
@@ -21,8 +22,8 @@ export default class SaveMilSymbolForm extends React.Component {
 
   render () {
     const { code, unit, unitText, onApply, onCancel, notClickable = true } = this.props
-    const errorSelectUnit = unit == null // підрозділ не обрано
-    const errorSelectCode = code.length < 20 // помилка в коді знаку
+    const errorSelectUnit = unit === null // підрозділ не обрано
+    const errorSelectCode = code.length < LENGTH_APP6_CODE // помилка в коді знаку
     return (
       <>
         { notClickable ? <div className="not-clickable-area"> </div> : <></> }
