@@ -38,6 +38,7 @@ const {
   },
 } = model
 
+const LENGTH_APP6_CODE = 20 // кол-во символов в коде
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({
@@ -435,7 +436,7 @@ export const checkSaveSymbol = () =>
       const { unit, code, id } = preview
       const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
         (symbol, index) => (Number(index) !== Number(id)))
-      if ((ident && ident.size > 0) || unit == null || code.length < 20) {
+      if ((ident && ident.size > 0) || unit === null || code.length < LENGTH_APP6_CODE) {
         return dispatch(showErrorSaveForm())
       }
     }
