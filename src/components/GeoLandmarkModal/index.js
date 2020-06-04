@@ -6,7 +6,8 @@ import { Input } from 'antd'
 import i18n from '../../i18n'
 import './style.css'
 
-const SIDEBAR_SIZE_DEFAULT = 400
+// TODO перевести на глобальну константу коли буде змержено гілку DZVIN-6560
+const SIDEBAR_SIZE_DEFAULT = 320
 const POPUP_WINDOW_WIDTH = 300
 
 const { form: { ButtonSave, ButtonCancel } } = components
