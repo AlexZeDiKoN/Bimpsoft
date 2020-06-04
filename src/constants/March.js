@@ -6,7 +6,7 @@ export const MARCH_KEYS = {
 export const DEFAULT_SEGMENT_ID = 0
 
 export const MARCH_SEGMENT_KEYS = {
-  COORDINATE: 'coordinate',
+  COORDINATES: 'coordinates',
   LANDMARK: 'landmark',
   SEGMENT: 'segment',
   SEGMENT_NAME: 'name',

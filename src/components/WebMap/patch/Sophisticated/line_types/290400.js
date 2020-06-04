@@ -3,6 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, drawArc, segmentLength,
 } from '../utils'
+import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: MINE CLUSTER
 // task code: DZVIN-5774
@@ -30,6 +31,7 @@ lineDefinitions['290400'] = {
     drawLine(result, p0, p1)
     const r = segmentLength(p0, p1) / 2
     drawArc(result, p0, p1, r)
-    result.layer._path.setAttribute('stroke-dasharray', 20)
+    result.layer.options.dashArray = settings.DASHARRAY * scale
+    result.layer._path.setAttribute('stroke-dasharray', settings.DASHARRAY * scale)
   },
 }
