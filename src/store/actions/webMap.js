@@ -68,6 +68,8 @@ export const actionNames = {
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
+  TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
+
 }
 
 export const changeTypes = {
@@ -723,6 +725,14 @@ export const redo = () =>
       type: actionNames.REDO,
     })
   })
+
+export const toggleGeoLandmarkModal = (visible, dataMap = null) => ({
+  type: actionNames.TOGGLE_GEO_LANDMARK_MODAL,
+  payload: {
+    visible,
+    dataMap,
+  },
+})
 
 // Ініціалізація
 window.addEventListener('beforeunload', () => {
