@@ -83,6 +83,13 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
     }
   })
 
+  commandPosts.sort(sortOrder)
+  for (const unit of Object.values(byIds)) {
+    if (unit && unit.children && unit.children.length) {
+      unit.children = unit.children.sort(sortOrder).map(({ unitID }) => unitID)
+    }
+  }
+
   commandPosts.forEach((commandPost) => {
     const { id, militaryUnitID, app6Code } = commandPost
     const parent = byIds[militaryUnitID]
@@ -91,13 +98,6 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
     }
     parent && parent.children && parent.children.unshift(id) && (byIds[commandPost.id] = commandPost)
   })
-
-  commandPosts.sort(sortOrder)
-  for (const unit of Object.values(byIds)) {
-    if (unit && unit.children && unit.children.length) {
-      unit.children = unit.children.sort(sortOrder).map(({ unitID }) => unitID)
-    }
-  }
 
   return { byIds, roots, commandPosts }
 }
