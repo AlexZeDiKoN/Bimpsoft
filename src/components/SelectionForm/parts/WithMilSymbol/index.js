@@ -77,9 +77,12 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     .set('point', coordinate),
   )
 
-  attributesChangeHandler = (newAttributes) => this.setResult((result) =>
-    result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes)),
-  )
+  attributesChangeHandler = (newAttributes) => this.setResult((result) => {
+    const { quantity, speed } = newAttributes
+    newAttributes.quantity = Math.abs(parseInt(String(quantity).slice(0, 10)) || 0)
+    newAttributes.speed = Math.abs(parseFloat(String(speed).slice(0, 10)) || 0)
+    return result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes))
+  })
 
   handlerUnitInfo = (unitId) => {
     if (!unitId) {
