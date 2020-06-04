@@ -23,6 +23,7 @@ export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
 export const CLOSE_MARCH = action('CLOSE_MARCH')
 export const SET_GEO_LANDMARKS = action('SET_GEO_LANDMARKS')
+export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 
 const { getMarchMetric } = api
 const { convertSegmentsForExplorer, getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
@@ -463,4 +464,12 @@ export const sendMarchToExplorer = () =>
 
 export const closeMarch = () => ({
   type: CLOSE_MARCH,
+})
+
+export const addGeoLandmark = (coordinates, geoLandmark) => ({
+  type: ADD_GEO_LANDMARK,
+  payload: {
+    coordinates,
+    geoLandmark,
+  },
 })

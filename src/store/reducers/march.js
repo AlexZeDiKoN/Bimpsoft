@@ -71,6 +71,32 @@ export default function reducer (state = initState, action) {
     case march.SET_GEO_LANDMARKS: {
       return { ...state, geoLandmarks: payload }
     }
+    case march.ADD_GEO_LANDMARK: {
+      const { coordinates, geoLandmark } = payload
+
+      const { lat, lng } = coordinates
+      const geoKey = `${lat}:${lng}`
+
+      const newGeoLandmark = {
+        propertiesText: geoLandmark,
+        geometry: {
+          coordinates: [ null, null ],
+        },
+      }
+
+      let updateGeoLandmark = state.geoLandmarks[geoKey]
+
+      if (Array.isArray(updateGeoLandmark)) {
+        updateGeoLandmark = [ newGeoLandmark, ...updateGeoLandmark ]
+      } else {
+        updateGeoLandmark = [ newGeoLandmark ]
+      }
+
+      const updaterGeoLandmarks = { ...state.geoLandmarks }
+      updaterGeoLandmarks[geoKey] = updateGeoLandmark
+
+      return { ...state, geoLandmarks: updaterGeoLandmarks }
+    }
     default:
       return state
   }

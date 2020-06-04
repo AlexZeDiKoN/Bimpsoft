@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import WrappedMarch from '../components/common/March'
-import { march } from '../store/actions'
+import { march, webMap } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = ({ march: {
@@ -36,6 +36,7 @@ const mapDispatchToProps = {
   openMarch: march.openMarch,
   sendMarchToExplorer: march.sendMarchToExplorer,
   closeMarch: march.closeMarch,
+  toggleGeoLandmarkModal: webMap.toggleGeoLandmarkModal,
 }
 
 const MarchContainer = connect(
