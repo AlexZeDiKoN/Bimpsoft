@@ -12,6 +12,7 @@ const mapStateToProps = (state) => {
   const selectedLayer = layers.selectedId
   const onMapObjects = webMap.objects
   const onLayersById = visibleLayersSelector(state)
+
   return {
     canEdit,
     selectedId,

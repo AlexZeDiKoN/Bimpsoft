@@ -525,7 +525,6 @@ class PrintPanel extends React.Component {
           <div className='printPanel_signatories'>
             {requisites?.signatories?.map((rowData) => {
               const { position, role, name, date } = rowData
-              console.log(rowData)
               return (
                 <TextArea key={date} rows={5} disabled value={`${position} ${role} ${name} ${date}`}/>
               )
