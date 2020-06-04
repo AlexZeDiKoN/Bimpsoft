@@ -202,11 +202,12 @@ function createSophisticated (data, layer, initMap) {
 }
 
 function createOlovo (data, layer, initMap) {
+  console.log(data)
   layer = new L.FlexGrid(
     initMap.pad(-0.4),
     {
-      directions,
-      zones,
+      directions: data.attributes.param.directions,
+      zones: data.attributes.param.zones,
       interactive: true,
       vertical: false,
       hideShadow: true,
