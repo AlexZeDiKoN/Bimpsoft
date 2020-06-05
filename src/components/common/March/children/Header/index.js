@@ -14,20 +14,27 @@ const Header = (props) => {
     closeMarch,
     isCoordFilled } = props
 
+  const onSendMarchToExplorer = () => isCoordFilled && sendMarchToExplorer()
+
   return <>
     <div className={'march-title-top'}>
       <div className={'march-title'}>
         {i18n.MARCH_TITLE}
       </div>
-      <IButton
-        onClick={sendMarchToExplorer}
-        colorType={ColorTypes.WHITE}
-        icon={IconNames.BAR_2_SAVE}
-        disabled={!isCoordFilled}/>
+      <Tooltip
+        placement='top'
+        title={isCoordFilled ? i18n.CREATE_BTN_TITLE : i18n.NOT_ALL_COORDINATES_ENTERED}
+      >
+        <IButton
+          onClick={onSendMarchToExplorer}
+          colorType={ColorTypes.WHITE}
+          icon={IconNames.BAR_2_SAVE}
+        />
+      </Tooltip>
       <IButton
         onClick={closeMarch}
         colorType={ColorTypes.WHITE}
-        icon={IconNames.CLOSE_ONE} />
+        icon={IconNames.DARK_CLOSE_ROUND} />
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip

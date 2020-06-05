@@ -3,6 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine,
 } from '../utils'
+import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: DECOY/DUMMY AND FEINT
 // task code: DZVIN-5801
@@ -28,7 +29,8 @@ lineDefinitions['230200'] = {
   // Рендер-функція
   render: (result, points, scale) => {
     const [ p0, p1, p2 ] = points
+    result.layer.options.dashArray = settings.DASHARRAY * scale
+    result.layer._path.setAttribute('stroke-dasharray', settings.DASHARRAY * scale)
     drawLine(result, p0, p2, p1)
-    result.layer._path.setAttribute('stroke-dasharray', 20)
   },
 }

@@ -19,8 +19,8 @@ const defaultRestTimeInHours = {
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
 
-  return async (coordinate = {}) => {
-    const { lat, lng } = coordinate
+  return async (coordinates = {}) => {
+    const { lat, lng } = coordinates
     const geoKey = `${lat}:${lng}`
 
     let geoLandmark = memoGeoLandmark[geoKey]
@@ -97,6 +97,7 @@ const March = (props) => {
               handlers={handlers}
               refPoint={''}
               {...segment}
+              segmentType={segment.type}
               isLast={segments.length - 1 === segmentId}
               marchPoints={marchPoints}
               coordTypeSystem={coordTypeSystem}
@@ -110,6 +111,7 @@ const March = (props) => {
                 marchPoints={marchPoints}
                 coordTypeSystem={coordTypeSystem}
                 {...segment}
+                segmentType={segment.type}
                 {...child}
               />
             })}

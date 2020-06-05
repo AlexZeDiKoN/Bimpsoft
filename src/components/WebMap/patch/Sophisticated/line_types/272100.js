@@ -81,7 +81,7 @@ lineDefinitions['272100'] = {
   // Рендер-функція
   render: (result, points, scale) => {
     if (points.length < 1) { return }
-    const width = (result.layer.options.strokeWidth ?? settings.STROKE_WIDTH) * scale
+    const width = result.layer.options.weight ?? (settings.STROKE_WIDTH * scale)
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     result.layer._path.setAttribute('stroke-width', 0.1)
     const pO = points[0]

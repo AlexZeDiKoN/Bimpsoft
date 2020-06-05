@@ -105,6 +105,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
+  background: @toolbar-light-background;
 
   .header {
     width: 100%;
@@ -211,7 +212,7 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        height: 135px;
+        height: 115px;
 
         .distance{
           color: #9FA659;
@@ -241,10 +242,20 @@
         &:hover .add-segment-button{
           visibility: visible !important;
         }
+        .context-menu{
+          background: #fff;
+          border: 0;
+          border-radius: 0;
+          .context-menu-item-text{
+            font-size: 12px;
+            font-weight: 600;
+            font-family: Roboto;
+          }
+        }
       }
       .segment-blocks-icon{
-        height: 100px;
         width: 100%;
+        height: 80px;
         display: flex;
         justify-content: center;
         flex-direction: column;
@@ -271,7 +282,9 @@
         justify-content: space-between;
         flex-direction: row;
         width: 100%;
-        height: 130px;
+        height: 110px;
+        padding-left: 4px;
+        padding-bottom: 5px;
         margin-bottom: 5px;
 
         .dots {
@@ -279,6 +292,7 @@
           flex-direction: column;
           justify-content: space-around;
           height: 100%;
+
           .dot {
             align-self: center;
             width: 14px;
@@ -356,6 +370,7 @@
           width: 100%;
           height: 100%;
           border-bottom: 2px solid #C4C4C4;
+          //padding-bottom: 5px;
 
           .ant-select-arrow {
             width: 0;
@@ -375,6 +390,13 @@
 
           .select-point{
             width: 100%;
+            margin-top: 2px;
+            .selected-item-landmark{
+            width: 170px;
+            }
+          }
+          .ant-input{
+            margin-top: 2px;
           }
           .bottom-panel{
             display: flex;
@@ -397,22 +419,48 @@
               }
             }
           }
+          .ant-input, .ant-select, .ant-select-selection{
+            border: 0;
+            height: 24px;
+          }
+          .visible-select{
+            border-left: 1px solid #ccc !important;
+            padding-left: 1px;
+            .ant-select-selection__rendered{
+              padding: 0 10px 0 2px;
+            }
+          }
+          .ant-select-selection__rendered {
+            line-height: 24px;
+          }
           .march-coord{
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #fff;
-            border: 1px solid @select-border-color;
             border-radius: 4px;
+            height: 24px;
             .coordinatesSelect{
+              .ant-input-wrapper{
+                height: 24px;
+              }
               input{
                 border: 0;
-                border-right: 1px solid @select-border-color;
+                height: 24px;
+                padding-right: 0;
+                font-size: 12px;
+                font-family: Roboto;
+              &:hover, &:focus{
+                box-shadow: none;
+              }
               }
               .ant-input-group-addon{
                 border: 0;
-                padding-top: 2px;
+                margin-top: 1px;
                 background: #fff;
+                height: 22px;
+                padding-left: 0;
+                z-index: 1;
                 .ant-select-selection:hover, .ant-select-selection:focus{
                   outline-color: transparent !important;
                   border-color: transparent !important;
@@ -444,5 +492,6 @@
         }
       }
     }
+
   }
 }

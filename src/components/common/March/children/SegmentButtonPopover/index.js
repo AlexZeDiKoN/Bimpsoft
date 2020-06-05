@@ -15,7 +15,7 @@ const SegmentButtonPopover = (props) => {
 
   let backgroundImage
 
-  switch (props.segmentType) {
+  switch (props.type) {
     case BY_RAILROAD:
       backgroundImage = getTrainIcon(isSelected)
       break
@@ -41,7 +41,7 @@ const SegmentButtonPopover = (props) => {
 }
 
 SegmentButtonPopover.propTypes = {
-  segmentType: PropTypes.number.isRequired,
+  type: PropTypes.number.isRequired,
 }
 
 export default SegmentButtonPopover

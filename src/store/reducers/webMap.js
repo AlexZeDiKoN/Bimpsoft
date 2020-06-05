@@ -15,6 +15,7 @@ import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
+import { evaluateColor } from '../../constants/colors'
 import { RED } from '../../constants/colors'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
@@ -37,7 +38,7 @@ const LineAmplifier = Record({
 
 const webMapAttributesInitValues = {
   template: '',
-  color: colors.BLACK,
+  color: evaluateColor(colors.BLACK),
   fill: colors.TRANSPARENT,
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
