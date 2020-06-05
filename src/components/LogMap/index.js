@@ -25,7 +25,7 @@ const LogMapTab = (props) => {
   }
 
   return <Wrapper
-    icon={IconNames.SYMBOLS}
+    icon={IconNames.LOG_EVENT}
     title={i18n.LOG_MAP}
   >
     <div className='log-map-wrapper'>
