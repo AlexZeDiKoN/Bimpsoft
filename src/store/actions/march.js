@@ -135,11 +135,9 @@ const getFormattedGeoLandmarks = (geoLandmarks = {}) => {
     const distanceInKm = Number((distance / 1000).toFixed(0))
     const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
-    if (distanceInKm) {
-      itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
-    } else {
-      itemGeoLandmark.propertiesText = `${i18n.CITY} ${name}`
-    }
+    itemGeoLandmark.propertiesText = distanceInKm
+      ? `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+      : itemGeoLandmark.propertiesText = `${i18n.CITY} ${name}`
 
     return itemGeoLandmark
   })
@@ -179,7 +177,7 @@ const getUpdateSegments = async (segments, data, geoLandmarks) => {
   let newSegments = segments
   let newGeoLandmarks = geoLandmarks
 
-  const clearCoordinate = () => ({ lng: undefined, lat: undefined })
+  const clearCoordinate = () => ({})
 
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'

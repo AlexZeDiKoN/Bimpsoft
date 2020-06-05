@@ -61,8 +61,8 @@ export default class GeoLandmarkModal extends React.Component {
               <Input value={geoLandmark} onChange={this.onChangeGeoLandmark}/>
             </div>
             <div className='buttons'>
-              <ButtonSave onClick={this.onAddGeoLandmark} style={{ minWidth: '100px' }} />
-              <ButtonCancel onClick={onClose} style={{ minWidth: '100px' }} />
+              <ButtonSave className='button' onClick={this.onAddGeoLandmark} />
+              <ButtonCancel className='button' onClick={onClose} />
             </div>
           </div>
         </Wrapper>

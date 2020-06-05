@@ -69,7 +69,6 @@ export const actionNames = {
   UNDO: action('UNDO'),
   REDO: action('REDO'),
   TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
-
 }
 
 export const changeTypes = {

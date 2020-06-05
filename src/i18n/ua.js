@@ -246,7 +246,7 @@ export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
 export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
 
-export const MAPS_VISIBILITY = 'Видимість всіх карт'
+export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'
 export const LAYER_VISIBILITY = 'Видимість шару'
 export const LAYERS_VISIBILITY = 'Видимість шарів'

@@ -86,11 +86,9 @@ export default function reducer (state = initState, action) {
 
       let updateGeoLandmark = state.geoLandmarks[geoKey]
 
-      if (Array.isArray(updateGeoLandmark)) {
-        updateGeoLandmark = [ newGeoLandmark, ...updateGeoLandmark ]
-      } else {
-        updateGeoLandmark = [ newGeoLandmark ]
-      }
+      updateGeoLandmark = Array.isArray(updateGeoLandmark)
+        ? [ newGeoLandmark, ...updateGeoLandmark ]
+        : [ newGeoLandmark ]
 
       const updaterGeoLandmarks = { ...state.geoLandmarks }
       updaterGeoLandmarks[geoKey] = updateGeoLandmark
