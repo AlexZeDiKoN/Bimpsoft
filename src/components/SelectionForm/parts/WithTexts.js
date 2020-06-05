@@ -9,7 +9,7 @@ const { FormItem, FormDivider } = components.form
 const { names: IconNames, IconHovered, IconButton } = components.icons
 
 const PATH = [ 'attributes', 'texts' ]
-const MAX_LENGTH_TEXT_INPUT = 30
+const MAX_LENGTH_TEXT_INPUT = 500
 
 const getTotalAlign = (texts) => {
   let totalAlign = null

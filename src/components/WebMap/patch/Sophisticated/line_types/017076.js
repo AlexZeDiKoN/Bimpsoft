@@ -7,7 +7,7 @@ import {
   drawLineMark,
   angleOf,
   arcTo,
-  lineTo,
+  lineTo, moveTo,
 } from '../utils'
 import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
@@ -61,7 +61,7 @@ lineDefinitions['017076'] = {
   },
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
     const pO = points[0]
     const pE = points[1]
     if (!isDefPoint(pO) || !isDefPoint(pE)) {
@@ -69,7 +69,7 @@ lineDefinitions['017076'] = {
     }
     // ---------------------------------------------------------------
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
-    const strokeWidth = result.layer._path.getAttribute('stroke-width') || settings.STROKE_WIDTH
+    const strokeWidth = result.layer?.options?.strokeWidth ?? (settings.LINE_WIDTH * scale)
     const coordArray = result.layer?.getLatLngs?.()
     const infoArray = []
     if (coordArray) {
@@ -88,9 +88,9 @@ lineDefinitions['017076'] = {
     }
     // вывод азимута
     drawLine(result, pO, pE)
-    const arrowPath = `<path fill="none" stroke-width="${strokeWidth}" d="M${pO.x} ${pO.y}L ${pE.x} ${pE.y}"/>`
+    const arrowPath = `<path fill="none" stroke="black" stroke-width="${strokeWidth * 2}" d="M${pO.x} ${pO.y}L ${pE.x} ${pE.y}"/>`
     // стрелка азимута
-    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, pE, angleOf(pO, pE))
+    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, pE, angleOf(pO, pE), 1, 'black')
     if (points.length < 4) {
       return
     }
@@ -140,11 +140,18 @@ lineDefinitions['017076'] = {
       }
       // левый бок сектора
       drawLine(result, s1bottom, s1top)
+      const endPoint = s1top
       // сортировка точек
       sectorTop.sort((elm1, elm2) => (angle3Points(pO, pE, elm1) - angle3Points(pO, pE, elm2)))
       let lastPoint = null
-      sectorTop.forEach((point) => {
-        arcTo(result, point, heightSector, heightSector, 0, 0, 1)
+      sectorTop.forEach((point, index) => {
+        if (index === 0) {
+          if (point !== endPoint) {
+            moveTo(result, point)
+          }
+        } else {
+          arcTo(result, point, heightSector, heightSector, 0, 0, 1)
+        }
         lastPoint = point
       })
       // правый бок сектора
@@ -180,7 +187,7 @@ lineDefinitions['017076'] = {
       sectorFill.d += 'z'
       const color = evaluateColor(sectorsInfo[iA]?.color) ?? 'black'
       const fillColor = evaluateColor(sectorsInfo[iA]?.fill) ?? 'transparent'
-      sectorsPath.push(`<path stroke="${color}" stroke-width="${strokeWidth}"
+      sectorsPath.push(`<path stroke="${color}" stroke-width="${strokeWidth * 2}"
         fill-rule="evenodd" fill="${fillColor}" fill-opacity="0.22"
         d="${sectorFill.d}"/>`)
       heightSectorPrev = heightSector
@@ -190,6 +197,7 @@ lineDefinitions['017076'] = {
     result.amplifiers += `<g mask="url(#mask-${id})">${arrowPath}`
     sectorsPath.forEach((sector) => { result.amplifiers += sector })
     result.amplifiers += `</g>`
-    result.layer._path.setAttribute('stroke-opacity', 0)
+    result.layer._path.setAttribute('stroke-width', 0.1)
+    // result.layer._path.setAttribute('stroke-opacity', 0)
   },
 }

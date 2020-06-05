@@ -38,6 +38,7 @@ const {
   },
 } = model
 
+export const LENGTH_APP6_CODE = 20 // кол-во символов в коде
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({
@@ -353,6 +354,11 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   const { selection: { list }, webMap: { objects } } = state
   const id = list[0]
   const obj = objects.get(id)
+  const type = obj.type
+  if (type === SelectionTypes.SQUARE ||
+    type === SelectionTypes.CIRCLE) {
+    return
+  }
   const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
   const point = obj.point.toObject()
   dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
@@ -410,13 +416,14 @@ export const dropContour = () =>
             list,
             layer,
           },
-        }
+        },
       ]))
     }
   })
 
 // Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
 // при зберіганні об’єкту обстановки
+// Перевірка Підрозділу на не вибрано
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     const {
@@ -429,7 +436,7 @@ export const checkSaveSymbol = () =>
       const { unit, code, id } = preview
       const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
         (symbol, index) => (Number(index) !== Number(id)))
-      if (ident && ident.size > 0) {
+      if ((ident && ident.size > 0) || unit === null || code.length < LENGTH_APP6_CODE) {
         return dispatch(showErrorSaveForm())
       }
     }

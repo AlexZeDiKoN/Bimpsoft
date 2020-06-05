@@ -27,10 +27,15 @@ const getFormattedGeoLandmarks = (geoLandmarks) => {
 
   return filteredGeoLandmarks.map((itemGeoLandmark) => {
     const { name, distance, azimuth } = itemGeoLandmark.properties
-    const distanceInKm = (distance / 1000).toFixed(0)
+    const distanceInKm = Number((distance / 1000).toFixed(0))
     const cardinalDirection = azimuthToCardinalDirection(azimuth)
 
-    itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    if (distanceInKm) {
+      itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+    } else {
+      itemGeoLandmark.propertiesText = `${i18n.CITY} ${name}`
+    }
+
     return itemGeoLandmark
   })
 }
@@ -52,7 +57,7 @@ const GeoLandmarkItem = (props) => {
   }
 
   return (
-    <div key={id} onMouseOver={onMouseOver}>
+    <div className={'selected-item-landmark'} key={id} onMouseOver={onMouseOver}>
       {name}
     </div>
   )
@@ -61,7 +66,7 @@ const GeoLandmarkItem = (props) => {
 const MarchForm = (props) => {
   const {
     name,
-    coordinate = {},
+    coordinates = {},
     refPoint,
     segmentType,
     segmentId,
@@ -79,15 +84,18 @@ const MarchForm = (props) => {
   const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
   const [ isModalVisible, changeIsModalVisible ] = useState(false)
   const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
+  const [ ownRefPointMarchModal, changeOwnRefPointModal ] = useState('')
+
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
   const showOwnRefPointModal = () => {
     changeIsModalVisible(true)
   }
 
-  const coordinateWithType = { ...coordinate, type: coordTypeSystem }
+  const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
 
   const onOkOwnRefPointModal = () => {
+    changeOwnRefPoint(ownRefPointMarchModal)
     changeIsModalVisible(false)
   }
 
@@ -95,10 +103,10 @@ const MarchForm = (props) => {
     changeIsModalVisible(false)
   }
 
-  const getGeoLandmarks = async (coordinate) => {
+  const getGeoLandmarks = async (coordinates) => {
     await changeIsLoadingGeoLandmarks(true)
     changeGeoLandmarks({})
-    const res = await getMemoGeoLandmarks(coordinate)
+    const res = await getMemoGeoLandmarks(coordinates)
     changeGeoLandmarks(res)
     await changeIsLoadingGeoLandmarks(false)
   }
@@ -153,7 +161,7 @@ const MarchForm = (props) => {
 
   const onBlurCoordinates = async ({ lat, lng }) => {
     editFormField({
-      fieldName: 'coordinate',
+      fieldName: 'coordinates',
       segmentId,
       childId,
       val: { lat, lng },
@@ -162,7 +170,7 @@ const MarchForm = (props) => {
 
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
-      getGeoLandmarks(coordinate)
+      getGeoLandmarks({ ...coordinates })
     } else {
       setRefPointOnMap()
     }
@@ -257,7 +265,7 @@ const MarchForm = (props) => {
       <div className={'dot-form'}>
         <div className={'march-coord'}>
           <Coordinates
-            coordinates={coordinateWithType}
+            coordinates={coordinatesWithType}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
           />
@@ -349,7 +357,7 @@ const MarchForm = (props) => {
         okText={i18n.ADD_BUTTON_TEXT}
         cancelText={i18n.REJECT_BUTTON_TEXT}
       >
-        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
+        <Input onChange={(e) => changeOwnRefPointModal(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
       </Modal>
     </div>
   )
@@ -357,7 +365,7 @@ const MarchForm = (props) => {
 
 MarchForm.propTypes = {
   name: PropTypes.string.isRequired,
-  coordinate: PropTypes.shape({}).isRequired,
+  coordinates: PropTypes.shape({}).isRequired,
   children: PropTypes.array,
   refPoint: PropTypes.string.isRequired,
   segmentType: PropTypes.number.isRequired,

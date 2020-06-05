@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
+import { Input } from '@DZVIN/CommonComponents'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const fontSizes = [
@@ -59,9 +60,11 @@ export default class FontSizePicker extends React.Component {
             ))}
           </div>
         </div>)}
-        <input
+        <Input.Integer
           className="font-size-picker-input"
           value={fontSize}
+          min={0}
+          max={999}
           onChange={this.inputChangeHandler}
           onClick={this.clickHandler}
         />
