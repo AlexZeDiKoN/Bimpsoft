@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { MARCH_TYPES } from '../../../../../constants/March'
 import placeSearch from '../../../../../server/places'
-import utilsMarch from '../../utilsMarch'
 import TimeInput from '../TimeInput'
 import i18n from './../../../../../i18n'
 
@@ -16,24 +15,7 @@ const {
   form: { Coordinates },
 } = components
 
-const { getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
-
 const getPointById = (marchPoints, id) => marchPoints.find((point) => point.id === id) || marchPoints[0]
-
-const getFormattedGeoLandmarks = (geoLandmarks) => {
-  const { features = [] } = geoLandmarks
-
-  const filteredGeoLandmarks = getFilteredGeoLandmarks(features)
-
-  return filteredGeoLandmarks.map((itemGeoLandmark) => {
-    const { name, distance, azimuth } = itemGeoLandmark.properties
-    const distanceInKm = (distance / 1000).toFixed(0)
-    const cardinalDirection = azimuthToCardinalDirection(azimuth)
-
-    itemGeoLandmark.propertiesText = `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
-    return itemGeoLandmark
-  })
-}
 
 const GeoLandmarkItem = (props) => {
   const { data, id, setRefPointOnMap, isSelectGeoLandmarksVisible } = props
@@ -43,25 +25,30 @@ const GeoLandmarkItem = (props) => {
     if (isSelectGeoLandmarksVisible) {
       const [ lng, lat ] = geometry.coordinates
 
-      const coordRefPoint = {
-        lat,
-        lng,
+      if (lng && lat) {
+        const coordRefPoint = {
+          lat,
+          lng,
+        }
+
+        setRefPointOnMap(coordRefPoint)
       }
-      setRefPointOnMap(coordRefPoint)
     }
   }
 
   return (
-    <div key={id} onMouseOver={onMouseOver}>
-      {name}
-    </div>
+    <Tooltip placement='left' title={name}>
+      <div className={'selected-item-landmark'} key={id} onMouseOver={onMouseOver}>
+        {name}
+      </div>
+    </Tooltip>
   )
 }
 
 const MarchForm = (props) => {
   const {
     name,
-    coordinate = {},
+    coordinates = {},
     refPoint,
     segmentType,
     segmentId,
@@ -71,38 +58,23 @@ const MarchForm = (props) => {
     marchPoints,
     type,
     coordTypeSystem,
+    geoLandmarks,
   } = props
-  const { editFormField, addChild, deleteChild, setCoordMode, getMemoGeoLandmarks, setRefPointOnMap } = props.handlers
+  const {
+    editFormField,
+    addChild,
+    deleteChild,
+    setCoordMode,
+    setRefPointOnMap,
+    toggleGeoLandmarkModal,
+  } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
-  const [ refPointMarch, changeRefPoint ] = useState(refPoint)
-  const [ geoLandmarks, changeGeoLandmarks ] = useState({})
-  const [ isLoadingGeoLandmarks, changeIsLoadingGeoLandmarks ] = useState(false)
-  const [ isModalVisible, changeIsModalVisible ] = useState(false)
-  const [ ownRefPointMarch, changeOwnRefPoint ] = useState('')
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
-  const showOwnRefPointModal = () => {
-    changeIsModalVisible(true)
-  }
-
-  const coordinateWithType = { ...coordinate, type: coordTypeSystem }
-
-  const onOkOwnRefPointModal = () => {
-    changeIsModalVisible(false)
-  }
-
-  const onCancelOwnRefPointModal = () => {
-    changeIsModalVisible(false)
-  }
-
-  const getGeoLandmarks = async (coordinate) => {
-    await changeIsLoadingGeoLandmarks(true)
-    changeGeoLandmarks({})
-    const res = await getMemoGeoLandmarks(coordinate)
-    changeGeoLandmarks(res)
-    await changeIsLoadingGeoLandmarks(false)
-  }
-
+  const { lat, lng } = coordinates
+  const geoKey = `${lat}:${lng}`
+  const formattedGeoLandmarks = geoLandmarks[geoKey]
+  const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
   const point = getPointById(marchPoints, type)
 
   const onChangeTime = (value) => {
@@ -127,8 +99,8 @@ const MarchForm = (props) => {
     setPointTime(msTime)
   }
 
-  const onChangeRefPoint = (value, option) => {
-    if (option.key === 'addItem') {
+  const onChangeRefPoint = (value, option = {}) => {
+    if (option && option.key === 'addItem') {
       return
     }
 
@@ -138,8 +110,6 @@ const MarchForm = (props) => {
       segmentId,
       childId,
     })
-
-    changeRefPoint(value)
   }
 
   const onBlurTime = (value) => {
@@ -151,9 +121,9 @@ const MarchForm = (props) => {
     })
   }
 
-  const onBlurCoordinates = async ({ lat, lng }) => {
+  const onBlurCoordinates = ({ lat, lng }) => {
     editFormField({
-      fieldName: 'coordinate',
+      fieldName: 'coordinates',
       segmentId,
       childId,
       val: { lat, lng },
@@ -162,7 +132,7 @@ const MarchForm = (props) => {
 
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
-      getGeoLandmarks(coordinate)
+      onBlurCoordinates({ ...coordinates })
     } else {
       setRefPointOnMap()
     }
@@ -170,8 +140,7 @@ const MarchForm = (props) => {
   }
 
   const onHandlerOwnGeoLandmark = () => {
-    changeRefPoint('')
-    showOwnRefPointModal()
+    toggleGeoLandmarkModal(true, coordinates)
   }
 
   let dotClass
@@ -257,7 +226,7 @@ const MarchForm = (props) => {
       <div className={'dot-form'}>
         <div className={'march-coord'}>
           <Coordinates
-            coordinates={coordinateWithType}
+            coordinates={coordinatesWithType}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
           />
@@ -265,23 +234,16 @@ const MarchForm = (props) => {
             <div className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
           </Tooltip>
         </div>
-        <Tooltip placement='left' title={i18n.GEOGRAPHICAL_LANDMARK}>
+        <Tooltip placement='left' title={ refPoint ? '' : i18n.GEOGRAPHICAL_LANDMARK}>
           <Select
             className={'select-point'}
-            value={refPointMarch}
+            value={refPoint}
             showArrow={false}
             onChange={onChangeRefPoint}
-            loading={isLoadingGeoLandmarks}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
           >
-            {ownRefPointMarch &&
-            <Option key={'ownGeoLandmark'} value={ownRefPointMarch}>
-              <div onMouseOver={() => setRefPointOnMap()}>
-                {ownRefPointMarch}
-              </div>
-            </Option>}
-            {getFormattedGeoLandmarks(geoLandmarks).map(({ propertiesText, geometry }, id) => (
+            {formattedGeoLandmarks && formattedGeoLandmarks.map(({ propertiesText, geometry }, id) => (
               <Option
                 key={id}
                 value={propertiesText}
@@ -302,26 +264,24 @@ const MarchForm = (props) => {
             </Option>
           </Select>
         </Tooltip>
-        <Tooltip placement='left' title={i18n.POINT_TYPE}>
-          {isStaticPointType
-            ? <Input
-              value={pointTypeName}
-            />
-            : <Select
-              className={'select-point'}
-              showArrow={false}
-              defaultValue={pointTypeName}
-              value={pointTypeName}
-              onChange={onChangeMarchPointType}
-            >
-              {marchPoints.map(({ name }, id) => (
-                <Option key={id} value={id}>
-                  {name}
-                </Option>
-              ))}
-            </Select>
-          }
-        </Tooltip>
+        {isStaticPointType
+          ? <Input
+            value={pointTypeName}
+          />
+          : <Select
+            className={'select-point'}
+            showArrow={false}
+            defaultValue={pointTypeName}
+            value={pointTypeName}
+            onChange={onChangeMarchPointType}
+          >
+            {marchPoints.map(({ name }, id) => (
+              <Option key={id} value={id}>
+                {name}
+              </Option>
+            ))}
+          </Select>
+        }
         {isViewBottomPanel &&
         <div className={'bottom-panel'}>
           {segmentType === OWN_RESOURCES
@@ -341,23 +301,13 @@ const MarchForm = (props) => {
         </div>
         }
       </div>
-      <Modal
-        title={i18n.SPECIFY_GEO_LANDMARK_TITLE}
-        visible={isModalVisible}
-        onOk={onOkOwnRefPointModal}
-        onCancel={onCancelOwnRefPointModal}
-        okText={i18n.ADD_BUTTON_TEXT}
-        cancelText={i18n.REJECT_BUTTON_TEXT}
-      >
-        <Input onChange={(e) => changeOwnRefPoint(e.target.value)} placeholder={i18n.GEOGRAPHICAL_LANDMARK} />
-      </Modal>
     </div>
   )
 }
 
 MarchForm.propTypes = {
   name: PropTypes.string.isRequired,
-  coordinate: PropTypes.shape({}).isRequired,
+  coordinates: PropTypes.shape({}).isRequired,
   children: PropTypes.array,
   refPoint: PropTypes.string.isRequired,
   segmentType: PropTypes.number.isRequired,
@@ -368,14 +318,15 @@ MarchForm.propTypes = {
     addChild: PropTypes.func.isRequired,
     deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
-    getMemoGeoLandmarks: PropTypes.func.isRequired,
     setRefPointOnMap: PropTypes.func.isRequired,
+    toggleGeoLandmarkModal: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
   marchPoints: PropTypes.array.isRequired,
   type: PropTypes.number,
   coordTypeSystem: PropTypes.string.isRequired,
+  geoLandmarks: PropTypes.object.isRequired,
 }
 
 GeoLandmarkItem.propTypes = {

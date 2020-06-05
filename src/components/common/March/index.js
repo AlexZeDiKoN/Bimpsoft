@@ -19,8 +19,8 @@ const defaultRestTimeInHours = {
 const getMemoGeoLandmarks = (() => {
   const memoGeoLandmark = {}
 
-  return async (coordinate = {}) => {
-    const { lat, lng } = coordinate
+  return async (coordinates = {}) => {
+    const { lat, lng } = coordinates
     const geoKey = `${lat}:${lng}`
 
     let geoLandmark = memoGeoLandmark[geoKey]
@@ -58,7 +58,17 @@ const getMarchPoints = (pointsTypes) => {
 }
 
 const March = (props) => {
-  const { pointsTypes, segmentList, time, distance, sendMarchToExplorer, closeMarch, isCoordFilled } = props
+  const {
+    pointsTypes,
+    segmentList,
+    time,
+    distance,
+    sendMarchToExplorer,
+    closeMarch,
+    isCoordFilled,
+    geoLandmarks,
+    toggleGeoLandmarkModal,
+  } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
   const marchPoints = getMarchPoints(pointsTypes)
@@ -72,6 +82,7 @@ const March = (props) => {
       setCoordMode,
       getMemoGeoLandmarks,
       setRefPointOnMap,
+      toggleGeoLandmarkModal,
     }
 
     return <div className={'dots-forms'}>
@@ -97,9 +108,11 @@ const March = (props) => {
               handlers={handlers}
               refPoint={''}
               {...segment}
+              segmentType={segment.type}
               isLast={segments.length - 1 === segmentId}
               marchPoints={marchPoints}
               coordTypeSystem={coordTypeSystem}
+              geoLandmarks={geoLandmarks}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -110,7 +123,9 @@ const March = (props) => {
                 marchPoints={marchPoints}
                 coordTypeSystem={coordTypeSystem}
                 {...segment}
+                segmentType={segment.type}
                 {...child}
+                geoLandmarks={geoLandmarks}
               />
             })}
           </div>
@@ -155,6 +170,8 @@ March.propTypes = {
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
   coordTypeSystem: PropTypes.string.isRequired,
+  geoLandmarks: PropTypes.object.isRequired,
+  toggleGeoLandmarkModal: PropTypes.func.isRequired,
 }
 
 export default React.memo(March)

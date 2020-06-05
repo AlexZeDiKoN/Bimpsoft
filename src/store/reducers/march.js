@@ -10,6 +10,7 @@ const initState = {
   integrity: false,
   coordMode: false,
   coordModeData: { },
+  geoLandmarks: {},
   isCoordFilled: false,
   time: 0,
   distance: 0,
@@ -65,7 +66,34 @@ export default function reducer (state = initState, action) {
       return { ...state, coordRefPoint: payload }
     }
     case march.CLOSE_MARCH: {
-      return { ...state, marchEdit: false }
+      return { ...state, marchEdit: false, segments: List([]) }
+    }
+    case march.SET_GEO_LANDMARKS: {
+      return { ...state, geoLandmarks: payload }
+    }
+    case march.ADD_GEO_LANDMARK: {
+      const { coordinates, geoLandmark } = payload
+
+      const { lat, lng } = coordinates
+      const geoKey = `${lat}:${lng}`
+
+      const newGeoLandmark = {
+        propertiesText: geoLandmark,
+        geometry: {
+          coordinates: [ null, null ],
+        },
+      }
+
+      let updateGeoLandmark = state.geoLandmarks[geoKey]
+
+      updateGeoLandmark = Array.isArray(updateGeoLandmark)
+        ? [ newGeoLandmark, ...updateGeoLandmark ]
+        : [ newGeoLandmark ]
+
+      const updaterGeoLandmarks = { ...state.geoLandmarks }
+      updaterGeoLandmarks[geoKey] = updateGeoLandmark
+
+      return { ...state, geoLandmarks: updaterGeoLandmarks }
     }
     default:
       return state

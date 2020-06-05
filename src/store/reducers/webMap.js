@@ -15,6 +15,7 @@ import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
+import { evaluateColor } from '../../constants/colors'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -36,7 +37,7 @@ const LineAmplifier = Record({
 
 const webMapAttributesInitValues = {
   template: '',
-  color: colors.BLACK,
+  color: evaluateColor(colors.BLACK),
   fill: colors.TRANSPARENT,
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
@@ -118,6 +119,7 @@ const WebMapState = Record({
   undoRecords: List(),
   undoPosition: 0,
   reportMap: {},
+  geoLandmark: {},
 })
 
 const checkLevel = (object) => {
@@ -429,6 +431,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.TOGGLE_REPORT_MAP_MODAL: {
       return update(state, 'reportMap', { ...state.reportMap, ...payload })
+    }
+    case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {
+      return update(state, 'geoLandmark', { ...state.geoLandmark, ...payload })
     }
     default: {
       const setField = simpleSetField(type)

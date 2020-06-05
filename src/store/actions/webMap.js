@@ -70,6 +70,7 @@ export const actionNames = {
   REDO: action('REDO'),
   TOGGLE_REPORT_MAP_MODAL: action('TOGGLE_REPORT_MAP_MODAL'),
   SAVE_COP_REPORT: action('SAVE_COP_REPORT'),
+  TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
 }
 
 export const changeTypes = {
@@ -737,6 +738,14 @@ export const redo = () =>
       type: actionNames.REDO,
     })
   })
+
+export const toggleGeoLandmarkModal = (visible, coordinates = null) => ({
+  type: actionNames.TOGGLE_GEO_LANDMARK_MODAL,
+  payload: {
+    visible,
+    coordinates,
+  },
+})
 
 // Ініціалізація
 window.addEventListener('beforeunload', () => {

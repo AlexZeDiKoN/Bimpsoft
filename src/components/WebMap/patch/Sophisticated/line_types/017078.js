@@ -5,7 +5,7 @@ import {
   emptyPath, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -36,7 +36,7 @@ lineDefinitions['017078'] = {
     const dashed = emptyPath()
     drawLine(dashed, p0, p1)
 
-    addPathAmplifier(result, dashed, false, 20)
+    addPathAmplifier(result, dashed, false, settings.DASHARRAY)
 
     const angleSerif = angleOf(p0, p1)
     const angle = angleSerif - Math.PI / 2

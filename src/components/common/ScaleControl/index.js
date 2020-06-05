@@ -5,7 +5,7 @@ import './style.css'
 export default class ScaleControl extends React.Component {
   changeHandler = ({ target: { value } }) => {
     const { onChange, name } = this.props
-    onChange(name, parseFloat(value))
+    onChange(name, Math.abs(parseInt(value) || 1))
   }
 
   render () {
@@ -17,8 +17,9 @@ export default class ScaleControl extends React.Component {
           type="number"
           className="scale-control-input"
           step={step}
-          min="0"
+          min="1"
           value={value}
+          title={''}
           onChange={this.changeHandler}
         />
       </>
