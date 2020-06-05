@@ -34,6 +34,7 @@ export default class GeoLandmarkModal extends React.Component {
 
   onAddGeoLandmark = () => {
     this.props.addGeoLandmark(this.props.coordinates, this.state.geoLandmark)
+    this.props.onClose()
   }
 
   render () {
