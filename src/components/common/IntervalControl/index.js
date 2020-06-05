@@ -7,30 +7,65 @@ import i18n from '../../../i18n'
 import './style.css'
 
 export default class IntervalControl extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      dateStart: this.props.from,
+      dateEnd: this.props.to,
+    }
+  }
+
+  disabledDateAfter = (current) => {
+    if (this.state.dateEnd === null) {
+      return false
+    }
+
+    return current.isAfter(this.state.dateEnd)
+  }
+
+  disabledDateBefore = (current) => {
+    if (this.state.dateStart === null) {
+      return false
+    }
+
+    return current.isBefore(this.state.dateStart)
+  }
+
+  onChangeFrom = (e) => {
+    this.setState({ dateStart: e })
+    this.props.onChangeFrom(e)
+  }
+
+  onChangeTo = (e) => {
+    this.setState({ dateEnd: e })
+    this.props.onChangeTo(e)
+  }
+
   render () {
-    const { from, to, onChangeFrom, onChangeTo } = this.props
     return (
       <div className='interval-control'>
         <span>{i18n.PERIOD_FROM}</span>
         <Tooltip title={i18n.PERIOD_START} placement='topRight'>
           <DatePicker
-            value={from}
+            value={this.state.dateStart}
             style={{ width: 'auto', minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
-            onChange={onChangeFrom}
+            onChange={this.onChangeFrom}
             placeholder={''}
+            disabledDate={this.disabledDateAfter}
           />
         </Tooltip>
         <span>{i18n.PERIOD_TO}</span>
         <Tooltip title={i18n.PERIOD_END} placement='topRight'>
           <DatePicker
-            value={to}
+            value={this.state.dateEnd}
             style={{ width: 'auto', minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
-            onChange={onChangeTo}
+            onChange={this.onChangeTo}
             placeholder={''}
+            disabledDate={this.disabledDateBefore}
           />
         </Tooltip>
       </div>

@@ -246,7 +246,7 @@ export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
 export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
 
-export const MAPS_VISIBILITY = 'Сховати всі карти'
+export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'
 export const LAYER_VISIBILITY = 'Видимість шару'
 export const LAYERS_VISIBILITY = 'Видимість шарів'
@@ -351,6 +351,7 @@ export const DAILY_REST_POINT = 'Пункт добового відпочинк�
 export const LINE_OF_REGULATION = 'Рубіж регулювання'
 export const DELETE_POINT_CONFIRM_TITLE = 'Ви впевнені, що хочете видалити цей пункт?'
 export const OK_BUTTON_TEXT = 'Гаразд'
+export const CLOSE_MARCH = 'Вийти з режиму редагування маршруту'
 export const CANCEL_BUTTON_TEXT = 'Скасувати'
 export const MARCH_LOCATION = 'Розташування'
 export const ADD_POINT = 'Додати пункт'
