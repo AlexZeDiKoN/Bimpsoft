@@ -70,7 +70,6 @@ export const actionNames = {
   REDO: action('REDO'),
   TOGGLE_REPORT_MAP_MODAL: action('TOGGLE_REPORT_MAP_MODAL'),
   SAVE_COP_REPORT: action('SAVE_COP_REPORT'),
-
 }
 
 export const changeTypes = {
@@ -653,9 +652,8 @@ export const toggleReportMapModal = (visible, dataMap = null) => ({
 })
 
 export const saveCopReport = (mapName, fromMapId, dateOn) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { createCOPReport } }) => {
-    await createCOPReport(mapName, fromMapId, dateOn)
-  })
+  asyncAction.withNotification((dispatch, _, { webmapApi: { createCOPReport } }) =>
+    createCOPReport(mapName, fromMapId, dateOn))
 
 async function performAction (record, direction, api, dispatch) {
   const { changeType, id, list, layer, oldData, newData } = record

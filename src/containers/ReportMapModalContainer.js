@@ -11,7 +11,7 @@ const mapStateToProps = (store) => ({
 const mapDispatchToProps = {
   onOpen: () => actions.toggleReportMapModal(true),
   onClose: () => actions.toggleReportMapModal(false),
-  saveCopReport: (mapName, fromMapId, dateOn) => actions.saveCopReport(mapName, fromMapId, dateOn),
+  saveCopReport: actions.saveCopReport,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReportMapModal)

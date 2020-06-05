@@ -4,6 +4,7 @@ import { MovablePanel, components } from '@DZVIN/CommonComponents'
 import { Input, DatePicker } from 'antd'
 import moment from 'moment'
 import { SIDEBAR_SIZE_DEFAULT } from '../../layouts/Sidebar'
+import { DATE_TIME_FORMAT } from '../../constants/formats'
 
 import i18n from '../../i18n'
 
@@ -33,9 +34,9 @@ export default class ReportMapModal extends React.Component {
 
   componentDidUpdate = (prevProps, prevState) => {
     const nameMap = this.props.reportMap?.dataMap?.name
-    const timeInLocal = moment.utc(prevState.dateTimeMap).local().format('DD-MM-YYYY HH:mm')
+    const timeInLocal = moment.utc(prevState.dateTimeMap).local().format(DATE_TIME_FORMAT)
     if (nameMap !== prevProps.reportMap?.dataMap?.name) {
-      this.setState({ nameMap: `Звітна карта ${nameMap} ${timeInLocal}` })
+      this.setState({ nameMap: `${i18n.REPORTING_CARD} ${nameMap} ${timeInLocal}` })
     }
   }
 
@@ -83,16 +84,16 @@ export default class ReportMapModal extends React.Component {
             <div className='input-as-of'>
               <div>{i18n.AS_OF}</div>
               <DatePicker
+                className='cop-date-picker'
                 value={dateTimeMap}
                 onChange={this.onChangeDateTimeMap}
-                format="DD.MM.YYYY HH:mm"
+                format={ DATE_TIME_FORMAT }
                 showTime={{ defaultValue: moment('00:00', 'HH:mm') }}
-                style={{ minWidth: '300px' }}
               />
             </div>
             <div className='buttons'>
-              <ButtonYes onClick={this.onSaveReport} style={{ minWidth: '100px' }} />
-              <ButtonNo onClick={onClose} style={{ minWidth: '100px' }} />
+              <ButtonYes className='button' onClick={this.onSaveReport} />
+              <ButtonNo className='button' onClick={onClose} />
             </div>
           </div>
         </Wrapper>
