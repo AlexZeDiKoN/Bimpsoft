@@ -6,6 +6,7 @@ import ReactDOMServer from 'react-dom/server'
 import { pointsToD } from '../../utils/svg/lines'
 // import SelectionTypes from '../../constants/SelectionTypes'
 import {
+  getDashSizeByDpi,
   getFontSizeByDpi,
   getGraphicSizeByDpi,
   getMapObjectSvg,
@@ -113,6 +114,7 @@ export const getMapSvg = (
   const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
   const getStrokeWidth = getStrokeWidthByDpi(printScale, dpi)
   const markerSize = graphicSize
+  const dashSize = getDashSizeByDpi(printScale, dpi)
   const commonData = {
     bounds,
     dpi,
@@ -122,6 +124,7 @@ export const getMapSvg = (
     getStrokeWidth,
     graphicSize,
     markerSize,
+    dashSize,
     pointSymbolSize,
     printScale,
     layersById,
