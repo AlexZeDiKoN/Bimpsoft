@@ -678,10 +678,12 @@ function getLeftPoint (points, lP, nP) {
   return indexR
 }
 
-export const drawLineMark = (result, markType, point, angle, scale = 1, color) => {
+// отресовка стрелок и оконцовок для линий ( пока только SOPHIISTICATED)
+// не требующие заливки добавляются в "d" к пути линии
+// требующие заливки выводятся в амплификаторы
+export const drawLineMark = (result, markType, point, angle, scale = 1, color, lineWidth = 1) => {
   const graphicSize = getGraphicSize(result.layer)
-  const strokeWidth = result.layer?.printOptions ? result.layer.printOptions.getStrokeWidth()
-    : (result.layer.options.weight || settings.LINE_WIDTH * scale)
+  const strokeWidth = getStrokeWidth(result.layer, lineWidth, scale)
   let colorFill
   let da
   let hArrow

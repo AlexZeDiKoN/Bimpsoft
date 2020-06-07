@@ -34,8 +34,9 @@ const MERGE_SYMBOL = 5 // отступы при генерации символ�
 export const MM_IN_INCH = 25.4
 export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
+const LINE_WIDTH = 2 // индекс ширины для линий без определенной толщины
 
-// Размер базового элемента пунктира (мм)  в зависимости от маштаба карты
+// Размер базового элемента пунктира (мм) в зависимости от маcштаба карты
 export const dashSizeFromScale = new Map([
   [ 25000, 3 ],
   [ 50000, 2.5 ],
@@ -45,7 +46,7 @@ export const dashSizeFromScale = new Map([
   [ 1000000, 2 ],
 ])
 
-// Размер точечных знаков(мм) в зависимости от маштаба карты
+// Размер точечных знаков(мм) в зависимости от маcштаба карты
 const pointSizeFromScale = new Map([
   [ 25000, 12 ],
   [ 50000, 11 ],
@@ -89,6 +90,10 @@ export const printSettings = {
   fontSizeFromScale,
   pointSizeFromScale,
   strokeSizeFromScale,
+  dashSizeFromScale,
+  pointSizeDefault: POINT_SIZE_DEFAULT,
+  shadowWidth: SHADOW_WIDTH,
+  lineWidth: LINE_WIDTH,
 }
 // printScale - масштаб карті
 // dpi - разрешение печати
@@ -104,7 +109,7 @@ export const getPointSizeByDpi = (printScale, dpi) => {
   return Math.round(pointSizeFromScale.get(printScale) / getmmInPixel(dpi))
 }
 
-export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = 1) => {
+export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = LINE_WIDTH) => {
   return Math.round(strokeSizeFromScale.get(printScale) / getmmInPixel(dpi) * strokeWidth)
 }
 

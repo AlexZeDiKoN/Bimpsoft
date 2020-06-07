@@ -2,9 +2,7 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-// import { Map, Record } from 'immutable'
 import { pointsToD } from '../../utils/svg/lines'
-// import SelectionTypes from '../../constants/SelectionTypes'
 import {
   getDashSizeByDpi,
   getFontSizeByDpi,
@@ -14,10 +12,10 @@ import {
   getStrokeWidthByDpi,
 } from './mapObject'
 
-const METERS_PER_INCH = 0.0254
+const METERS_PER_INCH = 0.0254 // м в дюйме
 const SEMI_MAJOR_AXIS = 6378245
 const TILE_SIZE = 256
-const DEG_TO_RAD = Math.PI / 180
+const DEG_TO_RAD = Math.PI / 180 // перевод градусов в радианы
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
 const multiply = ({ x, y }, dx, dy) => ({ x: x * dx, y: y * dy })
@@ -128,12 +126,12 @@ export const getMapSvg = (
     dpi,
     coordToPixels,
     scale,
-    getFontSize,
-    getStrokeWidth,
-    graphicSize,
-    markerSize,
-    dashSize,
-    pointSymbolSize,
+    // getFontSize,
+    // getStrokeWidth,
+    // graphicSize,
+    // markerSize,
+    // dashSize,
+    // pointSymbolSize,
     printScale,
     layersById,
     showAmplifiers,
