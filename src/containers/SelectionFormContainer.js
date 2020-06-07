@@ -7,7 +7,7 @@ import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
-    selection: { preview, showForm },
+    selection: { preview, showForm, errorCode },
     orgStructures, ovt: ovtReducer,
   } = store
   const canEdit = canEditSelector(store)
@@ -21,6 +21,7 @@ const mapStateToProps = (store) => {
     orgStructures,
     ovtData: ovtReducer.ovtData,
     ovtLoaded: ovtReducer.loaded,
+    errorCode,
   }
 }
 

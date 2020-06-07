@@ -36,7 +36,7 @@ export const types = {
 export const TYPE_LINE_PATH = {
   solidWithDots: { d: `M0,8 h56 M4,14 h2 M10,14 h2 M16,14 h2 M22,14 h2 M28,14 h2 M34,14 h2 M40,14 h2 M46,14 h2 M52,14 h2`,
     fill: 'none' },
-  stroked: { d: 'M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12',
+  stroked: { d: 'M0,16 h56 M4,16 v-8 M16,16 v-8 M28,16 v-8 M40,16 v-8 M52,16 v-8',
     fill: 'none' },
   waved: { d: 'M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7',
     fill: 'none' },
