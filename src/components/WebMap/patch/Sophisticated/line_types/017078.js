@@ -1,8 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
-  emptyPath, drawLineMark, getFontSize,
+  applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt,
+  drawLineMark, getFontSize, drawLineDashed,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
@@ -33,10 +33,8 @@ lineDefinitions['017078'] = {
   render: (result, points) => {
     const [ p0, p1 ] = points
 
-    const dashed = emptyPath()
-    drawLine(dashed, p0, p1)
-
-    addPathAmplifier(result, dashed, false, settings.DASHARRAY)
+    const dashed = result.layer.printOptions ? result.layer.printOptions.dashSize : settings.DASHARRAY
+    drawLineDashed(result, p0, p1, dashed)
 
     const angleSerif = angleOf(p0, p1)
     const angle = angleSerif - Math.PI / 2

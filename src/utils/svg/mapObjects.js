@@ -115,6 +115,14 @@ export const getMapSvg = (
   const getStrokeWidth = getStrokeWidthByDpi(printScale, dpi)
   const markerSize = graphicSize
   const dashSize = getDashSizeByDpi(printScale, dpi)
+  const printOptions = {
+    getFontSize,
+    getStrokeWidth,
+    graphicSize,
+    markerSize,
+    dashSize,
+    pointSymbolSize,
+  }
   const commonData = {
     bounds,
     dpi,
@@ -130,6 +138,7 @@ export const getMapSvg = (
     layersById,
     showAmplifiers,
     zoom,
+    printOptions,
     objects,
   }
   const width = bounds.max.x - bounds.min.x

@@ -9,8 +9,6 @@ import { MARK_TYPE } from '../../../../../utils/svg/lines'
 // task code: DZVIN-5992
 // hint: 'Сектор відповідальності підрозділу ППО'
 
-// const ARROW_WIDTH = 30
-
 lineDefinitions['017032'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
@@ -31,7 +29,6 @@ lineDefinitions['017032'] = {
   // Рендер-функція
   render: (result, points) => {
     const [ p0, p1, p2 ] = points
-
     const a = segmentBy(p0, p1, 1 / 3)
     const b = segmentBy(p0, p1, 2 / 3)
 

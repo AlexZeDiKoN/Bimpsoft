@@ -1364,7 +1364,7 @@ export const symbols = [
       {
         hint: 'Зона ураження / виявлення (сектор)',
         code: '10032500000170760000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, stroke: 'transparent', color: 'transparent' },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       // {
       //   hint: 'Основний сектор стрільби на середніх та великих висотах',
@@ -1439,7 +1439,7 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (сектор)',
         code: '10032500000170760000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, stroke: 'transparent', color: 'transparent' },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Потрібний рубіж видачі розвідувальної інформації',
@@ -2266,7 +2266,7 @@ export const symbols = [
       {
         hint: 'Мінімально безпечні відстані радіаційного забруднення місцевості',
         code: '10032500002721000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: `Мінімально безпечні відстані хімічного забруднення місцевості, відповідно до прогнозу без урахування напрямку вітру`,
@@ -3036,7 +3036,7 @@ export const symbols = [
       {
         hint: 'Сектор, межі (зони) стійкого прийому цивільних радіозасобів та телезасобів',
         code: '10032500000170760000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, stroke: 'transparent', color: 'transparent' },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Район, до якого сплановано відселення (евакуацію) населення, біженців із районів воєнних дій',

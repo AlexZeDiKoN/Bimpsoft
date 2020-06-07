@@ -346,7 +346,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
   },
   { ...data, attributes })
 
-  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, null, null, graphicSize)
+  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, strokeWidth, graphicSize)
   return (
     <>
       {Boolean(amplifiers.group) && (
@@ -370,7 +370,16 @@ const getLineSvg = (points, attributes, data, layerData) => {
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layerData) => {
-  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, dashSize, getStrokeWidth, dpi } = commonData
+  const {
+    coordToPixels,
+    bounds,
+    scale,
+    getFontSize,
+    graphicSize,
+    markerSize,
+    dashSize,
+    getStrokeWidth,
+    dpi } = commonData
   const { attributes, geometry, level, id } = object
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -378,6 +387,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
       prepareBezierPath(points, locked)
     }
     const strokeWidth = getStrokeWidth ? getStrokeWidth(attributes.strokeWidth) : attributes.strokeWidth
+    const fontSize = getFontSize()
     return getLineSvg(
       points,
       attributes,
@@ -515,7 +525,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
 
 // сборка сложных линий
 mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, layerData) => {
-  const { coordToPixels, bounds, getFontSize, getStrokeWidth, graphicSize, pointSymbolSize, dpi } = commonData
+  const { coordToPixels, bounds, printOptions, graphicSize, pointSymbolSize, dpi } = commonData
   const { geometry, attributes, id } = objectData
   const line = lineDefinitions[extractLineCode(objectData.code)]
 
@@ -528,10 +538,10 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     const options = {
       color,
       fill,
-      strokeWidth: getStrokeWidth(strokeWidth),
+      strokeWidth: printOptions.getStrokeWidth(strokeWidth),
       lineType,
       hatch }
-    const fontSize = getFontSize()
+    const fontSize = printOptions.getFontSize()
     const container = {
       d: '',
       mask: '',
@@ -543,6 +553,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
         pointSymbolSize,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
         options,
+        printOptions,
         getLatLngs: () => geometry.toJS(),
       },
     }
