@@ -177,7 +177,7 @@ const getUpdateSegments = async (segments, data, geoLandmarks) => {
   let newSegments = segments
   let newGeoLandmarks = geoLandmarks
 
-  const clearCoordinate = () => ({})
+  const clearCoordinate = () => ({ lng: undefined, lat: undefined })
 
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'
@@ -464,10 +464,12 @@ export const closeMarch = () => ({
   type: CLOSE_MARCH,
 })
 
-export const addGeoLandmark = (coordinates, geoLandmark) => ({
+export const addGeoLandmark = (coordinates, geoLandmark, segmentId, childId) => ({
   type: ADD_GEO_LANDMARK,
   payload: {
     coordinates,
     geoLandmark,
+    segmentId,
+    childId,
   },
 })

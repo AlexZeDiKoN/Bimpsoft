@@ -119,6 +119,7 @@ const WebMapState = Record({
   undoRecords: List(),
   undoPosition: 0,
   geoLandmark: {},
+  deleteMarchPointModal: {},
 })
 
 const checkLevel = (object) => {
@@ -430,6 +431,9 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {
       return update(state, 'geoLandmark', { ...state.geoLandmark, ...payload })
+    }
+    case actionNames.TOGGLE_DELETE_MARCH_POINT_MODAL: {
+      return update(state, 'deleteMarchPointModal', { ...state.deleteMarchPointModal, ...payload })
     }
     default: {
       const setField = simpleSetField(type)

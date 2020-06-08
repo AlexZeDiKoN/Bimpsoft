@@ -41,6 +41,7 @@ export default class LayersComponent extends React.Component {
     showLayers: false,
     showSearch: false,
     showCloseForm: false,
+    valueFilterLayers: '',
   }
 
   getCommonData = memoizeOne((selectedLayerId, textFilter, isMapCOP) => {
@@ -75,6 +76,7 @@ export default class LayersComponent extends React.Component {
   okCloseHandler = () => this.setState({ showCloseForm: false }, this.props.onCloseAllMaps)
 
   filterTextChangeHandler = (value) => {
+    this.setState({ valueFilterLayers: value })
     this.props.onFilterTextChange(value.trim())
   }
 
@@ -104,7 +106,7 @@ export default class LayersComponent extends React.Component {
       isMapCOP,
     } = this.props
 
-    const { showLayers, showPeriod, showCloseForm } = this.state
+    const { showLayers, showPeriod, showCloseForm, valueFilterLayers } = this.state
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
@@ -113,7 +115,7 @@ export default class LayersComponent extends React.Component {
       <Wrapper title={i18n.LAYERS} icon={IconNames.LAYERS}>
         <div className="layers-component">
           <div className='container-layers'>
-            <InputButton title={i18n.LAYERS} onChange={this.filterTextChangeHandler}/>
+            <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
             <div className='container-layers__btnContainer'>
               <Tooltip title={i18n.LAYERS_VISIBILITY} placement='topRight'>
                 <IButton
