@@ -337,8 +337,9 @@ export const showErrorPasteForm = () => ({
   type: SHOW_ERROR_PASTE_FORM,
 })
 
-export const showErrorSaveForm = () => ({
+export const showErrorSaveForm = (errorCode) => ({
   type: SHOW_ERROR_SAVE_FORM,
+  errorCode,
 })
 
 export const showDivideForm = () => ({
@@ -423,7 +424,11 @@ export const dropContour = () =>
 
 // Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
 // при зберіганні об’єкту обстановки
-// Перевірка Підрозділу на не вибрано
+// Не перевіряти об’єкт без вибраного підрозділу
+export const errorSymbol = {
+  duplication: 1,
+  code: 2,
+}
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     const {
@@ -431,13 +436,20 @@ export const checkSaveSymbol = () =>
       webMap: { objects },
       layers: { selectedId },
     } = getState()
-    const { type } = preview
-    if (type === SelectionTypes.POINT && objects && preview) {
-      const { unit, code, id } = preview
+    const { type, unit } = preview
+    if (type === SelectionTypes.POINT && objects && unit !== null) {
+      const { code, id } = preview
       const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
         (symbol, index) => (Number(index) !== Number(id)))
-      if ((ident && ident.size > 0) || unit === null || code.length < LENGTH_APP6_CODE) {
-        return dispatch(showErrorSaveForm())
+      let errorCode = 0
+      if (ident && ident.size > 0) {
+        errorCode = errorCode | errorSymbol.duplication
+      }
+      if (code.length < LENGTH_APP6_CODE) {
+        errorCode = errorCode | errorSymbol.code
+      }
+      if (errorCode) {
+        return dispatch(showErrorSaveForm(errorCode))
       }
     }
     return dispatch(savePreview())

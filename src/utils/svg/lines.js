@@ -404,11 +404,12 @@ const addWave = (
   return result
 }
 
-export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
+// eslint-disable-next-line max-len
+export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false, markerSize) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const waveStep = markerSize || interpolateSize(zoom, settings.WAVE_SIZE, scale)
   const lineLen = lineLength(points, locked)
   let waves = `M${points[0].x} ${points[0].y}`
   if (lineLen <= waveStep * 3) { // if we have not default line endings on both sides of the line, we need at least 3 waves to c it correctly
@@ -779,11 +780,11 @@ export const blockage = (points, objectAttributes, bezier, locked, bounds, scale
   return `${dAdd} ${creases}`
 }
 
-export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1, markerSize) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const strokeStep = interpolateSize(zoom, settings.STROKE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const strokeStep = markerSize || interpolateSize(zoom, settings.STROKE_SIZE, scale)
   const strokeSize = strokeStep / 2 // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
@@ -961,7 +962,7 @@ export const getPointAmplifier = ({
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
-    getOffset: getOffsetForIntermediateAmplifier,
+    getOffset: getOffsetForIntermediateAmplifier, // определение смещеня строки текста в зависимости от номера строки
   }
   return getTextAmplifiers({
     scale,
@@ -1173,17 +1174,15 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, strok
   return `${res}</g>`
 }
 
-export const getStylesForLineType = (type, scale = 1) => {
-  const styles = {
-    strokeDasharray: null,
-  }
+export const getStylesForLineType = (type, scale = 1, dashSize = 6) => {
+  const styles = {}
   switch (type) {
     case 'chain': {
-      styles.strokeDasharray = [ 6, 3, 2, 3 ]
+      styles.strokeDasharray = [ dashSize, dashSize / 2, dashSize / 3, dashSize / 2 ]
       break
     }
     case 'dashed': {
-      styles.strokeDasharray = [ 6, 6 ]
+      styles.strokeDasharray = [ dashSize, dashSize ]
       break
     }
     default: {

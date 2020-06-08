@@ -6,24 +6,22 @@ import FocusTrap from 'react-focus-lock'
 import { shortcuts } from '../../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../../common/HotKeys'
 import i18n from '../../../../../i18n'
-import { LENGTH_APP6_CODE } from '../../../../../store/actions/selection'
+import { errorSymbol } from '../../../../../store/actions/selection'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
 export default class SaveMilSymbolForm extends React.Component {
   static propTypes = {
     unitText: PropTypes.string,
-    unit: PropTypes.number,
     code: PropTypes.string,
     notClickable: PropTypes.bool,
     onApply: PropTypes.func,
     onCancel: PropTypes.func,
+    errorCode: PropTypes.number,
   }
 
   render () {
-    const { code, unit, unitText, onApply, onCancel, notClickable = true } = this.props
-    const errorSelectUnit = unit === null // підрозділ не обрано
-    const errorSelectCode = code.length < LENGTH_APP6_CODE // помилка в коді знаку
+    const { code, unitText, onApply, onCancel, notClickable = true, errorCode = errorSymbol.code } = this.props
     return (
       <>
         { notClickable ? <div className="not-clickable-area"> </div> : <></> }
@@ -34,16 +32,14 @@ export default class SaveMilSymbolForm extends React.Component {
                 <div className="confirm-icon-warning">!</div>
                 <div className="confirm-modal-window">
                   {notClickable ? <div className="confirm-title">{i18n.ERROR_CODE_SIGNS}</div> : <></>}
-                  <div className="confirm-text">{i18n.ERROR_MESSAGE_1} {code}</div>
-                  {errorSelectUnit ? <div className="confirm-text">{i18n.ERROR_MESSAGE_3}</div> : <></>}
-                  {errorSelectCode ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div> : <></>}
-                  {!errorSelectUnit && !errorSelectCode
-                    ? <div className="confirm-text">{i18n.ERROR_MESSAGE_2} {unitText}</div>
-                    : <></>
-                  }
+                  <div className="confirm-text">
+                    {(errorCode & errorSymbol.duplication) ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3} {code}
+                  </div>
+                  <div className="confirm-text">{i18n.ERROR_MESSAGE_2} {unitText}</div>
+                  {(errorCode & errorSymbol.code) ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div> : <></>}
                   <br/>
                   <div className="confirm-text">
-                    {!errorSelectUnit && !errorSelectCode ? i18n.QUESTION_1 : i18n.QUESTION_2}
+                    {(errorCode & errorSymbol.duplication) ? i18n.QUESTION_1 : i18n.QUESTION_2}
                   </div>
                 </div>
               </FormItem>

@@ -19,7 +19,9 @@ import {
   getLineEnds,
   getStylesForLineType,
   blockage,
-  getPointAmplifier, settings, HATCH_TYPE,
+  getPointAmplifier,
+  settings,
+  HATCH_TYPE,
 } from './lines'
 import { renderTextSymbol } from './index'
 
@@ -32,6 +34,16 @@ const MERGE_SYMBOL = 5 // отступы при генерации символ�
 export const MM_IN_INCH = 25.4
 export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
+
+// Размер базового элемента пунктира (мм)  в зависимости от маштаба карты
+export const dashSizeFromScale = new Map([
+  [ 25000, 3 ],
+  [ 50000, 2.5 ],
+  [ 100000, 2 ],
+  [ 200000, 2 ],
+  [ 500000, 2 ],
+  [ 1000000, 2 ],
+])
 
 // Размер точечных знаков(мм) в зависимости от маштаба карты
 const pointSizeFromScale = new Map([
@@ -48,18 +60,18 @@ export const fontSizeFromScale = new Map([
   [ 25000, 14 * onePunkt ],
   [ 50000, 13 * onePunkt ],
   [ 100000, 12 * onePunkt ],
-  [ 200000, 12 * onePunkt ],
+  [ 200000, 11 * onePunkt ],
   [ 500000, 11 * onePunkt ],
   [ 1000000, 11 * onePunkt ],
 ])
 
 export const graphicSizeFromScale = new Map([
-  [ 25000, 7 ],
+  [ 25000, 6 ],
   [ 50000, 6 ],
   [ 100000, 5 ],
-  [ 200000, 5 ],
-  [ 500000, 5 ],
-  [ 1000000, 5 ],
+  [ 200000, 4 ],
+  [ 500000, 3 ],
+  [ 1000000, 3 ],
 ])
 
 // толщина линии соответствующая одному пункту
@@ -96,6 +108,9 @@ export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = 1) => {
   return Math.round(strokeSizeFromScale.get(printScale) / getmmInPixel(dpi) * strokeWidth)
 }
 
+export const getDashSizeByDpi = (printScale, dpi) => {
+  return Math.round(dashSizeFromScale.get(printScale) / getmmInPixel(dpi))
+}
 // let lastMaskId = 1
 const builderGroup = (idGroup, objects) => {
   const _groupChildren = []
@@ -107,10 +122,21 @@ const builderGroup = (idGroup, objects) => {
   return _groupChildren
 }
 
-const getSvgPath = (d, attributes, layerData, scale, mask, bounds, idObject, strokeWidthPrint, options = {}, dpi) => {
+const getSvgPath = (
+  d,
+  attributes,
+  layerData,
+  scale,
+  mask,
+  bounds,
+  idObject,
+  strokeWidthPrint,
+  dashSize,
+  options = {},
+  dpi) => {
   const { color, fill, lineType, hatch, fillOpacity, fillColor, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
-  const styles = { ...options, ...getStylesForLineType(lineType, scale) } // для пунктира
+  const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
   const strokeWidthToScale = strokeWidthPrint || strokeWidth
   let maskBody = null
   let maskUrl = null
@@ -226,6 +252,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
     graphicSize,
     strokeWidth,
     markerSize,
+    dashSize,
     id,
     dpi,
   } = data
@@ -245,13 +272,13 @@ const getLineSvg = (points, attributes, data, layerData) => {
   if ((bezier && numberOfPoints > 2) || (!bezier && numberOfPoints > 1)) {
     switch (lineType) {
       case 'waved':
-        result = waved(points, attributes, bezier, locked, bounds, scale)
+        result = waved(points, attributes, bezier, locked, bounds, scale, null, false, markerSize)
         break
       case 'waved2':
-        result = waved(points, attributes, bezier, locked, bounds, scale, null, true)
+        result = waved(points, attributes, bezier, locked, bounds, scale, null, true, markerSize)
         break
       case 'stroked':
-        result = stroked(points, attributes, bezier, locked, bounds, scale)
+        result = stroked(points, attributes, bezier, locked, bounds, scale, null, markerSize)
         // eslint-disable-next-line no-fallthrough
       case 'solid':
       case 'dashed':
@@ -335,14 +362,15 @@ const getLineSvg = (points, attributes, data, layerData) => {
           dangerouslySetInnerHTML={{ __html: leftSvg + rightSvg }}
         />
       )}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, options, dpi)}
+      {/* eslint-disable-next-line max-len */}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dashSize, options, dpi)}
       {resultFilled}
     </>
   )
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layerData) => {
-  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, getStrokeWidth, dpi } = commonData
+  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, dashSize, getStrokeWidth, dpi } = commonData
   const { attributes, geometry, level, id } = object
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -353,7 +381,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
     return getLineSvg(
       points,
       attributes,
-      { level, bounds, bezier, locked, scale, fontSize, graphicSize, strokeWidth, markerSize, id, dpi },
+      { level, bounds, bezier, locked, scale, fontSize, graphicSize, strokeWidth, markerSize, dashSize, id, dpi },
       layerData,
     )
   }
@@ -361,7 +389,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
 
 // сборка Квадрата, Прямоугольника, Круга
 const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
-  const { coordToPixels, scale, bounds, fontSize, getStrokeWidth, dpi } = commonData
+  const { coordToPixels, scale, bounds, getFontSize, getStrokeWidth, dpi } = commonData
   const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   if (point1 && point2) {
@@ -371,6 +399,7 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
     const dy = p2.y - y
     let amplifiers
     let d
+    const fontSize = getFontSize()
     switch (kind) {
       case SelectionTypes.CIRCLE: {
         const r = Math.round(Math.sqrt(dx * dx + dy * dy))
