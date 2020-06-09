@@ -29,7 +29,7 @@ const mapObjectBuilders = new Map()
 const onePunkt = 0.3528 // 1 пункт в мм
 const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
 const DPI96 = 3.78 // количество пикселей в 1мм
-const DPI1 = 0.03937 // количество пикселей в 1мм при разрешении 1DPI
+const DPI1 = 0.03937 // количество пикселей в 1мм при разрешении 1 DPI
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
 export const MM_IN_INCH = 25.4
@@ -96,7 +96,7 @@ export const printSettings = {
   shadowWidth: SHADOW_WIDTH,
   lineWidth: LINE_WIDTH,
 }
-// printScale - масштаб карті
+// printScale - масштаб карты
 // dpi - разрешение печати
 export const getFontSizeByDpi = (printScale, dpi) => (fontSize = POINT_SIZE_DEFAULT) => {
   return Math.round(fontSizeFromScale.get(printScale) / getmmInPixel(dpi) * fontSize / POINT_SIZE_DEFAULT)

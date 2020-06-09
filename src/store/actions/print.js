@@ -94,7 +94,8 @@ export const printFileRetry = (id, name) =>
   }
 
 export const createPrintFile = (onError = null) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
+  asyncAction.withNotification(async (dispatch, getState,
+    { webmapApi: { getPrintBounds, printFileCreate, getPrintSettings } }) => {
     const state = getState()
     const {
       webMap: { objects, showAmplifiers },
@@ -119,8 +120,11 @@ export const createPrintFile = (onError = null) =>
         projectionGroup,
       })
 
+      const printSettings = await getPrintSettings()
+
       const { parts, size: [ width, height ] } = printBounds
-      const partsSvgs = parts.map((part) => getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+      const partsSvgs = parts.map((part) =>
+        getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers, printSettings }))
 
       const legendSvg = printLegendSvgStr({
         widthMM: width,
