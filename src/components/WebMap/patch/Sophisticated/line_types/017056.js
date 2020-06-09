@@ -9,7 +9,8 @@ import {
   applyVector,
   drawArc,
   drawLineMark,
-  angleOf, getPointSize,
+  angleOf,
+  getPointSize,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../utils/svg/lines'
 

@@ -16,6 +16,7 @@ const METERS_PER_INCH = 0.0254 // м в дюйме
 const SEMI_MAJOR_AXIS = 6378245
 const TILE_SIZE = 256
 const DEG_TO_RAD = Math.PI / 180 // перевод градусов в радианы
+const NORMAL_SIZE = 96 // разрешение экрана WINDOWS в dpi
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
 const multiply = ({ x, y }, dx, dy) => ({ x: x * dx, y: y * dy })
@@ -106,7 +107,7 @@ export const getMapSvg = (
   const zoom = Math.round(Math.log2(
     SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
-  const scale = dpi / 96
+  const scale = dpi / NORMAL_SIZE
   const getFontSize = getFontSizeByDpi(printScale, dpi) // размер шрифта соответствует на карте 12 кеглю
   const graphicSize = getGraphicSizeByDpi(printScale, dpi)
   const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
@@ -123,19 +124,13 @@ export const getMapSvg = (
   }
   const commonData = {
     bounds,
-    dpi,
     coordToPixels,
+    dpi,
+    zoom,
     scale,
-    // getFontSize,
-    // getStrokeWidth,
-    // graphicSize,
-    // markerSize,
-    // dashSize,
-    // pointSymbolSize,
     printScale,
     layersById,
     showAmplifiers,
-    zoom,
     printOptions,
     objects,
   }

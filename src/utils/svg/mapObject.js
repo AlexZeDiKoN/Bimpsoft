@@ -29,6 +29,7 @@ const mapObjectBuilders = new Map()
 const onePunkt = 0.3528 // 1 пункт в мм
 const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
 const DPI96 = 3.78 // количество пикселей в 1мм
+const DPI1 = 0.03937 // количество пикселей в 1мм при разрешении 1DPI
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
 const MERGE_SYMBOL = 5 // отступы при генерации символов
 export const MM_IN_INCH = 25.4
@@ -379,12 +380,15 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
     coordToPixels,
     bounds,
     scale,
-    getFontSize,
-    graphicSize,
-    markerSize,
-    dashSize,
-    getStrokeWidth,
-    dpi } = commonData
+    dpi,
+    printOptions: {
+      getFontSize,
+      getStrokeWidth,
+      graphicSize,
+      markerSize,
+      dashSize,
+    },
+  } = commonData
   const { attributes, geometry, level, id } = object
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -482,7 +486,8 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
     coordToPixels,
     printScale, // масштаб карты
     bounds,
-    scale, // масштаб к DPI 96
+    // scale, // масштаб к DPI 96
+    dpi,
   } = commonData
   const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
@@ -496,7 +501,8 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   })
   const { bbox } = symbol
   // ручное масштабирование символа после удаления тега <svg>
-  const scaleSymbol = DPI96 * scale * mmSize / HEIGHT_SYMBOL
+  // const scaleSymbol = DPI96 * scale * mmSize / HEIGHT_SYMBOL
+  const scaleSymbol = DPI1 * dpi * mmSize / HEIGHT_SYMBOL
   const scaleXY = size / 100 // переводим проценты в десятичную дробь
   const { x, y } = symbol.getAnchor() // точка привязки в символе
   // смещение центра символа от точки (0,0) символа
@@ -530,7 +536,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
 
 // сборка сложных линий
 mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, layerData) => {
-  const { coordToPixels, bounds, printOptions, graphicSize, pointSymbolSize, dpi } = commonData
+  const { coordToPixels, bounds, printOptions, dpi } = commonData
   const { geometry, attributes, id } = objectData
   const line = lineDefinitions[extractLineCode(objectData.code)]
 
@@ -539,23 +545,20 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     if (!points || !points[0]) {
       return null
     }
-    const { color, fill, strokeWidth = 1, lineType, hatch } = attributes
+    const { color, fill, strokeWidth = LINE_WIDTH, lineType, hatch } = attributes
     const options = {
       color,
       fill,
       strokeWidth: printOptions.getStrokeWidth(strokeWidth),
       lineType,
       hatch }
-    const fontSize = printOptions.getFontSize()
+    // const fontSize = printOptions.getFontSize()
     const container = {
       d: '',
       mask: '',
       amplifiers: '',
       layer: {
         object: objectData,
-        graphicSize, // размер графических амплификаторов и стрелок
-        fontSize,
-        pointSymbolSize,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
         options,
         printOptions,
