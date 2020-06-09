@@ -526,7 +526,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
   const { coordToPixels, getFontSize, dpi } = commonData
   const { attributes, point } = data
   const { x, y } = coordToPixels(point)
-  const scale = 100 * 12 / (getFontSize() / getmmInPixel(dpi)) // коэфициент приведения к px
+  const scale = 100 * 12 / (getFontSize() / getmmInPixel(dpi)) // коэффициент приведения к px
   return (
     <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
       {renderTextSymbol({ ...attributes.toJS(), outlineColor }, scale)}

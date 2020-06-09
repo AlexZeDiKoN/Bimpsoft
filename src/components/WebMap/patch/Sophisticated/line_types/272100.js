@@ -16,7 +16,7 @@ import { evaluateColor } from '../../../../../constants/colors'
 
 const COLORS = [ 'black', 'blue', 'red', 'green', 'black' ]
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
-const TEXT_SIZE = 1 // коэфициент размера текстового амплификатора
+const TEXT_SIZE = 1 // коэффициент размера текстового амплификатора
 
 lineDefinitions['272100'] = {
   // начальные цвета круговых секторов
