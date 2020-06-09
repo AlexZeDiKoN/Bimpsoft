@@ -14,18 +14,10 @@ import {
 import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
-import MapItemComponent from './MapItemComponent'
-import LayerItemComponent from './LayerItemComponent'
+import ItemTemplate from './ItemTemplate'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
-
-const ItemTemplate = (props) =>
-  props.data.id[0] === 'm' ? <MapItemComponent {...props} /> : <LayerItemComponent {...props}/>
-
-ItemTemplate.propTypes = {
-  data: PropTypes.object,
-}
 
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => item.name,
