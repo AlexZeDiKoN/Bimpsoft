@@ -37,6 +37,37 @@ const commonStyle = {
   fillRule: 'evenodd',
 }
 
+export const generateGeometry = (zones, directions, box, vertical = false) => {
+  const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
+  const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
+
+  const nBox = {
+    left: getMin(vertical),
+    right: getMax(vertical),
+    top: getMin(!vertical),
+    bottom: getMax(!vertical),
+  }
+  nBox.center = (nBox.left + nBox.right) / 2
+  const width = nBox.right - nBox.left
+  const height = nBox.bottom - nBox.top
+  const step = {
+    x: width / directions,
+    y: height / zones / 2,
+  }
+
+  return {
+    eternals: varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
+      /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
+      const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
+      const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
+      return vertical ? L.latLng(y, x) : L.latLng(x, y)
+    })),
+    directionSegments: varr(directions + 1, () => varr(zones * 2, () => [])),
+    zoneSegments: varr(zones * 2 + 1, () => varr(directions, () => [])),
+  }
+}
+
 /**
  * @class FlexGrid
  * Комплексний графічний об'єкт для представлення операційної зони
@@ -106,44 +137,13 @@ L.FlexGrid = L.Layer.extend({
       this.zoneSegments = geometry.zoneSegments.map(copyRing)
     } else {
       const { directions, zones, vertical } = this.options
-      const { eternals, directionSegments, zoneSegments } = this.generateGeometry(zones, directions, box, vertical)
+      const { eternals, directionSegments, zoneSegments } = generateGeometry(zones, directions, box, vertical)
       this.eternals = eternals
       this.directionSegments = directionSegments
       this.zoneSegments = zoneSegments
     }
 
     return this
-  },
-
-  generateGeometry (zones, directions, box, vertical = false) {
-    const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
-    const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
-
-    const nBox = {
-      left: getMin(vertical),
-      right: getMax(vertical),
-      top: getMin(!vertical),
-      bottom: getMax(!vertical),
-    }
-    nBox.center = (nBox.left + nBox.right) / 2
-    const width = nBox.right - nBox.left
-    const height = nBox.bottom - nBox.top
-    const step = {
-      x: width / directions,
-      y: height / zones / 2,
-    }
-
-    return {
-      eternals: varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-        /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
-          Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
-        const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
-        const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
-        return vertical ? L.latLng(y, x) : L.latLng(x, y)
-      })),
-      directionSegments: varr(directions + 1, () => varr(zones * 2, () => [])),
-      zoneSegments: varr(zones * 2 + 1, () => varr(directions, () => [])),
-    }
   },
 
   beforeAdd (map) {

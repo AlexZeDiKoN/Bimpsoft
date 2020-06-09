@@ -202,18 +202,24 @@ function createSophisticated (data, layer, initMap) {
 }
 
 function createOlovo (data, layer, initMap) {
-  console.log(data)
+  const [ eternals, directionSegments, zoneSegments ] = data.geometry.toJS()
   layer = new L.FlexGrid(
-    initMap.pad(-0.4),
+    initMap.getBounds().pad(-0.4),
     {
-      directions: data.attributes.param.directions,
-      zones: data.attributes.param.zones,
+      directions: data.attributes.params.directions,
+      zones: data.attributes.params.zones,
       interactive: true,
       vertical: false,
       hideShadow: true,
       hideCenterLine: true,
       shadow: false,
     },
+    data.id,
+    {
+      eternals,
+      directionSegments,
+      zoneSegments,
+    }
   )
   layer.options.tsType = entityKind.OLOVO
   return layer
@@ -444,6 +450,7 @@ export function getGeometry (layer) {
     case entityKind.CONTOUR:
       return layer._data ? { geometry: layer._data } : {}
     case entityKind.FLEXGRID:
+    case entityKind.OLOVO:
       return formFlexGridGeometry(layer.eternals, layer.directionSegments, layer.zoneSegments)
     default:
       return null
@@ -497,6 +504,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CIRCLE:
       return !geomPointEquals(layer.getLatLng(), point) || layer._map.distance(...geometry) !== layer.getRadius()
     case entityKind.FLEXGRID:
+    case entityKind.OLOVO:
       return !geomPointListEquals([ layer.eternals, layer.directionSegments, layer.zoneSegments ], geometry)
     default:
       return false

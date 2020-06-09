@@ -38,7 +38,7 @@ L.SVG.include({
   },
 
   _setLayerPathStyle: function (layer, style, className) {
-    if (layer.options.tsType === entityKind.FLEXGRID) {
+    if (layer.options.tsType === entityKind.FLEXGRID || layer.options.tsType === entityKind.OLOVO) {
       layer._pathes.forEach((path) => this._setPathStyle(layer, path, style, className))
     } else {
       this._setPathStyle(layer, layer._path, style, className)

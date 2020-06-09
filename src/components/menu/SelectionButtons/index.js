@@ -17,6 +17,8 @@ import './style.css'
 
 const { names: iconNames, IconButton } = components.icons
 
+const ALLOW_GROUP = false
+
 export default class SelectionButtons extends React.Component {
   static propTypes = {
     isEditMode: PropTypes.bool,
@@ -204,7 +206,7 @@ export default class SelectionButtons extends React.Component {
             disabled={!canContour && !canDecontour}
             onClick={canContour ? onContour : onDecontour}
           />
-          {<IconButton
+          {ALLOW_GROUP && <IconButton
             placement={'bottomLeft'}
             title={canGroup ? i18n.GROUPING : i18n.UNGROUPING}
             icon={iconNames.GROUP_UNIT_2}

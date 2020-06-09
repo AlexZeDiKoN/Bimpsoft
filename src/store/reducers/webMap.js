@@ -183,7 +183,7 @@ const unlockObject = (map, { objectId }) => map.get(objectId)
   ? map.delete(objectId)
   : map
 
-const notFlexGrid = (object) => object.type !== entityKind.FLEXGRID || object.attributes.params.regular
+const notFlexGrid = (object) => object.type !== entityKind.FLEXGRID
 
 const simpleSetFields = [ {
   action: actionNames.SET_COORDINATES_TYPE,
