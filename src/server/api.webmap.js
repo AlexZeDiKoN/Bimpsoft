@@ -84,10 +84,6 @@ export default {
     getDirect(`${webmapUrl}/group/move`, { id, shift }), /// ---(17)
 
   // API друку карти
-  // запрос настроек печати
-  getPrintSettings: () =>
-    getDirect(`${webmapUrl}/getPrintSettings`, false),
-
   getPrintBounds: (data) =>
     getDirect(`${webmapUrl}/printToFile/getPrintBounds`, data),
   printFileCreate: ({ printBounds, scale, dpi, mapName, mapId, partsSvgs, legendSvg, requisites }) => {

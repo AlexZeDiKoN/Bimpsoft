@@ -50,7 +50,7 @@ const getCoordToPixels = (projection, dpi, scale, angle, { min, max }) => {
 
 export const getMapSvg = (
   { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ], angle },
-  { objects, dpi, printScale, layersById, showAmplifiers, printSettings },
+  { objects, dpi, printScale, layersById, showAmplifiers },
 ) => {
   const projection = `EPSG:${srid}`
   const [ lngSW, latSW ] = proj4(projection, [ southWestLng, southWestLat ])
