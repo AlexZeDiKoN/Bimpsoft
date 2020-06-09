@@ -1724,13 +1724,26 @@ export default class WebMap extends React.PureComponent {
   }
 
   clickOnLayer = (event) => {
+    const {
+      isMeasureOn,
+      isMarkersOn,
+      isTopographicObjectsOn,
+      marchMode,
+      hiddenOpacity,
+      layer,
+      onChangeLayer,
+    } = this.props
+
+    if (isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode) {
+      return
+    }
     L.DomEvent.stopPropagation(event)
     const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
+    const useOneClickForActivateLayer = hiddenOpacity === 100
     const targetLayer = object && object.layer
-    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === layer
     if (!doActivate && useOneClickForActivateLayer && targetLayer) {
-      this.props.onChangeLayer(targetLayer)
+      onChangeLayer(targetLayer)
       doActivate = true
     }
     if (doActivate) {

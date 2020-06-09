@@ -31,10 +31,15 @@ const Header = (props) => {
           icon={IconNames.BAR_2_SAVE}
         />
       </Tooltip>
-      <IButton
-        onClick={closeMarch}
-        colorType={ColorTypes.WHITE}
-        icon={IconNames.DARK_CLOSE_ROUND} />
+      <Tooltip
+        placement='top'
+        title={i18n.CLOSE_MARCH}
+      >
+        <IButton
+          onClick={closeMarch}
+          colorType={ColorTypes.WHITE}
+          icon={IconNames.DARK_CLOSE_ROUND} />
+      </Tooltip>
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip

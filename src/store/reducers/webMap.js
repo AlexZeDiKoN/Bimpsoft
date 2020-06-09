@@ -118,6 +118,9 @@ const WebMapState = Record({
   topographicObjects: {},
   undoRecords: List(),
   undoPosition: 0,
+  reportMap: {},
+  geoLandmark: {},
+  deleteMarchPointModal: {},
 })
 
 const checkLevel = (object) => {
@@ -426,6 +429,15 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
+    }
+    case actionNames.TOGGLE_REPORT_MAP_MODAL: {
+      return update(state, 'reportMap', { ...state.reportMap, ...payload })
+    }
+    case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {
+      return update(state, 'geoLandmark', { ...state.geoLandmark, ...payload })
+    }
+    case actionNames.TOGGLE_DELETE_MARCH_POINT_MODAL: {
+      return update(state, 'deleteMarchPointModal', { ...state.deleteMarchPointModal, ...payload })
     }
     default: {
       const setField = simpleSetField(type)

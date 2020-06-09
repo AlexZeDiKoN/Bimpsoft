@@ -4,6 +4,7 @@ import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import { MARCH_TYPES } from '../../constants/March'
+import webmapApi from '../../server/api.webmap'
 import i18n from './../../i18n'
 import { openMapFolder } from './maps'
 import { asyncAction } from './index'
@@ -21,9 +22,11 @@ export const SET_COORD_FROM_MAP = action('SET_COORD_FROM_MAP')
 export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
 export const CLOSE_MARCH = action('CLOSE_MARCH')
+export const SET_GEO_LANDMARKS = action('SET_GEO_LANDMARKS')
+export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 
 const { getMarchMetric } = api
-const { convertSegmentsForExplorer } = utilsMarch.convertUnits
+const { convertSegmentsForExplorer, getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -122,7 +125,43 @@ const updateMetric = async (segments, payload) => {
   }
 }
 
-const getUpdateSegments = (segments, data) => {
+const getFormattedGeoLandmarks = (geoLandmarks = {}) => {
+  const { features = [] } = geoLandmarks
+
+  const filteredGeoLandmarks = getFilteredGeoLandmarks(features)
+
+  return filteredGeoLandmarks.map((itemGeoLandmark) => {
+    const { name, distance, azimuth } = itemGeoLandmark.properties
+    const distanceInKm = Number((distance / 1000).toFixed(0))
+    const cardinalDirection = azimuthToCardinalDirection(azimuth)
+
+    itemGeoLandmark.propertiesText = distanceInKm
+      ? `${distanceInKm} ${i18n.KILOMETER_TO} ${cardinalDirection} ${i18n.FROM_CITY} ${name}`
+      : itemGeoLandmark.propertiesText = `${i18n.CITY} ${name}`
+
+    return itemGeoLandmark
+  })
+}
+
+export const getGeoLandmarks = async (coordinates, geoLandmarks) => {
+  const { lat, lng } = coordinates
+  const geoKey = `${lat}:${lng}`
+
+  let geoLandmark = geoLandmarks[geoKey]
+
+  const fixedCoord = {}
+  fixedCoord.lat = lat || 0.00001
+  fixedCoord.lng = lng || 0.00001
+
+  if (!geoLandmark) {
+    geoLandmark = await webmapApi.nearestSettlement(fixedCoord)
+    geoLandmarks[geoKey] = getFormattedGeoLandmarks(geoLandmark)
+  }
+
+  return { ...geoLandmarks }
+}
+
+const getUpdateSegments = async (segments, data, geoLandmarks) => {
   const { segmentId, childId } = data
   let { val, fieldName } = data
 
@@ -136,21 +175,38 @@ const getUpdateSegments = (segments, data) => {
   }
 
   let newSegments = segments
-  const clearCoordinate = () => ({ lng: null, lat: null })
+  let newGeoLandmarks = geoLandmarks
+
+  const clearCoordinate = () => ({ lng: undefined, lat: undefined })
 
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'
+    let refPoint = ''
+
+    if (fieldName[i] === 'coordinates') {
+      newGeoLandmarks = await getGeoLandmarks(val[i], geoLandmarks)
+
+      const { lat, lng } = val[i]
+      const geoKey = `${lat}:${lng}`
+      const formattedGeoLandmarks = newGeoLandmarks[geoKey]
+
+      refPoint = formattedGeoLandmarks.length > 0 ? formattedGeoLandmarks[0].propertiesText : ''
+    }
 
     if (childId || childId === 0) {
       newSegments = newSegments.update(segmentId, (segment) => ({
         ...segment,
-        children: segment.children.map((it, id) => (id === childId) ? { ...it, [fieldName[i]]: val[i] } : it),
+        children: segment.children.map((it, id) => (id === childId) ? {
+          ...it,
+          [fieldName[i]]: val[i],
+          refPoint: fieldName[i] === 'refPoint' ? val[i] : (refPoint || it.refPoint),
+        } : it),
       }))
     } else {
       let children = segments.get(segmentId).children
       if (isSegmentTypeField) {
         if (val[i] === OWN_RESOURCES) {
-          children = children.map((child) => ({ ...child, coordinates: clearCoordinate() }))
+          children = children.map((child) => ({ ...child, coordinates: clearCoordinate(), refPoint: '' }))
           children.unshift({
             ...defaultChild(),
             type: 5,
@@ -162,6 +218,7 @@ const getUpdateSegments = (segments, data) => {
             type: 0,
             required: false,
             coordinates: clearCoordinate(),
+            refPoint: '',
           }))
         }
       }
@@ -169,18 +226,25 @@ const getUpdateSegments = (segments, data) => {
       newSegments = newSegments.update(segmentId, (segment) => {
         if (isSegmentTypeField) {
           segment.coordinates = clearCoordinate()
+          segment.refPoint = ''
         }
+
+        const newRefPoint = fieldName[i] === 'refPoint' ? val[i] : (refPoint || segment.refPoint)
 
         return {
           ...segment,
           [fieldName[i]]: val[i],
           children,
+          refPoint: newRefPoint,
         }
       })
     }
   }
 
-  return newSegments
+  return {
+    newSegments,
+    newGeoLandmarks,
+  }
 }
 
 export const getIndicator = () =>
@@ -205,13 +269,22 @@ export const setIntegrity = (data) => ({
 export const editFormField = (data) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
-    const newSegments = getUpdateSegments(march.segments, data)
+    const { segments, geoLandmarks } = march
+
+    const { newSegments, newGeoLandmarks } = await getUpdateSegments(segments, data, geoLandmarks)
 
     const isCoordFilled = isFilledMarchCoordinates(newSegments.toArray())
 
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance, isCoordFilled }
+    const payload = {
+      segments: segmentsWithMetric,
+      coordMode: false,
+      time,
+      distance,
+      isCoordFilled,
+      geoLandmarks: newGeoLandmarks,
+    }
 
     dispatch({
       type: EDIT_FORM_FIELD,
@@ -312,15 +385,22 @@ export const setCoordMode = (data) => ({
 export const setCoordFromMap = (value) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
-    const { segments, coordModeData } = march
+    const { segments, coordModeData, geoLandmarks } = march
     const data = { ...coordModeData, val: value, fieldName: 'coordinates' }
-    const newSegments = getUpdateSegments(segments, data)
+    const { newSegments, newGeoLandmarks } = await getUpdateSegments(segments, data, geoLandmarks)
 
     const isCoordFilled = isFilledMarchCoordinates(newSegments)
 
     const { segments: segmentsWithMetric, time, distance } = await updateMetric(newSegments, march.payload)
 
-    const payload = { segments: segmentsWithMetric, coordMode: false, time, distance, isCoordFilled }
+    const payload = {
+      segments: segmentsWithMetric,
+      coordMode: false,
+      time,
+      distance,
+      isCoordFilled,
+      geoLandmarks: newGeoLandmarks,
+    }
 
     dispatch({
       type: SET_COORD_FROM_MAP,
@@ -382,4 +462,14 @@ export const sendMarchToExplorer = () =>
 
 export const closeMarch = () => ({
   type: CLOSE_MARCH,
+})
+
+export const addGeoLandmark = (coordinates, geoLandmark, segmentId, childId) => ({
+  type: ADD_GEO_LANDMARK,
+  payload: {
+    coordinates,
+    geoLandmark,
+    segmentId,
+    childId,
+  },
 })
