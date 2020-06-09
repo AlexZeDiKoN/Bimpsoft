@@ -68,7 +68,7 @@ export const SHOW_UNBOUND_OBJECTS = 'Показати неприв\'язані �
 export const EXTRA_FUNCTIONS = 'Додаткові функції'
 export const CREATE_REPORT_MAP = 'Створити звітну карту?'
 export const NAME_OF_DOCUMENT = 'Назва документа (обовязково)'
-export const AS_OF = 'Станом на(обовязково)'
+export const AS_OF = 'Станом на (обовязково)'
 export const REPORTING_CARD = 'Звітна карта'
 
 export const SHAPE_POLYLINE = 'Ломана лінія'
