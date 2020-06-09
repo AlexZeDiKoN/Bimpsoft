@@ -68,6 +68,7 @@ export const actionNames = {
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
+  TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
   HIGHLIGHT_OBJECT: action('HIGHLIGHT_OBJECT'),
 }
 
@@ -186,7 +187,7 @@ export const addObject = (object, addUndoRecord = true) =>
         payload: {
           changeType: changeTypes.INSERT_OBJECT,
           id: payload.id,
-        }
+        },
       })
     }
 
@@ -208,7 +209,7 @@ export const copyContour = (id, layer, shift, addUndoRecord = true) =>
         payload: {
           changeType: changeTypes.COPY_CONTOUR,
           id: payload.id,
-        }
+        },
       })
     }
 
@@ -235,7 +236,7 @@ export const moveContour = (id, shift, addUndoRecord = true) =>
           changeType: changeTypes.MOVE_CONTOUR,
           id,
           shift,
-        }
+        },
       })
     }
 
@@ -256,7 +257,7 @@ export const moveObjList = (ids, shift, addUndoRecord = true) =>
           changeType: changeTypes.MOVE_LIST,
           list: ids,
           shift,
-        }
+        },
       })
     }
 
@@ -277,7 +278,7 @@ const deleteContour = (layer, contour) =>
     dispatch(batchActions([
       tryUnlockObject(contour),
       selection.selectedList(await webmapApi.contourDelete(layer, contour)),
-    ]))
+    ])),
   )
 
 const restoreContour = (layer, contour, objects) =>
@@ -306,7 +307,7 @@ export const deleteObject = (id, addUndoRecord = true) =>
         payload: {
           changeType: changeTypes.DELETE_OBJECT,
           id,
-        }
+        },
       })
     }
 
@@ -326,7 +327,7 @@ export const deleteObjects = (list, addUndoRecord = true) =>
         payload: {
           changeType: changeTypes.DELETE_LIST,
           list,
-        }
+        },
       })
     }
 
@@ -410,7 +411,7 @@ export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
           changeType: changeTypes.UPDATE_OBJECT,
           id,
           object,
-        }
+        },
       })
     }
 
@@ -458,7 +459,7 @@ export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
           changeType: changeTypes.UPDATE_GEOMETRY,
           id,
           geometry,
-        }
+        },
       })
     }
 
@@ -724,6 +725,14 @@ export const redo = () =>
       type: actionNames.REDO,
     })
   })
+
+export const toggleGeoLandmarkModal = (visible, coordinates = null) => ({
+  type: actionNames.TOGGLE_GEO_LANDMARK_MODAL,
+  payload: {
+    visible,
+    coordinates,
+  },
+})
 
 // Ініціалізація
 window.addEventListener('beforeunload', () => {

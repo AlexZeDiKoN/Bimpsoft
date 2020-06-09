@@ -12,6 +12,7 @@ import { determineGroupType, emptyParent } from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import { sameObjects } from '../../../store/selectors'
+import { errorSymbol } from '../../../store/actions/selection'
 import DeleteSelectionForm from './DeleteSelectionForm'
 import './style.css'
 
@@ -79,11 +80,11 @@ export default class SelectionButtons extends React.Component {
   errorPasteForm = () => {
     const { unit, code } = this.state
     const { onPasteOk, onPasteCancel, orgStructures } = this.props
-    const unitText = orgStructures.byIds && orgStructures.byIds[unit]
-      ? orgStructures.byIds[unit].fullName : ''
+    const unitText = orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : ''
     return <SaveMilSymbolForm
-      unit={unitText}
+      unitText={unitText}
       code={code}
+      errorCode={errorSymbol.duplication}
       onApply={onPasteOk}
       onCancel={onPasteCancel}
     />

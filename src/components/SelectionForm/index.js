@@ -252,17 +252,16 @@ export default class SelectionForm extends React.Component {
     } = forms[formType]
 
     const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
-    const errorSaveMilSymbolForm = () => {
+    const errorSaveMilSymbolForm = (errorCode = 1) => {
       const { unit, code } = this.props.data
       const { orgStructures, onCloseSaveError } = this.props
-      const unitText = orgStructures.byIds && orgStructures.byIds[unit]
-        ? orgStructures.byIds[unit].fullName : ''
+      const unitText = orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : ''
       return (
         <Wrapper
           title={i18n.ERROR_CODE_SIGNS}>
           <SaveMilSymbolForm
             unitText={unitText}
-            unit={unit}
+            errorCode={errorCode}
             code={code}
             notClickable={false}
             onApply={() => { onCloseSaveError(); onOk() }}
@@ -273,7 +272,7 @@ export default class SelectionForm extends React.Component {
 
     const { wrapper: Wrapper } = this.props
     return (showErrorMilSymbolForm
-      ? errorSaveMilSymbolForm()
+      ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
         <NotClickableArea/>
         <Wrapper
@@ -326,4 +325,5 @@ SelectionForm.propTypes = {
   ovtData: PropTypes.object,
   ovtLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
+  errorCode: PropTypes.number,
 }
