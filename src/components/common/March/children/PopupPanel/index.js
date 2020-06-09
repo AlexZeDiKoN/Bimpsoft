@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Input, InputNumber, Select, Modal, Tooltip } from 'antd'
+import { Input, InputNumber, Select, Tooltip } from 'antd'
 import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
 import { MARCH_TYPES } from '../../../../../constants/March'
-const { confirm } = Modal
 
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -24,7 +23,15 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
-  const { deleteSegment, segmentId, segmentType, required, terrain, velocity, metric } = propData
+  const {
+    segmentId,
+    segmentType,
+    required,
+    terrain,
+    velocity,
+    metric,
+    toggleDeleteMarchPointModal,
+  } = propData
   const { time } = metric
   const distance = metric.distance.toFixed(1)
 
@@ -39,18 +46,7 @@ const PopupPanel = (props) => {
   }
 
   const showDeleteConfirm = () => {
-    confirm({
-      title: i18n.DELETE_SEGMENT_CONFIRM_TITLE,
-      okText: i18n.OK_BUTTON_TEXT,
-      okType: 'danger',
-      cancelText: i18n.CANCEL_BUTTON_TEXT,
-      onOk () {
-        deleteSegment(segmentId)
-      },
-      centered: true,
-      zIndex: 10000,
-    },
-    )
+    toggleDeleteMarchPointModal(true, segmentId)
   }
 
   const correctedMB001 = MB001.slice(0, -1)
@@ -96,7 +92,6 @@ const PopupPanel = (props) => {
 
 PopupPanel.propTypes = {
   propData: PropTypes.shape({
-    deleteSegment: PropTypes.func.isRequired,
     required: PropTypes.bool.isRequired,
     segmentType: PropTypes.number.isRequired,
     terrain: PropTypes.number.isRequired,
@@ -106,6 +101,7 @@ PopupPanel.propTypes = {
       time: PropTypes.number.isRequired,
       distance: PropTypes.number.isRequired,
     }).isRequired,
+    toggleDeleteMarchPointModal: PropTypes.func.isRequired,
   }).isRequired,
   MB001: PropTypes.shape({
     typeValues: PropTypes.array.isRequired,

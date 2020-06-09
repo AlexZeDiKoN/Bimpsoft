@@ -72,10 +72,24 @@ export default function reducer (state = initState, action) {
       return { ...state, geoLandmarks: payload }
     }
     case march.ADD_GEO_LANDMARK: {
-      const { coordinates, geoLandmark } = payload
+      const { coordinates, geoLandmark, segmentId, childId } = payload
 
       const { lat, lng } = coordinates
       const geoKey = `${lat}:${lng}`
+
+      let updateGeoLandmark = state.geoLandmarks[geoKey]
+
+      if (Array.isArray(updateGeoLandmark)) {
+        const filterLandmark = geoLandmark.trim().toUpperCase()
+
+        for (let i = 0; i < updateGeoLandmark.length; i++) {
+          const itemLandmark = updateGeoLandmark[i].propertiesText.trim().toUpperCase()
+
+          if (itemLandmark === filterLandmark) {
+            return state
+          }
+        }
+      }
 
       const newGeoLandmark = {
         propertiesText: geoLandmark,
@@ -84,7 +98,27 @@ export default function reducer (state = initState, action) {
         },
       }
 
-      let updateGeoLandmark = state.geoLandmarks[geoKey]
+      let updateSegments
+
+      if (childId || childId === 0) {
+        updateSegments = state.segments.update(segmentId, (segment) => ({
+          ...segment,
+          children: segment.children.map((it, id) => (id === childId) ? {
+            ...it,
+            refPoint: geoLandmark,
+          } : it),
+        }))
+      } else {
+        const children = state.segments.get(segmentId).children
+
+        updateSegments = state.segments.update(segmentId, (segment) => {
+          return {
+            ...segment,
+            refPoint: geoLandmark,
+            children,
+          }
+        })
+      }
 
       updateGeoLandmark = Array.isArray(updateGeoLandmark)
         ? [ newGeoLandmark, ...updateGeoLandmark ]
@@ -93,7 +127,7 @@ export default function reducer (state = initState, action) {
       const updaterGeoLandmarks = { ...state.geoLandmarks }
       updaterGeoLandmarks[geoKey] = updateGeoLandmark
 
-      return { ...state, geoLandmarks: updaterGeoLandmarks }
+      return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks }
     }
     default:
       return state
