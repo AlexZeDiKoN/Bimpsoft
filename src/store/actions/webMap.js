@@ -69,6 +69,7 @@ export const actionNames = {
   UNDO: action('UNDO'),
   REDO: action('REDO'),
   TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
+  TOGGLE_DELETE_MARCH_POINT_MODAL: action('TOGGLE_DELETE_MARCH_POINT_MODAL'),
 }
 
 export const changeTypes = {
@@ -725,11 +726,22 @@ export const redo = () =>
     })
   })
 
-export const toggleGeoLandmarkModal = (visible, coordinates = null) => ({
+export const toggleGeoLandmarkModal = (visible, coordinates, segmentId, childId) => ({
   type: actionNames.TOGGLE_GEO_LANDMARK_MODAL,
   payload: {
     visible,
     coordinates,
+    segmentId,
+    childId,
+  },
+})
+
+export const toggleDeleteMarchPointModal = (visible, segmentId, childId) => ({
+  type: actionNames.TOGGLE_DELETE_MARCH_POINT_MODAL,
+  payload: {
+    visible,
+    segmentId,
+    childId,
   },
 })
 

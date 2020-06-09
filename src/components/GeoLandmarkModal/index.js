@@ -19,6 +19,8 @@ export default class GeoLandmarkModal extends React.Component {
     onClose: PropTypes.func,
     addGeoLandmark: PropTypes.func,
     visible: PropTypes.bool,
+    segmentId: PropTypes.number,
+    childId: PropTypes.number,
   }
 
   constructor (props) {
@@ -33,7 +35,9 @@ export default class GeoLandmarkModal extends React.Component {
   }
 
   onAddGeoLandmark = () => {
-    this.props.addGeoLandmark(this.props.coordinates, this.state.geoLandmark)
+    const { segmentId, childId, coordinates } = this.props
+    this.props.addGeoLandmark(coordinates, this.state.geoLandmark, segmentId, childId)
+    this.setState({ geoLandmark: '' })
     this.props.onClose()
   }
 

@@ -14,7 +14,14 @@ const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
 const { OWN_RESOURCES_BRUSH, BY_RAILROAD_BRUSH, BY_SHIPS_BRUSH, COMBINED_BRUSH, DEFAULT_BRUSH } = MARCH_COLOR
 
 const SegmentBlock = (props) => {
-  const { segment, addSegment, deleteSegment, segmentId, timeDistanceView, segments } = props
+  const {
+    segment,
+    addSegment,
+    segmentId,
+    timeDistanceView,
+    segments,
+    toggleDeleteMarchPointModal,
+  } = props
   const { type, children, metric = {} } = segment
 
   const [ isViewContextMenu, changeViewContextMenu ] = useState(false)
@@ -87,7 +94,15 @@ const SegmentBlock = (props) => {
 
     <SegmentButtonPopover
       type={type}
-      content={ <PopupPanel propData={{ ...segment, segmentType: segment.type, segmentId, deleteSegment, metric }} /> }
+      content={
+        <PopupPanel
+          propData={{
+            ...segment,
+            segmentType: segment.type,
+            segmentId,
+            metric,
+            toggleDeleteMarchPointModal,
+          }} /> }
     />
 
     {childrenIsPresent && children.map((child, id) => {
@@ -144,9 +159,9 @@ SegmentBlock.propTypes = {
     }).isRequired,
   }).isRequired,
   addSegment: PropTypes.func.isRequired,
-  deleteSegment: PropTypes.func.isRequired,
   timeDistanceView: PropTypes.bool.isRequired,
   segments: PropTypes.array.isRequired,
+  toggleDeleteMarchPointModal: PropTypes.func.isRequired,
 }
 
 export default React.memo(SegmentBlock)

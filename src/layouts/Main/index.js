@@ -22,6 +22,7 @@ import {
   EternalDescriptionContainer,
   TaskModalContainer,
   GeoLandmarkModalContainer,
+  DeleteMarchModalContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -67,6 +68,7 @@ export default class Main extends React.Component {
         <TopoObjModal wrapper={MovablePanel} />
         <TaskModalContainer wrapper={MovablePanel} />
         <GeoLandmarkModalContainer wrapper={MovablePanel} />
+        <DeleteMarchModalContainer wrapper={MovablePanel} />
       </HotKeysContainer>
     )
   }

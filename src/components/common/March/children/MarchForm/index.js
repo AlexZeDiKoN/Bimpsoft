@@ -1,4 +1,4 @@
-import { Input, Select, Tooltip, Modal, Divider } from 'antd'
+import { Input, Select, Tooltip, Divider } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
@@ -7,7 +7,6 @@ import placeSearch from '../../../../../server/places'
 import TimeInput from '../TimeInput'
 import i18n from './../../../../../i18n'
 
-const { confirm } = Modal
 const { Option } = Select
 const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS } = MARCH_TYPES
 
@@ -63,10 +62,10 @@ const MarchForm = (props) => {
   const {
     editFormField,
     addChild,
-    deleteChild,
     setCoordMode,
     setRefPointOnMap,
     toggleGeoLandmarkModal,
+    toggleDeleteMarchPointModal,
   } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
@@ -140,7 +139,7 @@ const MarchForm = (props) => {
   }
 
   const onHandlerOwnGeoLandmark = () => {
-    toggleGeoLandmarkModal(true, coordinates)
+    toggleGeoLandmarkModal(true, coordinates, segmentId, childId)
   }
 
   let dotClass
@@ -192,18 +191,7 @@ const MarchForm = (props) => {
   const isViewBottomPanel = (childId !== undefined) && !(segmentType === OWN_RESOURCES && childId === 0)
 
   const showDeletePointConfirm = () => {
-    confirm({
-      title: i18n.DELETE_POINT_CONFIRM_TITLE,
-      okText: i18n.OK_BUTTON_TEXT,
-      okType: 'danger',
-      cancelText: i18n.CANCEL_BUTTON_TEXT,
-      onOk () {
-        deleteChild(segmentId, childId)
-      },
-      centered: true,
-      zIndex: 10000,
-    },
-    )
+    toggleDeleteMarchPointModal(true, segmentId, childId)
   }
 
   return (
@@ -242,6 +230,8 @@ const MarchForm = (props) => {
             onChange={onChangeRefPoint}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
+            defaultActiveFirstOption={false}
+            showSearch={true}
           >
             {formattedGeoLandmarks && formattedGeoLandmarks.map(({ propertiesText, geometry }, id) => (
               <Option
@@ -316,10 +306,10 @@ MarchForm.propTypes = {
   handlers: PropTypes.shape({
     editFormField: PropTypes.func.isRequired,
     addChild: PropTypes.func.isRequired,
-    deleteChild: PropTypes.func.isRequired,
     setCoordMode: PropTypes.func.isRequired,
     setRefPointOnMap: PropTypes.func.isRequired,
     toggleGeoLandmarkModal: PropTypes.func.isRequired,
+    toggleDeleteMarchPointModal: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
