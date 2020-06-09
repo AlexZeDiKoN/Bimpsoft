@@ -43,6 +43,10 @@ export default class MapItemComponent extends React.Component {
     onPrintMap && onPrintMap(mapId, name)
   }
 
+  onShowReportMapModal = (dataMap) => {
+    this.props.onOpenReportMap(dataMap)
+  }
+
   render () {
     const { showCloseForm, showColor } = this.state
     const {
@@ -80,6 +84,12 @@ export default class MapItemComponent extends React.Component {
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <div className='color-picker-hover'>
+          <Tooltip title={i18n.SAVE_AS} placement='topRight'>
+            <IButton
+              icon={IconNames.BAR_2_SAVE}
+              onClick={() => this.onShowReportMapModal(this.props.data)}
+            />
+          </Tooltip>
           <Tooltip title={i18n.PRINT_BUTTON} placement='topRight'>
             <IButton
               icon={IconNames.MENU_PRINT}

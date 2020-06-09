@@ -37,6 +37,7 @@ const mapDispatchToProps = {
   sendMarchToExplorer: march.sendMarchToExplorer,
   closeMarch: march.closeMarch,
   toggleGeoLandmarkModal: webMap.toggleGeoLandmarkModal,
+  toggleDeleteMarchPointModal: webMap.toggleDeleteMarchPointModal,
 }
 
 const MarchContainer = connect(
