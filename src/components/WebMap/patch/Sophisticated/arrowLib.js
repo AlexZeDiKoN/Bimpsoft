@@ -5,7 +5,7 @@ import {
 } from './utils'
 
 const coefTangent = 3
-const coefArrowWing = 0.33 // коэфициент выступа стрелки над телом стрелки
+const coefArrowWing = 0.33 // коэффициент выступа стрелки над телом стрелки
 const coefArrow = 0.3 // отношение головы стрелки к телу стрелки по умолчанию
 
 function getKoefArrow () {
@@ -314,7 +314,7 @@ export const STRATEGY_ARROW = {
 }
 
 // ----------------------------------------------------------------------------------
-// Деление отрезка на сегменты с коэфициентом kf
+// Деление отрезка на сегменты с коэффициентом kf
 function segmentDivision (t1, t2, kf) {
   const razX = t1.x - t2.x
   const razY = t1.y - t2.y

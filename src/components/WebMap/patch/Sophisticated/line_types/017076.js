@@ -7,13 +7,13 @@ import {
   drawLineMark,
   angleOf,
   arcTo,
-  lineTo, moveTo,
+  lineTo, moveTo, getStrokeWidth,
 } from '../utils'
 import {
   lengthLine, angle3Points, isDefPoint, pointsToSegment,
 } from '../arrowLib'
 import { distanceAzimuth } from '../../utils/sectors'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { evaluateColor } from '../../../../../constants/colors'
 
 const { Coordinates: Coord } = utils
@@ -69,7 +69,7 @@ lineDefinitions['017076'] = {
     }
     // ---------------------------------------------------------------
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
-    const strokeWidth = result.layer?.options?.strokeWidth ?? (settings.LINE_WIDTH * scale)
+    const strokeWidth = getStrokeWidth(result.layer, 1, scale)
     const coordArray = result.layer?.getLatLngs?.()
     const infoArray = []
     if (coordArray) {
@@ -88,7 +88,7 @@ lineDefinitions['017076'] = {
     }
     // вывод азимута
     drawLine(result, pO, pE)
-    const arrowPath = `<path fill="none" stroke="black" stroke-width="${strokeWidth * 2}" d="M${pO.x} ${pO.y}L ${pE.x} ${pE.y}"/>`
+    const arrowPath = `<path fill="none" stroke="black" stroke-width="${strokeWidth}" d="M${pO.x} ${pO.y}L ${pE.x} ${pE.y}"/>`
     // стрелка азимута
     drawLineMark(result, MARK_TYPE.ARROW_30_FILL, pE, angleOf(pO, pE), 1, 'black')
     if (points.length < 4) {
@@ -187,17 +187,15 @@ lineDefinitions['017076'] = {
       sectorFill.d += 'z'
       const color = evaluateColor(sectorsInfo[iA]?.color) ?? 'black'
       const fillColor = evaluateColor(sectorsInfo[iA]?.fill) ?? 'transparent'
-      sectorsPath.push(`<path stroke="${color}" stroke-width="${strokeWidth * 2}"
-        fill-rule="evenodd" fill="${fillColor}" fill-opacity="0.22"
-        d="${sectorFill.d}"/>`)
+      sectorsPath.push(`<path stroke="${color}" fill="${fillColor}" d="${sectorFill.d}"/>`)
       heightSectorPrev = heightSector
     }
     sectorsPath.reverse()
     const id = result.layer.object.id
-    result.amplifiers += `<g mask="url(#mask-${id})">${arrowPath}`
+    result.amplifiers += `<g mask="url(#mask-${id})" stroke-width="${strokeWidth}" fill-rule="evenodd" fill-opacity="0.22">${arrowPath}`
     sectorsPath.forEach((sector) => { result.amplifiers += sector })
     result.amplifiers += `</g>`
-    result.layer._path.setAttribute('stroke-width', 0.1)
+    // result.layer._path.setAttribute('stroke-width', 0.1)
     // result.layer._path.setAttribute('stroke-opacity', 0)
   },
 }

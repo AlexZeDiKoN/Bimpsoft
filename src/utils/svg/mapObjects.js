@@ -2,9 +2,7 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-// import { Map, Record } from 'immutable'
 import { pointsToD } from '../../utils/svg/lines'
-// import SelectionTypes from '../../constants/SelectionTypes'
 import {
   getDashSizeByDpi,
   getFontSizeByDpi,
@@ -14,10 +12,11 @@ import {
   getStrokeWidthByDpi,
 } from './mapObject'
 
-const METERS_PER_INCH = 0.0254
+const METERS_PER_INCH = 0.0254 // м в дюйме
 const SEMI_MAJOR_AXIS = 6378245
 const TILE_SIZE = 256
-const DEG_TO_RAD = Math.PI / 180
+const DEG_TO_RAD = Math.PI / 180 // перевод градусов в радианы
+const NORMAL_SIZE = 96 // разрешение экрана WINDOWS в dpi
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
 const multiply = ({ x, y }, dx, dy) => ({ x: x * dx, y: y * dy })
@@ -108,28 +107,31 @@ export const getMapSvg = (
   const zoom = Math.round(Math.log2(
     SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
-  const scale = dpi / 96
+  const scale = dpi / NORMAL_SIZE
   const getFontSize = getFontSizeByDpi(printScale, dpi) // размер шрифта соответствует на карте 12 кеглю
   const graphicSize = getGraphicSizeByDpi(printScale, dpi)
   const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
   const getStrokeWidth = getStrokeWidthByDpi(printScale, dpi)
   const markerSize = graphicSize
   const dashSize = getDashSizeByDpi(printScale, dpi)
-  const commonData = {
-    bounds,
-    dpi,
-    coordToPixels,
-    scale,
+  const printOptions = {
     getFontSize,
     getStrokeWidth,
     graphicSize,
     markerSize,
     dashSize,
     pointSymbolSize,
+  }
+  const commonData = {
+    bounds,
+    coordToPixels,
+    dpi,
+    zoom,
+    scale,
     printScale,
     layersById,
     showAmplifiers,
-    zoom,
+    printOptions,
     objects,
   }
   const width = bounds.max.x - bounds.min.x
