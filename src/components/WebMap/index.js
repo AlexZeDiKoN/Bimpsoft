@@ -897,7 +897,11 @@ export default class WebMap extends React.PureComponent {
       }
       marchDots.forEach((dot) => {
         const marker = createSearchMarker(dot.coordinates, false)
-        marker.bindTooltip('my tooltip text', { direction: 'top', offset: new Point(0, -15) })
+        const { lat, lng } = dot.coordinates
+        const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
+
+        marker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
+
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
       })
