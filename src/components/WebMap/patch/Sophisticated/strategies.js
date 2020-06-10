@@ -9,6 +9,7 @@ import {
   alignmentAngle,
   angleBetweenPoints,
 } from '../utils/sectors'
+import { settings } from '../../../../utils/svg/lines'
 import {
   normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
   angleOf, oppositeVector, drawBezierSpline, getPointAt, neg, getPointSize,
@@ -538,7 +539,8 @@ export const DELETE = {
 
 export const RENDER = {
   // Заштрихована область з плавною границею, всередині точковий знак
-  hatchedAreaWihSymbol: (code, sizeScale, hatchingColor = 'yellow', hatchingWidth = 3, hatchingStep = 20) =>
+  hatchedAreaWihSymbol: (code, sizeScale,
+    hatchingColor = 'yellow', hatchingWidth = 3, hatchingStep = settings.CROSS_SIZE) =>
     (result, points) => {
       const sign = points[points.length - 1]
       const area = points.slice(0, -1)
@@ -549,9 +551,10 @@ export const RENDER = {
       result.layer._path.setAttribute('fill', hf)
       result.layer._path.setAttribute('width', 100)
       result.layer.options.fillColor = hf
+      result.layer.options.fillOpacity = 1
       result.amplifiers += `
         <pattern id="hatching" x="0" y="0" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
-          <line x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
+          <line stroke-linecap="butt" x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
         </pattern>`
       const sizeSymbol = getPointSize(result.layer) * sizeScale
       const symbol = new Symbol(code, { size: sizeSymbol }).asSVG()

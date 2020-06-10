@@ -20,7 +20,6 @@ import {
   getStylesForLineType,
   blockage,
   getPointAmplifier,
-  settings,
   HATCH_TYPE,
 } from './lines'
 import { renderTextSymbol } from './index'
@@ -38,6 +37,7 @@ export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
 export const getPixelInMm = (dpi) => dpi / MM_IN_INCH
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
 const LINE_WIDTH = 2 // индекс ширины для линий без определенной толщины
+const CROSS_SIZE = 32 // индекс ширины между линиями штриховки
 
 // Размер базового элемента пунктира (мм) в зависимости от маcштаба карты
 export const dashSizeFromScale = new Map([
@@ -142,7 +142,7 @@ const getSvgPath = (
   dpi,
   dashSize,
   options = {}) => {
-  const { color, fill, lineType, hatch, fillOpacity, fillColor, strokeWidth = 1 } = attributes
+  const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
   const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
   const strokeWidthToScale = strokeWidthPrint || strokeWidth
@@ -172,8 +172,8 @@ const getSvgPath = (
   // заливка або штрихування
   let fillOption = null
   if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
-    const cs = strokeWidthToScale + settings.CROSS_SIZE * scale
-    const sw = strokeWidthToScale
+    const cs = strokeWidthToScale + CROSS_SIZE
+    const sw = strokeWidthToScale * 2
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
@@ -194,10 +194,10 @@ const getSvgPath = (
         d={d}
       />
     </>
-  } else if (fillColor) { // заливка установлена в рендере линии
+  } else if (options.fill) { // заливка установлена в рендере линии
     fillOption = <path
-      fill={fillColor}
-      fillOpacity={fillOpacity ?? 0.22}
+      fill={options.fill}
+      fillOpacity={options.fillOpacity ?? 0.22}
       d={d}
     />
   } else if (fill) {
@@ -544,11 +544,12 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     if (!points || !points[0]) {
       return null
     }
-    const { color, fill, strokeWidth = LINE_WIDTH, lineType, hatch } = attributes
-    const options = {
+    const { color, fill, lineType, hatch } = attributes
+    const strokeWidth = printOptions.getStrokeWidth(attributes.strokeWidth)
+    const optionsRender = {
       color,
       fill,
-      strokeWidth: printOptions.getStrokeWidth(strokeWidth),
+      strokeWidth,
       lineType,
       hatch }
     // const fontSize = printOptions.getFontSize()
@@ -559,7 +560,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       layer: {
         object: objectData,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
-        options,
+        options: optionsRender,
         printOptions,
         getLatLngs: () => geometry.toJS(),
       },
@@ -570,9 +571,19 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       console.warn(e)
     }
     const strokeColor = colors.evaluateColor(attributes.color)
+    const options = {}
+    if (optionsRender.dashArray) {
+      options.strokeDasharray = optionsRender.dashArray
+    }
+    if (optionsRender.fillColor) {
+      options.fill = optionsRender.fillColor
+    }
+    if (optionsRender.fillOpacity) {
+      options.fillOpacity = optionsRender.fillOpacity
+    }
     return (
       <g id={id}>
-        {getSvgPath(container.d, options, layerData, 1, container.mask, bounds, id, options.strokeWidth, dpi)}
+        {getSvgPath(container.d, attributes, layerData, 1, container.mask, bounds, id, strokeWidth, dpi, null, options)}
         {Boolean(container.amplifiers) && (
           <g
             stroke={strokeColor}
