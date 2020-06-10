@@ -1,9 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, drawArc, segmentLength,
+  drawArc, segmentLength, getDashSize,
 } from '../utils'
-import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: MINE CLUSTER
 // task code: DZVIN-5774
@@ -28,10 +27,11 @@ lineDefinitions['290400'] = {
   // Рендер-функція
   render: (result, points, scale) => {
     const [ p0, p1 ] = points
-    drawLine(result, p0, p1)
     const r = segmentLength(p0, p1) / 2
-    drawArc(result, p0, p1, r)
-    result.layer.options.dashArray = settings.DASHARRAY * scale
-    result.layer._path.setAttribute('stroke-dasharray', settings.DASHARRAY * scale)
+    drawArc(result, p0, p1, r, 0, 0, 0, true)
+    // lineTo(result, p0, p1)
+    const dash = getDashSize(result.layer, scale) * 2
+    result.layer.options.dashArray = dash
+    result.layer._path.setAttribute('stroke-dasharray', dash)
   },
 }

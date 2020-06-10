@@ -2,7 +2,7 @@ import { Symbol } from '@DZVIN/milsymbol'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline, drawMaskedText,
+  drawBezierSpline, drawMaskedText, getPointSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 
@@ -11,7 +11,7 @@ import { amps } from '../../../../../constants/symbols'
 // hint: 'Район базування військової частини, підрозділу авіації'
 
 const CODE = '10032500001319000000'
-const SIZE = 96
+const SYMBOL_SCALE = 1.25
 
 lineDefinitions['120400'] = {
   // амплификатор
@@ -41,16 +41,16 @@ lineDefinitions['120400'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const sign = points[points.length - 2]
     const ampl = points[points.length - 1]
     const area = points.slice(0, -2)
 
     drawBezierSpline(result, area, true)
-
-    const symbol = new Symbol(CODE, { size: SIZE * scale }).asSVG()
-    const d = SIZE * scale / 2
-    result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
+    const size = getPointSize(result.layer) * SYMBOL_SCALE
+    const symbol = new Symbol(CODE, { size }).asSVG()
+    const d = size / 2
+    result.amplifiers += `<g transform="translate(${sign.x - d}, ${sign.y - d})">${symbol}</g>`
 
     drawMaskedText(result, ampl, 0, result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '')
   },

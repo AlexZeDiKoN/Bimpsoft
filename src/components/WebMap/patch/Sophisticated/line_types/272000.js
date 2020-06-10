@@ -5,7 +5,7 @@ import lineDefinitions from '../lineDefinitions'
 // task code: DZVIN-6163 (part 6)
 // hint: 'Район радіологічного зараження'
 
-const SIZE = 96
+const SYMBOL_SCALE = 2 // оношение к размеру точечных знаков
 const CODE = '10032500002817000000'
 
 lineDefinitions['272000'] = {
@@ -33,5 +33,5 @@ lineDefinitions['272000'] = {
   ],
 
   // Рендер-функція
-  render: RENDER.hatchedAreaWihSymbol(CODE, SIZE),
+  render: RENDER.hatchedAreaWihSymbol(CODE, SYMBOL_SCALE),
 }

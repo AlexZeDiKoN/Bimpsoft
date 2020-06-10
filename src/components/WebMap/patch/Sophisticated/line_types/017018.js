@@ -1,7 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline, getGraphicSize,
+  drawBezierSpline,
+  getGraphicSize,
 } from '../utils'
 
 // sign name: Район розповсюдження агітаційного матеріалу
@@ -37,8 +38,8 @@ lineDefinitions[CODE] = {
   render: (result, points) => {
     drawBezierSpline(result, points, true)
     const graphicSize = getGraphicSize(result.layer)
-    const cs = graphicSize * CROSS_SCALE // CROSS_SIZE * scale
-    const sw = graphicSize * STROKE_WIDTH_SCALE // STROKE_WIDTH * scale
+    const cs = graphicSize * CROSS_SCALE
+    const sw = graphicSize * STROKE_WIDTH_SCALE
     const fillId = `SVG-fill-pattern-${result.layer.object.id}`
     const fillColor = `url('#${fillId}')`
     const color = result.layer.object.attributes.color // _path.getAttribute('stroke')
