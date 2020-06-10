@@ -94,18 +94,21 @@ const SegmentBlock = (props) => {
       : <div className={'height-segment'}/>
     }
 
-    <SegmentButtonPopover
-      type={type}
-      content={
-        <PopupPanel
-          propData={{
-            ...segment,
-            segmentType: segment.type,
-            segmentId,
-            metric,
-            toggleDeleteMarchPointModal,
-          }} /> }
-    />
+    <Tooltip placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={ { offset: [ -7, 25 ] }}>
+      <SegmentButtonPopover
+        type={type}
+        content={
+          <PopupPanel
+            propData={{
+              ...segment,
+              segmentType: segment.type,
+              segmentId,
+              metric,
+              toggleDeleteMarchPointModal,
+            }} />
+        }
+      />
+    </Tooltip>
 
     {childrenIsPresent && children.map((child, id) => {
       const { distance, time } = metric.children[id]

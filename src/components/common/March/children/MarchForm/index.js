@@ -274,9 +274,11 @@ const MarchForm = (props) => {
         }
         {isViewBottomPanel &&
         <div className={'bottom-panel'}>
-          {segmentType === OWN_RESOURCES && point.time !== 0
+          {segmentType === OWN_RESOURCES && point.notEditableTime !== true
             ? <div className={'time-block'}>
-              <div className={'logo-time'}/>
+              <Tooltip placement='topRight' title={i18n.REST_TIME} align={ { offset: [ 10, 0 ] }}>
+                <div className={'logo-time'}/>
+              </Tooltip>
               <TimeInput
                 onChange={onChangeTime}
                 onBlur={onBlurTime}
@@ -284,10 +286,13 @@ const MarchForm = (props) => {
                 maxLength={10}
                 className={'time-input'}
               />
+
             </div>
             : <div/>
           }
-          <IButton icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
+          <Tooltip placement='topRight' title={i18n.DELETE_MARCH_POINT} align={ { offset: [ 5, 0 ] }}>
+            <IButton icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
+          </Tooltip>
         </div>
         }
       </div>
