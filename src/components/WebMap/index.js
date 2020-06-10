@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, control, point, popup } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, Point, control, point, popup } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
@@ -897,6 +897,11 @@ export default class WebMap extends React.PureComponent {
       }
       marchDots.forEach((dot) => {
         const marker = createSearchMarker(dot.coordinates, false)
+        const { lat, lng } = dot.coordinates
+        const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
+
+        marker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
+
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
       })

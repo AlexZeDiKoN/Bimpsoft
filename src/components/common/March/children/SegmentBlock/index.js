@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Tooltip } from 'antd'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
 import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
 import AddSegmentContextMenu from '../AddSegmentContextMenu'
 import utilsMarch from '../../utilsMarch'
+import i18n from './../../../../../i18n'
 
 const { getAllowedTypeSegments } = utilsMarch.reducersHelpers
 
@@ -119,7 +121,9 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
+      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT} align={ { offset: [ 13, 0 ] }}>
+        <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
+      </Tooltip>
       {isViewContextMenu && <AddSegmentContextMenu
         changeViewContextMenu={changeViewContextMenu}
         addSegment={addSegment}
@@ -127,7 +131,6 @@ const SegmentBlock = (props) => {
         segmentId={segmentId}
       />}
     </div>
-
   </div>)
 }
 
