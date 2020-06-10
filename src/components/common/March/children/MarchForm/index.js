@@ -202,7 +202,7 @@ const MarchForm = (props) => {
         </Tooltip>
         {(segmentType || childId || childId === 0)
           ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
-            <Tooltip placement='topRight' title={i18n.ADD_POINT}>
+            <Tooltip placement='topRight' title={i18n.ADD_POINT} align={ { offset: [ 13, 0 ] }}>
               {!(segmentType === OWN_RESOURCES && childId === undefined) &&
               <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
               }
@@ -274,7 +274,7 @@ const MarchForm = (props) => {
         }
         {isViewBottomPanel &&
         <div className={'bottom-panel'}>
-          {segmentType === OWN_RESOURCES
+          {segmentType === OWN_RESOURCES && point.time !== 0
             ? <div className={'time-block'}>
               <div className={'logo-time'}/>
               <TimeInput
