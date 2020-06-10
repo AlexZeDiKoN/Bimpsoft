@@ -74,6 +74,11 @@ export const MARK_TYPE = {
   SERIF_CROSS: 'serif_cross',
 }
 
+const SIN45 = 0.707
+const SIN60 = 0.866
+const SIN60_05 = 0.433
+const SIN30 = 0.5
+
 class Segment {
   constructor (start, finish) {
     this.start = start
@@ -612,7 +617,7 @@ const addUnitLine = (
       const r = markerSize / 6
       const vr = setLength(v, 0.01)
       const n = setLength(normal(v), markerSize * 0.83)
-      const nr = setLength(normal(v), markerSize * 0.5)
+      const nr = setLength(normal(v), markerSize * SIN30)
       const cp1 = apply(p2, nr)
       const cp2 = apply(cp1, vr)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
@@ -1131,28 +1136,28 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graph
   switch (type) {
     case MARK_TYPE.ARROW1: // 90
     {
-      const hArrow = graphicSize * 0.707
+      const hArrow = graphicSize * SIN45
       res += `<path fill="none" d="M${hArrow},${hArrow}L0,0L${hArrow} ${-hArrow}"/>`
       break
     }
     case MARK_TYPE.ARROW2: // 60 fill
     {
-      const oArrow = graphicSize * 0.866
-      const hArrow = graphicSize * 0.5
+      const oArrow = graphicSize * SIN60
+      const hArrow = graphicSize * SIN30
       res += `<path stroke="none" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${graphicSize}z"/>`
       break
     }
     case MARK_TYPE.ARROW3: // 90 dual
     {
-      const l = graphicSize * 0.707
-      const h = l / 4 + strokeWidth / 0.707
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
       res += `<path fill="none" d="M${0} 0l${l},${l} 0,${h} ${-l - h},${-l - h} ${l + h},${-l - h} 0,${h}z"/>`
       break
     }
     case MARK_TYPE.ARROW4: // 90 dual dash
     {
-      const l = graphicSize * 0.707
-      const h = l / 4 + strokeWidth / 0.707
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
       const lp = (h + l) / 8
       const ll = lp * 2
       res += `<path fill="none" d="M${l},${-l} L0,0l${l},${l} m0,${h}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}
@@ -1165,27 +1170,27 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graph
     case MARK_TYPE.STROKE2:
     {
       const hs = graphicSize / 4
-      const vs = graphicSize * 0.433
+      const vs = graphicSize * SIN60_05
       res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}"/>`
       break
     }
     case MARK_TYPE.STROKE3:
     {
       const hs = graphicSize / 4
-      const vs = graphicSize * 0.433
+      const vs = graphicSize * SIN60_05
       res += `<path fill="none" d="M${hs},${-vs}L${-hs},${vs}"/>`
       break
     }
     case MARK_TYPE.FORK:
     {
-      const l = graphicSize * 0.707
+      const l = graphicSize * SIN45
       res += `<path fill="none" d="M${-l},${-l}L0,0l${-l},${l}"/>`
       break
     }
     case MARK_TYPE.CROSS:
     {
       const hs = graphicSize / 2
-      const vs = graphicSize * 0.866
+      const vs = graphicSize * SIN60
       res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}M${-hs},${vs}L${hs},${-vs}"/>`
       break
     }
