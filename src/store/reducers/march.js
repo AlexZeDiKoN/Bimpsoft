@@ -5,6 +5,7 @@ import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
 import i18n from './../../i18n'
 
 const initState = {
+  readOnly: false,
   marchEdit: false,
   indicators: undefined,
   integrity: false,

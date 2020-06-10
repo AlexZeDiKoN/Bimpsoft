@@ -69,6 +69,7 @@ const March = (props) => {
     geoLandmarks,
     toggleGeoLandmarkModal,
     toggleDeleteMarchPointModal,
+    readOnly,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
@@ -101,6 +102,7 @@ const March = (props) => {
               addSegment={props.addSegment}
               segments={segments}
               toggleDeleteMarchPointModal={toggleDeleteMarchPointModal}
+              readOnly={readOnly}
             />
           </div>
           <div className={'form-container'}>
@@ -115,6 +117,7 @@ const March = (props) => {
               marchPoints={marchPoints}
               coordTypeSystem={coordTypeSystem}
               geoLandmarks={geoLandmarks}
+              readOnly={readOnly}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -128,6 +131,7 @@ const March = (props) => {
                 segmentType={segment.type}
                 {...child}
                 geoLandmarks={geoLandmarks}
+                readOnly={readOnly}
               />
             })}
           </div>
@@ -175,6 +179,7 @@ March.propTypes = {
   geoLandmarks: PropTypes.object.isRequired,
   toggleGeoLandmarkModal: PropTypes.func.isRequired,
   toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default React.memo(March)

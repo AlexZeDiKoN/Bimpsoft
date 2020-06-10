@@ -31,6 +31,7 @@ const PopupPanel = (props) => {
     velocity,
     metric,
     toggleDeleteMarchPointModal,
+    readOnly,
   } = propData
   const { time } = metric
   const distance = metric.distance.toFixed(1)
@@ -58,10 +59,12 @@ const PopupPanel = (props) => {
       {segmentId === 0
         ? <Input
           value={typeOfMove}
+          disabled={readOnly}
         />
         : <Select
           defaultValue={typeOfMove}
           onChange={onEditFormField('type')}
+          disabled={readOnly}
         >
           {correctedMB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
         </Select>
@@ -72,6 +75,7 @@ const PopupPanel = (props) => {
       <Select
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
+        disabled={readOnly}
       >
         {MB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
       </Select>
@@ -80,14 +84,23 @@ const PopupPanel = (props) => {
 
     <div className={'speed-block'}>
       <span>{i18n.AVERAGE_SPEED}: </span>
-      <InputNumber min={0} onChange={onChangeVelocity} value={velocity} maxLength={10} className={'velocity-input'}/>
+      <InputNumber
+        min={0}
+        onChange={onChangeVelocity}
+        value={velocity}
+        maxLength={10}
+        className={'velocity-input'}
+        disabled={readOnly}
+      />
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
       <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(time)}</div>
       { !required &&
       <Tooltip placement='topRight' title={i18n.DELETE_SEGMENT} align={ { offset: [ 12, 0 ] }}>
-        <div onClick={showDeleteConfirm} className={'delete-segment'} />
+        <div
+          onClick={(e) => { !readOnly && showDeleteConfirm(e) }}
+          className={`delete-segment ${readOnly ? 'march-disabled-element' : ''}`} />
       </Tooltip>
       }
     </div>
@@ -106,6 +119,7 @@ PopupPanel.propTypes = {
       distance: PropTypes.number.isRequired,
     }).isRequired,
     toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
   }).isRequired,
   MB001: PropTypes.shape({
     typeValues: PropTypes.array.isRequired,

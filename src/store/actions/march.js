@@ -416,7 +416,7 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const openMarch = (data) => asyncAction.withNotification(
   async (dispatch) => {
-    const { mapId } = data
+    const { mapId, readOnly } = data
 
     dispatch(openMapFolder(mapId, null, true))
     let segments
@@ -437,6 +437,7 @@ export const openMarch = (data) => asyncAction.withNotification(
       payload: data.payload,
       marchEdit: true,
       isCoordFilled,
+      readOnly,
     }
 
     dispatch({
@@ -447,9 +448,9 @@ export const openMarch = (data) => asyncAction.withNotification(
 
 export const sendMarchToExplorer = () =>
   (dispatch, getState) => {
-    const { march: { segments, isCoordFilled } } = getState()
+    const { march: { segments, isCoordFilled, readOnly } } = getState()
 
-    if (isCoordFilled) {
+    if (isCoordFilled && !readOnly) {
       const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
       const res = window.explorerBridge.saveMarch(segmentsForExplorer)
