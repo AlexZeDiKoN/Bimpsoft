@@ -7,6 +7,7 @@ import { MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
 import i18n from './../../i18n'
 import { openMapFolder } from './maps'
+import * as notifications from './notifications'
 import { asyncAction } from './index'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
@@ -452,6 +453,11 @@ export const sendMarchToExplorer = () =>
       const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
       const res = window.explorerBridge.saveMarch(segmentsForExplorer)
+      dispatch(notifications.push({
+        type: 'success',
+        message: i18n.MESSAGE,
+        description: i18n.SUCCESS_SEND_MARCH_TO_EXPLORER,
+      }))
       dispatch(closeMarch())
 
       return res
