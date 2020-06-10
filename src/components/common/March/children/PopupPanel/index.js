@@ -85,7 +85,11 @@ const PopupPanel = (props) => {
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
       <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(time)}</div>
-      { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
+      { !required &&
+      <Tooltip placement='topRight' title={i18n.DELETE_SEGMENT} align={ { offset: [ 12, 0 ] }}>
+        <div onClick={showDeleteConfirm} className={'delete-segment'} />
+      </Tooltip>
+      }
     </div>
   </div>
 }
