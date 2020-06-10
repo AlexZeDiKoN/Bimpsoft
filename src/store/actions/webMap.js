@@ -68,6 +68,8 @@ export const actionNames = {
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
+  TOGGLE_REPORT_MAP_MODAL: action('TOGGLE_REPORT_MAP_MODAL'),
+  SAVE_COP_REPORT: action('SAVE_COP_REPORT'),
   TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
   TOGGLE_DELETE_MARCH_POINT_MODAL: action('TOGGLE_DELETE_MARCH_POINT_MODAL'),
 }
@@ -642,6 +644,18 @@ export const getTopographicObjects = (data) =>
       payload: topographicObject,
     })
   })
+
+export const toggleReportMapModal = (visible, dataMap = null) => ({
+  type: actionNames.TOGGLE_REPORT_MAP_MODAL,
+  payload: {
+    visible,
+    dataMap,
+  },
+})
+
+export const saveCopReport = (mapName, fromMapId, dateOn) =>
+  asyncAction.withNotification((dispatch, _, { webmapApi: { createCOPReport } }) =>
+    createCOPReport(mapName, fromMapId, dateOn))
 
 async function performAction (record, direction, api, dispatch) {
   const { changeType, id, list, layer, oldData, newData } = record

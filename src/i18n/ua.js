@@ -66,6 +66,10 @@ export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`
 export const SHOW_UNBOUND_OBJECTS = 'Показати неприв\'язані об\'єкти'
 export const EXTRA_FUNCTIONS = 'Додаткові функції'
+export const CREATE_REPORT_MAP = 'Створити звітну карту?'
+export const NAME_OF_DOCUMENT = 'Назва документа (обовязково)'
+export const AS_OF = 'Станом на (обовязково)'
+export const REPORTING_CARD = 'Звітна карта'
 
 export const SHAPE_POLYLINE = 'Ломана лінія'
 export const SHAPE_CURVE = 'Крива'
@@ -209,6 +213,7 @@ export const SOUTH_EAST = 'Південний схід'
 export const NODAL_POINT_INDEX = (index) => `Точка ${index}`
 
 export const YES = 'Так'
+export const NO = 'Ні'
 export const EDIT = 'Редагувати'
 export const EDITING = 'Редагується'
 export const OBJECT_EDITING_BY = 'Цей тактичний знак зараз редагується користувачем'
@@ -304,6 +309,7 @@ export const CREATE = `Створити`
 export const SEND_TO_ICT = `Передати до ІРЗ склад угруповань в ОЗ`
 export const SENT_TO_ICT = `Склад угруповань в ОЗ успішно передано до ІРЗ`
 export const INVALID_UNITS_IN_GRID = 'Неоднозначність визначення місцеположення підрозділу'
+export const SAVE_AS = 'Зберегти як'
 // стани
 export const SENT_TO_PROCESSING = 'Надіслано в обробку'
 export const PUT_IN_QUEUE = 'Поставлено в чергу'

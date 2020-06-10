@@ -239,7 +239,7 @@ deploy-18:
     - master-2
   script:
     - rm .git -recurse -force
-    - cp build C:\$DeployDirTemp -recurse -force
+    - cp .\build\* C:\$DeployDirTemp -recurse -force
     - cp index.json e:\maps -force
 
 deploy-21:
@@ -250,7 +250,7 @@ deploy-21:
     - master-2
   script:
     - rm -recurse -force .git
-    - cp build \\172.16.95.21\c$\$DeployDirTemp -recurse -force
+    - cp .\build\* \\172.16.95.21\c$\$DeployDirTemp -recurse -force
     - cp index.json \\172.16.95.21\e$\maps  -force
 
         
