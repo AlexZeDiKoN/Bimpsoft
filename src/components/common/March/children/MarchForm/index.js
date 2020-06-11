@@ -195,10 +195,12 @@ const MarchForm = (props) => {
     toggleDeleteMarchPointModal(true, segmentId, childId)
   }
 
+  const dotFormId = `dot-form${type}${childId === undefined ? '' : childId}`
+
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
-        <Tooltip placement='topRight' title={i18n.MARCH_LOCATION}>
+        <Tooltip placement='topRight' title={i18n.MARCH_LOCATION} align={ { offset: [ isLast ? 0 : 13, 0 ] }}>
           <div className={`dot ${dotClass}`}/>
         </Tooltip>
         {(segmentType || childId || childId === 0)
@@ -212,15 +214,16 @@ const MarchForm = (props) => {
           : <div className={'vertical-block last-block'}/>
         }
       </div>
-      <div className={'dot-form'}>
+      <div className={'dot-form'} id={dotFormId} style={{ position: 'relative' }}>
         <div className={'march-coord'}>
           <Coordinates
             coordinates={coordinatesWithType}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
             isReadOnly={readOnly}
+            getPopupContainer={() => document.getElementById(dotFormId)}
           />
-          <Tooltip placement='topRight' title={i18n.POINT_ON_MAP}>
+          <Tooltip placement='topRight' title={i18n.POINT_ON_MAP} align={ { offset: [ 6, 0 ] }}>
             <div
               className={`logo-map ${readOnly ? 'march-disabled-element' : ''}`}
               onClick={() => { !readOnly && setCoordMode({ segmentId, childId }) }}
@@ -237,7 +240,7 @@ const MarchForm = (props) => {
             onDropdownVisibleChange={onDropdownVisibleChange}
             showSearch={true}
             disabled={readOnly}
-
+            getPopupContainer={() => document.getElementById(dotFormId)}
           >
             {formattedGeoLandmarks && formattedGeoLandmarks.map(({ propertiesText, geometry }, id) => (
               <Option
