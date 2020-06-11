@@ -22,7 +22,7 @@ export default class DeleteMapsForm extends React.Component {
     const { onOk, onCancel } = this.props
     return (
       <div className="confirm-close-maps">
-        {notClickableArea()}
+        {notClickableArea('')}
         <FocusTrap className="confirm-close-maps-overflow">
           <HotKeysContainer>
             {header(i18n.CLOSE_MAPS)}
@@ -34,7 +34,7 @@ export default class DeleteMapsForm extends React.Component {
                   <HotKey selector={shortcuts.ESC} onKey={onCancel} />
                   {buttonNo(onCancel)}
                 </FormItem>
-              </Form>
+              </Form>,
             )}
           </HotKeysContainer>
         </FocusTrap>
