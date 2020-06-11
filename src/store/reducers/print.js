@@ -6,7 +6,7 @@ const initState = {
   mapName: '',
   printScale: Print.PRINT_SCALES[0],
   requisites: {
-    dpi: Print.DPI_TYPES[2],
+    dpi: Print.DPI_TYPES[0],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendEnabled: false,
     legendAvailable: false,
@@ -35,10 +35,8 @@ export default function reducer (state = initState, action) {
       return { ...state, requisites }
     }
     case print.SELECTED_ZONE: {
-      const legendAvailable = true
-      // uncomment to enable legend restrictions
-      // const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
-      //   action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
+      const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
+        action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
       const requisites = { ...state.requisites, legendAvailable }
       return { ...state, requisites, selectedZone: action.selectedZone }
     }
