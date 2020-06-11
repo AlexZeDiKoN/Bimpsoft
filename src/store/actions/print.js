@@ -17,6 +17,7 @@ export const PRINT_REQUISITES_CLEAR = action('PRINT_REQUISITES_CLEAR')
 export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
 export const PRINT_FILE_LOG = action('PRINT_FILE_LOG')
+export const PRINT_MAP_AVAILABILITY = action('PRINT_MAP_AVAILABILITY')
 
 export const print = (mapId = null, name = '') =>
   (dispatch, getState) => {
@@ -146,3 +147,19 @@ export const createPrintFile = (onError = null) =>
       throw new Error(PRINT_ZONE_UNDEFINED)
     }
   })
+
+// запит наявності номенклатурних листів
+export const getMapAvailability = (gridId, printScale, coordinates) =>
+  async (dispatch, getState, { webmapApi: { printFileMapAvailability } }) => {
+    const coordinate = [
+      { lat: coordinates[0][0], lng: coordinates[0][1] },
+      { lat: coordinates[1][0], lng: coordinates[1][1] },
+    ]
+    // запит на сервер
+    const isMap = await printFileMapAvailability(printScale, coordinate)
+    const availability = !!(isMap.unavailable && isMap.unavailable.length === 0)
+    dispatch({
+      type: PRINT_MAP_AVAILABILITY,
+      payload: { gridId, availability },
+    })
+  }

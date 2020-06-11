@@ -1,5 +1,11 @@
 import { latLngBounds } from 'leaflet'
-import { INIT_GRID_OPTIONS, SELECTED_CELL_OPTIONS, CELL_SIZES } from '../constants'
+import {
+  INIT_GRID_OPTIONS,
+  SELECTED_CELL_OPTIONS,
+  CELL_SIZES,
+  SELECTED_CELL_OPTIONS_NOT_MAP,
+  INIT_GRID_OPTIONS_NOT_MAP,
+} from '../constants'
 import {
   addLayerToCurrentGrid,
   addLayerToSelectedLayers,
@@ -7,15 +13,45 @@ import {
   removeLayerFromSelectedLayers,
 } from '../helpers'
 
+// обновление состояния номенклатурных листов после получения ответа от сервера
+export const updateStyleLayer = (gridId, availability, currentGrid, selectedLayers) => {
+  currentGrid.getLayers().some((layer) => {
+    if (layer?.options?.id === gridId) {
+      layer.options.availability = availability
+      const style = availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP
+      layer.setStyle(style)
+      return true
+    }
+    return false
+  })
+  selectedLayers.getLayers().some((layer) => {
+    if (layer?.options?.id === gridId) {
+      layer.options.availability = availability
+      const style = availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP
+      layer.setStyle(style)
+      return true
+    }
+    return false
+  })
+}
+
 // додати листи до групи виділених
 const addToSelected = (layer, currentGrid, selectedLayers) => {
-  layer.setStyle(SELECTED_CELL_OPTIONS)
+  if (layer.options.availability) { // проверка наличия номенклатурных листов
+    layer.setStyle(SELECTED_CELL_OPTIONS)
+  } else {
+    layer.setStyle(SELECTED_CELL_OPTIONS_NOT_MAP)
+  }
   removeLayerFromCurrentGrid(layer, currentGrid)
   addLayerToSelectedLayers(layer, selectedLayers)
 }
 
 const addToDeselected = (layer, currentGrid, selectedLayers) => {
-  layer.setStyle(INIT_GRID_OPTIONS)
+  if (layer.options.availability) { // проверка наличия номенклатурных листов
+    layer.setStyle(INIT_GRID_OPTIONS)
+  } else {
+    layer.setStyle(INIT_GRID_OPTIONS_NOT_MAP)
+  }
   removeLayerFromSelectedLayers(layer, selectedLayers)
   addLayerToCurrentGrid(layer, currentGrid)
 }
