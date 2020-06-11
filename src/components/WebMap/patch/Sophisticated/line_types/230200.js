@@ -1,9 +1,8 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine,
+  drawLine, getDashSize,
 } from '../utils'
-import { settings } from '../../../../../utils/svg/lines'
 
 // sign name: DECOY/DUMMY AND FEINT
 // task code: DZVIN-5801
@@ -29,8 +28,9 @@ lineDefinitions['230200'] = {
   // Рендер-функція
   render: (result, points, scale) => {
     const [ p0, p1, p2 ] = points
-    result.layer.options.dashArray = settings.DASHARRAY * scale
-    result.layer._path.setAttribute('stroke-dasharray', settings.DASHARRAY * scale)
+    const dash = getDashSize(result.layer, scale)
+    result.layer.options.dashArray = dash
+    result.layer._path.setAttribute('stroke-dasharray', dash)
     drawLine(result, p0, p2, p1)
   },
 }

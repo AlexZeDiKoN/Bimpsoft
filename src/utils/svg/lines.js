@@ -66,13 +66,18 @@ export const MARK_TYPE = {
   ARROW4: 'arrow4',
   STROKE1: 'stroke1',
   STROKE2: 'stroke2',
-  STROKE3: 'stroke2',
+  STROKE3: 'stroke3',
   FORK: 'fork',
   CROSS: 'cross',
   SERIF: 'serif',
   ANGLE: 'angle',
   SERIF_CROSS: 'serif_cross',
 }
+
+const SIN45 = 0.707
+const SIN60 = 0.866
+const SIN60_05 = 0.433
+const SIN30 = 0.5
 
 class Segment {
   constructor (start, finish) {
@@ -612,7 +617,7 @@ const addUnitLine = (
       const r = markerSize / 6
       const vr = setLength(v, 0.01)
       const n = setLength(normal(v), markerSize * 0.83)
-      const nr = setLength(normal(v), markerSize * 0.5)
+      const nr = setLength(normal(v), markerSize * SIN30)
       const cp1 = apply(p2, nr)
       const cp2 = apply(cp1, vr)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
@@ -823,6 +828,7 @@ const getTextAmplifiers = ({
   fontColor,
   fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
+  strokeWidth,
 }) => {
   const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
   const fillColor = color ? `fill="${color}"` : ``
@@ -848,7 +854,7 @@ const getTextAmplifiers = ({
         }
         // стрелки на промежуточных точкакх
         if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
-          return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
+          return [ type, drawIntermediateArrow(amplifierType, graphicSize, strokeWidth) ]
         }
       }
 
@@ -1120,54 +1126,74 @@ export const getAmplifiers = ({
   return result
 }
 
-export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, strokeColor = 'black') => {
-  let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
+export const drawArrowFill = ({ x, y }, angle, strokeWidth = 2, colorFill = 'black', oArrow, hArrow) => {
+  const path = `<path stroke="none" fill="${colorFill}" fill-opacity="1" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${2 * hArrow}z"/>`
+  return `<g transform="translate(${x},${y}) rotate(${angle})">${path}</g>`
+}
+
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graphicSize) => {
+  let res = `<g stroke-width="${strokeWidth}" transform="translate(${x},${y}) rotate(${angle})">`
   switch (type) {
-    case MARK_TYPE.ARROW_90:
-      res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
-      break
-    case MARK_TYPE.ARROW_60:
-      res += `<path fill="none" d="M11-6 l-11,6 11,6"/>`
-      break
-    case MARK_TYPE.ARROW_45:
-      res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
-      break
-    case MARK_TYPE.ARROW_30:
-      res += `<path fill="none" d="M12-3 l-12,3 12,3"/>`
-      break
-    case MARK_TYPE.ARROW_30_FILL:
-      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-4v8z"/>`
-      break
-    case MARK_TYPE.ARROW_60_FILL:
-      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l12-6v12z"/>`
-      break
     case MARK_TYPE.ARROW1: // 90
-      res += `<path fill="none" d="M7,-8 l-8,8 8,8"/>`
+    {
+      const hArrow = graphicSize * SIN45
+      res += `<path fill="none" d="M${hArrow},${hArrow}L0,0L${hArrow} ${-hArrow}"/>`
       break
+    }
     case MARK_TYPE.ARROW2: // 60 fill
-      res += `<path stroke="none" d="M9,-7 l-12,7 l12,7 Z"/>`
+    {
+      const oArrow = graphicSize * SIN60
+      const hArrow = graphicSize * SIN30
+      res += `<path stroke="none" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${graphicSize}z"/>`
       break
-    case MARK_TYPE.ARROW3:
-      res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
+    }
+    case MARK_TYPE.ARROW3: // 90 dual
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      res += `<path fill="none" d="M${0} 0l${l},${l} 0,${h} ${-l - h},${-l - h} ${l + h},${-l - h} 0,${h}z"/>`
       break
-    case MARK_TYPE.ARROW4:
-      res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+    }
+    case MARK_TYPE.ARROW4: // 90 dual dash
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      const lp = (h + l) / 8
+      const ll = lp * 2
+      res += `<path fill="none" d="M${l},${-l} L0,0l${l},${l} m0,${h}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}
+      ${ll},${-ll}m${lp},${-lp}l${ll},${-ll}m${lp},${-lp}l${ll},${-ll}"/>`
       break
+    }
     case MARK_TYPE.STROKE1:
-      res += `<path d="M0,-8 v16"/>`
+      res += `<path fill="none" d="M0,${-graphicSize / 2}v${graphicSize}"/>`
       break
     case MARK_TYPE.STROKE2:
-      res += `<path d="M-4,-6 l6,12"/>`
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}"/>`
       break
+    }
     case MARK_TYPE.STROKE3:
-      res += `<path d="M2,-6 l-6,12"/>`
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${hs},${-vs}L${-hs},${vs}"/>`
       break
+    }
     case MARK_TYPE.FORK:
-      res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
+    {
+      const l = graphicSize * SIN45
+      res += `<path fill="none" d="M${-l},${-l}L0,0l${-l},${l}"/>`
       break
+    }
     case MARK_TYPE.CROSS:
-      res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
+    {
+      const hs = graphicSize / 2
+      const vs = graphicSize * SIN60
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}M${-hs},${vs}L${hs},${-vs}"/>`
       break
+    }
     default:
       break
   }
@@ -1195,13 +1221,13 @@ export const getStylesForLineType = (type, scale = 1, dashSize = 6) => {
   return styles
 }
 
-export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, graphicSizePrint) => {
+export const getLineEnds = (points, objectAttributes, bezier, strokeWidth, graphicSize) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
-  const graphicSize = (graphicSizePrint || interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1)) / 12
+  const scaleLineEnd = graphicSize / 12
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]
   if (bezier) {
@@ -1220,6 +1246,8 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, g
         leftEndType,
         points[0],
         angle(vector(points[0], leftPlus)),
+        scaleLineEnd,
+        strokeWidth,
         graphicSize,
       )
       : null),
@@ -1228,6 +1256,8 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, g
         rightEndType,
         points[points.length - 1],
         angle(vector(points[points.length - 1], rightMinus)),
+        scaleLineEnd,
+        strokeWidth,
         graphicSize,
       )
       : null),
