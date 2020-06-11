@@ -60,13 +60,23 @@ const PopupPanel = (props) => {
         ? <Input
           value={typeOfMove}
           disabled={readOnly}
+          className={'march-active-value'}
         />
         : <Select
           defaultValue={typeOfMove}
           onChange={onEditFormField('type')}
           disabled={readOnly}
+          className={'march-active-value'}
         >
-          {correctedMB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+          {correctedMB001.map(({ id, name }) => (
+            <Select.Option
+              key={id}
+              value={id}
+              className={'march-active-value'}
+            >
+              {name}
+            </Select.Option>
+          ))}
         </Select>
       }
     </Tooltip>
@@ -76,8 +86,16 @@ const PopupPanel = (props) => {
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
         disabled={readOnly}
+        className={'march-active-value'}
       >
-        {MB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+        {MB007.map(({ id, name }) => (
+          <Select.Option
+            className={'march-active-value'}
+            key={id} value={id}
+          >
+            {name}
+          </Select.Option>
+        ))}
       </Select>
     </Tooltip>
     }
@@ -89,7 +107,7 @@ const PopupPanel = (props) => {
         onChange={onChangeVelocity}
         value={velocity}
         maxLength={10}
-        className={'velocity-input'}
+        className={'velocity-input march-active-value'}
         disabled={readOnly}
       />
     </div>

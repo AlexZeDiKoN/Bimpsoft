@@ -6,7 +6,7 @@ import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import { MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
 import i18n from './../../i18n'
-import { openMapFolder } from './maps'
+import { openMapFolder, deleteMap } from './maps'
 import * as notifications from './notifications'
 import { asyncAction } from './index'
 
@@ -438,6 +438,7 @@ export const openMarch = (data) => asyncAction.withNotification(
       marchEdit: true,
       isCoordFilled,
       readOnly,
+      mapId,
     }
 
     dispatch({
@@ -467,9 +468,17 @@ export const sendMarchToExplorer = () =>
     return null
   }
 
-export const closeMarch = () => ({
-  type: CLOSE_MARCH,
-})
+export const closeMarch = () =>
+  (dispatch, getState) => {
+    const { march: { mapId } } = getState()
+
+    mapId && dispatch(deleteMap(mapId))
+    dispatch({
+      type: CLOSE_MARCH,
+    })
+
+    return null
+  }
 
 export const addGeoLandmark = (coordinates, geoLandmark, segmentId, childId) => ({
   type: ADD_GEO_LANDMARK,

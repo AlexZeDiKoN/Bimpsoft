@@ -235,15 +235,15 @@ const MarchForm = (props) => {
             onChange={onChangeRefPoint}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
-            defaultActiveFirstOption={false}
             showSearch={true}
             disabled={readOnly}
+
           >
             {formattedGeoLandmarks && formattedGeoLandmarks.map(({ propertiesText, geometry }, id) => (
               <Option
                 key={id}
                 value={propertiesText}
-                className={'select-point-item'}
+                className={'march-active-value'}
               >
                 <GeoLandmarkItem
                   id={id}

@@ -6,6 +6,7 @@ import i18n from './../../i18n'
 
 const initState = {
   readOnly: false,
+  mapId: null,
   marchEdit: false,
   indicators: undefined,
   integrity: false,
