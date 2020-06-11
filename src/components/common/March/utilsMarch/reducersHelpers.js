@@ -33,7 +33,7 @@ const defaultSegment = (type) => {
   switch (type) {
     case OWN_RESOURCES:
       specificFields.type = OWN_RESOURCES
-      specificFields.children = [ defaultChild() ]
+      specificFields.children = [ { ...defaultChild(), type: 5 } ]
       break
     case BY_RAILROAD:
       specificFields.type = BY_RAILROAD
@@ -43,7 +43,7 @@ const defaultSegment = (type) => {
       break
     default:
       specificFields.type = OWN_RESOURCES
-      specificFields.children = [ defaultChild() ]
+      specificFields.children = [ { ...defaultChild(), type: 5 } ]
   }
 
   return {
@@ -68,9 +68,8 @@ const getAllowedTypeSegments = (segments, segmentId) => {
     [BY_SHIPS]: BY_SHIPS,
   }
 
-  //const prevSegment = segments[segmentId]
-  //const nextSegment = segments[segmentId + 1]
-
+  // const prevSegment = segments[segmentId]
+  // const nextSegment = segments[segmentId + 1]
 
   // delete allowedType[prevSegment.type]
   // delete allowedType[nextSegment.type]

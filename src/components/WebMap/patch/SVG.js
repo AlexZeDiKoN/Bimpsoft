@@ -7,12 +7,12 @@ import {
   getLineEnds,
   blockage,
   drawLineHatch,
-  getPointAmplifier,
+  getPointAmplifier, settings,
 } from '../../../utils/svg/lines'
 import { evaluateColor } from '../../../constants/colors'
 import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import { setClassName, scaleValue } from './utils/helpers'
+import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -531,14 +531,13 @@ L.SVG.include({
   },
 
   _updateLineEnds: function (layer, bezier) {
-    // const { options: { weight }, strokeWidth } = layer
-    // const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
+    const graphicSize = interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
     const { left, right } = getLineEnds(
       layer._rings[0],
       layer.object?.attributes,
       bezier,
-      1,
-      layer._map.getZoom(),
+      layer.options.weight,
+      graphicSize,
     )
     if (!left && !right) {
       return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()

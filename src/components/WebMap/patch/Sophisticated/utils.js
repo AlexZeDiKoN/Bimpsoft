@@ -3,11 +3,11 @@ import { applyToPoint, compose, rotate, translate } from 'transformation-matrix'
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
-import { drawLineEnd, MARK_TYPE, settings } from '../../../../utils/svg/lines'
+import { drawArrowFill, MARK_TYPE, settings } from '../../../../utils/svg/lines'
 import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg'
 import { evaluateColor } from '../../../../constants/colors'
 import lineDefinitions from './lineDefinitions'
-import { coordinatesToPolar } from './arrowLib'
+import { coordinatesToPolar, lengthLine } from './arrowLib'
 import { CONFIG } from '.'
 
 const EPSILON = 1e-12
@@ -287,14 +287,32 @@ export const drawLine = (result, p1, ...rest) => {
   rest.forEach((point) => lineTo(result, point))
 }
 
+// Пунктирна линия між  вказаними точками
+export const drawLineDashed = (result, pBegin, pEnd, dashed) => {
+  moveTo(result, pBegin)
+  const length = lengthLine(pBegin, pEnd)
+  const n = Math.floor(length / dashed / 2)
+  let pP
+  for (let i = 0; i < n; i++) {
+    pP = getPointAt(pEnd, pBegin, 0, -dashed * (i * 2 + 1))
+    lineTo(result, pP)
+    pP = getPointAt(pEnd, pBegin, 0, -dashed * (i * 2 + 2))
+    moveTo(result, pP)
+  }
+  lineTo(result, pEnd)
+}
+
 // Дуга кола до вказаної точки // (rx, ry, xAxisRotation, largeArcFlag, sweepFlag, x, y)
 export const arcTo = (result, p, rx, ry, ar = 0, la = 0, sf = 0) =>
   (result.d += ` A${rx} ${ry} ${ar} ${la} ${sf} ${p.x} ${p.y}`)
 
 // Дуга кола між вказаними точками
-export const drawArc = (result, p1, p2, r, ar = 0, la = 0, sf = 0) => {
+export const drawArc = (result, p1, p2, r, ar = 0, la = 0, sf = 0, z = false) => {
   moveTo(result, p1)
   arcTo(result, p2, r, r, ar, la, sf)
+  if (z) {
+    result.d += `Z`
+  }
 }
 
 export const drawCircle = (result, center, radius) => {
@@ -663,9 +681,16 @@ function getLeftPoint (points, lP, nP) {
   return indexR
 }
 
-export const drawLineMark = (result, markType, point, angle, scale, color) => {
-  const graphicSize = getGraphicSize(result.layer, scale)
+// отресовка стрелок и оконцовок для линий ( пока только SOPHIISTICATED)
+// не требующие заливки добавляются в "d" к пути линии
+// требующие заливки выводятся в амплификаторы
+export const drawLineMark = (result, markType, point, angle, scale = 1, color, lineWidth = 1) => {
+  const graphicSize = getGraphicSize(result.layer)
+  const strokeWidth = getStrokeWidth(result.layer, lineWidth, scale)
+  let colorFill
   let da
+  let hArrow
+  let oArrow
   switch (markType) {
     case MARK_TYPE.SERIF:
       drawLine(result,
@@ -700,14 +725,20 @@ export const drawLineMark = (result, markType, point, angle, scale, color) => {
     case MARK_TYPE.ARROW_90_DASHES:
       drawArrowDashes(result, point, angle, graphicSize)
       return graphicSize
-    default: { // для стрілок з заливкою
-      const colorFill = color || evaluateColor(result.layer.object.attributes.color) || 'black'
-      result.amplifiers += drawLineEnd(markType,
-        point,
-        Math.round(deg(angle)),
-        graphicSize / 12,
-        result.layer.strokeWidth,
-        colorFill)
+    case MARK_TYPE.ARROW2:
+    case MARK_TYPE.ARROW_60_FILL: // для стрілок з заливкою
+      oArrow = graphicSize * 0.866
+      hArrow = graphicSize * 0.5
+      colorFill = color || evaluateColor(result.layer.object.attributes.color) || 'black'
+      result.amplifiers += drawArrowFill(point, deg(angle), strokeWidth, colorFill, oArrow, hArrow)
+      return graphicSize
+    case MARK_TYPE.ARROW_30_FILL: // для стрілок з заливкою
+      oArrow = graphicSize * 0.966
+      hArrow = graphicSize * 0.26
+      colorFill = color || evaluateColor(result.layer.object.attributes.color) || 'black'
+      result.amplifiers += drawArrowFill(point, deg(angle), strokeWidth, colorFill, oArrow, hArrow)
+      return graphicSize
+    default: { // для невідомих стрілок
       return graphicSize
     }
   }
@@ -716,28 +747,46 @@ export const drawLineMark = (result, markType, point, angle, scale, color) => {
 }
 
 // Обчислення розміру шрифту
-export const getFontSize = (layer, scale = 1) => {
-  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
-    return interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, scale)
+export const getFontSize = (layer, sizeFactor = 1) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.getFontSize() * sizeFactor || 12
   }
-  // статичний розмір (для друку)
-  return Math.round(layer.fontSize * scale) || 1
+  // розмір залежить від маштабу (для екрану)
+  return interpolateSize(layer._map.getZoom(), settings.TEXT_AMPLIFIER_SIZE, sizeFactor)
 }
 
 // Обчислення розміру маркера
-export const getGraphicSize = (layer, scale = 1) => {
-  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
-    return interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE, scale)
+export const getGraphicSize = (layer) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.graphicSize
   }
-  // статичний розмір (для друку)
-  return layer.graphicSize || 1
+  // розмір залежить від маштабу (для екрану)
+  return interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
 }
 
 // Обчислення розміру точкового знаку
-export const getPointSize = (layer, scale = 1) => {
-  if (layer?._map?.getZoom) { // розмір залежить від маштабу (для екрану)
-    return interpolateSize(layer._map.getZoom(), settings.POINT_SYMBOL_SIZE, scale)
+export const getPointSize = (layer) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.pointSymbolSize
   }
-  // статичний розмір (для друку)
-  return layer.pointSymbolSize * scale || 10
+  // розмір залежить від маштабу (для екрану)
+  return interpolateSize(layer._map.getZoom(), settings.POINT_SYMBOL_SIZE)
+}
+
+// Обчислення товщини линії
+export const getStrokeWidth = (layer, width, scale = 1) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.getStrokeWidth(width)
+  }
+  // розмір залежить від маштабу (для екрану)
+  return layer.options.weight ?? (settings.LINE_WIDTH * scale)
+}
+
+// Обчислення розміру пунктиру
+export const getDashSize = (layer, scale) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.dashSize
+  }
+  // розмір залежить від маштабу (для екрану)
+  return settings.DASHARRAY * scale
 }

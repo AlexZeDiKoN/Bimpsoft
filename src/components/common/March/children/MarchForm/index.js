@@ -58,6 +58,7 @@ const MarchForm = (props) => {
     type,
     coordTypeSystem,
     geoLandmarks,
+    readOnly,
   } = props
   const {
     editFormField,
@@ -194,16 +195,18 @@ const MarchForm = (props) => {
     toggleDeleteMarchPointModal(true, segmentId, childId)
   }
 
+  const dotFormId = `dot-form${type}${childId === undefined ? '' : childId}`
+
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
-        <Tooltip placement='topRight' title={i18n.MARCH_LOCATION}>
+        <Tooltip placement='topRight' title={i18n.MARCH_LOCATION} align={ { offset: [ isLast ? 0 : 13, 0 ] }}>
           <div className={`dot ${dotClass}`}/>
         </Tooltip>
         {(segmentType || childId || childId === 0)
           ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
             <Tooltip placement='topRight' title={i18n.ADD_POINT} align={ { offset: [ 13, 0 ] }}>
-              {!(segmentType === OWN_RESOURCES && childId === undefined) &&
+              {!(segmentType === OWN_RESOURCES && childId === undefined) && !readOnly &&
               <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
               }
             </Tooltip>
@@ -211,15 +214,20 @@ const MarchForm = (props) => {
           : <div className={'vertical-block last-block'}/>
         }
       </div>
-      <div className={'dot-form'}>
+      <div className={'dot-form'} id={dotFormId} style={{ position: 'relative' }}>
         <div className={'march-coord'}>
           <Coordinates
             coordinates={coordinatesWithType}
             onSearch={placeSearch}
             onExitWithChange={onBlurCoordinates}
+            isReadOnly={readOnly}
+            getPopupContainer={() => document.getElementById(dotFormId)}
           />
-          <Tooltip placement='topRight' title={i18n.POINT_ON_MAP}>
-            <div className={'logo-map'} onClick={() => setCoordMode({ segmentId, childId })}/>
+          <Tooltip placement='topRight' title={i18n.POINT_ON_MAP} align={ { offset: [ 6, 0 ] }}>
+            <div
+              className={`logo-map ${readOnly ? 'march-disabled-element' : ''}`}
+              onClick={() => { !readOnly && setCoordMode({ segmentId, childId }) }}
+            />
           </Tooltip>
         </div>
         <Tooltip placement='left' title={ refPoint ? '' : i18n.GEOGRAPHICAL_LANDMARK}>
@@ -230,13 +238,15 @@ const MarchForm = (props) => {
             onChange={onChangeRefPoint}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
-            defaultActiveFirstOption={false}
             showSearch={true}
+            disabled={readOnly}
+            getPopupContainer={() => document.getElementById(dotFormId)}
           >
             {formattedGeoLandmarks && formattedGeoLandmarks.map(({ propertiesText, geometry }, id) => (
               <Option
                 key={id}
                 value={propertiesText}
+                className={'march-active-value'}
               >
                 <GeoLandmarkItem
                   id={id}
@@ -257,6 +267,7 @@ const MarchForm = (props) => {
         {isStaticPointType
           ? <Input
             value={pointTypeName}
+            disabled={readOnly}
           />
           : <Select
             className={'select-point'}
@@ -264,6 +275,7 @@ const MarchForm = (props) => {
             defaultValue={pointTypeName}
             value={pointTypeName}
             onChange={onChangeMarchPointType}
+            disabled={readOnly}
           >
             {marchPoints.map(({ name }, id) => (
               <Option key={id} value={id}>
@@ -274,20 +286,26 @@ const MarchForm = (props) => {
         }
         {isViewBottomPanel &&
         <div className={'bottom-panel'}>
-          {segmentType === OWN_RESOURCES && point.time !== 0
+          {segmentType === OWN_RESOURCES && point.notEditableTime !== true
             ? <div className={'time-block'}>
-              <div className={'logo-time'}/>
+              <Tooltip placement='topRight' title={i18n.REST_TIME} align={ { offset: [ 10, 0 ] }}>
+                <div className={'logo-time'}/>
+              </Tooltip>
               <TimeInput
                 onChange={onChangeTime}
                 onBlur={onBlurTime}
                 value={pointTime}
                 maxLength={10}
                 className={'time-input'}
+                disabled={readOnly}
               />
+
             </div>
             : <div/>
           }
-          <IButton icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
+          <Tooltip placement='topRight' title={i18n.DELETE_MARCH_POINT} align={ { offset: [ 5, 0 ] }}>
+            <IButton disabled={readOnly} icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
+          </Tooltip>
         </div>
         }
       </div>
@@ -317,6 +335,7 @@ MarchForm.propTypes = {
   type: PropTypes.number,
   coordTypeSystem: PropTypes.string.isRequired,
   geoLandmarks: PropTypes.object.isRequired,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 GeoLandmarkItem.propTypes = {

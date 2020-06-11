@@ -1,21 +1,22 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawText, drawCircle,
+  drawText,
+  drawCircle,
+  getStrokeWidth,
 } from '../utils'
 import {
   isDefPoint, lengthLine,
 } from '../arrowLib'
-import { settings } from '../../../../../utils/svg/lines'
 import { evaluateColor } from '../../../../../constants/colors'
 
 // sign name: Зони РХБЗ
 // task code: DZVIN-5540 (part 3)
 // hint: 'Мінімально безпечні відстані радіаційного забруднення місцевості'
 
-const COLORS = [ 'black', 'blue', 'red', 'green' ]
+const COLORS = [ 'black', 'blue', 'red', 'green', 'black' ]
 const MARKER = [ '', 'А', 'Б', 'В', 'Г' ]
-const TEXT_SIZE = 1 // коэфициент размера текстового амплификатора
+const TEXT_SIZE = 1 // коэффициент размера текстового амплификатора
 
 lineDefinitions['272100'] = {
   // начальные цвета круговых секторов
@@ -79,11 +80,10 @@ lineDefinitions['272100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     if (points.length < 1) { return }
-    const width = result.layer.options.weight ?? (settings.STROKE_WIDTH * scale)
+    const width = getStrokeWidth(result.layer)
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
-    result.layer._path.setAttribute('stroke-width', 0.1)
     const pO = points[0]
     const endIndex = points.length - 1
     points.forEach((point, ind, points) => {
@@ -96,7 +96,7 @@ lineDefinitions['272100'] = {
           const prevPoint = (ind < endIndex) ? points[ind + 1] : pO
           const prevRadius = lengthLine(pO, prevPoint)
           // заливка сектора
-          result.amplifiers += `<path fill-rule="evenodd" stroke-width="0" fill="${fillColor}" fill-opacity="0.22" 
+          result.amplifiers += `<path fill-rule="evenodd" stroke="transparent" stroke-width="${width}" fill="${fillColor}" fill-opacity="0.22" 
             d="M${point.x} ${point.y} a${radius} ${radius} 90 1 1 0 -0.01z M${prevPoint.x} ${prevPoint.y} a${prevRadius} ${prevRadius} 0 1 1 0 -0.01z"/>`
           // цвет круга
           result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="none" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
