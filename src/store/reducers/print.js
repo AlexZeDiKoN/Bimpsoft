@@ -70,8 +70,10 @@ export default function reducer (state = initState, action) {
     }
     case print.PRINT_MAP_AVAILABILITY: { // добавляем в хранилище ответ на запрос о существование номенклатурного листа
       const mapAvailability = { ...state.mapAvailability }
-      const { gridId, availability } = payload
-      mapAvailability[gridId] = availability
+      const { gridIdRequest, gridIdUnavailable } = payload
+      gridIdRequest.forEach((gridId) => {
+        mapAvailability[gridId] = !gridIdUnavailable.includes(gridId)
+      })
       return { ...state, mapAvailability }
     }
     default:

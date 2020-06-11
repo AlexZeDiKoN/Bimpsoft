@@ -7,6 +7,7 @@ import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
 import { LS } from '../../utils'
 import { Print } from '../../constants'
+import { LAT, LNG } from '../../services/coordinateGrid/constants'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -149,17 +150,17 @@ export const createPrintFile = (onError = null) =>
   })
 
 // запит наявності номенклатурних листів
-export const getMapAvailability = (gridId, printScale, coordinates) =>
+export const getMapAvailability = (printScale, coordinates) =>
   async (dispatch, getState, { webmapApi: { printFileMapAvailability } }) => {
-    const coordinate = [
-      { lat: coordinates[0][0], lng: coordinates[0][1] },
-      { lat: coordinates[1][0], lng: coordinates[1][1] },
-    ]
+    const coordinatesRequest = coordinates.map((coordinate) => {
+      return { lat: coordinate[LAT], lng: coordinate[LNG] }
+    })
     // запит на сервер
-    const isMap = await printFileMapAvailability(printScale, coordinate)
-    const availability = !!(isMap.unavailable && isMap.unavailable.length === 0)
+    const response = await printFileMapAvailability(printScale, coordinatesRequest)
+    const gridIdRequest = coordinates.map((coord) => `${printScale}_${coord[LAT].toFixed(6)}_${coord[LNG].toFixed(6)}`)
+    const gridIdUnavailable = response.unavailable.map((coord) => `${printScale}_${coord.lat.toFixed(6)}_${coord.lng.toFixed(6)}`)
     dispatch({
       type: PRINT_MAP_AVAILABILITY,
-      payload: { gridId, availability },
+      payload: { gridIdRequest, gridIdUnavailable },
     })
   }

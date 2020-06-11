@@ -15,43 +15,41 @@ import {
 
 // обновление состояния номенклатурных листов после получения ответа от сервера
 export const updateStyleLayer = (gridId, availability, currentGrid, selectedLayers) => {
-  currentGrid.getLayers().some((layer) => {
-    if (layer?.options?.id === gridId) {
-      layer.options.availability = availability
-      const style = availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP
-      layer.setStyle(style)
-      return true
-    }
-    return false
-  })
-  selectedLayers.getLayers().some((layer) => {
-    if (layer?.options?.id === gridId) {
-      layer.options.availability = availability
-      const style = availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP
-      layer.setStyle(style)
-      return true
-    }
-    return false
-  })
+  if (currentGrid) {
+    currentGrid.getLayers().find((layer) => {
+      if (layer?.options?.id === gridId) {
+        layer.options.availability = availability
+        const style = availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP
+        layer.setStyle(style)
+        return true
+      }
+      return false
+    })
+  }
+  if (selectedLayers) {
+    selectedLayers.getLayers().find((layer) => {
+      if (layer?.options?.id === gridId) {
+        layer.options.availability = availability
+        const style = availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP
+        layer.setStyle(style)
+        return true
+      }
+      return false
+    })
+  }
 }
 
 // додати листи до групи виділених
 const addToSelected = (layer, currentGrid, selectedLayers) => {
-  if (layer.options.availability) { // проверка наличия номенклатурных листов
-    layer.setStyle(SELECTED_CELL_OPTIONS)
-  } else {
-    layer.setStyle(SELECTED_CELL_OPTIONS_NOT_MAP)
-  }
+  // проверка наличия номенклатурных листов
+  layer.options.availability ? layer.setStyle(SELECTED_CELL_OPTIONS) : layer.setStyle(SELECTED_CELL_OPTIONS_NOT_MAP)
   removeLayerFromCurrentGrid(layer, currentGrid)
   addLayerToSelectedLayers(layer, selectedLayers)
 }
 
 const addToDeselected = (layer, currentGrid, selectedLayers) => {
-  if (layer.options.availability) { // проверка наличия номенклатурных листов
-    layer.setStyle(INIT_GRID_OPTIONS)
-  } else {
-    layer.setStyle(INIT_GRID_OPTIONS_NOT_MAP)
-  }
+  // проверка наличия номенклатурных листов
+  layer.options.availability ? layer.setStyle(INIT_GRID_OPTIONS) : layer.setStyle(INIT_GRID_OPTIONS_NOT_MAP)
   removeLayerFromSelectedLayers(layer, selectedLayers)
   addLayerToCurrentGrid(layer, currentGrid)
 }
