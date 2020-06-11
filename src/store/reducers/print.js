@@ -35,8 +35,10 @@ export default function reducer (state = initState, action) {
       return { ...state, requisites }
     }
     case print.SELECTED_ZONE: {
-      const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
-        action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
+      const legendAvailable = true
+      // uncomment to enable legend restrictions
+      // const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
+      //   action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
       const requisites = { ...state.requisites, legendAvailable }
       return { ...state, requisites, selectedZone: action.selectedZone }
     }
