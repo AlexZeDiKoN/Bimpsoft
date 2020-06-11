@@ -6,7 +6,7 @@ const initState = {
   mapName: '',
   printScale: Print.PRINT_SCALES[0],
   requisites: {
-    dpi: Print.DPI_TYPES[0],
+    dpi: Print.DPI_TYPES[2],
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendEnabled: false,
     legendAvailable: false,
