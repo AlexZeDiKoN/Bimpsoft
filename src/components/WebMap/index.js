@@ -2076,8 +2076,7 @@ export default class WebMap extends React.PureComponent {
       } else if (amp.type === entityKind.OLOVO) {
         const { directions = 3, zones = 2 } = amp.params || {}
         const box = this.map.getBounds().pad(-0.4)
-        const { eternals, directionSegments, zoneSegments } = generateGeometry(zones, directions, box)
-        geometry = formFlexGridGeometry(eternals, directionSegments, zoneSegments).geometry
+        geometry = generateGeometry(zones, directions, box)
       } else {
         const p0 = { x, y }
         const p1 = { x: x + sw, y: y + sw }

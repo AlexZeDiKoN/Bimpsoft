@@ -4,6 +4,7 @@ import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind, { GROUPS } from './entityKind'
+import { generateGeometry } from './patch/FlexGrid'
 
 const { Coordinates: Coord } = utils
 
@@ -202,26 +203,54 @@ function createSophisticated (data, layer, initMap) {
 }
 
 function createOlovo (data, layer, initMap) {
-  const [ eternals, directionSegments, zoneSegments ] = data.geometry.toJS()
-  layer = new L.FlexGrid(
-    initMap.getBounds().pad(-0.4),
-    {
-      directions: data.attributes.params.directions,
-      zones: data.attributes.params.zones,
-      interactive: true,
-      vertical: false,
-      hideShadow: true,
-      hideCenterLine: true,
-      shadow: false,
-    },
-    data.id,
-    {
+  const box = initMap.getBounds().pad(-0.4)
+  const { directions, zones, start, title } = data.attributes.params
+  let geometry = data.geometry.toJS()
+  let checkSave
+  if (directions + 1 !== geometry[0].length || zones * 2 + 1 !== geometry[0][0].length || (
+    layer && (layer.options.directions !== directions || layer.options.zones !== zones)
+  )) {
+    if (layer) {
+      layer.removeFrom(layer.map)
+      layer = null
+    }
+    geometry = generateGeometry(zones, directions, box)
+    checkSave = true
+  }
+  const [ eternals, directionSegments, zoneSegments ] = geometry
+  if (layer) {
+    layer.updateProps({
+      start,
+      title,
+    }, {
       eternals,
       directionSegments,
       zoneSegments,
-    }
-  )
-  layer.options.tsType = entityKind.OLOVO
+    })
+  } else {
+    layer = new L.FlexGrid(
+      box,
+      {
+        directions,
+        zones,
+        interactive: true,
+        vertical: false,
+        hideShadow: true,
+        hideCenterLine: true,
+        shadow: false,
+        regular: true,
+        start,
+        title,
+      },
+      data.id,
+      {
+        eternals,
+        directionSegments,
+        zoneSegments,
+      }
+    )
+    layer.options.tsType = entityKind.OLOVO
+  }
   return layer
 }
 
