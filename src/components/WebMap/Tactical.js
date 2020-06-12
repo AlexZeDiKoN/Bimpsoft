@@ -206,7 +206,6 @@ function createOlovo (data, layer, initMap) {
   const box = initMap.getBounds().pad(-0.4)
   const { directions, zones, start, title } = data.attributes.params
   let geometry = data.geometry.toJS()
-  let checkSave
   if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length || (
     layer && (layer.options.directions !== directions || layer.options.zones !== zones)
   )) {
@@ -215,7 +214,6 @@ function createOlovo (data, layer, initMap) {
       layer = null
     }
     geometry = generateGeometry(zones, directions, box)
-    checkSave = true
   }
   const [ eternals, directionSegments, zoneSegments ] = geometry
   if (layer) {

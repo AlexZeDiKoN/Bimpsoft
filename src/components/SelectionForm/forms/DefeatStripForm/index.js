@@ -19,7 +19,6 @@ import {
 import './DefeatStripForm.css'
 import i18n from '../../../../i18n'
 import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
-import { amps } from '../../../../constants/symbols'
 
 const { FormRow } = components.form
 
