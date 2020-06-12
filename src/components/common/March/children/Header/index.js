@@ -30,6 +30,7 @@ const Header = (props) => {
           onClick={onSendMarchToExplorer}
           colorType={ColorTypes.WHITE}
           icon={IconNames.BAR_2_SAVE}
+          disabled={!isCoordFilled}
         />
       </Tooltip>
       <Tooltip
