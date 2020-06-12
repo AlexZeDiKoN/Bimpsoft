@@ -5,7 +5,6 @@ import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
-  FormRow,
   FormDarkPart,
 } = components.form
 
@@ -17,7 +16,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
 
     return (
       <FormDarkPart>
-        <FormRow label={i18n.COORDINATES}/>
+        <div className='coordinate-width-title'>{i18n.COORDINATES}</div>
         <div className="shape-form-scrollable">
           <CoordinateRow
             readOnly={readOnly}

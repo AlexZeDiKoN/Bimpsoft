@@ -119,61 +119,61 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
         const color = sectorInfo?.color || (presetColor && presetColor[index]) || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
         return (index !== 0) ? (
-          <div key={index}>
-            <div className="circularzone-container__itemWidth">
-              <div className="container__itemWidth50">
-                <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
-                  <InputWithSuffix
-                    readOnly={!canEdit}
-                    value={radius}
-                    onChange={canEdit ? this.radiusChangeHandler(index) : null}
-                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
-                    onBlur={canEdit ? this.radiusBlurHandler(index) : null}
-                    suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
-                    error={!radiusIsGood}
-                  />
-                </FormRow>
-                <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
-                  <Input.TextArea
-                    value={amplifierT}
-                    name={'amplifier'}
-                    onChange={this.sectorAmplifierChangeHandler(index)}
-                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
-                    onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
-                    disabled={!canEdit}
-                    rows={1}
-                  />
-                </FormRow>
+          <>
+            <div className="circularzone-container__itemWidth" key={index}>
+              <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
+                <InputWithSuffix
+                  readOnly={!canEdit}
+                  value={radius}
+                  onChange={canEdit ? this.radiusChangeHandler(index) : null}
+                  onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                  onBlur={canEdit ? this.radiusBlurHandler(index) : null}
+                  suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
+                  error={!radiusIsGood}
+                />
+              </FormRow>
+              <div className='radiContainer radiContainerColor'>
+                <div>{i18n.LINE_COLOR}</div>
+                <ColorPicker
+                  color={color}
+                  disabled={!canEdit}
+                  onChange={this.sectorColorChangeHandler(index)}
+                  zIndex={COLOR_PICKER_Z_INDEX}
+                  presetColors={PRESET_COLORS}
+                />
               </div>
-              <div className="container__itemWidth50">
-                <FormRow label="Колір">
-                  <ColorPicker
-                    color={color}
-                    disabled={!canEdit}
-                    onChange={this.sectorColorChangeHandler(index)}
-                    zIndex={COLOR_PICKER_Z_INDEX}
-                    presetColors={PRESET_COLORS}
-                  />
-                </FormRow>
-                <FormRow label="Заливка">
-                  <Select
-                    value={fill}
-                    disabled={!canEdit}
-                    onChange={this.sectorFillChangeHandler(index)}
-                  >
-                    {colorOption(colors.TRANSPARENT)}
-                    {colorOption(colors.BLUE)}
-                    {colorOption(colors.RED)}
-                    {colorOption(colors.BLACK)}
-                    {colorOption(colors.GREEN)}
-                    {colorOption(colors.YELLOW)}
-                    {colorOption(colors.WHITE)}
-                  </Select>
-                </FormRow>
+              <div className='radiContainer'>
+                <div>{i18n.FILLING}</div>
+                <Select
+                  value={fill}
+                  disabled={!canEdit}
+                  onChange={this.sectorFillChangeHandler(index)}
+                >
+                  {colorOption(colors.TRANSPARENT)}
+                  {colorOption(colors.BLUE)}
+                  {colorOption(colors.RED)}
+                  {colorOption(colors.BLACK)}
+                  {colorOption(colors.GREEN)}
+                  {colorOption(colors.YELLOW)}
+                  {colorOption(colors.WHITE)}
+                </Select>
               </div>
             </div>
+            <div className='amplifier'>
+              <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
+                <Input.TextArea
+                  value={amplifierT}
+                  name={'amplifier'}
+                  onChange={this.sectorAmplifierChangeHandler(index)}
+                  onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                  onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
+                  disabled={!canEdit}
+                  rows={1}
+                />
+              </FormRow>
+            </div>
             { (index < indexEnd) && <FormDivider/> }
-          </div>)
+          </>)
           : ''
       })
     )

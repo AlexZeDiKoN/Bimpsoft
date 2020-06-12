@@ -8,7 +8,6 @@ import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
-  FormRow,
   FormDivider,
   FormDarkPart,
 } = components.form
@@ -84,55 +83,41 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
     const countCoordinates = coordinatesArray.length
     return (
       <FormDarkPart>
-        <FormRow label={i18n.NODAL_POINTS}>
+        <div className='coordinatesNotArrayContainer'>
+          <div>{i18n.NODAL_POINTS}</div>
           {canEdit && (<IconHovered
             icon={editCoordinates ? iconNames.BAR_2_EDIT_ACTIVE : iconNames.BAR_2_EDIT_DEFAULT}
             hoverIcon={iconNames.BAR_2_EDIT_HOVER}
             onClick={this.coordinatesEditClickHandler}
           />)}
-        </FormRow>
+        </div>
         <FormDivider/>
         <div className="shape-form-scrollable">
-          <table>
-            <tbody>
-              <tr>
-                <th>
-                  <FormRow label={i18n.COORDINATES}>
-                  </FormRow>
-                </th>
-              </tr>
-              {coordinatesArray.map((coordinate, index) => {
-                const canRemove = allowDelete ? allowDelete(index, countCoordinates) : countCoordinates > 2
-                const canAdd = canEditCoord && (allowMiddle ? allowMiddle(index, index + 1, countCoordinates) : false)
-                return (
-                  <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
-                    <tr>
-                      <td>
-                        <CoordinateItem
-                          key={index}
-                          coordinate={coordinate}
-                          index={index}
-                          readOnly={!canEditCoord}
-                          canRemove={canRemove && canEditCoord }
-                          onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
-                          onRemove={this.coordinateRemoveHandler}
-                          onFocus={this.onCoordinateFocusHandler}
-                          onBlur={this.onCoordinateBlurHandler}
-                        />
-                      </td>
-                      <td>
-                        {canAdd && <IconHovered
-                          icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-                          hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-                          onClick={() => this.coordinateAddHandler(index)}
-                        />}
-                      </td>
-                    </tr>
-                  </Fragment>
-                )
-              })}
-            </tbody>
-          </table>
+          <div>{i18n.COORDINATES}</div>
+          {coordinatesArray.map((coordinate, index) => {
+            const canRemove = allowDelete ? allowDelete(index, countCoordinates) : countCoordinates > 2
+            const canAdd = canEditCoord && (allowMiddle ? allowMiddle(index, index + 1, countCoordinates) : false)
+            return (
+              <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
+                <CoordinateItem
+                  key={index}
+                  coordinate={coordinate}
+                  index={index}
+                  readOnly={!canEditCoord}
+                  canRemove={canRemove && canEditCoord }
+                  onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+                  onRemove={this.coordinateRemoveHandler}
+                  onFocus={this.onCoordinateFocusHandler}
+                  onBlur={this.onCoordinateBlurHandler}
+                />
+                {canAdd && <IconHovered
+                  icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                  hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                  onClick={() => this.coordinateAddHandler(index)}
+                />}
+              </Fragment>
+            )
+          })}
         </div>
       </FormDarkPart>
     )

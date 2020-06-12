@@ -127,6 +127,7 @@ export const AMP_STARTING_NUMBER = 'Початковий номер'
 export const AMP_TITLE = 'Назва'
 
 export const UNIT = 'Підрозділ'
+export const MILITARY_FORMATION = 'Військове формування'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TEXT_2 = 'Текст'

@@ -21,7 +21,7 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './RectangleForm.css'
 
-const { FormRow, FormDarkPart } = components.form
+const { FormDarkPart } = components.form
 
 export default class SquareForm extends
   compose(
@@ -44,44 +44,45 @@ export default class SquareForm extends
   renderContent () {
     return (
       <div className="rectangle-container">
-        <div className="rectangle-container--firstSection">
-          <div className="rectangle-container__itemSchema">
-            <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
-          </div>
-          <div className="rectangle-container__itemWidth">
-            {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
-          </div>
-          <div className="rectangle-container__itemWidth">
-            {this.renderAffiliation()}
-            {this.renderStatus()}
-          </div>
+        <div className="rectangle-container__itemWidth-left">
+          <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
         </div>
-        <div className="rectangle-container--secondSection">
-          <div className="rectangle-container__itemWidth">
-            {this.renderLineType(true)}
-            {this.renderStrokeWidth()}
-            <FormRow label={i18n.LINE_COLOR}>
-              {this.renderColor()}
-            </FormRow>
+        <div className='scroll-container'>
+          <div className="rectangle-container__item--firstSection">
+            <div className="rectangle-container__itemWidth-right">
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+              {this.renderAffiliation()}
+              {this.renderStatus()}
+            </div>
           </div>
-          <div className="rectangle-container__itemWidth">
-            {this.renderFill(true)}
-            {this.renderHatch()}
+          <div className="rectangle-container__item--secondSection">
+            <div className="rectangle-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderLineType(true)}
+                {this.renderColor()}
+              </div>
+              {this.renderStrokeWidth()}
+            </div>
+            <div className="rectangle-container__itemWidth">
+              {this.renderFill(true)}
+              {this.renderHatch()}
+            </div>
           </div>
-        </div>
-        {this.renderIntermediateAmplifiers()}
-        {this.renderPointAmplifiers()}
-        <div className="rectangle-container__item">
-          <div className="rectangle-container__itemWidth50">
-            <FormDarkPart>
-              <FormRow label={i18n.AMPLIFIERS_DISPLAY}>
-              </FormRow>
-              {this.renderIntermediateAmplifiersTune()}
-            </FormDarkPart>
-          </div>
-          <div className="rectangle-container__itemWidth50">
-            {this.renderTwoCoordinates()}
+          {this.renderIntermediateAmplifiers()}
+          {this.renderPointAmplifiers()}
+          <div className="rectangle-container__item">
+            <div className="rectangle-container__itemWidth50">
+              <FormDarkPart>
+                <div className='amplifiers-display'>
+                  {i18n.AMPLIFIERS_DISPLAY}
+                </div>
+                {this.renderIntermediateAmplifiersTune()}
+              </FormDarkPart>
+            </div>
+            <div className="rectangle-container__itemWidth50">
+              {this.renderTwoCoordinates()}
+            </div>
           </div>
         </div>
       </div>
