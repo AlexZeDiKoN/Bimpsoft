@@ -16,40 +16,32 @@ import {
 // обновление состояния номенклатурных листов после получения ответа от сервера
 export const updateStyleLayer = (gridId, availability, currentGrid, selectedLayers) => {
   if (currentGrid) {
-    currentGrid.getLayers().find((layer) => {
-      if (layer?.options?.id === gridId) {
-        layer.options.availability = availability
-        const style = availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP
-        layer.setStyle(style)
-        return true
-      }
-      return false
-    })
+    const fondLayer = currentGrid.getLayers().find((layer) => layer?.options?.id === gridId)
+    if (fondLayer) {
+      fondLayer.options.availability = availability
+      fondLayer.setStyle(availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP)
+    }
   }
   if (selectedLayers) {
-    selectedLayers.getLayers().find((layer) => {
-      if (layer?.options?.id === gridId) {
-        layer.options.availability = availability
-        const style = availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP
-        layer.setStyle(style)
-        return true
-      }
-      return false
-    })
+    const fondLayer = selectedLayers.getLayers().find((layer) => layer?.options?.id === gridId)
+    if (fondLayer) {
+      fondLayer.options.availability = availability
+      fondLayer.setStyle(availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP)
+    }
   }
 }
 
 // додати листи до групи виділених
 const addToSelected = (layer, currentGrid, selectedLayers) => {
   // проверка наличия номенклатурных листов
-  layer.options.availability ? layer.setStyle(SELECTED_CELL_OPTIONS) : layer.setStyle(SELECTED_CELL_OPTIONS_NOT_MAP)
+  layer.setStyle(layer.options.availability ? SELECTED_CELL_OPTIONS : SELECTED_CELL_OPTIONS_NOT_MAP)
   removeLayerFromCurrentGrid(layer, currentGrid)
   addLayerToSelectedLayers(layer, selectedLayers)
 }
 
 const addToDeselected = (layer, currentGrid, selectedLayers) => {
   // проверка наличия номенклатурных листов
-  layer.options.availability ? layer.setStyle(INIT_GRID_OPTIONS) : layer.setStyle(INIT_GRID_OPTIONS_NOT_MAP)
+  layer.setStyle(layer.options.availability ? INIT_GRID_OPTIONS : INIT_GRID_OPTIONS_NOT_MAP)
   removeLayerFromSelectedLayers(layer, selectedLayers)
   addLayerToCurrentGrid(layer, currentGrid)
 }
