@@ -121,6 +121,7 @@ L.FlexGrid = L.Layer.extend({
       fillColor: '#444',
     },
     draggable: true,
+    olovo: false,
   },
 
   /**
