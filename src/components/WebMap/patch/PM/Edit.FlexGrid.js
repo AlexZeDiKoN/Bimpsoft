@@ -208,7 +208,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     const { directions, zones } = this._layer.options
     switch (code) {
       case 'dir':
-        if (zoneIdx < zones * 2 - 1) {
+        if (zoneIdx < zones * this._layer.zoneMultiplier - 1) {
           const segment = this._layer.directionSegments[dirIdx][zoneIdx + 1]
           return segment.length ? segment[0] : this._layer.eternals[dirIdx][zoneIdx + 2]
         }

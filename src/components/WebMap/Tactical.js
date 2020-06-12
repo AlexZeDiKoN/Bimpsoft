@@ -207,7 +207,7 @@ function createOlovo (data, layer, initMap) {
   const { directions, zones, start, title } = data.attributes.params
   let geometry = data.geometry.toJS()
   let checkSave
-  if (directions + 1 !== geometry[0].length || zones * 2 + 1 !== geometry[0][0].length || (
+  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length || (
     layer && (layer.options.directions !== directions || layer.options.zones !== zones)
   )) {
     if (layer) {
@@ -237,8 +237,7 @@ function createOlovo (data, layer, initMap) {
         vertical: false,
         hideShadow: true,
         hideCenterLine: true,
-        shadow: false,
-        regular: true,
+        olovo: true,
         start,
         title,
       },
@@ -250,6 +249,7 @@ function createOlovo (data, layer, initMap) {
       }
     )
     layer.options.tsType = entityKind.OLOVO
+    layer.options.directionLines.weight = 2
   }
   return layer
 }
