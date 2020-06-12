@@ -22,8 +22,9 @@ const Header = (props) => {
         {i18n.MARCH_TITLE}
       </div>
       <Tooltip
-        placement='top'
+        placement='topRight'
         title={isCoordFilled ? i18n.CREATE_BTN_TITLE : i18n.NOT_ALL_COORDINATES_ENTERED}
+        align={ { offset: [ 5, 0 ] }}
       >
         <IButton
           onClick={onSendMarchToExplorer}
@@ -32,8 +33,9 @@ const Header = (props) => {
         />
       </Tooltip>
       <Tooltip
-        placement='top'
+        placement='topRight'
         title={i18n.CLOSE_MARCH}
+        align={ { offset: [ 5, 0 ] }}
       >
         <IButton
           onClick={closeMarch}

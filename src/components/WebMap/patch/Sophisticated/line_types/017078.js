@@ -2,10 +2,10 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt,
-  drawLineMark, getFontSize, drawLineDashed,
+  drawLineMark, getFontSize, drawLineDashed, getDashSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../utils/svg/lines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -30,10 +30,10 @@ lineDefinitions['017078'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
     const [ p0, p1 ] = points
 
-    const dashed = result.layer.printOptions ? result.layer.printOptions.dashSize : settings.DASHARRAY
+    const dashed = getDashSize(result.layer, scale) * 2
     drawLineDashed(result, p0, p1, dashed)
 
     const angleSerif = angleOf(p0, p1)

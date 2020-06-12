@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Input, InputNumber, Select, Modal, Tooltip } from 'antd'
+import { Input, InputNumber, Select, Tooltip } from 'antd'
 import { connect } from 'react-redux'
 import { catchErrors } from '../../../../../store/actions/asyncAction'
 import { march } from '../../../../../store/actions'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
 import { MARCH_TYPES } from '../../../../../constants/March'
-const { confirm } = Modal
 
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -24,7 +23,16 @@ const nameTypeById = (typeValues, type) => typeValues.find(({ id }) => id === ty
 
 const PopupPanel = (props) => {
   const { MB001: { typeValues: MB001 = [] }, MB007: { typeValues: MB007 = [] }, editFormField, propData } = props
-  const { deleteSegment, segmentId, segmentType, required, terrain, velocity, metric } = propData
+  const {
+    segmentId,
+    segmentType,
+    required,
+    terrain,
+    velocity,
+    metric,
+    toggleDeleteMarchPointModal,
+    readOnly,
+  } = propData
   const { time } = metric
   const distance = metric.distance.toFixed(1)
 
@@ -39,18 +47,7 @@ const PopupPanel = (props) => {
   }
 
   const showDeleteConfirm = () => {
-    confirm({
-      title: i18n.DELETE_SEGMENT_CONFIRM_TITLE,
-      okText: i18n.OK_BUTTON_TEXT,
-      okType: 'danger',
-      cancelText: i18n.CANCEL_BUTTON_TEXT,
-      onOk () {
-        deleteSegment(segmentId)
-      },
-      centered: true,
-      zIndex: 10000,
-    },
-    )
+    toggleDeleteMarchPointModal(true, segmentId)
   }
 
   const correctedMB001 = MB001.slice(0, -1)
@@ -62,12 +59,24 @@ const PopupPanel = (props) => {
       {segmentId === 0
         ? <Input
           value={typeOfMove}
+          disabled={readOnly}
+          className={'march-active-value'}
         />
         : <Select
           defaultValue={typeOfMove}
           onChange={onEditFormField('type')}
+          disabled={readOnly}
+          className={'march-active-value'}
         >
-          {correctedMB001.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+          {correctedMB001.map(({ id, name }) => (
+            <Select.Option
+              key={id}
+              value={id}
+              className={'march-active-value'}
+            >
+              {name}
+            </Select.Option>
+          ))}
         </Select>
       }
     </Tooltip>
@@ -76,27 +85,48 @@ const PopupPanel = (props) => {
       <Select
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
+        disabled={readOnly}
+        className={'march-active-value'}
       >
-        {MB007.map(({ id, name }) => (<Select.Option key={id} value={id}>{name}</Select.Option>))}
+        {MB007.map(({ id, name }) => (
+          <Select.Option
+            className={'march-active-value'}
+            key={id} value={id}
+          >
+            {name}
+          </Select.Option>
+        ))}
       </Select>
     </Tooltip>
     }
 
     <div className={'speed-block'}>
       <span>{i18n.AVERAGE_SPEED}: </span>
-      <InputNumber min={0} onChange={onChangeVelocity} value={velocity} maxLength={10} className={'velocity-input'}/>
+      <InputNumber
+        min={0}
+        onChange={onChangeVelocity}
+        value={velocity}
+        maxLength={10}
+        className={'velocity-input march-active-value'}
+        disabled={readOnly}
+      />
     </div>
     <div><span>{i18n.LENGTH_OF_SEGMENT}: </span> {distance} км</div>
     <div className={'bottom-panel'}>
       <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(time)}</div>
-      { !required && <div onClick={showDeleteConfirm} className={'delete-segment'} />}
+      { !required &&
+      <Tooltip placement='topRight' title={i18n.DELETE_SEGMENT} align={ { offset: [ 12, 0 ] }}>
+        <div
+          onClick={(e) => { !readOnly && showDeleteConfirm(e) }}
+          className={`delete-segment ${readOnly ? 'march-disabled-element' : ''}`} />
+      </Tooltip>
+      }
     </div>
   </div>
 }
 
 PopupPanel.propTypes = {
   propData: PropTypes.shape({
-    deleteSegment: PropTypes.func.isRequired,
     required: PropTypes.bool.isRequired,
     segmentType: PropTypes.number.isRequired,
     terrain: PropTypes.number.isRequired,
@@ -106,6 +136,8 @@ PopupPanel.propTypes = {
       time: PropTypes.number.isRequired,
       distance: PropTypes.number.isRequired,
     }).isRequired,
+    toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
   }).isRequired,
   MB001: PropTypes.shape({
     typeValues: PropTypes.array.isRequired,

@@ -6,7 +6,8 @@ import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import { MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
 import i18n from './../../i18n'
-import { openMapFolder } from './maps'
+import { openMapFolder, deleteMap } from './maps'
+import * as notifications from './notifications'
 import { asyncAction } from './index'
 
 export const GET_TYPE_KINDS = action('GET_TYPE_KINDS')
@@ -177,7 +178,7 @@ const getUpdateSegments = async (segments, data, geoLandmarks) => {
   let newSegments = segments
   let newGeoLandmarks = geoLandmarks
 
-  const clearCoordinate = () => ({})
+  const clearCoordinate = () => ({ lng: undefined, lat: undefined })
 
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'
@@ -415,7 +416,7 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const openMarch = (data) => asyncAction.withNotification(
   async (dispatch) => {
-    const { mapId } = data
+    const { mapId, readOnly } = data
 
     dispatch(openMapFolder(mapId, null, true))
     let segments
@@ -436,6 +437,8 @@ export const openMarch = (data) => asyncAction.withNotification(
       payload: data.payload,
       marchEdit: true,
       isCoordFilled,
+      readOnly,
+      mapId,
     }
 
     dispatch({
@@ -446,12 +449,17 @@ export const openMarch = (data) => asyncAction.withNotification(
 
 export const sendMarchToExplorer = () =>
   (dispatch, getState) => {
-    const { march: { segments, isCoordFilled } } = getState()
+    const { march: { segments, isCoordFilled, readOnly } } = getState()
 
-    if (isCoordFilled) {
+    if (isCoordFilled && !readOnly) {
       const segmentsForExplorer = convertSegmentsForExplorer(segments)
 
       const res = window.explorerBridge.saveMarch(segmentsForExplorer)
+      dispatch(notifications.push({
+        type: 'success',
+        message: i18n.MESSAGE,
+        description: i18n.SUCCESS_SEND_MARCH_TO_EXPLORER,
+      }))
       dispatch(closeMarch())
 
       return res
@@ -460,14 +468,24 @@ export const sendMarchToExplorer = () =>
     return null
   }
 
-export const closeMarch = () => ({
-  type: CLOSE_MARCH,
-})
+export const closeMarch = () =>
+  (dispatch, getState) => {
+    const { march: { mapId } } = getState()
 
-export const addGeoLandmark = (coordinates, geoLandmark) => ({
+    mapId && dispatch(deleteMap(mapId))
+    dispatch({
+      type: CLOSE_MARCH,
+    })
+
+    return null
+  }
+
+export const addGeoLandmark = (coordinates, geoLandmark, segmentId, childId) => ({
   type: ADD_GEO_LANDMARK,
   payload: {
     coordinates,
     geoLandmark,
+    segmentId,
+    childId,
   },
 })

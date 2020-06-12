@@ -307,9 +307,12 @@ export const arcTo = (result, p, rx, ry, ar = 0, la = 0, sf = 0) =>
   (result.d += ` A${rx} ${ry} ${ar} ${la} ${sf} ${p.x} ${p.y}`)
 
 // Дуга кола між вказаними точками
-export const drawArc = (result, p1, p2, r, ar = 0, la = 0, sf = 0) => {
+export const drawArc = (result, p1, p2, r, ar = 0, la = 0, sf = 0, z = false) => {
   moveTo(result, p1)
   arcTo(result, p2, r, r, ar, la, sf)
+  if (z) {
+    result.d += `Z`
+  }
 }
 
 export const drawCircle = (result, center, radius) => {
@@ -777,4 +780,13 @@ export const getStrokeWidth = (layer, width, scale = 1) => {
   }
   // розмір залежить від маштабу (для екрану)
   return layer.options.weight ?? (settings.LINE_WIDTH * scale)
+}
+
+// Обчислення розміру пунктиру
+export const getDashSize = (layer, scale) => {
+  if (layer.printOptions) { // статичний розмір (для друку)
+    return layer.printOptions.dashSize
+  }
+  // розмір залежить від маштабу (для екрану)
+  return settings.DASHARRAY * scale
 }

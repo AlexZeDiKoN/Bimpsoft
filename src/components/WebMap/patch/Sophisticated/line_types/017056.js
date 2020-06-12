@@ -41,7 +41,6 @@ lineDefinitions['017056'] = {
     let [ p0, p1 ] = points
 
     const r = getPointSize(result.layer) * 1.2
-    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes) * 1.2
     const d = r * Math.sqrt(2)
     const pv = getVector(p1, p0)
     p0 = applyVector(p1, setVectorLength(pv, segmentLength(pv) - r))

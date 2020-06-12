@@ -50,7 +50,7 @@ const getMarchPoints = (pointsTypes) => {
     { rest: true, time: hoursToMs(point) },
     { rest: true, time: hoursToMs(dayNight) },
     { rest: true, time: hoursToMs(daily) },
-    { rest: true, time: 0, notEditableTime: true },
+    { rest: false, time: 0, notEditableTime: true },
     { rest: false, time: 0 },
   ]
 
@@ -68,6 +68,8 @@ const March = (props) => {
     isCoordFilled,
     geoLandmarks,
     toggleGeoLandmarkModal,
+    toggleDeleteMarchPointModal,
+    readOnly,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
@@ -83,6 +85,7 @@ const March = (props) => {
       getMemoGeoLandmarks,
       setRefPointOnMap,
       toggleGeoLandmarkModal,
+      toggleDeleteMarchPointModal,
     }
 
     return <div className={'dots-forms'}>
@@ -97,8 +100,9 @@ const March = (props) => {
               segmentId={segmentId}
               timeDistanceView={timeDistanceView}
               addSegment={props.addSegment}
-              deleteSegment={props.deleteSegment}
               segments={segments}
+              toggleDeleteMarchPointModal={toggleDeleteMarchPointModal}
+              readOnly={readOnly}
             />
           </div>
           <div className={'form-container'}>
@@ -113,6 +117,7 @@ const March = (props) => {
               marchPoints={marchPoints}
               coordTypeSystem={coordTypeSystem}
               geoLandmarks={geoLandmarks}
+              readOnly={readOnly}
             />
             {children && children.map((child, childId) => {
               return <MarchForm
@@ -126,6 +131,7 @@ const March = (props) => {
                 segmentType={segment.type}
                 {...child}
                 geoLandmarks={geoLandmarks}
+                readOnly={readOnly}
               />
             })}
           </div>
@@ -172,6 +178,8 @@ March.propTypes = {
   coordTypeSystem: PropTypes.string.isRequired,
   geoLandmarks: PropTypes.object.isRequired,
   toggleGeoLandmarkModal: PropTypes.func.isRequired,
+  toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default React.memo(March)
