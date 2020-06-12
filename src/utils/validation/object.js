@@ -25,6 +25,7 @@ export function validateObject (object) {
       break
     case SelectionTypes.CONTOUR:
     case SelectionTypes.SOPHISTICATED:
+    case SelectionTypes.OLOVO:
       break
     default:
       validateCoordinates(object.geometry, 2)

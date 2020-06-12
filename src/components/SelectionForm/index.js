@@ -26,6 +26,7 @@ import {
   CircularZoneForm,
   AttackForm,
   ConcentrationOfFireForm,
+  DefeatStripForm,
 } from './forms'
 import SaveMilSymbolForm from './forms/MilSymbolForm/SaveMilSymbolForm'
 
@@ -128,6 +129,10 @@ const forms = {
     minHeight: 330,
     maxHeight: 330,
     minWidth: 415,
+  },
+  [SelectionTypes.OLOVO]: {
+    title: i18n.DEFEAT_STRIP_ZONE,
+    component: DefeatStripForm,
   },
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.MIL_SYMBOL,

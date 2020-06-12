@@ -227,6 +227,7 @@ export const SOPHISTICATED = 'Складна лінія'
 export const ATTACK = 'Напрямок удару / атаки'
 export const CONCENTRATION_FIRE = 'Послідовне зосередження вогню'
 export const CONTOUR_REGION_UNIT = 'Позиційний район підрозділу'
+export const DEFEAT_STRIP_ZONE = 'Смуга ураження керованими снарядами'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`

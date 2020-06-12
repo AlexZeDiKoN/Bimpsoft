@@ -10,9 +10,12 @@ import {
   getPointAmplifier, settings,
 } from '../../../utils/svg/lines'
 import { evaluateColor } from '../../../constants/colors'
+import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
+import { narr } from './FlexGrid'
 import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
+import { getFontSize } from './Sophisticated/utils'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -22,6 +25,18 @@ const getViewBox = (element) => {
     element = element.parentElement
   }
   return element && element.getAttribute('viewBox').split(' ')
+}
+
+const massCenter = (array) => {
+  const zero = { x: 0, y: 0 }
+  if (!array || !array.length) {
+    return zero
+  }
+  const sum = array.reduce(({ x: ax, y: ay }, { x, y }) => ({ x: ax + x, y: ay + y }), zero)
+  return {
+    x: sum.x / array.length,
+    y: sum.y / array.length,
+  }
 }
 
 const { _initPath, _updateStyle, _setPath, _addPath, _removePath, _updateCircle } = L.SVG.prototype
@@ -38,7 +53,7 @@ L.SVG.include({
   },
 
   _setLayerPathStyle: function (layer, style, className) {
-    if (layer.options.tsType === entityKind.FLEXGRID) {
+    if (layer.options.tsType === entityKind.FLEXGRID || layer.options.tsType === entityKind.OLOVO) {
       layer._pathes.forEach((path) => this._setPathStyle(layer, path, style, className))
     } else {
       this._setPathStyle(layer, layer._path, style, className)
@@ -547,41 +562,91 @@ L.SVG.include({
 
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
+    const {
+      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
+      shadow,
+    } = grid.options
     grid._path = group
-    if (grid.options.className) {
-      L.DomUtil.addClass(group, grid.options.className)
+    if (className) {
+      L.DomUtil.addClass(group, className)
     }
-    grid._shadow = L.SVG.create('path')
+    if (!olovo) {
+      grid._shadow = L.SVG.create('path')
+    }
     grid._zones = L.SVG.create('path')
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
     grid._highlighted = L.SVG.create('path')
     grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
-    if (grid.options.interactive) {
+    if (interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
-    this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
-    this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
-    this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
-    this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
-    this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
-    this._updateStyle({ _path: grid._highlighted, options: grid.options.highlight })
-    group.appendChild(grid._shadow)
+    if (!olovo) {
+      this._updateStyle({ _path: grid._shadow, options: shadow })
+    }
+    this._updateStyle({ _path: grid._directions, options: directionLines })
+    this._updateStyle({ _path: grid._zones, options: olovo ? directionLines : zoneLines })
+    this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine  })
+    this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
+    this._updateStyle({ _path: grid._highlighted, options: highlight })
+    if (!olovo) {
+      group.appendChild(grid._shadow)
+    }
     grid._pathes.forEach((path) => group.appendChild(path))
+    if (olovo) {
+      grid._olovo = L.SVG.create('g')
+      grid._title = L.SVG.create('text')
+      grid._olovo.appendChild(grid._title)
+      grid._cells = narr(directions).map(() => narr(zones).map(() => {
+        const text = L.SVG.create('text')
+        grid._olovo.appendChild(text)
+        return text
+      }))
+      group.appendChild(grid._olovo)
+    }
     this._layers[L.Util.stamp(grid)] = grid
   },
 
+  _prepareTextAmplifier: function (layer, text, title, point, center = false) {
+    text.innerHTML = title
+    text.setAttribute('x', point.x)
+    text.setAttribute('y', point.y)
+    text.setAttribute('font-family', FONT_FAMILY)
+    text.setAttribute('font-weight', FONT_WEIGHT)
+    text.setAttribute('stroke', 'none')
+    text.setAttribute('fill', 'black')
+    text.setAttribute('font-size', getFontSize(layer))
+    if (center) {
+      text.setAttribute('text-anchor', 'middle')
+      text.setAttribute('alignment-baseline', 'central')
+    }
+  },
+
   _updateFlexGrid: function (grid) {
+    const { olovo, title, start } = grid.options
     const bounds = grid._map._renderer._bounds
     const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
-    grid._shadow.setAttribute('d', `${path}${border}`)
+    if (!olovo) {
+      grid._shadow.setAttribute('d', `${path}${border}`)
+    }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+    if (olovo) {
+      this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
+      grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
+        this._prepareTextAmplifier(grid, item, `${start + dirIdx * 10 + zoneIdx}`, massCenter([
+          grid.eternalRings[dirIdx][zoneIdx],
+          grid.eternalRings[dirIdx + 1][zoneIdx],
+          grid.eternalRings[dirIdx][zoneIdx + 1],
+          grid.eternalRings[dirIdx + 1][zoneIdx + 1],
+        ]), true)
+      ))
+    }
   },
 
   _getHighlightDirectionsArea: function (grid) {
