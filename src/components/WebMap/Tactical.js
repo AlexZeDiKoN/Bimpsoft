@@ -4,6 +4,7 @@ import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind, { GROUPS } from './entityKind'
+import { generateGeometry } from './patch/FlexGrid'
 
 const { Coordinates: Coord } = utils
 
@@ -123,6 +124,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createGroup(entityKind.GROUPED_REGION, data, prevLayer)
     case entityKind.SOPHISTICATED:
       return createSophisticated(data, prevLayer, map)
+    case entityKind.OLOVO:
+      return createOlovo(data, prevLayer, map)
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
@@ -195,6 +198,58 @@ function createSophisticated (data, layer, initMap) {
       data.geometry?.toJS(),
       initMap,
     )
+  }
+  return layer
+}
+
+function createOlovo (data, layer, initMap) {
+  const box = initMap.getBounds().pad(-0.4)
+  const { directions, zones, start, title } = data.attributes.params
+  let geometry = data.geometry.toJS()
+  let checkSave
+  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length || (
+    layer && (layer.options.directions !== directions || layer.options.zones !== zones)
+  )) {
+    if (layer) {
+      layer.removeFrom(layer.map)
+      layer = null
+    }
+    geometry = generateGeometry(zones, directions, box)
+    checkSave = true
+  }
+  const [ eternals, directionSegments, zoneSegments ] = geometry
+  if (layer) {
+    layer.updateProps({
+      start,
+      title,
+    }, {
+      eternals,
+      directionSegments,
+      zoneSegments,
+    })
+  } else {
+    layer = new L.FlexGrid(
+      box,
+      {
+        directions,
+        zones,
+        interactive: true,
+        vertical: false,
+        hideShadow: true,
+        hideCenterLine: true,
+        olovo: true,
+        start,
+        title,
+      },
+      data.id,
+      {
+        eternals,
+        directionSegments,
+        zoneSegments,
+      }
+    )
+    layer.options.tsType = entityKind.OLOVO
+    layer.options.directionLines.weight = 2
   }
   return layer
 }
@@ -424,6 +479,7 @@ export function getGeometry (layer) {
     case entityKind.CONTOUR:
       return layer._data ? { geometry: layer._data } : {}
     case entityKind.FLEXGRID:
+    case entityKind.OLOVO:
       return formFlexGridGeometry(layer.eternals, layer.directionSegments, layer.zoneSegments)
     default:
       return null
@@ -477,6 +533,7 @@ export function isGeometryChanged (layer, point, geometry) {
     case entityKind.CIRCLE:
       return !geomPointEquals(layer.getLatLng(), point) || layer._map.distance(...geometry) !== layer.getRadius()
     case entityKind.FLEXGRID:
+    case entityKind.OLOVO:
       return !geomPointListEquals([ layer.eternals, layer.directionSegments, layer.zoneSegments ], geometry)
     default:
       return false

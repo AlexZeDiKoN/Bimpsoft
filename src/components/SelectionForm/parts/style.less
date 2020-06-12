@@ -2,14 +2,58 @@
 @import "../../../assets/styles/_variables.less";
 
 .shape-form{
-  min-width: 23em;
+  min-width: 22em;
   justify-content: space-between;
   height: 100%;
+
+  .coordinate-width-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 2px;
+    padding-right: 10px;
+  }
+
+  .coordinatesNotArrayContainer{
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 10px;
+    justify-content: space-between;
+  }
+
+  .coordinate-width-title{
+    display: flex;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Roboto;
+  }
+
+  .coordinateRow-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;
+    .coordinate-title {
+      font-size: 12px;
+      font-family: Roboto;
+    }
+    .coordinatesSelect, .input-block {
+      width: 180px;
+      flex: 0 0 auto;
+    }
+  }
+
+  .ant-input, .ant-input-group-addon{
+    border-color: #d9d9d9;
+    border-radius: 2px;
+    background: #fff;
+  }
   .dzvin-form-row{
     .dzvin-form-input{
       // position: relative;
       .ant-select{
-        width: 12em;
         .icon-option{
           background: transparent;
           border: 0;
@@ -29,10 +73,14 @@
     .dzvin-input{
       color: @toolbar-color;
       border: 1px solid @select-border-color;
+      height: 30px;
+      border-radius: 2px;
     }
     .dzvin-input-disabled {
       background: @input-disabled-color;
       border: 1px solid @select-border-color;
+      height: 30px;
+      border-radius: 2px;
 
       input[disabled] {
         background: @input-disabled-color;
@@ -41,17 +89,31 @@
     }
   }
   .ant-select-selection--single{
-    height: 32px;
+    height: 30px;
     color: @toolbar-color;
+    border: 1px solid @modals-section-border-color;
+    border-radius: 2px;
   }
 }
+.headerSiding {
+  position: relative;  /* нужна нестатическая позиция */
+  margin-top: 0.25em;
+}
 .text-form-preview {
-  height: 104px;
-  max-width: 1000px;
-  overflow: hidden;
+  margin: 6px;
+  height: 160px;
+  border-bottom: 2px solid @modals-divider-color;
+  display: flex;
+  background: @toolbar-light-background;
+  order: -1;
   .flex;
   align-items: center;
   justify-content: center;
+  position: sticky;
+  top: 0;
+  padding-top: 6px;
+  z-index: 99999;
+  margin-top: 0;
 
   .textsymbol{
     flex: 0 0 auto;
@@ -63,13 +125,16 @@
   display: flex;
   align-items: center;
   margin-right: 4px;
-  background: #f5f5f5;
+  background: #fff;
   padding-right: 4px;
   width: 100%;
   height: 32px;
   padding-left: 10px;
-  border-radius: 4px;
+  border-radius: 2px;
   border: 1px solid #d9d9d9;
+  .ant-checkbox-wrapper{
+    margin-right: 10px;
+  }
   .icon-rect{
     width: 24px;
     height: 24px;
@@ -85,18 +150,54 @@
 }
 
 .shape-form-scrollable{
-  .flex;
-  flex-direction: column;
-  height: 130px;
-  overflow: auto;
-  > div {
-    flex: 0 0 auto;
-    overflow: hidden;
-    margin-right: 24px;
-    margin-left: 24px;
+  height: auto;
+  padding: 0 10px;
+  .icon-option{
+    width: 100px;
+    margin-right: 0;
+  }
+  .coordinates-checkbox-container{
+    display: flex;
+    align-items: center;
+  }
+  .coordinate-check{
+    display: flex;
+    margin: 5px 10px;
+  }
+  .coordinatesModal{
+    width: 180px;
+    padding-left: 10px;
+    padding-right: 0;
+    flex-direction: row;
+    .input-block .ant-input{
+      background: #fff;
+      border-radius: 2px;
+      border-color: #d9d9d9;
+    }
+    .ant-input-group-addon{
+      border-color: #d9d9d9;
+      .visible-select{
+        border-color: #d9d9d9;
+      }
+    }
+  }
+  .columns-container{
+    display: flex;
+    font-family: Roboto;
+    height: 27px;
+    .amplifiers-title{
+      font-size: 12px;
+      margin-right: 26px;
+      line-height: 1.9;
+    }
+    .coordinates-title{
+      font-size: 12px;
+      line-height: 1.9;
+    }
   }
   .icon-hovered {
     margin-left: 6px;
+    width: 60px;
   }
 }
 

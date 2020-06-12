@@ -127,6 +127,7 @@ export const AMP_STARTING_NUMBER = 'Початковий номер'
 export const AMP_TITLE = 'Назва'
 
 export const UNIT = 'Підрозділ'
+export const MILITARY_FORMATION = 'Військове формування'
 export const SUBORDINATION_LEVEL = 'Рівень підпорядкування'
 export const TEXT = 'Надпис'
 export const TEXT_2 = 'Текст'
@@ -226,6 +227,7 @@ export const SOPHISTICATED = 'Складна лінія'
 export const ATTACK = 'Напрямок удару / атаки'
 export const CONCENTRATION_FIRE = 'Послідовне зосередження вогню'
 export const CONTOUR_REGION_UNIT = 'Позиційний район підрозділу'
+export const DEFEAT_STRIP_ZONE = 'Смуга ураження керованими снарядами'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`

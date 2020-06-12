@@ -33,22 +33,26 @@ export default class PollutionCircleForm extends compose(
     return (
       <Scrollbar>
         <div className="pollutioncircle-container">
-          <div className="pollutioncircle-container__item--firstSection">
-            <div>
-              <svg key={name}>
-                <use xlinkHref={`${spriteUrl}#${name}`}/>
-              </svg>
-            </div>
-            <div className="pollutioncircle-container__itemWidth-right">
-              {this.renderSubordinationLevel()}
-              {this.renderOrgStructureSelect()}
-              {this.renderAffiliation()}
-              {this.renderStartingCoordinate()}
-            </div>
+          <div className='pollutioncircle-container__itemWidth-left'>
+            <svg key={name}>
+              <use xlinkHref={`${spriteUrl}#${name}`}/>
+            </svg>
           </div>
-          <div className="pollutioncircle-container__item--secondSection">
-            <div className="pollutioncircle-container__itemWidth">
-              {this.renderRadii()}
+          <div className='scroll-container'>
+            <div className="pollutioncircle-container__item--firstSection">
+              <div className="pollutioncircle-container__itemWidth-right">
+                {this.renderSubordinationLevel()}
+                {this.renderOrgStructureSelect()}
+                {this.renderAffiliation()}
+                <div className='coordinate-container-border'>
+                  {this.renderStartingCoordinate()}
+                </div>
+              </div>
+            </div>
+            <div className="pollutioncircle-container__item--secondSection">
+              <div className="pollutioncircle-container__itemWidth">
+                {this.renderRadii()}
+              </div>
             </div>
           </div>
         </div>

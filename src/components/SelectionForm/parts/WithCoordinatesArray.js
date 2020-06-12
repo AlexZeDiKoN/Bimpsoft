@@ -76,6 +76,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_ICONS.NONE
     return (
       <FormDarkPart>
+        <FormDivider/>
         <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && (<IconHovered
             icon={editCoordinates ? iconNames.BAR_2_EDIT_ACTIVE : iconNames.BAR_2_EDIT_DEFAULT}
@@ -83,22 +84,17 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
             onClick={this.coordinatesEditClickHandler}
           />)}
         </FormRow>
-        <FormDivider/>
         <div className="headerSiding">
           <div className="shape-form-scrollable">
             <table>
               <tbody>
-                <tr>
-                  <th>
-                    <div>
-                      <FormRow label={i18n.AMPLIFIERS}/>
-                    </div>
-                  </th>
-                  <th>
-                    <div>
-                      <FormRow label={i18n.COORDINATES}/>
-                    </div>
-                  </th>
+                <div className={'columns-container'}>
+                  <div className={'amplifiers-title'}>
+                    {i18n.AMPLIFIERS}
+                  </div>
+                  <div className={'coordinates-title'}>
+                    {i18n.COORDINATES}
+                  </div>
                   <th className="col-add">
                     <div>
                       {canEdit && editCoordinates && <IconHovered
@@ -109,42 +105,38 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                     &nbsp;
                     </div>
                   </th>
-                </tr>
+                </div>
                 {coordinatesArray.map((coordinate, index) => (
                   <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
-                    <tr>
-                      <td>
-                        <div className="icon-option">
-                          <Checkbox
-                            disabled={!canEdit || noNodalPointAmplifier}
-                            checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
-                            onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
-                          />
-                          {nodalPointIconPreview}
-                        </div>
-                      </td>
-                      <td>
-                        <CoordinateItem
-                          key={index}
-                          coordinate={coordinate}
-                          index={index}
-                          readOnly={readOnly}
-                          canRemove={coordinatesLength > 2 && !readOnly}
-                          onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
-                          onRemove={this.coordinateRemoveHandler}
-                          onFocus={this.onCoordinateFocusHandler}
-                          onBlur={this.onCoordinateBlurHandler}
+                    <div className={'coordinates-checkbox-container'}>
+                      <div className="icon-option">
+                        <Checkbox
+                          disabled={!canEdit || noNodalPointAmplifier}
+                          checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
+                          onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
                         />
-                      </td>
-                    </tr>
+                        {nodalPointIconPreview}
+                      </div>
+                      <CoordinateItem
+                        key={index}
+                        coordinate={coordinate}
+                        index={index}
+                        readOnly={readOnly}
+                        canRemove={coordinatesLength > 2 && !readOnly}
+                        onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+                        onRemove={this.coordinateRemoveHandler}
+                        onFocus={this.onCoordinateFocusHandler}
+                        onBlur={this.onCoordinateBlurHandler}
+                      />
+                    </div>
                     {index !== coordinatesLength - (lock ? 0 : 1) ? (
-                      <tr>
-                        <td><Checkbox
+                      <div className={'coordinate-check'}>
+                        <Checkbox
                           disabled={!canEdit}
                           onChange={this.createAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
                           checked={shownIntermediateAmplifiersSet.has(index)}
-                        /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;</td>
-                      </tr>
+                        /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;
+                      </div>
                     ) : null}
                   </Fragment>
                 ))}

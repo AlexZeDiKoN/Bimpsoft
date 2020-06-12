@@ -8,7 +8,7 @@ import { prepareBezierPath } from './utils/Bezier'
 const FG_MARKER_RADIUS = 7 // radius of the edit-marker of the radius WAS COPIED FROM leaflet.pm!
 const positive = (value) => value > 0
 const neq = (control) => (value) => value !== control
-const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
+export const narr = (length) => [ ...Array(length).keys() ] // Array.apply(null, { length }).map(Number.call, Number)
 const varr = (length, getValue) => narr(length).map((_, index) => getValue(index))
 
 const copyRow = (row) => row.map(L.latLng)
@@ -35,6 +35,42 @@ const commonStyle = {
   fillColor: null,
   fillOpacity: 0.2,
   fillRule: 'evenodd',
+}
+
+export const generateGeometry = (zones, directions, box, vertical = false, olovo = true) => {
+  const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
+  const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
+
+  const zoneMultiplier = olovo ? 1 : 2
+
+  const nBox = {
+    left: getMin(vertical),
+    right: getMax(vertical),
+    top: getMin(!vertical),
+    bottom: getMax(!vertical),
+  }
+  nBox.center = (nBox.left + nBox.right) / 2
+  const width = nBox.right - nBox.left
+  const height = nBox.bottom - nBox.top
+  const step = {
+    x: width / directions,
+    y: height / zones / zoneMultiplier,
+  }
+
+  return [
+    // eternals
+    varr(directions + 1, (i) => varr(zones * zoneMultiplier + 1, (j) => {
+      /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
+        Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
+      const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
+      const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
+      return vertical ? L.latLng(y, x) : L.latLng(x, y)
+    })),
+    // directionSegments
+    varr(directions + 1, () => varr(zones * zoneMultiplier, () => [])),
+    // zoneSegments
+    varr(zones * zoneMultiplier + 1, () => varr(directions, () => [])),
+  ]
 }
 
 /**
@@ -85,6 +121,7 @@ L.FlexGrid = L.Layer.extend({
       fillColor: '#444',
     },
     draggable: true,
+    olovo: false,
   },
 
   /**
@@ -98,24 +135,6 @@ L.FlexGrid = L.Layer.extend({
   initialize (box, options, id, geometry) {
     L.setOptions(this, options)
 
-    const { directions, zones, vertical } = this.options
-    const getMin = (vertical) => vertical ? box.getWest() : box.getSouth()
-    const getMax = (vertical) => vertical ? box.getEast() : box.getNorth()
-
-    const nBox = {
-      left: getMin(vertical),
-      right: getMax(vertical),
-      top: getMin(!vertical),
-      bottom: getMax(!vertical),
-    }
-    nBox.center = (nBox.left + nBox.right) / 2
-    const width = nBox.right - nBox.left
-    const height = nBox.bottom - nBox.top
-    const step = {
-      x: width / directions,
-      y: height / zones / 2,
-    }
-
     this.id = id
     this.highlightedDirections = []
     if (geometry) {
@@ -123,17 +142,14 @@ L.FlexGrid = L.Layer.extend({
       this.directionSegments = geometry.directionSegments.map(copyRing)
       this.zoneSegments = geometry.zoneSegments.map(copyRing)
     } else {
-      this.eternals = varr(directions + 1, (i) => varr(zones * 2 + 1, (j) => {
-        /* const x = nBox.center + (nBox.left + i * step.x - nBox.center) *
-          Math.cos(Math.abs(j - zones) * Math.PI / 3 / zones) */
-        const x = nBox.right - i * step.x // напрямки: нумерація згори вниз
-        const y = nBox.bottom - j * step.y // зони: зліва дружні, справа ворожі
-        return vertical ? L.latLng(y, x) : L.latLng(x, y)
-      }))
-      this.directionSegments = varr(directions + 1, () => varr(zones * 2, () => []))
-      this.zoneSegments = varr(zones * 2 + 1, () => varr(directions, () => []))
+      const { directions, zones, vertical, olovo } = this.options
+      const [ eternals, directionSegments, zoneSegments ] = generateGeometry(zones, directions, box, vertical, olovo)
+      this.eternals = eternals
+      this.directionSegments = directionSegments
+      this.zoneSegments = zoneSegments
     }
 
+    this.zoneMultiplier = this.options.olovo ? 1 : 2
     return this
   },
 
@@ -168,7 +184,7 @@ L.FlexGrid = L.Layer.extend({
   // Лінії розмежування зон
   _zoneLines () {
     const { zones } = this.options
-    const z = narr(zones * 2)
+    const z = narr(zones * this.zoneMultiplier)
       .filter(positive)
       .filter(neq(zones))
     return z.map(this._zoneLine.bind(this))
@@ -204,7 +220,7 @@ L.FlexGrid = L.Layer.extend({
     const { directions, zones } = this.options
     switch (code) {
       case 'dir':
-        if (zoneIdx < zones * 2 - 1) {
+        if (zoneIdx < zones * this.zoneMultiplier - 1) {
           const segment = this.directionRings[dirIdx][zoneIdx + 1]
           return segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
         }
@@ -271,7 +287,7 @@ L.FlexGrid = L.Layer.extend({
   _buildCellRings () {
     const { directions, zones } = this.options
     const d = narr(directions)
-    const z = narr(zones * 2)
+    const z = narr(zones * this.zoneMultiplier)
     return d.map((_, dirIdx) => z.map((_, zoneIdx) => this._cellRings(dirIdx, zoneIdx)))
   },
 
@@ -305,7 +321,7 @@ L.FlexGrid = L.Layer.extend({
     return [].concat(
       this._zoneLine(0),
       this._directionLine(directions),
-      this._zoneLine(zones * 2, true),
+      this._zoneLine(zones * this.zoneMultiplier, true),
       this._directionLine(0, true),
     )
   },
