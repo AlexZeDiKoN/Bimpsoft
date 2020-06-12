@@ -5,10 +5,10 @@ import { layerGroup, rectangle } from 'leaflet'
 import { generateCoordinateMatrix } from './children/coordinateMatrix'
 import { createMarkersGroup, updateMarkers } from './children/markers'
 import { isAreaOnScreen, removeLayerFromSelectedLayers, setInitCoordinates } from './helpers'
-import { selectLayer } from './children/selectLayer'
+import { selectLayer, updateStyleLayer } from './children/selectLayer'
 import './coordinateGrid.css'
 
-import { INIT_GRID_OPTIONS, LAT, LNG, MIN_ZOOM } from './constants'
+import { INIT_GRID_OPTIONS, INIT_GRID_OPTIONS_NOT_MAP, LAT, LNG, MIN_ZOOM } from './constants'
 
 export default class PrintInner extends React.Component {
   static propTypes = {
@@ -16,7 +16,9 @@ export default class PrintInner extends React.Component {
     printScale: PropTypes.number,
     map: PropTypes.object,
     setSelectedZone: PropTypes.func,
+    getMapAvailability: PropTypes.func,
     selectedZone: PropTypes.object,
+    mapAvailability: PropTypes.object,
   }
 
   constructor (props) {
@@ -33,10 +35,19 @@ export default class PrintInner extends React.Component {
   }
 
   async componentDidUpdate (prevProps, prevState, snapshot) {
-    const { printStatus, printScale } = this.props
+    const { printStatus, printScale, mapAvailability } = this.props
     if (printStatus !== prevProps.printStatus || printScale !== prevProps.printScale) {
       this.removeCoordinateMapGrid()
       printStatus && this.initCoordinateMapGrid()
+    }
+    if (mapAvailability !== prevProps.mapAvailability) { // обновление состояния наличия номенклатурных листов
+      const { currentGrid, selectedLayers } = this
+      for (const [ gridId, value ] of Object.entries(mapAvailability)) {
+        // eslint-disable-next-line no-prototype-builtins
+        if (!prevProps.mapAvailability.hasOwnProperty(gridId)) { // нашли новый ответ на запрос
+          updateStyleLayer(gridId, value, currentGrid, selectedLayers)
+        }
+      }
     }
   }
 
@@ -82,10 +93,17 @@ export default class PrintInner extends React.Component {
   // Створення групи елементів гріда
   createGridGroup = (coordinatesMatrix) => {
     const { selectedLayers } = this
+    const { printScale, mapAvailability, getMapAvailability } = this.props
+    const requestAvailability = []
     const rectangles = concat(...coordinatesMatrix)
-      .map((coordinates) => this.createGridRectangle(coordinates))
+      .map((coordinates) => {
+        const rectangle = this.createGridRectangle(coordinates)
+        if (mapAvailability && !mapAvailability[rectangle.options.id]) {
+          requestAvailability.push(coordinates[0])
+        }
+        return rectangle
+      })
     const currentGrid = layerGroup(rectangles)
-    const { printScale } = this.props
     rectangles.map((rectangle) => rectangle
       .on('click', (e) => selectLayer(
         e,
@@ -95,16 +113,32 @@ export default class PrintInner extends React.Component {
         this.props.setSelectedZone,
         printScale,
       )))
+    getMapAvailability(printScale, requestAvailability)
     return currentGrid
   }
 
-  createGridRectangle = (coordinates) => rectangle(coordinates, INIT_GRID_OPTIONS)
+  createGridRectangle = (coordinates) => {
+    const { printScale, mapAvailability } = this.props
+    const id = `${printScale}_${coordinates[0][LAT].toFixed(6)}_${coordinates[0][LNG].toFixed(6)}`
+    let availability
+    let options
+    if (mapAvailability && mapAvailability[id]) { // є данні о наявности номенклатурного листа
+      availability = mapAvailability[id]
+      options = { id, availability, ...INIT_GRID_OPTIONS }
+    } else { // немає данних о номенклатурних листах, робимо запит
+      // getMapAvailability(id, printScale, coordinates)
+      availability = false
+      options = { id, availability, ...INIT_GRID_OPTIONS_NOT_MAP }
+    }
+    return rectangle(coordinates, options)
+  }
 
   // Оновлення елементів гріда
   updateGrid = (coordinatesMatrix) => {
-    const { printScale, map } = this.props
+    const { printScale, map, mapAvailability, getMapAvailability } = this.props
     const { currentGrid, selectedLayers } = this
     const screenCoordinates = setInitCoordinates(map.getBounds())
+    const requestAvailability = []
     // Видаляємо участки які виходять за межі екрану
     currentGrid.getLayers().forEach((layer) => {
       const { _northEast } = layer.getBounds()
@@ -115,6 +149,9 @@ export default class PrintInner extends React.Component {
     concat(...coordinatesMatrix).forEach((coordinate) => {
       if (!this.isLayerExist(coordinate, layers)) {
         const newLayer = this.createGridRectangle(coordinate)
+        if (mapAvailability && !mapAvailability[newLayer.options.id]) {
+          requestAvailability.push(coordinate[0])
+        }
         newLayer.on('click', (e) => selectLayer(
           e,
           currentGrid,
@@ -126,6 +163,7 @@ export default class PrintInner extends React.Component {
         currentGrid.addLayer(newLayer)
       }
     })
+    getMapAvailability(printScale, requestAvailability)
   }
 
   isLayerExist = (coordinate, layers) =>

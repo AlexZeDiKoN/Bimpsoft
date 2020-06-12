@@ -13,6 +13,7 @@ const initState = {
     legendTableType: 'right',
   },
   selectedZone: null,
+  mapAvailability: {}, // хранилище ответов на запрысы о наличии номенклатурных листов
   printFiles: {},
 }
 
@@ -66,6 +67,14 @@ export default function reducer (state = initState, action) {
       const printFiles = { ...state.printFiles }
       delete printFiles[payload]
       return { ...state, printFiles }
+    }
+    case print.PRINT_MAP_AVAILABILITY: { // добавляем в хранилище ответ на запрос о существование номенклатурного листа
+      const mapAvailability = { ...state.mapAvailability }
+      const { gridIdRequest, gridIdUnavailable } = payload
+      gridIdRequest.forEach((gridId) => {
+        mapAvailability[gridId] = !gridIdUnavailable.includes(gridId)
+      })
+      return { ...state, mapAvailability }
     }
     default:
       return state
