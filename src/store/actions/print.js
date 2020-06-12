@@ -95,7 +95,7 @@ export const printFileRetry = (id, name) =>
 
 export const createPrintFile = (onError = null) =>
   asyncAction.withNotification(async (dispatch, getState,
-    { webmapApi: { getPrintBounds, printFileCreate } }) => {
+    { webmapApi: { getPrintBounds, printFileCreate, getDefaultConfig } }) => {
     const state = getState()
     const {
       webMap: { objects, showAmplifiers },
@@ -107,7 +107,8 @@ export const createPrintFile = (onError = null) =>
         mapId,
       },
     } = state
-
+    const configForPrint = await getDefaultConfig()
+    console.log('conf', configForPrint)
     const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
 
     if (selectedZone) {
