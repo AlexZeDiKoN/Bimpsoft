@@ -33,21 +33,25 @@ export default class CircularZoneForm extends compose(
     return (
       <Scrollbar>
         <div className="circularzone-container">
-          <div className="circularzone-container__item--firstSection">
-            <div>
-              <svg key={name}>
-                <use xlinkHref={`${spriteUrl}#${name}`}/>
-              </svg>
-            </div>
-            <div className="circularzone-container__itemWidth-right">
-              {this.renderSubordinationLevel()}
-              {this.renderOrgStructureSelect()}
-              {this.renderAffiliation()}
-              {this.renderStartingCoordinate()}
-            </div>
+          <div className='circularzone-container__itemWidth-left'>
+            <svg key={name}>
+              <use xlinkHref={`${spriteUrl}#${name}`}/>
+            </svg>
           </div>
-          <div className="circularzone-container__item--secondSection">
-            {this.renderRadiiAndAmplifiers()}
+          <div className='scroll-container'>
+            <div className="circularzone-container__item--firstSection">
+              <div className="circularzone-container__itemWidth-right">
+                {this.renderSubordinationLevel()}
+                {this.renderOrgStructureSelect()}
+                {this.renderAffiliation()}
+                <div className='coordinate-container-border'>
+                  {this.renderStartingCoordinate()}
+                </div>
+              </div>
+            </div>
+            <div className="circularzone-container__item--secondSection">
+              {this.renderRadiiAndAmplifiers()}
+            </div>
           </div>
         </div>
       </Scrollbar>

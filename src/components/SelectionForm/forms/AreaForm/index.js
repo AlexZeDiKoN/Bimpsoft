@@ -96,37 +96,37 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
     const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
     return (
       <div className="area-container">
-        <div className="area-container--firstSection">
-          <div className="area-container__itemWidth-left">
-            {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
-          </div>
-          <div className="area-container__itemWidth-right">
-            <div className="area-container__itemWidth">
+        <div className="area-container__itemWidth-left">
+          {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
+        </div>
+        <div className='scroll-container'>
+          <div className="area-container__item--firstSection">
+            <div className="area-container__itemWidth-right">
               {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
               {this.renderOrgStructureSelect()} { /* підрозділ */ }
-            </div>
-            <div className="area-container__itemWidth">
               {this.renderAffiliation()} { /* принадлежність */ }
               {this.renderStatus()} { /* Стан */ }
             </div>
           </div>
+          <div className="area-container__item--secondSection">
+            <div className="area-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderSegment()}
+                {this.renderColor()}
+              </div>
+              {this.renderLineType()}
+                <div className='containerSegmentLine'>
+                {this.renderStrokeWidth()}
+                {this.renderNodalPointType()}
+              </div>
+              {this.renderFill(true)}
+              {this.renderHatch()}
+            </div>
+          </div>
+          {this.renderIntermediateAmplifiers()}
+          {this.renderPointAmplifiers()}
+          {this.renderCoordinatesArray(true)}
         </div>
-        <div className="area-container__item">
-          {this.renderSegment()}
-          {this.renderLineType()}
-          {this.renderColor()}
-        </div>
-        <div className="area-container__item">
-          {this.renderStrokeWidth()}
-          {this.renderNodalPointType()}
-          {this.renderFill(true)}
-          {this.renderHatch()}
-        </div>
-        <div className="dzvin-form-divider">
-        </div>
-        {this.renderIntermediateAmplifiers()}
-        {this.renderPointAmplifiers()}
-        {this.renderCoordinatesArray(true)}
       </div>
     )
   }

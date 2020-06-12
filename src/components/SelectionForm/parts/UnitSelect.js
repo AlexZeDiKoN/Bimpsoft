@@ -16,7 +16,7 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
     const orgStructures = this.getOrgStructures()
     return (
       <div className='org-structures-select-disabled'>
-        <FormRow label={i18n.UNIT}>
+        <FormRow label={i18n.MILITARY_FORMATION}>
           <OrgStructureSelect
             values={orgStructures}
             onChange={this.unitChangeHandler}

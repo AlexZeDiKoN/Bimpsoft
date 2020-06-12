@@ -6,7 +6,6 @@ import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
-  FormRow,
   FormDarkPart,
   InputWithSuffix,
 } = components.form
@@ -67,7 +66,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
 
     return (
       <FormDarkPart>
-        <FormRow label={i18n.COORDINATES}/>
+        <div className='coordinate-width-title'>{i18n.COORDINATES}</div>
         <div className="shape-form-scrollable">
           <CoordinateRow
             label={i18n.NORTH_WEST}
@@ -87,7 +86,8 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
-          <FormRow label={i18n.SIDE_SIZE}>
+          <div className='coordinateRow-container'>
+            <div className='coordinate-title'>{i18n.SIDE_SIZE}</div>
             <InputWithSuffix
               readOnly={!canEdit}
               value={width}
@@ -96,7 +96,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
               error={widthIsWrong}
               onBlur={this.widthBlurHandler}
             />
-          </FormRow>
+          </div>
         </div>
       </FormDarkPart>
     )

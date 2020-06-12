@@ -20,29 +20,27 @@ const WithIntermediateAmplifiersTune = (Component) => class IntermediateAmplifie
     const canEdit = this.isCanEdit()
     const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
     return (
-      <table className="tune_intermediate_table">
-        <tbody>
-          {intermediateArray.map((name, index) => (
-            <tr key={index}>
-              <td>
-                {name}
-              </td>
-              <td>
-                <div className="icon-option">
-                  <Checkbox
-                    disabled={!canEdit}
-                    name={NAME_OF_AMPLIFIERS}
-                    onChange={this.setAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
-                    checked={shownIntermediateAmplifiersSet.has(index)}
-                  />
-                  <span>&nbsp;&laquo;{NAME_OF_AMPLIFIERS}&raquo;</span>
-                </div>
-              </td>
-            </tr>
-          ))
-          }
-        </tbody>
-      </table>
+      <>
+        {intermediateArray.map((name, index) => (
+          <div key={index} className={'intermediate-container'}>
+            <div className='left-part'>
+              {name}
+            </div>
+            <div className='right-part'>
+              <div className="icon-option">
+                <Checkbox
+                  disabled={!canEdit}
+                  name={NAME_OF_AMPLIFIERS}
+                  onChange={this.setAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
+                  checked={shownIntermediateAmplifiersSet.has(index)}
+                />
+                <span>&nbsp;&laquo;{NAME_OF_AMPLIFIERS}&raquo;</span>
+              </div>
+            </div>
+          </div>
+        ))
+        }
+      </>
     )
   }
 }
