@@ -153,13 +153,14 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     const sector = this.addSectors(coordinatesArray, !canEdit || !editSectors)
     return (
       <FormDarkPart>
-        <FormRow label={i18n.SECTORS}>
+        <div className='coordinate-width-container'>
+          <div className='coordinate-width-title'>{i18n.SECTORS}</div>
           {canEdit && (<IconHovered
             icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
             hoverIcon={IconNames.BAR_2_EDIT_HOVER}
             onClick={this.sectorsEditClickHandler}
           />)}
-        </FormRow>
+        </div>
         <FormDivider/>
         <div className="shape-form-scrollable">
           <table>
