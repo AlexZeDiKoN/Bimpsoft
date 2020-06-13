@@ -39,9 +39,23 @@ export const INIT_GRID_OPTIONS = {
   fillOpacity: 0.3,
   weight: 0.5,
 }
+
+// нет номенклатурного листа
+export const INIT_GRID_OPTIONS_NOT_MAP = {
+  color: 'red',
+  fillOpacity: 0.3,
+  weight: 0.5,
+}
+
 export const SELECTED_CELL_OPTIONS = {
   color: 'black',
   fillOpacity: 0,
+}
+
+// лист выбран, но для него отсутствует номенклатурный лист
+export const SELECTED_CELL_OPTIONS_NOT_MAP = {
+  color: 'red',
+  fillOpacity: 0.10,
 }
 export const GRID_CELLS_STRUCTURE = {
   row_length: 0,

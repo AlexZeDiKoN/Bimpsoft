@@ -87,7 +87,8 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
-          <FormRow label={i18n.RADIUS}>
+          <div className='coordinateRow-container'>
+            <div className='coordinate-title'>{i18n.RADIUS}</div>
             <InputWithSuffix
               readOnly={!canEdit}
               value={radius}
@@ -96,7 +97,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
               suffix={i18n.ABBR_METERS}
               error={radiusIsWrong}
             />
-          </FormRow>
+          </div>
         </div>
       </FormDarkPart>
     )

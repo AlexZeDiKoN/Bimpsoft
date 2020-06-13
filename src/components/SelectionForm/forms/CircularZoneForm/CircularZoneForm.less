@@ -4,45 +4,43 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: @modals-background-color;
 
-  svg {width: 240px}
+  .scroll-container {
+    overflow: auto;
+    height: ~"calc(100vh - 330px)";
+  }
 
-  .dzvin-form-row{
+  .circularzone-container__itemWidth-left {
+    margin: 6px;
+    height: 160px;
+    border-bottom: 2px solid @modals-divider-color;
+    display: flex;
+    background: @toolbar-light-background;
+
+    svg {
+      width: 100%;
+    }
+  }
+
+  .dzvin-form-row-label {
+    margin: 0.2em;
+  }
+
+  .dzvin-form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
-    .wrong-input-block {
-      .ant-input {
-        border-color: #ff4520;
-        background-color: pink;
-      }
-
-      .ant-input-group-addon {
-        border-color: #FF4218;
-      }
-    }
-
-    label{
-      margin-bottom: 0.35em;
-      margin-left: 0.5em;
-      font-size: 12px;
-      flex: 0 0 auto;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      margin-right: 0;
-      text-overflow: ellipsis;
-    }
-    textarea.ant-input{
-      min-height: 48px;
-    }
+    font-size: 12px;
+    font-family: Roboto;
+    color: @modals-text-color;
+    margin: 0 10px;
   }
 
   &__item {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
 
     .dzvin-form-row {
       display: flex;
@@ -63,7 +61,7 @@
         }
 
         .ant-select-disabled {
-          .ant-select-arrow{
+          .ant-select-arrow {
             opacity: 0;
           }
         }
@@ -76,177 +74,112 @@
           transform: scale(0.6);
         }
       }
-
-      label {
-        margin-bottom: 0.35em;
-        margin-left: 0.5em;
-        font-size: 12px;
-        flex: 0 0 auto;
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        margin-right: 0;
-        text-overflow: ellipsis;
-      }
     }
 
     &--firstSection {
       display: flex;
-      margin-top: 10px;
-      border-bottom: 2px solid rgba(159,166,89,.54);
+      margin-top: 2px;
+      flex-direction: column;
+      border-bottom: 2px solid rgba(159, 166, 89, .54);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
 
-      .sectors-container__itemWidth-left {
-        width: 50%;
-        border: 7px solid #eaeaea;
-        margin: 12px;
-        height: 300px;
 
-        img {
-          height: 300px;
-          transform: scale(1.8);
+      .circularzone-container__itemWidth-right {
+        display: flex;
+        flex-direction: column;
+
+        .coordinate-container-border {
+          border-top: 2px solid rgba(159, 166, 89, 0.54);
+          margin-top: 10px;
+          padding-top: 10px;
         }
-      }
 
-      .sectors-container__itemWidth-right {
-        width: 50%;
         .dzvin-form-input {
           width: 100%;
-          .ant-select{
+
+          & > .ant-select {
             width: 100%;
           }
         }
-        .sectors-container__itemWidth--section1 {
-          display: flex;
-          .dzvin-input{
-            input{
-              width: 139px;
-            }
-          }
-
-          & > div {
-            width: 50%;
-          }
-
-          & > div:first-child {
-            width: 49%;
-          }
-        }
       }
     }
 
-    &--secondSection{
-      display: block;
-      //flex-direction: row;
-      //flex-wrap: wrap;
-      width: 100%;
-      padding: 0 0.3em;
-      border-bottom: 2px solid rgba(159, 166, 89, 0.54);
-
-      .color-picker{
-        width: 32px;
-        height: 32px;
-      }
-
-      .dzvin-form-divider{
-        margin: 5px 0 5px;
-      }
-
-      .color-picker-button{
-        width: 28px;
-        height: 28px;
-      }
-
-      .container__itemWidth50{
-        width: 50%;
-
-        .containerTypeColor{
-          display: flex;
-          align-items: center;
-          width: 100%;
-          margin-right: 2em;
-
-          .container-color-picker{
-            height: 48px;
-            display: flex;
-            align-items: flex-end;
-            padding: 15px;
-          }
-        }
-
-        & > div {
-          display: flex;
-          width: 100%;
-          justify-content: space-between;
-
-          .dzvin-form-row {
-            flex: 1 1 auto;
-            width: 100%;
-
-            .dzvin-form-input {
-              width: 100%;
-
-              .ant-select {
-                width: 100%;
-              }
-            }
-          }
-        }
-      }
-    }
-
-  }
-
-  &__itemWidth {
-    width: 100%;
-    display: flex;
-
-    .dzvin-form-row-label{
-      flex: 0 0 auto;
-    }
-
-    .hideArrow{
-      .dzvin-input-after{
-        opacity: 0;
-      }
-    }
-  }
-
-  &__item-amplifier{
-    .dzvin-form-input{
+    &--secondSection {
       display: flex;
       flex-direction: row;
-      input{
-        margin-left: 15px;
+      flex-wrap: wrap;
+      width: 100%;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+
+
+      .amplifier {
+        width: 100%;
+        .dzvin-form-input {
+          width: 100%;
+          border-bottom: 2px solid @modals-section-border-color;
+          padding-bottom: 10px;
+          margin-bottom: 10px;
+        }
+      }
+
+      .circularzone-container__itemWidth {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-right: 10px;
+        width: 100%;
+
+        .dzvin-form-row {
+          width: 90px;
+          flex: 0 0 auto;
+          margin-right: 0;
+        }
+
+        .radiContainer {
+          font-size: 12px;
+          font-family: Roboto;
+
+          .icon-option {
+            height: 28px;
+            border: 0;
+
+            .icon-text {
+              display: none;
+            }
+          }
+        }
+
+        .radiContainerColor {
+          display: flex;
+          align-items: center;
+          margin-top: 18px;
+
+          & > div:first-child {
+            margin-right: 5px;
+          }
+
+          .color-picker {
+            width: 30px;
+            height: 30px;
+
+            .color-picker-button {
+              width: 28px;
+              height: 28px;
+            }
+          }
+        }
       }
     }
   }
 
-  .dzvin-form-dark-part {
-    min-height: 250px;
-    height: 100%;
-    margin: 0;
-
-    .dzvin-form-row{
-      padding: 5px 10px;
-      flex: 0 0 auto;
-      height: fit-content;
-      justify-content: space-between;
-      flex-direction: row;
-    }
-
-    .shape-form-scrollable {
-      height: 185px;
-      padding-left: 1.1em;
-      .coordinatesModal{
-        margin-bottom: 5px;
-      }
-    }
-  }
   .ant-select-open {
     .ant-select-arrow {
       transform: rotate(180deg) scale(0.6);
     }
   }
+
   .ant-select-arrow {
     width: 0;
     height: 0;

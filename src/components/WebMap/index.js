@@ -58,6 +58,7 @@ import {
 } from './Tactical'
 import { MapProvider } from './MapContext'
 import { findDefinition } from './patch/Sophisticated/utils'
+import { generateGeometry } from './patch/FlexGrid'
 
 const { Coordinates: Coord } = utils
 
@@ -1513,24 +1514,25 @@ export default class WebMap extends React.PureComponent {
     }
     const layer = createTacticalSign(object, this.map, prevLayer)
     if (layer) {
-      const objectIsPoint = object.type === entityKind.POINT
       layer.options.lineCap = 'butt'
       layer.id = id
       layer.object = object
       layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      objectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
-        openingAction,
-        layer,
-        layerObject.formationId,
-        object,
-      ))
-      objectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
-        closingAction,
-        layer,
-        layerObject.formationId,
-        object,
-      ))
+      if (object.type === entityKind.POINT && unit) {
+        layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+          openingAction,
+          layer,
+          layerObject.formationId,
+          object,
+        ))
+        layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+          closingAction,
+          layer,
+          layerObject.formationId,
+          object,
+        ))
+      }
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
@@ -2071,6 +2073,10 @@ export default class WebMap extends React.PureComponent {
         const p0 = { x: x + sw, y: y + sw }
         const p1 = { x: x - sw, y: y - sw }
         geometry = [ p0, p1 ].map(c2g)
+      } else if (amp.type === entityKind.OLOVO) {
+        const { directions = 3, zones = 2 } = amp.params || {}
+        const box = this.map.getBounds().pad(-0.4)
+        geometry = generateGeometry(zones, directions, box)
       } else {
         const p0 = { x, y }
         const p1 = { x: x + sw, y: y + sw }

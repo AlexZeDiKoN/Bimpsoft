@@ -26,8 +26,13 @@ import {
   CircularZoneForm,
   AttackForm,
   ConcentrationOfFireForm,
+  DefeatStripForm,
 } from './forms'
 import SaveMilSymbolForm from './forms/MilSymbolForm/SaveMilSymbolForm'
+
+const clientWidth = document?.documentElement?.clientWidth
+
+const calc = clientWidth - 310 - 40
 
 const forms = {
   [SelectionTypes.POINT]: {
@@ -40,65 +45,83 @@ const forms = {
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
     component: LineForm,
-    minHeight: 680,
-    minWidth: 900,
-    maxHeight: 800,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
-    minHeight: 670,
-    maxHeight: 750,
-    minWidth: 660,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
     component: AreaForm,
-    minHeight: 750,
-    maxHeight: 750,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
     component: AreaForm,
-    minHeight: 750,
-    maxHeight: 800,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
     component: RectangleForm,
-    minHeight: 700,
-    maxHeight: 700,
-    minWidth: 520,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
     component: CircleForm,
-    minHeight: 575,
-    maxHeight: 575,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
     component: SquareForm,
-    minHeight: 760,
-    maxHeight: 760,
-    minWidth: 560,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.TEXT]: {
     title: i18n.SHAPE_TEXT,
     component: TextForm,
-    minHeight: 330,
-    minWidth: 735,
-    maxHeight: 750,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CONTOUR]: {
     title: i18n.CONTOUR,
     component: ContourForm,
-    minHeight: 330,
-    maxHeight: 330,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.GROUPED_REGION]: {
     title: i18n.CONTOUR_REGION_UNIT,
@@ -107,12 +130,18 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.OLOVO]: {
+    title: i18n.DEFEAT_STRIP_ZONE,
+    component: DefeatStripForm,
+  },
   [SelectionTypes.SOPHISTICATED]: {
-    title: i18n.SOPHISTICATED,
+    title: i18n.MIL_SYMBOL,
     component: SophisticatedForm,
-    minHeight: 330,
-    maxHeight: 630,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.ATTACK]: {
     title: i18n.ATTACK,
@@ -146,23 +175,29 @@ const forms = {
   [SelectionTypes.SECTORS]: {
     title: i18n.SHAPE_SECTORS,
     component: SectorsForm,
-    minHeight: 640,
-    minWidth: 900,
-    maxHeight: 800,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLLUTION_CIRCLE]: {
     title: i18n.SHAPE_POLLUTION_CIRCLE,
     component: PollutionCircleForm,
-    minHeight: 545,
-    minWidth: 600,
-    maxHeight: 545,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCULAR_ZONE]: {
     title: i18n.SHAPE_CIRCULAR_ZONE,
     component: CircularZoneForm,
-    minHeight: 645,
-    minWidth: 550,
-    maxHeight: 645,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.MINE_FIELD]: {
     title: i18n.SHAPE_MINEFIELD,
@@ -248,6 +283,8 @@ export default class SelectionForm extends React.Component {
       minHeight,
       maxHeight,
       minWidth,
+      maxWidth,
+      defaultPosition,
       component: Component,
     } = forms[formType]
 
@@ -279,27 +316,30 @@ export default class SelectionForm extends React.Component {
           title={title}
           onClose={onCancel}
           minWidth={minWidth}
+          maxWidth={maxWidth}
+          defaultPosition={defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
         >
-          <FocusTrap>
-            <HotKeysContainer>
-              <Component
-                data={data}
-                canEdit={canEdit}
-                orgStructures={orgStructures}
-                onOk={onOk}
-                onChange={this.changeHandler}
-                onClose={onCancel}
-                onSaveError={onSaveError}
-                onCheckSave={onCheckSave}
-                onAddToTemplates={this.addToTemplateHandler}
-                onCoordinateFocusChange={onCoordinateFocusChange}
-                ovtData={ovtData}
-              />
-              <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-            </HotKeysContainer>
-          </FocusTrap>
+          {
+            <FocusTrap>
+              <HotKeysContainer>
+                <Component
+                  data={data}
+                  canEdit={canEdit}
+                  orgStructures={orgStructures}
+                  onOk={onOk}
+                  onChange={this.changeHandler}
+                  onClose={onCancel}
+                  onSaveError={onSaveError}
+                  onCheckSave={onCheckSave}
+                  onAddToTemplates={this.addToTemplateHandler}
+                  onCoordinateFocusChange={onCoordinateFocusChange}
+                  ovtData={ovtData}
+                />
+                <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
+              </HotKeysContainer>
+            </FocusTrap>}
         </Wrapper>
       </>
     )

@@ -19,16 +19,17 @@ import {
 import './DefeatStripForm.css'
 import i18n from '../../../../i18n'
 import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
-import { amps } from '../../../../constants/symbols'
 
 const { FormRow } = components.form
 
 const CONFIG_AMPLIFIERS = [
-  { id: amps.N, name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: amps.T, name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: amps.W, name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: amps.B, name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT },
+  { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
+  { id: 'zones', name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM },
+  { id: 'start', name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM },
+  { id: 'title', name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT },
 ]
+
+const PATH_AMPLIFIERS = [ 'attributes', 'params' ]
 
 export default class SophisticatedForm extends compose(
   UnitSelect,
@@ -64,7 +65,7 @@ export default class SophisticatedForm extends compose(
               {this.renderColor()}
             </FormRow>
           </div>
-          {this.renderAmplifiers(CONFIG_AMPLIFIERS)}
+          {this.renderAmplifiers(CONFIG_AMPLIFIERS, PATH_AMPLIFIERS, true)}
         </div>
       </div>
     )
