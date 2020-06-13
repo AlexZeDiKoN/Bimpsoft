@@ -26,67 +26,75 @@ import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
 const onePunkt = 0.3528 // 1 пункт в мм
-const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
 // eslint-disable-next-line no-unused-vars
 const DPI96 = 3.78 // количество пикселей в 1мм
 const DPI1 = 0.03937 // количество пикселей в 1мм при разрешении 1 DPI
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
-const MERGE_SYMBOL = 5 // отступы при генерации символов
 export const MM_IN_INCH = 25.4
 export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
 export const getPixelInMm = (dpi) => dpi / MM_IN_INCH
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
 const LINE_WIDTH = 2 // индекс ширины для линий без определенной толщины
 const CROSS_SIZE = 32 // индекс ширины между линиями штриховки
+const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
+const MERGE_SYMBOL = 5 // отступы при генерации символов
 
 // Размер базового элемента пунктира (мм) в зависимости от маcштаба карты
-export const dashSizeFromScale = new Map([
+const dashSize = [
   [ 25000, 3 ],
   [ 50000, 2.5 ],
   [ 100000, 2 ],
   [ 200000, 2 ],
   [ 500000, 2 ],
   [ 1000000, 2 ],
-])
+]
+const dashSizeFromScale = new Map(dashSize)
 
 // Размер точечных знаков(мм) в зависимости от маcштаба карты
-const pointSizeFromScale = new Map([
+const pointSize = [
   [ 25000, 12 ],
   [ 50000, 11 ],
   [ 100000, 9 ],
   [ 200000, 7 ],
   [ 500000, 6 ],
   [ 1000000, 5 ],
-])
+]
+const pointSizeFromScale = new Map(pointSize)
 
 // размер шрифта(мм) в зависимости от масштаба приведенный к 12 пункту
-export const fontSizeFromScale = new Map([
+const fontSize = [
   [ 25000, 14 * onePunkt ],
   [ 50000, 13 * onePunkt ],
   [ 100000, 12 * onePunkt ],
   [ 200000, 11 * onePunkt ],
   [ 500000, 11 * onePunkt ],
   [ 1000000, 11 * onePunkt ],
-])
+]
+const fontSizeFromScale = new Map(fontSize)
 
-export const graphicSizeFromScale = new Map([
+const graphicSize = [
   [ 25000, 6 ],
   [ 50000, 6 ],
   [ 100000, 5 ],
   [ 200000, 4 ],
   [ 500000, 3 ],
   [ 1000000, 3 ],
-])
+]
+const graphicSizeFromScale = new Map(graphicSize)
 
 // толщина линии соответствующая одному пункту
-export const strokeSizeFromScale = new Map([
+const strokeSize = [
   [ 25000, 0.7 ],
   [ 50000, 0.6 ],
   [ 100000, 0.5 ],
   [ 200000, 0.45 ],
   [ 500000, 0.38 ],
   [ 1000000, 0.25 ],
-])
+]
+const strokeSizeFromScale = new Map(strokeSize)
+
+// масштабы используемые при печати
+const existingScale = [ 25000, 50000, 100000, 200000, 500000, 1000000 ]
 
 export const printSettings = {
   graphicSizeFromScale,
@@ -97,28 +105,107 @@ export const printSettings = {
   pointSizeDefault: POINT_SIZE_DEFAULT,
   shadowWidth: SHADOW_WIDTH,
   lineWidth: LINE_WIDTH,
+  crossSize: CROSS_SIZE,
+  mergeSymbol: MERGE_SYMBOL,
 }
 // printScale - масштаб карты
 // dpi - разрешение печати
-export const getFontSizeByDpi = (printScale, dpi) => (fontSize = POINT_SIZE_DEFAULT) => {
-  return Math.round(fontSizeFromScale.get(printScale) / getmmInPixel(dpi) * fontSize / POINT_SIZE_DEFAULT)
+export const getFontSizeByDpi = (printScale, dpi) => (fontSize = printSettings.pointSizeDefault) => {
+  return Math.round(printSettings.fontSizeFromScale.get(printScale) * getPixelInMm(dpi) * fontSize /
+    printSettings.pointSizeDefault)
 }
 
 export const getGraphicSizeByDpi = (printScale, dpi) => {
-  return Math.round(graphicSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.graphicSizeFromScale.get(printScale) * getPixelInMm(dpi))
 }
 
 export const getPointSizeByDpi = (printScale, dpi) => {
-  return Math.round(pointSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.pointSizeFromScale.get(printScale) * getPixelInMm(dpi))
 }
 
-export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = LINE_WIDTH) => {
-  return Math.round(strokeSizeFromScale.get(printScale) / getmmInPixel(dpi) * strokeWidth)
+export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = printSettings.lineWidth) => {
+  return Math.round(printSettings.strokeSizeFromScale.get(printScale) * getPixelInMm(dpi) * strokeWidth)
 }
 
 export const getDashSizeByDpi = (printScale, dpi) => {
-  return Math.round(dashSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.dashSizeFromScale.get(printScale) / getmmInPixel(dpi))
 }
+
+// проверка и установка настроек печати из конфигупационного файла
+export const setConfigPrintConstant = (configPrint) => {
+  const {
+    pointSizeDefault,
+    shadowWidth,
+    lineWidth,
+    crossSize,
+    mergeSymbol,
+    graphicSizeFromScale,
+    fontSizeFromScale,
+    pointSizeFromScale,
+    strokeSizeFromScale,
+    dashSizeFromScale,
+  } = configPrint
+  let errorMessage = ''
+  if (Number.isInteger(pointSizeDefault)) {
+    printSettings.pointSizeDefault = pointSizeDefault
+  } else {
+    errorMessage += 'pointSizeDefault, '
+  }
+  if (Number.isInteger(shadowWidth)) {
+    printSettings.shadowWidth = shadowWidth
+  } else {
+    errorMessage += 'shadowWidth, '
+  }
+  if (Number.isInteger(lineWidth)) {
+    printSettings.lineWidth = lineWidth
+  } else {
+    errorMessage += 'lineWidth, '
+  }
+  if (Number.isInteger(crossSize)) {
+    printSettings.crossSize = crossSize
+  } else {
+    errorMessage += 'crossSize, '
+  }
+  if (Number.isInteger(mergeSymbol)) {
+    printSettings.mergeSymbol = mergeSymbol
+  } else {
+    errorMessage += 'mergeSymbol, '
+  }
+  const mapGraphicSizeFromScale = new Map(graphicSizeFromScale)
+  const mapFontSizeFromScale = new Map()
+  new Map(fontSizeFromScale).forEach((value, key) => mapFontSizeFromScale.set(key, value * onePunkt))
+  const mapPointSizeFromScale = new Map(pointSizeFromScale)
+  const mapStrokeSizeFromScale = new Map(strokeSizeFromScale)
+  const mapDashSizeFromScale = new Map(dashSizeFromScale)
+
+  if (!existingScale.some((scale) => !mapGraphicSizeFromScale.has(scale))) {
+    printSettings.graphicSizeFromScale = mapGraphicSizeFromScale
+  } else {
+    errorMessage += 'graphicSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapFontSizeFromScale.has(scale))) {
+    printSettings.fontSizeFromScale = mapFontSizeFromScale
+  } else {
+    errorMessage += 'fontSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapPointSizeFromScale.has(scale))) {
+    printSettings.pointSizeFromScale = mapPointSizeFromScale
+  } else {
+    errorMessage += 'pointSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapStrokeSizeFromScale.has(scale))) {
+    printSettings.strokeSizeFromScale = mapStrokeSizeFromScale
+  } else {
+    errorMessage += 'strokeSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapDashSizeFromScale.has(scale))) {
+    printSettings.dashSizeFromScale = mapDashSizeFromScale
+  } else {
+    errorMessage += 'dashSizeFromScale, '
+  }
+  return errorMessage.slice(0, -2)
+}
+
 // let lastMaskId = 1
 const builderGroup = (idGroup, objects) => {
   const _groupChildren = []
@@ -172,7 +259,7 @@ const getSvgPath = (
   // заливка або штрихування
   let fillOption = null
   if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
-    const cs = strokeWidthToScale + CROSS_SIZE
+    const cs = strokeWidthToScale + printSettings.crossSize
     const sw = strokeWidthToScale * 2
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
@@ -214,7 +301,7 @@ const getSvgPath = (
         {fillOption}
         {Boolean(outlineColor) && <path
           stroke={outlineColor}
-          strokeWidth={strokeWidthToScale + SHADOW_WIDTH * getPixelInMm(dpi)}
+          strokeWidth={strokeWidthToScale + printSettings.shadowWidth * getPixelInMm(dpi)}
           fill="none"
           d={d}
         />}
@@ -491,7 +578,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   } = commonData
   const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
-  const mmSize = pointSizeFromScale.get(printScale) || POINT_SIZE_DEFAULT
+  const mmSize = pointSizeFromScale.get(printScale) || printSettings.pointSizeDefault
   const size = mmSize * 5
   const pointD = coordToPixels(point)
   const symbol = new Symbol(code, {
@@ -505,8 +592,8 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const scaleXY = size / 100 // переводим проценты в десятичную дробь
   const { x, y } = symbol.getAnchor() // точка привязки в символе
   // смещение центра символа от точки (0,0) символа
-  const dx = (bbox.x1 + x / scaleXY - MERGE_SYMBOL) * scaleSymbol
-  const dy = (bbox.y1 + y / scaleXY - MERGE_SYMBOL) * scaleSymbol
+  const dx = (bbox.x1 + x / scaleXY - printSettings.mergeSymbol) * scaleSymbol
+  const dy = (bbox.y1 + y / scaleXY - printSettings.mergeSymbol) * scaleSymbol
   const inBounds = getInBounds({ x: pointD.x - dx, y: pointD.y - dy }, bbox, bounds)
   if (!inBounds) {
     return (<></>)

@@ -10,6 +10,7 @@ export const TOPOGRAPHIC_OBJECT_CARD = 'Картка топографічног�
 export const ERROR = 'Помилка'
 export const COORDINATES_UNDEFINED = 'Координати не задані'
 export const PRINT_ZONE_UNDEFINED = 'Область друку не задана'
+export const PRINT_CONFIG_ERROR = 'Помилка в файлі конфігурацbї друку. Помилка в : '
 export const UNKNOWN_ERROR = 'Невідома помилка'
 export const SERVER_ERROR = 'Помилка сервера'
 export const VALIDATION_ERROR = 'Помилка валідації'
