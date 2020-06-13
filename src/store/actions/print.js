@@ -112,8 +112,8 @@ export const createPrintFile = (onError = null) =>
     } = state
     const configPrint = await getDefaultConfig()
     const errorConfig = setConfigPrintConstant(configPrint)
-    if (errorConfig !== '') {
-      if (onError) { onError() }
+    if (errorConfig) {
+      onError && onError()
       throw new Error(i18n.PRINT_CONFIG_ERROR + errorConfig)
     }
     const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
