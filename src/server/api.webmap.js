@@ -101,7 +101,7 @@ export default {
     getDirect(`${webmapUrl}/printToFile/retry`, { id }),
   printFileList: () =>
     getDirect(`${webmapUrl}/printToFile/list`, false),
-  printFileMapAvailability: (scale, coordinates) => // {"scale": 100000, "coordinates": [{"lat": 50, "lng": 31}, {"lat": 50, "lng": 32}]}
+  printFileMapAvailability: (scale, coordinates) => // {"scale": 100000, "coordinates": [{"lat": 50, "lng": 31}, {"lat": 50, "lng": 32}, ...]}
     getDirect(`${webmapUrl}/printToFile/mapAvailability`, { scale, coordinates }), // {"unavailable":  [{"lat": 50, "lng": 31}, {"lat": 50, "lng": 32}]}
   getDefaultConfig: () =>
     getDirect(`${webmapUrl}/getDefaultConfig`, false),
