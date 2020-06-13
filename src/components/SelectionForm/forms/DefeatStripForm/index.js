@@ -1,6 +1,5 @@
 import { compose } from 'redux'
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -19,8 +18,6 @@ import {
 import './DefeatStripForm.css'
 import i18n from '../../../../i18n'
 import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
-
-const { FormRow } = components.form
 
 const CONFIG_AMPLIFIERS = [
   { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
