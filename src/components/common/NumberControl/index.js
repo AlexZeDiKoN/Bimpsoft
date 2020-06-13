@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Input } from '@DZVIN/CommonComponents'
 import './style.css'
 
 export default class NumberControl extends React.Component {
@@ -13,7 +14,7 @@ export default class NumberControl extends React.Component {
     const step = 1
     return (
       <>
-        <input
+        <Input.Number
           type="number"
           className="number-control-input"
           step={step}

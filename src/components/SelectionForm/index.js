@@ -133,6 +133,11 @@ const forms = {
   [SelectionTypes.OLOVO]: {
     title: i18n.DEFEAT_STRIP_ZONE,
     component: DefeatStripForm,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.MIL_SYMBOL,
