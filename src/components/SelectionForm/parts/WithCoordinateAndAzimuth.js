@@ -22,7 +22,8 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
     super(props)
     this.state = {
       ...this.state,
-      azimuthText: undefined }
+      azimuthText: undefined,
+    }
   }
 
   firstCoordinateExitChangeHandler = async (value) => {
