@@ -36,11 +36,11 @@ export default class SectorItem extends React.Component {
     onFocus: PropTypes.func,
   }
 
-  // state = { azimut1Text: null, azimut2Text: null, radiusText: null }
   constructor (props) {
     super(props)
 
     this.state = {
+      ...this.state,
       azimuthLText: undefined,
       azimuthRText: undefined,
       radiusText: undefined,
@@ -102,7 +102,6 @@ export default class SectorItem extends React.Component {
   azimutBlurHandler = () => {
     const { onChange, onFocus, index, beginCoordinate, coord1, coord2, secondCoordinate } = this.props
     const { azimuthLText, azimuthRText } = this.state
-    // console.log(this.state)
     if (azimuthLText === undefined && azimuthRText === undefined) {
       return
     }

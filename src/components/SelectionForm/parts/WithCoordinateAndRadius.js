@@ -28,8 +28,12 @@ function getRadiusFromCoordinatesArray (coordinatesArray) {
 }
 
 const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponent extends CoordinatesMixin(Component) {
-  state = {
-    radiusText: null,
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      radiusText: null,
+    }
   }
 
   coordinateChangeHandler = async (index, value) => {

@@ -26,7 +26,13 @@ function getWidthFromCoordinatesArray (coordinatesArray) {
 }
 
 const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent extends CoordinatesMixin(Component) {
-  state = { widthText: null }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      widthText: null,
+    }
+  }
 
   coordinateChangeHandler = async (index, value) => {
     await this.onCoordinateExitWithChangeHandler(index, value)

@@ -33,7 +33,13 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     ovtData: PropTypes.object,
   }
 
-  state = { editSectors: false }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      editSectors: false,
+    }
+  }
 
   // createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
   //   result.updateIn(path, (showedSet) =>

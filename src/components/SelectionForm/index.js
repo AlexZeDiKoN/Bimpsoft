@@ -247,6 +247,7 @@ export default class SelectionForm extends React.Component {
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
+      wrapper: Wrapper,
     } = this.props
     if (data === null || !forms[data.type]) {
       return null
@@ -312,7 +313,6 @@ export default class SelectionForm extends React.Component {
         </Wrapper>)
     }
 
-    const { wrapper: Wrapper } = this.props
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>

@@ -28,6 +28,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
   constructor (props) {
     super(props)
     this.state = {
+      ...this.state,
       radiiText: [],
       amplifiers: [],
     }
