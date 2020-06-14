@@ -13,7 +13,6 @@ export const propTypes = {
   data: PropTypes.object,
   preview: PropTypes.object,
   canEdit: PropTypes.bool,
-  saveButtonEnabled: PropTypes.bool,
   onOk: PropTypes.func,
   onChange: PropTypes.func,
   onClose: PropTypes.func,
@@ -64,7 +63,7 @@ export default class AbstractShapeForm extends React.Component {
     const { onCheckSave } = this.props
     this.setState(
       { saveButtonBlock: true },
-      () => { onCheckSave(this.enableSaveButton) },
+      () => { onCheckSave() },
     )
   }
 
