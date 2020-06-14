@@ -25,7 +25,13 @@ const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmp
 const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
-  state = { editCoordinates: false }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      editCoordinates: false,
+    }
+  }
 
   createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
     result.updateIn(path, (showedSet) =>

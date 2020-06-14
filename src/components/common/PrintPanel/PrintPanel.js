@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 import { Form, Row, Col, Select, Input, DatePicker, Checkbox } from 'antd'
 import { components, ButtonTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
 import moment from 'moment'
+import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import './style.css'
-import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+
 const { TextArea } = Input
 
 const COLOR_PICKER_Z_INDEX = 2000

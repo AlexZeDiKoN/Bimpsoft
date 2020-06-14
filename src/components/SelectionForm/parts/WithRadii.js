@@ -26,6 +26,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
   constructor (props) {
     super(props)
     this.state = {
+      ...this.state,
       radiiText: [],
     }
   }
