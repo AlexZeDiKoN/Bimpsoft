@@ -141,7 +141,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
         return (
           <div
             className="option-line-type"
-            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth / 2}px` : 1 }}
+            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth}px 0 0 0` : 1 }}
           />
         )
     }
