@@ -15,7 +15,13 @@ const {
 const { icons: { IconHovered, names: iconNames } } = components
 
 const WithCoordinates = (Component) => class CoordinatesComponent extends CoordinatesMixin(Component) {
-  state = { editCoordinates: false }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      editCoordinates: false,
+    }
+  }
 
   coordinateRemoveHandler = (index) => {
     const count = this.getResult().getIn(COORDINATE_PATH).size

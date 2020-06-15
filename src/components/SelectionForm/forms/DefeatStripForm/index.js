@@ -1,6 +1,5 @@
 import { compose } from 'redux'
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -19,9 +18,6 @@ import {
 import './DefeatStripForm.css'
 import i18n from '../../../../i18n'
 import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
-import { amps } from '../../../../constants/symbols'
-
-const { FormRow } = components.form
 
 const CONFIG_AMPLIFIERS = [
   { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
@@ -46,27 +42,25 @@ export default class SophisticatedForm extends compose(
 
   renderContent () {
     return (
-      <div className="contour-container">
-        <div className="contour-container--firstSection">
-          <div className="contour-container__item">
-            <div className="contour-container__itemWidth">
+      <div className="strip-default-container">
+        <div className='scroll-container'>
+          <div className="strip-default-container__item--firstSection">
+            <div className="strip-default-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
-            </div>
-            <div className="contour-container__itemWidth">
               {this.renderAffiliation()}
               {this.renderStatus()}
             </div>
           </div>
-        </div>
-        <div className="contour-container--secondSection">
-          <div className="contour-container__item">
-            {this.renderStrokeWidth()}
-            <FormRow label={i18n.LINE_COLOR}>
-              {this.renderColor()}
-            </FormRow>
+          <div className="strip-default-container__item--secondSection">
+            <div className="strip-default-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderStrokeWidth()}
+                {this.renderColor()}
+              </div>
+            </div>
+            {this.renderAmplifiers(CONFIG_AMPLIFIERS, PATH_AMPLIFIERS, true)}
           </div>
-          {this.renderAmplifiers(CONFIG_AMPLIFIERS, PATH_AMPLIFIERS, true)}
         </div>
       </div>
     )

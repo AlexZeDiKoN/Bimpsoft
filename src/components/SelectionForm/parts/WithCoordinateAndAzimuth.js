@@ -18,7 +18,13 @@ const {
 
 // eslint-disable-next-line max-len
 const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthComponent extends CoordinatesMixin(Component) {
-  state = { azimuthText: undefined }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      azimuthText: undefined,
+    }
+  }
 
   firstCoordinateExitChangeHandler = async (value) => {
     await this.onFirstCoordinateExitChangeHandler(value)

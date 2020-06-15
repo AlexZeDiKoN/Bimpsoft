@@ -2,12 +2,13 @@ import * as R from 'ramda'
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { getMapSvg } from '../../utils/svg/mapObjects'
-import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
+import i18n from '../../i18n'
 import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
 import { LS } from '../../utils'
 import { Print } from '../../constants'
 import { LAT, LNG } from '../../services/coordinateGrid/constants'
+import { setConfigPrintConstant } from '../../utils/svg/mapObject'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -96,7 +97,8 @@ export const printFileRetry = (id, name) =>
   }
 
 export const createPrintFile = (onError = null) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
+  asyncAction.withNotification(async (dispatch, getState,
+    { webmapApi: { getPrintBounds, printFileCreate, getDefaultConfig } }) => {
     const state = getState()
     const {
       webMap: { objects, showAmplifiers },
@@ -108,7 +110,12 @@ export const createPrintFile = (onError = null) =>
         mapId,
       },
     } = state
-
+    const configPrint = await getDefaultConfig()
+    const errorConfig = setConfigPrintConstant(configPrint)
+    if (errorConfig) {
+      onError && onError()
+      throw new Error(i18n.PRINT_CONFIG_ERROR + errorConfig)
+    }
     const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
 
     if (selectedZone) {
@@ -122,7 +129,8 @@ export const createPrintFile = (onError = null) =>
       })
 
       const { parts, size: [ width, height ] } = printBounds
-      const partsSvgs = parts.map((part) => getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+      const partsSvgs = parts.map((part) =>
+        getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
 
       const legendSvg = printLegendSvgStr({
         widthMM: width,
@@ -145,7 +153,7 @@ export const createPrintFile = (onError = null) =>
       ]))
     } else {
       if (onError) { onError() }
-      throw new Error(PRINT_ZONE_UNDEFINED)
+      throw new Error(i18n.PRINT_ZONE_UNDEFINED)
     }
   })
 

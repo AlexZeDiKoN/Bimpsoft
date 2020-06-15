@@ -47,7 +47,7 @@ const svgMines = <svg viewBox="0 0 1024 640">
   </g>
 </svg>
 
-export default class PollutionCircleForm extends compose(
+export default class MineFieldForm extends compose(
   UnitSelect,
   WithSubordinationLevel,
   WithStatus,

@@ -133,6 +133,11 @@ const forms = {
   [SelectionTypes.OLOVO]: {
     title: i18n.DEFEAT_STRIP_ZONE,
     component: DefeatStripForm,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SOPHISTICATED]: {
     title: i18n.MIL_SYMBOL,
@@ -242,6 +247,7 @@ export default class SelectionForm extends React.Component {
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
+      wrapper: Wrapper,
     } = this.props
     if (data === null || !forms[data.type]) {
       return null
@@ -307,7 +313,6 @@ export default class SelectionForm extends React.Component {
         </Wrapper>)
     }
 
-    const { wrapper: Wrapper } = this.props
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
