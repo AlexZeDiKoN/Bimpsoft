@@ -448,7 +448,7 @@ export const allocateObjectsByLayerId = (layerId) => ({
   payload: layerId,
 })
 
-export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
+export const updateObjectGeometry = (id, geometry, addUndoRecord = true, flexGridPrevState) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
 
@@ -461,6 +461,7 @@ export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
           changeType: changeTypes.UPDATE_GEOMETRY,
           id,
           geometry,
+          flexGridPrevState,
         },
       })
     }

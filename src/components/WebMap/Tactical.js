@@ -126,6 +126,8 @@ export function createTacticalSign (data, map, prevLayer) {
       return createSophisticated(data, prevLayer, map)
     case entityKind.OLOVO:
       return createOlovo(data, prevLayer, map)
+    case entityKind.FLEXGRID:
+      return null
     default:
       console.error(`Невідомий тип тактичного знаку: ${type}`)
       return null
