@@ -106,7 +106,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.TEXT]: {
-    title: i18n.SHAPE_TEXT,
+    title: i18n.TEXT,
     component: TextForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -214,9 +214,11 @@ const forms = {
   [SelectionTypes.CONCENTRATION_FIRE]: {
     title: i18n.CONCENTRATION_FIRE,
     component: ConcentrationOfFireForm,
-    minHeight: 670,
-    maxHeight: 680,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
 }
 
