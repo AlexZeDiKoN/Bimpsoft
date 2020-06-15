@@ -6,6 +6,7 @@ import i18n from './../../i18n'
 
 const initState = {
   readOnly: false,
+  isChanged: false,
   mapId: null,
   marchEdit: false,
   indicators: undefined,
@@ -59,13 +60,14 @@ export default function reducer (state = initState, action) {
     case march.ADD_CHILD:
     case march.DELETE_CHILD:
     case march.SET_COORD_FROM_MAP:
+      return { ...state, ...payload, isChanged: true }
     case march.INIT_MARCH:
       return { ...state, ...payload }
     case march.SET_COORD_MODE: {
       return { ...state, coordMode: !state.coordMode, coordModeData: payload }
     }
     case march.SET_REF_POINT_ON_MAP: {
-      return { ...state, coordRefPoint: payload }
+      return { ...state, coordRefPoint: payload, isChanged: true }
     }
     case march.CLOSE_MARCH: {
       return { ...state, marchEdit: false, segments: List([]) }
@@ -129,7 +131,7 @@ export default function reducer (state = initState, action) {
       const updaterGeoLandmarks = { ...state.geoLandmarks }
       updaterGeoLandmarks[geoKey] = updateGeoLandmark
 
-      return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks }
+      return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks, isChanged: true }
     }
     default:
       return state
