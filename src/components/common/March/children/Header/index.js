@@ -12,7 +12,9 @@ const Header = (props) => {
     distance,
     sendMarchToExplorer,
     closeMarch,
-    isCoordFilled } = props
+    isCoordFilled,
+    isChanged,
+  } = props
 
   const onSendMarchToExplorer = () => isCoordFilled && sendMarchToExplorer()
 
@@ -30,7 +32,7 @@ const Header = (props) => {
           onClick={onSendMarchToExplorer}
           colorType={ColorTypes.WHITE}
           icon={IconNames.BAR_2_SAVE}
-          disabled={!isCoordFilled}
+          disabled={!isCoordFilled || !isChanged}
         />
       </Tooltip>
       <Tooltip
@@ -76,6 +78,7 @@ Header.propTypes = {
   sendMarchToExplorer: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
+  isChanged: PropTypes.bool.isRequired,
 }
 
 export default React.memo(Header)

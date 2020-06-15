@@ -70,6 +70,7 @@ const March = (props) => {
     toggleGeoLandmarkModal,
     toggleDeleteMarchPointModal,
     readOnly,
+    isChanged,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
@@ -150,6 +151,7 @@ const March = (props) => {
         sendMarchToExplorer={sendMarchToExplorer}
         closeMarch={closeMarch}
         isCoordFilled={isCoordFilled}
+        isChanged={isChanged}
       />
     </div>
     <div className={'march-main'}>
@@ -180,6 +182,7 @@ March.propTypes = {
   toggleGeoLandmarkModal: PropTypes.func.isRequired,
   toggleDeleteMarchPointModal: PropTypes.func.isRequired,
   readOnly: PropTypes.bool.isRequired,
+  isChanged: PropTypes.bool.isRequired,
 }
 
 export default React.memo(March)
