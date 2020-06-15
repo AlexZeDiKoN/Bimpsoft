@@ -18,10 +18,9 @@ import {
 } from '../../parts'
 
 import './ConcentrationOfFireForm.css'
-import i18n from '../../../../i18n'
 import { extractLineCode } from '../../../WebMap/patch/Sophisticated/utils'
 
-const { FormRow, FormDarkPart } = components.form
+const { FormDarkPart } = components.form
 
 export default class ConcentrationOfFireForm extends compose(
   UnitSelect,
@@ -39,31 +38,29 @@ export default class ConcentrationOfFireForm extends compose(
     const useStatus = lineDefinitions[extractLineCode(this.props.data.code)]?.useStatus
     const useAmplifiers = lineDefinitions[extractLineCode(this.props.data.code)]?.useAmplifiers
     return (
-      <div className="contour-container">
-        <div className="contour-container--firstSection">
-          <div className="contour-container__item">
-            <div className="contour-container__itemWidth">
+      <div className="concentration-container">
+        <div className='scroll-container'>
+          <div className="concentration-container__item--firstSection">
+            <div className="concentration-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
-            </div>
-            <div className="contour-container__itemWidth">
               {this.renderAffiliation()}
               {useStatus && this.renderStatus()}
             </div>
           </div>
-        </div>
-        <div className="contour-container--secondSection">
-          <div className="contour-container__item">
-            {this.renderStrokeWidth()}
-            <FormRow label={i18n.LINE_COLOR}>
-              {this.renderColor()}
-            </FormRow>
-          </div>
-          {useAmplifiers && this.renderAmplifiers(useAmplifiers)}
-          <div className="contour-container__item">
-            <FormDarkPart>
-              {this.renderCoordinates()}
-            </FormDarkPart>
+          <div className="concentration-container__item--secondSection">
+            <div className="concentration-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderStrokeWidth()}
+                {this.renderColor()}
+              </div>
+            </div>
+            {useAmplifiers && this.renderAmplifiers(useAmplifiers)}
+            <div className="concentration-container__item">
+              <FormDarkPart>
+                {this.renderCoordinates()}
+              </FormDarkPart>
+            </div>
           </div>
         </div>
       </div>
