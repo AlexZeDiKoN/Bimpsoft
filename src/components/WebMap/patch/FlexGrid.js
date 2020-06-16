@@ -433,4 +433,12 @@ L.FlexGrid = L.Layer.extend({
     }
     return this
   },
+
+  setStrokeWidth: function (strokeWidth) {
+    L.setOptions(this, { strokeWidth })
+  },
+
+  setColor: function (color) {
+    L.setOptions(this, { color })
+  },
 })
