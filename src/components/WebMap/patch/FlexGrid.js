@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import pointInSvgPolygon from 'point-in-svg-polygon'
 import * as R from 'ramda'
 import entityKind from '../entityKind'
@@ -440,5 +439,10 @@ L.FlexGrid = L.Layer.extend({
 
   setColor: function (color) {
     L.setOptions(this, { color })
+  },
+
+  setHidden: function (hidden) {
+    L.setOptions(this, { hidden })
+    this._renderer._updateStyle(this)
   },
 })
