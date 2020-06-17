@@ -24,7 +24,9 @@ export const viewModeEnable = (name) => ({
 
 export const search = (sample) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { placeSearch } }) => {
-    const searchOptions = await placeSearch(sample)
+    let searchOptions = await placeSearch(sample)
+    searchOptions = searchOptions.map((item) => ({ ...item, sample }))
+
     switch (searchOptions.length) {
       case 0:
         dispatch({
