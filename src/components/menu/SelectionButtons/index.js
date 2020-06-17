@@ -30,7 +30,7 @@ export default class SelectionButtons extends React.Component {
     list: PropTypes.array,
     clipboard: PropTypes.array,
     orgStructures: PropTypes.object,
-    objectsMap: PropTypes.string,
+    objectsMap: PropTypes.object,
     selectedTypes: PropTypes.arrayOf(
       PropTypes.number,
     ),

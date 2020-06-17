@@ -759,6 +759,7 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
+    let isFlexGrid = false
     if (layer) {
       let checkPoint = null
       let checkGeometry
@@ -772,11 +773,12 @@ export default class WebMap extends React.PureComponent {
       } else if (layer === this.flexGrid) {
         const { eternals, directionSegments, zoneSegments } = flexGridData
         checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]
+        isFlexGrid = true
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (id !== null) {
         if (geometryChanged) {
-          return updateObjectGeometry(id, getGeometry(layer))
+          return updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
         } else if (leaving) {
           return tryUnlockObject(id)
         }

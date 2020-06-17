@@ -240,7 +240,7 @@ const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
-  const { changeType, id } = payload
+  const { changeType, id, flexGridPrevState } = payload
   const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload) }
   if (id) {
     objData = state.getIn([ 'objects', id ])
@@ -254,9 +254,15 @@ function addUndoRecord (state, payload) {
       break
     }
     case changeTypes.UPDATE_GEOMETRY: {
-      oldData = {
-        point: objData.get('point').toJS(),
-        geometry: objData.get('geometry').toJS(),
+      if (flexGridPrevState) {
+        oldData = {
+          geometry: flexGridPrevState,
+        }
+      } else {
+        oldData = {
+          point: objData.get('point').toJS(),
+          geometry: objData.get('geometry').toJS(),
+        }
       }
       newData = payload.geometry
       break

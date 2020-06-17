@@ -9,7 +9,9 @@ export function validateObject (object) {
   if (!object || !object.type) {
     throw new ValidationError(i18n.ERROR_UNDEFINET_OBJECT_TYPE)
   }
-  validateCoordinate(object.point)
+  if (object.type !== SelectionTypes.FLEXGRID) {
+    validateCoordinate(object.point)
+  }
   switch (object.type) {
     case SelectionTypes.TEXT:
       validateTexts(object.attributes.texts)
@@ -26,6 +28,7 @@ export function validateObject (object) {
     case SelectionTypes.CONTOUR:
     case SelectionTypes.SOPHISTICATED:
     case SelectionTypes.OLOVO:
+    case SelectionTypes.FLEXGRID:
       break
     default:
       validateCoordinates(object.geometry, 2)
