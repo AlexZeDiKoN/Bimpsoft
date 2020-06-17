@@ -153,10 +153,21 @@ export const getGeoLandmarks = async (coordinates, geoLandmarks) => {
   const fixedCoord = {}
   fixedCoord.lat = lat || 0.00001
   fixedCoord.lng = lng || 0.00001
+  const geoLandmarkSize = geoLandmark?.length
 
-  if (!geoLandmark) {
+  if (!geoLandmarkSize) {
     geoLandmark = await webmapApi.nearestSettlement(fixedCoord)
     geoLandmarks[geoKey] = getFormattedGeoLandmarks(geoLandmark)
+  } else if (geoLandmarkSize && geoLandmark[geoLandmarkSize - 1].isReceived) {
+    const fromServerGeoLandmark = await webmapApi.nearestSettlement(fixedCoord)
+    const formattedGeoLandmark = getFormattedGeoLandmarks(fromServerGeoLandmark)
+    const filteredGeoLandmark = formattedGeoLandmark.filter(
+      (item) => {
+        return item.propertiesText !== geoLandmark[0].propertiesText
+      },
+    )
+
+    geoLandmarks[geoKey] = [ geoLandmark[0], ...filteredGeoLandmark ]
   }
 
   return { ...geoLandmarks }
@@ -418,12 +429,43 @@ export const openMarch = (data) => asyncAction.withNotification(
   async (dispatch) => {
     const { mapId, readOnly } = data
 
+    const geoLandmarks = {}
+
     dispatch(openMapFolder(mapId, null, true))
     let segments
     if (!data || !data.segments || !data.segments.length) {
       segments = initDefaultSegments()
     } else {
       segments = data.segments
+
+      for (let i = 0; i < segments.length; i++) {
+        const { coordinates, refPoint, children } = segments[i]
+        const { lat, lng } = coordinates
+        const geoKey = `${lat}:${lng}`
+
+        geoLandmarks[geoKey] = [ {
+          propertiesText: refPoint,
+          isReceived: true,
+          geometry: {
+            coordinates: [ lat, lng ],
+          },
+        } ]
+
+        if (children && children.length > 0) {
+          for (let j = 0; j < children.length; j++) {
+            const { lat, lng } = children[j].coordinates
+            const geoKey = `${lat}:${lng}`
+
+            geoLandmarks[geoKey] = [ {
+              propertiesText: children[j].refPoint,
+              isReceived: true,
+              geometry: {
+                coordinates: [ lat, lng ],
+              },
+            } ]
+          }
+        }
+      }
     }
 
     const isCoordFilled = isFilledMarchCoordinates(segments)
@@ -439,6 +481,7 @@ export const openMarch = (data) => asyncAction.withNotification(
       isCoordFilled,
       readOnly,
       mapId,
+      geoLandmarks,
     }
 
     dispatch({
