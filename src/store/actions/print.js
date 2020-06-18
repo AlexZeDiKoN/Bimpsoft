@@ -128,9 +128,9 @@ export const createPrintFile = (onError = null) =>
         projectionGroup,
       })
 
-      const { parts, size: [ width, height ] } = printBounds
+      const { parts, size: [ width, height ], geographicSrid } = printBounds
       const partsSvgs = parts.map((part) =>
-        getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+        getMapSvg(part, { geographicSrid, objects, dpi, printScale, layersById, showAmplifiers }))
 
       const legendSvg = printLegendSvgStr({
         widthMM: width,
