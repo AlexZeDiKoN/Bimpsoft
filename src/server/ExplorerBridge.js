@@ -70,6 +70,7 @@ export default class ExplorerBridge {
       console.info('Message from Explorer >> ', JSON.stringify(data, null, 2))
       switch (action) {
         case ACTION_INIT: {
+          this.abandoned = false
           this.send({ action: ACTION_READY })
           break
         }
