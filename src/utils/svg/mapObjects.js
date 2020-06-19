@@ -49,19 +49,20 @@ const getCoordToPixels = (projection, dpi, scale, angle, { min, max }) => {
 }
 
 export const getMapSvg = (
-  { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ], angle },
-  { objects, dpi, printScale, layersById, showAmplifiers },
+  { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ] },
+  { geographicSrid, objects, dpi, printScale, layersById, showAmplifiers },
 ) => {
-  const projection = `EPSG:${srid}`
-  const [ lngSW, latSW ] = proj4(projection, [ southWestLng, southWestLat ])
-  const [ lngNE, latNE ] = proj4(projection, [ northEastLng, northEastLat ])
+  const fromProj = `EPSG:${geographicSrid}`
+  const toProj = `EPSG:${srid}`
+  const [ lngSW, latSW ] = proj4(fromProj, toProj, [ southWestLng, southWestLat ])
+  const [ lngNE, latNE ] = proj4(fromProj, toProj, [ northEastLng, northEastLat ])
 
   const boundsCoord = {
     min: { lng: Math.min(lngSW, lngNE), lat: Math.min(latSW, latNE) },
     max: { lng: Math.max(lngSW, lngNE), lat: Math.max(latSW, latNE) },
   }
 
-  const coordToPixels = getCoordToPixels(projection, dpi, printScale, angle, boundsCoord)
+  const coordToPixels = getCoordToPixels(toProj, dpi, printScale, 0, boundsCoord)
 
   const edgePoint = { lng: southWestLng, lat: southWestLat }
   const edgePoints = [ coordToPixels(edgePoint) ]
