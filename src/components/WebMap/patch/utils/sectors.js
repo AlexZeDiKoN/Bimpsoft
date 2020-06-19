@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import { utils } from '@DZVIN/CommonComponents'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 const { Coordinates: Coord } = utils

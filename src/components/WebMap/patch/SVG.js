@@ -20,6 +20,8 @@ import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
+const DASH_ON = false
+
 const getViewBox = (element) => {
   while (element && (element.nodeName !== 'svg')) {
     element = element.parentElement
@@ -55,6 +57,7 @@ L.SVG.include({
   _setLayerPathStyle: function (layer, style, className) {
     if (layer.options.tsType === entityKind.FLEXGRID || layer.options.tsType === entityKind.OLOVO) {
       layer._pathes.forEach((path) => this._setPathStyle(layer, path, style, className))
+      layer._olovo && this._setPathStyle(layer, layer._olovo, style, className)
     } else {
       this._setPathStyle(layer, layer._path, style, className)
     }
@@ -83,7 +86,6 @@ L.SVG.include({
   },
 
   _updateStyle: function (layer) {
-    const DASHON = false
     const {
       options: {
         shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
@@ -104,13 +106,13 @@ L.SVG.include({
         _shadowPath.setAttribute('stroke-linecap', lineCap)
         _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
 
-        if (dashArray && DASHON) {
+        if (dashArray && DASH_ON) {
           _shadowPath.setAttribute('stroke-dasharray', dashArray)
         } else {
           _shadowPath.removeAttribute('stroke-dasharray')
         }
 
-        if (dashOffset && DASHON) {
+        if (dashOffset && DASH_ON) {
           _shadowPath.setAttribute('stroke-dashoffset', dashOffset)
         } else {
           _shadowPath.removeAttribute('stroke-dashoffset')
@@ -123,6 +125,7 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
+
     // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 
@@ -182,7 +185,7 @@ L.SVG.include({
       const bounds = layer._map._renderer._bounds
       const zoom = layer._map.getZoom()
       const scale = 1
-      // сборка pointAmlifier в центре круга
+      // сборка pointAmplifier в центре круга
       if (layer.object?.attributes?.pointAmplifier) {
         const options = {
           centroid: layer._point,
@@ -201,7 +204,7 @@ L.SVG.include({
 
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
-    let rezultFilled = ''
+    let resultFilled = ''
     const lineType = layer.lineType || 'solid'
     const skipStart = layer.options?.skipStart
     const skipEnd = layer.options?.skipEnd
@@ -293,13 +296,13 @@ L.SVG.include({
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
-          rezultFilled = this._buildElementFilled(layer, false, true, lineType)
+          resultFilled = this._buildElementFilled(layer, false, true, lineType)
           break
         default:
           break
       }
       this._updateMask(layer, false, true)
-      this._updateLineFilled(layer, rezultFilled)
+      this._updateLineFilled(layer, resultFilled)
     } else if (fullPolyline) {
       switch (lineType) {
         case 'waved':
@@ -339,15 +342,15 @@ L.SVG.include({
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
-          rezultFilled = this._buildElementFilled(layer, false, false, lineType)
+          resultFilled = this._buildElementFilled(layer, false, false, lineType)
           break
         default:
           break
       }
       this._updateMask(layer, false, false)
       this._updateLineEnds(layer, false)
-      this._updateLineFilled(layer, rezultFilled)
-      // result += ` m1,1`
+      this._updateLineFilled(layer, resultFilled)
+      result += ` m1,1`
     } else if (fullArea) {
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
@@ -386,14 +389,13 @@ L.SVG.include({
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
-          rezultFilled = this._buildElementFilled(layer, true, true, lineType)
-          // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
+          resultFilled = this._buildElementFilled(layer, true, true, lineType)
           break
         default:
           break
       }
       this._updateMask(layer, true, true)
-      this._updateLineFilled(layer, rezultFilled)
+      this._updateLineFilled(layer, resultFilled)
     } else if (fullCurve) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
       switch (lineType) {
@@ -436,15 +438,14 @@ L.SVG.include({
         case 'moatAntiTank':
         case 'moatAntiTankMine':
         case 'rowMinesAntyTank':
-          rezultFilled = this._buildElementFilled(layer, true, false, lineType)
-          // layer.getAmplifierGroup().innerHTML = `${filledRezult}`
+          resultFilled = this._buildElementFilled(layer, true, false, lineType)
           break
         default:
           break
       }
       this._updateMask(layer, true, false)
       this._updateLineEnds(layer, true)
-      this._updateLineFilled(layer, rezultFilled)
+      this._updateLineFilled(layer, resultFilled)
     }
     this._setPath(layer, result)
   },
@@ -530,19 +531,13 @@ L.SVG.include({
   _buildElementFilled: function (layer, bezier, locked, lineType, setEnd) {
     const bounds = layer._map._renderer._bounds
     const colorLine = layer.object?.attributes?.color || 'black'
-    // const widthLine = setStrokeWidth ? interpolateSize(layer._map.getZoom(), layer.scaleOptions, 10.0, 5, 20) *
-    //  (layer.object?.attributes?.strokeWidth || 1) / 100 : 1
-
     const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
       layer._map.getZoom(), false, lineType, setEnd)
     return `<path fill="${evaluateColor(colorLine)}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
   },
 
-  _updateLineFilled: function (layer, rezultFilled) {
-    // if (rezultFilled === '') {
-    //   return layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
-    // }
-    layer.getAmplifierGroup().innerHTML += `${rezultFilled}`
+  _updateLineFilled: function (layer, resultFilled) {
+    layer.getAmplifierGroup().innerHTML += `${resultFilled}`
   },
 
   _updateLineEnds: function (layer, bezier) {
@@ -608,14 +603,14 @@ L.SVG.include({
     this._layers[L.Util.stamp(grid)] = grid
   },
 
-  _prepareTextAmplifier: function (layer, text, title, point, center = false) {
+  _prepareTextAmplifier: function (layer, text, title, point, center = false, color) {
     text.innerHTML = title
     text.setAttribute('x', point.x)
     text.setAttribute('y', point.y)
     text.setAttribute('font-family', FONT_FAMILY)
     text.setAttribute('font-weight', FONT_WEIGHT)
     text.setAttribute('stroke', 'none')
-    text.setAttribute('fill', 'black')
+    text.setAttribute('fill', color || 'black')
     text.setAttribute('font-size', getFontSize(layer))
     if (center) {
       text.setAttribute('text-anchor', 'middle')
@@ -624,7 +619,7 @@ L.SVG.include({
   },
 
   _updateFlexGrid: function (grid) {
-    const { olovo, title, start } = grid.options
+    const { olovo, title, start, color, strokeWidth } = grid.options
     const bounds = grid._map._renderer._bounds
     const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
@@ -646,6 +641,12 @@ L.SVG.include({
           grid.eternalRings[dirIdx + 1][zoneIdx + 1],
         ]), true),
       ))
+
+      const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+      grid._pathes.forEach((path) => {
+        strokeWidth && path.setAttribute('stroke-width', strokeWidth * scale / 100)
+        color && path.setAttribute('stroke', color)
+      })
     }
   },
 
