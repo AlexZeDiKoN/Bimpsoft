@@ -125,6 +125,7 @@ export const createPrintFile = (onError = null) =>
       const printBounds = await getPrintBounds({
         extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
         scale: printScale,
+        dpi,
         projectionGroup,
       })
 
