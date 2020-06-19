@@ -120,33 +120,36 @@ export const extractTextSVG = ({
   fontColor,
   margin,
   getOffset,
+  angle = 0,
 }) => {
   const lines = string.split('\n')
   const numberOfLines = lines.length
+  const fillColor = fontColor ? `fill="${fontColor}"` : ``
+  const rotate = Math.abs(angle) > 90 ? 180 : 0
+  const height = fontSize * LINE_COEFFICIENT
   return lines.map((line, index) => {
     const width = getTextWidth(line, getFont(fontSize, false))
     const widthWithMargin = width + 2 * margin
-    const height = fontSize * LINE_COEFFICIENT
-    const { y = 0, x = 0 } = getOffset ? getOffset(widthWithMargin, height, numberOfLines) : { y: 0, x: 0 }
-    const left = (-widthWithMargin + 2 * margin) / 2 // horizontal centering
-    const top = height * index + y
-    const fillColor = fontColor ? `fill="${fontColor}"` : ``
+    const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
+      ? getOffset(widthWithMargin, height, numberOfLines, index)
+      : { y: 0, x: 0, xMask: 0, yMask: 0 }
     return {
-      // 'dy' for top vertical align
-      sign: `<text
-        font-family="${FONT_FAMILY}"
-        stroke="none"
-        ${fillColor}
-        transform="translate(${left}, ${top}) translate(${x})"
-        font-size="${fontSize}"
-        dy="${fontSize * 0.95}"
-      >${line}</text>`,
+      sign: `<g font-family="${FONT_FAMILY}"
+           stroke="none"
+           text-anchor="middle"
+           dominant-baseline="middle"
+           font-size="${fontSize}"
+           ${fillColor}
+           transform="rotate(${rotate})">
+           <text transform="translate(${x}, ${y})">${line}</text>
+           </g>`,
       maskRect: {
-        x: left - margin + x,
-        y: top,
+        x: xMask,
+        y: yMask - height / 2,
         width: widthWithMargin,
         height: height,
       },
+      top: y,
     }
   })
 }

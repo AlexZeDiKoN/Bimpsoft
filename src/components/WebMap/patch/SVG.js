@@ -639,7 +639,7 @@ L.SVG.include({
           grid.eternalRings[dirIdx + 1][zoneIdx],
           grid.eternalRings[dirIdx][zoneIdx + 1],
           grid.eternalRings[dirIdx + 1][zoneIdx + 1],
-        ]), true)
+        ]), true),
       ))
 
       const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
