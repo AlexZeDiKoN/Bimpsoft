@@ -587,7 +587,7 @@ L.SVG.include({
     }
     this._updateStyle({ _path: grid._directions, options: directionLines })
     this._updateStyle({ _path: grid._zones, options: olovo ? directionLines : zoneLines })
-    this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine  })
+    this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine })
     this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
     this._updateStyle({ _path: grid._highlighted, options: highlight })
     if (!olovo) {
@@ -644,7 +644,7 @@ L.SVG.include({
           grid.eternalRings[dirIdx + 1][zoneIdx],
           grid.eternalRings[dirIdx][zoneIdx + 1],
           grid.eternalRings[dirIdx + 1][zoneIdx + 1],
-        ]), true)
+        ]), true),
       ))
     }
   },
