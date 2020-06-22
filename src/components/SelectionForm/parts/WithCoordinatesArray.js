@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
