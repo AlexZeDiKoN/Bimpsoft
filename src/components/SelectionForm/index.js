@@ -249,6 +249,12 @@ export default class SelectionForm extends React.Component {
     onOk && onOk()
   }
 
+  checkSaveHandler = () => {
+    const { onCheckSave } = this.props
+    this.resetWereChange()
+    onCheckSave && onCheckSave()
+  }
+
   addToTemplateHandler = (data) => {
     this.props.onAddToTemplates(data)
   }
@@ -284,7 +290,6 @@ export default class SelectionForm extends React.Component {
       ovtData,
       canEdit,
       onSaveError,
-      onCheckSave,
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
@@ -334,7 +339,6 @@ export default class SelectionForm extends React.Component {
       defaultPosition,
       component: Component,
     } = forms[formType]
-
     const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
     const errorSaveMilSymbolForm = (errorCode = 1) => {
       const { unit, code } = this.props.data
@@ -388,7 +392,7 @@ export default class SelectionForm extends React.Component {
                 onChange={this.changeHandler}
                 onClose={this.canselButtonClick}
                 onSaveError={onSaveError}
-                onCheckSave={onCheckSave}
+                onCheckSave={this.checkSaveHandler}
                 onAddToTemplates={this.addToTemplateHandler}
                 onCoordinateFocusChange={onCoordinateFocusChange}
                 ovtData={ovtData}
