@@ -74,7 +74,7 @@ export default class AbstractShapeForm extends React.Component {
     return (
       <Form className="shape-form">
         { this.renderContent() }
-        <div>
+        <div className='footer-container'>
           {buttonClose(onClose)}
           {canEdit && (<ButtonApply onClick={this.saveEditElement} disabled={saveButtonBlock}/>)}
         </div>
