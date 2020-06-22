@@ -223,18 +223,34 @@ const forms = {
 }
 
 export default class SelectionForm extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      wereChanges: false,
+    }
+  }
+
   componentDidMount () {
     !this.props.ovtLoaded && this.props.getOvtList()
   }
 
   changeHandler = (data) => {
     if (this.props.canEdit) {
+      this.setState({ wereChanges: true })
       this.props.onChange(data)
     }
   }
 
   addToTemplateHandler = (data) => {
     this.props.onAddToTemplates(data)
+  }
+
+  canselButtonClick = () => {
+    if (this.state.wereChanges) {
+      console.log('Дані не збережено')
+    }
+    const { onCancel } = this.props
+    onCancel && onCancel()
   }
 
   render () {
@@ -337,14 +353,14 @@ export default class SelectionForm extends React.Component {
                   orgStructures={orgStructures}
                   onOk={onOk}
                   onChange={this.changeHandler}
-                  onClose={onCancel}
+                  onClose={this.canselButtonClick}
                   onSaveError={onSaveError}
                   onCheckSave={onCheckSave}
                   onAddToTemplates={this.addToTemplateHandler}
                   onCoordinateFocusChange={onCoordinateFocusChange}
                   ovtData={ovtData}
                 />
-                <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
+                <HotKey onKey={this.canselButtonClick} selector={shortcuts.ESC}/>
               </HotKeysContainer>
             </FocusTrap>}
         </Wrapper>
