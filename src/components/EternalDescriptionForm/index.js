@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
@@ -27,7 +27,7 @@ export default function EternalDescriptionForm (props) {
     wrapper: Wrapper,
   } = props
 
-  const descRef = React.createRef()
+  const textAreaRef = useRef(null)
   const [ coords, setCoords ] = useState(null)
 
   useEffect(() => {
@@ -36,8 +36,7 @@ export default function EternalDescriptionForm (props) {
 
   const handleSubmit = () => {
     const { lat, lng } = coords
-    const desc = descRef.current.textAreaRef.value
-    onSubmit({ lat, lng }, desc)
+    onSubmit({ lat, lng }, textAreaRef.current?.state?.value)
   }
 
   return visible && coords && (
@@ -52,7 +51,7 @@ export default function EternalDescriptionForm (props) {
               <CoordinatesField coordinates={coords} onExitWithChange={setCoords} onSearch={placeSearch}/>
             </FormRow>
             <FormRow label={`${i18n.DESCRIPTION}:`}>
-              <TextArea className="et_description--desc_input" defaultValue={description} ref={descRef}/>
+              <TextArea className="et_description--desc_input" defaultValue={description} ref={textAreaRef}/>
             </FormRow>
             <FormRow>
               {buttonSave(handleSubmit)}

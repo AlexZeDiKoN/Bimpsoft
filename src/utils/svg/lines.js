@@ -868,35 +868,50 @@ const getTextAmplifiers = ({
         fontColor,
         margin: amplifierMargin,
         getOffset: getOffset.bind(null, type, point),
+        angle: point.r,
+        type,
       }) ]
     }).filter(Boolean)
 
     amplifiers.forEach(([ type, amplifiers ]) => {
-      amplifiers.forEach((amplifier) => {
-        let { x, y, r } = point
-        r = getRotate?.(type, r, amplifierType) ?? r
-        if (amplifier.maskRect) {
-          result.maskPath.push(
-            pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
-              const movedPoint = add(point, x, y)
-              if (R.isNil(r) || r === 0) {
-                return movedPoint
-              }
-              return rotate(movedPoint, x, y, r)
-            }), true),
-          )
-        }
-        result.group += `<g
+      if (Array.isArray(amplifiers)) {
+        amplifiers.forEach((amplifier) => {
+          const { x, y, r } = point
+          // r = getRotate?.(type, r, amplifierType) ?? r
+          if (amplifier.maskRect) {
+            result.maskPath.push(
+              pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+                const movedPoint = add(point, x, y)
+                if (R.isNil(r) || r === 0) {
+                  return movedPoint
+                }
+                return rotate(movedPoint, x, y, r)
+              }), true),
+            )
+          }
+          result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
           font-weight="${FONT_WEIGHT}"
           ${fillColor}
        >${amplifier.sign}</g>`
-      })
+        })
+      }
     })
   })
 
   return result
+}
+
+export const getOffsetIntermediateAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  if (type === 'top') {
+    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+  } else if (type === 'bottom') {
+    y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+  }
+  return { y, yMask: (rotate ? -y : y) }
 }
 
 export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
@@ -913,23 +928,26 @@ export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHe
   }
 }
 
-const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines) {
+const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines, index) {
   let t = point.t === 0 ? -1 : 1
   if (Math.abs(point.r) > 90) {
     t = -t
   }
   const half = lineWidth / 2
-  const offsetObject = getOffsetForIntermediateAmplifier(...arguments)
+  const offsetObject = getOffsetIntermediateAmplifier(...arguments) // определяем смещение по y
   switch (type) {
     case 'top':
       offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
       break
     case 'middle':
     case 'center':
-      offsetObject.x = -(half + lineHeight / 3) * t
+      offsetObject.x = -(half + lineHeight / 4) * t
+      offsetObject.xMask = point.t ? -(lineWidth + lineHeight / 4) : (lineHeight / 4)
       break
     case 'bottom':
       offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
       break
     default:
       break
@@ -1016,7 +1034,7 @@ export const getAmplifiers = ({
   const step = fontSize || settings.AMPLIFIERS_SIZE * scale
   const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
 
-  { // межузловые амплификаторы
+  { // межузловые амплификаторы H1, B, H2
     const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
     const { maskPath, group } = getTextAmplifiers({
       level,
@@ -1031,7 +1049,7 @@ export const getAmplifiers = ({
         bezier,
         locked,
       ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
-      getOffset: getOffsetForIntermediateAmplifier,
+      getOffset: getOffsetIntermediateAmplifier,
       getRotate: getRotateForIntermediateAmplifier,
       color,
       fontColor,
@@ -1052,7 +1070,7 @@ export const getAmplifiers = ({
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
-        getOffset: getOffsetForIntermediateAmplifier,
+        getOffset: getOffsetIntermediateAmplifier,
       }
     } else { // pointAmplifiers на краях линии
       amplifierOptions = {

@@ -40,12 +40,12 @@ export default class LineForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
+    </div>
     return (
       <Scrollbar>
         <div className="line-container">
-          <div className="line-container__itemWidth-left">
-            <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
-          </div>
           <div className='scroll-container'>
             <div className="line-container__item--firstSection">
               <div className="line-container__itemWidth-right">
@@ -70,8 +70,8 @@ export default class LineForm extends compose(
                 </div>
               </div>
             </div>
-            {this.renderIntermediateAmplifiers()}
-            {this.renderPointAmplifiers()}
+            {this.renderIntermediateAmplifiers(elem)}
+            {this.renderPointAmplifiers(elem)}
             {this.renderCoordinatesArray()}
           </div>
         </div>

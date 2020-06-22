@@ -125,12 +125,13 @@ export const createPrintFile = (onError = null) =>
       const printBounds = await getPrintBounds({
         extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
         scale: printScale,
+        dpi,
         projectionGroup,
       })
 
-      const { parts, size: [ width, height ] } = printBounds
+      const { parts, size: [ width, height ], geographicSrid } = printBounds
       const partsSvgs = parts.map((part) =>
-        getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+        getMapSvg(part, { geographicSrid, objects, dpi, printScale, layersById, showAmplifiers }))
 
       const legendSvg = printLegendSvgStr({
         widthMM: width,
