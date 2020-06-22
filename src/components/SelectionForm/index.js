@@ -348,7 +348,7 @@ export default class SelectionForm extends React.Component {
           />
         </Wrapper>)
     }
-
+  //  {/*<Button onClick={ this.resetShowWarningCancel } text={'Отмена выхода'}/>*/}
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
@@ -356,11 +356,10 @@ export default class SelectionForm extends React.Component {
           ? <ModalContainer>
             <MovablePanel
               title={'Предупреждение'}
-              defaultPosition={{ x: '50%', y: '50%' }}
               onClose={ this.resetShowWarningCancel }
             >
-              <Button onClick={ this.onWarningCancel } text={'Не сохранять изменения'}/>
-              <Button onClick={ this.resetShowWarningCancel } text={'Отмена выхода'}/>
+              <div>Изменения на форме несохранены</div><br></br>
+              <Button onClick={ this.onWarningCancel } text={'Не сохранять'}/>
             </MovablePanel>
           </ModalContainer>
           : <></>
