@@ -8,14 +8,14 @@
 
   .scroll-container {
     overflow: auto;
-    height: ~"calc(100vh - 330px)";
+    height: ~"calc(100vh - 160px)";
   }
 
   .square-container__itemWidth-left {
     margin: 6px;
     height: 160px;
     border-bottom: 2px solid @modals-divider-color;
-    display: flex;
+    display: none;
     background: @toolbar-light-background;
     img{
       width: 100%;
@@ -102,7 +102,7 @@
 
     &--firstSection {
       display: flex;
-      margin-top: 2px;
+      margin-top: 20px;
       flex-direction: column;
       border-bottom: 2px solid rgba(159, 166, 89, .54);
       padding-bottom: 10px;
@@ -204,7 +204,6 @@
   }
 
   .dzvin-form-dark-part {
-    height: 100%;
     background: none;
 
     .dzvin-form-row {

@@ -30,6 +30,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     this.state = {
       ...this.state,
       editCoordinates: false,
+      addedCoodrinates: false,
     }
   }
 
@@ -64,10 +65,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         return coordinatesArray.push({ text: '' })
       }
     }),
+  this.setState({ addedCoodrinates: true }),
   )
 
   renderCoordinatesArray (lock = false) {
-    const { editCoordinates } = this.state
+    const { editCoordinates, addedCoodrinates } = this.state
     const formStore = this.getResult()
 
     const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
@@ -113,7 +115,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   </th>
                 </div>
                 {coordinatesArray.map((coordinate, index) => (
-                  <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
+                  <div tabIndex={addedCoodrinates && index} key={`${coordinate.lat}/${coordinate.lng}`}>
                     <div className={'coordinates-checkbox-container'}>
                       <div className="icon-option">
                         <Checkbox
@@ -144,7 +146,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                         /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;
                       </div>
                     ) : null}
-                  </Fragment>
+                  </div>
                 ))}
               </tbody>
             </table>
