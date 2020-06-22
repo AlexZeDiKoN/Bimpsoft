@@ -12,12 +12,11 @@ const { Option } = Select
 const { icons: { Icon } } = components
 
 export const colorDiv = (color) => (
-  <div className="icon-option">
+  <div className="icon-option" title={colors.titles[color]}>
     <div
       className="icon-rect"
       style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${evaluateColor(color)}` }}
     />
-    <div className="icon-text">{colors.titles[color]}</div>
   </div>
 )
 export const colorOption = (color) => (

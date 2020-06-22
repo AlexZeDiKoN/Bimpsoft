@@ -42,11 +42,11 @@ export default class SquareForm extends
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
+    </div>
     return (
       <div className="square-container">
-        <div className="square-container__itemWidth-left">
-          <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
-        </div>
         <div className='scroll-container'>
           <div className="square-container__item--firstSection">
             <div className="square-container__itemWidth-right">
@@ -69,8 +69,8 @@ export default class SquareForm extends
               {this.renderHatch()}
             </div>
           </div>
-          {this.renderIntermediateAmplifiers()}
-          {this.renderPointAmplifiers()}
+          {this.renderIntermediateAmplifiers(elem)}
+          {this.renderPointAmplifiers(elem)}
           <div className="square-container__item">
             <div className="square-container__itemWidth50">
               <FormDarkPart>
