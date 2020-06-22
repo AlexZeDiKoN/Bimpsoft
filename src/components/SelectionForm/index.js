@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
+import { MovablePanel, NotClickableArea, ModalContainer, Button } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -227,6 +227,7 @@ export default class SelectionForm extends React.Component {
     super(props)
     this.state = {
       wereChanges: false,
+      showWarningCancel: false,
     }
   }
 
@@ -247,10 +248,27 @@ export default class SelectionForm extends React.Component {
 
   canselButtonClick = () => {
     if (this.state.wereChanges) {
+      this.setState({ showWarningCancel: true })
       console.log('Дані не збережено')
+    } else {
+      this.resetWereChange()
+      const { onCancel } = this.props
+      onCancel && onCancel()
     }
+  }
+
+  onWarningCancel = () => {
+    this.setState({ wereChanges: false, showWarningCancel: false })
     const { onCancel } = this.props
     onCancel && onCancel()
+  }
+
+  resetWereChange = () => {
+    this.setState({ wereChanges: false })
+  }
+
+  resetShowWarningCancel = () => {
+    this.setState({ showWarningCancel: false })
   }
 
   render () {
@@ -325,8 +343,8 @@ export default class SelectionForm extends React.Component {
             errorCode={errorCode}
             code={code}
             notClickable={false}
-            onApply={() => { onCloseSaveError(); onOk() }}
-            onCancel={() => { onCloseSaveError() }}
+            onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
+            onCancel={() => { this.resetWereChange(); onCloseSaveError() }}
           />
         </Wrapper>)
     }
@@ -334,10 +352,23 @@ export default class SelectionForm extends React.Component {
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
+        {this.state.showWarningCancel
+          ? <ModalContainer>
+            <MovablePanel
+              title={'Предупреждение'}
+              defaultPosition={{ x: '50%', y: '50%' }}
+              onClose={ this.resetShowWarningCancel }
+            >
+              <Button onClick={ this.onWarningCancel } text={'Не сохранять изменения'}/>
+              <Button onClick={ this.resetShowWarningCancel } text={'Отмена выхода'}/>
+            </MovablePanel>
+          </ModalContainer>
+          : <></>
+        }
         <NotClickableArea/>
         <Wrapper
           title={title}
-          onClose={onCancel}
+          onClose={this.canselButtonClick}
           minWidth={minWidth}
           maxWidth={maxWidth}
           defaultPosition={defaultPosition}
@@ -351,7 +382,7 @@ export default class SelectionForm extends React.Component {
                   data={data}
                   canEdit={canEdit}
                   orgStructures={orgStructures}
-                  onOk={onOk}
+                  onOk={() => { this.resetWereChange(); onOk() }}
                   onChange={this.changeHandler}
                   onClose={this.canselButtonClick}
                   onSaveError={onSaveError}
