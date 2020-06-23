@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
 import { List } from 'immutable'
 import i18n from '../../../i18n'
@@ -104,7 +104,9 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
             const canRemove = allowDelete ? allowDelete(index, countCoordinates) : countCoordinates > 2
             const canAdd = canEditCoord && (allowMiddle ? allowMiddle(index, index + 1, countCoordinates) : false)
             return (
-              <Fragment key={`${coordinate.lat}/${coordinate.lng}`}>
+              <div
+                style={{ display: 'flex', alignItems: 'center' }}
+                key={`${coordinate.lat}/${coordinate.lng}`}>
                 <CoordinateItem
                   key={index}
                   coordinate={coordinate}
@@ -121,7 +123,7 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
                   hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
                   onClick={() => this.coordinateAddHandler(index)}
                 />}
-              </Fragment>
+              </div>
             )
           })}
         </div>

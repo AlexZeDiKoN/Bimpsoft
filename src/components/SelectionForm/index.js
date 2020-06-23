@@ -152,9 +152,11 @@ const forms = {
   [SelectionTypes.ATTACK]: {
     title: i18n.ATTACK,
     component: AttackForm,
-    minHeight: 330,
-    maxHeight: 630,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.AIRBORNE]: {
     title: i18n.SHAPE_AIRBORNE,
