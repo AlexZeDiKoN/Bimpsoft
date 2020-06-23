@@ -88,17 +88,27 @@ export const renderTextSymbol = ({
     const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
     const isUnderline = Boolean(lineStrokeWidth)
     return <Fragment key={i}>
-      {outlineColor &&
-      <text fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor} {...outlineProps}>
-        {text}
-      </text>
-      }
-      {outlineColor && isUnderline && <rect x={0} y={yUnderline - lineStrokeWidth / 2}
-        height={lineStrokeWidth}
-        width={maxWidth}
-        {...outlineProps}/>
-      }
-      <text fill="#000" stroke="none" fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor}>
+      {outlineColor && (<>
+        <text x={x} y={y}
+          fontFamily={FONT_FAMILY}
+          fontSize={fontSize}
+          textAnchor={textAnchor}
+          dominantBaseline={'text-after-edge'}
+          {...outlineProps}>
+          {text}
+        </text>
+        {isUnderline && <rect x={0} y={yUnderline - lineStrokeWidth / 2}
+          height={lineStrokeWidth}
+          width={maxWidth}
+          {...outlineProps}/>
+        }</>)}
+      <text x={x} y={y}
+        fill="#000"
+        stroke="none"
+        fontFamily={FONT_FAMILY}
+        fontSize={fontSize}
+        textAnchor={textAnchor}
+        dominantBaseline={'text-after-edge'}>
         {text}
       </text>
       {isUnderline && <line x1={0} x2={maxWidth}
@@ -106,13 +116,6 @@ export const renderTextSymbol = ({
         stroke={'#000000'}
         strokeWidth={lineStrokeWidth}/>
       }
-      {/* {isUnderline && <rect x={0} y={yUnderline + outlineProps.strokeWidth / 2} */}
-      {/*  height={lineStrokeWidth} */}
-      {/*  width={maxWidth} */}
-      {/*  stroke={'none'} */}
-      {/*  strokeWidth={0} */}
-      {/*  fill={'#000000'}/> */}
-      {/* } */}
     </Fragment>
   })
   return isSvg
@@ -120,7 +123,6 @@ export const renderTextSymbol = ({
       width={maxWidth}
       height={fullHeight}
       viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg"
-      dominantBaseline={'text-after-edge'}
     >{textsEls}</svg>
     : textsEls
 }
