@@ -259,7 +259,7 @@ export default class SelectionForm extends React.Component {
     this.props.onAddToTemplates(data)
   }
 
-  canselButtonClick = () => {
+  cancelButtonClick = () => {
     if (this.state.wereChanges) {
       this.setState({ showWarningCancel: true })
     } else {
@@ -376,7 +376,7 @@ export default class SelectionForm extends React.Component {
         <ModalContainer>
           <Wrapper
             title={title}
-            onClose={this.canselButtonClick}
+            onClose={this.cancelButtonClick}
             minWidth={minWidth}
             maxWidth={maxWidth}
             defaultPosition={defaultPosition}
@@ -390,14 +390,14 @@ export default class SelectionForm extends React.Component {
                 orgStructures={orgStructures}
                 onOk={this.okHandler}
                 onChange={this.changeHandler}
-                onClose={this.canselButtonClick}
+                onClose={this.cancelButtonClick}
                 onSaveError={onSaveError}
                 onCheckSave={this.checkSaveHandler}
                 onAddToTemplates={this.addToTemplateHandler}
                 onCoordinateFocusChange={onCoordinateFocusChange}
                 ovtData={ovtData}
               />
-              <HotKey onKey={this.canselButtonClick} selector={shortcuts.ESC}/>
+              <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
             </HotKeysContainer>
           </Wrapper>
         </ModalContainer>
