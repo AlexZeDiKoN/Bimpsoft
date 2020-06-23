@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import FocusTrap from 'react-focus-lock'
-import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
+// import FocusTrap from 'react-focus-lock'
+import { MovablePanel, ModalContainer } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -29,6 +29,7 @@ import {
   DefeatStripForm,
 } from './forms'
 import SaveMilSymbolForm from './forms/MilSymbolForm/SaveMilSymbolForm'
+import WarningForm from './forms/WarningForm'
 
 const clientWidth = document?.documentElement?.clientWidth
 
@@ -223,18 +224,63 @@ const forms = {
 }
 
 export default class SelectionForm extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      wereChanges: false,
+      showWarningCancel: false,
+    }
+  }
+
   componentDidMount () {
     !this.props.ovtLoaded && this.props.getOvtList()
   }
 
   changeHandler = (data) => {
     if (this.props.canEdit) {
+      this.setState({ wereChanges: true })
       this.props.onChange(data)
     }
   }
 
+  okHandler = () => {
+    const { onOk } = this.props
+    this.setState({ wereChanges: false, showWarningCancel: false }) // сброс проверки внесения изменений
+    onOk && onOk()
+  }
+
+  checkSaveHandler = () => {
+    const { onCheckSave } = this.props
+    this.resetWereChange()
+    onCheckSave && onCheckSave()
+  }
+
   addToTemplateHandler = (data) => {
     this.props.onAddToTemplates(data)
+  }
+
+  cancelButtonClick = () => {
+    if (this.state.wereChanges) {
+      this.setState({ showWarningCancel: true })
+    } else {
+      this.resetWereChange()
+      const { onCancel } = this.props
+      onCancel && onCancel()
+    }
+  }
+
+  warningCancelHandler = () => {
+    this.setState({ wereChanges: false, showWarningCancel: false })
+    const { onCancel } = this.props
+    onCancel && onCancel()
+  }
+
+  resetWereChange = () => {
+    this.setState({ wereChanges: false })
+  }
+
+  resetShowWarningCancel = () => {
+    this.setState({ showWarningCancel: false })
   }
 
   render () {
@@ -243,9 +289,7 @@ export default class SelectionForm extends React.Component {
       onOk,
       ovtData,
       canEdit,
-      onCancel,
       onSaveError,
-      onCheckSave,
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
@@ -295,7 +339,6 @@ export default class SelectionForm extends React.Component {
       defaultPosition,
       component: Component,
     } = forms[formType]
-
     const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
     const errorSaveMilSymbolForm = (errorCode = 1) => {
       const { unit, code } = this.props.data
@@ -309,45 +352,55 @@ export default class SelectionForm extends React.Component {
             errorCode={errorCode}
             code={code}
             notClickable={false}
-            onApply={() => { onCloseSaveError(); onOk() }}
-            onCancel={() => { onCloseSaveError() }}
+            onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
+            onCancel={() => { this.resetWereChange(); onCloseSaveError() }}
           />
         </Wrapper>)
     }
-
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
-        <NotClickableArea/>
-        <Wrapper
-          title={title}
-          onClose={onCancel}
-          minWidth={minWidth}
-          maxWidth={maxWidth}
-          defaultPosition={defaultPosition}
-          maxHeight={maxHeight}
-          minHeight={minHeight}
-        >
-          {
-            <FocusTrap>
-              <HotKeysContainer>
-                <Component
-                  data={data}
-                  canEdit={canEdit}
-                  orgStructures={orgStructures}
-                  onOk={onOk}
-                  onChange={this.changeHandler}
-                  onClose={onCancel}
-                  onSaveError={onSaveError}
-                  onCheckSave={onCheckSave}
-                  onAddToTemplates={this.addToTemplateHandler}
-                  onCoordinateFocusChange={onCoordinateFocusChange}
-                  ovtData={ovtData}
-                />
-                <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-              </HotKeysContainer>
-            </FocusTrap>}
-        </Wrapper>
+        {this.state.showWarningCancel
+          ? <WarningForm
+            title={i18n.WARNING}
+            onClose={ this.resetShowWarningCancel }
+            minHeight={150}
+            minWidth={300}
+            message={i18n.WARNING_MESSAGE_1}
+            question={i18n.QUESTION_3}
+            onNo={this.warningCancelHandler}
+            onYes={this.okHandler}>
+          </WarningForm>
+          : <></>
+        }
+        <ModalContainer>
+          <Wrapper
+            title={title}
+            onClose={this.cancelButtonClick}
+            minWidth={minWidth}
+            maxWidth={maxWidth}
+            defaultPosition={defaultPosition}
+            maxHeight={maxHeight}
+            minHeight={minHeight}
+          >
+            <HotKeysContainer>
+              <Component
+                data={data}
+                canEdit={canEdit && !this.state.showWarningCancel}
+                orgStructures={orgStructures}
+                onOk={this.okHandler}
+                onChange={this.changeHandler}
+                onClose={this.cancelButtonClick}
+                onSaveError={onSaveError}
+                onCheckSave={this.checkSaveHandler}
+                onAddToTemplates={this.addToTemplateHandler}
+                onCoordinateFocusChange={onCoordinateFocusChange}
+                ovtData={ovtData}
+              />
+              <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
+            </HotKeysContainer>
+          </Wrapper>
+        </ModalContainer>
       </>
     )
   }
