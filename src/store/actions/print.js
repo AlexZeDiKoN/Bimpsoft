@@ -109,9 +109,12 @@ export const createPrintFile = (onError = null) =>
         mapName,
         mapId,
       },
+      maps: { byId },
     } = state
     const configPrint = await getDefaultConfig()
     const errorConfig = setConfigPrintConstant(configPrint)
+    const printMap = byId[mapId]
+    const { classified }  = printMap && printMap.securityClassification
     if (errorConfig) {
       onError && onError()
       throw new Error(i18n.PRINT_CONFIG_ERROR + errorConfig)
@@ -139,6 +142,7 @@ export const createPrintFile = (onError = null) =>
         dpi,
         requisites,
         printScale,
+        classified,
         selectedZone,
         strokeScale: 1, // необходимо для создания обводки текста в Qgis
       })

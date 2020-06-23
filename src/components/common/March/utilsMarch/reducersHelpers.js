@@ -55,7 +55,7 @@ const defaultSegment = (type) => {
     coordinates: {},
     required: false,
     editableName: true,
-    metric: getDefaultMetric(),
+    metric: getDefaultMetric(type !== OWN_RESOURCES),
     children: [],
     ...specificFields,
   }
