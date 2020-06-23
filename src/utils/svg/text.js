@@ -79,13 +79,12 @@ export const renderTextSymbol = ({
   maxWidth += 6
   maxWidth = Math.round(maxWidth)
 
+  const strokeWidth = 6 * scale / 100
   let outlineProps = false
   if (outlineColor) {
-    const strokeWidth = 12 * scale / 100
-    fullHeight = fullHeight + strokeWidth / 2
+    fullHeight = fullHeight + strokeWidth
     outlineProps = { stroke: outlineColor, strokeWidth, fill: 'none' }
   }
-
   const textsEls = texts.map(({ text, fontSize, align, y, lineSpace, lineStrokeWidth }, i) => {
     const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
     const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
@@ -100,16 +99,28 @@ export const renderTextSymbol = ({
       <text fill="#000" fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor}>
         {text}
       </text>
-      {lineD && outlineColor && <path d={lineD} {...outlineProps}/>}
-      {lineD && <path fill="#000" d={lineD}/>}
+      {lineD && outlineColor && <rect x={0} y={y}
+        height={lineStrokeWidth + outlineProps.strokeWidth}
+        width={maxWidth}
+        {...outlineProps}/>
+      }
+      {lineD && <rect x={0} y={y + outlineProps.strokeWidth / 2}
+        height={lineStrokeWidth}
+        width={maxWidth}
+        stroke={'none'}
+        strokeWidth={0}
+        fill={'#000'}/>
+      }
+      {/* {lineD && outlineColor && <path d={lineD} {...outlineProps}/>} */}
+      {/* {lineD && <path fill="#000" d={lineD} {...outlinePropsLine}/>} */}
     </Fragment>
   })
-
   return isSvg
     ? <svg
       width={maxWidth}
       height={fullHeight}
       viewBox={`0 0 ${maxWidth} ${fullHeight}`} version="1.1" xmlns="http://www.w3.org/2000/svg"
+      dominantBaseline={'text-after-edge'}
     >{textsEls}</svg>
     : textsEls
 }
