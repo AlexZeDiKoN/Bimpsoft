@@ -69,9 +69,9 @@ export const renderTextSymbol = ({
     fullHeight += LINE_COEFFICIENT * fontSize
 
     const y = fullHeight
-    const lineSpace = underline ? 20 * scale / 100 : 0
+    const lineSpace = underline ? 2 * scale / 100 : 0
     const lineStrokeWidth = underline ? (bold ? 7 : 4) * scale / 100 : 0
-    fullHeight += lineSpace + lineStrokeWidth
+    fullHeight += lineSpace + lineStrokeWidth / 2
 
     return { underline, fontSize, align, y, text, lineSpace, lineStrokeWidth }
   })
@@ -80,7 +80,7 @@ export const renderTextSymbol = ({
   maxWidth = Math.round(maxWidth)
 
   const strokeWidth = 6 * scale / 100
-  let outlineProps = false
+  let outlineProps = { strokeWidth: 0 }
   if (outlineColor) {
     fullHeight = fullHeight + strokeWidth
     outlineProps = { stroke: outlineColor, strokeWidth, fill: 'none' }
@@ -91,7 +91,7 @@ export const renderTextSymbol = ({
     const lineD = Boolean(lineStrokeWidth) &&
       pointsToD(rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }), true)
     return <Fragment key={i}>
-      {outlineProps &&
+      {outlineColor &&
       <text fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor} {...outlineProps}>
         {text}
       </text>
@@ -99,12 +99,12 @@ export const renderTextSymbol = ({
       <text fill="#000" fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor}>
         {text}
       </text>
-      {lineD && outlineColor && <rect x={0} y={y}
+      {lineD && outlineColor && <rect x={0} y={y + lineSpace}
         height={lineStrokeWidth + outlineProps.strokeWidth}
         width={maxWidth}
         {...outlineProps}/>
       }
-      {lineD && <rect x={0} y={y + outlineProps.strokeWidth / 2}
+      {lineD && <rect x={0} y={y + outlineProps.strokeWidth / 2 + lineSpace}
         height={lineStrokeWidth}
         width={maxWidth}
         stroke={'none'}
