@@ -67,6 +67,7 @@ const MarchForm = (props) => {
     setRefPointOnMap,
     toggleGeoLandmarkModal,
     toggleDeleteMarchPointModal,
+    setGeoLandmarks,
   } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
@@ -130,9 +131,18 @@ const MarchForm = (props) => {
     })
   }
 
+  const onGetGeoLandmarks = ({ lat, lng }) => {
+    setGeoLandmarks({
+      segmentId,
+      childId,
+      coordinates: { lat, lng },
+      selectFirstItem: false,
+    })
+  }
+
   const onDropdownVisibleChange = (isOpen) => {
     if (isOpen) {
-      onBlurCoordinates({ ...coordinates })
+      onGetGeoLandmarks({ ...coordinates })
     } else {
       setRefPointOnMap()
     }
@@ -328,6 +338,7 @@ MarchForm.propTypes = {
     setRefPointOnMap: PropTypes.func.isRequired,
     toggleGeoLandmarkModal: PropTypes.func.isRequired,
     toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+    setGeoLandmarks: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
