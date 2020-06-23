@@ -72,9 +72,6 @@ export default function reducer (state = initState, action) {
     case march.CLOSE_MARCH: {
       return { ...state, marchEdit: false, segments: List([]) }
     }
-    case march.SET_GEO_LANDMARKS: {
-      return { ...state, geoLandmarks: payload }
-    }
     case march.ADD_GEO_LANDMARK: {
       const { coordinates, geoLandmark, segmentId, childId } = payload
 
@@ -132,6 +129,10 @@ export default function reducer (state = initState, action) {
       updaterGeoLandmarks[geoKey] = updateGeoLandmark
 
       return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks, isChanged: true }
+    }
+    case march.SET_GEO_LANDMARKS:
+    case march.SET_METRIC: {
+      return { ...state, ...payload }
     }
     default:
       return state
