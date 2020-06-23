@@ -1,7 +1,9 @@
 import React from 'react'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
+import * as ENTITY from '../../../components/WebMap/entityKind'
 import { typeDiv, typeOption } from './render'
 
 const { FormRow } = components.form
@@ -98,17 +100,27 @@ const TYPE_LIST = Object.values(types)
 
 export const PATH = [ 'attributes', 'lineType' ]
 
+export const propTypes = {
+  data: PropTypes.object,
+}
+
 const WithLineType = (Component) => class LineTypeComponent extends Component {
+  static propTypes = propTypes
+
   lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH, lineType))
 
   renderLineType (simple = false) {
     const lineType = this.getResult().getIn(PATH)
+    const dataType = this.props.data?.type
     const typeInfo = types[lineType]
     const canEdit = this.isCanEdit()
     const value = canEdit
       ? (
         <Select value={lineType} onChange={this.lineTypeChangeHandler}>
           {TYPE_LIST.map((type) => {
+            if (ENTITY.GROUPS.AREAS.includes(dataType) && type.value === 'waved2') {
+              return null
+            }
             return type.simple || !simple
               ? typeOption(type.value, type.value, type.text)
               : null
