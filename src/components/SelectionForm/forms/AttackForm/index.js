@@ -17,11 +17,11 @@ import {
 } from '../../parts'
 
 import './AttackForm.css'
-import i18n from '../../../../i18n'
 import spriteUrl from '../../../Symbols/sprite.svg'
 import { amps } from '../../../../constants/symbols'
+import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
 
-const { FormRow, FormDarkPart } = components.form
+const { FormDarkPart } = components.form
 const svgAmplifier = <path
   d="M532 400h224v224h-224zm48 48h124h-62v128M512 664h-224v224h224zM336 724l32 96l32-96l32 96l32-96"
   fill="white" fillRule="nonzero" strokeLinejoin="bevel" stroke="#000000" strokeWidth="10">
@@ -57,38 +57,39 @@ export default class SophisticatedForm extends compose(
   renderContent () {
     const code = this.props.data.code
     const pathSymbol = SVG[code] || <use xlinkHref={`${spriteUrl}#${code}`}/>
+    const elem =
+      <div className='containers-svg-tooltip'>
+        <svg viewBox="0 0 1024 1024">
+          {pathSymbol}
+          {svgAmplifier}
+        </svg>
+      </div>
     return (
       <div className="attack-container">
-        <div className="attack-container--firstSection">
-          <div className="attack-container__item">
-            <div className="attack-container__itemWidth">
-              <svg viewBox="0 0 1024 1024">
-                {pathSymbol}
-                {svgAmplifier}
-              </svg>
-            </div>
-            <div className="attack-container__itemWidth">
+        <div className='scroll-container'>
+          <div className="attack-container__item--firstSection">
+            <div className="attack-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
               {this.renderAffiliation()}
               {this.renderStatus()}
             </div>
           </div>
-        </div>
-        <div className="attack-container--secondSection">
-          <div className="attack-container__item">
-            {this.renderStrokeWidth()}
-            <FormRow label={i18n.LINE_COLOR}>
-              {this.renderColor()}
-            </FormRow>
+          <div className="attack-container__item--secondSection">
+            <div className="attack-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderStrokeWidth()}
+                {this.renderColor()}
+              </div>
+            </div>
           </div>
           <div className="attack-container__item">
-            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
-          </div>
-          <div className="attack-container__item">
-            <FormDarkPart>
-              {this.renderCoordinates()}
-            </FormDarkPart>
+            <div className="attack-container__itemWidth50">
+              {this.renderAmplifiers(PAIRS_AMPLIFIERS, PATH_AMPLIFIERS, false, elem)}
+              <FormDarkPart>
+                {this.renderCoordinates()}
+              </FormDarkPart>
+            </div>
           </div>
         </div>
       </div>

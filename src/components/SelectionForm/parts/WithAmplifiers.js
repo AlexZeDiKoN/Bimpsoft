@@ -1,5 +1,5 @@
 import React from 'react'
-import { Input } from 'antd'
+import { Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 // import { typeOption } from './render'
@@ -37,7 +37,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     }
   }
 
-  renderAmplifiers (ampPairs, pathAmplifiers = PATH_AMPLIFIERS, simpleObject = false) {
+  renderAmplifiers (ampPairs, pathAmplifiers = PATH_AMPLIFIERS, simpleObject = false, svg) {
     const amplifiersPairs = ampPairs ?? PAIRS_DEFAULT
     const currentValue = this.getResult().getIn(pathAmplifiers)
     const canEdit = this.isCanEdit()
@@ -46,25 +46,32 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
         {amplifiersPairs.map(({ id, name, type, maxRows }) => (
           <div className="line-container__itemWidth" key={id}>
             {type !== TYPE_AMPLIFIER_NUM
-              ? <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
-                  <Input.TextArea
-                    value={currentValue[id] ?? ''}
-                    onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
-                    disabled={!canEdit}
-                    rows={id === amps.A ? 6 : 1}
-                    autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
-                    maxLength={id === amps.A
-                      ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                      : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
-                  />
-                </FormRow>
+              ? <FormRow title={null}
+                label={svg ? <Tooltip
+                  overlayClassName='shape-form-svg-tooltip'
+                  mouseEnterDelay={1}
+                  placement={'left'}
+                  title={() => svg}>
+                  {`${i18n.AMPLIFIER} "${name}"`}
+                </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
+                <Input.TextArea
+                  value={currentValue[id] ?? ''}
+                  onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
+                  disabled={!canEdit}
+                  rows={id === amps.A ? 6 : 1}
+                  autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
+                  maxLength={id === amps.A
+                    ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
+                    : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                />
+              </FormRow>
               : <FormRow label={`${name}`}>
-                  <NumberControl
-                    name={id}
-                    value={Number(currentValue[id])}
-                    onChange={this.changeNumAmplifier(pathAmplifiers, simpleObject)}
-                  />
-                </FormRow>
+                <NumberControl
+                  name={id}
+                  value={Number(currentValue[id])}
+                  onChange={this.changeNumAmplifier(pathAmplifiers, simpleObject)}
+                />
+              </FormRow>
             }
           </div>
         ))}
