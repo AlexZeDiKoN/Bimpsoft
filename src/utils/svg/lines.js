@@ -74,10 +74,10 @@ export const MARK_TYPE = {
   SERIF_CROSS: 'serif_cross',
 }
 
-const SIN45 = 0.707
-const SIN60 = 0.866
-const SIN60_05 = 0.433
-const SIN30 = 0.5
+export const SIN45 = 0.707
+export const SIN60 = 0.866
+export const SIN60_05 = 0.433
+export const SIN30 = 0.5
 
 class Segment {
   constructor (start, finish) {
