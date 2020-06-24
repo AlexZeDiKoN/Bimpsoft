@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { Fragment } from 'react'
 import { Align } from '../../constants'
-import { pointsToD, rectToPoints } from './lines'
 
 export const FONT_FAMILY = 'Arial'
 export const FONT_WEIGHT = 'bold'
@@ -58,10 +57,9 @@ export const renderTextSymbol = ({
 }, scale = 100, isSvg = false) => {
   let maxWidth = 0
   let fullHeight = 0
-
+  let endUnderLine = false
   texts = texts.map(({ text, bold, size, align, underline }) => {
     const fontSize = (size || 12) * scale / 100
-
     const width = getTextWidth(text, getFont(fontSize, bold))
     if (width > maxWidth) {
       maxWidth = width
@@ -69,42 +67,57 @@ export const renderTextSymbol = ({
     fullHeight += LINE_COEFFICIENT * fontSize
 
     const y = fullHeight
-    const lineSpace = underline ? 20 * scale / 100 : 0
+    const lineSpace = underline ? 4 * scale / 100 : 0
     const lineStrokeWidth = underline ? (bold ? 7 : 4) * scale / 100 : 0
-    fullHeight += lineSpace + lineStrokeWidth
-
-    return { underline, fontSize, align, y, text, lineSpace, lineStrokeWidth }
+    fullHeight += lineSpace * 2 + lineStrokeWidth
+    endUnderLine = underline
+    return { underline, fontSize, align, y, text, yUnderline: y + lineSpace + lineStrokeWidth / 2, lineStrokeWidth }
   })
 
   maxWidth += 6
   maxWidth = Math.round(maxWidth)
 
-  let outlineProps = false
+  const strokeWidth = 8 * scale / 100
+  let outlineProps = { strokeWidth: 0 }
   if (outlineColor) {
-    const strokeWidth = 12 * scale / 100
-    fullHeight = fullHeight + strokeWidth / 2
+    endUnderLine && (fullHeight = fullHeight + strokeWidth * 2) // увеличиваем высоту svg на высоту подсветки слоя последней линии подчеркивания
     outlineProps = { stroke: outlineColor, strokeWidth, fill: 'none' }
   }
-
-  const textsEls = texts.map(({ text, fontSize, align, y, lineSpace, lineStrokeWidth }, i) => {
+  const textsEls = texts.map(({ text, fontSize, align, y, yUnderline, lineStrokeWidth }, i) => {
     const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
     const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
-    const lineD = Boolean(lineStrokeWidth) &&
-      pointsToD(rectToPoints({ x: 0, y: y + lineSpace, width: maxWidth, height: lineStrokeWidth }), true)
+    const isUnderline = Boolean(lineStrokeWidth)
     return <Fragment key={i}>
-      {outlineProps &&
-      <text fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor} {...outlineProps}>
+      {outlineColor && (<>
+        <text x={x} y={y}
+          fontFamily={FONT_FAMILY}
+          fontSize={fontSize}
+          textAnchor={textAnchor}
+          dominantBaseline={'text-after-edge'}
+          {...outlineProps}>
+          {text}
+        </text>
+        {isUnderline && <rect x={0} y={yUnderline - lineStrokeWidth / 2}
+          height={lineStrokeWidth}
+          width={maxWidth}
+          {...outlineProps}/>
+        }</>)}
+      <text x={x} y={y}
+        fill="#000"
+        stroke="none"
+        fontFamily={FONT_FAMILY}
+        fontSize={fontSize}
+        textAnchor={textAnchor}
+        dominantBaseline={'text-after-edge'}>
         {text}
       </text>
+      {isUnderline && <line x1={0} x2={maxWidth}
+        y1={yUnderline} y2={yUnderline}
+        stroke={'#000000'}
+        strokeWidth={lineStrokeWidth}/>
       }
-      <text fill="#000" fontFamily={FONT_FAMILY} fontSize={fontSize} x={x} y={y} textAnchor={textAnchor}>
-        {text}
-      </text>
-      {lineD && outlineColor && <path d={lineD} {...outlineProps}/>}
-      {lineD && <path fill="#000" d={lineD}/>}
     </Fragment>
   })
-
   return isSvg
     ? <svg
       width={maxWidth}
