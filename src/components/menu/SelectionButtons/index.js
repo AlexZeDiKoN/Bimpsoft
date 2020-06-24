@@ -59,6 +59,7 @@ export default class SelectionButtons extends React.Component {
     code: undefined,
   }
 
+  // проверка объекта при вставке на дублирование
   onPasteObject = () => {
     const { onPasteError, onPaste, clipboard, objectsMap, layerId } = this.props
     const doubleObjects = clipboard.map((object) => {
@@ -104,7 +105,6 @@ export default class SelectionButtons extends React.Component {
       selectedPoints,
       onCopy,
       onCut,
-      onPaste,
       onDelete,
       onDeleteOk,
       onDeleteCancel,
@@ -156,7 +156,7 @@ export default class SelectionButtons extends React.Component {
           onClick={onCopy}
         />
         {isEditMode && (<>
-          <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? onPaste : null} />
+          <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? this.onPasteObject : null} />
           <IconButton
             placement={'bottomLeft'}
             title={i18n.PASTE}
