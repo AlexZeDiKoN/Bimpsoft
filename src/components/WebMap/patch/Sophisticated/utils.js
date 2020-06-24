@@ -523,27 +523,27 @@ export const drawArrowDashes = (result, pO, angle, length) => {
   drawLine(
     result,
     pd,
-    segmentBy(pd, pO, 0.2),
+    segmentBy(pd, pO, 0.25),
   )
   drawLine(
     result,
-    segmentBy(pd, pO, 0.4),
-    segmentBy(pd, pO, 0.6),
+    segmentBy(pd, pO, 0.375),
+    segmentBy(pd, pO, 0.625),
   )
   drawLine(
     result,
-    segmentBy(pd, pO, 0.8),
+    segmentBy(pd, pO, 0.75),
     pO,
-    segmentBy(pu, pO, 0.8),
+    segmentBy(pu, pO, 0.75),
   )
   drawLine(
     result,
-    segmentBy(pu, pO, 0.6),
-    segmentBy(pu, pO, 0.4),
+    segmentBy(pu, pO, 0.625),
+    segmentBy(pu, pO, 0.375),
   )
   drawLine(
     result,
-    segmentBy(pu, pO, 0.2),
+    segmentBy(pu, pO, 0.25),
     pu,
   )
 }
@@ -723,7 +723,7 @@ export const drawLineMark = (result, markType, point, angle, scale = 1, color, l
       da = Math.PI / 12
       break
     case MARK_TYPE.ARROW_90_DASHES:
-      drawArrowDashes(result, point, angle, graphicSize)
+      drawArrowDashes(result, point, angle, graphicSize * scale)
       return graphicSize
     case MARK_TYPE.ARROW2:
     case MARK_TYPE.ARROW_60_FILL: // для стрілок з заливкою
