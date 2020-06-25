@@ -30,7 +30,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     this.state = {
       ...this.state,
       editCoordinates: false,
-      addedCoodrinates: false,
+      changeCoordinates: false,
     }
   }
 
@@ -44,6 +44,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
       coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
     ),
+  this.setState({ changeCoordinates: true }),
   )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
@@ -65,11 +66,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         return coordinatesArray.push({ text: '' })
       }
     }),
-  this.setState({ addedCoodrinates: true }),
+  this.setState({ changeCoordinates: true }),
   )
 
   renderCoordinatesArray (lock = false) {
-    const { editCoordinates, addedCoodrinates } = this.state
+    const { editCoordinates, changeCoordinates } = this.state
     const formStore = this.getResult()
 
     const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
@@ -115,7 +116,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                   </th>
                 </div>
                 {coordinatesArray.map((coordinate, index) => (
-                  <div tabIndex={addedCoodrinates && index} key={`${coordinate.lat}/${coordinate.lng}`}>
+                  <div tabIndex={changeCoordinates && index} key={`${coordinate.lat}/${coordinate.lng}`}>
                     <div className={'coordinates-checkbox-container'}>
                       <div className="icon-option">
                         <Checkbox
