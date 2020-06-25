@@ -128,6 +128,16 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
       case 'trenches':
         return optionsSvg(
           <>
+            {borderStyle === 'waved' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 13 H0 M0 15l2-2M3 19l6-6M10 19l6-6 M17 19l6-6 M24 19l6-6M31 19l6-6M38 19l6-6M45 19l6-6M52 19l2-2"
+            />}
+            {borderStyle === 'waved2' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 8 H0 M0 4L2 2M3 8l6-6M10 8l6-6M17 8l6-6 M24 8l6-6M31 8l6-6M38 8l6-6M45 8l6-6M52 8l2-2"
+            />}
             <path
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}

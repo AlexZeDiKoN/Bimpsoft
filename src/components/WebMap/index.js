@@ -404,6 +404,7 @@ export default class WebMap extends React.PureComponent {
       this.onSelectedListChange([])
     })
     this.updateMarchDots(this.props.marchDots, [])
+    window.explorerBridge.init(true)
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {

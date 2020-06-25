@@ -1,10 +1,18 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, drawMaskedText, getPointAt, drawLineMark, getPointMove, getGraphicSize, getFontSize,
+  drawLine,
+  segmentBy,
+  angleOf,
+  drawMaskedText,
+  getPointAt,
+  drawLineMark,
+  getPointMove,
+  getFontSize,
+  getStrokeWidth,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, SIN45 } from '../../../../../utils/svg/lines'
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519
@@ -32,14 +40,14 @@ lineDefinitions['140605'] = {
     const [ p0, p1, ...rest ] = points
     const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
 
-    drawLineMark(result, MARK_TYPE.ARROW_90, p0, angleOf(p1, p0))
-    const graphicSize = getGraphicSize(result.layer)
+    const graphicSize = drawLineMark(result, MARK_TYPE.ARROW_90, p0, angleOf(p1, p0))
     const angle = angleOf(p1, p0)
-    const offset = graphicSize / 5 + result.layer.options.weight
-    const scaleDashes = 1 + (offset) * 2 / graphicSize
+    const offset = graphicSize / 5 +
+      (result.layer.options.weight || getStrokeWidth(result.layer, result.layer.options.strokeWidth))
+    const scaleDashes = 1 + offset * 2 * SIN45 / graphicSize
     drawLineMark(result,
       MARK_TYPE.ARROW_90_DASHES,
-      getPointMove(p0, angle, -offset * 1.4),
+      getPointMove(p0, angle, -offset),
       angle,
       scaleDashes)
 

@@ -175,10 +175,11 @@ const forms = {
   [SelectionTypes.MINEDAREA]: {
     title: i18n.SHAPE_MINED_AREA,
     component: MinedAreaForm,
-    minHeight: 645,
-    minWidth: 800,
-    maxHeight: 655,
-    maxWidth: 950,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SECTORS]: {
     title: i18n.SHAPE_SECTORS,

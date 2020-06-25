@@ -74,10 +74,10 @@ export const MARK_TYPE = {
   SERIF_CROSS: 'serif_cross',
 }
 
-const SIN45 = 0.707
-const SIN60 = 0.866
-const SIN60_05 = 0.433
-const SIN30 = 0.5
+export const SIN45 = 0.707
+export const SIN60 = 0.866
+export const SIN60_05 = 0.433
+export const SIN30 = 0.5
 
 class Segment {
   constructor (start, finish) {
@@ -137,8 +137,10 @@ const lineArray = (points, index, locked) => {
     points[next],
   ]
 }
+
+// влияет на последовательность сборки сторон у квадрата и прямоугольника при печати => позиция текстовых амплификаторов
 export const rectToPoints = ({ x, y, width, height = width }) =>
-  [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  [ { x, y: y + height }, { x, y }, { x: x + width, y }, { x: x + width, y: y + height } ]
 
 export const circleToD = (r, dx, dy) => `
   M ${dx - r}, ${dy}
@@ -907,9 +909,28 @@ export const getOffsetIntermediateAmplifier = (type, point, lineWidth, height, n
   const rotate = Math.abs(point.r) > 90 ? 180 : 0
   let y = 0
   if (type === 'top') {
-    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
-  } else if (type === 'bottom') {
     y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+  } else if (type === 'bottom') {
+    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+  }
+  return { y, yMask: (rotate ? -y : y) }
+}
+
+export const getOffsetPointAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  switch (type) {
+    case 'top':
+      y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+      break
+    case 'middle':
+    case 'center':
+      y = -height * ((numberOfLines - 1) / 2 - index)
+      break
+    case 'bottom':
+      y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+      break
+    default: break
   }
   return { y, yMask: (rotate ? -y : y) }
 }
@@ -934,7 +955,7 @@ const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHe
     t = -t
   }
   const half = lineWidth / 2
-  const offsetObject = getOffsetIntermediateAmplifier(...arguments) // определяем смещение по y
+  const offsetObject = getOffsetPointAmplifier(...arguments) // определяем смещение по y
   switch (type) {
     case 'top':
       offsetObject.x = half * t
@@ -986,7 +1007,7 @@ export const getPointAmplifier = ({
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
-    getOffset: getOffsetForIntermediateAmplifier, // определение смещеня строки текста в зависимости от номера строки
+    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и тапа амплификатора
   }
   return getTextAmplifiers({
     scale,
@@ -1070,7 +1091,7 @@ export const getAmplifiers = ({
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
-        getOffset: getOffsetIntermediateAmplifier,
+        getOffset: getOffsetPointAmplifier,
       }
     } else { // pointAmplifiers на краях линии
       amplifierOptions = {
@@ -1090,7 +1111,7 @@ export const getAmplifiers = ({
       }
     }
 
-    if (amplifierOptions.points.length) {
+    if (amplifierOptions.points.length) { // генерация svg PointAmplifiers
       const { maskPath, group } = getTextAmplifiers({
         level,
         scale,
