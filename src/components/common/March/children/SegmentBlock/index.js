@@ -95,7 +95,7 @@ const SegmentBlock = (props) => {
       : <div className={'height-segment'}/>
     }
 
-    <Tooltip placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={ { offset: [ -7, 25 ] }}>
+    <Tooltip placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={{ offset: [ -7, 25 ] }}>
       <SegmentButtonPopover
         type={type}
         content={
@@ -107,12 +107,15 @@ const SegmentBlock = (props) => {
               metric,
               toggleDeleteMarchPointModal,
               readOnly,
-            }} />
+            }}/>
         }
       />
     </Tooltip>
 
     {childrenIsPresent && children.map((child, id) => {
+      if (!metric.children[id]) {
+        return null
+      }
       const { distance, time } = metric.children[id]
       const timeWithOffset = msToTime(time + timeOffset)
       const distanceWithOffset = (distance + distanceOffset).toFixed(1)
@@ -126,8 +129,8 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT} align={ { offset: [ 13, 0 ] }}>
-        { !readOnly && <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/> }
+      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT} align={{ offset: [ 13, 0 ] }}>
+        {!readOnly && <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>}
       </Tooltip>
       {isViewContextMenu && <AddSegmentContextMenu
         changeViewContextMenu={changeViewContextMenu}
