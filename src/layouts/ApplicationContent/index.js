@@ -14,19 +14,17 @@ class ApplicationContent extends React.PureComponent {
 
   render () {
     const { is3DMapMode } = this.props
-    return (
-      <>
-        {
-          is3DMapMode
-            ? <WebMap3DContainer />
-            : <WebMap center={[ 48.5, 38 ]} zoom={14} >
-              <MapConsumer>{(map) => map && <PrintGrid map={map} />}</MapConsumer>
-              <PrintLegendContainer />
-            </WebMap>
-        }
-      </>
 
-    )
+    return <>
+      {
+        is3DMapMode
+          ? <WebMap3DContainer />
+          : <WebMap center={[ 48.5, 38 ]} zoom={14}>
+            <MapConsumer>{(map) => map && <PrintGrid map={map} />}</MapConsumer>
+            <PrintLegendContainer />
+          </WebMap>
+      }
+    </>
   }
 }
 
