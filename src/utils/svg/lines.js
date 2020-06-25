@@ -137,8 +137,10 @@ const lineArray = (points, index, locked) => {
     points[next],
   ]
 }
+
+// влияет на последовательность сборки сторон у квадрата и прямоугольника при печати => позиция текстовых амплификаторов
 export const rectToPoints = ({ x, y, width, height = width }) =>
-  [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  [ { x, y: y + height }, { x, y }, { x: x + width, y }, { x: x + width, y: y + height } ]
 
 export const circleToD = (r, dx, dy) => `
   M ${dx - r}, ${dy}
