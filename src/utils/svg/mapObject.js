@@ -277,6 +277,7 @@ const getSvgPath = (
       </pattern>
       <path
         fill={fillColor}
+        fillRule='nonzero'
         fillOpacity="1"
         d={d}
       />
@@ -284,12 +285,14 @@ const getSvgPath = (
   } else if (options.fill) { // заливка установлена в рендере линии
     fillOption = <path
       fill={options.fill}
+      fillRule='nonzero'
       fillOpacity={options.fillOpacity ?? 0.22}
       d={d}
     />
   } else if (fill) {
     fillOption = <path
       fill={colors.evaluateColor(fill) || 'transparent'}
+      fillRule='nonzero'
       fillOpacity={fillOpacity ?? 0.22}
       d={d}
     />
