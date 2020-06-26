@@ -571,10 +571,10 @@ export const objectUnlocked = (objectId) => ({
 
 export const tryLockObject = (objectId) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objLock, objUnlock } }) => {
-    const { webMap: { lockedObjects } } = getState()
+    const { webMap: { lockedObjects, contactFullName } } = getState()
     let lockedBy = lockedObjects.get(objectId)
     let success = false
-    if (lockedBy) {
+    if (lockedBy && (lockedBy !== contactFullName)) { // Игнорируем блокировку от себя
       dispatch(notifications.push({
         type: 'warning',
         message: i18n.EDITING,

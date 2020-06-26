@@ -261,6 +261,7 @@ L.SVG.include({
         }
       }
     } else if (fullPolygon) {
+      layer.options.fillRule = 'nonzero'
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, false, true)
@@ -280,18 +281,18 @@ L.SVG.include({
         case 'solidWithDots':
           layer.options.lineCap = 'round'
         // eslint-disable-next-line no-fallthrough
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'blockageWireHigh':
         case 'blockageIsolation':
         case 'blockageWire1':
         case 'blockageWire2':
         case 'blockageWireFence':
         case 'blockageWireLow':
-        case 'blockageWireHigh':
         case 'blockageSpiral':
-        case 'blockageSpiral2':
-        case 'blockageSpiral3':
           result += this._buildBlockage(layer, false, true, lineType)
           break
-        // необхідна заливка
+        // необхідна заливка елементів лінії
         case 'rowMinesLand':
         case 'moatAntiTank':
         case 'moatAntiTankMine':
@@ -352,6 +353,7 @@ L.SVG.include({
       this._updateLineFilled(layer, resultFilled)
       result += ` m1,1`
     } else if (fullArea) {
+      layer.options.fillRule = 'nonzero'
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
         case 'waved':
@@ -430,7 +432,6 @@ L.SVG.include({
         case 'blockageSpiral':
         case 'blockageSpiral2':
         case 'blockageSpiral3':
-
           result += this._buildBlockage(layer, true, false, lineType)
           break
         // необхідна заливка

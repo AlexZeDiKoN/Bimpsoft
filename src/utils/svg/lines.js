@@ -599,7 +599,11 @@ const addUnitLine = (
     case 'moatAntiTank': {
       const n = setLength(normal(v), markerSize * 0.83)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
-      return ` M${p1.x} ${p1.y} L${cp3.x} ${cp3.y} L${p2.x} ${p2.y} Z`
+      return (
+        lineType === 'moatAntiTank'
+          ? `M${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}Z`
+          : `L${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}L${p1.x} ${p1.y}`
+      )
     }
     case 'moatAntiTankMine1': {
       if (halfElement) {
