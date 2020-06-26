@@ -16,14 +16,6 @@ export const setOpacity = function (opacity) {
   }
 }
 
-export const setHidden = function (hidden) {
-  this._hidden = hidden
-  const el = this.getElement && this.getElement()
-  if (el) {
-    el.style.display = this._hidden ? 'none' : ''
-  }
-}
-
 export const setShadowColor = function (shadowColor) {
   this._shadowColor = shadowColor
   const el = this.getElement && this.getElement()
