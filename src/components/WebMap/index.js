@@ -1252,7 +1252,10 @@ export default class WebMap extends React.PureComponent {
   }
 
   removeLayer = (layer) => {
-    this.map.objects.remove(layer)
+    const index = this.map.objects.indexOf(layer)
+    if (index >= 0) {
+      this.map.objects.splice(index, 1)
+    }
     layer.pm && layer.pm.disable()
     layer.remove()
   }
