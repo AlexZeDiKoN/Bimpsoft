@@ -1258,6 +1258,9 @@ export default class WebMap extends React.PureComponent {
     }
     layer.pm && layer.pm.disable()
     layer.remove()
+    if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
+      this.catalogsPopup.remove()
+    }
   }
 
   updateObjects = (objects, preview) => {
@@ -1267,6 +1270,7 @@ export default class WebMap extends React.PureComponent {
       const regions = []
       const groups = []
       const groupItems = []
+      const toDelete = []
 
       this.map.objects.forEach((layer) => {
         const { id, options: { tsType: type } } = layer
@@ -1278,10 +1282,11 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else if (!layer.catalogId) {
-            this.removeLayer(layer)
+            toDelete.push(layer)
           }
         }
       })
+      toDelete.forEach(this.removeLayer)
 
       objects.forEach((object) => {
         if (object.parent) {
@@ -1386,6 +1391,8 @@ export default class WebMap extends React.PureComponent {
     if (this.map) {
       const existsIds = new Set()
       const changes = []
+      const toDelete = []
+
       this.map.objects.forEach((layer) => {
         const { id, catalogId } = layer
         if (id && catalogId) {
@@ -1397,25 +1404,20 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
-            if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
-              this.catalogsPopup.remove()
-            }
-            // layer.pm && layer.pm.disable()
+            toDelete.push(layer)
           }
         }
       })
+      toDelete.forEach(this.removeLayer)
+
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addCatalogObject(object, layer)
         if (newLayer !== layer) {
-          layer.remove()
-          if (this.catalogsPopup && this.catalogsPopup.isOpen && this.catalogsPopup._openOver === layer) {
-            this.catalogsPopup.remove()
-          }
-          // layer.pm && layer.pm.disable()
+          this.removeLayer(layer)
         }
       }
+
       Object.values(catalogObjects).forEach((objects) => {
         objects && objects.forEach((object) => {
           if (!existsIds.has(object.id)) {
@@ -1610,6 +1612,7 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       layer.id = id
       layer.object = object
+      layer.map = this.map
       // layer.object.level = catalogLevel(catalogId)
       layer.catalogId = catalogId
       layer.on('click', this.clickOnCatalogLayer)
@@ -1618,9 +1621,13 @@ export default class WebMap extends React.PureComponent {
       // layer.on('pm:markerdragend', this.onMarkerDragEnd)
       // TODO: events
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+      } else {
+        this.map.objects.push(layer)
+        layer.addTo(this.map)
+        console.log('add catalog layer')
+      }
 
       const { params } = this.props
       setScaleOptions(layer, params)
