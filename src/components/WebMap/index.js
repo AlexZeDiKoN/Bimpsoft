@@ -508,7 +508,7 @@ export default class WebMap extends React.PureComponent {
 
   componentWillUnmount () {
     delete window.webMap
-    this.map?.remove()
+    this.map && this.map.remove()
   }
 
   indicateMode = indicateModes.WGS
@@ -1154,7 +1154,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
-    this.map?.objects.forEach((item) =>
+    this.map && this.map.objects.forEach((item) =>
       this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
   }
 
@@ -1178,11 +1178,11 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
-    this.map?.objects.forEach((layer) => setScaleOptions(layer, params))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map?.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    this.map && this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -1253,7 +1253,7 @@ export default class WebMap extends React.PureComponent {
 
   removeLayer = (layer) => {
     this.map.objects.remove(layer)
-    layer.pm?.disable()
+    layer.pm && layer.pm.disable()
     layer.remove()
   }
 
