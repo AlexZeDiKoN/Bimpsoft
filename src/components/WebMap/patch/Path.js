@@ -49,7 +49,11 @@ export default L.Path.include({
   },
 
   setHidden: function (hidden) {
-    this.setStyle({ hidden })
+    if (hidden) {
+      this.removeFrom(this.map)
+    } else {
+      this.addTo(this.map)
+    }
   },
 
   getMask: function () {

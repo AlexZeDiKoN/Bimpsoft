@@ -442,7 +442,15 @@ L.FlexGrid = L.Layer.extend({
   },
 
   setHidden: function (hidden) {
-    L.setOptions(this, { hidden })
-    this._renderer._updateStyle(this)
+    if (this.options.olovo) {
+      if (hidden) {
+        this.removeFrom(this.map)
+      } else {
+        this.addTo(this.map)
+      }
+    } else {
+      L.setOptions(this, { hidden })
+      this._renderer._updateStyle(this)
+    }
   },
 })
