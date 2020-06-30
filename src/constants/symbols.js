@@ -720,12 +720,21 @@ export const symbols = [
       {
         hint: 'Район вогневих позицій',
         code: '10032500002405000000rvp',
-        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'РВП' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.RECTANGLE,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0, 2 ],
+          intermediateAmplifier: { [amps.N]: 'РВП' } },
       },
       {
         hint: 'Основний позиційний район',
         code: '10032500002405000000opr',
-        amp: { isSvg: true, type: entityKind.POLYGON, pointAmplifier: { [amps.W]: 'ОПР' } },
+        amp: { isSvg: true,
+          type: entityKind.RECTANGLE,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0, 2 ],
+          intermediateAmplifier: { [amps.N]: 'ОПР' } },
       },
       {
         hint: 'Рубіж досяжності вогневих засобів',
@@ -2129,7 +2138,12 @@ export const symbols = [
       {
         hint: 'Район контролю радіоелектронної обстановки',
         code: '10032500001200000000rez',
-        amp: { isSvg: true, type: entityKind.RECTANGLE, pointAmplifier: { [amps.W]: 'РЕЗ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.RECTANGLE,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0, 2 ],
+          intermediateAmplifier: { [amps.W]: 'РЕЗ' } },
       },
       {
         hint: 'Район, вільний від радіоелектронних засобів',
