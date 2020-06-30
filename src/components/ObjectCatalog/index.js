@@ -85,7 +85,6 @@ export default class CatalogsComponent extends React.PureComponent {
     } = this.props
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
-
     const commonData = this.getCommonData(
       textFilter,
       onClick,
@@ -105,6 +104,7 @@ export default class CatalogsComponent extends React.PureComponent {
           <div className='catalog-container__header'>
             <InputButton
               title={title}
+              initValue={textFilter ? textFilter.regExpTest.source : ''}
               onChange={this.filterTextChangeHandler}
             />
           </div>

@@ -404,6 +404,7 @@ export default class WebMap extends React.PureComponent {
       this.onSelectedListChange([])
     })
     this.updateMarchDots(this.props.marchDots, [])
+    window.explorerBridge.init(true)
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -660,7 +661,7 @@ export default class WebMap extends React.PureComponent {
       if (scaleToSelection) {
         const selectedIdsSet = new Set(selectedIds)
         const points = []
-        this.map.eachLayer((layer) =>
+        this.map.objects.forEach((layer) =>
           layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry),
         )
         if (points.length > 0) {
@@ -696,6 +697,7 @@ export default class WebMap extends React.PureComponent {
         //   : Math.round((val / 1000) * 100) / 100 + ' ' + i18n.ABBR_KILOMETERS,
       },
     })
+    this.map.objects = []
     this.scale = control.graphicScale({
       fill: 'hollow',
     })
@@ -1046,7 +1048,7 @@ export default class WebMap extends React.PureComponent {
     this.isBoxSelection = false
     const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
-    this.map.eachLayer((layer) => {
+    this.map.objects.forEach((layer) => {
       if (layer.options.tsType) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
@@ -1077,7 +1079,7 @@ export default class WebMap extends React.PureComponent {
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
-      this.map.eachLayer((layer) => {
+      this.map.objects.forEach((layer) => {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
@@ -1152,10 +1154,8 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
-    if (this.map) {
-      this.map.eachLayer((item) =>
-        this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
-    }
+    this.map && this.map.objects.forEach((item) =>
+      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
   }
 
   updateScaleOptions = () => {
@@ -1178,11 +1178,11 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
-    this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map && this.map.eachLayer((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    this.map && this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -1200,7 +1200,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   crosshairCursor = (on) => {
-    this.map && (this.map._container.style.cursor = on ? 'crosshair' : '')
+    if (this.map) {
+      this.map._container.style.cursor = on ? 'crosshair' : ''
+    }
   }
 
   setMapCursor = (edit, type) => {
@@ -1249,6 +1251,18 @@ export default class WebMap extends React.PureComponent {
     this.updateCatalogObjects(this.props.catalogObjects)
   }
 
+  removeLayer = (layer) => {
+    const index = this.map.objects.indexOf(layer)
+    if (index >= 0) {
+      this.map.objects.splice(index, 1)
+    }
+    layer.pm && layer.pm.disable()
+    layer.remove()
+    if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
+      this.catalogsPopup.remove()
+    }
+  }
+
   updateObjects = (objects, preview) => {
     if (this.map) {
       const existsIds = new Set()
@@ -1256,8 +1270,9 @@ export default class WebMap extends React.PureComponent {
       const regions = []
       const groups = []
       const groupItems = []
+      const toDelete = []
 
-      this.map.eachLayer((layer) => {
+      this.map.objects.forEach((layer) => {
         const { id, options: { tsType: type } } = layer
         if (id && type !== entityKind.FLEXGRID) {
           const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
@@ -1266,13 +1281,12 @@ export default class WebMap extends React.PureComponent {
             if (layer.object !== object) {
               changes.push({ object, layer })
             }
-          } else {
-            layer.catalogId || layer.remove()
-            // eslint-disable-next-line no-unused-expressions
-            layer.pm?.disable()
+          } else if (!layer.catalogId) {
+            toDelete.push(layer)
           }
         }
       })
+      toDelete.forEach(this.removeLayer)
 
       objects.forEach((object) => {
         if (object.parent) {
@@ -1304,9 +1318,7 @@ export default class WebMap extends React.PureComponent {
         if (newLayer !== layer) {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
-          layer.remove()
-          // eslint-disable-next-line no-unused-expressions
-          layer.pm?.disable()
+          this.removeLayer(layer)
         }
       }
 
@@ -1324,12 +1336,11 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = this.addObject(preview, null)
         } else {
           setLayerSelected(this.newLayer, false, false)
-          this.newLayer.remove()
-          this.newLayer.pm && this.newLayer.pm.disable()
+          this.removeLayer(this.newLayer)
           this.newLayer = null
         }
       }
-      this.map.eachLayer((layer) => {
+      this.map.objects.forEach((layer) => {
         if (layer._groupChildren) {
           layer._groupChildren = []
         }
@@ -1380,7 +1391,9 @@ export default class WebMap extends React.PureComponent {
     if (this.map) {
       const existsIds = new Set()
       const changes = []
-      this.map.eachLayer((layer) => {
+      const toDelete = []
+
+      this.map.objects.forEach((layer) => {
         const { id, catalogId } = layer
         if (id && catalogId) {
           const catalog = catalogObjects[Number(catalogId)]
@@ -1391,25 +1404,20 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
-            if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
-              this.catalogsPopup.remove()
-            }
-            // layer.pm && layer.pm.disable()
+            toDelete.push(layer)
           }
         }
       })
+      toDelete.forEach(this.removeLayer)
+
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addCatalogObject(object, layer)
         if (newLayer !== layer) {
-          layer.remove()
-          if (this.catalogsPopup && this.catalogsPopup.isOpen && this.catalogsPopup._openOver === layer) {
-            this.catalogsPopup.remove()
-          }
-          // layer.pm && layer.pm.disable()
+          this.removeLayer(layer)
         }
       }
+
       Object.values(catalogObjects).forEach((objects) => {
         objects && objects.forEach((object) => {
           if (!existsIds.has(object.id)) {
@@ -1505,17 +1513,32 @@ export default class WebMap extends React.PureComponent {
   getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
 
   addObject = (object, prevLayer) => {
-    const { layersByIdFromStore } = this.props
+    const {
+      layersByIdFromStore,
+      level,
+      layersById,
+      hiddenOpacity,
+      params,
+      showAmplifiers,
+      layer: selectedLayerId,
+      selection: { list },
+    } = this.props
+
     const { id, attributes, layer: layerInner, unit } = object
+
     const layerObject = layersByIdFromStore[layerInner]
+
     try {
       validateObject(object && object.toJS ? object.toJS() : object)
     } catch (e) {
       console.error(e)
       return null
     }
+
     const layer = createTacticalSign(object, this.map, prevLayer)
+
     if (layer) {
+      layer.map = this.map
       layer.options.lineCap = 'butt'
       layer.id = id
       layer.object = object
@@ -1550,11 +1573,11 @@ export default class WebMap extends React.PureComponent {
           layer.pm.enable()
         }
       } else {
-        layer.addTo(this.map)
+        this.map.objects.push(layer)
       }
 
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
-      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)
+      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
+
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
 
       if (color !== null && color !== '') {
@@ -1574,6 +1597,7 @@ export default class WebMap extends React.PureComponent {
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
+
     return layer
   }
 
@@ -1588,6 +1612,7 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       layer.id = id
       layer.object = object
+      layer.map = this.map
       // layer.object.level = catalogLevel(catalogId)
       layer.catalogId = catalogId
       layer.on('click', this.clickOnCatalogLayer)
@@ -1596,9 +1621,13 @@ export default class WebMap extends React.PureComponent {
       // layer.on('pm:markerdragend', this.onMarkerDragEnd)
       // TODO: events
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+      } else {
+        this.map.objects.push(layer)
+        layer.addTo(this.map)
+        console.log('add catalog layer')
+      }
 
       const { params } = this.props
       setScaleOptions(layer, params)
@@ -1624,7 +1653,7 @@ export default class WebMap extends React.PureComponent {
         y: this._dragEndPx.y - this._dragStartPx.y,
       }
       const objects = list.filter((id) => id !== layer.id)
-      this.map.eachLayer((item) => {
+      this.map.objects.forEach((item) => {
         if (item.id && objects.includes(item.id)) {
           const shiftOne = (latLng) => {
             const f = this.map.project(latLng)

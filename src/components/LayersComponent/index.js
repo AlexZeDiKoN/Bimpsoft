@@ -184,6 +184,7 @@ export default class LayersComponent extends React.Component {
             <div className='divider'/>
             <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
               <IButton
+                disabled={roots?.length === 0}
                 icon={IconNames.CLOSE_MAP}
                 onClick={this.closeHandler}
               />

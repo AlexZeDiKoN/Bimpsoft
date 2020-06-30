@@ -57,7 +57,8 @@ export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
 }
 
 export const openMapByCoord = (mapId, coordinate) => async (dispatch) => {
-  const actions = [ openMapFolder(mapId) ]
+  const actions = [ ]
+  mapId && actions.push(openMapFolder(mapId))
   coordinate && actions.push(webMap.setMarker({
     text: i18n.TASK,
     point: { lng: parseFloat(coordinate.lng), lat: parseFloat(coordinate.lat) },

@@ -137,8 +137,10 @@ const lineArray = (points, index, locked) => {
     points[next],
   ]
 }
+
+// влияет на последовательность сборки сторон у квадрата и прямоугольника при печати => позиция текстовых амплификаторов
 export const rectToPoints = ({ x, y, width, height = width }) =>
-  [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  [ { x, y: y + height }, { x, y }, { x: x + width, y }, { x: x + width, y: y + height } ]
 
 export const circleToD = (r, dx, dy) => `
   M ${dx - r}, ${dy}
@@ -597,7 +599,11 @@ const addUnitLine = (
     case 'moatAntiTank': {
       const n = setLength(normal(v), markerSize * 0.83)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
-      return ` M${p1.x} ${p1.y} L${cp3.x} ${cp3.y} L${p2.x} ${p2.y} Z`
+      return (
+        lineType === 'moatAntiTank'
+          ? `M${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}Z`
+          : `L${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}L${p1.x} ${p1.y}`
+      )
     }
     case 'moatAntiTankMine1': {
       if (halfElement) {
@@ -907,9 +913,28 @@ export const getOffsetIntermediateAmplifier = (type, point, lineWidth, height, n
   const rotate = Math.abs(point.r) > 90 ? 180 : 0
   let y = 0
   if (type === 'top') {
-    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
-  } else if (type === 'bottom') {
     y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+  } else if (type === 'bottom') {
+    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+  }
+  return { y, yMask: (rotate ? -y : y) }
+}
+
+export const getOffsetPointAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  switch (type) {
+    case 'top':
+      y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+      break
+    case 'middle':
+    case 'center':
+      y = -height * ((numberOfLines - 1) / 2 - index)
+      break
+    case 'bottom':
+      y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+      break
+    default: break
   }
   return { y, yMask: (rotate ? -y : y) }
 }
@@ -934,7 +959,7 @@ const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHe
     t = -t
   }
   const half = lineWidth / 2
-  const offsetObject = getOffsetIntermediateAmplifier(...arguments) // определяем смещение по y
+  const offsetObject = getOffsetPointAmplifier(...arguments) // определяем смещение по y
   switch (type) {
     case 'top':
       offsetObject.x = half * t
@@ -986,7 +1011,7 @@ export const getPointAmplifier = ({
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
-    getOffset: getOffsetForIntermediateAmplifier, // определение смещеня строки текста в зависимости от номера строки
+    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и тапа амплификатора
   }
   return getTextAmplifiers({
     scale,
@@ -1070,7 +1095,7 @@ export const getAmplifiers = ({
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
-        getOffset: getOffsetIntermediateAmplifier,
+        getOffset: getOffsetPointAmplifier,
       }
     } else { // pointAmplifiers на краях линии
       amplifierOptions = {
@@ -1090,7 +1115,7 @@ export const getAmplifiers = ({
       }
     }
 
-    if (amplifierOptions.points.length) {
+    if (amplifierOptions.points.length) { // генерация svg PointAmplifiers
       const { maskPath, group } = getTextAmplifiers({
         level,
         scale,
