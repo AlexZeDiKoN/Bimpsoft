@@ -609,13 +609,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   )
 })
 
-// Todo надо разобратся с размером шрифта
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { coordToPixels, printOptions: { getFontSize }, dpi } = commonData
+  const { coordToPixels, printOptions: { getFontSize } } = commonData
   const { attributes, point } = data
   const { x, y } = coordToPixels(point)
-  const scale = 100 * 12 / (getFontSize() / getmmInPixel(dpi)) // коэффициент приведения к px
+  const scale = getFontSize()
   return (
     <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
       {renderTextSymbol({ ...attributes.toJS(), outlineColor }, scale)}
