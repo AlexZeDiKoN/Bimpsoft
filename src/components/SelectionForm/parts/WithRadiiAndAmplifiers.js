@@ -121,7 +121,8 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
         const fill = sectorInfo?.fill || colors.TRANSPARENT
         return (index !== 0) ? (
           <>
-            <div className="circularzone-container__itemWidth" key={index}>
+            <div
+              className={canEdit ? 'circularzone-container__itemWidth' : 'circularzone-container__itemWidth modals-input-disabled'} key={index}>
               <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
                 <InputWithSuffix
                   readOnly={!canEdit}
@@ -165,6 +166,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                 <Input.TextArea
                   value={amplifierT}
                   name={'amplifier'}
+                  className={!canEdit ? 'modals-input-disabled' : ''}
                   onChange={this.sectorAmplifierChangeHandler(index)}
                   onFocus={canEdit ? this.sectorFocusHandler(index) : null}
                   onBlur={canEdit ? this.amplifierBlurHandler(index) : null}

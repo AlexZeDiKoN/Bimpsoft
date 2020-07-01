@@ -122,6 +122,28 @@
       }
     }
   }
+  .org-structures-disabled{
+    .dzvin-input{
+      background: #fafafa;
+      border: 0;
+      input[disabled]{
+        background: #fafafa;
+        border: 0;
+      }
+    }
+  }
+  .modals-input-disabled{
+    border: none;
+    .ant-input, .ant-input-group-addon, .ant-select-selection--single{
+      border: none;
+      background: #fafafa;
+    }
+  }
+  .modals-input-disabled:hover, .modals-input-disabled:focus {
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
 }
 .headerSiding {
   position: relative;  /* нужна нестатическая позиция */
@@ -153,13 +175,12 @@
   display: flex;
   align-items: center;
   margin-right: 4px;
-  background: #fff;
+  background: #fafafa;
   padding-right: 4px;
   width: 100%;
   height: 32px;
   padding-left: 10px;
   border-radius: 2px;
-  border: 1px solid #d9d9d9;
   .ant-checkbox-wrapper{
     margin-right: 10px;
   }

@@ -39,7 +39,11 @@ const WithHatch = (Component) => class FillComponent extends Component {
 
     return (
       <FormRow label={i18n.HATCH}>
-        <Select value={value} onChange={this.hatchChangeHandler} disabled={!canEdit}>
+        <Select
+          value={value}
+          onChange={this.hatchChangeHandler}
+          className={!canEdit ? 'modals-input-disabled' : ''}
+          disabled={!canEdit}>
           {TYPE_LIST_JSX}
         </Select>
       </FormRow>
