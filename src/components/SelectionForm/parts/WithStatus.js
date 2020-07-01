@@ -25,7 +25,11 @@ const WithStatus = (Component) => class StatusComponent extends Component {
     const canEdit = this.isCanEdit()
     return (
       <FormRow label={i18n.STATUS}>
-        <Select value={currentAffiliation} onChange={this.statusHandler} disabled={!canEdit}>
+        <Select
+          value={currentAffiliation}
+          className={!canEdit ? 'modals-input-disabled' : ''}
+          onChange={this.statusHandler}
+          disabled={!canEdit}>
           {STATUS_LIST.map(({ id, text }) => (
             <Select.Option key={id} value={id}>{text}</Select.Option>
           ))}

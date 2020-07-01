@@ -57,7 +57,8 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                 <Input.TextArea
                   value={currentValue[id] ?? ''}
                   onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
-                  disabled={!canEdit}
+                  readOnly={!canEdit}
+                  className={!canEdit ? 'modals-input-disabled' : ''}
                   rows={id === amps.A ? 6 : 1}
                   autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
                   maxLength={id === amps.A
@@ -68,6 +69,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
               : <FormRow label={`${name}`}>
                 <NumberControl
                   name={id}
+                  disabled={!canEdit}
                   value={Number(currentValue[id])}
                   onChange={this.changeNumAmplifier(pathAmplifiers, simpleObject)}
                 />

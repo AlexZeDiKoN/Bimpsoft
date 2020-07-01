@@ -46,7 +46,8 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
                 autoSize={{ maxRows: 3, minRows: 1 }}
                 value={currentValue[id] ?? ''}
                 onChange={this.createPointAmplifierHandler(id)}
-                disabled={!canEdit}
+                className={!canEdit ? 'modals-input-disabled' : ''}
+                readOnly={!canEdit}
                 rows={1}
                 maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
               />

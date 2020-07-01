@@ -15,7 +15,11 @@ const WithAffiliation = (Component) => class AffiliationComponent extends Compon
     const canEdit = this.isCanEdit()
     return (
       <FormRow label={i18n.IDENTITY}>
-        <Select value={currentAffiliation} onChange={this.affiliationHandler} disabled={!canEdit}>
+        <Select
+          value={currentAffiliation}
+          className={!canEdit ? 'modals-input-disabled' : ''}
+          onChange={this.affiliationHandler}
+          disabled={!canEdit}>
           {IDENTITY_LIST.map(({ id, title }) => (
             <Select.Option key={id} value={id}>{title}</Select.Option>
           ))}

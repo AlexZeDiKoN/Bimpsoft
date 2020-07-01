@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { angleDegCheck, distanceAzimuth, moveCoordinate } from '../../WebMap/patch/utils/sectors'
@@ -72,8 +72,8 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
 
     return (
       <FormRow label={i18n.COORDINATES}>
-        {coordBegin
-          ? <Fragment key={`${coordBegin.lat}/${coordBegin.lng}`}>
+        {coordBegin &&
+          <div className={!canEdit ? 'modals-input-disabled' : ''} key={`${coordBegin.lat}/${coordBegin.lng}`}>
             <FormItem className="coordinatesModal">
               <Coordinates
                 isReadOnly={!canEdit}
@@ -95,7 +95,7 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
                 error={azimuthIsWrong}
               />
             </FormRow>
-          </Fragment> : 'нет'}
+          </div>}
       </FormRow>
     )
   }

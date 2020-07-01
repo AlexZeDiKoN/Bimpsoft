@@ -10,13 +10,14 @@ export default class NumberControl extends React.Component {
   }
 
   render () {
-    const { value } = this.props
+    const { value, disabled } = this.props
     const step = 1
     return (
       <>
         <Input.Number
           type="number"
           className="number-control-input"
+          disabled={disabled}
           step={step}
           min="0"
           value={value}
@@ -31,4 +32,5 @@ NumberControl.propTypes = {
   name: PropTypes.string,
   value: PropTypes.number,
   onChange: PropTypes.func,
+  disabled: PropTypes.bool,
 }

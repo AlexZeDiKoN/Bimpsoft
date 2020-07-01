@@ -73,7 +73,8 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
             autoSize={{ maxRows: 3 }}
             value={currentValue[id] ?? ''}
             onChange={this.createIntermediateAmplifierHandler(id)}
-            disabled={!canEdit}
+            className={!canEdit ? 'modals-input-disabled' : ''}
+            readOnly={!canEdit}
             rows={1}
             maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
           />
@@ -97,6 +98,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 value={type}
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
+                className={!canEdit ? 'modals-input-disabled' : ''}
               >{TYPE_LIST.map(({ text, value }) => {
                   const level = value === TYPES.LEVEL ? subordinationLevel : null
                   let borderStyle
@@ -112,6 +114,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 })}
               </Select>
               <Input
+                className={!canEdit ? 'modals-input-disabled' : ''}
                 disabled={!canEdit || type !== TYPES.TEXT}
                 value={currentValue[PAIRS.MIDDLE.id] ?? ''}
                 onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
