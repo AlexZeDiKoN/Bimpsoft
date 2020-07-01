@@ -618,7 +618,7 @@ export default class WebMap extends React.PureComponent {
     if (marker !== prevProps.marker /* && marker !== null */) {
       if (!isMarkersOn) {
         if (marker) {
-          this.markers && this.markers[0].removeFrom(this.map)
+          this.markers && this.markers.length && this.markers[0].removeFrom(this.map)
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
@@ -635,7 +635,7 @@ export default class WebMap extends React.PureComponent {
       } else {
         if (marker) {
           let { point, text } = marker
-          text = this.createSearchMarkerText(point)
+          text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
             const searchMarker = createSearchMarker(point)
             searchMarker.addTo(this.map)
