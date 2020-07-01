@@ -1626,7 +1626,6 @@ export default class WebMap extends React.PureComponent {
       } else {
         this.map.objects.push(layer)
         layer.addTo(this.map)
-        console.log('add catalog layer')
       }
 
       const { params } = this.props
@@ -1910,10 +1909,7 @@ export default class WebMap extends React.PureComponent {
     if (show) {
       if (this.flexGrid) {
         this.flexGrid.addTo(this.map)
-        const { inICTMode } = this.props
-        if (inICTMode) {
-          this.map.fitBounds(this.flexGrid.getBounds())
-        }
+        this.props.inICTMode && this.map.fitBounds(this.flexGrid.getBounds())
       } else {
         this.dropFlexGrid()
       }
@@ -1926,8 +1922,10 @@ export default class WebMap extends React.PureComponent {
 
   dropFlexGrid = (show = true) => {
     if (this.flexGrid) {
-      this.flexGrid.removeFrom(this.map)
+      this.removeLayer(this.flexGrid)
+      // this.flexGrid.removeFrom(this.map)
     }
+
     const {
       flexGridParams: {
         vertical,
@@ -1946,6 +1944,7 @@ export default class WebMap extends React.PureComponent {
       activeMapId,
       fixFlexGridInstance,
     } = this.props
+
     const layer = new L.FlexGrid(
       this.map.getBounds().pad(-0.2),
       {
@@ -1973,6 +1972,7 @@ export default class WebMap extends React.PureComponent {
     }
     if (id) {
       this.flexGrid = layer
+      this.map.objects.push(layer)
       fixFlexGridInstance && fixFlexGridInstance(layer)
     }
     const geometry = getGeometry(layer)

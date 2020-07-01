@@ -82,10 +82,12 @@ export const setLayerSelected = (layer, selected, active, activeLayer, isDraggab
   }
   if (isDraggable !== undefined && isDraggable !== layer.options.draggable) {
     layer.options.draggable = isDraggable
-    if (isDraggable) {
-      layer.pm.enableLayerDrag()
-    } else {
-      layer.pm.disableLayerDrag()
+    if (layer._map) {
+      if (isDraggable) {
+        layer.pm.enableLayerDrag()
+      } else {
+        layer.pm.disableLayerDrag()
+      }
     }
   }
 }
