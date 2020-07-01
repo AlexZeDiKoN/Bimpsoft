@@ -13,7 +13,6 @@ import {
   circleToD,
   getAmplifiers,
   pointsToD,
-  rectToPoints,
   stroked,
   waved,
   getLineEnds,
@@ -525,9 +524,15 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
       }
       case SelectionTypes.SQUARE:
       case SelectionTypes.RECTANGLE: {
-        const points = kind === SelectionTypes.SQUARE
-          ? rectToPoints({ x, y, width: Math.abs(dx) > Math.abs(dy) ? dx : dy })
-          : rectToPoints({ x, y, width: dx, height: dy })
+        const point3 = {
+          lat: point1.lat,
+          lng: point2.lng,
+        }
+        const point4 = {
+          lat: point2.lat,
+          lng: point1.lng,
+        }
+        const points = [ coordToPixels(point1), coordToPixels(point4), coordToPixels(point2), coordToPixels(point3) ]
         d = pointsToD(points, true)
         amplifiers = getAmplifiers({ points, bezier: false, locked: true, bounds, tsType: kind, fontSize }, data)
         break
@@ -609,13 +614,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   )
 })
 
-// Todo надо разобратся с размером шрифта
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { coordToPixels, printOptions: { getFontSize }, dpi } = commonData
+  const { coordToPixels, printOptions: { getFontSize } } = commonData
   const { attributes, point } = data
   const { x, y } = coordToPixels(point)
-  const scale = 100 * 12 / (getFontSize() / getmmInPixel(dpi)) // коэффициент приведения к px
+  const scale = getFontSize()
   return (
     <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
       {renderTextSymbol({ ...attributes.toJS(), outlineColor }, scale)}
