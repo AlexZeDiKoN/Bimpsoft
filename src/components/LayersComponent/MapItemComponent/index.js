@@ -29,7 +29,13 @@ export default class MapItemComponent extends React.Component {
     onChangeMapColor && onChangeMapColor(mapId, color)
   }
 
-  closeHandler = () => this.setState({ showCloseForm: true })
+  closeHandler = () => {
+    const { cancelVariant, openedVariantMapId } = window.explorerBridge
+    this.setState({ showCloseForm: true })
+    if (this.props.data.mapId === openedVariantMapId ){
+      cancelVariant()
+    }
+  }
 
   cancelCloseHandler = () => this.setState({ showCloseForm: false })
 
