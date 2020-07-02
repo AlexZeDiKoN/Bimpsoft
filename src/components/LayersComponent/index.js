@@ -61,7 +61,10 @@ export default class LayersComponent extends React.Component {
     }
   })
 
-  closeHandler = () => this.setState({ showCloseForm: true })
+  closeHandler = () => {
+    this.setState({ showCloseForm: true })
+    window.explorerBridge.cancelVariant()
+  }
 
   cancelCloseHandler = () => this.setState({ showCloseForm: false })
 

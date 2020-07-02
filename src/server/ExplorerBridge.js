@@ -33,6 +33,7 @@ export default class ExplorerBridge {
   constructor (store) {
     this.store = store
     this.abandoned = false
+    this.openedVariantMapId = null
   }
 
   init = (authorized = false) => {
@@ -92,6 +93,7 @@ export default class ExplorerBridge {
         case ACTION_OPEN_VARIANT: {
           const { mapId, variantId } = data
           catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
+          this.openedVariantMapId = mapId
           break
         }
         case ACTION_CLOSE_VARIANT: {

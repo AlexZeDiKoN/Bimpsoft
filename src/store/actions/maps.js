@@ -47,6 +47,7 @@ export const cancelVariant = (variantId = null) => ({
 export const clearVariant = (variantId = null, fromExplorer = false) => {
   if (!fromExplorer) {
     window.explorerBridge.cancelVariant(variantId)
+    window.explorerBridge.openedVariantMapId = null
   }
   return cancelVariant(variantId)
 }
