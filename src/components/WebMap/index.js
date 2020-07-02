@@ -192,7 +192,7 @@ const serializeCoordinate = (mode, lat, lng) => {
     : Coord.stringify({ type, lat, lng })
   if (type === Coord.types.UCS_2000 || type === Coord.types.CS_42) {
     const coord = serialized.split(' ', 2)
-    serialized = `X=${coord[0]} Y=${coord[1]}`
+    serialized = `${coord[0]} ${coord[1]}`
   }
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
