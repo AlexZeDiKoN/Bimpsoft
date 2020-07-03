@@ -441,8 +441,15 @@ L.FlexGrid = L.Layer.extend({
     L.setOptions(this, { color })
   },
 
+  intersectsWithBounds: function (bounds) {
+    return this.options.olovo
+      ? this.getBounds().pad(1).intersects(bounds)
+      : true
+  },
+
   setHidden: function (hidden) {
     if (this.options.olovo) {
+      this._hidden = hidden
       if (hidden) {
         this.removeFrom(this.map)
       } else {
