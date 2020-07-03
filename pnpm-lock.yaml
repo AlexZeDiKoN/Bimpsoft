@@ -1,7 +1,7 @@
 dependencies:
-  '@DZVIN/CommonComponents': 14.3.498_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/CommonComponents': 15.1.500_8163dde90d88e02f48b04383611abbfe
   '@DZVIN/MilSymbolEditor': 14.3.268
-  '@DZVIN/components': 14.3.569_56c0a69b77661e2a2e6d79d63bcec91c
+  '@DZVIN/components': 15.1.570_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 14.3.6
   '@DZVIN/milsymbol': 0.0.5
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/14.3.498_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/15.1.500_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -88,7 +88,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-ttZonv1uzXoC8dldvlJkFMefCtg5ZvFAR+zxWZPkjEnxL90qGS4PhoYpcMVUitTfF7cSnt7nae14M0DpEnLrzw==
+      integrity: sha512-SJbNdzixqcr4A+epw6VrNA1FOXpuz753hEa7K8htqAMJd64sbPBkjZQEqvo2t0//ijdXS6SJdcgldjxUnYVYJw==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
@@ -99,7 +99,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Qw8/600+cDrInvN103jqLhkWuTsyacAT2G6DVkz+QaMYcsqm3YNrgA2HMgbVXpDR5KH2ccAEnmLcijkMb1XqGg==
-  /@DZVIN/components/14.3.569_56c0a69b77661e2a2e6d79d63bcec91c:
+  /@DZVIN/components/15.1.570_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
@@ -111,7 +111,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-99XOiXLSMET3GJEhbYlSp+/nXtN/eukfD4K1Ly86Vm8VDZvbD1gKP8gBVYq9/lxWlH9iqyYbomlJDcG0dxeieQ==
+      integrity: sha512-MRumto5xdh0nj5hQSx4+Crxc189Vg/62nrT+OS94BiyXUMdI+Qo9YEFN/lXqQQKuFu600lbaqn6qbPm0jTMPxg==
   /@DZVIN/leaflet-measure-custom/14.3.6:
     dev: false
     resolution:
@@ -15921,9 +15921,9 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^14.3.498
+  '@DZVIN/CommonComponents': ^15.1.500
   '@DZVIN/MilSymbolEditor': ^14.3.268
-  '@DZVIN/components': ^14.3.569
+  '@DZVIN/components': ^15.1.570
   '@DZVIN/leaflet-measure-custom': 14.3.6
   '@DZVIN/milsymbol': ^0.0.5
   '@craco/craco': ^5.2.1

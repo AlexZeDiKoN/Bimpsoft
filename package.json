@@ -3,9 +3,9 @@
   "version": "15.01.959",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^15.1.499",
+    "@DZVIN/CommonComponents": "^15.1.500",
     "@DZVIN/MilSymbolEditor": "^14.3.268",
-    "@DZVIN/components": "^14.3.569",
+    "@DZVIN/components": "^15.1.570",
     "@DZVIN/leaflet-measure-custom": "14.3.6",
     "@DZVIN/milsymbol": "^0.0.5",
     "antd": "^3.12.4",
