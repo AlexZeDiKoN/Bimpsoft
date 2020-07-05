@@ -2,6 +2,7 @@ import Bezier from 'bezier-js'
 import { Symbol } from '@DZVIN/milsymbol'
 import { rotate, applyToPoint } from 'transformation-matrix'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
+import { settings } from '../../../../constants/drawLines'
 import {
   distanceAzimuth,
   moveCoordinate,
@@ -9,14 +10,16 @@ import {
   alignmentAngle,
   angleBetweenPoints,
 } from '../utils/sectors'
-import { settings } from '../../../../utils/svg/lines'
 import {
   normalVectorTo, segmentLength, setVectorLength, applyVector, segmentBy, getVector, findNearest, halfPlane,
   angleOf, oppositeVector, drawBezierSpline, getPointAt, neg, getPointSize,
+  shiftPoints,
+  lengthLine,
+  coordinatesToPolar,
+  polarToCoordinates,
+  pointIntersecSegments,
+  referencePoint,
 } from './utils'
-import {
-  shiftPoints, lengthLine, coordinatesToPolar, polarToCoordinates, pointIntersecSegments,
-} from './arrowLib'
 
 export const MIN_LINE_POINTS = 2
 export const MIN_AREA_POINTS = 3
@@ -48,6 +51,29 @@ const middlePointBezier = (array, index1, index2, factor = 0.5) => {
   const p2 = array[index2]
   const spline = new Bezier(p1.x, p1.y, p1.cp2.x, p1.cp2.y, p2.cp1.x, p2.cp1.y, p2.x, p2.y)
   return spline.get(factor)
+}
+
+// стратегия перемещения опорных точек для символов 151401 - 151406
+export const STRATEGY_ARROW = {
+  // Довільне розташування усіх точок
+  empty: () => {
+  },
+  // Проверка взаиморасположения точек PT 1, PT 2, PT N (определяют длину и ширину стрелки)
+  supportingAttack: (prevPoints, nextPoints, changed) => {
+    if (prevPoints.length === nextPoints.length && changed.length === 1) { // кол-во точек совпадает и перетаскиваем одну точку
+      const indEnd = prevPoints.length - 1
+      // опорных точек должно быть минимум 4 (мне хотябы 3), обрабатываем изменение одной точки
+      if (((changed[0] === indEnd || changed[0] < 2) && indEnd > 1)) { // Обрабатываем изменения контрольных точек головы стрелки
+        const referencePT = { x: nextPoints[indEnd].x, y: nextPoints[indEnd].y }
+        const polarPoint = coordinatesToPolar(prevPoints[0], prevPoints[1], referencePT)
+        if (polarPoint.angle < 0) {
+          polarPoint.angle = -polarPoint.angle
+        }
+        const coordinates = referencePoint(nextPoints[0], nextPoints[1], polarPoint.angle, polarPoint.beamLength)
+        nextPoints[indEnd] = { x: coordinates.x, y: coordinates.y }
+      }
+    }
+  },
 }
 
 // Загальні стратегії взаємних залежностей розташування контрольних точок тактичного знаку

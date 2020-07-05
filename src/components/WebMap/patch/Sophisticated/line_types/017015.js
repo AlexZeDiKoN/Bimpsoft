@@ -3,10 +3,10 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, drawText, setVectorLength, getVector,
   angleOf, drawLineMark, getFontSize,
+  angle3Points,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { angle3Points } from '../arrowLib'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996

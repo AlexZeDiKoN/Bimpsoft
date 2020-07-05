@@ -4,10 +4,9 @@ import {
   drawText,
   drawCircle,
   getStrokeWidth,
+  isDefPoint,
+  lengthLine,
 } from '../utils'
-import {
-  isDefPoint, lengthLine,
-} from '../arrowLib'
 import { evaluateColor } from '../../../../../constants/colors'
 
 // sign name: Зони РХБЗ

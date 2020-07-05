@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { colors } from '../../../constants'
 import { evaluateColor } from '../../../constants/colors'
-import { HATCH_TYPE } from '../../../utils/svg/lines'
+import { HATCH_TYPE } from '../../../constants/drawLines'
 
 const { FormRow } = components.form
 

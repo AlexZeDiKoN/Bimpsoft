@@ -3,11 +3,13 @@ import { CODE_MINE_TYPES, MINE_TYPES, CONTROL_TYPES } from '../../../../../const
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawRectangleCz, drawText, getPointSize,
+  drawRectangleCz,
+  drawText,
+  getPointSize,
+  drawLightning,
+  drawWires,
+  drawDotted,
 } from '../utils'
-import {
-  drawLightning, drawWires, drawDotted,
-} from '../arrowLib'
 
 // sign name: Мінне поле (мінне загородження)
 // task code: DZVIN-5776

@@ -9,8 +9,8 @@ import {
   square,
   drawLineMark, drawText,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: FOLLOW AND SUPPORT
 // task code: DZVIN-5533

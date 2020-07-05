@@ -166,3 +166,48 @@ export const extractTextSVG = ({
     }
   })
 }
+
+export const extractTextsSVG = ({
+  string,
+  fontSize,
+  fontColor,
+  margin,
+  getOffset,
+  angle = 0,
+}) => {
+  const lines = string.split('\n')
+  const numberOfLines = lines.length
+  const fillColor = fontColor ? `fill="${fontColor}"` : ``
+  const rotate = Math.abs(angle) > 90 ? 180 : 0
+  const height = fontSize // * LINE_COEFFICIENT
+
+  const tspans = []
+  const masks = []
+  lines.forEach((line, index) => {
+    const width = getTextWidth(line, getFont(fontSize, false))
+    const widthWithMargin = width + 2 * margin
+    const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
+      ? getOffset(widthWithMargin, height, numberOfLines, index)
+      : { y: 0, x: 0, xMask: 0, yMask: 0 }
+    tspans.push(`<tspan x = "${x}" dy="${index === 0 ? y : height}">${line}</tspan>`)
+    masks.push({
+      x: xMask,
+      y: yMask - height / 2,
+      width: widthWithMargin,
+      height: height,
+    })
+  })
+
+  return {
+    sign: `<text font-family="${FONT_FAMILY}"
+           stroke="none"
+           text-anchor="middle"
+           dominant-baseline="middle"
+           font-size="${fontSize}"
+           ${fillColor}
+           transform="rotate(${rotate})">
+           ${tspans.join(' ')}
+           </text>`,
+    masksRect: masks,
+  }
+}

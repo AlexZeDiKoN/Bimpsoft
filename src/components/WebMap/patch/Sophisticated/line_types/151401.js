@@ -1,7 +1,6 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingAirborne } from '../arrowLib'
 import lineDefinitions from '../lineDefinitions'
-
+import { buildingAirborne } from '../utils'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
 // hint: 'Напрямок дій авіації / повітряного десанту'
