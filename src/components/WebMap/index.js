@@ -721,10 +721,16 @@ export default class WebMap extends React.PureComponent {
     scale._container.style.left = '20px'
     scale.text.style.width = '100%'
     const graphicStyle = this.scale._container.style
-    graphicStyle.background = '#fff'
-    graphicStyle.padding = '5px 15px 5px 0px'
-    graphicStyle.height = '45px'
-    graphicStyle.borderRadius = '20px'
+    const graphicStyleInner = this.scale._scaleInner.style
+    graphicStyle.background = 'rgba(255, 255, 255, 0.65)'
+    graphicStyle.padding = '5px 14px 5px 14px'
+    graphicStyle.height = '30px'
+    graphicStyle.borderRadius = '0px 4px 0px 0px'
+    graphicStyle.marginBottom = '0'
+    graphicStyle.marginLeft = '0'
+    graphicStyle.fontSize = '11px'
+    graphicStyle.color = '#000'
+    graphicStyleInner.marginTop = '12px'
 
     this.control = control.zoom({
       zoomInTitle: i18n.ZOOM_IN,
