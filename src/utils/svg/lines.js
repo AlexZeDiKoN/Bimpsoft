@@ -802,7 +802,7 @@ const getTextAmplifiers = ({
         return null // canceling render of a text amplifier
       }
 
-      // корректировка позиции внутреннего амплификатора для областей
+      // корректировка позиции внутреннего/наружного амплификатора для областей
       const pointN = { ...point }
       if (amplifierIsNormal === false) { // область вывернута, переворачиваем амлификаторы T и W
         pointN.r += point.r < 0 ? 180 : -180

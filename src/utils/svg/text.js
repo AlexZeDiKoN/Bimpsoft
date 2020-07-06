@@ -4,7 +4,7 @@ import { Align } from '../../constants'
 
 export const FONT_FAMILY = 'Arial'
 export const FONT_WEIGHT = 'bold'
-const LINE_COEFFICIENT = 1.2
+const LINE_COEFFICIENT = 1.1
 
 let ctx = null
 
@@ -179,7 +179,7 @@ export const extractTextsSVG = ({
   const numberOfLines = lines.length
   const fillColor = fontColor ? `fill="${fontColor}"` : ``
   const rotate = Math.abs(angle) > 90 ? 180 : 0
-  const height = fontSize // * LINE_COEFFICIENT
+  const height = fontSize * LINE_COEFFICIENT
 
   const tspans = []
   const masks = []
@@ -206,7 +206,7 @@ export const extractTextsSVG = ({
            font-size="${fontSize}"
            ${fillColor}
            transform="rotate(${rotate})">
-           ${tspans.join(' ')}
+           ${tspans.join('')}
            </text>`,
     masksRect: masks,
   }
