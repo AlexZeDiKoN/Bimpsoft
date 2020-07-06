@@ -74,7 +74,12 @@ const DzvinMarker = L.Marker.extend({
 
   setShadowColor,
 
+  intersectsWithBounds: function (bounds) {
+    return bounds.pad(0.5).contains(this.getLatLng())
+  },
+
   setHidden: function (hidden) {
+    this._hidden = hidden
     if (hidden) {
       this.removeFrom(this.map)
     } else {

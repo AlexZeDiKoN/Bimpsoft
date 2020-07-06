@@ -1126,6 +1126,7 @@ export default class WebMap extends React.PureComponent {
       this.view = { center, zoom }
       const { onMove } = this.props
       onMove(center.wrap(), zoom, isZoomChanged)
+      this.updateShowLayersByBounds()
     }
   }, 500)
 
@@ -1153,9 +1154,28 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  updateShowLayerByBounds = (bounds, item) => {
+    const intersect = item.intersectsWithBounds(bounds, this.map)
+    const showed = this.map.hasLayer(item)
+    if (showed !== intersect) {
+      if (intersect) {
+        item.addTo(this.map)
+      } else {
+        item.removeFrom(this.map)
+      }
+    }
+  }
+
   updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
     this.map && this.map.objects.forEach((item) =>
       this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
+  }
+
+  updateShowLayersByBounds = () => {
+    const bounds = this.map.getBounds()
+    this.map.objects
+      .filter((item) => item.id && item.object && item.intersectsWithBounds && !item._hidden)
+      .forEach((item) => this.updateShowLayerByBounds(bounds, item))
   }
 
   updateScaleOptions = () => {

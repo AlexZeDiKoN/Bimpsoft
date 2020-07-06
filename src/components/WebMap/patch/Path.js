@@ -48,7 +48,16 @@ export default L.Path.include({
     this.setStyle({ opacity })
   },
 
+  intersectsWithBounds: function (bounds, map) {
+    const saveMap = this._map
+    this._map = map
+    const result = this.getBounds().pad(1).intersects(bounds)
+    this._map = saveMap
+    return result
+  },
+
   setHidden: function (hidden) {
+    this._hidden = hidden
     if (hidden) {
       this.removeFrom(this.map)
     } else {

@@ -137,13 +137,9 @@ export function createTacticalSign (data, map, prevLayer) {
 }
 
 export function createSearchMarker (point, bounce = true, iconName) {
-  let icon
-
-  if (iconName) {
-    icon = new L.Icon({ iconUrl: `${process.env.REACT_APP_PREFIX}/images/${iconName}` })
-  } else {
-    icon = new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
-  }
+  const icon = iconName
+    ? new L.Icon({ iconUrl: `${process.env.REACT_APP_PREFIX}/images/${iconName}` })
+    : new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
 
   return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: bounce })
 }
@@ -222,14 +218,16 @@ function createOlovo (data, layer, initMap) {
   }
   const [ eternals, directionSegments, zoneSegments ] = geometry
   if (layer) {
-    layer.updateProps({
-      start,
-      title,
-    }, {
-      eternals,
-      directionSegments,
-      zoneSegments,
-    })
+    layer.updateProps(
+      {
+        start,
+        title,
+      },
+      {
+        eternals,
+        directionSegments,
+        zoneSegments,
+      })
   } else {
     layer = new L.FlexGrid(
       box,
@@ -249,8 +247,7 @@ function createOlovo (data, layer, initMap) {
         eternals,
         directionSegments,
         zoneSegments,
-      }
-    )
+      })
     layer.options.tsType = entityKind.OLOVO
     layer.options.directionLines.weight = 2
   }
@@ -342,28 +339,31 @@ function createCircle (type, data, map, layer) {
   return layer
 }
 
-const geoJSONLayer = (coordinates, type, tsType, style, geomData) => L.geoJSON(geomData
-  ? {
-    type: 'FeatureCollection',
-    features: geomData.map((geometry) => ({
-      type: 'Feature',
-      geometry,
-    })),
-  } : {
-    type: 'FeatureCollection',
-    features: [
-      {
+const geoJSONLayer = (coordinates, type, tsType, style, geomData) => L.geoJSON(
+  geomData
+    ? {
+      type: 'FeatureCollection',
+      features: geomData.map((geometry) => ({
         type: 'Feature',
-        geometry: {
-          type,
-          coordinates,
+        geometry,
+      })),
+    }
+    : {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type,
+            coordinates,
+          },
         },
-      },
-    ],
-  }, {
-  ...prepareOptions(tsType),
-  style,
-})
+      ],
+    },
+  {
+    ...prepareOptions(tsType),
+    style,
+  })
 
 function createGeoJSONLayer (data, layer, type, style, geometry) {
   if (layer?._checkData === data) {
@@ -391,15 +391,25 @@ function createGeoJSONLayer (data, layer, type, style, geometry) {
   return layer
 }
 
-const createContour = (data, layer) => createGeoJSONLayer(data, layer, entityKind.CONTOUR, {
-  weight: 3,
-  fillOpacity: 0.1,
-}, false)
+const createContour = (data, layer) => createGeoJSONLayer(
+  data,
+  layer,
+  entityKind.CONTOUR,
+  {
+    weight: 3,
+    fillOpacity: 0.1,
+  },
+  false)
 
-export const createTargeting = (data, layer) => createGeoJSONLayer(data, layer, entityKind.TARGETING, {
-  weight: 0,
-  fillOpacity: 0.2,
-}, true)
+export const createTargeting = (data, layer) => createGeoJSONLayer(
+  data,
+  layer,
+  entityKind.TARGETING,
+  {
+    weight: 0,
+    fillOpacity: 0.2,
+  },
+  true)
 
 function createRectangle (kind, data, layer) {
   const bounds = Array.isArray(data) ? data : data.geometry.toJS()
