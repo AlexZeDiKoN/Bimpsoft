@@ -10,7 +10,7 @@ import {
   segmentsBy,
   drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: DISRUPT
 // task code: DZVIN-7277

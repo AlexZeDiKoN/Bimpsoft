@@ -26,7 +26,6 @@ import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../.
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
-import { settings } from '../../utils/svg/lines'
 import {
   BACK_LIGHT_STYLE_LINE,
   BACK_LIGHT_STYLE_POLYGON,
@@ -37,6 +36,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
+import { settings } from '../../constants/drawLines'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,

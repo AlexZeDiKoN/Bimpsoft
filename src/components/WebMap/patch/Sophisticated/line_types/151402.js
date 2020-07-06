@@ -1,8 +1,8 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingAttackHelicopter } from '../arrowLib'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   addPathAmplifier,
+  buildingAttackHelicopter,
 } from '../utils'
 
 // sign name: ATTACK HELICOPTER

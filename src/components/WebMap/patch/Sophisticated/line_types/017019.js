@@ -3,12 +3,11 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawCircle,
-  drawText, getStrokeWidth,
-} from '../utils'
-import {
+  drawText,
+  getStrokeWidth,
   lengthLine,
   isDefPoint,
-} from '../arrowLib'
+} from '../utils'
 import { colors } from '../../../../../constants'
 
 // sign name: Дальність дії (кругові)

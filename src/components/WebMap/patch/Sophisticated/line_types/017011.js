@@ -4,7 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ЗАКРІПИТИСЯ
 // task code: DZVIN-6007
@@ -30,7 +30,7 @@ lineDefinitions['017011'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1 ] = points
 
     const r = segmentLength(p0, p1)

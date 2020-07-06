@@ -1,8 +1,10 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingArrow } from '../arrowLib'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from '../lineDefinitions'
-import { getDashSize } from '../utils'
+import {
+  getDashSize,
+  buildingArrow,
+} from '../utils'
 
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)

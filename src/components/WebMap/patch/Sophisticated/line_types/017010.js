@@ -12,7 +12,7 @@ import {
   drawMaskedText,
   drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ПЕРЕСЛІДУВАТИ
 // task code: DZVIN-6008
@@ -38,7 +38,7 @@ lineDefinitions['017010'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
 
     drawLine(result, p1, p0)

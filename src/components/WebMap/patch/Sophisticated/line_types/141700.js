@@ -14,7 +14,7 @@ import {
   square,
   drawLineMark, getPointMove,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: AMBUSH
 // task code: DZVIN-5521

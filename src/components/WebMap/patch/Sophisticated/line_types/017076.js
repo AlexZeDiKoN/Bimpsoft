@@ -7,14 +7,17 @@ import {
   drawLineMark,
   angleOf,
   arcTo,
-  lineTo, moveTo, getStrokeWidth,
+  lineTo,
+  moveTo,
+  getStrokeWidth,
+  lengthLine,
+  angle3Points,
+  isDefPoint,
+  pointsToSegment,
 } from '../utils'
-import {
-  lengthLine, angle3Points, isDefPoint, pointsToSegment,
-} from '../arrowLib'
 import { distanceAzimuth } from '../../utils/sectors'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { evaluateColor } from '../../../../../constants/colors'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 const { Coordinates: Coord } = utils
 

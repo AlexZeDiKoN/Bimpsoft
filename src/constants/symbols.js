@@ -10,7 +10,7 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
-import { HATCH_TYPE, MARK_TYPE } from '../utils/svg/lines'
+import { HATCH_TYPE, MARK_TYPE } from './drawLines'
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування

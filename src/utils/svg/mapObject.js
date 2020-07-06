@@ -9,6 +9,7 @@ import * as colors from '../../constants/colors'
 import { drawLine, emptyPath, extractLineCode, getMaxPolygon } from '../../components/WebMap/patch/Sophisticated/utils'
 import lineDefinitions from '../../components/WebMap/patch/Sophisticated/lineDefinitions'
 
+import { HATCH_TYPE } from '../../constants/drawLines'
 import {
   circleToD,
   getAmplifiers,
@@ -19,7 +20,7 @@ import {
   getStylesForLineType,
   blockage,
   getPointAmplifier,
-  HATCH_TYPE,
+
 } from './lines'
 import { renderTextSymbol } from './index'
 

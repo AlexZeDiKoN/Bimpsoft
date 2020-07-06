@@ -4,7 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, drawArc, angleOf, segmentLength, drawMaskedText, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: RETAIN
 // task code: DZVIN-5524

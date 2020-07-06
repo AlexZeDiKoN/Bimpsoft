@@ -11,11 +11,11 @@ import { IDENTITIES } from '../../utils/affiliations'
 import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
 import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import entityKind from '../../components/WebMap/entityKind'
-import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
 import { evaluateColor } from '../../constants/colors'
+import { settings } from '../../constants/drawLines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
