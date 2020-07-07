@@ -347,6 +347,8 @@ export const removeObjects = (ids) => ({
 const restoreObjects = (ids) =>
   asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
 
+export const getObjectAccess = (id) => (dispatch, _, { webmapApi: { objAccess } }) => objAccess(id)
+
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
     for (const id of ids) {

@@ -333,6 +333,7 @@ export default class WebMap extends React.PureComponent {
       canUndo: PropTypes.bool,
       canRedo: PropTypes.bool,
     }),
+    isMapCOP: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -374,6 +375,7 @@ export default class WebMap extends React.PureComponent {
     marchRefPoint: PropTypes.object,
     undo: PropTypes.func,
     redo: PropTypes.func,
+    checkObjectAccess: PropTypes.func,
   }
 
   constructor (props) {
@@ -1103,18 +1105,24 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateActiveObject = (prevProps) => {
-    const { activeObjectId, tryLockObject } = this.props
+  updateActiveObject = async (prevProps) => {
+    const { isMapCOP, activeObjectId, tryLockObject, checkObjectAccess } = this.props
+    const WRITE = 2 // Рівень доступу до об'єкта: 0 - заборонено, 1 - тільки читання, 2 - повний доступ
 
     if (activeObjectId && activeObjectId !== prevProps.activeObjectId) {
-      tryLockObject(activeObjectId)
-        .then((success) => {
-          if (!success && this.activeLayer.id === activeObjectId) {
-            this.activeLayer.setLocked && this.activeLayer.setLocked(true)
-            setLayerSelected(this.activeLayer, true, false)
-            this.activeLayer = null
-          }
-        })
+      let success = true
+      if (isMapCOP) {
+        const access = await checkObjectAccess(activeObjectId)
+        success = access.access === WRITE
+      }
+      if (success) {
+        success = await tryLockObject(activeObjectId)
+      }
+      if (!success && this.activeLayer.id === activeObjectId) {
+        this.activeLayer.setLocked && this.activeLayer.setLocked(true)
+        setLayerSelected(this.activeLayer, true, false)
+        this.activeLayer = null
+      }
     }
   }
 
