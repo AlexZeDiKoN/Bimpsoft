@@ -1,9 +1,12 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, getPointMove, angleOf, getGraphicSize,
+  drawLine,
+  getPointMove,
+  angleOf,
+  getGraphicSize,
+  angle3Points,
 } from '../utils'
-import { angle3Points } from '../arrowLib'
 
 // sign name: ASSAULT CROSSING
 // task code: DZVIN-5765

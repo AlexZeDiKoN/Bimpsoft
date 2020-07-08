@@ -5,7 +5,12 @@ const { getEvents } = L.GeoJSON.prototype
 
 export default L.GeoJSON.include({
   setHidden: function (hidden) {
-    this.setStyle({ hidden })
+    this._hidden = hidden
+    if (hidden) {
+      this.removeFrom(this.map)
+    } else {
+      this.addTo(this.map)
+    }
   },
 
   setOpacity: function (opacity) {

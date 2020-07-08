@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import { settings } from '../../../../utils/svg/lines'
+import { settings } from '../../../../constants/drawLines'
 import { halfPoint } from './Bezier'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем

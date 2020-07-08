@@ -3,7 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, segmentBy, segmentLength, getPointAt, drawLineMark, angleOf,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: SEARCH AREA
 // task code: DZVIN-5526

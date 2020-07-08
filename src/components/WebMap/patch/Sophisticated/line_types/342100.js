@@ -4,7 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: SECURE
 // task code: DZVIN-5538

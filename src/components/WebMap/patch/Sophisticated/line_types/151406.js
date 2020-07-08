@@ -1,5 +1,8 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingArrow, buildingDotted } from '../arrowLib'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
+import {
+  buildingArrow,
+  buildingDotted,
+} from '../utils'
 import lineDefinitions from '../lineDefinitions'
 
 // sign name: SUPPORTING ATTACK
@@ -32,5 +35,5 @@ lineDefinitions['151406'] = {
   render: (result, points) => {
     buildingDotted(result, points)
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
-  }
+  },
 }

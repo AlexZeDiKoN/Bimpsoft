@@ -4,7 +4,7 @@ import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
   drawMaskedText, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ДЕМОНСТРУВАТИ
 // task code: DZVIN-5778
@@ -31,7 +31,7 @@ lineDefinitions['017008'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2, p3 ] = points
 
     const norm = normalVectorTo(p1, p2, p0)

@@ -4,7 +4,8 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { evaluateColor, TRANSPARENT } from '../../../constants/colors'
-import { getStylesForLineType, MARK_TYPE, settings } from '../../../utils/svg/lines'
+import { getStylesForLineType } from '../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../constants/drawLines'
 import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings

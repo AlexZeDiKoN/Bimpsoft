@@ -6,7 +6,7 @@ import {
   applyVector, segmentBy, angleOf, segmentLength, drawMaskedText, setVectorLength, getVector, getPointAt,
   drawBezier, drawCircle, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: SEIZE
 // task code: DZVIN-5771

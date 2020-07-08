@@ -4,7 +4,7 @@ import {
   drawLine, segmentLength, getPointAt, drawLineMark, angleOf, drawText, getPointMove, segmentBy, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: Створення активних перешкод
 // task code: DZVIN-5990

@@ -26,7 +26,6 @@ import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../.
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
-import { settings } from '../../utils/svg/lines'
 import {
   BACK_LIGHT_STYLE_LINE,
   BACK_LIGHT_STYLE_POLYGON,
@@ -37,6 +36,7 @@ import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
+import { settings } from '../../constants/drawLines'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -333,6 +333,7 @@ export default class WebMap extends React.PureComponent {
       canUndo: PropTypes.bool,
       canRedo: PropTypes.bool,
     }),
+    isMapCOP: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -374,6 +375,7 @@ export default class WebMap extends React.PureComponent {
     marchRefPoint: PropTypes.object,
     undo: PropTypes.func,
     redo: PropTypes.func,
+    checkObjectAccess: PropTypes.func,
   }
 
   constructor (props) {
@@ -721,10 +723,16 @@ export default class WebMap extends React.PureComponent {
     scale._container.style.left = '20px'
     scale.text.style.width = '100%'
     const graphicStyle = this.scale._container.style
-    graphicStyle.background = '#fff'
-    graphicStyle.padding = '5px 15px 5px 0px'
-    graphicStyle.height = '45px'
-    graphicStyle.borderRadius = '20px'
+    const graphicStyleInner = this.scale._scaleInner.style
+    graphicStyle.background = 'rgba(255, 255, 255, 0.65)'
+    graphicStyle.padding = '5px 14px 5px 14px'
+    graphicStyle.height = '30px'
+    graphicStyle.borderRadius = '0px 4px 0px 0px'
+    graphicStyle.marginBottom = '0'
+    graphicStyle.marginLeft = '0'
+    graphicStyle.fontSize = '11px'
+    graphicStyle.color = '#000'
+    graphicStyleInner.marginTop = '12px'
 
     this.control = control.zoom({
       zoomInTitle: i18n.ZOOM_IN,
@@ -1097,18 +1105,24 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateActiveObject = (prevProps) => {
-    const { activeObjectId, tryLockObject } = this.props
+  updateActiveObject = async (prevProps) => {
+    const { isMapCOP, activeObjectId, tryLockObject, checkObjectAccess } = this.props
+    const WRITE = 2 // Рівень доступу до об'єкта: 0 - заборонено, 1 - тільки читання, 2 - повний доступ
 
     if (activeObjectId && activeObjectId !== prevProps.activeObjectId) {
-      tryLockObject(activeObjectId)
-        .then((success) => {
-          if (!success && this.activeLayer.id === activeObjectId) {
-            this.activeLayer.setLocked && this.activeLayer.setLocked(true)
-            setLayerSelected(this.activeLayer, true, false)
-            this.activeLayer = null
-          }
-        })
+      let success = true
+      if (isMapCOP) {
+        const access = await checkObjectAccess(activeObjectId)
+        success = access.access === WRITE
+      }
+      if (success) {
+        success = await tryLockObject(activeObjectId)
+      }
+      if (!success && this.activeLayer.id === activeObjectId) {
+        this.activeLayer.setLocked && this.activeLayer.setLocked(true)
+        setLayerSelected(this.activeLayer, true, false)
+        this.activeLayer = null
+      }
     }
   }
 

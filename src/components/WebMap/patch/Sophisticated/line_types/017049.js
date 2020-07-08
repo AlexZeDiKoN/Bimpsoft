@@ -4,7 +4,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, segmentBy, angleOf, segmentLength, drawLineMark, getGraphicSize,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: СТЕЖЕННЯ
 // task code: DZVIN-5532

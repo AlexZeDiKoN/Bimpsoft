@@ -52,6 +52,8 @@ export default {
     getDirect(`${webmapUrl}/obj/restore`, { list }),
   objRefresh: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
+  objAccess: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/access`, false),
   objLock: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/lock`, false),
   objUnlock: (id = 0) =>

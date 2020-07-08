@@ -3,7 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, drawLineMark, angleOf,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: OBSTACLE BYPASS EASY
 // task code: DZVIN-5766 (part 1)

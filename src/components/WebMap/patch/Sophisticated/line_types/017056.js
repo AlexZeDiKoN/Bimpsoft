@@ -12,7 +12,7 @@ import {
   angleOf,
   getPointSize,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: Розвідувальні завдання пошуком
 // task code: DZVIN-6012

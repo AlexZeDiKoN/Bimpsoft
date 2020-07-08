@@ -7,10 +7,11 @@ import {
   getLineEnds,
   blockage,
   drawLineHatch,
-  getPointAmplifier, settings,
+  getPointAmplifier,
 } from '../../../utils/svg/lines'
 import { evaluateColor } from '../../../constants/colors'
 import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
+import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
 import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'

@@ -4,7 +4,7 @@ import {
   drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, drawLineMark,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996

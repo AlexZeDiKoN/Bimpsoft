@@ -12,7 +12,7 @@ import {
   getStrokeWidth,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, SIN45 } from '../../../../../utils/svg/lines'
+import { MARK_TYPE, SIN45 } from '../../../../../constants/drawLines'
 
 // sign name: DIRECTION OF ATTACK FEINT
 // task code: DZVIN-5519

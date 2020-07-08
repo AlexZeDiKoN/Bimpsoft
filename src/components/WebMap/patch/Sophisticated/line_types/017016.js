@@ -17,8 +17,8 @@ import {
   translateTo,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995

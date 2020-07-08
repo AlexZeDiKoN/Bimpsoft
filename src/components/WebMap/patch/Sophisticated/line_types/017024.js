@@ -4,7 +4,7 @@ import {
   drawLine, normalVectorTo, applyVector, halfPlane, drawArc, segmentLength, addPathAmplifier, emptyPath,
   setVectorLength, drawLineMark, angleOf, drawLineDashed, getDashSize,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: Підрозділ (група), який проводить пошук (наліт), із зазначенням належності
 // task code: DZVIN-6010
