@@ -13,11 +13,13 @@ import * as MarchKeys from './March'
 import * as TopoObj from './TopoObj'
 import * as utils from './utils'
 import * as MapModes from './MapModes'
+import access from './access'
 
 export {
   SubordinationLevel,
   MapSources,
   colors,
+  access,
   Align,
   viewModesKeys,
   shortcuts,

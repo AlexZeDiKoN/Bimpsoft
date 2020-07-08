@@ -23,17 +23,17 @@
   resolved "http://172.16.95.16:4873/@DZVIN%2fEuSign/-/EuSign-0.0.2.tgz#48a82a28bc6a6d5012ddf96cee5e0846cd9b0c7d"
   integrity sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
 
-"@DZVIN/MilSymbolEditor@^15.1.269":
-  version "15.1.269"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-15.1.269.tgz#e5875b0ae6d01a021858eb2370a5e3ac5b4552a4"
-  integrity sha512-5zQZl7mWM5fjgLvLuVsB0I1yY4tWkeW7P0ANiWEmfn3GENafgM1hzMlxyPkYF/5DiCgg99fIaD05TyldrFmbcw==
+"@DZVIN/MilSymbolEditor@^15.1.270":
+  version "15.1.270"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-15.1.270.tgz#096c54ecf2189ce10ef0069df02752c9452dc99c"
+  integrity sha512-lizD6OGOWoS8zr7WrDlAyMD39ZASYRN7XvnXtcGJ31RKYLGfpnuPHH4QEqb5cmL5lt2KrfBtbd2W+PLUE0TAfA==
   dependencies:
     "@DZVIN/milsymbol" "^0.0.5"
 
-"@DZVIN/components@^15.1.571":
-  version "15.1.571"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-15.1.571.tgz#aa8418418ca6796699711243d5e11092844c52f6"
-  integrity sha512-d16WHxP8Fc16Zp3Pz2vC0foRWKEosns5NNf+fxi+PZcQKy2uFqQHZ8+zDiFQXvd8PEFAECkukpHTTrHoysN3LA==
+"@DZVIN/components@^15.1.572":
+  version "15.1.572"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-15.1.572.tgz#f9c18e221c2128cf8c9eefa99cc7c45630dbbec4"
+  integrity sha512-+ZXlSJ43vaY0TYZM87eU46s2sefzn5YkXX+TJ+RWI6DaEVDzkqvBIdlH9mp4vJ5ks8fxssXbaAiRbtJSrZnv5A==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"

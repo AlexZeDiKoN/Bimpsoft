@@ -98,7 +98,7 @@ export const TYPE_LINE_PATH = {
 
 const TYPE_LIST = Object.values(types)
 
-export const PATH = [ 'attributes', 'lineType' ]
+export const PATH_LINE_TYPE = [ 'attributes', 'lineType' ]
 
 export const propTypes = {
   data: PropTypes.object,
@@ -107,10 +107,10 @@ export const propTypes = {
 const WithLineType = (Component) => class LineTypeComponent extends Component {
   static propTypes = propTypes
 
-  lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH, lineType))
+  lineTypeChangeHandler = (lineType) => this.setResult((result) => result.setIn(PATH_LINE_TYPE, lineType))
 
   renderLineType (simple = false) {
-    const lineType = this.getResult().getIn(PATH)
+    const lineType = this.getResult().getIn(PATH_LINE_TYPE)
     const dataType = this.props.data?.type
     const typeInfo = types[lineType]
     const canEdit = this.isCanEdit()
