@@ -37,6 +37,7 @@ import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
+import { access } from '../../constants'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -1107,13 +1108,11 @@ export default class WebMap extends React.PureComponent {
 
   updateActiveObject = async (prevProps) => {
     const { isMapCOP, activeObjectId, tryLockObject, checkObjectAccess } = this.props
-    const WRITE = 2 // Рівень доступу до об'єкта: 0 - заборонено, 1 - тільки читання, 2 - повний доступ
 
     if (activeObjectId && activeObjectId !== prevProps.activeObjectId) {
       let success = true
       if (isMapCOP) {
-        const access = await checkObjectAccess(activeObjectId)
-        success = access.access === WRITE
+        success = await checkObjectAccess(activeObjectId) === access.WRITE
       }
       if (success) {
         success = await tryLockObject(activeObjectId)
