@@ -9,14 +9,14 @@ export default class ScaleControl extends React.Component {
   }
 
   render () {
-    const { value } = this.props
-    const step = value < 15 ? 1 : Math.ceil(value / 100) * 10
+    const { value, step } = this.props
+    const stepInput = step || (value < 15 ? 1 : Math.ceil(value / 100) * 10)
     return (
       <>
         <input
           type="number"
           className="scale-control-input"
-          step={step}
+          step={stepInput}
           min="1"
           value={value}
           title={''}
@@ -31,4 +31,5 @@ ScaleControl.propTypes = {
   name: PropTypes.string,
   value: PropTypes.number,
   onChange: PropTypes.func,
+  step: PropTypes.number,
 }
