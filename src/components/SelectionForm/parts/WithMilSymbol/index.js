@@ -15,7 +15,7 @@ const hidden = { hidden: true }
 const elementsConfigs = {
   [configs.ADD_TO_TEMPLATE]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
   [configs.NAME]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
-  [configs.commonIdentifier]: readOnly,
+  // [configs.commonIdentifier]: readOnly, // включаємо для ручного вводу
 }
 
 const elementsConfigsEditable = {
