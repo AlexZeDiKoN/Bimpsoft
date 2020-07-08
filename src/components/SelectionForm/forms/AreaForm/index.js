@@ -19,6 +19,7 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './areaForm.css'
 import SelectionTypes from '../../../../constants/SelectionTypes'
+import { PATH_LINE_TYPE, types } from '../../parts/WithLineType'
 
 const Extenders = compose(
   UnitSelect, // Підрозділ
@@ -94,6 +95,8 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
 
   renderContent () {
     const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
+    const lineType = this.getResult().getIn(PATH_LINE_TYPE)
+    const isContinuousArea = lineType !== types.blockageWire.value // область имеет сплошной контур
     const elem = <div className="containers-svg-tooltip">
       {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
     </div>
@@ -119,8 +122,12 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
                 {this.renderStrokeWidth()}
                 {this.renderNodalPointType()}
               </div>
-              {this.renderFill(true)}
-              {this.renderHatch()}
+              {isContinuousArea // область может иметь заливку или штиховку
+                ? <>
+                  {this.renderFill(true)}
+                  {this.renderHatch()}
+                </>
+                : <></>}
             </div>
           </div>
           {this.renderIntermediateAmplifiers(elem)}
