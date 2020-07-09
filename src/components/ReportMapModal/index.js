@@ -58,6 +58,15 @@ export default class ReportMapModal extends React.Component {
     this.props.onClose()
   }
 
+  isValidateFields = () => {
+    const { dateTimeMap, nameMap } = this.state
+
+    const isValidateNameMap = !!nameMap.trim().length
+    const isValidatedDateTimeMap = !!dateTimeMap
+
+    return isValidateNameMap && isValidatedDateTimeMap
+  }
+
   render () {
     if (!this.props.reportMap.visible) {
       return null
@@ -92,7 +101,7 @@ export default class ReportMapModal extends React.Component {
               />
             </div>
             <div className='buttons'>
-              <ButtonYes className='button' onClick={this.onSaveReport} />
+              <ButtonYes className='button' onClick={this.onSaveReport} disabled={!this.isValidateFields()} />
               <ButtonNo className='button' onClick={onClose} />
             </div>
           </div>
