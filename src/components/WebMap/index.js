@@ -22,7 +22,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -37,7 +37,6 @@ import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
-import { access } from '../../constants'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -2118,7 +2117,7 @@ export default class WebMap extends React.PureComponent {
     if (data.type === 'line') {
       const point = this.map.mouseEventToContainerPoint(e)
       const { x, y } = point
-      const { amp } = data
+      const { amp, isFlip } = data
       const size = this.map.getSize()
       const w = Math.max(Math.min(size.x, size.y) / 4, 128)
       const sw = w / 2
@@ -2134,7 +2133,12 @@ export default class WebMap extends React.PureComponent {
         const p0 = { x: x + sw, y }
         const p1 = { x: x - sw, y: y - sw }
         const p2 = { x: x - sw, y: y + sw }
-        geometry = [ p0, p1, p2 ].map(c2g)
+        if (isFlip) {
+          geometry = [ p2, p1, p0 ].map(c2g)
+        } else {
+          geometry = [ p0, p1, p2 ].map(c2g)
+        }
+        // eslint-disable-next-line max-len
       } else if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
         const p0 = { x: x + sw, y: y + sw }
         const p1 = { x: x - sw, y: y - sw }
