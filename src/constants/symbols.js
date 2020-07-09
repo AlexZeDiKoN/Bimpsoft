@@ -60,6 +60,7 @@ export const CONTROL_TYPES = {
 }
 
 // Все, что с пустым кодом - Линии, все у которых isSvh = true - Линии. TODO - добавить свгши, или ссылки на них
+// isFlip === true - Реверсирует сгенерированные координаты (для переворота типовой линии в замкнутых фигурах)
 export const symbols = [
   {
     name: 'Пункти управління',
@@ -1988,7 +1989,12 @@ export const symbols = [
       {
         hint: 'Зона (смуга) загороджень із зазначенням всередині знаку ефекту',
         code: '10032500000170580000',
-        amp: { isSvg: true, type: entityKind.POLYGON },
+        isFlip: true,
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYGON,
+          lineType: types.blockage.value,
+        },
       },
       { hint: 'Завал', code: '10032500002801000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
