@@ -1554,6 +1554,7 @@ export const drawArrowOutline = (result, p1, p2, dL, dW, ddL, ddW, drawArrowLine
         y: -dW,
       }),
     )
+    drawZ(result)
   }
 }
 
