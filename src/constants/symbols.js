@@ -23,6 +23,7 @@ export const amps = {
   affiliation: 'affiliation',
   dtg: 'dtg', // 1Дата-час
   type: 'type', // 1Озброєння
+  typeId: 'typeId', // Код озброення
   N: 'middle', // Амплификатор в форме линий
   // Если что, в формах любых линий есть топ, ботом и мидл, но лейбл у них разный, например W и H это ботом
   T: 'top', // --||--
@@ -305,7 +306,7 @@ export const symbols = [
         },
       },
       {
-        hint: 'Рубіж дії бойових підрозділу',
+        hint: 'Рубіж дії підрозділу',
         code: '10032500000170010000',
         amp: { isSvg: true, type: entityKind.POLYLINE },
       },
@@ -354,7 +355,7 @@ export const symbols = [
         amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'ВРД' } },
       },
       { hint: 'Район базування', code: '10032500000170030000', amp: { isSvg: true, type: entityKind.AREA } },
-      { hint: 'Посадочна площадка', code: '10032000001213000000', amp: {} },
+      { hint: 'Посадочна площадка', code: '10032000001213050000', amp: {} },
       {
         hint: 'Площадка підскоку',
         code: '10032500003103000000',
@@ -1140,20 +1141,73 @@ export const symbols = [
       { hint: 'Бойова машина 9А33БМ3', code: '10031500321111010000', amp: {} },
       { hint: 'Зенітна самохідна установка 2А6', code: '10031500331105010000', amp: {} },
       { hint: 'Зенітна установка ЗУ-23-2', code: '10031500311105010000', amp: {} },
-      { hint: 'Транспортно-заряджаюча машина', code: '10031500321401000000', amp: {} },
-      { hint: 'Радіолокаційна станція', code: '10031500312203000000', amp: {} },
-      { hint: 'Командно-штабна машина (без зазначення засобів зв’язку) на БМП', code: '10031500321201020000', amp: {} },
+      { hint: 'Транспортно-заряджаюча машина',
+        code: '10031500321401000000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: 'ТЗМ',
+        },
+      },
+      { hint: 'Радіолокаційна станція',
+        code: '10031500312203000000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: 'П-19',
+        },
+      },
+      { hint: 'Командно-штабна машина (без зазначення засобів зв’язку) на БМП',
+        code: '10031500321201020000',
+        amp: {},
+      },
       {
         hint: 'Командно-штабна машина (без зазначення засобів зв’язку) на ББМ',
         code: '10031500001201050000',
         amp: { [amps.specialHeadquarters]: 'С2' },
       },
-      { hint: 'КМУ (1В110, 1В111)', code: '10031500321401000000', amp: {} },
-      { hint: 'КМУ (1В119, ЛБР – ARM-M1114 )', code: '10031500311201050000', amp: {} },
-      { hint: 'ПРП – 3 (4)', code: '10031500321201010000', amp: {} },
-      { hint: 'СНАР (АРК, AN/TPQ)', code: '10031500331201030000', amp: {} },
-      { hint: 'АЗК-7', code: '10031500321401000000', amp: {} },
-      { hint: 'Топоприв’язник 1Т12', code: '10031500321401000000', amp: {} },
+      { hint: 'КМУ (1В110, 1В111)',
+        code: '10031500321401000000',
+        amp: {
+          [amps.additionalInformation]: 'КМУ',
+          [amps.typeId]: 0,
+          [amps.type]: '1В110',
+        },
+      },
+      { hint: 'КМУ (1В119, ЛБР – ARM-M1114 )',
+        code: '10031500311201050000',
+        amp: {
+          [amps.additionalInformation]: 'КМУ',
+          [amps.typeId]: 0,
+          [amps.type]: '1В119',
+        },
+      },
+      { hint: 'ПРП – 3 (4)',
+        code: '10031500321201010000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: 'ПРП-3',
+        },
+      },
+      { hint: 'СНАР (АРК, AN/TPQ)',
+        code: '10031500331201030000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: 'CHAP',
+        },
+      },
+      { hint: 'АЗК-7',
+        code: '10031500321401000000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: 'АЗК-7',
+        },
+      },
+      { hint: 'Топоприв’язник 1Т12',
+        code: '10031500321401000000',
+        amp: {
+          [amps.typeId]: 0,
+          [amps.type]: '1Т12',
+        },
+      },
     ],
   },
   {
@@ -1925,7 +1979,11 @@ export const symbols = [
       {
         hint: 'Зона вільна (очищена) від загороджень',
         code: '10032500002704000000',
-        amp: { isSvg: true, type: entityKind.POLYGON },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYGON,
+          lineType: types.blockage.value,
+        },
       },
       {
         hint: 'Зона (смуга) загороджень із зазначенням всередині знаку ефекту',
@@ -1958,8 +2016,22 @@ export const symbols = [
           },
         },
       },
-      { hint: 'Ряд протитанкових мін', code: '10032500000170610000', amp: { isSvg: true, type: entityKind.POLYLINE } },
-      { hint: 'Ряд протипіхотних мін', code: '10032500000170620000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      { hint: 'Ряд протитанкових мін',
+        code: '10032500000170610000',
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.rowMinesAntyTank.value,
+        },
+      },
+      { hint: 'Ряд протипіхотних мін',
+        code: '10032500000170620000',
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.rowMinesLand.value,
+        },
+      },
       { hint: 'Протитанкова міна', code: '10032500002803000000', amp: {} },
       { hint: 'Протипіхотна міна', code: '10032500002802000000', amp: {} },
       { hint: 'Міна невизначеного типу', code: '10032500002806000000', amp: {} },
@@ -1983,56 +2055,103 @@ export const symbols = [
         code: '10032500002711000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Протитанковий рів', code: '10032500002902020000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      { hint: 'Протитанковий рів',
+        code: '10032500002902020000',
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.moatAntiTank.value,
+        },
+      },
       {
         hint: 'Протитанковий рів посилений протираковими мінами',
         code: '10032500002902030000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.moatAntiTankMine.value,
+        },
       },
       {
         hint: 'Протитанковий рів в процесі обладнання',
         code: '10032500002902010000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.moatAntiTankUnfin.value,
+        },
       },
       {
         hint: 'Лінія загороджень (яка поєднує в собі різні типи загороджень)',
         code: '10032500002901000000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockage.value,
+        },
       },
       {
         hint: 'Однорядне дротяне загородження',
         code: '10032500002903020000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageWire1.value,
+        },
       },
       {
         hint: 'Дворядне дротяне загородження',
         code: '10032500002903030000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageWire2.value,
+        },
       },
       {
         hint: 'Дротяне загородження на низьких кілках (типу спотикач)',
         code: '10032500002903050000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageWireLow.value,
+        },
       },
       {
         hint: 'Дротяне загородження на високих кілках',
         code: '10032500002903060000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageWireHigh.value,
+        },
       },
       {
         hint: 'Спіральне однорядне дротяне загородження',
         code: '10032500002903070000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageSpiral.value,
+        },
       },
       {
         hint: 'Спіральне дворядне дротяне загородження',
         code: '10032500002903080000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageSpiral2.value,
+        },
       },
       {
         hint: 'Спіральне трьохрядне дротяне загородження',
         code: '10032500002903090000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.blockageSpiral3.value,
+        },
       },
       {
         hint: `Пункт польового водопостачання (ВІДПВП-відділення польового водопостачання групи інженерного забезпечення)`,

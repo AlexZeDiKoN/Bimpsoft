@@ -1379,6 +1379,16 @@ export const drawLine = (result, p1, ...rest) => {
   rest.forEach((point) => lineTo(result, point))
 }
 
+// продовження ломаної лінія між вказаними точками
+export const drawLineProceed = (result, p1, ...rest) => {
+  rest.forEach((point) => lineTo(result, point))
+}
+
+// вставка в path соединнения последнюй точки пути с ее начальной точкой
+export const drawZ = (result) => {
+  result.d += `Z`
+}
+
 // Пунктирна линия між  вказаними точками
 export const drawLineDashed = (result, pBegin, pEnd, dashed) => {
   moveTo(result, pBegin)
@@ -1544,6 +1554,7 @@ export const drawArrowOutline = (result, p1, p2, dL, dW, ddL, ddW, drawArrowLine
         y: -dW,
       }),
     )
+    drawZ(result)
   }
 }
 

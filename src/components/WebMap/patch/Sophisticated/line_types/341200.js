@@ -10,7 +10,7 @@ import {
   square,
   emptyPath,
   addPathAmplifier,
-  drawText,
+  drawText, drawZ,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 
@@ -64,6 +64,7 @@ lineDefinitions['341200'] = {
     const anchor = applyToPoint(qp0, { x: SIDE_LENGTH * 2 + k * 2, y: 0 })
 
     drawLine(result, a, b, c, center, d, a)
+    drawZ(result)
     drawText(result, segmentBy(p0, center, 0.4), a0,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
 

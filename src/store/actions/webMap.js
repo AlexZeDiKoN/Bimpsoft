@@ -1,6 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { utils } from '@DZVIN/CommonComponents'
-import { MapSources, ZOOMS, paramsNames } from '../../constants'
+import { MapSources, ZOOMS, paramsNames, access } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
@@ -347,7 +347,17 @@ export const removeObjects = (ids) => ({
 const restoreObjects = (ids) =>
   asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
 
-export const getObjectAccess = (id) => (dispatch, _, { webmapApi: { objAccess } }) => objAccess(id)
+export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAccess } }) => {
+  const result = await objAccess(id)
+  if (result.access !== access.WRITE) {
+    dispatch(notifications.push({
+      type: 'warning',
+      message: i18n.ERROR_ACCESS_DENIED,
+      description: i18n.ERROR_ACCESS_DENIED_TO_OBJECT,
+    }))
+  }
+  return result.access
+}
 
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
