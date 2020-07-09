@@ -1925,7 +1925,11 @@ export const symbols = [
       {
         hint: 'Зона вільна (очищена) від загороджень',
         code: '10032500002704000000',
-        amp: { isSvg: true, type: entityKind.POLYGON },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYGON,
+          lineType: types.blockage.value,
+        },
       },
       {
         hint: 'Зона (смуга) загороджень із зазначенням всередині знаку ефекту',
