@@ -90,7 +90,7 @@ export default class MapItemComponent extends React.Component {
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <div className='color-picker-hover'>
-          <Tooltip title={i18n.SAVE_AS} placement='topRight'>
+          <Tooltip title={i18n.CREATE_REPORT_MAP} placement='topRight'>
             <IButton
               icon={IconNames.BAR_2_SAVE}
               onClick={() => this.onShowReportMapModal(this.props.data)}

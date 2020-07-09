@@ -1143,11 +1143,11 @@ export default class WebMap extends React.PureComponent {
   }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
-    if (item.id && item.object) {
+    if (item.object) {
       const { layer, level } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const isSelectedItem = list.includes(item.id)
+      const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
       const hidden = !isSelectedItem && (
         (itemLevel < levelEdge) ||
         ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
@@ -1372,6 +1372,7 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = null
         }
       }
+
       this.map.objects.forEach((layer) => {
         if (layer._groupChildren) {
           layer._groupChildren = []
@@ -1393,10 +1394,10 @@ export default class WebMap extends React.PureComponent {
         }
       })
 
-      objects.forEach((object, id) => {
+      objects.forEach((object) => {
         if (GROUPS.GENERALIZE.includes(object.type)) {
-          const layer = this.findLayerById(id)
-          if (layer.options.icon) {
+          const layer = this.findLayerById(object.id)
+          if (layer && layer.options.icon) {
             layer.options.icon.options.data = layer._groupChildren.map(({ object }) => object)
           }
         }
@@ -1773,6 +1774,7 @@ export default class WebMap extends React.PureComponent {
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
     country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
     affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
+    text = `<div style="overflow:auto;">${text}</div>`
     if (!this.catalogsPopup) {
       this.catalogsPopup = L.popup()
     }

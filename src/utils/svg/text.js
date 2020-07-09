@@ -178,7 +178,7 @@ export const extractTextsSVG = ({
   const lines = string.split('\n')
   const numberOfLines = lines.length
   const fillColor = fontColor ? `fill="${fontColor}"` : ``
-  const rotate = Math.abs(angle) > 90 ? 180 : 0
+  const rotate = Math.abs(angle) >= 90 ? 180 : 0
   const height = fontSize * LINE_COEFFICIENT
 
   const tspans = []
