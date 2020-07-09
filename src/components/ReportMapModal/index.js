@@ -67,7 +67,7 @@ export default class ReportMapModal extends React.Component {
     const { wrapper: Wrapper, onClose } = this.props
 
     return (
-      <div className='log-map-container'>
+      <div className='log-map-container not-clickable-area'>
         <Wrapper
           title={i18n.CREATE_REPORT_MAP}
           onClose={onClose}

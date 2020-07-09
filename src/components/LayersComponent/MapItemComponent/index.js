@@ -32,7 +32,7 @@ export default class MapItemComponent extends React.Component {
   closeHandler = () => {
     const { cancelVariant, openedVariantMapId } = window.explorerBridge
     this.setState({ showCloseForm: true })
-    if (this.props.data.mapId === openedVariantMapId ){
+    if (this.props.data.mapId === openedVariantMapId) {
       cancelVariant()
     }
   }

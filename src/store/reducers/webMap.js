@@ -437,6 +437,10 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     case actionNames.TOGGLE_REPORT_MAP_MODAL: {
+      const { visible, dataMap } = payload
+      if (visible === false && dataMap && dataMap.mapId !== state?.reportMap?.dataMap?.mapId) {
+        return state
+      }
       return update(state, 'reportMap', { ...state.reportMap, ...payload })
     }
     case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {
