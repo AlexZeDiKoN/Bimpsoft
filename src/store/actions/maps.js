@@ -22,6 +22,7 @@ export const deleteMap = (mapId) => asyncAction.withNotification(
       mapId,
     })
     dispatch(layers.deleteLayersByMapId(mapId))
+    dispatch(webMap.toggleReportMapModal(false, { mapId }))
   },
 )
 
