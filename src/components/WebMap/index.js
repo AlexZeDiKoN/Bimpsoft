@@ -1774,6 +1774,7 @@ export default class WebMap extends React.PureComponent {
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
     country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
     affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
+    text = `<div style="overflow:auto;">${text}</div>`
     if (!this.catalogsPopup) {
       this.catalogsPopup = L.popup()
     }
