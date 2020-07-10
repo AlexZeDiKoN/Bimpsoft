@@ -54,17 +54,29 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   title={() => svg}>
                   {`${i18n.AMPLIFIER} "${name}"`}
                 </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
-                <Input.TextArea
-                  value={currentValue[id] ?? ''}
-                  onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
-                  readOnly={!canEdit}
-                  className={!canEdit ? 'modals-input-disabled' : ''}
-                  rows={id === amps.A ? 6 : 1}
-                  autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
-                  maxLength={id === amps.A
-                    ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                    : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
-                />
+                {maxRows === 1
+                  ? <input
+                    className={!canEdit ? 'modals-input-disabled' : ''}
+                    name={name}
+                    value={currentValue[id] ?? ''}
+                    readOnly={!canEdit}
+                    onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
+                    disabled={!canEdit}
+                    maxLength={id === amps.A
+                      ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
+                      : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                  />
+                  : <Input.TextArea
+                    value={currentValue[id] ?? ''}
+                    onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
+                    readOnly={!canEdit}
+                    className={!canEdit ? 'modals-input-disabled' : ''}
+                    rows={id === amps.A ? 6 : 1}
+                    autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
+                    maxLength={id === amps.A
+                      ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
+                      : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                  />}
               </FormRow>
               : <FormRow label={`${name}`}>
                 <NumberControl
