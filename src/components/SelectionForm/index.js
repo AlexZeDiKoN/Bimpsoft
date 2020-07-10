@@ -211,9 +211,11 @@ const forms = {
   [SelectionTypes.MINE_FIELD]: {
     title: i18n.SHAPE_MINEFIELD,
     component: MineFieldForm,
-    minHeight: 420,
-    minWidth: 750,
-    maxHeight: 420,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CONCENTRATION_FIRE]: {
     title: i18n.CONCENTRATION_FIRE,
