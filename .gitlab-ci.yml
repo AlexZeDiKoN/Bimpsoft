@@ -67,6 +67,7 @@ build:
       - ./build/static/js/*.*
       - ./build/static/media/*.*
       - ./build/cesium/
+  interruptible: true
 
 deploy-qa-11:
   stage: deploy
