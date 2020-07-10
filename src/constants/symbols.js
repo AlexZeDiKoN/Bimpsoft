@@ -1953,14 +1953,25 @@ export const symbols = [
         code: '10032500002910000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Система траншей', code: '10032500002909000000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      { hint: 'Система траншей',
+        code: '10032500002909000000',
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.trenches.value,
+        },
+      },
       { hint: 'Укриття (бліндаж)', code: '10032500002809000000', amp: {} },
       { hint: 'Надземне укриття', code: '10032500002810000000', amp: {} },
       { hint: 'Підземне укриття', code: '10032500002811000000', amp: {} },
       {
         hint: 'Протитанковий рів (ескарп, контрескарп)',
         code: '10032500002902020000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.moatAntiTank.value,
+        },
       },
       {
         hint: `Ефект руйнування спрямований на використання вогню і ефекту загороджень, щоб примусити противника розділити свої формування, порушити бойовий порядок, витратити час, змінити план, поспішно здійснити розмінування та зірвати атаку`,
