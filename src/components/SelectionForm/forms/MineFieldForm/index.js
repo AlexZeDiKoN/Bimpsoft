@@ -1,6 +1,5 @@
 import { compose } from 'redux'
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -20,10 +19,8 @@ import {
 
 import './MineFieldForm.css'
 // import spriteUrl from '../../../Symbols/sprite.svg'
-import i18n from '../../../../i18n'
 import { amps } from '../../../../constants/symbols'
-
-const { FormRow } = components.form
+import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
 
 const PAIRS_AMPLIFIERS = [
   { id: amps.N, name: 'N', maxRows: 1 },
@@ -62,41 +59,33 @@ export default class MineFieldForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      {svgMines}
+    </div>
     return (
       <div className="minefield-container">
-        <div className="minefield-container__item--firstSection">
-          <div className="line-container__itemWidth-left">
-            {svgMines}
-          </div>
-          <div className="line-container__itemWidth-right">
-            <div className="line-container__itemWidth">
+        <div className='scroll-container'>
+          <div className="minefield-container__item--firstSection">
+            <div className="minefield-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
               {this.renderStatus()}
-            </div>
-            <div className="line-container__itemWidth">
-              {this.renderStartingCoordinate()}
               {this.renderAffiliation()}
               {this.renderDummy()}
             </div>
           </div>
-        </div>
-        <div className="minefield-container__item--secondSection">
-          <div className="line-container__itemWidth">
-            <div className="line-container__itemWidth30">
+          <div className="minefield-container__item--secondSection">
+            <div className="minefield-container__itemWidth">
               {this.renderMineType()}
-            </div>
-            <div className="line-container__itemWidth30">
-              {this.renderControllability()}
-            </div>
-            <div className="line-container__itemWidth30">
-              <FormRow label={i18n.LINE_COLOR}>
+              <div className="containerTypeColor">
+                {this.renderControllability()}
                 {this.renderColor()}
-              </FormRow>
+              </div>
             </div>
-          </div>
-          <div className="line-container__itemWidth">
-            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+            <div className="minefield-container__itemWidth">
+              {this.renderAmplifiers(PAIRS_AMPLIFIERS, PATH_AMPLIFIERS, false, elem)}
+              {this.renderStartingCoordinate()}
+            </div>
           </div>
         </div>
       </div>
