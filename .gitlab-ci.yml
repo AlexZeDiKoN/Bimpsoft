@@ -78,9 +78,7 @@ deploy-qa-11:
     - 'echo ========= Deploy: 11 (remote) ========='
     - xcopy /E /C /I /Q /H /R /Y build \\172.16.95.11\c$\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.95.11\e$\maps
-#  after_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
-
+  interruptible: true
 
 deploy-self(17):
   stage: deploy
@@ -92,8 +90,7 @@ deploy-self(17):
     - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
     - xcopy /E /C /I /Q /H /R /Y index.json e:\maps
     - echo Done
-#  after_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
+  interruptible: true
 
 Increment_dzvin_dev:
   stage: increment-dzvin
@@ -109,7 +106,7 @@ Increment_dzvin_dev:
     - git commit -a -m "autocommit"
     - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:develop
   dependencies: []
-
+  interruptible: true
 ######################### START MASTER ##############################
 
 build-master:
