@@ -1010,19 +1010,89 @@ export default class WebMap extends React.PureComponent {
   isFlexGridEditingMode = () =>
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
+  canClickOnLayer = (item) => {
+    const { object, options: { tsType } = {} } = item
+
+    if (!object && tsType !== entityKind.FLEXGRID) {
+      return false
+    }
+
+    const {
+      hiddenOpacity,
+      layer,
+    } = this.props
+
+    const useOneClickForActivateLayer = hiddenOpacity === 100
+    const targetLayer = object && object.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === layer
+    if (!doActivate && useOneClickForActivateLayer && targetLayer) {
+      doActivate = true
+    }
+
+    return doActivate
+  }
+
   onMouseClick = useDebounce((e) => {
     const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
+
     if (detail > 1) { // если это дабл/трипл/etc. клик
       return
     }
+
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
       if (this.boxSelected) {
         delete this.boxSelected
       } else {
-        this.onSelectedListChange([])
+        const {
+          isMeasureOn,
+          isMarkersOn,
+          isTopographicObjectsOn,
+          marchMode,
+          layer,
+          onChangeLayer,
+        } = this.props
+
+        if (isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode) {
+          return
+        }
+
+        const area = (layer) => {
+          if (!layer.getBounds) {
+            return 0
+          }
+          const b = layer.getBounds()
+          return Math.abs((b.getNorth() - b.getSouth()) * (b.getWest() - b.getEast()))
+        }
+        const byArea = (a, b) => area(a) - area(b)
+
+        const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
+        const all = [].map
+          .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
+          .filter(Boolean)
+          .filter(this.canClickOnLayer)
+          .sort(byArea)
+
+        const [ result ] = all
+
+        this.map._container.focus()
+
+        if (!result) {
+          this.onSelectedListChange([])
+        } else {
+          result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
+          return this.selectLayer(result.id, e.originalEvent.ctrlKey)
+        }
       }
     }
-    const { selection: { newShape, preview }, printStatus, onClick, marchMode, getCoordForMarch } = this.props
+
+    const {
+      selection: { newShape, preview },
+      printStatus,
+      onClick,
+      marchMode,
+      getCoordForMarch,
+    } = this.props
+
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -1575,7 +1645,7 @@ export default class WebMap extends React.PureComponent {
       layer.options.lineCap = 'butt'
       layer.id = id
       layer.object = object
-      layer.on('click', this.clickOnLayer)
+      // layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
       if (object.type === entityKind.POINT && unit) {
         layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
@@ -1792,35 +1862,6 @@ export default class WebMap extends React.PureComponent {
     window.explorerBridge.showCatalogObject(catalogId, id)
   }
 
-  clickOnLayer = (event) => {
-    const {
-      isMeasureOn,
-      isMarkersOn,
-      isTopographicObjectsOn,
-      marchMode,
-      hiddenOpacity,
-      layer,
-      onChangeLayer,
-    } = this.props
-
-    if (isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode) {
-      return
-    }
-    L.DomEvent.stopPropagation(event)
-    const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = hiddenOpacity === 100
-    const targetLayer = object && object.layer
-    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === layer
-    if (!doActivate && useOneClickForActivateLayer && targetLayer) {
-      onChangeLayer(targetLayer)
-      doActivate = true
-    }
-    if (doActivate) {
-      this.selectLayer(id, event.originalEvent.ctrlKey)
-      event.target._map._container.focus()
-    }
-  }
-
   dblClickOnLayer = async (event) => {
     const { target: layer } = event
     const { id, object } = layer
@@ -1892,17 +1933,20 @@ export default class WebMap extends React.PureComponent {
 
   selectLayer = (id, exclusive) => {
     const { selection: { list } } = this.props
+
+    let result = []
+
     if (id) {
       if (exclusive) {
-        return this.onSelectedListChange(list.indexOf(id) === -1
+        result = list.indexOf(id) === -1
           ? [ ...list, id ]
-          : list.filter((itemId) => itemId !== id))
+          : list.filter((itemId) => itemId !== id)
       } else if (list.length !== 1 || list[0] !== id) {
-        return this.onSelectedListChange([ id ])
+        result = [ id ]
       }
-    } else {
-      return this.onSelectedListChange([])
     }
+
+    return this.onSelectedListChange(result)
   }
 
   findLayerById = (id) => {
@@ -1996,7 +2040,7 @@ export default class WebMap extends React.PureComponent {
         }
         : undefined,
     )
-    layer.on('click', this.clickOnLayer)
+    // layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onMarkerDragStart)
     layer.on('pm:markerdragend', this.onMarkerDragEnd)
