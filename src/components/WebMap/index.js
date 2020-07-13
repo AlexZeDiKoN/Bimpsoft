@@ -1165,6 +1165,9 @@ export default class WebMap extends React.PureComponent {
             (layer.object?.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
           const isDraggable = canDrag && isSelected && isActiveLayer
+          if (layer._map === null) {
+            layer._map = this.map
+          }
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
             isDraggable)
           if (isActive) {
