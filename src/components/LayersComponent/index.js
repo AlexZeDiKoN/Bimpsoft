@@ -36,7 +36,7 @@ export default class LayersComponent extends React.Component {
     valueFilterLayers: '',
   }
 
-  getCommonData = memoizeOne((selectedLayerId, textFilter, isMapCOP) => {
+  getCommonData = memoizeOne((selectedLayerId, textFilter) => {
     const {
       onSelectLayer,
       onChangeMapColor,
@@ -57,7 +57,6 @@ export default class LayersComponent extends React.Component {
       onPrintMap,
       onChangeLayerVisibility,
       onChangeLayerColor,
-      isMapCOP,
     }
   })
 
@@ -160,7 +159,7 @@ export default class LayersComponent extends React.Component {
               className="tree-layers"
               byIds={byIds}
               roots={roots}
-              commonData={this.getCommonData(selectedLayerId, textFilter, isMapCOP)}
+              commonData={this.getCommonData(selectedLayerId, textFilter)}
               itemTemplate={ItemTemplate}
               expandedKeys={expandedKeys}
               filteredIds={filteredIds}
