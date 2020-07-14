@@ -8,7 +8,7 @@ import DeleteMapsForm from './DeleteMapsForm'
 
 export default class LayersControlsComponent extends React.Component {
   render () {
-    const { showCloseForm, okCloseHandler, cancelCloseHandler } = this.props
+    const { showCloseForm, okCloseHandler, cancelCloseHandler, backOpacity = 100, hiddenOpacity = 0 } = this.props
     return (
       <div className="layers-controls-component">
         {showCloseForm && (<DeleteMapsForm onCancel={cancelCloseHandler} onOk={okCloseHandler} />)}
@@ -16,14 +16,14 @@ export default class LayersControlsComponent extends React.Component {
           title={i18n.LAYERS_BASEMAP_OPACITY}
           className="layers-controls-control"
           icon={IconNames.OPEN_MAP}
-          opacity={this.props.backOpacity}
+          opacity={backOpacity}
           onChange={this.props.onChangeBackOpacity}
         />
         <OpacityControl
           title={i18n.LAYERS_INACTIVE_OPACITY}
           className="layers-controls-control"
           icon={IconNames.TRANSPARENCY}
-          opacity={this.props.hiddenOpacity}
+          opacity={hiddenOpacity}
           onChange={this.props.onChangeHiddenOpacity}
         />
       </div>

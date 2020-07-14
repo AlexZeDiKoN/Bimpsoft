@@ -60,6 +60,7 @@ export const CONTROL_TYPES = {
 }
 
 // Все, что с пустым кодом - Линии, все у которых isSvh = true - Линии. TODO - добавить свгши, или ссылки на них
+// isFlip === true - Реверсирует сгенерированные координаты (для переворота типовой линии в замкнутых фигурах)
 export const symbols = [
   {
     name: 'Пункти управління',
@@ -1952,14 +1953,25 @@ export const symbols = [
         code: '10032500002910000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Система траншей', code: '10032500002909000000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      { hint: 'Система траншей',
+        code: '10032500002909000000',
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.trenches.value,
+        },
+      },
       { hint: 'Укриття (бліндаж)', code: '10032500002809000000', amp: {} },
       { hint: 'Надземне укриття', code: '10032500002810000000', amp: {} },
       { hint: 'Підземне укриття', code: '10032500002811000000', amp: {} },
       {
         hint: 'Протитанковий рів (ескарп, контрескарп)',
         code: '10032500002902020000',
-        amp: { isSvg: true, type: entityKind.POLYLINE },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYLINE,
+          lineType: types.moatAntiTank.value,
+        },
       },
       {
         hint: `Ефект руйнування спрямований на використання вогню і ефекту загороджень, щоб примусити противника розділити свої формування, порушити бойовий порядок, витратити час, змінити план, поспішно здійснити розмінування та зірвати атаку`,
@@ -1988,7 +2000,12 @@ export const symbols = [
       {
         hint: 'Зона (смуга) загороджень із зазначенням всередині знаку ефекту',
         code: '10032500000170580000',
-        amp: { isSvg: true, type: entityKind.POLYGON },
+        isFlip: true,
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYGON,
+          lineType: types.blockage.value,
+        },
       },
       { hint: 'Завал', code: '10032500002801000000', amp: { isSvg: true, type: entityKind.SOPHISTICATED } },
       {
@@ -3227,16 +3244,16 @@ export const symbols = [
   {
     name: 'Космічні системи',
     children: [
-      { hint: 'Космічний апарат', code: '10030500001107000000', amp: {} },
+      { hint: 'Космічний апарат', code: '10030500001101000000', amp: {} },
       { hint: 'Космічний апарат зв’язку', code: '10030500001111000000', amp: {} },
       { hint: 'Розвідувальний КА', code: '10030500001115000000', amp: {} },
       { hint: 'Навігаційний КА', code: '10030500001114000000', amp: {} },
-      { hint: 'Метеорологічний КА', code: '10030500001107000000', amp: {} },
+      { hint: 'Метеорологічний КА', code: '10030500001118000000', amp: {} },
       { hint: 'Орбітальне угруповання', code: '10030500001107000000', amp: {} },
-      { hint: 'Космічний корабель', code: '10030500001116000000', amp: {} },
+      { hint: 'Космічний корабель', code: '10030500001101000000', amp: {} },
       {
         hint: 'Космічний корабель (вантажний)',
-        code: '10030500001116000000',
+        code: '10030500001101000000',
         amp: { [amps.additionalInformation]: 'В' },
       },
       { hint: 'Орбітальна станція', code: '10030500001116000000', amp: {} },
