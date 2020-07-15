@@ -1035,27 +1035,25 @@ export default class WebMap extends React.PureComponent {
   onMouseClick = useDebounce((e) => {
     const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
 
+    const {
+      isMeasureOn,
+      isMarkersOn,
+      isTopographicObjectsOn,
+      marchMode,
+      layer,
+      onChangeLayer,
+    } = this.props
+
     if (detail > 1) { // если это дабл/трипл/etc. клик
       return
     }
 
-    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
+    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
+      !isTopographicObjectsOn && !marchMode
+    ) {
       if (this.boxSelected) {
         delete this.boxSelected
       } else {
-        const {
-          isMeasureOn,
-          isMarkersOn,
-          isTopographicObjectsOn,
-          marchMode,
-          layer,
-          onChangeLayer,
-        } = this.props
-
-        if (isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode) {
-          return
-        }
-
         const area = (layer) => {
           if (!layer.getBounds) {
             return 0
@@ -1089,7 +1087,6 @@ export default class WebMap extends React.PureComponent {
       selection: { newShape, preview },
       printStatus,
       onClick,
-      marchMode,
       getCoordForMarch,
     } = this.props
 
