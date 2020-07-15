@@ -3012,7 +3012,7 @@ export const symbols = [
       {
         hint: 'Мобільна група підсилення (лікарсько-сестринська бригада)',
         code: '10031500311402000000',
-        amp: { [amps.additionalInformation]: 'ГМП' },
+        amp: { [amps.additionalInformation]: 'МГП' },
       },
       { hint: 'Медичний склад', code: '10031000001644000000', amp: {} },
       {
