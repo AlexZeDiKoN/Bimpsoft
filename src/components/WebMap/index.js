@@ -87,6 +87,10 @@ const switchScaleOptions = {
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
 }
 
+const getFeatureParent = (item) => item.feature && item.options && item.options.tsType === entityKind.CONTOUR
+  ? item._eventParents[Object.keys(item._eventParents)[0]]
+  : item
+
 const isLayerInBounds = (layer, bounds) => {
   const geometryObj = getGeometry(layer)
   if (geometryObj === null) {
@@ -1011,6 +1015,8 @@ export default class WebMap extends React.PureComponent {
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
   canClickOnLayer = (item) => {
+    item = getFeatureParent(item)
+
     const { object, options: { tsType } = {} } = item
 
     if (!object && tsType !== entityKind.FLEXGRID) {
@@ -1070,13 +1076,14 @@ export default class WebMap extends React.PureComponent {
           .filter(this.canClickOnLayer)
           .sort(byArea)
 
-        const [ result ] = all
+        let [ result ] = all
 
         this.map._container.focus()
 
         if (!result) {
           this.onSelectedListChange([])
         } else {
+          result = getFeatureParent(result)
           result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
           return this.selectLayer(result.id, e.originalEvent.ctrlKey)
         }
