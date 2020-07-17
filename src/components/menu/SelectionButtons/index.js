@@ -18,7 +18,7 @@ import './style.css'
 
 const { names: iconNames, IconButton } = components.icons
 
-const ALLOW_GROUP = false
+const ALLOW_GROUP = true
 
 export default class SelectionButtons extends React.Component {
   static propTypes = {

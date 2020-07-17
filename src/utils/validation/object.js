@@ -21,6 +21,11 @@ export function validateObject (object) {
       validateMilsymbol(object.code, object.attributes)
       validateCoordinates(object.geometry, 1)
       break
+    case SelectionTypes.GROUPED_HEAD:
+    case SelectionTypes.GROUPED_LAND:
+      validateCoordinates(object.geometry, 1)
+      break
+    case SelectionTypes.GROUPED_REGION:
     case SelectionTypes.POLYGON:
     case SelectionTypes.AREA:
       validateCoordinates(object.geometry, 3)
