@@ -55,7 +55,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   {`${i18n.AMPLIFIER} "${name}"`}
                 </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
                 {maxRows === 1
-                  ? <input
+                  ? <Input
                     className={!canEdit ? 'modals-input-disabled' : ''}
                     name={name}
                     value={currentValue[id] ?? ''}
