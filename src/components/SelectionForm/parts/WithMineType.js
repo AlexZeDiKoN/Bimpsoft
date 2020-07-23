@@ -45,7 +45,6 @@ const WithMineType = (Component) => class MineTypeComponent extends Component {
                   <MilSymbol
                     code={CODE_MINE_TYPES[type.value]}
                     amplifiers={{ size: SIZE }}
-                    className={'symbol'}
                   />
                   <div className="icon-text">{type.text}</div>
                 </div>
