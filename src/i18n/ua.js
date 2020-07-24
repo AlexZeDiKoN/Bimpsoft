@@ -161,7 +161,9 @@ export const LINE_TYPE = 'Тип лінії'
 export const LINE_WIDTH = 'Товщина лінії'
 export const LINE_COLOR = 'Колір лінії'
 export const FILL_COLOR = 'Колір заливки'
-export const HATCH_COLOR = 'штрихування'
+export const FILL_TYPE = 'Тип заливки'
+export const FILL_FULL = 'Суцільна заливка'
+export const HATCH_COLOR = 'Колір штрихування'
 export const SOLID = 'Суцільна'
 export const DASHED = 'Пунктирна'
 export const CHAIN_LINE = 'Штрих-пунктир'
@@ -188,6 +190,7 @@ export const LINE_MINES_LAND = 'Ряд протипіхотних мін'
 
 export const HATCH = 'Штриховка'
 export const LEFT_TO_RIGHT = 'Зліва направо'
+export const HATCH_LEFT_TO_RIGHT = 'Штриховка зліва направо'
 
 export const REGULAR = 'Звичайний'
 export const LINE_ENDS_LEFT = 'Лівий край' // константа використовується

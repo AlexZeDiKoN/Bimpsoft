@@ -23,7 +23,7 @@ const CONFIG_AMPLIFIERS = [
   { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
   { id: 'zones', name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM },
   { id: 'start', name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'title', name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT },
+  { id: 'title', name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT, maxRows: 1 },
 ]
 
 const PATH_AMPLIFIERS = [ 'attributes', 'params' ]

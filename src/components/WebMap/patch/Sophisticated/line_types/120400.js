@@ -15,7 +15,7 @@ const SYMBOL_SCALE = 1.25
 
 lineDefinitions['120400'] = {
   // амплификатор
-  useAmplifiers: [ { id: amps.N, name: 'H' } ],
+  useAmplifiers: [ { id: amps.N, name: 'H', maxRows: 1 } ],
   // Спеціальний випадок
   isArea: true,
 

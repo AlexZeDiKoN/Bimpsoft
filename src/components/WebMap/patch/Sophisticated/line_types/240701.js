@@ -14,7 +14,7 @@ const EDGE = 4
 
 lineDefinitions['240701'] = {
   // Ампліфікатори, що використовуються на лінії
-  useAmplifiers: [ { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
+  useAmplifiers: [ { id: amps.N, name: 'N', maxRows: 1 }, { id: amps.B, name: 'B', maxRows: 1 } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 

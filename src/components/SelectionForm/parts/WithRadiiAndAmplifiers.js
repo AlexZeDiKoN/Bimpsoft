@@ -11,6 +11,7 @@ import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const {
   FormRow,
@@ -101,7 +102,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     this.changeSectorsInfo({ name, index, value })
   }
 
-  renderRadiiAndAmplifiers () {
+  renderRadiiAndAmplifiers (maxRows) {
     const canEdit = this.isCanEdit()
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
@@ -122,7 +123,12 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
         return (index !== 0) ? (
           <>
             <div
-              className={canEdit ? 'circularzone-container__itemWidth' : 'circularzone-container__itemWidth modals-input-disabled'} key={index}>
+              className={
+                canEdit
+                  ? 'circularzone-container__itemWidth'
+                  : 'circularzone-container__itemWidth modals-input-disabled'
+              }
+              key={index}>
               <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
                 <InputWithSuffix
                   readOnly={!canEdit}
@@ -163,16 +169,30 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
             </div>
             <div className='amplifier'>
               <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
-                <Input.TextArea
-                  value={amplifierT}
-                  name={'amplifier'}
-                  className={!canEdit ? 'modals-input-disabled' : ''}
-                  onChange={this.sectorAmplifierChangeHandler(index)}
-                  onFocus={canEdit ? this.sectorFocusHandler(index) : null}
-                  onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
-                  disabled={!canEdit}
-                  rows={1}
-                />
+                {maxRows === 1
+                  ? <Input
+                    className={!canEdit ? 'modals-input-disabled' : ''}
+                    value={amplifierT}
+                    name={'amplifier'}
+                    readOnly={!canEdit}
+                    onChange={this.sectorAmplifierChangeHandler(index)}
+                    disabled={!canEdit}
+                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                    onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
+                    maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                  />
+                  : <Input.TextArea
+                    value={amplifierT}
+                    name={'amplifier'}
+                    className={!canEdit ? 'modals-input-disabled' : ''}
+                    onChange={this.sectorAmplifierChangeHandler(index)}
+                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                    onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
+                    disabled={!canEdit}
+                    autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
+                    rows={2}
+                  />
+                }
               </FormRow>
             </div>
             { (index < indexEnd) && <FormDivider/> }

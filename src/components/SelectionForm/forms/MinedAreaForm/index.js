@@ -18,8 +18,8 @@ import './MinedAreaForm.css'
 import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
 
 const PAIRS_AMPLIFIERS = [
-  { id: 'middle', name: 'N' },
-  { id: 'top', name: 'H1' },
+  { id: 'middle', name: 'N', maxRows: 1 },
+  { id: 'top', name: 'H1', maxRows: 1 },
 ]
 
 const SVG_MINED_AREA = <svg viewBox="0 0 1024 840">
