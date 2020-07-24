@@ -2,10 +2,10 @@ import React from 'react'
 import { Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-// import { typeOption } from './render'
 import { amps } from '../../../constants/symbols'
 import NumberControl from '../../common/NumberControl'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
+import './withAmplifiersStyle.css'
 
 const { FormRow } = components.form
 
@@ -42,9 +42,9 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const currentValue = this.getResult().getIn(pathAmplifiers)
     const canEdit = this.isCanEdit()
     return (
-      <div className="line-container__item">
+      <div className="amplifier-container__item">
         {amplifiersPairs.map(({ id, name, type, maxRows }) => (
-          <div className="line-container__itemWidth" key={id}>
+          <div className="amplifier-container__itemWidth" key={id}>
             {type !== TYPE_AMPLIFIER_NUM
               ? <FormRow title={null}
                 label={svg ? <Tooltip

@@ -1,0 +1,53 @@
+@import "../../../assets/styles/_variables.less";
+@import "../../../assets/styles/_mixins.less";
+
+.fill-item-component {
+  .flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2em;
+  position: relative;
+  flex: 1 1 auto;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid @toolbar-border;
+  }
+
+  .fill-item-text {
+    align-self: center;
+  }
+
+  .color-picker-hover {
+    align-items: center;
+    float: right;
+    margin: auto 0 auto 8px;
+    border-radius: 3px;
+
+    .color-picker {
+      width: auto;
+      height: auto;
+    }
+
+    .color-picker-button {
+      height: 28px;
+      width: 28px;
+    }
+
+    .dzvin-icon {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .dzvin-form-input {
+    display: flex;
+    margin-bottom: 4px;
+  }
+
+  .fill-item-component-hover {
+    .color-picker-hover {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
