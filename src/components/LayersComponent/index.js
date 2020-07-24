@@ -121,7 +121,7 @@ export default class LayersComponent extends React.Component {
                   onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
                 />
               </Tooltip>
-              {!isMapCOP && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
+              {!isMapCOP && isMapCOP !== undefined && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
                 <IButton
                   icon={IconNames.CALENDAR}
                   colorType={ColorTypes.WHITE}
