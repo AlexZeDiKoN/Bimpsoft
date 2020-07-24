@@ -82,10 +82,8 @@ export default class MineFieldForm extends compose(
                 {this.renderColor()}
               </div>
             </div>
-            <div className="minefield-container__itemWidth">
-              {this.renderAmplifiers(PAIRS_AMPLIFIERS, PATH_AMPLIFIERS, false, elem)}
-              {this.renderStartingCoordinate()}
-            </div>
+            {this.renderAmplifiers(PAIRS_AMPLIFIERS, PATH_AMPLIFIERS, false, elem)}
+            {this.renderStartingCoordinate()}
           </div>
         </div>
       </div>
