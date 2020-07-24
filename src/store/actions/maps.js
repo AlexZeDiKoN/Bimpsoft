@@ -130,13 +130,9 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       await dispatch(webMap.updateObjectsByLayerId(layerId))
       await dispatch(layers.updateColorByLayerId(layerId))
     }
+
     if (layersData.length > 0) {
-      let selectedLayer
-      if (layerId === null) {
-        selectedLayer = layersData[0]
-      } else {
-        selectedLayer = layersData.find((layer) => layer.layerId === layerId)
-      }
+      const selectedLayer = layersData[0]
       if (selectedLayer) {
         await dispatch(layers.selectLayer(selectedLayer.layerId))
       }

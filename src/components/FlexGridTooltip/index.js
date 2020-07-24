@@ -69,7 +69,7 @@ class FlexGridToolTip extends Component {
     const content = visible && getTT(type, this.additional)
     if (content) {
       const style = {
-        position: 'fixed',
+        position: 'absolute',
         left: `${x}px`,
         top: `${y}px`,
       }
