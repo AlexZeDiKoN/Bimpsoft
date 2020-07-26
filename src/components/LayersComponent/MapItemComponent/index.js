@@ -71,8 +71,9 @@ export default class MapItemComponent extends React.Component {
             onChange={this.changeMapVisibilityHandler}
           />
         </div>
-        <div className={expanded ? 'expand-icon-expanded expand-icon' : 'expand-icon'}>
+        <div className={expanded ? 'expand-icon-collapse expand-icon' : 'expand-icon expand-icon-expanded'}>
           <IButton
+            title={expanded ? i18n.LAYERS_ROLL_UP : i18n.LAYERS_ROLL_DOWN}
             icon={IconNames.NEXT}
             onClick={onExpand}
             disabled={!canExpand}
