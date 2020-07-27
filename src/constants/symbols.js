@@ -1058,7 +1058,7 @@ export const symbols = [
       {
         hint: 'Пункт обміну на автомобільному маршруті фельд’єгерсько-поштового зв’язку',
         code: '10032500001303000000',
-        amp: { [amps.additionalInformation]: 'ФПЗ' },
+        amp: { [amps.uniqueDesignation1]: 'ФПЗ' },
       },
       {
         hint: 'Пункт обміну на залізничному маршруті фельд’єгерсько-поштового зв’язку',
@@ -1125,7 +1125,7 @@ export const symbols = [
       { hint: 'Пускова установка - легкий ПТРК', code: '10031500001112010000', amp: {} },
       { hint: 'Пускова установка - середній ПТРК', code: '10031500001112020000', amp: {} },
       { hint: 'Пускова установка - важкий ПТРК', code: '10031500001112030000', amp: {} },
-      { hint: 'Протитанкова гармата', code: '10031500351106000000', amp: {} },
+      { hint: 'Протитанкова гармата', code: '10031500351106010000', amp: {} },
       { hint: 'ПТРК (на колісній базі)', code: '10031500311112020000', amp: {} },
       { hint: 'ПТРК (на гусеничній базі)', code: '10031500331112020000', amp: {} },
       { hint: '122 мм гаубиця, що буксирується', code: '10031500351109010000', amp: {} },
@@ -1894,12 +1894,21 @@ export const symbols = [
       {
         hint: 'Район підрозділу зі складу руху опору',
         code: '10032500000170520000',
-        amp: { isSvg: true, type: entityKind.AREA, lineType: types.solidWithDots.value },
+        amp: {
+          isSvg: true,
+          type: entityKind.AREA,
+          lineType: types.solidWithDots.value,
+          pointAmplifier: { [amps.N]: 'PO' } },
       },
       {
         hint: 'Район виконання завдань Гр СпП ССпО',
         code: '100325000012000000000spr',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.B]: 'СпР' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.AREA,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0, 1, 2 ],
+          intermediateAmplifier: { [amps.N]: 'СпР' } },
       },
       {
         hint: 'Район евакуації',
@@ -1929,7 +1938,7 @@ export const symbols = [
           right: ENDS_ARROW2 },
       },
       {
-        hint: 'Pозвідувальні завдання пошуком',
+        hint: 'Розвідувальні завдання пошуком',
         code: '10032500000170560000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
@@ -2537,6 +2546,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.POLYLINE,
+          shownIntermediateAmplifiers: [ 0 ],
           intermediateAmplifier: { [amps.W]: 'AM' },
           left: ENDS_STROKE1,
           right: ENDS_STROKE1,
@@ -2545,7 +2555,7 @@ export const symbols = [
       {
         hint: 'Район, який маскується аерозолем в районах розташування своїх військ',
         code: '10032500001200000000am',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'AM' } },
+        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.N]: 'AM' } },
       },
       {
         hint: 'Головний напрямок ведення вогню',
@@ -2671,12 +2681,24 @@ export const symbols = [
           'Кд – кодована \n' +
           'Ор – орієнтирів \n',
         code: '10032500000170700000',
-        amp: { isSvg: true, type: entityKind.RECTANGLE, pointAmplifier: { [amps.W]: 'OB' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.RECTANGLE,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0, 2 ],
+          intermediateAmplifier: { [amps.N]: 'ОВ' },
+        },
       },
       {
         hint: 'Район створення (виправлення) плану міста (масштаб 1:5 000)',
         code: '10032500000170710000',
-        amp: { isSvg: true, type: entityKind.RECTANGLE },
+        amp: {
+          isSvg: true,
+          type: entityKind.RECTANGLE,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 1 ],
+          intermediateAmplifier: { [amps.N]: '1:5000' },
+        },
       },
     ],
   },
@@ -2914,7 +2936,13 @@ export const symbols = [
       {
         hint: `Райони зосередження пошкоджених зразків ОВТ (масового виходу зі строю ОВТ) з вказівкою часу координат та кількістю ОВТ`,
         code: '10032500001502000000rzp',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'AA', [amps.W]: 'РЗП ОВТ' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.AREA,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 0 ],
+          intermediateAmplifier: { [amps.N]: 'РЗП ОВТ' },
+        },
       },
       { hint: 'Склад з ракетами та боєприпасами', code: '10031000001641000000', amp: {} },
       { hint: 'Запаси ракет та боєприпасів, які розміщені на ґрунті', code: '10031000001604000000', amp: {} },

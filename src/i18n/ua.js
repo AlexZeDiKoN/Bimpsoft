@@ -450,7 +450,7 @@ export const LOCATION = 'Позиція'
 export const ACCESS_READONLY = 'Лише перегляд'
 export const GROUPING = 'Групувати'
 export const UNGROUPING = 'Розгрупувати'
-export const GROUPING_REGION = 'Позиційний район підрозділу'
+export const GROUPING_REGION = 'Позиційний район'
 
 export const NATO_CLASSIFIER = 'Класифікація НАТО'
 export const DIVIDING_LINE = 'Розмежувальна лінія'
