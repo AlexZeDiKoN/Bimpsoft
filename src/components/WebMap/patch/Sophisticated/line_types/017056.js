@@ -3,22 +3,20 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine,
   segmentLength,
-  getPointAt,
-  getVector,
-  setVectorLength,
-  applyVector,
   drawArc,
   drawLineMark,
   angleOf,
-  getPointSize,
+  rad,
+  segmentBy,
+  halfPlane,
+  getPointMove,
+  getGraphicSize,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: Розвідувальні завдання пошуком
 // task code: DZVIN-6012
 // hint: 'Pозвідувальні завдання пошуком'
-
-const ARROW_LENGTH = 16
 
 lineDefinitions['017056'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -28,29 +26,33 @@ lineDefinitions['017056'] = {
   allowDelete: DELETE.none,
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
-  adjust: STRATEGY.empty,
+  adjust: STRATEGY.shapeT(),
 
   // Ініціалізація вершин при створенні нової лінії даного типу
   init: () => [
-    { x: 0.25, y: 0.50 },
-    { x: 0.75, y: 0.50 },
+    { x: 0.33, y: 0.25 },
+    { x: 0.33, y: 0.75 },
+    { x: 0.66, y: 0.50 },
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
-    let [ p0, p1 ] = points
+  render: (result, points) => {
+    const [ p0, p1, p2 ] = points
 
-    const r = getPointSize(result.layer) * 1.2
-    const d = r * Math.sqrt(2)
-    const pv = getVector(p1, p0)
-    p0 = applyVector(p1, setVectorLength(pv, segmentLength(pv) - r))
-    const v = getVector(p0, p1)
-    const l = segmentLength(v)
-    const mainLine = setVectorLength(v, l - ARROW_LENGTH * scale / 2)
+    const halfAngle = rad(120) / 2 // deg, 2pi/3 rad
+    const startPoint = segmentBy(p0, p1, 0.5)
+    const arrowLength = getGraphicSize(result.layer) * 2
+    const bLength = segmentLength(p0, p1) / 2
+    const r = bLength / Math.sin(halfAngle) // радиус сектора
+    drawArc(result, p1, p0, r, 0, 0, halfPlane(p0, p1, p2))
 
-    drawLine(result, p0, applyVector(p0, mainLine))
-    drawArc(result, getPointAt(p1, p0, Math.PI / 4, d), getPointAt(p1, p0, -Math.PI / 4, d), r, 0, 0, 1)
+    const ro = r * (1 - Math.cos(halfAngle))
+    const angleArrow = angleOf(startPoint, p2)
+    const pEnd = getPointMove(startPoint, angleArrow, -ro) // точка окончания стрелки на секторе
+    const pMinStart = getPointMove(pEnd, angleArrow, -arrowLength) // точка начала стрелки при её минимальной длине
 
-    drawLineMark(result, MARK_TYPE.ARROW_30_FILL, p1, angleOf(p0, p1))
+    const pStart = (segmentLength(startPoint, pMinStart) < segmentLength(startPoint, p2)) ? p2 : pMinStart
+    drawLine(result, pEnd, pStart)
+    drawLineMark(result, MARK_TYPE.ARROW_45, pStart, angleArrow)
   },
 }

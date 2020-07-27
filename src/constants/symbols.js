@@ -1938,7 +1938,7 @@ export const symbols = [
           right: ENDS_ARROW2 },
       },
       {
-        hint: 'Pозвідувальні завдання пошуком',
+        hint: 'Розвідувальні завдання пошуком',
         code: '10032500000170560000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
