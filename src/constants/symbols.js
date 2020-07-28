@@ -559,8 +559,8 @@ export const symbols = [
       },
       {
         hint: 'Зона чергування постановників завад',
-        code: '10062500001701000000',
-        amp: { isSvg: true, type: entityKind.POLYLINE, color: '#ff0404' },
+        code: '10032500001408000000red', // исходный код линии - '10062500001701000000',
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: '#ff0404' },
       },
       {
         hint: 'Зона баражування літаків-розвідників (ДРЛВ, ДРЛВУ)',
