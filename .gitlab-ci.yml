@@ -32,12 +32,12 @@ build:
   tags: 
     - explorer-build
   script:
-    - a=($(cat package.json | python2 -c "import sys, json; print json.load(sys.stdin)['version']" | tr '.' '\n'));
-        patch=${a[2]};
-        updated=`expr $patch + 1`; 
-        old=${a[0]}.${a[1]}.${a[2]};
-        sed -i "s/${old}/${CURRENT_VERSION}.${updated}/g" package.json;
-        echo "Version  $CURRENT_VERSION.$updated"
+#    - a=($(cat package.json | python2 -c "import sys, json; print json.load(sys.stdin)['version']" | tr '.' '\n'));
+#        patch=${a[2]};
+#        updated=`expr $patch + 1`; 
+#        old=${a[0]}.${a[1]}.${a[2]};
+#        sed -i "s/${old}/${CURRENT_VERSION}.${updated}/g" package.json;
+#        echo "Version  $CURRENT_VERSION.$updated"
     - yarn
     - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
     - cp .env .env.backup
