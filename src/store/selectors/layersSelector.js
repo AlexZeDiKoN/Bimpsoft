@@ -127,7 +127,15 @@ export const layersTree = createSelector(
       }
       // сортировка по времени
       const lDateFor = Date.parse(layer.dateFor)
-      const findIndex = map.children.findIndex((id) => lDateFor > Date.parse(layersById[id.slice(1)].dateFor))
+      const nameLayer = layer.name.toLowerCase()
+      const findIndex = map.children.findIndex((id) => {
+        const layerChildren = layersById[id.slice(1)]
+        if (lDateFor === Date.parse(layerChildren.dateFor)) {
+          // сортировка по названию слоев
+          return nameLayer < layerChildren.name.toLowerCase()
+        }
+        return lDateFor > Date.parse(layerChildren.dateFor)
+      })
       if (findIndex === -1) {
         map.children.push(lLayerId)
       } else if (findIndex === 0) {
