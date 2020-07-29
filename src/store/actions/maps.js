@@ -147,8 +147,9 @@ export const expandMap = (id, expand) => ({
   expand,
 })
 
-export const closeMapSections = () => ({
+export const closeMapSections = (mapsCollapsed) => ({
   type: CLOSE_MAP_SECTIONS,
+  mapsCollapsed,
 })
 
 export const toggleExpandMap = (id) => (dispatch, getState) =>
