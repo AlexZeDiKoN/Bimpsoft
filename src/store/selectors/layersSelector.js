@@ -105,7 +105,7 @@ export const layersTree = createSelector(
     Object.values(layersById).forEach((layer) => {
       let { mapId, layerId, name } = layer
       mapId = `m${mapId}`
-      layerId = `l${layerId}`
+      const lLayerId = `l${layerId}`
       let map = byIds[mapId]
       if (!map) {
         const mapCommonData = mapsById[layer.mapId]
@@ -125,8 +125,18 @@ export const layersTree = createSelector(
         byIds[mapId] = map
         roots.push(mapId)
       }
-      map.children.push(layerId)
-      byIds[layerId] = { ...layer, id: layerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
+      // сортировка по времени
+      const lDateFor = Date.parse(layer.dateFor)
+      const findIndex = map.children.findIndex((id) => lDateFor > Date.parse(layersById[id.slice(1)].dateFor))
+      if (findIndex === -1) {
+        map.children.push(lLayerId)
+      } else if (findIndex === 0) {
+        map.children.unshift(lLayerId)
+      } else {
+        map.children.splice(findIndex, 0, lLayerId)
+      }
+
+      byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
       if (layer.visible) {
         map.visible = true
         visible = true

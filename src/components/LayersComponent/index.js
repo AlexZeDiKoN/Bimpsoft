@@ -104,6 +104,8 @@ export default class LayersComponent extends React.Component {
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
+    // console.log('byids', byIds)
+    // console.log('roots', roots)
     return (
       <Wrapper title={i18n.LAYERS} icon={IconNames.LAYERS}>
         <div className="layers-component">
