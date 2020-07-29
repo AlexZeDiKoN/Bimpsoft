@@ -6,8 +6,8 @@ import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLaye
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
-import { asyncAction, orgStructures, webMap, selection, flexGrid } from './index'
 import { actionNames, changeTypes } from './webMap'
+import { asyncAction, orgStructures, webMap, selection, flexGrid } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -122,7 +122,6 @@ export const selectLayer = (layerId) =>
       },
       webMap: { mode },
     } = state
-
     if (selectedId === layerId) {
       return
     }

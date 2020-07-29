@@ -11,6 +11,7 @@ import {
   ButtonTypes,
   IButton,
 } from '@DZVIN/CommonComponents'
+import { isEmpty } from 'ramda'
 import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
@@ -101,7 +102,7 @@ export default class LayersComponent extends React.Component {
     } = this.props
 
     const { showLayers, showPeriod, showCloseForm, valueFilterLayers } = this.state
-
+    const mapsCollapsed = isEmpty(expandedIds) // все карты свернуты
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
     // console.log('byids', byIds)
@@ -175,13 +176,15 @@ export default class LayersComponent extends React.Component {
               onChange={onChangeVisibility}
             />
             <div className='divider'/>
-            <Tooltip title={i18n.CLOSE_MAP_SECTIONS} placement='topRight'>
+            <Tooltip
+              title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
+              placement='topRight'>
               <IButton
                 icon={IconNames.HIDE_MAP}
                 colorType={ColorTypes.WITH_BG}
                 disabled={roots?.length === 0}
                 type={ButtonTypes.WHITE}
-                onClick={onCloseMapSections}
+                onClick={() => onCloseMapSections(mapsCollapsed)}
               />
             </Tooltip>
             <div className='divider'/>
