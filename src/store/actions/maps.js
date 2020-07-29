@@ -1,7 +1,7 @@
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
-import { asyncAction, maps, layers, webMap, flexGrid, selection } from './index'
+import { asyncAction, maps, layers, webMap, flexGrid, selection, orgStructures } from './index'
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
@@ -91,7 +91,7 @@ export const openMapByObject = (mapId, objectData) => async (dispatch, getState)
 }
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
-  async (dispatch, _, { webmapApi: { getMap } }) => {
+  async (dispatch, getState, { webmapApi: { getMap } }) => {
     const content = await getMap(mapId)
     const {
       layers: entities,
@@ -106,6 +106,8 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       isCOP,
       // breadcrumbs,
     } = content
+    const state = getState()
+    const { webMap: { unitId } } = state
 
     await dispatch(maps.updateMap({
       mapId: id,
@@ -130,11 +132,12 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       await dispatch(webMap.updateObjectsByLayerId(layerId))
       await dispatch(layers.updateColorByLayerId(layerId))
     }
-
     if (layersData.length > 0) {
       const selectedLayer = layersData[0]
       if (selectedLayer) {
         await dispatch(layers.selectLayer(selectedLayer.layerId))
+        dispatch(orgStructures.expandTreeByOrgStructureItem(unitId))
+        dispatch(orgStructures.setOrgStructureSelectedId(unitId))
       }
     }
     await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))
