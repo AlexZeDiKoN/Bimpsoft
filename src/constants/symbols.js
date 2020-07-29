@@ -2333,7 +2333,11 @@ export const symbols = [
       {
         hint: 'Район, вільний від радіоелектронних засобів',
         code: '10032500000170650000',
-        amp: { isSvg: true, type: entityKind.POLYGON },
+        amp: {
+          isSvg: true,
+          type: entityKind.POLYGON,
+          lineType: types.blockage.value,
+        },
       },
       {
         hint: 'Межа зони розвідки КХ засобів зв’язку',
@@ -2442,7 +2446,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.POLYLINE,
-          pointAmplifier: { [amps.N]: 'PL РПЗПКЗ' },
+          pointAmplifier: { [amps.N]: 'PL РПЗІКЗ' },
           lineType: types.waved.value,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
@@ -2467,7 +2471,13 @@ export const symbols = [
       {
         hint: 'Межа зони радіаційного забруднення місцевості за даними розвідки',
         code: '10032500002722000000',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.W]: 'A' } },
+        amp: {
+          isSvg: true,
+          type: entityKind.AREA,
+          intermediateAmplifierType: 'text',
+          shownIntermediateAmplifiers: [ 2 ],
+          intermediateAmplifier: { [amps.N]: 'A' },
+        },
       },
       {
         hint: 'Мінімально безпечні відстані радіаційного забруднення місцевості',
@@ -2479,7 +2489,15 @@ export const symbols = [
         code: '10032500002721000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
-      { hint: 'Аміакопровід', code: '10032500000170690000', amp: { isSvg: true, type: entityKind.POLYLINE } },
+      {
+        hint: 'Аміакопровід',
+        code: '10032500000170690000',
+        amp: {
+          isSvg: true,
+          type: entityKind.CURVE,
+          lineType: types.chain.value,
+        },
+      },
       {
         hint: `Обхід зон з високою концентрацією отруйних та небезпечних хімічних речовин (високими рівнями потужності дози випромінювання).`,
         code: '10032500003403000000',
