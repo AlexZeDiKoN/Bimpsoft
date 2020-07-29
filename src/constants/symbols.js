@@ -2240,7 +2240,7 @@ export const symbols = [
         amp: { isSvg: true, type: entityKind.POLYLINE, right: ENDS_FORK, left: ENDS_FORK },
       },
       {
-        hint: 'Наплаваний міст з парку ПМП',
+        hint: 'Наплавний міст з парку ПМП',
         code: '10032500002714000000',
         amp: { isSvg: true, type: entityKind.SOPHISTICATED },
       },
