@@ -146,8 +146,8 @@ export const layersTree = createSelector(
 
       byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
       if (layer.visible) {
-        map.visible = true
-        visible = true
+        map.visible = true // на карте хоть один из слоёв видимый
+        visible = true // хоть один из слоёв видимый
       }
       if (map.color !== undefined && map.color !== layer.color) {
         map.color = undefined
