@@ -125,7 +125,7 @@ export const layersTree = createSelector(
         byIds[mapId] = map
         roots.push(mapId)
       }
-      // сортировка по времени
+      // сортировка по "Станом на" (времени)
       const lDateFor = Date.parse(layer.dateFor)
       const nameLayer = layer.name.toLowerCase()
       const findIndex = map.children.findIndex((id) => {
