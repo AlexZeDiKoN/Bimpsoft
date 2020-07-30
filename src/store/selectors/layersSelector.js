@@ -102,6 +102,7 @@ export const layersTree = createSelector(
     let visible = false
     const byIds = {}
     const roots = []
+    console.log('layersTree')
     Object.values(layersById).forEach((layer) => {
       let { mapId, layerId, name } = layer
       mapId = `m${mapId}`
