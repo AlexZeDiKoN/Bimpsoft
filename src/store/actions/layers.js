@@ -126,7 +126,6 @@ export const selectLayer = (layerId) =>
       },
       webMap: { mode },
     } = state
-
     if (selectedId === layerId) {
       return
     }
