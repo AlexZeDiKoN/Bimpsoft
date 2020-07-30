@@ -49,7 +49,7 @@ export const updateLayer = (layerData) =>
     const store = getStore()
     const allLayersById = layersById(store)
     const currentlySelectedLayerId = selectedLayerId(store)
-    console.log('updateL')
+    console.log('updateL', layerData)
     if (
       currentlySelectedLayerId === layerData.layerId &&
       R.has('visible', layerData) &&
