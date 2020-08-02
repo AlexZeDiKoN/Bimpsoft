@@ -3292,7 +3292,10 @@ export const symbols = [
       {
         hint: 'Пункт прийому особового складу',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППОС', [amps.staffComments]: 'ППОС' },
+        amp: {
+          type: entityKind.POINT,
+          [amps.uniqueDesignation1]: ' ППОС ',
+        },
       },
       {
         hint: 'Пункт прийому техніки',
