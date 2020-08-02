@@ -2915,12 +2915,17 @@ export const symbols = [
       {
         hint: 'Замикання похідної колони головних сил',
         code: '10031004001611000000',
-        amp: { [amps.additionalInformation]: 'ЗПК', [amps.staffComments]: 'ГС' },
+        amp: {
+          [amps.additionalInformation]: 'ЗПК',
+          [amps.staffComments]: 'ГС' },
       },
       {
         hint: 'Замикання похідної колони підрозділів технічного та тилового забезпечення',
         code: '10031004001611000000',
-        amp: { [amps.additionalInformation]: 'ЗПК' },
+        amp: {
+          [amps.additionalInformation]: 'ЗПК',
+          [amps.staffComments]: 'ТТ',
+        },
       },
       { hint: 'Пункт бойового постачання', code: '10032500003217050000', amp: {} },
       // TODO when done karandash start
