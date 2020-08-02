@@ -3125,7 +3125,15 @@ export const symbols = [
         code: '10031500311402000000',
         amp: { [amps.additionalInformation]: 'ПГМП' },
       },
-      { hint: 'Військовий госпіталь (стаціонарний)', code: '10032000001207000000', amp: {} },
+      {
+        hint: 'Військовий госпіталь (стаціонарний)',
+        code: '10032000001207020000',
+        amp: {
+          [amps.additionalInformation]: '200',
+          [amps.uniqueDesignation]: '29ВГ',
+          [amps.higherFormation]: 'ВМКЦ ЦР',
+        },
+      },
       { hint: 'Військовий мобільний госпіталь', code: '10031000161614000000', amp: {} },
       {
         hint: 'Цивільна лікарня (міська клінічна лікарня)',
