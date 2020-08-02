@@ -2788,7 +2788,14 @@ export const symbols = [
       },
       { hint: 'Метеорологічна група ВМС', code: '10031000131306004600', amp: { [amps.uniqueDesignation]: 'метгр' } },
       { hint: 'Метеорологічне бюро ВМС', code: '10031000141306004600', amp: { [amps.uniqueDesignation]: 'метбюро' } },
-      { hint: 'Гідрометеорологічна служба СВ', code: '10031000121306000000', amp: { [amps.uniqueDesignation]: 'ГМС' } },
+      {
+        hint: 'Гідрометеорологічна служба СВ',
+        code: '10031000121306000000',
+        amp: {
+          [amps.uniqueDesignation]: 'ГМС',
+          [amps.higherFormation]: 'СВ',
+        },
+      },
       {
         hint: 'Метеорологічне бюро КП АА СВ',
         code: '10031000131306007800',
