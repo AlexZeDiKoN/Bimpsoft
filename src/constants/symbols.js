@@ -17,6 +17,7 @@ export const amps = {
   higherFormation: 'higherFormation', // 1Вище формування
   uniqueDesignation: 'uniqueDesignation', // 1Призначення
   uniqueDesignation1: 'uniqueDesignation1', // 1Призначення
+  commonIdentifier: 'commonIdentifier', // Загальний ідентифікатор
   additionalInformation: 'additionalInformation', // 1Додаткова інформація
   reinforcedReduced: 'reinforcedReduced', // 1Посилення/Послаблення
   staffComments: 'staffComments', // 1Коментар
@@ -3184,7 +3185,11 @@ export const symbols = [
         code: '10031000001605010000',
         amp: { [amps.higherFormation]: 'ВМУ' },
       },
-      { hint: 'Похідний автомобільний клуб (ПАК) військовий (армійський)', code: '10031500311401000000', amp: {} },
+      {
+        hint: 'Похідний автомобільний клуб (ПАК) військовий (армійський)',
+        code: '10031500311401000000',
+        amp: { [amps.commonIdentifier]: 'ПАК-Д' },
+      },
       {
         hint: 'Державна адміністрація (обласна)',
         code: '10032000000000000000',
