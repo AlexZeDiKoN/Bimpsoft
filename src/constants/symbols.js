@@ -2799,7 +2799,10 @@ export const symbols = [
       {
         hint: 'Метеорологічне бюро КП АА СВ',
         code: '10031000131306007800',
-        amp: { [amps.uniqueDesignation]: 'метбюро' },
+        amp: {
+          [amps.uniqueDesignation]: 'метбюро',
+          [amps.higherFormation]: 'КП АА',
+        },
       },
       { hint: 'Метеорологічний взвод омбр (отбр)', code: '10031000141211023200', amp: {} },
       { hint: 'Метеорологічний взвод огпбр', code: '10031000141211003227', amp: {} },
