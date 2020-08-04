@@ -77,7 +77,6 @@ export default L.Path.include({
   getAmplifierGroup: function () {
     if (!this._amplifierGroup) {
       this._amplifierGroup = L.SVG.create('g')
-      // this._renderer._rootGroup.appendChild(this._amplifierGroup)
       this._renderer._updateStyle(this)
     }
     return this._amplifierGroup
