@@ -2488,7 +2488,7 @@ export const symbols = [
       {
         hint: `Мінімально безпечні відстані хімічного забруднення місцевості, відповідно до прогнозу без урахування напрямку вітру`,
         code: '10032500002721000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Аміакопровід',
