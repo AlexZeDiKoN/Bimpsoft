@@ -300,7 +300,9 @@ function createGroup (kind, data, layer) {
         ? layer._groupChildren.map(({ object: { code, attributes } }) => ({ code, attributes }))
         : []
       const icon = new L.GroupIcon({ data })
-      return createMarker(points[0], icon, layer)
+      const marker = createMarker(points[0], icon, layer)
+      marker.options.tsType = kind
+      return marker
     }
     default:
       return L.polyline(points, options)
@@ -476,12 +478,12 @@ export function getGeometry (layer) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return formGeometry(layer.getLatLng ? [ layer.getLatLng() ] : layer.getLatLngs())
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
-    case entityKind.GROUPED_HEAD:
-    case entityKind.GROUPED_LAND:
     case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return formGeometry(layer.getLatLngs())
@@ -535,12 +537,12 @@ export function isGeometryChanged (layer, point, geometry) {
   switch (tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
+    case entityKind.GROUPED_HEAD:
+    case entityKind.GROUPED_LAND:
       return !geomPointEquals(layer.getLatLng ? layer.getLatLng() : layer.getLatLngs()[0][0], point)
     case entityKind.SEGMENT:
     case entityKind.POLYLINE:
     case entityKind.CURVE:
-    case entityKind.GROUPED_HEAD:
-    case entityKind.GROUPED_LAND:
     case entityKind.GROUPED_REGION:
     case entityKind.SOPHISTICATED:
       return !geomPointListEquals(layer.getLatLngs(), geometry)
