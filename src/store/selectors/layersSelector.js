@@ -64,14 +64,16 @@ export const inICTMode = createSelector(
 )
 
 export const inTimeRangeLayers = createSelector(
-  (state) => state.layers.byId,
+  layersById,
+  mapsById,
   (state) => state.layers.timelineFrom,
   (state) => state.layers.timelineTo,
-  (byId, timelineFrom, timelineTo) => {
+  (byId, mapsId, timelineFrom, timelineTo) => {
     const result = {}
     for (const layer of Object.values(byId)) {
-      const { layerId, dateFor } = layer
-      if (date.inDateRange(dateFor, timelineFrom, timelineTo)) {
+      const { layerId, dateFor, mapId } = layer
+      const isCOP = mapsId[mapId]?.isCOP ?? false
+      if (isCOP || date.inDateRange(dateFor, timelineFrom, timelineTo)) {
         result[layerId] = layer
       }
     }
@@ -97,7 +99,7 @@ export const visibleLayersSelector = createSelector(
 
 export const layersTree = createSelector(
   inTimeRangeLayers,
-  (state) => state.maps.byId,
+  mapsById,
   (layersById, mapsById) => {
     let visible = false
     const byIds = {}
@@ -130,9 +132,9 @@ export const layersTree = createSelector(
       const nameLayer = layer.name.toLowerCase()
       const findIndex = map.children.findIndex((id) => {
         const layerChildren = layersById[id.slice(1)]
-        if (lDateFor === Date.parse(layerChildren.dateFor)) {
+        if (lDateFor === Date.parse(layerChildren.dateFor) || map.isCOP) {
           // сортировка по названию слоев
-          return nameLayer < layerChildren.name.toLowerCase()
+          return nameLayer.localeCompare(layerChildren.name.toLowerCase()) < 1
         }
         return lDateFor > Date.parse(layerChildren.dateFor)
       })
