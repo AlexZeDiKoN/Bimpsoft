@@ -380,6 +380,7 @@ export default class WebMap extends React.PureComponent {
     undo: PropTypes.func,
     redo: PropTypes.func,
     checkObjectAccess: PropTypes.func,
+    onShadowDelete: PropTypes.func,
   }
 
   constructor (props) {
@@ -1393,6 +1394,10 @@ export default class WebMap extends React.PureComponent {
             }
           } else if (!layer.catalogId) {
             toDelete.push(layer)
+            if (GROUPS.GENERALIZE.includes(layer.options.tsType) && layer._groupChildren) {
+              layer._groupChildren.forEach((child) => toDelete.push(child))
+              this.props.onShadowDelete(layer._groupChildren.map(({ id }) => id))
+            }
           }
         }
       })
@@ -1506,6 +1511,7 @@ export default class WebMap extends React.PureComponent {
         if (layer) {
           layer._reinitIcon()
           layer.update()
+          layer._groupChildren.forEach(this.removeLayer)
         }
       })
     }

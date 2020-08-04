@@ -122,7 +122,7 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
     const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
-    const canGroup = selectedTypes.length >= 1 && selectedPoints.length === selectedTypes.length &&
+    const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       emptyParent(selectedPoints)
@@ -209,11 +209,11 @@ export default class SelectionButtons extends React.Component {
           />
           {ALLOW_GROUP && <IconButton
             placement={'bottomLeft'}
-            title={canGroup ? i18n.GROUPING : i18n.UNGROUPING}
+            title={canGroup ? i18n.GROUPING : canUngroup ? i18n.UNGROUPING : `${i18n.GROUPING} / ${i18n.UNGROUPING}`}
             icon={iconNames.GROUP_UNIT_2}
-            checked={canUngroup}
+            checked={!canGroup && canUngroup}
             disabled={!canGroup && !canUngroup}
-            onClick={canGroup ? onGroup : onUngroup}
+            onClick={canGroup ? onGroup : canUngroup ? onUngroup : undefined}
           />}
           <IconButton
             placement={'bottomLeft'}
