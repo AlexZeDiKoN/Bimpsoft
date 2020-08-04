@@ -1,6 +1,5 @@
 import { compose } from 'redux'
 import React from 'react'
-import { Scrollbar } from '@DZVIN/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'
@@ -45,9 +44,7 @@ export default class SectorsForm extends compose(
             </div>
           </div>
           <div className="sectors-container__item--secondSection">
-            <Scrollbar>
-              {this.renderSectorsArray()}
-            </Scrollbar>
+            {this.renderSectorsArray()}
           </div>
         </div>
       </div>
