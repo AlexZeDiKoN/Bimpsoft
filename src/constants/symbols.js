@@ -2932,32 +2932,32 @@ export const symbols = [
       {
         hint: 'Пункт зустрічі матеріальних засобів',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗ', [amps.staffComments]: 'ПЗ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗ' },
       },
       {
         hint: 'Пункт передачі матеріальних засобів',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПП', [amps.staffComments]: 'ПП' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПП' },
       },
       {
         hint: 'Пункт технічної допомоги',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТД', [amps.staffComments]: 'ПТД' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТД' },
       },
       {
         hint: 'Пункт технічного спостереження',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТС', [amps.staffComments]: 'ПТС' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТС' },
       },
       {
         hint: 'Збірний пункт пошкоджених машин',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ', [amps.staffComments]: 'ЗППМ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ' },
       },
       {
         hint: 'Збірний пункт пошкоджених машин, що планується',
         code: '10032510001301000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ', [amps.staffComments]: 'ЗППМ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ' },
       },
       {
         hint: 'Запасний збірний пункт пошкоджених машин',
@@ -2966,7 +2966,6 @@ export const symbols = [
           type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ЗППМ',
           [amps.dtg]: 'З',
-          [amps.staffComments]: 'ЗППМ',
         },
       },
       // TODO end
