@@ -380,6 +380,7 @@ export default class WebMap extends React.PureComponent {
     undo: PropTypes.func,
     redo: PropTypes.func,
     checkObjectAccess: PropTypes.func,
+    onShadowDelete: PropTypes.func,
   }
 
   constructor (props) {
@@ -1131,7 +1132,7 @@ export default class WebMap extends React.PureComponent {
     const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.objects.forEach((layer) => {
-      if (layer.options.tsType) {
+      if (layer.options.tsType && !layer._hidden) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
         const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
@@ -1221,7 +1222,7 @@ export default class WebMap extends React.PureComponent {
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
     if (item.object) {
-      const { layer, level } = item.object
+      const { layer, level = 0 } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
@@ -1381,6 +1382,7 @@ export default class WebMap extends React.PureComponent {
       const groupItems = []
       const toDelete = []
 
+      // Визначаємо по списку наявних на карті об'єктів, які треба видалити, які змінити; заповнюємо список існуючих ID
       this.map.objects.forEach((layer) => {
         const { id, options: { tsType: type } } = layer
         if (id && type !== entityKind.FLEXGRID) {
@@ -1392,11 +1394,18 @@ export default class WebMap extends React.PureComponent {
             }
           } else if (!layer.catalogId) {
             toDelete.push(layer)
+            if (GROUPS.GENERALIZE.includes(layer.options.tsType) && layer._groupChildren) {
+              layer._groupChildren.forEach((child) => toDelete.push(child))
+              this.props.onShadowDelete(layer._groupChildren.map(({ id }) => id))
+            }
           }
         }
       })
+
+      // Видаляємо з карти об'єкти, яких вже немає в редаксі
       toDelete.forEach(this.removeLayer)
 
+      // Заповнюємо списки групованих об'єктів
       objects.forEach((object) => {
         if (object.parent) {
           switch (objects.get(object.parent)?.type) {
@@ -1421,6 +1430,7 @@ export default class WebMap extends React.PureComponent {
         }
       })
 
+      // По списку змінених об'єктів: перегенеровуємо значки на карті
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addObject(object, layer)
@@ -1431,12 +1441,14 @@ export default class WebMap extends React.PureComponent {
         }
       }
 
+      // Створюємо об'єкти, які є в редаксі, але немає на карті
       objects.forEach((object, id) => {
         if (!existsIds.has(id)) {
           this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
 
+      // Окремо оновлюємо поточний створюваний або редагований об'єкт
       const isNew = Boolean(preview && !preview.id)
       if (isNew === Boolean(this.newLayer)) {
         isNew && this.addObject(preview, this.newLayer)
@@ -1450,12 +1462,14 @@ export default class WebMap extends React.PureComponent {
         }
       }
 
+      // Очищуємо списки дочірніх об'єктів у групованих об'єктів
       this.map.objects.forEach((layer) => {
         if (layer._groupChildren) {
           layer._groupChildren = []
         }
       })
 
+      // Для групованих об'єктів: заповнюємо список дочірніх, а у них встановлюємо посилання на батьківський
       objects.forEach((object, id) => {
         const parent = object.parent
         if (parent) {
@@ -1471,15 +1485,19 @@ export default class WebMap extends React.PureComponent {
         }
       })
 
+      // Для іконки групованого об'єкта формуємо список ID дочірніх
       objects.forEach((object) => {
         if (GROUPS.GENERALIZE.includes(object.type)) {
           const layer = this.findLayerById(object.id)
           if (layer && layer.options.icon) {
-            layer.options.icon.options.data = layer._groupChildren.map(({ object }) => object)
+            layer.options.icon.options.data = layer._groupChildren
+              ? layer._groupChildren.map(({ object }) => object)
+              : []
           }
         }
       })
 
+      // Перерендер "позиційних районів підрозділу"
       regions.forEach((item) => {
         const layer = this.findLayerById(item)
         if (layer) {
@@ -1487,11 +1505,13 @@ export default class WebMap extends React.PureComponent {
         }
       })
 
+      // Перерендер групованих точкових знаків
       groups.forEach((item) => {
         const layer = this.findLayerById(item)
         if (layer) {
           layer._reinitIcon()
           layer.update()
+          layer._groupChildren.forEach(this.removeLayer)
         }
       })
     }

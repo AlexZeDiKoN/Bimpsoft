@@ -150,9 +150,10 @@ export default class SectorItem extends React.Component {
     const color = sectorInfo?.color || colors.BLACK
     const fill = sectorInfo?.fill || colors.TRANSPARENT
     return (
-      <Fragment key={`${coord1.lat}/${coord1.lng}`}>
-        <tr>
-          <td>
+      <div className='sectors-item-container' key={`${coord1.lat}/${coord1.lng}`}>
+        <div className='first-section'>
+          <div className='item'>
+            <div>{i18n.RADIUS}</div>
             <InputWithSuffix
               key = 'r'
               readOnly={readOnly}
@@ -163,8 +164,10 @@ export default class SectorItem extends React.Component {
               suffix={i18n.ABBR_METERS}
               error={!radiusIsWrong}
             />
-          </td>
-          <td>
+          </div>
+
+          <div className='item'>
+            <div>{i18n.AZIMUTH1}</div>
             <InputWithSuffix
               key = 'a1'
               readOnly={readOnly}
@@ -175,8 +178,10 @@ export default class SectorItem extends React.Component {
               suffix={`${i18n.ABBR_GRADUS} ${azimuthLIsWrong ? '*' : ''}`}
               error={azimuthLIsWrong}
             />
-          </td>
-          <td>
+          </div>
+
+          <div className='item'>
+            <div>{i18n.AZIMUTH2}</div>
             <InputWithSuffix
               key = 'a2'
               readOnly={readOnly}
@@ -187,8 +192,12 @@ export default class SectorItem extends React.Component {
               suffix={`${i18n.ABBR_GRADUS} ${azimuthRIsWrong ? '*' : ''}`}
               error={azimuthRIsWrong}
             />
-          </td>
-          <td>
+          </div>
+        </div>
+
+        <div className='second-section'>
+          <div className='item'>
+            <div>{i18n.AMPLIFIER_T}</div>
             <Input.TextArea
               value={amplifierT}
               name={'amplifier'}
@@ -198,8 +207,12 @@ export default class SectorItem extends React.Component {
               disabled={readOnly}
               rows={1}
             />
-          </td>
-          <td>
+          </div>
+        </div>
+
+        <div className='three-section'>
+          <div className='item'>
+            <div>{i18n.LINE_COLOR}</div>
             <ColorPicker
               color={color}
               disabled={readOnly}
@@ -207,8 +220,10 @@ export default class SectorItem extends React.Component {
               zIndex={COLOR_PICKER_Z_INDEX}
               presetColors={PRESET_COLORS}
             />
-          </td>
-          <td>
+          </div>
+
+          <div className='item'>
+            <div>{i18n.FILLING}</div>
             <Select
               value={fill}
               disabled={readOnly}
@@ -222,17 +237,15 @@ export default class SectorItem extends React.Component {
               {colorOption(colors.YELLOW)}
               {colorOption(colors.WHITE)}
             </Select>
-          </td>
-          <td>
-            <FormItem className={'sectorItems'}>
-              { !readOnly && !addOnly && (<IconHovered
-                icon={IconNames.DELETE_24_DEFAULT}
-                hoverIcon={IconNames.DELETE_24_HOVER}
-                onClick={this.removeSectorClickHandler}
-              />)}
-            </FormItem>
-          </td>
-        </tr>
-      </Fragment>)
+          </div>
+          <FormItem className={'sectorItems'}>
+            { !readOnly && !addOnly && (<IconHovered
+              icon={IconNames.DELETE_24_DEFAULT}
+              hoverIcon={IconNames.DELETE_24_HOVER}
+              onClick={this.removeSectorClickHandler}
+            />)}
+          </FormItem>
+        </div>
+      </div>)
   }
 }
