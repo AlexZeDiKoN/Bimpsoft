@@ -99,7 +99,7 @@ export const visibleLayersSelector = createSelector(
 
 export const layersTree = createSelector(
   inTimeRangeLayers,
-  (state) => state.maps.byId,
+  mapsById,
   (layersById, mapsById) => {
     let visible = false
     const byIds = {}
@@ -132,9 +132,9 @@ export const layersTree = createSelector(
       const nameLayer = layer.name.toLowerCase()
       const findIndex = map.children.findIndex((id) => {
         const layerChildren = layersById[id.slice(1)]
-        if (lDateFor === Date.parse(layerChildren.dateFor)) {
+        if (lDateFor === Date.parse(layerChildren.dateFor) || map.isCOP) {
           // сортировка по названию слоев
-          return nameLayer < layerChildren.name.toLowerCase()
+          return nameLayer.localeCompare(layerChildren.name.toLowerCase()) < 1
         }
         return lDateFor > Date.parse(layerChildren.dateFor)
       })
