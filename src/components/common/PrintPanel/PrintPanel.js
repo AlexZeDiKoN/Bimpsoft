@@ -273,7 +273,8 @@ class PrintPanel extends React.Component {
             }
           </div>
           {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
-          <FormRow className='printPanel_dpi' label={i18n.DPI}>
+          <div className='print-scale-container'>
+            <div>{i18n.DPI}</div>
             {
               getFieldDecorator(
                 PRINT_SELECTS_KEYS.DPI, {
@@ -285,7 +286,7 @@ class PrintPanel extends React.Component {
                 </Select>,
               )
             }
-          </FormRow>
+          </div>
           {/* TODO: наразі прихований блок. При відображені замінити на FormRow */}
           <Row className='printPanel_coordinatesType invisible' label={i18n.COORDINATES_TYPE}>
             {

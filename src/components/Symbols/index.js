@@ -100,7 +100,7 @@ const SymbolsTab = (props) => {
       return <Tooltip
         key={`${hint}${code}`}
         mouseEnterDelay={1}
-        title={<HighlightedText text={`${!listMode && hint}`} textFilter={data.TextFilter.create(search)}/>}
+        title={!listMode && <HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/>}
       >
         { elemToRender }
       </Tooltip>

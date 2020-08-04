@@ -68,7 +68,7 @@ export const renderTextSymbol = ({
 
     const y = fullHeight
     const lineSpace = underline ? 4 * scale / 100 : 0
-    const lineStrokeWidth = underline ? (bold ? 7 : 4) * scale / 100 : 0
+    const lineStrokeWidth = underline ? (bold ? 7 : 1) * scale / 100 : 0
     fullHeight += lineSpace * 2 + lineStrokeWidth
     endUnderLine = underline
     return { underline, fontSize, align, y, text, yUnderline: y + lineSpace + lineStrokeWidth / 2, lineStrokeWidth }
