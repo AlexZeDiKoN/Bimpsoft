@@ -64,14 +64,16 @@ export const inICTMode = createSelector(
 )
 
 export const inTimeRangeLayers = createSelector(
-  (state) => state.layers.byId,
+  layersById,
+  mapsById,
   (state) => state.layers.timelineFrom,
   (state) => state.layers.timelineTo,
-  (byId, timelineFrom, timelineTo) => {
+  (byId, mapsId, timelineFrom, timelineTo) => {
     const result = {}
     for (const layer of Object.values(byId)) {
-      const { layerId, dateFor } = layer
-      if (date.inDateRange(dateFor, timelineFrom, timelineTo)) {
+      const { layerId, dateFor, mapId } = layer
+      const isCOP = mapsId[mapId]?.isCOP ?? false
+      if (isCOP || date.inDateRange(dateFor, timelineFrom, timelineTo)) {
         result[layerId] = layer
       }
     }
