@@ -154,6 +154,10 @@ L.SVG.include({
       layer.addInteractiveTarget(layer._outlinePath)
     }
 
+    if (layer._amplifierGroup) {
+      this._rootGroup.appendChild(layer._amplifierGroup)
+    }
+
     _addPath.call(this, layer)
   },
 
