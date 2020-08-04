@@ -144,7 +144,7 @@ export const layersTree = createSelector(
         map.children.splice(findIndex, 0, lLayerId)
       }
 
-      byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
+      byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: `${map.name} / ${name}` }
       if (layer.visible) {
         map.visible = true // на карте хоть один из слоёв видимый
         visible = true // хоть один из слоёв видимый
