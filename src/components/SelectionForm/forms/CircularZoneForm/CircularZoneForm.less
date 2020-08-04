@@ -117,11 +117,16 @@
 
       .amplifier {
         width: 100%;
+
         .dzvin-form-input {
           width: 100%;
           border-bottom: 2px solid @modals-section-border-color;
           padding-bottom: 10px;
           margin-bottom: 10px;
+        }
+
+        input {
+          width: inherit;
         }
       }
 
@@ -133,14 +138,23 @@
         width: 100%;
 
         .dzvin-form-row {
-          width: 90px;
+          width: min-content;
           flex: 0 0 auto;
           margin-right: 0;
+
+          .dzvin-form-input {
+            .wrong-input-block {
+              .ant-input-group-addon {
+                background-color: @error-number-color;
+              }
+            }
+          }
         }
 
         .radiContainer {
           font-size: 12px;
           font-family: Roboto;
+          text-align: center;
 
           .icon-option {
             height: 28px;
@@ -153,15 +167,14 @@
         }
 
         .radiContainerColor {
-          display: flex;
-          align-items: center;
-          margin-top: 18px;
+          margin-left: 4px;
 
           & > div:first-child {
             margin-right: 5px;
           }
 
           .color-picker {
+            margin: auto;
             width: 30px;
             height: 30px;
 

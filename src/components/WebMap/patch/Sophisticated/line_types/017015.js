@@ -14,7 +14,12 @@ import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 lineDefinitions['017015'] = {
   // Ампліфікатори, що використовуються на лінії
-  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
+  useAmplifiers: [
+    { id: amps.T, name: 'T', maxRows: 1 },
+    { id: amps.N, name: 'N', maxRows: 1 },
+    { id: amps.B, name: 'B', maxRows: 1 },
+  ],
+
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 

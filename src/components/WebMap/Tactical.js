@@ -1,5 +1,7 @@
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
+import { symbolOptions } from '@DZVIN/MilSymbolEditor/src/model'
+import { Record } from 'immutable'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
@@ -12,6 +14,10 @@ const latLng2peerArr = (data) =>
   data && Array.isArray(data)
     ? data.map(latLng2peerArr)
     : [ data.lng, data.lat ]
+
+// ------------- Ініціалізація атрибутів для точкових знаків ----------------------------------------------------------
+const SymbolAtributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
+const SymbolAttributesRec = Record(SymbolAtributesInitValue)
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -175,7 +181,10 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
     if (amplifiers.affiliation !== undefined) {
       code = model.APP6Code.setIdentity2(code, amplifiers.affiliation)
     }
-    const icon = new L.PointIcon({ data: { code, amplifiers } })
+    const attributes = SymbolAttributesRec(amplifiers)
+    const data = { code, affiliation: amplifiers.affiliation, attributes }
+    const icon = new L.PointIcon({ data })
+    icon.options.showAmplifiers = true // Включение использования атрибутов при генерации знака
     const marker = createMarker(point, icon, layer)
     marker.options.tsType = entityKind.POINT
     return marker

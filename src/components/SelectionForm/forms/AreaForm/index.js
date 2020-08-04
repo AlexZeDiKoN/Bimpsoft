@@ -9,7 +9,6 @@ import {
   WithFill,
   WithSegment,
   WithLineType,
-  WithHatch,
   WithNodalPointType,
   WithCoordinatesArray,
   WithIntermediateAmplifiers,
@@ -31,7 +30,6 @@ const Extenders = compose(
   WithNodalPointType,
   WithSegment,
   WithFill,
-  WithHatch,
   WithColor,
   WithStrokeWidth,
   WithIntermediateAmplifiers,
@@ -125,7 +123,6 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
               {isContinuousArea // область может иметь заливку или штиховку
                 ? <>
                   {this.renderFill(true)}
-                  {this.renderHatch()}
                 </>
                 : <></>}
             </div>

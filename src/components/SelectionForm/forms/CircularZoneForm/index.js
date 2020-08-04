@@ -50,7 +50,7 @@ export default class CircularZoneForm extends compose(
               </div>
             </div>
             <div className="circularzone-container__item--secondSection">
-              {this.renderRadiiAndAmplifiers()}
+              {this.renderRadiiAndAmplifiers(1)}
             </div>
           </div>
         </div>

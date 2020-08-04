@@ -4,11 +4,22 @@ import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
+import { Symbol } from '@DZVIN/milsymbol'
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons
 const { TextFilter } = data
 
 export default class Item extends React.Component {
+  componentDidMount () {
+    this.generateDragImage(this.props?.data?.app6Code) // генерации иконки перетягиваемого объекта
+  }
+
+  componentDidUpdate (prevProps) {
+    if (prevProps?.data?.app6Code !== this.props?.data?.app6Code) {
+      this.generateDragImage(this.props?.data?.app6Code)
+    }
+  }
+
   doubleClickHandler = () => {
     const { onDoubleClick, data } = this.props
     onDoubleClick(data.id)
@@ -19,9 +30,35 @@ export default class Item extends React.Component {
     onClick && onClick(data.id)
   }
 
+  imgDrag = new Image()
+
+  dragAnchor = { x: 0, y: 0 }
+
+  // генерации иконки перетягиваемого объекта
+  generateDragImage = (app6Code) => {
+    const size = 25
+    const symbol = new Symbol(app6Code, { size })
+    if (symbol.isValid()) {
+      this.dragXY = symbol.symbolAnchor
+      this.dragAnchor = symbol.symbolAnchor
+      this.imgDrag.src = symbol.toDataURL()
+    } else {
+      this.imgDrag.removeAttribute('src')
+    }
+  }
+
   dragStartHandler = (e) => {
     const { data } = this.props
-    e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
+    e.dataTransfer.setData && e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
+    if (e.dataTransfer) {
+      if (this.imgDrag.src) { // Создания нового аватара переносимого объекта
+        e.dataTransfer.setDragImage && e.dataTransfer.setDragImage(this.imgDrag, this.dragAnchor.x, this.dragAnchor.y)
+      } else {
+      // Для не имеющих иконки. Перенос только точки привязки переносимого объекта
+        const xy = parseInt(getComputedStyle(e.target).height) / 2
+        e.dataTransfer.setDragImage && e.dataTransfer.setDragImage(e.target, xy, xy)
+      }
+    }
   }
 
   count = (selectedLayer, onMapObjects, id) =>

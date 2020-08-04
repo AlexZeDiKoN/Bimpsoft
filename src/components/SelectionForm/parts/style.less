@@ -59,10 +59,14 @@
       .ant-select{
         font-size: 12px;
         font-family: Roboto;
-        .icon-option{
-          background: transparent;
-          border: 0;
-          color: @toolbar-color;
+        .ant-select-selection__rendered {
+          margin-left: 10px;
+          .icon-option {
+            background: transparent;
+            border: 0;
+            padding: 0;
+            color: @toolbar-color;
+          }
         }
       }
       .icon-button-more{
@@ -252,6 +256,23 @@
   }
 }
 
+.sectors-array-container{
+  input{
+    min-width: 65px;
+  }
+  .ant-input-group-addon{
+    border-left: 0;
+  }
+  .sectorItems{
+    padding: 0;
+    width: 30px;
+  }
+  .color-picker{
+    justify-content: center;
+    width: 100%;
+  }
+}
+
 .text-form-controls label{
   flex: 1 1 auto;
   text-align: left;
@@ -300,4 +321,36 @@
 
 .ant-select-dropdown-menu-item {
   font-size: 12px;
+  padding: 5px 10px;
+  .icon-option{
+    padding: 0;
+  }
+}
+
+.line-type-dropdown {
+  .ant-select-dropdown-menu-item {
+    padding: 5px 10px;
+    .icon-option {
+      padding: 0;
+      .icon-text {
+        white-space: normal;
+        line-height: 1;
+        margin-left: 6px;
+      }
+    }
+  }
+}
+
+.line-type-select{
+  .ant-select-selection__rendered{
+    margin-left: 10px;
+    .icon-option {
+      padding: 0;
+      .icon-text {
+        white-space: normal;
+        line-height: 1;
+        margin-left: 6px;
+      }
+    }
+  }
 }

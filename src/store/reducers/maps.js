@@ -44,7 +44,15 @@ export default function reducer (state = initState, action) {
       return { ...state, expandedIds }
     }
     case maps.CLOSE_MAP_SECTIONS: {
-      return { ...state, expandedIds: {} }
+      const { mapsCollapsed } = action
+      const expandedIds = {}
+      if (mapsCollapsed) {
+        const { byId } = state
+        for (const key in byId) {
+          expandedIds[byId[key].mapId] = true
+        }
+      }
+      return { ...state, expandedIds }
     }
     case maps.SET_CALC_VARIANT: {
       let calc = { ...state.calc }

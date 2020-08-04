@@ -79,8 +79,12 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   attributesChangeHandler = (newAttributes) => this.setResult((result) => {
     const { quantity, speed } = newAttributes
-    newAttributes.quantity = Math.abs(parseInt(String(quantity).slice(0, 10)) || 0)
-    newAttributes.speed = Math.abs(parseFloat(String(speed).slice(0, 10)) || 0)
+    if (quantity !== undefined) {
+      newAttributes.quantity = Math.abs(parseInt(String(quantity).slice(0, 10)) || 0)
+    }
+    if (speed !== undefined) {
+      newAttributes.speed = Math.abs(parseFloat(String(speed).slice(0, 10)) || 0)
+    }
     return result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes))
   })
 

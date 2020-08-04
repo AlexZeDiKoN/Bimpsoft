@@ -168,7 +168,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
           />)}
         </div>
         <FormDivider/>
-        <div className="shape-form-scrollable">
+        <div className="shape-form-scrollable sectors-array-container">
           <table>
             <tbody>
               <tr>
@@ -185,7 +185,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
                   <FormRow label={i18n.AMPLIFIER_T}/>
                 </th>
                 <th>
-                  <FormRow label={i18n.COLOR}/>
+                  <FormRow label={i18n.LINE_COLOR}/>
                 </th>
                 <th>
                   <FormRow label={i18n.FILLING}/>

@@ -12,7 +12,6 @@ import {
   WithFill,
   WithLineType,
   WithStrokeWidth,
-  WithHatch,
   WithIntermediateAmplifiers,
   WithPointAmplifiers,
   WithIntermediateAmplifiersTune,
@@ -33,7 +32,6 @@ export default class SquareForm extends
     WithStrokeWidth,
     WithColor,
     WithFill,
-    WithHatch,
     WithIntermediateAmplifiers,
     WithPointAmplifiers,
     WithIntermediateAmplifiersTune,
@@ -66,7 +64,6 @@ export default class SquareForm extends
             </div>
             <div className="rectangle-container__itemWidth">
               {this.renderFill(true)}
-              {this.renderHatch()}
             </div>
           </div>
           {this.renderIntermediateAmplifiers(elem)}
