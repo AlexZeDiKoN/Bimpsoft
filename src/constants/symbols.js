@@ -746,7 +746,7 @@ export const symbols = [
       {
         hint: 'Рубіж досяжності вогневих засобів',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Ракетний удар',
@@ -914,7 +914,7 @@ export const symbols = [
       {
         hint: 'Зона розвідки повітряного противника',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
     ],
   },
@@ -1428,7 +1428,7 @@ export const symbols = [
       {
         hint: 'Зона ураження / виявлення (кругова)',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Зона ураження / виявлення (сектор)',
@@ -1503,7 +1503,7 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (кругова)',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (сектор)',
@@ -2353,7 +2353,7 @@ export const symbols = [
       {
         hint: 'Зона морської радіотехнічної розвідки, Межа зони подавлення',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       { hint: 'Цивільний телекомунікатор', code: '10032000001212020000', amp: {} },
       { hint: 'Цивільне телебачення', code: '10032000001212021300', amp: {} },
