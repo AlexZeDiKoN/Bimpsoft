@@ -104,7 +104,7 @@ export const layersTree = createSelector(
     let visible = false
     const byIds = {}
     const roots = []
-    console.log('layersTree', layersById)
+
     Object.values(layersById).forEach((layer) => {
       let { mapId, layerId, name } = layer
       mapId = `m${mapId}`
@@ -128,29 +128,13 @@ export const layersTree = createSelector(
         byIds[mapId] = map
         roots.push(mapId)
       }
-      // сортировка по "Станом на" (времени)
-      const lDateFor = Date.parse(layer.dateFor)
-      const nameLayer = layer.name.toLowerCase()
-      const findIndex = map.children.findIndex((id) => {
-        const layerChildren = layersById[id.slice(1)]
-        if (lDateFor === Date.parse(layerChildren.dateFor) || map.isCOP) {
-          // сортировка по названию слоев
-          return nameLayer.localeCompare(layerChildren.name.toLowerCase()) < 1
-        }
-        return lDateFor > Date.parse(layerChildren.dateFor)
-      })
-      if (findIndex === -1) {
-        map.children.push(lLayerId)
-      } else if (findIndex === 0) {
-        map.children.unshift(lLayerId)
-      } else {
-        map.children.splice(findIndex, 0, lLayerId)
-      }
+
+      map.children.push(lLayerId)
 
       byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: `${map.name} / ${name}` }
       if (layer.visible) {
         map.visible = true // на карте хоть один из слоёв видимый
-        visible = true // хоть один из слоёв видимый
+        visible = true // хоть один из слоёв карт видимый
       }
       if (map.color !== undefined && map.color !== layer.color) {
         map.color = undefined

@@ -138,7 +138,15 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       dateFor: date_for,
       formationId: id_formation,
       readOnly,
-    }))
+    })).sort((layer1, layer2) => { // сортировка слоев карты
+      const dateFor1 = Date.parse(layer1.dateFor)
+      const dateFor2 = Date.parse(layer2.dateFor)
+      if ((dateFor1 === dateFor2) || isCOP) { // сортировка по названию слоев
+        return (layer1.name.toLowerCase()).localeCompare(layer2.name.toLowerCase())
+      }
+      return dateFor2 - dateFor1 // сортировка по "станом на"
+    })
+
     await dispatch(layers.updateLayers(layersData))
     for (const { layerId } of layersData) {
       await dispatch(webMap.updateObjectsByLayerId(layerId))
