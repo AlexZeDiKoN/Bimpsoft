@@ -1051,14 +1051,10 @@ export default class WebMap extends React.PureComponent {
       onChangeLayer,
     } = this.props
 
-    if (detail > 1) { // если это дабл/трипл/etc. клик
-      return
-    }
-
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
       !isTopographicObjectsOn && !marchMode
     ) {
-      if (this.boxSelected) {
+      if (this.boxSelected && detail <= 1) {
         delete this.boxSelected
       } else {
         const area = (layer) => {
@@ -1085,8 +1081,12 @@ export default class WebMap extends React.PureComponent {
           this.onSelectedListChange([])
         } else {
           result = getFeatureParent(result)
-          result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
-          return this.selectLayer(result.id, e.originalEvent.ctrlKey)
+          if (detail <= 1) {
+            result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
+            return this.selectLayer(result.id, e.originalEvent.ctrlKey)
+          } else { // double click
+            return this.processDblClickOnLayer(result)
+          }
         }
       }
     }
@@ -1889,8 +1889,12 @@ export default class WebMap extends React.PureComponent {
     window.explorerBridge.showCatalogObject(catalogId, id)
   }
 
-  dblClickOnLayer = async (event) => {
-    const { target: layer } = event
+  dblClickOnLayer = (event) => {
+    L.DomEvent.stopPropagation(event)
+    return this.processDblClickOnLayer(event.target)
+  }
+
+  processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
@@ -1905,7 +1909,6 @@ export default class WebMap extends React.PureComponent {
         layer._map._container.focus()
       }
     }
-    L.DomEvent.stopPropagation(event)
   }
 
   onDblClick = (event) => {
