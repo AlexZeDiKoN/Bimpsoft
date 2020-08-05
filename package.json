@@ -1,9 +1,9 @@
 {
   "name": "web-map",
-  "version": "15.02.1021",
+  "version": "15.02.1034",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^15.2.508",
+    "@DZVIN/CommonComponents": "^15.2.511",
     "@DZVIN/MilSymbolEditor": "^15.1.272",
     "@DZVIN/components": "^15.1.574",
     "@DZVIN/leaflet-measure-custom": "15.2.7",
@@ -77,7 +77,7 @@
   "scripts": {
     "start": "npm run build-css && run-p -ncr watch-css start-js",
     "start-js": "craco start",
-    "build": "run-s -n svg-sprite2 inc-version build-css build-js",
+    "build": "run-s -n svg-sprite2 build-css build-js",
     "build-js": "craco build",
     "test": "run-s -n build-css test-js",
     "test-js": "craco test --env=jsdom",

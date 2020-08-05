@@ -64,14 +64,16 @@ export const inICTMode = createSelector(
 )
 
 export const inTimeRangeLayers = createSelector(
-  (state) => state.layers.byId,
+  layersById,
+  mapsById,
   (state) => state.layers.timelineFrom,
   (state) => state.layers.timelineTo,
-  (byId, timelineFrom, timelineTo) => {
+  (byId, mapsId, timelineFrom, timelineTo) => {
     const result = {}
     for (const layer of Object.values(byId)) {
-      const { layerId, dateFor } = layer
-      if (date.inDateRange(dateFor, timelineFrom, timelineTo)) {
+      const { layerId, dateFor, mapId } = layer
+      const isCOP = mapsId[mapId]?.isCOP ?? false
+      if (isCOP || date.inDateRange(dateFor, timelineFrom, timelineTo)) {
         result[layerId] = layer
       }
     }
@@ -97,7 +99,7 @@ export const visibleLayersSelector = createSelector(
 
 export const layersTree = createSelector(
   inTimeRangeLayers,
-  (state) => state.maps.byId,
+  mapsById,
   (layersById, mapsById) => {
     let visible = false
     const byIds = {}
@@ -105,7 +107,7 @@ export const layersTree = createSelector(
     Object.values(layersById).forEach((layer) => {
       let { mapId, layerId, name } = layer
       mapId = `m${mapId}`
-      layerId = `l${layerId}`
+      const lLayerId = `l${layerId}`
       let map = byIds[mapId]
       if (!map) {
         const mapCommonData = mapsById[layer.mapId]
@@ -125,11 +127,29 @@ export const layersTree = createSelector(
         byIds[mapId] = map
         roots.push(mapId)
       }
-      map.children.push(layerId)
-      byIds[layerId] = { ...layer, id: layerId, parentId: mapId, breadCrumbs: map.name + ' / ' + name }
+      // сортировка по "Станом на" (времени)
+      const lDateFor = Date.parse(layer.dateFor)
+      const nameLayer = layer.name.toLowerCase()
+      const findIndex = map.children.findIndex((id) => {
+        const layerChildren = layersById[id.slice(1)]
+        if (lDateFor === Date.parse(layerChildren.dateFor) || map.isCOP) {
+          // сортировка по названию слоев
+          return nameLayer.localeCompare(layerChildren.name.toLowerCase()) < 1
+        }
+        return lDateFor > Date.parse(layerChildren.dateFor)
+      })
+      if (findIndex === -1) {
+        map.children.push(lLayerId)
+      } else if (findIndex === 0) {
+        map.children.unshift(lLayerId)
+      } else {
+        map.children.splice(findIndex, 0, lLayerId)
+      }
+
+      byIds[lLayerId] = { ...layer, id: lLayerId, parentId: mapId, breadCrumbs: `${map.name} / ${name}` }
       if (layer.visible) {
-        map.visible = true
-        visible = true
+        map.visible = true // на карте хоть один из слоёв видимый
+        visible = true // хоть один из слоёв видимый
       }
       if (map.color !== undefined && map.color !== layer.color) {
         map.color = undefined
