@@ -7,8 +7,6 @@ import { colors } from '../../../constants'
 import SectorItem from './SectorItem'
 
 const {
-  FormRow,
-  FormDivider,
   FormDarkPart,
 } = components.form
 
@@ -161,44 +159,21 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
       <FormDarkPart>
         <div className='coordinate-width-container'>
           <div className='coordinate-width-title'>{i18n.SECTORS}</div>
-          {canEdit && (<IconHovered
-            icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
-            hoverIcon={IconNames.BAR_2_EDIT_HOVER}
-            onClick={this.sectorsEditClickHandler}
-          />)}
+          <div className='coordinate-width-button'>
+            {canEdit && editSectors && <IconHovered
+              icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
+              hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
+              onClick={this.sectorAddHandler}
+            />}
+            {canEdit && (<IconHovered
+              icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
+              hoverIcon={IconNames.BAR_2_EDIT_HOVER}
+              onClick={this.sectorsEditClickHandler}
+            />)}
+          </div>
         </div>
-        <FormDivider/>
         <div className="shape-form-scrollable sectors-array-container">
-          <table>
-            <tbody>
-              <tr>
-                <th>
-                  <FormRow label={i18n.RADIUS}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AZIMUTH1}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AZIMUTH2}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AMPLIFIER_T}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.LINE_COLOR}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.FILLING}/>
-                </th>
-              </tr>
-              {sector}
-            </tbody>
-          </table>
-          {canEdit && editSectors && <IconHovered
-            icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
-            hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
-            onClick={this.sectorAddHandler}
-          />}
+          {sector}
         </div>
       </FormDarkPart>
     )

@@ -116,7 +116,11 @@ const WithLineType = (Component) => class LineTypeComponent extends Component {
     const canEdit = this.isCanEdit()
     const value = canEdit
       ? (
-        <Select value={lineType} onChange={this.lineTypeChangeHandler}>
+        <Select
+          value={lineType}
+          className='line-type-select'
+          dropdownClassName='line-type-dropdown'
+          onChange={this.lineTypeChangeHandler}>
           {TYPE_LIST.map((type) => {
             if (ENTITY.GROUPS.AREAS.includes(dataType) && type.value === 'waved2') {
               return null

@@ -17,6 +17,7 @@ export const amps = {
   higherFormation: 'higherFormation', // 1Вище формування
   uniqueDesignation: 'uniqueDesignation', // 1Призначення
   uniqueDesignation1: 'uniqueDesignation1', // 1Призначення
+  commonIdentifier: 'commonIdentifier', // Загальний ідентифікатор
   additionalInformation: 'additionalInformation', // 1Додаткова інформація
   reinforcedReduced: 'reinforcedReduced', // 1Посилення/Послаблення
   staffComments: 'staffComments', // 1Коментар
@@ -745,7 +746,7 @@ export const symbols = [
       {
         hint: 'Рубіж досяжності вогневих засобів',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Ракетний удар',
@@ -913,7 +914,7 @@ export const symbols = [
       {
         hint: 'Зона розвідки повітряного противника',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
     ],
   },
@@ -1427,7 +1428,7 @@ export const symbols = [
       {
         hint: 'Зона ураження / виявлення (кругова)',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Зона ураження / виявлення (сектор)',
@@ -1502,7 +1503,7 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (кругова)',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (сектор)',
@@ -2352,7 +2353,7 @@ export const symbols = [
       {
         hint: 'Зона морської радіотехнічної розвідки, Межа зони подавлення',
         code: '10032500000170190000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       { hint: 'Цивільний телекомунікатор', code: '10032000001212020000', amp: {} },
       { hint: 'Цивільне телебачення', code: '10032000001212021300', amp: {} },
@@ -2487,7 +2488,7 @@ export const symbols = [
       {
         hint: `Мінімально безпечні відстані хімічного забруднення місцевості, відповідно до прогнозу без урахування напрямку вітру`,
         code: '10032500002721000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
       },
       {
         hint: 'Аміакопровід',
@@ -2507,12 +2508,12 @@ export const symbols = [
       {
         hint: 'Пункт спеціальної обробки (ПуСО)',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО', [amps.staffComments]: 'ПуСО' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПуСО' },
       },
       // TODO when done karandash (done)
       { hint: 'Дегазаційний пункт (ДП)',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ДП', [amps.staffComments]: 'ДП' } },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ДП' } },
       {
         hint: 'Район спеціальної обробки  (РСО)',
         code: '10032500001501000000',
@@ -2602,7 +2603,7 @@ export const symbols = [
       },
       {
         hint: 'Безпілотний літальний апарат (середній)  із встановленою на ньому апаратурою  РХБ розвідки',
-        code: '10030100001103000002',
+        code: '10030100001103001802',
         amp: { [amps.additionalInformation]: 'РХБЗ' },
       },
       {
@@ -2750,7 +2751,7 @@ export const symbols = [
       },
       {
         hint: 'Метеорологічна служба Повітряного командування',
-        code: '10031000151213003200',
+        code: '10031000121213003200',
         amp: { [amps.uniqueDesignation]: 'метсл', [amps.higherFormation]: 'ПвК' },
       },
       { hint: 'Метеорологічне бюро ЦУО', code: '10031000131213003200', amp: { [amps.uniqueDesignation]: 'метсл' } },
@@ -2787,11 +2788,21 @@ export const symbols = [
       },
       { hint: 'Метеорологічна група ВМС', code: '10031000131306004600', amp: { [amps.uniqueDesignation]: 'метгр' } },
       { hint: 'Метеорологічне бюро ВМС', code: '10031000141306004600', amp: { [amps.uniqueDesignation]: 'метбюро' } },
-      { hint: 'Гідрометеорологічна служба СВ', code: '10031000121306000000', amp: { [amps.uniqueDesignation]: 'ГМС' } },
+      {
+        hint: 'Гідрометеорологічна служба СВ',
+        code: '10031000121306000000',
+        amp: {
+          [amps.uniqueDesignation]: 'ГМС',
+          [amps.higherFormation]: 'СВ',
+        },
+      },
       {
         hint: 'Метеорологічне бюро КП АА СВ',
         code: '10031000131306007800',
-        amp: { [amps.uniqueDesignation]: 'метбюро' },
+        amp: {
+          [amps.uniqueDesignation]: 'метбюро',
+          [amps.higherFormation]: 'КП АА',
+        },
       },
       { hint: 'Метеорологічний взвод омбр (отбр)', code: '10031000141211023200', amp: {} },
       { hint: 'Метеорологічний взвод огпбр', code: '10031000141211003227', amp: {} },
@@ -2864,9 +2875,12 @@ export const symbols = [
       },
       { hint: 'Евакуаційне відділення', code: '10031000121611000000', amp: { [amps.additionalInformation]: 'ЕВ' } },
       {
-        hint: 'Відділення технічного обслуговування бронетанкової техніки',
+        hint: 'Відділення технічного обслуговування бронетанкового озброєння і техніки',
         code: '10031000121611000000',
-        amp: { [amps.staffComments]: 'БТОТ' },
+        amp: {
+          [amps.staffComments]: 'БТОТ',
+          [amps.additionalInformation]: 'ТО',
+        },
       },
       {
         hint: 'Відділення технічного обслуговування ракетно-артилерійського озброєння',
@@ -2901,44 +2915,49 @@ export const symbols = [
       {
         hint: 'Замикання похідної колони головних сил',
         code: '10031004001611000000',
-        amp: { [amps.additionalInformation]: 'ЗПК', [amps.staffComments]: 'ГС' },
+        amp: {
+          [amps.additionalInformation]: 'ЗПК',
+          [amps.staffComments]: 'ГС' },
       },
       {
         hint: 'Замикання похідної колони підрозділів технічного та тилового забезпечення',
         code: '10031004001611000000',
-        amp: { [amps.additionalInformation]: 'ЗПК' },
+        amp: {
+          [amps.additionalInformation]: 'ЗПК',
+          [amps.staffComments]: 'ТТ',
+        },
       },
       { hint: 'Пункт бойового постачання', code: '10032500003217050000', amp: {} },
       // TODO when done karandash start
       {
         hint: 'Пункт зустрічі матеріальних засобів',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗ', [amps.staffComments]: 'ПЗ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗ' },
       },
       {
         hint: 'Пункт передачі матеріальних засобів',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПП', [amps.staffComments]: 'ПП' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПП' },
       },
       {
         hint: 'Пункт технічної допомоги',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТД', [amps.staffComments]: 'ПТД' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТД' },
       },
       {
         hint: 'Пункт технічного спостереження',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТС', [amps.staffComments]: 'ПТС' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПТС' },
       },
       {
         hint: 'Збірний пункт пошкоджених машин',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ', [amps.staffComments]: 'ЗППМ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ' },
       },
       {
         hint: 'Збірний пункт пошкоджених машин, що планується',
         code: '10032510001301000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ', [amps.staffComments]: 'ЗППМ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ЗППМ' },
       },
       {
         hint: 'Запасний збірний пункт пошкоджених машин',
@@ -2947,7 +2966,6 @@ export const symbols = [
           type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ЗППМ',
           [amps.dtg]: 'З',
-          [amps.staffComments]: 'ЗППМ',
         },
       },
       // TODO end
@@ -2972,7 +2990,7 @@ export const symbols = [
       { hint: 'Склад автомобільного майна', code: '10031000001645000000', amp: { [amps.additionalInformation]: 'АМ' } },
       {
         hint: 'Центральна база зберігання ракет та боєприпасів',
-        code: '10032000001103000000',
+        code: '10031000001622000000',
         amp: { [amps.uniqueDesignation]: 'ЦБ РіБ' },
       },
       { hint: 'Рухомий засіб технічного обслуговування та ремонту типу МТО-АТ', code: '10031500321401000000', amp: {} },
@@ -3066,7 +3084,7 @@ export const symbols = [
         code: '10032000001112000000',
         amp: { [amps.additionalInformation]: 'ПММ' },
       },
-      { hint: 'Пункт заправки ПММ', code: '10032500003217000000', amp: {} },
+      { hint: 'Пункт заправки ПММ', code: '10032500003217090000', amp: {} },
       { hint: 'Пересувна станція перекачування ПММ / Насос перекачування ПММ', code: '10031500311409000000', amp: {} },
       { hint: 'Трубопровідні військові частини (підрозділи)', code: '10031000001626000000', amp: {} },
       { hint: 'Ремонтні підрозділи (майстерні)', code: '10031000001636003100', amp: {} },
@@ -3106,7 +3124,15 @@ export const symbols = [
         code: '10031500311402000000',
         amp: { [amps.additionalInformation]: 'ПГМП' },
       },
-      { hint: 'Військовий госпіталь (стаціонарний)', code: '10032000001207000000', amp: {} },
+      {
+        hint: 'Військовий госпіталь (стаціонарний)',
+        code: '10032000001207020000',
+        amp: {
+          [amps.additionalInformation]: '200',
+          [amps.uniqueDesignation]: '29ВГ',
+          [amps.higherFormation]: 'ВМКЦ ЦР',
+        },
+      },
       { hint: 'Військовий мобільний госпіталь', code: '10031000161614000000', amp: {} },
       {
         hint: 'Цивільна лікарня (міська клінічна лікарня)',
@@ -3184,7 +3210,11 @@ export const symbols = [
         code: '10031000001605010000',
         amp: { [amps.higherFormation]: 'ВМУ' },
       },
-      { hint: 'Похідний автомобільний клуб (ПАК) військовий (армійський)', code: '10031500311401000000', amp: {} },
+      {
+        hint: 'Похідний автомобільний клуб (ПАК) військовий (армійський)',
+        code: '10031500311401000000',
+        amp: { [amps.commonIdentifier]: 'ПАК-Д' },
+      },
       {
         hint: 'Державна адміністрація (обласна)',
         code: '10032000000000000000',
@@ -3292,37 +3322,40 @@ export const symbols = [
       {
         hint: 'Пункт прийому особового складу',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППОС', [amps.staffComments]: 'ППОС' },
+        amp: {
+          type: entityKind.POINT,
+          [amps.uniqueDesignation1]: ' ППОС ',
+        },
       },
       {
         hint: 'Пункт прийому техніки',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППТ', [amps.staffComments]: 'ППТ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППТ' },
       },
       {
         hint: 'Пункт зустрічі поповнення',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗП', [amps.staffComments]: 'ПЗП' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗП' },
       },
       {
         hint: 'Пункт попереднього збору військовозобов’язаних',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППВЗ', [amps.staffComments]: 'ППВЗ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППВЗ' },
       },
       {
         hint: 'Пункт попереднього збору техніки',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППЗТ', [amps.staffComments]: 'ППЗТ' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ППЗТ' },
       },
       {
         hint: 'Пункт збору селищної ради',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗСР', [amps.staffComments]: 'ПЗСР' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ПЗСР' },
       },
       {
         hint: 'Штаб оповіщення',
         code: '10032500002818000000',
-        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ШО', [amps.staffComments]: 'ШО' },
+        amp: { type: entityKind.POINT, [amps.uniqueDesignation1]: 'ШО' },
       },
       // TODO end
     ],

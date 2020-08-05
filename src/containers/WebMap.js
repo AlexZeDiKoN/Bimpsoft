@@ -148,6 +148,7 @@ const WebMapContainer = connect(
     undo: webMap.undo,
     redo: webMap.redo,
     checkObjectAccess: webMap.getObjectAccess,
+    onShadowDelete: webMap.removeObjects,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

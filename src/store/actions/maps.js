@@ -3,6 +3,8 @@ import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { asyncAction, maps, layers, webMap, flexGrid, selection, orgStructures } from './index'
 
+const MAP_FORCED_UPDATE_INTERVAL = 30 // seconds
+
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
 export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
@@ -109,7 +111,7 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
     const state = getState()
     const { webMap: { unitId } } = state
 
-    await dispatch(maps.updateMap({
+    const mapData = {
       mapId: id,
       name,
       isCOP,
@@ -118,7 +120,17 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       docConfirm,
       approversData,
       securityClassification,
-    }))
+    }
+
+    if (isCOP) {
+      // Примусовий таймер оновлення
+      mapData.refreshTimer = setInterval(
+        () => Promise.all(layersData.map(({ layerId }) => dispatch(webMap.updateObjectsByLayerId(layerId)))),
+        MAP_FORCED_UPDATE_INTERVAL * 1000,
+      )
+    }
+
+    await dispatch(maps.updateMap(mapData))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
       mapId: id_map,
       layerId: id,
