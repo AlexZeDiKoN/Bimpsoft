@@ -40,8 +40,8 @@ const forms = {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
     minWidth: 825,
-    minHeight: 825,
-    maxHeight: 825,
+    minHeight: 'calc(100vh - 150px)',
+    maxHeight: 'calc(100vh - 150px)',
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
@@ -378,34 +378,33 @@ export default class SelectionForm extends React.Component {
           </WarningForm>
           : <></>
         }
-        <ModalContainer>
-          <Wrapper
-            title={title}
-            onClose={this.cancelButtonClick}
-            minWidth={minWidth}
-            maxWidth={maxWidth}
-            defaultPosition={defaultPosition}
-            maxHeight={maxHeight}
-            minHeight={minHeight}
-          >
-            <HotKeysContainer>
-              <Component
-                data={data}
-                canEdit={canEdit && !this.state.showWarningCancel}
-                orgStructures={orgStructures}
-                onOk={this.okHandler}
-                onChange={this.changeHandler}
-                onClose={this.cancelButtonClick}
-                onSaveError={onSaveError}
-                onCheckSave={this.checkSaveHandler}
-                onAddToTemplates={this.addToTemplateHandler}
-                onCoordinateFocusChange={onCoordinateFocusChange}
-                ovtData={ovtData}
-              />
-              <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
-            </HotKeysContainer>
-          </Wrapper>
-        </ModalContainer>
+        <Wrapper
+          title={title}
+          onClose={this.cancelButtonClick}
+          bounds={'div.app-body'}
+          minWidth={minWidth}
+          maxWidth={maxWidth}
+          defaultPosition={defaultPosition}
+          maxHeight={maxHeight}
+          minHeight={minHeight}
+        >
+          <HotKeysContainer>
+            <Component
+              data={data}
+              canEdit={canEdit && !this.state.showWarningCancel}
+              orgStructures={orgStructures}
+              onOk={this.okHandler}
+              onChange={this.changeHandler}
+              onClose={this.cancelButtonClick}
+              onSaveError={onSaveError}
+              onCheckSave={this.checkSaveHandler}
+              onAddToTemplates={this.addToTemplateHandler}
+              onCoordinateFocusChange={onCoordinateFocusChange}
+              ovtData={ovtData}
+            />
+            <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
+          </HotKeysContainer>
+        </Wrapper>
       </>
     )
   }
