@@ -1,3 +1,4 @@
+import { difference, pickBy } from 'ramda'
 import { print } from '../actions'
 import { Print } from '../../constants'
 
@@ -7,6 +8,7 @@ const initState = {
   printScale: Print.PRINT_SCALES[0],
   requisites: {
     dpi: Print.DPI_TYPES[0],
+    dpiAvailable: Print.DPI_TYPES,
     projectionGroup: Print.PRINT_PROJECTION_GROUP[0],
     legendEnabled: false,
     legendAvailable: false,
@@ -38,7 +40,13 @@ export default function reducer (state = initState, action) {
     case print.SELECTED_ZONE: {
       const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
         action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
-      const requisites = { ...state.requisites, legendAvailable }
+      const dpiAvailable = difference(
+        Print.DPI_TYPES,
+        Object.keys(
+          pickBy((v) => v < action.selectedZone.lists.X * action.selectedZone.lists.Y, Print.DPI_TYPE_MAX_LISTS),
+        ),
+      )
+      const requisites = { ...state.requisites, legendAvailable, dpiAvailable }
       return { ...state, requisites, selectedZone: action.selectedZone }
     }
     case print.PRINT_FILE_SET: {
