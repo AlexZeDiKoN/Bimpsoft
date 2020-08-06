@@ -178,7 +178,7 @@ export default class LayersComponent extends React.Component {
               title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
               placement='topRight'>
               <IButton
-                icon={IconNames.HIDE_MAP}
+                icon={mapsCollapsed ? IconNames.MAP_UNFOLD_DOWN : IconNames.MAP_FOLD }
                 colorType={ColorTypes.WITH_BG}
                 disabled={roots?.length === 0}
                 type={ButtonTypes.WHITE}
