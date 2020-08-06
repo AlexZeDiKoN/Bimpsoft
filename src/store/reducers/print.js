@@ -43,7 +43,7 @@ export default function reducer (state = initState, action) {
       const dpiAvailable = difference(
         Print.DPI_TYPES,
         Object.keys(
-          pickBy((v, _) => v < action.selectedZone.lists.X * action.selectedZone.lists.Y, Print.DPI_TYPE_MAX_LISTS),
+          pickBy((v) => v < action.selectedZone.lists.X * action.selectedZone.lists.Y, Print.DPI_TYPE_MAX_LISTS),
         ),
       )
       const requisites = { ...state.requisites, legendAvailable, dpiAvailable }
