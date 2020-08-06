@@ -44,6 +44,7 @@ export default class TaskModal extends React.Component {
           onClose={onClose}
           minWidth={1000}
           maxWidth={1000}
+          bounds='div.app-body'
           minHeight={350}
           resizeEnable={ResizeEnable.ALL_DISABLED}
         >
