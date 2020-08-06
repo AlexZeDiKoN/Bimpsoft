@@ -65,6 +65,8 @@ export const DATE_FORMAT = 'DD.MM.YYYY'
 
 export const DPI_TYPES = [ '150', '300', '600' ]
 
+export const DPI_TYPE_MAX_LISTS = { '600': 4, '300': 16 }
+
 export const PRINT_PROJECTION_GROUP = [ Coord.types.UCS_2000, Coord.types.UTM ]
 
 export const LS_GROUP = 'print'

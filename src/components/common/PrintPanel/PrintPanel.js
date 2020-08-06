@@ -52,10 +52,18 @@ class PrintPanel extends React.Component {
   }
 
   shouldComponentUpdate (nextProps, nextState, nextContext) {
-    if (!nextProps.requisites.legendAvailable && nextProps.requisites.legendEnabled) {
-      const { setPrintRequisites } = nextProps
+    const { requisites, setPrintRequisites } = nextProps
+    if (!requisites.legendAvailable && requisites.legendEnabled) {
       const { LEGEND_ENABLED } = Print.PRINT_PANEL_KEYS
       setPrintRequisites({ [LEGEND_ENABLED]: false })
+      return false
+    }
+    if (!requisites.dpiAvailable.includes(requisites.dpi)) {
+      const { setFieldsValue } = this.props.form
+      const { DPI } = Print.PRINT_SELECTS_KEYS
+      const dpi = requisites.dpiAvailable.slice(-1)[0]
+      setPrintRequisites({ [DPI]: dpi })
+      setFieldsValue({ [DPI]: dpi })
       return false
     }
     return true
@@ -252,7 +260,7 @@ class PrintPanel extends React.Component {
     const { setRequisitesFunc, colors, legendTableType, saveButtonEnabled, start, finish } = this.state
     const {
       PRINT_PANEL_KEYS, PRINT_SELECTS_KEYS, PRINT_SCALES,
-      DPI_TYPES, DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
+      DATE_FORMAT, COLOR_PICKER_KEYS, PRINT_PROJECTION_GROUP,
     } = Print
     const { FormRow, ButtonCancel, ButtonSave } = components.form
     return (
@@ -282,7 +290,7 @@ class PrintPanel extends React.Component {
                 },
               )(
                 <Select onChange={(value) => this.setPrintParameters(value, PRINT_SELECTS_KEYS.DPI)}>
-                  {this.createSelectChildren(DPI_TYPES)}
+                  {this.createSelectChildren(requisites.dpiAvailable)}
                 </Select>,
               )
             }
