@@ -62,7 +62,7 @@ export default class MapItemComponent extends React.Component {
     } = this.props
     return (
       <div className={'map-item-component ' + (showColor ? 'map-item-component-hover' : '')}>
-        <div className={'color-container'} style={{ background: color }}>
+        <div className={'color-container'} style={{ border: `6px solid ${color}` }}>
           <VisibilityButton
             title={i18n.MAP_VISIBILITY}
             className="map-item-component-control"

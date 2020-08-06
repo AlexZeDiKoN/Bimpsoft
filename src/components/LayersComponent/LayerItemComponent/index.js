@@ -57,7 +57,7 @@ export default class LayerItemComponent extends React.Component {
         className='layer-item-component-container'
         onClick={this.selectHandler}
       >
-        <div className='layer-color-icon' style={{ background: color }}>
+        <div className='layer-color-icon' style={{ border: `6px solid ${color}` }}>
           <VisibilityButton
             title={i18n.LAYER_VISIBILITY}
             visible={visible}
