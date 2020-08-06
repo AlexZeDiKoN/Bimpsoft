@@ -49,7 +49,6 @@ export const updateLayer = (layerData) =>
     const store = getStore()
     const allLayersById = layersById(store)
     const currentlySelectedLayerId = selectedLayerId(store)
-    console.log('updateL', layerData)
     if (
       currentlySelectedLayerId === layerData.layerId &&
       R.has('visible', layerData) &&
@@ -63,7 +62,6 @@ export const updateLayer = (layerData) =>
       dispatch(selectLayer(nextLayerIdToSelect))
     } else if (!currentlySelectedLayerId && layerData.visible) {
       // при отсутствии активного слоя выбираем первый попавшийся слой
-      console.log('selectActive', { currentlySelectedLayerId, vis: layerData.visible })
       dispatch(selectLayer(layerData.layerId))
     }
 
