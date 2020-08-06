@@ -8,12 +8,14 @@ import {
 } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 import { MapModes } from '../constants'
+import { SET_SEARCH_OPTIONS } from '../store/actions/viewModes'
 
 const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
       [viewModesKeys.map3D]: is3DMapMode,
+      searchEmpty: searchFailed,
     },
     webMap: {
       subordinationLevel,
@@ -44,6 +46,7 @@ const mapStateToProps = (store) => {
     topographicObjects,
     layerName,
     targetingMode,
+    searchFailed,
     printFilesCount: printFiles
       ? Object.keys(printFiles).length
       : null,
@@ -66,6 +69,14 @@ const mapDispatchToProps = {
     webMap.setSubordinationLevel(subordinationLevel),
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
+  onSearch: (sample) => viewModes.search(sample),
+  onCoordinates: (text, point) => webMap.setMarker({ text, point }),
+  onManyCoords: (list) => ({
+    type: SET_SEARCH_OPTIONS,
+    payload: list,
+  }),
+  onClearSearchError: () => viewModes.searchClearError,
+  onCloseSearch: () => viewModes.searchCloseList,
   onChangeTargetingMode: (targetingMode) => webMap.setMapMode(targetingMode ? MapModes.TARGET : MapModes.NONE),
   onChangeTaskMode: (taskMode) => taskMode
     ? batchActions([

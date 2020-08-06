@@ -1,15 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { components, utils } from '@DZVIN/CommonComponents'
 import './style.css'
+import { Input, Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
+import SearchOptions from '../../../containers/SearchOptionsContainer'
 
 const { names: iconNames, IconButton } = components.icons
+
+const { Coordinates: Coord } = utils
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -42,6 +46,12 @@ export default class LeftMenu extends React.Component {
     onChangeTargetingMode: PropTypes.func,
     onChangeTaskMode: PropTypes.func,
     onClick3D: PropTypes.func,
+    searchFailed: PropTypes.bool,
+    onSearch: PropTypes.func,
+    onCoordinates: PropTypes.func,
+    onManyCoords: PropTypes.func,
+    onClearSearchError: PropTypes.func,
+    onCloseSearch: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -72,6 +82,38 @@ export default class LeftMenu extends React.Component {
     onClick3D()
   }
 
+  search = (sample) => {
+    const { onSearch, onCoordinates, onManyCoords } = this.props
+    const query = sample.toUpperCase().trim()
+    if (query.length) {
+      const parsed = Coord.parse(query)
+      if (parsed && (parsed.length > 1 || (parsed.lng !== undefined && parsed.lat !== undefined))) {
+        if (parsed.length > 1) {
+          onManyCoords(parsed.map(({ lng, lat, type }) => ({
+            point: { lng, lat },
+            text: `${query} (${Coord.names[type]})`,
+          })))
+        } else {
+          onCoordinates(query, parsed)
+        }
+      } else {
+        onSearch(query)
+      }
+    }
+  }
+
+  searchClearError = () => {
+    const { searchFailed, onClearSearchError } = this.props
+    if (searchFailed) {
+      onClearSearchError()
+    }
+  }
+
+  searchBlur = () => {
+    const { onCloseSearch } = this.props
+    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
+  }
+
   render () {
     const {
       isMapCOP,
@@ -96,6 +138,7 @@ export default class LeftMenu extends React.Component {
       selectionButtonsComponent: SelectionButtonsComponent,
       flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
+      searchFailed,
     } = this.props
 
     const subordinationLevelViewData =
@@ -194,7 +237,26 @@ export default class LeftMenu extends React.Component {
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
-        <div className="menu-layer-name">{layerName}</div>
+        <Input.Search
+          placeholder={i18n.SEARCH}
+          style={{ width: '10%' }}
+          onBlur={this.searchBlur}
+          onSearch={this.search}
+          onChange={this.searchClearError}
+          className={searchFailed ? 'search-failed' : ''}
+          disabled={is3DMapMode}
+        />
+        <div className="search-options-sub-panel search-options-sub-panel-right">
+          <SearchOptions />
+        </div>
+        <Tooltip
+          title={layerName}
+          mouseEnterDelay={1.5}
+          placement='bottom'
+          className="menu-layer-name"
+        >
+          {layerName}
+        </Tooltip>
       </div>
     )
   }
