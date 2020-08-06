@@ -88,6 +88,7 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-M5cA7+F7tW6bVIQSJeLo6g9+SPb2P6yILlFOcPuNtupWguuUA5cmILQsAthaFdlaizdG0AbCiTMJ+An1FaFFuA==
+      tarball: '@DZVIN/CommonComponents/-/CommonComponents-15.2.513.tgz'
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
@@ -110,6 +111,7 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-NoWxKujWaY1Y8vtOJ3xyqftx+KTuntLjQa5K3r5wzoPKDx1/cH2u1aMDCUWvdXfZ2s2EvcF0hQK8ed9aJ0zlrA==
+      tarball: '@DZVIN/components/-/components-15.2.576.tgz'
   /@DZVIN/leaflet-measure-custom/15.2.7:
     dev: false
     resolution:
@@ -186,7 +188,7 @@ packages:
       debug: 4.1.1
       gensync: 1.0.0-beta.1
       json5: 2.1.2
-      lodash: 4.17.15
+      lodash: 4.17.19
       resolve: 1.15.1
       semver: 5.7.1
       source-map: 0.5.7
@@ -199,7 +201,7 @@ packages:
     dependencies:
       '@babel/types': 7.9.0
       jsesc: 2.5.2
-      lodash: 4.17.15
+      lodash: 4.17.19
       source-map: 0.5.7
     dev: true
     resolution:
@@ -274,7 +276,7 @@ packages:
     dependencies:
       '@babel/helper-function-name': 7.8.3
       '@babel/types': 7.9.0
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-PoeBYtxoZGtct3md6xZOCWPcKuMuk3IHhgxsRRNtnNShebf4C8YonTSblsK4tvDbm+eJAw2HAPOfCr+Q/YRG/g==
@@ -325,7 +327,7 @@ packages:
       '@babel/helper-split-export-declaration': 7.8.3
       '@babel/template': 7.8.6
       '@babel/types': 7.9.0
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-0FvKyu0gpPfIQ8EkxlrAydOWROdHpBmiCiRwLkUiBGhCUPRRbVD2/tm3sFr/c/GWFrQ/ffutGUAnx7V0FzT2wA==
@@ -341,7 +343,7 @@ packages:
       integrity: sha512-j+fq49Xds2smCUNYmEHF9kGNkhbet6yVIBp4e6oeQpH1RUs/Ir06xUKzDjDkGcaaokPiTNs2JBWHjaE4csUkZQ==
   /@babel/helper-regex/7.8.3:
     dependencies:
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-BWt0QtYv/cg/NecOAZMdcn/waj/5P26DR4mVLXfFtDokSR6fyuG0Pj+e2FqtSME+MqED1khnSMulkmGl8qWiUQ==
@@ -677,7 +679,7 @@ packages:
     dependencies:
       '@babel/core': 7.9.0
       '@babel/helper-plugin-utils': 7.8.3
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     peerDependencies:
       '@babel/core': ^7.0.0-0
@@ -1173,12 +1175,11 @@ packages:
   /@babel/runtime/7.11.2:
     dependencies:
       regenerator-runtime: 0.13.7
-    dev: false
     resolution:
       integrity: sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
   /@babel/runtime/7.9.0:
     dependencies:
-      regenerator-runtime: 0.13.5
+      regenerator-runtime: 0.13.7
     dev: true
     resolution:
       integrity: sha512-cTIudHnzuWLS56ik4DnRnqqNf8MkdUzV4iFFI1h7Jo9xvrpQROYaAnaSd2mHLQAzzZAPfATynX5ord6YlNYNMA==
@@ -1188,12 +1189,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-NE2DtOdufG7R5vnfQUTehdTfNycfUANEtCa9PssN9O/xmTzP4E08UI797ixaei6hBEVL9BI/PsdJS5x7mWoB9Q==
-  /@babel/runtime/7.9.6:
-    dependencies:
-      regenerator-runtime: 0.13.5
-    dev: true
-    resolution:
-      integrity: sha512-64AF1xY3OAkFHqOb9s4jpgk1Mm5vDZ4L3acHvAml+53nO1XbXLuDodsVpO4OIUsmemlUHMxNdYMNJmsvOwLrvQ==
   /@babel/template/7.8.6:
     dependencies:
       '@babel/code-frame': 7.8.3
@@ -1212,14 +1207,14 @@ packages:
       '@babel/types': 7.9.0
       debug: 4.1.1
       globals: 11.12.0
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-jAZQj0+kn4WTHO5dUZkZKhbFrqZE7K5LAQ5JysMnmvGij+wOdr+8lWqPeW0BcF4wFwrEXXtdGO7wcV6YPJcf3w==
   /@babel/types/7.9.0:
     dependencies:
       '@babel/helper-validator-identifier': 7.9.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       to-fast-properties: 2.0.0
     dev: true
     resolution:
@@ -1841,7 +1836,7 @@ packages:
       eslint-visitor-keys: 1.1.0
       glob: 7.1.6
       is-glob: 4.0.1
-      lodash: 4.17.15
+      lodash: 4.17.19
       semver: 6.3.0
       tsutils: 3.17.1
     dev: true
@@ -2749,7 +2744,7 @@ packages:
       integrity: sha512-XNtCsMAeAH1pdLMEg1z8/Bb3a8cdCbui9QbJATRFHHHW5kT6+NPI3zSVQUXgikTFITzsg+kYY5NTWhM2Orwt9w==
   /async/2.6.3:
     dependencies:
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==
@@ -2884,7 +2879,7 @@ packages:
       integrity: sha512-2EMA2P8Vp7lG0RAzr4HXqtYwacfMErOuv1U3wrvxHX6rD1sV6xS3WXG3r8TRQ2r6w8OhvSdWt+z41hQNwNm3Xw==
   /babel-plugin-macros/2.8.0:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
       cosmiconfig: 6.0.0
       resolve: 1.15.1
     dev: true
@@ -3621,6 +3616,7 @@ packages:
       path-is-absolute: 1.0.1
       readdirp: 2.2.1
       upath: 1.2.0
+    deprecated: Chokidar 2 will break on node v14+. Upgrade to chokidar 3 with 15x less dependencies.
     dev: true
     optionalDependencies:
       fsevents: 1.2.12
@@ -5343,7 +5339,7 @@ packages:
   /eslint-plugin-flowtype/4.6.0_eslint@6.8.0:
     dependencies:
       eslint: 6.8.0
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     engines:
       node: '>=4'
@@ -5396,7 +5392,7 @@ packages:
       integrity: sha512-FObidqpXrR8OnCh4iNsxy+WACztJLXAHBO5hK79T1Hc77PgQZkyDGA5Ag9xAvRpglvLNxhH/zSmZ70/pZ31dHg==
   /eslint-plugin-jsx-a11y/6.2.3_eslint@6.8.0:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
       aria-query: 3.0.0
       array-includes: 3.1.1
       ast-types-flow: 0.0.7
@@ -5557,7 +5553,7 @@ packages:
       js-yaml: 3.13.1
       json-stable-stringify-without-jsonify: 1.0.1
       levn: 0.3.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       minimatch: 3.0.4
       mkdirp: 0.5.4
       natural-compare: 1.4.0
@@ -6461,6 +6457,7 @@ packages:
     dependencies:
       bindings: 1.5.0
       nan: 2.14.0
+    deprecated: fsevents 1 will break on node v14+ and could be using insecure binaries. Upgrade to fsevents 2.
     dev: true
     engines:
       node: '>= 4.0'
@@ -6963,6 +6960,7 @@ packages:
     dependencies:
       ajv: 6.12.0
       har-schema: 2.0.0
+    deprecated: this library is no longer supported
     dev: true
     engines:
       node: '>=6'
@@ -7175,7 +7173,7 @@ packages:
     dependencies:
       html-minifier-terser: 5.0.5
       loader-utils: 1.4.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       pretty-error: 2.1.1
       tapable: 1.1.3
       util.promisify: 1.0.0
@@ -7260,7 +7258,7 @@ packages:
     dependencies:
       http-proxy: 1.18.0
       is-glob: 4.0.1
-      lodash: 4.17.15
+      lodash: 4.17.19
       micromatch: 3.1.10
     dev: true
     engines:
@@ -7546,7 +7544,7 @@ packages:
       cli-width: 2.2.0
       external-editor: 3.1.0
       figures: 3.2.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       mute-stream: 0.0.8
       run-async: 2.4.0
       rxjs: 6.5.4
@@ -7566,7 +7564,7 @@ packages:
       cli-width: 2.2.0
       external-editor: 3.1.0
       figures: 3.2.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       mute-stream: 0.0.8
       run-async: 2.4.0
       rxjs: 6.5.4
@@ -8935,7 +8933,7 @@ packages:
       integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
   /last-call-webpack-plugin/3.0.0:
     dependencies:
-      lodash: 4.17.15
+      lodash: 4.17.19
       webpack-sources: 1.4.3
     dev: true
     resolution:
@@ -9274,7 +9272,6 @@ packages:
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /lodash/4.17.19:
-    dev: false
     resolution:
       integrity: sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
   /logalot/2.1.0:
@@ -12561,8 +12558,8 @@ packages:
       object-assign: 4.1.1
       promise: 8.1.0
       raf: 3.4.1
-      regenerator-runtime: 0.13.5
-      whatwg-fetch: 3.0.0
+      regenerator-runtime: 0.13.7
+      whatwg-fetch: 3.3.1
     dev: true
     engines:
       node: '>=6'
@@ -13119,12 +13116,11 @@ packages:
     resolution:
       integrity: sha512-ZS5w8CpKFinUzOwW3c83oPeVXoNsrLsaCoLtJvAClH135j/R77RuymhiSErhm2lKcwSCIpmvIWSbDkIfAqKQlA==
   /regenerator-runtime/0.13.7:
-    dev: false
     resolution:
       integrity: sha512-a54FxoJDIr27pgf7IgeQGxmqUNYrcV338lf/6gH456HZ/PhX+5BcwHXG9ajESmwe6WRO0tAzRUrRmNONWgkrew==
   /regenerator-transform/0.14.4:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
       private: 0.1.8
     dev: true
     resolution:
@@ -13265,7 +13261,7 @@ packages:
       integrity: sha1-6H9tUTuSjd6AgmDBK+f+xv9ueYw=
   /request-promise-core/1.1.3_request@2.88.2:
     dependencies:
-      lodash: 4.17.15
+      lodash: 4.17.19
       request: 2.88.2
     dev: true
     engines:
@@ -14559,7 +14555,7 @@ packages:
   /table/5.4.6:
     dependencies:
       ajv: 6.12.0
-      lodash: 4.17.15
+      lodash: 4.17.19
       slice-ansi: 2.1.0
       string-width: 3.1.0
     dev: true
@@ -15489,7 +15485,7 @@ packages:
   /webpack-manifest-plugin/2.2.0_webpack@4.42.0:
     dependencies:
       fs-extra: 7.0.1
-      lodash: 4.17.15
+      lodash: 4.17.19
       object.entries: 1.1.1
       tapable: 1.1.3
       webpack: 4.42.0_webpack@4.42.0
@@ -15601,12 +15597,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw==
-  /whatwg-fetch/3.0.0:
-    dev: true
-    resolution:
-      integrity: sha512-9GSJUgz1D4MfyKU7KRqwOjXCXTqWdFNvEr7eUBYchQiVc744mqK/MzXPNR2WsPkmkOa4ywfg8C2n8h+13Bey1Q==
   /whatwg-fetch/3.3.1:
-    dev: false
     resolution:
       integrity: sha512-faXTmGDcLuEPBpJwb5LQfyxvubKiE+RlbmmweFGKjvIPFj4uHTTfdtTIkdTRhC6OSH9S9eyYbx8kZ0UEaQqYTA==
   /whatwg-mimetype/2.3.0:
@@ -15676,7 +15667,7 @@ packages:
       integrity: sha512-MTSfgzIljpKLTBPROo4IpKjESD86pPFlZwlvVG32Kb70hW+aob4Jxpblud8EhNb1/L5m43DUM4q7C+W6eQMMbA==
   /workbox-build/4.3.1:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
       '@hapi/joi': 15.1.1
       common-tags: 1.8.0
       fs-extra: 4.0.3
@@ -15771,7 +15762,7 @@ packages:
       integrity: sha512-0jXdusCL2uC5gM3yYFT6QMBzKfBr2XTk0g5TPAV4y8IZDyVNDyj1a8uSXy3/XrvkVTmQvLN4O5k3JawGReXr9w==
   /workbox-webpack-plugin/4.3.1_webpack@4.42.0:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
       json-stable-stringify: 1.0.1
       webpack: 4.42.0_webpack@4.42.0
       workbox-build: 4.3.1
@@ -15892,7 +15883,7 @@ packages:
       integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
   /yaml/1.8.3:
     dependencies:
-      '@babel/runtime': 7.9.6
+      '@babel/runtime': 7.11.2
     dev: true
     engines:
       node: '>= 6'
@@ -16038,7 +16029,7 @@ specifiers:
   react-redux: ^7.1.0
   react-router-dom: ^5.0.1
   react-router-redux: ^4.0.8
-  react-scripts: ^3.4.0
+  react-scripts: ^3.4.1
   recompose: ^0.30.0
   redux: ^4.0.4
   redux-batched-actions: ^0.4.1
