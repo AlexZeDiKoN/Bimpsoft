@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 // import FocusTrap from 'react-focus-lock'
-import { MovablePanel, ModalContainer } from '@DZVIN/CommonComponents'
+import { MovablePanel } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
