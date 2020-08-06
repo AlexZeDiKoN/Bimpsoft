@@ -1670,6 +1670,7 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       layer.map = this.map
       layer.options.lineCap = 'butt'
+      layer.pm.options.snappable = false // отключаем примагничивание маркеров к объектам при их перемещении
       layer.id = id
       layer.object = object
       // layer.on('click', this.clickOnLayer)

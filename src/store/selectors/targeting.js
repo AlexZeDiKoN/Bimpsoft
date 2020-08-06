@@ -1,9 +1,17 @@
 import { createSelector } from 'reselect'
+import { model } from '@DZVIN/MilSymbolEditor'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'
 import { isFriendObject } from '../../utils/affiliations'
 import { currentMapLayers } from './layersSelector'
+
+const ARMED = [
+  model.app6Data.symbolKeys.LAND_EQUIPMENT,
+  model.app6Data.symbolKeys.SEA_SURFACE,
+  model.app6Data.symbolKeys.SEA_SUBSURFACE,
+  model.app6Data.symbolKeys.AIR,
+]
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
@@ -35,19 +43,24 @@ const myList = (orgStructure, myUnitId) => {
   return buildList(orgStructure, myUnitId).flat(32)
 }
 
-const currentMapPointLowLevelObjects = createSelector(
+const currentMapArmedPointObjects = createSelector(
   objects,
   currentMapLayers,
   (objects, layers) => objects
-    .filter((object) => object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW &&
-      layers.includes(object.layer)),
+    .filter((object) =>
+      object.type === entityKind.POINT &&
+      layers.includes(object.layer) &&
+      (
+        object.level === SubordinationLevel.TEAM_CREW ||
+        ARMED.includes(model.APP6Code.getSymbol(object.code))
+      )),
 )
 
 export const targetingObjects = createSelector(
   targetingModeSelector,
   unitId,
   objects,
-  currentMapPointLowLevelObjects,
+  currentMapArmedPointObjects,
   defaultOrgStructure,
   selectedList,
   (targetingMode, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
