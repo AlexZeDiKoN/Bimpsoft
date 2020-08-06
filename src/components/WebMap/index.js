@@ -2283,7 +2283,10 @@ export default class WebMap extends React.PureComponent {
       <div
         onDragOver={this.dragOverHandler}
         onDrop={this.dropHandler}
-        ref={(container) => (this.container = container)}
+        ref={(container) => {
+          this.container = container
+          this.container?.removeAttribute('tabindex')
+        }}
         className='catalog-leaflet-popup'
       >
         <MapProvider value={this.map}>{this.props.children}</MapProvider>
