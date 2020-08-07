@@ -72,6 +72,7 @@ export const actionNames = {
   SAVE_COP_REPORT: action('SAVE_COP_REPORT'),
   TOGGLE_GEO_LANDMARK_MODAL: action('TOGGLE_GEO_LANDMARK_MODAL'),
   TOGGLE_DELETE_MARCH_POINT_MODAL: action('TOGGLE_DELETE_MARCH_POINT_MODAL'),
+  HIGHLIGHT_OBJECT: action('HIGHLIGHT_OBJECT'),
 }
 
 export const changeTypes = {
@@ -782,4 +783,9 @@ export const toggleDeleteMarchPointModal = (visible, segmentId, childId) => ({
 window.addEventListener('beforeunload', () => {
   dropLock && dropLock()
   stopHeartBeat()
+})
+
+export const highlightObject = (id, restoreColor = null) => ({
+  type: actionNames.HIGHLIGHT_OBJECT,
+  payload: { id, restoreColor },
 })

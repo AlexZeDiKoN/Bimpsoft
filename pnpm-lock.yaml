@@ -1,12 +1,12 @@
 dependencies:
-  '@DZVIN/CommonComponents': 15.2.513_react-dom@16.13.1+react@16.13.1
-  '@DZVIN/MilSymbolEditor': 15.2.273
+  '@DZVIN/CommonComponents': 15.2.514_react-dom@16.13.1+react@16.13.1
+  '@DZVIN/MilSymbolEditor': 15.2.274
   '@DZVIN/components': 15.2.576_react-dom@16.13.1+react@16.13.1
   '@DZVIN/leaflet-measure-custom': 15.2.7
   '@DZVIN/milsymbol': 0.0.5
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
   bezier-js: 2.5.1
-  cesium: 1.67.0
+  cesium: 1.72.0
   classnames: 2.2.6
   core-js: 3.6.4
   debounce: 1.2.0
@@ -43,7 +43,7 @@ dependencies:
   redux-thunk: 2.3.0
   regenerator-runtime: 0.13.5
   reselect: 4.0.0
-  resium: 1.11.0_3f6baf0fdd483daad68c73e62f4a4f09
+  resium: 1.12.0_5c10b3b7f1e753db08b46823e6644ee6
   svg-path-bounds: 1.0.1
   transformation-matrix: 2.2.0
   utm: 1.1.1
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/15.2.513_react-dom@16.13.1+react@16.13.1:
+  /@DZVIN/CommonComponents/15.2.514_react-dom@16.13.1+react@16.13.1:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -87,18 +87,17 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-M5cA7+F7tW6bVIQSJeLo6g9+SPb2P6yILlFOcPuNtupWguuUA5cmILQsAthaFdlaizdG0AbCiTMJ+An1FaFFuA==
-      tarball: '@DZVIN/CommonComponents/-/CommonComponents-15.2.513.tgz'
+      integrity: sha512-sNoay0vn9JoY9+Ovf2n4KteLROPBYOMALLhN5ZK2O2fMex6M4D+riRMZ40rYYN3+h+tyAS9fi7xeOBWxyZzK4A==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/15.2.273:
+  /@DZVIN/MilSymbolEditor/15.2.274:
     dependencies:
       '@DZVIN/milsymbol': 0.0.5
     dev: false
     resolution:
-      integrity: sha512-saeH7aJNkMqumdqFr0l+BDRV6VXe5ouE8sRhVjhgbrbriSrtu22TPwX2gl4l5zNVv0UO5XIXwdAae3uRP/q91g==
+      integrity: sha512-kSfpC++LyphCKods1X0jwkopMbORlRPw+MC9bnTIDQTrsYnylxU0bW3zikS4iC5mrTZaMYXVcx5hu0mElbM+XQ==
   /@DZVIN/components/15.2.576_react-dom@16.13.1+react@16.13.1:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
@@ -111,7 +110,6 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-NoWxKujWaY1Y8vtOJ3xyqftx+KTuntLjQa5K3r5wzoPKDx1/cH2u1aMDCUWvdXfZ2s2EvcF0hQK8ed9aJ0zlrA==
-      tarball: '@DZVIN/components/-/components-15.2.576.tgz'
   /@DZVIN/leaflet-measure-custom/15.2.7:
     dev: false
     resolution:
@@ -1232,7 +1230,7 @@ packages:
   /@craco/craco/5.6.4_react-scripts@3.4.1:
     dependencies:
       cross-spawn: 7.0.1
-      lodash: 4.17.15
+      lodash: 4.17.19
       react-scripts: 3.4.1
       webpack-merge: 4.2.2
     dev: true
@@ -3535,12 +3533,10 @@ packages:
     optional: true
     resolution:
       integrity: sha512-Cg8/ZSBEa8ZVY9HspcGUYaK63d/bN7rqS3CYCzEGUxuYv6UlmcjzDUz2fCFFHyTvUW5Pk0I+3hkA3iXlIj6guA==
-  /cesium/1.67.0:
-    dependencies:
-      esm: 3.2.25
+  /cesium/1.72.0:
     dev: false
     resolution:
-      integrity: sha512-vu/InLNtw1pV2FavfAB1c/BQGogg7LAx5GPu2hnGlSoSfb+hUyCh0YlW0kKyL/appAYgt1OtMCRaND2S7RqygQ==
+      integrity: sha512-7m3ITPlEx868+KgT9fVtpCW6gKoPJmNNvU/JxgPIGwwP1gY0dRttog6I4Sfq/j+e+cOtLTmCvN11qtYEuFpGmQ==
   /chalk/1.1.3:
     dependencies:
       ansi-styles: 2.2.1
@@ -5572,12 +5568,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-K+Iayyo2LtyYhDSYwz5D5QdWw0hCacNzyq1Y821Xna2xSJj7cijoLLYmLxTQgcgZ9mC61nryMy9S7GRbYpI5Ig==
-  /esm/3.2.25:
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
   /espree/6.2.1:
     dependencies:
       acorn: 7.1.1
@@ -9269,6 +9259,7 @@ packages:
     resolution:
       integrity: sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
   /lodash/4.17.15:
+    dev: false
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /lodash/4.17.19:
@@ -13332,9 +13323,9 @@ packages:
     dev: false
     resolution:
       integrity: sha512-qUgANli03jjAyGlnbYVAV5vvnOmJnODyABz51RdBN7M4WaVu8mecZWgyQNkG8Yqe3KRGRt0l4K4B3XVEULC4CA==
-  /resium/1.11.0_3f6baf0fdd483daad68c73e62f4a4f09:
+  /resium/1.12.0_5c10b3b7f1e753db08b46823e6644ee6:
     dependencies:
-      cesium: 1.67.0
+      cesium: 1.72.0
       react: 16.13.1
       react-dom: 16.13.1_react@16.13.1
     dev: false
@@ -13345,7 +13336,7 @@ packages:
       react: '>=16.8'
       react-dom: '>=16.8'
     resolution:
-      integrity: sha512-EdqUYClLYE4CWQCcv+9SfFaE13LGEV55mpfXX1DsQwpJikhpIkXkZ0YY4v1rMuEgswYxAhFerfOM2TUZ/BjOJA==
+      integrity: sha512-617O1Y01ldTDUHEz8vMmmlpCVeA+E7Be0Zm403oTvlrv/TM/a3fxJ3gBpiKTUga24VfiqILlU7npLLS6nGm9Gw==
   /resize-observer-polyfill/1.5.1:
     dev: false
     resolution:
@@ -15498,7 +15489,7 @@ packages:
       integrity: sha512-9S6YyKKKh/Oz/eryM1RyLVDVmy3NSPV0JXMRhZ18fJsq+AwGxUY34X54VNwkzYcEmEkDwNxuEOboCZEebJXBAQ==
   /webpack-merge/4.2.2:
     dependencies:
-      lodash: 4.17.15
+      lodash: 4.17.19
     dev: true
     resolution:
       integrity: sha512-TUE1UGoTX2Cd42j3krGYqObZbOD+xF7u28WB7tfUordytSjbWTIjK/8V0amkBfTYN4/pB/GIDlJZZ657BGG19g==
@@ -15972,15 +15963,15 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^15.2.513
-  '@DZVIN/MilSymbolEditor': ^15.2.273
-  '@DZVIN/components': ^15.2.575
+  '@DZVIN/CommonComponents': ^15.2.514
+  '@DZVIN/MilSymbolEditor': ^15.2.274
+  '@DZVIN/components': ^15.2.576
   '@DZVIN/leaflet-measure-custom': ^15.2.7
   '@DZVIN/milsymbol': ^0.0.5
-  '@craco/craco': ^5.2.1
+  '@craco/craco': ^5.6.4
   antd: ^3.12.4
   bezier-js: 2.5.1
-  cesium: ^1.59.0
+  cesium: ^1.72.0
   classnames: ^2.2.6
   core-js: ^3.1.4
   craco-cesium: ^1.1.1
@@ -16029,14 +16020,14 @@ specifiers:
   react-redux: ^7.1.0
   react-router-dom: ^5.0.1
   react-router-redux: ^4.0.8
-  react-scripts: ^3.4.1
+  react-scripts: ^3.4.0
   recompose: ^0.30.0
   redux: ^4.0.4
   redux-batched-actions: ^0.4.1
   redux-thunk: ^2.3.0
   regenerator-runtime: ^0.13.3
   reselect: ^4.0.0
-  resium: ^1.7.0
+  resium: ^1.12.0
   svg-path-bounds: ^1.0.1
   transformation-matrix: ^2.2.0
   utm: ^1.1.1

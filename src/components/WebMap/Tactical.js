@@ -219,7 +219,10 @@ function createOlovo (data, layer, initMap) {
     layer && (layer.options.directions !== directions || layer.options.zones !== zones)
   )) {
     if (layer) {
-      layer.map.objects.remove(layer)
+      const index = layer.map.objects.indexOf(layer)
+      if (index >= 0) {
+        layer.map.objects.splice(index, 1)
+      }
       layer.removeFrom(layer.map)
       layer = null
     }
