@@ -2742,7 +2742,9 @@ export const symbols = [
       {
         hint: 'Метеорологічна служба ПС',
         code: '10031000121306000000',
-        amp: { [amps.uniqueDesignation]: 'метсл', [amps.higherFormation]: 'ПС' },
+        amp: {
+          [amps.uniqueDesignation]: 'метсл',
+          [amps.higherFormation]: 'ПС' },
       },
       {
         hint: 'Авіаційний метеорологічний центр КЦ ПС',
@@ -2751,8 +2753,11 @@ export const symbols = [
       },
       {
         hint: 'Метеорологічна служба Повітряного командування',
-        code: '10031000121213003200',
-        amp: { [amps.uniqueDesignation]: 'метсл', [amps.higherFormation]: 'ПвК' },
+        code: '10031000121306000000',
+        amp: {
+          [amps.uniqueDesignation]: 'метсл',
+          [amps.higherFormation]: 'ПвК',
+        },
       },
       { hint: 'Метеорологічне бюро ЦУО', code: '10031000131213003200', amp: { [amps.uniqueDesignation]: 'метсл' } },
       {
