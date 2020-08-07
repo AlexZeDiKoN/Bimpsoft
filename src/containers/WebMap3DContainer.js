@@ -8,7 +8,7 @@ import * as selection from '../store/actions/selection'
 
 // @TODO: сделать общий метод фильтрации с мемоизацией
 const filterObjects = memoize((subordinationLevel, objects, layers) =>
-  objects.filter((item) => item.level >= subordinationLevel && layers[item.layer].visible)
+  objects.filter((item) => item.level >= subordinationLevel && layers[item.layer].visible),
 )
 
 const mapStateToProps = (state) => {
@@ -34,6 +34,7 @@ const mapDispatchToProps = {
     setZoom(zoom),
     webMap.setSubordinationLevelByZoom(),
   ]),
+  setCenter: webMap.setCenter,
   setMapMode: webMap.setMapMode,
   setSource: webMap.setSource,
   editObject: selection.showEditForm,

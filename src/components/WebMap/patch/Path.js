@@ -48,8 +48,21 @@ export default L.Path.include({
     this.setStyle({ opacity })
   },
 
+  intersectsWithBounds: function (bounds, map) {
+    const saveMap = this._map
+    this._map = map
+    const result = this.getBounds().pad(1).intersects(bounds)
+    this._map = saveMap
+    return result
+  },
+
   setHidden: function (hidden) {
-    this.setStyle({ hidden })
+    this._hidden = hidden
+    if (hidden) {
+      this.removeFrom(this.map)
+    } else {
+      this.addTo(this.map)
+    }
   },
 
   getMask: function () {
@@ -64,7 +77,6 @@ export default L.Path.include({
   getAmplifierGroup: function () {
     if (!this._amplifierGroup) {
       this._amplifierGroup = L.SVG.create('g')
-      this._renderer._rootGroup.appendChild(this._amplifierGroup)
       this._renderer._updateStyle(this)
     }
     return this._amplifierGroup

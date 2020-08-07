@@ -7,8 +7,6 @@ import { colors } from '../../../constants'
 import SectorItem from './SectorItem'
 
 const {
-  FormRow,
-  FormDivider,
   FormDarkPart,
 } = components.form
 
@@ -33,7 +31,13 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     ovtData: PropTypes.object,
   }
 
-  state = { editSectors: false }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      editSectors: false,
+    }
+  }
 
   // createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
   //   result.updateIn(path, (showedSet) =>
@@ -153,45 +157,23 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     const sector = this.addSectors(coordinatesArray, !canEdit || !editSectors)
     return (
       <FormDarkPart>
-        <FormRow label={i18n.SECTORS}>
-          {canEdit && (<IconHovered
-            icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
-            hoverIcon={IconNames.BAR_2_EDIT_HOVER}
-            onClick={this.sectorsEditClickHandler}
-          />)}
-        </FormRow>
-        <FormDivider/>
-        <div className="shape-form-scrollable">
-          <table>
-            <tbody>
-              <tr>
-                <th>
-                  <FormRow label={i18n.RADIUS}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AZIMUTH1}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AZIMUTH2}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.AMPLIFIER_T}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.COLOR}/>
-                </th>
-                <th>
-                  <FormRow label={i18n.FILLING}/>
-                </th>
-              </tr>
-              {sector}
-            </tbody>
-          </table>
-          {canEdit && editSectors && <IconHovered
-            icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
-            hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
-            onClick={this.sectorAddHandler}
-          />}
+        <div className='coordinate-width-container'>
+          <div className='coordinate-width-title'>{i18n.SECTORS}</div>
+          <div className='coordinate-width-button'>
+            {canEdit && editSectors && <IconHovered
+              icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
+              hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
+              onClick={this.sectorAddHandler}
+            />}
+            {canEdit && (<IconHovered
+              icon={editSectors ? IconNames.BAR_2_EDIT_ACTIVE : IconNames.BAR_2_EDIT_DEFAULT}
+              hoverIcon={IconNames.BAR_2_EDIT_HOVER}
+              onClick={this.sectorsEditClickHandler}
+            />)}
+          </div>
+        </div>
+        <div className="shape-form-scrollable sectors-array-container">
+          {sector}
         </div>
       </FormDarkPart>
     )

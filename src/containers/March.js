@@ -11,7 +11,9 @@ const mapStateToProps = ({ march: {
   time,
   distance,
   isCoordFilled,
-  geoLandmarks }, webMap }) => ({
+  geoLandmarks,
+  readOnly,
+  isChanged }, webMap }) => ({
   indicators,
   segmentList: segments,
   integrity,
@@ -21,6 +23,8 @@ const mapStateToProps = ({ march: {
   isCoordFilled,
   coordTypeSystem: webMap.get('coordinatesType'),
   geoLandmarks,
+  readOnly,
+  isChanged,
 })
 
 const mapDispatchToProps = {
@@ -38,6 +42,7 @@ const mapDispatchToProps = {
   closeMarch: march.closeMarch,
   toggleGeoLandmarkModal: webMap.toggleGeoLandmarkModal,
   toggleDeleteMarchPointModal: webMap.toggleDeleteMarchPointModal,
+  setGeoLandmarks: march.setGeoLandmarks,
 }
 
 const MarchContainer = connect(

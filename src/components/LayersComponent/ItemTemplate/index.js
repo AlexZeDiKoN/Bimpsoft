@@ -9,11 +9,19 @@ import { webMap } from '../../../store/actions'
 const ItemTemplate = (props) =>
   props.data.id[0] === 'm' ? <MapItemComponent {...props} /> : <LayerItemComponent {...props}/>
 
+const mapStateToProps = ({ maps: { byId } }, { data }) => {
+  const isMapCOP = data.hasOwnProperty('isCOP') ? data.isCOP : byId[data.mapId].isCOP
+
+  return {
+    isMapCOP,
+  }
+}
+
 const mapDispatchToProps = {
   onOpenReportMap: (dataMap) => webMap.toggleReportMapModal(true, dataMap),
 }
 
-export default connect(null, catchErrors(mapDispatchToProps))(ItemTemplate)
+export default connect(mapStateToProps, catchErrors(mapDispatchToProps))(ItemTemplate)
 
 ItemTemplate.propTypes = {
   data: PropTypes.object,

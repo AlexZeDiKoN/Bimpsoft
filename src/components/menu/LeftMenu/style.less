@@ -4,12 +4,42 @@
 .left-menu{
   .flex;
   align-items: center;
+  width: 100%;
 }
 .menu-layer-name {
   font-size: 1.1em;
-  font-family: @sidebar-font;
-  margin: 0 2em;
-  height: 1.5em;
+  font-family: Roboto;
   line-height: 1.5em;
+  margin: 0 10px;
   flex: 1 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+.search-failed > input {
+  color: red;
+}
+
+.search-options-container{
+  width: 10%;
+  .search-options-sub-panel {
+    width: auto !important;
+    position: relative;
+    top: 5px;
+    z-index: 1050;
+  }
+
+  .search-options-sub-panel-right {
+    .context-menu {
+      right: 0;
+    }
+  }
+
+  .search-options-sub-panel-left {
+    .context-menu {
+      left: 0;
+    }
+  }
 }

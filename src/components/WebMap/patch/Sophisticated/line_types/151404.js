@@ -1,8 +1,10 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingArrow } from '../arrowLib'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from '../lineDefinitions'
-import { settings } from '../../../../../utils/svg/lines'
+import {
+  getDashSize,
+  buildingArrow,
+} from '../utils'
 
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
@@ -36,8 +38,9 @@ lineDefinitions['151404'] = {
   render: (result, points, scale) => {
     const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
     if (status === STATUSES.PLANNED) {
-      result.layer.options.dashArray = settings.DASHARRAY * scale
-      result.layer._path.setAttribute('stroke-dasharray', settings.DASHARRAY * scale)
+      const dash = getDashSize(result.layer, scale)
+      result.layer.options.dashArray = dash
+      result.layer._path.setAttribute('stroke-dasharray', dash)
     }
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },

@@ -5,7 +5,7 @@ import {
 } from '../utils'
 
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519

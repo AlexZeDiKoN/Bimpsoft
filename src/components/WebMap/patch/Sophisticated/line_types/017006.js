@@ -13,7 +13,7 @@ import {
   drawLineMark,
   angleOf,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986

@@ -11,7 +11,7 @@ import { amps } from '../../../../../constants/symbols'
 
 lineDefinitions['240805'] = {
   // Ампліфікатори лінії
-  useAmplifiers: [ { id: amps.N, name: 'N' } ],
+  useAmplifiers: [ { id: amps.N, name: 'N', maxRows: 1 } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 

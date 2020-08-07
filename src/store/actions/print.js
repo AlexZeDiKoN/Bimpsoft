@@ -2,11 +2,13 @@ import * as R from 'ramda'
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import { getMapSvg } from '../../utils/svg/mapObjects'
-import { PRINT_ZONE_UNDEFINED } from '../../i18n/ua'
+import i18n from '../../i18n'
 import { visibleLayersSelector } from '../selectors'
 import { printLegendSvgStr } from '../../utils/svg'
 import { LS } from '../../utils'
 import { Print } from '../../constants'
+import { LAT, LNG } from '../../services/coordinateGrid/constants'
+import { setConfigPrintConstant } from '../../utils/svg/mapObject'
 import { asyncAction } from './index'
 
 export const PRINT = action('PRINT')
@@ -17,6 +19,7 @@ export const PRINT_REQUISITES_CLEAR = action('PRINT_REQUISITES_CLEAR')
 export const PRINT_FILE_SET = action('PRINT_FILE_SET')
 export const PRINT_FILE_REMOVE = action('PRINT_FILE_REMOVE')
 export const PRINT_FILE_LOG = action('PRINT_FILE_LOG')
+export const PRINT_MAP_AVAILABILITY = action('PRINT_MAP_AVAILABILITY')
 
 export const print = (mapId = null, name = '') =>
   (dispatch, getState) => {
@@ -94,7 +97,8 @@ export const printFileRetry = (id, name) =>
   }
 
 export const createPrintFile = (onError = null) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getPrintBounds, printFileCreate } }) => {
+  asyncAction.withNotification(async (dispatch, getState,
+    { webmapApi: { getPrintBounds, printFileCreate, getDefaultConfig } }) => {
     const state = getState()
     const {
       webMap: { objects, showAmplifiers },
@@ -105,8 +109,16 @@ export const createPrintFile = (onError = null) =>
         mapName,
         mapId,
       },
+      maps: { byId },
     } = state
-
+    const configPrint = await getDefaultConfig()
+    const errorConfig = setConfigPrintConstant(configPrint)
+    const printMap = byId[mapId]
+    const { classified } = printMap && printMap.securityClassification
+    if (errorConfig) {
+      onError && onError()
+      throw new Error(i18n.PRINT_CONFIG_ERROR + errorConfig)
+    }
     const layersById = R.filter((layer) => layer.mapId === mapId, visibleLayersSelector(state))
 
     if (selectedZone) {
@@ -116,11 +128,13 @@ export const createPrintFile = (onError = null) =>
       const printBounds = await getPrintBounds({
         extent: [ southWest.lng, southWest.lat, northEast.lng, northEast.lat ],
         scale: printScale,
+        dpi,
         projectionGroup,
       })
 
-      const { parts, size: [ width, height ] } = printBounds
-      const partsSvgs = parts.map((part) => getMapSvg(part, { objects, dpi, printScale, layersById, showAmplifiers }))
+      const { parts, size: [ width, height ], geographicSrid } = printBounds
+      const partsSvgs = parts.map((part) =>
+        getMapSvg(part, { geographicSrid, objects, dpi, printScale, layersById, showAmplifiers }))
 
       const legendSvg = printLegendSvgStr({
         widthMM: width,
@@ -128,6 +142,7 @@ export const createPrintFile = (onError = null) =>
         dpi,
         requisites,
         printScale,
+        classified,
         selectedZone,
         strokeScale: 1, // необходимо для создания обводки текста в Qgis
       })
@@ -143,6 +158,22 @@ export const createPrintFile = (onError = null) =>
       ]))
     } else {
       if (onError) { onError() }
-      throw new Error(PRINT_ZONE_UNDEFINED)
+      throw new Error(i18n.PRINT_ZONE_UNDEFINED)
     }
   })
+
+// запит наявності номенклатурних листів
+export const getMapAvailability = (printScale, coordinates) =>
+  async (dispatch, getState, { webmapApi: { printFileMapAvailability } }) => {
+    const coordinatesRequest = coordinates.map((coordinate) => {
+      return { lat: coordinate[LAT], lng: coordinate[LNG] }
+    })
+    // запит на сервер
+    const response = await printFileMapAvailability(printScale, coordinatesRequest)
+    const gridIdRequest = coordinates.map((coord) => `${printScale}_${coord[LAT].toFixed(6)}_${coord[LNG].toFixed(6)}`)
+    const gridIdUnavailable = response.unavailable.map((coord) => `${printScale}_${coord.lat.toFixed(6)}_${coord.lng.toFixed(6)}`)
+    dispatch({
+      type: PRINT_MAP_AVAILABILITY,
+      payload: { gridIdRequest, gridIdUnavailable },
+    })
+  }

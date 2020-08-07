@@ -1,5 +1,7 @@
-import { MIDDLE, DELETE } from '../strategies'
-import { STRATEGY_ARROW, buildingMainAttack } from '../arrowLib'
+import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
+import {
+  buildingMainAttack,
+} from '../utils'
 import lineDefinitions from '../lineDefinitions'
 
 // sign name: MAIN ATTACK

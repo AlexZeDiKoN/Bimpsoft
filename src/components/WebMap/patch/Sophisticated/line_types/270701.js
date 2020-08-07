@@ -3,18 +3,20 @@ import { CODE_MINE_TYPES, MINE_TYPES, CONTROL_TYPES } from '../../../../../const
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawRectangleCz, drawText,
+  drawRectangleCz,
+  drawText,
+  getPointSize,
+  drawLightning,
+  drawWires,
+  drawDotted,
 } from '../utils'
-import {
-  drawLightning, drawWires, drawDotted,
-} from '../arrowLib'
 
 // sign name: Мінне поле (мінне загородження)
 // task code: DZVIN-5776
 // hint: 'Мінне поле (Мінне загородження)'
 
 const SMALL_TEXT_SIZE = 0.67
-const SIZE = 48
+const MINE_SIZE = 1 // коэффициент размера мин по отношению к точечным знакам
 
 lineDefinitions['270701'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -34,21 +36,21 @@ lineDefinitions['270701'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const mineType = result.layer?.object?.attributes?.params?.mineType ?? MINE_TYPES.ANTI_TANK
     const controlType = result.layer?.object?.attributes?.params?.controlType ?? CONTROL_TYPES.UNCONTROLLED
     const dummy = result.layer?.object?.attributes?.params?.dummy ?? false
     const amplifiers = result.layer?.object?.attributes?.pointAmplifier ?? { top: null, middle: null, bottom: null }
     const pO = points[0]
     // міни
-    const d = SIZE * scale / 2
-    const symbolScale = mineType >= MINE_TYPES.MARINE ? 0.85 : 1
-    const sizeSymbol = SIZE * scale * symbolScale
-    let symbol = new Symbol(CODE_MINE_TYPES[mineType], { size: sizeSymbol }).asSVG()
+    const mineSize = getPointSize(result.layer) * MINE_SIZE
+    const d = mineSize / 2
+    const size = mineSize * (mineType >= MINE_TYPES.MARINE ? 0.85 : 1)
+    let symbol = new Symbol(CODE_MINE_TYPES[mineType], { size }).asSVG()
     result.amplifiers += `<g transform="translate(${pO.x - d * 3.2}, ${pO.y - d * 1.05})">${symbol}</g>`
     result.amplifiers += `<g transform="translate(${pO.x + d * 1.15}, ${pO.y - d * 1.05})">${symbol}</g>`
     if (mineType === MINE_TYPES.VARIOUS_TYPES) {
-      symbol = new Symbol(CODE_MINE_TYPES[0], { size: sizeSymbol }).asSVG()
+      symbol = new Symbol(CODE_MINE_TYPES[0], { size }).asSVG()
     }
     result.amplifiers += `<g transform="translate(${pO.x - d * 1.05}, ${pO.y - d * 1.05})">${symbol}</g>`
 

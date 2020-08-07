@@ -15,8 +15,9 @@ const UnitSelect = (Component) => class UnitSelectComponent extends Component {
     const unit = this.getResult().getIn(UNIT_PATH)
     const orgStructures = this.getOrgStructures()
     return (
-      <div className='org-structures-select-disabled'>
-        <FormRow label={i18n.UNIT}>
+      <div
+        className={canEdit ? 'org-structures-select-disabled' : 'org-structures-select-disabled org-structures-disabled'}>
+        <FormRow label={i18n.MILITARY_FORMATION}>
           <OrgStructureSelect
             values={orgStructures}
             onChange={this.unitChangeHandler}

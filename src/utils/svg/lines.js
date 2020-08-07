@@ -2,77 +2,13 @@ import Bezier from 'bezier-js'
 import * as R from 'ramda'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
+import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
+import { angle3Points } from '../../components/WebMap/patch/Sophisticated/utils'
 import { extractSubordinationLevelSVG } from './milsymbol'
-import { extractTextSVG, FONT_WEIGHT } from './text'
-
-export const settings = {
-  LINE_WIDTH: 2, // (пікселів) товщина ліній
-  AMPLIFIERS_STEP: 144, // (пікселів) крок відображення ампліфікаторів на лініях
-  AMPLIFIERS_SIZE: 96, // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
-  AMPLIFIERS_WINDOW_MARGIN: 6, // (пікселів) ширина ободків навкого ампліфікатора
-  AMPLIFIERS_STROKE_WIDTH: 6, // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
-  NODES_STROKE_WIDTH: 2, // (пікселів) товщина лінії для зображення вузлових точок
-  NODES_SPACE: 36, // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
-  // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
-  // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
-  POINT_SYMBOL_SIZE: { min: 9, max: 100 }, // (пікселів) розмір точкового знаку
-  NODES_SIZE: { min: 12, max: 120 }, // (пікселів) розмір вузлової точки (діаметр перекресленого кола, сторона квадрата)
-  TEXT_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір текстових ампліфікаторів лінійних/площинних знаків'
-  GRAPHIC_AMPLIFIER_SIZE: { min: 4, max: 64 }, // (пікселів) 'Розмір графічних ампліфікаторів лінійних/площинних знаків'
-  // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
-  // була строго кратною WAVE_SIZE
-  WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
-  CREASE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "изгиба" для ліній загородження
-  WIRE_SIZE: { min: 30, max: 180 }, // (пікселів) ширина шага повтора для ліній загородження з дрота
-  BLOCKAGE_SIZE: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "загородження"
-  MOAT_SIZE: { min: 6, max: 180 }, // (пікселів) висота знака для ліній "рів"
-  ROW_MINE_SIZE: { min: 4, max: 80 }, // (пікселів) висота знака для ліній "ряд мін"
-  DOTS_HEIGHT: { min: 4, max: 50 }, // (пікселів) висота знака для ліній "точки"
-  LINE_AMPLIFIER_TEXT_SIZE: { min: 6, max: 70 },
-  // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
-  STROKE_SIZE: { min: 9, max: 36 }, // (пікселів) відстань між "засічками" для лінії з засічками
-  // STROKE_SIZE: 18, // (пікселів) висота "засічки" для лінії з засічками
-  // TODO потенційно це місце просадки продуктивності:
-  // TODO * при маленьких значеннях будуть рвані лінії
-  // TODO * при великих може гальмувати відмальовка
-  LUT_STEPS: 16000, // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення
-  // довжин і пропорцій
-  DRAW_PARTIAL_WAVES: true,
-  MIN_ZOOM: 5,
-  MAX_ZOOM: 20,
-  STROKE_WIDTH: 5,
-  CROSS_SIZE: 24,
-  DASHARRAY: '20', // определяет структуру штрихов и пробелов , используемых для рисования пунктирной линии
-  DOTS_LENGTH_FACTOR: 0.2, // коэффициент длины точки линии к толщине линии при исползовании stroke_linecap = 'round'
-  FACTOR_SIZE: 10, // коэффициент для интерполяции размеров
-}
-
-export const HATCH_TYPE = {
-  NONE: 'none',
-  LEFT_TO_RIGHT: 'left-to-right',
-}
-
-export const MARK_TYPE = {
-  ARROW_90: 'arrow90',
-  ARROW_60: 'arrow60',
-  ARROW_45: 'arrow45',
-  ARROW_30: 'arrow30',
-  ARROW_30_FILL: 'arrow30fill',
-  ARROW_60_FILL: 'arrow60fill',
-  ARROW_90_DASHES: 'arrow90dashes',
-  ARROW1: 'arrow1',
-  ARROW2: 'arrow2',
-  ARROW3: 'arrow3',
-  ARROW4: 'arrow4',
-  STROKE1: 'stroke1',
-  STROKE2: 'stroke2',
-  STROKE3: 'stroke2',
-  FORK: 'fork',
-  CROSS: 'cross',
-  SERIF: 'serif',
-  ANGLE: 'angle',
-  SERIF_CROSS: 'serif_cross',
-}
+import {
+  extractTextsSVG,
+  FONT_WEIGHT,
+} from './text'
 
 class Segment {
   constructor (start, finish) {
@@ -132,8 +68,10 @@ const lineArray = (points, index, locked) => {
     points[next],
   ]
 }
+
+// влияет на последовательность сборки сторон у квадрата и прямоугольника при печати => позиция текстовых амплификаторов
 export const rectToPoints = ({ x, y, width, height = width }) =>
-  [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  [ { x, y: y + height }, { x, y }, { x: x + width, y }, { x: x + width, y: y + height } ]
 
 export const circleToD = (r, dx, dy) => `
   M ${dx - r}, ${dy}
@@ -592,7 +530,11 @@ const addUnitLine = (
     case 'moatAntiTank': {
       const n = setLength(normal(v), markerSize * 0.83)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
-      return ` M${p1.x} ${p1.y} L${cp3.x} ${cp3.y} L${p2.x} ${p2.y} Z`
+      return (
+        lineType === 'moatAntiTank'
+          ? `M${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}Z`
+          : `L${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}L${p1.x} ${p1.y}`
+      )
     }
     case 'moatAntiTankMine1': {
       if (halfElement) {
@@ -612,7 +554,7 @@ const addUnitLine = (
       const r = markerSize / 6
       const vr = setLength(v, 0.01)
       const n = setLength(normal(v), markerSize * 0.83)
-      const nr = setLength(normal(v), markerSize * 0.5)
+      const nr = setLength(normal(v), markerSize * SIN30)
       const cp1 = apply(p2, nr)
       const cp2 = apply(cp1, vr)
       const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
@@ -823,9 +765,9 @@ const getTextAmplifiers = ({
   fontColor,
   fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
+  strokeWidth,
+  amplifierIsNormal,
 }) => {
-  const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
-  const fillColor = color ? `fill="${color}"` : ``
   const result = {
     maskPath: [],
     group: '',
@@ -835,62 +777,131 @@ const getTextAmplifiers = ({
     return result
   }
 
+  const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
+  const fillColor = color ? `fill="${color}"` : ``
+
   points.forEach((point) => {
     // const isLast = points[index] === points.length - 1
-    const amplifiers = [ ...amplifier.entries() ].map(([ type, value ]) => {
+
+    const amplifiersExtract = [ ...amplifier.entries() ].map(([ type, value ]) => {
       if (type === 'middle') {
-        if (amplifierType === 'level' && level) {
+        if (amplifierType === 'level' && level) { // рівень підпорядкування
           return [ type, [ extractSubordinationLevelSVG(
             level,
             graphicSize,
-            settings.AMPLIFIERS_WINDOW_MARGIN * scale,
+            amplifierMargin,
           ) ] ]
         }
         // стрелки на промежуточных точкакх
         if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
-          return [ type, drawIntermediateArrow(amplifierType, graphicSize) ]
+          return [ type, drawIntermediateArrow(amplifierType, graphicSize, strokeWidth) ]
         }
       }
 
       if (!value) {
         return null // canceling render of a text amplifier
       }
+
+      // корректировка позиции внутреннего/наружного амплификатора для областей
+      const pointN = { ...point }
+      if (amplifierIsNormal === false) { // область вывернута, переворачиваем амлификаторы T и W
+        pointN.r += point.r < 0 ? 180 : -180
+      }
       // текстовый амплификатор
-      return [ type, extractTextSVG({
+      return [ type, extractTextsSVG({
         string: value,
         fontSize,
         fontColor,
         margin: amplifierMargin,
-        getOffset: getOffset.bind(null, type, point),
+        getOffset: getOffset.bind(null, type, pointN),
+        angle: point.r,
+        type,
       }) ]
     }).filter(Boolean)
 
-    amplifiers.forEach(([ type, amplifiers ]) => {
-      amplifiers.forEach((amplifier) => {
-        let { x, y, r } = point
-        r = getRotate?.(type, r, amplifierType) ?? r
-        if (amplifier.maskRect) {
-          result.maskPath.push(
-            pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
-              const movedPoint = add(point, x, y)
-              if (R.isNil(r) || r === 0) {
-                return movedPoint
-              }
-              return rotate(movedPoint, x, y, r)
-            }), true),
-          )
+    amplifiersExtract.forEach(([ type, amplifiers ]) => {
+      if (Array.isArray(amplifiers)) {
+        amplifiers.forEach((amplifier) => {
+          const { x, y, r } = point
+          // r = getRotate?.(type, r, amplifierType) ?? r
+          if (amplifier.maskRect) {
+            result.maskPath.push(
+              pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+                const movedPoint = add(point, x, y)
+                if (R.isNil(r) || r === 0) {
+                  return movedPoint
+                }
+                return rotate(movedPoint, x, y, r)
+              }), true),
+            )
+          }
+          result.group += `<g
+          stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
+          transform="translate(${x},${y}) rotate(${r})"
+          font-weight="${FONT_WEIGHT}"
+          ${fillColor}
+       >${amplifier.sign}</g>`
+        })
+      } else {
+        const { x, y, r } = point
+        if (amplifiers.masksRect && Array.isArray(amplifiers.masksRect)) {
+          amplifiers.masksRect.forEach((maskRect) => {
+            result.maskPath.push(
+              pointsToD(rectToPoints(maskRect).map((point) => {
+                const movedPoint = add(point, x, y)
+                if (R.isNil(r) || r === 0) {
+                  return movedPoint
+                }
+                let rmask = r
+                if (amplifierIsNormal === false) { // область вывернута, переворачиваем маску для амлификаторов T и W
+                  rmask += r < 0 ? 180 : -180
+                }
+                return rotate(movedPoint, x, y, rmask)
+              }), true),
+            )
+          })
         }
         result.group += `<g
           stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
           transform="translate(${x},${y}) rotate(${r})"
           font-weight="${FONT_WEIGHT}"
           ${fillColor}
-       >${amplifier.sign}</g>`
-      })
+       >${amplifiers.sign}</g>`
+      }
     })
   })
 
   return result
+}
+
+export const getOffsetIntermediateAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  if (type === 'top') {
+    y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+  } else if (type === 'bottom') {
+    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+  }
+  return { y, yMask: (rotate ? -y : y) }
+}
+
+export const getOffsetPointAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  switch (type) {
+    case 'top':
+      y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+      break
+    case 'middle':
+    case 'center':
+      y = -height * ((numberOfLines - 1) / 2 - index)
+      break
+    case 'bottom':
+      y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+      break
+    default: break
+  }
+  return { y, yMask: (rotate ? -y : y) }
 }
 
 export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
@@ -907,23 +918,26 @@ export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHe
   }
 }
 
-const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines) {
+const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines, index) {
   let t = point.t === 0 ? -1 : 1
   if (Math.abs(point.r) > 90) {
     t = -t
   }
   const half = lineWidth / 2
-  const offsetObject = getOffsetForIntermediateAmplifier(...arguments)
+  const offsetObject = getOffsetPointAmplifier(...arguments) // определяем смещение по y
   switch (type) {
     case 'top':
       offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
       break
     case 'middle':
     case 'center':
-      offsetObject.x = -(half + lineHeight / 3) * t
+      offsetObject.x = -(half + lineHeight / 4) * t
+      offsetObject.xMask = point.t ? -(lineWidth + lineHeight / 4) : (lineHeight / 4)
       break
     case 'bottom':
       offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
       break
     default:
       break
@@ -962,7 +976,7 @@ export const getPointAmplifier = ({
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
-    getOffset: getOffsetForIntermediateAmplifier, // определение смещеня строки текста в зависимости от номера строки
+    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и тапа амплификатора
   }
   return getTextAmplifiers({
     scale,
@@ -1009,8 +1023,21 @@ export const getAmplifiers = ({
   const interpolatedNodeSize = graphicSize || interpolateSize(zoom, settings.NODES_SIZE, scale)
   const step = fontSize || settings.AMPLIFIERS_SIZE * scale
   const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
-
-  { // межузловые амплификаторы
+  let amplifierIsNormal
+  if (locked) { // определение внутренней стороны области
+    const kolPoints = points.length
+    let angleL = 0
+    points.forEach((point, index, points) => {
+      let ang = angle3Points(point, points[(index - 1 + kolPoints) % kolPoints], points[(index + 1) % kolPoints])
+      if (ang < 0) {
+        ang = ang + Math.PI * 2
+      }
+      angleL += ang
+    })
+    // если амплификаторы  H1 и H2 необходимо поменять местами amplifierIsNormal=false
+    amplifierIsNormal = Math.abs(angleL - Math.PI * (kolPoints - 2)) < 0.1
+  }
+  { // межузловые амплификаторы H1, B, H2
     const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
     const { maskPath, group } = getTextAmplifiers({
       level,
@@ -1025,12 +1052,13 @@ export const getAmplifiers = ({
         bezier,
         locked,
       ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
-      getOffset: getOffsetForIntermediateAmplifier,
+      getOffset: getOffsetIntermediateAmplifier,
       getRotate: getRotateForIntermediateAmplifier,
       color,
       fontColor,
       fontSize,
       graphicSize,
+      amplifierIsNormal,
     })
     result.maskPath.push(...maskPath)
     result.group += group
@@ -1046,7 +1074,7 @@ export const getAmplifiers = ({
       centroid.r = 0
       amplifierOptions = {
         points: insideMap(centroid) ? [ centroid ] : [],
-        getOffset: getOffsetForIntermediateAmplifier,
+        getOffset: getOffsetPointAmplifier,
       }
     } else { // pointAmplifiers на краях линии
       amplifierOptions = {
@@ -1066,7 +1094,7 @@ export const getAmplifiers = ({
       }
     }
 
-    if (amplifierOptions.points.length) {
+    if (amplifierOptions.points.length) { // генерация svg PointAmplifiers
       const { maskPath, group } = getTextAmplifiers({
         level,
         scale,
@@ -1120,54 +1148,74 @@ export const getAmplifiers = ({
   return result
 }
 
-export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, strokeColor = 'black') => {
-  let res = `<g stroke-width="2" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
+export const drawArrowFill = ({ x, y }, angle, strokeWidth = 2, colorFill = 'black', oArrow, hArrow) => {
+  const path = `<path stroke="none" fill="${colorFill}" fill-opacity="1" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${2 * hArrow}z"/>`
+  return `<g transform="translate(${x},${y}) rotate(${angle})">${path}</g>`
+}
+
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graphicSize) => {
+  let res = `<g stroke-width="${strokeWidth}" transform="translate(${x},${y}) rotate(${angle})">`
   switch (type) {
-    case MARK_TYPE.ARROW_90:
-      res += `<path fill="none" d="M8-8 l-8,8 8,8"/>`
-      break
-    case MARK_TYPE.ARROW_60:
-      res += `<path fill="none" d="M11-6 l-11,6 11,6"/>`
-      break
-    case MARK_TYPE.ARROW_45:
-      res += `<path fill="none" d="M10-5 l-10,5 10,5"/>`
-      break
-    case MARK_TYPE.ARROW_30:
-      res += `<path fill="none" d="M12-3 l-12,3 12,3"/>`
-      break
-    case MARK_TYPE.ARROW_30_FILL:
-      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l13-4v8z"/>`
-      break
-    case MARK_TYPE.ARROW_60_FILL:
-      res += `<path stroke-width="0" fill="${strokeColor}" d="M${-strokeWidth},0l12-6v12z"/>`
-      break
     case MARK_TYPE.ARROW1: // 90
-      res += `<path fill="none" d="M7,-8 l-8,8 8,8"/>`
+    {
+      const hArrow = graphicSize * SIN45
+      res += `<path fill="none" d="M${hArrow},${hArrow}L0,0L${hArrow} ${-hArrow}"/>`
       break
+    }
     case MARK_TYPE.ARROW2: // 60 fill
-      res += `<path stroke="none" d="M9,-7 l-12,7 l12,7 Z"/>`
+    {
+      const oArrow = graphicSize * SIN60
+      const hArrow = graphicSize * SIN30
+      res += `<path stroke="none" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${graphicSize}z"/>`
       break
-    case MARK_TYPE.ARROW3:
-      res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
+    }
+    case MARK_TYPE.ARROW3: // 90 dual
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      res += `<path fill="none" d="M${0} 0l${l},${l} 0,${h} ${-l - h},${-l - h} ${l + h},${-l - h} 0,${h}z"/>`
       break
-    case MARK_TYPE.ARROW4:
-      res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+    }
+    case MARK_TYPE.ARROW4: // 90 dual dash
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      const lp = (h + l) / 8
+      const ll = lp * 2
+      res += `<path fill="none" d="M${l},${-l} L0,0l${l},${l} m0,${h}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}
+      ${ll},${-ll}m${lp},${-lp}l${ll},${-ll}m${lp},${-lp}l${ll},${-ll}"/>`
       break
+    }
     case MARK_TYPE.STROKE1:
-      res += `<path d="M0,-8 v16"/>`
+      res += `<path fill="none" d="M0,${-graphicSize / 2}v${graphicSize}"/>`
       break
     case MARK_TYPE.STROKE2:
-      res += `<path d="M-4,-6 l6,12"/>`
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}"/>`
       break
+    }
     case MARK_TYPE.STROKE3:
-      res += `<path d="M2,-6 l-6,12"/>`
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${hs},${-vs}L${-hs},${vs}"/>`
       break
+    }
     case MARK_TYPE.FORK:
-      res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
+    {
+      const l = graphicSize * SIN45
+      res += `<path fill="none" d="M${-l},${-l}L0,0l${-l},${l}"/>`
       break
+    }
     case MARK_TYPE.CROSS:
-      res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
+    {
+      const hs = graphicSize / 2
+      const vs = graphicSize * SIN60
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}M${-hs},${vs}L${hs},${-vs}"/>`
       break
+    }
     default:
       break
   }
@@ -1195,13 +1243,13 @@ export const getStylesForLineType = (type, scale = 1, dashSize = 6) => {
   return styles
 }
 
-export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, graphicSizePrint) => {
+export const getLineEnds = (points, objectAttributes, bezier, strokeWidth, graphicSize) => {
   const leftEndType = getLineEnd(objectAttributes, 'left')
   const rightEndType = getLineEnd(objectAttributes, 'right')
   if (!leftEndType && !rightEndType) {
     return { left: null, right: null }
   }
-  const graphicSize = (graphicSizePrint || interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, 1)) / 12
+  const scaleLineEnd = graphicSize / 12
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]
   if (bezier) {
@@ -1220,6 +1268,8 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, g
         leftEndType,
         points[0],
         angle(vector(points[0], leftPlus)),
+        scaleLineEnd,
+        strokeWidth,
         graphicSize,
       )
       : null),
@@ -1228,6 +1278,8 @@ export const getLineEnds = (points, objectAttributes, bezier, scale, zoom = 1, g
         rightEndType,
         points[points.length - 1],
         angle(vector(points[points.length - 1], rightMinus)),
+        scaleLineEnd,
+        strokeWidth,
         graphicSize,
       )
       : null),

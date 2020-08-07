@@ -1,6 +1,5 @@
 import { compose } from 'redux'
 import React from 'react'
-import { Scrollbar } from '@DZVIN/CommonComponents'
 import {
   UnitSelect, // Підрозділ
   WithSubordinationLevel, // Рівень підпорядкування
@@ -16,10 +15,11 @@ import {
 
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './MinedAreaForm.css'
+import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
 
 const PAIRS_AMPLIFIERS = [
-  { id: 'middle', name: 'N' },
-  { id: 'top', name: 'H1' },
+  { id: 'middle', name: 'N', maxRows: 1 },
+  { id: 'top', name: 'H1', maxRows: 1 },
 ]
 
 const SVG_MINED_AREA = <svg viewBox="0 0 1024 840">
@@ -50,35 +50,33 @@ export default class MinedAreaForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      {SVG_MINED_AREA}
+    </div>
     return (
-      <Scrollbar>
-        <div className="minedarea-container">
+      <div className="minedarea-container">
+        <div className='scroll-container'>
           <div className="minedarea-container__item--firstSection">
-            <div className="line-container__itemWidth-left">
-              {SVG_MINED_AREA}
-            </div>
-            <div className="line-container__itemWidth-right">
-              <div className="line-container__itemWidth">
-                {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
-                {this.renderOrgStructureSelect()} { /* підрозділ */ }
-              </div>
-              <div className="line-container__itemWidth">
-                {this.renderAffiliation()} { /* принадлежність */ }
-                {this.renderStatus()} { /* Стан */ }
-              </div>
+            <div className="minedarea-container__itemWidth-right">
+              {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
+              {this.renderOrgStructureSelect()} { /* підрозділ */ }
+              {this.renderAffiliation()} { /* принадлежність */ }
+              {this.renderStatus()} { /* Стан */ }
             </div>
           </div>
           <div className="minedarea-container__item--secondSection">
-            <div className="line-container__item">
-              {this.renderSegment()}
+            <div className="minedarea-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderSegment()}
+                {this.renderColor()}
+              </div>
               {this.renderLineType()}
-              {this.renderColor()}
             </div>
-            {this.renderAmplifiers(PAIRS_AMPLIFIERS)}
+            {this.renderAmplifiers(PAIRS_AMPLIFIERS, PATH_AMPLIFIERS, false, elem)}
             {this.renderCoordinates()}
           </div>
         </div>
-      </Scrollbar>
+      </div>
     )
   }
 }

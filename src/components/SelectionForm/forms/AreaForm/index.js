@@ -9,7 +9,6 @@ import {
   WithFill,
   WithSegment,
   WithLineType,
-  WithHatch,
   WithNodalPointType,
   WithCoordinatesArray,
   WithIntermediateAmplifiers,
@@ -19,6 +18,7 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './areaForm.css'
 import SelectionTypes from '../../../../constants/SelectionTypes'
+import { PATH_LINE_TYPE, types } from '../../parts/WithLineType'
 
 const Extenders = compose(
   UnitSelect, // Підрозділ
@@ -30,7 +30,6 @@ const Extenders = compose(
   WithNodalPointType,
   WithSegment,
   WithFill,
-  WithHatch,
   WithColor,
   WithStrokeWidth,
   WithIntermediateAmplifiers,
@@ -51,8 +50,8 @@ const SVG_AREA = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="
     <text alignmentBaseline="central" x="56" y="280">H1</text>
     <text alignmentBaseline="central" x="216" y="280">H2</text>
     <text alignmentBaseline="central" x="648" y="280">B</text>
-    <text alignmentBaseline="central" x="568" y="280">H1</text>
-    <text alignmentBaseline="central" x="728" y="280">H2</text>
+    <text alignmentBaseline="central" x="568" y="280">H2</text>
+    <text alignmentBaseline="central" x="728" y="280">H1</text>
     <text alignmentBaseline="central" x="392" y="200">T</text>
     <text alignmentBaseline="central" x="392" y="280">N</text>
     <text alignmentBaseline="central" x="392" y="360">W</text>
@@ -76,11 +75,11 @@ const SVG_POLYGON = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBo
     <text alignmentBaseline="central" x="56" y="280">H1</text>
     <text alignmentBaseline="central" x="216" y="280">H2</text>
     <text alignmentBaseline="central" x="648" y="400">B</text>
-    <text alignmentBaseline="central" x="568" y="400">H1</text>
-    <text alignmentBaseline="central" x="728" y="400">H2</text>
+    <text alignmentBaseline="central" x="568" y="400">H2</text>
+    <text alignmentBaseline="central" x="728" y="400">H1</text>
     <text alignmentBaseline="central" x="600" y="128">B</text>
-    <text alignmentBaseline="central" x="520" y="128">H1</text>
-    <text alignmentBaseline="central" x="680" y="128">H2</text>
+    <text alignmentBaseline="central" x="520" y="128">H2</text>
+    <text alignmentBaseline="central" x="680" y="128">H1</text>
     <text alignmentBaseline="central" x="392" y="200">T</text>
     <text alignmentBaseline="central" x="392" y="280">N</text>
     <text alignmentBaseline="central" x="392" y="360">W</text>
@@ -94,39 +93,44 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
 
   renderContent () {
     const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
+    const lineType = this.getResult().getIn(PATH_LINE_TYPE)
+    const isContinuousArea = lineType !== types.blockageWire.value // область имеет сплошной контур
+    const elem = <div className="containers-svg-tooltip">
+      {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
+    </div>
     return (
       <div className="area-container">
-        <div className="area-container--firstSection">
-          <div className="area-container__itemWidth-left">
-            {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
-          </div>
-          <div className="area-container__itemWidth-right">
-            <div className="area-container__itemWidth">
+        <div className='scroll-container'>
+          <div className="area-container__item--firstSection">
+            <div className="area-container__itemWidth-right">
               {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
               {this.renderOrgStructureSelect()} { /* підрозділ */ }
-            </div>
-            <div className="area-container__itemWidth">
               {this.renderAffiliation()} { /* принадлежність */ }
               {this.renderStatus()} { /* Стан */ }
             </div>
           </div>
+          <div className="area-container__item--secondSection">
+            <div className="area-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderSegment()}
+                {this.renderColor()}
+              </div>
+              {this.renderLineType()}
+              <div className='containerSegmentLine'>
+                {this.renderStrokeWidth()}
+                {this.renderNodalPointType()}
+              </div>
+              {isContinuousArea // область может иметь заливку или штиховку
+                ? <>
+                  {this.renderFill(true)}
+                </>
+                : <></>}
+            </div>
+          </div>
+          {this.renderIntermediateAmplifiers(elem)}
+          {this.renderPointAmplifiers(elem)}
+          {this.renderCoordinatesArray(true)}
         </div>
-        <div className="area-container__item">
-          {this.renderSegment()}
-          {this.renderLineType()}
-          {this.renderColor()}
-        </div>
-        <div className="area-container__item">
-          {this.renderStrokeWidth()}
-          {this.renderNodalPointType()}
-          {this.renderFill(true)}
-          {this.renderHatch()}
-        </div>
-        <div className="dzvin-form-divider">
-        </div>
-        {this.renderIntermediateAmplifiers()}
-        {this.renderPointAmplifiers()}
-        {this.renderCoordinatesArray(true)}
       </div>
     )
   }

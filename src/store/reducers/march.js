@@ -5,6 +5,9 @@ import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
 import i18n from './../../i18n'
 
 const initState = {
+  readOnly: false,
+  isChanged: false,
+  mapId: null,
   marchEdit: false,
   indicators: undefined,
   integrity: false,
@@ -57,19 +60,17 @@ export default function reducer (state = initState, action) {
     case march.ADD_CHILD:
     case march.DELETE_CHILD:
     case march.SET_COORD_FROM_MAP:
+      return { ...state, ...payload, isChanged: true }
     case march.INIT_MARCH:
       return { ...state, ...payload }
     case march.SET_COORD_MODE: {
       return { ...state, coordMode: !state.coordMode, coordModeData: payload }
     }
     case march.SET_REF_POINT_ON_MAP: {
-      return { ...state, coordRefPoint: payload }
+      return { ...state, coordRefPoint: payload, isChanged: true }
     }
     case march.CLOSE_MARCH: {
       return { ...state, marchEdit: false, segments: List([]) }
-    }
-    case march.SET_GEO_LANDMARKS: {
-      return { ...state, geoLandmarks: payload }
     }
     case march.ADD_GEO_LANDMARK: {
       const { coordinates, geoLandmark, segmentId, childId } = payload
@@ -127,7 +128,11 @@ export default function reducer (state = initState, action) {
       const updaterGeoLandmarks = { ...state.geoLandmarks }
       updaterGeoLandmarks[geoKey] = updateGeoLandmark
 
-      return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks }
+      return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks, isChanged: true }
+    }
+    case march.SET_GEO_LANDMARKS:
+    case march.SET_METRIC: {
+      return { ...state, ...payload }
     }
     default:
       return state

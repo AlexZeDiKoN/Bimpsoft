@@ -3,7 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, getPointAt, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: GUARD
 // task code: DZVIN-5770 (part 2)

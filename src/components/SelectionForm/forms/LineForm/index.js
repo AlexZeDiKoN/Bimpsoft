@@ -40,44 +40,40 @@ export default class LineForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
+    </div>
     return (
       <Scrollbar>
         <div className="line-container">
-          <div className="line-container__item--firstSection">
-            <div className="line-container__itemWidth-left">
-              <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
-            </div>
-            <div className="line-container__itemWidth-right">
-              <div className='line-container__itemWidth--section1'>
+          <div className='scroll-container'>
+            <div className="line-container__item--firstSection">
+              <div className="line-container__itemWidth-right">
                 {this.renderSubordinationLevel()}
                 {this.renderOrgStructureSelect()}
-              </div>
-              <div className='line-container__itemWidth--section1'>
                 {this.renderAffiliation()}
                 {this.renderStatus()}
               </div>
             </div>
-          </div>
-          <div className="line-container__item--secondSection">
-            <div className="line-container__itemWidth">
-              <div>
-                {this.renderSegment()}
-                {this.renderLineEnds(DIRECTION_LEFT)}
-                {this.renderNodalPointType()}
-              </div>
-              <div>
+            <div className="line-container__item--secondSection">
+              <div className="line-container__itemWidth">
                 <div className='containerTypeColor'>
-                  {this.renderLineType()}
+                  {this.renderSegment()}
                   {this.renderColor()}
                 </div>
-                {this.renderStrokeWidth()}
-                {this.renderLineEnds(DIRECTION_RIGHT)}
+                {this.renderLineType()}
+                <div className='container-sections'>
+                  {this.renderStrokeWidth()}
+                  {this.renderNodalPointType()}
+                  {this.renderLineEnds(DIRECTION_LEFT)}
+                  {this.renderLineEnds(DIRECTION_RIGHT)}
+                </div>
               </div>
             </div>
+            {this.renderIntermediateAmplifiers(elem)}
+            {this.renderPointAmplifiers(elem)}
+            {this.renderCoordinatesArray()}
           </div>
-          {this.renderIntermediateAmplifiers()}
-          {this.renderPointAmplifiers()}
-          {this.renderCoordinatesArray()}
         </div>
       </Scrollbar>
     )

@@ -7,10 +7,10 @@ import {
   angleOf,
   segmentLength,
   square,
-  drawLineMark, drawText,
+  drawLineMark, drawText, drawZ,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
 import { amps } from '../../../../../constants/symbols'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: FOLLOW AND SUPPORT
 // task code: DZVIN-5533
@@ -58,6 +58,7 @@ lineDefinitions['341300'] = {
     const anchor = applyToPoint(qp0, { x: SIDE_LENGTH * 2 + k * 2, y: 0 })
 
     drawLine(result, a, p0, b, c, center, d, a)
+    drawZ(result)
     drawText(result, segmentBy(p0, center, 0.4), a0,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
 

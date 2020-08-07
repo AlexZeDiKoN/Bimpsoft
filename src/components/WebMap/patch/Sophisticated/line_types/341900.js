@@ -12,7 +12,7 @@ import {
   drawMaskedText,
   drawLineMark, drawLine,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: Relief in Place (RIP)
 // task code: DZVIN-5537

@@ -4,7 +4,8 @@ import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { evaluateColor, TRANSPARENT } from '../../../constants/colors'
-import { getStylesForLineType, MARK_TYPE, settings } from '../../../utils/svg/lines'
+import { getStylesForLineType } from '../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../constants/drawLines'
 import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
@@ -12,12 +13,11 @@ const { Option } = Select
 const { icons: { Icon } } = components
 
 export const colorDiv = (color) => (
-  <div className="icon-option">
+  <div className="icon-option" title={colors.titles[color]}>
     <div
       className="icon-rect"
       style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${evaluateColor(color)}` }}
     />
-    <div className="icon-text">{colors.titles[color]}</div>
   </div>
 )
 export const colorOption = (color) => (
@@ -129,6 +129,16 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
       case 'trenches':
         return optionsSvg(
           <>
+            {borderStyle === 'waved' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 13 H0 M0 15l2-2M3 19l6-6M10 19l6-6 M17 19l6-6 M24 19l6-6M31 19l6-6M38 19l6-6M45 19l6-6M52 19l2-2"
+            />}
+            {borderStyle === 'waved2' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 8 H0 M0 4L2 2M3 8l6-6M10 8l6-6M17 8l6-6 M24 8l6-6M31 8l6-6M38 8l6-6M45 8l6-6M52 8l2-2"
+            />}
             <path
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
@@ -141,7 +151,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
         return (
           <div
             className="option-line-type"
-            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth / 2}px` : 1 }}
+            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth}px 0 0 0` : 1 }}
           />
         )
     }

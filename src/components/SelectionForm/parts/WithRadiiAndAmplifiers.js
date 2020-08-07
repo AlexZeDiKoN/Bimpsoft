@@ -11,6 +11,7 @@ import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const {
   FormRow,
@@ -28,12 +29,14 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
   constructor (props) {
     super(props)
     this.state = {
+      ...this.state,
       radiiText: [],
       amplifiers: [],
     }
   }
 
   setRadiusSector = (index, radiusText) => {
+    let isSet = false
     this.setResult((result) => {
       const radius = Number(radiusText)
       if (Number.isFinite(radius)) {
@@ -41,8 +44,8 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
         const coord1 = coordinatesArray[0]
         if (Coord.check(coord1)) {
           const coord2 = L.CRS.Earth.calcPairDown(coord1, radius)
-          const isSet = ((coord2.lat > coordinatesArray[index - 1].lat) &&
-          (index + 1) < coordinatesArray.size ? (coord2.lat < coordinatesArray[index + 1].lat) : true)
+          isSet = (coord2.lat < coordinatesArray[index - 1].lat) &&
+            ((index + 1 < coordinatesArray.length) ? (coord2.lat > coordinatesArray[index + 1].lat) : true)
           if (isSet) {
             return result.setIn([ ...COORDINATE_PATH, index ], coord2)
           }
@@ -50,14 +53,17 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
       }
       return result
     })
+    return Boolean(isSet)
   }
 
   // обработка изменения радиуса
   radiusChangeHandler = (index) => (radiusText) => {
-    this.setRadiusSector(index, radiusText)
-    const { radiiText } = this.state
-    radiiText[index] = radiusText
-    this.setState({ radiiText })
+    if (radiusText.length < 7) {
+      this.setRadiusSector(index, radiusText)
+      const { radiiText } = this.state
+      radiiText[index] = radiusText
+      this.setState({ radiiText })
+    }
   }
 
   radiusBlurHandler = (index) => () => {
@@ -100,7 +106,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     this.changeSectorsInfo({ name, index, value })
   }
 
-  renderRadiiAndAmplifiers () {
+  renderRadiiAndAmplifiers (maxRows) {
     const canEdit = this.isCanEdit()
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
@@ -111,70 +117,91 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
     const { radiiText = [] } = this.state
     return (
       coordinatesArray.map((elm, index) => {
-        const radius = radiiText[index] ? radiiText[index]
-          : Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
-        const radiusIsGood = Number.isFinite(Number(radius))
+        if (index === 0) {
+          return ''
+        }
+        const prevRadius = Math.round(distanceAzimuth(coordO, coordinatesArray[index]).distance)
+        const radius = radiiText[index] ? radiiText[index] : prevRadius
+        const radiusIsGood = prevRadius === radius
         const sectorInfo = sectorsInfo[index] ?? {}
         const amplifierT = sectorInfo?.amplifier || ''
         const color = sectorInfo?.color || (presetColor && presetColor[index]) || '#000000'
         const fill = sectorInfo?.fill || colors.TRANSPARENT
-        return (index !== 0) ? (
-          <div key={index}>
-            <div className="circularzone-container__itemWidth">
-              <div className="container__itemWidth50">
-                <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
-                  <InputWithSuffix
-                    readOnly={!canEdit}
-                    value={radius}
-                    onChange={canEdit ? this.radiusChangeHandler(index) : null}
-                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
-                    onBlur={canEdit ? this.radiusBlurHandler(index) : null}
-                    suffix={`${i18n.ABBR_METERS} ${radiusIsGood ? '' : '*'}`}
-                    error={!radiusIsGood}
-                  />
-                </FormRow>
-                <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
-                  <Input.TextArea
-                    value={amplifierT}
-                    name={'amplifier'}
-                    onChange={this.sectorAmplifierChangeHandler(index)}
-                    onFocus={canEdit ? this.sectorFocusHandler(index) : null}
-                    onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
-                    disabled={!canEdit}
-                    rows={1}
-                  />
-                </FormRow>
-              </div>
-              <div className="container__itemWidth50">
-                <FormRow label="Колір">
-                  <ColorPicker
-                    color={color}
-                    disabled={!canEdit}
-                    onChange={this.sectorColorChangeHandler(index)}
-                    zIndex={COLOR_PICKER_Z_INDEX}
-                    presetColors={PRESET_COLORS}
-                  />
-                </FormRow>
-                <FormRow label="Заливка">
-                  <Select
-                    value={fill}
-                    disabled={!canEdit}
-                    onChange={this.sectorFillChangeHandler(index)}
-                  >
-                    {colorOption(colors.TRANSPARENT)}
-                    {colorOption(colors.BLUE)}
-                    {colorOption(colors.RED)}
-                    {colorOption(colors.BLACK)}
-                    {colorOption(colors.GREEN)}
-                    {colorOption(colors.YELLOW)}
-                    {colorOption(colors.WHITE)}
-                  </Select>
-                </FormRow>
-              </div>
+        return <>
+          <div
+            className={canEdit
+              ? 'circularzone-container__itemWidth'
+              : 'circularzone-container__itemWidth modals-input-disabled'
+            }
+            key={index}>
+            <FormRow label={`${MARKER[index]} ${i18n.RADIUS.toLowerCase()}`}>
+              <InputWithSuffix
+                readOnly={!canEdit}
+                value={radius}
+                onChange={canEdit ? this.radiusChangeHandler(index) : null}
+                onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                onBlur={canEdit ? this.radiusBlurHandler(index) : null}
+                suffix={i18n.ABBR_METERS}
+                error={!radiusIsGood}
+              />
+            </FormRow>
+            <div className='radiContainer radiContainerColor'>
+              <div>{i18n.LINE_COLOR}</div>
+              <ColorPicker
+                color={color}
+                disabled={!canEdit}
+                onChange={this.sectorColorChangeHandler(index)}
+                zIndex={COLOR_PICKER_Z_INDEX}
+                presetColors={PRESET_COLORS}
+              />
             </div>
-            { (index < indexEnd) && <FormDivider/> }
-          </div>)
-          : ''
+            <div className='radiContainer'>
+              <div>{i18n.FILLING}</div>
+              <Select
+                value={fill}
+                disabled={!canEdit}
+                onChange={this.sectorFillChangeHandler(index)}
+              >
+                {colorOption(colors.TRANSPARENT)}
+                {colorOption(colors.BLUE)}
+                {colorOption(colors.RED)}
+                {colorOption(colors.BLACK)}
+                {colorOption(colors.GREEN)}
+                {colorOption(colors.YELLOW)}
+                {colorOption(colors.WHITE)}
+              </Select>
+            </div>
+          </div>
+          <div className='amplifier'>
+            <FormRow label={`${i18n.AMPLIFIER} «Т${index}»`}>
+              {maxRows === 1
+                ? <Input
+                  className={!canEdit ? 'modals-input-disabled' : ''}
+                  value={amplifierT}
+                  name={'amplifier'}
+                  readOnly={!canEdit}
+                  onChange={this.sectorAmplifierChangeHandler(index)}
+                  disabled={!canEdit}
+                  onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                  onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
+                  maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                />
+                : <Input.TextArea
+                  value={amplifierT}
+                  name={'amplifier'}
+                  className={!canEdit ? 'modals-input-disabled' : ''}
+                  onChange={this.sectorAmplifierChangeHandler(index)}
+                  onFocus={canEdit ? this.sectorFocusHandler(index) : null}
+                  onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
+                  disabled={!canEdit}
+                  autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
+                  rows={2}
+                />
+              }
+            </FormRow>
+          </div>
+          { (index < indexEnd) && <FormDivider/> }
+        </>
       })
     )
   }

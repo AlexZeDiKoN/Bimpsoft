@@ -29,7 +29,13 @@ export default class MapItemComponent extends React.Component {
     onChangeMapColor && onChangeMapColor(mapId, color)
   }
 
-  closeHandler = () => this.setState({ showCloseForm: true })
+  closeHandler = () => {
+    const { cancelVariant, openedVariantMapId } = window.explorerBridge
+    this.setState({ showCloseForm: true })
+    if (this.props.data.mapId === openedVariantMapId) {
+      cancelVariant()
+    }
+  }
 
   cancelCloseHandler = () => this.setState({ showCloseForm: false })
 
@@ -56,7 +62,7 @@ export default class MapItemComponent extends React.Component {
     } = this.props
     return (
       <div className={'map-item-component ' + (showColor ? 'map-item-component-hover' : '')}>
-        <div className={'color-container'} style={{ background: color }}>
+        <div className={'color-container'} style={{ border: `6px solid ${color}` }}>
           <VisibilityButton
             title={i18n.MAP_VISIBILITY}
             className="map-item-component-control"
@@ -65,8 +71,9 @@ export default class MapItemComponent extends React.Component {
             onChange={this.changeMapVisibilityHandler}
           />
         </div>
-        <div className={expanded ? 'expand-icon-expanded expand-icon' : 'expand-icon'}>
+        <div className={expanded ? 'expand-icon-collapse expand-icon' : 'expand-icon expand-icon-expanded'}>
           <IButton
+            title={expanded ? i18n.LAYERS_ROLL_UP : i18n.LAYERS_ROLL_DOWN}
             icon={IconNames.NEXT}
             onClick={onExpand}
             disabled={!canExpand}
@@ -84,7 +91,7 @@ export default class MapItemComponent extends React.Component {
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <div className='color-picker-hover'>
-          <Tooltip title={i18n.SAVE_AS} placement='topRight'>
+          <Tooltip title={i18n.CREATE_REPORT_MAP} placement='topRight'>
             <IButton
               icon={IconNames.BAR_2_SAVE}
               onClick={() => this.onShowReportMapModal(this.props.data)}

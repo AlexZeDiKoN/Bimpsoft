@@ -1,7 +1,7 @@
 import { DELETE, MIDDLE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import { angleOf, continueLine, drawLine, drawLineMark } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: SUPPORT BY FIRE POSITION
 // task code: DZVIN-5520
@@ -28,7 +28,7 @@ lineDefinitions['152100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2, p3 ] = points
 
     drawLine(result, p2, p0, p1, p3)

@@ -14,6 +14,7 @@ const entityKind = { // ID в базі даних відповідних тип�
   GROUPED_HEAD: 13, // згрупований знак пунктів управління
   GROUPED_LAND: 14, // згрупований знак сухопутних об'єктів
   GROUPED_REGION: 15, // згрупований знак "Позиційний район підрозділу" (DZVIN-5991)
+  OLOVO: 16, // знак "Смуга ураження керованими снарядами" (DZVIN-5993)
   SOPHISTICATED: 69, // складна лінія
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
@@ -42,6 +43,7 @@ export const entityKindNonFillable = [
   entityKind.GROUPED_HEAD,
   entityKind.GROUPED_LAND,
   entityKind.GROUPED_REGION,
+  entityKind.OLOVO,
 ]
 
 export const entityKindOutlinable = [
@@ -73,6 +75,7 @@ export const GROUPS = {
     entityKind.RECTANGLE,
     entityKind.SQUARE,
     entityKind.CONTOUR,
+    entityKind.OLOVO,
   ],
   POINTS: [
     entityKind.POINT,

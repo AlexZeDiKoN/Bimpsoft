@@ -11,6 +11,7 @@ import {
   ButtonTypes,
   IButton,
 } from '@DZVIN/CommonComponents'
+import { isEmpty } from 'ramda'
 import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
@@ -36,7 +37,7 @@ export default class LayersComponent extends React.Component {
     valueFilterLayers: '',
   }
 
-  getCommonData = memoizeOne((selectedLayerId, textFilter, isMapCOP) => {
+  getCommonData = memoizeOne((selectedLayerId, textFilter) => {
     const {
       onSelectLayer,
       onChangeMapColor,
@@ -57,11 +58,13 @@ export default class LayersComponent extends React.Component {
       onPrintMap,
       onChangeLayerVisibility,
       onChangeLayerColor,
-      isMapCOP,
     }
   })
 
-  closeHandler = () => this.setState({ showCloseForm: true })
+  closeHandler = () => {
+    this.setState({ showCloseForm: true })
+    window.explorerBridge.cancelVariant()
+  }
 
   cancelCloseHandler = () => this.setState({ showCloseForm: false })
 
@@ -99,10 +102,9 @@ export default class LayersComponent extends React.Component {
     } = this.props
 
     const { showLayers, showPeriod, showCloseForm, valueFilterLayers } = this.state
-
+    const mapsCollapsed = isEmpty(expandedIds) // все карты свернуты
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
-
     return (
       <Wrapper title={i18n.LAYERS} icon={IconNames.LAYERS}>
         <div className="layers-component">
@@ -119,7 +121,7 @@ export default class LayersComponent extends React.Component {
                   onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
                 />
               </Tooltip>
-              {!isMapCOP && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
+              {!isMapCOP && isMapCOP !== undefined && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
                 <IButton
                   icon={IconNames.CALENDAR}
                   colorType={ColorTypes.WHITE}
@@ -157,7 +159,7 @@ export default class LayersComponent extends React.Component {
               className="tree-layers"
               byIds={byIds}
               roots={roots}
-              commonData={this.getCommonData(selectedLayerId, textFilter, isMapCOP)}
+              commonData={this.getCommonData(selectedLayerId, textFilter)}
               itemTemplate={ItemTemplate}
               expandedKeys={expandedKeys}
               filteredIds={filteredIds}
@@ -172,18 +174,21 @@ export default class LayersComponent extends React.Component {
               onChange={onChangeVisibility}
             />
             <div className='divider'/>
-            <Tooltip title={i18n.CLOSE_MAP_SECTIONS} placement='topRight'>
+            <Tooltip
+              title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
+              placement='topRight'>
               <IButton
-                icon={IconNames.HIDE_MAP}
+                icon={mapsCollapsed ? IconNames.MAP_UNFOLD_DOWN : IconNames.MAP_FOLD }
                 colorType={ColorTypes.WITH_BG}
                 disabled={roots?.length === 0}
                 type={ButtonTypes.WHITE}
-                onClick={onCloseMapSections}
+                onClick={() => onCloseMapSections(mapsCollapsed)}
               />
             </Tooltip>
             <div className='divider'/>
             <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
               <IButton
+                disabled={roots?.length === 0}
                 icon={IconNames.CLOSE_MAP}
                 onClick={this.closeHandler}
               />

@@ -3,7 +3,7 @@ import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, angleOf, drawMaskedText, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: CANALIZE
 // task code: DZVIN-5767

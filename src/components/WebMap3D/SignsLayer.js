@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import memoize from 'memoize-one'
 import {
-  Cartographic, Cartesian3, PolygonGeometry, SceneMode,
+  Cartographic, Cartesian3, PolygonGeometry,
   GeometryInstance, ColorGeometryInstanceAttribute, PolygonHierarchy,
 } from 'cesium'
 import { Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource } from 'resium'
@@ -38,11 +38,6 @@ const renderEntities = memoize((signs, edit) => signs.map(({ type, id, ...rest }
     return <Entity key={id} onDoubleClick={edit(id)} { ...rest }/>
   }
 }))
-
-// @TODO: in constants
-const MIN_PITCH = -Math.PI / 2
-const MAX_PITCH = 0
-const MIN_HEIGHT = 200
 
 export default class SignsLayer extends Component {
   static propTypes = {
@@ -81,11 +76,10 @@ export default class SignsLayer extends Component {
   }
 
   checkZoom = () => {
-    this.fixCameraUnderground()
     if (!this.scene.current) { return }
     const { zoom, setZoom } = this.props
     const camera = this.scene.current.cesiumElement.camera
-    const cartographic = Cartographic.fromCartesian(camera.position)
+    const cartographic = camera.positionCartographic
     const { latitude, height } = cartographic
     const currentZoom = zoom2height(latitude, null, height)
     currentZoom !== zoom && setZoom(currentZoom)
@@ -99,38 +93,6 @@ export default class SignsLayer extends Component {
     return Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, height + value)
   }
 
-  fixCameraUnderground = () => {
-    if (!this.scene.current) { return }
-    const scene = this.scene.current.cesiumElement
-    const camera = scene.camera
-    if (camera._suspendTerrainAdjustment && scene.mode === SceneMode.SCENE3D) {
-      camera._suspendTerrainAdjustment = false
-      camera._adjustHeightForTerrain()
-    }
-    let pitch = camera.pitch
-    if (pitch > MAX_PITCH || pitch < MIN_PITCH) {
-      scene.screenSpaceCameraController.enableTilt = false
-
-      // clamp the pitch
-      if (pitch > MAX_PITCH) {
-        pitch = MAX_PITCH
-      } else if (pitch < MIN_PITCH) {
-        pitch = MIN_PITCH
-      }
-
-      const destination = Cartesian3.fromRadians(
-        camera.positionCartographic.longitude,
-        camera.positionCartographic.latitude,
-        Math.max(camera.positionCartographic.height, MIN_HEIGHT))
-
-      camera.setView({
-        destination: destination,
-        orientation: { pitch },
-      })
-      scene.screenSpaceCameraController.enableTilt = true
-    }
-  }
-
   render () {
     const { signs } = this.state
     const entities = renderEntities(signs, this.edit)
@@ -140,7 +102,7 @@ export default class SignsLayer extends Component {
           <Fog enabled={false}/>
         </Scene>
         <Globe depthTestAgainstTerrain={false}/>
-        <Camera onMoveEnd={this.checkZoom} onChange={this.fixCameraUnderground}/>
+        <Camera onMoveEnd={this.checkZoom}/>
         { entities }
       </>
     )

@@ -63,7 +63,9 @@ export const PRINT_SCALES = [ 500000, 200000, 100000, 50000, 25000 ]
 
 export const DATE_FORMAT = 'DD.MM.YYYY'
 
-export const DPI_TYPES = [ '150', '200', '300', '600' ]
+export const DPI_TYPES = [ '150', '300', '600' ]
+
+export const DPI_TYPE_MAX_LISTS = { '600': 4, '300': 16 }
 
 export const PRINT_PROJECTION_GROUP = [ Coord.types.UCS_2000, Coord.types.UTM ]
 
@@ -71,4 +73,4 @@ export const LS_GROUP = 'print'
 
 export const DOC_CLASS_ID = '5c767b4e737a6915a1000001'
 
-export const PRINT_LEGEND_MIN_LISTS = { X: 2, Y: 2 }
+export const PRINT_LEGEND_MIN_LISTS = { X: 1, Y: 1 }

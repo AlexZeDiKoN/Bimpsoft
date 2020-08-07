@@ -9,108 +9,203 @@ import * as colors from '../../constants/colors'
 import { drawLine, emptyPath, extractLineCode, getMaxPolygon } from '../../components/WebMap/patch/Sophisticated/utils'
 import lineDefinitions from '../../components/WebMap/patch/Sophisticated/lineDefinitions'
 
+import { HATCH_TYPE } from '../../constants/drawLines'
 import {
   circleToD,
   getAmplifiers,
   pointsToD,
-  rectToPoints,
   stroked,
   waved,
   getLineEnds,
   getStylesForLineType,
   blockage,
   getPointAmplifier,
-  settings,
-  HATCH_TYPE,
+
 } from './lines'
 import { renderTextSymbol } from './index'
 
 const mapObjectBuilders = new Map()
 const onePunkt = 0.3528 // 1 пункт в мм
-const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
+// eslint-disable-next-line no-unused-vars
 const DPI96 = 3.78 // количество пикселей в 1мм
+const DPI1 = 0.03937 // количество пикселей в 1мм при разрешении 1 DPI
 const HEIGHT_SYMBOL = 100 // высота символа в px при size=100%
-const MERGE_SYMBOL = 5 // отступы при генерации символов
 export const MM_IN_INCH = 25.4
 export const getmmInPixel = (dpi) => MM_IN_INCH / dpi
+export const getPixelInMm = (dpi) => dpi / MM_IN_INCH
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
+const LINE_WIDTH = 2 // индекс ширины для линий без определенной толщины
+const CROSS_SIZE = 32 // индекс ширины между линиями штриховки
+const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
+const MERGE_SYMBOL = 5 // отступы при генерации символов
 
-// Размер базового элемента пунктира (мм)  в зависимости от маштаба карты
-export const dashSizeFromScale = new Map([
+// Размер базового элемента пунктира (мм) в зависимости от маcштаба карты
+const dashSize = [
   [ 25000, 3 ],
   [ 50000, 2.5 ],
   [ 100000, 2 ],
   [ 200000, 2 ],
   [ 500000, 2 ],
   [ 1000000, 2 ],
-])
+]
+const dashSizeFromScale = new Map(dashSize)
 
-// Размер точечных знаков(мм) в зависимости от маштаба карты
-const pointSizeFromScale = new Map([
+// Размер точечных знаков(мм) в зависимости от маcштаба карты
+const pointSize = [
   [ 25000, 12 ],
   [ 50000, 11 ],
   [ 100000, 9 ],
   [ 200000, 7 ],
   [ 500000, 6 ],
   [ 1000000, 5 ],
-])
+]
+const pointSizeFromScale = new Map(pointSize)
 
 // размер шрифта(мм) в зависимости от масштаба приведенный к 12 пункту
-export const fontSizeFromScale = new Map([
+const fontSize = [
   [ 25000, 14 * onePunkt ],
   [ 50000, 13 * onePunkt ],
   [ 100000, 12 * onePunkt ],
   [ 200000, 11 * onePunkt ],
   [ 500000, 11 * onePunkt ],
   [ 1000000, 11 * onePunkt ],
-])
+]
+const fontSizeFromScale = new Map(fontSize)
 
-export const graphicSizeFromScale = new Map([
+const graphicSize = [
   [ 25000, 6 ],
   [ 50000, 6 ],
   [ 100000, 5 ],
   [ 200000, 4 ],
   [ 500000, 3 ],
   [ 1000000, 3 ],
-])
+]
+const graphicSizeFromScale = new Map(graphicSize)
 
 // толщина линии соответствующая одному пункту
-export const strokeSizeFromScale = new Map([
+const strokeSize = [
   [ 25000, 0.7 ],
   [ 50000, 0.6 ],
   [ 100000, 0.5 ],
   [ 200000, 0.45 ],
   [ 500000, 0.38 ],
   [ 1000000, 0.25 ],
-])
+]
+const strokeSizeFromScale = new Map(strokeSize)
+
+// масштабы используемые при печати
+const existingScale = [ 25000, 50000, 100000, 200000, 500000, 1000000 ]
 
 export const printSettings = {
   graphicSizeFromScale,
   fontSizeFromScale,
   pointSizeFromScale,
   strokeSizeFromScale,
+  dashSizeFromScale,
+  pointSizeDefault: POINT_SIZE_DEFAULT,
+  shadowWidth: SHADOW_WIDTH,
+  lineWidth: LINE_WIDTH,
+  crossSize: CROSS_SIZE,
+  mergeSymbol: MERGE_SYMBOL,
 }
-// printScale - масштаб карті
+// printScale - масштаб карты
 // dpi - разрешение печати
-export const getFontSizeByDpi = (printScale, dpi) => (fontSize = POINT_SIZE_DEFAULT) => {
-  return Math.round(fontSizeFromScale.get(printScale) / getmmInPixel(dpi) * fontSize / POINT_SIZE_DEFAULT)
+export const getFontSizeByDpi = (printScale, dpi) => (fontSize = printSettings.pointSizeDefault) => {
+  return Math.round(printSettings.fontSizeFromScale.get(printScale) * getPixelInMm(dpi) * fontSize /
+    printSettings.pointSizeDefault)
 }
 
 export const getGraphicSizeByDpi = (printScale, dpi) => {
-  return Math.round(graphicSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.graphicSizeFromScale.get(printScale) * getPixelInMm(dpi))
 }
 
 export const getPointSizeByDpi = (printScale, dpi) => {
-  return Math.round(pointSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.pointSizeFromScale.get(printScale) * getPixelInMm(dpi))
 }
 
-export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = 1) => {
-  return Math.round(strokeSizeFromScale.get(printScale) / getmmInPixel(dpi) * strokeWidth)
+export const getStrokeWidthByDpi = (printScale, dpi) => (strokeWidth = printSettings.lineWidth) => {
+  return Math.round(printSettings.strokeSizeFromScale.get(printScale) * getPixelInMm(dpi) * strokeWidth)
 }
 
 export const getDashSizeByDpi = (printScale, dpi) => {
-  return Math.round(dashSizeFromScale.get(printScale) / getmmInPixel(dpi))
+  return Math.round(printSettings.dashSizeFromScale.get(printScale) / getmmInPixel(dpi))
 }
+
+// проверка и установка настроек печати из конфигупационного файла
+export const setConfigPrintConstant = (configPrint) => {
+  const {
+    pointSizeDefault,
+    shadowWidth,
+    lineWidth,
+    crossSize,
+    mergeSymbol,
+    graphicSizeFromScale,
+    fontSizeFromScale,
+    pointSizeFromScale,
+    strokeSizeFromScale,
+    dashSizeFromScale,
+  } = configPrint
+  let errorMessage = ''
+  if (Number.isInteger(pointSizeDefault)) {
+    printSettings.pointSizeDefault = pointSizeDefault
+  } else {
+    errorMessage += 'pointSizeDefault, '
+  }
+  if (Number.isInteger(shadowWidth)) {
+    printSettings.shadowWidth = shadowWidth
+  } else {
+    errorMessage += 'shadowWidth, '
+  }
+  if (Number.isInteger(lineWidth)) {
+    printSettings.lineWidth = lineWidth
+  } else {
+    errorMessage += 'lineWidth, '
+  }
+  if (Number.isInteger(crossSize)) {
+    printSettings.crossSize = crossSize
+  } else {
+    errorMessage += 'crossSize, '
+  }
+  if (Number.isInteger(mergeSymbol)) {
+    printSettings.mergeSymbol = mergeSymbol
+  } else {
+    errorMessage += 'mergeSymbol, '
+  }
+  const mapGraphicSizeFromScale = new Map(graphicSizeFromScale)
+  const mapFontSizeFromScale = new Map()
+  new Map(fontSizeFromScale).forEach((value, key) => mapFontSizeFromScale.set(key, value * onePunkt))
+  const mapPointSizeFromScale = new Map(pointSizeFromScale)
+  const mapStrokeSizeFromScale = new Map(strokeSizeFromScale)
+  const mapDashSizeFromScale = new Map(dashSizeFromScale)
+
+  if (!existingScale.some((scale) => !mapGraphicSizeFromScale.has(scale))) {
+    printSettings.graphicSizeFromScale = mapGraphicSizeFromScale
+  } else {
+    errorMessage += 'graphicSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapFontSizeFromScale.has(scale))) {
+    printSettings.fontSizeFromScale = mapFontSizeFromScale
+  } else {
+    errorMessage += 'fontSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapPointSizeFromScale.has(scale))) {
+    printSettings.pointSizeFromScale = mapPointSizeFromScale
+  } else {
+    errorMessage += 'pointSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapStrokeSizeFromScale.has(scale))) {
+    printSettings.strokeSizeFromScale = mapStrokeSizeFromScale
+  } else {
+    errorMessage += 'strokeSizeFromScale, '
+  }
+  if (!existingScale.some((scale) => !mapDashSizeFromScale.has(scale))) {
+    printSettings.dashSizeFromScale = mapDashSizeFromScale
+  } else {
+    errorMessage += 'dashSizeFromScale, '
+  }
+  return errorMessage.slice(0, -2)
+}
+
 // let lastMaskId = 1
 const builderGroup = (idGroup, objects) => {
   const _groupChildren = []
@@ -131,10 +226,10 @@ const getSvgPath = (
   bounds,
   idObject,
   strokeWidthPrint,
+  dpi,
   dashSize,
-  options = {},
-  dpi) => {
-  const { color, fill, lineType, hatch, fillOpacity, fillColor, strokeWidth = 1 } = attributes
+  options = {}) => {
+  const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
   const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
   const strokeWidthToScale = strokeWidthPrint || strokeWidth
@@ -164,8 +259,8 @@ const getSvgPath = (
   // заливка або штрихування
   let fillOption = null
   if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
-    const cs = strokeWidthToScale + settings.CROSS_SIZE * scale
-    const sw = strokeWidthToScale
+    const cs = strokeWidthToScale + printSettings.crossSize
+    const sw = strokeWidthToScale * 2
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
@@ -182,24 +277,26 @@ const getSvgPath = (
       </pattern>
       <path
         fill={fillColor}
+        fillRule='nonzero'
         fillOpacity="1"
         d={d}
       />
     </>
-  } else if (fillColor) { // заливка установлена в рендере линии
+  } else if (options.fill) { // заливка установлена в рендере линии
     fillOption = <path
-      fill={fillColor}
-      fillOpacity={fillOpacity ?? 0.22}
+      fill={options.fill}
+      fillRule='nonzero'
+      fillOpacity={options.fillOpacity ?? 0.22}
       d={d}
     />
   } else if (fill) {
     fillOption = <path
       fill={colors.evaluateColor(fill) || 'transparent'}
+      fillRule='nonzero'
       fillOpacity={fillOpacity ?? 0.22}
       d={d}
     />
   }
-
   return (
     <>
       {maskBody}
@@ -207,7 +304,7 @@ const getSvgPath = (
         {fillOption}
         {Boolean(outlineColor) && <path
           stroke={outlineColor}
-          strokeWidth={strokeWidthToScale + SHADOW_WIDTH / getmmInPixel(dpi)}
+          strokeWidth={strokeWidthToScale + printSettings.shadowWidth * getPixelInMm(dpi)}
           fill="none"
           d={d}
         />}
@@ -256,7 +353,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
     id,
     dpi,
   } = data
-  const options = {}
+  const options = {} // дополнительные опции для path
   const fontColor = '#000000'
   const strokeColor = colors.evaluateColor(color)
   let result = ''
@@ -297,7 +394,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
         break
         // залишаємо початкову лінію
       case 'solidWithDots':
-        options.strokeLinecap = 'round'
+        options.strokeLinecap = 'round' // закругляем короткий отрезок в круг (точку)
       // eslint-disable-next-line no-fallthrough
       case 'blockageIsolation':
       case 'blockageWire1':
@@ -346,7 +443,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
   },
   { ...data, attributes })
 
-  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, null, null, graphicSize)
+  const { left: leftSvg, right: rightSvg } = getLineEnds(points, attributes, bezier, strokeWidth, graphicSize)
   return (
     <>
       {Boolean(amplifiers.group) && (
@@ -363,14 +460,26 @@ const getLineSvg = (points, attributes, data, layerData) => {
         />
       )}
       {/* eslint-disable-next-line max-len */}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dashSize, options, dpi)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options)}
       {resultFilled}
     </>
   )
 }
 
 const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layerData) => {
-  const { coordToPixels, bounds, scale, fontSize, graphicSize, markerSize, dashSize, getStrokeWidth, dpi } = commonData
+  const {
+    coordToPixels,
+    bounds,
+    scale,
+    dpi,
+    printOptions: {
+      getFontSize,
+      getStrokeWidth,
+      graphicSize,
+      markerSize,
+      dashSize,
+    },
+  } = commonData
   const { attributes, geometry, level, id } = object
   if (geometry && geometry.size >= minPoints) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -378,6 +487,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
       prepareBezierPath(points, locked)
     }
     const strokeWidth = getStrokeWidth ? getStrokeWidth(attributes.strokeWidth) : attributes.strokeWidth
+    const fontSize = getFontSize()
     return getLineSvg(
       points,
       attributes,
@@ -389,7 +499,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
 
 // сборка Квадрата, Прямоугольника, Круга
 const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
-  const { coordToPixels, scale, bounds, getFontSize, getStrokeWidth, dpi } = commonData
+  const { coordToPixels, scale, bounds, printOptions: { getFontSize, getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   if (point1 && point2) {
@@ -415,9 +525,15 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
       }
       case SelectionTypes.SQUARE:
       case SelectionTypes.RECTANGLE: {
-        const points = kind === SelectionTypes.SQUARE
-          ? rectToPoints({ x, y, width: Math.abs(dx) > Math.abs(dy) ? dx : dy })
-          : rectToPoints({ x, y, width: dx, height: dy })
+        const point3 = {
+          lat: point1.lat,
+          lng: point2.lng,
+        }
+        const point4 = {
+          lat: point2.lat,
+          lng: point1.lng,
+        }
+        const points = [ coordToPixels(point1), coordToPixels(point4), coordToPixels(point2), coordToPixels(point3) ]
         d = pointsToD(points, true)
         amplifiers = getAmplifiers({ points, bezier: false, locked: true, bounds, tsType: kind, fontSize }, data)
         break
@@ -434,13 +550,13 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
             dangerouslySetInnerHTML={{ __html: amplifiers.group }}
           />
         )}
-        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, null, dpi)}
+        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi)}
       </>)
   }
 }
 
 const getContourBuilder = () => (commonData, data, layerData) => {
-  const { coordToPixels, scale, getStrokeWidth, dpi } = commonData
+  const { coordToPixels, scale, printOptions: { getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   if (geometry) {
     const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
@@ -454,7 +570,6 @@ const getContourBuilder = () => (commonData, data, layerData) => {
         null,
         id,
         getStrokeWidth(),
-        null,
         dpi),
     )
   }
@@ -467,11 +582,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
     coordToPixels,
     printScale, // масштаб карты
     bounds,
-    scale, // масштаб к DPI 96
+    // scale, // масштаб к DPI 96
+    dpi,
   } = commonData
   const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
-  const mmSize = pointSizeFromScale.get(printScale) || POINT_SIZE_DEFAULT
+  const mmSize = pointSizeFromScale.get(printScale) || printSettings.pointSizeDefault
   const size = mmSize * 5
   const pointD = coordToPixels(point)
   const symbol = new Symbol(code, {
@@ -481,12 +597,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   })
   const { bbox } = symbol
   // ручное масштабирование символа после удаления тега <svg>
-  const scaleSymbol = DPI96 * scale * mmSize / HEIGHT_SYMBOL
+  const scaleSymbol = DPI1 * dpi * mmSize / HEIGHT_SYMBOL
   const scaleXY = size / 100 // переводим проценты в десятичную дробь
   const { x, y } = symbol.getAnchor() // точка привязки в символе
   // смещение центра символа от точки (0,0) символа
-  const dx = (bbox.x1 + x / scaleXY - MERGE_SYMBOL) * scaleSymbol
-  const dy = (bbox.y1 + y / scaleXY - MERGE_SYMBOL) * scaleSymbol
+  const dx = (bbox.x1 + x / scaleXY - printSettings.mergeSymbol) * scaleSymbol
+  const dy = (bbox.y1 + y / scaleXY - printSettings.mergeSymbol) * scaleSymbol
   const inBounds = getInBounds({ x: pointD.x - dx, y: pointD.y - dy }, bbox, bounds)
   if (!inBounds) {
     return (<></>)
@@ -499,13 +615,12 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   )
 })
 
-// Todo надо разобратся с размером шрифта
 mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
-  const { coordToPixels, getFontSize, dpi } = commonData
+  const { coordToPixels, printOptions: { getFontSize } } = commonData
   const { attributes, point } = data
   const { x, y } = coordToPixels(point)
-  const scale = 100 * 12 / (getFontSize() / getmmInPixel(dpi)) // коэфициент приведения к px
+  const scale = getFontSize()
   return (
     <g transform={`translate(${Math.round(x)},${Math.round(y)})`}>
       {renderTextSymbol({ ...attributes.toJS(), outlineColor }, scale)}
@@ -515,7 +630,7 @@ mapObjectBuilders.set(SelectionTypes.TEXT, (commonData, data, layerData) => {
 
 // сборка сложных линий
 mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, layerData) => {
-  const { coordToPixels, bounds, getFontSize, getStrokeWidth, graphicSize, pointSymbolSize, dpi } = commonData
+  const { coordToPixels, bounds, printOptions, dpi } = commonData
   const { geometry, attributes, id } = objectData
   const line = lineDefinitions[extractLineCode(objectData.code)]
 
@@ -524,25 +639,24 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     if (!points || !points[0]) {
       return null
     }
-    const { color, fill, strokeWidth = 1, lineType, hatch } = attributes
-    const options = {
+    const { color, fill, lineType, hatch } = attributes
+    const strokeWidth = printOptions.getStrokeWidth(attributes.strokeWidth)
+    const optionsRender = {
       color,
       fill,
-      strokeWidth: getStrokeWidth(strokeWidth),
+      strokeWidth,
       lineType,
       hatch }
-    const fontSize = getFontSize()
+    // const fontSize = printOptions.getFontSize()
     const container = {
       d: '',
       mask: '',
       amplifiers: '',
       layer: {
         object: objectData,
-        graphicSize, // размер графических амплификаторов и стрелок
-        fontSize,
-        pointSymbolSize,
         _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
-        options,
+        options: optionsRender,
+        printOptions,
         getLatLngs: () => geometry.toJS(),
       },
     }
@@ -552,9 +666,19 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       console.warn(e)
     }
     const strokeColor = colors.evaluateColor(attributes.color)
+    const options = {}
+    if (optionsRender.dashArray) {
+      options.strokeDasharray = optionsRender.dashArray
+    }
+    if (optionsRender.fillColor) {
+      options.fill = optionsRender.fillColor
+    }
+    if (optionsRender.fillOpacity) {
+      options.fillOpacity = optionsRender.fillOpacity
+    }
     return (
       <g id={id}>
-        {getSvgPath(container.d, options, layerData, 1, container.mask, bounds, id, options.strokeWidth, null, dpi)}
+        {getSvgPath(container.d, attributes, layerData, 1, container.mask, bounds, id, strokeWidth, dpi, null, options)}
         {Boolean(container.amplifiers) && (
           <g
             stroke={strokeColor}
@@ -577,16 +701,13 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_LAND, () => {
 mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer) => {
   const {
     coordToPixels,
-    printScale, // масштаб карты
     bounds,
     scale, // масштаб к DPI 96
     objects, // все объекты карты
-    getStrokeWidth,
+    printOptions: { getStrokeWidth, pointSymbolSize },
     dpi,
   } = commonData
   const { attributes, id } = object
-  const mmSize = pointSizeFromScale.get(printScale) || POINT_SIZE_DEFAULT
-  const sizeSymbol = DPI96 * scale * mmSize // высота знака в px
   let _groupChildren = []
   if (!object._groupChildren) {
     _groupChildren = builderGroup(id, objects)
@@ -598,7 +719,7 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   const polygon = getMaxPolygon(points)
   const rectanglePoints = []
 
-  const dy = sizeSymbol * 0.5 * 1.2
+  const dy = pointSymbolSize * 0.5 * 1.2 // половина высоты знака в px + отступ от знака 20%
   const dx = dy * 1.5
 
   polygon.forEach((elm, number) => {
@@ -612,8 +733,8 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   const result = emptyPath()
   drawLine(result, ...rectanglePolygon)
   // return `${result.d} z`
-  const attributesSet = { ...attributes, strokeWidth: getStrokeWidth(attributes.strokeWidth) }
-  return getSvgPath(result.d, attributesSet, layer, scale, null, bounds, id, null, null, dpi)
+  const strokeWidth = getStrokeWidth(attributes.strokeWidth)
+  return getSvgPath(result.d, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
 })
 
 mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))

@@ -1,15 +1,13 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, segmentLength, getPointAt, drawLineMark, angleOf,
+  drawLine, segmentBy, segmentLength, getPointAt, drawLineMark, angleOf, drawLineProceed, getGraphicSize,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: SEARCH AREA
 // task code: DZVIN-5526
 // hint: 'Район (сектор) РХБ розвідки'
-
-const Z_WIDTH = 16
 
 lineDefinitions['152200'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -29,26 +27,29 @@ lineDefinitions['152200'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const [ p0, p1, p2 ] = points
-
-    const drawZArrow = (pStart, pEnd, flip) => {
+    const zWidth = getGraphicSize(result.layer) / 2
+    const drawZArrow = (pStart, pEnd, flip, proceed) => {
       const l = segmentLength(pStart, pEnd)
-      let p = pStart
-      if (l > 2 * Z_WIDTH * scale) {
+      if (l > 4 * zWidth) {
         const pMid = segmentBy(pStart, pEnd, 0.5)
-        const x = Math.asin(Z_WIDTH * scale * Math.sqrt(3) / l)
+        const x = Math.asin(zWidth * Math.sqrt(3) / l)
         const d = 1 - 2 * Number(flip)
-        const pm1 = getPointAt(pStart, pMid, d * (x + Math.PI / 3), Z_WIDTH * scale)
-        const pm2 = getPointAt(pEnd, pMid, d * (x + Math.PI / 3), Z_WIDTH * scale)
-        drawLine(result, pStart, pm1, pm2, pEnd)
-        p = pm2
+        const pm1 = getPointAt(pStart, pMid, d * (x + Math.PI / 3), zWidth)
+        const pm2 = getPointAt(pEnd, pMid, d * (x + Math.PI / 3), zWidth)
+        if (proceed) {
+          drawLineProceed(result, pStart, pm1, pm2, pEnd)
+        } else {
+          drawLine(result, pStart, pm1, pm2, pEnd)
+        }
+        return proceed ? pm2 : pm1
       } else {
         drawLine(result, pStart, pEnd)
+        return proceed ? pStart : pEnd
       }
-      drawLineMark(result, MARK_TYPE.ARROW_60_FILL, pEnd, angleOf(p, pEnd))
     }
-    drawZArrow(p0, p1, true)
-    drawZArrow(p0, p2, false)
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p1, angleOf(drawZArrow(p1, p0, true), p1))
+    drawLineMark(result, MARK_TYPE.ARROW_60_FILL, p2, angleOf(drawZArrow(p0, p2, false, true), p2))
   },
 }

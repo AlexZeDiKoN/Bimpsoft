@@ -5,7 +5,7 @@ import { Align } from '../../../constants'
 import i18n from '../../../i18n'
 import TextItem from './TextItem'
 
-const { FormItem, FormDivider } = components.form
+const { FormItem } = components.form
 const { names: IconNames, IconHovered, IconButton } = components.icons
 
 const PATH = [ 'attributes', 'texts' ]
@@ -55,34 +55,35 @@ const WithTexts = (Component) => class TextsComponent extends Component {
         <FormItem className="text-form-preview">
           <TextSymbol texts={texts.map((item) => item.preview ? item.preview : item).toJS()}/>
         </FormItem>
-        <FormDivider />
         {canEdit && (<FormItem className="text-form-controls">
-          <label>{i18n.TEXT}</label>
-          <IconButton
-            value={Align.LEFT}
-            checked={totalAlign === Align.LEFT}
-            icon={IconNames.TEXT_ALIGN_LEFT_DEFAULT}
-            onClick={this.changeTextsAlignHandler}
-          />
-          <IconButton
-            value={Align.CENTER}
-            checked={totalAlign === Align.CENTER}
-            icon={IconNames.TEXT_ALIGN_CENTER_DEFAULT}
-            onClick={this.changeTextsAlignHandler}
-          />
-          <IconButton
-            value={Align.RIGHT}
-            checked={totalAlign === Align.RIGHT}
-            icon={IconNames.TEXT_ALIGN_RIGHT_DEFAULT}
-            onClick={this.changeTextsAlignHandler}
-          />
-          <IconHovered
-            icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
-            hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
-            onClick={this.addTextHandler}
-          />
+          <div>{i18n.TEXT}</div>
+          <div className='btn-container'>
+            <IconButton
+              value={Align.LEFT}
+              checked={totalAlign === Align.LEFT}
+              icon={IconNames.TEXT_ALIGN_LEFT_DEFAULT}
+              onClick={this.changeTextsAlignHandler}
+            />
+            <IconButton
+              value={Align.CENTER}
+              checked={totalAlign === Align.CENTER}
+              icon={IconNames.TEXT_ALIGN_CENTER_DEFAULT}
+              onClick={this.changeTextsAlignHandler}
+            />
+            <IconButton
+              value={Align.RIGHT}
+              checked={totalAlign === Align.RIGHT}
+              icon={IconNames.TEXT_ALIGN_RIGHT_DEFAULT}
+              onClick={this.changeTextsAlignHandler}
+            />
+            <IconHovered
+              icon={IconNames.MAP_SCALE_PLUS_DEFAULT}
+              hoverIcon={IconNames.MAP_SCALE_PLUS_HOVER}
+              onClick={this.addTextHandler}
+            />
+          </div>
         </FormItem>)}
-        <div className="text-form-scrollable">
+        <div>
           {texts.map((item, index) => (
             <TextItem
               key={index}

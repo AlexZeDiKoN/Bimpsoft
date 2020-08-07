@@ -33,6 +33,7 @@ export default class ExplorerBridge {
   constructor (store) {
     this.store = store
     this.abandoned = false
+    this.openedVariantMapId = null
   }
 
   init = (authorized = false) => {
@@ -70,6 +71,7 @@ export default class ExplorerBridge {
       console.info('Message from Explorer >> ', JSON.stringify(data, null, 2))
       switch (action) {
         case ACTION_INIT: {
+          this.abandoned = false
           this.send({ action: ACTION_READY })
           break
         }
@@ -91,6 +93,7 @@ export default class ExplorerBridge {
         case ACTION_OPEN_VARIANT: {
           const { mapId, variantId } = data
           catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
+          this.openedVariantMapId = mapId
           break
         }
         case ACTION_CLOSE_VARIANT: {

@@ -1,11 +1,11 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, addPathAmplifier,
-  emptyPath, drawLineMark, getFontSize,
+  applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt,
+  drawLineMark, getFontSize, drawLineDashed, getDashSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -13,7 +13,7 @@ import { MARK_TYPE, settings } from '../../../../../utils/svg/lines'
 
 lineDefinitions['017078'] = {
   // Ампліфікатори, що використовуються на лінії
-  useAmplifiers: [ { id: amps.N, name: 'N' }, { id: amps.B, name: 'B' } ],
+  useAmplifiers: [ { id: amps.N, name: 'N', maxRows: 1 }, { id: amps.B, name: 'B', maxRows: 1 } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -30,13 +30,11 @@ lineDefinitions['017078'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
     const [ p0, p1 ] = points
 
-    const dashed = emptyPath()
-    drawLine(dashed, p0, p1)
-
-    addPathAmplifier(result, dashed, false, settings.DASHARRAY)
+    const dashed = getDashSize(result.layer, scale) * 2
+    drawLineDashed(result, p0, p1, dashed)
 
     const angleSerif = angleOf(p0, p1)
     const angle = angleSerif - Math.PI / 2

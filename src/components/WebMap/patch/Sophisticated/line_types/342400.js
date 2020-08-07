@@ -12,7 +12,7 @@ import {
   drawLine,
   drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../../../constants/drawLines'
 
 // sign name: WITHDRAW
 // task code: DZVIN-5769 (part 3)

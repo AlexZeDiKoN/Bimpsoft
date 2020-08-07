@@ -1,8 +1,8 @@
 import React from 'react'
-import { Select, Input } from 'antd'
+import { Select, Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { MARK_TYPE } from '../../../utils/svg/lines'
+import { MARK_TYPE } from '../../../constants/drawLines'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
@@ -51,7 +51,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
   )
 
-  renderIntermediateAmplifiers () {
+  renderIntermediateAmplifiers (svg) {
     const state = this.getResult()
     const currentValue = state.getIn(PATH)
     const type = state.getIn(TYPE_PATH)
@@ -60,12 +60,21 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
 
     const renderAmplifierInput = ({ id, name }) => (
       <div className="line-container__itemWidth" key={id}>
-        <FormRow label={`${i18n.AMPLIFIER} "${name}"`}>
+        <FormRow
+          title={null}
+          label={svg ? <Tooltip
+            overlayClassName='shape-form-svg-tooltip'
+            mouseEnterDelay={1}
+            placement={'left'}
+            title={() => svg}>
+            {`${i18n.AMPLIFIER} "${name}"`}
+          </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
           <Input.TextArea
             autoSize={{ maxRows: 3 }}
             value={currentValue[id] ?? ''}
             onChange={this.createIntermediateAmplifierHandler(id)}
-            disabled={!canEdit}
+            className={!canEdit ? 'modals-input-disabled' : ''}
+            readOnly={!canEdit}
             rows={1}
             maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
           />
@@ -77,11 +86,19 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
       <div className="intermediate-amplifiers__item">
         <div className="intermediate-amplifiers__itemWidth">
           <div className="intermediate-amplifiers__item-B">
-            <FormRow label={`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
+            <FormRow title={null}
+              label={svg ? <Tooltip
+                overlayClassName='shape-form-svg-tooltip'
+                mouseEnterDelay={1}
+                placement={'left'}
+                title={() => svg}>
+                {`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}
+              </Tooltip> : `${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}>
               <Select
                 value={type}
                 onChange={this.intermediateAmplifierTypeHandler}
                 disabled={!canEdit}
+                className={!canEdit ? 'modals-input-disabled' : ''}
               >{TYPE_LIST.map(({ text, value }) => {
                   const level = value === TYPES.LEVEL ? subordinationLevel : null
                   let borderStyle
@@ -97,6 +114,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 })}
               </Select>
               <Input
+                className={!canEdit ? 'modals-input-disabled' : ''}
                 disabled={!canEdit || type !== TYPES.TEXT}
                 value={currentValue[PAIRS.MIDDLE.id] ?? ''}
                 onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}

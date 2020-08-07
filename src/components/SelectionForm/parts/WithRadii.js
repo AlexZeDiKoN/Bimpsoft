@@ -26,6 +26,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
   constructor (props) {
     super(props)
     this.state = {
+      ...this.state,
       radiiText: [],
     }
   }
@@ -135,7 +136,8 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
                   error={!radiusIsGood}
                 />
               </FormRow>
-              <FormRow label="Колір">
+              <div className='radiContainer radiContainerColor'>
+                <div>{i18n.LINE_COLOR}</div>
                 <ColorPicker
                   color={color}
                   disabled={!canEdit}
@@ -143,8 +145,9 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
                   zIndex={COLOR_PICKER_Z_INDEX}
                   presetColors={PRESET_COLORS}
                 />
-              </FormRow>
-              <FormRow label="Заливка">
+              </div>
+              <div className='radiContainer'>
+                <div>{i18n.FILLING}</div>
                 <Select
                   value={fill}
                   disabled={!canEdit}
@@ -158,7 +161,7 @@ const WithRadii = (Component) => class RadiiComponent extends CoordinatesMixin(C
                   {colorOption(colors.YELLOW)}
                   {colorOption(colors.WHITE)}
                 </Select>
-              </FormRow>
+              </div>
             </div>) : ''
         })}
       </div>

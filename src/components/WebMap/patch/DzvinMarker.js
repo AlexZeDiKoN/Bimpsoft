@@ -1,5 +1,5 @@
 import L, { Draggable, DomUtil } from 'leaflet'
-import { setOpacity, setHidden, setClassName, setShadowColor } from './utils/helpers'
+import { setOpacity, setClassName, setShadowColor } from './utils/helpers'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng }
@@ -72,9 +72,20 @@ const MarkerDrag = L.Handler.extend({
 const DzvinMarker = L.Marker.extend({
   setOpacity,
 
-  setHidden,
-
   setShadowColor,
+
+  intersectsWithBounds: function (bounds) {
+    return bounds.pad(0.5).contains(this.getLatLng())
+  },
+
+  setHidden: function (hidden) {
+    this._hidden = hidden
+    if (hidden) {
+      this.removeFrom(this.map)
+    } else {
+      this.addTo(this.map)
+    }
+  },
 
   setSelected: function (selected, inActiveLayer) {
     if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
@@ -169,7 +180,6 @@ const DzvinMarker = L.Marker.extend({
     parent.update.call(this)
     const el = this.getElement()
     if (el) {
-      el.style.display = this._hidden ? 'none' : ''
       if (this._opacity !== undefined) {
         el.style.opacity = this._opacity
       }

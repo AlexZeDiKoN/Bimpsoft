@@ -4,7 +4,7 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { colors } from '../../../constants'
 import { evaluateColor } from '../../../constants/colors'
-import { HATCH_TYPE } from '../../../utils/svg/lines'
+import { HATCH_TYPE } from '../../../constants/drawLines'
 
 const { FormRow } = components.form
 
@@ -39,7 +39,11 @@ const WithHatch = (Component) => class FillComponent extends Component {
 
     return (
       <FormRow label={i18n.HATCH}>
-        <Select value={value} onChange={this.hatchChangeHandler} disabled={!canEdit}>
+        <Select
+          value={value}
+          onChange={this.hatchChangeHandler}
+          className={!canEdit ? 'modals-input-disabled' : ''}
+          disabled={!canEdit}>
           {TYPE_LIST_JSX}
         </Select>
       </FormRow>

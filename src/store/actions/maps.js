@@ -1,7 +1,9 @@
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
-import { asyncAction, maps, layers, webMap, flexGrid, selection } from './index'
+import { asyncAction, maps, layers, webMap, flexGrid, selection, orgStructures } from './index'
+
+const MAP_FORCED_UPDATE_INTERVAL = 30 // seconds
 
 export const UPDATE_MAP = action('UPDATE_MAP')
 export const DELETE_MAP = action('DELETE_MAP')
@@ -22,6 +24,7 @@ export const deleteMap = (mapId) => asyncAction.withNotification(
       mapId,
     })
     dispatch(layers.deleteLayersByMapId(mapId))
+    dispatch(webMap.toggleReportMapModal(false, { mapId }))
   },
 )
 
@@ -47,6 +50,7 @@ export const cancelVariant = (variantId = null) => ({
 export const clearVariant = (variantId = null, fromExplorer = false) => {
   if (!fromExplorer) {
     window.explorerBridge.cancelVariant(variantId)
+    window.explorerBridge.openedVariantMapId = null
   }
   return cancelVariant(variantId)
 }
@@ -57,7 +61,8 @@ export const openMapFolderVariant = (mapId, variantId) => async (dispatch) => {
 }
 
 export const openMapByCoord = (mapId, coordinate) => async (dispatch) => {
-  const actions = [ openMapFolder(mapId) ]
+  const actions = [ ]
+  mapId && actions.push(openMapFolder(mapId))
   coordinate && actions.push(webMap.setMarker({
     text: i18n.TASK,
     point: { lng: parseFloat(coordinate.lng), lat: parseFloat(coordinate.lat) },
@@ -88,7 +93,7 @@ export const openMapByObject = (mapId, objectData) => async (dispatch, getState)
 }
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
-  async (dispatch, _, { webmapApi: { getMap } }) => {
+  async (dispatch, getState, { webmapApi: { getMap } }) => {
     const content = await getMap(mapId)
     const {
       layers: entities,
@@ -103,8 +108,10 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       isCOP,
       // breadcrumbs,
     } = content
+    const state = getState()
+    const { webMap: { unitId } } = state
 
-    await dispatch(maps.updateMap({
+    const mapData = {
       mapId: id,
       name,
       isCOP,
@@ -113,7 +120,17 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       docConfirm,
       approversData,
       securityClassification,
-    }))
+    }
+
+    if (isCOP) {
+      // Примусовий таймер оновлення
+      mapData.refreshTimer = setInterval(
+        () => Promise.all(layersData.map(({ layerId }) => dispatch(webMap.updateObjectsByLayerId(layerId)))),
+        MAP_FORCED_UPDATE_INTERVAL * 1000,
+      )
+    }
+
+    await dispatch(maps.updateMap(mapData))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
       mapId: id_map,
       layerId: id,
@@ -121,21 +138,26 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       dateFor: date_for,
       formationId: id_formation,
       readOnly,
-    }))
+    })).sort((layer1, layer2) => { // сортировка слоев карты
+      const dateFor1 = Date.parse(layer1.dateFor)
+      const dateFor2 = Date.parse(layer2.dateFor)
+      if ((dateFor1 === dateFor2) || isCOP) { // сортировка по названию слоев
+        return (layer1.name.toLowerCase()).localeCompare(layer2.name.toLowerCase())
+      }
+      return dateFor2 - dateFor1 // сортировка по "станом на"
+    })
+
     await dispatch(layers.updateLayers(layersData))
     for (const { layerId } of layersData) {
       await dispatch(webMap.updateObjectsByLayerId(layerId))
       await dispatch(layers.updateColorByLayerId(layerId))
     }
     if (layersData.length > 0) {
-      let selectedLayer
-      if (layerId === null) {
-        selectedLayer = layersData[0]
-      } else {
-        selectedLayer = layersData.find((layer) => layer.layerId === layerId)
-      }
+      const selectedLayer = layersData[0]
       if (selectedLayer) {
         await dispatch(layers.selectLayer(selectedLayer.layerId))
+        dispatch(orgStructures.expandTreeByOrgStructureItem(unitId))
+        dispatch(orgStructures.setOrgStructureSelectedId(unitId))
       }
     }
     await dispatch(flexGrid.getFlexGrid(mapId, showFlexGrid))
@@ -148,8 +170,9 @@ export const expandMap = (id, expand) => ({
   expand,
 })
 
-export const closeMapSections = () => ({
+export const closeMapSections = (mapsCollapsed) => ({
   type: CLOSE_MAP_SECTIONS,
+  mapsCollapsed,
 })
 
 export const toggleExpandMap = (id) => (dispatch, getState) =>

@@ -1,6 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { utils } from '@DZVIN/CommonComponents'
-import { MapSources, ZOOMS, paramsNames } from '../../constants'
+import { MapSources, ZOOMS, paramsNames, access } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
@@ -348,6 +348,18 @@ export const removeObjects = (ids) => ({
 const restoreObjects = (ids) =>
   asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
 
+export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAccess } }) => {
+  const result = await objAccess(id)
+  if (result.access !== access.WRITE) {
+    dispatch(notifications.push({
+      type: 'warning',
+      message: i18n.ERROR_ACCESS_DENIED,
+      description: i18n.ERROR_ACCESS_DENIED_TO_OBJECT,
+    }))
+  }
+  return result.access
+}
+
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
     for (const id of ids) {
@@ -449,7 +461,7 @@ export const allocateObjectsByLayerId = (layerId) => ({
   payload: layerId,
 })
 
-export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
+export const updateObjectGeometry = (id, geometry, addUndoRecord = true, flexGridPrevState) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
     stopHeartBeat()
 
@@ -462,6 +474,7 @@ export const updateObjectGeometry = (id, geometry, addUndoRecord = true) =>
           changeType: changeTypes.UPDATE_GEOMETRY,
           id,
           geometry,
+          flexGridPrevState,
         },
       })
     }
@@ -498,10 +511,16 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 export const getAppInfo = () =>
   asyncAction.withNotification(
     async (dispatch, getState, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
-      const [ version, { contactId, positionContactId, unitId, countryId, formationId, contactFullName } ] =
-        await Promise.all([ getVersion(), getContactId() ])
+      const [
+        version,
+        { contactId, positionContactId, unitId, countryId, formationId, contactFullName },
+      ] = await Promise.all([
+        getVersion(),
+        getContactId(),
+      ])
       const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
       const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
+
       return dispatch({
         type: actionNames.APP_INFO,
         payload: {
@@ -565,10 +584,10 @@ export const objectUnlocked = (objectId) => ({
 
 export const tryLockObject = (objectId) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objLock, objUnlock } }) => {
-    const { webMap: { lockedObjects } } = getState()
+    const { webMap: { lockedObjects, contactFullName } } = getState()
     let lockedBy = lockedObjects.get(objectId)
     let success = false
-    if (lockedBy) {
+    if (lockedBy && (lockedBy !== contactFullName)) { // Игнорируем блокировку от себя
       dispatch(notifications.push({
         type: 'warning',
         message: i18n.EDITING,

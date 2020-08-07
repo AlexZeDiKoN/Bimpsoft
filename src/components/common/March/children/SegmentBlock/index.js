@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { Tooltip } from 'antd'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
 import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
 import AddSegmentContextMenu from '../AddSegmentContextMenu'
 import utilsMarch from '../../utilsMarch'
+import i18n from './../../../../../i18n'
 
 const { getAllowedTypeSegments } = utilsMarch.reducersHelpers
 
@@ -21,6 +23,7 @@ const SegmentBlock = (props) => {
     timeDistanceView,
     segments,
     toggleDeleteMarchPointModal,
+    readOnly,
   } = props
   const { type, children, metric = {} } = segment
 
@@ -92,20 +95,27 @@ const SegmentBlock = (props) => {
       : <div className={'height-segment'}/>
     }
 
-    <SegmentButtonPopover
-      type={type}
-      content={
-        <PopupPanel
-          propData={{
-            ...segment,
-            segmentType: segment.type,
-            segmentId,
-            metric,
-            toggleDeleteMarchPointModal,
-          }} /> }
-    />
+    <Tooltip placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={{ offset: [ -7, 25 ] }}>
+      <SegmentButtonPopover
+        type={type}
+        content={
+          <PopupPanel
+            propData={{
+              ...segment,
+              segmentType: segment.type,
+              segmentId,
+              metric,
+              toggleDeleteMarchPointModal,
+              readOnly,
+            }}/>
+        }
+      />
+    </Tooltip>
 
     {childrenIsPresent && children.map((child, id) => {
+      if (!metric.children[id]) {
+        return null
+      }
       const { distance, time } = metric.children[id]
       const timeWithOffset = msToTime(time + timeOffset)
       const distanceWithOffset = (distance + distanceOffset).toFixed(1)
@@ -119,7 +129,9 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>
+      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT} align={{ offset: [ 13, 0 ] }}>
+        {!readOnly && <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>}
+      </Tooltip>
       {isViewContextMenu && <AddSegmentContextMenu
         changeViewContextMenu={changeViewContextMenu}
         addSegment={addSegment}
@@ -127,7 +139,6 @@ const SegmentBlock = (props) => {
         segmentId={segmentId}
       />}
     </div>
-
   </div>)
 }
 
@@ -162,6 +173,7 @@ SegmentBlock.propTypes = {
   timeDistanceView: PropTypes.bool.isRequired,
   segments: PropTypes.array.isRequired,
   toggleDeleteMarchPointModal: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool.isRequired,
 }
 
 export default React.memo(SegmentBlock)

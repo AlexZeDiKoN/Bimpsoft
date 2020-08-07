@@ -21,7 +21,7 @@ export const CLASSIFIERS = {
     id: '1',
     text: i18n.DIVIDING_LINE,
     attributes: [
-      { path: WithLineType.PATH, value: WithLineType.types.solid.value },
+      { path: WithLineType.PATH_LINE_TYPE, value: WithLineType.types.solid.value },
       { path: WithColor.PATH, value: colors.RED },
       { path: WithLineEnds.PATHS[WithLineEnds.DIRECTION_LEFT], value: 'none' },
       { path: WithLineEnds.PATHS[WithLineEnds.DIRECTION_RIGHT], value: 'none' },

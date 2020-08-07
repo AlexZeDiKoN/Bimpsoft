@@ -12,7 +12,9 @@ const Header = (props) => {
     distance,
     sendMarchToExplorer,
     closeMarch,
-    isCoordFilled } = props
+    isCoordFilled,
+    isChanged,
+  } = props
 
   const onSendMarchToExplorer = () => isCoordFilled && sendMarchToExplorer()
 
@@ -22,18 +24,21 @@ const Header = (props) => {
         {i18n.MARCH_TITLE}
       </div>
       <Tooltip
-        placement='top'
+        placement='topRight'
         title={isCoordFilled ? i18n.CREATE_BTN_TITLE : i18n.NOT_ALL_COORDINATES_ENTERED}
+        align={ { offset: [ 5, 0 ] }}
       >
         <IButton
           onClick={onSendMarchToExplorer}
           colorType={ColorTypes.WHITE}
           icon={IconNames.BAR_2_SAVE}
+          disabled={!isCoordFilled || !isChanged}
         />
       </Tooltip>
       <Tooltip
-        placement='top'
+        placement='topRight'
         title={i18n.CLOSE_MARCH}
+        align={ { offset: [ 5, 0 ] }}
       >
         <IButton
           onClick={closeMarch}
@@ -73,6 +78,7 @@ Header.propTypes = {
   sendMarchToExplorer: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
+  isChanged: PropTypes.bool.isRequired,
 }
 
 export default React.memo(Header)

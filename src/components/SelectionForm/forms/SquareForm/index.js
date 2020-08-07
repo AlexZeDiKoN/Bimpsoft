@@ -12,7 +12,6 @@ import {
   WithFill,
   WithLineType,
   WithStrokeWidth,
-  WithHatch,
   WithIntermediateAmplifiers,
   WithPointAmplifiers,
   WithIntermediateAmplifiersTune,
@@ -21,7 +20,7 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SquareForm.css'
 
-const { FormRow, FormDarkPart } = components.form
+const { FormDarkPart } = components.form
 
 export default class SquareForm extends
   compose(
@@ -33,7 +32,6 @@ export default class SquareForm extends
     WithStrokeWidth,
     WithColor,
     WithFill,
-    WithHatch,
     WithIntermediateAmplifiers,
     WithPointAmplifiers,
     WithIntermediateAmplifiersTune,
@@ -42,46 +40,46 @@ export default class SquareForm extends
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const elem = <div className="containers-svg-tooltip">
+      <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
+    </div>
     return (
       <div className="square-container">
-        <div className="square-container--firstSection">
-          <div className="square-container__itemSchema">
-            <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
+        <div className='scroll-container'>
+          <div className="square-container__item--firstSection">
+            <div className="square-container__itemWidth-right">
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+              {this.renderAffiliation()}
+              {this.renderStatus()}
+            </div>
           </div>
-          <div className="square-container__itemWidth">
-            {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
+          <div className="square-container__item--secondSection">
+            <div className="square-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderLineType(true)}
+                {this.renderColor()}
+              </div>
+              {this.renderStrokeWidth()}
+            </div>
+            <div className="square-container__itemWidth">
+              {this.renderFill(true)}
+            </div>
           </div>
-          <div className="square-container__itemWidth">
-            {this.renderAffiliation()}
-            {this.renderStatus()}
-          </div>
-        </div>
-        <div className="square-container--secondSection">
-          <div className="square-container__itemWidth">
-            {this.renderLineType(true)}
-            {this.renderStrokeWidth()}
-            <FormRow label={i18n.LINE_COLOR}>
-              {this.renderColor()}
-            </FormRow>
-          </div>
-          <div className="square-container__itemWidth">
-            {this.renderFill(true)}
-            {this.renderHatch()}
-          </div>
-        </div>
-        {this.renderIntermediateAmplifiers()}
-        {this.renderPointAmplifiers()}
-        <div className="square-container__item">
-          <div className="square-container__itemWidth50">
-            <FormDarkPart>
-              <FormRow label={i18n.AMPLIFIERS_DISPLAY}>
-              </FormRow>
-              {this.renderIntermediateAmplifiersTune()}
-            </FormDarkPart>
-          </div>
-          <div className="square-container__itemWidth50">
-            {this.renderCoordinateAndWidth()}
+          {this.renderIntermediateAmplifiers(elem)}
+          {this.renderPointAmplifiers(elem)}
+          <div className="square-container__item">
+            <div className="square-container__itemWidth50">
+              <FormDarkPart>
+                <div className='amplifiers-display'>
+                  {i18n.AMPLIFIERS_DISPLAY}
+                </div>
+                {this.renderIntermediateAmplifiersTune()}
+              </FormDarkPart>
+            </div>
+            <div className="square-container__itemWidth50">
+              {this.renderCoordinateAndWidth()}
+            </div>
           </div>
         </div>
       </div>

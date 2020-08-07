@@ -4,32 +4,32 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: @modals-background-color;
 
-  .dzvin-form-row-label{
+  .scroll-container {
+    overflow: auto;
+    height: ~"calc(100vh - 148px)";
+    width: 310px;
+  }
+
+  .dzvin-form-row-label {
     margin: 0.2em;
   }
 
-  .dzvin-form-row{
+  .dzvin-form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    label{
-      margin-bottom: 0.35em;
-      margin-left: 0.5em;
-      font-size: 12px;
-      flex: 0 0 auto;
-      display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      margin-right: 0;
-      text-overflow: ellipsis;
-    }
+    font-size: 12px;
+    font-family: Roboto;
+    color: @modals-text-color;
+    margin: 0 10px;
   }
 
   &__item {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
+    flex-direction: column;
 
     .dzvin-form-row {
       display: flex;
@@ -50,7 +50,7 @@
         }
 
         .ant-select-disabled {
-          .ant-select-arrow{
+          .ant-select-arrow {
             opacity: 0;
           }
         }
@@ -63,135 +63,114 @@
           transform: scale(0.6);
         }
       }
-
-      label {
-        margin-bottom: 0.35em;
-        margin-left: 0.5em;
-        font-size: 12px;
-        flex: 0 0 auto;
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        margin-right: 0;
-        text-overflow: ellipsis;
-      }
     }
 
     &--firstSection {
       display: flex;
-      margin-top: 2px;
-      border-bottom: 2px solid rgba(159,166,89,.54);
+      margin-top: 20px;
+      flex-direction: column;
+      border-bottom: 2px solid rgba(159, 166, 89, .54);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
 
-      .line-container__itemWidth-left {
-        width: 40%;
-        border: 6px solid #eaeaea;
-        margin: 6px;
-        height: auto;
-      }
 
       .line-container__itemWidth-right {
-        width: 59%;
+        display: flex;
+        flex-direction: column;
+
         .dzvin-form-input {
           width: 100%;
-          .ant-select{
+
+          .ant-select {
             width: 100%;
-          }
-        }
-        .line-container__itemWidth--section1 {
-          display: flex;
-          .dzvin-input{
-            input{
-              width: 139px;
-            }
-          }
-
-          & > div {
-            width: 49%;
-          }
-
-          & > div:first-child {
-            width: 49%;
           }
         }
       }
     }
 
-    &--secondSection{
+    &--secondSection {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       width: 100%;
-      padding: 0 0.3em;
       border-bottom: 2px solid rgba(159, 166, 89, 0.54);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
 
       .line-container__itemWidth {
         width: 100%;
 
-        .containerTypeColor{
+        .dzvin-form-input, .ant-select {
+          width: 100%;
+        }
+
+        .container-sections {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+
+          .dzvin-form-row {
+            flex: 0 0 auto;
+            margin: 0 5px;
+
+            .ant-select {
+              width: 140px;
+            }
+          }
+        }
+
+        .containerTypeColor {
           display: flex;
           align-items: center;
-          width: 100%;
-          margin-right: 2em;
-          .container-color-picker{
+          margin-right: 10px;
+
+          .container-color-picker {
             height: 48px;
             display: flex;
             align-items: flex-end;
           }
         }
-
-        & > div {
-          display: flex;
-          width: 100%;
-          justify-content: space-between;
-
-          .dzvin-form-row {
-            flex: 1 1 auto;
-            width: 100%;
-
-            .dzvin-form-input {
-              width: 100%;
-
-              .ant-select {
-                width: 100%;
-              }
-            }
-          }
-        }
       }
     }
 
   }
 
-  &__itemWidth {
-    width: 33%;
+  .intermediate-amplifiers__item {
+    align-items: stretch;
+    flex-direction: column;
 
-    .dzvin-form-row-label{
-      flex: 0 0 auto;
+    .intermediate-amplifiers__itemWidth {
+      width: 100%;
+
+      .dzvin-form-row-label {
+        text-align: left;
+      }
     }
 
-    .hideArrow{
-      .dzvin-input-after{
-        opacity: 0;
-      }
+    .line-container__itemWidth {
+      width: 100%;
     }
   }
 
-  &__item-amplifier{
-    .dzvin-form-input{
+  &__item-amplifier {
+    .dzvin-form-input {
       display: flex;
       flex-direction: row;
-      input{
+
+      input {
         margin-left: 15px;
       }
     }
   }
 
   .dzvin-form-dark-part {
-    //min-height: 250px;
-    height: 100%;
+    background: none;
 
-    .dzvin-form-row{
-      padding: 0 10px;
+    .dzvin-form-row {
+      padding: 5px 10px;
+      margin: 0;
+      font-size: 12px;
+      font-weight: bold;
       flex: 0 0 auto;
       height: fit-content;
       justify-content: space-between;
@@ -199,40 +178,11 @@
     }
 
     .dzvin-form-row-label {
-    padding-top: 4px;
+      padding-top: 4px;
     }
 
-    .dzvin-form-divider{
+    .dzvin-form-divider {
       margin: 2px 0;
-    }
-
-    .headerSiding {
-      position: relative;  /* нужна нестатическая позиция */
-      padding-top : 28px ; /* место для фиксированного заголовка */
-      margin-top: 0.25em;
-    }
-
-    .shape-form-scrollable {
-      height: 160px;
-      padding-left: 1em;
-      overflow :  auto ; /* показывать полосу прокрутки при необходимости */
-      overflow-x: hidden;
-      .coordinatesModal{
-        margin-bottom: 5px;
-      }
-      .col-add {
-        width: 48px;
-      }
-
-      th div {
-        position :  absolute ; /* закреплено за следующим нестатичным родителем */
-        top :  0 ; /* наверху родителя */
-
-        label {
-          position: relative;
-        }
-      }
-
     }
   }
 
@@ -241,6 +191,7 @@
       transform: rotate(180deg) scale(0.6);
     }
   }
+
   .ant-select-arrow {
     width: 0;
     height: 0;

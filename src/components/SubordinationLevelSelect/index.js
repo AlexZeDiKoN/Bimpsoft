@@ -17,8 +17,8 @@ export default class SubordinationLevelSelect extends React.Component {
     const { value, onChange, readOnly } = this.props
     if (readOnly) {
       const levelInfo = SubordinationLevel.list.find((level) => value === level.value)
-      return (<Input style={{
-        background: '#f5f5f5',
+      return (<Input className='modals-input-disabled' style={{
+        background: '#fafafa',
         color: '5e6269',
       }} value={levelInfo ? levelInfo.title : null} readOnly={true} />)
     } else {

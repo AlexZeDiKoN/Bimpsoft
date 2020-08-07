@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import FocusTrap from 'react-focus-lock'
+// import FocusTrap from 'react-focus-lock'
 import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
@@ -26,79 +26,103 @@ import {
   CircularZoneForm,
   AttackForm,
   ConcentrationOfFireForm,
+  DefeatStripForm,
 } from './forms'
 import SaveMilSymbolForm from './forms/MilSymbolForm/SaveMilSymbolForm'
+import WarningForm from './forms/WarningForm'
+
+const clientWidth = document?.documentElement?.clientWidth
+
+const calc = clientWidth - 310 - 40
 
 const forms = {
   [SelectionTypes.POINT]: {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
     minWidth: 825,
-    minHeight: 825,
-    maxHeight: 825,
+    minHeight: 'calc(100vh - 150px)',
+    maxHeight: 'calc(100vh - 150px)',
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.SHAPE_POLYLINE,
     component: LineForm,
-    minHeight: 680,
-    minWidth: 900,
-    maxHeight: 800,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CURVE]: {
     title: i18n.SHAPE_CURVE,
     component: LineForm,
-    minHeight: 670,
-    maxHeight: 750,
-    minWidth: 660,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLYGON]: {
     title: i18n.SHAPE_POLYGON,
     component: AreaForm,
-    minHeight: 750,
-    maxHeight: 750,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.AREA]: {
     title: i18n.SHAPE_AREA,
     component: AreaForm,
-    minHeight: 750,
-    maxHeight: 800,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.RECTANGLE]: {
     title: i18n.SHAPE_RECTANGLE,
     component: RectangleForm,
-    minHeight: 700,
-    maxHeight: 700,
-    minWidth: 520,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCLE]: {
     title: i18n.SHAPE_CIRCLE,
     component: CircleForm,
-    minHeight: 575,
-    maxHeight: 575,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SQUARE]: {
     title: i18n.SHAPE_SQUARE,
     component: SquareForm,
-    minHeight: 760,
-    maxHeight: 760,
-    minWidth: 560,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.TEXT]: {
-    title: i18n.SHAPE_TEXT,
+    title: i18n.TEXT,
     component: TextForm,
-    minHeight: 330,
-    minWidth: 735,
-    maxHeight: 750,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CONTOUR]: {
     title: i18n.CONTOUR,
     component: ContourForm,
-    minHeight: 330,
-    maxHeight: 330,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.GROUPED_REGION]: {
     title: i18n.CONTOUR_REGION_UNIT,
@@ -107,19 +131,32 @@ const forms = {
     maxHeight: 330,
     minWidth: 415,
   },
+  [SelectionTypes.OLOVO]: {
+    title: i18n.DEFEAT_STRIP_ZONE,
+    component: DefeatStripForm,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
+  },
   [SelectionTypes.SOPHISTICATED]: {
-    title: i18n.SOPHISTICATED,
+    title: i18n.MIL_SYMBOL,
     component: SophisticatedForm,
-    minHeight: 330,
-    maxHeight: 630,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.ATTACK]: {
     title: i18n.ATTACK,
     component: AttackForm,
-    minHeight: 330,
-    maxHeight: 630,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.AIRBORNE]: {
     title: i18n.SHAPE_AIRBORNE,
@@ -138,61 +175,117 @@ const forms = {
   [SelectionTypes.MINEDAREA]: {
     title: i18n.SHAPE_MINED_AREA,
     component: MinedAreaForm,
-    minHeight: 645,
-    minWidth: 800,
-    maxHeight: 655,
-    maxWidth: 950,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SECTORS]: {
     title: i18n.SHAPE_SECTORS,
     component: SectorsForm,
-    minHeight: 640,
-    minWidth: 900,
-    maxHeight: 800,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLLUTION_CIRCLE]: {
     title: i18n.SHAPE_POLLUTION_CIRCLE,
     component: PollutionCircleForm,
-    minHeight: 545,
-    minWidth: 600,
-    maxHeight: 545,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCULAR_ZONE]: {
     title: i18n.SHAPE_CIRCULAR_ZONE,
     component: CircularZoneForm,
-    minHeight: 645,
-    minWidth: 550,
-    maxHeight: 645,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.MINE_FIELD]: {
     title: i18n.SHAPE_MINEFIELD,
     component: MineFieldForm,
-    minHeight: 420,
-    minWidth: 750,
-    maxHeight: 420,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CONCENTRATION_FIRE]: {
     title: i18n.CONCENTRATION_FIRE,
     component: ConcentrationOfFireForm,
-    minHeight: 670,
-    maxHeight: 680,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
 }
 
 export default class SelectionForm extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      wereChanges: false,
+      showWarningCancel: false,
+    }
+  }
+
   componentDidMount () {
     !this.props.ovtLoaded && this.props.getOvtList()
   }
 
   changeHandler = (data) => {
     if (this.props.canEdit) {
+      this.setState({ wereChanges: true })
       this.props.onChange(data)
     }
   }
 
+  okHandler = () => {
+    const { onOk } = this.props
+    this.setState({ wereChanges: false, showWarningCancel: false }) // сброс проверки внесения изменений
+    onOk && onOk()
+  }
+
+  checkSaveHandler = () => {
+    const { onCheckSave } = this.props
+    this.resetWereChange()
+    onCheckSave && onCheckSave()
+  }
+
   addToTemplateHandler = (data) => {
     this.props.onAddToTemplates(data)
+  }
+
+  cancelButtonClick = () => {
+    if (this.state.wereChanges) {
+      this.setState({ showWarningCancel: true })
+    } else {
+      this.resetWereChange()
+      const { onCancel } = this.props
+      onCancel && onCancel()
+    }
+  }
+
+  warningCancelHandler = () => {
+    this.setState({ wereChanges: false, showWarningCancel: false })
+    const { onCancel } = this.props
+    onCancel && onCancel()
+  }
+
+  resetWereChange = () => {
+    this.setState({ wereChanges: false })
+  }
+
+  resetShowWarningCancel = () => {
+    this.setState({ showWarningCancel: false })
   }
 
   render () {
@@ -201,12 +294,11 @@ export default class SelectionForm extends React.Component {
       onOk,
       ovtData,
       canEdit,
-      onCancel,
       onSaveError,
-      onCheckSave,
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
+      wrapper: Wrapper,
     } = this.props
     if (data === null || !forms[data.type]) {
       return null
@@ -248,9 +340,10 @@ export default class SelectionForm extends React.Component {
       minHeight,
       maxHeight,
       minWidth,
+      maxWidth,
+      defaultPosition,
       component: Component,
     } = forms[formType]
-
     const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
     const errorSaveMilSymbolForm = (errorCode = 1) => {
       const { unit, code } = this.props.data
@@ -264,42 +357,54 @@ export default class SelectionForm extends React.Component {
             errorCode={errorCode}
             code={code}
             notClickable={false}
-            onApply={() => { onCloseSaveError(); onOk() }}
-            onCancel={() => { onCloseSaveError() }}
+            onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
+            onCancel={() => { this.resetWereChange(); onCloseSaveError() }}
           />
         </Wrapper>)
     }
-
-    const { wrapper: Wrapper } = this.props
     return (showErrorMilSymbolForm
       ? errorSaveMilSymbolForm(this.props.errorCode)
       : <>
+        {this.state.showWarningCancel
+          ? <WarningForm
+            title={i18n.WARNING}
+            onClose={ this.resetShowWarningCancel }
+            minHeight={150}
+            minWidth={300}
+            message={i18n.WARNING_MESSAGE_1}
+            question={i18n.QUESTION_3}
+            onNo={this.warningCancelHandler}
+            onYes={this.okHandler}>
+          </WarningForm>
+          : <></>
+        }
         <NotClickableArea/>
         <Wrapper
           title={title}
-          onClose={onCancel}
+          onClose={this.cancelButtonClick}
+          bounds={'div.app-body'}
           minWidth={minWidth}
+          maxWidth={maxWidth}
+          defaultPosition={defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
         >
-          <FocusTrap>
-            <HotKeysContainer>
-              <Component
-                data={data}
-                canEdit={canEdit}
-                orgStructures={orgStructures}
-                onOk={onOk}
-                onChange={this.changeHandler}
-                onClose={onCancel}
-                onSaveError={onSaveError}
-                onCheckSave={onCheckSave}
-                onAddToTemplates={this.addToTemplateHandler}
-                onCoordinateFocusChange={onCoordinateFocusChange}
-                ovtData={ovtData}
-              />
-              <HotKey onKey={onCancel} selector={shortcuts.ESC}/>
-            </HotKeysContainer>
-          </FocusTrap>
+          <HotKeysContainer>
+            <Component
+              data={data}
+              canEdit={canEdit && !this.state.showWarningCancel}
+              orgStructures={orgStructures}
+              onOk={this.okHandler}
+              onChange={this.changeHandler}
+              onClose={this.cancelButtonClick}
+              onSaveError={onSaveError}
+              onCheckSave={this.checkSaveHandler}
+              onAddToTemplates={this.addToTemplateHandler}
+              onCoordinateFocusChange={onCoordinateFocusChange}
+              ovtData={ovtData}
+            />
+            <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
+          </HotKeysContainer>
         </Wrapper>
       </>
     )

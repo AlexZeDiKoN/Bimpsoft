@@ -163,7 +163,7 @@ const buildPolyline = (positions, color, width) => ({
   width,
   clampToGround: true,
   followSurface: true,
-  material: Color.fromCssColorString(mapColors.values[color]),
+  material: Color.fromCssColorString(mapColors.evaluateColor(color)),
 })
 
 const buildBillboard = (image, isCP) => ({
@@ -287,7 +287,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
               data = makeGeoJSON(coordinates, 'MultiPolygon')
             }
             // @TODO: осветление в утилиты
-            const fill = Color.fromCssColorString(mapColors.values[fillColor])
+            const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
             fill.alpha = 0.5
             acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
           }
@@ -302,7 +302,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
         acc.push({ id, polyline, type: objTypes.POLYLINE })
       }
       if (fillColor !== mapColors.TRANSPARENT) {
-        const fill = Color.fromCssColorString(mapColors.values[fillColor])
+        const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
         acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
       }
     }

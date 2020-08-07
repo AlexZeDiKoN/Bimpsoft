@@ -2,13 +2,32 @@
 @import "../../assets/styles/_mixins.less";
 
 .settings-form-group{
+  .ant-tabs-bar{
+    border-color: #D7D7D7;
+    &:focus{
+    outline: none;
+    }
+  }
+  .ant-tabs-ink-bar{
+    height: 3px;
+    background-color: #A2A85E;
+  }
+  .ant-tabs-nav .ant-tabs-tab-active{
+    color: rgba(44, 45, 45, 0.87);;
+    font-size: 14px;
+    font-family: Roboto;
+  }
+  .ant-tabs-tab:hover {
+    color: rgba(44, 45, 45, 0.87);
+  }
+  .ant-tabs-tab-active{
+    font-weight: bold;
+  }
   .settings-form-system{
     display: flex;
-    justify-content: space-between;
-    border-bottom: 2px solid #9fa659;
-    margin-left: 20px;
-    margin-right: 20px;
+    border-bottom: 1px solid #D7D7D7;
     padding-bottom: 8px;
+    margin-top: 15px;
     .coordinateContainer{
       display: flex;
       .dzvin-form-row{
@@ -22,14 +41,18 @@
         .dzvin-form-input{
           position: relative;
           .ant-select{
-            width: 216px;
+            width: 270px;
+            .ant-select-selection--single{
+              border-radius: 2px;
+            }
           }
         }
       }
     }
     .checkedContainer{
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      padding-top: 20px;
       .dzvin-form-row{
         flex-direction: row-reverse;
         .dzvin-form-row-label {
@@ -52,26 +75,40 @@
     display: flex;
     justify-content: flex-end;
     padding-left: 10px;
-    padding-right: 15px;
     font-size: 12px;
+    div{
+      margin: 0 10px;
+    }
   }
   .containerSign{
     display: flex;
-    margin-left: 20px;
-    margin-right: 20px;
+    height: 33px;
     justify-content: space-between;
+    margin-right: 10px;
     .dzvin-form-row{
       padding-top: 0;
-      font-size: 12px;
+      font-size: 14px;
       padding-bottom: 0;
+      color: @modals-text-color;
       align-items: center;
+      margin: 0 0 0 15px;
+      .dzvin-form-row-label{
+        margin-right: 0;
+      }
     }
     .dzvin-form-dark-part{
       background: transparent;
       flex-direction: row;
+      .dzvin-form-row {
+        padding-top: 0;
+        font-size: 12px;
+        margin: 0 5px;
+      }
       .scale-control-input{
-        width: 60px;
-        height: 32px;
+        width: 65px;
+        height: 30px;
+        border-color: @modals-section-border-color;
+        border-radius: 2px;
       }
     }
   }
@@ -81,10 +118,10 @@
   .containerScales{
     display: flex;
     flex-wrap: wrap;
-    width: 500px;
-    margin: auto;
-    justify-content: center;
+    justify-content: space-between;
+    margin-right: 15px;
     .containerForm{
+      width: 50%;
       .dzvin-form-row{
         flex-direction: column;
         align-items: flex-start;
@@ -97,27 +134,40 @@
           position: relative;
           .ant-select{
             font-size: 13px;
+            .ant-select-selection--single{
+              border-radius: 2px;
+              height: 30px;
+            }
           }
         }
       }
     }
   }
-  .moreButtonSettins{
-    position: absolute;
-    top: -3px;
-    right: -7px;
-    transform: rotate(90deg);
-    pointer-events: none;
-    .icon-button {
-      .icon:hover{
-        display: none;
-      }
+  .ant-select-open {
+    .ant-select-arrow {
+      transform: rotate(180deg) scale(0.6);
+    }
+  }
+
+  .ant-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid @toolbar-color;
+    top: 55%;
+    transition: 0.3s;
+    transform: scale(0.6);
+    right: 7px;
+
+    .anticon {
+      display: none;
     }
   }
 }
 
 .select-level {
-  width: 216px;
+  width: 269px;
 }
 
 .icon-level {
@@ -134,5 +184,5 @@
 }
 
 .settings--form {
-  min-width: 510px;
+  width: 580px;
 }

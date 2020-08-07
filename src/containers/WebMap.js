@@ -4,13 +4,14 @@ import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
   activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
-  marchDots, undoInfo,
+  marchDots, undoInfo, mapCOP,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups, march,
 } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
+import { MapModes } from '../constants'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -56,6 +57,7 @@ const WebMapContainer = connect(
     marchDots: marchDots(state),
     marchRefPoint: state.march.coordRefPoint,
     undoInfo: undoInfo(state),
+    isMapCOP: mapCOP(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -117,10 +119,15 @@ const WebMapContainer = connect(
     flexGridChanged: flexGrid.flexGridChanged,
     flexGridDeleted: flexGrid.flexGridDeleted,
     fixFlexGridInstance: flexGrid.fixInstance,
-    showDirectionNameForm: (props) => batchActions([
-      flexGrid.selectDirection(props),
-      viewModes.viewModeEnable(directionName),
-    ]),
+    showDirectionNameForm: (props) => (dispatch, getState) => {
+      const state = getState()
+      if (state.webMap.mode === MapModes.EDIT) {
+        dispatch(batchActions([
+          flexGrid.selectDirection(props),
+          viewModes.viewModeEnable(directionName),
+        ]))
+      }
+    },
     showEternalDescriptionForm: (props) => batchActions([
       flexGrid.selectEternal(props),
       viewModes.viewModeEnable(eternalPoint),
@@ -140,6 +147,8 @@ const WebMapContainer = connect(
     getCoordForMarch: march.setCoordFromMap,
     undo: webMap.undo,
     redo: webMap.redo,
+    checkObjectAccess: webMap.getObjectAccess,
+    onShadowDelete: webMap.removeObjects,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

@@ -11,11 +11,11 @@ import { IDENTITIES } from '../../utils/affiliations'
 import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
 import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import entityKind from '../../components/WebMap/entityKind'
-import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
 import { evaluateColor, RED } from '../../constants/colors'
+import { settings } from '../../constants/drawLines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -240,7 +240,7 @@ const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
 function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
-  const { changeType, id } = payload
+  const { changeType, id, flexGridPrevState } = payload
   const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload), timestamp: Date.now() }
   if (id) {
     objData = state.getIn([ 'objects', id ])
@@ -254,9 +254,15 @@ function addUndoRecord (state, payload) {
       break
     }
     case changeTypes.UPDATE_GEOMETRY: {
-      oldData = {
-        point: objData.get('point').toJS(),
-        geometry: objData.get('geometry').toJS(),
+      if (flexGridPrevState) {
+        oldData = {
+          geometry: flexGridPrevState,
+        }
+      } else {
+        oldData = {
+          point: objData.get('point').toJS(),
+          geometry: objData.get('geometry').toJS(),
+        }
       }
       newData = payload.geometry
       break
@@ -431,6 +437,10 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
     case actionNames.TOGGLE_REPORT_MAP_MODAL: {
+      const { visible, dataMap } = payload
+      if (visible === false && dataMap && dataMap.mapId !== state?.reportMap?.dataMap?.mapId) {
+        return state
+      }
       return update(state, 'reportMap', { ...state.reportMap, ...payload })
     }
     case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {

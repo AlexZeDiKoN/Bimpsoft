@@ -1,4 +1,5 @@
 import React from 'react'
+import { Checkbox } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 
@@ -18,15 +19,12 @@ const WithDummy = (Component) => class DummyComponent extends Component {
     return (
       <FormRow label="&nbsp;">
         <div className='minefield-checkbox'>
-          <label>
-            <input
-              type="checkbox"
-              readOnly={isReadOnly}
-              checked={dummy}
-              disabled={isReadOnly}
-              onChange={this.dummyChangeHandler}/>
-            {i18n.DUMMY}
-          </label>
+          <Checkbox
+            readOnly={isReadOnly}
+            checked={dummy}
+            disabled={isReadOnly}
+            onChange={this.dummyChangeHandler}/>
+          <div>{i18n.DUMMY}</div>
         </div>
       </FormRow>
     )
