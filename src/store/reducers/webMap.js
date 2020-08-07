@@ -14,7 +14,7 @@ import entityKind from '../../components/WebMap/entityKind'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
-import { evaluateColor } from '../../constants/colors'
+import { evaluateColor, RED } from '../../constants/colors'
 import { settings } from '../../constants/drawLines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
@@ -241,7 +241,7 @@ function addUndoRecord (state, payload) {
   let objData, oldData, newData
 
   const { changeType, id, flexGridPrevState } = payload
-  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload) }
+  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload), timestamp: Date.now() }
   if (id) {
     objData = state.getIn([ 'objects', id ])
   }
@@ -448,6 +448,20 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.TOGGLE_DELETE_MARCH_POINT_MODAL: {
       return update(state, 'deleteMarchPointModal', { ...state.deleteMarchPointModal, ...payload })
+    }
+    case actionNames.HIGHLIGHT_OBJECT: {
+      const { id, restoreColor } = payload
+      const objects = state.get('objects')
+      const color = restoreColor || RED
+
+      const newObjects = objects.update(id, (object) => {
+        return Record({
+          ...object.toObject(),
+          attributes: object.attributes.update('color', (attribute) => color),
+        })()
+      })
+
+      return state.set('objects', newObjects)
     }
     default: {
       const setField = simpleSetField(type)
