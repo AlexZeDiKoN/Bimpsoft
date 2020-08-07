@@ -2,8 +2,7 @@
 import { connect } from 'react-redux'
 import RightMenu from '../components/menu/RightMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, webMap } from '../store/actions'
-import { SET_SEARCH_OPTIONS } from '../store/actions/viewModes'
+import { viewModes } from '../store/actions'
 
 const mapStateToProps = (store) => {
   const {
@@ -11,7 +10,6 @@ const mapStateToProps = (store) => {
       [viewModesKeys.sidebar]: isSidebarShow,
       [viewModesKeys.settings]: isSettingsShow,
       [viewModesKeys.map3D]: is3DMapMode,
-      searchEmpty: searchFailed,
     },
     print: {
       printFiles,
@@ -21,7 +19,6 @@ const mapStateToProps = (store) => {
     isSettingsShow,
     isSidebarShow,
     is3DMapMode,
-    searchFailed,
     printFiles,
   }
 }
@@ -33,20 +30,12 @@ const mapDispatchToProps = (dispatch) => ({
     return result
   },
   onClickSettings: () => dispatch(viewModes.viewModeToggle(viewModesKeys.settings)),
-  onSearch: (sample) => dispatch(viewModes.search(sample)),
-  onCoordinates: (text, point) => dispatch(webMap.setMarker({ text, point })),
   onSelectSearchOption: (index) => dispatch(viewModes.searchSelectOption(index)),
-  onClearSearchError: () => dispatch(viewModes.searchClearError),
-  onCloseSearch: () => dispatch(viewModes.searchCloseList),
-  onManyCoords: (list) => dispatch({
-    type: SET_SEARCH_OPTIONS,
-    payload: list,
-  }),
 })
 
 const RightMenuContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(RightMenu)
 
 export default RightMenuContainer
