@@ -237,17 +237,18 @@ export default class LeftMenu extends React.Component {
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
-        <Input.Search
-          placeholder={i18n.SEARCH}
-          style={{ width: '10%' }}
-          onBlur={this.searchBlur}
-          onSearch={this.search}
-          onChange={this.searchClearError}
-          className={searchFailed ? 'search-failed' : ''}
-          disabled={is3DMapMode}
-        />
-        <div className="search-options-sub-panel search-options-sub-panel-right">
-          <SearchOptions />
+        <div className='search-options-container'>
+          <Input.Search
+            placeholder={i18n.SEARCH}
+            onBlur={this.searchBlur}
+            onSearch={this.search}
+            onChange={this.searchClearError}
+            className={searchFailed ? 'search-failed' : ''}
+            disabled={is3DMapMode}
+          />
+          <div className={`search-options-sub-panel ${isEditMode ? 'search-options-sub-panel-right' : 'search-options-sub-panel-left'}`}>
+            <SearchOptions />
+          </div>
         </div>
         <Tooltip
           title={layerName}

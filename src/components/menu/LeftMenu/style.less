@@ -17,3 +17,29 @@
   text-align: left;
   text-overflow: ellipsis;
 }
+
+.search-failed > input {
+  color: red;
+}
+
+.search-options-container{
+  width: 10%;
+  .search-options-sub-panel {
+    width: auto !important;
+    position: relative;
+    top: 5px;
+    z-index: 1050;
+  }
+
+  .search-options-sub-panel-right {
+    .context-menu {
+      right: 0;
+    }
+  }
+
+  .search-options-sub-panel-left {
+    .context-menu {
+      left: 0;
+    }
+  }
+}
