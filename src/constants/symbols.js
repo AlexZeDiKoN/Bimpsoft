@@ -3128,9 +3128,7 @@ export const symbols = [
         hint: 'Військовий госпіталь (стаціонарний)',
         code: '10032000001207020000',
         amp: {
-          [amps.additionalInformation]: '200',
-          [amps.uniqueDesignation]: '29ВГ',
-          [amps.higherFormation]: 'ВМКЦ ЦР',
+          [amps.uniqueDesignation]: 'ВГ',
         },
       },
       { hint: 'Військовий мобільний госпіталь', code: '10031000161614000000', amp: {} },
