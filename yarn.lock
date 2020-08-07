@@ -1530,13 +1530,13 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@craco/craco@^5.2.1":
-  version "5.6.3"
-  resolved "http://172.16.95.16:4873/@craco%2fcraco/-/craco-5.6.3.tgz#e76d5d8099b1d31574c0af006703ca6e3d8c1f4a"
-  integrity sha512-QxH+cfLQoqmrVgvesED3VK+WTZbUIaybwEc3/u7m/axQPTY2wjWDm39/jg4Cv8nwDWpGep0JUtBYyRF8Ba2oWA==
+"@craco/craco@^5.6.4":
+  version "5.6.4"
+  resolved "http://172.16.95.16:4873/@craco%2fcraco/-/craco-5.6.4.tgz#de7a707c727864f39e6afc192fb6732c3ca45f90"
+  integrity sha512-/Qi6yPMOBC7SEZJEDI5vYaPiGFs7HzO4AAZkGB0W3MX2OCw4u4FZC+ZO6TBptGzM3QLrF7WFt5AyQnXhNBcn3A==
   dependencies:
     cross-spawn "^7.0.0"
-    lodash.mergewith "^4.6.2"
+    lodash "^4.17.15"
     webpack-merge "^4.2.2"
 
 "@csstools/convert-colors@^1.4.0":
@@ -3659,12 +3659,10 @@ caw@^2.0.0, caw@^2.0.1:
     tunnel-agent "^0.6.0"
     url-to-options "^1.0.1"
 
-cesium@^1.59.0:
-  version "1.65.0"
-  resolved "http://172.16.95.16:4873/cesium/-/cesium-1.65.0.tgz#4a54986d1346bc3431bd151c8d9827b5fbb69259"
-  integrity sha512-TvxZuparbi96vcSPVVF4aNet2uaeo3ncc4KuK1lAR1v00ILTJF2vpyQM+izDRFhyUqYUyQcQEEVaz5OPJBeqIQ==
-  dependencies:
-    esm "^3.2.25"
+cesium@^1.72.0:
+  version "1.72.0"
+  resolved "http://172.16.95.16:4873/cesium/-/cesium-1.72.0.tgz#dee5da9bfe7313226b6f91dfd8de1541bdc59026"
+  integrity sha512-7m3ITPlEx868+KgT9fVtpCW6gKoPJmNNvU/JxgPIGwwP1gY0dRttog6I4Sfq/j+e+cOtLTmCvN11qtYEuFpGmQ==
 
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
@@ -5575,11 +5573,6 @@ eslint@^6.6.0:
     table "^5.2.3"
     text-table "^0.2.0"
     v8-compile-cache "^2.0.3"
-
-esm@^3.2.25:
-  version "3.2.25"
-  resolved "http://172.16.95.16:4873/esm/-/esm-3.2.25.tgz#342c18c29d56157688ba5ce31f8431fbb795cc10"
-  integrity sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
 
 espree@^6.1.2:
   version "6.1.2"
@@ -8951,11 +8944,6 @@ lodash.merge@^4.4.0:
   version "4.6.2"
   resolved "http://172.16.95.16:4873/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
-
-lodash.mergewith@^4.6.2:
-  version "4.6.2"
-  resolved "http://172.16.95.16:4873/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
-  integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
 
 lodash.pick@^4.2.1:
   version "4.4.0"
@@ -12803,10 +12791,10 @@ reselect@^4.0.0:
   resolved "http://172.16.95.16:4873/reselect/-/reselect-4.0.0.tgz#f2529830e5d3d0e021408b246a206ef4ea4437f7"
   integrity sha512-qUgANli03jjAyGlnbYVAV5vvnOmJnODyABz51RdBN7M4WaVu8mecZWgyQNkG8Yqe3KRGRt0l4K4B3XVEULC4CA==
 
-resium@^1.7.0:
-  version "1.10.1"
-  resolved "http://172.16.95.16:4873/resium/-/resium-1.10.1.tgz#de391fa1fe1a7221c73db2442fc8cb26164bb230"
-  integrity sha512-30bdFprXelr6me/+BxfZcRXz5hG+A/5OUQnwtMhuIVdDxYl0Rr8FSAnA2mV2FmQ6rpiYPS9YwKuqqjwzU0Qzbg==
+resium@^1.12.0:
+  version "1.12.0"
+  resolved "http://172.16.95.16:4873/resium/-/resium-1.12.0.tgz#da129df2b4e3c993c88fc13ce82b3d1ed3155688"
+  integrity sha512-617O1Y01ldTDUHEz8vMmmlpCVeA+E7Be0Zm403oTvlrv/TM/a3fxJ3gBpiKTUga24VfiqILlU7npLLS6nGm9Gw==
 
 resize-observer-polyfill@^1.5.0, resize-observer-polyfill@^1.5.1:
   version "1.5.1"
