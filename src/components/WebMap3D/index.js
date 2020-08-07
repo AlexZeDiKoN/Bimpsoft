@@ -7,6 +7,7 @@ import memoize from 'memoize-one'
 import {
   Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer,
   ScreenSpaceEventHandler, ScreenSpaceEvent, ImageryLayerCollection,
+  Camera,
 } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
@@ -51,6 +52,7 @@ export default class WebMap3D extends React.PureComponent {
       selected: PropTypes.array,
       source: PropTypes.object,
       setZoom: PropTypes.func.isRequired,
+      setCenter: PropTypes.func.isRequired,
       setSource: PropTypes.func.isRequired,
       setMapMode: PropTypes.func.isRequired,
       editObject: PropTypes.func.isRequired,
@@ -81,7 +83,7 @@ export default class WebMap3D extends React.PureComponent {
 
     // @TODO: remove terrainExaggeration after test
     render () {
-      const { objects, center, zoom, setZoom, selected, editObject, source: { sources } } = this.props
+      const { objects, center, zoom, setZoom, setCenter, selected, editObject, source: { sources } } = this.props
       const imageryLayers = getImageryLayers(sources)
       return imageryLayers
         ? (
@@ -105,6 +107,13 @@ export default class WebMap3D extends React.PureComponent {
             creditContainer={DIV}
             creditViewport={DIV}
           >
+            <Camera
+              ref={ (e) => { this.camera = e && e.cesiumElement }}
+              onMoveEnd={() => {
+                const pos = this.camera.positionCartographic
+                setCenter({ lng: pos.longitude * 180 / Math.PI, lat: pos.latitude * 180 / Math.PI }, zoom)
+              }}
+            />
             <ImageryLayerCollection>
               {imageryLayers}
             </ImageryLayerCollection>
@@ -113,7 +122,7 @@ export default class WebMap3D extends React.PureComponent {
               maximumHeight={MAX_ZOOM}
               duration={0}
               destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
-              onComplete={this.stopAutoMove}
+              onComplete={this.stopAutoMove()}
             />
             }
             <SignsLayer
