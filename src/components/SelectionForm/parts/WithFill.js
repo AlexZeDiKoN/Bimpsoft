@@ -10,6 +10,8 @@ import { evaluateColor } from '../../../constants/colors'
 
 const { FormRow } = components.form
 
+const COLOR_PICKER_Z_INDEX = 2000
+
 const PATH_HATCH = [ 'attributes', 'hatch' ]
 const PATH_FILL = [ 'attributes', 'fill' ]
 
@@ -61,6 +63,7 @@ const WithFill = (Component) => class FillComponent extends Component {
               title={hatch === HATCH_TYPE.NONE ? i18n.FILL_COLOR : i18n.HATCH_COLOR}
               className="fill-item-component-control"
               color={fill}
+              zIndex={COLOR_PICKER_Z_INDEX}
               onChange={this.fillColorChangeHandler}
             />
           </div>
