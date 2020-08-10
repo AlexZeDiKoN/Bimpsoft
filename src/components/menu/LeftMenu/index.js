@@ -237,6 +237,7 @@ export default class LeftMenu extends React.Component {
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
+        <MenuDivider />
         <div className='search-options-container'>
           <Input.Search
             placeholder={i18n.SEARCH}
@@ -250,6 +251,7 @@ export default class LeftMenu extends React.Component {
             <SearchOptions />
           </div>
         </div>
+        <MenuDivider />
         <Tooltip
           title={layerName}
           mouseEnterDelay={1.5}
