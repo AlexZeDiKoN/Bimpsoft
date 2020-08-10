@@ -46,6 +46,10 @@ const restoreObjects = (dispatch) => (ids) => {
   catchError(webMapActions.refreshObjects)(ids)(dispatch)
 }
 
+const refreshObjectList = (dispatch) => ({ list, layer }) => {
+  catchError(webMapActions.refreshObjectList)(list, layer)(dispatch)
+}
+
 const lockObject = (dispatch, getState) => ({ objectId, contactId, contactName }) => {
   // console.log(`lockObject`, getState().webMap.contactId, contactId)
   if (String(getState().webMap.contactId) !== String(contactId)) {
@@ -75,6 +79,7 @@ export const initSocketEvents = async (dispatch, getState) => {
     socket.on('map:update object', updateObject(dispatch))
     socket.on('map:delete objects', deleteObjects(dispatch))
     socket.on('map:restore objects', restoreObjects(dispatch))
+    socket.on('map:refresh objects', refreshObjectList(dispatch))
     socket.on('map:lock object', lockObject(dispatch, getState))
     socket.on('map:unlock object', unlockObject(dispatch))
     socket.on('map:printStatus', printGeneratingStatus(dispatch))

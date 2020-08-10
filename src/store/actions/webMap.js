@@ -360,6 +360,15 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
   return result.access
 }
 
+export const refreshObjectList = (list, layer) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => {
+    const objects = (await objRefreshList({ list, layer })).map(fixServerObject)
+    return dispatch({
+      //TODO type: actionNames.REFRESH_OBJECT,
+      //TODO payload: { id, object },
+    })
+  })
+
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
     for (const id of ids) {
