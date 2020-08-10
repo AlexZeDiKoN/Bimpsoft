@@ -20,7 +20,9 @@ const locales = window.navigator.language
 
 const ItemList = (props) => {
   const { time, user, event, highlightObject, object, id } = props
-  const [ baseColor ] = useState(object.attributes.color)
+  const [ baseColor ] = useState(object ? object.attributes.color : null)
+  const onMouseOver = baseColor === null ? null : () => highlightObject(id)
+  const onMouseOut = baseColor === null ? null : () => highlightObject(id, baseColor)
 
   const formatDate = new Date(time).toLocaleDateString(locales, dateOptions)
   const formatTime = new Date(time).toLocaleTimeString(locales, timeOptions)
@@ -39,8 +41,8 @@ const ItemList = (props) => {
       </div>
       <div
         className={'event'}
-        onMouseOver={() => highlightObject(id)}
-        onMouseOut={ () => highlightObject(id, baseColor)}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
       >
         {event}
       </div>
@@ -53,7 +55,7 @@ ItemList.propTypes = {
   event: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
   highlightObject: PropTypes.func.isRequired,
-  object: PropTypes.object.isRequired,
+  object: PropTypes.object,
   id: PropTypes.string.isRequired,
 }
 

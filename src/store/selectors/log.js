@@ -63,7 +63,7 @@ export const userEvents = createSelector(
         event,
         timestamp,
         id,
-        object: objectById.toObject(),
+        object: objectById ? objectById.toObject() : null,
       }
     }).reverse()
   })

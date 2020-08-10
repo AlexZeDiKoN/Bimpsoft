@@ -1049,6 +1049,10 @@ export default class WebMap extends React.PureComponent {
       marchMode,
       layer,
       onChangeLayer,
+      printStatus,
+      onClick,
+      getCoordForMarch,
+      selection: { newShape, preview },
     } = this.props
 
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
@@ -1056,7 +1060,7 @@ export default class WebMap extends React.PureComponent {
     ) {
       if (this.boxSelected && detail <= 1) {
         delete this.boxSelected
-      } else {
+      } else if (!newShape.type) {
         const area = (layer) => {
           if (!layer.getBounds) {
             return 0
@@ -1090,13 +1094,6 @@ export default class WebMap extends React.PureComponent {
         }
       }
     }
-
-    const {
-      selection: { newShape, preview },
-      printStatus,
-      onClick,
-      getCoordForMarch,
-    } = this.props
 
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
