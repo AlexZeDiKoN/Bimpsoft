@@ -1,10 +1,12 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { Input, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import memoizeOne from 'memoize-one'
-import { components, data } from '@DZVIN/CommonComponents'
+import { components, data, IconNames } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import Item from '../ObjectCatalogItem'
+import { InputButton } from '../common'
+import './style.css'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -38,14 +40,7 @@ export default class CatalogsComponent extends React.PureComponent {
 
   scrollPanelRef = React.createRef()
 
-  inputRef = React.createRef()
-
-  mouseUpHandler = (e) => {
-    e.preventDefault()
-    this.inputRef.current.focus()
-  }
-
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 
@@ -90,7 +85,6 @@ export default class CatalogsComponent extends React.PureComponent {
     } = this.props
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
-
     const commonData = this.getCommonData(
       textFilter,
       onClick,
@@ -102,13 +96,18 @@ export default class CatalogsComponent extends React.PureComponent {
     )
 
     return (
-      <Wrapper title={(<Tooltip title={title}>{title}</Tooltip>)}>
-        <div style={{ width: `100%` }}>
-          <Input.Search
-            ref={this.inputRef}
-            placeholder={i18n.FILTER}
-            onChange={this.filterTextChangeHandler}
-          />
+      <Wrapper
+        icon={title === i18n.TARGETS ? IconNames.TARGETS : IconNames.CATALOG}
+        title={(<Tooltip title={title}>{title}</Tooltip>)}
+      >
+        <div className='catalog-container'>
+          <div className='catalog-container__header'>
+            <InputButton
+              title={title}
+              initValue={textFilter ? textFilter.regExpTest.source : ''}
+              onChange={this.filterTextChangeHandler}
+            />
+          </div>
           <div className="catalog-scroll" ref={this.scrollPanelRef}>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
@@ -118,7 +117,6 @@ export default class CatalogsComponent extends React.PureComponent {
               roots={roots}
               itemTemplate={Item}
               commonData={commonData}
-              onMouseUp={this.mouseUpHandler}
             />
           </div>
         </div>

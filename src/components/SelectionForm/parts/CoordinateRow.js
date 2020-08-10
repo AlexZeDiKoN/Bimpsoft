@@ -5,7 +5,7 @@ import i18n from '../../../i18n'
 import placeSearch from '../../../server/places'
 
 const {
-  form: { Coordinates, FormRow },
+  form: { Coordinates },
 } = components
 
 export default class CoordinateRow extends React.Component {
@@ -43,17 +43,18 @@ export default class CoordinateRow extends React.Component {
   render () {
     const { coordinate = {}, index, label, readOnly } = this.props
     return (
-      <FormRow label={label || i18n.NODAL_POINT_INDEX(index + 1)}>
+      <div className='coordinateRow-container'>
+        <div className='coordinate-title'>{label || i18n.NODAL_POINT_INDEX(index + 1)}</div>
         <Coordinates
           coordinates={coordinate}
-          readOnly={readOnly}
+          isReadOnly={readOnly}
           onChange={this.changeHandler}
           onBlur={this.onBlurHandler}
           onExitWithChange={this.onExitWithChangeHandler}
           onEnter={this.onFocusHandler}
           onSearch={placeSearch}
         />
-      </FormRow>
+      </div>
     )
   }
 }

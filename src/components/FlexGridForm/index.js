@@ -52,7 +52,7 @@ export default class extends React.PureComponent {
           <HotKeysContainer>
             <Form className="settings-form-group flex-grid--form">
               <FormRow label={i18n.DIRECTIONS_AMOUNT}>
-                <Input type="number" defaultValue={directions} onChange={this.onDirectionsChange} />
+                <Input.Integer type="number" value={directions} min={1} max={10} onChange={this.onDirectionsChange} />
               </FormRow>
               <FormRow label={i18n.DIRECTION_ZONES}>
                 <Switch defaultChecked={zones} onChange={setZones}/>

@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -28,7 +28,13 @@ function getRadiusFromCoordinatesArray (coordinatesArray) {
 }
 
 const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponent extends CoordinatesMixin(Component) {
-  state = { radiusText: null }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      radiusText: null,
+    }
+  }
 
   coordinateChangeHandler = async (index, value) => {
     await this.onCoordinateExitWithChangeHandler(index, value)
@@ -85,7 +91,8 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
-          <FormRow label={i18n.RADIUS}>
+          <div className='coordinateRow-container'>
+            <div className='coordinate-title'>{i18n.RADIUS}</div>
             <InputWithSuffix
               readOnly={!canEdit}
               value={radius}
@@ -94,7 +101,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
               suffix={i18n.ABBR_METERS}
               error={radiusIsWrong}
             />
-          </FormRow>
+          </div>
         </div>
       </FormDarkPart>
     )

@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
@@ -8,7 +7,7 @@ const parent = { _onMarkerDrag }
 
 L.PM.Edit.Rectangle.include({
   _onMarkerDrag: function (e) {
-    parent._onMarkerDrag.call(this, e) // Здається, цей виклик не потрібен, без нього працює так само
+    // parent._onMarkerDrag.call(this, e) // Здається, цей виклик не потрібен, без нього працює так само
     const marker = e.target
     const kind = this._layer.options.tsType
     if (kind === entityKind.SQUARE) {
@@ -17,6 +16,8 @@ L.PM.Edit.Rectangle.include({
       point = adjustSquareCorner(marker._map, point, opposite)
       this._layer.setBounds(L.latLngBounds(point, opposite))
       this._adjustAllMarkers(this._layer.getLatLngs()[0])
+    } else {
+      parent._onMarkerDrag.call(this, e) // потрібен для не SQUARE
     }
   },
 })

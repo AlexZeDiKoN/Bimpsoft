@@ -4,9 +4,9 @@ import { model } from '@DZVIN/MilSymbolEditor'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector, taskModeSelector, targetingModeSelector } from '../selectors'
+import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects } from '../selectors'
 import entityKind, { GROUPS } from '../../components/WebMap/entityKind'
-import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
+import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
@@ -19,6 +19,8 @@ export const SET_DATA_PREVIEW = action('SET_DATA_PREVIEW')
 export const SET_NEW_SHAPE = action('SET_NEW_SHAPE')
 export const SET_NEW_SHAPE_COORDINATES = action('SET_NEW_SHAPE_COORDINATES')
 export const SHOW_DELETE_FORM = action('SHOW_DELETE_FORM')
+export const SHOW_ERROR_PASTE_FORM = action('SHOW_ERROR_PASTE_FORM')
+export const SHOW_ERROR_SAVE_FORM = action('SHOW_ERROR_SAVE_FORM')
 export const UPDATE_NEW_SHAPE = action('UPDATE_NEW_SHAPE')
 export const SELECTED_LIST = action('SELECTED_LIST')
 export const CLIPBOARD_SET = action('CLIPBOARD_SET')
@@ -36,6 +38,7 @@ const {
   },
 } = model
 
+export const LENGTH_APP6_CODE = 20 // кол-во символов в коде
 const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
 
 export const selectedList = (list) => ({
@@ -130,7 +133,7 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
             underline: true,
             align: Align.CENTER,
             size: 16,
-          })
+          }),
         )),
       ]))
       break
@@ -179,6 +182,49 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
   })))
 })
 
+export const newShapeFromSymbol = (data, point) => withNotification((dispatch, getState) => {
+  const {
+    layers: {
+      selectedId: layer,
+    },
+  } = getState()
+
+  const { code, amp } = data
+
+  dispatch(setPreview(WebMapObject({
+    type: SelectionTypes.POINT,
+    code,
+    layer,
+    geometry: List([ point ]),
+    point: point,
+    attributes: WebMapAttributes(amp || {}),
+  }),
+  ))
+})
+
+export const newShapeFromLine = (data, point, geometry) => withNotification((dispatch, getState) => {
+  const {
+    layers: {
+      selectedId: layer,
+    },
+  } = getState()
+
+  const { code, amp } = data
+
+  dispatch(
+    setPreview(
+      WebMapObject({
+        type: amp.type,
+        code,
+        layer,
+        geometry: List(geometry),
+        point: point,
+        attributes: createObjectRecord(amp),
+      }),
+    ),
+  )
+})
+
 export const copy = () => withNotification((dispatch, getState) => {
   const {
     selection: { list = null },
@@ -211,6 +257,7 @@ export const cut = () => withNotification((dispatch) => {
 })
 
 export const paste = () => withNotification((dispatch, getState) => {
+  dispatch(hideForm())
   const state = getState()
   const canEdit = canEditSelector(state)
   if (!canEdit) {
@@ -239,6 +286,7 @@ export const paste = () => withNotification((dispatch, getState) => {
             )
           case entityKind.GROUPED_HEAD:
           case entityKind.GROUPED_LAND:
+          case entityKind.GROUPED_REGION:
             return webMap.copyGroup(
               id,
               layer,
@@ -266,9 +314,14 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   const {
     selection: { list = [] },
   } = state
-  for (const id of list) {
-    await dispatch(webMap.deleteObject(id))
+  if (list.length) {
+    await (
+      list.length === 1
+        ? dispatch(webMap.deleteObject(list[0]))
+        : dispatch(webMap.deleteObjects(list))
+    )
   }
+  webMap.stopHeartBeat()
   dispatch(batchActions([
     hideForm(),
     selectedList([]),
@@ -278,6 +331,15 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
 
 export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
+})
+
+export const showErrorPasteForm = () => ({
+  type: SHOW_ERROR_PASTE_FORM,
+})
+
+export const showErrorSaveForm = (errorCode) => ({
+  type: SHOW_ERROR_SAVE_FORM,
+  errorCode,
 })
 
 export const showDivideForm = () => ({
@@ -293,6 +355,11 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   const { selection: { list }, webMap: { objects } } = state
   const id = list[0]
   const obj = objects.get(id)
+  const type = obj.type
+  if (type === SelectionTypes.SQUARE ||
+    type === SelectionTypes.CIRCLE) {
+    return
+  }
   const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
   const point = obj.point.toObject()
   dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
@@ -306,25 +373,84 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   },
 }) */
 
-export const createContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
-  const {
-    selection: { list },
-    layers: { selectedId: layer },
-  } = getState()
+export const createContour = () =>
+  withNotification(async (dispatch, getState, { webmapApi }) => {
+    const {
+      selection: { list },
+      layers: { selectedId: layer },
+    } = getState()
 
-  const contour = await webmapApi.contourCreate(layer, list)
-  contour && dispatch(selectedList([ contour.id ]))
-})
+    const contour = await webmapApi.contourCreate(layer, list)
 
-export const dropContour = () => withNotification(async (dispatch, getState, { webmapApi }) => {
-  const {
-    selection: { list: [ contour ] },
-    layers: { selectedId: layer },
-  } = getState()
+    if (contour) {
+      dispatch(selectedList([ contour.id ]))
+      dispatch({
+        type: webMap.actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: webMap.changeTypes.CREATE_CONTOUR,
+          id: contour.id,
+          list,
+          layer,
+        },
+      })
+    }
+  })
 
-  const objects = await webmapApi.contourDelete(layer, contour)
-  objects && dispatch(batchActions([
-    webMap.tryUnlockObject(contour),
-    selectedList(objects),
-  ]))
-})
+export const dropContour = () =>
+  withNotification(async (dispatch, getState, { webmapApi }) => {
+    const {
+      selection: { list: [ contour ] },
+      layers: { selectedId: layer },
+    } = getState()
+
+    const list = await webmapApi.contourDelete(layer, contour)
+
+    if (list) {
+      dispatch(batchActions([
+        webMap.tryUnlockObject(contour),
+        selectedList(list),
+        {
+          type: webMap.actionNames.ADD_UNDO_RECORD,
+          payload: {
+            changeType: webMap.changeTypes.DELETE_CONTOUR,
+            id: contour,
+            list,
+            layer,
+          },
+        },
+      ]))
+    }
+  })
+
+// Перевірка та попередження користувача про створення однакових об'єктів обстановки (точковий знак) на одному шарі
+// при зберіганні об’єкту обстановки
+// Не перевіряти об’єкт без вибраного підрозділу
+export const errorSymbol = {
+  duplication: 1,
+  code: 2,
+}
+export const checkSaveSymbol = () =>
+  withNotification((dispatch, getState) => {
+    const {
+      selection: { preview },
+      webMap: { objects },
+      layers: { selectedId },
+    } = getState()
+    const { type, unit } = preview
+    if (type === SelectionTypes.POINT && objects && unit !== null) {
+      const { code, id } = preview
+      const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
+        (symbol, index) => (Number(index) !== Number(id)))
+      let errorCode = 0
+      if (ident && ident.size > 0) {
+        errorCode = errorCode | errorSymbol.duplication
+      }
+      if (code.length < LENGTH_APP6_CODE) {
+        errorCode = errorCode | errorSymbol.code
+      }
+      if (errorCode) {
+        return dispatch(showErrorSaveForm(errorCode))
+      }
+    }
+    return dispatch(savePreview())
+  })

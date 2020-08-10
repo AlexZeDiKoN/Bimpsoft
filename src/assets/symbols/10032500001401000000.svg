@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 80C0 35.8172 35.8172 0 80 0C124.183 0 160 35.8172 160 80C160 124.183 124.183 160 80 160C35.8172 160 0 124.183 0 80Z" transform="translate(16 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 80C0 35.8172 35.8172 0 80 0C124.183 0 160 35.8172 160 80C160 124.183 124.183 160 80 160C35.8172 160 0 124.183 0 80Z" transform="translate(846 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L112 123.784" transform="translate(40 442)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L112 123.784" transform="matrix(-1 0 0 1 152 442)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L112 123.784" transform="translate(870 442)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L112 123.784" transform="matrix(-1 0 0 1 982 442)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M9.06477e-07 94.0018C9.06477e-07 94.0018 0.396328 -0.0983405 65.3939 0.000154413C130.392 0.0986494 130 93.9996 130 93.9996" transform="translate(184 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M9.06477e-07 94.0018C9.06477e-07 94.0018 0.396328 -0.0984177 65.394 7.72673e-05C130.392 0.0985723 130 93.9996 130 93.9996" transform="translate(314.5 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M9.06477e-07 94.0018C9.06477e-07 94.0018 0.396328 -0.0984177 65.394 7.72673e-05C130.392 0.0985723 130 93.9996 130 93.9996" transform="translate(445 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M9.06477e-07 94.0018C9.06477e-07 94.0018 0.396328 -0.0984177 65.394 7.72673e-05C130.392 0.0985723 130 93.9996 130 93.9996" transform="translate(575.5 424)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M9.06477e-07 94.0018C9.06477e-07 94.0018 0.396328 -0.0984177 65.394 7.72673e-05C130.392 0.0985723 130 93.9996 130 93.9996" transform="translate(705.5 424)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

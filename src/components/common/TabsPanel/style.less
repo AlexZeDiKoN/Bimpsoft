@@ -3,38 +3,31 @@
 
 .tabs-panel {
   .flex;
-  flex: 1 1 auto;
-  flex-direction: column;
+  width: 100%;
+  flex-direction: row-reverse;
 }
 .tabs-panel-headers{
   .flex;
-  height: 40px;
-  background-color: @toolbar-header-background;
   flex: 0 0 auto;
-}
-.tabs-panel-header {
-  color: @toolbar-header-text;
-  font-size: 16px;
-  border-bottom: 3px solid @toolbar-header-background;
-  margin: 10px 5px 0 5px;
-  padding: 0 5px;
-  width: 33.3%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: left;
-  font-family: @sidebar-font;
-}
-.tabs-panel-header-selected{
-  border-bottom: 3px solid #9fa659;
+  flex-direction: column;
+  height: 100%;
+  width: 40px;
+  padding-top: 5px;
+  align-items: center;
+  background: @sidebar-background-color;
+  .dzvin-ibutton{
+    font-size: 1.18em;
+  }
 }
 
 .tabs-panel-content{
   min-height: 10%;
   flex: 1 1 auto;
+  overflow: hidden;
   .flex;
 }
 .tabs-panel-container{
-  flex: 1 1 auto;
   .flex;
+  flex: 1 1 auto;
+  overflow: hidden;
 }

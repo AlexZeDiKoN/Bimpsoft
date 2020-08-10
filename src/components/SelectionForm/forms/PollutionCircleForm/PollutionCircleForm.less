@@ -1,0 +1,200 @@
+@import "../../../../assets/styles/_variables.less";
+
+.pollutioncircle-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: @modals-background-color;
+
+  .scroll-container {
+    overflow: auto;
+    height: ~"calc(100vh - 148px)";
+    width: 310px;
+  }
+
+  .pollutioncircle-container__itemWidth-left {
+    margin: 6px;
+    height: 160px;
+    border-bottom: 2px solid @modals-divider-color;
+    display: none;
+    background: @toolbar-light-background;
+
+    svg {
+      width: 100%;
+    }
+  }
+
+  .dzvin-form-row-label {
+    margin: 0.2em;
+  }
+
+  .dzvin-form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 12px;
+    font-family: Roboto;
+    color: @modals-text-color;
+    margin: 0 10px;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+
+    .dzvin-form-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .dzvin-form-input {
+        width: 100%;
+        position: relative;
+
+        input[readonly] {
+          background: #f5f5f5;
+          pointer-events: none;
+        }
+
+        .ant-select {
+          width: 100%;
+        }
+
+        .ant-select-disabled {
+          .ant-select-arrow {
+            opacity: 0;
+          }
+        }
+
+        .icon-button {
+          position: absolute;
+          top: -4px;
+          pointer-events: none;
+          right: -4px;
+          transform: scale(0.6);
+        }
+      }
+    }
+
+    &--firstSection {
+      display: flex;
+      margin-top: 20px;
+      flex-direction: column;
+      border-bottom: 2px solid rgba(159, 166, 89, .54);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+
+
+      .pollutioncircle-container__itemWidth-right {
+        display: flex;
+        flex-direction: column;
+
+        .coordinate-container-border {
+          border-top: 2px solid rgba(159, 166, 89, 0.54);
+          margin-top: 10px;
+          padding-top: 10px;
+        }
+
+        .dzvin-form-input {
+          width: 100%;
+
+          & > .ant-select {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    &--secondSection {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+
+      .pollutioncircle-container__itemWidth {
+        width: 100%;
+
+        .dzvin-form-input, .ant-select {
+          width: 100%;
+        }
+
+        .container__itemWidth {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-right: 10px;
+          border-bottom: 2px solid @modals-section-border-color;
+          padding-bottom: 10px;
+          margin-bottom: 10px;
+
+          .dzvin-form-row {
+            width: 90px;
+            flex: 0 0 auto;
+            margin-right: 0;
+          }
+
+          .radiContainer {
+            font-size: 12px;
+            font-family: Roboto;
+
+            .icon-option {
+              height: 28px;
+              border: 0;
+              background: transparent;
+
+              .icon-text {
+                display: none;
+              }
+            }
+          }
+
+          .radiContainerColor {
+            display: flex;
+            align-items: center;
+            margin-top: 18px;
+
+            & > div:first-child {
+              margin-right: 5px;
+            }
+
+            .color-picker {
+              width: 30px;
+              height: 30px;
+
+              .color-picker-button {
+                width: 28px;
+                height: 28px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+  }
+
+  .ant-select-open {
+    .ant-select-arrow {
+      transform: rotate(180deg) scale(0.6);
+    }
+  }
+
+  .ant-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid @toolbar-color;
+    top: 55%;
+    transition: 0.3s;
+    transform: scale(0.6);
+    right: 7px;
+
+    .anticon {
+      display: none;
+    }
+  }
+}

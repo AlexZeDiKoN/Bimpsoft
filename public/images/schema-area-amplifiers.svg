@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 800 560">
+    <path fill="none" stroke="#000" stroke-linejoin="bevel" stroke-width="8"
+          d="M120,328C120,400 240,480 360,480C440,480 670,580 656,328
+   M648,228C620,60 420,40 380,40C280,40 140,40 120,228"
+
+    />
+    <path fill="none" stroke="#000" stroke-linejoin="bevel" stroke-width="2"
+          d="M352 160h80v80h-80zM352 240h80v80h-80zM352 320h80v80h-80zM16 240h80v80h-80zM96 240h80v80h-80zM176 240h80v80h-80zM528 240h80v80h-80zM608 240h80v80h-80zM688 240h80v80h-80z"
+    />
+    <g text-anchor="middle" font-size="52" font-family="Arial" font-weight="bold" stroke-width="0" fill="black">
+        <text alignment-baseline="central" x="136" y="280">B</text>
+        <text alignment-baseline="central" x="56" y="280">H1</text>
+        <text alignment-baseline="central" x="216" y="280">H2</text>
+        <text alignment-baseline="central" x="648" y="280">B</text>
+        <text alignment-baseline="central" x="568" y="280">H1</text>
+        <text alignment-baseline="central" x="728" y="280">H2</text>
+        <text alignment-baseline="central" x="392" y="200">T</text>
+        <text alignment-baseline="central" x="392" y="280">N</text>
+        <text alignment-baseline="central" x="392" y="360">W</text>
+    </g>
+</svg>

@@ -1,15 +1,31 @@
-.marker-icon, .marker-icon:focus {
-  border: 2px solid #0a0;
+.catalog-leaflet-popup {
+  height: 100%;
+
+  .marker-icon, .marker-icon:focus {
+    border: 2px solid #0a0;
+  }
+
+  .marker-icon-middle, .marker-icon-middle:focus {
+    opacity: .8;
+    border: 1px solid #0a0;
+  }
+
+  .leaflet-marker-pane .leaflet-div-icon {
+    background: none;
+    border: none;
+  }
+
+  .nameValue {
+    vertical-align: top;
+    width: auto;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: auto;
+  }
 }
 
-.marker-icon-middle, .marker-icon-middle:focus {
-  opacity: .8;
-  border: 1px solid #0a0;
+.invisible {
+  display: none;
 }
-
-.leaflet-marker-pane .leaflet-div-icon {
-  background: none;
-  border: none;
-}
-
-

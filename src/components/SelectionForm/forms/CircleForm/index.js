@@ -8,6 +8,7 @@ import {
   WithLineType,
   WithStrokeWidth,
   UnitSelect,
+  WithPointAmplifiers,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './CircleForm.css'
@@ -21,25 +22,33 @@ export default class SquareForm extends
     WithLineType,
     WithStrokeWidth,
     UnitSelect,
+    WithPointAmplifiers,
   )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
     return (
       <div className="circle-container">
-        <div className="circle-container__item">
-          <div className="circle-container__itemWidth">
-            {this.renderSubordinationLevel()}
-            {this.renderColor()}
-            {this.renderStrokeWidth()}
+        <div className='scroll-container'>
+          <div className="circle-container__item--firstSection">
+            <div className="circle-container__itemWidth-right">
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+            </div>
           </div>
-          <div className="circle-container__itemWidth">
-            {this.renderOrgStructureSelect()}
+          <div className="circle-container__item--secondSection">
+            <div className="circle-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderLineType(true)}
+                {this.renderColor()}
+              </div>
+              {this.renderStrokeWidth()}
+            </div>
             {this.renderFill()}
-            {this.renderLineType(true)}
           </div>
+          {this.renderPointAmplifiers()}
+          {this.renderCoordinateAndRadius()}
         </div>
-        {this.renderCoordinateAndRadius()}
       </div>
     )
   }

@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import entityKind from '../entityKind'
 const { _simplifyPoints } = L.Polyline.prototype
 

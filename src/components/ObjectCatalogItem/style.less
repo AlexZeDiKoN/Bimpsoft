@@ -2,15 +2,15 @@
 @import "../../assets/styles/_mixins.less";
 
 .catalog-scroll{
-  overflow-y: scroll;
-  height: 89%;
+  overflow-y: auto;
+  height: ~"calc(100% - 40px)";
   padding-bottom: 10px;
 
   .catalog-item{
     .flex;
     align-items: center;
-    height: 32px;
-    background: @sidebar-item-background-color;
+    height: 34px;
+    background: #EDEDED;
     border-top: 1px solid @sidebar-item-border-color;
     .button_layers{
       width: 1.7em;
@@ -58,7 +58,7 @@
     width: 10px;
     text-align: left;
     padding: 0 0.3em;
-    font-size: 13px;
+    font-size: 14px;
     font-family: @sidebar-font;
     overflow: hidden;
     white-space: nowrap;

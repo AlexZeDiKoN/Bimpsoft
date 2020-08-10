@@ -1,15 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { components, utils } from '@DZVIN/CommonComponents'
 import './style.css'
+import { Input, Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
 import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
+import SearchOptions from '../../../containers/SearchOptionsContainer'
 
 const { names: iconNames, IconButton } = components.icons
+
+const { Coordinates: Coord } = utils
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -42,6 +46,12 @@ export default class LeftMenu extends React.Component {
     onChangeTargetingMode: PropTypes.func,
     onChangeTaskMode: PropTypes.func,
     onClick3D: PropTypes.func,
+    searchFailed: PropTypes.bool,
+    onSearch: PropTypes.func,
+    onCoordinates: PropTypes.func,
+    onManyCoords: PropTypes.func,
+    onClearSearchError: PropTypes.func,
+    onCloseSearch: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -59,6 +69,49 @@ export default class LeftMenu extends React.Component {
   clickTargetingModeHandler = () => {
     const { targetingMode, onChangeTargetingMode } = this.props
     onChangeTargetingMode && onChangeTargetingMode(!targetingMode)
+  }
+
+  clickMap3D = () => {
+    const { onClick3D, is3DMapMode, isMeasureOn, onMeasureChange, marker, onMarkerChange, topographicObjects,
+      onTopographicObjectsChange } = this.props
+    if (!is3DMapMode) {
+      isMeasureOn && onMeasureChange()
+      marker && onMarkerChange()
+      topographicObjects && onTopographicObjectsChange()
+    }
+    onClick3D()
+  }
+
+  search = (sample) => {
+    const { onSearch, onCoordinates, onManyCoords } = this.props
+    const query = sample.toUpperCase().trim()
+    if (query.length) {
+      const parsed = Coord.parse(query)
+      if (parsed && (parsed.length > 1 || (parsed.lng !== undefined && parsed.lat !== undefined))) {
+        if (parsed.length > 1) {
+          onManyCoords(parsed.map(({ lng, lat, type }) => ({
+            point: { lng, lat },
+            text: `${query} (${Coord.names[type]})`,
+          })))
+        } else {
+          onCoordinates(query, parsed)
+        }
+      } else {
+        onSearch(query)
+      }
+    }
+  }
+
+  searchClearError = () => {
+    const { searchFailed, onClearSearchError } = this.props
+    if (searchFailed) {
+      onClearSearchError()
+    }
+  }
+
+  searchBlur = () => {
+    const { onCloseSearch } = this.props
+    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
   }
 
   render () {
@@ -85,7 +138,7 @@ export default class LeftMenu extends React.Component {
       selectionButtonsComponent: SelectionButtonsComponent,
       flexGridButtonsComponent: FlexGridButtonsComponent,
       layerName,
-      onClick3D,
+      searchFailed,
     } = this.props
 
     const subordinationLevelViewData =
@@ -101,14 +154,14 @@ export default class LeftMenu extends React.Component {
           onClick={this.clickEditModeHandler}
           disabled={is3DMapMode}
         />
+        <IconButton
+          placement={'bottomLeft'}
+          title={i18n.TARGETING}
+          icon={iconNames.AIM}
+          checked={targetingMode}
+          onClick={this.clickTargetingModeHandler}
+        />
         {isMapCOP && <>
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.TARGETING}
-            icon={iconNames.AIM}
-            checked={targetingMode}
-            onClick={this.clickTargetingModeHandler}
-          />
           <IconButton
             placement={'bottomLeft'}
             title={i18n.CREATE_TASK}
@@ -124,7 +177,7 @@ export default class LeftMenu extends React.Component {
           title={i18n.VOLUME_VIEW}
           icon={iconNames.MAP_3D}
           checked={is3DMapMode}
-          onClick={onClick3D}
+          onClick={this.clickMap3D}
         />
         <MapSourceSelectComponent />
         <IconButton
@@ -160,11 +213,11 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <IconButton
           placement={'topLeft'}
-          value={!isMeasureOn}
           title={i18n.MEASURE}
           icon={iconNames.MENU_RULER_DEFAULT}
           checked={isMeasureOn}
           onClick={onMeasureChange}
+          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomLeft'}
@@ -172,6 +225,7 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_MARKER_DEFAULT}
           checked={marker}
           onClick={onMarkerChange}
+          disabled={is3DMapMode}
         />
         <IconButton
           placement={'bottomLeft'}
@@ -179,10 +233,33 @@ export default class LeftMenu extends React.Component {
           icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
           checked={topographicObjects}
           onClick={onTopographicObjectsChange}
+          disabled={is3DMapMode}
         />
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
-        <div className="menu-layer-name">{layerName}</div>
+        <MenuDivider />
+        <div className='search-options-container'>
+          <Input.Search
+            placeholder={i18n.SEARCH}
+            onBlur={this.searchBlur}
+            onSearch={this.search}
+            onChange={this.searchClearError}
+            className={searchFailed ? 'search-failed' : ''}
+            disabled={is3DMapMode}
+          />
+          <div className={`search-options-sub-panel ${isEditMode ? 'search-options-sub-panel-right' : 'search-options-sub-panel-left'}`}>
+            <SearchOptions />
+          </div>
+        </div>
+        <MenuDivider />
+        <Tooltip
+          title={layerName}
+          mouseEnterDelay={1.5}
+          placement='bottom'
+          className="menu-layer-name"
+        >
+          {layerName}
+        </Tooltip>
       </div>
     )
   }

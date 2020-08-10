@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 0L96 167.999" transform="translate(120 428.999)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L96 167.999" transform="matrix(-1 0 0 1 216 428.999)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L96 167.999" transform="translate(448 428)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L96 167.999" transform="matrix(-1 0 0 1 544 428)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L96 167.999" transform="translate(775.999 427.999)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0L96 167.999" transform="matrix(-1 0 0 1 871.999 427.999)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 1L976 1" transform="translate(24 511)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

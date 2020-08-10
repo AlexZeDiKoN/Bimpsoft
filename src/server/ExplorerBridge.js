@@ -1,4 +1,4 @@
-import { maps, webMap, task } from '../store/actions'
+import { maps, webMap, task, march } from '../store/actions'
 import { getExplorerOrigin } from '../utils/services'
 import { catchError } from '../store/actions/asyncAction'
 
@@ -26,11 +26,14 @@ const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
 const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 const ACTION_OPEN_COORDINATE = 'open coordinate'
 const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
+const OPEN_MARCH = 'open march'
+const SAVE_MARSH = 'save march'
 
 export default class ExplorerBridge {
   constructor (store) {
     this.store = store
     this.abandoned = false
+    this.openedVariantMapId = null
   }
 
   init = (authorized = false) => {
@@ -68,6 +71,7 @@ export default class ExplorerBridge {
       console.info('Message from Explorer >> ', JSON.stringify(data, null, 2))
       switch (action) {
         case ACTION_INIT: {
+          this.abandoned = false
           this.send({ action: ACTION_READY })
           break
         }
@@ -89,6 +93,7 @@ export default class ExplorerBridge {
         case ACTION_OPEN_VARIANT: {
           const { mapId, variantId } = data
           catchError(maps.openMapFolderVariant)(mapId, variantId)(this.store.dispatch)
+          this.openedVariantMapId = mapId
           break
         }
         case ACTION_CLOSE_VARIANT: {
@@ -118,6 +123,10 @@ export default class ExplorerBridge {
           catchError(maps.openMapByObject)(mapId, object)(this.store.dispatch)
           break
         }
+        case OPEN_MARCH: {
+          catchError(march.openMarch)(data.payload)(this.store.dispatch)
+          break
+        }
         default:
       }
     }
@@ -141,4 +150,6 @@ export default class ExplorerBridge {
 
   showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
     window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)
+
+  saveMarch = (data = {}) => this.send({ action: SAVE_MARSH, payload: data })
 }

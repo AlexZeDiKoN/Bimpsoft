@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 0C0 0 376.574 1.7797 377.001 448.999C377.428 896.218 2.09912 897 2.09912 897" transform="translate(71 63.00146)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M520 1L0 1" transform="translate(448 503)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 971.875 435.6785)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

@@ -34,7 +34,7 @@ const BaseForm = (props) => {
         disabled={isDisabled && isDisabled(value)}
         onChange={handleSelect}
       >
-        {name}
+        <div title={name} className='dir_info'>{name}</div>
       </Option>
     </div>
   )

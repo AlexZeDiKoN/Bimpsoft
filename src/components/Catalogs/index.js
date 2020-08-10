@@ -24,6 +24,8 @@ export const catalogSign = (catalogId) => {
 }
 
 export default class Catalogs extends React.PureComponent {
+  static displayName = 'Catalogs'
+
   componentDidMount () {
     const { preloadCatalogList } = this.props
     preloadCatalogList && preloadCatalogList()

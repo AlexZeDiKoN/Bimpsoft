@@ -3,12 +3,20 @@ import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
 import { pointsToD } from '../../utils/svg/lines'
-import { getMapObjectSvg } from './mapObject'
+import {
+  getDashSizeByDpi,
+  getFontSizeByDpi,
+  getGraphicSizeByDpi,
+  getMapObjectSvg,
+  getPointSizeByDpi,
+  getStrokeWidthByDpi,
+} from './mapObject'
 
-const METERS_PER_INCH = 0.0254
+const METERS_PER_INCH = 0.0254 // м в дюйме
 const SEMI_MAJOR_AXIS = 6378245
 const TILE_SIZE = 256
-const DEG_TO_RAD = Math.PI / 180
+const DEG_TO_RAD = Math.PI / 180 // перевод градусов в радианы
+const NORMAL_SIZE = 96 // разрешение экрана WINDOWS в dpi
 
 const add = ({ x, y }, dx, dy) => ({ x: x + dx, y: y + dy })
 const multiply = ({ x, y }, dx, dy) => ({ x: x * dx, y: y * dy })
@@ -41,19 +49,20 @@ const getCoordToPixels = (projection, dpi, scale, angle, { min, max }) => {
 }
 
 export const getMapSvg = (
-  { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ], angle },
-  { objects, dpi, printScale, layersById, showAmplifiers },
+  { srid, extent: [ southWestLng, southWestLat, northEastLng, northEastLat ] },
+  { geographicSrid, objects, dpi, printScale, layersById, showAmplifiers },
 ) => {
-  const projection = `EPSG:${srid}`
-  const [ lngSW, latSW ] = proj4(projection, [ southWestLng, southWestLat ])
-  const [ lngNE, latNE ] = proj4(projection, [ northEastLng, northEastLat ])
+  const fromProj = `EPSG:${geographicSrid}`
+  const toProj = `EPSG:${srid}`
+  const [ lngSW, latSW ] = proj4(fromProj, toProj, [ southWestLng, southWestLat ])
+  const [ lngNE, latNE ] = proj4(fromProj, toProj, [ northEastLng, northEastLat ])
 
   const boundsCoord = {
     min: { lng: Math.min(lngSW, lngNE), lat: Math.min(latSW, latNE) },
     max: { lng: Math.max(lngSW, lngNE), lat: Math.max(latSW, latNE) },
   }
 
-  const coordToPixels = getCoordToPixels(projection, dpi, printScale, angle, boundsCoord)
+  const coordToPixels = getCoordToPixels(toProj, dpi, printScale, 0, boundsCoord)
 
   const edgePoint = { lng: southWestLng, lat: southWestLat }
   const edgePoints = [ coordToPixels(edgePoint) ]
@@ -99,11 +108,36 @@ export const getMapSvg = (
   const zoom = Math.round(Math.log2(
     SEMI_MAJOR_AXIS * 2 * Math.PI / TILE_SIZE * Math.cos(midLat * DEG_TO_RAD) / printScale / METERS_PER_INCH * dpi,
   ))
-  const scale = dpi / 96
-
-  const commonData = { bounds, coordToPixels, scale, layersById, showAmplifiers, zoom }
+  const scale = dpi / NORMAL_SIZE
+  const getFontSize = getFontSizeByDpi(printScale, dpi) // размер шрифта соответствует на карте 12 кеглю
+  const graphicSize = getGraphicSizeByDpi(printScale, dpi)
+  const pointSymbolSize = getPointSizeByDpi(printScale, dpi)
+  const getStrokeWidth = getStrokeWidthByDpi(printScale, dpi)
+  const markerSize = graphicSize
+  const dashSize = getDashSizeByDpi(printScale, dpi)
+  const printOptions = {
+    getFontSize,
+    getStrokeWidth,
+    graphicSize,
+    markerSize,
+    dashSize,
+    pointSymbolSize,
+  }
+  const commonData = {
+    bounds,
+    coordToPixels,
+    dpi,
+    zoom,
+    scale,
+    printScale,
+    layersById,
+    showAmplifiers,
+    printOptions,
+    objects,
+  }
   const width = bounds.max.x - bounds.min.x
   const height = bounds.max.y - bounds.min.y
+  // {/*{layerRegions.toArray().map(getMapObjectSvg(commonData)).filter(Boolean)}*/}
   return ReactDOMServer.renderToStaticMarkup(<svg
     xmlns="http://www.w3.org/2000/svg" version="1.2"
     width={width}

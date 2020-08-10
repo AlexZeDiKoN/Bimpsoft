@@ -3,20 +3,21 @@ import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
-import { TRANSPARENT } from '../../../constants/colors'
-import { settings } from '../../../utils/svg/lines'
+import { evaluateColor, TRANSPARENT } from '../../../constants/colors'
+import { getStylesForLineType } from '../../../utils/svg/lines'
+import { MARK_TYPE, settings } from '../../../constants/drawLines'
+import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
 const { Option } = Select
 const { icons: { Icon } } = components
 
 export const colorDiv = (color) => (
-  <div className="icon-option">
+  <div className="icon-option" title={colors.titles[color]}>
     <div
       className="icon-rect"
-      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : colors.values[color] }}
+      style={{ backgroundColor: color === TRANSPARENT ? 'transparent' : `${evaluateColor(color)}` }}
     />
-    <div className="icon-text">{colors.titles[color]}</div>
   </div>
 )
 export const colorOption = (color) => (
@@ -47,21 +48,21 @@ const optionsSvg = (children) => (
   </svg>
 )
 
-const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
-  let amp
-  const dash = {}
-  if (level) {
-    amp = extractSubordinationLevelSVG(level, 36, 4, 56, 20)
-    if (borderStyle === 'dashed') {
-      dash.strokeDasharray = '3.5 1.5'
-    }
-  }
-  if (level && amp) {
+export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
+  const dash = getStylesForLineType(borderStyle)
+  const amplifier = level ? extractSubordinationLevelSVG(level, 16, 4, 56, 20) : null
+  if (amplifier) {
     return optionsSvg(
       <>
         <mask id="sign">
-          <rect fill="white" x="0" y="0" width="100%" height="100%" />
-          <g dangerouslySetInnerHTML={{ __html: amp.mask }} />
+          <rect fill="white" x="0" y="0" width="100%" height="100%"/>
+          <rect
+            fill="black"
+            x={amplifier.maskRect.x}
+            y={amplifier.maskRect.y}
+            width={amplifier.maskRect.width}
+            height={amplifier.maskRect.height}
+          />
         </mask>
         <path mask="url(#sign)" stroke="rgba(0,0,0,0.65)" strokeWidth={strokeWidth} d="M0,10 h56 m1,1" {...dash} />
         <g
@@ -69,50 +70,88 @@ const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
           strokeWidth="4"
           fill="none"
           transform={`translate(28,10)`}
-          dangerouslySetInnerHTML={{ __html: amp.sign }}
+          dangerouslySetInnerHTML={{ __html: amplifier.sign }}
         />
-      </>
+      </>,
     )
   } else {
     switch (borderStyle) {
-      case 'waved':
+      case 'chain':
         return optionsSvg(
           <>
             <path
+              mask="url(#sign)"
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7"
+              d="M0,10 h56 m1,1"
+              {...dash}
             />
-          </>
+          </>,
         )
-      case 'waved2':
+      case MARK_TYPE.ARROW_90:
         return optionsSvg(
-          <>
-            <path
-              stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 C0,4 16,4 16,16 C16,4 32,4 32,16 C32,4 48,4 48,16 C48,10 52,7 56,7 L0,7"
-            />
-          </>
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="none"
+            d="M0,10 h56 m-24,8l-8-8l8-8"
+          />,
         )
+      case MARK_TYPE.ARROW_30_FILL:
+        return optionsSvg(
+          <path
+            stroke="rgba(0,0,0,1)"
+            strokeWidth={strokeWidth}
+            fill="rgba(0,0,0,1)"
+            d="M0,10 h56 m-24,4l-12-4l12-4z"
+          />,
+        )
+      case 'solidWithDots':
       case 'stroked':
+      case 'waved':
+      case 'waved2':
+      case 'blockage':
+      case 'blockageIsolation':
+      case 'moatAntiTankUnfin':
+      case 'moatAntiTank':
+      case 'moatAntiTankMine':
+      case 'blockageWire':
+      case 'blockageWire1':
+      case 'blockageWire2':
+      case 'blockageWireFence':
+      case 'blockageWireLow':
+      case 'blockageWireHigh':
+      case 'blockageSpiral':
+      case 'blockageSpiral2':
+      case 'blockageSpiral3':
+      case 'rowMinesAntyTank':
+      case 'rowMinesLand':
+      case 'trenches':
         return optionsSvg(
           <>
+            {borderStyle === 'waved' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 13 H0 M0 15l2-2M3 19l6-6M10 19l6-6 M17 19l6-6 M24 19l6-6M31 19l6-6M38 19l6-6M45 19l6-6M52 19l2-2"
+            />}
+            {borderStyle === 'waved2' && <path
+              stroke="#adadad"
+              strokeWidth={strokeWidth / 2}
+              d="M55 8 H0 M0 4L2 2M3 8l6-6M10 8l6-6M17 8l6-6 M24 8l6-6M31 8l6-6M38 8l6-6M45 8l6-6M52 8l2-2"
+            />}
             <path
               stroke="rgba(0,0,0,0.65)"
-              strokeWidth={strokeWidth}
-              fill="none"
-              d="M0,16 h56 M4,4 v12 M16,4 v12 M28,4 v12 M40,4 v12 M52,4 v12"
+              strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}
+              fill={TYPE_LINE_PATH[borderStyle]?.fill || ''}
+              d={TYPE_LINE_PATH[borderStyle]?.d || 'M0,0 l56,20 M0,20 l56,-20'}
             />
-          </>
+          </>,
         )
       default:
         return (
           <div
             className="option-line-type"
-            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth / 2}px` : 1 }}
+            style={{ borderStyle, borderWidth: strokeWidth ? `${strokeWidth}px 0 0 0` : 1 }}
           />
         )
     }
@@ -261,7 +300,7 @@ const renderLineEnds = (type, direction) => {
   return optionsSvg(picture)
 }
 
-const renderNodes = (type) => {
+export const renderNodes = (type) => {
   let picture = null
   switch (type) {
     case 'none':
@@ -277,16 +316,16 @@ const renderNodes = (type) => {
     case 'cross-circle':
       picture = (
         <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
-          <path d="M0,10 h20 M36,10 h20 M22.34,4.34 l11.31,11.31 M22.34,15.66 l11.31,-11.31" />
-          <circle cx="28" cy="10" r="8" />
+          <path d="M0,10 h20 M36,10 h20 M22.34,4.34 l11.31,11.31 M22.34,15.66 l11.31,-11.31"/>
+          <circle cx="28" cy="10" r="8"/>
         </g>
       )
       break
     case 'square':
       picture = (
         <g stroke="rgba(0,0,0,0.65)" strokeWidth="2" fill="none">
-          <path d="M0,10 h20 M36,10 h20" />
-          <rect x="20" y="2" width="16" height="16" />
+          <path d="M0,10 h20 M36,10 h20"/>
+          <rect x="20" y="2" width="16" height="16"/>
         </g>
       )
       break
@@ -331,7 +370,7 @@ export const nodesDiv = ({ value, text }) => ( // eslint-disable-line react/prop
 )
 
 export const nodesOption = (nodesInfo) => (
-  <Option value={nodesInfo.value}>
+  <Option value={nodesInfo.value} key={nodesInfo.value}>
     {nodesDiv(nodesInfo)}
   </Option>
 )

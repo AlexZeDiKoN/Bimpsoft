@@ -1,17 +1,21 @@
 import { connect } from 'react-redux'
-import { batchActions } from 'redux-batched-actions/lib/index'
+import { batchActions } from 'redux-batched-actions'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import { viewModes, layers, webMap, task, selection } from '../store/actions'
-import { canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector } from '../store/selectors'
+import {
+  canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector,
+} from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 import { MapModes } from '../constants'
+import { SET_SEARCH_OPTIONS } from '../store/actions/viewModes'
 
 const mapStateToProps = (store) => {
   const {
     viewModes: {
       [viewModesKeys.subordinationLevel]: isShowSubordinationLevel,
       [viewModesKeys.map3D]: is3DMapMode,
+      searchEmpty: searchFailed,
     },
     webMap: {
       subordinationLevel,
@@ -42,6 +46,7 @@ const mapStateToProps = (store) => {
     topographicObjects,
     layerName,
     targetingMode,
+    searchFailed,
     printFilesCount: printFiles
       ? Object.keys(printFiles).length
       : null,
@@ -64,6 +69,14 @@ const mapDispatchToProps = {
     webMap.setSubordinationLevel(subordinationLevel),
     viewModes.viewModeDisable(viewModesKeys.subordinationLevel),
   ]),
+  onSearch: (sample) => viewModes.search(sample),
+  onCoordinates: (text, point) => webMap.setMarker({ text, point }),
+  onManyCoords: (list) => ({
+    type: SET_SEARCH_OPTIONS,
+    payload: list,
+  }),
+  onClearSearchError: () => viewModes.searchClearError,
+  onCloseSearch: () => viewModes.searchCloseList,
   onChangeTargetingMode: (targetingMode) => webMap.setMapMode(targetingMode ? MapModes.TARGET : MapModes.NONE),
   onChangeTaskMode: (taskMode) => taskMode
     ? batchActions([
@@ -76,7 +89,7 @@ const mapDispatchToProps = {
 }
 const LeftMenuContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(LeftMenu)
 
 export default LeftMenuContainer

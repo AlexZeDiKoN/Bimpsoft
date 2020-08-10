@@ -1,5 +1,4 @@
-/* global L */
-
+import L from 'leaflet'
 import entityKind, { GROUPS } from '../../entityKind'
 import { hookSplice, setBezierMiddleMarkerCoords } from '../utils/helpers'
 
@@ -57,6 +56,7 @@ L.PM.Edit.Line.include({
       case entityKind.SQUARE:
       case entityKind.GROUPED_HEAD:
       case entityKind.GROUPED_LAND:
+      case entityKind.GROUPED_REGION:
         break // для певних типів знаків заброняємо видалення вершин
       case entityKind.AREA: // для площинних знаків
         if (this._layer._rings[0].length > 3) { // дозволяємо видалення вершин лише у випадку, коли їх більше трьох
@@ -88,34 +88,58 @@ L.PM.Edit.Line.include({
           parent._removeMarker.call(this, e)
         }
         break
-      default:
+      case entityKind.SOPHISTICATED: { // для складних ліній
+        if (this._layer.lineDefinition?.allowDelete(e.target._index, this._layer._latlngs.length)) {
+          parent._removeMarker.call(this, e)
+        }
+        break
+      }
+      default: {
         parent._removeMarker.call(this, e)
+      }
     }
   },
 
   _onMarkerDrag: function (e) {
+    this._markers = this._markers ?? []
     parent._onMarkerDrag.call(this, e)
     const marker = e.target
     const kind = this._layer.options.tsType
-    if (GROUPS.BEZIER.includes(kind) && marker._index >= 0) {
-      const len = this._getMarkersCount()
-      const markerArray = this._getMarkersArray()
-      const nextMarkerIndex = (marker._index + 1) % len
-      const prevMarkerIndex = ((marker._index + len) - 1) % len
-      const nextNextMarkerIndex = (nextMarkerIndex + 1) % len
-      const prevPrevMarkerIndex = ((prevMarkerIndex + len) - 1) % len
-      if (marker._middleMarkerNext) {
-        setBezierMiddleMarkerCoords(this, marker._middleMarkerNext, marker, markerArray[nextMarkerIndex])
-        if (markerArray[nextMarkerIndex]._middleMarkerNext) {
-          setBezierMiddleMarkerCoords(this, markerArray[nextMarkerIndex]._middleMarkerNext,
-            markerArray[nextMarkerIndex], markerArray[nextNextMarkerIndex])
+    if (marker._index >= 0) {
+      if (
+        GROUPS.BEZIER.includes(kind) ||
+        (kind === entityKind.SOPHISTICATED && (this.isPolygon() || this.isArea()))
+      ) {
+        const len = this._getMarkersCount()
+        const markerArray = this._getMarkersArray()
+
+        let nextMarkerIndex, prevMarkerIndex, nextNextMarkerIndex, prevPrevMarkerIndex
+
+        const getSeq = this._layer.lineDefinition?.areaSeq
+        if (getSeq) {
+          [ prevMarkerIndex, nextMarkerIndex ] = getSeq(marker._index, markerArray.length);
+          [ , nextNextMarkerIndex ] = getSeq(nextMarkerIndex, markerArray.length);
+          [ prevPrevMarkerIndex ] = getSeq(prevMarkerIndex, markerArray.length)
+        } else {
+          nextMarkerIndex = (marker._index + 1) % len
+          prevMarkerIndex = ((marker._index + len) - 1) % len
+          nextNextMarkerIndex = (nextMarkerIndex + 1) % len
+          prevPrevMarkerIndex = ((prevMarkerIndex + len) - 1) % len
         }
-      }
-      if (marker._middleMarkerPrev) {
-        setBezierMiddleMarkerCoords(this, marker._middleMarkerPrev, markerArray[prevMarkerIndex], marker)
-        if (markerArray[prevMarkerIndex]._middleMarkerPrev) {
-          setBezierMiddleMarkerCoords(this, markerArray[prevMarkerIndex]._middleMarkerPrev,
-            markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
+
+        if (marker._middleMarkerNext) {
+          setBezierMiddleMarkerCoords(this, marker._middleMarkerNext, marker, markerArray[nextMarkerIndex])
+          if (markerArray[nextMarkerIndex]._middleMarkerNext) {
+            setBezierMiddleMarkerCoords(this, markerArray[nextMarkerIndex]._middleMarkerNext,
+              markerArray[nextMarkerIndex], markerArray[nextNextMarkerIndex])
+          }
+        }
+        if (marker._middleMarkerPrev) {
+          setBezierMiddleMarkerCoords(this, marker._middleMarkerPrev, markerArray[prevMarkerIndex], marker)
+          if (markerArray[prevMarkerIndex]._middleMarkerPrev) {
+            setBezierMiddleMarkerCoords(this, markerArray[prevMarkerIndex]._middleMarkerPrev,
+              markerArray[prevPrevMarkerIndex], markerArray[prevMarkerIndex])
+          }
         }
       }
     }

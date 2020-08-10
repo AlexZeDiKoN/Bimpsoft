@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 1L160 1" transform="matrix(-0.9396926 0.3420202 -0.3420202 -0.9396926 970.7554 320.2495)" fill="none" stroke="#FF0000" stroke-width="20" />
+    <path d="M0 1L160 1" transform="matrix(-0.9396926 0.3420202 -0.3420202 -0.9396926 727.375 408.833)" fill="none" stroke="#FF0000" stroke-width="20" />
+    <path d="M0 1L160 1" transform="matrix(-0.9396926 0.3420202 -0.3420202 -0.9396926 483.9946 497.4165)" fill="none" stroke="#FF0000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.4539904 -0.8910066 0.8910066 -0.4539904 103.8706 706.8667)" fill="none" stroke="#FF0000" stroke-width="20" />
+    <path d="M0 1L160 1" transform="matrix(-0.9396926 0.3420202 -0.3420202 -0.9396926 241.2124 584.7183)" fill="none" stroke="#FF0000" stroke-width="20" />
+  </g>
+</svg>

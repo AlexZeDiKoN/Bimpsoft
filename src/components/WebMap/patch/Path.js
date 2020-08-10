@@ -1,7 +1,6 @@
-/* global L */
+import L from 'leaflet'
+import { getStylesForLineType } from '../../../utils/svg/lines'
 import { interpolateSize } from './utils/helpers'
-
-const DASH_LENGTH = 6
 
 const _getEvents = L.Path.prototype.getEvents
 
@@ -49,14 +48,27 @@ export default L.Path.include({
     this.setStyle({ opacity })
   },
 
+  intersectsWithBounds: function (bounds, map) {
+    const saveMap = this._map
+    this._map = map
+    const result = this.getBounds().pad(1).intersects(bounds)
+    this._map = saveMap
+    return result
+  },
+
   setHidden: function (hidden) {
-    this.setStyle({ hidden })
+    this._hidden = hidden
+    if (hidden) {
+      this.removeFrom(this.map)
+    } else {
+      this.addTo(this.map)
+    }
   },
 
   getMask: function () {
     if (!this._mask) {
       this._mask = L.SVG.create('mask')
-      this._mask.setAttribute('id', `mask-${this.object.id}`)
+      this._mask.setAttribute('id', `mask-${this.object?.id ?? 'NewObject'}`)
       this._renderer._rootGroup.appendChild(this._mask)
     }
     return this._mask
@@ -65,7 +77,6 @@ export default L.Path.include({
   getAmplifierGroup: function () {
     if (!this._amplifierGroup) {
       this._amplifierGroup = L.SVG.create('g')
-      this._renderer._rootGroup.appendChild(this._amplifierGroup)
       this._renderer._updateStyle(this)
     }
     return this._amplifierGroup
@@ -148,7 +159,7 @@ export default L.Path.include({
       }
       if (scaleChanged || lineTypePrev !== lineType) {
         this.lineTypePrev = lineType
-        styles.dashArray = lineType === 'dashed' ? `${scale * DASH_LENGTH} ${scale * DASH_LENGTH}` : null
+        styles.dashArray = getStylesForLineType(lineType, scale).strokeDasharray
         hasStyles = true
         needRedraw = true
       }

@@ -2,9 +2,10 @@ import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input, Tooltip } from 'antd'
-import { data, components } from '@DZVIN/CommonComponents'
+import { data, components, IconNames } from '@DZVIN/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
+import { InputButton } from '../common'
 import Item from './children/Item'
 import OrgStructureMenu from './children/OrgStructureMenu'
 
@@ -17,7 +18,11 @@ const {
 const getFilteredIds = TextFilter.getFilteredIdsFunc(
   (item) => `${item.shortName} ${item.fullName}`,
   (item) => item.id,
-  (item) => item.parentUnitID,
+  (item) => (
+    item.itemType === 'CommandPost'
+      ? item.militaryUnitID
+      : item.parentUnitID
+  ),
 )
 
 const notSameProps = (obj1, obj2, props) => {
@@ -40,6 +45,8 @@ function scrollParentToChild (parent, child) {
 }
 
 export default class OrgStructuresComponent extends React.PureComponent {
+  static displayName = 'OrgStructuresComponent'
+
   componentDidUpdate (prevProps, prevState, snapshot) {
     if (notSameProps(prevProps, this.props,
       [ 'selectedId', 'textFilter', 'byIds', 'roots', 'formation', 'expandedIds' ])
@@ -55,12 +62,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
   inputRef = React.createRef()
 
-  mouseUpHandler = (e) => {
-    e.preventDefault()
-    this.inputRef.current.focus()
-  }
-
-  filterTextChangeHandler = ({ target: { value } }) => {
+  filterTextChangeHandler = (value) => {
     this.props.onFilterTextChange(value.trim())
   }
 
@@ -107,7 +109,20 @@ export default class OrgStructuresComponent extends React.PureComponent {
     } = this.props
 
     if (formation === null) {
-      return null
+      return <Wrapper
+        icon={IconNames.ORG_STRUCTURE}
+        title={(<Tooltip title={i18n.NO_ORG_STRUCTURE}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
+        <div className="org-structures">
+          <div className='org-structures-searchBlock'>
+            <Input.Search
+              ref={this.inputRef}
+              placeholder={i18n.FILTER}
+              disabled
+            />
+          </div>
+          <b>{i18n.NO_ORG_STRUCTURE}</b>
+        </div>
+      </Wrapper>
     }
 
     const filteredIds = this.getFilteredIds(textFilter, byIds)
@@ -125,12 +140,11 @@ export default class OrgStructuresComponent extends React.PureComponent {
     )
 
     return (
-      <Wrapper title={(<Tooltip title={formation.fullName}>{formation.shortName}</Tooltip>)}>
+      <Wrapper title={(<Tooltip title={formation.fullName}>{i18n.ORG_STRUCTURE_SHORT}</Tooltip>)}>
         <div className="org-structures">
           <div className='org-structures-searchBlock'>
-            <Input.Search
-              ref={this.inputRef}
-              placeholder={i18n.FILTER}
+            <InputButton
+              title={i18n.ORG_STRUCTURE_SHORT}
               onChange={this.filterTextChangeHandler}
             />
             <OrgStructureMenu
@@ -140,6 +154,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
             />
           </div>
           <div className="org-structures-scroll" ref={this.scrollPanelRef}>
+            <div className='org-structures-title'>{formation.fullName}</div>
             <TreeComponentUncontrolled
               expandedKeys={expandedKeys}
               onExpand={onExpand}
@@ -148,7 +163,6 @@ export default class OrgStructuresComponent extends React.PureComponent {
               roots={roots}
               itemTemplate={Item}
               commonData={commonData}
-              onMouseUp={this.mouseUpHandler}
             />
           </div>
         </div>

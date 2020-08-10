@@ -1,34 +1,35 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
-import subordinationLevels from '../../constants/SubordinationLevel'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
+import { evaluateColor } from '../../constants/colors'
+import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
+import { angle3Points } from '../../components/WebMap/patch/Sophisticated/utils'
 import { extractSubordinationLevelSVG } from './milsymbol'
+import {
+  extractTextsSVG,
+  FONT_WEIGHT,
+} from './text'
 
-export const settings = {
-  LINE_WIDTH: 2, // (пікселів) товщина ліній
-  AMPLIFIERS_STEP: 144, // (пікселів) крок відображення ампліфікаторів на лініях
-  AMPLIFIERS_SIZE: 96, // (пікселів) розмір тактичного знака, з якого знімаємо ампліфікатор рівня підрозділу
-  AMPLIFIERS_WINDOW_MARGIN: 6, // (пікселів) ширина ободків навкого ампліфікатора
-  AMPLIFIERS_STROKE_WIDTH: 6, // (пікселів) товщина пера (у масштабі), яким наносяться ампліфікатори
-  NODES_STROKE_WIDTH: 2, // (пікселів) товщина лінії для зображення вузлових точок
-  NODES_SPACE: 36, // (пікселів) відстань очищення ампліфікаторів, надто близьких до вузлових точок
-  // NODES_CIRCLE_RADIUS: 12, // (пікселів) радіус перекресленого кола у візлових точках
-  // NODES_SQUARE_WIDTH: 24, // (пікселів) сторона квадрата у вузлових точках
-  NODES_SIZE: { min: 12, max: 120 }, // (пікселів) розмір вузлової точки (діаметр перекресленого кола, сторона квадрата)
-  // Важливо! Для кращого відображення хвилястої лінії разом з ампліфікаторами, бажано щоб константа AMPLIFIERS_STEP
-  // була строго кратною WAVE_SIZE
-  WAVE_SIZE: { min: 6, max: 180 }, // (пікселів) ширина "хвилі" для хвилястої лінії
-  // WAVE_SIZE: 24, // (пікселів) висота "хвилі" для хвилястої лінії
-  STROKE_SIZE: { min: 9, max: 36 }, // (пікселів) відстань між "засічками" для лінії з засічками
-  // STROKE_SIZE: 18, // (пікселів) висота "засічки" для лінії з засічками
-  // TODO потенційно це місце просадки продуктивності:
-  // TODO * при маленьких значеннях будуть рвані лінії
-  // TODO * при великих може гальмувати відмальовка
-  LUT_STEPS: 16000, // максимальна кількість ділянок, на які розбивається сегмент кривої Безьє для обчислення
-  // довжин і пропорцій
-  DRAW_PARTIAL_WAVES: true,
-  MIN_ZOOM: 0,
-  MAX_ZOOM: 20,
+class Segment {
+  constructor (start, finish) {
+    this.start = start
+    this.vector = {
+      x: finish.x - start.x,
+      y: finish.y - start.y,
+    }
+  }
+
+  length = () => Math.hypot(this.vector.x, this.vector.y)
+
+  get = (part) => ({
+    x: this.start.x + this.vector.x * part,
+    y: this.start.y + this.vector.y * part,
+  })
+
+  normal = () => ({
+    x: -this.vector.y,
+    y: +this.vector.x,
+  })
 }
 
 const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y)
@@ -67,8 +68,10 @@ const lineArray = (points, index, locked) => {
     points[next],
   ]
 }
+
+// влияет на последовательность сборки сторон у квадрата и прямоугольника при печати => позиция текстовых амплификаторов
 export const rectToPoints = ({ x, y, width, height = width }) =>
-  [ { x, y }, { x, y: y + height }, { x: x + width, y: y + height }, { x: x + width, y } ]
+  [ { x, y: y + height }, { x, y }, { x: x + width, y }, { x: x + width, y: y + height } ]
 
 export const circleToD = (r, dx, dy) => `
   M ${dx - r}, ${dy}
@@ -79,28 +82,6 @@ export const circleToD = (r, dx, dy) => `
 export const pointsToD = (points, locked) => {
   points = points.map(({ x, y }) => `${Math.round(x)} ${Math.round(y)}`)
   return `M${points.join('L')}${locked ? 'z' : ''}`
-}
-
-class Segment {
-  constructor (start, finish) {
-    this.start = start
-    this.vector = {
-      x: finish.x - start.x,
-      y: finish.y - start.y,
-    }
-  }
-
-  length = () => Math.hypot(this.vector.x, this.vector.y)
-
-  get = (part) => ({
-    x: this.start.x + this.vector.x * part,
-    y: this.start.y + this.vector.y * part,
-  })
-
-  normal = () => ({
-    x: -this.vector.y,
-    y: +this.vector.x,
-  })
 }
 
 const getPart = (steps, lut, pos, start = 0, finish = 0) => {
@@ -213,6 +194,20 @@ const getShiftedPoints = (points, offset, locked) => {
   return shiftedPoints
 }
 
+const buildPoints = (points, segments, pointLocationResolver, bezier, locked) => {
+  return segments.map((index) => {
+    const segment = bezier
+      ? new Bezier(...bezierArray(points, index, locked))
+      : new Segment(...lineArray(points, index, locked))
+    const t = pointLocationResolver(index)
+    const point = segment.get(t)
+    point.n = segment.normal(t)
+    point.t = t
+    point.r = (Math.atan2(point.n.y, point.n.x) / Math.PI + 0.5) * 180
+    return point
+  })
+}
+
 const buildPeriodicPoints = (step, verticalOffset, offset, points, bezier, locked, insideMap, skipNodes = false) => {
   const amplPoints = []
   bezier = bezier && points.length > 2
@@ -271,14 +266,39 @@ const offsetCurve = (cPoints, offset) => {
   return next.length < 3 ? R.chain(duplicate, next) : next
 }
 
-const getBoundsFunc = ({ min, max }, step) =>
+function getPolygonCentroid (points) {
+  const first = points[0]
+  const last = points[points.length - 1]
+  if (first.x !== last.x || first.y !== last.y) {
+    points = [ ...points, first ]
+  }
+  let twiceArea = 0
+  let x = 0
+  let y = 0
+  let p1
+  let p2
+  let f
+  const pointsLength = points.length
+  for (let i = 0, j = pointsLength - 1; i < pointsLength; j = i++) {
+    p1 = points[i]
+    p2 = points[j]
+    f = p1.x * p2.y - p2.x * p1.y
+    twiceArea += f
+    x += (p1.x + p2.x) * f
+    y += (p1.y + p2.y) * f
+  }
+  f = twiceArea * 3
+  return { x: x / f, y: y / f }
+}
+
+export const getBoundsFunc = ({ min, max }, step) =>
   ({ x, y }) => x > min.x - step && y > min.y - step && x < max.x + step && y < max.y + step
 
-const getLineEnd = (lineEnds, end) => {
-  const res = lineEnds && lineEnds[end]
+const getLineEnd = (objectAttributes, end) => {
+  const res = objectAttributes && objectAttributes[end]
   return res === 'none' ? null : res
 }
-const getNodes = (lineNodes) => lineNodes === 'none' ? null : lineNodes
+const getNodes = (nodalPointIcon) => nodalPointIcon === 'none' ? null : nodalPointIcon
 
 const lineLength = (points, locked) => {
   const last = points.length - 1
@@ -296,9 +316,14 @@ const lineLength = (points, locked) => {
 const addLineTo = ({ x, y }) => ` L${x} ${y}`
 
 const addWave = (
-  inverse, waveSize, waveStep,
-  p1, p2,
-  halfWave = false, part = 'left', addLine = false,
+  inverse,
+  waveSize,
+  waveStep,
+  p1,
+  p2,
+  halfWave = false,
+  part = 'left',
+  addLine = false,
   addSize = !inverse,
 ) => {
   let result = ''
@@ -317,11 +342,12 @@ const addWave = (
   return result
 }
 
-export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false) => {
+// eslint-disable-next-line max-len
+export const waved = (points, objectAttributes, bezier, locked, bounds, scale = 1, zoom = -1, inverse = false, markerSize) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const waveStep = interpolateSize(zoom, settings.WAVE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
+  const waveStep = markerSize || interpolateSize(zoom, settings.WAVE_SIZE, scale)
   const lineLen = lineLength(points, locked)
   let waves = `M${points[0].x} ${points[0].y}`
   if (lineLen <= waveStep * 3) { // if we have not default line endings on both sides of the line, we need at least 3 waves to c it correctly
@@ -334,13 +360,13 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
     if (!wavePoints.length) {
       return 'M0 0'
     }
-    if (!inverse || !getLineEnd(lineEnds, 'left')) {
+    if (!inverse || !getLineEnd(objectAttributes, 'left')) {
       waves = `M${wavePoints[0].x} ${wavePoints[0].y}`
     }
     for (let i = 1; i < wavePoints.length; i++) {
-      if (inverse && i === wavePoints.length - 1 && getLineEnd(lineEnds, 'right')) {
+      if (inverse && i === wavePoints.length - 1 && getLineEnd(objectAttributes, 'right')) {
         waves += addWave(inverse, waveSize, waveStep, wavePoints[i - 1], wavePoints[i], true)
-      } else if (i === 1 && getLineEnd(lineEnds, 'left')) {
+      } else if (i === 1 && getLineEnd(objectAttributes, 'left')) {
         waves += inverse
           ? addWave(inverse, waveSize, waveStep, wavePoints[0], wavePoints[1], true, 'right', true)
           : addLineTo(wavePoints[1])
@@ -360,7 +386,7 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
         if (locked) {
           waves += addWave(inverse, waveSize, waveStep, p0, points[0], false, false, false, false)
         } else {
-          if (getLineEnd(lineEnds, 'right')) {
+          if (getLineEnd(objectAttributes, 'right')) {
             waves += ` L${points[points.length - 1].x} ${points[points.length - 1].y}`
           } else {
             const p2 = {
@@ -386,17 +412,326 @@ export const waved = (points, lineEnds, bezier, locked, bounds, scale = 1, zoom 
   }
   return `${waves}${locked ? ' Z' : ''}`
 }
+// ---------------------------------------------------------------------------------------------------
+// смещение точек линий или кривых Безье
+const shiftPointsToPoints = (points, verticalOffset = 0, bezier = false, locked = false) => {
+  let carcassPoints = [] // каркас кривой по всеми точками
+  const carcassLines = [] // каркас кривой Безье
+  let cp1, cp2
+  if (bezier) {
+    let last = points.length - Number(!locked)
+    for (let i = 0; i < last; i++) {
+      const curve = (new Bezier(bezierArray(points, i, locked)).offset(verticalOffset))
+      carcassLines.push(...curve.map((elm) => elm.points))
+    }
+    // конвертируем сегменты кривой в точки кривой
+    last = carcassLines.length
+    const indEnd = last - 1
+    for (let i = 0; i < last; i++) {
+      const x = carcassLines[i][0].x
+      const y = carcassLines[i][0].y
+      if (i === 0) {
+        // для замкнутых кривых берем данные из последнего сегмента
+        cp1 = locked ? { x: carcassLines[indEnd][2].x, y: carcassLines[indEnd][2].y } : { x, y }
+      } else {
+        cp1 = { x: carcassLines[i - 1][2].x, y: carcassLines[i - 1][2].y }
+      }
+      cp2 = { x: carcassLines[i][1].x, y: carcassLines[i][1].y }
+      carcassPoints.push({ x, y, cp1, cp2 })
+    }
+    if (!locked && last > 0) { // для незамкнутых кривых добавляем последнюю точку
+      const x = carcassLines[indEnd][3].x
+      const y = carcassLines[indEnd][3].y
+      cp1 = { x: carcassLines[indEnd][2].x, y: carcassLines[indEnd][2].y }
+      cp2 = { x, y }
+      carcassPoints.push({ x, y, cp1, cp2 })
+    }
+  } else {
+    carcassPoints = getShiftedPoints(points, verticalOffset, locked) // каркас смещенная ломанной со всеми точками
+  }
+  return carcassPoints
+}
+// смещение линии
+const shiftLine = (points, verticalOffset = 0, bezier = false, locked = false) => {
+  let carcassPoints = points
+  const carcassLines = [] // каркас кривой со всеми точками
+  let last = carcassPoints.length - Number(!locked)
+  if (bezier) {
+    for (let i = 0; i < last; i++) {
+      if (verticalOffset) {
+        const curve = (new Bezier(bezierArray(carcassPoints, i, locked)).offset(verticalOffset))
+        carcassLines.push(...curve.map((elm) => elm.points))
+      } else {
+        carcassLines.push(bezierArray(carcassPoints, i, locked))
+      }
+    }
+  } else {
+    if (verticalOffset) {
+      carcassPoints = getShiftedPoints(points, verticalOffset, locked) // каркас смещенная ломанной со всеми точками
+    }
+    last = carcassPoints.length - Number(!locked)
+    for (let i = 0; i < last; i++) {
+      carcassLines.push(lineArray(carcassPoints, i, locked)) // каркас ломанной со всеми точками
+    }
+  }
+  return carcassLines
+}
+// построение линии по массиву сегментов
+const builderPathLine = (points, bezier = false) => {
+  let dAdd = ''
+  const carcassLines = points
+  const last = carcassLines.length
+  if (last) {
+    dAdd = `M${carcassLines[0][0].x} ${carcassLines[0][0].y}`
+  }
+  // збираєм лінію в path
+  carcassLines.forEach((segment) => {
+    dAdd += bezier ? `C${segment[1].x} ${segment[1].y}, ${segment[2].x} ${segment[2].y},${segment[3].x} ${segment[3].y}` : `L${segment[1].x} ${segment[1].y}`
+  })
+  return dAdd
+}
+// ---------------------------------------------------------------------------------------------------------
+// построение елемента типовой линии
+// отрисовка маркера(елемента) типовой линии
+const addUnitLine = (
+  markerSize = 1,
+  p1,
+  p2,
+  lineType = 'blockage',
+  strokeWidth = 1,
+  halfElement = false) => {
+  const result = ''
+  const v = vector(p1, p2)
+  switch (lineType) {
+    case 'solidWithDots': {
+      const vw = setLength(v, strokeWidth * settings.DOTS_LENGTH_FACTOR)
+      // const r = strokeWidth / 4
+      // return ` M${p1.x} ${p1.y} A${r} {r} 0 1 1 ${p1.x + 0.01} ${p1.y + 0.01}`
+      return `M${p1.x} ${p1.y}L${p1.x + vw.x} ${p1.y + vw.y}M${p2.x} ${p2.y}L${p2.x + vw.x} ${p2.y + vw.y}`
+    }
+    case 'blockage': {
+      if (halfElement) {
+        const n = setLength(normal(v), markerSize)
+        const cp2 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+        return `L${cp2.x} ${cp2.y} L${p2.x} ${p2.y}`
+      }
+      return `L${p2.x} ${p2.y}`
+    }
+    case 'trenches' : {
+      if (halfElement) {
+        const n = setLength(normal(v), markerSize)
+        const cp2 = apply(p1, n)
+        const cp3 = apply(p2, n)
+        return `L${cp2.x} ${cp2.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}`
+      }
+      return `L${p2.x} ${p2.y}`
+    }
+    case 'moatAntiTankUnfin':
+    case 'moatAntiTank': {
+      const n = setLength(normal(v), markerSize * 0.83)
+      const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+      return (
+        lineType === 'moatAntiTank'
+          ? `M${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}Z`
+          : `L${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}L${p1.x} ${p1.y}`
+      )
+    }
+    case 'moatAntiTankMine1': {
+      if (halfElement) {
+        const n = setLength(normal(v), markerSize * 0.83)
+        const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+        return `M${p2.x} ${p2.y}L${cp3.x} ${cp3.y}L${p1.x} ${p1.y} Z`
+      } else {
+        const r = markerSize / 4
+        const vr = setLength(v, 0.01)
+        const nr = setLength(normal(v), markerSize * 0.2)
+        const cp1 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, nr)
+        const cp2 = apply(cp1, vr)
+        return `M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}` // M${p1.x} ${p1.y}L${p2.x} ${p2.y}`
+      }
+    }
+    case 'moatAntiTankMine': {
+      const r = markerSize / 6
+      const vr = setLength(v, 0.01)
+      const n = setLength(normal(v), markerSize * 0.83)
+      const nr = setLength(normal(v), markerSize * SIN30)
+      const cp1 = apply(p2, nr)
+      const cp2 = apply(cp1, vr)
+      const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+      return `M${p2.x} ${p2.y}L${cp3.x} ${cp3.y}L${p1.x} ${p1.y}Z M${cp1.x} ${cp1.y}A${r} ${r} 0 1 1 ${cp2.x} ${cp2.y}`
+    }
+    case 'blockageIsolation': {
+      const n = setLength(normal(v), markerSize)
+      const cp3 = apply({ x: p1.x + v.x / 2, y: p1.y + v.y / 2 }, n)
+      return `M${p1.x} ${p1.y}L${cp3.x} ${cp3.y}L${p2.x} ${p2.y}`
+    }
+    case 'blockageWireHigh':
+    case 'blockageWireLow': {
+      // основная линия снизу
+      const dx = v.x / 8
+      const dy = v.y / 8
+      const cp1 = { x: p1.x + dx, y: p1.y + dy }
+      const cp2 = { x: p2.x - dx, y: p2.y - dy }
+      const n = setLength(normal(v), markerSize)
+      const cp3 = apply(cp1, n)
+      const cp4 = apply(cp2, n)
+      return `M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp3.x} ${cp3.y} L${cp2.x} ${cp2.y}`
+    }
+    case 'blockageWire':
+    case 'blockageWireFence':
+    case 'blockageWire1':
+    case 'blockageWire2': {
+      // основная линия по центру
+      const dx = v.x / 8
+      const dy = v.y / 8
+      const dp1 = { x: p1.x + dx, y: p1.y + dy }
+      const dp2 = { x: p2.x - dx, y: p2.y - dy }
+      const n = setLength(normal(v), markerSize / 2)
+      const nN = setLength(normal(v), -markerSize / 2)
+      const cp1 = apply(dp1, n)
+      const cp2 = apply(dp1, nN)
+      const cp3 = apply(dp2, n)
+      const cp4 = apply(dp2, nN)
+      return `M${cp1.x} ${cp1.y} L${cp4.x} ${cp4.y} M${cp2.x} ${cp2.y} L${cp3.x} ${cp3.y}`
+    }
+    case 'blockageSpiral':
+    case 'blockageSpiral2':
+    case 'blockageSpiral3': {
+      // основная линия снизу
+      const r1 = markerSize / 3
+      const r2 = markerSize / 2
+      const cp1 = apply(p1, setLength(v, 0.01))
+      const angleLine = angle(v)
+      return `M${p1.x} ${p1.y}A${r1} ${r2} ${angleLine} 1 1 ${cp1.x},${cp1.y}`
+    }
+    case 'rowMinesLand': {
+      const r = markerSize / 2
+      const cpC = apply(p2, setLength(v, -r))
+      const cp1 = apply(p2, setLength(normal(v), markerSize / 1.3)) // верх рога
+      const cp2 = apply(cpC, setLength(vector(cpC, cp1), r)) // низ рога
+      const cp1d = apply(cp1, setLength(v, -r / 5))
+      const cp2d = apply(cp2, setLength(v, -r / 5))
 
-export const stroked = (points, lineEnds, lineNodes, bezier, locked, bounds = null, scale = 1, zoom = 1) => {
+      const cp3 = apply(cp1, setLength(v, -r * 2)) // верх рога
+      const cp4 = apply(cpC, setLength(vector(cpC, cp3), r)) // низ рога
+      const cp3d = apply(cp3, setLength(v, r / 5))
+      const cp4d = apply(cp4, setLength(v, r / 5))
+      // const cpA = apply(p2, setLength(v, -r * 2))
+      const p2s = apply(p2, setLength(normal(v), 0.01))
+      return `M${cp2.x} ${cp2.y}L${cp1.x} ${cp1.y}L${cp1d.x} ${cp1d.y}L${cp2d.x} ${cp2d.y}
+        M${cp4.x} ${cp4.y}L${cp3.x} ${cp3.y}L${cp3d.x} ${cp3d.y}L${cp4d.x} ${cp4d.y}
+        M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
+    }
+    case 'rowMinesAntyTank': {
+      // основная линия снизу
+      const r = markerSize / 2
+      const p2s = apply(p2, setLength(normal(v), 0.01))
+      return `M${p2.x} ${p2.y}A${r} ${r} 0 1 1 ${p2s.x},${p2s.y}`
+    }
+    default:
+  }
+  return result
+}
+// -----------------------------------------------------------------------------------------------------------------
+// построение типовой линии (загрождения)
+export const blockage = (points, objectAttributes, bezier, locked, bounds, scaleOptions, zoom = -1, inverse = false,
+  lineType = 'blockage', setEnd = false, strokeWidthPrint, markerSizePrint) => {
   if (zoom < 0) {
     zoom = settings.MAX_ZOOM
   }
-  const strokeStep = interpolateSize(zoom, settings.STROKE_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const strokeSize = strokeStep // settings.STROKE_SIZE * scale
+  let size
+  const strokeWidth = strokeWidthPrint ||
+    interpolateSize(zoom, scaleOptions, settings.FACTOR_SIZE) * objectAttributes.strokeWidth / 100
+  switch (lineType.slice(0, 3)) {
+    case 'row':
+      size = settings.ROW_MINE_SIZE // для рядів мін
+      break
+    case 'moa':
+      size = settings.MOAT_SIZE // для рвів
+      break
+    default:
+      size = settings.BLOCKAGE_SIZE // для загороджень
+  }
+  // шаг интерполяции равен ширене маркера приведеной к маштабу
+  const scale = 1
+  let markerSize = markerSizePrint || interpolateSize(zoom, size, scale)
+  const lineLen = lineLength(points, locked)
+  let creases = `M${points[0].x} ${points[0].y}`
+  if (lineLen <= markerSize * 3) { // нам нужно по крайней мере 3 маркера, чтобы было видно тип линии
+    points.forEach((p, i) => i && (creases += addLineTo(p)))
+    return creases
+  }
+  let dAdd = '' // додаткова лінія
+  const insideMap = getBoundsFunc(bounds, markerSize)
+  if (lineType === 'blockageWireHigh' || lineType === 'blockageSpiral3') {
+    // додаєм додаткову лінію зверху
+    const mLine = shiftLine(points, -markerSize, bezier, locked)
+    dAdd = builderPathLine(mLine, bezier)
+  } else if (lineType === 'blockageSpiral2') {
+    // додаєм додаткову лінію по середені
+    const mLine = shiftLine(points, -markerSize / 2, bezier, locked)
+    dAdd = builderPathLine(mLine, bezier)
+  }
+  // строим только маркеры к линии
+  let markerStep = [ 1 ] // коэфициент шага между маркерами линии (целое число)
+  let offsetM = -markerSize / 2 // маркер прорисовываем с отступом в пол символа
+  let step = markerSize
+  if (lineType === 'blockageWire1') {
+    markerStep = [ 5 ]
+  } else if (lineType === 'blockageWire2') {
+    markerStep = [ 4, 0 ]
+  } else if (lineType.slice(0, 4) === 'moat') {
+    markerStep = [ 0 ]
+    offsetM = -markerSize // маркер прорисовываем с самого начала линии
+  } else if (lineType.slice(0, 3) === 'row') {
+    markerStep = [ 0 ]
+    step = markerSize * 1.25
+    offsetM = -step // маркер прорисовываем с самого начала линии
+  } else if (lineType === 'trenches') {
+    markerStep = [ 0 ]
+    offsetM = -markerSize / 2 // маркер прорисовываем с самого начала линии
+  } else if (lineType.slice(8, 14) === 'Spiral') {
+    markerStep = [ 2 ]
+    step = markerSize / 1.5
+    offsetM = 0 // маркер прорисовываем отступив шаг
+  } else if (lineType === 'blockage') {
+    markerStep = [ 0 ]
+  }
+  let creasePoints
+  if (lineType === 'solidWithDots') {
+    // смещаем построение точек
+    markerSize = (markerSize + strokeWidth) / 2
+    const verticalOffset = -markerSize / 1.5
+    const shiftPoints = shiftPointsToPoints(points, verticalOffset, bezier, locked)
+    creasePoints = buildPeriodicPoints(markerSize, 0, -markerSize, shiftPoints, bezier, locked, insideMap)
+  } else {
+    creasePoints = buildPeriodicPoints(step, 0, offsetM, points, bezier, locked, insideMap)
+  }
+  // Начало линии сдвинуто, дотягиваем до начала отрисовки знаков линии
+  if (lineType === 'trenches' || lineType === 'blockage') {
+    creases += `L${creasePoints[0].x} ${creasePoints[0].y}`
+  }
+  const kolStep = markerStep.length || 0
+  for (let i = 1; i < creasePoints.length; i += (1 + markerStep[i % kolStep])) {
+    creases += addUnitLine(markerSize, creasePoints[i - 1], creasePoints[i], lineType, strokeWidth, i % 2)
+  }
+  // дотягиваемся до конечной точки
+  if (setEnd) {
+    creases += locked ? `L${points[0].x} ${points[0].y}` : `L${points[points.length - 1].x} ${points[points.length - 1].y}`
+  }
+  return `${dAdd} ${creases}`
+}
+
+export const stroked = (points, objectAttributes, bezier, locked, bounds = null, scale = 1, zoom = 1, markerSize) => {
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const strokeStep = markerSize || interpolateSize(zoom, settings.STROKE_SIZE, scale)
+  const strokeSize = strokeStep / 2 // settings.STROKE_SIZE * scale
   const strokes = []
   const insideMap = getBoundsFunc(bounds, strokeStep)
-  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(lineEnds, 'left') ? -1 : -strokeStep / 2,
-    points, bezier, locked, insideMap, getNodes(lineNodes)).filter(({ i, o }) => i && o)
+  const strokePoints = buildPeriodicPoints(strokeStep, 0, getLineEnd(objectAttributes, 'left') ? -1 : -strokeStep / 2,
+    points, bezier, locked, insideMap, getNodes(objectAttributes.nodalPointIcon)).filter(({ i, o }) => i && o)
   for (let i = 0; i < strokePoints.length; i++) {
     const p = apply(strokePoints[i], setLength(strokePoints[i].n, -strokeSize))
     if (i < strokePoints.length - 1 ||
@@ -417,62 +752,389 @@ const rotate = ({ x, y }, originX, originY, angle) => {
   }
 }
 
-const getAmpSigns = (scale = 1) => subordinationLevels.list.reduce((res, { value }) => ({
-  ...res,
-  [value]: extractSubordinationLevelSVG(value, settings.AMPLIFIERS_SIZE * scale,
-    settings.AMPLIFIERS_WINDOW_MARGIN * scale),
-}), {})
-
-export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked, bounds, scale = 1, zoom = -1) => {
-  if (zoom < 0) {
-    zoom = settings.MAX_ZOOM
-  }
-  const nodeStep = interpolateSize(zoom, settings.NODES_SIZE, scale, settings.MIN_ZOOM, settings.MAX_ZOOM)
-  const insideMap = getBoundsFunc(bounds, settings.AMPLIFIERS_SIZE * scale)
-  const amplifiers = {
+const getTextAmplifiers = ({
+  points,
+  amplifier,
+  amplifierType,
+  getOffset,
+  getRotate,
+  level,
+  scale,
+  zoom,
+  color,
+  fontColor,
+  fontSize = interpolateSize(zoom, settings.TEXT_AMPLIFIER_SIZE, scale),
+  graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
+  strokeWidth,
+  amplifierIsNormal,
+}) => {
+  const result = {
     maskPath: [],
     group: '',
   }
-  if (lineAmpl === 'show-level' && level) {
-    const amp = getAmpSigns(scale)[level]
-    const amplPoints = buildPeriodicPoints(
-      settings.AMPLIFIERS_STEP * scale,
-      0,
-      -settings.AMPLIFIERS_STEP / 2 * scale,
-      points,
-      bezier,
-      locked,
-      insideMap,
-      getNodes(lineNodes)).filter(({ i, o }) => i && o,
-    )
-    amplifiers.maskPath.push(...amplPoints.map(({ x, y, r }) =>
-      pointsToD(rectToPoints(amp.maskRect).map((point) => rotate(add(point, x, y), x, y, r)), true),
-    ))
-    amplifiers.group += amplPoints.map(({ x, y, r }) =>
-      `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" fill="none" transform="translate(${x},${y}) rotate(${r})">${amp.sign}</g>`,
-    ).join('')
+
+  if (!amplifier) {
+    return result
   }
-  switch (lineNodes) {
+
+  const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN * scale
+  const fillColor = color ? `fill="${color}"` : ``
+
+  points.forEach((point) => {
+    // const isLast = points[index] === points.length - 1
+
+    const amplifiersExtract = [ ...amplifier.entries() ].map(([ type, value ]) => {
+      if (type === 'middle') {
+        if (amplifierType === 'level' && level) { // рівень підпорядкування
+          return [ type, [ extractSubordinationLevelSVG(
+            level,
+            graphicSize,
+            amplifierMargin,
+          ) ] ]
+        }
+        // стрелки на промежуточных точкакх
+        if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
+          return [ type, drawIntermediateArrow(amplifierType, graphicSize, strokeWidth) ]
+        }
+      }
+
+      if (!value) {
+        return null // canceling render of a text amplifier
+      }
+
+      // корректировка позиции внутреннего/наружного амплификатора для областей
+      const pointN = { ...point }
+      if (amplifierIsNormal === false) { // область вывернута, переворачиваем амлификаторы T и W
+        pointN.r += point.r < 0 ? 180 : -180
+      }
+      // текстовый амплификатор
+      return [ type, extractTextsSVG({
+        string: value,
+        fontSize,
+        fontColor,
+        margin: amplifierMargin,
+        getOffset: getOffset.bind(null, type, pointN),
+        angle: point.r,
+        type,
+      }) ]
+    }).filter(Boolean)
+
+    amplifiersExtract.forEach(([ type, amplifiers ]) => {
+      if (Array.isArray(amplifiers)) {
+        amplifiers.forEach((amplifier) => {
+          const { x, y, r } = point
+          // r = getRotate?.(type, r, amplifierType) ?? r
+          if (amplifier.maskRect) {
+            result.maskPath.push(
+              pointsToD(rectToPoints(amplifier.maskRect).map((point) => {
+                const movedPoint = add(point, x, y)
+                if (R.isNil(r) || r === 0) {
+                  return movedPoint
+                }
+                return rotate(movedPoint, x, y, r)
+              }), true),
+            )
+          }
+          result.group += `<g
+          stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
+          transform="translate(${x},${y}) rotate(${r})"
+          font-weight="${FONT_WEIGHT}"
+          ${fillColor}
+       >${amplifier.sign}</g>`
+        })
+      } else {
+        const { x, y, r } = point
+        if (amplifiers.masksRect && Array.isArray(amplifiers.masksRect)) {
+          amplifiers.masksRect.forEach((maskRect) => {
+            result.maskPath.push(
+              pointsToD(rectToPoints(maskRect).map((point) => {
+                const movedPoint = add(point, x, y)
+                if (R.isNil(r) || r === 0) {
+                  return movedPoint
+                }
+                let rmask = r
+                if (amplifierIsNormal === false) { // область вывернута, переворачиваем маску для амлификаторов T и W
+                  rmask += r < 0 ? 180 : -180
+                }
+                return rotate(movedPoint, x, y, rmask)
+              }), true),
+            )
+          })
+        }
+        result.group += `<g
+          stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}"
+          transform="translate(${x},${y}) rotate(${r})"
+          font-weight="${FONT_WEIGHT}"
+          ${fillColor}
+       >${amplifiers.sign}</g>`
+      }
+    })
+  })
+
+  return result
+}
+
+export const getOffsetIntermediateAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  if (type === 'top') {
+    y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+  } else if (type === 'bottom') {
+    y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+  }
+  return { y, yMask: (rotate ? -y : y) }
+}
+
+export const getOffsetPointAmplifier = (type, point, lineWidth, height, numberOfLines, index) => {
+  const rotate = Math.abs(point.r) > 90 ? 180 : 0
+  let y = 0
+  switch (type) {
+    case 'top':
+      y = rotate ? height * (index + 1) : -height * (numberOfLines - index)
+      break
+    case 'middle':
+    case 'center':
+      y = -height * ((numberOfLines - 1) / 2 - index)
+      break
+    case 'bottom':
+      y = rotate ? -height * (numberOfLines - index) : height * (index + 1)
+      break
+    default: break
+  }
+  return { y, yMask: (rotate ? -y : y) }
+}
+
+export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHeight, numberOfLines) => {
+  switch (type) {
+    case 'top':
+      return { y: -lineHeight * numberOfLines - lineHeight / 2 }
+    case 'middle':
+    case 'center':
+      return { y: -lineHeight * numberOfLines / 2 }
+    case 'bottom':
+      return { y: lineHeight / 2 }
+    default:
+      break
+  }
+}
+
+const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines, index) {
+  let t = point.t === 0 ? -1 : 1
+  if (Math.abs(point.r) > 90) {
+    t = -t
+  }
+  const half = lineWidth / 2
+  const offsetObject = getOffsetPointAmplifier(...arguments) // определяем смещение по y
+  switch (type) {
+    case 'top':
+      offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
+      break
+    case 'middle':
+    case 'center':
+      offsetObject.x = -(half + lineHeight / 4) * t
+      offsetObject.xMask = point.t ? -(lineWidth + lineHeight / 4) : (lineHeight / 4)
+      break
+    case 'bottom':
+      offsetObject.x = half * t
+      offsetObject.xMask = point.t ? 0 : -(lineWidth)
+      break
+    default:
+      break
+  }
+  return offsetObject
+}
+
+const getRotateForLineAmplifier = (amplifierType, pointRotate) => {
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
+const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermediateType) => {
+  if (amplifierType === 'middle' &&
+    (intermediateType === MARK_TYPE.ARROW_90 || intermediateType === MARK_TYPE.ARROW_30_FILL)) {
+    return pointRotate
+  }
+  if (Math.abs(pointRotate) > 90) {
+    return pointRotate - 180
+  }
+}
+
+// сборка pointAmlifier в указанной точке
+export const getPointAmplifier = ({
+  centroid,
+  bounds,
+  scale = 1,
+  zoom = -1,
+  fontSize, // для печати
+  amplifier,
+}) => {
+  const step = fontSize || settings.AMPLIFIERS_SIZE * scale
+  // функция проверки попадания амплификатора в область вывода.
+  const insideMap = getBoundsFunc(bounds, step) // TODO Надо переработать
+  centroid.r = 0 // Угол поворота текста ампливикаторов
+  const amplifierOptions = {
+    points: insideMap(centroid) ? [ centroid ] : [],
+    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и тапа амплификатора
+  }
+  return getTextAmplifiers({
+    scale,
+    zoom,
+    amplifier,
+    fontSize,
+    ...amplifierOptions,
+  })
+}
+
+export const getAmplifiers = ({
+  points,
+  bezier,
+  locked,
+  bounds,
+  scale = 1,
+  zoom = -1,
+  fontColor,
+  fontSize, // для печати
+  graphicSize, // для печати
+  strokeWidth, // для печати
+  tsType, // тип линии
+}, object) => {
+  const result = {
+    maskPath: [],
+    group: '',
+  }
+  if (!object) {
+    return result
+  }
+  const {
+    intermediateAmplifierType,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
+    pointAmplifier,
+    nodalPointIcon,
+    color,
+  } = object.attributes
+  const { level } = object
+  if (zoom < 0) {
+    zoom = settings.MAX_ZOOM
+  }
+  const interpolatedNodeSize = graphicSize || interpolateSize(zoom, settings.NODES_SIZE, scale)
+  const step = fontSize || settings.AMPLIFIERS_SIZE * scale
+  const insideMap = getBoundsFunc(bounds, step) // функция проверки попадания амплификатора в область вывода
+  let amplifierIsNormal
+  if (locked) { // определение внутренней стороны области
+    const kolPoints = points.length
+    let angleL = 0
+    points.forEach((point, index, points) => {
+      let ang = angle3Points(point, points[(index - 1 + kolPoints) % kolPoints], points[(index + 1) % kolPoints])
+      if (ang < 0) {
+        ang = ang + Math.PI * 2
+      }
+      angleL += ang
+    })
+    // если амплификаторы  H1 и H2 необходимо поменять местами amplifierIsNormal=false
+    amplifierIsNormal = Math.abs(angleL - Math.PI * (kolPoints - 2)) < 0.1
+  }
+  { // межузловые амплификаторы H1, B, H2
+    const segments = [ ...new Array(points.length - Number(!locked)) ].map((_, index) => index)
+    const { maskPath, group } = getTextAmplifiers({
+      level,
+      scale,
+      zoom,
+      amplifier: intermediateAmplifier,
+      amplifierType: intermediateAmplifierType,
+      points: buildPoints(
+        points,
+        segments,
+        () => 0.5,
+        bezier,
+        locked,
+      ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
+      getOffset: getOffsetIntermediateAmplifier,
+      getRotate: getRotateForIntermediateAmplifier,
+      color,
+      fontColor,
+      fontSize,
+      graphicSize,
+      amplifierIsNormal,
+    })
+    result.maskPath.push(...maskPath)
+    result.group += group
+  }
+
+  { // формирование pointAmplifiers
+    const segments = [ 0, points.length - Number(!locked) - 1 ]
+
+    let amplifierOptions
+
+    if (locked) { // замкнутая линия, pointAmplifiers в центре
+      const centroid = getPolygonCentroid(points)
+      centroid.r = 0
+      amplifierOptions = {
+        points: insideMap(centroid) ? [ centroid ] : [],
+        getOffset: getOffsetPointAmplifier,
+      }
+    } else { // pointAmplifiers на краях линии
+      amplifierOptions = {
+        points: buildPoints(
+          points,
+          segments,
+          (index) => index === 0 ? 0 : 1,
+          bezier,
+          locked,
+        ).filter(insideMap),
+        getOffset: getOffsetForNodalPointAmplifier,
+        getRotate: (amplifierType, pointRotate) => {
+          return amplifierType !== 'middle'
+            ? getRotateForLineAmplifier(amplifierType, pointRotate)
+            : 0 // Амплификатор N выводится горизонтально
+        },
+      }
+    }
+
+    if (amplifierOptions.points.length) { // генерация svg PointAmplifiers
+      const { maskPath, group } = getTextAmplifiers({
+        level,
+        scale,
+        zoom,
+        amplifier: pointAmplifier,
+        ...amplifierOptions,
+        fontColor,
+        fontSize,
+      })
+      result.maskPath.push(...maskPath)
+      result.group += group
+    }
+  }
+
+  const insideMapNodal = getBoundsFunc(bounds, interpolatedNodeSize) // функция проверки попадания узлового амплификатора в область вывода
+  points = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
+  const strokeWidthNodes = strokeWidth ? strokeWidth / 2 : settings.NODES_STROKE_WIDTH * scale
+
+  switch (nodalPointIcon) {
     case 'cross-circle': {
-      const d = Number((nodeStep * Math.sqrt(2) * scale / 4).toFixed(2))
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(circleToD(nodeStep * scale / 2, x, y))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <circle cx="0" cy="0" r="${nodeStep * scale / 2}" />
-            <path d="M${-d} ${-d} l${d * 2} ${d * 2} M${-d} ${d} l${d * 2} ${-d * 2}" />
+      const d = Number((interpolatedNodeSize * Math.sqrt(2) / 4).toFixed(2))
+      const dx2 = d * 2
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
+        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
+            <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
+            <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
       })
       break
     }
     case 'square': {
-      const d = nodeStep * scale / 2
-      points.filter(insideMap).forEach(({ x, y }) => {
-        amplifiers.maskPath.push(pointsToD(
-          rectToPoints({ x: -d, y: -d, width: d * 2 }).map((point) => add(point, x, y)),
+      const d = interpolatedNodeSize / 2
+      points.forEach(({ x, y }) => {
+        result.maskPath.push(pointsToD(
+          rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
           true,
         ))
-        amplifiers.group += `<g stroke-width="${settings.NODES_STROKE_WIDTH * scale}" fill="none" transform="translate(${x},${y})">
-            <rect x="${-d}" y="${-d}" width="${d * 2}" height="${d * 2}" />
+        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
+            <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
       })
       break
@@ -480,55 +1142,114 @@ export const getAmplifiers = (points, lineAmpl, level, lineNodes, bezier, locked
     default:
       break
   }
-  if (amplifiers.maskPath.length) {
-    amplifiers.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
-  }
-  return amplifiers
+  /* if (result.maskPath.length) {
+    result.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
+  } */
+  return result
 }
 
-const drawLineEnd = (type, { x, y }, angle, scale) => {
-  let res = `<g stroke-width="3" transform="translate(${x},${y}) rotate(${angle}) scale(${scale})">`
+export const drawArrowFill = ({ x, y }, angle, strokeWidth = 2, colorFill = 'black', oArrow, hArrow) => {
+  const path = `<path stroke="none" fill="${colorFill}" fill-opacity="1" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${2 * hArrow}z"/>`
+  return `<g transform="translate(${x},${y}) rotate(${angle})">${path}</g>`
+}
+
+export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graphicSize) => {
+  let res = `<g stroke-width="${strokeWidth}" transform="translate(${x},${y}) rotate(${angle})">`
   switch (type) {
-    case 'arrow1':
-      res += `<path fill="none" d="M6,-8 l-8,8 8,8"/>`
+    case MARK_TYPE.ARROW1: // 90
+    {
+      const hArrow = graphicSize * SIN45
+      res += `<path fill="none" d="M${hArrow},${hArrow}L0,0L${hArrow} ${-hArrow}"/>`
       break
-    case 'arrow2':
-      res += `<path d="M9,-6 l-12,6 l12,6 Z"/>`
+    }
+    case MARK_TYPE.ARROW2: // 60 fill
+    {
+      const oArrow = graphicSize * SIN60
+      const hArrow = graphicSize * SIN30
+      res += `<path stroke="none" d="M${-strokeWidth},0l${oArrow}-${hArrow}v${graphicSize}z"/>`
       break
-    case 'arrow3':
-      res += `<path fill="none" stroke-width="2" d="M8,-10 l-10,10 10,10 0,5 -15,-15 15,-15 0,5 Z"/>`
+    }
+    case MARK_TYPE.ARROW3: // 90 dual
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      res += `<path fill="none" d="M${0} 0l${l},${l} 0,${h} ${-l - h},${-l - h} ${l + h},${-l - h} 0,${h}z"/>`
       break
-    case 'arrow4':
-      res += `<path fill="none" stroke-width="2" d="M6,-8 l-8,8 8,8 M6,-12 l-3,3 m-1.5,1.5 l-3,3 m-1.5,1.5 l-3,3 3,3 m1.5,1.5 l3,3 m1.5,1.5 l3,3"/>`
+    }
+    case MARK_TYPE.ARROW4: // 90 dual dash
+    {
+      const l = graphicSize * SIN45
+      const h = l / 4 + strokeWidth / SIN45
+      const lp = (h + l) / 8
+      const ll = lp * 2
+      res += `<path fill="none" d="M${l},${-l} L0,0l${l},${l} m0,${h}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}m${-lp},${-lp}l${-ll},${-ll}
+      ${ll},${-ll}m${lp},${-lp}l${ll},${-ll}m${lp},${-lp}l${ll},${-ll}"/>`
       break
-    case 'stroke1':
-      res += `<path d="M0,-8 v16"/>`
+    }
+    case MARK_TYPE.STROKE1:
+      res += `<path fill="none" d="M0,${-graphicSize / 2}v${graphicSize}"/>`
       break
-    case 'stroke2':
-      res += `<path d="M-4,-6 l6,12"/>`
+    case MARK_TYPE.STROKE2:
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}"/>`
       break
-    case 'stroke3':
-      res += `<path d="M2,-6 l-6,12"/>`
+    }
+    case MARK_TYPE.STROKE3:
+    {
+      const hs = graphicSize / 4
+      const vs = graphicSize * SIN60_05
+      res += `<path fill="none" d="M${hs},${-vs}L${-hs},${vs}"/>`
       break
-    case 'fork':
-      res += `<path fill="none" d="M-8,-8 l8,8 -8,8"/>`
+    }
+    case MARK_TYPE.FORK:
+    {
+      const l = graphicSize * SIN45
+      res += `<path fill="none" d="M${-l},${-l}L0,0l${-l},${l}"/>`
       break
-    case 'cross':
-      res += `<path fill="none" stroke-width="2" d="M-6,-12 l12,24 m-12,0 l12,-24"/>`
+    }
+    case MARK_TYPE.CROSS:
+    {
+      const hs = graphicSize / 2
+      const vs = graphicSize * SIN60
+      res += `<path fill="none" d="M${-hs},${-vs}L${hs},${vs}M${-hs},${vs}L${hs},${-vs}"/>`
       break
+    }
     default:
       break
   }
   return `${res}</g>`
 }
 
-export const getLineEnds = (points, lineEnds, bezier, scale) => {
-  const result = { left: null, right: null }
-  const leftEndType = getLineEnd(lineEnds, 'left')
-  const rightEndType = getLineEnd(lineEnds, 'right')
-  if (!leftEndType && !rightEndType) {
-    return result
+export const getStylesForLineType = (type, scale = 1, dashSize = 6) => {
+  const styles = {}
+  switch (type) {
+    case 'chain': {
+      styles.strokeDasharray = [ dashSize, dashSize / 2, dashSize / 3, dashSize / 2 ]
+      break
+    }
+    case 'dashed': {
+      styles.strokeDasharray = [ dashSize, dashSize ]
+      break
+    }
+    default: {
+      break
+    }
   }
+  if (styles.strokeDasharray) {
+    styles.strokeDasharray = styles.strokeDasharray.map((i) => i * scale).join(' ')
+  }
+  return styles
+}
+
+export const getLineEnds = (points, objectAttributes, bezier, strokeWidth, graphicSize) => {
+  const leftEndType = getLineEnd(objectAttributes, 'left')
+  const rightEndType = getLineEnd(objectAttributes, 'right')
+  if (!leftEndType && !rightEndType) {
+    return { left: null, right: null }
+  }
+  const scaleLineEnd = graphicSize / 12
   let leftPlus = points[1]
   let rightMinus = points[points.length - 2]
   if (bezier) {
@@ -542,17 +1263,63 @@ export const getLineEnds = (points, lineEnds, bezier, scale) => {
     rightMinus = br.get(pr)
   }
   return {
-    left: drawLineEnd(
-      leftEndType,
-      points[0],
-      angle(vector(points[0], leftPlus)),
-      scale,
-    ),
-    right: drawLineEnd(
-      rightEndType,
-      points[points.length - 1],
-      angle(vector(points[points.length - 1], rightMinus)),
-      scale,
-    ),
+    left: (leftEndType
+      ? drawLineEnd(
+        leftEndType,
+        points[0],
+        angle(vector(points[0], leftPlus)),
+        scaleLineEnd,
+        strokeWidth,
+        graphicSize,
+      )
+      : null),
+    right: (rightEndType
+      ? drawLineEnd(
+        rightEndType,
+        points[points.length - 1],
+        angle(vector(points[points.length - 1], rightMinus)),
+        scaleLineEnd,
+        strokeWidth,
+        graphicSize,
+      )
+      : null),
   }
+}
+
+export const drawLineHatch = (layer, scale, hatch) => {
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) {
+    const strokeWidth = layer.options.weight
+    const cs = strokeWidth + settings.CROSS_SIZE * scale
+    const sw = strokeWidth // settings.STROKE_WIDTH * scale
+    const code = layer.object.id
+    const hatchColor = evaluateColor(layer.object?.attributes?.fill) || 'black'
+    const fillId = `SVG-fill-pattern-${code}`
+    const fillColor = `url('#${fillId}')`
+    // const color = result.layer._path.getAttribute('stroke')
+    layer._path.setAttribute('fill', fillColor)
+    layer._path.setAttribute('fill-opacity', 1)
+    // layer._path.setAttribute('width', 100)
+    layer.options.fillColor = fillColor
+    layer.options.fillOpacity = 1
+    return ` 
+      <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
+      </pattern>`
+  } else {
+    layer.options.fillColor = evaluateColor(layer.object?.attributes?.fill) || 'transparent'
+    layer.options.fillOpacity = 0.22
+  }
+  return ''
+}
+
+const drawIntermediateArrow = (amplifierType, graphicSize) => {
+  const scale = graphicSize / 24
+  switch (amplifierType) {
+    case MARK_TYPE.ARROW_90:
+      return [ { sign: `<path fill="none" transform="scale(${scale})" d="M16,16l-16-16l16-16"/>` } ]
+    case MARK_TYPE.ARROW_30_FILL:
+      return [ { sign: `<path stroke-width="0" transform="scale(${scale})" d="M24,10l-24-10l24-10z"/>` } ]
+    default:
+  }
+  return null
 }

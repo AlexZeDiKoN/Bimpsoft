@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.8910065 -0.4539905 0.4539905 0.8910065 75.89624 618.4951)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 271.892C0 271.892 84.1579 -0.0197455 369.752 9.18344e-05C597.648 0.0159215 704.424 146.452 738.178 275.747" transform="translate(142.8224 144)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 120" transform="translate(511 24.00049)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M1 0L1 120" transform="translate(511 879.9995)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M85 0L0 83.9995" transform="matrix(-1 0 0 1 248 172.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M88 0L0 84.001" transform="matrix(-1 0 0 1 864 775.9995)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="matrix(-0.01745238 -0.9998477 0.9998477 -0.01745238 58.81979 369.9029)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="matrix(-0.01745238 -0.9998477 0.9998477 -0.01745238 856.8198 709.9092)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M85 0L0 83.9995" transform="translate(792 172.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="translate(671.9999 67.00049)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="matrix(-1 0 0 1 360 67.00098)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="matrix(-1 0 0 -1 360.0001 957.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M737.663 0C703.905 129.42 597.488 276.135 369.327 275.759C83.4441 275.288 0 2.22374 0 2.22374" transform="translate(143 604.2402)" fill="none" stroke="#000000" stroke-width="20" />
+    <g transform="translate(815 420.001)">
+      <path d="M12.5781 149.305L12.5781 34.7734L63.3594 34.7734Q78.6719 34.7734 86.6406 37.8594Q94.6094 40.9453 99.375 48.7578Q104.141 56.5703 104.141 66.0234Q104.141 78.2109 96.25 86.5703Q88.3594 94.9297 71.875 97.1953Q77.8906 100.086 81.0156 102.898Q87.6563 108.992 93.5938 118.133L113.516 149.305L94.4531 149.305L79.2969 125.477Q72.6562 115.164 68.3594 109.695Q64.0625 104.227 60.6641 102.039Q57.2656 99.8516 53.75 98.9922Q51.1719 98.4453 45.3125 98.4453L27.7344 98.4453L27.7344 149.305L12.5781 149.305ZM27.7344 85.3203L60.3125 85.3203Q70.7031 85.3203 76.5625 83.1719Q82.4219 81.0234 85.4688 76.2969Q88.5156 71.5703 88.5156 66.0234Q88.5156 57.8984 82.6172 52.6641Q76.7187 47.4297 63.9844 47.4297L27.7344 47.4297L27.7344 85.3203Z" />
+    </g>
+    <path d="M88 0L0 84.001" transform="translate(168 775.9995)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M46.0001 0L0 109" transform="matrix(1 0 0 -1 672 957)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

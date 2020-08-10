@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 320">
+  <path d="M472.5 160h-328" stroke-width="3" stroke="black" fill="none" fill-opacity="1"/>
+  <path d="M880.5 160h-328" stroke-width="3" stroke="black" fill="none" fill-opacity="1"/>
+  <g  stroke-width="1" stroke="black" fill="none" fill-opacity="1">
+  <path d="M472.5 120h80v80h-80Z"/>
+  <path d="M912.5 120h80v80h-80Z"/>
+  <path d="M32.5 120h80v80h-80Z"/>
+  <path d="M168.5 56h80v80h-80Z"/>
+  <path d="M776.5 56h80v80h-80Z"/>
+  <path d="M168.5 184h80v80h-80Z"/>
+  <path d="M776.5 184h80v80h-80Z"/>
+  <path d="M472.5 224h80v80h-80Z"/>
+  <path d="M472.5 16h80v80h-80Z"/>
+  </g>
+  <g  text-anchor="middle" alignment-baseline="baseline" font-size="56" font-family="Arial" font-weight="bold" stroke-width="2" stroke="none" fill="black">
+  <text x="513" y="183">B</text>
+  <text x="515" y="78">H1</text>
+  <text x="512" y="285">H2</text>
+  <text x="207" y="121">T</text>
+  <text x="816" y="121">T</text>
+  <text x="208" y="248">W</text>
+  <text x="817" y="248">W</text>
+  <text x="73" y="183">N</text>
+  <text x="953" y="183">N</text>
+  </g>
+</svg>

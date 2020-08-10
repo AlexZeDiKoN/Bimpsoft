@@ -1,9 +1,17 @@
 import { createSelector } from 'reselect'
+import { model } from '@DZVIN/MilSymbolEditor'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'
 import { isFriendObject } from '../../utils/affiliations'
-import { mapCOP, currentMapLayers } from './layersSelector'
+import { currentMapLayers } from './layersSelector'
+
+const ARMED = [
+  model.app6Data.symbolKeys.LAND_EQUIPMENT,
+  model.app6Data.symbolKeys.SEA_SURFACE,
+  model.app6Data.symbolKeys.SEA_SUBSURFACE,
+  model.app6Data.symbolKeys.AIR,
+]
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
@@ -35,25 +43,29 @@ const myList = (orgStructure, myUnitId) => {
   return buildList(orgStructure, myUnitId).flat(32)
 }
 
-const currentMapPointLowLevelObjects = createSelector(
+const currentMapArmedPointObjects = createSelector(
   objects,
   currentMapLayers,
   (objects, layers) => objects
-    .filter((object) => object.type === entityKind.POINT && object.level === SubordinationLevel.TEAM_CREW &&
-      layers.includes(object.layer))
+    .filter((object) =>
+      object.type === entityKind.POINT &&
+      layers.includes(object.layer) &&
+      (
+        object.level === SubordinationLevel.TEAM_CREW ||
+        ARMED.includes(model.APP6Code.getSymbol(object.code))
+      )),
 )
 
 export const targetingObjects = createSelector(
   targetingModeSelector,
-  mapCOP,
   unitId,
   objects,
-  currentMapPointLowLevelObjects,
+  currentMapArmedPointObjects,
   defaultOrgStructure,
   selectedList,
-  (targetingMode, mapCOP, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
+  (targetingMode, unitId, allObjects, pointObjects, orgStructure, selectedList) => {
     let predicate = () => false
-    if (targetingMode && mapCOP && unitId && allObjects && pointObjects && orgStructure) {
+    if (targetingMode && unitId && allObjects && pointObjects && orgStructure) {
       // const mySubList = myList(orgStructure.tree, unitId)
       const one = selectedOur(allObjects, selectedList)
       const oneSubList = one
@@ -62,5 +74,5 @@ export const targetingObjects = createSelector(
       predicate = (object) => /* mySubList.includes(object.unit) && ( */oneSubList && oneSubList.includes(object.unit)/* ) */
     }
     return pointObjects.filter(predicate)
-  }
+  },
 )

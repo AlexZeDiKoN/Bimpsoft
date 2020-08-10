@@ -29,7 +29,6 @@ createNotificator(store)
 
 class App extends React.Component {
   authorized = () => {
-    window.explorerBridge.init(true)
     window.socket.then(async (socket) => {
       socket.emit('authorization', await getAuthToken())
     })
@@ -44,7 +43,7 @@ class App extends React.Component {
               <AuthForm onSuccess={this.authorized}>
                 <Router>
                   <RootContainer>
-                    <Main/>
+                    <Main />
                   </RootContainer>
                 </Router>
                 <ICTInfoPopup/>

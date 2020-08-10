@@ -5,8 +5,7 @@ import './style.css'
 
 const {
   default: Form,
-  FormItem,
-  buttonApply,
+  ButtonApply,
   buttonClose,
 } = components.form
 
@@ -18,11 +17,20 @@ export const propTypes = {
   onChange: PropTypes.func,
   onClose: PropTypes.func,
   onError: PropTypes.func,
+  onSaveError: PropTypes.func,
+  onCheckSave: PropTypes.func,
   orgStructures: PropTypes.object,
 }
 
 export default class AbstractShapeForm extends React.Component {
   static propTypes = propTypes
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      saveButtonBlock: false,
+    }
+  }
 
   setResult (resultFunc) {
     const data = resultFunc(this.props.data)
@@ -47,17 +55,29 @@ export default class AbstractShapeForm extends React.Component {
     return this.props.canEdit
   }
 
+  enableSaveButton = (enable = true) => {
+    this.setState({ saveButtonBlock: !enable })
+  }
+
+  saveEditElement = () => {
+    const { onCheckSave } = this.props
+    this.setState(
+      { saveButtonBlock: true },
+      () => { onCheckSave() },
+    )
+  }
+
   render () {
     const canEdit = this.isCanEdit()
-    const { onClose, onOk } = this.props
+    const { saveButtonBlock } = this.state
+    const { onClose } = this.props
     return (
       <Form className="shape-form">
-        {this.renderContent()}
-        <FormItem>
-          {canEdit && buttonClose(onClose)}
-          {canEdit && buttonApply(onOk)}
-          {!canEdit && buttonClose(onClose)}
-        </FormItem>
+        { this.renderContent() }
+        <div className='footer-container'>
+          {buttonClose(onClose)}
+          {canEdit && (<ButtonApply onClick={this.saveEditElement} disabled={saveButtonBlock}/>)}
+        </div>
       </Form>
     )
   }

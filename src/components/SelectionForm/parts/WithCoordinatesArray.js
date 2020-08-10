@@ -1,8 +1,17 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { renderNodes } from './render'
+import {
+  NODAL_POINT_ICON_PATH,
+  NODAL_POINT_ICONS,
+} from './WithNodalPointType'
+import {
+  NAME_OF_AMPLIFIERS,
+} from './WithIntermediateAmplifiers'
 
 const {
   FormRow,
@@ -12,13 +21,30 @@ const {
 
 const { icons: { IconHovered, names: iconNames } } = components
 
+const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
+const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
+
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
-  state = { editCoordinates: false }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      editCoordinates: false,
+      changeCoordinates: false,
+    }
+  }
+
+  createAmplifierShowerHandler = (path, index) => () => this.setResult((result) =>
+    result.updateIn(path, (showedSet) =>
+      showedSet.has(index) ? showedSet.delete(index) : showedSet.add(index),
+    ),
+  )
 
   coordinateRemoveHandler = (index) => this.setResult((result) =>
     result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
-      coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index)
-    )
+      coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
+    ),
+  this.setState({ changeCoordinates: true }),
   )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
@@ -26,44 +52,106 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
   }))
 
   coordinateAddHandler = () => this.setResult((result) =>
-    result.updateIn(COORDINATE_PATH, (coordinatesArray) => coordinatesArray.push({ text: '' }))
+    result.updateIn(COORDINATE_PATH, (coordinatesArray) => {
+      const endIndex = coordinatesArray.size - 1
+      if (endIndex > 0) {
+        const end = coordinatesArray.get(endIndex)
+        if (endIndex === 0) {
+          return coordinatesArray.push(end)
+        }
+        const prevEnd = coordinatesArray.get(endIndex - 1)
+        const coordNew = end.set('lat', 2 * end.lat - prevEnd.lat).set('lng', 2 * end.lng - prevEnd.lng)
+        return coordinatesArray.push(coordNew)
+      } else {
+        return coordinatesArray.push({ text: '' })
+      }
+    }),
+  this.setState({ changeCoordinates: true }),
   )
 
-  renderCoordinatesArray () {
-    const { editCoordinates } = this.state
-    const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
+  renderCoordinatesArray (lock = false) {
+    const { editCoordinates, changeCoordinates } = this.state
+    const formStore = this.getResult()
+
+    const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
+    const shownNodalPointAmplifiersSet = formStore.getIn(SHOWN_NODAL_POINT_AMPLIFIERS_PATH)
+
+    const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
+    const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
+    const readOnly = !canEdit || !editCoordinates
+    const nodalPointIconPreview = renderNodes(nodalPointIcon)
+    const coordinatesLength = coordinatesArray.length
+    const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_ICONS.NONE
     return (
       <FormDarkPart>
-        <FormRow label={i18n.COORDINATES}>
+        <FormDivider/>
+        <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && (<IconHovered
             icon={editCoordinates ? iconNames.BAR_2_EDIT_ACTIVE : iconNames.BAR_2_EDIT_DEFAULT}
             hoverIcon={iconNames.BAR_2_EDIT_HOVER}
             onClick={this.coordinatesEditClickHandler}
           />)}
         </FormRow>
-        <FormDivider/>
-        <FormRow label={i18n.NODAL_POINTS}>
-          {canEdit && editCoordinates && (<IconHovered
-            icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
-            hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
-            onClick={this.coordinateAddHandler}
-          />)}
-        </FormRow>
-        <div className="shape-form-scrollable">
-          {coordinatesArray.map((coordinate, index) => (
-            <CoordinateItem
-              key={index}
-              coordinate={coordinate}
-              index={index}
-              readOnly={!canEdit || !editCoordinates}
-              canRemove={coordinatesArray.size > 2}
-              onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
-              onRemove={this.coordinateRemoveHandler}
-              onFocus={this.onCoordinateFocusHandler}
-              onBlur={this.onCoordinateBlurHandler}
-            />
-          ))}
+        <div className="headerSiding">
+          <div className="shape-form-scrollable">
+            <table>
+              <tbody>
+                <div className={'columns-container'}>
+                  <div className={'amplifiers-title'}>
+                    {i18n.AMPLIFIERS}
+                  </div>
+                  <div className={'coordinates-title'}>
+                    {i18n.COORDINATES}
+                  </div>
+                  <th className="col-add">
+                    <div>
+                      {canEdit && editCoordinates && <IconHovered
+                        icon={iconNames.MAP_SCALE_PLUS_DEFAULT}
+                        hoverIcon={iconNames.MAP_SCALE_PLUS_HOVER}
+                        onClick={this.coordinateAddHandler}
+                      />}
+                    &nbsp;
+                    </div>
+                  </th>
+                </div>
+                {coordinatesArray.map((coordinate, index) => (
+                  <div tabIndex={changeCoordinates && index} key={`${coordinate.lat}/${coordinate.lng}`}>
+                    <div className={'coordinates-checkbox-container'}>
+                      <div className="icon-option">
+                        <Checkbox
+                          disabled={!canEdit || noNodalPointAmplifier}
+                          checked={noNodalPointAmplifier || shownNodalPointAmplifiersSet.has(index)}
+                          onChange={this.createAmplifierShowerHandler(SHOWN_NODAL_POINT_AMPLIFIERS_PATH, index)}
+                        />
+                        {nodalPointIconPreview}
+                      </div>
+                      <CoordinateItem
+                        key={index}
+                        coordinate={coordinate}
+                        index={index}
+                        readOnly={readOnly}
+                        canRemove={coordinatesLength > 2 && !readOnly}
+                        onExitWithChange={canEdit ? this.onCoordinateExitWithChangeHandler : null}
+                        onRemove={this.coordinateRemoveHandler}
+                        onFocus={this.onCoordinateFocusHandler}
+                        onBlur={this.onCoordinateBlurHandler}
+                      />
+                    </div>
+                    {index !== coordinatesLength - (lock ? 0 : 1) ? (
+                      <div className={'coordinate-check'}>
+                        <Checkbox
+                          disabled={!canEdit}
+                          onChange={this.createAmplifierShowerHandler(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH, index)}
+                          checked={shownIntermediateAmplifiersSet.has(index)}
+                        /> &laquo;{NAME_OF_AMPLIFIERS}&raquo;
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </FormDarkPart>
     )

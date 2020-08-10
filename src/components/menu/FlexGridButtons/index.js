@@ -70,7 +70,7 @@ export default class FlexGridButtons extends React.Component {
         <IconButton
           placement={'bottomLeft'}
           title={i18n.SEND_TO_ICT}
-          icon={iconNames.MENU_CALCULATION_DEFAULT}
+          icon={iconNames.SEND_ICT}
           disabled={!visible}
           onClick={calcFlexGridUnits}
         />

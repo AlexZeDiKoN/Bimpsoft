@@ -1,11 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel } from '@DZVIN/CommonComponents'
+import { MovablePanel, ResizeEnable } from '@DZVIN/CommonComponents'
 import { TaskComponentStatefull } from '@DZVIN/components'
 import i18n from '../../i18n'
-
-const STYLE = { width: '1000px' }
+import './style.css'
 
 export default class TaskModal extends React.Component {
   static propTypes = {
@@ -43,9 +42,14 @@ export default class TaskModal extends React.Component {
         <Wrapper
           title={i18n.CREATE_TASK}
           onClose={onClose}
+          minWidth={1000}
+          maxWidth={1000}
+          bounds='div.app-body'
+          minHeight={350}
+          resizeEnable={ResizeEnable.ALL_DISABLED}
         >
           <FocusTrap>
-            <div tabIndex={0} style={STYLE}>
+            <div tabIndex={0} className='taskModal'>
               <TaskComponentStatefull
                 value={value}
                 tasks={tasks}

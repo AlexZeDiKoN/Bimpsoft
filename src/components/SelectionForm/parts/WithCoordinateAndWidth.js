@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
@@ -6,7 +6,6 @@ import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
 const {
-  FormRow,
   FormDarkPart,
   InputWithSuffix,
 } = components.form
@@ -27,7 +26,13 @@ function getWidthFromCoordinatesArray (coordinatesArray) {
 }
 
 const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent extends CoordinatesMixin(Component) {
-  state = { widthText: null }
+  constructor (props) {
+    super(props)
+    this.state = {
+      ...this.state,
+      widthText: null,
+    }
+  }
 
   coordinateChangeHandler = async (index, value) => {
     await this.onCoordinateExitWithChangeHandler(index, value)
@@ -67,7 +72,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
 
     return (
       <FormDarkPart>
-        <FormRow label={i18n.COORDINATES}/>
+        <div className='coordinate-width-title'>{i18n.COORDINATES}</div>
         <div className="shape-form-scrollable">
           <CoordinateRow
             label={i18n.NORTH_WEST}
@@ -87,7 +92,8 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
           />
-          <FormRow label={i18n.SIDE_SIZE}>
+          <div className='coordinateRow-container'>
+            <div className='coordinate-title'>{i18n.SIDE_SIZE}</div>
             <InputWithSuffix
               readOnly={!canEdit}
               value={width}
@@ -96,7 +102,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
               error={widthIsWrong}
               onBlur={this.widthBlurHandler}
             />
-          </FormRow>
+          </div>
         </div>
       </FormDarkPart>
     )

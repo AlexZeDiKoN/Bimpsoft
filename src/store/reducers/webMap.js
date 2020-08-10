@@ -1,16 +1,21 @@
 import PropTypes from 'prop-types'
-import { Record, List, Map } from 'immutable'
+import * as R from 'ramda'
+import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { update, comparator, filter, merge, eq } from '../../utils/immutable'
-import { actionNames } from '../actions/webMap'
+import { actionNames, changeTypes } from '../actions/webMap'
 import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
+import { IDENTITIES } from '../../utils/affiliations'
+import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
+import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import entityKind from '../../components/WebMap/entityKind'
-import { settings } from '../../utils/svg/lines'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
+import { evaluateColor, RED } from '../../constants/colors'
+import { settings } from '../../constants/drawLines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -22,19 +27,38 @@ const WebMapPoint = Record({
   lng: null,
 })
 
+const LineAmplifier = Record({
+  top: null,
+  middle: null,
+  bottom: null,
+  center: null,
+  additional: null,
+})
+
 const webMapAttributesInitValues = {
   template: '',
-  color: colors.BLACK,
+  color: evaluateColor(colors.BLACK),
   fill: colors.TRANSPARENT,
   lineType: 'solid',
   strokeWidth: LINE_WIDTH,
-  lineAmpl: 'none',
+  hatch: 'none',
+  intermediateAmplifierType: 'none',
+  intermediateAmplifier: LineAmplifier(),
+  shownIntermediateAmplifiers: Set(),
+  shownNodalPointAmplifiers: Set(),
+  pointAmplifier: LineAmplifier(),
+  textAmplifiers: {},
+  sectorsInfo: List(),
+  params: {},
   left: 'none',
   right: 'none',
-  lineNodes: 'none',
+  nodalPointIcon: 'none',
   texts: List(),
   z: null,
   taskId: null,
+  lineClassifier: UNDEFINED_CLASSIFIER,
+  status: STATUSES.EXISTING,
+  uniqueDesignation1: '',
 }
 
 for (const key of Object.keys(symbolOptions)) {
@@ -53,7 +77,7 @@ export const WebMapObject = Record({
   geometry: List(),
   unit: null,
   level: null,
-  affiliation: null,
+  affiliation: IDENTITIES.FRIEND,
   layer: null,
   parent: null,
   attributes: WebMapAttributes(),
@@ -83,6 +107,7 @@ const WebMapState = Record({
   lockedObjects: Map(),
   version: null,
   contactId: null,
+  contactFullName: '',
   positionContactId: null,
   unitId: null,
   countryId: null,
@@ -91,6 +116,11 @@ const WebMapState = Record({
   scaleToSelection: false,
   marker: null,
   topographicObjects: {},
+  undoRecords: List(),
+  undoPosition: 0,
+  reportMap: {},
+  geoLandmark: {},
+  deleteMarchPointModal: {},
 })
 
 const checkLevel = (object) => {
@@ -113,14 +143,34 @@ export const updateGeometry = (obj, geometry) => {
       .set('hash', makeHash(obj.get('type'), geometry))
 }
 
+export const createObjectRecord = (attributes) => {
+  const {
+    texts,
+    pointAmplifier,
+    intermediateAmplifier,
+    shownIntermediateAmplifiers,
+    shownNodalPointAmplifiers,
+    sectorsInfo,
+    ...otherAttrs
+  } = attributes
+  return WebMapAttributes({
+    texts: List(texts),
+    intermediateAmplifier: LineAmplifier(intermediateAmplifier),
+    shownIntermediateAmplifiers: Set(shownIntermediateAmplifiers),
+    shownNodalPointAmplifiers: Set(shownNodalPointAmplifiers),
+    pointAmplifier: LineAmplifier(pointAmplifier),
+    sectorsInfo: List(sectorsInfo),
+    ...otherAttrs,
+  })
+}
+
 const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
   update(map, id, (object) => {
     checkLevel(rest)
     let obj = object || WebMapObject({ id, ...rest })
     obj = update(obj, 'point', comparator, WebMapPoint(point))
     if (attributes) {
-      const { texts, ...otherAttrs } = attributes
-      obj = update(obj, 'attributes', comparator, WebMapAttributes({ texts: List(texts), ...otherAttrs }))
+      obj = update(obj, 'attributes', comparator, createObjectRecord(attributes))
     } else {
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
@@ -173,6 +223,9 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_MARKERS,
   field: 'isMarkersOn',
+}, {
+  action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
+  field: 'isTopographicObjectsOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -183,6 +236,75 @@ const findField = (actionName, list) => {
 const simpleSetField = (actionName) => findField(actionName, simpleSetFields)
 
 const simpleToggleField = (actionName) => findField(actionName, toggleSetFields)
+
+function addUndoRecord (state, payload) {
+  let objData, oldData, newData
+
+  const { changeType, id, flexGridPrevState } = payload
+  const newRecord = { changeType, ...R.pick([ 'id', 'list', 'layer' ], payload), timestamp: Date.now() }
+  if (id) {
+    objData = state.getIn([ 'objects', id ])
+  }
+
+  switch (changeType) {
+    case changeTypes.UPDATE_OBJECT: {
+      const { id, ...rest } = objData.toJS()
+      oldData = rest
+      newData = payload.object
+      break
+    }
+    case changeTypes.UPDATE_GEOMETRY: {
+      if (flexGridPrevState) {
+        oldData = {
+          geometry: flexGridPrevState,
+        }
+      } else {
+        oldData = {
+          point: objData.get('point').toJS(),
+          geometry: objData.get('geometry').toJS(),
+        }
+      }
+      newData = payload.geometry
+      break
+    }
+    case changeTypes.LAYER_COLOR: {
+      oldData = payload.oldColor
+      newData = payload.newColor
+      break
+    }
+    case changeTypes.MOVE_CONTOUR:
+    case changeTypes.MOVE_LIST: {
+      const { x, y } = payload.shift
+      oldData = { x: -x, y: -y }
+      newData = { x, y }
+      break
+    }
+    case changeTypes.INSERT_OBJECT:
+    case changeTypes.DELETE_OBJECT:
+    case changeTypes.DELETE_LIST:
+    case changeTypes.CREATE_CONTOUR:
+    case changeTypes.DELETE_CONTOUR:
+    case changeTypes.COPY_CONTOUR:
+      break
+    default:
+      return state
+  }
+  if (oldData && newData) {
+    if (JSON.stringify(oldData) === JSON.stringify(newData)) {
+      return state
+    }
+    newRecord.oldData = oldData
+    newRecord.newData = newData
+  }
+  let records = state.get('undoRecords')
+  const undoPosition = state.get('undoPosition')
+  if (undoPosition < records.size) {
+    records = records.skipLast(records.size - undoPosition)
+  }
+  return state
+    .set('undoRecords', records.push(newRecord))
+    .set('undoPosition', undoPosition + 1)
+}
 
 export default function webMapReducer (state = WebMapState(), action) {
   const { type, payload } = action
@@ -222,12 +344,24 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SET_MAP_MODE: {
       return state.mode === payload ? state : state.set('mode', payload)
     }
+    case actionNames.ADD_UNDO_RECORD:
+      return addUndoRecord(state, payload)
+    case actionNames.UNDO:
+      return update(state, 'undoPosition',
+        (position) => Math.max(position - 1, 0))
+    case actionNames.REDO:
+      return update(state, 'undoPosition',
+        (position) => Math.min(position + 1, state.get('undoRecords').size))
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))
     case actionNames.DEL_OBJECT:
       return payload
         ? state.deleteIn([ 'objects', payload ])
+        : state
+    case actionNames.DEL_OBJECTS:
+      return payload
+        ? state.set('objects', state.get('objects').filter((value, key) => !payload.includes(key)))
         : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
       const delLayerId = payload
@@ -253,10 +387,14 @@ export default function webMapReducer (state = WebMapState(), action) {
       return result
     }
     case actionNames.APP_INFO: {
-      const { version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure } = payload
+      const {
+        version, contactId, positionContactId, unitId, countryId, formationId, defOrgStructure, contactFullName,
+      } = payload
       console.info(`Backend version`, version)
       console.info(`Frontend version`, front)
-      console.info(`My IDs`, { contactId, positionContactId, unitId, countryId, formationId })
+      console.info(`My IDs`, {
+        contactId, positionContactId, unitId, countryId, formationId, contactFullName,
+      })
       return merge(state, {
         version,
         defOrgStructure,
@@ -265,6 +403,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         unitId: Number(unitId),
         countryId: Number(countryId),
         formationId: Number(formationId),
+        contactFullName,
       })
     }
     case actionNames.GET_LOCKED_OBJECTS: {
@@ -293,28 +432,50 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
       return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })
     }
-    case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS: {
-      // return update(state, 'isTopographicObjectsOn', !state.isTopographicObjectsOn)
-      return state
-        .set('isTopographicObjectsOn', !state.isTopographicObjectsOn)
-        .set('topographicObjects', {})
-    }
     case actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: {
       const visible = !state.topographicObjects.visible
       return update(state, 'topographicObjects', { ...state.topographicObjects, visible: visible })
     }
-    default: {
-      const f1 = simpleSetField(type)
-      if (f1) {
-        return state.set(f1, payload)
+    case actionNames.TOGGLE_REPORT_MAP_MODAL: {
+      const { visible, dataMap } = payload
+      if (visible === false && dataMap && dataMap.mapId !== state?.reportMap?.dataMap?.mapId) {
+        return state
       }
-      const f2 = simpleToggleField(type)
-      if (f2) {
+      return update(state, 'reportMap', { ...state.reportMap, ...payload })
+    }
+    case actionNames.TOGGLE_GEO_LANDMARK_MODAL: {
+      return update(state, 'geoLandmark', { ...state.geoLandmark, ...payload })
+    }
+    case actionNames.TOGGLE_DELETE_MARCH_POINT_MODAL: {
+      return update(state, 'deleteMarchPointModal', { ...state.deleteMarchPointModal, ...payload })
+    }
+    case actionNames.HIGHLIGHT_OBJECT: {
+      const { id, restoreColor } = payload
+      const objects = state.get('objects')
+      const color = restoreColor || RED
+
+      const newObjects = objects.update(id, (object) => {
+        return Record({
+          ...object.toObject(),
+          attributes: object.attributes.update('color', (attribute) => color),
+        })()
+      })
+
+      return state.set('objects', newObjects)
+    }
+    default: {
+      const setField = simpleSetField(type)
+      if (setField) {
+        return state.set(setField, payload)
+      }
+      const toggleField = simpleToggleField(type)
+      if (toggleField) {
         return toggleSetFields
           .map(({ field }) => field)
-          .filter((field) => field !== f2)
+          .filter((field) => field !== toggleField)
           .reduce((current, field) => current.set(field, false), state)
-          .set(f2, !state.get(f2))
+          .set(toggleField, !state.get(toggleField))
+          .set('topographicObjects', {})
       }
       return state
     }

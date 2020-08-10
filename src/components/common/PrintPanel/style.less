@@ -1,206 +1,267 @@
 @import "../../../assets/styles/_variables.less";
 
 .printPanelFormInner {
-  overflow-y: scroll;
+  overflow-y: auto;
   font-family: @sidebar-font;
+  height: 100%;
+
+  .ant-select-open {
+    .ant-select-arrow {
+      transform: rotate(180deg) scale(0.6);
+    }
+  }
+
+  .ant-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 10px solid @toolbar-color;
+    top: 55%;
+    transition: 0.3s;
+    transform: scale(0.6);
+    right: 7px;
+
+    .anticon {
+      display: none;
+    }
+  }
 
   .ant-form {
     position: relative;
-    margin-top: 15px;
+    padding-top: 15px;
+    height: 100%;
 
-  .dzvin-form-row {
-    padding: 2px 15px;
-    label {
-      font-size: 12px;
-      font-weight: 500;
-      color: rgba(0,0,0,0.85);
-    }
-    > .dzvin-form-input {
-      width: 140px;
-      padding-right: 5px;
-    }
-  }
-
-  .printPanel_indicators {
     .dzvin-form-row {
-      margin-top: 0;
-      margin-bottom: 2px;
-      .dzvin-form-input {
-        width: 100%;
+      margin: 11px 0;
+
+      .dzvin-form-row-label {
+        font-family: Roboto;
+      }
+
+      > .dzvin-form-input {
+        width: 155px;
       }
     }
-  }
 
-  .printPanel_docBlock {
-    border-top: 1px solid grey;
-    border-bottom: 1px solid grey;
-    padding: 8px 0;
-    .dzvin-form-column{
-      margin: 5px 10px;
-    }
-  }
-
-  .printData{
-    label{
-      font-weight: 400;
-    }
-  }
-
-  .printPanelSecurity {
-    margin: 8px 0;
-    font-size: 12px;
-    font-weight: 500;
-    color: rgba(0,0,0,0.85);
-    div:last-child {
-      font-weight: 400;
-      font-size: 11px;
-    }
-  }
-
-  h5 {
-    margin: 8px 0;
-    font-size: 12px;
-  }
-
-  .printPanelSign_block {
-    border: 1px solid grey;
-    margin: 0 15px;
-    .printPanelSignTitle_row {
+    .print-requisites-container {
       display: flex;
-      border-bottom: 1px solid grey;
+      font-size: 14px;
+      font-family: Roboto;
+      margin: 10px;
+
+      .ant-checkbox-checked .ant-checkbox-inner{
+        background-color: @select-color;
+        border-color: @select-color;
+      }
+
+      .ant-checkbox-wrapper {
+        margin-left: 20px;
+      }
+    }
+
+    .print-scale-container {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-family: Roboto;
+      align-items: center;
+      margin: 0 10px;
+
+      div:first-child {
+        white-space: nowrap;
+      }
+
+      .ant-select {
+        margin-left: 7px;
+      }
+    }
+
+    .docBlock_header {
+      text-align: left;
+      padding: 10px 10px 0px;
+      font-family: Roboto;
+      border-top: 1px solid #D7D7D7;
+    }
+
+    .docBlock_subHeader {
+      margin: 8px 10px 0px;
+      text-align: left;
+    }
+
+    .printPanel_docBlock {
+      padding: 0 10px;
+
+      .ant-input {
+        border-color: @modals-section-border-color;
+        border-radius: 2px;
+        margin: 1px 0;
+        height: 30px;
+      }
+    }
+
+    .printData {
+      label {
+        font-weight: 400;
+      }
+    }
+
+    h5 {
+      margin: 8px 0;
       font-size: 12px;
     }
-    .right {
-      order: 1;
-    }
-    .printPanelSign_row {
-      display: flex;
+
+    .printPanelSign_block {
+      margin: 2px 10px 20px;
+
       .right {
         order: 1;
       }
-    }
-    .printPanelSign_row {
-      .ant-col-6 {
+
+      .printPanelSign_row {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 32px;
+
+        .ant-input{
+          border-color: @modals-section-border-color;
+          border-radius: 2px;
+          margin: 1px 0;
+          height: 30px;
+        }
+
+        .color-picker{
+          width: 30px;
+          height: 30px;
+          .color-picker-button{
+            background-repeat: no-repeat;
+            width: 28px;
+            height: 28px;
+            background-size: contain;
+          }
+        }
+
+        .right {
+          order: 1;
+        }
       }
-      .PrintPanel_colorPicker {
-        .color-picker-popup {
-          margin-left: -6px;
-          .color-picker-controls {
-            transform: scale(-1, 1);
-            input {
+
+      .printPanelSign_row {
+        .ant-col-6 {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 32px;
+        }
+
+        .PrintPanel_colorPicker {
+          .color-picker-popup {
+            margin-left: -6px;
+
+            .color-picker-controls {
               transform: scale(-1, 1);
+
+              input {
+                transform: scale(-1, 1);
+              }
             }
           }
         }
-      }
-      .right {
-        .PrintPanel_colorPicker {
-          .color-picker-popup {
-            margin-left: -185px;
-            .color-picker-controls {
-              transform: scale(1, 1);
-              input {
+
+        .right {
+          .PrintPanel_colorPicker {
+            .color-picker-popup {
+              margin-left: -185px;
+
+              .color-picker-controls {
                 transform: scale(1, 1);
+
+                input {
+                  transform: scale(1, 1);
+                }
               }
             }
           }
         }
       }
     }
-  }
 
-  .printPanel_indicators {
-    .dzvin-form-row {
-      padding: 1px 10px;
-    }
-
-    .dzvin-form-input {
-      input {
-        border-radius: 5px;
+    .printPanel_indicators {
+      .dzvin-form-row {
+        padding: 1px 10px;
       }
-    }
 
-    .dzvin-form-row:last-child {
       .dzvin-form-input {
-        border: 0;
+        input {
+          border-radius: 5px;
+        }
+      }
+
+      .dzvin-form-row:last-child {
+        .dzvin-form-input {
+          border: 0;
+        }
       }
     }
-  }
 
-  .printPanel_legend {
-    display: flex;
-    align-items: center;
-
-    .printPanel_legendControl {
-      button {
-        height: 20px;
-        width: 20px;
-        font-size: 10px;
-        padding: 0 !important;
-      }
-
-      button:hover {
-        color: #fff !important;
-        border-color: #b0b37d !important;
-        background-color: #b0b37d;
-        cursor: pointer;
-      }
-
-      button.active {
-        color: #fff !important;
-        border-color: #b0b37d !important;
-        background-color: #b0b37d;
+    .printPanel_legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 10px;
+      margin-top: 10px;
+      .printPanel_legendControl{
+        display: flex;
       }
     }
-  }
 
-  .printPanel_signatories {
-    margin: 0 15px 15px 15px;
+    .printPanel_signatories {
+      margin: 0 10px 10px 10px;
 
-    .ant-row {
-      border: 1px solid grey;
-      border-top: 0;
-      max-height: 19px;
-      overflow: hidden;
-      font-size: 12px;
+      .ant-input{
+        margin: 0;
+        padding: 0 10px;
+        color: #000;
+      }
 
-      div {
-        border-right: 1px solid grey;
+      .ant-row {
+        border: 1px solid grey;
+        border-top: 0;
         max-height: 19px;
         overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        font-size: 12px;
+
+        div {
+          border-right: 1px solid grey;
+          max-height: 19px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+
+        div:last-child {
+          border: 0;
+        }
       }
 
-      div:last-child {
-        border: 0;
+      .ant-row:first-child {
+        border-top: 1px solid grey;
       }
     }
 
-    .ant-row:first-child {
-      border-top: 1px solid grey;
+    .printPanel_buttonBlock {
+      position: sticky;
+      bottom: -1px;
+      padding: 8px 0px;
+      padding-top: 50px;
+      z-index: 1001;
+      background: @toolbar-color-selected;
+    }
+
+    .invisible {
+      display: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
     }
   }
-
-  .printPanel_buttonBlock {
-    position: sticky;
-    bottom: -1px;
-    margin-top: 20px;
-    padding: 8px 0px;
-    z-index: 1001;
-    background: @toolbar-color-selected;
-  }
-
-  .invisible {
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-  }
- }
 }

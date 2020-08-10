@@ -15,7 +15,7 @@ const hidden = { hidden: true }
 const elementsConfigs = {
   [configs.ADD_TO_TEMPLATE]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
   [configs.NAME]: hidden, // TODO: тимчасово приховуємо команду "Додати до шаблонів"
-  [configs.commonIdentifier]: readOnly,
+  // [configs.commonIdentifier]: readOnly, // включаємо для ручного вводу
 }
 
 const elementsConfigsEditable = {
@@ -50,22 +50,48 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     ovtData: PropTypes.object,
   }
 
-  codeChangeHandler = (code, subordinationLevel) => this.setResult((result) =>
-    result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel),
-  )
+  codeChangeHandler = (code, subordinationLevel) => this.setResult((result) => {
+    if (code.length > 20 || !code.match(/^[0-9]+$/)) {
+      return result
+    }
+    return result.setIn(CODE_PATH, code).setIn(SUBORDINATION_LEVEL_PATH, subordinationLevel)
+  })
 
-  unitChangeHandler = (unit) => this.setResult((result) => result.setIn(UNIT_PATH, unit))
+  unitChangeHandler = (unit) => this.setResult((result) => {
+    const { orgStructures: { byIds } } = this.props
+    const {
+      symbolData,
+      natoLevelID,
+      app6Code,
+    } = byIds[unit] ?? { symbolData: {}, natoLevelID: 0, app6Code: '10000000000000000000' }
+    const uniqueDesignation = symbolData?.uniqueDesignation ?? null
+    const higherFormation = symbolData?.higherFormation ?? null
+    return result.setIn(UNIT_PATH, unit)
+      .setIn(CODE_PATH, app6Code)
+      .setIn(SUBORDINATION_LEVEL_PATH, natoLevelID)
+      .updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge({ uniqueDesignation, higherFormation }))
+  })
 
   coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
     .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
     .set('point', coordinate),
   )
 
-  attributesChangeHandler = (newAttributes) => this.setResult((result) =>
-    result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes)),
-  )
+  attributesChangeHandler = (newAttributes) => this.setResult((result) => {
+    const { quantity, speed } = newAttributes
+    if (quantity !== undefined) {
+      newAttributes.quantity = Math.abs(parseInt(String(quantity).slice(0, 10)) || 0)
+    }
+    if (speed !== undefined) {
+      newAttributes.speed = Math.abs(parseFloat(String(speed).slice(0, 10)) || 0)
+    }
+    return result.updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAttributes))
+  })
 
   handlerUnitInfo = (unitId) => {
+    if (!unitId) {
+      return
+    }
     const { itemType } = this.props.orgStructures.byIds[unitId]
     window.explorerBridge.showUnitInfo(itemType, unitId)
   }

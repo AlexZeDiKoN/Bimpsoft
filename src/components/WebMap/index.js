@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, control, point, popup } from 'leaflet'
+import L, { Map, TileLayer, Control, DomEvent, Point, control, point, popup } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
@@ -14,19 +14,18 @@ import { version } from '../../version'
 import 'leaflet.pm'
 import 'leaflet-minimap/dist/Control.MiniMap.min.css'
 import 'leaflet-minimap'
-import 'leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
-import 'leaflet-measure-custom/leaflet.measure/leaflet.measure'
+import '@DZVIN/leaflet-measure-custom/leaflet.measure/leaflet.measure.css'
+import '@DZVIN/leaflet-measure-custom/leaflet.measure/leaflet.measure'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min.css'
 import 'leaflet-graphicscale/dist/Leaflet.GraphicScale.min'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
-import { settings } from '../../utils/svg/lines'
 import {
   BACK_LIGHT_STYLE_LINE,
   BACK_LIGHT_STYLE_POLYGON,
@@ -35,9 +34,15 @@ import {
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
 import { catalogSign } from '../Catalogs'
-import { calcMoveWM } from '../../utils/mapObjConvertor'
+import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
-import entityKind, { entityKindFillable, entityKindMultipointCurves, entityKindMultipointAreas } from './entityKind'
+import { settings } from '../../constants/drawLines'
+import entityKind, {
+  entityKindFillable,
+  entityKindMultipointCurves,
+  entityKindMultipointAreas,
+  GROUPS,
+} from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
 import {
   createTacticalSign,
@@ -52,6 +57,8 @@ import {
   createTargeting,
 } from './Tactical'
 import { MapProvider } from './MapContext'
+import { findDefinition } from './patch/Sophisticated/utils'
+import { generateGeometry } from './patch/FlexGrid'
 
 const { Coordinates: Coord } = utils
 
@@ -80,6 +87,10 @@ const switchScaleOptions = {
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
 }
 
+const getFeatureParent = (item) => item.feature && item.options && item.options.tsType === entityKind.CONTOUR
+  ? item._eventParents[Object.keys(item._eventParents)[0]]
+  : item
+
 const isLayerInBounds = (layer, bounds) => {
   const geometryObj = getGeometry(layer)
   if (geometryObj === null) {
@@ -89,33 +100,32 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && L.latLngBounds(geometry)
+  const rect = geometry && geometry.length && L.latLngBounds(geometry)
   return rect && bounds.contains(rect)
 }
 
-// const tmp = `<svg
-//   width="480" height="480"
-//   line-point-1="24,240"
-//   line-point-2="456,240"
-// >
-//   <path
-//     fill="none"
-//     stroke="red" stroke-width="3" stroke-linecap="square"
-//     d="M8,240
-//        a16,16 0 0,1 16,-16
-//        h80
-//        l15,-23 15,23 -15,23 -15,-23
-//        m30,0 h106
-//        v-65 l-4,6 4,-15 4,15 -4,-6 v35
-//        l-20,0 40,0 -20,0 v15
-//        l-20,0 40,0 -20,0 v15
-//        h106
-//        l15,-23 15,23 -15,23 -15,-23
-//        m30,0 h80
-//        a16,16 0 0,1 16,16"
-//   />
-// </svg>`
-// TODO: end
+/* const tmp = `<svg
+  width="480" height="480"
+  line-point-1="24,240"
+  line-point-2="456,240"
+>
+  <path
+    fill="none"
+    stroke="red" stroke-width="3" stroke-linecap="square"
+    d="M8,240
+       a16,16 0 0,1 16,-16
+       h80
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h106
+       v-65 l-4,6 4,-15 4,15 -4,-6 v35
+       l-20,0 40,0 -20,0 v15
+       l-20,0 40,0 -20,0 v15
+       h106
+       l15,-23 15,23 -15,23 -15,-23
+       m30,0 h80
+       a16,16 0 0,1 16,16"
+  />
+</svg>` */
 
 const miniMapOptions = {
   width: 200,
@@ -181,34 +191,43 @@ const toGMS = (value, pos, neg) => {
 
 const serializeCoordinate = (mode, lat, lng) => {
   const type = mode2type(mode)
-  const serialized = mode === indicateModes.WGSI
+  let serialized = mode === indicateModes.WGSI
     ? `${toGMS(lat, 'N', 'S')}   ${toGMS(lng, 'E', 'W')}`
     : Coord.stringify({ type, lat, lng })
+  if (type === Coord.types.UCS_2000 || type === Coord.types.CS_42) {
+    const coord = serialized.split(' ', 2)
+    serialized = `${coord[0]} ${coord[1]}`
+  }
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
 const setScaleOptions = (layer, params) => {
-  if (layer && layer.object) {
+  const pointSizes = {
+    min: Number(params[paramsNames.POINT_SIZE_MIN]),
+    max: Number(params[paramsNames.POINT_SIZE_MAX]),
+  }
+  const textSizes = {
+    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+  }
+  const lineSizes = {
+    min: Number(params[paramsNames.LINE_SIZE_MIN]),
+    max: Number(params[paramsNames.LINE_SIZE_MAX]),
+    pointSizes,
+  }
+  if (layer?.object) {
     if (layer.object.catalogId) {
-      layer.setScaleOptions({
-        min: Number(params[paramsNames.POINT_SIZE_MIN]),
-        max: Number(params[paramsNames.POINT_SIZE_MAX]),
-      })
+      layer.setScaleOptions(pointSizes)
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.POINT_SIZE_MIN]),
-            max: Number(params[paramsNames.POINT_SIZE_MAX]),
-          })
+        case entityKind.GROUPED_REGION:
+          layer.setScaleOptions(pointSizes)
           break
         case entityKind.TEXT:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-          })
+          layer.setScaleOptions(textSizes)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
@@ -219,10 +238,8 @@ const setScaleOptions = (layer, params) => {
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
         case entityKind.CONTOUR:
-          layer.setScaleOptions({
-            min: Number(params[paramsNames.LINE_SIZE_MIN]),
-            max: Number(params[paramsNames.LINE_SIZE_MAX]),
-          })
+        case entityKind.SOPHISTICATED:
+          layer.setScaleOptions(lineSizes)
           break
         default:
       }
@@ -316,6 +333,11 @@ export default class WebMap extends React.PureComponent {
     catalogObjects: PropTypes.object,
     catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
+    undoInfo: PropTypes.shape({
+      canUndo: PropTypes.bool,
+      canRedo: PropTypes.bool,
+    }),
+    isMapCOP: PropTypes.bool,
     // Redux actions
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
@@ -349,6 +371,16 @@ export default class WebMap extends React.PureComponent {
     getZones: PropTypes.func,
     createGroup: PropTypes.func,
     dropGroup: PropTypes.func,
+    newShapeFromSymbol: PropTypes.func,
+    newShapeFromLine: PropTypes.func,
+    getCoordForMarch: PropTypes.func,
+    marchMode: PropTypes.bool,
+    marchDots: PropTypes.array,
+    marchRefPoint: PropTypes.object,
+    undo: PropTypes.func,
+    redo: PropTypes.func,
+    checkObjectAccess: PropTypes.func,
+    onShadowDelete: PropTypes.func,
   }
 
   constructor (props) {
@@ -358,6 +390,8 @@ export default class WebMap extends React.PureComponent {
       zoom: 0,
     }
     this.activeLayer = null
+    this.marchMarkers = []
+    this.marchRefPoint = null
   }
 
   async componentDidMount () {
@@ -376,6 +410,8 @@ export default class WebMap extends React.PureComponent {
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
     })
+    this.updateMarchDots(this.props.marchDots, [])
+    window.explorerBridge.init(true)
   }
 
   componentDidUpdate (prevProps, prevState, snapshot) {
@@ -390,11 +426,12 @@ export default class WebMap extends React.PureComponent {
       flexGridParams: { selectedDirections, selectedEternal },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects,
+      targetingObjects, marchDots, marchMode, marchRefPoint,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
+      this.map._container.focus()
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -468,10 +505,12 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
+    this.updateMarchDots(marchDots, prevProps.marchDots)
+    this.updateMarchRefPoint(marchRefPoint)
   }
 
   componentWillUnmount () {
@@ -483,7 +522,10 @@ export default class WebMap extends React.PureComponent {
 
   sources = []
 
-  updateMinimap = (showMiniMap) => showMiniMap ? this.mini.addTo(this.map) : this.mini.remove()
+  updateMinimap = (showMiniMap) => showMiniMap
+    ? this.mini.addTo(this.map) &&
+    this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
     .filter((key) => this.map._layers[key]._locked)
@@ -492,7 +534,7 @@ export default class WebMap extends React.PureComponent {
       const layer = this.map._layers[key]
       const isLocked = lockedObjects.get(layer.id)
       if (!isLocked) {
-        layer.setLocked && layer.setLocked(false)
+        layer.setLocked(false)
         layer.id === activeObjectId && this.onSelectedListChange([])
       }
     })
@@ -583,11 +625,11 @@ export default class WebMap extends React.PureComponent {
     if (marker !== prevProps.marker /* && marker !== null */) {
       if (!isMarkersOn) {
         if (marker) {
-          this.markers && this.markers[0].removeFrom(this.map)
+          this.markers && this.markers.length && this.markers[0].removeFrom(this.map)
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
-            this.markers = [ createSearchMarker(point, text) ]
+            this.markers = [ createSearchMarker(point) ]
             this.markers[0].addTo(this.map)
             setTimeout(() => this.markers && this.markers[0].bindPopup(text).openPopup(), 1000)
           }, 500)
@@ -602,7 +644,7 @@ export default class WebMap extends React.PureComponent {
           let { point, text } = marker
           text = this.createSearchMarkerText(point, text)
           setTimeout(() => {
-            const searchMarker = createSearchMarker(point, text)
+            const searchMarker = createSearchMarker(point)
             searchMarker.addTo(this.map)
             this.markers.push(searchMarker)
             setTimeout(() => searchMarker.bindPopup(text).openPopup(), 500)
@@ -626,7 +668,7 @@ export default class WebMap extends React.PureComponent {
       if (scaleToSelection) {
         const selectedIdsSet = new Set(selectedIds)
         const points = []
-        this.map.eachLayer((layer) =>
+        this.map.objects.forEach((layer) =>
           layer.options.tsType && selectedIdsSet.has(layer.id) && points.push(...getGeometry(layer).geometry),
         )
         if (points.length > 0) {
@@ -653,14 +695,16 @@ export default class WebMap extends React.PureComponent {
     this.mini = undefined
     this.map = new Map(this.container, {
       zoomControl: false,
-      measureControl: true,
+      measureControl: {
+        button: null,
+        formatDistance: (val) => Math.round((val / 1000) * 10) / 10 + ' ' + i18n.ABBR_KILOMETERS,
+        // Format distance for meters and kilometers
+        // formatDistance: (val) => val < 1000
+        //   ? Math.round(val) + ' ' + i18n.ABBR_METERS
+        //   : Math.round((val / 1000) * 100) / 100 + ' ' + i18n.ABBR_KILOMETERS,
+      },
     })
-    this.map.removeControl(this.map.measureControl)
-    this.map.measureControl._map = this.map
-    control.zoom({
-      zoomInTitle: i18n.ZOOM_IN,
-      zoomOutTitle: i18n.ZOOM_OUT,
-    }).addTo(this.map)
+    this.map.objects = []
     this.scale = control.graphicScale({
       fill: 'hollow',
     })
@@ -682,12 +726,33 @@ export default class WebMap extends React.PureComponent {
     const scale = new L.Control.SwitchScaleControl(switchScaleOptions)
     this.map.addControl(scale)
     scale._container.style.left = '20px'
+    scale.text.style.width = '100%'
+    const graphicStyle = this.scale._container.style
+    const graphicStyleInner = this.scale._scaleInner.style
+    graphicStyle.background = 'rgba(255, 255, 255, 0.65)'
+    graphicStyle.padding = '5px 14px 5px 14px'
+    graphicStyle.height = '30px'
+    graphicStyle.borderRadius = '0px 4px 0px 0px'
+    graphicStyle.marginBottom = '0'
+    graphicStyle.marginLeft = '0'
+    graphicStyle.fontSize = '11px'
+    graphicStyle.color = '#000'
+    graphicStyleInner.marginTop = '12px'
+
+    this.control = control.zoom({
+      zoomInTitle: i18n.ZOOM_IN,
+      zoomOutTitle: i18n.ZOOM_OUT,
+      position: 'bottomleft',
+    }).addTo(this.map)
+    this.control._container.style.left = '15px'
     DomEvent.addListener(this.coordinates._container, 'click', () => {
       this.toggleIndicateMode()
       this.coordinates._update({ latlng: this.coordinates._currentPos })
     }, this.coordinates)
     this.map.setView(this.props.center, this.props.zoom)
-    this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
+    if (process.env.NODE_ENV === 'development') {
+      this.map.attributionControl.setPrefix(`f${version} b${this.props.backVersion}`)
+    }
     this.map.on('moveend', this.moveHandler)
     this.map.on('zoomend', this.moveHandler)
     this.map.on('pm:create', this.createNewShape)
@@ -709,6 +774,7 @@ export default class WebMap extends React.PureComponent {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
+    let isFlexGrid = false
     if (layer) {
       let checkPoint = null
       let checkGeometry
@@ -722,11 +788,12 @@ export default class WebMap extends React.PureComponent {
       } else if (layer === this.flexGrid) {
         const { eternals, directionSegments, zoneSegments } = flexGridData
         checkGeometry = [ eternals.toArray(), directionSegments.toArray(), zoneSegments.toArray() ]
+        isFlexGrid = true
       }
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (id !== null) {
         if (geometryChanged) {
-          return updateObjectGeometry(id, getGeometry(layer))
+          return updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
         } else if (leaving) {
           return tryUnlockObject(id)
         }
@@ -738,7 +805,7 @@ export default class WebMap extends React.PureComponent {
     const { edit, selection: { list } } = this.props
     if (edit && list.length === 1) {
       const layer = this.findLayerById(list[0])
-      if (layer && layer.object) {
+      if (layer?.object) {
         await this.checkSaveObject(false)
         return layer.object.id
       }
@@ -773,7 +840,7 @@ export default class WebMap extends React.PureComponent {
     if (newList.length === 1 && list[0] !== newList[0]) {
       const id = newList[0]
       const layer = this.findLayerById(id)
-      selectedUnit = (layer && layer.object && layer.object.unit) || null
+      selectedUnit = (layer?.object?.unit) || null
     }
     await onSelectUnit(selectedUnit)
 
@@ -814,11 +881,91 @@ export default class WebMap extends React.PureComponent {
   addUserMarker = (point) => {
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
-      const marker = createSearchMarker(point, text)
+      const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
       setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
     }, 50)
+  }
+
+  updateMarchDots = (marchDots, prevMarchDots) => {
+    const drawMarchLine = () => {
+      if (!this.marchLines) {
+        this.marchLines = []
+      }
+      if (this.marchLines.length > 0) {
+        this.marchLines.forEach((line) => {
+          line.removeFrom(this.map)
+        })
+        this.marchLines = []
+      }
+      marchDots.forEach((dot, id) => {
+        if (id !== marchDots.length - 1) {
+          const marchLine = L.polyline([ dot.coordinates, marchDots[id + 1].coordinates ], dot.options)
+          marchLine.addTo(this.map)
+          this.marchLines.push(marchLine)
+        }
+      })
+    }
+
+    if (marchDots.length !== prevMarchDots.length) {
+      if (this.marchMarkers.length !== 0) {
+        this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
+        this.marchMarkers = []
+      }
+      marchDots.forEach((dot) => {
+        const marker = createSearchMarker(dot.coordinates, false)
+        const { lat, lng } = dot.coordinates
+        const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
+
+        marker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
+
+        marker.addTo(this.map)
+        this.marchMarkers.push(marker)
+      })
+
+      drawMarchLine()
+    } else {
+      if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
+        let redrawLine = false
+        marchDots.forEach((dot, id) => {
+          if (
+            dot.coordinates.lat !== prevMarchDots[id].coordinates.lat ||
+            dot.coordinates.lng !== prevMarchDots[id].coordinates.lng ||
+            dot.options.color !== prevMarchDots[id].options.color
+          ) {
+            redrawLine = true
+            const marker = createSearchMarker(dot.coordinates, false)
+            marker.addTo(this.map)
+            if (this.marchMarkers.length && this.marchMarkers[id]) {
+              this.marchMarkers[id].removeFrom(this.map)
+              this.marchMarkers[id] = marker
+            } else {
+              this.marchMarkers.push(marker)
+            }
+          }
+        })
+        if (marchDots.length > 1) {
+          if (redrawLine) {
+            drawMarchLine()
+          }
+        }
+      }
+    }
+  }
+
+  updateMarchRefPoint = (marchRefPoint) => {
+    if (this.marchRefPoint) {
+      this.marchRefPoint.removeFrom(this.map)
+    }
+
+    let marker = null
+    if (marchRefPoint) {
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
+      marker.addTo(this.map)
+    }
+
+    this.marchRefPoint = marker
   }
 
   addTopographicMarker = (point) => {
@@ -868,19 +1015,86 @@ export default class WebMap extends React.PureComponent {
   isFlexGridEditingMode = () =>
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
+  canClickOnLayer = (item) => {
+    item = getFeatureParent(item)
+
+    const { object, options: { tsType } = {} } = item
+
+    if (!object && tsType !== entityKind.FLEXGRID) {
+      return false
+    }
+
+    const {
+      hiddenOpacity,
+      layer,
+    } = this.props
+
+    const useOneClickForActivateLayer = hiddenOpacity === 100
+    const targetLayer = object && object.layer
+    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === layer
+    if (!doActivate && useOneClickForActivateLayer && targetLayer) {
+      doActivate = true
+    }
+
+    return doActivate
+  }
+
   onMouseClick = useDebounce((e) => {
     const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
-    if (detail > 1) { // если это дабл/трипл/etc. клик
-      return
-    }
-    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag) {
-      if (this.boxSelected) {
+
+    const {
+      isMeasureOn,
+      isMarkersOn,
+      isTopographicObjectsOn,
+      marchMode,
+      layer,
+      onChangeLayer,
+      printStatus,
+      onClick,
+      getCoordForMarch,
+      selection: { newShape, preview },
+    } = this.props
+
+    if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
+      !isTopographicObjectsOn && !marchMode
+    ) {
+      if (this.boxSelected && detail <= 1) {
         delete this.boxSelected
-      } else {
-        this.onSelectedListChange([])
+      } else if (!newShape.type) {
+        const area = (layer) => {
+          if (!layer.getBounds) {
+            return 0
+          }
+          const b = layer.getBounds()
+          return Math.abs((b.getNorth() - b.getSouth()) * (b.getWest() - b.getEast()))
+        }
+        const byArea = (a, b) => area(a) - area(b)
+
+        const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
+        const all = [].map
+          .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
+          .filter(Boolean)
+          .filter(this.canClickOnLayer)
+          .sort(byArea)
+
+        let [ result ] = all
+
+        this.map._container.focus()
+
+        if (!result) {
+          this.onSelectedListChange([])
+        } else {
+          result = getFeatureParent(result)
+          if (detail <= 1) {
+            result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
+            return this.selectLayer(result.id, e.originalEvent.ctrlKey)
+          } else { // double click
+            return this.processDblClickOnLayer(result)
+          }
+        }
       }
     }
-    const { selection: { newShape, preview }, printStatus, onClick } = this.props
+
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
         this.addUserMarker(e.latlng)
@@ -899,6 +1113,10 @@ export default class WebMap extends React.PureComponent {
       }
     }
 
+    if (marchMode) {
+      getCoordForMarch(e.latlng)
+    }
+
     onClick(e.latlng)
   }, 200)
 
@@ -910,8 +1128,8 @@ export default class WebMap extends React.PureComponent {
     this.isBoxSelection = false
     const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
-    this.map.eachLayer((layer) => {
-      if (layer.options.tsType) {
+    this.map.objects.forEach((layer) => {
+      if (layer.options.tsType && !layer._hidden) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
         const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
         const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
@@ -941,14 +1159,17 @@ export default class WebMap extends React.PureComponent {
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
-      this.map.eachLayer((layer) => {
+      this.map.objects.forEach((layer) => {
         if (layer.options.tsType) {
           const { id } = layer
           const isSelected = selectedIdsSet.has(id)
-          const isActiveLayer = (layer.options && layer.options.tsType === entityKind.FLEXGRID) ||
-            (layer.object && layer.object.layer === layerId)
+          const isActiveLayer = (layer.options?.tsType === entityKind.FLEXGRID) ||
+            (layer.object?.layer === layerId)
           const isActive = canEditLayer && isSelected && isActiveLayer
           const isDraggable = canDrag && isSelected && isActiveLayer
+          if (layer._map === null) {
+            layer._map = this.map
+          }
           setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
             isDraggable)
           if (isActive) {
@@ -959,18 +1180,22 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateActiveObject = (prevProps) => {
-    const { activeObjectId, tryLockObject } = this.props
+  updateActiveObject = async (prevProps) => {
+    const { isMapCOP, activeObjectId, tryLockObject, checkObjectAccess } = this.props
 
     if (activeObjectId && activeObjectId !== prevProps.activeObjectId) {
-      tryLockObject(activeObjectId)
-        .then((success) => {
-          if (!success && this.activeLayer.id === activeObjectId) {
-            this.activeLayer.setLocked && this.activeLayer.setLocked(true)
-            setLayerSelected(this.activeLayer, true, false)
-            this.activeLayer = null
-          }
-        })
+      let success = true
+      if (isMapCOP) {
+        success = await checkObjectAccess(activeObjectId) === access.WRITE
+      }
+      if (success) {
+        success = await tryLockObject(activeObjectId)
+      }
+      if (!success && this.activeLayer.id === activeObjectId) {
+        this.activeLayer.setLocked && this.activeLayer.setLocked(true)
+        setLayerSelected(this.activeLayer, true, false)
+        this.activeLayer = null
+      }
     }
   }
 
@@ -988,17 +1213,21 @@ export default class WebMap extends React.PureComponent {
       this.view = { center, zoom }
       const { onMove } = this.props
       onMove(center.wrap(), zoom, isZoomChanged)
+      this.updateShowLayersByBounds()
     }
   }, 500)
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
-    if (item.id && item.object) {
-      const { layer, level } = item.object
+    if (item.object) {
+      const { layer, level = 0 } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
-      const isSelectedItem = list.includes(item.id)
-      const hidden = !isSelectedItem && (itemLevel < levelEdge ||
-        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId))
+      const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
+      const hidden = !isSelectedItem && (
+        (itemLevel < levelEdge) ||
+        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
+        (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
+      )
 
       const isSelectedLayer = selectedLayerId === layer
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
@@ -1012,26 +1241,55 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
-    if (this.map) {
-      this.map.eachLayer((item) =>
-        this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
+  updateShowLayerByBounds = (bounds, item) => {
+    const intersect = item.intersectsWithBounds(bounds, this.map)
+    const showed = this.map.hasLayer(item)
+    if (showed !== intersect) {
+      if (intersect) {
+        item.addTo(this.map)
+      } else {
+        item.removeFrom(this.map)
+      }
     }
+  }
+
+  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
+    this.map && this.map.objects.forEach((item) =>
+      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
+  }
+
+  updateShowLayersByBounds = () => {
+    const bounds = this.map.getBounds()
+    this.map.objects
+      .filter((item) => item.id && item.object && item.intersectsWithBounds && !item._hidden)
+      .forEach((item) => this.updateShowLayerByBounds(bounds, item))
   }
 
   updateScaleOptions = () => {
     const { params } = this.props
     settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
     settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
+    settings.BLOCKAGE_SIZE.max = params[paramsNames.BLOCKAGE_SIZE_MAX]
+    settings.BLOCKAGE_SIZE.min = params[paramsNames.BLOCKAGE_SIZE_MIN]
+    settings.ROW_MINE_SIZE.max = params[paramsNames.ROW_MINE_SIZE_MAX]
+    settings.ROW_MINE_SIZE.min = params[paramsNames.ROW_MINE_SIZE_MIN]
+    settings.MOAT_SIZE.max = params[paramsNames.MOAT_SIZE_MAX]
+    settings.MOAT_SIZE.min = params[paramsNames.MOAT_SIZE_MIN]
     settings.STROKE_SIZE.max = params[paramsNames.STROKE_SIZE_MAX]
     settings.STROKE_SIZE.min = params[paramsNames.STROKE_SIZE_MIN]
     settings.NODES_SIZE.max = params[paramsNames.NODE_SIZE_MAX]
     settings.NODES_SIZE.min = params[paramsNames.NODE_SIZE_MIN]
-    this.map && this.map.eachLayer((layer) => setScaleOptions(layer, params))
+    settings.TEXT_AMPLIFIER_SIZE.max = params[paramsNames.TEXT_AMPLIFIER_SIZE_MAX]
+    settings.TEXT_AMPLIFIER_SIZE.min = params[paramsNames.TEXT_AMPLIFIER_SIZE_MIN]
+    settings.GRAPHIC_AMPLIFIER_SIZE.max = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX]
+    settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
+    settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
+    settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map && this.map.eachLayer((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    this.map && this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -1049,7 +1307,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   crosshairCursor = (on) => {
-    this.map && (this.map._container.style.cursor = on ? 'crosshair' : '')
+    if (this.map) {
+      this.map._container.style.cursor = on ? 'crosshair' : ''
+    }
   }
 
   setMapCursor = (edit, type) => {
@@ -1098,11 +1358,29 @@ export default class WebMap extends React.PureComponent {
     this.updateCatalogObjects(this.props.catalogObjects)
   }
 
+  removeLayer = (layer) => {
+    const index = this.map.objects.indexOf(layer)
+    if (index >= 0) {
+      this.map.objects.splice(index, 1)
+    }
+    layer.pm && layer.pm.disable()
+    layer.remove()
+    if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
+      this.catalogsPopup.remove()
+    }
+  }
+
   updateObjects = (objects, preview) => {
     if (this.map) {
       const existsIds = new Set()
       const changes = []
-      this.map.eachLayer((layer) => {
+      const regions = []
+      const groups = []
+      const groupItems = []
+      const toDelete = []
+
+      // Визначаємо по списку наявних на карті об'єктів, які треба видалити, які змінити; заповнюємо список існуючих ID
+      this.map.objects.forEach((layer) => {
         const { id, options: { tsType: type } } = layer
         if (id && type !== entityKind.FLEXGRID) {
           const object = preview && preview.id && preview.id === id ? preview : objects.get(id)
@@ -1111,27 +1389,63 @@ export default class WebMap extends React.PureComponent {
             if (layer.object !== object) {
               changes.push({ object, layer })
             }
-          } else {
-            layer.catalogId || layer.remove()
-            layer.pm && layer.pm.disable()
+          } else if (!layer.catalogId) {
+            toDelete.push(layer)
+            if (GROUPS.GENERALIZE.includes(layer.options.tsType) && layer._groupChildren) {
+              layer._groupChildren.forEach((child) => toDelete.push(child))
+              this.props.onShadowDelete(layer._groupChildren.map(({ id }) => id))
+            }
           }
         }
       })
+
+      // Видаляємо з карти об'єкти, яких вже немає в редаксі
+      toDelete.forEach(this.removeLayer)
+
+      // Заповнюємо списки групованих об'єктів
+      objects.forEach((object) => {
+        if (object.parent) {
+          switch (objects.get(object.parent)?.type) {
+            case entityKind.GROUPED_REGION: {
+              if (!regions.includes(object.parent)) {
+                regions.push(object.parent)
+              }
+              break
+            }
+            case entityKind.GROUPED_LAND:
+            case entityKind.GROUPED_HEAD: {
+              if (!groups.includes(object.parent)) {
+                groups.push(object.parent)
+              }
+              if (!groupItems.includes(object.id)) {
+                groupItems.push(object.id)
+              }
+              break
+            }
+            default:
+          }
+        }
+      })
+
+      // По списку змінених об'єктів: перегенеровуємо значки на карті
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addObject(object, layer)
         if (newLayer !== layer) {
           setLayerSelected(layer, false, false)
           this.activeLayer = null
-          layer.remove()
-          layer.pm && layer.pm.disable()
+          this.removeLayer(layer)
         }
       }
+
+      // Створюємо об'єкти, які є в редаксі, але немає на карті
       objects.forEach((object, id) => {
         if (!existsIds.has(id)) {
           this.addObject(preview && preview.id && preview.id === id ? preview : object, null)
         }
       })
+
+      // Окремо оновлюємо поточний створюваний або редагований об'єкт
       const isNew = Boolean(preview && !preview.id)
       if (isNew === Boolean(this.newLayer)) {
         isNew && this.addObject(preview, this.newLayer)
@@ -1140,11 +1454,63 @@ export default class WebMap extends React.PureComponent {
           this.newLayer = this.addObject(preview, null)
         } else {
           setLayerSelected(this.newLayer, false, false)
-          this.newLayer.remove()
-          this.newLayer.pm && this.newLayer.pm.disable()
+          this.removeLayer(this.newLayer)
           this.newLayer = null
         }
       }
+
+      // Очищуємо списки дочірніх об'єктів у групованих об'єктів
+      this.map.objects.forEach((layer) => {
+        if (layer._groupChildren) {
+          layer._groupChildren = []
+        }
+      })
+
+      // Для групованих об'єктів: заповнюємо список дочірніх, а у них встановлюємо посилання на батьківський
+      objects.forEach((object, id) => {
+        const parent = object.parent
+        if (parent) {
+          const layer = this.findLayerById(id)
+          const parentLayer = this.findLayerById(parent)
+          if (layer && parentLayer) {
+            if (!parentLayer._groupChildren) {
+              parentLayer._groupChildren = []
+            }
+            parentLayer._groupChildren.push(layer)
+            layer._groupParent = parentLayer
+          }
+        }
+      })
+
+      // Для іконки групованого об'єкта формуємо список ID дочірніх
+      objects.forEach((object) => {
+        if (GROUPS.GENERALIZE.includes(object.type)) {
+          const layer = this.findLayerById(object.id)
+          if (layer && layer.options.icon) {
+            layer.options.icon.options.data = layer._groupChildren
+              ? layer._groupChildren.map(({ object }) => object)
+              : []
+          }
+        }
+      })
+
+      // Перерендер "позиційних районів підрозділу"
+      regions.forEach((item) => {
+        const layer = this.findLayerById(item)
+        if (layer) {
+          layer._update()
+        }
+      })
+
+      // Перерендер групованих точкових знаків
+      groups.forEach((item) => {
+        const layer = this.findLayerById(item)
+        if (layer) {
+          layer._reinitIcon()
+          layer.update()
+          layer._groupChildren.forEach(this.removeLayer)
+        }
+      })
     }
   }
 
@@ -1152,7 +1518,9 @@ export default class WebMap extends React.PureComponent {
     if (this.map) {
       const existsIds = new Set()
       const changes = []
-      this.map.eachLayer((layer) => {
+      const toDelete = []
+
+      this.map.objects.forEach((layer) => {
         const { id, catalogId } = layer
         if (id && catalogId) {
           const catalog = catalogObjects[Number(catalogId)]
@@ -1163,25 +1531,20 @@ export default class WebMap extends React.PureComponent {
               changes.push({ object, layer })
             }
           } else {
-            layer.remove()
-            if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
-              this.catalogsPopup.remove()
-            }
-            // layer.pm && layer.pm.disable()
+            toDelete.push(layer)
           }
         }
       })
+      toDelete.forEach(this.removeLayer)
+
       for (let i = 0; i < changes.length; i++) {
         const { object, layer } = changes[i]
         const newLayer = this.addCatalogObject(object, layer)
         if (newLayer !== layer) {
-          layer.remove()
-          if (this.catalogsPopup && this.catalogsPopup.isOpen && this.catalogsPopup._openOver === layer) {
-            this.catalogsPopup.remove()
-          }
-          // layer.pm && layer.pm.disable()
+          this.removeLayer(layer)
         }
       }
+
       Object.values(catalogObjects).forEach((objects) => {
         objects && objects.forEach((object) => {
           if (!existsIds.has(object.id)) {
@@ -1227,7 +1590,7 @@ export default class WebMap extends React.PureComponent {
         }
 
         timer = setTimeout(() => {
-          if (layer && layer._latlng) {
+          if (layer?._latlng) {
             const unitData = this.getUnitData(object.unit)
             const renderPopUp = renderIndicators(object, unitData)
             const dir = this.findLayerDirection(this.map, layer)
@@ -1277,40 +1640,52 @@ export default class WebMap extends React.PureComponent {
   getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
 
   addObject = (object, prevLayer) => {
-    const { layersByIdFromStore } = this.props
+    const {
+      layersByIdFromStore,
+      level,
+      layersById,
+      hiddenOpacity,
+      params,
+      showAmplifiers,
+      layer: selectedLayerId,
+      selection: { list },
+    } = this.props
+
     const { id, attributes, layer: layerInner, unit } = object
+
     const layerObject = layersByIdFromStore[layerInner]
+
     try {
-      validateObject(object.toJS())
+      validateObject(object && object.toJS ? object.toJS() : object)
     } catch (e) {
+      console.error(e)
       return null
     }
+
     const layer = createTacticalSign(object, this.map, prevLayer)
+
     if (layer) {
-      const objectIsPoint = object.type === entityKind.POINT
+      layer.map = this.map
       layer.options.lineCap = 'butt'
-      layer.options.lineAmpl = attributes.lineAmpl
-      layer.options.lineNodes = attributes.lineNodes
-      layer.options.lineEnds = {
-        left: attributes.left,
-        right: attributes.right,
-      }
+      layer.pm.options.snappable = false // отключаем примагничивание маркеров к объектам при их перемещении
       layer.id = id
       layer.object = object
-      layer.on('click', this.clickOnLayer)
+      // layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      objectIsPoint && unit && layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
-        openingAction,
-        layer,
-        layerObject.formationId,
-        object,
-      ))
-      objectIsPoint && unit && layer.on('mouseout', () => this.showUnitIndicatorsHandler(
-        closingAction,
-        layer,
-        layerObject.formationId,
-        object,
-      ))
+      if (object.type === entityKind.POINT && unit) {
+        layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
+          openingAction,
+          layer,
+          layerObject.formationId,
+          object,
+        ))
+        layer.on('mouseout', () => this.showUnitIndicatorsHandler(
+          closingAction,
+          layer,
+          layerObject.formationId,
+          object,
+        ))
+      }
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
@@ -1319,12 +1694,18 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+        if (layer.pm && layer.pm.enabled()) {
+          layer.pm.disable()
+          layer.pm.enable()
+        }
+      } else {
+        this.map.objects.push(layer)
+      }
 
-      const { level, layersById, hiddenOpacity, layer: selectedLayerId, params, showAmplifiers } = this.props
-      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, this.props.selection.list)
+      this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
+
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
 
       if (color !== null && color !== '') {
@@ -1344,6 +1725,7 @@ export default class WebMap extends React.PureComponent {
 
       layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
     }
+
     return layer
   }
 
@@ -1358,6 +1740,7 @@ export default class WebMap extends React.PureComponent {
     if (layer) {
       layer.id = id
       layer.object = object
+      layer.map = this.map
       // layer.object.level = catalogLevel(catalogId)
       layer.catalogId = catalogId
       layer.on('click', this.clickOnCatalogLayer)
@@ -1366,9 +1749,12 @@ export default class WebMap extends React.PureComponent {
       // layer.on('pm:markerdragend', this.onMarkerDragEnd)
       // TODO: events
 
-      layer === prevLayer
-        ? layer.update && layer.update()
-        : layer.addTo(this.map)
+      if (layer === prevLayer) {
+        layer.update && layer.update()
+      } else {
+        this.map.objects.push(layer)
+        layer.addTo(this.map)
+      }
 
       const { params } = this.props
       setScaleOptions(layer, params)
@@ -1381,12 +1767,11 @@ export default class WebMap extends React.PureComponent {
   }
 
   onMarkerDragEnd = () => setTimeout(() => {
-    this.draggingObject = false
     this.checkSaveObject(false)
-  }, 210)
+    this.draggingObject = false
+  }, 250)
 
   moveListByOne = (layer) => {
-    // console.log(layer)
     const { selection: { list } } = this.props
     if (list.length > 1) {
       this._dragEndPx = this.map.project(layer._bounds._northEast)
@@ -1395,10 +1780,8 @@ export default class WebMap extends React.PureComponent {
         y: this._dragEndPx.y - this._dragStartPx.y,
       }
       const objects = list.filter((id) => id !== layer.id)
-      // console.log({ id: layer.id, bounds: layer._bounds, delta })
-      this.map.eachLayer((item) => {
+      this.map.objects.forEach((item) => {
         if (item.id && objects.includes(item.id)) {
-          // console.log(item.id)
           const shiftOne = (latLng) => {
             const f = this.map.project(latLng)
             return this.map.unproject(point({
@@ -1427,7 +1810,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    // console.log(layer)
     const { selection: { list } } = this.props
     if (list.length > 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
@@ -1457,6 +1839,7 @@ export default class WebMap extends React.PureComponent {
           return this.props.onMoveContour(layer.id, shift)
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
+        case entityKind.GROUPED_REGION:
           return this.props.onMoveGroup(layer.id, shift)
         default:
           return this.checkSaveObject(false)
@@ -1482,10 +1865,11 @@ export default class WebMap extends React.PureComponent {
     const { catalogs } = this.props
     const catalogName = catalogs[catalogId].name
     let text = `<strong>${catalogName}</strong><br/>`
-    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;${name}<br/>`)
+    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;<span class="nameValue">${name}</span><br/>`)
     state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
     country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
     affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
+    text = `<div style="overflow:auto;">${text}</div>`
     if (!this.catalogsPopup) {
       this.catalogsPopup = L.popup()
     }
@@ -1503,24 +1887,12 @@ export default class WebMap extends React.PureComponent {
     window.explorerBridge.showCatalogObject(catalogId, id)
   }
 
-  clickOnLayer = (event) => {
+  dblClickOnLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: { id, object, options: { tsType } } } = event
-    const useOneClickForActivateLayer = this.props.hiddenOpacity === 100
-    const targetLayer = object && object.layer
-    let doActivate = tsType === entityKind.FLEXGRID || targetLayer === this.props.layer
-    if (!doActivate && useOneClickForActivateLayer && targetLayer) {
-      this.props.onChangeLayer(targetLayer)
-      doActivate = true
-    }
-    if (doActivate) {
-      this.selectLayer(id, event.originalEvent.ctrlKey)
-      event.target._map._container.focus()
-    }
+    return this.processDblClickOnLayer(event.target)
   }
 
-  dblClickOnLayer = async (event) => {
-    const { target: layer } = event
+  processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
@@ -1531,11 +1903,10 @@ export default class WebMap extends React.PureComponent {
       if (targetLayer && targetLayer !== this.props.layer) {
         await this.selectLayer(id)
         await this.props.onChangeLayer(targetLayer)
-        await onSelectUnit((layer && layer.object && layer.object.unit) || null)
+        await onSelectUnit(layer?.object?.unit ?? null)
         layer._map._container.focus()
       }
     }
-    L.DomEvent.stopPropagation(event)
   }
 
   onDblClick = (event) => {
@@ -1590,17 +1961,20 @@ export default class WebMap extends React.PureComponent {
 
   selectLayer = (id, exclusive) => {
     const { selection: { list } } = this.props
+
+    let result = []
+
     if (id) {
       if (exclusive) {
-        return this.onSelectedListChange(list.indexOf(id) === -1
+        result = list.indexOf(id) === -1
           ? [ ...list, id ]
-          : list.filter((itemId) => itemId !== id))
+          : list.filter((itemId) => itemId !== id)
       } else if (list.length !== 1 || list[0] !== id) {
-        return this.onSelectedListChange([ id ])
+        result = [ id ]
       }
-    } else {
-      return this.onSelectedListChange([])
     }
+
+    return this.onSelectedListChange(result)
   }
 
   findLayerById = (id) => {
@@ -1612,136 +1986,27 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  // // TODO: пибрати це після тестування
-  // handleShortcuts = async (action) => {
-  //   const { addObject } = this.props
-  //   const bounds = this.map.getBounds()
-  //   const center = bounds.getCenter()
-  //   const width = bounds.getEast() - bounds.getWest()
-  //   const height = bounds.getNorth() - bounds.getSouth()
-  //   let created
-  //   switch (action) {
-  //     case ADD_POINT:
-  //       console.info('ADD_POINT')
-  //       break
-  //     case ADD_SEGMENT: {
-  //       console.info('ADD_SEGMENT')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.SEGMENT,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //         attributes: {
-  //           template: tmp,
-  //           color: 'red',
-  //         },
-  //       })
-  //       break
-  //     }
-  //     case ADD_AREA: {
-  //       console.info('ADD_AREA')
-  //       const geometry = [
-  //         { lat: center.lat - height / 10, lng: center.lng },
-  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.AREA,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_CURVE: {
-  //       console.info('ADD_CURVE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.CURVE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_POLYGON: {
-  //       console.info('ADD_POLYGON')
-  //       const geometry = [
-  //         { lat: center.lat - height / 10, lng: center.lng },
-  //         { lat: center.lat + height / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + height / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.POLYGON,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_POLYLINE: {
-  //       console.info('ADD_POLYLINE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng - width / 10 },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.POLYLINE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_CIRCLE: {
-  //       console.info('ADD_CIRCLE')
-  //       const geometry = [
-  //         { lat: center.lat, lng: center.lng },
-  //         { lat: center.lat, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.CIRCLE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_RECTANGLE: {
-  //       console.info('ADD_RECTANGLE')
-  //       const geometry = [
-  //         { lat: center.lat - width / 15, lng: center.lng - width / 10 },
-  //         { lat: center.lat + width / 15, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.RECTANGLE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_SQUARE: {
-  //       console.info('ADD_SQUARE')
-  //       const geometry = [
-  //         { lat: center.lat - width / 10, lng: center.lng - width / 10 },
-  //         { lat: center.lat + width / 10, lng: center.lng + width / 10 },
-  //       ]
-  //       created = await addObject({
-  //         type: entityKind.SQUARE,
-  //         point: calcMiddlePoint(geometry),
-  //         geometry,
-  //       })
-  //       break
-  //     }
-  //     case ADD_TEXT:
-  //       console.info('ADD_TEXT')
-  //       break
-  //     default:
-  //       console.error(`Unknown action: ${action}`)
-  //   }
-  //   this.activateCreated(created)
-  // }
+  /* // TODO: пибрати це після тестування
+  handleAddSegment = async () => {
+    const bounds = this.map.getBounds()
+    const center = bounds.getCenter()
+    const width = bounds.getEast() - bounds.getWest()
+    // const height = bounds.getNorth() - bounds.getSouth()
+    const geometry = [
+      { lat: center.lat, lng: center.lng - width / 10 },
+      { lat: center.lat, lng: center.lng + width / 10 },
+    ]
+    const created = await this.addObject({
+      type: entityKind.SEGMENT,
+      point: calcMiddlePoint(geometry),
+      geometry,
+      attributes: {
+        template: await parseStringPromise(tmp),
+        color: 'red',
+      },
+    }, null)
+    setLayerSelected(created, true, true)
+  } */
 
   showFlexGrid = (show) => {
     if (!this.map) {
@@ -1750,10 +2015,7 @@ export default class WebMap extends React.PureComponent {
     if (show) {
       if (this.flexGrid) {
         this.flexGrid.addTo(this.map)
-        const { inICTMode } = this.props
-        if (inICTMode) {
-          this.map.fitBounds(this.flexGrid.getBounds())
-        }
+        this.props.inICTMode && this.map.fitBounds(this.flexGrid.getBounds())
       } else {
         this.dropFlexGrid()
       }
@@ -1766,8 +2028,10 @@ export default class WebMap extends React.PureComponent {
 
   dropFlexGrid = (show = true) => {
     if (this.flexGrid) {
-      this.flexGrid.removeFrom(this.map)
+      this.removeLayer(this.flexGrid)
+      // this.flexGrid.removeFrom(this.map)
     }
+
     const {
       flexGridParams: {
         vertical,
@@ -1786,6 +2050,7 @@ export default class WebMap extends React.PureComponent {
       activeMapId,
       fixFlexGridInstance,
     } = this.props
+
     const layer = new L.FlexGrid(
       this.map.getBounds().pad(-0.2),
       {
@@ -1803,7 +2068,7 @@ export default class WebMap extends React.PureComponent {
         }
         : undefined,
     )
-    layer.on('click', this.clickOnLayer)
+    // layer.on('click', this.clickOnLayer)
     layer.on('dblclick', this.dblClickOnLayer)
     layer.on('pm:markerdragstart', this.onMarkerDragStart)
     layer.on('pm:markerdragend', this.onMarkerDragEnd)
@@ -1813,6 +2078,7 @@ export default class WebMap extends React.PureComponent {
     }
     if (id) {
       this.flexGrid = layer
+      this.map.objects.push(layer)
       fixFlexGridInstance && fixFlexGridInstance(layer)
     }
     const geometry = getGeometry(layer)
@@ -1915,6 +2181,51 @@ export default class WebMap extends React.PureComponent {
       const { lat, lng } = point
       this.props.onDropUnit(data.id, { lat, lng })
     }
+    if (data.type === 'symbol') {
+      const point = this.map.mouseEventToLatLng(e)
+      const { lat, lng } = point
+      this.props.newShapeFromSymbol(data, { lat, lng })
+    }
+    if (data.type === 'line') {
+      const point = this.map.mouseEventToContainerPoint(e)
+      const { x, y } = point
+      const { amp, isFlip } = data
+      const size = this.map.getSize()
+      const w = Math.max(Math.min(size.x, size.y) / 4, 128)
+      const sw = w / 2
+      const c2g = (p) => this.map.containerPointToLatLng(p)
+      let geometry = []
+      if (amp.type === entityKind.SOPHISTICATED) {
+        geometry = (geometry && geometry.length) ||
+          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+            x: x - w + dx * w * 2,
+            y: y - w + dy * w * 2,
+          })).map(c2g)
+      } else if (amp.type === entityKind.CURVE || amp.type === entityKind.AREA || amp.type === entityKind.POLYGON) {
+        const p0 = { x: x + sw, y }
+        const p1 = { x: x - sw, y: y - sw }
+        const p2 = { x: x - sw, y: y + sw }
+        if (isFlip) {
+          geometry = [ p2, p1, p0 ].map(c2g)
+        } else {
+          geometry = [ p0, p1, p2 ].map(c2g)
+        }
+        // eslint-disable-next-line max-len
+      } else if (amp.type === entityKind.POLYLINE || amp.type === entityKind.RECTANGLE || amp.type === entityKind.SQUARE) {
+        const p0 = { x: x + sw, y: y + sw }
+        const p1 = { x: x - sw, y: y - sw }
+        geometry = [ p0, p1 ].map(c2g)
+      } else if (amp.type === entityKind.OLOVO) {
+        const { directions = 3, zones = 2 } = amp.params || {}
+        const box = this.map.getBounds().pad(-0.4)
+        geometry = generateGeometry(zones, directions, box)
+      } else {
+        const p0 = { x, y }
+        const p1 = { x: x + sw, y: y + sw }
+        geometry = [ p0, p1 ].map(c2g)
+      }
+      this.props.newShapeFromLine(data, this.map.containerPointToLatLng(point), geometry)
+    }
   }
 
   disableDrawLineSquareMark = () => {
@@ -1954,18 +2265,34 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  undoHandler = () => {
+    const { edit, undoInfo: { canUndo }, undo } = this.props
+    edit && canUndo && undo && undo()
+  }
+
+  redoHandler = () => {
+    const { edit, undoInfo: { canRedo }, redo } = this.props
+    edit && canRedo && redo && redo()
+  }
+
   render () {
     return (
       <div
         onDragOver={this.dragOverHandler}
         onDrop={this.dropHandler}
-        ref={(container) => (this.container = container)}
-        style={{ height: '100%' }}
+        ref={(container) => {
+          this.container = container
+          this.container && this.container.removeAttribute('tabindex')
+        }}
+        className='catalog-leaflet-popup'
       >
         <MapProvider value={this.map}>{this.props.children}</MapProvider>
-        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler} />
-        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler} />
-        <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler} />
+        <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
+        <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
+        <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler}/>
+        <HotKey selector={shortcuts.UNDO} onKey={this.undoHandler} />
+        <HotKey selector={shortcuts.REDO} onKey={this.redoHandler} />
+        {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
         {this.props.flexGridVisible && (
           <FlexGridToolTip
             startLooking={this.enableLookAfterMouseMove}
@@ -1981,5 +2308,3 @@ export default class WebMap extends React.PureComponent {
 
 /** Do not delete, please, it is FIX */
 export const buildFlexGridGeometry = formFlexGridGeometry
-
-// try { throw new Error() } catch (e) { console.log(e.stack) }

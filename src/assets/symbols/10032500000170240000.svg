@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 0L687.585 3.82846e-06" transform="translate(24 272.0167)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0C0 0 39.5462 5.95118 72.5 26C105.454 46.0488 124.5 70.5 124.5 70.5" transform="translate(812 275.5005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0C0 0 33.9518 6.55139 71.2607 29.3695C108.57 52.1876 125.129 69.3224 125.129 69.3224" transform="matrix(0.5591929 0.8290375 -0.8290375 0.5591929 976 415.9995)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M160 1L0 1" transform="translate(624 750.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M160 1L0 1" transform="translate(344 750.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M160 1L0 1" transform="translate(64 750.0005)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 0C0 0 37.4666 5.5498 73.9736 30.8436C110.481 56.1375 119.886 74.1248 119.886 74.1248" transform="matrix(-0.224951 0.9743701 -0.9743701 -0.224951 964.6934 631.8608)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(0.1218693 0.9925461 -0.9925461 0.1218693 711.8873 203.707)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 96.8963L68.3195 0L111.227 110.049" transform="matrix(-0.1218693 0.9925461 0.9925461 0.1218693 53.55505 683.1909)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

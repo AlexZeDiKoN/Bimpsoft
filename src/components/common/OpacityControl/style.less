@@ -22,13 +22,23 @@
 }
 .opacity-control-input {
   flex:0 0 auto;
-  width: 58px;
+  width: 75px;
   padding: 0 3px;
+  background: @sidebar-control-background-color;
+  border: none;
   .ant-input-number-handler-wrap{
+    background: @sidebar-control-background-color;
+    .ant-input-number-handler-up-inner{
+      color: @toolbar-light-background;
+    }
     .ant-input-number-handler:hover .ant-input-number-handler-up-inner, .ant-input-number-handler:hover .ant-input-number-handler-down-inner{
       color: @toolbar-background-selected;
   }
     opacity: 1;
+  }
+  .ant-input-number-input-wrap{
+    padding-top: 2px;
+    color: @toolbar-light-background;
   }
   &:hover, &:focus-within{
     border-color: @toolbar-background-selected;
@@ -47,4 +57,9 @@
 }
 .opacity-control-block {
   display: flex;
+  align-items: center;
+  height: 24px;
+  background: #636871;
+  border-radius: 4px;
+  font-size: 12px;
 }

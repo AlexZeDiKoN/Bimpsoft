@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="0 0 1024 1024">
+  <g>
+    <path d="M0 85C0 38.0558 38.0558 0 85 0C131.944 0 170 38.0558 170 85C170 131.944 131.944 170 85 170C38.0558 170 0 131.944 0 85Z" transform="translate(80.00024 430.001)" fill="#000000" stroke="none" />
+    <path d="M0 1L976 1" transform="translate(24 511)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M48 104L0 0" transform="translate(64 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 85C0 38.0558 38.0558 0 85 0C131.944 0 170 38.0558 170 85C170 131.944 131.944 170 85 170C38.0558 170 0 131.944 0 85Z" transform="translate(311.0002 430.001)" fill="#000000" stroke="none" />
+    <path d="M48 104L0 0" transform="matrix(-1 0 0 1 264 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M48 104L0 0" transform="translate(295 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 85C0 38.0558 38.0558 0 85 0C131.944 0 170 38.0558 170 85C170 131.944 131.944 170 85 170C38.0558 170 0 131.944 0 85Z" transform="translate(544.0002 430.001)" fill="#000000" stroke="none" />
+    <path d="M48 104L0 0" transform="matrix(-1 0 0 1 495 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M48 104L0 0" transform="translate(528 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M0 85C0 38.0558 38.0558 0 85 0C131.944 0 170 38.0558 170 85C170 131.944 131.944 170 85 170C38.0558 170 0 131.944 0 85Z" transform="translate(777.0002 430.001)" fill="#000000" stroke="none" />
+    <path d="M48 104L0 0" transform="matrix(-1 0 0 1 728 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M48 104L0 0" transform="translate(761 368)" fill="none" stroke="#000000" stroke-width="20" />
+    <path d="M48 104L0 0" transform="matrix(-1 0 0 1 961 368)" fill="none" stroke="#000000" stroke-width="20" />
+  </g>
+</svg>

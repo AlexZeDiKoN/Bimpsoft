@@ -1,14 +1,48 @@
-/* global L */
+import L from 'leaflet'
 import entityKind, { entityKindNonFillable, GROUPS } from '../entityKind'
-import { getAmplifiers, stroked, waved, getLineEnds } from '../../../utils/svg/lines'
-import { prepareLinePath, makeHeadGroup, makeLandGroup } from './utils/SVG'
+import {
+  getAmplifiers,
+  stroked,
+  waved,
+  getLineEnds,
+  blockage,
+  drawLineHatch,
+  getPointAmplifier,
+} from '../../../utils/svg/lines'
+import { evaluateColor } from '../../../constants/colors'
+import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
+import { settings } from '../../../constants/drawLines'
+import { narr } from './FlexGrid'
+import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
-import { setClassName } from './utils/helpers'
+import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
+import { getFontSize } from './Sophisticated/utils'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
 
-const { _initPath, _updateStyle, _setPath, _addPath, _removePath } = L.SVG.prototype
+const DASH_ON = false
+
+const getViewBox = (element) => {
+  while (element && (element.nodeName !== 'svg')) {
+    element = element.parentElement
+  }
+  return element && element.getAttribute('viewBox').split(' ')
+}
+
+const massCenter = (array) => {
+  const zero = { x: 0, y: 0 }
+  if (!array || !array.length) {
+    return zero
+  }
+  const sum = array.reduce(({ x: ax, y: ay }, { x, y }) => ({ x: ax + x, y: ay + y }), zero)
+  return {
+    x: sum.x / array.length,
+    y: sum.y / array.length,
+  }
+}
+
+const { _initPath, _updateStyle, _setPath, _addPath, _removePath, _updateCircle } = L.SVG.prototype
 
 L.SVG.include({
   _initPath: function (layer) {
@@ -22,8 +56,9 @@ L.SVG.include({
   },
 
   _setLayerPathStyle: function (layer, style, className) {
-    if (layer.options.tsType === entityKind.FLEXGRID) {
+    if (layer.options.tsType === entityKind.FLEXGRID || layer.options.tsType === entityKind.OLOVO) {
       layer._pathes.forEach((path) => this._setPathStyle(layer, path, style, className))
+      layer._olovo && this._setPathStyle(layer, layer._olovo, style, className)
     } else {
       this._setPathStyle(layer, layer._path, style, className)
     }
@@ -55,7 +90,7 @@ L.SVG.include({
     const {
       options: {
         shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
-        fillColor, fillOpacity, fillRule,
+        dashArray, dashOffset, lineCap = 'round',
       },
       _shadowPath,
       _amplifierGroup,
@@ -63,17 +98,26 @@ L.SVG.include({
     } = layer
 
     if (_shadowPath) {
-      layer.options.fill = !shadowColor
+      layer.options.fill = layer.options.fill || (layer.options.tsType && !shadowColor)
       if (shadowColor) {
         _shadowPath.removeAttribute('display')
         _shadowPath.setAttribute('stroke', shadowColor)
         _shadowPath.setAttribute('fill', 'none')
         _shadowPath.setAttribute('stroke-linejoin', 'round')
+        _shadowPath.setAttribute('stroke-linecap', lineCap)
         _shadowPath.setAttribute('stroke-width', `${weight + 4}px`)
 
-        _shadowPath.setAttribute('fill', fillColor || color)
-        _shadowPath.setAttribute('fill-opacity', fillOpacity)
-        _shadowPath.setAttribute('fill-rule', fillRule || 'evenodd')
+        if (dashArray && DASH_ON) {
+          _shadowPath.setAttribute('stroke-dasharray', dashArray)
+        } else {
+          _shadowPath.removeAttribute('stroke-dasharray')
+        }
+
+        if (dashOffset && DASH_ON) {
+          _shadowPath.setAttribute('stroke-dashoffset', dashOffset)
+        } else {
+          _shadowPath.removeAttribute('stroke-dashoffset')
+        }
       } else {
         _shadowPath.setAttribute('display', 'none')
       }
@@ -82,6 +126,8 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
+
+    // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
@@ -106,6 +152,10 @@ L.SVG.include({
     if (layer._outlinePath) {
       this._rootGroup.appendChild(layer._outlinePath)
       layer.addInteractiveTarget(layer._outlinePath)
+    }
+
+    if (layer._amplifierGroup) {
+      this._rootGroup.appendChild(layer._amplifierGroup)
     }
 
     _addPath.call(this, layer)
@@ -134,31 +184,89 @@ L.SVG.include({
     layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
   },
 
+  _updateCircle: function (layer) {
+    const kind = layer.options?.tsType
+    if (kind === entityKind.CIRCLE && layer._point) {
+      const bounds = layer._map._renderer._bounds
+      const zoom = layer._map.getZoom()
+      const scale = 1
+      // сборка pointAmplifier в центре круга
+      if (layer.object?.attributes?.pointAmplifier) {
+        const options = {
+          centroid: layer._point,
+          bounds,
+          scale,
+          zoom,
+          tsType: kind, // тип линии
+          amplifier: layer.object.attributes.pointAmplifier,
+        }
+        const amplifiers = getPointAmplifier(options)
+        this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+      }
+    }
+    _updateCircle.call(this, layer)
+  },
+
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
+    let resultFilled = ''
     const lineType = layer.lineType || 'solid'
-    const skipStart = layer.options && layer.options.skipStart
-    const skipEnd = layer.options && layer.options.skipEnd
-    const kind = layer.options && layer.options.tsType
-    const length = layer._rings && layer._rings.length === 1 && layer._rings[0].length
+    const skipStart = layer.options?.skipStart
+    const skipEnd = layer.options?.skipEnd
+    const kind = layer.options?.tsType
+    const length = layer._rings?.length === 1 && layer._rings[0].length
     const fullPolygon = kind === entityKind.POLYGON && length >= 3
     const fullPolyline = kind === entityKind.POLYLINE && length >= 2
     const fullArea = kind === entityKind.AREA && length >= 3
     const fullCurve = kind === entityKind.CURVE && length >= 2
-    if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
+    const simpleFigures = (kind === entityKind.RECTANGLE || kind === entityKind.SQUARE)
+    if (simpleFigures) {
+      this._updateMask(layer, false, true)
+    } else if (kind === entityKind.SEGMENT && length === 2 && layer.options.tsTemplate) {
       const js = layer.options.tsTemplate
       if (js && js.svg && js.svg.path && js.svg.path[0] && js.svg.path[0].$ && js.svg.path[0].$.d) {
         result = prepareLinePath(js, js.svg.path[0].$.d, layer._rings[0])
       }
+    } else if (kind === entityKind.SOPHISTICATED && layer.lineDefinition) {
+      if (!layer._rings || !layer._rings[0]) {
+        result = ''
+      } else {
+        const container = {
+          d: '',
+          mask: '',
+          amplifiers: '',
+          layer,
+        }
+        layer._rings[0] = layer._latlngs.map(layer._map.latLngToLayerPoint.bind(layer._map))
+        try {
+          layer.lineDefinition.render(container, layer._rings[0], scaleValue(1000, layer) / 1000)
+        } catch (e) {
+          console.warn(e)
+        }
+        result = container.d
+        this._setMask(layer, container.amplifiers, container.mask)
+      }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
-      const parts = []
-      const line = layer._rings[0]
-      result = parts.length === 0
-        ? ''
-        : kind === entityKind.GROUPED_HEAD
-          ? makeHeadGroup(line, parts)
-          : makeLandGroup(line, parts)
+      result = 'm0,0'
+      if (layer._groupChildren) {
+        switch (kind) {
+          case entityKind.GROUPED_REGION: {
+            result = makeRegionGroup(layer)
+            break
+          }
+          case entityKind.GROUPED_HEAD: {
+            result = makeHeadGroup()
+            break
+          }
+          case entityKind.GROUPED_LAND: {
+            result = makeLandGroup()
+            break
+          }
+          default:
+        }
+      }
     } else if (fullPolygon) {
+      layer.options.fillRule = 'nonzero'
       switch (lineType) {
         case 'waved':
           result = this._buildWaved(layer, false, true)
@@ -166,10 +274,41 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, true)
           break
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, false, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, true, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+        case 'blockageWireHigh':
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageSpiral':
+          result += this._buildBlockage(layer, false, true, lineType)
+          break
+        // необхідна заливка елементів лінії
+        case 'rowMinesLand':
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          resultFilled = this._buildElementFilled(layer, false, true, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, false, true)
+      this._updateLineFilled(layer, resultFilled)
     } else if (fullPolyline) {
       switch (lineType) {
         case 'waved':
@@ -181,13 +320,45 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, false, false)
           break
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, false, false, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, false, false, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+          result += this._buildBlockage(layer, false, false, lineType)
+          break
+        // необхідна заливка
+        case 'rowMinesLand':
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          resultFilled = this._buildElementFilled(layer, false, false, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, false, false)
       this._updateLineEnds(layer, false)
+      this._updateLineFilled(layer, resultFilled)
       result += ` m1,1`
     } else if (fullArea) {
+      layer.options.fillRule = 'nonzero'
       result = prepareBezierPath(layer._rings[0], true)
       switch (lineType) {
         case 'waved':
@@ -196,10 +367,42 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, true)
           break
+        // не залишаємо початкову лінію
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, true, true, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, true, true, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+          result += this._buildBlockage(layer, true, true, lineType)
+          break
+        // необхідна заливка
+        case 'rowMinesLand':
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          resultFilled = this._buildElementFilled(layer, true, true, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, true, true)
+      this._updateLineFilled(layer, resultFilled)
     } else if (fullCurve) {
       result = prepareBezierPath(layer._rings[0], false, skipStart && length > 3, skipEnd && length > 3)
       switch (lineType) {
@@ -212,32 +415,84 @@ L.SVG.include({
         case 'stroked':
           result += this._buildStroked(layer, true, false)
           break
+        // не залишаємо початкову лінію
+        case 'blockage':
+        case 'moatAntiTankUnfin':
+        case 'trenches':
+          result = this._buildBlockage(layer, true, false, lineType, true)
+          break
+        case 'blockageWire':
+          result = this._buildBlockage(layer, true, false, lineType)
+          break
+        // залишаємо початкову лінію
+        case 'solidWithDots':
+          layer.options.lineCap = 'round'
+        // eslint-disable-next-line no-fallthrough
+        case 'blockageIsolation':
+        case 'blockageWire1':
+        case 'blockageWire2':
+        case 'blockageWireFence':
+        case 'blockageWireLow':
+        case 'blockageWireHigh':
+        case 'blockageSpiral':
+        case 'blockageSpiral2':
+        case 'blockageSpiral3':
+          result += this._buildBlockage(layer, true, false, lineType)
+          break
+        // необхідна заливка
+        case 'rowMinesLand':
+        case 'moatAntiTank':
+        case 'moatAntiTankMine':
+        case 'rowMinesAntyTank':
+          resultFilled = this._buildElementFilled(layer, true, false, lineType)
+          break
         default:
           break
       }
       this._updateMask(layer, true, false)
       this._updateLineEnds(layer, true)
+      this._updateLineFilled(layer, resultFilled)
     }
-
     this._setPath(layer, result)
   },
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const amplifiers = getAmplifiers(layer._rings[0], layer.options && layer.options.lineAmpl,
-      layer.object && layer.object.level, layer.options && layer.options.lineNodes, bezier, locked,
-      bounds, 1.0, layer._map.getZoom())
-    if (amplifiers.maskPath.length) {
-      layer.getMask().innerHTML = `<path fill-rule="nonzero" fill="#ffffff" d="${amplifiers.maskPath.join(' ')}" />`
-      layer._path.setAttribute('mask', `url(#mask-${layer.object.id})`)
-      layer._shadowPath.setAttribute('mask', `url(#mask-${layer.object.id})`)
+    const amplifiers = getAmplifiers({
+      points: layer._rings[0],
+      bezier,
+      locked,
+      bounds,
+      scale: 1.0,
+      zoom: layer._map.getZoom(),
+      tsType: layer.options.tsType,
+    }, layer.object)
+
+    if (layer.object?.attributes?.hatch) {
+      amplifiers.group += drawLineHatch(layer, scaleValue(1000, layer) / 1000, layer.object?.attributes?.hatch)
+    }
+
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+  },
+
+  _setMask: function (layer, amplifiers, mask) {
+    if (Array.isArray(mask)) {
+      mask = mask.length ? `<path fill="black" fill-rule="nonzero" d="${mask.join(' ')}" />` : null
+    }
+    if (mask) {
+      const vb = getViewBox(layer._path) || [ 0, 0, '100%', '100%' ]
+      mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
+      layer.getMask().innerHTML = mask
+      const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`
+      layer._path.setAttribute('mask', maskURL)
+      layer._shadowPath.setAttribute('mask', maskURL)
     } else {
       layer.deleteMask && layer.deleteMask()
       layer._path.removeAttribute('mask')
       layer._shadowPath.removeAttribute('mask')
     }
-    if (amplifiers.group) {
-      layer.getAmplifierGroup().innerHTML = amplifiers.group
+    if (amplifiers) {
+      layer.getAmplifierGroup().innerHTML = amplifiers
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
@@ -245,24 +500,60 @@ L.SVG.include({
 
   _buildWaved: function (layer, bezier, locked, inverse) {
     const bounds = layer._map._renderer._bounds
-    return waved(layer._rings[0], layer.options && layer.options.lineEnds, bezier, locked, bounds, 1.0,
+    return waved(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, 1.0,
       layer._map.getZoom(), inverse)
   },
 
+  // сборка линии с засечками
   _buildStroked: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    return stroked(layer._rings[0], layer.options && layer.options.lineEnds,
-      layer.options && layer.options.lineNodes, bezier, locked, bounds, 1.0, layer._map.getZoom())
+    return stroked(
+      layer._rings[0],
+      layer.object?.attributes,
+      bezier,
+      locked,
+      bounds,
+      1.0,
+      layer._map.getZoom(),
+    )
+  },
+
+  // сборка остальных типов линий
+  _buildBlockage: function (layer, bezier, locked, lineType, setEnd) {
+    const bounds = layer._map._renderer._bounds
+    return blockage(
+      layer._rings[0],
+      layer.object?.attributes,
+      bezier,
+      locked,
+      bounds,
+      layer.scaleOptions, //  1.0,
+      layer._map.getZoom(),
+      false,
+      lineType,
+      setEnd)
+  },
+
+  _buildElementFilled: function (layer, bezier, locked, lineType, setEnd) {
+    const bounds = layer._map._renderer._bounds
+    const colorLine = layer.object?.attributes?.color || 'black'
+    const d = blockage(layer._rings[0], layer.object?.attributes, bezier, locked, bounds, layer.scaleOptions, //  1.0,
+      layer._map.getZoom(), false, lineType, setEnd)
+    return `<path fill="${evaluateColor(colorLine)}" fill-rule="nonzero" stroke-width="${1}" d="${d}"/>`
+  },
+
+  _updateLineFilled: function (layer, resultFilled) {
+    layer.getAmplifierGroup().innerHTML += `${resultFilled}`
   },
 
   _updateLineEnds: function (layer, bezier) {
-    const { options: { weight }, strokeWidth } = layer
-    const scale = weight * 0.6 / Math.log1p(strokeWidth) || 1
+    const graphicSize = interpolateSize(layer._map.getZoom(), settings.GRAPHIC_AMPLIFIER_SIZE)
     const { left, right } = getLineEnds(
       layer._rings[0],
-      layer.options && layer.options.lineEnds,
+      layer.object?.attributes,
       bezier,
-      scale,
+      layer.options.weight,
+      graphicSize,
     )
     if (!left && !right) {
       return layer.deleteLineEndsGroup && layer.deleteLineEndsGroup()
@@ -272,41 +563,97 @@ L.SVG.include({
 
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
+    const {
+      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
+      shadow,
+    } = grid.options
     grid._path = group
-    if (grid.options.className) {
-      L.DomUtil.addClass(group, grid.options.className)
+    if (className) {
+      L.DomUtil.addClass(group, className)
     }
-    grid._shadow = L.SVG.create('path')
+    if (!olovo) {
+      grid._shadow = L.SVG.create('path')
+    }
     grid._zones = L.SVG.create('path')
     grid._directions = L.SVG.create('path')
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
     grid._highlighted = L.SVG.create('path')
     grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
-    if (grid.options.interactive) {
+    if (interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
-    this._updateStyle({ _path: grid._shadow, options: grid.options.shadow })
-    this._updateStyle({ _path: grid._zones, options: grid.options.zoneLines })
-    this._updateStyle({ _path: grid._directions, options: grid.options.directionLines })
-    this._updateStyle({ _path: grid._boundary, options: grid.options.boundaryLine })
-    this._updateStyle({ _path: grid._border, options: grid.options.borderLine })
-    this._updateStyle({ _path: grid._highlighted, options: grid.options.highlight })
-    group.appendChild(grid._shadow)
+    if (!olovo) {
+      this._updateStyle({ _path: grid._shadow, options: shadow })
+    }
+    this._updateStyle({ _path: grid._directions, options: directionLines })
+    this._updateStyle({ _path: grid._zones, options: olovo ? directionLines : zoneLines })
+    this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine })
+    this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
+    this._updateStyle({ _path: grid._highlighted, options: highlight })
+    if (!olovo) {
+      group.appendChild(grid._shadow)
+    }
     grid._pathes.forEach((path) => group.appendChild(path))
+    if (olovo) {
+      grid._olovo = L.SVG.create('g')
+      grid._title = L.SVG.create('text')
+      grid._olovo.appendChild(grid._title)
+      grid._cells = narr(directions).map(() => narr(zones).map(() => {
+        const text = L.SVG.create('text')
+        grid._olovo.appendChild(text)
+        return text
+      }))
+      group.appendChild(grid._olovo)
+    }
     this._layers[L.Util.stamp(grid)] = grid
   },
 
+  _prepareTextAmplifier: function (layer, text, title, point, center = false, color) {
+    text.innerHTML = title
+    text.setAttribute('x', point.x)
+    text.setAttribute('y', point.y)
+    text.setAttribute('font-family', FONT_FAMILY)
+    text.setAttribute('font-weight', FONT_WEIGHT)
+    text.setAttribute('stroke', 'none')
+    text.setAttribute('fill', color || 'black')
+    text.setAttribute('font-size', getFontSize(layer))
+    if (center) {
+      text.setAttribute('text-anchor', 'middle')
+      text.setAttribute('alignment-baseline', 'central')
+    }
+  },
+
   _updateFlexGrid: function (grid) {
+    const { olovo, title, start, color, strokeWidth } = grid.options
     const bounds = grid._map._renderer._bounds
     const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
-    grid._shadow.setAttribute('d', `${path}${border}`)
+    if (!olovo) {
+      grid._shadow.setAttribute('d', `${path}${border}`)
+    }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+    if (olovo) {
+      this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
+      grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
+        this._prepareTextAmplifier(grid, item, `${start + dirIdx * 10 + zoneIdx}`, massCenter([
+          grid.eternalRings[dirIdx][zoneIdx],
+          grid.eternalRings[dirIdx + 1][zoneIdx],
+          grid.eternalRings[dirIdx][zoneIdx + 1],
+          grid.eternalRings[dirIdx + 1][zoneIdx + 1],
+        ]), true),
+      ))
+
+      const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+      grid._pathes.forEach((path) => {
+        strokeWidth && path.setAttribute('stroke-width', strokeWidth * scale / 100)
+        color && path.setAttribute('stroke', color)
+      })
+    }
   },
 
   _getHighlightDirectionsArea: function (grid) {

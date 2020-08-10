@@ -1,0 +1,76 @@
+@import "../../../../assets/styles/_variables";
+
+.coordinatesModal {
+  .context-menu {
+    max-height: 220px;
+    overflow: auto;
+    right: 375px;
+  }
+}
+
+.sectors-item-container {
+  font-size: 12px;
+  font-family: Roboto;
+  color: @modals-text-color;
+  border-bottom: 2px solid @modals-section-border-color;
+  margin-bottom: 10px;
+  padding: 0 10px 10px 10px;
+
+  .first-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .item {
+      .input-block {
+        width: 90px;
+
+        .ant-input {
+          width: 65px;
+        }
+
+        .ant-input-group-addon {
+          width: 25px;
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  .second-section {
+    margin-bottom: 10px;
+
+    .item {
+      margin-top: 4px;
+    }
+  }
+
+  .three-section {
+    display: flex;
+    justify-content: space-between;
+
+    .item {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+
+      .color-picker, .ant-select {
+        margin-left: 10px;
+      }
+
+      .color-picker {
+        .color-picker-button {
+          width: 30px;
+          height: 30px;
+        }
+      }
+
+      .ant-select-disabled {
+        .ant-select-selection {
+          background: #fff;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}

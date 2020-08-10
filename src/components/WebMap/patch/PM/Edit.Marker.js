@@ -1,4 +1,4 @@
-/* global L */
+import L from 'leaflet'
 
 const { enable } = L.PM.Edit.Marker.prototype
 const parent = { enable }

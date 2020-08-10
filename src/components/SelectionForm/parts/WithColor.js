@@ -1,13 +1,12 @@
 import React from 'react'
-import { Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
-import i18n from '../../../i18n'
-import { colorOption, colorDiv } from './render'
+import { colorDiv } from './render'
 
-const { FormRow } = components.form
+export const PATH = [ 'attributes', 'color' ]
 
-const PATH = [ 'attributes', 'color' ]
+const PRESET_COLORS = Object.values(colors.values)
+const COLOR_PICKER_Z_INDEX = 2000
 
 const WithColor = (Component) => class ColorComponent extends Component {
   colorChangeHandler = (color) => this.setResult((result) => result.setIn(PATH, color))
@@ -16,20 +15,18 @@ const WithColor = (Component) => class ColorComponent extends Component {
     const color = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
     const value = canEdit ? (
-      <Select value={color} onChange={this.colorChangeHandler}>
-        {colorOption(colors.BLUE)}
-        {colorOption(colors.RED)}
-        {colorOption(colors.BLACK)}
-        {colorOption(colors.GREEN)}
-        {colorOption(colors.YELLOW)}
-        {colorOption(colors.WHITE)}
-      </Select>
+      <ColorPicker
+        color={color}
+        onChange={this.colorChangeHandler}
+        zIndex={COLOR_PICKER_Z_INDEX}
+        presetColors={PRESET_COLORS}
+      />
     ) : colorDiv(color)
 
     return (
-      <FormRow label={i18n.COLOR}>
+      <div className={'container-color-picker'}>
         {value}
-      </FormRow>
+      </div>
     )
   }
 }

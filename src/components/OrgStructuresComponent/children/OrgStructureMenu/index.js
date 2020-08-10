@@ -1,13 +1,9 @@
 import React from 'react'
-import './style.css'
 import { Menu, Dropdown } from 'antd'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { IButton, IconNames } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
 import i18n from '../../../../i18n'
-
-const {
-  icons: { names: iconNames, IconButton },
-} = components
 
 export default class Index extends React.Component {
   static propTypes = {
@@ -41,11 +37,11 @@ export default class Index extends React.Component {
         overlay={menu}
         trigger={[ 'click' ]}
       >
-        <IconButton
-          placement={'topRight'}
-          className={'settingsButton'}
+        <IButton
           title={i18n.EXTRA_FUNCTIONS}
-          icon={iconNames.TABLE_SETING_DEFAULT}
+          colorType={ColorTypes.WHITE}
+          type={ButtonTypes.WITH_BG}
+          icon={IconNames.TABLE_SETING}
         />
       </Dropdown>
     )

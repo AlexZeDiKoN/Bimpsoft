@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Checkbox, Collapse, Select } from 'antd'
+import { Checkbox, Tabs, Select } from 'antd'
 import { components, utils, MovablePanel } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
@@ -9,7 +9,6 @@ import ScaleControl from '../common/ScaleControl'
 import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
 
 import './style.css'
-const { names: iconNames, IconButton } = components.icons
 
 const {
   form: { default: Form, FormRow, FormDarkPart },
@@ -19,6 +18,8 @@ const {
 const { Coordinates: Coord } = utils
 
 const { Option } = Select
+
+const SIZE_SETTING_MODAL = 580
 
 const formatScale = (scale) => `1 : ${scale.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}`
 
@@ -49,7 +50,7 @@ export default class SettingsForm extends React.Component {
     const { params: { [paramName]: value }, onChangeParam } = this.props
 
     return (
-      <ScaleControl name={paramName} value={Number(value)} onChange={onChangeParam}/>
+      <ScaleControl name={paramName} value={Number(value)} step={1} onChange={onChangeParam}/>
     )
   }
 
@@ -58,20 +59,15 @@ export default class SettingsForm extends React.Component {
 
     return (
       <>
-      <Select value={+value} onChange={this.changeParamOption(paramName)} showArrow={false} className="select-level">
-        {SubordinationLevel.list.map(({ value, title, icon }) => (
-          <Option key={value} value={value}>
-            <div className="flex-level">
-              <Icon className="icon-level" icon={icon} /> <span className="text-level">{title}</span>
-            </div>
-          </Option>
-        ))}
-      </Select>
-      <div className="moreButtonSettins">
-        <IconButton
-          icon={iconNames.MORE_WHITE_DEFAULT}
-        />
-      </div>
+        <Select value={+value} onChange={this.changeParamOption(paramName)} className="select-level">
+          {SubordinationLevel.list.map(({ value, title, icon }) => (
+            <Option key={value} value={value}>
+              <div className="flex-level">
+                <Icon className="icon-level" icon={icon} /> <span className="text-level">{title}</span>
+              </div>
+            </Option>
+          ))}
+        </Select>
       </>
     )
   }
@@ -93,11 +89,17 @@ export default class SettingsForm extends React.Component {
       // onChangeGeneralization,
     } = this.props
 
+    const clientWidth = document?.documentElement?.clientWidth
+
     return (
       <Wrapper
         title={i18n.SETTINGS}
         onClose={onClose}
-        defaultPosition={{ x: window.screen.width * 0.5, y: window.screen.height * 0.05 }}
+        minWidth={SIZE_SETTING_MODAL}
+        maxWidth={SIZE_SETTING_MODAL}
+        minHeight={SIZE_SETTING_MODAL}
+        maxHeight={SIZE_SETTING_MODAL}
+        defaultPosition={{ x: clientWidth - SIZE_SETTING_MODAL - 40, y: 40 }}
       >
         <FocusTrap>
           <HotKeysContainer>
@@ -105,16 +107,11 @@ export default class SettingsForm extends React.Component {
               <div className="settings-form-system">
                 <div className="coordinateContainer">
                   <FormRow label={i18n.DEFAULT_COORDINATES_SYSTEM}>
-                    <Select value={coordinatesType} showArrow={false} onChange={onChangeCoordinatesType} >
+                    <Select value={coordinatesType} onChange={onChangeCoordinatesType} >
                       {Object.keys(Coord.types).map((key) => (
                         <Option key={key} value={Coord.types[key]}>{Coord.names[Coord.types[key]]}</Option>
                       ))}
                     </Select>
-                    <div className="moreButtonSettins">
-                      <IconButton
-                        icon={iconNames.MORE_WHITE_DEFAULT}
-                      />
-                    </div>
                   </FormRow>
                 </div>
 
@@ -128,9 +125,12 @@ export default class SettingsForm extends React.Component {
                 </div>
               </div>
 
-              <Collapse accordion>
-                <Collapse.Panel header={i18n.ELEMENT_SIZES} key={1}>
-                  <div className="pointTitle">{i18n.POINT_SIGN_SIZE_TITLE}</div>
+              <Tabs>
+                <Tabs.TabPane tab={i18n.ELEMENT_SIZES} key={1}>
+                  <div className="pointTitle">
+                    <div>{i18n.POINT_SIGN_SIZE_MIN}</div>
+                    <div>{i18n.POINT_SIGN_SIZE_MAX}</div>
+                  </div>
                   <div className="containerSign">
                     <FormRow label={i18n.POINT_SIGN_SIZE}/>
                     <FormDarkPart>
@@ -164,10 +164,50 @@ export default class SettingsForm extends React.Component {
                   </div>
 
                   <div className="containerSign">
+                    <FormRow label={i18n.TEXT_AMPLIFIER_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.TEXT_AMPLIFIER_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.TEXT_AMPLIFIER_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.GRAPHIC_AMPLIFIER_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.GRAPHIC_AMPLIFIER_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
                     <FormRow label={i18n.WAVE_SIGN_SIZE}/>
                     <FormDarkPart>
                       <FormRow>{this.renderScaleControl(paramsNames.WAVE_SIZE_MIN)}</FormRow>
                       <FormRow>{this.renderScaleControl(paramsNames.WAVE_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.BLOCKAGE_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.BLOCKAGE_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.MOAT_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.MOAT_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.MOAT_SIZE_MAX)}</FormRow>
+                    </FormDarkPart>
+                  </div>
+
+                  <div className="containerSign">
+                    <FormRow label={i18n.ROW_MINE_SIGN_SIZE}/>
+                    <FormDarkPart>
+                      <FormRow>{this.renderScaleControl(paramsNames.ROW_MINE_SIZE_MIN)}</FormRow>
+                      <FormRow>{this.renderScaleControl(paramsNames.ROW_MINE_SIZE_MAX)}</FormRow>
                     </FormDarkPart>
                   </div>
 
@@ -178,8 +218,8 @@ export default class SettingsForm extends React.Component {
                       <FormRow>{this.renderScaleControl(paramsNames.STROKE_SIZE_MAX)}</FormRow>
                     </FormDarkPart>
                   </div>
-                </Collapse.Panel>
-                <Collapse.Panel header={i18n.ELEMENT_SCALES} key={2}>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={i18n.ELEMENT_SCALES} key={2}>
                   <div className="containerScales">
                     {SCALES.map((scale) => (
                       <div key={scale} className="containerForm">
@@ -189,8 +229,8 @@ export default class SettingsForm extends React.Component {
                       </div>
                     ))}
                   </div>
-                </Collapse.Panel>
-              </Collapse>
+                </Tabs.TabPane>
+              </Tabs>
               {/* <FormRow label={i18n.GENERALIZATION}> */}
               {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
               {/* </FormRow> */}

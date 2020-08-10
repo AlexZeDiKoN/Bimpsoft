@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import Trigger from 'rc-trigger'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
+import { Checkboard } from 'react-color/lib/components/common'
 import './style.css'
+import { IButton } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
+import ColorPickerPopup from './ColorPickerPopup'
 
-const colors = [
-
+const PRESENT_COLORS = [
+  'transparent',
   '#ffffff', // '#FFFFFFaa',
   '#ff999c', // '#ff666baa',
   '#ffbe99', // '#ff9e66aa',
@@ -39,86 +45,111 @@ const colors = [
   '#bb55bb', // '#990099aa',
 ]
 
-export default class ColorPicker extends React.Component {
-  static propTypes = {
-    title: PropTypes.string,
-    className: PropTypes.string,
-    color: PropTypes.string,
-    onChange: PropTypes.func,
-  }
+const builtinPlacements = {
+  bottomRight: {
+    points: [ 'tr', 'br' ],
+    offset: [ 0, 4 ],
+    overflow: { adjustX: true, adjustY: true },
+  },
+  bottomLeft: {
+    points: [ 'tl', 'bl' ],
+    offset: [ 0, 4 ],
+    overflow: { adjustX: true, adjustY: true },
+  },
+}
 
-  state = {
-    opened: false,
-  }
+const POPUP_STYLE = { display: 'flex', position: 'absolute' }
 
-  buttonRef = React.createRef()
+const ColorPicker = (props) => {
+  const [ opened, setOpened ] = useState(false)
+  const [ color, setColor ] = useState(props.color)
 
-  clickHandler = ({ color, target }) => this.setState((state) => {
-    const opened = !state.opened
-    if (opened) {
-      return { opened, top: target.offsetTop, left: target.offsetLeft }
-    } else {
-      return { opened }
+  useEffect(() => {
+    if (props.color !== color) {
+      setColor(props.color)
     }
+    // eslint-disable-next-line
+  }, [ props.color ])
+
+  const noColor = color !== undefined && (color === null || !color?.length || color === 'transparent')
+
+  const isRGB = typeof color === 'object'
+  const colorType = isRGB ? 'rgb' : 'hex'
+
+  const handleButtonClick = () => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(true)
+    }
+    if (!props.disabled) {
+      setOpened(!opened)
+    }
+  }
+  const handleChange = useCallback(() => (color) => setColor(color[colorType]), [ colorType ])
+  const handleChangeComplete = useCallback((color) => props.onChange?.(color[colorType]), [ props.onChange, colorType ])
+
+  const clickOutsideRef = getClickOutsideRef(() => {
+    if (props.onHandlerColor) {
+      props.onHandlerColor(false)
+    }
+    opened === true && setOpened(false)
   })
 
-  clickColorHandler = ({ color }) => this.props.onChange(color)
+  const popup = <div ref={clickOutsideRef}>
+    <ColorPickerPopup
+      presetColors={props.presetColors}
+      onChange={handleChange}
+      onChangeComplete={handleChangeComplete}
+      color={noColor ? 'transparent' : color}
+    />
+  </div>
 
-  inputChangeHandler = ({ target: { value } }) => this.props.onChange && this.props.onChange(value)
-
-  clickOutsideRef = getClickOutsideRef(() => this.setState({ opened: false }))
-
-  render () {
-    const { color, title } = this.props
-    const { opened, top, left } = this.state
-    const classNames = [ 'color-picker' ]
-    if (this.props.className) {
-      classNames.push(this.props.className)
-    }
-    if (opened) {
-      classNames.push('color-picker-opened')
-    }
-    return (
-      <div className={classNames.join(' ')} ref={this.clickOutsideRef}>
-        {opened && (<div className="color-picker-popup" style={{ top, left }}>
-          <div className="color-picker-list">
-            {colors.map((color) => (<ColorButton key={color} color={color} onClick={this.clickColorHandler} />))}
-          </div>
-          <div className="color-picker-controls">
-            <input value={color || ''} onChange={this.inputChangeHandler} />
-            <ColorButton color={''} onClick={this.clickColorHandler} />
-            <ColorButton className="color-picker-close-button" color={color} onClick={this.clickHandler} />
-          </div>
-        </div>)}
-        <ColorButton title={title} color={color} onClick={this.clickHandler} />
-      </div>
-    )
-  }
+  return (
+    <div className='color-picker'>
+      <Trigger
+        popupVisible={opened}
+        builtinPlacements={builtinPlacements}
+        popupPlacement={props.placement}
+        destroyPopupOnHide={true}
+        zIndex={props.zIndex}
+        popupStyle={POPUP_STYLE}
+        popup={popup}>
+        {props.icon
+          ? <Tooltip title={props.title} placement='topRight'>
+            <IButton
+              icon={props.icon}
+              onClick={handleButtonClick}/>
+          </Tooltip>
+          : <button
+            className={classNames('color-picker-button', {
+              [props.className]: Boolean(props.className),
+              'color-picker-button-undefined': color === undefined,
+            })}
+            style={{ backgroundColor: color }}
+            onClick={handleButtonClick}
+          >{noColor ? <Checkboard/> : null}</button>
+        }
+      </Trigger>
+    </div>
+  )
 }
 
-class ColorButton extends React.Component {
-  static propTypes = {
-    title: PropTypes.string,
-    color: PropTypes.string,
-    className: PropTypes.string,
-    onClick: PropTypes.func,
-  }
-
-  clickHandler = (e) => this.props.onClick({ color: this.props.color, target: e.target })
-
-  render () {
-    const { color, title, className } = this.props
-    const extClassName = (color === undefined)
-      ? ' color-picker-button-undefined'
-      : (color === null || !color.length) ? ' color-picker-button-empty' : ''
-    return (
-      <button
-        title={title}
-        className={`color-picker-button${className ? ` ${className}` : ''}${extClassName}`}
-        style={{ backgroundColor: color }}
-        onClick={this.clickHandler}
-      >
-      </button>
-    )
-  }
+ColorPicker.propTypes = {
+  icon: PropTypes.string,
+  onHandlerColor: PropTypes.func,
+  title: PropTypes.string,
+  color: PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]),
+  onChange: PropTypes.func,
+  zIndex: PropTypes.number,
+  className: PropTypes.string,
+  disabled: PropTypes.bool,
+  presetColors: PropTypes.array,
+  placement: PropTypes.oneOf([ 'bottomLeft', 'bottomRight' ]),
 }
+
+ColorPicker.defaultProps = {
+  zIndex: 1000,
+  placement: 'bottomLeft',
+  presetColors: PRESENT_COLORS,
+}
+
+export default ColorPicker

@@ -4,13 +4,12 @@
 .layers-controls-component {
   .flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .layers-controls-control{
-  margin: auto 0;
   flex: 0 0 auto;
-  margin-bottom: 5px;
+  margin: 0 15px;
   &.icon-button:hover{
     & .icon{
       color: @toolbar-header-background;
@@ -26,12 +25,12 @@
 }
 .confirm-close-maps-overflow{
   width: 350px;
-  margin-left: -380px;
-  position: absolute;
+  right: 390px;
+  position: fixed;
+  top: 80px;
   z-index: 10000;
   animation: confirm-close-maps 0.2s 0.01s both;
   transform-origin: right bottom;
-  margin-top: -100px;
   .dzvin-form {
     width: 350px;
   }

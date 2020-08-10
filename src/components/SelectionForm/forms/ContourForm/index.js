@@ -24,16 +24,22 @@ export default class ContourForm extends compose(
 
   renderContent () {
     return (
-      <div className="contour-container">
-        <div className="contour-container__item">
-          <div className="contour-container__itemWidth">
-            {this.renderSubordinationLevel()}
-            {this.renderOrgStructureSelect()}
-            {this.renderStrokeWidth()}
+      <div className="contour-default-container">
+        <div className='scroll-container'>
+          <div className="contour-default-container__item--firstSection">
+            <div className="contour-default-container__itemWidth-right">
+              {this.renderSubordinationLevel()}
+              {this.renderOrgStructureSelect()}
+              {this.renderStrokeWidth()}
+            </div>
           </div>
-          <div className="contour-container__itemWidth">
-            {this.renderColor()}
-            {this.renderFill()}
+          <div className='contour-default-container__item--secondSection'>
+            <div className="contour-default-container__itemWidth">
+              <div className='containerTypeColor'>
+                {this.renderFill()}
+                {this.renderColor()}
+              </div>
+            </div>
           </div>
         </div>
       </div>
