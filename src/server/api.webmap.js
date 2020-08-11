@@ -84,6 +84,8 @@ export default {
     getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }), /// ---(16)
   groupMove: (id, shift) =>
     getDirect(`${webmapUrl}/group/move`, { id, shift }), /// ---(17)
+  copyList: (layer, list) =>
+    getDirect(`${webmapUrl}/obj/copy-list`, { layer, list }), /// ---(18)
 
   // API друку карти
   getPrintBounds: (data) =>

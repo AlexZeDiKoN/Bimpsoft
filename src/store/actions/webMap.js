@@ -361,13 +361,13 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
 }
 
 export const refreshObjectList = (list, layer) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => {
-    const objects = (await objRefreshList({ list, layer })).map(fixServerObject)
-    return dispatch({
-      //TODO type: actionNames.REFRESH_OBJECT,
-      //TODO payload: { id, object },
-    })
-  })
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => dispatch({
+    type: actionNames.OBJECT_LIST,
+    payload: {
+      layerId: layer,
+      objects: (await objRefreshList({ list, layer })).map(fixServerObject),
+    },
+  }))
 
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
@@ -421,6 +421,10 @@ export const refreshObject = (id, type, layer) =>
     }
   })
 
+export const copyList = (layer, list) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { copyList } }) =>
+    copyList(layer, list))
+
 export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     stopHeartBeat()
@@ -446,19 +450,13 @@ export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   })
 
 export const updateObjectsByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
-    let objects = await objGetList(layerId)
-
-    objects = objects.map(fixServerObject)
-
-    return dispatch({
-      type: actionNames.OBJECT_LIST,
-      payload: {
-        layerId,
-        objects,
-      },
-    })
-  })
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => dispatch({
+    type: actionNames.OBJECT_LIST,
+    payload: {
+      layerId,
+      objects: (await objGetList(layerId)).map(fixServerObject),
+    },
+  }))
 
 export const updateUnitObjectWithIndicators = (payload) => ({
   type: actionNames.RETURN_UNIT_INDICATORS,
