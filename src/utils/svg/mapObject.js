@@ -648,13 +648,16 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       lineType,
       hatch }
     // const fontSize = printOptions.getFontSize()
+    const sophPath = L.SVG.create('path') // заглушка для рендера некоторых линий
+    sophPath.setAttribute('stroke-width', strokeWidth)
+    sophPath.setAttribute('stroke', color)
     const container = {
       d: '',
       mask: '',
       amplifiers: '',
       layer: {
         object: objectData,
-        _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
+        _path: sophPath,
         options: optionsRender,
         printOptions,
         getLatLngs: () => geometry.toJS(),
