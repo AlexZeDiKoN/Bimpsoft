@@ -3001,7 +3001,7 @@ export const symbols = [
       },
       {
         hint: 'Запасний збірний пункт пошкоджених машин',
-        code: '10032500002818000000',
+        code: '10032510002818000000',
         amp: {
           type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ЗППМ',
