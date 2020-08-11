@@ -3006,7 +3006,7 @@ export const symbols = [
           type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ЗППМ',
           [amps.staffComments]: 'ЗППМ',
-          [amps.dtg]: 'З',
+          [amps.dtg]: '"З"',
         },
       },
       // TODO end
