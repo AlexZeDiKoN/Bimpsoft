@@ -5,7 +5,7 @@ import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects } from '../selectors'
-import entityKind, { GROUPS } from '../../components/WebMap/entityKind'
+import { GROUPS } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
@@ -269,37 +269,25 @@ export const paste = () => withNotification((dispatch, getState) => {
     layers: { selectedId: layer = null },
   } = state
   if (layer !== null) {
-    if (Array.isArray(clipboard)) {
+    if (Array.isArray(clipboard) && clipboard.length) {
       const hashList = objects
         .filter((obj) => obj.layer === layer)
         .map((obj) => obj.hash || null)
         .toArray()
-      dispatch(batchActions(clipboard.map((clipboardObject) => {
+      return dispatch(webMap.copyList(clipboard[0].layer, layer, clipboard.map((clipboardObject) => {
         const { id, type, geometry: g } = clipboardObject
         const [ geometry, steps ] = getShift(hashList, type, g, zoom)
-        switch (type) {
-          case entityKind.CONTOUR:
-            return webMap.copyContour(
-              id,
-              layer,
-              calcShiftWM(zoom, steps),
-            )
-          case entityKind.GROUPED_HEAD:
-          case entityKind.GROUPED_LAND:
-          case entityKind.GROUPED_REGION:
-            return webMap.copyGroup(
-              id,
-              layer,
-              calcShiftWM(zoom, steps),
-            )
-          default:
-            return webMap.addObject({
-              ...clipboardObject,
-              layer,
-              geometry,
-              point: calcMiddlePoint(geometry),
-            })
-        }
+        const data = GROUPS.GROUPED_OR_COMBINED.includes(type)
+          ? {
+            id,
+            shift: calcShiftWM(zoom, steps),
+          }
+          : {
+            ...clipboardObject,
+            geometry,
+            point: calcMiddlePoint(geometry),
+          }
+        return { type, data }
       })))
     }
   }

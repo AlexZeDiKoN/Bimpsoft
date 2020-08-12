@@ -598,9 +598,11 @@ L.SVG.include({
     if (olovo) {
       grid._olovo = L.SVG.create('g')
       grid._title = L.SVG.create('text')
+      grid._title.style.userSelect = 'none'
       grid._olovo.appendChild(grid._title)
       grid._cells = narr(directions).map(() => narr(zones).map(() => {
         const text = L.SVG.create('text')
+        text.style.userSelect = 'none'
         grid._olovo.appendChild(text)
         return text
       }))

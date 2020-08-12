@@ -2277,31 +2277,33 @@ export default class WebMap extends React.PureComponent {
 
   render () {
     return (
-      <div
-        onDragOver={this.dragOverHandler}
-        onDrop={this.dropHandler}
-        ref={(container) => {
-          this.container = container
-          this.container && this.container.removeAttribute('tabindex')
-        }}
-        className='catalog-leaflet-popup'
-      >
-        <MapProvider value={this.map}>{this.props.children}</MapProvider>
+      <>
         <HotKey selector={shortcuts.ESC} onKey={this.escapeHandler}/>
         <HotKey selector={shortcuts.SPACE} onKey={this.spaceHandler}/>
         <HotKey selector={shortcuts.ENTER} onKey={this.enterHandler}/>
         <HotKey selector={shortcuts.UNDO} onKey={this.undoHandler} />
         <HotKey selector={shortcuts.REDO} onKey={this.redoHandler} />
         {/* <HotKey selector={shortcuts.ADD_SEGMENT} onKey={this.handleAddSegment} /> */}
-        {this.props.flexGridVisible && (
-          <FlexGridToolTip
-            startLooking={this.enableLookAfterMouseMove}
-            stopLooking={this.disableLookAfterMouseMove}
-            getCurrentCell={this.getCursorDescription}
-            names={this.props.flexGridData.directionNames}
-          />
-        )}
-      </div>
+        <div
+          onDragOver={this.dragOverHandler}
+          onDrop={this.dropHandler}
+          ref={(container) => {
+            this.container = container
+            this.container && this.container.removeAttribute('tabindex')
+          }}
+          className='catalog-leaflet-popup'
+        >
+          <MapProvider value={this.map}>{this.props.children}</MapProvider>
+          {this.props.flexGridVisible && (
+            <FlexGridToolTip
+              startLooking={this.enableLookAfterMouseMove}
+              stopLooking={this.disableLookAfterMouseMove}
+              getCurrentCell={this.getCursorDescription}
+              names={this.props.flexGridData.directionNames}
+            />
+          )}
+        </div>
+      </>
     )
   }
 }
