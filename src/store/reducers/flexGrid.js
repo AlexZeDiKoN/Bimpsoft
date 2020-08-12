@@ -84,8 +84,8 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] },
-          geometry: [ eternals, directionSegments, zoneSegments ],
+          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] } = {},
+          geometry: [ eternals, directionSegments, zoneSegments ] = [],
         } = payload
         return update(merge(state, {
           present: !deleted,
