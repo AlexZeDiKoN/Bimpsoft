@@ -65,7 +65,6 @@ export const actionNames = {
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
   SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM'),
-  MOVE_OBJECTS: action(`MOVE_OBJECTS`),
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
@@ -253,7 +252,7 @@ export const moveContour = (id, shift, addUndoRecord = true) =>
 
 export const moveObjList = (ids, shift, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => {
-    const payload = await objListMove(ids, shift)
+    await objListMove(ids, shift)
 
     if (addUndoRecord) {
       dispatch({
@@ -265,11 +264,6 @@ export const moveObjList = (ids, shift, addUndoRecord = true) =>
         },
       })
     }
-
-    return dispatch({
-      type: actionNames.MOVE_OBJECTS,
-      payload,
-    })
   })
 
 export const moveGroup = (id, shift) =>
