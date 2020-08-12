@@ -167,7 +167,7 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
     M${pm[11].x} ${pm[11].y} L${pm[12].x} ${pm[12].y}
     M${pm[13].x} ${pm[13].y} L${pm[14].x} ${pm[14].y}`
   // добавляем элемен фигуры с заливкой
-  const amplifiers = `M${pm[15].x} ${pm[15].y} L${pm[16].x} ${pm[16].y}L${pm[17].x} ${pm[17].y} Z`
+  const amplifiers = `M${pm[15].x} ${pm[15].y}L${pm[16].x} ${pm[16].y}L${pm[17].x} ${pm[17].y}Z`
   // построение динамического хвоста -------------------------------
   if (isDef(typeLine) && typeLine === 'L') { // дорисовка хвоста прямыми
     const timePt = pt.slice(0, -1) // убираем контрольнуя точку стрелки из построения
