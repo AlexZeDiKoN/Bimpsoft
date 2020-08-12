@@ -282,6 +282,7 @@ function addUndoRecord (state, payload) {
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:
+    case changeTypes.COPY_LIST:
     case changeTypes.CREATE_CONTOUR:
     case changeTypes.DELETE_CONTOUR:
     case changeTypes.COPY_CONTOUR:
@@ -352,6 +353,12 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.REDO:
       return update(state, 'undoPosition',
         (position) => Math.min(position + 1, state.get('undoRecords').size))
+    case actionNames.OBJECT_LIST_REFRESH: {
+      if (!payload || !payload.length) {
+        return state
+      }
+      return update(state, 'objects', (map) => payload.reduce(updateObject, map))
+    }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))

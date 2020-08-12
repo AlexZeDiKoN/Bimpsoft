@@ -44,6 +44,7 @@ export const actionNames = {
   SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
+  OBJECT_LIST_REFRESH: action('OBJECT_LIST_REFRESH'),
   RETURN_UNIT_INDICATORS: action('RETURN_UNIT_INDICATORS'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
   SET_MARKER: action('SET_MARKER'),
@@ -89,6 +90,7 @@ export const changeTypes = {
   COPY_CONTOUR: '(11) Copy contour',
   MOVE_CONTOUR: '(12) Move contour',
   MOVE_LIST: '(13) Move list of objects',
+  COPY_LIST: '(18) Copy list of objects',
 }
 
 export const setCoordinatesType = (value) => {
@@ -362,11 +364,8 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
 
 export const refreshObjectList = (list, layer) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => dispatch({
-    type: actionNames.OBJECT_LIST,
-    payload: {
-      layerId: layer,
-      objects: (await objRefreshList({ list, layer })).map(fixServerObject),
-    },
+    type: actionNames.OBJECT_LIST_REFRESH,
+    payload: (await objRefreshList(list, layer)).map(fixServerObject),
   }))
 
 export const refreshObjects = (ids) =>
@@ -421,9 +420,22 @@ export const refreshObject = (id, type, layer) =>
     }
   })
 
-export const copyList = (layer, list) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { copyList } }) =>
-    copyList(layer, list))
+export const copyList = (fromLayer, toLayer, list, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { copyList } }) => {
+    const ids = await copyList(fromLayer, toLayer, list)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.COPY_LIST,
+          list: ids,
+        },
+      })
+    }
+
+    return dispatch(selection.selectedList(ids))
+  })
 
 export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
@@ -712,6 +724,13 @@ async function performAction (record, direction, api, dispatch) {
         return dispatch(restoreObjects(list))
       } else {
         return dispatch(deleteObjects(list, false))
+      }
+    }
+    case changeTypes.COPY_LIST: {
+      if (direction === 'undo') {
+        return dispatch(deleteObjects(list, false))
+      } else {
+        return dispatch(restoreObjects(list))
       }
     }
     case changeTypes.LAYER_COLOR: {

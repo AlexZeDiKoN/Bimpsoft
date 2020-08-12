@@ -269,12 +269,12 @@ export const paste = () => withNotification((dispatch, getState) => {
     layers: { selectedId: layer = null },
   } = state
   if (layer !== null) {
-    if (Array.isArray(clipboard)) {
+    if (Array.isArray(clipboard) && clipboard.length) {
       const hashList = objects
         .filter((obj) => obj.layer === layer)
         .map((obj) => obj.hash || null)
         .toArray()
-      return dispatch(webMap.copyList(layer, clipboard.map((clipboardObject) => {
+      return dispatch(webMap.copyList(clipboard[0].layer, layer, clipboard.map((clipboardObject) => {
         const { id, type, geometry: g } = clipboardObject
         const [ geometry, steps ] = getShift(hashList, type, g, zoom)
         const data = GROUPS.GROUPED_OR_COMBINED.includes(type)
