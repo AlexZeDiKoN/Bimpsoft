@@ -154,7 +154,7 @@ L.SVG.include({
       layer.addInteractiveTarget(layer._outlinePath)
     }
 
-    if (layer._amplifierGroup) {
+    if (layer._amplifierGroup) { // переустанавливаем группу выше линии
       this._rootGroup.appendChild(layer._amplifierGroup)
     }
 
