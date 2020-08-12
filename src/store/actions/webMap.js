@@ -357,10 +357,16 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
 }
 
 export const refreshObjectList = (list, layer) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => dispatch({
-    type: actionNames.OBJECT_LIST_REFRESH,
-    payload: (await objRefreshList(list, layer)).map(fixServerObject),
-  }))
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => {
+    const { toUpdate, toDelete } = await objRefreshList(list, layer)
+    return dispatch({
+      type: actionNames.OBJECT_LIST_REFRESH,
+      payload: {
+        toUpdate: toUpdate.map(fixServerObject),
+        toDelete,
+      },
+    })
+  })
 
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {

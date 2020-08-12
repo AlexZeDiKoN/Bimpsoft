@@ -354,10 +354,17 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'undoPosition',
         (position) => Math.min(position + 1, state.get('undoRecords').size))
     case actionNames.OBJECT_LIST_REFRESH: {
-      if (!payload || !payload.length) {
+      if (!payload) {
         return state
       }
-      return update(state, 'objects', (map) => payload.reduce(updateObject, map))
+      const { toUpdate, toDelete } = payload
+      if (toUpdate && toUpdate.length) {
+        state = update(state, 'objects', (map) => toUpdate.reduce(updateObject, map))
+      }
+      if (toDelete && toDelete.length) {
+        state = state.set('objects', state.get('objects').filter((value, key) => !toDelete.includes(key)))
+      }
+      return state
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
