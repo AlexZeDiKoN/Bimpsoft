@@ -13,7 +13,7 @@ import { evaluateColor } from '../../../constants/colors'
 import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
 import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
-import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
+import { prepareLinePath, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
 import { getFontSize } from './Sophisticated/utils'
@@ -248,22 +248,8 @@ L.SVG.include({
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       result = 'm0,0'
-      if (layer._groupChildren) {
-        switch (kind) {
-          case entityKind.GROUPED_REGION: {
-            result = makeRegionGroup(layer)
-            break
-          }
-          case entityKind.GROUPED_HEAD: {
-            result = makeHeadGroup()
-            break
-          }
-          case entityKind.GROUPED_LAND: {
-            result = makeLandGroup()
-            break
-          }
-          default:
-        }
+      if (kind === entityKind.GROUPED_REGION && layer._groupChildren) {
+        result = makeRegionGroup(layer)
       }
     } else if (fullPolygon) {
       layer.options.fillRule = 'nonzero'
