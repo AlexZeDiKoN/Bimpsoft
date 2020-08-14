@@ -40,7 +40,7 @@ export default function reducer (state = initState, action) {
     case print.SELECTED_ZONE: {
       const legendAvailable = action.selectedZone && action.selectedZone.lists.X >= Print.PRINT_LEGEND_MIN_LISTS.X &&
         action.selectedZone.lists.Y >= Print.PRINT_LEGEND_MIN_LISTS.Y
-      const dpiAvailable = difference(
+      const dpiAvailable = action.selectedZone && difference(
         Print.DPI_TYPES,
         Object.keys(
           pickBy((v) => v < action.selectedZone.lists.X * action.selectedZone.lists.Y, Print.DPI_TYPE_MAX_LISTS),

@@ -2,7 +2,7 @@
 import React from 'react'
 import proj4 from 'proj4'
 import ReactDOMServer from 'react-dom/server'
-import { pointsToD } from '../../utils/svg/lines'
+import { pointsToD } from './lines'
 import {
   getDashSizeByDpi,
   getFontSizeByDpi,
@@ -11,6 +11,24 @@ import {
   getPointSizeByDpi,
   getStrokeWidthByDpi,
 } from './mapObject'
+
+proj4.defs([
+  // СК-42
+  [ 'EPSG:4284', '+proj=longlat +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +no_defs' ],
+  [ 'EPSG:28402', '+proj=tmerc +lat_0=0 +lon_0=9 +k=1 +x_0=2500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28403', '+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=3500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28404', '+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28405', '+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28406', '+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28407', '+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  [ 'EPSG:28408', '+proj=tmerc +lat_0=0 +lon_0=45 +k=1 +x_0=8500000 +y_0=0 +ellps=krass +towgs84=23.92,-141.27,-80.9,-0,0.35,0.82,-0.12 +units=m +no_defs' ],
+  // УСК-2000
+  [ 'EPSG:5561', '+proj=longlat +ellps=krass +towgs84=25,-141,-78.5,-0,0.35,0.736,0 +no_defs' ],
+  [ 'EPSG:5562', '+proj=tmerc +lat_0=0 +lon_0=21 +k=1 +x_0=4500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,-0,0.35,0.736,0 +units=m +no_defs' ],
+  [ 'EPSG:5563', '+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=5500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,-0,0.35,0.736,0 +units=m +no_defs' ],
+  [ 'EPSG:5564', '+proj=tmerc +lat_0=0 +lon_0=33 +k=1 +x_0=6500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,-0,0.35,0.736,0 +units=m +no_defs' ],
+  [ 'EPSG:5565', '+proj=tmerc +lat_0=0 +lon_0=39 +k=1 +x_0=7500000 +y_0=0 +ellps=krass +towgs84=25,-141,-78.5,-0,0.35,0.736,0 +units=m +no_defs' ],
+])
 
 const METERS_PER_INCH = 0.0254 // м в дюйме
 const SEMI_MAJOR_AXIS = 6378245
@@ -54,6 +72,7 @@ export const getMapSvg = (
 ) => {
   const fromProj = `EPSG:${geographicSrid}`
   const toProj = `EPSG:${srid}`
+
   const [ lngSW, latSW ] = proj4(fromProj, toProj, [ southWestLng, southWestLat ])
   const [ lngNE, latNE ] = proj4(fromProj, toProj, [ northEastLng, northEastLat ])
 

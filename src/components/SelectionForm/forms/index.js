@@ -7,8 +7,6 @@ import SquareForms from './SquareForm'
 import TextForms from './TextForm'
 import ContourForms from './ContourForm'
 import SophisticatedForms from './SophisticatedForm'
-import AirborneForms from './AirborneForm'
-import ManoeuvreForms from './ManoeuvreControlForm'
 import MinedAreaForms from './MinedAreaForm'
 import MineFieldForms from './MineFieldForm'
 import SectorsForms from './SectorsForm'
@@ -27,8 +25,6 @@ export const SquareForm = SquareForms
 export const TextForm = TextForms
 export const ContourForm = ContourForms
 export const SophisticatedForm = SophisticatedForms
-export const AirborneForm = AirborneForms
-export const ManoeuvreForm = ManoeuvreForms
 export const MinedAreaForm = MinedAreaForms
 export const MineFieldForm = MineFieldForms
 export const SectorsForm = SectorsForms

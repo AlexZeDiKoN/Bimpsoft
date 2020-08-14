@@ -255,8 +255,11 @@ export function makeRegionGroup (layer) {
   const rectanglePolygon = getMaxPolygon(rectanglePoints)
 
   const result = emptyPath()
-  drawLine(result, ...rectanglePolygon)
-  return `${result.d} z`
+  if (rectanglePolygon && rectanglePolygon.length > 2) {
+    drawLine(result, ...rectanglePolygon)
+    return `${result.d} z`
+  }
+  return ''
 }
 
 export function svgToJS (svg) {
