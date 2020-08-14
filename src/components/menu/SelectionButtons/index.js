@@ -128,7 +128,9 @@ export default class SelectionButtons extends React.Component {
       emptyParent(selectedPoints)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
-      if (window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) {
+      if ((window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) ||
+        document.activeElement.id === 'main'
+      ) {
         onDelete()
       }
     }
