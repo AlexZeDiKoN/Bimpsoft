@@ -195,10 +195,10 @@ const getShiftedPoints = (points, offset, locked) => {
 }
 
 const buildPoints = (points, segments, pointLocationResolver, bezier, locked) => {
-  return segments.map((index) => {
+  return segments.map((numSegment, index) => {
     const segment = bezier
-      ? new Bezier(...bezierArray(points, index, locked))
-      : new Segment(...lineArray(points, index, locked))
+      ? new Bezier(...bezierArray(points, numSegment, locked))
+      : new Segment(...lineArray(points, numSegment, locked))
     const t = pointLocationResolver(index)
     const point = segment.get(t)
     point.n = segment.normal(t)
@@ -1065,8 +1065,6 @@ export const getAmplifiers = ({
   }
 
   { // формирование pointAmplifiers
-    const segments = [ 0, points.length - Number(!locked) - 1 ]
-
     let amplifierOptions
 
     if (locked) { // замкнутая линия, pointAmplifiers в центре
@@ -1076,7 +1074,8 @@ export const getAmplifiers = ({
         points: insideMap(centroid) ? [ centroid ] : [],
         getOffset: getOffsetPointAmplifier,
       }
-    } else { // pointAmplifiers на краях линии
+    } else if (points.length > 1) { // pointAmplifiers на краях линии
+      const segments = [ 0, points.length - 2 ]
       amplifierOptions = {
         points: buildPoints(
           points,
