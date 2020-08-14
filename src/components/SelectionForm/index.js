@@ -157,7 +157,7 @@ const forms = {
     defaultPosition: { x: calc, y: 40 },
     maxHeight: 'calc(100vh - 60px)',
   },
-  [SelectionTypes.MINEDAREA]: {
+  [SelectionTypes.MINED_AREA]: {
     title: i18n.SHAPE_MINED_AREA,
     component: MinedAreaForm,
     minHeight: 'calc(100vh - 60px)',
@@ -312,7 +312,7 @@ export default class SelectionForm extends React.Component {
           formType = SelectionTypes.ATTACK
           break
         case '270800':
-          formType = SelectionTypes.MINEDAREA
+          formType = SelectionTypes.MINED_AREA
           break
         case '017016':
           formType = SelectionTypes.CONCENTRATION_FIRE

@@ -454,7 +454,9 @@ L.FlexGrid = L.Layer.extend({
         this.removeFrom(this.map)
       } else {
         this.addTo(this.map)
-        setTimeout(() => this.redraw(), 0)
+        setTimeout(() => {
+          this._map && this.redraw()
+        }, 0)
       }
     } else {
       L.setOptions(this, { hidden })
