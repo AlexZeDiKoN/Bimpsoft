@@ -85,6 +85,7 @@ lineDefinitions['272100'] = {
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     const pO = points[0]
     const endIndex = points.length - 1
+    const maskId = result.layer.object.id
     points.forEach((point, ind, points) => {
       if (isDefPoint(point)) {
         const radius = lengthLine(pO, point)
@@ -94,11 +95,18 @@ lineDefinitions['272100'] = {
           const fillColor = evaluateColor(sectorsInfo[ind]?.fill) ?? 'none'
           const prevPoint = (ind < endIndex) ? points[ind + 1] : pO
           const prevRadius = lengthLine(pO, prevPoint)
-          // заливка сектора
-          result.amplifiers += `<path fill-rule="evenodd" stroke="transparent" stroke-width="${width}" fill="${fillColor}" fill-opacity="0.22" 
-            d="M${point.x} ${point.y} a${radius} ${radius} 90 1 1 0 -0.01z M${prevPoint.x} ${prevPoint.y} a${prevRadius} ${prevRadius} 0 1 1 0 -0.01z"/>`
+
+          // заливка сектора +
           // цвет круга
-          result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="none" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
+          result.amplifiers += `<g>
+            <defs>
+              <mask id="cut-circle-${maskId}-${ind}">
+                <circle fill="white" stroke="white" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
+                <circle fill="black" stroke="black" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${prevRadius}"/>
+              </mask>
+           </defs>
+               <circle mask="url(#cut-circle-${maskId}-${ind})" stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.22" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
+            </g>`
           // маркер круга
           drawText(
             result,
