@@ -39,8 +39,8 @@ lineDefinitions['017019'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
-    const width = getStrokeWidth(result.layer, 1, scale)
+  render: (result, points) => {
+    const width = getStrokeWidth(result.layer)
     const coordArray = result.layer?.getLatLng ? [ result.layer.getLatLng() ] : result.layer?.getLatLngs()
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     result.layer._path.setAttribute('stroke-width', 0.01)
