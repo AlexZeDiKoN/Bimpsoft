@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 // import FocusTrap from 'react-focus-lock'
-import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
+import { MovablePanel, NotClickableArea, ResizeEnable } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -38,6 +38,7 @@ const forms = {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
     minWidth: 825,
+    enableResizing: ResizeEnable.ALL_DISABLED,
     minHeight: 'calc(100vh - 150px)',
     maxHeight: 'calc(100vh - 150px)',
   },
@@ -325,6 +326,7 @@ export default class SelectionForm extends React.Component {
       maxHeight,
       minWidth,
       maxWidth,
+      enableResizing,
       defaultPosition,
       component: Component,
     } = forms[formType]
@@ -369,6 +371,7 @@ export default class SelectionForm extends React.Component {
           bounds={'div.app-body'}
           minWidth={minWidth}
           maxWidth={maxWidth}
+          enableResizing={enableResizing}
           defaultPosition={defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
