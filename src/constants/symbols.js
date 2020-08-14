@@ -27,11 +27,11 @@ export const amps = {
   typeId: 'typeId', // Код озброення, 0 - для введеного в ручну
   N: 'middle', // Амплификатор в форме линий
   // Если что, в формах любых линий есть топ, ботом и мидл, но лейбл у них разный, например W и H это ботом
-  T: 'top', // --||--
-  W: 'bottom', // --||--
+  T: 'top', //  (intermediateAmplifier - H1)
+  W: 'bottom', // (intermediateAmplifier - H2)
   A: 'additional',
   B: 'center', //  это для сложных линий
-  // в простіх линиях для амплификатор "B" между опорніми точками (intermediateAmplifier) используйте "N"
+  // в простіх линиях для амплификатора "B" между опорніми точками (intermediateAmplifier) используйте "N"
 }
 
 export const MINE_TYPES = {
@@ -412,7 +412,8 @@ export const symbols = [
           type: entityKind.POLYLINE,
           left: ENDS_STROKE1,
           right: ENDS_STROKE1,
-          pointAmplifier: { [amps.W]: '№ 1' },
+          intermediateAmplifier: { [amps.W]: '№ 1' },
+          shownIntermediateAmplifiers: [ 0 ],
           color: '#3366ff',
         },
       },
@@ -1301,6 +1302,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          color: 'transparent',
         },
       },
       {
@@ -1658,6 +1660,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          color: 'transparent',
         },
       },
     ],
@@ -2660,6 +2663,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          color: 'transparent',
         },
       },
       {
@@ -2849,6 +2853,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          color: 'transparent',
         },
       },
       {
@@ -4589,6 +4594,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
+          color: 'transparent',
         },
       },
       {
