@@ -614,10 +614,10 @@ L.SVG.include({
 
   _updateFlexGrid: function (grid) {
     const { olovo, title, start, color, strokeWidth } = grid.options
-    const bounds = grid._map._renderer._bounds
-    const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
     if (!olovo) {
+      const bounds = grid._map._renderer._bounds
+      const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
       grid._shadow.setAttribute('d', `${path}${border}`)
     }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
@@ -636,10 +636,21 @@ L.SVG.include({
         ]), true),
       ))
 
-      const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+
       grid._pathes.forEach((path) => {
-        strokeWidth && path.setAttribute('stroke-width', strokeWidth * scale / 100)
-        color && path.setAttribute('stroke', color)
+        if (strokeWidth) {
+          let w
+          if (grid.printOptions) {
+            w = grid.printOptions.getStrokeWidth(strokeWidth)
+          } else {
+            const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+            w = strokeWidth * scale / 100
+          }
+          path.setAttribute('stroke-width', w)
+        }
+        if (color) {
+          path.setAttribute('stroke', color)
+        }
       })
     }
   },
