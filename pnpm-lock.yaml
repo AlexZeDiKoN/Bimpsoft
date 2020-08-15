@@ -1,9 +1,9 @@
 dependencies:
-  '@DZVIN/CommonComponents': 15.2.514_react-dom@16.13.1+react@16.13.1
-  '@DZVIN/MilSymbolEditor': 15.2.274
-  '@DZVIN/components': 15.2.576_react-dom@16.13.1+react@16.13.1
+  '@DZVIN/CommonComponents': 15.2.514_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/MilSymbolEditor': 15.3.275
+  '@DZVIN/components': 15.3.578_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 15.2.7
-  '@DZVIN/milsymbol': 0.0.5
+  '@DZVIN/milsymbol': 15.3.10
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
   bezier-js: 2.5.1
   cesium: 1.72.0
@@ -70,20 +70,21 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/15.2.514_react-dom@16.13.1+react@16.13.1:
+  /@DZVIN/CommonComponents/15.2.514_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
       is-negative-zero: 2.0.0
       mgrs: 1.0.0
       proj4: 2.6.2
-      react-datetime: 2.16.3_react-dom@16.13.1+react@16.13.1
+      react-datetime: 2.16.3_8163dde90d88e02f48b04383611abbfe
       react-easy-swipe: 0.0.16
       react-focus-lock: 2.4.1_react@16.13.1
       react-rnd: 10.2.1
       utm: 1.1.1
     dev: false
     peerDependencies:
+      moment: '*'
       react: '*'
       react-dom: '*'
     resolution:
@@ -92,32 +93,33 @@ packages:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/15.2.274:
+  /@DZVIN/MilSymbolEditor/15.3.275:
     dependencies:
-      '@DZVIN/milsymbol': 0.0.5
+      '@DZVIN/milsymbol': 15.3.10
     dev: false
     resolution:
-      integrity: sha512-kSfpC++LyphCKods1X0jwkopMbORlRPw+MC9bnTIDQTrsYnylxU0bW3zikS4iC5mrTZaMYXVcx5hu0mElbM+XQ==
-  /@DZVIN/components/15.2.576_react-dom@16.13.1+react@16.13.1:
+      integrity: sha512-yTbRbrBCzgztcBgZWUHMLk9TDnWOzqPKebDLGp5GzrD8FQ1yNkwmGXrjETrdPxlXmil+FEtPnnuKLWgckom7rQ==
+  /@DZVIN/components/15.3.578_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
       draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
-      draft-js-export-html: 1.4.1_draft-js@0.11.6
+      draft-js-export-html: 1.4.1_draft-js@0.11.6+immutable@3.8.2
     dev: false
     peerDependencies:
+      immutable: '*'
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-NoWxKujWaY1Y8vtOJ3xyqftx+KTuntLjQa5K3r5wzoPKDx1/cH2u1aMDCUWvdXfZ2s2EvcF0hQK8ed9aJ0zlrA==
+      integrity: sha512-xKnFsPycuG2RiZUlZ9HkOCA4UdVzWYORWSmAono6kI5Qteaf76UAdmYxdjx9qWyMgYKMKoDetK4RdEltNojGCA==
   /@DZVIN/leaflet-measure-custom/15.2.7:
     dev: false
     resolution:
       integrity: sha512-Gf5t2QfnCuWpUQiEGIcnQHpMFUgUsNf9BWa/StSPj1TW+Me7vufaDWGq7lP85gc1HFpIkNVT8W7Jd+lJLY9QPg==
-  /@DZVIN/milsymbol/0.0.5:
+  /@DZVIN/milsymbol/15.3.10:
     dev: false
     resolution:
-      integrity: sha512-Fi3eL4XWAcRhXs1q6uUn5Kx1Q9EylV3ocCcAjY5uKdB3aUwDD+nqHE8Dq7LafEj/x5oNfBCjQZp+0OVs7G+TMA==
+      integrity: sha512-sX2mw5nspRGjaK8xtxhIAeUOByhxtTqiPn8vUoSwBLT8g7L8qOaUQd4Hrju1CAGlZxsAG6LXpbqcWpCTco1vPw==
   /@DZVIN/validators/1.0.9:
     dependencies:
       moment: 2.27.0
@@ -1853,7 +1855,7 @@ packages:
       integrity: sha512-yYCM5P0iH+si37bYQ9aw6/Fr5dQmyRNR22cRWLRf2mPa3vgZNIHS7JInBwQ15qDyFsCaCw89Mo4J2UZ6LG4Szg==
   /@unitybase/cs-shared/5.2.7:
     dependencies:
-      lodash: 4.17.19
+      lodash: 4.17.20
     dev: false
     engines:
       ub: ^5.0.0
@@ -1863,7 +1865,7 @@ packages:
     dependencies:
       '@unitybase/cryptojs': 1.0.14
       '@unitybase/cs-shared': 5.2.7
-      lodash: 4.17.19
+      lodash: 4.17.20
     dev: false
     resolution:
       integrity: sha512-ht6/CZu2fhNNO/Gu0wbxFVSEt+R97R+3xYTQxMhauwad9950mJYarjRFW/WYxMhKdauUtczl7YZ3exbrYytAjA==
@@ -4993,19 +4995,21 @@ packages:
     optional: true
     resolution:
       integrity: sha512-xqnBTVd/E+GxJVrX5/eUJiLYjCGPwMpdL+jGhGU57BvtcA7wwhtHVbXBeUk51kOpW3S7Jn3BQbN9Q1R1Km2qDQ==
-  /draft-js-export-html/1.4.1_draft-js@0.11.6:
+  /draft-js-export-html/1.4.1_draft-js@0.11.6+immutable@3.8.2:
     dependencies:
       draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
-      draft-js-utils: 1.4.0_draft-js@0.11.6
+      draft-js-utils: 1.4.0_draft-js@0.11.6+immutable@3.8.2
+      immutable: 3.8.2
     dev: false
     peerDependencies:
       draft-js: '>=0.10.0'
       immutable: 3.x.x
     resolution:
       integrity: sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
-  /draft-js-utils/1.4.0_draft-js@0.11.6:
+  /draft-js-utils/1.4.0_draft-js@0.11.6+immutable@3.8.2:
     dependencies:
       draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
+      immutable: 3.8.2
     dev: false
     peerDependencies:
       draft-js: '>=0.10.0'
@@ -8127,7 +8131,7 @@ packages:
   /isomorphic-fetch/2.2.1:
     dependencies:
       node-fetch: 1.7.3
-      whatwg-fetch: 3.3.1
+      whatwg-fetch: 3.4.0
     dev: false
     resolution:
       integrity: sha1-YRrhrPFPXoH3KVB0coGf6XM1WKk=
@@ -9263,8 +9267,13 @@ packages:
     resolution:
       integrity: sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
   /lodash/4.17.19:
+    dev: true
     resolution:
       integrity: sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
+  /lodash/4.17.20:
+    dev: false
+    resolution:
+      integrity: sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
   /logalot/2.1.0:
     dependencies:
       figures: 1.7.0
@@ -12578,9 +12587,10 @@ packages:
       react: '*'
     resolution:
       integrity: sha512-FyVeU1kQiSokWc8NPz22azl1ezLpJdUyTbWL0LPUpcuuYDrZ/Y1veOk9rRK5B3pMlyDGvTk4f4KJhlkIQNRjEA==
-  /react-datetime/2.16.3_react-dom@16.13.1+react@16.13.1:
+  /react-datetime/2.16.3_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       create-react-class: 15.6.3
+      moment: 2.24.0
       object-assign: 3.0.0
       prop-types: 15.7.2
       react: 16.13.1
@@ -15589,8 +15599,13 @@ packages:
     resolution:
       integrity: sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw==
   /whatwg-fetch/3.3.1:
+    dev: true
     resolution:
       integrity: sha512-faXTmGDcLuEPBpJwb5LQfyxvubKiE+RlbmmweFGKjvIPFj4uHTTfdtTIkdTRhC6OSH9S9eyYbx8kZ0UEaQqYTA==
+  /whatwg-fetch/3.4.0:
+    dev: false
+    resolution:
+      integrity: sha512-rsum2ulz2iuZH08mJkT0Yi6JnKhwdw4oeyMjokgxd+mmqYSd9cPpOQf01TIWgjxG/U4+QR+AwKq6lSbXVxkyoQ==
   /whatwg-mimetype/2.3.0:
     dev: true
     resolution:
@@ -15964,10 +15979,10 @@ packages:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
   '@DZVIN/CommonComponents': ^15.2.514
-  '@DZVIN/MilSymbolEditor': ^15.2.274
-  '@DZVIN/components': ^15.2.576
+  '@DZVIN/MilSymbolEditor': ^15.3.275
+  '@DZVIN/components': ^15.3.578
   '@DZVIN/leaflet-measure-custom': ^15.2.7
-  '@DZVIN/milsymbol': ^0.0.5
+  '@DZVIN/milsymbol': ^15.3.10
   '@craco/craco': ^5.6.4
   antd: ^3.12.4
   bezier-js: 2.5.1

@@ -13,7 +13,7 @@ import { evaluateColor } from '../../../constants/colors'
 import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
 import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
-import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
+import { prepareLinePath, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
 import { getFontSize } from './Sophisticated/utils'
@@ -248,22 +248,8 @@ L.SVG.include({
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       result = 'm0,0'
-      if (layer._groupChildren) {
-        switch (kind) {
-          case entityKind.GROUPED_REGION: {
-            result = makeRegionGroup(layer)
-            break
-          }
-          case entityKind.GROUPED_HEAD: {
-            result = makeHeadGroup()
-            break
-          }
-          case entityKind.GROUPED_LAND: {
-            result = makeLandGroup()
-            break
-          }
-          default:
-        }
+      if (kind === entityKind.GROUPED_REGION && layer._groupChildren) {
+        result = makeRegionGroup(layer)
       }
     } else if (fullPolygon) {
       layer.options.fillRule = 'nonzero'
@@ -637,10 +623,10 @@ L.SVG.include({
 
   _updateFlexGrid: function (grid) {
     const { olovo, title, start, color, strokeWidth } = grid.options
-    const bounds = grid._map._renderer._bounds
-    const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
     if (!olovo) {
+      const bounds = grid._map._renderer._bounds
+      const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
       grid._shadow.setAttribute('d', `${path}${border}`)
     }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
@@ -660,10 +646,21 @@ L.SVG.include({
         ]), true),
       ))
 
-      const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+
       grid._pathes.forEach((path) => {
-        strokeWidth && path.setAttribute('stroke-width', strokeWidth * scale / 100)
-        color && path.setAttribute('stroke', color)
+        if (strokeWidth) {
+          let w
+          if (grid.printOptions) {
+            w = grid.printOptions.getStrokeWidth(strokeWidth)
+          } else {
+            const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+            w = strokeWidth * scale / 100
+          }
+          path.setAttribute('stroke-width', w)
+        }
+        if (color) {
+          path.setAttribute('stroke', color)
+        }
       })
     }
   },

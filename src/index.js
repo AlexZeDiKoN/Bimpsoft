@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 import 'antd/dist/antd.css'
 import { notification } from 'antd'
 import App from './App'
-import registerServiceWorker from './registerServiceWorker'
+// import registerServiceWorker from './registerServiceWorker'
 import './index.css'
 import './assets/fonts/qwe-icon.css'
 import './assets/styles/rewrites.css'
@@ -23,4 +23,4 @@ window.addEventListener('unhandledrejection', (event) => {
 })
 
 ReactDOM.render(<App/>, document.getElementById('root'))
-registerServiceWorker()
+// registerServiceWorker()

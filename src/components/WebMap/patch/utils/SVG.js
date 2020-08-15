@@ -238,14 +238,6 @@ export function prepareLinePath (js, d, rings) {
   return wrapSvgPath(decodedPath)
 }
 
-export function makeHeadGroup (line, parts) {
-  // TODO 5235
-}
-
-export function makeLandGroup (line, parts) {
-  // TODO 5235
-}
-
 export function makeRegionGroup (layer) {
   const points = layer._groupChildren.map((marker) => layer._map.latLngToLayerPoint(marker._latlng))
   const polygon = getMaxPolygon(points)
@@ -263,26 +255,12 @@ export function makeRegionGroup (layer) {
   const rectanglePolygon = getMaxPolygon(rectanglePoints)
 
   const result = emptyPath()
-  drawLine(result, ...rectanglePolygon)
-  return `${result.d} z`
-}
-
-/* function getCentralPoint (js) {
-  const result = { x: 0, y: 0 }
-  if (js.svg.$.width && js.svg.$.height) {
-    if (js.svg.$['central-point']) {
-      const xy = js.svg.$['central-point'].split(',')
-      result.x = xy[0]
-      result.y = xy[1]
-    } else {
-      result.x = js.svg.$.width / 2
-      result.y = js.svg.$.height / 2
-    }
-    result.x = Math.round(result.x / js.svg.$.width) //  * pointSignSize inside brackets
-    result.y = Math.round(result.y / js.svg.$.height) //  * pointSignSize inside brackets
+  if (rectanglePolygon && rectanglePolygon.length > 2) {
+    drawLine(result, ...rectanglePolygon)
+    return `${result.d} z`
   }
-  return result
-} */
+  return ''
+}
 
 export function svgToJS (svg) {
   const parser = new DOMParser()

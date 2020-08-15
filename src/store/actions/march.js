@@ -456,7 +456,7 @@ export const openMarch = (data) => asyncAction.withNotification(
 
     const geoLandmarks = {}
 
-    dispatch(openMapFolder(mapId, null, true))
+    dispatch(openMapFolder(mapId))
     let segments
     if (!data || !data.segments || !data.segments.length) {
       segments = initDefaultSegments()
