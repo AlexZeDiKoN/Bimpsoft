@@ -5,9 +5,9 @@
   "dependencies": {
     "@DZVIN/CommonComponents": "^15.2.514",
     "@DZVIN/MilSymbolEditor": "^15.3.275",
-    "@DZVIN/components": "^15.3.577",
+    "@DZVIN/components": "^15.3.578",
     "@DZVIN/leaflet-measure-custom": "^15.2.7",
-    "@DZVIN/milsymbol": "^15.03.10",
+    "@DZVIN/milsymbol": "^15.3.10",
     "antd": "^3.12.4",
     "bezier-js": "2.5.1",
     "cesium": "^1.72.0",
