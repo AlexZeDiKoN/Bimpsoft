@@ -1,5 +1,5 @@
 import { action } from '../../utils/services'
-import { getArrayFromSet } from '../../utils/immutable'
+import { getArrayFromSet, getArrayFromDirectionSigns } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector, visibleLayersSelector, allUnits } from '../selectors'
 import i18n from '../../i18n'
@@ -142,13 +142,14 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
       })
     }
     if (!invalid.length) {
-      const { directionNames: names, directions } = state.flexGrid.flexGrid
+      const { directionNames: names, directions, mainDirectionSigns } = state.flexGrid.flexGrid
       const units = result.map(({ units, ...rest }) => ({
         units: units.map(({ unit, formation }) => ({ unit, formation })),
         ...rest,
       }))
       const directionNames = getArrayFromSet(names, directions)
-      window.explorerBridge.variantResult(variantId, { units, directionNames })
+      const mainDirections = getArrayFromDirectionSigns(mainDirectionSigns, directions)
+      window.explorerBridge.variantResult(variantId, { units, directionNames, mainDirections })
       dispatch(notifications.push({
         type: 'success',
         message: i18n.MESSAGE,
