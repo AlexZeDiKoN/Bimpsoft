@@ -17,6 +17,7 @@ const FlexGrid = Record({
   zoneSegments: List(),
   directions: DEF_DIRECTIONS,
   directionNames: List(),
+  mainDirectionSigns: List(),
   eternalDescriptions: List(),
   zones: HAS_ZONES,
 })
@@ -84,7 +85,13 @@ export default function reducer (state = FlexGridState(), action) {
         const {
           id,
           deleted,
-          attributes: { directions, zones, directionNames = [], eternalDescriptions = [] } = {},
+          attributes: {
+            directions,
+            zones,
+            directionNames = [],
+            mainDirectionSigns = [],
+            eternalDescriptions = [],
+          } = {},
           geometry: [ eternals, directionSegments, zoneSegments ] = [],
         } = payload
         return update(merge(state, {
@@ -98,6 +105,7 @@ export default function reducer (state = FlexGridState(), action) {
           eternals: List(eternals),
           directionSegments: List(directionSegments),
           directionNames: List(directionNames),
+          mainDirectionSigns: List(mainDirectionSigns),
           eternalDescriptions: List(eternalDescriptions),
           zoneSegments: List(zoneSegments),
         })

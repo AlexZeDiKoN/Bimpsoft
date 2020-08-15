@@ -13,7 +13,16 @@ const toXY = (props) => Array.isArray(props)
 
 /** DIVIDE METHODS */
 const divideDirection = (flexGrid, index) => {
-  const { zoneSegments, eternals, directions, zones, directionSegments, directionNames, id } = flexGrid
+  const {
+    zoneSegments,
+    eternals,
+    directions,
+    zones,
+    directionSegments,
+    directionNames,
+    mainDirectionSigns,
+    id,
+  } = flexGrid
   const divPoints = getPointsDivZones(eternals, zoneSegments, index)
   const newDirections = directions + 1
   const newDirectionSegments = directionSegments.insert(index + 1, [ ...Array(zones * 2) ].map(() => [])).toArray()
@@ -21,12 +30,16 @@ const divideDirection = (flexGrid, index) => {
   const newDirectionNames = directionNames.size > index
     ? directionNames.insert(index + 1, null).toArray()
     : directionNames.toArray()
+  const newMainDirectionSigns = mainDirectionSigns.size > index
+    ? mainDirectionSigns.insert(index + 1, false).toArray()
+    : mainDirectionSigns.toArray()
   const newZoneSegments = divideZoneSegments(zoneSegments, index).toArray()
   const geometryProps = buildFlexGridGeometry(newEternals, newDirectionSegments, newZoneSegments)
   const attrProps = {
     zones,
     directions: newDirections,
     directionNames: newDirectionNames,
+    mainDirectionSigns: newMainDirectionSigns,
   }
   return { geometryProps, attrProps, id }
 }
@@ -43,7 +56,7 @@ const getMiddlePoint = memoize((eternals, index) =>
       return toLatLng(halfPoint(toXY(points[1]), toXY(cp2), toXY(cp1), toXY(points[2])))
     }
     return toLatLng(arr[Math.floor(arr.length / 2)])
-  }
+  },
 )
 
 const divideZoneSegments = (segments, index) => segments.map((column) => {
@@ -82,14 +95,25 @@ const getRulePoints = (eternals, index, segment, i) => {
 
 /** COMBINE METHODS */
 const combineDirections = (flexGrid, index, lastIndex) => {
-  const { zoneSegments, eternals, directions, directionSegments, directionNames, zones, id } = flexGrid
+  const {
+    zoneSegments,
+    eternals,
+    directions,
+    directionSegments,
+    directionNames,
+    mainDirectionSigns,
+    zones,
+    id,
+  } = flexGrid
 
   const eternalsArray = eternals.toArray()
   const zoneSegmentsArray = zoneSegments.toArray()
   const directionSegmentsArray = directionSegments.toArray()
   const directionNamesArray = directionNames.toArray()
+  const mainDirectionSignsArray = mainDirectionSigns.toArray()
 
   const newDirectionNames = combineList(directionNamesArray, index, lastIndex)
+  const newMainDirectionSigns = combineList(mainDirectionSignsArray, index, lastIndex)
   const newEternals = combineList(eternalsArray, index, lastIndex)
   const newDirectionSegments = combineList(directionSegmentsArray, index, lastIndex)
   const newZoneSegments = combineZoneSegments(zoneSegmentsArray, eternalsArray, index, lastIndex)
@@ -99,6 +123,7 @@ const combineDirections = (flexGrid, index, lastIndex) => {
     zones,
     directions: newDirections,
     directionNames: newDirectionNames,
+    mainDirectionSigns: newMainDirectionSigns,
   }
   return { geometryProps, attrProps, id }
 }
