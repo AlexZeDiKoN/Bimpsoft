@@ -1,5 +1,5 @@
 dependencies:
-  '@DZVIN/CommonComponents': 15.2.514_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/CommonComponents': 15.3.515_8163dde90d88e02f48b04383611abbfe
   '@DZVIN/MilSymbolEditor': 15.3.275
   '@DZVIN/components': 15.3.578_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 15.2.7
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/15.2.514_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/15.3.515_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -88,7 +88,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-sNoay0vn9JoY9+Ovf2n4KteLROPBYOMALLhN5ZK2O2fMex6M4D+riRMZ40rYYN3+h+tyAS9fi7xeOBWxyZzK4A==
+      integrity: sha512-YQ5ToDhNLdLzE13kran2yO5xUOmCMuN/F8yvKhgArSR0pCRYWlFAeiT6PuA6sh3ZXYjt/3tSdoUmdSErAKqgHw==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
@@ -15978,7 +15978,7 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^15.2.514
+  '@DZVIN/CommonComponents': ^15.3.515
   '@DZVIN/MilSymbolEditor': ^15.3.275
   '@DZVIN/components': ^15.3.578
   '@DZVIN/leaflet-measure-custom': ^15.2.7
