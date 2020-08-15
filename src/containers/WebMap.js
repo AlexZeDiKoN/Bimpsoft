@@ -121,7 +121,7 @@ const WebMapContainer = connect(
     fixFlexGridInstance: flexGrid.fixInstance,
     showDirectionNameForm: (props) => (dispatch, getState) => {
       const state = getState()
-      if (state.webMap.mode === MapModes.EDIT) {
+      if (state.webMap.mode === MapModes.EDIT && !state.viewModes[directionName]) {
         dispatch(batchActions([
           flexGrid.selectDirection(props),
           viewModes.viewModeEnable(directionName),

@@ -8,6 +8,7 @@ const optionDirections = ({ flexGrid }) => flexGrid.flexGrid.directions
 const optionZones = ({ flexGrid }) => flexGrid.flexGrid.zones
 const optionVertical = ({ flexGrid }) => flexGrid.vertical
 const directionNames = ({ flexGrid }) => flexGrid.flexGrid.directionNames
+const mainDirectionSigns = ({ flexGrid }) => flexGrid.flexGrid.mainDirectionSigns
 const eternalDescriptions = ({ flexGrid }) => flexGrid.flexGrid.eternalDescriptions
 export const selectedDirections = ({ flexGrid }) => flexGrid.selectedDirections.list.toArray()
 export const selectedEternal = ({ flexGrid }) => flexGrid.selectedEternal
@@ -15,19 +16,19 @@ const data = ({ flexGrid: { flexGrid } }) => flexGrid
 
 export const showFlexGridOptions = createSelector(
   optionsForm,
-  theSame
+  theSame,
 )
 
 export const flexGridVisible = createSelector(
   visibleFlag,
-  theSame
+  theSame,
 )
 
 export const flexGridOptions = createSelector(
   optionDirections,
   optionZones,
   optionVertical,
-  (directions, zones, vertical) => ({ directions, zones: zones !== 1, vertical })
+  (directions, zones, vertical) => ({ directions, zones: zones !== 1, vertical }),
 )
 
 export const flexGridParams = createSelector(
@@ -36,13 +37,21 @@ export const flexGridParams = createSelector(
   optionVertical,
   selectedDirections,
   selectedEternal,
-  (directions, zones, vertical, selectedDirections, selectedEternal) =>
-    ({ directions, zones, vertical, selectedDirections, selectedEternal })
+  mainDirectionSigns,
+  (directions, zones, vertical, selectedDirections, selectedEternal, mainDirectionSigns) =>
+    ({
+      directions,
+      zones,
+      vertical,
+      selectedDirections,
+      selectedEternal,
+      mainDirectionIndex: mainDirectionSigns.indexOf(true),
+    }),
 )
 
 export const flexGridData = createSelector(
   data,
-  theSame
+  theSame,
 )
 
 export const geoPointPropTypes = PropTypes.shape({
@@ -51,9 +60,9 @@ export const geoPointPropTypes = PropTypes.shape({
 })
 
 export const flexGridAttributes = createSelector(
-  [ optionZones, optionDirections, directionNames, eternalDescriptions ],
-  (zones, directions, directionNames, eternalDescriptions) =>
-    ({ zones, directions, directionNames, eternalDescriptions })
+  [ optionZones, optionDirections, directionNames, eternalDescriptions, mainDirectionSigns ],
+  (zones, directions, directionNames, eternalDescriptions, mainDirectionSigns) =>
+    ({ zones, directions, directionNames, eternalDescriptions, mainDirectionSigns }),
 )
 
 export const flexGridPropTypes = PropTypes.shape({
@@ -66,4 +75,5 @@ export const flexGridPropTypes = PropTypes.shape({
   eternalDescriptions: PropTypes.any,
   directionNames: PropTypes.any,
   zoneSegments: PropTypes.any,
+  mainDirectionSigns: PropTypes.any,
 })

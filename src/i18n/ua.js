@@ -212,6 +212,7 @@ export const LINE_STYLE_WAVE = 'Хвиляста'
 
 export const COORDINATES = 'Координати'
 export const DIRECTION = 'Напрямок'
+export const MAIN_DIRECTION = 'Головний напрямок'
 export const NODAL_POINTS = 'Вузлові точки'
 export const SIDE_SIZE = 'Довжина сторони'
 export const RADIUS = 'Радіус'

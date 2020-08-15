@@ -565,7 +565,7 @@ L.SVG.include({
     const group = L.SVG.create('g')
     const {
       className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
-      shadow,
+      shadow, highlightMain,
     } = grid.options
     grid._path = group
     if (className) {
@@ -579,7 +579,15 @@ L.SVG.include({
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
     grid._highlighted = L.SVG.create('path')
-    grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
+    grid._highlightMain = L.SVG.create('path')
+    grid._pathes = [
+      grid._zones,
+      grid._highlighted,
+      grid._directions,
+      grid._boundary,
+      grid._border,
+      grid._highlightMain,
+    ]
     if (interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
@@ -591,6 +599,7 @@ L.SVG.include({
     this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine })
     this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
     this._updateStyle({ _path: grid._highlighted, options: highlight })
+    this._updateStyle({ _path: grid._highlightMain, options: highlightMain })
     if (!olovo) {
       group.appendChild(grid._shadow)
     }
@@ -639,6 +648,7 @@ L.SVG.include({
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+    grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
     if (olovo) {
       this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
       grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
@@ -662,5 +672,9 @@ L.SVG.include({
     return grid.highlightedDirections && grid.highlightedDirections.length
       ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
       : ''
+  },
+
+  _getHighlightMainDirectionsArea: function (grid) {
+    return grid.highlightedMainDirection !== null ? grid.cellRings[grid.highlightedMainDirection].join('') : ''
   },
 })

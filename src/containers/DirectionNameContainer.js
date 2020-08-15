@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { List } from 'immutable'
 import { directionName } from '../constants/viewModesKeys'
 import { viewModeDisable } from '../store/actions/viewModes'
 import { updateObjectAttributes } from '../store/actions/webMap'
@@ -21,17 +22,22 @@ const mapDispatchToProps = {
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { id, index, attributes, ...restState } = stateProps
-  const { directionNames } = attributes || {}
+  const { directionNames, mainDirectionSigns = List() } = attributes || {}
   const { updateObjectAttributes, hideModal, deselectDirection } = dispatchProps
-  const defaultName = directionNames && directionNames.get(index)
 
+  const defaultName = directionNames && directionNames.get(index)
+  let defaultMainDirection = mainDirectionSigns.get(index)
+  defaultMainDirection = defaultMainDirection || false
   return {
     ...ownProps,
     ...restState,
     defaultName,
-    onSubmit: (name) => {
-      if (name !== defaultName) {
+    defaultMainDirection,
+    onSubmit: (name, isMainDirection) => {
+      if (name !== defaultName || isMainDirection !== defaultMainDirection) {
         attributes.directionNames = directionNames.set(index, name)
+        const resetMainDirectionSigns = isMainDirection ? mainDirectionSigns.map(() => false) : mainDirectionSigns
+        attributes.mainDirectionSigns = resetMainDirectionSigns.set(index, isMainDirection)
         return updateObjectAttributes(id, attributes)
       }
     },
@@ -45,5 +51,5 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-  mergeProps
+  mergeProps,
 )(DirectionNameForm)

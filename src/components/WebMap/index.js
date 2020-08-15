@@ -320,6 +320,7 @@ export default class WebMap extends React.PureComponent {
       zones: PropTypes.number,
       vertical: PropTypes.bool,
       selectedDirections: PropTypes.array,
+      mainDirectionIndex: PropTypes.number,
       selectedEternal: PropTypes.shape({
         coordinates: PropTypes.object,
         position: PropTypes.array,
@@ -423,7 +424,7 @@ export default class WebMap extends React.PureComponent {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects,
-      flexGridParams: { selectedDirections, selectedEternal },
+      flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
       targetingObjects, marchDots, marchMode, marchRefPoint,
@@ -489,6 +490,9 @@ export default class WebMap extends React.PureComponent {
     }
     if (selectedDirections !== prevProps.flexGridParams.selectedDirections) {
       this.highlightDirections(selectedDirections)
+    }
+    if (mainDirectionIndex !== prevProps.flexGridParams.mainDirectionIndex) {
+      mainDirectionIndex !== -1 && this.highlightMainDirection(mainDirectionIndex)
     }
     if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
       this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
@@ -1888,7 +1892,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    L.DomEvent.stopPropagation(event)
+    // L.DomEvent.stopPropagation(event)
     return this.processDblClickOnLayer(event.target)
   }
 
@@ -1947,6 +1951,11 @@ export default class WebMap extends React.PureComponent {
   highlightDirections = (selectedDirections) => {
     const { flexGridVisible } = this.props
     this.flexGrid && flexGridVisible && this.flexGrid.selectDirection(selectedDirections)
+  }
+
+  highlightMainDirection = (mainDirectionIndex) => {
+    const { flexGridVisible } = this.props
+    this.flexGrid && this.flexGrid.setMainDirection(mainDirectionIndex, flexGridVisible)
   }
 
   highlightEternal = (position, prevPosition) => {
