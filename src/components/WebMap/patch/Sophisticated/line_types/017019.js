@@ -59,7 +59,7 @@ lineDefinitions['017019'] = {
         // отрисовка круговых секторов для выбора их на карте
         drawCircle(result, pO, radius + !ind * 2)
         // заливка сектора + цвет круга
-        result.amplifiers += `<g>
+        result.amplifiers += `
             <defs>
               <mask id="cut-circle-${maskId}-${ind}">
                 <circle fill="white" stroke="white" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
@@ -67,9 +67,9 @@ lineDefinitions['017019'] = {
               </mask>
            </defs>
                <circle mask="url(#cut-circle-${maskId}-${ind})" cx="${pO.x}" cy="${pO.y}" r="${radius}"
-               stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.25" />
-            </g>`
+               stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.25" />`
         prevRadius = radius
+        // вывод радиуса и амплификатора
         const radiusM = Earth.distance(pgO, coordArray[ind]).toFixed(0)
         const amplifier = sectorsInfo[ind]?.amplifier ?? ''
         drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'after-edge')

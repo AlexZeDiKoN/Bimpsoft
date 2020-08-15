@@ -98,15 +98,14 @@ lineDefinitions['272100'] = {
 
           // заливка сектора +
           // цвет круга
-          result.amplifiers += `<g>
+          result.amplifiers += `
             <defs>
               <mask id="cut-circle-${maskId}-${ind}">
                 <circle fill="white" stroke="white" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
                 <circle fill="black" stroke="black" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${prevRadius}"/>
               </mask>
            </defs>
-               <circle mask="url(#cut-circle-${maskId}-${ind})" stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.22" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
-            </g>`
+               <circle mask="url(#cut-circle-${maskId}-${ind})" stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.22" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>`
           // маркер круга
           drawText(
             result,
