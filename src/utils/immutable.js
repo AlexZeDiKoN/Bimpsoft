@@ -39,17 +39,8 @@ export const getArrayFromSet = (data, length) => length && data.size
   ? [ ...Array(length) ].map((_, i) => data.get(i) || String(i + 1))
   : data.toArray()
 
-export const getArrayFromDirectionSigns = (data, length) => {
-  const initialArray = []
-  for (let i = 0; i < length; i++) {
-    initialArray.push(false)
-  }
-  const indexMainDirection = data.indexOf(true)
-  if (indexMainDirection !== -1) {
-    initialArray[indexMainDirection] = true
-  }
-  return initialArray
-}
+export const getArrayFromDirectionSigns = (data, length) =>
+  length && data.size ? [ ...Array(length) ].map((_, i) => data.get(i) || false) : data.toArray()
 
 export const useArraysIn = (obj) => Object.keys(obj).reduce((acc, key) => {
   List.isList(obj[key]) && (acc[key] = obj[key].toArray())
