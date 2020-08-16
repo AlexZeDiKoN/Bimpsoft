@@ -25,7 +25,7 @@ export function validateObject (object) {
     case SelectionTypes.GROUPED_LAND:
       validateCoordinates(object.geometry, 1)
       break
-    case SelectionTypes.GROUPED_REGION:
+    // case SelectionTypes.GROUPED_REGION:
     case SelectionTypes.POLYGON:
     case SelectionTypes.AREA:
       validateCoordinates(object.geometry, 3)

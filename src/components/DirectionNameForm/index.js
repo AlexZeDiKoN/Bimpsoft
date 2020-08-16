@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components, Checkbox } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import * as shortcuts from '../../constants/shortcuts'
@@ -20,17 +20,22 @@ export default function DirectionNameForm (props) {
     visible, defaultName,
     onClose, onSubmit,
     wrapper: Wrapper,
+    defaultMainDirection,
   } = props
 
   const [ name, setName ] = useState(defaultName)
+  const [ isMainDirection, setMainDirection ] = useState(defaultMainDirection)
+
   useEffect(() => {
     visible && setName(defaultName || '')
-  }, [ visible, defaultName ])
+    visible && setMainDirection(defaultMainDirection)
+  }, [ visible, defaultName, defaultMainDirection ])
 
   const handleChange = ({ target: { value } }) => setName(value)
+  const handleChangeCheckbox = ({ target: { value } }) => setMainDirection(value)
 
   const handleSubmit = () => {
-    onSubmit(name)
+    onSubmit(name, isMainDirection)
     onClose()
   }
 
@@ -44,6 +49,12 @@ export default function DirectionNameForm (props) {
           <Form className="direction_name--form">
             <FormRow label={`${i18n.DESIGNATION}:`}>
               <Input value={name} onChange={handleChange} />
+            </FormRow>
+            <FormRow label={i18n.MAIN_DIRECTION} alignLabel='left'>
+              <Checkbox
+                onChange={handleChangeCheckbox}
+                value={isMainDirection}
+              />
             </FormRow>
             <FormItem>
               {buttonSave(handleSubmit)}
@@ -62,6 +73,7 @@ DirectionNameForm.propTypes = {
   index: PropTypes.number,
   visible: PropTypes.bool.isRequired,
   wrapper: PropTypes.any,
+  defaultMainDirection: PropTypes.bool,
   /** actions */
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,

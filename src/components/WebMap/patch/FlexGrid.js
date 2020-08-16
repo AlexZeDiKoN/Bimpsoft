@@ -112,6 +112,13 @@ L.FlexGrid = L.Layer.extend({
       fillOpacity: 0.4,
       fillColor: '#ff2',
     },
+    highlightMain: {
+      ...commonStyle,
+      stroke: false,
+      fill: true,
+      fillOpacity: 0.4,
+      fillColor: '#f989f9',
+    },
     shadow: {
       ...commonStyle,
       stroke: false,
@@ -136,6 +143,7 @@ L.FlexGrid = L.Layer.extend({
 
     this.id = id
     this.highlightedDirections = []
+    this.highlightedMainDirection = null
     if (geometry) {
       this.eternals = geometry.eternals.map(copyRow)
       this.directionSegments = geometry.directionSegments.map(copyRing)
@@ -424,6 +432,13 @@ L.FlexGrid = L.Layer.extend({
     this._update()
   },
 
+  setMainDirection (index, flexGridVisible) {
+    this.highlightedMainDirection = index
+    if (flexGridVisible) {
+      this._update()
+    }
+  },
+
   // @method bringToFront(): this
   // Brings the layer to the top of all path layers.
   bringToFront: function () {
@@ -454,6 +469,9 @@ L.FlexGrid = L.Layer.extend({
         this.removeFrom(this.map)
       } else {
         this.addTo(this.map)
+        setTimeout(() => {
+          this._map && this.redraw()
+        }, 0)
       }
     } else {
       L.setOptions(this, { hidden })

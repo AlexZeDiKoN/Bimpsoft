@@ -19,7 +19,8 @@ export const createGroupRegion = () =>
     const objects = selectedList(state)
     const layer = selectedLayerId(state)
     const scale = state.webMap.zoom
-    return groupCreate('region', objects, layer, scale)
+    const { id } = await groupCreate('region', objects, layer, scale)
+    return dispatch(selection.selectedList([ id ]))
   })
 
 export const dropGroup = () =>

@@ -39,8 +39,8 @@ lineDefinitions['017019'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
-    const width = getStrokeWidth(result.layer, 1, scale)
+  render: (result, points) => {
+    const width = getStrokeWidth(result.layer)
     const coordArray = result.layer?.getLatLng ? [ result.layer.getLatLng() ] : result.layer?.getLatLngs()
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
     result.layer._path.setAttribute('stroke-width', 0.01)
@@ -48,20 +48,28 @@ lineDefinitions['017019'] = {
       return
     }
     const pO = points[0]
-    let pP = pO
-    let radiusP = 0
+    let prevRadius = 0
     const pgO = coordArray[0]
+    const maskId = result.layer.object.id
     points.forEach((elm, ind) => {
       if (isDefPoint(elm) && (ind > 0)) {
         const radius = lengthLine(pO, elm)
         const color = sectorsInfo[ind]?.color ?? COLORS[ind]
         const fillColor = colors.values[sectorsInfo[ind]?.fill] ?? 'transparent'
+        // отрисовка круговых секторов для выбора их на карте
         drawCircle(result, pO, radius + !ind * 2)
-        result.amplifiers += `<path fill-rule="evenodd" stroke="transparent" stroke-width="${width}" fill="${fillColor}" fill-opacity="0.25" 
-            d="M${elm.x} ${elm.y} a${radius} ${radius} 0 1 1 0.01 0 M${pP.x} ${pP.y} a${radiusP} ${radiusP} 0 1 1 0.01 0"/>`
-        result.amplifiers += `<circle stroke-width="${width}" stroke="${color}" fill="transparent" cx="${pO.x}" cy="${pO.y}" r="${radius}"/> `
-        radiusP = radius
-        pP = elm
+        // заливка сектора + цвет круга
+        result.amplifiers += `
+            <defs>
+              <mask id="cut-circle-${maskId}-${ind}">
+                <circle fill="white" stroke="white" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${radius}"/>
+                <circle fill="black" stroke="black" stroke-width="${width}" cx="${pO.x}" cy="${pO.y}" r="${prevRadius}"/>
+              </mask>
+           </defs>
+               <circle mask="url(#cut-circle-${maskId}-${ind})" cx="${pO.x}" cy="${pO.y}" r="${radius}"
+               stroke-width="${width}" stroke="${color}" fill="${fillColor}" fill-opacity="0.25" />`
+        prevRadius = radius
+        // вывод радиуса и амплификатора
         const radiusM = Earth.distance(pgO, coordArray[ind]).toFixed(0)
         const amplifier = sectorsInfo[ind]?.amplifier ?? ''
         drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'after-edge')

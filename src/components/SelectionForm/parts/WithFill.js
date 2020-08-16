@@ -31,7 +31,7 @@ const WithFill = (Component) => class FillComponent extends Component {
     if (hatch !== HATCH_TYPE.NONE) {
       let fill = this.getResult().getIn(PATH_FILL)
       if (fill === evaluateColor(colors.TRANSPARENT) || fill === colors.TRANSPARENT) {
-        fill = colors.BLACK
+        fill = '#000000'
         this.setResult((result) => result.setIn(PATH_FILL, fill).setIn(PATH_HATCH, hatch))
         return
       }

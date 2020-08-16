@@ -228,7 +228,8 @@ const getSvgPath = (
   strokeWidthPrint,
   dpi,
   dashSize,
-  options = {}) => {
+  options = {},
+) => {
   const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
   const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
@@ -648,13 +649,16 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       lineType,
       hatch }
     // const fontSize = printOptions.getFontSize()
+    const sophPath = L.SVG.create('path') // заглушка для рендера некоторых линий
+    sophPath.setAttribute('stroke-width', strokeWidth)
+    sophPath.setAttribute('stroke', color)
     const container = {
       d: '',
       mask: '',
       amplifiers: '',
       layer: {
         object: objectData,
-        _path: L.SVG.create('path'), // заглушка для рендера некоторых линий
+        _path: sophPath,
         options: optionsRender,
         printOptions,
         getLatLngs: () => geometry.toJS(),
@@ -691,11 +695,11 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
 })
 
 mapObjectBuilders.set(SelectionTypes.GROUPED_HEAD, () => {
-  return ''
+  return '' // TODO
 })
 
 mapObjectBuilders.set(SelectionTypes.GROUPED_LAND, () => {
-  return ''
+  return '' // TODO
 })
 
 mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer) => {
@@ -737,6 +741,54 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   return getSvgPath(result.d, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
 })
 
+mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
+  const {
+    coordToPixels,
+    printOptions: {
+      getFontSize,
+      getStrokeWidth,
+    },
+  } = commonData
+  const render = {
+    _layers: {},
+    ...L.SVG.prototype,
+  }
+  const [ eternals, directionSegments, zoneSegments ] = object.geometry.toJS()
+  const { params: { directions, zones, start, title } } = object.attributes.toJS()
+  const grid = new L.FlexGrid(
+    null, {
+      directions,
+      zones,
+      vertical: false,
+      hideShadow: true,
+      hideCenterLine: true,
+      olovo: true,
+      start,
+      title,
+    },
+    object.id,
+    {
+      eternals,
+      directionSegments,
+      zoneSegments,
+    })
+  render._initFlexGrid(grid)
+  grid._map = {
+    latLngToLayerPoint: coordToPixels,
+  }
+  grid._project()
+  grid.printOptions = {
+    getFontSize,
+    getStrokeWidth,
+  }
+  render._updateFlexGrid(grid)
+  return <Fragment key={object.id}>
+    <g
+      dangerouslySetInnerHTML={{ __html: grid._path.innerHTML }}
+    />
+  </Fragment>
+})
+
 mapObjectBuilders.set(SelectionTypes.POLYLINE, getLineBuilder(false, false, 2))
 mapObjectBuilders.set(SelectionTypes.POLYGON, getLineBuilder(false, true, 3))
 mapObjectBuilders.set(SelectionTypes.CURVE, getLineBuilder(true, false, 2))
@@ -755,7 +807,7 @@ export const getMapObjectSvg = (commonData) => (object) => {
     return null
   }
   const layerData = layersById[layer]
-  return mapObjectBuilder && (
+  return (
     <Fragment key={id}>
       {mapObjectBuilder(commonData, object, layerData)}
     </Fragment>

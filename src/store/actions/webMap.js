@@ -44,6 +44,7 @@ export const actionNames = {
   SUBORDINATION_AUTO: action('SUBORDINATION_AUTO'),
   SET_MAP_CENTER: action('SET_MAP_CENTER'),
   OBJECT_LIST: action('OBJECT_LIST'),
+  OBJECT_LIST_REFRESH: action('OBJECT_LIST_REFRESH'),
   RETURN_UNIT_INDICATORS: action('RETURN_UNIT_INDICATORS'),
   SET_SCALE_TO_SELECTION: action('SET_SCALE_TO_SELECTION'),
   SET_MARKER: action('SET_MARKER'),
@@ -64,7 +65,6 @@ export const actionNames = {
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL: action('TOGGLE_TOPOGRAPHIC_OBJECTS_MODAL'),
   SELECT_TOPOGRAPHIC_ITEM: action('SELECT_TOPOGRAPHIC_ITEM'),
-  MOVE_OBJECTS: action(`MOVE_OBJECTS`),
   ADD_UNDO_RECORD: action('ADD_UNDO_RECORD'),
   UNDO: action('UNDO'),
   REDO: action('REDO'),
@@ -89,6 +89,7 @@ export const changeTypes = {
   COPY_CONTOUR: '(11) Copy contour',
   MOVE_CONTOUR: '(12) Move contour',
   MOVE_LIST: '(13) Move list of objects',
+  COPY_LIST: '(18) Copy list of objects',
 }
 
 export const setCoordinatesType = (value) => {
@@ -251,7 +252,7 @@ export const moveContour = (id, shift, addUndoRecord = true) =>
 
 export const moveObjList = (ids, shift, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => {
-    const payload = await objListMove(ids, shift)
+    await objListMove(ids, shift)
 
     if (addUndoRecord) {
       dispatch({
@@ -263,11 +264,6 @@ export const moveObjList = (ids, shift, addUndoRecord = true) =>
         },
       })
     }
-
-    return dispatch({
-      type: actionNames.MOVE_OBJECTS,
-      payload,
-    })
   })
 
 export const moveGroup = (id, shift) =>
@@ -360,6 +356,18 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
   return result.access
 }
 
+export const refreshObjectList = (list, layer) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => {
+    const { toUpdate, toDelete } = await objRefreshList(list, layer)
+    return dispatch({
+      type: actionNames.OBJECT_LIST_REFRESH,
+      payload: {
+        toUpdate: toUpdate.map(fixServerObject),
+        toDelete,
+      },
+    })
+  })
+
 export const refreshObjects = (ids) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefresh } }) => {
     for (const id of ids) {
@@ -412,6 +420,23 @@ export const refreshObject = (id, type, layer) =>
     }
   })
 
+export const copyList = (fromLayer, toLayer, list, addUndoRecord = true) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { copyList } }) => {
+    const ids = await copyList(fromLayer, toLayer, list)
+
+    if (addUndoRecord) {
+      dispatch({
+        type: actionNames.ADD_UNDO_RECORD,
+        payload: {
+          changeType: changeTypes.COPY_LIST,
+          list: ids,
+        },
+      })
+    }
+
+    return dispatch(selection.selectedList(ids))
+  })
+
 export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdate } }) => {
     stopHeartBeat()
@@ -437,19 +462,13 @@ export const updateObject = ({ id, ...object }, addUndoRecord = true) =>
   })
 
 export const updateObjectsByLayerId = (layerId) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => {
-    let objects = await objGetList(layerId)
-
-    objects = objects.map(fixServerObject)
-
-    return dispatch({
-      type: actionNames.OBJECT_LIST,
-      payload: {
-        layerId,
-        objects,
-      },
-    })
-  })
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objGetList } }) => dispatch({
+    type: actionNames.OBJECT_LIST,
+    payload: {
+      layerId,
+      objects: (await objGetList(layerId)).map(fixServerObject),
+    },
+  }))
 
 export const updateUnitObjectWithIndicators = (payload) => ({
   type: actionNames.RETURN_UNIT_INDICATORS,
@@ -705,6 +724,13 @@ async function performAction (record, direction, api, dispatch) {
         return dispatch(restoreObjects(list))
       } else {
         return dispatch(deleteObjects(list, false))
+      }
+    }
+    case changeTypes.COPY_LIST: {
+      if (direction === 'undo') {
+        return dispatch(deleteObjects(list, false))
+      } else {
+        return dispatch(restoreObjects(list))
       }
     }
     case changeTypes.LAYER_COLOR: {

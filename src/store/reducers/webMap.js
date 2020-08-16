@@ -282,6 +282,7 @@ function addUndoRecord (state, payload) {
     case changeTypes.INSERT_OBJECT:
     case changeTypes.DELETE_OBJECT:
     case changeTypes.DELETE_LIST:
+    case changeTypes.COPY_LIST:
     case changeTypes.CREATE_CONTOUR:
     case changeTypes.DELETE_CONTOUR:
     case changeTypes.COPY_CONTOUR:
@@ -352,6 +353,19 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.REDO:
       return update(state, 'undoPosition',
         (position) => Math.min(position + 1, state.get('undoRecords').size))
+    case actionNames.OBJECT_LIST_REFRESH: {
+      if (!payload) {
+        return state
+      }
+      const { toUpdate, toDelete } = payload
+      if (toUpdate && toUpdate.length) {
+        state = update(state, 'objects', (map) => toUpdate.reduce(updateObject, map))
+      }
+      if (toDelete && toDelete.length) {
+        state = update(state, 'objects', (map) => map.filter((value, key) => !toDelete.includes(key)))
+      }
+      return state
+    }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
       return update(state, 'objects', (map) => updateObject(map, payload))
@@ -361,11 +375,11 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state
     case actionNames.DEL_OBJECTS:
       return payload
-        ? state.set('objects', state.get('objects').filter((value, key) => !payload.includes(key)))
+        ? update(state, 'objects', (map) => map.filter((value, key) => !payload.includes(key)))
         : state
     case actionNames.ALLOCATE_OBJECTS_BY_LAYER_ID: {
       const delLayerId = payload
-      return state.set('objects', state.get('objects').filter(({ layer }) => layer !== delLayerId))
+      return update(state, 'objects', (map) => map.filter(({ layer }) => layer !== delLayerId))
     }
     case actionNames.REFRESH_OBJECT: {
       const { id, object } = payload
@@ -375,16 +389,15 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SET_MAP_CENTER: {
       const { center, zoom } = payload
-      let result = state
       if (center) {
-        result = result.set('center', center)
+        state = update(state, 'center', center)
         LS.set('view', 'center', center)
       }
       if (zoom) {
-        result = result.set('zoom', zoom)
+        state = update(state, 'zoom', zoom)
         LS.set('view', 'zoom', zoom)
       }
-      return result
+      return state
     }
     case actionNames.APP_INFO: {
       const {
@@ -427,7 +440,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         visible: true,
         selectedItem: 0,
       }
-      return state.set('topographicObjects', data)
+      return update(state, 'topographicObjects', data)
     }
     case actionNames.SELECT_TOPOGRAPHIC_ITEM: {
       return update(state, 'topographicObjects', { ...state.topographicObjects, selectedItem: payload })

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 // import FocusTrap from 'react-focus-lock'
-import { MovablePanel, NotClickableArea } from '@DZVIN/CommonComponents'
+import { MovablePanel, NotClickableArea, ResizeEnable } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -17,8 +17,6 @@ import {
   TextForm,
   ContourForm,
   SophisticatedForm,
-  AirborneForm,
-  ManoeuvreForm,
   MinedAreaForm,
   SectorsForm,
   PollutionCircleForm,
@@ -40,6 +38,7 @@ const forms = {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
     minWidth: 825,
+    enableResizing: ResizeEnable.ALL_DISABLED,
     minHeight: 'calc(100vh - 150px)',
     maxHeight: 'calc(100vh - 150px)',
   },
@@ -158,21 +157,7 @@ const forms = {
     defaultPosition: { x: calc, y: 40 },
     maxHeight: 'calc(100vh - 60px)',
   },
-  [SelectionTypes.AIRBORNE]: {
-    title: i18n.SHAPE_AIRBORNE,
-    component: AirborneForm,
-    minHeight: 795,
-    minWidth: 900,
-    maxHeight: 805,
-  },
-  [SelectionTypes.MANOEUVRE]: {
-    title: i18n.SHAPE_MANOEUVRE,
-    component: ManoeuvreForm,
-    minHeight: 795,
-    minWidth: 900,
-    maxHeight: 805,
-  },
-  [SelectionTypes.MINEDAREA]: {
+  [SelectionTypes.MINED_AREA]: {
     title: i18n.SHAPE_MINED_AREA,
     component: MinedAreaForm,
     minHeight: 'calc(100vh - 60px)',
@@ -327,7 +312,7 @@ export default class SelectionForm extends React.Component {
           formType = SelectionTypes.ATTACK
           break
         case '270800':
-          formType = SelectionTypes.MINEDAREA
+          formType = SelectionTypes.MINED_AREA
           break
         case '017016':
           formType = SelectionTypes.CONCENTRATION_FIRE
@@ -341,6 +326,7 @@ export default class SelectionForm extends React.Component {
       maxHeight,
       minWidth,
       maxWidth,
+      enableResizing,
       defaultPosition,
       component: Component,
     } = forms[formType]
@@ -385,6 +371,7 @@ export default class SelectionForm extends React.Component {
           bounds={'div.app-body'}
           minWidth={minWidth}
           maxWidth={maxWidth}
+          enableResizing={enableResizing}
           defaultPosition={defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}

@@ -13,7 +13,7 @@ import { evaluateColor } from '../../../constants/colors'
 import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
 import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
-import { prepareLinePath, makeHeadGroup, makeLandGroup, makeRegionGroup } from './utils/SVG'
+import { prepareLinePath, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
 import { getFontSize } from './Sophisticated/utils'
@@ -154,7 +154,7 @@ L.SVG.include({
       layer.addInteractiveTarget(layer._outlinePath)
     }
 
-    if (layer._amplifierGroup) {
+    if (layer._amplifierGroup) { // переустанавливаем группу выше линии
       this._rootGroup.appendChild(layer._amplifierGroup)
     }
 
@@ -248,22 +248,8 @@ L.SVG.include({
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
       result = 'm0,0'
-      if (layer._groupChildren) {
-        switch (kind) {
-          case entityKind.GROUPED_REGION: {
-            result = makeRegionGroup(layer)
-            break
-          }
-          case entityKind.GROUPED_HEAD: {
-            result = makeHeadGroup()
-            break
-          }
-          case entityKind.GROUPED_LAND: {
-            result = makeLandGroup()
-            break
-          }
-          default:
-        }
+      if (kind === entityKind.GROUPED_REGION && layer._groupChildren) {
+        result = makeRegionGroup(layer)
       }
     } else if (fullPolygon) {
       layer.options.fillRule = 'nonzero'
@@ -565,7 +551,7 @@ L.SVG.include({
     const group = L.SVG.create('g')
     const {
       className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
-      shadow,
+      shadow, highlightMain,
     } = grid.options
     grid._path = group
     if (className) {
@@ -579,7 +565,15 @@ L.SVG.include({
     grid._boundary = L.SVG.create('path')
     grid._border = L.SVG.create('path')
     grid._highlighted = L.SVG.create('path')
-    grid._pathes = [ grid._zones, grid._highlighted, grid._directions, grid._boundary, grid._border ]
+    grid._highlightMain = L.SVG.create('path')
+    grid._pathes = [
+      grid._zones,
+      grid._highlighted,
+      grid._directions,
+      grid._boundary,
+      grid._border,
+      grid._highlightMain,
+    ]
     if (interactive) {
       grid._pathes.forEach((path) => L.DomUtil.addClass(path, 'leaflet-interactive'))
     }
@@ -591,6 +585,7 @@ L.SVG.include({
     this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine })
     this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
     this._updateStyle({ _path: grid._highlighted, options: highlight })
+    this._updateStyle({ _path: grid._highlightMain, options: highlightMain })
     if (!olovo) {
       group.appendChild(grid._shadow)
     }
@@ -598,9 +593,11 @@ L.SVG.include({
     if (olovo) {
       grid._olovo = L.SVG.create('g')
       grid._title = L.SVG.create('text')
+      grid._title.style.userSelect = 'none'
       grid._olovo.appendChild(grid._title)
       grid._cells = narr(directions).map(() => narr(zones).map(() => {
         const text = L.SVG.create('text')
+        text.style.userSelect = 'none'
         grid._olovo.appendChild(text)
         return text
       }))
@@ -626,10 +623,10 @@ L.SVG.include({
 
   _updateFlexGrid: function (grid) {
     const { olovo, title, start, color, strokeWidth } = grid.options
-    const bounds = grid._map._renderer._bounds
-    const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
     const border = prepareBezierPath(grid._borderLine(), true)
     if (!olovo) {
+      const bounds = grid._map._renderer._bounds
+      const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
       grid._shadow.setAttribute('d', `${path}${border}`)
     }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
@@ -637,6 +634,7 @@ L.SVG.include({
     grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
+    grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
     if (olovo) {
       this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
       grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
@@ -648,10 +646,21 @@ L.SVG.include({
         ]), true),
       ))
 
-      const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+
       grid._pathes.forEach((path) => {
-        strokeWidth && path.setAttribute('stroke-width', strokeWidth * scale / 100)
-        color && path.setAttribute('stroke', color)
+        if (strokeWidth) {
+          let w
+          if (grid.printOptions) {
+            w = grid.printOptions.getStrokeWidth(strokeWidth)
+          } else {
+            const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+            w = strokeWidth * scale / 100
+          }
+          path.setAttribute('stroke-width', w)
+        }
+        if (color) {
+          path.setAttribute('stroke', color)
+        }
       })
     }
   },
@@ -660,5 +669,9 @@ L.SVG.include({
     return grid.highlightedDirections && grid.highlightedDirections.length
       ? grid.highlightedDirections.reduce((acc, index) => acc + grid.cellRings[index].join(''), '')
       : ''
+  },
+
+  _getHighlightMainDirectionsArea: function (grid) {
+    return grid.highlightedMainDirection !== null ? grid.cellRings[grid.highlightedMainDirection].join('') : ''
   },
 })

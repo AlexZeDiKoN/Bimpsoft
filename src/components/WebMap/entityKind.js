@@ -94,7 +94,12 @@ export const GROUPS = {
     entityKind.CONTOUR,
     entityKind.GROUPED_HEAD,
     entityKind.GROUPED_LAND,
-    // entityKind.GROUPED_REGION,
+  ],
+  GROUPED_OR_COMBINED: [
+    entityKind.CONTOUR,
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+    entityKind.GROUPED_REGION,
   ],
   BEZIER: [
     entityKind.CURVE,

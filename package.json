@@ -1,13 +1,13 @@
 {
   "name": "web-map",
-  "version": "15.03.1050",
+  "version": "15.03.1067",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^15.2.514",
-    "@DZVIN/MilSymbolEditor": "^15.2.274",
-    "@DZVIN/components": "^15.2.576",
+    "@DZVIN/CommonComponents": "^15.3.516",
+    "@DZVIN/MilSymbolEditor": "^15.3.275",
+    "@DZVIN/components": "^15.3.578",
     "@DZVIN/leaflet-measure-custom": "^15.2.7",
-    "@DZVIN/milsymbol": "^0.0.5",
+    "@DZVIN/milsymbol": "^15.3.10",
     "antd": "^3.12.4",
     "bezier-js": "2.5.1",
     "cesium": "^1.72.0",
