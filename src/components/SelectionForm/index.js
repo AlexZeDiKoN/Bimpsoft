@@ -126,9 +126,11 @@ const forms = {
   [SelectionTypes.GROUPED_REGION]: {
     title: i18n.CONTOUR_REGION_UNIT,
     component: ContourForm,
-    minHeight: 330,
-    maxHeight: 330,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.OLOVO]: {
     title: i18n.DEFEAT_STRIP_ZONE,
