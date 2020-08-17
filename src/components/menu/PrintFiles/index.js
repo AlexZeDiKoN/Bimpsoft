@@ -63,7 +63,7 @@ export default class PrintFiles extends PureComponent {
       <Dropdown
         overlay={this.renderFileBox()}
         trigger={[ 'click' ]}
-        placement='bottomCenter'
+        placement='bottomLeft'
         onVisibleChange={this.handleVisibleChange}
         visible={this.state.visible}
       >
