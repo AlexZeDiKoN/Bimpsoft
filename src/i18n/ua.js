@@ -93,6 +93,7 @@ export const SHAPE_MINE_FIELD = 'Мінне поле'
 export const SOPHISTICATED = 'Складна лінія'
 export const SHAPE_ATTACK = 'Напрямок удару / атаки'
 export const SHAPE_CONCENTRATION_FIRE = 'Послідовне зосередження вогню'
+export const SHAPE_DEFEAT_STRIP_ZONE = 'Смуга ураження керованими снарядами' // OLOVO
 
 export const UNDEFINED = 'Не вказано'
 
@@ -236,7 +237,6 @@ export const COMBINE = 'Об\'єднати'
 export const MIRROR_IMAGE = 'Дзеркально відобразити'
 export const CONTOUR = 'Контур'
 export const CONTOUR_REGION_UNIT = 'Позиційний район підрозділу'
-export const DEFEAT_STRIP_ZONE = 'Смуга ураження керованими снарядами'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
