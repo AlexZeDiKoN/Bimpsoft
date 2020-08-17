@@ -123,6 +123,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onUnitInfo={this.handlerUnitInfo}
         onSearch={placeSearch}
         ovtData={ovtData}
+        maxInputLength={30}
       />
     )
   }
