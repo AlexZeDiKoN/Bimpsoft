@@ -1676,7 +1676,8 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       // layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      if (object.type === entityKind.POINT && unit) {
+      // TODO: тимчасово відключаємо показ характеристик підрозділу
+      /* if (object.type === entityKind.POINT && unit) {
         layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
           openingAction,
           layer,
@@ -1689,7 +1690,7 @@ export default class WebMap extends React.PureComponent {
           layerObject.formationId,
           object,
         ))
-      }
+      } */
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
