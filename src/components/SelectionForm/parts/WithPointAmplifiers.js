@@ -15,6 +15,7 @@ export const MAX_LENGTH_TEXT_AMPLIFIERS = {
   TEXTAREA: 30,
   TEXT_MULTILINE: 128,
   INPUT: 15,
+  TEXT_INPUT: 30,
 }
 
 const PAIR_LIST = Object.values(PAIRS)

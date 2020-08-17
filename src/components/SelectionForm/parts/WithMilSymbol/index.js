@@ -6,6 +6,7 @@ import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
 
 import './style.css'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
 
 const configs = SymbolEditorComponentStateless.configs
 
@@ -123,7 +124,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onUnitInfo={this.handlerUnitInfo}
         onSearch={placeSearch}
         ovtData={ovtData}
-        maxInputLength={30}
+        maxInputLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_INPUT}
       />
     )
   }
