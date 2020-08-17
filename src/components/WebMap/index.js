@@ -84,7 +84,7 @@ const popupOptionsIndicators = {
 const switchScaleOptions = {
   scales: SCALES,
   splitScale: true,
-  ratioCustomItemText: '1: інший...',
+  ratioCustomItemText: '1: інший...', // CustomItem заблокирован через стили
   customScaleTitle: 'Задайте свій масштаб і натисніть Enter',
 }
 
