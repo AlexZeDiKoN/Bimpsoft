@@ -112,9 +112,22 @@
           margin-right: 10px;
 
           .container-color-picker {
-            height: 48px;
+            height: 30px;
             display: flex;
             align-items: flex-end;
+            padding-top: 0;
+            .dzvin-form-row{
+              flex-direction: row;
+              align-items: center;
+              .dzvin-form-input{
+                width: fit-content;
+                margin-left: 10px;
+                .color-picker{
+                  width: 28px;
+                  height: 28px;
+                }
+              }
+            }
           }
         }
       }
