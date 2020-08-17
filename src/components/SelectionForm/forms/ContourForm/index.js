@@ -37,7 +37,6 @@ export default class ContourForm extends compose(
             <div className="contour-default-container__itemWidth">
               <div className='containerTypeColor'>
                 {this.renderFill()}
-                {this.renderColor()}
               </div>
             </div>
           </div>

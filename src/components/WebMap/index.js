@@ -67,8 +67,9 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
   dashArray: [ 5, 5 ],
 }
 
-const openingAction = 'open'
-const closingAction = 'close'
+// TODO: тимчасово відключаємо показ характеристик підрозділу
+// const openingAction = 'open'
+// const closingAction = 'close'
 const xBound = 160
 const yBound = 320
 const openPopUpInterval = 1000
@@ -1645,7 +1646,8 @@ export default class WebMap extends React.PureComponent {
 
   addObject = (object, prevLayer) => {
     const {
-      layersByIdFromStore,
+      // TODO: тимчасово відключаємо показ характеристик підрозділу
+      // layersByIdFromStore,
       level,
       layersById,
       hiddenOpacity,
@@ -1655,9 +1657,16 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
     } = this.props
 
-    const { id, attributes, layer: layerInner, unit } = object
+    const {
+      id,
+      attributes,
+      // TODO: тимчасово відключаємо показ характеристик підрозділу
+      // layer: layerInner,
+      // unit,
+    } = object
 
-    const layerObject = layersByIdFromStore[layerInner]
+    // TODO: тимчасово відключаємо показ характеристик підрозділу
+    // const layerObject = layersByIdFromStore[layerInner]
 
     try {
       validateObject(object && object.toJS ? object.toJS() : object)
@@ -1676,7 +1685,8 @@ export default class WebMap extends React.PureComponent {
       layer.object = object
       // layer.on('click', this.clickOnLayer)
       layer.on('dblclick', this.dblClickOnLayer)
-      if (object.type === entityKind.POINT && unit) {
+      // TODO: тимчасово відключаємо показ характеристик підрозділу
+      /* if (object.type === entityKind.POINT && unit) {
         layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
           openingAction,
           layer,
@@ -1689,7 +1699,7 @@ export default class WebMap extends React.PureComponent {
           layerObject.formationId,
           object,
         ))
-      }
+      } */
       layer.on('pm:markerdragstart', this.onMarkerDragStart)
       layer.on('pm:markerdragend', this.onMarkerDragEnd)
       layer.on('pm:dragstart', this.onDragStarted)
