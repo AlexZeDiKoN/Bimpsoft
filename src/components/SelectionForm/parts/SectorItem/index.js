@@ -23,10 +23,8 @@ const { Coordinates: Coord } = utils
 export default class SectorItem extends React.Component {
   static propTypes = {
     index: PropTypes.number,
-    beginCoordinate: PropTypes.object,
-    secondCoordinate: PropTypes.object,
-    coord1: PropTypes.object,
-    coord2: PropTypes.object,
+    numSector: PropTypes.number,
+    allPoints: PropTypes.array,
     sectorInfo: PropTypes.object,
     canRemove: PropTypes.bool,
     readOnly: PropTypes.bool,
@@ -49,27 +47,27 @@ export default class SectorItem extends React.Component {
   }
 
   removeSectorClickHandler = () => {
-    const { onRemove, index } = this.props
-    onRemove && onRemove(index)
+    const { onRemove, numSector } = this.props
+    onRemove && onRemove(numSector)
   }
 
   sectorAmplifierChangeHandler = ({ target: { name, value } }) => {
-    const { onChangeProps, index } = this.props
-    onChangeProps && onChangeProps({ name, index, value })
+    const { onChangeProps, numSector } = this.props
+    onChangeProps && onChangeProps({ name, numSector, value })
   }
 
   sectorColorChangeHandler = (color) => {
-    const { onChangeProps, index } = this.props
+    const { onChangeProps, numSector } = this.props
     const name = 'color'
     const value = color
-    onChangeProps && onChangeProps({ name, index, value })
+    onChangeProps && onChangeProps({ name, numSector, value })
   }
 
   sectorFillChangeHandler = (fill) => {
-    const { onChangeProps, index } = this.props
+    const { onChangeProps, numSector } = this.props
     const name = 'fill'
     const value = fill
-    onChangeProps && onChangeProps({ name, index, value })
+    onChangeProps && onChangeProps({ name, numSector, value })
   }
 
   onFocusHandler = () => {
@@ -83,17 +81,34 @@ export default class SectorItem extends React.Component {
   }
 
   radiusBlurHandler = () => {
-    const { onChange, onFocus, index, beginCoordinate, coord1, coord2 } = this.props
+    const { onChange, onFocus, index, allPoints } = this.props
     const { radiusText } = this.state
+    const center = allPoints[0]
+    const coord1 = allPoints[index]
+    const coord2 = allPoints[index + 1]
     const radius = Number(radiusText)
-    if (Number.isFinite(radius) && Coord.check(beginCoordinate) && Coord.check(coord1) && Coord.check(coord2)) {
-      const da1 = distanceAzimuth(beginCoordinate, coord1)
-      const da2 = distanceAzimuth(beginCoordinate, coord2)
-      const coord1New = sphereDirect(beginCoordinate, da1.angledeg, radius)
-      const coord2New = sphereDirect(beginCoordinate, da2.angledeg, radius)
-      // TODO нужна проверка радиуса
-      if (Coord.check(coord1New) && Coord.check(coord2New)) {
-        onChange && onChange({ coord1: coord1New, coord2: coord2New, index })
+    if (Number.isFinite(radius) && Coord.check(center) && Coord.check(coord1) && Coord.check(coord2)) {
+      const da1 = distanceAzimuth(center, coord1)
+      const da2 = distanceAzimuth(center, coord2)
+      // сравнение радиуса с радиусами соседних секторов
+      const nextInd = index + 2
+      const prevRadius = index > 1 ? distanceAzimuth(center, allPoints[index - 2]).distance : 10
+      const nextRadius = (nextInd) < allPoints.length ? distanceAzimuth(center, allPoints[nextInd]).distance : Infinity
+      if ((radius > prevRadius * 1.1) && (radius * 1.1 < nextRadius)) {
+        let coordArrow
+        if (nextInd === allPoints.length) { // Изменяли последний сектор
+          // Подгонка направляющего луча
+          const arrow = distanceAzimuth(center, allPoints[1])
+          if (arrow.distance < radius * 1.1) {
+            coordArrow = sphereDirect(center, arrow.angledeg, radius * 1.1)
+          }
+        }
+        const coord1New = sphereDirect(center, da1.angledeg, radius)
+        const coord2New = sphereDirect(center, da2.angledeg, radius)
+        // проверка радиуса
+        if (Coord.check(coord1New) && Coord.check(coord2New) && onChange) {
+          onChange({ coord1: coord1New, coord2: coord2New, index, coordArrow })
+        }
       }
     }
     this.setState({ isFocus: false, radiusText: undefined })
@@ -101,11 +116,15 @@ export default class SectorItem extends React.Component {
   }
 
   azimutBlurHandler = () => {
-    const { onChange, onFocus, index, beginCoordinate, coord1, coord2, secondCoordinate } = this.props
+    const { onChange, onFocus, index, allPoints } = this.props
     const { azimuthLText, azimuthRText } = this.state
     if (azimuthLText === undefined && azimuthRText === undefined) {
       return
     }
+    const beginCoordinate = allPoints[0]
+    const secondCoordinate = allPoints[1]
+    const coord1 = allPoints[index]
+    const coord2 = allPoints[index + 1]
     const radius = Earth.distance(beginCoordinate, coord1)
     const azimuthL = (azimuthLText !== undefined)
       ? Number(azimuthLText) : distanceAzimuth(beginCoordinate, coord1).angledeg
@@ -136,10 +155,12 @@ export default class SectorItem extends React.Component {
   azimut1ChangHandler = (value) => this.setState({ azimuthLText: value })
 
   render () {
-    const { index, sectorInfo, readOnly, beginCoordinate, coord1, coord2, addOnly } = this.props
-    if (index === undefined) { return }
-    const da1 = distanceAzimuth(beginCoordinate, coord1)
-    const da2 = distanceAzimuth(beginCoordinate, coord2)
+    const { index, numSector, sectorInfo, readOnly, addOnly, allPoints } = this.props
+    if (numSector === undefined || index === undefined) { return }
+    const coord1 = allPoints[index]
+    const center = allPoints[0]
+    const da1 = distanceAzimuth(center, coord1)
+    const da2 = distanceAzimuth(center, allPoints[index + 1])
     const { radiusText, azimuthLText, azimuthRText } = this.state
     const radius = radiusText ?? da1.distance.toFixed(0)
     const azimuthL = azimuthLText ?? da1.angledeg.toFixed(0)
