@@ -100,7 +100,7 @@ export default function reducer (state = FlexGridState(), action) {
         }), 'flexGrid', merge, {
           id,
           deleted,
-          directions,
+          directions: deleted ? DEF_DIRECTIONS : directions,
           zones,
           eternals: List(eternals),
           directionSegments: List(directionSegments),
