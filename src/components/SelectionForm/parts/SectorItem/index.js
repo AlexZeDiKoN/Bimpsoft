@@ -156,10 +156,10 @@ export default class SectorItem extends React.Component {
 
   render () {
     const { index, numSector, sectorInfo, readOnly, addOnly, allPoints } = this.props
-    if (numSector === undefined) { return }
+    if (numSector === undefined || index === undefined) { return }
     const coord1 = allPoints[index]
     const center = allPoints[0]
-    const da1 = distanceAzimuth(center, allPoints[index])
+    const da1 = distanceAzimuth(center, coord1)
     const da2 = distanceAzimuth(center, allPoints[index + 1])
     const { radiusText, azimuthLText, azimuthRText } = this.state
     const radius = radiusText ?? da1.distance.toFixed(0)
