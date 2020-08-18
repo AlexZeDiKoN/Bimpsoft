@@ -87,7 +87,8 @@ export default class SectorItem extends React.Component {
     const coord1 = allPoints[index]
     const coord2 = allPoints[index + 1]
     const radius = Number(radiusText)
-    if (Number.isFinite(radius) && Coord.check(center) && Coord.check(coord1) && Coord.check(coord2)) {
+    if (Number.isFinite(radius) && Coord.check(center) && Coord.check(coord1) && Coord.check(coord2) &&
+      radius < 1000000) {
       const da1 = distanceAzimuth(center, coord1)
       const da2 = distanceAzimuth(center, coord2)
       // сравнение радиуса с радиусами соседних секторов
