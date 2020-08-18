@@ -67,7 +67,8 @@ export default class TextItem extends React.Component {
           value={text}
           maxLength={maxLengthText}
           onChange={readOnly ? null : this.textChangeHandler}
-          readOnly={readOnly} />
+          readOnly={readOnly}
+        />
         <div className={'icons'}>
           {!readOnly && (<IconHovered
             icon={underline ? IconNames.U_ACTIVE : IconNames.U_DEFAULT}
