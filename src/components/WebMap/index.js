@@ -75,8 +75,6 @@ const yBound = 320
 const openPopUpInterval = 1000
 const clearLastUnitIdToGetNewRequestForIndicators = 30000
 
-// через это количество милисеккунд идет запрос на сервер и еще через столько же открывается попап
-
 const popupOptionsIndicators = {
   maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false, closeButton: false,
 }
