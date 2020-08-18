@@ -9,6 +9,7 @@ import ColorPicker from '../../../common/ColorPicker'
 import { colorOption } from '../render'
 import { distanceAzimuth, sphereDirect, angleDegCheck, azimuthCheck } from '../../../WebMap/patch/utils/sectors'
 import i18n from '../../../../i18n'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
 
 const {
   icons: { IconHovered, names: IconNames },
@@ -206,6 +207,7 @@ export default class SectorItem extends React.Component {
               onBlur={!readOnly ? this.onBlurHandler : null}
               disabled={readOnly}
               rows={1}
+              maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
             />
           </div>
         </div>
