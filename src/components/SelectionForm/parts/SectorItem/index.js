@@ -11,6 +11,7 @@ import { distanceAzimuth, sphereDirect, angleDegCheck, azimuthCheck } from '../.
 import i18n from '../../../../i18n'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
 
+const MAX_RADIUS = 1000000
 const {
   icons: { IconHovered, names: IconNames },
   form: { FormItem, InputWithSuffix },
@@ -88,7 +89,7 @@ export default class SectorItem extends React.Component {
     const coord2 = allPoints[index + 1]
     const radius = Number(radiusText)
     if (Number.isFinite(radius) && Coord.check(center) && Coord.check(coord1) && Coord.check(coord2) &&
-      radius < 1000000) {
+      radius < MAX_RADIUS) {
       const da1 = distanceAzimuth(center, coord1)
       const da2 = distanceAzimuth(center, coord2)
       // сравнение радиуса с радиусами соседних секторов
