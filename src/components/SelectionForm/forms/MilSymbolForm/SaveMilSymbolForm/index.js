@@ -3,13 +3,17 @@ import PropTypes from 'prop-types'
 import { components } from '@DZVIN/CommonComponents'
 import './style.css'
 import FocusTrap from 'react-focus-lock'
-import { isArray } from 'leaflet/src/core/Util'
 import { shortcuts } from '../../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../../common/HotKeys'
 import i18n from '../../../../../i18n'
 import { errorSymbol } from '../../../../../store/actions/selection'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
+
+function declOfNum (number, titles) {
+  const cases = [ 2, 0, 1, 1, 1, 2 ]
+  return titles[ (number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5] ]
+}
 
 export default class SaveMilSymbolForm extends React.Component {
   static propTypes = {
@@ -29,14 +33,15 @@ export default class SaveMilSymbolForm extends React.Component {
       doubleObjects,
     } = this.props
     let errorMessage = errorCode & errorSymbol.duplication ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3
-    let doubles = (doubleObjects && isArray(doubleObjects)) ? doubleObjects : [ { code: '', unit: '' } ]
+    let doubles = (doubleObjects && Array.isArray(doubleObjects)) ? doubleObjects : [ { code: '', unit: '' } ]
     let isEtc = false
     let question = (errorCode & errorSymbol.duplication) ? i18n.QUESTION_1_0 : i18n.QUESTION_2
 
     if (errorCode & errorSymbol.duplication) {
-      if (doubleObjects && isArray(doubleObjects)) {
+      if (doubleObjects && Array.isArray(doubleObjects)) {
         if (doubleObjects.length > 1) {
-          errorMessage = `${i18n.ERROR_MESSAGE_00}${doubleObjects.length}${(doubleObjects.length < 5) ? i18n.ERROR_MESSAGE_01 : i18n.ERROR_MESSAGE_02}`
+          errorMessage = `${i18n.ERROR_MESSAGE_00}${doubleObjects.length}
+            ${declOfNum(doubleObjects.length, i18n.ERROR_MESSAGES_SYMBOL)}`
           // формирование списка выводимых объектов на форму предупреждеия
           if (doubleObjects.length < 5) {
             doubles = doubleObjects.map((obj) => { return { code: obj.code, unit: obj.unit ?? '' } })
