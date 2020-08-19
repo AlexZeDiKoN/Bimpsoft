@@ -22,7 +22,8 @@ export default class SaveMilSymbolForm extends React.Component {
 
   render () {
     const {
-      onApply, onCancel,
+      onApply,
+      onCancel,
       notClickable = true,
       errorCode = errorSymbol.code,
       doubleObjects,
@@ -36,9 +37,10 @@ export default class SaveMilSymbolForm extends React.Component {
       if (doubleObjects && isArray(doubleObjects)) {
         if (doubleObjects.length > 1) {
           errorMessage = `${i18n.ERROR_MESSAGE_00}${doubleObjects.length}${(doubleObjects.length < 5) ? i18n.ERROR_MESSAGE_01 : i18n.ERROR_MESSAGE_02}`
+          // формирование списка выводимых объектов на форму предупреждеия
           if (doubleObjects.length < 5) {
             doubles = doubleObjects.map((obj) => { return { code: obj.code, unit: obj.unit ?? '' } })
-          } else {
+          } else { // выводим только первые 3
             doubles = doubleObjects.slice(0, 3).map((obj) => { return { code: obj.code, unit: obj.unit ?? '' } })
             isEtc = true
           }

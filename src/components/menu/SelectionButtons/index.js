@@ -72,7 +72,7 @@ export default class SelectionButtons extends React.Component {
       return null
     }).filter(Boolean)
     if (doubleObjects.length > 0) {
-      onPasteError(doubleObjects)
+      onPasteError(doubleObjects) // передаем список объектов уже существующих на слое
     } else {
       onPaste()
     }
