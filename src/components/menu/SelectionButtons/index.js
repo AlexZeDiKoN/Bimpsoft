@@ -55,11 +55,6 @@ export default class SelectionButtons extends React.Component {
     onUngroup: PropTypes.func,
   }
 
-  state = {
-    unit: undefined,
-    code: undefined,
-  }
-
   // проверка объекта при вставке на дублирование
   onPasteObject = () => {
     const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures } = this.props

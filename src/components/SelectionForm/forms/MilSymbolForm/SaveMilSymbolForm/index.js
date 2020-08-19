@@ -34,7 +34,7 @@ export default class SaveMilSymbolForm extends React.Component {
     let errorMessage = errorCode & errorSymbol.duplication ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3
     let doubles = [ { code, unit: unitText } ]
     let isEtc = false
-    let question = i18n.QUESTION_1_0
+    let question = (errorCode & errorSymbol.duplication) ? i18n.QUESTION_1_0 : i18n.QUESTION_2
 
     if (errorCode & errorSymbol.duplication) {
       if (doubleObjects && isArray(doubleObjects)) {
@@ -87,7 +87,7 @@ export default class SaveMilSymbolForm extends React.Component {
                   {(errorCode & errorSymbol.code) ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div> : <></>}
                   <br/>
                   <div className="confirm-text">
-                    {(errorCode & errorSymbol.duplication) ? question : i18n.QUESTION_2}
+                    {question}
                   </div>
                 </div>
               </FormItem>
