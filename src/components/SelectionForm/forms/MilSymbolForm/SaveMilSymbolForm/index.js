@@ -13,8 +13,6 @@ const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
 export default class SaveMilSymbolForm extends React.Component {
   static propTypes = {
-    unitText: PropTypes.string,
-    code: PropTypes.string,
     notClickable: PropTypes.bool,
     onApply: PropTypes.func,
     onCancel: PropTypes.func,
@@ -24,15 +22,13 @@ export default class SaveMilSymbolForm extends React.Component {
 
   render () {
     const {
-      code = '',
-      unitText = '',
       onApply, onCancel,
       notClickable = true,
       errorCode = errorSymbol.code,
       doubleObjects,
     } = this.props
     let errorMessage = errorCode & errorSymbol.duplication ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3
-    let doubles = [ { code, unit: unitText } ]
+    let doubles = (doubleObjects && isArray(doubleObjects)) ? doubleObjects : [ { code: '', unit: '' } ]
     let isEtc = false
     let question = (errorCode & errorSymbol.duplication) ? i18n.QUESTION_1_0 : i18n.QUESTION_2
 
@@ -49,7 +45,6 @@ export default class SaveMilSymbolForm extends React.Component {
           question = i18n.QUESTION_1_1
         } else {
           errorMessage = i18n.ERROR_MESSAGE_1
-          doubles = [ { code: doubleObjects[0].code, unit: doubleObjects[0].unit } ]
         }
       }
     }
