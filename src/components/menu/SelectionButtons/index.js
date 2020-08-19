@@ -60,7 +60,7 @@ export default class SelectionButtons extends React.Component {
     const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures } = this.props
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
-      if (type === SelectionTypes.POINT) {
+      if (type === SelectionTypes.POINT && objectsMap && unit !== null) {
         const symbols = sameObjects({ code, unit, type, layerId }, objectsMap)
         if (symbols.size > 0) {
           return {
