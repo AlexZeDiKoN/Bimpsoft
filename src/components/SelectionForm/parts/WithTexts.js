@@ -4,12 +4,12 @@ import TextSymbol from '../../common/TextSymbol'
 import { Align } from '../../../constants'
 import i18n from '../../../i18n'
 import TextItem from './TextItem'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const { FormItem } = components.form
 const { names: IconNames, IconHovered, IconButton } = components.icons
 
 const PATH = [ 'attributes', 'texts' ]
-const MAX_LENGTH_TEXT_INPUT = 500
 
 const getTotalAlign = (texts) => {
   let totalAlign = null
@@ -90,7 +90,7 @@ const WithTexts = (Component) => class TextsComponent extends Component {
               data={item}
               index={index}
               readOnly={!canEdit}
-              maxLengthText={MAX_LENGTH_TEXT_INPUT}
+              maxLengthText={MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_INSCRIPTION}
               canRemove={texts.size > 1}
               onChange={this.changeTextItemHandler}
               onPreview={this.previewTextItemHandler}

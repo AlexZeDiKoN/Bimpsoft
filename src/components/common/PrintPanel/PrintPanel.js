@@ -264,7 +264,9 @@ class PrintPanel extends React.Component {
     } = Print
     const { FormRow, ButtonCancel, ButtonSave } = components.form
     return (
-      <div className='printPanelFormInner'>
+      <div
+        className='printPanelFormInner'
+        style={legendEnabled ? { overflowY: 'auto' } : { overflowY: 'hidden' }}>
         <Form>
           <div className='print-scale-container'>
             <div>{i18n.SCALE_PRINT}</div>
