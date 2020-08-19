@@ -79,9 +79,7 @@ export default class SelectionButtons extends React.Component {
   }
 
   errorPasteForm = () => {
-    // const { unit, code } = this.state
     const { onPasteOk, onPasteCancel, doubleObjects } = this.props
-    // const unitText = orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : ''
     return <SaveMilSymbolForm
       doubleObjects={doubleObjects}
       errorCode={errorSymbol.duplication}
