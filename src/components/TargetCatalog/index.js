@@ -3,7 +3,6 @@ import memoizeOne from 'memoize-one'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
-import i18n from '../../i18n'
 
 const _expandedIds = {}
 
@@ -28,7 +27,6 @@ export default class TargetCatalog extends React.PureComponent {
         {...this.props}
         roots={this.getRoots(this.props.byIds)}
         expandedIds={_expandedIds}
-        title={i18n.TARGETS}
         selectedId={this.props.selectedList[0]}
         milSymbolRenderer={this.milSymbolRenderer}
         onClick={this.handleSelect}
@@ -40,7 +38,6 @@ export default class TargetCatalog extends React.PureComponent {
 }
 
 TargetCatalog.propTypes = {
-  wrapper: PropTypes.any,
   canEdit: PropTypes.bool,
   byIds: PropTypes.object.isRequired,
   setFilterText: PropTypes.func,

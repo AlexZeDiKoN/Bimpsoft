@@ -79,7 +79,6 @@ export default class LayersComponent extends React.Component {
 
   render () {
     const {
-      wrapper: Wrapper = React.Fragment,
       timelineFrom,
       timelineTo,
       onChangeTimeLineFrom,
@@ -106,96 +105,94 @@ export default class LayersComponent extends React.Component {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
     return (
-      <Wrapper title={i18n.LAYERS} icon={IconNames.LAYERS}>
-        <div className="layers-component">
-          <div className='container-layers'>
-            <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
-            <div className='container-layers__btnContainer'>
-              <Tooltip title={i18n.LAYERS_VISIBILITY} placement='topRight'>
-                <IButton
-                  icon={IconNames.COLORS}
-                  colorType={ColorTypes.WHITE}
-                  type={ButtonTypes.WITH_BG}
-                  active={showLayers}
-                  disabled={is3DMapMode}
-                  onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
-                />
-              </Tooltip>
-              {!isMapCOP && isMapCOP !== undefined && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
-                <IButton
-                  icon={IconNames.CALENDAR}
-                  colorType={ColorTypes.WHITE}
-                  type={ButtonTypes.WITH_BG}
-                  active={showPeriod}
-                  onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
-                />
-              </Tooltip>}
-            </div>
-          </div>
-          {(!is3DMapMode) &&
-            <div className={'container-layers-controls'} style={{ height: showLayers ? 46 : 0 }}>
-              <LayersControlsComponent
-                backOpacity={backOpacity}
-                cancelCloseHandler={this.cancelCloseHandler}
-                showCloseForm={showCloseForm}
-                okCloseHandler={this.okCloseHandler}
-                onChangeBackOpacity={onChangeBackOpacity}
-                hiddenOpacity={hiddenOpacity}
-                onChangeHiddenOpacity={onChangeHiddenOpacity}
-              />
-            </div>
-          }
-          <div className='interval-control-container' style={{ height: showPeriod ? 48 : 0 }}>
-            <IntervalControl
-              showPeriod={showPeriod}
-              from={timelineFrom}
-              to={timelineTo}
-              onChangeFrom={onChangeTimeLineFrom}
-              onChangeTo={onChangeTimeLineTo}
-            />
-          </div>
-          <div className="tree-layers-container">
-            <TreeComponentUncontrolled
-              className="tree-layers"
-              byIds={byIds}
-              roots={roots}
-              commonData={this.getCommonData(selectedLayerId, textFilter)}
-              itemTemplate={ItemTemplate}
-              expandedKeys={expandedKeys}
-              filteredIds={filteredIds}
-              onExpand={onExpand}
-            />
-          </div>
-          <div className='control-button'>
-            <VisibilityButton
-              title={i18n.MAPS_VISIBILITY}
-              className="layers-controls-control"
-              visible={visible}
-              onChange={onChangeVisibility}
-            />
-            <div className='divider'/>
-            <Tooltip
-              title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
-              placement='topRight'>
+      <div className="layers-component">
+        <div className='container-layers'>
+          <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
+          <div className='container-layers__btnContainer'>
+            <Tooltip title={i18n.LAYERS_VISIBILITY} placement='topRight'>
               <IButton
-                icon={mapsCollapsed ? IconNames.MAP_UNFOLD_DOWN : IconNames.MAP_FOLD }
-                colorType={ColorTypes.WITH_BG}
-                disabled={roots?.length === 0}
-                type={ButtonTypes.WHITE}
-                onClick={() => onCloseMapSections(mapsCollapsed)}
+                icon={IconNames.COLORS}
+                colorType={ColorTypes.WHITE}
+                type={ButtonTypes.WITH_BG}
+                active={showLayers}
+                disabled={is3DMapMode}
+                onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
               />
             </Tooltip>
-            <div className='divider'/>
-            <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
+            {!isMapCOP && isMapCOP !== undefined && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
               <IButton
-                disabled={roots?.length === 0}
-                icon={IconNames.CLOSE_MAP}
-                onClick={this.closeHandler}
+                icon={IconNames.CALENDAR}
+                colorType={ColorTypes.WHITE}
+                type={ButtonTypes.WITH_BG}
+                active={showPeriod}
+                onClick={() => this.setState((prev) => ({ showPeriod: !prev.showPeriod }))}
               />
-            </Tooltip>
+            </Tooltip>}
           </div>
         </div>
-      </Wrapper>
+        {(!is3DMapMode) &&
+          <div className={'container-layers-controls'} style={{ height: showLayers ? 46 : 0 }}>
+            <LayersControlsComponent
+              backOpacity={backOpacity}
+              cancelCloseHandler={this.cancelCloseHandler}
+              showCloseForm={showCloseForm}
+              okCloseHandler={this.okCloseHandler}
+              onChangeBackOpacity={onChangeBackOpacity}
+              hiddenOpacity={hiddenOpacity}
+              onChangeHiddenOpacity={onChangeHiddenOpacity}
+            />
+          </div>
+        }
+        <div className='interval-control-container' style={{ height: showPeriod ? 48 : 0 }}>
+          <IntervalControl
+            showPeriod={showPeriod}
+            from={timelineFrom}
+            to={timelineTo}
+            onChangeFrom={onChangeTimeLineFrom}
+            onChangeTo={onChangeTimeLineTo}
+          />
+        </div>
+        <div className="tree-layers-container">
+          <TreeComponentUncontrolled
+            className="tree-layers"
+            byIds={byIds}
+            roots={roots}
+            commonData={this.getCommonData(selectedLayerId, textFilter)}
+            itemTemplate={ItemTemplate}
+            expandedKeys={expandedKeys}
+            filteredIds={filteredIds}
+            onExpand={onExpand}
+          />
+        </div>
+        <div className='control-button'>
+          <VisibilityButton
+            title={i18n.MAPS_VISIBILITY}
+            className="layers-controls-control"
+            visible={visible}
+            onChange={onChangeVisibility}
+          />
+          <div className='divider'/>
+          <Tooltip
+            title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
+            placement='topRight'>
+            <IButton
+              icon={mapsCollapsed ? IconNames.MAP_UNFOLD_DOWN : IconNames.MAP_FOLD }
+              colorType={ColorTypes.WITH_BG}
+              disabled={roots?.length === 0}
+              type={ButtonTypes.WHITE}
+              onClick={() => onCloseMapSections(mapsCollapsed)}
+            />
+          </Tooltip>
+          <div className='divider'/>
+          <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
+            <IButton
+              disabled={roots?.length === 0}
+              icon={IconNames.CLOSE_MAP}
+              onClick={this.closeHandler}
+            />
+          </Tooltip>
+        </div>
+      </div>
     )
   }
 }

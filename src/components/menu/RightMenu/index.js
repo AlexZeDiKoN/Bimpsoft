@@ -11,10 +11,8 @@ const { icons: { names: iconNames, IconButton } } = components
 export default class RightMenu extends React.Component {
   static propTypes = {
     isSettingsShow: PropTypes.bool,
-    isSidebarShow: PropTypes.bool,
     is3DMapMode: PropTypes.bool,
     onClickSettings: PropTypes.func,
-    onClickSidebar: PropTypes.func,
     onClick3D: PropTypes.func,
     onSelectSearchOption: PropTypes.func,
     printFiles: PropTypes.object,

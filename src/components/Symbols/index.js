@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { useState } from 'react'
 import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import {
@@ -42,7 +42,7 @@ const ButtonComponent = (props) =>
 
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 const SymbolsTab = (props) => {
-  const { wrapper: Wrapper = Fragment, canEdit } = props
+  const { canEdit } = props
   const [ search, onChange ] = useState('')
   const [ listMode, setListMode ] = useState(false)
   const sections = useToggleGroup()
@@ -124,10 +124,7 @@ const SymbolsTab = (props) => {
     </div>
   })
 
-  return <Wrapper
-    icon={IconNames.SYMBOLS}
-    title={i18n.SYMBOLS}
-  >
+  return (
     <div className='symbols-wrapper'>
       <div className='symbols-header'>
         <InputButton
@@ -154,12 +151,11 @@ const SymbolsTab = (props) => {
         {partsJSX}
       </Scrollbar>
     </div>
-  </Wrapper>
+  )
 }
 
 SymbolsTab.propTypes = {
   canEdit: PropTypes.bool,
-  wrapper: PropTypes.any,
 }
 
 SymbolsTab.displayName = 'SymbolsTab'
