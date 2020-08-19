@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import * as ReactDom from 'react-dom'
 import { Tooltip } from 'antd'
 import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
