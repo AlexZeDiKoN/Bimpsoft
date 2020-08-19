@@ -31,7 +31,7 @@ export default class SaveMilSymbolForm extends React.Component {
       errorCode = errorSymbol.code,
       doubleObjects,
     } = this.props
-    let errorMessage = i18n.ERROR_MESSAGE_3
+    let errorMessage = errorCode & errorSymbol.duplication ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3
     let doubles = [ { code, unit: unitText } ]
     let isEtc = false
     let question = i18n.QUESTION_1_0
