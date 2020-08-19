@@ -321,8 +321,9 @@ export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
 })
 
-export const showErrorPasteForm = () => ({
+export const showErrorPasteForm = (doubleObjects) => ({
   type: SHOW_ERROR_PASTE_FORM,
+  doubleObjects,
 })
 
 export const showErrorSaveForm = (errorCode) => ({
