@@ -8,7 +8,6 @@ import { SCALES, ZOOMS, INIT_VALUES } from './scales'
 import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 import * as Print from './Print'
-import { SET_SIDEBAR } from './sidebar'
 import * as MarchKeys from './March'
 import * as TopoObj from './TopoObj'
 import * as utils from './utils'
@@ -28,7 +27,6 @@ export {
   ZOOMS,
   INIT_VALUES,
   FormTypes,
-  SET_SIDEBAR,
   Print,
   MarchKeys,
   TopoObj,

@@ -1,6 +1,6 @@
 import React from 'react'
 import './style.css'
-import { components } from '@DZVIN/CommonComponents'
+import { components, IconNames } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import {
   LayersContainer,
@@ -12,6 +12,7 @@ import {
   LogMapContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
+import i18n from '../../i18n'
 
 const SIDEBAR_PANEL_SIZE_DEFAULT = 400
 
@@ -29,13 +30,12 @@ export default class Sidebar extends React.Component {
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
-    setSidebar: PropTypes.func,
-    sidebar: PropTypes.bool,
   }
 
   state = {
     topPanelHeight: SIDEBAR_PANEL_SIZE_DEFAULT,
     sidebarWidth: this.props.marchEdit ? SIDEBAR_SIZE_MARCH_DEFAULT : SIDEBAR_SIZE_DEFAULT,
+    selectedTabIndex: -1,
   }
 
   changeWidthHandler = (startValue, pos) => {
@@ -44,7 +44,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP, is3DMapMode, sidebar, setSidebar } = this.props
+    const { printStatus, marchEdit, isMapCOP, is3DMapMode } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -56,16 +56,39 @@ export default class Sidebar extends React.Component {
             className="sidebar-panel1"
           >
             <TabsPanel
-              setSidebar={setSidebar}
-              sidebar={sidebar}
               tabs={[
-                LayersContainer,
-                OrgStructuresContainer,
-                !is3DMapMode && CatalogsContainer,
-                isMapCOP ? TargetCatalogContainer : null,
-                SymbolsContainer,
-                LogMapContainer,
+                {
+                  Component: LayersContainer,
+                  title: i18n.LAYERS,
+                  icon: IconNames.LAYERS,
+                },
+                {
+                  Component: OrgStructuresContainer,
+                  title: i18n.ORG_STRUCTURE_SHORT,
+                  icon: IconNames.ORG_STRUCTURE,
+                },
+                !is3DMapMode && {
+                  Component: CatalogsContainer,
+                  title: i18n.CATALOGS,
+                  icon: IconNames.CATALOG,
+                },
+                isMapCOP && {
+                  Component: TargetCatalogContainer,
+                  title: i18n.TARGETS,
+                  icon: IconNames.TARGETS,
+                },
+                {
+                  Component: SymbolsContainer,
+                  title: i18n.SYMBOLS,
+                  icon: IconNames.SYMBOLS,
+                },
+                {
+                  Component: LogMapContainer,
+                  title: i18n.LOG_MAP,
+                  icon: IconNames.LOG_EVENT,
+                },
               ].filter(Boolean)}
+              onToggle={this.onToggle}
             />
           </div>
         </>
@@ -73,23 +96,26 @@ export default class Sidebar extends React.Component {
     }
   }
 
+  onToggle = (selectedTabIndex) => {
+    this.setState({ selectedTabIndex })
+  }
+
   render () {
-    const { sidebarWidth } = this.state
-    const { visible, sidebar, marchEdit } = this.props
-    const sidebarDisplay = visible ? '' : 'none'
+    const { sidebarWidth, selectedTabIndex } = this.state
+    const { marchEdit } = this.props
+    const sidebarDisplay = selectedTabIndex >= 0
     return (
       <>
-        {sidebar && <ValueSwiper
-          style={{ display: sidebarDisplay }}
+        {sidebarDisplay && <ValueSwiper
           value={this.state.sidebarWidth}
           onChange={this.changeWidthHandler}
         />}
         <div
           className="app-sidebar"
           style={{
-            minWidth: sidebar ? SIDEBAR_OPEN_MIN_SIZE : SIDEBAR_CLOSED_SIZE,
-            width: sidebar || marchEdit ? sidebarWidth : SIDEBAR_CLOSED_SIZE,
-            display: sidebarDisplay }}>
+            minWidth: sidebarDisplay ? SIDEBAR_OPEN_MIN_SIZE : SIDEBAR_CLOSED_SIZE,
+            width: sidebarDisplay || marchEdit ? sidebarWidth : SIDEBAR_CLOSED_SIZE,
+          }}>
           <div className="sidebar">
             {this.changeSidebarPanels()}
           </div>

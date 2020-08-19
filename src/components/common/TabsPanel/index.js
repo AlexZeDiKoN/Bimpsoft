@@ -8,72 +8,66 @@ import './style.css'
 
 export default class TabsPanel extends React.Component {
   state = {
-    selectedIndex: 0,
-    isMounted: false,
+    selectedIndex: -1,
+    isMounted: null,
   }
 
   componentDidMount () {
     this.setState({ isMounted: true })
+    this.props.onToggle(-1)
   }
 
   componentDidUpdate (prevProps) {
-    const { state, props } = this
-    const { selectedIndex } = state
-    if (prevProps.tabs.length !== props.tabs.length && !props.tabs[selectedIndex]) {
-      this.setState({ selectedIndex: props.tabs.length - 1 })
-    } else if (props.tabs[selectedIndex].displayName !== prevProps.tabs[selectedIndex].displayName) {
-      const newIndex = props.tabs.findIndex((it) => it.displayName === prevProps.tabs[selectedIndex].displayName)
-      this.setState({ selectedIndex: newIndex })
+    const { tabs } = this.props
+    const { selectedIndex } = this.state
+    if (prevProps.tabs.length !== tabs.length && !tabs[selectedIndex]) {
+      this.selectHandler(-1)
+    } else if (selectedIndex >= 0 && tabs[selectedIndex].displayName !== prevProps.tabs[selectedIndex].displayName) {
+      this.selectHandler(tabs.findIndex((it) => it.displayName === prevProps.tabs[selectedIndex].displayName))
     }
   }
 
-  containersRef = React.createRef()
-
   selectHandler = (selectedIndex) => () => {
-    const { setSidebar, sidebar } = this.props
-    setSidebar(!sidebar || selectedIndex !== this.state.selectedIndex)
+    if (selectedIndex === this.state.selectedIndex) {
+      selectedIndex = -1
+    }
+    this.props.onToggle(selectedIndex)
     this.setState({ selectedIndex })
   }
 
   render () {
-    const { tabs, sidebar } = this.props
+    const { tabs } = this.props
     const { selectedIndex } = this.state
+
     return (
       <div className="tabs-panel">
         <div className="tabs-panel-headers">{
-          tabs.map((Panel, index) => this.state.isMounted && (
-            <Panel
-              key={index}
-              wrapper={({ children, title, icon }) => {
-                const selected = selectedIndex === index
-                return [
-                  <div
-                    key={index}>
-                    <Tooltip title={title} placement='left'>
-                      <IButton
-                        colorType={ColorTypes.WHITE}
-                        type={ButtonTypes.WITH_BG}
-                        active={sidebar && selected}
-                        icon={icon || IconNames.ORG_STRUCTURE}
-                        onClick={this.selectHandler(index)}
-                      />
-                    </Tooltip>
-                  </div>,
-                  ReactDom.createPortal(
-                    <div
-                      key={index}
-                      className='tabs-panel-container'
-                      style={{ display: selected ? '' : 'none' }}
-                    >{children}</div>,
-                    this.containersRef.current,
-                  ),
-                ]
-              }}
-            />
-          ),
-          )
+          this.state.isMounted && tabs.map(({ title, icon }, index) => (
+            <div
+              key={index}>
+              <Tooltip title={title} placement='left'>
+                <IButton
+                  colorType={ColorTypes.WHITE}
+                  type={ButtonTypes.WITH_BG}
+                  active={index === selectedIndex}
+                  icon={icon || IconNames.ORG_STRUCTURE}
+                  onClick={this.selectHandler(index)}
+                />
+              </Tooltip>
+            </div>
+          ))
         }</div>
-        <div className="tabs-panel-content" ref={this.containersRef}/>
+        <div className="tabs-panel-content">{
+          this.state.isMounted && tabs.map(({ Component }, index) => (
+            <div
+              key={index}
+              className='tabs-panel-container'
+              style={{ display: index === selectedIndex ? '' : 'none' }}
+            >
+              <Component />
+            </div>
+          ))
+        }</div>
       </div>
     )
   }
@@ -81,6 +75,4 @@ export default class TabsPanel extends React.Component {
 
 TabsPanel.propTypes = {
   tabs: PropTypes.array,
-  sidebar: PropTypes.bool,
-  setSidebar: PropTypes.func,
 }
