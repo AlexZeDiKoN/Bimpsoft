@@ -4,7 +4,6 @@ import * as viewModesKeys from '../../constants/viewModesKeys'
 const initialState = {
   [viewModesKeys.text]: false,
   [viewModesKeys.print]: false,
-  [viewModesKeys.sidebar]: true,
   [viewModesKeys.mapSourcesList]: false,
   [viewModesKeys.directionName]: false,
   [viewModesKeys.eternalPoint]: false,

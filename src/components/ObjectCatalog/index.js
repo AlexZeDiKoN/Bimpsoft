@@ -1,9 +1,7 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { Tooltip } from 'antd'
 import memoizeOne from 'memoize-one'
-import { components, data, IconNames } from '@DZVIN/CommonComponents'
-import i18n from '../../i18n'
+import { components, data } from '@DZVIN/CommonComponents'
 import Item from '../ObjectCatalogItem'
 import { InputButton } from '../common'
 import './style.css'
@@ -74,7 +72,6 @@ export default class CatalogsComponent extends React.PureComponent {
       roots,
       onDoubleClick,
       onClick,
-      wrapper: Wrapper = Fragment,
       selectedId = null,
       expandedIds,
       onExpand,
@@ -96,38 +93,31 @@ export default class CatalogsComponent extends React.PureComponent {
     )
 
     return (
-      <Wrapper
-        icon={title === i18n.TARGETS ? IconNames.TARGETS : IconNames.CATALOG}
-        title={(<Tooltip title={title}>{title}</Tooltip>)}
-      >
-        <div className='catalog-container'>
-          <div className='catalog-container__header'>
-            <InputButton
-              title={title}
-              initValue={textFilter ? textFilter.regExpTest.source : ''}
-              onChange={this.filterTextChangeHandler}
-            />
-          </div>
-          <div className="catalog-scroll" ref={this.scrollPanelRef}>
-            <TreeComponentUncontrolled
-              expandedKeys={expandedKeys}
-              onExpand={onExpand}
-              filteredIds={filteredIds}
-              byIds={byIds}
-              roots={roots}
-              itemTemplate={Item}
-              commonData={commonData}
-            />
-          </div>
+      <div className='catalog-container'>
+        <div className='catalog-container__header'>
+          <InputButton
+            title={title}
+            initValue={textFilter ? textFilter.regExpTest.source : ''}
+            onChange={this.filterTextChangeHandler}
+          />
         </div>
-      </Wrapper>
+        <div className="catalog-scroll" ref={this.scrollPanelRef}>
+          <TreeComponentUncontrolled
+            expandedKeys={expandedKeys}
+            onExpand={onExpand}
+            filteredIds={filteredIds}
+            byIds={byIds}
+            roots={roots}
+            itemTemplate={Item}
+            commonData={commonData}
+          />
+        </div>
+      </div>
     )
   }
 }
 
 CatalogsComponent.propTypes = {
-  wrapper: PropTypes.any,
-  title: PropTypes.string.isRequired,
   canEdit: PropTypes.bool,
   roots: PropTypes.array.isRequired,
   byIds: PropTypes.object.isRequired,

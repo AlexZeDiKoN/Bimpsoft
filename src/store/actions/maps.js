@@ -125,7 +125,13 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
     if (isCOP) {
       // Примусовий таймер оновлення
       mapData.refreshTimer = setInterval(
-        () => Promise.all(layersData.map(({ layerId }) => dispatch(webMap.updateObjectsByLayerId(layerId)))),
+        async () => {
+          try {
+            await Promise.all(layersData.map(({ layerId }) => dispatch(webMap.updateObjectsByLayerId(layerId))))
+          } catch (err) {
+            console.error(err)
+          }
+        },
         MAP_FORCED_UPDATE_INTERVAL * 1000,
       )
     }

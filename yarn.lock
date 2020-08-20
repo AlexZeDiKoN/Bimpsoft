@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^15.2.514":
-  version "15.2.514"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-15.2.514.tgz#6331fe0dca6f9ed3f7f3bec6228c7f015137797b"
-  integrity sha512-sNoay0vn9JoY9+Ovf2n4KteLROPBYOMALLhN5ZK2O2fMex6M4D+riRMZ40rYYN3+h+tyAS9fi7xeOBWxyZzK4A==
+"@DZVIN/CommonComponents@^16.1.519":
+  version "16.1.519"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-16.1.519.tgz#1275cb981c23a77bf60971c02272d52116e19e40"
+  integrity sha512-zXYPAwb9D+jU9LPH2qNjnNRQeMcdIA5w+jc+e7eBSsaABoZ0fSoapMAkEWfuh3zbFrW82FlR2m+2PuDaFAuxLg==
   dependencies:
     "@DZVIN/validators" "^1.0.9"
     classnames "^2.2.6"
@@ -23,17 +23,17 @@
   resolved "http://172.16.95.16:4873/@DZVIN%2fEuSign/-/EuSign-0.0.2.tgz#48a82a28bc6a6d5012ddf96cee5e0846cd9b0c7d"
   integrity sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
 
-"@DZVIN/MilSymbolEditor@^15.3.275":
-  version "15.3.275"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-15.3.275.tgz#90941fb24e599ce122d1151f91975d8ddc463fd9"
-  integrity sha512-yTbRbrBCzgztcBgZWUHMLk9TDnWOzqPKebDLGp5GzrD8FQ1yNkwmGXrjETrdPxlXmil+FEtPnnuKLWgckom7rQ==
+"@DZVIN/MilSymbolEditor@^16.1.276":
+  version "16.1.276"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-16.1.276.tgz#aa78879a47c61bc6be7a225a9bb200d97b2d1a89"
+  integrity sha512-6jF3a1ISLvklSTYbAewrM2vYDDn6QXCnapse4BkoQ3vmL0QPY+ASeqwxKvCI3ZssEx+AI1pc0UbpTsRM+aqWsA==
   dependencies:
     "@DZVIN/milsymbol" "^15.03.10"
 
-"@DZVIN/components@^15.3.578":
-  version "15.3.578"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-15.3.578.tgz#b792c97ac2b3fb550559710f85e28ffcf8c877ce"
-  integrity sha512-xKnFsPycuG2RiZUlZ9HkOCA4UdVzWYORWSmAono6kI5Qteaf76UAdmYxdjx9qWyMgYKMKoDetK4RdEltNojGCA==
+"@DZVIN/components@^16.1.579":
+  version "16.1.579"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-16.1.579.tgz#c56e3746e66168dc1071b5f7f813960873d0596d"
+  integrity sha512-hOPV4fElL+c3RigAAHM/w5mYXdXFwnQ3YErGWPtEBwbfXm0uwb8fGJ34T+RREDAnxsHi2SQLeM/f90aX3YSPTg==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Provider, connect } from 'react-redux'
 import { HashRouter as Router } from 'react-router-dom'
-import { LocaleProvider } from 'antd'
+import { ConfigProvider } from 'antd'
 import { createAuthForm } from '@DZVIN/components'
 import { createBrowserHistory as createHistory } from 'history'
 import ukUA from 'antd/lib/locale-provider/uk_UA'
@@ -37,7 +37,7 @@ class App extends React.Component {
   render () {
     return (
       <div id="app" className="app">
-        <LocaleProvider locale={ukUA}>
+        <ConfigProvider locale={ukUA}>
           <Provider store={store}>
             <ErrorBoundary>
               <AuthForm onSuccess={this.authorized}>
@@ -50,7 +50,7 @@ class App extends React.Component {
               </AuthForm>
             </ErrorBoundary>
           </Provider>
-        </LocaleProvider>
+        </ConfigProvider>
       </div>
     )
   }

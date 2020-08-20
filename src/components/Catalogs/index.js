@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
-import i18n from '../../i18n'
 import { signCodes } from '../../constants/catalogs'
 
 const commonPointApp6Code = '10032500001313000000'
@@ -63,8 +62,7 @@ export default class Catalogs extends React.PureComponent {
       .forEach(([ key, value ]) => (value.shown = Object.prototype.hasOwnProperty.call(shownIds, key)))
     return (
       <ObjectCatalog
-        { ...this.props }
-        title={i18n.CATALOGS}
+        {...this.props}
         onVisibleChange={this.toggleItem}
         milSymbolRenderer={this.milSymbolRenderer}
       />

@@ -62,7 +62,7 @@ const mapDispatchToProps = {
 
 const OrgStructuresContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(OrgStructuresComponent)
 
 export default OrgStructuresContainer

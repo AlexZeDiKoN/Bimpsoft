@@ -43,7 +43,7 @@ const forms = {
     maxHeight: 'calc(100vh - 150px)',
   },
   [SelectionTypes.POLYLINE]: {
-    title: i18n.SHAPE_POLYLINE,
+    title: i18n.MIL_SYMBOL,
     component: LineForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -52,7 +52,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CURVE]: {
-    title: i18n.SHAPE_CURVE,
+    title: i18n.MIL_SYMBOL,
     component: LineForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -61,7 +61,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLYGON]: {
-    title: i18n.SHAPE_POLYGON,
+    title: i18n.MIL_SYMBOL,
     component: AreaForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -70,7 +70,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.AREA]: {
-    title: i18n.SHAPE_AREA,
+    title: i18n.MIL_SYMBOL,
     component: AreaForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -79,7 +79,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.RECTANGLE]: {
-    title: i18n.SHAPE_RECTANGLE,
+    title: i18n.MIL_SYMBOL,
     component: RectangleForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -88,7 +88,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCLE]: {
-    title: i18n.SHAPE_CIRCLE,
+    title: i18n.MIL_SYMBOL,
     component: CircleForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -97,7 +97,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SQUARE]: {
-    title: i18n.SHAPE_SQUARE,
+    title: i18n.MIL_SYMBOL,
     component: SquareForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -126,12 +126,14 @@ const forms = {
   [SelectionTypes.GROUPED_REGION]: {
     title: i18n.CONTOUR_REGION_UNIT,
     component: ContourForm,
-    minHeight: 330,
-    maxHeight: 330,
-    minWidth: 415,
+    minHeight: 'calc(100vh - 60px)',
+    minWidth: 310,
+    maxWidth: 310,
+    defaultPosition: { x: calc, y: 40 },
+    maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.OLOVO]: {
-    title: i18n.DEFEAT_STRIP_ZONE,
+    title: i18n.MIL_SYMBOL,
     component: DefeatStripForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -149,7 +151,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.ATTACK]: {
-    title: i18n.ATTACK,
+    title: i18n.MIL_SYMBOL,
     component: AttackForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -158,7 +160,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.MINED_AREA]: {
-    title: i18n.SHAPE_MINED_AREA,
+    title: i18n.MIL_SYMBOL,
     component: MinedAreaForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -167,7 +169,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.SECTORS]: {
-    title: i18n.SHAPE_SECTORS,
+    title: i18n.MIL_SYMBOL,
     component: SectorsForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -176,7 +178,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.POLLUTION_CIRCLE]: {
-    title: i18n.SHAPE_POLLUTION_CIRCLE,
+    title: i18n.MIL_SYMBOL,
     component: PollutionCircleForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -185,7 +187,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CIRCULAR_ZONE]: {
-    title: i18n.SHAPE_CIRCULAR_ZONE,
+    title: i18n.MIL_SYMBOL,
     component: CircularZoneForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -194,7 +196,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.MINE_FIELD]: {
-    title: i18n.SHAPE_MINEFIELD,
+    title: i18n.MIL_SYMBOL,
     component: MineFieldForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -203,7 +205,7 @@ const forms = {
     maxHeight: 'calc(100vh - 60px)',
   },
   [SelectionTypes.CONCENTRATION_FIRE]: {
-    title: i18n.CONCENTRATION_FIRE,
+    title: i18n.MIL_SYMBOL,
     component: ConcentrationOfFireForm,
     minHeight: 'calc(100vh - 60px)',
     minWidth: 310,
@@ -339,9 +341,8 @@ export default class SelectionForm extends React.Component {
         <Wrapper
           title={i18n.ERROR_CODE_SIGNS}>
           <SaveMilSymbolForm
-            unitText={unitText}
             errorCode={errorCode}
-            code={code}
+            doubleObjects={ [ { code, unit: unitText } ] }
             notClickable={false}
             onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
             onCancel={() => { this.resetWereChange(); onCloseSaveError() }}

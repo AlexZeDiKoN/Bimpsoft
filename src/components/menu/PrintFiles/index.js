@@ -14,6 +14,7 @@ export default class PrintFiles extends PureComponent {
     printFiles: PropTypes.object,
     printFileCancel: PropTypes.func,
     printFileRetry: PropTypes.func,
+    printFileList: PropTypes.func,
   }
 
   state = {
@@ -22,6 +23,9 @@ export default class PrintFiles extends PureComponent {
 
   handleVisibleChange = (flag) => {
     this.setState({ visible: flag })
+    if (flag) {
+      return this.props.printFileList()
+    }
   }
 
   renderFileBox = () => {
@@ -63,7 +67,7 @@ export default class PrintFiles extends PureComponent {
       <Dropdown
         overlay={this.renderFileBox()}
         trigger={[ 'click' ]}
-        placement='bottomCenter'
+        placement='bottomLeft'
         onVisibleChange={this.handleVisibleChange}
         visible={this.state.visible}
       >

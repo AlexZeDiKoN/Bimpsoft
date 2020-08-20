@@ -1,6 +1,6 @@
-import React, { Fragment, useState } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Scrollbar, IconNames } from '@DZVIN/CommonComponents'
+import { Scrollbar } from '@DZVIN/CommonComponents'
 import { InputButton } from '../common'
 
 import './style.css'
@@ -8,7 +8,7 @@ import i18n from '../../i18n'
 import ItemList from './children/ItemList'
 
 const LogMapTab = (props) => {
-  const { wrapper: Wrapper = Fragment, userEvents, user, highlightObject } = props
+  const { userEvents, user, highlightObject } = props
   const [ search, onChange ] = useState('')
 
   const onChangeSearch = (value) => {
@@ -24,10 +24,7 @@ const LogMapTab = (props) => {
     }
   }
 
-  return <Wrapper
-    icon={IconNames.LOG_EVENT}
-    title={i18n.LOG_MAP}
-  >
+  return (
     <div className='log-map-wrapper'>
       <div className='log-map-header'>
         <InputButton
@@ -50,11 +47,10 @@ const LogMapTab = (props) => {
         }
       </Scrollbar>
     </div>
-  </Wrapper>
+  )
 }
 
 LogMapTab.propTypes = {
-  wrapper: PropTypes.any,
   userEvents: PropTypes.object.isRequired,
   user: PropTypes.string.isRequired,
   highlightObject: PropTypes.func.isRequired,

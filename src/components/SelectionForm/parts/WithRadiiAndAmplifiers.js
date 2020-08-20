@@ -196,6 +196,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                   disabled={!canEdit}
                   autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
                   rows={2}
+                  maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
                 />
               }
             </FormRow>

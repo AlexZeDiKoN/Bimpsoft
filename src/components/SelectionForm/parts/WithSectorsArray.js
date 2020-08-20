@@ -51,8 +51,8 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
   }))
 
   // удаление сектора
-  sectorRemoveHandler = (index) => this.setResult((result) => {
-    const indexDelete = index * 2 + 2
+  sectorRemoveHandler = (numSector) => this.setResult((result) => {
+    const indexDelete = numSector * 2 + 2
     let deleteSector = false
     // удаление координат сектора
     const newResult = result.updateIn(COORDINATE_PATH, (coordArray) => {
@@ -67,7 +67,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
     })
     // удаление свойств сектора
     if (deleteSector) {
-      return newResult.updateIn(PATH_S_INFO, (fieldSectors) => (fieldSectors.delete(index)))
+      return newResult.updateIn(PATH_S_INFO, (fieldSectors) => (fieldSectors.delete(numSector)))
     }
     return result
   })
@@ -98,18 +98,20 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
   })
 
   sectorPropertiesChangeHandler = (target) => {
-    const { name, value, index } = target
+    const { name, value, numSector } = target
     this.setResult((result) => (
       result.updateIn(PATH_S_INFO,
-        (sectorsInfo) => sectorsInfo.set(index, Object.assign({}, sectorsInfo.get(index), { [name]: value })))
+        (sectorsInfo) => sectorsInfo.set(numSector, Object.assign({}, sectorsInfo.get(numSector), { [name]: value })))
     ))
   }
 
   sectorChangeHandler = (target) => {
-    const { coord1, coord2, index } = target
+    const { coord1, coord2, index, coordArrow } = target
     this.setResult((result) => (
       result.updateIn(COORDINATE_PATH, (coordinates) => (
-        coordinates.set((2 + index * 2), coord1).set((3 + index * 2), coord2)
+        coordArrow
+          ? coordinates.set((index), coord1).set((index + 1), coord2).set(1, coordArrow)
+          : coordinates.set((index), coord1).set((index + 1), coord2)
       ))
     ))
   }
@@ -117,7 +119,7 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
   sectorFocusChange = (target) => {
     const { isActive, index } = target
     const { onCoordinateFocusChange } = this.props
-    onCoordinateFocusChange && onCoordinateFocusChange(index * 2 + 2, isActive)
+    onCoordinateFocusChange && onCoordinateFocusChange(index, isActive)
   }
 
   addSectors (points, readOnly) {
@@ -130,11 +132,9 @@ const WithSectorsArray = (Component) => class SectorsArrayComponent extends Comp
       const sectorInfo = sectorsInfo.get(numSector)
       sector.push(
         <SectorItem key={`${points[i].lat}/${points[i].lng}`}
-          index = {numSector}
-          beginCoordinate={points[0]}
-          secondCoordinate={points[1]}
-          coord1={points[i]}
-          coord2={points[i + 1]}
+          index = {i}
+          numSector = {numSector}
+          allPoints={points}
           sectorInfo={sectorInfo}
           canRemove={canRemove}
           readOnly={readOnly}
