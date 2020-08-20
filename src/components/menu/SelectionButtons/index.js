@@ -56,11 +56,12 @@ export default class SelectionButtons extends React.Component {
   }
 
   // проверка объекта при вставке на дублирование
+  // из проверки исключаются объекты не привязанные к подрпзделению
   onPasteObject = () => {
     const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures } = this.props
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
-      if (type === SelectionTypes.POINT) {
+      if (type === SelectionTypes.POINT && objectsMap && unit !== null) {
         const symbols = sameObjects({ code, unit, type, layerId }, objectsMap)
         if (symbols.size > 0) {
           return {
