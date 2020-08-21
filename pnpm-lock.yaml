@@ -1,7 +1,7 @@
 dependencies:
-  '@DZVIN/CommonComponents': 15.3.516_8163dde90d88e02f48b04383611abbfe
-  '@DZVIN/MilSymbolEditor': 15.3.275
-  '@DZVIN/components': 15.3.578_56c0a69b77661e2a2e6d79d63bcec91c
+  '@DZVIN/CommonComponents': 16.1.519_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/MilSymbolEditor': 16.1.276
+  '@DZVIN/components': 16.1.579_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 15.2.7
   '@DZVIN/milsymbol': 15.3.10
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/15.3.516_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/16.1.519_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -80,7 +80,7 @@ packages:
       react-datetime: 2.16.3_8163dde90d88e02f48b04383611abbfe
       react-easy-swipe: 0.0.16
       react-focus-lock: 2.4.1_react@16.13.1
-      react-rnd: 10.2.1
+      react-rnd: 10.2.2
       utm: 1.1.1
     dev: false
     peerDependencies:
@@ -88,30 +88,30 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-dGEh0pH6wIOga/ZMelfyYHHUG+hulLuaB3ALgYSAC/OM1ov903xzTsvYCPOgzbRm2e3Y2Vh6MuUj7t0Y5eIjqg==
+      integrity: sha512-zXYPAwb9D+jU9LPH2qNjnNRQeMcdIA5w+jc+e7eBSsaABoZ0fSoapMAkEWfuh3zbFrW82FlR2m+2PuDaFAuxLg==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/15.3.275:
+  /@DZVIN/MilSymbolEditor/16.1.276:
     dependencies:
       '@DZVIN/milsymbol': 15.3.10
     dev: false
     resolution:
-      integrity: sha512-yTbRbrBCzgztcBgZWUHMLk9TDnWOzqPKebDLGp5GzrD8FQ1yNkwmGXrjETrdPxlXmil+FEtPnnuKLWgckom7rQ==
-  /@DZVIN/components/15.3.578_56c0a69b77661e2a2e6d79d63bcec91c:
+      integrity: sha512-6jF3a1ISLvklSTYbAewrM2vYDDn6QXCnapse4BkoQ3vmL0QPY+ASeqwxKvCI3ZssEx+AI1pc0UbpTsRM+aqWsA==
+  /@DZVIN/components/16.1.579_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
-      draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
-      draft-js-export-html: 1.4.1_draft-js@0.11.6+immutable@3.8.2
+      draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
+      draft-js-export-html: 1.4.1_draft-js@0.11.7+immutable@3.8.2
     dev: false
     peerDependencies:
       immutable: '*'
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-xKnFsPycuG2RiZUlZ9HkOCA4UdVzWYORWSmAono6kI5Qteaf76UAdmYxdjx9qWyMgYKMKoDetK4RdEltNojGCA==
+      integrity: sha512-hOPV4fElL+c3RigAAHM/w5mYXdXFwnQ3YErGWPtEBwbfXm0uwb8fGJ34T+RREDAnxsHi2SQLeM/f90aX3YSPTg==
   /@DZVIN/leaflet-measure-custom/15.2.7:
     dev: false
     resolution:
@@ -4100,6 +4100,11 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-4paDGScNgZP2IXXilaffL9X7968RuvwlkK3xWtZRVqgd8SYNiVKRJvkFd1aqqEuPfN7E68ZHEp9hDj6lHj4Hyw==
+  /core-js/3.6.5:
+    dev: false
+    requiresBuild: true
+    resolution:
+      integrity: sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
   /core-util-is/1.0.2:
     dev: true
     resolution:
@@ -4186,6 +4191,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
+  /cross-fetch/3.0.5:
+    dependencies:
+      node-fetch: 2.6.0
+    dev: false
+    resolution:
+      integrity: sha512-FFLcLtraisj5eteosnX1gf01qYDCOc4fDy0+euOt8Kn9YBY2NtXL/pCoYPavw24NIQkQqm5ZOLsGD5Zzj0gyew==
   /cross-spawn/5.1.0:
     dependencies:
       lru-cache: 4.1.5
@@ -4995,10 +5006,10 @@ packages:
     optional: true
     resolution:
       integrity: sha512-xqnBTVd/E+GxJVrX5/eUJiLYjCGPwMpdL+jGhGU57BvtcA7wwhtHVbXBeUk51kOpW3S7Jn3BQbN9Q1R1Km2qDQ==
-  /draft-js-export-html/1.4.1_draft-js@0.11.6+immutable@3.8.2:
+  /draft-js-export-html/1.4.1_draft-js@0.11.7+immutable@3.8.2:
     dependencies:
-      draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
-      draft-js-utils: 1.4.0_draft-js@0.11.6+immutable@3.8.2
+      draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
+      draft-js-utils: 1.4.0_draft-js@0.11.7+immutable@3.8.2
       immutable: 3.8.2
     dev: false
     peerDependencies:
@@ -5006,9 +5017,9 @@ packages:
       immutable: 3.x.x
     resolution:
       integrity: sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
-  /draft-js-utils/1.4.0_draft-js@0.11.6+immutable@3.8.2:
+  /draft-js-utils/1.4.0_draft-js@0.11.7+immutable@3.8.2:
     dependencies:
-      draft-js: 0.11.6_react-dom@16.13.1+react@16.13.1
+      draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
       immutable: 3.8.2
     dev: false
     peerDependencies:
@@ -5029,19 +5040,19 @@ packages:
       react-dom: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
     resolution:
       integrity: sha512-LE6jSCV9nkPhfVX2ggcRLA4FKs6zWq9ceuO/88BpXdNCS7mjRTgs0NsV6piUCJX9YxMsB9An33wnkMmU2sD2Zg==
-  /draft-js/0.11.6_react-dom@16.13.1+react@16.13.1:
+  /draft-js/0.11.7_react-dom@16.13.1+react@16.13.1:
     dependencies:
-      fbjs: 1.0.0
+      fbjs: 2.0.0
       immutable: 3.7.6
       object-assign: 4.1.1
       react: 16.13.1
       react-dom: 16.13.1_react@16.13.1
     dev: false
     peerDependencies:
-      react: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
-      react-dom: ^0.14.0 || ^15.0.0-rc || ^16.0.0-rc || ^16.0.0
+      react: '>=0.14.0'
+      react-dom: '>=0.14.0'
     resolution:
-      integrity: sha512-H8OaophZecxm0L/C0LvOo6IZrbMb+s0txPXF7DW3E2oUjSo5ufvWvWb3B/0K2wRqBnwJrRxApqljD899i0fZMA==
+      integrity: sha512-ne7yFfN4sEL82QPQEn80xnADR8/Q6ALVworbC5UOSzOvjffmYfFsr3xSZtxbIirti14R7Y33EZC5rivpLgIbsg==
   /duplexer/0.1.1:
     dev: true
     resolution:
@@ -5972,11 +5983,11 @@ packages:
     dev: false
     resolution:
       integrity: sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
-  /fbjs/1.0.0:
+  /fbjs/2.0.0:
     dependencies:
-      core-js: 2.6.11
+      core-js: 3.6.5
+      cross-fetch: 3.0.5
       fbjs-css-vars: 1.0.2
-      isomorphic-fetch: 2.2.1
       loose-envify: 1.4.0
       object-assign: 4.1.1
       promise: 7.3.1
@@ -5984,7 +5995,7 @@ packages:
       ua-parser-js: 0.7.21
     dev: false
     resolution:
-      integrity: sha512-MUgcMEJaFhCaF1QtWGnmq9ZDRAzECTCRAF7O6UZIlAlkTs1SasiX9aP0Iw7wfD2mJ7wDTNfg2w7u5fSCwJk1OA==
+      integrity: sha512-8XA8ny9ifxrAWlyhAbexXcs3rRMtxWcs3M0lctLfB49jRDHiaxj+Mo0XxbwE7nKZYzgCFoq64FS+WFd4IycPPQ==
   /fd-slicer/1.1.0:
     dependencies:
       pend: 1.2.0
@@ -9926,6 +9937,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==
+  /node-fetch/2.6.0:
+    dev: false
+    engines:
+      node: 4.x || >=6.0.0
+    resolution:
+      integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
   /node-forge/0.9.0:
     dev: true
     engines:
@@ -12773,14 +12790,14 @@ packages:
         optional: true
     resolution:
       integrity: sha512-EvCAZYGfOLqwV7gh849xy9/pt55rJXPwmYvI4lilPM5rUT/1NxuuN59ipdBksRVSvz0KInbPnp4IfoXJXCqiDA==
-  /react-rnd/10.2.1:
+  /react-rnd/10.2.2:
     dependencies:
       re-resizable: 6.3.2
       react-draggable: 4.4.3
       tslib: 2.0.0
     dev: false
     resolution:
-      integrity: sha512-DLOgEsgBNerBrfWYSib/5EwwIOhv1z12P1bHqY5FoCHz6R3P24YJvO4aXlEnq7fLRwfkJcQgz0/egU5EVVVCAw==
+      integrity: sha512-UoQnNehseKEspimfPFaO0gN0vSVJ8uCZeG39nCibUVyGTjZ5d+bnY/zHEp9SObHQ9tKW4vFSa9+8Mf7QZrQrUw==
   /react-router-dom/5.1.2_react@16.13.1:
     dependencies:
       '@babel/runtime': 7.9.2
@@ -15978,9 +15995,9 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^15.3.516
-  '@DZVIN/MilSymbolEditor': ^15.3.275
-  '@DZVIN/components': ^15.3.578
+  '@DZVIN/CommonComponents': ^16.1.519
+  '@DZVIN/MilSymbolEditor': ^16.1.276
+  '@DZVIN/components': ^16.1.579
   '@DZVIN/leaflet-measure-custom': ^15.2.7
   '@DZVIN/milsymbol': ^15.3.10
   '@craco/craco': ^5.6.4
