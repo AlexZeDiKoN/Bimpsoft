@@ -1817,8 +1817,7 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  onDragStarted = (e) => {
-    const { target: layer } = e
+  onDragStarted = ({ target: layer }) => {
     const { selection: { list }, lockedObjects, tryLockObjectsMove } = this.props
     if (list.length > 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
