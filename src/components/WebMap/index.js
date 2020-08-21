@@ -352,6 +352,7 @@ export default class WebMap extends React.PureComponent {
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
     requestMaSources: PropTypes.func,
+    tryLockObjectsMove: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
@@ -1151,10 +1152,11 @@ export default class WebMap extends React.PureComponent {
       edit,
       selection: { list: selectedIds, preview },
     } = this.props
-
+    // пустые массивы selection.list при сравнении не равны (проверяем размеры массивов)
+    const noChangeSelection = selectedIds.length === 0 && prevProps.selection.list.length === 0
     if (
       objects !== prevProps.objects ||
-      selectedIds !== prevProps.selection.list ||
+      (selectedIds !== prevProps.selection.list && !noChangeSelection) ||
       edit !== prevProps.edit ||
       layerId !== prevProps.layer ||
       preview !== prevProps.selection.preview
@@ -1821,11 +1823,20 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  onDragStarted = ({ target: layer }) => {
-    const { selection: { list } } = this.props
+  onDragStarted = (e) => {
+    const { target: layer } = e
+    const { selection: { list }, lockedObjects, tryLockObjectsMove } = this.props
+    console.log('selecttion', { lockedObjects, list })
     if (list.length > 1) {
+      // Проверка выделенных объектов на блокировку
       this._dragStartPx = this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
+      if (list.some((objectId) => lockedObjects.has(objectId))) {
+        // вывод сообщения о попытке перемещения заблокированого объекта
+        tryLockObjectsMove()
+        console.log('lock', e.target.dragging._draggable)
+        e.target.dragging._draggable.finishDrag && e.target.dragging._draggable.finishDrag()
+      }
     }
   }
 

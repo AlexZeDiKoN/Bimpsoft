@@ -601,6 +601,17 @@ export const objectUnlocked = (objectId) => ({
   payload: { objectId },
 })
 
+export const tryLockObjectsMove = (objectId) =>
+  asyncAction.withNotification(async (dispatch, getState) => {
+    const { webMap: { lockedObjects } } = getState()
+    let lockedBy = lockedObjects.get(objectId)
+    dispatch(notifications.push({
+      type: 'warning',
+      message: i18n.ERROR_OBJECTS_LOCKED,
+      description: i18n.ERROR_OBJECTS_LOCKED_DESCRIPTION,
+    }))
+  })
+
 export const tryLockObject = (objectId) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objLock, objUnlock } }) => {
     const { webMap: { lockedObjects, contactFullName } } = getState()
