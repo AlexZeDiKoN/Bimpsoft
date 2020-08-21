@@ -835,7 +835,7 @@ export default class WebMap extends React.PureComponent {
     }
 
     // save geometry when one selected item lost focus
-    if (list.length === 1 && list[0] !== newList[0] && edit) {
+    if (list.length === 1 && (list[0] !== newList[0] || newList.length !== 1) && edit) {
       await this.checkSaveObject(true)
     }
 
