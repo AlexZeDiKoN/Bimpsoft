@@ -830,7 +830,7 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
     } = this.props
-    if (newList.length === 0 && list === 0) {
+    if (newList.length === 0 && list.length === 0) {
       return
     }
 
@@ -1152,11 +1152,9 @@ export default class WebMap extends React.PureComponent {
       edit,
       selection: { list: selectedIds, preview },
     } = this.props
-    // пустые массивы selection.list при сравнении не равны (проверяем размеры массивов)
-    const noChangeSelection = selectedIds.length === 0 && prevProps.selection.list.length === 0
     if (
       objects !== prevProps.objects ||
-      (selectedIds !== prevProps.selection.list && !noChangeSelection) ||
+      selectedIds !== prevProps.selection.list ||
       edit !== prevProps.edit ||
       layerId !== prevProps.layer ||
       preview !== prevProps.selection.preview
