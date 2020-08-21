@@ -16,7 +16,7 @@ import { narr } from './FlexGrid'
 import { prepareLinePath, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
-import { getFontSize } from './Sophisticated/utils'
+import { getFontSize, getStrokeWidth } from './Sophisticated/utils'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -645,17 +645,15 @@ L.SVG.include({
           grid.eternalRings[dirIdx + 1][zoneIdx + 1],
         ]), true),
       ))
-
-
       grid._pathes.forEach((path) => {
         if (strokeWidth) {
-          let w
-          if (grid.printOptions) {
-            w = grid.printOptions.getStrokeWidth(strokeWidth)
-          } else {
-            const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
-            w = strokeWidth * scale / 100
-          }
+          const w = getStrokeWidth(grid, strokeWidth)
+          // if (grid.printOptions) {
+          //   w = grid.printOptions.getStrokeWidth(strokeWidth)
+          // } else {
+          //   const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
+          //   w = strokeWidth * scale / 100
+          // }
           path.setAttribute('stroke-width', w)
         }
         if (color) {

@@ -1882,7 +1882,14 @@ export const getStrokeWidth = (layer, width, scale = 1) => {
     return layer.printOptions.getStrokeWidth(width)
   }
   // розмір залежить від маштабу (для екрану)
-  return layer.options.weight ?? (settings.LINE_WIDTH * scale)
+  const kfSize = interpolateSize(layer._map.getZoom(), settings.LINE_SIZE, 10) / 100
+  return layer.options.weight ?? // уже имеется расчитанная толщина линий
+    (width ? width * kfSize // передана базовая толщина линии
+      : (layer.object?.attributes?.strokeWidth
+        ? layer.object.attributes.strokeWidth * kfSize // расчитываем по аттрибутам объекта
+        : settings.LINE_WIDTH * scale
+      )
+    )
 }
 
 // Обчислення розміру пунктиру
