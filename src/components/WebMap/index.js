@@ -1826,16 +1826,15 @@ export default class WebMap extends React.PureComponent {
   onDragStarted = (e) => {
     const { target: layer } = e
     const { selection: { list }, lockedObjects, tryLockObjectsMove } = this.props
-    console.log('selecttion', { lockedObjects, list })
     if (list.length > 1) {
-      // Проверка выделенных объектов на блокировку
       this._dragStartPx = this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
+      // Проверка выделенных объектов на блокировку
       if (list.some((objectId) => lockedObjects.has(objectId))) {
-        // вывод сообщения о попытке перемещения заблокированого объекта
+        // повідомлення про спробу переміщення заблокованого об'єкта
         tryLockObjectsMove()
-        console.log('lock', e.target.dragging._draggable)
-        e.target.dragging._draggable.finishDrag && e.target.dragging._draggable.finishDrag()
+        // зупиняємо процес переміщення об'єктів
+        layer.dragging?._draggable?.finishDrag && layer.dragging._draggable.finishDrag()
       }
     }
   }

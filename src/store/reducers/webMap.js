@@ -427,11 +427,11 @@ export default function webMapReducer (state = WebMapState(), action) {
         .reduce(lockObject, map))
     }
     case actionNames.OBJECT_LOCKED: {
-      console.log(`OBJECT_LOCKED`, payload)
+      // console.log(`OBJECT_LOCKED`, payload)
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
     }
     case actionNames.OBJECT_UNLOCKED: {
-      console.log(`OBJECT_UNLOCKED`, payload)
+      // console.log(`OBJECT_UNLOCKED`, payload)
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {

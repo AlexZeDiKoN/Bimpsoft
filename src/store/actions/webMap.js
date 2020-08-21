@@ -601,10 +601,8 @@ export const objectUnlocked = (objectId) => ({
   payload: { objectId },
 })
 
-export const tryLockObjectsMove = (objectId) =>
-  asyncAction.withNotification(async (dispatch, getState) => {
-    const { webMap: { lockedObjects } } = getState()
-    let lockedBy = lockedObjects.get(objectId)
+export const tryLockObjectsMove = () =>
+  asyncAction.withNotification(async (dispatch) => {
     dispatch(notifications.push({
       type: 'warning',
       message: i18n.ERROR_OBJECTS_LOCKED,
