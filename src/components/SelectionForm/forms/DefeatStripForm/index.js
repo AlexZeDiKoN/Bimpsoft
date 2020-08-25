@@ -20,9 +20,9 @@ import i18n from '../../../../i18n'
 import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
 
 const CONFIG_AMPLIFIERS = [
-  { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'zones', name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'start', name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM },
+  { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM, maxNumber: 99 },
+  { id: 'zones', name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM, maxNumber: 99 },
+  { id: 'start', name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM, maxNumber: 999999 },
   { id: 'title', name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT, maxRows: 1 },
 ]
 
