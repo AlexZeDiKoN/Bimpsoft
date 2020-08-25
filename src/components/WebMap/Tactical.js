@@ -230,8 +230,11 @@ function createOlovo (data, layer, initMap) {
   }
   const [ eternals, directionSegments, zoneSegments ] = geometry
   if (layer) {
+    layer._map = initMap
     layer.updateProps(
       {
+        directions,
+        zones,
         start,
         title,
       },

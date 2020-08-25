@@ -38,7 +38,8 @@ export default function reducer (state = initState, action) {
       return { ...state, showForm: FormTypes.DEL }
     }
     case actions.SHOW_ERROR_PASTE_FORM: {
-      return { ...state, showForm: FormTypes.ERROR_PAST }
+      const { doubleObjects } = action
+      return { ...state, doubleObjects, showForm: FormTypes.ERROR_PAST }
     }
     case actions.SHOW_ERROR_SAVE_FORM: {
       return { ...state, showForm: FormTypes.ERROR_SAVE, errorCode: action.errorCode }

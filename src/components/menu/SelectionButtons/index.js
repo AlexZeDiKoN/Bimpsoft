@@ -37,6 +37,7 @@ export default class SelectionButtons extends React.Component {
     selectedPoints: PropTypes.arrayOf(
       PropTypes.object,
     ),
+    doubleObjects: PropTypes.array,
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
     onPaste: PropTypes.func,
@@ -54,39 +55,34 @@ export default class SelectionButtons extends React.Component {
     onUngroup: PropTypes.func,
   }
 
-  state = {
-    unit: undefined,
-    code: undefined,
-  }
-
   // проверка объекта при вставке на дублирование
+  // из проверки исключаются объекты не привязанные к подрпзделению
   onPasteObject = () => {
-    const { onPasteError, onPaste, clipboard, objectsMap, layerId } = this.props
+    const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures } = this.props
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
-      if (type === SelectionTypes.POINT) {
+      if (type === SelectionTypes.POINT && objectsMap && unit !== null) {
         const symbols = sameObjects({ code, unit, type, layerId }, objectsMap)
         if (symbols.size > 0) {
-          this.setState({ unit, code })
-          return object
+          return {
+            code,
+            unit: orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : '',
+          }
         }
       }
       return null
     }).filter(Boolean)
     if (doubleObjects.length > 0) {
-      onPasteError()
+      onPasteError(doubleObjects) // передаем список объектов уже существующих на слое
     } else {
       onPaste()
     }
   }
 
   errorPasteForm = () => {
-    const { unit, code } = this.state
-    const { onPasteOk, onPasteCancel, orgStructures } = this.props
-    const unitText = orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : ''
+    const { onPasteOk, onPasteCancel, doubleObjects } = this.props
     return <SaveMilSymbolForm
-      unitText={unitText}
-      code={code}
+      doubleObjects={doubleObjects}
       errorCode={errorSymbol.duplication}
       onApply={onPasteOk}
       onCancel={onPasteCancel}

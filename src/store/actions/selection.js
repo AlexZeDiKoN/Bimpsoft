@@ -145,11 +145,15 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     case SelectionTypes.CIRCLE:
     case SelectionTypes.RECTANGLE:
     case SelectionTypes.SQUARE: {
-      const id = await dispatch(webMap.addObject(object.toJS()))
+      await dispatch(batchActions([
+        setNewShape({}),
+        setPreview(object.set('type', type)),
+      ]))
+      /* const id = await dispatch(webMap.addObject(object.toJS()))
       await dispatch(batchActions([
         selectedList([ id ]),
         showEditForm(id),
-      ]))
+      ])) */
       break
     }
     default:
@@ -321,8 +325,9 @@ export const showDeleteForm = () => ({
   type: SHOW_DELETE_FORM,
 })
 
-export const showErrorPasteForm = () => ({
+export const showErrorPasteForm = (doubleObjects) => ({
   type: SHOW_ERROR_PASTE_FORM,
+  doubleObjects,
 })
 
 export const showErrorSaveForm = (errorCode) => ({
