@@ -39,6 +39,8 @@ export const getArrayFromSet = (data, length) => length && data.size
   ? [ ...Array(length) ].map((_, i) => data.get(i) || String(i + 1))
   : data.toArray()
 
+export const getMainDirectionIndex = (data) => data.indexOf(true)
+
 export const useArraysIn = (obj) => Object.keys(obj).reduce((acc, key) => {
   List.isList(obj[key]) && (acc[key] = obj[key].toArray())
   return acc

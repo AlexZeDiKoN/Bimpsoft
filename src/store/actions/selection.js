@@ -145,11 +145,15 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     case SelectionTypes.CIRCLE:
     case SelectionTypes.RECTANGLE:
     case SelectionTypes.SQUARE: {
-      const id = await dispatch(webMap.addObject(object.toJS()))
+      await dispatch(batchActions([
+        setNewShape({}),
+        setPreview(object.set('type', type)),
+      ]))
+      /* const id = await dispatch(webMap.addObject(object.toJS()))
       await dispatch(batchActions([
         selectedList([ id ]),
         showEditForm(id),
-      ]))
+      ])) */
       break
     }
     default:

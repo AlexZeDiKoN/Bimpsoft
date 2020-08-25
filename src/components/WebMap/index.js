@@ -431,7 +431,7 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
-      this.map._container.focus()
+      this.map && this.map._container.focus()
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -1450,16 +1450,12 @@ export default class WebMap extends React.PureComponent {
 
       // Окремо оновлюємо поточний створюваний або редагований об'єкт
       const isNew = Boolean(preview && !preview.id)
-      if (isNew === Boolean(this.newLayer)) {
-        isNew && this.addObject(preview, this.newLayer)
-      } else {
-        if (isNew) {
-          this.newLayer = this.addObject(preview, null)
-        } else {
-          setLayerSelected(this.newLayer, false, false)
-          this.removeLayer(this.newLayer)
-          this.newLayer = null
-        }
+      if (isNew) {
+        this.newLayer = this.addObject(preview, this.newLayer)
+      } else if (this.newLayer) {
+        setLayerSelected(this.newLayer, false, false)
+        this.removeLayer(this.newLayer)
+        this.newLayer = null
       }
 
       // Очищуємо списки дочірніх об'єктів у групованих об'єктів
@@ -1908,8 +1904,7 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit } = this.props
     if (object && list.length === 1 && list[0] === object.id) {
-      // this.checkSaveObject(false)
-      editObject(object.id)
+      object.id && editObject(object.id)
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
