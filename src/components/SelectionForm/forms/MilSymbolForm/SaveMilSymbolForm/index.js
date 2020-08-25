@@ -9,7 +9,7 @@ import i18n from '../../../../../i18n'
 import { errorSymbol } from '../../../../../store/actions/selection'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
-const MAX_OUT_MESSAGE = 10 // максимальное колличество выводимых на форму сообщений
+const MAX_OUT_MESSAGE = 50 // максимальное колличество выводимых на форму сообщений
 
 function declOfNum (number, titles) {
   const cases = [ 2, 0, 1, 1, 1, 2 ]
@@ -82,9 +82,11 @@ export default class SaveMilSymbolForm extends React.Component {
                         </div>,
                       )
                     }
-                    <div className="confirm-text-etc">
-                      {etcMessage}
-                    </div>
+                    {
+                      etcMessage
+                        ? <div className="confirm-text-etc">{etcMessage}</div>
+                        : <></>
+                    }
                     {
                       (errorCode & errorSymbol.code)
                         ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div>
