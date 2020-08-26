@@ -31,6 +31,8 @@ import WarningForm from './forms/WarningForm'
 
 const clientWidth = document?.documentElement?.clientWidth
 
+const sidebarWidth = 285
+
 const calc = clientWidth - 310 - 40
 
 const forms = {
@@ -38,7 +40,6 @@ const forms = {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
     minWidth: 825,
-    enableResizing: ResizeEnable.ALL_DISABLED,
     minHeight: 'calc(100vh - 150px)',
     maxHeight: 'calc(100vh - 150px)',
   },
@@ -286,6 +287,7 @@ export default class SelectionForm extends React.Component {
       orgStructures,
       onCoordinateFocusChange,
       wrapper: Wrapper,
+      sidebar,
     } = this.props
     if (data === null || !forms[data.type]) {
       return null
@@ -328,7 +330,6 @@ export default class SelectionForm extends React.Component {
       maxHeight,
       minWidth,
       maxWidth,
-      enableResizing,
       defaultPosition,
       component: Component,
     } = forms[formType]
@@ -372,8 +373,8 @@ export default class SelectionForm extends React.Component {
           bounds={'div.app-body'}
           minWidth={minWidth}
           maxWidth={maxWidth}
-          enableResizing={enableResizing}
-          defaultPosition={defaultPosition}
+          enableResizing={ResizeEnable.ALL_DISABLED}
+          defaultPosition={defaultPosition && sidebar ? { x: defaultPosition.x - sidebarWidth, y: defaultPosition.y } : defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
         >
@@ -419,4 +420,5 @@ SelectionForm.propTypes = {
   ovtLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
   errorCode: PropTypes.number,
+  sidebar: PropTypes.bool,
 }
