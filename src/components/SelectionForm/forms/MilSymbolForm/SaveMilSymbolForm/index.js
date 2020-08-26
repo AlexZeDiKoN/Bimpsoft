@@ -83,9 +83,7 @@ export default class SaveMilSymbolForm extends React.Component {
                       )
                     }
                     {
-                      etcMessage
-                        ? <div className="confirm-text-etc">{etcMessage}</div>
-                        : <></>
+                      etcMessage && <div className="confirm-text-etc">{etcMessage}</div>
                     }
                     {
                       (errorCode & errorSymbol.code)
