@@ -1,9 +1,9 @@
 {
   "name": "web-map",
-  "version": "16.01.1084",
+  "version": "16.01.1087",
   "private": true,
   "dependencies": {
-    "@DZVIN/CommonComponents": "^16.1.519",
+    "@DZVIN/CommonComponents": "^16.1.520",
     "@DZVIN/MilSymbolEditor": "^16.1.276",
     "@DZVIN/components": "^16.1.579",
     "@DZVIN/leaflet-measure-custom": "^15.2.7",

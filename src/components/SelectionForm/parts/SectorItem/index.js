@@ -229,7 +229,7 @@ export default class SectorItem extends React.Component {
               onFocus={!readOnly ? this.onFocusHandler : null }
               onBlur={!readOnly ? this.onBlurHandler : null}
               disabled={readOnly}
-              rows={1}
+              autoSize={ { minRows: 1, maxRows: 3 } }
               maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
             />
           </div>

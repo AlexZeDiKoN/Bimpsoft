@@ -10,8 +10,11 @@ import {
   WithStrokeWidth,
   UnitSelect,
 } from '../../parts'
+import SelectionTypes from '../../../../constants/SelectionTypes'
 
 import './ContourForm.css'
+
+const TYPE_PATH = [ 'type' ]
 
 export default class ContourForm extends compose(
   WithColor,
@@ -23,6 +26,8 @@ export default class ContourForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.CONTOUR
+
     return (
       <div className="contour-default-container">
         <div className='scroll-container'>
@@ -37,7 +42,7 @@ export default class ContourForm extends compose(
             <div className="contour-default-container__itemWidth">
               <div className='containerTypeColor'>
                 {this.renderColor(true)}
-                {this.renderFill()}
+                {type !== SelectionTypes.GROUPED_REGION && this.renderFill()}
               </div>
             </div>
           </div>
