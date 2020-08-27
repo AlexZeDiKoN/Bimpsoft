@@ -2,14 +2,14 @@ import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
 import { selection, ovt as ovtActions } from '../store/actions'
 import { canEditSelector } from '../store/selectors'
-import { FormTypes } from '../constants'
+import { FormTypes, viewModesKeys } from '../constants'
 import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
     selection: { preview, showForm, errorCode },
     orgStructures, ovt: ovtReducer,
-    sidebar: { sidebar },
+    viewModes: { [viewModesKeys.sidebarOpen]: sidebar },
   } = store
   const canEdit = canEditSelector(store)
   const showFormTypes = preview && preview.id ? FormTypes.EDIT : FormTypes.CREATE

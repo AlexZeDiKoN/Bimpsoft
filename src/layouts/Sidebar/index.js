@@ -98,6 +98,8 @@ export default class Sidebar extends React.Component {
 
   onToggle = (selectedTabIndex) => {
     this.setState({ selectedTabIndex })
+    const { sidebarOpen } = this.props
+    sidebarOpen(selectedTabIndex >= 0)
   }
 
   render () {

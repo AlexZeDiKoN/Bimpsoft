@@ -1,5 +1,6 @@
 import { action } from '../../utils/services'
 import { asyncAction, webMap } from '.'
+import { viewModesKeys } from '../../constants'
 
 export const VIEW_MODE_TOGGLE = action('VIEW_MODE_TOGGLE')
 export const VIEW_MODE_DISABLE = action('VIEW_MODE_DISABLE')
@@ -20,6 +21,11 @@ export const viewModeDisable = (name) => ({
 export const viewModeEnable = (name) => ({
   type: VIEW_MODE_ENABLE,
   payload: name,
+})
+
+export const sidebarOpen = (value) => ({
+  type: value ? VIEW_MODE_ENABLE : VIEW_MODE_DISABLE,
+  payload: viewModesKeys.sidebarOpen,
 })
 
 export const search = (sample) =>
