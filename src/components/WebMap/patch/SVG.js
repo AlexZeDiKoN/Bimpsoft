@@ -645,11 +645,11 @@ L.SVG.include({
           grid.eternalRings[dirIdx + 1][zoneIdx + 1],
         ]), true),
       ))
-      const weidth = strokeWidth ? getStrokeWidth(grid, strokeWidth) : false
 
+      const width = strokeWidth ? getStrokeWidth(grid, strokeWidth) : false
       grid._pathes.forEach((path) => {
-        if (weidth) {
-          path.setAttribute('stroke-width', weidth)
+        if (width) {
+          path.setAttribute('stroke-width', width)
         }
         if (color) {
           path.setAttribute('stroke', color)
