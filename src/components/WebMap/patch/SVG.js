@@ -678,8 +678,7 @@ L.SVG.include({
         grid.highlightedMainDirection = null
         return ''
       }
-    } else {
-      return ''
     }
+    return ''
   },
 })
