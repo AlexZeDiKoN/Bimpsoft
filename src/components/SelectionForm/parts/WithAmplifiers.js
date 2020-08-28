@@ -43,7 +43,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="amplifier-container__item">
-        {amplifiersPairs.map(({ id, name, type, maxRows }) => (
+        {amplifiersPairs.map(({ id, name, type, maxRows, maxNumber }) => (
           <div className="amplifier-container__itemWidth" key={id}>
             {type !== TYPE_AMPLIFIER_NUM
               ? <FormRow title={null}
@@ -84,6 +84,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   disabled={!canEdit}
                   value={Number(currentValue[id])}
                   onChange={this.changeNumAmplifier(pathAmplifiers, simpleObject)}
+                  maxNumber={maxNumber}
                 />
               </FormRow>
             }

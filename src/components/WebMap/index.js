@@ -1270,6 +1270,8 @@ export default class WebMap extends React.PureComponent {
 
   updateScaleOptions = () => {
     const { params } = this.props
+    settings.LINE_SIZE.min = params[paramsNames.LINE_SIZE_MIN]
+    settings.LINE_SIZE.max = params[paramsNames.LINE_SIZE_MAX]
     settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
     settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
     settings.BLOCKAGE_SIZE.max = params[paramsNames.BLOCKAGE_SIZE_MAX]

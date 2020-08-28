@@ -10,7 +10,7 @@ export default class NumberControl extends React.Component {
   }
 
   render () {
-    const { value, disabled } = this.props
+    const { value, disabled, maxNumber } = this.props
     const step = 1
     return (
       <>
@@ -20,6 +20,7 @@ export default class NumberControl extends React.Component {
           disabled={disabled}
           step={step}
           min="0"
+          max={maxNumber}
           value={value}
           onChange={this.changeHandler}
         />
@@ -33,4 +34,5 @@ NumberControl.propTypes = {
   value: PropTypes.number,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
+  maxNumber: PropTypes.number,
 }
