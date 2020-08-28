@@ -43,7 +43,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="amplifier-container__item">
-        {amplifiers.map(({ id, name, type, maxRows, maxNumber, notTitle }) => (
+        {amplifiers.map(({ id, name, type, maxRows, minNumber, maxNumber, notTitle }) => (
           <div className="amplifier-container__itemWidth" key={id}>
             <FormRow title={null}
               label={svg
@@ -62,7 +62,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   disabled={!canEdit}
                   readOnly={!canEdit}
                   step={1}
-                  min={0}
+                  min={minNumber}
                   max={maxNumber}
                   value={currentValue[id] ?? ''}
                   onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject)}
@@ -74,7 +74,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                     disabled={!canEdit}
                     readOnly={!canEdit}
                     step={1}
-                    min={0}
+                    min={minNumber}
                     max={maxNumber}
                     value={currentValue[id] ?? ''}
                     onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject, name)}
