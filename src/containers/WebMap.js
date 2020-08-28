@@ -113,7 +113,7 @@ const WebMapContainer = connect(
     requestAppInfo: webMap.getAppInfo,
     requestMaSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,
-    tryLockObjectsMove: webMap.tryLockObjectsMove,
+    warningLockObjectsMove: webMap.warningLockObjectsMove,
     tryLockObject: webMap.tryLockObject,
     tryUnlockObject: webMap.tryUnlockObject,
     flexGridCreated: flexGrid.flexGridCreated,

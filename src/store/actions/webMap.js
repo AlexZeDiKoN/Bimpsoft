@@ -601,7 +601,7 @@ export const objectUnlocked = (objectId) => ({
   payload: { objectId },
 })
 
-export const tryLockObjectsMove = () =>
+export const warningLockObjectsMove = () =>
   asyncAction.withNotification(async (dispatch) => {
     dispatch(notifications.push({
       type: 'warning',

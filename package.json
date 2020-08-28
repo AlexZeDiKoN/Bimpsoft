@@ -6,7 +6,7 @@
     "@DZVIN/CommonComponents": "^16.1.519",
     "@DZVIN/MilSymbolEditor": "^16.1.276",
     "@DZVIN/components": "^16.1.579",
-    "@DZVIN/leaflet-measure-custom": "^15.2.7",
+    "@DZVIN/leaflet-measure-custom": "^16.01.9",
     "@DZVIN/milsymbol": "^15.3.10",
     "antd": "^3.12.4",
     "bezier-js": "2.5.1",

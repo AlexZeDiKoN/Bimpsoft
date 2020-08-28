@@ -352,7 +352,7 @@ export default class WebMap extends React.PureComponent {
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
     requestMaSources: PropTypes.func,
-    tryLockObjectsMove: PropTypes.func,
+    warningLockObjectsMove: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
@@ -1818,14 +1818,14 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    const { selection: { list }, lockedObjects, tryLockObjectsMove } = this.props
+    const { selection: { list }, lockedObjects, warningLockObjectsMove } = this.props
     if (list.length > 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
       // Проверка выделенных объектов на блокировку
       if (list.some((objectId) => lockedObjects.has(objectId))) {
         // повідомлення про спробу переміщення заблокованого об'єкта
-        tryLockObjectsMove()
+        warningLockObjectsMove()
         // зупиняємо процес переміщення об'єктів
         layer.dragging?._draggable?.finishDrag && layer.dragging._draggable.finishDrag()
       }
