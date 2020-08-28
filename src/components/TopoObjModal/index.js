@@ -60,11 +60,13 @@ export default class TopoObjModal extends React.Component {
                       className='mainProperties'>{`${TopoObj.TOPCODE}: ${features[ selectedItem ].properties[ TopoObj.TOPCODE ]}`}</div>
                     <div
                       className='mainProperties'>{`${TopoObj.POINT_COORDINATE}: ${location.lat} ${location.lng}`}</div>
+                    <div
+                      className='mainProperties'>{`${TopoObj.POINT_HEIGHT}: ${features[ selectedItem ].properties[ TopoObj.POINT_HEIGHT ]}`}</div>
                   </div>
                   <div className='secondaryPropertiesContainer'>
                     {Object.keys(features[ selectedItem ].properties)
                       .filter((item) =>
-                        item !== TopoObj.OBJECT_TYPE && item !== TopoObj.TOPCODE)
+                        item !== TopoObj.OBJECT_TYPE && item !== TopoObj.TOPCODE && item !== TopoObj.POINT_HEIGHT)
                       .map((item, index) =>
                         <div className='secondaryProperties' key={index}>
                           {`${item}: ${features[ selectedItem ].properties[ item ]}`}
