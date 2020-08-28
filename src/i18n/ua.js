@@ -55,6 +55,7 @@ export const ERROR_MESSAGE_2 = 'військового формування: '
 export const ERROR_MESSAGE_3 = 'Умовний знак:'
 export const ERROR_MESSAGE_4 = 'Має помилку в коді знаку: Код не повний.'
 export const SYMBOL_S = [ 'знак', 'знаки', 'знаків' ]
+export const AND_MORE = 'І ще'
 export const WARNING_MESSAGE_1 = 'Зміни не збережені.'
 export const QUESTION_1_0 = 'Нанести його повторно?'
 export const QUESTION_1_1 = 'Нанести їх повторно?'

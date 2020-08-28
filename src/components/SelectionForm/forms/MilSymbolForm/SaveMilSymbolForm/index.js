@@ -50,7 +50,7 @@ export default class SaveMilSymbolForm extends React.Component {
             doubles = doubleObjects.slice(0, MAX_OUT_MESSAGE).map((obj) => {
               return { code: obj.code, unit: obj.unit ?? '' }
             })
-            etcMessage = `І ще ${doubleObjects.length - MAX_OUT_MESSAGE} ${declOfNum(doubleObjects.length - MAX_OUT_MESSAGE, i18n.SYMBOL_S)}`
+            etcMessage = `${i18n.AND_MORE} ${doubleObjects.length - MAX_OUT_MESSAGE} ${declOfNum(doubleObjects.length - MAX_OUT_MESSAGE, i18n.SYMBOL_S)}`
           }
           question = i18n.QUESTION_1_1
         } else {
