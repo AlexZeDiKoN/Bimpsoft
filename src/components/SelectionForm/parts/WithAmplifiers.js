@@ -103,13 +103,6 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                         : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
                     />}
             </FormRow>
-            {/* <NumberControl */}
-            {/*  name={id} */}
-            {/*  disabled={!canEdit} */}
-            {/*  value={Number(currentValue[id])} */}
-            {/*  onChange={this.changeNumAmplifier(pathAmplifiers, simpleObject)} */}
-            {/*  maxNumber={maxNumber} */}
-            {/* /> */}
           </div>
         ))}
       </div>
