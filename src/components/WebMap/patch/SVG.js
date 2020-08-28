@@ -646,7 +646,6 @@ L.SVG.include({
         ]), true),
       ))
 
-
       grid._pathes.forEach((path) => {
         if (strokeWidth) {
           let w
@@ -672,6 +671,13 @@ L.SVG.include({
   },
 
   _getHighlightMainDirectionsArea: function (grid) {
-    return grid.highlightedMainDirection !== null ? grid.cellRings[grid.highlightedMainDirection].join('') : ''
+    if (grid.highlightedMainDirection !== null) {
+      if (grid.cellRings.length > grid.highlightedMainDirection) {
+        return grid.cellRings[grid.highlightedMainDirection].join('')
+      } else {
+        grid.highlightedMainDirection = null
+      }
+    }
+    return ''
   },
 })
