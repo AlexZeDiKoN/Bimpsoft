@@ -8,9 +8,11 @@ const mapStateToProps = (store) => {
     print: {
       printFiles,
     },
+    viewModes: { sidebarSelectedTabIndex },
   } = store
   return {
     printFiles,
+    sidebarSelectedTabIndex,
   }
 }
 

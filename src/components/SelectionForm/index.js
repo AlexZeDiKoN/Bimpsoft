@@ -287,7 +287,7 @@ export default class SelectionForm extends React.Component {
       orgStructures,
       onCoordinateFocusChange,
       wrapper: Wrapper,
-      sidebar,
+      sidebarSelectedTabIndex,
     } = this.props
     if (data === null || !forms[data.type]) {
       return null
@@ -374,7 +374,7 @@ export default class SelectionForm extends React.Component {
           minWidth={minWidth}
           maxWidth={maxWidth}
           enableResizing={ResizeEnable.ALL_DISABLED}
-          defaultPosition={defaultPosition && sidebar ? { x: defaultPosition.x - sidebarWidth, y: defaultPosition.y } : defaultPosition}
+          defaultPosition={defaultPosition && sidebarSelectedTabIndex >= 0 ? { x: defaultPosition.x - sidebarWidth, y: defaultPosition.y } : defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
         >
@@ -420,5 +420,5 @@ SelectionForm.propTypes = {
   ovtLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
   errorCode: PropTypes.number,
-  sidebar: PropTypes.bool,
+  sidebarSelectedTabIndex: PropTypes.number,
 }
