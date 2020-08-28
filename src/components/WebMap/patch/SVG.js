@@ -676,7 +676,6 @@ L.SVG.include({
         return grid.cellRings[grid.highlightedMainDirection].join('')
       } else {
         grid.highlightedMainDirection = null
-        return ''
       }
     }
     return ''
