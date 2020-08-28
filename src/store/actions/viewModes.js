@@ -4,6 +4,7 @@ import { asyncAction, webMap } from '.'
 export const VIEW_MODE_TOGGLE = action('VIEW_MODE_TOGGLE')
 export const VIEW_MODE_DISABLE = action('VIEW_MODE_DISABLE')
 export const VIEW_MODE_ENABLE = action('VIEW_MODE_ENABLE')
+export const VIEW_MODE_SET_SIDEBAR_TAB_INDEX = action('VIEW_MODE_SET_SIDEBAR_TAB_INDEX')
 export const SET_SEARCH_OPTIONS = action('SET_SEARCH_OPTIONS')
 export const SET_SEARCH_EMPTY = action('SET_SEARCH_EMPTY')
 
@@ -20,6 +21,11 @@ export const viewModeDisable = (name) => ({
 export const viewModeEnable = (name) => ({
   type: VIEW_MODE_ENABLE,
   payload: name,
+})
+
+export const viewModeSetSidebarTabIndex = (payload) => ({
+  type: VIEW_MODE_SET_SIDEBAR_TAB_INDEX,
+  payload,
 })
 
 export const search = (sample) =>

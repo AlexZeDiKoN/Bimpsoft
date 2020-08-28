@@ -9,6 +9,7 @@ const mapStateToProps = (store) => {
   const {
     selection: { preview, showForm, errorCode },
     orgStructures, ovt: ovtReducer,
+    viewModes: { sidebarSelectedTabIndex },
   } = store
   const canEdit = canEditSelector(store)
   const showFormTypes = preview && preview.id ? FormTypes.EDIT : FormTypes.CREATE
@@ -19,6 +20,7 @@ const mapStateToProps = (store) => {
     showErrorSave,
     data: preview,
     orgStructures,
+    sidebarSelectedTabIndex,
     ovtData: ovtReducer.ovtData,
     ovtLoaded: ovtReducer.loaded,
     errorCode,

@@ -646,6 +646,7 @@ L.SVG.include({
         ]), true),
       ))
       const weidth = strokeWidth ? getStrokeWidth(grid, strokeWidth) : false
+
       grid._pathes.forEach((path) => {
         if (weidth) {
           path.setAttribute('stroke-width', weidth)
@@ -664,6 +665,13 @@ L.SVG.include({
   },
 
   _getHighlightMainDirectionsArea: function (grid) {
-    return grid.highlightedMainDirection !== null ? grid.cellRings[grid.highlightedMainDirection].join('') : ''
+    if (grid.highlightedMainDirection !== null) {
+      if (grid.cellRings.length > grid.highlightedMainDirection) {
+        return grid.cellRings[grid.highlightedMainDirection].join('')
+      } else {
+        grid.highlightedMainDirection = null
+      }
+    }
+    return ''
   },
 })
