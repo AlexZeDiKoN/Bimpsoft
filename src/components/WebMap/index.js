@@ -1914,8 +1914,8 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit, getLockedObjects } = this.props
     const lockedObjects = await getLockedObjects()
-    const locedIndex = Object.keys(lockedObjects.payload).findIndex((id) => object.id === id)
-    if (object && list.length === 1 && list[0] === object.id && locedIndex === -1) {
+    const lockedIndex = Object.keys(lockedObjects.payload).findIndex((id) => object.id === id)
+    if (object && list.length === 1 && list[0] === object.id && lockedIndex < 0) {
       object.id && editObject(object.id)
     } else {
       const targetLayer = object && object.layer
