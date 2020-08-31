@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { IButton, IconNames, ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
@@ -11,8 +12,6 @@ import Divide from './DirectionForms/Divide'
 
 const DivideDirectionForm = formFor(Divide)
 const CombineDirectionsForm = formFor(Combine)
-
-const { names: iconNames, IconButton } = components.icons
 
 export default class FlexGridButtons extends React.Component {
   static propTypes = {
@@ -60,27 +59,35 @@ export default class FlexGridButtons extends React.Component {
       <>
         <MenuDivider />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={dropHandler} />
-        <IconButton
-          placement={'bottomLeft'}
-          title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`}
-          icon={iconNames.MENU_OPERATING_AREA_DEFAULT}
-          checked={visible}
-          onClick={dropHandler}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.SEND_TO_ICT}
-          icon={iconNames.SEND_ICT}
-          disabled={!visible}
-          onClick={calcFlexGridUnits}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.DIVIDE_DIRECTION}
-          icon={iconNames.MENU_DIVISION_DEFAULT}
-          disabled={!visible}
-          onClick={showDivideDirForm}
-        >{isShownDivideForm &&
+        <Tooltip title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.MENU_OPERATING_AREA}
+            active={visible}
+            onClick={dropHandler}
+          />
+        </Tooltip>
+        <Tooltip title={i18n.SEND_TO_ICT} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.SEND_ICT}
+            disabled={!visible}
+            onClick={calcFlexGridUnits}
+          />
+        </Tooltip>
+        <div>
+          <Tooltip title={i18n.DIVIDE_DIRECTION} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.MENU_DIVISION}
+              disabled={!visible}
+              onClick={showDivideDirForm}
+            />
+          </Tooltip>
+          {isShownDivideForm &&
           <DivideDirectionForm
             onCancel={onModalCancel}
             onOk={updateFlexGridDirections}
@@ -88,14 +95,18 @@ export default class FlexGridButtons extends React.Component {
             deselect={deselectDirection}
             flexGrid={flexGrid}
           />}
-        </IconButton>
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.COMBINE_DIRECTIONS}
-          icon={iconNames.MENU_UNION_DEFAULT}
-          disabled={!visible || flexGrid.directions < 2}
-          onClick={showCombineDirForm}
-        >{isShownCombineForm &&
+        </div>
+        <div>
+          <Tooltip title={i18n.COMBINE_DIRECTIONS} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.MENU_UNION}
+              disabled={!visible || flexGrid.directions < 2}
+              onClick={showCombineDirForm}
+            />
+          </Tooltip>
+          {isShownCombineForm &&
           <CombineDirectionsForm
             onCancel={onModalCancel}
             onOk={updateFlexGridDirections}
@@ -103,7 +114,7 @@ export default class FlexGridButtons extends React.Component {
             deselect={deselectDirection}
             flexGrid={flexGrid}
           />}
-        </IconButton>
+        </div>
       </>
     )
   }

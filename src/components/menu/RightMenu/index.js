@@ -1,12 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
+import { ButtonTypes, ColorTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
 import './style.css'
-
-const { icons: { names: iconNames, IconButton } } = components
 
 export default class RightMenu extends React.Component {
   static propTypes = {
@@ -27,14 +26,16 @@ export default class RightMenu extends React.Component {
         {Object.keys(printFiles).length !== 0 && (
           <PrintFilesContainer/>
         )}
-        <IconButton
-          placement={'bottomRight'}
-          title={i18n.SETTINGS}
-          icon={iconNames.SETTING_DEFAULT}
-          checked={isSettingsShow}
-          onClick={onClickSettings}
-          disabled={is3DMapMode}
-        />
+        <Tooltip title={i18n.SETTINGS} placement='bottomRight'>
+          <IButton
+            icon={IconNames.MENU_SETTING}
+            active={isSettingsShow}
+            onClick={onClickSettings}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            disabled={is3DMapMode}
+          />
+        </Tooltip>
       </div>
     )
   }

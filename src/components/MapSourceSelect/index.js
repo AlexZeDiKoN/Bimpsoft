@@ -1,11 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 import i18n from '../../i18n'
-
-const { names: iconNames, IconButton } = components.icons
 
 export default class MapSourceSelect extends React.Component {
   static propTypes = {
@@ -27,13 +26,16 @@ export default class MapSourceSelect extends React.Component {
     const { isShowSources, sources, source, onClickMapSource } = this.props
     const filteredSources = sources.filter(({ isTerrain, title }) => !isTerrain && title)
     return (
-      <IconButton
-        placement={'bottomLeft'}
-        title={i18n.MAP_SOURCE}
-        icon={iconNames.MAP_DEFAULT}
-        checked={isShowSources}
-        onClick={onClickMapSource}
-      >
+      <div>
+        <Tooltip title={i18n.MAP_SOURCE} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.OPEN_MAP}
+            active={isShowSources}
+            onClick={onClickMapSource}
+          />
+        </Tooltip>
         {isShowSources && (<ContextMenu ref={this.clickOutsideRef} >
           {filteredSources.map((sourceObj, index) => {
             const { title } = sourceObj
@@ -48,7 +50,7 @@ export default class MapSourceSelect extends React.Component {
             )
           })}
         </ContextMenu>)}
-      </IconButton>
+      </div>
     )
   }
 }
