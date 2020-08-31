@@ -344,9 +344,9 @@ export const NO_ORG_STRUCTURE = 'Орг. структура відсутня'
 export const ORG_STRUCTURE_SHORT = 'Орг. структура'
 
 // лог
-export const FILES_TO_PRINT = 'Файли на друк'
+export const FILES_TO_PRINT = 'Черга друку'
 export const OPEN_FILE = 'Відкрити файл в провіднику'
-export const CANCEL_FILE = 'Скасувати'
+export const DELETE_FILE = 'Видалити з черги'
 export const CLEAN_FILE = 'Прибрати зі списку'
 export const RETRY_FILE = 'Спробувати ще раз'
 export const UPDATE_OBJECT = 'Оновлено весь об’єкт'

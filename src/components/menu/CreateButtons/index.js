@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
 import './style.css'
+import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import LinesList from '../../LinesList'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
-
-const { names: iconNames, IconButton } = components.icons
 
 const lineTypes = [
   SelectionTypes.AREA, SelectionTypes.CURVE, SelectionTypes.POLYGON, SelectionTypes.POLYLINE, SelectionTypes.CIRCLE,
@@ -64,35 +63,44 @@ export default class CreateButtons extends React.PureComponent {
     return (
       <>
         <MenuDivider />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.UNDO}
-          icon={iconNames.MENU_BACK_DEFAULT}
-          disabled={!isEditMode || !canUndo}
-          onClick={undo}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.REDO}
-          icon={iconNames.MENU_NEXT_DEFAULT}
-          disabled={!isEditMode || !canRedo}
-          onClick={redo}
-        />
+        <Tooltip title={i18n.UNDO} placement='bottomLeft'>
+          <IButton
+            icon={IconNames.MENU_BACK}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            disabled={!isEditMode || !canUndo}
+            onClick={undo}
+          />
+        </Tooltip>
+        <Tooltip title={i18n.REDO} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.MENU_NEXT}
+            disabled={!isEditMode || !canRedo}
+            onClick={redo}
+          />
+        </Tooltip>
         <MenuDivider />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.POINT_SIGN}
-          icon={iconNames.CONVENTIONAL_SIGN_DEFAULT}
-          checked={newShape.type === SelectionTypes.POINT}
-          onClick={this.clickPointHandler}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.LINE_SIGN}
-          icon={iconNames.GROUPING_GRAPHIC_PRIMITIVES_DEFAULT}
-          checked={lineTypes.indexOf(newShape.type) >= 0}
-          onClick={onClickLineSign}
-        >
+        <Tooltip title={i18n.POINT_SIGN} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.MENU_CONVENTIONAL_SIGN}
+            active={newShape.type === SelectionTypes.POINT}
+            onClick={this.clickPointHandler}
+          />
+        </Tooltip>
+        <div>
+          <Tooltip title={i18n.LINE_SIGN} placement='bottomLeft'>
+            <IButton
+              icon={IconNames.MENU_GROUPING_GRAPHIC_PRIMITIVES}
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              active={lineTypes.indexOf(newShape.type) >= 0}
+              onClick={onClickLineSign}
+            />
+          </Tooltip>
           {isShowLines && (
             <LinesList
               onSelect={this.selectLineHandler}
@@ -100,14 +108,16 @@ export default class CreateButtons extends React.PureComponent {
               ref={this.clickOutsideLinesListRef}
             />
           )}
-        </IconButton>
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.ADD_TEXT}
-          icon={iconNames.TEXT_SIGN_DEFAULT}
-          checked={newShape.type === SelectionTypes.TEXT}
-          onClick={this.clickTextHandler}
-        />
+        </div>
+        <Tooltip title={i18n.ADD_TEXT} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.MENU_TEXT}
+            active={newShape.type === SelectionTypes.TEXT}
+            onClick={this.clickTextHandler}
+          />
+        </Tooltip>
       </>
     )
   }

@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { debounce } from 'lodash/function'
-import { components } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
+import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
@@ -15,8 +16,6 @@ import { sameObjects } from '../../../store/selectors'
 import { errorSymbol } from '../../../store/actions/selection'
 import DeleteSelectionForm from './DeleteSelectionForm'
 import './style.css'
-
-const { names: iconNames, IconButton } = components.icons
 
 const ALLOW_GROUP = true
 
@@ -137,48 +136,58 @@ export default class SelectionButtons extends React.Component {
         {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
         {isEditMode && (<>
           <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.CUT}
-            icon={iconNames.CUT_DEFAULT}
-            disabled={!isSelected}
-            onClick={onCut}
-          />
+          <Tooltip title={i18n.CUT} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.MENU_CUT}
+              disabled={!isSelected}
+              onClick={onCut}
+            />
+          </Tooltip>
         </>)}
         <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.COPY}
-          icon={iconNames.COPY_DEFAULT}
-          disabled={!isSelected}
-          onClick={onCopy}
-        />
+        <Tooltip title={i18n.COPY} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.MENU_COPY}
+            disabled={!isSelected}
+            onClick={onCopy}
+          />
+        </Tooltip>
         {isEditMode && (<>
           <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? this.onPasteObject : null} />
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.PASTE}
-            icon={iconNames.PASTE_DEFAULT}
-            disabled={!isClipboardExist}
-            onClick={this.onPasteObject}
-          >
+          <div>
+            <Tooltip title={i18n.PASTE} placement='bottomLeft'>
+              <IButton
+                type={ButtonTypes.WITH_BG}
+                colorType={ColorTypes.BLACK_DARK_GREEN}
+                icon={IconNames.MENU_PASTE}
+                disabled={!isClipboardExist}
+                onClick={this.onPasteObject}
+              />
+            </Tooltip>
             {showErrorPasteForm && this.errorPasteForm()}
             {isClipboardExist && (
               <CountLabel className="clipboard-size" title={i18n.NUM_BUFFERED_SIGNS(clipboardSize)}>
                 {clipboardSize}
               </CountLabel>
             )}
-          </IconButton>
+          </div>
         </>)}
         {isEditMode && (<>
           <HotKey selector={shortcuts.DELETE} onKey={isSelected ? deleteHandler : null} />
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.DELETE}
-            icon={iconNames.DELETE_DEFAULT}
-            disabled={!isSelected}
-            onClick={onDelete}
-          >
+          <div>
+            <Tooltip title={i18n.DELETE} placement='bottomLeft'>
+              <IButton
+                type={ButtonTypes.WITH_BG}
+                colorType={ColorTypes.BLACK_DARK_GREEN}
+                icon={IconNames.MENU_DELETE}
+                disabled={!isSelected}
+                onClick={onDelete}
+              />
+            </Tooltip>
             {showDelForm && (
               <DeleteSelectionForm
                 layerName={layerName}
@@ -187,39 +196,49 @@ export default class SelectionButtons extends React.Component {
                 onCancel={onDeleteCancel}
               />
             )}
-          </IconButton>
+          </div>
         </>)}
         {isEditMode && (<>
           <MenuDivider />
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.MIRROR_IMAGE}
-            icon={iconNames.MENU_MIRROR_DEFAULT}
-            disabled={!isSelected || nSelected > 1}
-            onClick={debounce(onMirrorImage, 350)}
-          />
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.CONTOUR}
-            icon={iconNames.MENU_CONTOUR_DEFAULT}
-            disabled={!canContour && !canDecontour}
-            onClick={canContour ? onContour : onDecontour}
-          />
-          {ALLOW_GROUP && <IconButton
-            placement={'bottomLeft'}
+          <Tooltip title={i18n.MIRROR_IMAGE} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.MENU_MIRROR}
+              disabled={!isSelected || nSelected > 1}
+              onClick={debounce(onMirrorImage, 350)}
+            />
+          </Tooltip>
+          <Tooltip title={i18n.CONTOUR} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.MENU_CONTOUR}
+              disabled={!canContour && !canDecontour}
+              onClick={canContour ? onContour : onDecontour}
+            />
+          </Tooltip>
+          {ALLOW_GROUP &&
+          <Tooltip
             title={canGroup ? i18n.GROUPING : canUngroup ? i18n.UNGROUPING : `${i18n.GROUPING} / ${i18n.UNGROUPING}`}
-            icon={iconNames.GROUP_UNIT_2}
-            checked={!canGroup && canUngroup}
-            disabled={!canGroup && !canUngroup}
-            onClick={canGroup ? onGroup : canUngroup ? onUngroup : undefined}
-          />}
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.GROUPING_REGION}
-            icon={iconNames.POSITION_AREA_UNIT}
-            disabled={!canGroupRegion}
-            onClick={onGroupRegion}
-          />
+            placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.GROUP_UNIT_2}
+              active={!canGroup && canUngroup}
+              disabled={!canGroup && !canUngroup}
+              onClick={canGroup ? onGroup : canUngroup ? onUngroup : undefined}
+            /></Tooltip>}
+          <Tooltip title={i18n.GROUPING_REGION} placement='bottomLeft'>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              icon={IconNames.POSITION_AREA_UNIT}
+              disabled={!canGroupRegion}
+              onClick={onGroupRegion}
+            />
+          </Tooltip>
         </>)}
       </>
     )

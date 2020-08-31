@@ -84,9 +84,9 @@ export default class PrintFiles extends PureComponent {
         />
         {visible && ReactDOM.createPortal(
           <MovablePanel
-            minHeight={'calc(80vh + 35px)'}
             minWidth={400}
             maxWidth={400}
+            title={i18n.FILES_TO_PRINT}
             onClose={() => this.setState({ visible: false })}
             defaultPosition={ sidebarSelectedTabIndex >= 0 ? { x: calc - sidebarWidth, y: 40 } : { x: calc, y: 40 } }
             maxHeight={'calc(80vh + 35px)'}>
