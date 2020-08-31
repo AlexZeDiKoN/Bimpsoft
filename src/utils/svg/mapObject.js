@@ -744,17 +744,14 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
 mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
   const {
     coordToPixels,
-    printOptions: {
-      getFontSize,
-      getStrokeWidth,
-    },
+    printOptions,
   } = commonData
   const render = {
     _layers: {},
     ...L.SVG.prototype,
   }
   const [ eternals, directionSegments, zoneSegments ] = object.geometry.toJS()
-  const { params: { directions, zones, start, title } } = object.attributes.toJS()
+  const { params: { directions, zones, start, title }, color, strokeWidth } = object.attributes.toJS()
   const grid = new L.FlexGrid(
     null, {
       directions,
@@ -765,6 +762,8 @@ mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
       olovo: true,
       start,
       title,
+      color,
+      strokeWidth,
     },
     object.id,
     {
@@ -777,10 +776,7 @@ mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
     latLngToLayerPoint: coordToPixels,
   }
   grid._project()
-  grid.printOptions = {
-    getFontSize,
-    getStrokeWidth,
-  }
+  grid.printOptions = printOptions
   render._updateFlexGrid(grid)
   return <Fragment key={object.id}>
     <g

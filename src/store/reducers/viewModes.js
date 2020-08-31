@@ -8,7 +8,7 @@ const initialState = {
   [viewModesKeys.directionName]: false,
   [viewModesKeys.eternalPoint]: false,
   [viewModesKeys.map3D]: false,
-  [viewModesKeys.sidebarOpen]: false,
+  [viewModesKeys.sidebarSelectedTabIndex]: -1,
   searchEmpty: false,
   searchOptions: null,
 }
@@ -35,6 +35,10 @@ export default function reducer (state = initialState, action) {
     case actions.VIEW_MODE_ENABLE: {
       const { payload: name } = action
       return { ...state, [name]: true }
+    }
+    case actions.VIEW_MODE_SET_SIDEBAR_TAB_INDEX: {
+      const { payload } = action
+      return { ...state, [viewModesKeys.sidebarSelectedTabIndex]: payload }
     }
     case actions.SET_SEARCH_OPTIONS: {
       const { payload } = action

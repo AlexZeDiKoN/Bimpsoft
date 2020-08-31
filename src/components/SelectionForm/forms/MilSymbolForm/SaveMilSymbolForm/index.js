@@ -9,6 +9,7 @@ import i18n from '../../../../../i18n'
 import { errorSymbol } from '../../../../../store/actions/selection'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
+const MAX_OUT_MESSAGE = 50 // максимальное колличество выводимых на форму сообщений
 
 function declOfNum (number, titles) {
   const cases = [ 2, 0, 1, 1, 1, 2 ]
@@ -34,8 +35,8 @@ export default class SaveMilSymbolForm extends React.Component {
     } = this.props
     let errorMessage = errorCode & errorSymbol.duplication ? i18n.ERROR_MESSAGE_1 : i18n.ERROR_MESSAGE_3
     let doubles = (doubleObjects && Array.isArray(doubleObjects)) ? doubleObjects : [ { code: '', unit: '' } ]
-    let isEtc = false
     let question = (errorCode & errorSymbol.duplication) ? i18n.QUESTION_1_0 : i18n.QUESTION_2
+    let etcMessage = ''
 
     if (errorCode & errorSymbol.duplication) {
       if (doubleObjects && Array.isArray(doubleObjects)) {
@@ -43,11 +44,13 @@ export default class SaveMilSymbolForm extends React.Component {
           errorMessage = `${i18n.ERROR_MESSAGE_00}${doubleObjects.length}
             ${declOfNum(doubleObjects.length, i18n.ERROR_MESSAGES_SYMBOL)}`
           // формирование списка выводимых объектов на форму предупреждеия
-          if (doubleObjects.length < 5) {
+          if (doubleObjects.length <= MAX_OUT_MESSAGE) {
             doubles = doubleObjects.map((obj) => { return { code: obj.code, unit: obj.unit ?? '' } })
-          } else { // выводим только первые 3
-            doubles = doubleObjects.slice(0, 3).map((obj) => { return { code: obj.code, unit: obj.unit ?? '' } })
-            isEtc = true
+          } else { // выводим только по первым MAX_OUT_MESSAGE дублируемым объекам
+            doubles = doubleObjects.slice(0, MAX_OUT_MESSAGE).map((obj) => {
+              return { code: obj.code, unit: obj.unit ?? '' }
+            })
+            etcMessage = `${i18n.AND_MORE} ${doubleObjects.length - MAX_OUT_MESSAGE} ${declOfNum(doubleObjects.length - MAX_OUT_MESSAGE, i18n.SYMBOL_S)}`
           }
           question = i18n.QUESTION_1_1
         } else {
@@ -68,26 +71,27 @@ export default class SaveMilSymbolForm extends React.Component {
                   <div className="confirm-text">
                     {errorMessage}
                   </div>
-                  {
-                    doubles.map((double, index) =>
-                      <div className="confirm-text" key={index}>
-                        {double.code}
-                        <br/>
-                        {i18n.ERROR_MESSAGE_2}{double.unit}
-                        <br/>
-                      </div>,
-                    )
-                  }
-                  {isEtc ? <div className="confirm-text" style={ { textAlign: 'center' } }>
-                    •
+                  <div className="confirm-message">
+                    {
+                      doubles.map((double, index) =>
+                        <div className="confirm-text" key={index}>
+                          {double.code}
+                          <br/>
+                          {i18n.ERROR_MESSAGE_2}{double.unit}
+                          <br/>
+                        </div>,
+                      )
+                    }
+                    {
+                      etcMessage && <div className="confirm-text-etc">{etcMessage}</div>
+                    }
+                    {
+                      (errorCode & errorSymbol.code)
+                        ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div>
+                        : <></>
+                    }
                     <br/>
-                    •
-                    <br/>
-                    •
-                  </div> : <></>
-                  }
-                  {(errorCode & errorSymbol.code) ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div> : <></>}
-                  <br/>
+                  </div>
                   <div className="confirm-text">
                     {question}
                   </div>

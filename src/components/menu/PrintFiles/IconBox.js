@@ -1,6 +1,6 @@
 import React, { Fragment, Component } from 'react'
 import { Icon } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import { DOC_CLASS_ID } from '../../../constants/Print'
@@ -51,9 +51,9 @@ export default class IconBox extends Component {
             icon={iconNames.REFRESH_DEFAULT}
             onClick={this.handleRetry}
           />}
-        <IconButton
-          title={message === 'done' ? i18n.CLEAN_FILE : i18n.CANCEL_FILE}
-          icon={iconNames.CLOSE}
+        <IButton
+          title={message === 'done' ? i18n.CLEAN_FILE : i18n.DELETE_FILE}
+          icon={IconNames.BAR_2_DELETE}
           onClick={this.handleClose}
         />
       </Fragment>

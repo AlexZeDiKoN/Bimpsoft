@@ -12,6 +12,8 @@ import {
 import { catchErrors } from '../store/actions/asyncAction'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
 import { MapModes } from '../constants'
+import * as notifications from '../store/actions/notifications'
+import i18n from '../i18n'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -113,6 +115,11 @@ const WebMapContainer = connect(
     requestAppInfo: webMap.getAppInfo,
     requestMaSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,
+    warningLockObjectsMove: () => notifications.push({
+      type: 'warning',
+      message: i18n.ERROR_OBJECTS_LOCKED,
+      description: i18n.ERROR_OBJECTS_LOCKED_DESCRIPTION,
+    }),
     tryLockObject: webMap.tryLockObject,
     tryUnlockObject: webMap.tryUnlockObject,
     flexGridCreated: flexGrid.flexGridCreated,

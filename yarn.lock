@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^16.1.520":
-  version "16.1.520"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-16.1.520.tgz#0411472ee39ac0255c8d67ab1312a6f60504d531"
-  integrity sha512-8exEu3sqEw2Ztx5dzlcpCla5rVPpcaNql83Bm/UEy5hflx6lcqFHJZYqLmPJme4PzH1Ag0wpLJdhn1YcfRA2YA==
+"@DZVIN/CommonComponents@^16.1.524":
+  version "16.1.524"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-16.1.524.tgz#76a7418acce9248d7b173181db97225c1ab0cb78"
+  integrity sha512-JbqAU1MQu8IL9oiZs1unY2/U75BD39NahEXh/R2H8Huj6zSM7iQYFDb8eCDZRfKVl/aREc+b9d/YKlFQwm+NxA==
   dependencies:
     "@DZVIN/validators" "^1.0.9"
     classnames "^2.2.6"
@@ -23,27 +23,27 @@
   resolved "http://172.16.95.16:4873/@DZVIN%2fEuSign/-/EuSign-0.0.2.tgz#48a82a28bc6a6d5012ddf96cee5e0846cd9b0c7d"
   integrity sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
 
-"@DZVIN/MilSymbolEditor@^16.1.276":
-  version "16.1.276"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-16.1.276.tgz#aa78879a47c61bc6be7a225a9bb200d97b2d1a89"
-  integrity sha512-6jF3a1ISLvklSTYbAewrM2vYDDn6QXCnapse4BkoQ3vmL0QPY+ASeqwxKvCI3ZssEx+AI1pc0UbpTsRM+aqWsA==
+"@DZVIN/MilSymbolEditor@^16.1.278":
+  version "16.1.278"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fMilSymbolEditor/-/MilSymbolEditor-16.1.278.tgz#2d16c9320f1de1efe2a23351e4feb500b26b8b0b"
+  integrity sha512-0Y5WkcQJjTMz0JBxFMvLO0JtgiQx7hZZzEGR2RnMwFB4eFb2HN922j+5EKwQx+JMs2BthhtM2L74EvveiSo/Wg==
   dependencies:
     "@DZVIN/milsymbol" "^15.03.10"
 
-"@DZVIN/components@^16.1.579":
-  version "16.1.579"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-16.1.579.tgz#c56e3746e66168dc1071b5f7f813960873d0596d"
-  integrity sha512-hOPV4fElL+c3RigAAHM/w5mYXdXFwnQ3YErGWPtEBwbfXm0uwb8fGJ34T+RREDAnxsHi2SQLeM/f90aX3YSPTg==
+"@DZVIN/components@^16.1.581":
+  version "16.1.581"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-16.1.581.tgz#2b5b4bd847a4a84553598d919d8e0440ecb10c79"
+  integrity sha512-AMNx64chQJ1Rr1E5wq94VW28PAmoJa5n11rRT3pIGNM5rpezf683BKxN4e2F/0R8hud/hgjXHF2ZVJnM9PTS5Q==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"
     draft-js "^0.11.0"
     draft-js-export-html "^1.3.3"
 
-"@DZVIN/leaflet-measure-custom@^15.2.7":
-  version "15.2.7"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fleaflet-measure-custom/-/leaflet-measure-custom-15.2.7.tgz#80e31cda3bf8629a42561fa1529cacf8d5774c08"
-  integrity sha512-Gf5t2QfnCuWpUQiEGIcnQHpMFUgUsNf9BWa/StSPj1TW+Me7vufaDWGq7lP85gc1HFpIkNVT8W7Jd+lJLY9QPg==
+"@DZVIN/leaflet-measure-custom@^16.01.10":
+  version "16.1.10"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fleaflet-measure-custom/-/leaflet-measure-custom-16.1.10.tgz#0dfe644cc82713187cd63b88c2ab1aa78434db9a"
+  integrity sha512-MuRWxGJ5hXrtcEMoyWyYUc2MYum0VdO2g8WJTRrE/HrgxAoGberb8jptYJJP9aSgn+VARJjKx6+/OsXAKpKFTQ==
 
 "@DZVIN/milsymbol@^15.03.10", "@DZVIN/milsymbol@^15.3.10":
   version "15.3.10"
