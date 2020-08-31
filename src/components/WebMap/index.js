@@ -774,7 +774,7 @@ export default class WebMap extends React.PureComponent {
 
   disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
-  checkSaveObject = (leaving) => {
+  checkSaveObject = async (leaving) => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
@@ -797,9 +797,10 @@ export default class WebMap extends React.PureComponent {
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (id !== null) {
         if (geometryChanged) {
-          return updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
-        } else if (leaving) {
-          return tryUnlockObject(id)
+          await updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
+        }
+        if (leaving) {
+          await tryUnlockObject(id)
         }
       }
     }
