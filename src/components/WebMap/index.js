@@ -492,7 +492,7 @@ export default class WebMap extends React.PureComponent {
       this.highlightDirections(selectedDirections)
     }
     if (mainDirectionIndex !== prevProps.flexGridParams.mainDirectionIndex) {
-      mainDirectionIndex !== -1 && this.highlightMainDirection(mainDirectionIndex)
+      this.highlightMainDirection(mainDirectionIndex)
     }
     if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
       this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
@@ -1913,10 +1913,12 @@ export default class WebMap extends React.PureComponent {
   processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit, getLockedObjects } = this.props
-    const lockedObjects = await getLockedObjects()
-    const lockedIndex = Object.keys(lockedObjects.payload).findIndex((id) => object.id === id)
-    if (object && list.length === 1 && list[0] === object.id && lockedIndex < 0) {
-      object.id && editObject(object.id)
+    if (object && object.id && list.length === 1 && list[0] === object.id) {
+      const { payload = {} } = await getLockedObjects()
+      const lockedIndex = Object.keys(payload).findIndex((id) => object.id === id)
+      if (lockedIndex < 0) {
+        editObject(object.id)
+      }
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
@@ -1970,6 +1972,7 @@ export default class WebMap extends React.PureComponent {
 
   highlightMainDirection = (mainDirectionIndex) => {
     const { flexGridVisible } = this.props
+    mainDirectionIndex = mainDirectionIndex === -1 ? null : mainDirectionIndex
     this.flexGrid && this.flexGrid.setMainDirection(mainDirectionIndex, flexGridVisible)
   }
 
