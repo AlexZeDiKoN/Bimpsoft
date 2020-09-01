@@ -1913,11 +1913,11 @@ export default class WebMap extends React.PureComponent {
   processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit, getLockedObjects } = this.props
-    if (object && list.length === 1 && list[0] === object.id) {
+    if (object && object.id && list.length === 1 && list[0] === object.id) {
       const { payload = {} } = await getLockedObjects()
       const lockedIndex = Object.keys(payload).findIndex((id) => object.id === id)
       if (lockedIndex < 0) {
-        object.id && editObject(object.id)
+        editObject(object.id)
       }
     } else {
       const targetLayer = object && object.layer
