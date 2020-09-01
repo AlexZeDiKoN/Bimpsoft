@@ -492,7 +492,7 @@ export default class WebMap extends React.PureComponent {
       this.highlightDirections(selectedDirections)
     }
     if (mainDirectionIndex !== prevProps.flexGridParams.mainDirectionIndex) {
-      mainDirectionIndex !== -1 && this.highlightMainDirection(mainDirectionIndex)
+      this.highlightMainDirection(mainDirectionIndex)
     }
     if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
       this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
@@ -1972,6 +1972,7 @@ export default class WebMap extends React.PureComponent {
 
   highlightMainDirection = (mainDirectionIndex) => {
     const { flexGridVisible } = this.props
+    mainDirectionIndex = mainDirectionIndex === -1 ? null : mainDirectionIndex
     this.flexGrid && this.flexGrid.setMainDirection(mainDirectionIndex, flexGridVisible)
   }
 
