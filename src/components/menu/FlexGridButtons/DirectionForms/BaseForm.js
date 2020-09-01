@@ -1,6 +1,7 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { components, MovablePanel } from '@DZVIN/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKey, HotKeysContainer } from '../../../common/HotKeys'
 import * as shortcuts from '../../../../constants/shortcuts'
@@ -36,27 +37,28 @@ const BaseForm = (props) => {
       >
         <div title={name} className='dir_info'>{name}</div>
       </Option>
-    </div>
+    </div>,
   )
 
   return (
-    <>
-      <div className="not-clickable-area"/>
-      <FocusTrap className="form-direction_wrapper">
-        <HotKeysContainer>
-          <Form className="form-direction">
-            <div className="form-direction_title">{title}</div>
-            <div className="form-direction_desc">{description}:</div>
-            <FormItem><div className={'options_wrapper'}>{options}</div></FormItem>
-            <FormItem>
-              <Button onClick={handleOkay} text={okBtnText || YES}/>
-              {buttonCancel(onCancel)}
-              <HotKey selector={shortcuts.ESC} onKey={onCancel}/>
-            </FormItem>
-          </Form>
-        </HotKeysContainer>
-      </FocusTrap>
-    </>
+    ReactDOM.createPortal(
+      <MovablePanel title={title} bounds='div.app-body'>
+        <FocusTrap className="form-direction_wrapper">
+          <HotKeysContainer>
+            <Form className="form-direction">
+              <div className="form-direction_desc">{description}:</div>
+              <FormItem><div className={'options_wrapper'}>{options}</div></FormItem>
+              <FormItem>
+                <Button onClick={handleOkay} text={okBtnText || YES}/>
+                {buttonCancel(onCancel)}
+                <HotKey selector={shortcuts.ESC} onKey={onCancel}/>
+              </FormItem>
+            </Form>
+          </HotKeysContainer>
+        </FocusTrap>
+      </MovablePanel>,
+      document.getElementById('main'),
+    )
   )
 }
 
