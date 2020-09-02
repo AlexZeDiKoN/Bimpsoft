@@ -53,6 +53,15 @@ export const entityKindOutlinable = [
   entityKind.SQUARE,
 ]
 
+export const entityKindCanMirror = [
+  entityKind.SEGMENT,
+  entityKind.AREA,
+  entityKind.CURVE,
+  entityKind.POLYGON,
+  entityKind.POLYLINE,
+  entityKind.SOPHISTICATED,
+]
+
 export const entityKindMultipointCurves = [
   entityKind.POLYLINE,
   entityKind.CURVE,

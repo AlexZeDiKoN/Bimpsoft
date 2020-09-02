@@ -1080,7 +1080,6 @@ export default class WebMap extends React.PureComponent {
         const byArea = (a, b) => area(a) - area(b)
 
         const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
-        console.log(elems)
         const all = [].map
           .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
           .filter(Boolean)
@@ -1091,15 +1090,12 @@ export default class WebMap extends React.PureComponent {
 
         this.map._container.focus()
 
-        console.log({ result })
         if (!result) {
           await this.onSelectedListChange([])
         } else {
           result = getFeatureParent(result)
           doubleClick && result.object && result.object.layer !== layer && await onChangeLayer(result.object.layer)
-          console.log(111, { list: this.props.selection.list })
           await this.selectLayer(result.id, e.originalEvent.ctrlKey)
-          console.log(222, { list: this.props.selection.list })
           doubleClick && await this.processDblClickOnLayer(result)
         }
       }
@@ -1788,8 +1784,9 @@ export default class WebMap extends React.PureComponent {
   }, 250)
 
   moveListByOne = (layer) => {
-    const { selection: { list } } = this.props
-    if (list.length > 1) {
+    let { selection: { list } } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
+    if (list.length >= 1) {
       this._dragEndPx = this.map.project(layer._bounds._northEast)
       const delta = {
         x: this._dragEndPx.x - this._dragStartPx.x,
@@ -1826,8 +1823,10 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    const { selection: { list }, lockedObjects, warningLockObjectsMove } = this.props
-    if (list.length > 1) {
+    let { selection: { list } } = this.props
+    const { lockedObjects, warningLockObjectsMove } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
+    if (list.length >= 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
       // Проверка выделенных объектов на блокировку
@@ -1846,7 +1845,8 @@ export default class WebMap extends React.PureComponent {
 
   onDragEnded = ({ target: layer }) => {
     this.moveListByOne(layer)
-    const { selection: { list } } = this.props
+    let { selection: { list } } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length > 1) {
       const delta = calcMoveWM({
         x: this._dragEndPx.x - this._savedDragStartPx.x,
@@ -1919,12 +1919,9 @@ export default class WebMap extends React.PureComponent {
     const { id, object } = layer
     const { selection: { list }, editObject, onSelectUnit, lockedObjects } = this.props
 
-    console.log(`processDblClickOnLayer`, { object, list, lockedObjects })
     if (object && object.id && list.length === 1 && list[0] === object.id && !lockedObjects.has(object.id)) {
-      console.log('do editObject')
       editObject(object.id)
     } else {
-      console.log('do NOT editObject')
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
         await this.selectLayer(id)
@@ -1996,8 +1993,6 @@ export default class WebMap extends React.PureComponent {
 
     let result = []
 
-    console.log(333, JSON.stringify(list), { id, exclusive })
-
     if (id) {
       if (exclusive) {
         result = list.indexOf(id) === -1
@@ -2007,8 +2002,6 @@ export default class WebMap extends React.PureComponent {
         result = [ id ]
       }
     }
-
-    console.log(444, JSON.stringify(result))
 
     return this.onSelectedListChange(result)
   }
