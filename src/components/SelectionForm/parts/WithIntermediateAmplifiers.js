@@ -86,7 +86,8 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
       <div className="intermediate-amplifiers__item">
         <div className="intermediate-amplifiers__itemWidth">
           <div className="intermediate-amplifiers__item-B">
-            <FormRow title={null}
+            <FormRow
+              title={null}
               label={svg ? <Tooltip
                 overlayClassName='shape-form-svg-tooltip'
                 mouseEnterDelay={1}
