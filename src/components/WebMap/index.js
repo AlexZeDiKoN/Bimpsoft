@@ -382,6 +382,7 @@ export default class WebMap extends React.PureComponent {
     redo: PropTypes.func,
     checkObjectAccess: PropTypes.func,
     onShadowDelete: PropTypes.func,
+    myContactId: PropTypes.number,
   }
 
   constructor (props) {
@@ -1912,10 +1913,12 @@ export default class WebMap extends React.PureComponent {
 
   processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
-    const { selection: { list }, editObject, onSelectUnit, getLockedObjects } = this.props
+    const { selection: { list }, editObject, onSelectUnit, getLockedObjects, myContactId } = this.props
+
     if (object && object.id && list.length === 1 && list[0] === object.id) {
       const { payload = {} } = await getLockedObjects()
-      const lockedIndex = Object.keys(payload).findIndex((id) => object.id === id)
+      const lockedIndex = Object.keys(payload).findIndex((id) =>
+        object.id === id && String(payload[id].contactId) !== String(myContactId))
       if (lockedIndex < 0) {
         editObject(object.id)
       }
