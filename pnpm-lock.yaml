@@ -1,8 +1,8 @@
 dependencies:
-  '@DZVIN/CommonComponents': 16.1.519_8163dde90d88e02f48b04383611abbfe
-  '@DZVIN/MilSymbolEditor': 16.1.276
-  '@DZVIN/components': 16.1.579_56c0a69b77661e2a2e6d79d63bcec91c
-  '@DZVIN/leaflet-measure-custom': 15.2.7
+  '@DZVIN/CommonComponents': 16.2.526_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/MilSymbolEditor': 16.1.278
+  '@DZVIN/components': 16.1.581_56c0a69b77661e2a2e6d79d63bcec91c
+  '@DZVIN/leaflet-measure-custom': 16.1.10
   '@DZVIN/milsymbol': 15.3.10
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
   bezier-js: 2.5.1
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/16.1.519_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/16.2.526_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -88,18 +88,18 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-zXYPAwb9D+jU9LPH2qNjnNRQeMcdIA5w+jc+e7eBSsaABoZ0fSoapMAkEWfuh3zbFrW82FlR2m+2PuDaFAuxLg==
+      integrity: sha512-TrWmVM/9/apSxyS3IEWbUZucBtS0ValvpRKHyvol5Xx5jagt5hy8jpnf3Iq3lxLmZ1ceKeJ9uVK488ngnNbFtQ==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/16.1.276:
+  /@DZVIN/MilSymbolEditor/16.1.278:
     dependencies:
       '@DZVIN/milsymbol': 15.3.10
     dev: false
     resolution:
-      integrity: sha512-6jF3a1ISLvklSTYbAewrM2vYDDn6QXCnapse4BkoQ3vmL0QPY+ASeqwxKvCI3ZssEx+AI1pc0UbpTsRM+aqWsA==
-  /@DZVIN/components/16.1.579_56c0a69b77661e2a2e6d79d63bcec91c:
+      integrity: sha512-0Y5WkcQJjTMz0JBxFMvLO0JtgiQx7hZZzEGR2RnMwFB4eFb2HN922j+5EKwQx+JMs2BthhtM2L74EvveiSo/Wg==
+  /@DZVIN/components/16.1.581_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
@@ -111,11 +111,11 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-hOPV4fElL+c3RigAAHM/w5mYXdXFwnQ3YErGWPtEBwbfXm0uwb8fGJ34T+RREDAnxsHi2SQLeM/f90aX3YSPTg==
-  /@DZVIN/leaflet-measure-custom/15.2.7:
+      integrity: sha512-AMNx64chQJ1Rr1E5wq94VW28PAmoJa5n11rRT3pIGNM5rpezf683BKxN4e2F/0R8hud/hgjXHF2ZVJnM9PTS5Q==
+  /@DZVIN/leaflet-measure-custom/16.1.10:
     dev: false
     resolution:
-      integrity: sha512-Gf5t2QfnCuWpUQiEGIcnQHpMFUgUsNf9BWa/StSPj1TW+Me7vufaDWGq7lP85gc1HFpIkNVT8W7Jd+lJLY9QPg==
+      integrity: sha512-MuRWxGJ5hXrtcEMoyWyYUc2MYum0VdO2g8WJTRrE/HrgxAoGberb8jptYJJP9aSgn+VARJjKx6+/OsXAKpKFTQ==
   /@DZVIN/milsymbol/15.3.10:
     dev: false
     resolution:
@@ -15995,10 +15995,10 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^16.1.519
-  '@DZVIN/MilSymbolEditor': ^16.1.276
-  '@DZVIN/components': ^16.1.579
-  '@DZVIN/leaflet-measure-custom': ^15.2.7
+  '@DZVIN/CommonComponents': ^16.2.526
+  '@DZVIN/MilSymbolEditor': ^16.1.278
+  '@DZVIN/components': ^16.1.581
+  '@DZVIN/leaflet-measure-custom': ^16.1.10
   '@DZVIN/milsymbol': ^15.3.10
   '@craco/craco': ^5.6.4
   antd: ^3.12.4

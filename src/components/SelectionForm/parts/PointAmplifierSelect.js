@@ -19,7 +19,6 @@ const PATH_S_INFO = [ 'attributes', 'sectorsInfo' ]
 
 const PointAmplifierSelect = (Component) => class PointAmplifierSelectComponent extends Component {
   createAmplifierSelectHandler = (index) => ({ target: { name, value } }) => {
-    // console.log(JSON.stringify(index))
     this.setResult((result) => {
       result = result.updateIn([ ...PATH_S_INFO, index ],
         (sectorsInfo) => Object.assign({}, sectorsInfo, { [name]: value }))
@@ -39,11 +38,7 @@ const PointAmplifierSelect = (Component) => class PointAmplifierSelectComponent 
     const name = 'T'
     const id = 'p0'
     const sectorInfo = formStore.getIn([ ...PATH_S_INFO, id ])
-    // let amplifierT = ''
-    // if (sectorInfo) {
     const amplifierT = sectorInfo?.amplifier || ''
-    // console.log(JSON.stringify(sectorInfo))
-    // }
     return (
       <div className="line-container__item">
         <div className="line-container__itemWidth" key={id}>

@@ -107,7 +107,6 @@ export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
     try {
       pt = JSON.parse(datapt)
     } catch (e) {
-      //        console.log("Error Jason.parse datapt");
       return null
     }
   } else {
@@ -194,7 +193,6 @@ export function buildingMainAttack (datapt, typeLine, bindingType) {
     try {
       pt = JSON.parse(datapt)
     } catch (e) {
-      //        console.log("Error Jason.parse datapt");
       return null
     }
   } else {
@@ -247,7 +245,6 @@ export function buildingArrow (datapt, typeLine, bindingType) {
     try {
       pt = JSON.parse(datapt)
     } catch (e) {
-      //        console.log("Error Jason.parse datapt");
       return null
     }
   } else {
