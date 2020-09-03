@@ -281,8 +281,8 @@ export const LAYERS_BASEMAP_OPACITY = 'Непрозорість картогра
 export const LAYERS_INACTIVE_OPACITY = 'Непрозорість знаків неактивного шару (%)'
 export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування знаків'
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
-export const CLOSE_MAP_SECTIONS = 'Згорнути всі карти'
-export const OPEN_MAP_SECTIONS = 'Розгорнути всі карти'
+export const COLLAPSE_LAYERS = 'Згорнути шари'
+export const EXPAND_LAYERS = 'Розгорнути шари'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
 export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 
