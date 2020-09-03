@@ -5,7 +5,6 @@ import { components, data } from '@DZVIN/CommonComponents'
 import Item from '../ObjectCatalogItem'
 import { InputButton } from '../common'
 import './style.css'
-import i18n from '../../i18n'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -128,7 +127,6 @@ CatalogsComponent.propTypes = {
   onFilterTextChange: PropTypes.func,
   selectedId: PropTypes.any,
   onClick: PropTypes.func,
-  title: PropTypes.string,
   onDoubleClick: PropTypes.func,
   milSymbolRenderer: PropTypes.func.isRequired,
   onVisibleChange: PropTypes.func,
