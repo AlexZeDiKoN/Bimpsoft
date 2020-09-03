@@ -173,10 +173,10 @@ export default class LayersComponent extends React.Component {
           />
           <div className='divider'/>
           <Tooltip
-            title={mapsCollapsed ? i18n.OPEN_MAP_SECTIONS : i18n.CLOSE_MAP_SECTIONS}
+            title={mapsCollapsed ? i18n.EXPAND_LAYERS : i18n.COLLAPSE_LAYERS}
             placement='topRight'>
             <IButton
-              icon={mapsCollapsed ? IconNames.MAP_UNFOLD_DOWN : IconNames.MAP_FOLD }
+              icon={mapsCollapsed ? IconNames.EXPAND_LAYER : IconNames.COLLAPSE_LAYER }
               colorType={ColorTypes.WITH_BG}
               disabled={roots?.length === 0}
               type={ButtonTypes.WHITE}

@@ -17,13 +17,38 @@ import {
 
 import './DefeatStripForm.css'
 import i18n from '../../../../i18n'
-import { TYPE_AMPLIFIER_NUM, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
+import { TYPE_AMPLIFIER_INTEGER, TYPE_AMPLIFIER_TEXT } from '../../parts/WithAmplifiers'
 
 const CONFIG_AMPLIFIERS = [
-  { id: 'directions', name: i18n.AMP_LANES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'zones', name: i18n.AMP_ZONES_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'start', name: i18n.AMP_STARTING_NUMBER, type: TYPE_AMPLIFIER_NUM },
-  { id: 'title', name: i18n.AMP_TITLE, type: TYPE_AMPLIFIER_TEXT, maxRows: 1 },
+  {
+    id: 'directions',
+    name: i18n.AMP_LANES_NUMBER,
+    type: TYPE_AMPLIFIER_INTEGER,
+    minNumber: 1,
+    maxNumber: 99,
+    notTitle: true,
+  },
+  {
+    id: 'zones',
+    name: i18n.AMP_ZONES_NUMBER,
+    type: TYPE_AMPLIFIER_INTEGER,
+    minNumber: 1,
+    maxNumber: 99,
+    notTitle: true,
+  },
+  {
+    id: 'start',
+    name: i18n.AMP_STARTING_NUMBER,
+    type: TYPE_AMPLIFIER_INTEGER,
+    minNumber: 1,
+    maxNumber: 999999,
+    notTitle: true,
+  },
+  { id: 'title',
+    name: i18n.AMP_TITLE,
+    type: TYPE_AMPLIFIER_TEXT,
+    maxRows: 1,
+  },
 ]
 
 const PATH_AMPLIFIERS = [ 'attributes', 'params' ]

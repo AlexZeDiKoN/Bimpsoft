@@ -1,6 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, utils } from '@DZVIN/CommonComponents'
+import {
+  components,
+  utils,
+  ButtonTypes,
+  ColorTypes,
+  IButton,
+  IconNames,
+} from '@DZVIN/CommonComponents'
 import './style.css'
 import { Input, Tooltip } from 'antd'
 import i18n from '../../../i18n'
@@ -11,7 +18,7 @@ import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 
-const { names: iconNames, IconButton } = components.icons
+const { names: iconNames } = components.icons
 
 const { Coordinates: Coord } = utils
 
@@ -146,47 +153,58 @@ export default class LeftMenu extends React.Component {
 
     return (
       <div className='left-menu' >
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.EDIT_MODE}
-          icon={iconNames.EDIT_ACTIVE}
-          checked={isEditMode}
-          onClick={this.clickEditModeHandler}
-          disabled={is3DMapMode}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.TARGETING}
-          icon={iconNames.AIM}
-          checked={targetingMode}
-          onClick={this.clickTargetingModeHandler}
-        />
-        {isMapCOP && <>
-          <IconButton
-            placement={'bottomLeft'}
-            title={i18n.CREATE_TASK}
-            icon={iconNames.TASK_DEFAULT}
-            checked={isTaskMode}
-            onClick={this.clickTaskModeHandler}
+        <Tooltip title={i18n.EDIT_MODE} placement='bottomLeft'>
+          <IButton
+            icon={IconNames.MENU_EDIT}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            active={isEditMode}
+            onClick={this.clickEditModeHandler}
+            disabled={is3DMapMode}
           />
+        </Tooltip>
+        <Tooltip title={i18n.TARGETING} placement='bottomLeft'>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            icon={IconNames.AIM}
+            active={targetingMode}
+            onClick={this.clickTargetingModeHandler}
+          />
+        </Tooltip>
+        {isMapCOP && <>
+          <Tooltip title={i18n.CREATE_TASK} placement='bottomLeft'>
+            <IButton
+              icon={IconNames.TASK}
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              active={isTaskMode}
+              onClick={this.clickTaskModeHandler}
+            />
+          </Tooltip>
         </>}
         <CreateButtonsComponent />
         <MenuDivider />
-        <IconButton
-          placement={'bottomRight'}
-          title={i18n.VOLUME_VIEW}
-          icon={iconNames.MAP_3D}
-          checked={is3DMapMode}
-          onClick={this.clickMap3D}
-        />
+        <Tooltip title={i18n.VOLUME_VIEW} placement='bottomRight'>
+          <IButton
+            icon={IconNames.MAP_3D}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            active={is3DMapMode}
+            onClick={this.clickMap3D}
+          />
+        </Tooltip>
         <MapSourceSelectComponent />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })}
-          icon={subordinationLevelViewData.icon}
-          checked={isShowSubordinationLevel || !subordinationAuto}
-          onClick={onClickSubordinationLevel}
-        >
+        <div>
+          <Tooltip title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })} placement='bottomLeft'>
+            <IButton
+              icon={subordinationLevelViewData.icon2}
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.BLACK_DARK_GREEN}
+              active={isShowSubordinationLevel || !subordinationAuto}
+              onClick={onClickSubordinationLevel}
+            />
+          </Tooltip>
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
               <ContextMenuItem
@@ -209,32 +227,38 @@ export default class LeftMenu extends React.Component {
               ))}
             </ContextMenu>
           )}
-        </IconButton>
+        </div>
         <MenuDivider />
-        <IconButton
-          placement={'topLeft'}
-          title={i18n.MEASURE}
-          icon={iconNames.MENU_RULER_DEFAULT}
-          checked={isMeasureOn}
-          onClick={onMeasureChange}
-          disabled={is3DMapMode}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.MARKER}
-          icon={iconNames.MENU_MARKER_DEFAULT}
-          checked={marker}
-          onClick={onMarkerChange}
-          disabled={is3DMapMode}
-        />
-        <IconButton
-          placement={'bottomLeft'}
-          title={i18n.TOPOGRAPHIC_OBJECTS}
-          icon={iconNames.MENU_TOPOGRAPHY_1_DEFAULT}
-          checked={topographicObjects}
-          onClick={onTopographicObjectsChange}
-          disabled={is3DMapMode}
-        />
+        <Tooltip title={i18n.MEASURE} placement='topLeft'>
+          <IButton
+            icon={IconNames.MENU_RULER}
+            active={isMeasureOn}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            onClick={onMeasureChange}
+            disabled={is3DMapMode}
+          />
+        </Tooltip>
+        <Tooltip title={i18n.MARKER} placement='bottomLeft'>
+          <IButton
+            icon={IconNames.MENU_MARKER}
+            active={marker}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            onClick={onMarkerChange}
+            disabled={is3DMapMode}
+          />
+        </Tooltip>
+        <Tooltip title={i18n.TOPOGRAPHIC_OBJECTS} placement='bottomLeft'>
+          <IButton
+            icon={IconNames.MENU_TOPOGRAPHY_1}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.BLACK_DARK_GREEN}
+            active={topographicObjects}
+            onClick={onTopographicObjectsChange}
+            disabled={is3DMapMode}
+          />
+        </Tooltip>
         <SelectionButtonsComponent />
         <FlexGridButtonsComponent />
         <MenuDivider />

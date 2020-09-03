@@ -30,12 +30,13 @@ export default class Sidebar extends React.Component {
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
     marchEdit: PropTypes.bool,
+    setSidebarTabIndex: PropTypes.func,
+    sidebarSelectedTabIndex: PropTypes.number,
   }
 
   state = {
     topPanelHeight: SIDEBAR_PANEL_SIZE_DEFAULT,
     sidebarWidth: this.props.marchEdit ? SIDEBAR_SIZE_MARCH_DEFAULT : SIDEBAR_SIZE_DEFAULT,
-    selectedTabIndex: -1,
   }
 
   changeWidthHandler = (startValue, pos) => {
@@ -97,13 +98,14 @@ export default class Sidebar extends React.Component {
   }
 
   onToggle = (selectedTabIndex) => {
-    this.setState({ selectedTabIndex })
+    const { setSidebarTabIndex } = this.props
+    setSidebarTabIndex(selectedTabIndex)
   }
 
   render () {
-    const { sidebarWidth, selectedTabIndex } = this.state
-    const { marchEdit } = this.props
-    const sidebarDisplay = selectedTabIndex >= 0
+    const { sidebarWidth } = this.state
+    const { marchEdit, sidebarSelectedTabIndex } = this.props
+    const sidebarDisplay = sidebarSelectedTabIndex >= 0
     return (
       <>
         {sidebarDisplay && <ValueSwiper

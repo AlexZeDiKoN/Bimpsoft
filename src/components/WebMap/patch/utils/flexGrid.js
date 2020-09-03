@@ -111,9 +111,8 @@ const combineDirections = (flexGrid, index, lastIndex) => {
   const directionSegmentsArray = directionSegments.toArray()
   const directionNamesArray = directionNames.toArray()
   const mainDirectionSignsArray = mainDirectionSigns.toArray()
-
   const newDirectionNames = combineList(directionNamesArray, index, lastIndex)
-  const newMainDirectionSigns = combineList(mainDirectionSignsArray, index, lastIndex)
+  const newMainDirectionSigns = combineMainDirectionList(mainDirectionSignsArray, index, lastIndex)
   const newEternals = combineList(eternalsArray, index, lastIndex)
   const newDirectionSegments = combineList(directionSegmentsArray, index, lastIndex)
   const newZoneSegments = combineZoneSegments(zoneSegmentsArray, eternalsArray, index, lastIndex)
@@ -129,6 +128,13 @@ const combineDirections = (flexGrid, index, lastIndex) => {
 }
 
 const combineList = (list, index, lastIndex) => list.filter((_, i) => i > lastIndex || i <= index)
+const combineMainDirectionList = (mainDirectionSignsArray, index, lastIndex) => {
+  const combineMainSignsDirections = mainDirectionSignsArray.slice(index, lastIndex + 1)
+  const isMainDirection = combineMainSignsDirections.some((item) => item)
+  const newMainDirectionSigns = combineList(mainDirectionSignsArray, index, lastIndex)
+  newMainDirectionSigns[index] = isMainDirection
+  return newMainDirectionSigns
+}
 
 const combineZoneSegments = (segments, eternals, firstDirection, lastDirection) =>
   segments.map((col, i) => col.reduce((colAcc, dirSegment, j) => {

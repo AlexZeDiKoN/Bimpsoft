@@ -16,7 +16,7 @@ import { narr } from './FlexGrid'
 import { prepareLinePath, makeRegionGroup } from './utils/SVG'
 import { prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
-import { getFontSize } from './Sophisticated/utils'
+import { getFontSize, getStrokeWidth } from './Sophisticated/utils'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -646,17 +646,10 @@ L.SVG.include({
         ]), true),
       ))
 
-
+      const width = strokeWidth ? getStrokeWidth(grid, strokeWidth) : false
       grid._pathes.forEach((path) => {
-        if (strokeWidth) {
-          let w
-          if (grid.printOptions) {
-            w = grid.printOptions.getStrokeWidth(strokeWidth)
-          } else {
-            const scale = interpolateSize(grid._map.getZoom(), null, 10.0, 5, 20)
-            w = strokeWidth * scale / 100
-          }
-          path.setAttribute('stroke-width', w)
+        if (width) {
+          path.setAttribute('stroke-width', width)
         }
         if (color) {
           path.setAttribute('stroke', color)
@@ -672,6 +665,13 @@ L.SVG.include({
   },
 
   _getHighlightMainDirectionsArea: function (grid) {
-    return grid.highlightedMainDirection !== null ? grid.cellRings[grid.highlightedMainDirection].join('') : ''
+    if (grid.highlightedMainDirection !== null) {
+      if (grid.cellRings.length > grid.highlightedMainDirection) {
+        return grid.cellRings[grid.highlightedMainDirection].join('')
+      } else {
+        grid.highlightedMainDirection = null
+      }
+    }
+    return ''
   },
 })

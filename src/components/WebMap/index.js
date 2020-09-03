@@ -352,6 +352,7 @@ export default class WebMap extends React.PureComponent {
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
     requestMaSources: PropTypes.func,
+    warningLockObjectsMove: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
     getLockedObjects: PropTypes.func,
@@ -381,6 +382,7 @@ export default class WebMap extends React.PureComponent {
     redo: PropTypes.func,
     checkObjectAccess: PropTypes.func,
     onShadowDelete: PropTypes.func,
+    myContactId: PropTypes.number,
   }
 
   constructor (props) {
@@ -491,7 +493,7 @@ export default class WebMap extends React.PureComponent {
       this.highlightDirections(selectedDirections)
     }
     if (mainDirectionIndex !== prevProps.flexGridParams.mainDirectionIndex) {
-      mainDirectionIndex !== -1 && this.highlightMainDirection(mainDirectionIndex)
+      this.highlightMainDirection(mainDirectionIndex)
     }
     if (selectedEternal !== prevProps.flexGridParams.selectedEternal) {
       this.highlightEternal(selectedEternal.position, prevProps.flexGridParams.selectedEternal.position)
@@ -773,7 +775,7 @@ export default class WebMap extends React.PureComponent {
 
   disableLookAfterMouseMove = (func) => this.map && func && this.map.off('mousemove', func)
 
-  checkSaveObject = (leaving) => {
+  checkSaveObject = async (leaving) => {
     const { selection: { list }, updateObjectGeometry, tryUnlockObject, flexGridData } = this.props
     const id = list[0]
     const layer = this.findLayerById(id)
@@ -796,9 +798,10 @@ export default class WebMap extends React.PureComponent {
       const geometryChanged = isGeometryChanged(layer, checkPoint, checkGeometry)
       if (id !== null) {
         if (geometryChanged) {
-          return updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
-        } else if (leaving) {
-          return tryUnlockObject(id)
+          await updateObjectGeometry(id, getGeometry(layer), true, isFlexGrid && checkGeometry)
+        }
+        if (leaving) {
+          await tryUnlockObject(id)
         }
       }
     }
@@ -829,12 +832,12 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
     } = this.props
-    if (newList.length === 0 && list === 0) {
+    if (newList.length === 0 && list.length === 0) {
       return
     }
 
     // save geometry when one selected item lost focus
-    if (list.length === 1 && list[0] !== newList[0] && edit) {
+    if (list.length === 1 && (list[0] !== newList[0] || newList.length !== 1) && edit) {
       await this.checkSaveObject(true)
     }
 
@@ -1151,7 +1154,6 @@ export default class WebMap extends React.PureComponent {
       edit,
       selection: { list: selectedIds, preview },
     } = this.props
-
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
@@ -1270,6 +1272,8 @@ export default class WebMap extends React.PureComponent {
 
   updateScaleOptions = () => {
     const { params } = this.props
+    settings.LINE_SIZE.min = params[paramsNames.LINE_SIZE_MIN]
+    settings.LINE_SIZE.max = params[paramsNames.LINE_SIZE_MAX]
     settings.WAVE_SIZE.max = params[paramsNames.WAVE_SIZE_MAX]
     settings.WAVE_SIZE.min = params[paramsNames.WAVE_SIZE_MIN]
     settings.BLOCKAGE_SIZE.max = params[paramsNames.BLOCKAGE_SIZE_MAX]
@@ -1818,10 +1822,17 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    const { selection: { list } } = this.props
+    const { selection: { list }, lockedObjects, warningLockObjectsMove } = this.props
     if (list.length > 1) {
       this._dragStartPx = this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
+      // Проверка выделенных объектов на блокировку
+      if (list.some((objectId) => lockedObjects.has(objectId))) {
+        // повідомлення про спробу переміщення заблокованого об'єкта
+        warningLockObjectsMove()
+        // зупиняємо процес переміщення об'єктів
+        layer.dragging?._draggable?.finishDrag && layer.dragging._draggable.finishDrag()
+      }
     }
   }
 
@@ -1902,9 +1913,15 @@ export default class WebMap extends React.PureComponent {
 
   processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
-    const { selection: { list }, editObject, onSelectUnit } = this.props
-    if (object && list.length === 1 && list[0] === object.id) {
-      object.id && editObject(object.id)
+    const { selection: { list }, editObject, onSelectUnit, getLockedObjects, myContactId } = this.props
+
+    if (object && object.id && list.length === 1 && list[0] === object.id) {
+      const { payload = {} } = await getLockedObjects()
+      const lockedIndex = Object.keys(payload).findIndex((id) =>
+        object.id === id && String(payload[id].contactId) !== String(myContactId))
+      if (lockedIndex < 0) {
+        editObject(object.id)
+      }
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
@@ -1958,6 +1975,7 @@ export default class WebMap extends React.PureComponent {
 
   highlightMainDirection = (mainDirectionIndex) => {
     const { flexGridVisible } = this.props
+    mainDirectionIndex = mainDirectionIndex === -1 ? null : mainDirectionIndex
     this.flexGrid && this.flexGrid.setMainDirection(mainDirectionIndex, flexGridVisible)
   }
 

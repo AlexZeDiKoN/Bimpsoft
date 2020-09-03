@@ -556,23 +556,26 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
   }
 }
 
+const contourPathBuilder = (geometry, coordToPixels) => Array.isArray(geometry[0])
+  ? geometry.reduce((result, part) => `${result} ${contourPathBuilder(part, coordToPixels)}`, '')
+  : pointsToD(geometry.map((point) => coordToPixels(point)), true)
+
 const getContourBuilder = () => (commonData, data, layerData) => {
   const { coordToPixels, scale, printOptions: { getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   if (geometry) {
-    const fixedGeometry = geometry.size === 1 ? [ geometry.toJS() ] : geometry.toJS()
-    return fixedGeometry.map((coords) =>
-      getSvgPath(
-        pointsToD(coords[0].map((point) => coordToPixels(point)), true),
-        attributes,
-        layerData,
-        scale,
-        null,
-        null,
-        id,
-        getStrokeWidth(),
-        dpi),
-    )
+    const js = geometry.toJS()
+    return [ getSvgPath(
+      contourPathBuilder(js, coordToPixels),
+      attributes,
+      layerData,
+      scale,
+      null,
+      null,
+      id,
+      getStrokeWidth(),
+      dpi,
+    ) ]
   }
 }
 
@@ -744,17 +747,14 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
 mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
   const {
     coordToPixels,
-    printOptions: {
-      getFontSize,
-      getStrokeWidth,
-    },
+    printOptions,
   } = commonData
   const render = {
     _layers: {},
     ...L.SVG.prototype,
   }
   const [ eternals, directionSegments, zoneSegments ] = object.geometry.toJS()
-  const { params: { directions, zones, start, title } } = object.attributes.toJS()
+  const { params: { directions, zones, start, title }, color, strokeWidth } = object.attributes.toJS()
   const grid = new L.FlexGrid(
     null, {
       directions,
@@ -765,6 +765,8 @@ mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
       olovo: true,
       start,
       title,
+      color,
+      strokeWidth,
     },
     object.id,
     {
@@ -777,10 +779,7 @@ mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
     latLngToLayerPoint: coordToPixels,
   }
   grid._project()
-  grid.printOptions = {
-    getFontSize,
-    getStrokeWidth,
-  }
+  grid.printOptions = printOptions
   render._updateFlexGrid(grid)
   return <Fragment key={object.id}>
     <g
