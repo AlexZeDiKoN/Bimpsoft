@@ -4151,6 +4151,8 @@ export const symbols = [
           isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
+          right: ENDS_FORK,
+          left: ENDS_FORK,
         },
       },
       {
