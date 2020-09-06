@@ -58,10 +58,10 @@ export default class extends React.PureComponent {
                 <Switch defaultChecked={zones} onChange={setZones}/>
               </FormRow>
               <FormItem>
+                {buttonCancel(closeForm)}
                 <Button onClick={dropFlexGrid} className="dzvin-button">
                   {i18n.CREATE}
                 </Button>
-                {buttonCancel(closeForm)}
                 <HotKey onKey={closeForm} selector={shortcuts.ESC}/>
               </FormItem>
             </Form>
