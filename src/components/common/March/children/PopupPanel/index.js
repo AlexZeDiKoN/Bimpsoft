@@ -64,6 +64,7 @@ const PopupPanel = (props) => {
         />
         : <Select
           defaultValue={typeOfMove}
+          defaultActiveFirstOption={false}
           onChange={onEditFormField('type')}
           disabled={readOnly}
           className={'march-active-value'}
