@@ -127,6 +127,7 @@ CatalogsComponent.propTypes = {
   onFilterTextChange: PropTypes.func,
   selectedId: PropTypes.any,
   onClick: PropTypes.func,
+  title: PropTypes.string,
   onDoubleClick: PropTypes.func,
   milSymbolRenderer: PropTypes.func.isRequired,
   onVisibleChange: PropTypes.func,

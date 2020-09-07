@@ -350,7 +350,9 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   const obj = objects.get(id)
   const type = obj.type
   if (type === SelectionTypes.SQUARE ||
-    type === SelectionTypes.CIRCLE) {
+    type === SelectionTypes.CIRCLE ||
+    (type === SelectionTypes.SOPHISTICATED)
+  ) {
     return
   }
   const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
