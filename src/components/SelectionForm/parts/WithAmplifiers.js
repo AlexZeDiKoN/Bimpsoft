@@ -1,6 +1,6 @@
 import React from 'react'
-import { Tooltip } from 'antd'
-import { components, Input, TextArea } from '@DZVIN/CommonComponents'
+import { Tooltip, Input as antdInput } from 'antd'
+import { components, Input } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { amps } from '../../../constants/symbols'
 import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
@@ -13,6 +13,8 @@ const PAIRS_DEFAULT = [
   { id: amps.T, name: 'H1_' },
   { id: amps.W, name: 'H2_' },
 ]
+
+const DEFAULT_MAX_ROWS = 3 // максимльное количкство строк на которое растягивается поле TextArea по умолчанию
 
 export const PATH_AMPLIFIERS = [ 'attributes', 'pointAmplifier' ]
 export const TYPE_AMPLIFIER_NUM = 'num'
@@ -41,25 +43,35 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="amplifier-container__item">
-        {amplifiers.map(({ id, name, type, maxRows, minNumber, maxNumber, notTitle }) => {
-          console.log({ id, name, type, maxRows, minNumber, maxNumber, notTitle })
-          return (
-            <div className="amplifier-container__itemWidth" key={id}>
-              <FormRow
-                title={null}
-                label={svg
-                  ? <Tooltip
-                    overlayClassName='shape-form-svg-tooltip'
-                    mouseEnterDelay={1}
-                    placement={'left'}
-                    title={() => svg}>
-                    {`${i18n.AMPLIFIER} "${name}"`}
-                  </Tooltip>
-                  : `${notTitle ? '' : i18n.AMPLIFIER} "${name}"`
-                }
-              >
-                {type === TYPE_AMPLIFIER_NUM
-                  ? <Input.Number
+        {amplifiers.map(({ id, name, type, maxRows = DEFAULT_MAX_ROWS, minNumber, maxNumber, notTitle }) =>
+          <div className="amplifier-container__itemWidth" key={id}>
+            <FormRow
+              title={null}
+              label={svg
+                ? <Tooltip
+                  overlayClassName='shape-form-svg-tooltip'
+                  mouseEnterDelay={1}
+                  placement={'left'}
+                  title={() => svg}>
+                  {`${i18n.AMPLIFIER} "${name}"`}
+                </Tooltip>
+                : `${notTitle ? '' : i18n.AMPLIFIER} "${name}"`
+              }
+            >
+              {type === TYPE_AMPLIFIER_NUM
+                ? <Input.Number
+                  type="number"
+                  className="number-control-input"
+                  disabled={!canEdit}
+                  readOnly={!canEdit}
+                  step={1}
+                  min={minNumber}
+                  max={maxNumber}
+                  value={currentValue[id] ?? ''}
+                  onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject)}
+                />
+                : type === TYPE_AMPLIFIER_INTEGER
+                  ? <Input.Integer
                     type="number"
                     className="number-control-input"
                     disabled={!canEdit}
@@ -68,47 +80,34 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                     min={minNumber}
                     max={maxNumber}
                     value={currentValue[id] ?? ''}
-                    onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject)}
+                    onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject, name)}
                   />
-                  : type === TYPE_AMPLIFIER_INTEGER
-                    ? <Input.Integer
-                      type="number"
-                      className="number-control-input"
-                      disabled={!canEdit}
-                      readOnly={!canEdit}
-                      step={1}
-                      min={minNumber}
-                      max={maxNumber}
+                  : maxRows === 1
+                    ? <Input
+                      className={!canEdit ? 'modals-input-disabled' : ''}
+                      name={name}
                       value={currentValue[id] ?? ''}
-                      onChange={this.changeNumAmplifier(id, pathAmplifiers, simpleObject, name)}
+                      readOnly={!canEdit}
+                      onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
+                      disabled={!canEdit}
+                      maxLength={id === amps.A
+                        ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
+                        : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
                     />
-                    : maxRows === 1
-                      ? <Input
-                        className={!canEdit ? 'modals-input-disabled' : ''}
-                        name={name}
-                        value={currentValue[id] ?? ''}
-                        readOnly={!canEdit}
-                        onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
-                        disabled={!canEdit}
-                        maxLength={id === amps.A
-                          ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                          : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
-                      />
-                      : <TextArea
-                        value={currentValue[id] ?? ''}
-                        onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
-                        readOnly={!canEdit}
-                        className={!canEdit ? 'modals-input-disabled' : ''}
-                        rows={id === amps.A ? 6 : 1}
-                        autoSize={maxRows ? { minRows: 1, maxRows } : undefined}
-                        maxLength={id === amps.A
-                          ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                          : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
-                      />}
-              </FormRow>
-            </div>
-          )
-        })}
+                    : <antdInput.TextArea
+                      value={currentValue[id] ?? ''}
+                      onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
+                      readOnly={!canEdit}
+                      className={!canEdit ? 'modals-input-disabled' : ''}
+                      rows={id === amps.A ? 6 : 1}
+                      autoSize={maxRows ? { minRows: 1, maxRows } : undefined}
+                      maxLength={id === amps.A
+                        ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
+                        : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                    />}
+            </FormRow>
+          </div>)
+        }
       </div>
     )
   }
