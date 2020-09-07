@@ -169,7 +169,6 @@ export default class LayersComponent extends React.Component {
             title={i18n.MAPS_VISIBILITY}
             className="layers-controls-control"
             visible={visible}
-            disabled={roots?.length === 0}
             onChange={onChangeVisibility}
           />
           <div className='divider'/>
