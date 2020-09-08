@@ -2125,6 +2125,7 @@ export default class WebMap extends React.PureComponent {
       this.flexGrid.removeFrom(this.map)
       delete this.flexGrid
       fixFlexGridInstance && fixFlexGridInstance(null)
+      this.map.objects = this.map.objects.filter((object) => object.id !== flexGridData.id)
     } else if (actual && !this.flexGrid) {
       this.dropFlexGrid(flexGridVisible)
     } else if (actual && this.flexGrid) {

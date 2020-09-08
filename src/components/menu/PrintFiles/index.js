@@ -76,7 +76,7 @@ export default class PrintFiles extends PureComponent {
       <>
         <IButton
           type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.BLACK_DARK_GREEN}
+          colorType={ColorTypes.MAP_HEADER_GREEN}
           title={i18n.FILES_TO_PRINT}
           icon={IconNames.PRINT_QUEUE}
           onClick={this.handleVisibleChange}

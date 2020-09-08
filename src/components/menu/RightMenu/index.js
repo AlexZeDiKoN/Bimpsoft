@@ -32,7 +32,7 @@ export default class RightMenu extends React.Component {
             active={isSettingsShow}
             onClick={onClickSettings}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             disabled={is3DMapMode}
           />
         </Tooltip>

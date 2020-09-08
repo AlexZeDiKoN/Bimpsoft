@@ -16,7 +16,7 @@ const INTERLINE = 1.3
 
 lineDefinitions['170100'] = {
   // Ампліфікатори лінії
-  useAmplifiers: [ { id: amps.T, name: 'T' }, { id: amps.A, name: 'N' } ],
+  useAmplifiers: [ { id: amps.T, name: 'T', maxRows: 1 }, { id: amps.A, name: 'N', maxRows: 6 } ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.lineWithAmplifiers(1),
 
@@ -34,7 +34,7 @@ lineDefinitions['170100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points) => {
     const sw = segmentLength(normalVectorTo(points[0], points[1], points[points.length - 1]))
 
     const calcSegmentPoints = (index, side) => {

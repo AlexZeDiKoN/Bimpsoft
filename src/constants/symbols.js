@@ -585,7 +585,7 @@ export const symbols = [
       },
       {
         hint: 'Район висадки тактичного повітряного десанту',
-        code: '10032500001204000000',
+        code: '10032500000170030000',
         amp: {
           isSvg: true,
           type: entityKind.AREA,
@@ -4151,6 +4151,8 @@ export const symbols = [
           isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
+          right: ENDS_FORK,
+          left: ENDS_FORK,
         },
       },
       {

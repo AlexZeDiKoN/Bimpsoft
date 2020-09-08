@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tooltip } from 'antd'
+import { Tooltip, Input as antdInput } from 'antd'
 import { components, Input } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { amps } from '../../../constants/symbols'
@@ -13,6 +13,8 @@ const PAIRS_DEFAULT = [
   { id: amps.T, name: 'H1_' },
   { id: amps.W, name: 'H2_' },
 ]
+
+const DEFAULT_MAX_ROWS = 3 // максимльное количкство строк на которое растягивается поле TextArea по умолчанию
 
 export const PATH_AMPLIFIERS = [ 'attributes', 'pointAmplifier' ]
 export const TYPE_AMPLIFIER_NUM = 'num'
@@ -29,11 +31,9 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
 
   changeNumAmplifier = (id, pathAmplifiers, simpleObject) => ({ target: { value } }) => {
     if (!isNaN(value)) {
-      if (simpleObject) {
-        this.setResult((result) => result.setIn(pathAmplifiers, { ...result.getIn(pathAmplifiers), [id]: value }))
-      } else {
-        this.setResult((result) => (result.setIn([ ...pathAmplifiers, id ], value)))
-      }
+      this.setResult((result) => simpleObject
+        ? result.setIn(pathAmplifiers, { ...result.getIn(pathAmplifiers), [id]: value })
+        : result.setIn([ ...pathAmplifiers, id ], value))
     }
   }
 
@@ -43,9 +43,10 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
     const canEdit = this.isCanEdit()
     return (
       <div className="amplifier-container__item">
-        {amplifiers.map(({ id, name, type, maxRows, minNumber, maxNumber, notTitle }) => (
+        {amplifiers.map(({ id, name, type, maxRows = DEFAULT_MAX_ROWS, minNumber, maxNumber, notTitle }) =>
           <div className="amplifier-container__itemWidth" key={id}>
-            <FormRow title={null}
+            <FormRow
+              title={null}
               label={svg
                 ? <Tooltip
                   overlayClassName='shape-form-svg-tooltip'
@@ -54,7 +55,9 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                   title={() => svg}>
                   {`${i18n.AMPLIFIER} "${name}"`}
                 </Tooltip>
-                : `${notTitle ? '' : i18n.AMPLIFIER} "${name}"`}>
+                : `${notTitle ? '' : i18n.AMPLIFIER} "${name}"`
+              }
+            >
               {type === TYPE_AMPLIFIER_NUM
                 ? <Input.Number
                   type="number"
@@ -91,20 +94,20 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                         ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
                         : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
                     />
-                    : <Input.TextArea
+                    : <antdInput.TextArea
                       value={currentValue[id] ?? ''}
                       onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
                       readOnly={!canEdit}
                       className={!canEdit ? 'modals-input-disabled' : ''}
                       rows={id === amps.A ? 6 : 1}
-                      autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
+                      autoSize={maxRows ? { minRows: 1, maxRows } : undefined}
                       maxLength={id === amps.A
                         ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
                         : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
                     />}
             </FormRow>
-          </div>
-        ))}
+          </div>)
+        }
       </div>
     )
   }

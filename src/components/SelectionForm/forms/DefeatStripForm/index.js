@@ -25,7 +25,7 @@ const CONFIG_AMPLIFIERS = [
     name: i18n.AMP_LANES_NUMBER,
     type: TYPE_AMPLIFIER_INTEGER,
     minNumber: 1,
-    maxNumber: 99,
+    maxNumber: 9,
     notTitle: true,
   },
   {
@@ -33,7 +33,7 @@ const CONFIG_AMPLIFIERS = [
     name: i18n.AMP_ZONES_NUMBER,
     type: TYPE_AMPLIFIER_INTEGER,
     minNumber: 1,
-    maxNumber: 99,
+    maxNumber: 9,
     notTitle: true,
   },
   {

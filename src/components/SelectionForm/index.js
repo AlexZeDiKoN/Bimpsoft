@@ -344,7 +344,6 @@ export default class SelectionForm extends React.Component {
           <SaveMilSymbolForm
             errorCode={errorCode}
             doubleObjects={ [ { code, unit: unitText } ] }
-            notClickable={false}
             onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
             onCancel={() => { this.resetWereChange(); onCloseSaveError() }}
           />
