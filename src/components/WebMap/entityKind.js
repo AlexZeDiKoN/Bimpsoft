@@ -59,7 +59,6 @@ export const entityKindCanMirror = [
   entityKind.CURVE,
   entityKind.POLYGON,
   entityKind.POLYLINE,
-  entityKind.SOPHISTICATED,
 ]
 
 export const entityKindMultipointCurves = [
