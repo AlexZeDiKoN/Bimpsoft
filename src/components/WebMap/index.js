@@ -1682,7 +1682,7 @@ export default class WebMap extends React.PureComponent {
       layer.id = id
       layer.object = object
       // layer.on('click', this.clickOnLayer)
-      // layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('marker:dblclick', this.dblClickOnLayer)
       // TODO: тимчасово відключаємо показ характеристик підрозділу
       /* if (object.type === entityKind.POINT && unit) {
         layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
@@ -1911,7 +1911,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    // L.DomEvent.stopPropagation(event)
+    L.DomEvent.stopPropagation(event)
     return this.processDblClickOnLayer(event.target)
   }
 
@@ -1933,6 +1933,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDblClick = (event) => {
+    L.DomEvent.stopPropagation(event)
     const { flexGridVisible, showDirectionNameForm } = this.props
     if (this.flexGrid && flexGridVisible) {
       const { latlng } = event
@@ -2142,7 +2143,9 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  onDoubleClickEternal = (eternalProps) => eternalProps && this.props.showEternalDescriptionForm(eternalProps)
+  onDoubleClickEternal = (eternalProps) => {
+    eternalProps && this.props.showEternalDescriptionForm(eternalProps)
+  }
 
   updateCreatePoly = (type) => {
     const layerOptions = {

@@ -282,6 +282,7 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     marker.on('dragstart', this._onMarkerDragStart, this)
     marker.on('move', this._onMarkerDrag, this)
     marker.on('dragend', this._onMarkerDragEnd, this)
+    marker.on('click', this._onMarkerClick, this)
     marker.on('dblclick', this._onMarkerDblClick, this)
     if (!eternal) {
       marker.on('contextmenu', this._removeMarker, this)
@@ -289,6 +290,8 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._markerGroup.addLayer(marker)
     return marker
   },
+
+  _onMarkerClick () {}, // TODO: Чомусь без цього не спрацьовує подія dblclick. Розібратися, чому і прибрати "костиль".
 
   _onMarkerDblClick (e) {
     if (this._enabled) {
