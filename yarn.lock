@@ -30,10 +30,10 @@
   dependencies:
     "@DZVIN/milsymbol" "^15.03.10"
 
-"@DZVIN/components@^16.2.584":
-  version "16.2.584"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-16.2.584.tgz#e737f521576de47a93e6bbcedfddab797e3274fd"
-  integrity sha512-iMMy8Nq55kUUihmCElRCW2zkURYAxl2BdNVkJToDYuheUy58EUVns1F1pnj9lbuKmw4rvcevA2ywX8gQraNRxQ==
+"@DZVIN/components@^16.2.585":
+  version "16.2.585"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fcomponents/-/components-16.2.585.tgz#fcfcaf83b50422ec82db1d1fd7ac12d02774c032"
+  integrity sha512-Z9XJA8e19xkeV4jmANENDXTh+FjhIgnriM6tLkiJBcUz/0gtGIEdE+1sP348uZdKrcfpyjHEuSrlZGYn3mLiKw==
   dependencies:
     "@DZVIN/EuSign" "0.0.2"
     "@unitybase/ub-pub" "^5.3.1"
