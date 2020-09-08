@@ -60,7 +60,7 @@ export const enableEdit = (layer) => {
     }
     layer.pm.enable()
     const click = layer.fire.bind(layer, 'click')
-    const dblclick = layer.fire.bind(layer, 'dblclick')
+    const dblclick = layer.fire.bind(layer, 'marker:dblclick')
     recursiveForEach(getMarkers(layer), (marker) => {
       marker.on('click', click)
       marker.on('dblclick', dblclick)

@@ -136,6 +136,19 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       )
     }
 
+    if (!global.lockRefreshTimer) {
+      global.lockRefreshTimer = setInterval(
+        async () => {
+          try {
+            await webMap.getLockedObjects()
+          } catch (err) {
+            console.error(err)
+          }
+        },
+        MAP_FORCED_UPDATE_INTERVAL * 1000,
+      )
+    }
+
     await dispatch(maps.updateMap(mapData))
     const layersData = entities.map(({ id, id_map, name, date_for, id_formation, readOnly }) => ({ // eslint-disable-line camelcase
       mapId: id_map,
