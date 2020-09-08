@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@DZVIN/CommonComponents": "^16.2.533",
-    "@DZVIN/MilSymbolEditor": "^16.2.280",
+    "@DZVIN/MilSymbolEditor": "^16.2.281",
     "@DZVIN/components": "^16.2.584",
     "@DZVIN/leaflet-measure-custom": "^16.01.10",
     "@DZVIN/milsymbol": "^15.3.10",
