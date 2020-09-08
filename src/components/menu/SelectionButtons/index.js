@@ -139,8 +139,8 @@ export default class SelectionButtons extends React.Component {
           <Tooltip title={i18n.CUT} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_CUT}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_CUT}
               disabled={!isSelected}
               onClick={onCut}
             />
@@ -150,20 +150,20 @@ export default class SelectionButtons extends React.Component {
         <Tooltip title={i18n.COPY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_COPY}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_MENU_COPY}
             disabled={!isSelected}
             onClick={onCopy}
           />
         </Tooltip>
         {isEditMode && (<>
           <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? this.onPasteObject : null} />
-          <div>
+          <div className='btn-context-container'>
             <Tooltip title={i18n.PASTE} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
-                colorType={ColorTypes.BLACK_DARK_GREEN}
-                icon={IconNames.MENU_PASTE}
+                colorType={ColorTypes.MAP_HEADER_GREEN}
+                icon={IconNames.MAP_HEADER_ICON_MENU_PASTE}
                 disabled={!isClipboardExist}
                 onClick={this.onPasteObject}
               />
@@ -178,12 +178,12 @@ export default class SelectionButtons extends React.Component {
         </>)}
         {isEditMode && (<>
           <HotKey selector={shortcuts.DELETE} onKey={isSelected ? deleteHandler : null} />
-          <div>
+          <div className='btn-context-container'>
             <Tooltip title={i18n.DELETE} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
-                colorType={ColorTypes.BLACK_DARK_GREEN}
-                icon={IconNames.MENU_DELETE}
+                colorType={ColorTypes.MAP_HEADER_GREEN}
+                icon={IconNames.MAP_HEADER_ICON_MENU_DELETE}
                 disabled={!isSelected}
                 onClick={onDelete}
               />
@@ -203,8 +203,8 @@ export default class SelectionButtons extends React.Component {
           <Tooltip title={i18n.MIRROR_IMAGE} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_MIRROR}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_MIRROR}
               disabled={!isSelected || nSelected > 1}
               onClick={debounce(onMirrorImage, 350)}
             />
@@ -212,8 +212,8 @@ export default class SelectionButtons extends React.Component {
           <Tooltip title={i18n.CONTOUR} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_CONTOUR}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_CONTOUR}
               disabled={!canContour && !canDecontour}
               onClick={canContour ? onContour : onDecontour}
             />
@@ -224,8 +224,8 @@ export default class SelectionButtons extends React.Component {
             placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.GROUP_UNIT_2}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={canGroup ? IconNames.MAP_HEADER_ICON_GROUP_UNIT_2 : IconNames.MAP_HEADER_ICON_GROUP_UNIT_1}
               active={!canGroup && canUngroup}
               disabled={!canGroup && !canUngroup}
               onClick={canGroup ? onGroup : canUngroup ? onUngroup : undefined}
@@ -233,8 +233,8 @@ export default class SelectionButtons extends React.Component {
           <Tooltip title={i18n.GROUPING_REGION} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.POSITION_AREA_UNIT}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_POSITION_AREA_UNIT}
               disabled={!canGroupRegion}
               onClick={onGroupRegion}
             />

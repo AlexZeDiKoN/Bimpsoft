@@ -62,8 +62,8 @@ export default class FlexGridButtons extends React.Component {
         <Tooltip title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_OPERATING_AREA}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_MENU_OPERATING_AREA}
             active={visible}
             onClick={dropHandler}
           />
@@ -71,18 +71,18 @@ export default class FlexGridButtons extends React.Component {
         <Tooltip title={i18n.SEND_TO_ICT} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.SEND_ICT}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_SEND_ICT}
             disabled={!visible}
             onClick={calcFlexGridUnits}
           />
         </Tooltip>
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.DIVIDE_DIRECTION} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_DIVISION}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_DIVISION}
               disabled={!visible}
               onClick={showDivideDirForm}
             />
@@ -96,12 +96,12 @@ export default class FlexGridButtons extends React.Component {
             flexGrid={flexGrid}
           />}
         </div>
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.COMBINE_DIRECTIONS} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_UNION}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_UNION}
               disabled={!visible || flexGrid.directions < 2}
               onClick={showCombineDirForm}
             />
