@@ -26,12 +26,12 @@ export default class MapSourceSelect extends React.Component {
     const { isShowSources, sources, source, onClickMapSource } = this.props
     const filteredSources = sources.filter(({ isTerrain, title }) => !isTerrain && title)
     return (
-      <div>
+      <div className='btn-context-container'>
         <Tooltip title={i18n.MAP_SOURCE} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.OPEN_MAP}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_OPEN_MAP}
             active={isShowSources}
             onClick={onClickMapSource}
           />

@@ -65,9 +65,9 @@ export default class CreateButtons extends React.PureComponent {
         <MenuDivider />
         <Tooltip title={i18n.UNDO} placement='bottomLeft'>
           <IButton
-            icon={IconNames.MENU_BACK}
+            icon={IconNames.MAP_HEADER_ICON_UNDO}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             disabled={!isEditMode || !canUndo}
             onClick={undo}
           />
@@ -75,8 +75,8 @@ export default class CreateButtons extends React.PureComponent {
         <Tooltip title={i18n.REDO} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_NEXT}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_REDO}
             disabled={!isEditMode || !canRedo}
             onClick={redo}
           />
@@ -85,19 +85,19 @@ export default class CreateButtons extends React.PureComponent {
         <Tooltip title={i18n.POINT_SIGN} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_CONVENTIONAL_SIGN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_MENU_CONVENTIONAL_SIGN}
             active={newShape.type === SelectionTypes.POINT}
             onClick={this.clickPointHandler}
           />
         </Tooltip>
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.LINE_SIGN} placement='bottomLeft'>
             <IButton
-              icon={IconNames.MENU_GROUPING_GRAPHIC_PRIMITIVES}
+              icon={IconNames.MAP_HEADER_ICON_MENU_GROUPING_GRAPHIC_PRIMITIVES}
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              active={lineTypes.indexOf(newShape.type) >= 0}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              active={lineTypes.indexOf(newShape.type) >= 0 || isShowLines}
               onClick={onClickLineSign}
             />
           </Tooltip>
@@ -112,8 +112,8 @@ export default class CreateButtons extends React.PureComponent {
         <Tooltip title={i18n.ADD_TEXT} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_TEXT}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_MENU_TEXT}
             active={newShape.type === SelectionTypes.TEXT}
             onClick={this.clickTextHandler}
           />
