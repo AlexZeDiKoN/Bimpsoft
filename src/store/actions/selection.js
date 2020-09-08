@@ -5,7 +5,7 @@ import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects } from '../selectors'
-import { GROUPS } from '../../components/WebMap/entityKind'
+import { GROUPS, entityKindCanMirror } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { withNotification } from './asyncAction'
@@ -303,9 +303,9 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   if (!canEdit) {
     return
   }
-  const {
-    selection: { list = [] },
-  } = state
+  const { layers: { selectedId }, webMap: { objects } } = state
+  let { selection: { list = [] } } = state
+  list = list.filter((id) => objects.get(id).layer === selectedId)
   if (list.length) {
     await (
       list.length === 1
@@ -346,18 +346,17 @@ export const showCombineForm = () => ({
 export const mirrorImage = () => withNotification((dispatch, getState) => {
   const state = getState()
   const { selection: { list }, webMap: { objects } } = state
-  const id = list[0]
-  const obj = objects.get(id)
-  const type = obj.type
-  if (type === SelectionTypes.SQUARE ||
-    type === SelectionTypes.CIRCLE ||
-    (type === SelectionTypes.SOPHISTICATED)
-  ) {
-    return
+  if (list.length === 1) {
+    const id = list[0]
+    const obj = objects.get(id)
+    const type = obj.type
+    if (!entityKindCanMirror.includes(type)) {
+      return
+    }
+    const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
+    const point = obj.point.toObject()
+    dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
   }
-  const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())
-  const point = obj.point.toObject()
-  dispatch(webMap.updateObjectGeometry(id, { geometry, point }))
 })
 
 /* const refreshObject = async (webmapApi, objectId) => ({
@@ -370,24 +369,30 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
 
 export const createContour = () =>
   withNotification(async (dispatch, getState, { webmapApi }) => {
+    const state = getState()
+    let { selection: { list } } = state
     const {
-      selection: { list },
       layers: { selectedId: layer },
-    } = getState()
+      webMap: { objects },
+    } = state
 
-    const contour = await webmapApi.contourCreate(layer, list)
+    list = list.filter((id) => objects.get(id).layer === layer)
 
-    if (contour) {
-      dispatch(selectedList([ contour.id ]))
-      dispatch({
-        type: webMap.actionNames.ADD_UNDO_RECORD,
-        payload: {
-          changeType: webMap.changeTypes.CREATE_CONTOUR,
-          id: contour.id,
-          list,
-          layer,
-        },
-      })
+    if (list.length > 1) {
+      const contour = await webmapApi.contourCreate(layer, list)
+
+      if (contour) {
+        dispatch(selectedList([ contour.id ]))
+        dispatch({
+          type: webMap.actionNames.ADD_UNDO_RECORD,
+          payload: {
+            changeType: webMap.changeTypes.CREATE_CONTOUR,
+            id: contour.id,
+            list,
+            layer,
+          },
+        })
+      }
     }
   })
 

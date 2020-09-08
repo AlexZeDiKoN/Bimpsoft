@@ -113,7 +113,7 @@ const WebMapContainer = connect(
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,
-    requestMaSources: webMap.getMapSources,
+    requestMapSources: webMap.getMapSources,
     getLockedObjects: webMap.getLockedObjects,
     warningLockObjectsMove: () => notifications.push({
       type: 'warning',
