@@ -303,12 +303,14 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   if (!canEdit) {
     return
   }
-  const { layers: { selectedId }, webMap: { objects } } = state
+  const { layers: { selectedId }, webMap: { objects }, flexGrid: { flexGrid } } = state
   let { selection: { list = [] } } = state
-  list = list.filter((id) => {
-    const obj = objects.get(id)
-    return obj && obj.layer === selectedId
-  })
+  if (list.length !== 1 || !list[0] || list[0] !== flexGrid.get('id')) {
+    list = list.filter((id) => {
+      const obj = objects.get(id)
+      return obj && obj.layer === selectedId
+    })
+  }
   if (list.length) {
     await (
       list.length === 1
