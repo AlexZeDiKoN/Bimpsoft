@@ -6,6 +6,7 @@ import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
+import { MAX_DIRECTIONS } from '../../../store/reducers/flexGrid'
 import formFor from './DirectionForms'
 import Combine from './DirectionForms/Combine'
 import Divide from './DirectionForms/Divide'
@@ -83,7 +84,7 @@ export default class FlexGridButtons extends React.Component {
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               icon={IconNames.MAP_HEADER_ICON_MENU_DIVISION}
-              disabled={!visible}
+              disabled={!visible || flexGrid.directions >= MAX_DIRECTIONS}
               onClick={showDivideDirForm}
             />
           </Tooltip>
