@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, MovablePanel } from '@DZVIN/CommonComponents'
+import { components, MovablePanel, ModalContainer } from '@DZVIN/CommonComponents'
 import './style.css'
 import FocusTrap from 'react-focus-lock'
 import ReactDOM from 'react-dom'
@@ -60,51 +60,53 @@ export default class SaveMilSymbolForm extends React.Component {
     }
     return (
       ReactDOM.createPortal(
-        <MovablePanel title={i18n.ERROR_CODE_SIGNS} bounds='div.app-body'>
-          <FocusTrap className="confirm-save-overflow">
-            <HotKeysContainer>
-              <Form className="confirm-save">
-                <FormItem>
-                  <div className="confirm-icon-warning">!</div>
-                  <div className="confirm-modal-window">
-                    <div className="confirm-text">
-                      {errorMessage}
+        <ModalContainer>
+          <MovablePanel title={i18n.ERROR_CODE_SIGNS} bounds='div.app-body'>
+            <FocusTrap className="confirm-save-overflow">
+              <HotKeysContainer>
+                <Form className="confirm-save">
+                  <FormItem>
+                    <div className="confirm-icon-warning">!</div>
+                    <div className="confirm-modal-window">
+                      <div className="confirm-text">
+                        {errorMessage}
+                      </div>
+                      <div className="confirm-message">
+                        {
+                          doubles.map((double, index) =>
+                            <div className="confirm-text" key={index}>
+                              {double.code}
+                              <br/>
+                              {i18n.ERROR_MESSAGE_2}{double.unit}
+                              <br/>
+                            </div>,
+                          )
+                        }
+                        {
+                          etcMessage && <div className="confirm-text-etc">{etcMessage}</div>
+                        }
+                        {
+                          (errorCode & errorSymbol.code)
+                            ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div>
+                            : <></>
+                        }
+                        <br/>
+                      </div>
+                      <div className="confirm-text">
+                        {question}
+                      </div>
                     </div>
-                    <div className="confirm-message">
-                      {
-                        doubles.map((double, index) =>
-                          <div className="confirm-text" key={index}>
-                            {double.code}
-                            <br/>
-                            {i18n.ERROR_MESSAGE_2}{double.unit}
-                            <br/>
-                          </div>,
-                        )
-                      }
-                      {
-                        etcMessage && <div className="confirm-text-etc">{etcMessage}</div>
-                      }
-                      {
-                        (errorCode & errorSymbol.code)
-                          ? <div className="confirm-text">{i18n.ERROR_MESSAGE_4}</div>
-                          : <></>
-                      }
-                      <br/>
-                    </div>
-                    <div className="confirm-text">
-                      {question}
-                    </div>
-                  </div>
-                </FormItem>
-                <FormItem>
-                  {buttonYes(onApply)}
-                  <HotKey selector={shortcuts.ESC} onKey={onCancel} />
-                  {buttonNo(onCancel)}
-                </FormItem>
-              </Form>
-            </HotKeysContainer>
-          </FocusTrap>
-        </MovablePanel>,
+                  </FormItem>
+                  <FormItem>
+                    {buttonYes(onApply)}
+                    <HotKey selector={shortcuts.ESC} onKey={onCancel} />
+                    {buttonNo(onCancel)}
+                  </FormItem>
+                </Form>
+              </HotKeysContainer>
+            </FocusTrap>
+          </MovablePanel>
+        </ModalContainer>,
         document.getElementById('main'),
       )
     )

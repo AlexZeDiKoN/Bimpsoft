@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import FocusTrap from 'react-focus-lock'
 import { MovablePanel, NotClickableArea, ResizeEnable } from '@DZVIN/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
@@ -220,7 +219,7 @@ export default class SelectionForm extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      wereChanges: false,
+      wereChanges: false, // Были изменения
       showWarningCancel: false,
     }
   }
@@ -238,7 +237,7 @@ export default class SelectionForm extends React.Component {
 
   okHandler = () => {
     const { onOk } = this.props
-    this.setState({ wereChanges: false, showWarningCancel: false }) // сброс проверки внесения изменений
+    this.setState({ wereChanges: false, showWarningCancel: false }) // сброс флага "Были изменения данных"
     onOk && onOk()
   }
 
@@ -256,7 +255,6 @@ export default class SelectionForm extends React.Component {
     if (this.state.wereChanges) {
       this.setState({ showWarningCancel: true })
     } else {
-      this.resetWereChange()
       const { onCancel } = this.props
       onCancel && onCancel()
     }
@@ -276,10 +274,28 @@ export default class SelectionForm extends React.Component {
     this.setState({ showWarningCancel: false })
   }
 
+  warningSaveMilSymbol = () => {
+    const {
+      orgStructures: { byIds },
+      data: { unit, code },
+      onCloseSaveError,
+      onOk,
+      errorCode = 1,
+    } = this.props
+    const unitText = (byIds && byIds[unit]) ? byIds[unit].fullName : ''
+    return (
+      <SaveMilSymbolForm
+        errorCode={errorCode}
+        doubleObjects={ [ { code, unit: unitText } ] }
+        onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
+        onCancel={ onCloseSaveError }
+      />
+    )
+  }
+
   render () {
     const {
       data,
-      onOk,
       ovtData,
       canEdit,
       onSaveError,
@@ -333,24 +349,9 @@ export default class SelectionForm extends React.Component {
       defaultPosition,
       component: Component,
     } = forms[formType]
-    const showErrorMilSymbolForm = showErrorSave && formType === SelectionTypes.POINT
-    const errorSaveMilSymbolForm = (errorCode = 1) => {
-      const { unit, code } = this.props.data
-      const { orgStructures, onCloseSaveError } = this.props
-      const unitText = orgStructures.byIds && orgStructures.byIds[unit] ? orgStructures.byIds[unit].fullName : ''
-      return (
-        <Wrapper
-          title={i18n.ERROR_CODE_SIGNS}>
-          <SaveMilSymbolForm
-            errorCode={errorCode}
-            doubleObjects={ [ { code, unit: unitText } ] }
-            onApply={() => { this.resetWereChange(); onCloseSaveError(); onOk() }}
-            onCancel={() => { this.resetWereChange(); onCloseSaveError() }}
-          />
-        </Wrapper>)
-    }
-    return (showErrorMilSymbolForm
-      ? errorSaveMilSymbolForm(this.props.errorCode)
+
+    return ((showErrorSave && formType === SelectionTypes.POINT)
+      ? this.warningSaveMilSymbol()
       : <>
         {this.state.showWarningCancel
           ? <WarningForm
@@ -373,7 +374,9 @@ export default class SelectionForm extends React.Component {
           minWidth={minWidth}
           maxWidth={maxWidth}
           enableResizing={ResizeEnable.ALL_DISABLED}
-          defaultPosition={defaultPosition && sidebarSelectedTabIndex >= 0 ? { x: defaultPosition.x - sidebarWidth, y: defaultPosition.y } : defaultPosition}
+          defaultPosition={defaultPosition && sidebarSelectedTabIndex >= 0
+            ? { x: defaultPosition.x - sidebarWidth, y: defaultPosition.y }
+            : defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
         >
