@@ -354,8 +354,7 @@ export const mirrorImage = () => withNotification((dispatch, getState) => {
   if (list.length === 1) {
     const id = list[0]
     const obj = objects.get(id)
-    const type = obj.type
-    if (!entityKindCanMirror.includes(type)) {
+    if (!obj || !entityKindCanMirror.includes(obj.type)) {
       return
     }
     const geometry = obj.geometry.toArray().reverse().map((data) => data.toObject())

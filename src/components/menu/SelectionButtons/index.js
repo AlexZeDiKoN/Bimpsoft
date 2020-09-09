@@ -8,7 +8,11 @@ import MenuDivider from '../MenuDivider'
 import CountLabel from '../../common/CountLabel'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
-import entityKind, { entityKindOutlinable, GROUPS } from '../../WebMap/entityKind'
+import entityKind, {
+  entityKindCanMirror,
+  entityKindOutlinable,
+  GROUPS,
+} from '../../WebMap/entityKind'
 import { determineGroupType, emptyParent } from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
 import SelectionTypes from '../../../constants/SelectionTypes'
@@ -130,29 +134,32 @@ export default class SelectionButtons extends React.Component {
       }
     }
 
+    const isEnableCopy = isSelected && selectedTypes.every((type) => type)
+    const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.indexOf(selectedTypes[0]) >= 0
+
     return (
       <>
         <MenuDivider />
         {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
         {isEditMode && (<>
-          <HotKey selector={shortcuts.CUT} onKey={isSelected ? onCut : null} />
+          <HotKey selector={shortcuts.CUT} onKey={isEnableCopy ? onCut : null} />
           <Tooltip title={i18n.CUT} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               icon={IconNames.MAP_HEADER_ICON_MENU_CUT}
-              disabled={!isSelected}
+              disabled={!isEnableCopy}
               onClick={onCut}
             />
           </Tooltip>
         </>)}
-        <HotKey selector={shortcuts.COPY} onKey={isSelected ? onCopy : null} />
+        <HotKey selector={shortcuts.COPY} onKey={isEnableCopy ? onCopy : null} />
         <Tooltip title={i18n.COPY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
             icon={IconNames.MAP_HEADER_ICON_MENU_COPY}
-            disabled={!isSelected}
+            disabled={!isEnableCopy}
             onClick={onCopy}
           />
         </Tooltip>
@@ -205,7 +212,7 @@ export default class SelectionButtons extends React.Component {
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               icon={IconNames.MAP_HEADER_ICON_MENU_MIRROR}
-              disabled={!isSelected || nSelected > 1}
+              disabled={!isEnableMirror}
               onClick={debounce(onMirrorImage, 350)}
             />
           </Tooltip>
