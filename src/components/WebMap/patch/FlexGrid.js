@@ -343,6 +343,7 @@ L.FlexGrid = L.Layer.extend({
     this.zoneRings = this.zoneSegments.map(projectRings)
     this.cellRings = this._buildCellRings()
     this.cellSegments = this._buildCellSegments()
+    this._bounds = new L.LatLngBounds([ ...this.eternals, ...this.directionSegments.flat(), ...this.zoneSegments.flat() ])
   },
 
   redraw () {

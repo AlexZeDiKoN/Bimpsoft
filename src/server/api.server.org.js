@@ -1,7 +1,8 @@
-import { post } from './implementation/utils.rest'
+import { post, getDirect } from './implementation/utils.rest'
 import { requiredParam } from './requiredParam'
 
 const namespace = '/hub/org/v1'
+const v2 = '/hub/explorer/v2/mil'
 
 const gfUrl = '/generalformation'
 
@@ -11,6 +12,9 @@ const doUpdate = (url) => (item) => post(`${namespace}${url}`, item, 'Update')
 const doDelete = (url) => (id = requiredParam('id')) => post(`${namespace}${url}`, id, 'Delete')
 const doUpdateMany = (url) => (item) => post(`${namespace}${url}`, item, 'UpdateMany')
 const allDc = () => post(`${namespace}${dcUrl}`, {}, 'All')
+
+const getFormationUnits = (formationID = requiredParam('formationID')) =>
+  getDirect(`${v2}/Unit_ListByFormation`, { formationID })
 
 const generalFormation = {
   list: doList(gfUrl),
@@ -79,6 +83,7 @@ const ServerApiOrg = {
   militaryCommandPostDepartment,
   MilitaryCommandPostPosition,
   allDc,
+  getFormationUnits,
 }
 
 export default ServerApiOrg

@@ -541,7 +541,7 @@ export const getAppInfo = () =>
         getVersion(),
         getContactId(),
       ])
-      const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
+      const unitsById = await reloadUnits(dispatch, getState, milOrgApi, formationId)
       const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
 
       return dispatch({

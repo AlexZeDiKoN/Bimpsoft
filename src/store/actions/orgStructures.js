@@ -130,13 +130,14 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   return formationInfo
 }
 
-let needReloadUnits = true
-let promiseUnits
+let needNotReloadUnits = {}
+let promiseUnits = {}
 
-export const reloadUnits = (dispatch, getState, milOrgApi) => {
-  if (needReloadUnits) {
-    if (!promiseUnits) {
-      promiseUnits = milOrgApi.militaryUnit.list()
+export const reloadUnits = (dispatch, getState, milOrgApi, formationId) => {
+  if (!needNotReloadUnits[formationId]) {
+    if (!promiseUnits[formationId]) {
+      promiseUnits[formationId] = milOrgApi.getFormationUnits(formationId) // milOrgApi.militaryUnit.list()
+        .then(({ payload }) => payload)
         .then(async (units) => {
           const result = units.reduce((acc, item) => {
             acc[item.id] = item
@@ -146,13 +147,13 @@ export const reloadUnits = (dispatch, getState, milOrgApi) => {
           return result
         })
         .then((result) => {
-          promiseUnits = undefined
-          needReloadUnits = false
-          setTimeout(() => { needReloadUnits = true }, CACHE_LIFETIME * 1000)
+          delete promiseUnits[formationId]
+          needNotReloadUnits[formationId] = true
+          setTimeout(() => delete needNotReloadUnits[formationId], CACHE_LIFETIME * 1000)
           return result
         })
     }
-    return getState().orgStructures.unitsById || promiseUnits
+    return getState().orgStructures.unitsById || promiseUnits[formationId]
   } else {
     return getState().orgStructures.unitsById
   }
@@ -166,7 +167,7 @@ export const setFormationById = (formationId) =>
         setOrgStructureTree({}, []),
       ]))
     } else {
-      const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
+      const unitsById = await reloadUnits(dispatch, getState, milOrgApi, formationId)
       const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
