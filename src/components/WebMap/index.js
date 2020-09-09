@@ -1934,8 +1934,8 @@ export default class WebMap extends React.PureComponent {
 
   onDblClick = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { flexGridVisible, showDirectionNameForm } = this.props
-    if (this.flexGrid && flexGridVisible) {
+    const { flexGridVisible, showDirectionNameForm, selection: { list } } = this.props
+    if (this.flexGrid && flexGridVisible && (!list.length || list[0] === this.flexGrid.id)) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
