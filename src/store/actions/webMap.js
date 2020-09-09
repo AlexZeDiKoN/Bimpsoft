@@ -297,7 +297,7 @@ const restoreObject = (id) =>
   })
 
 export const deleteObject = (id, addUndoRecord = true) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDelete } }) => {
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objDelete } }) => {
     await objDelete(id)
 
     if (addUndoRecord) {
@@ -310,10 +310,14 @@ export const deleteObject = (id, addUndoRecord = true) =>
       })
     }
 
-    return dispatch({
-      type: actionNames.DEL_OBJECT,
-      payload: id,
-    })
+    const flexGridId = getState().flexGrid.get('id')
+
+    return id === flexGridId
+      ? dispatch(flexGrid.flexGridDeleted)
+      : dispatch({
+        type: actionNames.DEL_OBJECT,
+        payload: id,
+      })
   })
 
 export const deleteObjects = (list, addUndoRecord = true) =>
