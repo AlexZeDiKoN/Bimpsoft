@@ -305,7 +305,10 @@ export const deleteSelected = () => withNotification(async (dispatch, getState) 
   }
   const { layers: { selectedId }, webMap: { objects } } = state
   let { selection: { list = [] } } = state
-  list = list.filter((id) => objects.get(id).layer === selectedId)
+  list = list.filter((id) => {
+    const obj = objects.get(id)
+    return obj && obj.layer === selectedId
+  })
   if (list.length) {
     await (
       list.length === 1
@@ -376,7 +379,10 @@ export const createContour = () =>
       webMap: { objects },
     } = state
 
-    list = list.filter((id) => objects.get(id).layer === layer)
+    list = list.filter((id) => {
+      const obj = objects.get(id)
+      return obj && obj.layer === layer
+    })
 
     if (list.length > 1) {
       const contour = await webmapApi.contourCreate(layer, list)
@@ -439,8 +445,8 @@ export const checkSaveSymbol = () =>
     const { type, unit } = preview
     if (type === SelectionTypes.POINT && objects && unit !== null) {
       const { code, id } = preview
-      const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects).filter(
-        (symbol, index) => (Number(index) !== Number(id)))
+      const ident = sameObjects({ code, unit, type, layerId: selectedId }, objects)
+        .filter((symbol, index) => (Number(index) !== Number(id)))
       let errorCode = 0
       if (ident && ident.size > 0) {
         errorCode = errorCode | errorSymbol.duplication
