@@ -130,10 +130,11 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
   return formationInfo
 }
 
-let needNotReloadUnits = {}
-let promiseUnits = {}
+const needNotReloadUnits = {}
+const promiseUnits = {}
+const cacheUnits = {}
 
-export const reloadUnits = (dispatch, getState, milOrgApi, formationId) => {
+export const reloadUnits = (dispatch, milOrgApi, formationId) => {
   if (!needNotReloadUnits[formationId]) {
     if (!promiseUnits[formationId]) {
       promiseUnits[formationId] = milOrgApi.getFormationUnits(formationId) // milOrgApi.militaryUnit.list()
@@ -143,7 +144,8 @@ export const reloadUnits = (dispatch, getState, milOrgApi, formationId) => {
             acc[item.id] = item
             return acc
           }, {})
-          await dispatch(setOrgStructureUnits(result))
+          cacheUnits[formationId] = result
+          dispatch(setOrgStructureUnits(result))
           return result
         })
         .then((result) => {
@@ -153,21 +155,22 @@ export const reloadUnits = (dispatch, getState, milOrgApi, formationId) => {
           return result
         })
     }
-    return getState().orgStructures.unitsById || promiseUnits[formationId]
+    return cacheUnits[formationId] || promiseUnits[formationId]
   } else {
-    return getState().orgStructures.unitsById
+    dispatch(setOrgStructureUnits(cacheUnits[formationId]))
+    return cacheUnits[formationId]
   }
 }
 
 export const setFormationById = (formationId) =>
-  asyncAction.withNotification(async (dispatch, getState, { milOrgApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { milOrgApi }) => {
     if (!formationId) {
       dispatch(batchActions([
         setOrgStructureFormation(null),
         setOrgStructureTree({}, []),
       ]))
     } else {
-      const unitsById = await reloadUnits(dispatch, getState, milOrgApi, formationId)
+      const unitsById = await reloadUnits(dispatch, milOrgApi, formationId)
       const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
