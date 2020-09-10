@@ -368,7 +368,10 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
-      return update(state, 'objects', (map) => updateObject(map, payload))
+      // блокируем обработку FlexGrid (ОЗ)? иначе добавиться в WebMap.objects
+      return (payload.type === entityKind.FLEXGRID)
+        ? state
+        : update(state, 'objects', (map) => updateObject(map, payload))
     case actionNames.DEL_OBJECT:
       return payload
         ? state.deleteIn([ 'objects', payload ])

@@ -134,8 +134,8 @@ export default class SelectionButtons extends React.Component {
       }
     }
 
-    const isEnableCopy = isSelected && selectedTypes.every((type) => type)
-    const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.indexOf(selectedTypes[0]) >= 0
+    const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
+    const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.includes(selectedTypes[0])
 
     return (
       <>
