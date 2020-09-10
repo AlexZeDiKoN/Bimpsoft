@@ -18,6 +18,7 @@ import MenuDivider from '../MenuDivider'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 
 const { Coordinates: Coord } = utils
+let timerId
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -87,6 +88,7 @@ export default class LeftMenu extends React.Component {
   }
 
   search = (sample) => {
+    clearTimeout(timerId)
     const { onSearch, onCoordinates, onManyCoords } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
@@ -115,7 +117,7 @@ export default class LeftMenu extends React.Component {
 
   searchBlur = () => {
     const { onCloseSearch } = this.props
-    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
+    onCloseSearch && (timerId = setTimeout(() => onCloseSearch(), 500))
   }
 
   render () {
@@ -266,6 +268,7 @@ export default class LeftMenu extends React.Component {
             onChange={this.searchClearError}
             className={searchFailed ? 'search-failed' : ''}
             disabled={is3DMapMode}
+            onFocus={this.searchFocus}
           />
           <div className={`search-options-sub-panel ${isEditMode ? 'search-options-sub-panel-right' : 'search-options-sub-panel-left'}`}>
             <SearchOptions />
