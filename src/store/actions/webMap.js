@@ -273,7 +273,7 @@ export const moveGroup = (id, shift) =>
   }))
 
 const deleteContour = (layer, contour) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) =>
     dispatch(batchActions([
       tryUnlockObject(contour),
       selection.selectedList(await webmapApi.contourDelete(layer, contour)),
@@ -281,7 +281,7 @@ const deleteContour = (layer, contour) =>
   )
 
 const restoreContour = (layer, contour, objects) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
     await webmapApi.contourRestore(layer, contour, objects)
     return dispatch(selection.selectedList([ contour ]))
   })
@@ -533,7 +533,7 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 
 export const getAppInfo = () =>
   asyncAction.withNotification(
-    async (dispatch, getState, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
+    async (dispatch, _, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
       const [
         version,
         { contactId, positionContactId, unitId, countryId, formationId, contactFullName },
@@ -541,7 +541,7 @@ export const getAppInfo = () =>
         getVersion(),
         getContactId(),
       ])
-      const unitsById = await reloadUnits(dispatch, getState, milOrgApi, formationId)
+      const unitsById = await reloadUnits(dispatch, milOrgApi, formationId)
       const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
 
       return dispatch({
