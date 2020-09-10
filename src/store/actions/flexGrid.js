@@ -1,7 +1,7 @@
 import { action } from '../../utils/services'
 import { getArrayFromSet, getMainDirectionIndex } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
-import { activeMapSelector, visibleLayersSelector, allUnits } from '../selectors'
+import { activeMapSelector, visibleLayersSelector, allCommandPosts } from '../selectors'
 import i18n from '../../i18n'
 import * as asyncAction from './asyncAction'
 import * as maps from './maps'
@@ -98,7 +98,7 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
   let invalid = []
   const state = getState()
   const mapId = activeMapSelector(state)
-  const units = allUnits(state)
+  const commandPosts = allCommandPosts(state)
   const variantId = state.maps.calc[mapId]
   if (variantId) {
     const layers = visibleLayersSelector(state)
@@ -107,7 +107,8 @@ export const calcUnits = () => async (dispatch, getState, { flexGridInstance }) 
         type === entityKind.POINT &&
         Boolean(layers[layer]) &&
         Boolean(unit) &&
-        Boolean(units[unit])) // Тут ми пересвідчуємося, що це саме підрозділ (а не командний пункт)
+        !commandPosts[unit] // Тут ми пересвідчуємося, що це саме підрозділ (а не командний пункт)
+      )
     const result = []
     if (flexGridInstance) {
       const { options: { directions, zones } } = flexGridInstance
