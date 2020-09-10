@@ -110,6 +110,7 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
 
 const formationsCache = new Map()
 let promiseFormation
+let commandPosts
 
 export const getFormationInfo = async (formationId, unitsById, milOrgApi, dispatch) => {
   const formationInfo = formationsCache.get(formationId)
@@ -120,16 +121,17 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi, dispat
     return promiseFormation.then(async (formations) => {
       const formation = formations.find((formation) => formation.id === formationId)
       const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-      const commandPosts = await milOrgApi.militaryCommandPost.list()
-      const commandPostsToSave = commandPosts
-        .reduce((result, item) => {
-          result[item.id] = item
-          return result
-        }, {})
-      const commandPostsToUse = commandPosts
-        .filter(({ state }) => state === STATUS_OPERATING)
-      dispatch(setOrgStructureCommandPosts(commandPostsToSave))
-      const tree = getOrgStructuresTree(unitsById, relations, commandPostsToUse)
+      if (!commandPosts) {
+        const fullList = await milOrgApi.militaryCommandPost.list()
+        const commandPostsToSave = fullList
+          .reduce((result, item) => {
+            result[item.id] = true
+            return result
+          }, {})
+        dispatch(setOrgStructureCommandPosts(commandPostsToSave))
+        commandPosts = fullList.filter(({ state }) => state === STATUS_OPERATING)
+      }
+      const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
       for (const [ , value ] of Object.entries(tree.byIds)) {
         value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
       }
