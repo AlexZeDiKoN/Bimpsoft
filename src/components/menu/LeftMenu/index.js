@@ -88,7 +88,10 @@ export default class LeftMenu extends React.Component {
   }
 
   search = (sample) => {
-    clearTimeout(timerId)
+    if (timerId) {
+      clearTimeout(timerId)
+      timerId = undefined
+    }
     const { onSearch, onCoordinates, onManyCoords } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
