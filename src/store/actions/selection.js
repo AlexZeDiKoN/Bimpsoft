@@ -55,7 +55,9 @@ export const showEditForm = (id) => (dispatch, getState) => {
   const state = getState()
   const { webMap: { objects } } = state
   const object = objects.get(id)
-  if (!taskModeSelector(state) && !targetingModeSelector(state)) {
+  if (
+    !taskModeSelector(state) && !targetingModeSelector(state) && (!object || !GROUPS.GENERALIZE.includes(object.type))
+  ) {
     dispatch(setPreview(object))
   }
 }
