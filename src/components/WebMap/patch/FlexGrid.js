@@ -360,10 +360,11 @@ L.FlexGrid = L.Layer.extend({
   },
 
   _latLngBounds (pad = 0) {
-    const result = L.latLngBounds([ this.eternals[0][0] ])
-    this.eternals.forEach((row) => row.forEach((item) => result.extend(item)))
-    this.directionSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
-    this.zoneSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    const result = new L.LatLngBounds([
+      ...this.eternals,
+      ...this.directionSegments.flat(),
+      ...this.zoneSegments.flat(),
+    ])
     return result.pad(pad)
   },
 
