@@ -271,7 +271,6 @@ export default class LeftMenu extends React.Component {
             onChange={this.searchClearError}
             className={searchFailed ? 'search-failed' : ''}
             disabled={is3DMapMode}
-            onFocus={this.searchFocus}
           />
           <div className={`search-options-sub-panel ${isEditMode ? 'search-options-sub-panel-right' : 'search-options-sub-panel-left'}`}>
             <SearchOptions />
