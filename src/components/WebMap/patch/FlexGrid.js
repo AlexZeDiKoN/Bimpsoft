@@ -229,13 +229,13 @@ L.FlexGrid = L.Layer.extend({
       case 'dir':
         if (zoneIdx < zones * this.zoneMultiplier - 1) {
           const segment = this.directionRings[dirIdx][zoneIdx + 1]
-          return segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
+          return segment && segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
         }
         break
       case 'zone':
         if (dirIdx < directions - 1) {
           const segment = this.zoneRings[zoneIdx][dirIdx + 1]
-          return segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
+          return segment && segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
         }
         break
       default:
