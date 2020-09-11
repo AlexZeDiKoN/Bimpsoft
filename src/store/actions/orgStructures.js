@@ -10,6 +10,7 @@ export const SET_ORG_STRUCTURE_SELECTED_ID = action('SET_ORG_STRUCTURE_SELECTED_
 export const SET_ORG_STRUCTURE_FILTER_TEXT = action('SET_ORG_STRUCTURE_FILTER_TEXT')
 export const EXPAND_ORG_STRUCTURE_ITEM = action('EXPAND_ORG_STRUCTURE_ITEM')
 export const EXPAND_TREE_BY_ORG_STRUCTURE_ITEM = action('EXPAND_TREE_BY_ORG_STRUCTURE_ITEM')
+export const SET_ORG_STRUCTURE_COMMAND_POSTS = action('SET_ORG_STRUCTURE_COMMAND_POSTS')
 
 const STATUS_OPERATING = 1
 const CACHE_LIFETIME = 120
@@ -18,6 +19,11 @@ const { setHQ } = APP6Code
 export const setOrgStructureUnits = (unitsById) => ({
   type: SET_ORG_STRUCTURE_UNITS,
   unitsById,
+})
+
+export const setOrgStructureCommandPosts = (commandPosts) => ({
+  type: SET_ORG_STRUCTURE_COMMAND_POSTS,
+  commandPosts,
 })
 
 export const setOrgStructureFormation = (formation) => ({
@@ -104,8 +110,9 @@ const getOrgStructuresTree = (unitsById, relations, commandPosts) => {
 
 const formationsCache = new Map()
 let promiseFormation
+let commandPosts
 
-export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
+export const getFormationInfo = async (formationId, unitsById, milOrgApi, dispatch) => {
   const formationInfo = formationsCache.get(formationId)
   if (!formationInfo) {
     if (!promiseFormation) {
@@ -114,8 +121,16 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi) => {
     return promiseFormation.then(async (formations) => {
       const formation = formations.find((formation) => formation.id === formationId)
       const relations = await milOrgApi.militaryUnitRelation.list({ formationID: formationId })
-      const commandPosts = (await milOrgApi.militaryCommandPost.list())
-        .filter(({ state }) => state === STATUS_OPERATING)
+      if (!commandPosts) {
+        const fullList = await milOrgApi.militaryCommandPost.list()
+        const commandPostsToSave = fullList
+          .reduce((result, item) => {
+            result[item.id] = true
+            return result
+          }, {})
+        dispatch(setOrgStructureCommandPosts(commandPostsToSave))
+        commandPosts = fullList.filter(({ state }) => state === STATUS_OPERATING)
+      }
       const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
       for (const [ , value ] of Object.entries(tree.byIds)) {
         value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
@@ -139,7 +154,7 @@ export const reloadUnits = (dispatch, milOrgApi, formationId) => {
     if (!promiseUnits[formationId]) {
       promiseUnits[formationId] = milOrgApi.getFormationUnits(formationId) // milOrgApi.militaryUnit.list()
         .then(({ payload }) => payload)
-        .then(async (units) => {
+        .then((units) => {
           const result = units.reduce((acc, item) => {
             acc[item.id] = item
             return acc
@@ -171,7 +186,7 @@ export const setFormationById = (formationId) =>
       ]))
     } else {
       const unitsById = await reloadUnits(dispatch, milOrgApi, formationId)
-      const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi)
+      const { formation, tree } = await getFormationInfo(formationId, unitsById, milOrgApi, dispatch)
       dispatch(batchActions([
         setOrgStructureFormation(formation),
         setOrgStructureTree(tree.byIds, tree.roots),

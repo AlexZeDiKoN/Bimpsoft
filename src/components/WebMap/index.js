@@ -3,12 +3,23 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, Point, control, point, popup } from 'leaflet'
+import L, {
+  Map,
+  TileLayer,
+  Control,
+  DomEvent,
+  Point,
+  control,
+  point,
+  // TODO: тимчасово відключаємо показ характеристик підрозділу
+  // popup,
+} from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
-import renderIndicators from '../../components/UnitIndicators'
+// TODO: тимчасово відключаємо показ характеристик підрозділу
+// import renderIndicators from '../../components/UnitIndicators'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -68,16 +79,16 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 }
 
 // TODO: тимчасово відключаємо показ характеристик підрозділу
-// const openingAction = 'open'
-// const closingAction = 'close'
-const xBound = 160
-const yBound = 320
+/* const openingAction = 'open'
+const closingAction = 'close'
 const openPopUpInterval = 1000
 const clearLastUnitIdToGetNewRequestForIndicators = 30000
-
 const popupOptionsIndicators = {
   maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false, closeButton: false,
-}
+} */
+
+const xBound = 160
+const yBound = 320
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -1578,7 +1589,8 @@ export default class WebMap extends React.PureComponent {
     return newPosition
   }
 
-  getUnitIndicatorsInfoOnHover = () => {
+  // TODO: тимчасово відключаємо показ характеристик підрозділу
+  /* getUnitIndicatorsInfoOnHover = () => {
     let timer
     const lastUnits = {}
     const popupInner = popup(popupOptionsIndicators)
@@ -1640,7 +1652,7 @@ export default class WebMap extends React.PureComponent {
 
   showUnitIndicatorsHandler = this.getUnitIndicatorsInfoOnHover()
 
-  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
+  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {} */
 
   addObject = (object, prevLayer) => {
     const {

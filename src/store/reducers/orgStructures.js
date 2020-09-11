@@ -24,6 +24,10 @@ export default function reducer (state = initState, action) {
       const { unitsById } = action
       return { ...state, unitsById }
     }
+    case orgStructures.SET_ORG_STRUCTURE_COMMAND_POSTS: {
+      const { commandPosts } = action
+      return { ...state, commandPosts }
+    }
     case orgStructures.SET_ORG_STRUCTURE_TREE: {
       const { byIds, roots } = action
       return { ...state, byIds, roots }
