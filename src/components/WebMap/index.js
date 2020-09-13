@@ -1799,7 +1799,7 @@ export default class WebMap extends React.PureComponent {
     let { selection: { list } } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
-      this._dragEndPx = this.map.project(layer._bounds._northEast)
+      this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
       const delta = {
         x: this._dragEndPx.x - this._dragStartPx.x,
         y: this._dragEndPx.y - this._dragStartPx.y,
@@ -1839,13 +1839,14 @@ export default class WebMap extends React.PureComponent {
     const { lockedObjects, warningLockObjectsMove } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
-      this._dragStartPx = this.map.project(layer._bounds._northEast)
+      this._dragStartPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
       // Проверка выделенных объектов на блокировку
       if (list.some((objectId) => lockedObjects.has(objectId))) {
         // повідомлення про спробу переміщення заблокованого об'єкта
         warningLockObjectsMove()
         // зупиняємо процес переміщення об'єктів
+        // отрабатывает только для MilSymbol
         layer.dragging?._draggable?.finishDrag && layer.dragging._draggable.finishDrag()
       }
     }
