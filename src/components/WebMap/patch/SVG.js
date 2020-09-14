@@ -628,10 +628,10 @@ L.SVG.include({
       const bounds = grid._map._renderer._bounds
       const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
       grid._shadow.setAttribute('d', `${path}${border}`)
+      grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
-    grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
     grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
