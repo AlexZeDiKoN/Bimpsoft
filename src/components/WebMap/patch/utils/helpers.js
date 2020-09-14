@@ -3,8 +3,8 @@ import { settings } from '../../../../constants/drawLines'
 import { halfPoint } from './Bezier'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
-export const MIN_ZOOM = 0
-export const MAX_ZOOM = 20
+// export const MIN_ZOOM = 0
+// export const MAX_ZOOM = 20
 export const DEF_MIN_SIZE = 4
 export const DEF_MAX_SIZE = 96
 
@@ -46,12 +46,7 @@ export function adjustSquareCorner (map, point, opposite) {
   let bounds = L.latLngBounds(point, opposite)
   const nw = bounds.getNorthWest()
   const ne = bounds.getNorthEast()
-  const sw = bounds.getSouthWest()
-  const se = bounds.getSouthEast()
-  const width = (map.distance(nw, ne) + map.distance(sw, se)) / 2
-  const height = (map.distance(nw, sw) + map.distance(ne, se)) / 2
-  const size = (width + height) / 2
-  bounds = opposite.toBounds(size * 2)
+  bounds = opposite.toBounds(map.distance(nw, ne) * 2)
   if (point.lat > opposite.lat && point.lng > opposite.lng) {
     point = bounds.getNorthEast()
   } else if (point.lng > opposite.lng && point.lat < opposite.lat) {

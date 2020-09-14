@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
-const { IconHovered } = components.icons
+import { IButton } from '@DZVIN/CommonComponents'
 
 export default class ContextMenuItem extends React.Component {
   static propTypes = {
@@ -30,7 +29,7 @@ export default class ContextMenuItem extends React.Component {
     return (
       <div className={className} onClick={this.clickHandler}>
         {icon && (
-          <IconHovered icon={icon}/>
+          <IButton icon={icon}/>
         )}
         <div className="context-menu-item-text">{text}</div>
       </div>

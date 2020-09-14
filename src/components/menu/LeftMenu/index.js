@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import {
-  components,
   utils,
   ButtonTypes,
   ColorTypes,
@@ -18,9 +17,8 @@ import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
 
-const { names: iconNames } = components.icons
-
 const { Coordinates: Coord } = utils
+let timerId
 
 export default class LeftMenu extends React.Component {
   static propTypes = {
@@ -90,6 +88,10 @@ export default class LeftMenu extends React.Component {
   }
 
   search = (sample) => {
+    if (timerId) {
+      clearTimeout(timerId)
+      timerId = undefined
+    }
     const { onSearch, onCoordinates, onManyCoords } = this.props
     const query = sample.toUpperCase().trim()
     if (query.length) {
@@ -118,7 +120,7 @@ export default class LeftMenu extends React.Component {
 
   searchBlur = () => {
     const { onCloseSearch } = this.props
-    onCloseSearch && setTimeout(() => onCloseSearch(), 333)
+    onCloseSearch && (timerId = setTimeout(() => onCloseSearch(), 500))
   }
 
   render () {
@@ -155,9 +157,9 @@ export default class LeftMenu extends React.Component {
       <div className='left-menu' >
         <Tooltip title={i18n.EDIT_MODE} placement='bottomLeft'>
           <IButton
-            icon={IconNames.MENU_EDIT}
+            icon={IconNames.MAP_HEADER_ICON_MENU_EDIT}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             active={isEditMode}
             onClick={this.clickEditModeHandler}
             disabled={is3DMapMode}
@@ -166,8 +168,8 @@ export default class LeftMenu extends React.Component {
         <Tooltip title={i18n.TARGETING} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.AIM}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_AIM}
             active={targetingMode}
             onClick={this.clickTargetingModeHandler}
           />
@@ -175,9 +177,9 @@ export default class LeftMenu extends React.Component {
         {isMapCOP && <>
           <Tooltip title={i18n.CREATE_TASK} placement='bottomLeft'>
             <IButton
-              icon={IconNames.TASK}
+              icon={IconNames.MAP_HEADER_ICON_TASK}
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
               active={isTaskMode}
               onClick={this.clickTaskModeHandler}
             />
@@ -187,20 +189,20 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <Tooltip title={i18n.VOLUME_VIEW} placement='bottomRight'>
           <IButton
-            icon={IconNames.MAP_3D}
+            icon={IconNames.MAP_HEADER_ICON_MAP_3D}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             active={is3DMapMode}
             onClick={this.clickMap3D}
           />
         </Tooltip>
         <MapSourceSelectComponent />
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })} placement='bottomLeft'>
             <IButton
               icon={subordinationLevelViewData.icon2}
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
               active={isShowSubordinationLevel || !subordinationAuto}
               onClick={onClickSubordinationLevel}
             />
@@ -208,17 +210,16 @@ export default class LeftMenu extends React.Component {
           {isShowSubordinationLevel && (
             <ContextMenu ref={this.clickOutsideSubordinationLevelRef}>
               <ContextMenuItem
-                icon={iconNames.UNIT_15_ACTIVE}
+                icon={IconNames.MAP_HEADER_ICON_UNIT_15}
                 text={i18n.AUTO}
                 checked={subordinationAuto}
-                hoverIcon={iconNames.UNIT_15_ACTIVE}
                 onClick={onSetSubordinationLevelAuto}
               />
-              {SubordinationLevel.list.map(({ title, value, icon, iconActive }) => (
+              {SubordinationLevel.list.map(({ title, value, icon2, iconActive }) => (
                 <ContextMenuItem
                   key={value}
                   value={value}
-                  icon={icon}
+                  icon={icon2}
                   text={title}
                   checked={!subordinationAuto && value === subordinationLevel}
                   hoverIcon={iconActive}
@@ -231,29 +232,29 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <Tooltip title={i18n.MEASURE} placement='topLeft'>
           <IButton
-            icon={IconNames.MENU_RULER}
+            icon={IconNames.MAP_HEADER_ICON_MENU_RULER}
             active={isMeasureOn}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             onClick={onMeasureChange}
             disabled={is3DMapMode}
           />
         </Tooltip>
         <Tooltip title={i18n.MARKER} placement='bottomLeft'>
           <IButton
-            icon={IconNames.MENU_MARKER}
+            icon={IconNames.MAP_HEADER_ICON_MENU_MARKER}
             active={marker}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             onClick={onMarkerChange}
             disabled={is3DMapMode}
           />
         </Tooltip>
         <Tooltip title={i18n.TOPOGRAPHIC_OBJECTS} placement='bottomLeft'>
           <IButton
-            icon={IconNames.MENU_TOPOGRAPHY_1}
+            icon={IconNames.MAP_HEADER_ICON_MENU_TOPOGRAPHY_1}
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
             active={topographicObjects}
             onClick={onTopographicObjectsChange}
             disabled={is3DMapMode}
@@ -279,7 +280,7 @@ export default class LeftMenu extends React.Component {
         <Tooltip
           title={layerName}
           mouseEnterDelay={1.5}
-          placement='bottom'
+          placement='bottomLeft'
           className="menu-layer-name"
         >
           {layerName}

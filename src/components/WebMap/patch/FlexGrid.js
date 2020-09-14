@@ -229,13 +229,13 @@ L.FlexGrid = L.Layer.extend({
       case 'dir':
         if (zoneIdx < zones * this.zoneMultiplier - 1) {
           const segment = this.directionRings[dirIdx][zoneIdx + 1]
-          return segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
+          return segment && segment.length ? segment[0] : this.eternalRings[dirIdx][zoneIdx + 2]
         }
         break
       case 'zone':
         if (dirIdx < directions - 1) {
           const segment = this.zoneRings[zoneIdx][dirIdx + 1]
-          return segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
+          return segment && segment.length ? segment[0] : this.eternalRings[dirIdx + 2][zoneIdx]
         }
         break
       default:
@@ -343,6 +343,7 @@ L.FlexGrid = L.Layer.extend({
     this.zoneRings = this.zoneSegments.map(projectRings)
     this.cellRings = this._buildCellRings()
     this.cellSegments = this._buildCellSegments()
+    this._bounds = new L.LatLngBounds([ ...this.eternals, ...this.directionSegments.flat(), ...this.zoneSegments.flat() ])
   },
 
   redraw () {
@@ -359,10 +360,11 @@ L.FlexGrid = L.Layer.extend({
   },
 
   _latLngBounds (pad = 0) {
-    const result = L.latLngBounds([ this.eternals[0][0] ])
-    this.eternals.forEach((row) => row.forEach((item) => result.extend(item)))
-    this.directionSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
-    this.zoneSegments.forEach((row) => row.forEach((item) => item.forEach((point) => result.extend(point))))
+    const result = new L.LatLngBounds([
+      ...this.eternals,
+      ...this.directionSegments.flat(),
+      ...this.zoneSegments.flat(),
+    ])
     return result.pad(pad)
   },
 

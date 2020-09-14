@@ -6,6 +6,7 @@ import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
 import { shortcuts } from '../../../constants'
 import { HotKey } from '../../common/HotKeys'
+import { MAX_DIRECTIONS } from '../../../store/reducers/flexGrid'
 import formFor from './DirectionForms'
 import Combine from './DirectionForms/Combine'
 import Divide from './DirectionForms/Divide'
@@ -62,8 +63,8 @@ export default class FlexGridButtons extends React.Component {
         <Tooltip title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.MENU_OPERATING_AREA}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_MENU_OPERATING_AREA}
             active={visible}
             onClick={dropHandler}
           />
@@ -71,19 +72,19 @@ export default class FlexGridButtons extends React.Component {
         <Tooltip title={i18n.SEND_TO_ICT} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.BLACK_DARK_GREEN}
-            icon={IconNames.SEND_ICT}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.MAP_HEADER_ICON_SEND_ICT}
             disabled={!visible}
             onClick={calcFlexGridUnits}
           />
         </Tooltip>
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.DIVIDE_DIRECTION} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_DIVISION}
-              disabled={!visible}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_DIVISION}
+              disabled={!visible || flexGrid.directions >= MAX_DIRECTIONS}
               onClick={showDivideDirForm}
             />
           </Tooltip>
@@ -96,12 +97,12 @@ export default class FlexGridButtons extends React.Component {
             flexGrid={flexGrid}
           />}
         </div>
-        <div>
+        <div className='btn-context-container'>
           <Tooltip title={i18n.COMBINE_DIRECTIONS} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.BLACK_DARK_GREEN}
-              icon={IconNames.MENU_UNION}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              icon={IconNames.MAP_HEADER_ICON_MENU_UNION}
               disabled={!visible || flexGrid.directions < 2}
               onClick={showCombineDirForm}
             />

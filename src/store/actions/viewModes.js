@@ -41,6 +41,10 @@ export const search = (sample) =>
         })
         break
       case 1:
+        dispatch({
+          type: SET_SEARCH_OPTIONS,
+          payload: null,
+        })
         dispatch(webMap.setMarker(searchOptions[0]))
         break
       default:

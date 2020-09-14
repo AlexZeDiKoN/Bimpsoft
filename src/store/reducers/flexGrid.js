@@ -4,7 +4,7 @@ import { merge, update } from '../../utils/immutable'
 
 const MIN_DIRECTIONS = 1
 const DEF_DIRECTIONS = 3
-const MAX_DIRECTIONS = 10
+export const MAX_DIRECTIONS = 10
 
 const HAS_ZONES = 3
 const HASNT_ZONES = 1
