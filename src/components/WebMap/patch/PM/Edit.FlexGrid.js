@@ -723,6 +723,9 @@ L.PM.Edit.FlexGrid = L.PM.Edit.extend({
     this._layer.zoneSegments.forEach(dropRings)
     setTimeout(() => (this._map._customDrag = false), 10)
     marker._dir === `r` && this._updateResizeMarkersPos()
+    this._layer.fire('pm:markerdragend', {
+      markerEvent: marker,
+    })
   },
 
   _onResizeMarkerDragStart ({ target: marker }) {
