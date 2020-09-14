@@ -133,7 +133,11 @@ export const getFormationInfo = async (formationId, unitsById, milOrgApi, dispat
       }
       const tree = getOrgStructuresTree(unitsById, relations, commandPosts)
       for (const [ , value ] of Object.entries(tree.byIds)) {
-        value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+        if (typeof value.symbolData == 'object') { // Иногда вместо строки или null приходит пустой объект
+          value.symbolData = null
+        } else {
+          value.symbolData = value.symbolData ? JSON.parse(value.symbolData) : null
+        }
       }
       setTimeout(() => formationsCache.delete(formationId), CACHE_LIFETIME * 1000)
       const formationInfo = { formation, relations, tree }
