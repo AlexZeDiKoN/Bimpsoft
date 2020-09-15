@@ -143,6 +143,7 @@ export default class SelectionButtons extends React.Component {
         <MenuDivider />
         {isSelected &&
           <CountLabel
+            className={isShowForm ? 'block-selected' : null}
             title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}
           </CountLabel>
         }
