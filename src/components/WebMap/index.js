@@ -447,7 +447,7 @@ export default class WebMap extends React.PureComponent {
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
       if (document.activeElement.tagName.toUpperCase() === 'BODY') {
-        this.map && this.map._container.focus()
+        this.map._container.focus()
       }
     }
     if (showMiniMap !== prevProps.showMiniMap) {
@@ -1102,7 +1102,7 @@ export default class WebMap extends React.PureComponent {
         let [ result ] = all
 
         if (document.activeElement.tagName.toUpperCase() === 'BODY') {
-          this.map._container && this.map._container.focus()
+          this.map && this.map._container && this.map._container.focus()
         }
         if (!result) {
           await this.onSelectedListChange([])
