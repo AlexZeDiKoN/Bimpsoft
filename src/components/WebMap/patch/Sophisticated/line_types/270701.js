@@ -16,9 +16,10 @@ import {
 // hint: 'Мінне поле (Мінне загородження)'
 
 const SMALL_TEXT_SIZE = 0.67
-const MINE_SIZE = 0.75 // коэффициент размера мин по отношению к точечным знакам
+const MINE_SIZE = 0.65 // коэффициент размера мин по отношению к точечным знакам
 const KF_WIDTH = 6.8
 const KF_HEIGHT = 3.2
+const COUNT_DASH = 6
 
 lineDefinitions['270701'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -73,8 +74,8 @@ lineDefinitions['270701'] = {
       const pN = { x: pO.x - d * KF_WIDTH / 2, y: pO.y - d * KF_HEIGHT / 2 }
       const pS = { x: pO.x, y: pO.y - d * (KF_WIDTH / 2 + KF_HEIGHT / 2) }
       const pK = { x: pO.x + d * KF_WIDTH / 2, y: pO.y - d * KF_HEIGHT / 2 }
-      drawDotted(result, [ pN, pS ], [ 1, 1 ], 6)
-      drawDotted(result, [ pS, pK ], [ 1, 1 ], 6)
+      drawDotted(result, [ pN, pS ], [ 1, 1 ], COUNT_DASH)
+      drawDotted(result, [ pS, pK ], [ 1, 1 ], COUNT_DASH)
     }
     // Ампліфікатор «N»
     if (amplifiers.middle && amplifiers.middle.length !== 0) {
