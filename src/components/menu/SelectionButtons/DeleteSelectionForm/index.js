@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, MovablePanel } from '@DZVIN/CommonComponents'
+import { components, ModalContainer, MovablePanel } from '@DZVIN/CommonComponents'
 import './style.css'
 import FocusTrap from 'react-focus-lock'
 import ReactDOM from 'react-dom'
@@ -22,27 +22,29 @@ export default class DeleteSelectionForm extends React.Component {
     const { list, layerName, onOk, onCancel } = this.props
     return (
       ReactDOM.createPortal(
-        <MovablePanel title={i18n.REMOVING_SIGNS} bounds='div.app-body'>
-          <FocusTrap className="confirm-delete-overflow">
-            <HotKeysContainer>
-              <Form className="confirm-delete">
-                <FormItem>
-                  <div className="confirm-icon-warning">!</div>
-                  <div className="confirm-modal-window">
-                    <div className="confirm-text">{i18n.LAYER_WITH_NAME(layerName)}</div>
-                    <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>
-                  </div>
-                </FormItem>
-                <FormItem>
-                  <HotKey selector={shortcuts.ENTER} onKey={onOk} />
-                  {buttonYes(onOk)}
-                  <HotKey selector={shortcuts.ESC} onKey={onCancel} />
-                  {buttonNo(onCancel)}
-                </FormItem>
-              </Form>
-            </HotKeysContainer>
-          </FocusTrap>
-        </MovablePanel>,
+        <ModalContainer>
+          <MovablePanel title={i18n.REMOVING_SIGNS} bounds='div.app-body'>
+            <FocusTrap className="confirm-delete-overflow">
+              <HotKeysContainer>
+                <Form className="confirm-delete">
+                  <FormItem>
+                    <div className="confirm-icon-warning">!</div>
+                    <div className="confirm-modal-window">
+                      <div className="confirm-text">{i18n.LAYER_WITH_NAME(layerName)}</div>
+                      <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>
+                    </div>
+                  </FormItem>
+                  <FormItem>
+                    <HotKey selector={shortcuts.ENTER} onKey={onOk} />
+                    {buttonYes(onOk)}
+                    <HotKey selector={shortcuts.ESC} onKey={onCancel} />
+                    {buttonNo(onCancel)}
+                  </FormItem>
+                </Form>
+              </HotKeysContainer>
+            </FocusTrap>
+          </MovablePanel>
+        </ModalContainer>,
         document.getElementById('main'),
       )
     )
