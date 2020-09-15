@@ -2338,7 +2338,6 @@ export default class WebMap extends React.PureComponent {
           onDrop={this.dropHandler}
           ref={(container) => {
             this.container = container
-            // this.container && this.container.removeAttribute('tabindex')
           }}
           className='catalog-leaflet-popup'
         >
