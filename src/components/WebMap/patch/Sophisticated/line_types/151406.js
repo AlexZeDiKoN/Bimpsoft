@@ -33,7 +33,7 @@ lineDefinitions['151406'] = {
 
   // Рендер-функція
   render: (result, points) => {
-    buildingDotted(result, points)
+    buildingDotted(result, points, 2)
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }

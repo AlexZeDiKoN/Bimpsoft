@@ -16,7 +16,9 @@ import {
 // hint: 'Мінне поле (Мінне загородження)'
 
 const SMALL_TEXT_SIZE = 0.67
-const MINE_SIZE = 1 // коэффициент размера мин по отношению к точечным знакам
+const MINE_SIZE = 0.75 // коэффициент размера мин по отношению к точечным знакам
+const KF_WIDTH = 6.8
+const KF_HEIGHT = 3.2
 
 lineDefinitions['270701'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -54,7 +56,7 @@ lineDefinitions['270701'] = {
     }
     result.amplifiers += `<g transform="translate(${pO.x - d * 1.05}, ${pO.y - d * 1.05})">${symbol}</g>`
 
-    drawRectangleCz(result, pO, d * 6.8, d * 2.5)
+    drawRectangleCz(result, pO, d * KF_WIDTH, d * KF_HEIGHT)
 
     // Керованість
     if (controlType === 1) { // Керованість по радіо
@@ -68,10 +70,11 @@ lineDefinitions['270701'] = {
     }
     // Макет/Хибний
     if (dummy) {
-      const pN = { x: pO.x - d * 3.2, y: pO.y - d * 1.25 }
-      const pS = { x: pO.x, y: pO.y - d * 3.8 }
-      const pK = { x: pO.x + d * 3.2, y: pO.y - d * 1.25 }
-      drawDotted(result, [ pN, pS, pK ])
+      const pN = { x: pO.x - d * KF_WIDTH / 2, y: pO.y - d * KF_HEIGHT / 2 }
+      const pS = { x: pO.x, y: pO.y - d * (KF_WIDTH / 2 + KF_HEIGHT / 2) }
+      const pK = { x: pO.x + d * KF_WIDTH / 2, y: pO.y - d * KF_HEIGHT / 2 }
+      drawDotted(result, [ pN, pS ], [ 1, 1 ], 6)
+      drawDotted(result, [ pS, pK ], [ 1, 1 ], 6)
     }
     // Ампліфікатор «N»
     if (amplifiers.middle && amplifiers.middle.length !== 0) {
