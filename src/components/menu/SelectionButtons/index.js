@@ -34,6 +34,7 @@ export default class SelectionButtons extends React.Component {
     clipboard: PropTypes.array,
     orgStructures: PropTypes.object,
     objectsMap: PropTypes.object,
+    isShowForm: PropTypes.bool,
     selectedTypes: PropTypes.arrayOf(
       PropTypes.number,
     ),
@@ -61,7 +62,10 @@ export default class SelectionButtons extends React.Component {
   // проверка объекта при вставке на дублирование
   // из проверки исключаются объекты не привязанные к подрпзделению
   onPasteObject = () => {
-    const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures } = this.props
+    const { onPasteError, onPaste, clipboard, objectsMap, layerId, orgStructures, isShowForm } = this.props
+    if (isShowForm) {
+      return null
+    }
     const doubleObjects = clipboard.map((object) => {
       const { code, unit, type } = object
       if (type === SelectionTypes.POINT && objectsMap && unit !== null) {
@@ -95,6 +99,7 @@ export default class SelectionButtons extends React.Component {
   render () {
     const {
       isEditMode,
+      isShowForm,
       showDelForm,
       showErrorPasteForm,
       list,
@@ -127,11 +132,7 @@ export default class SelectionButtons extends React.Component {
       emptyParent(selectedPoints)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
-      if ((window.webMap && window.webMap.map && window.webMap.map._container === document.activeElement) ||
-        document.activeElement.id === 'main'
-      ) {
-        onDelete()
-      }
+      !isShowForm && onDelete()
     }
 
     const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
@@ -140,9 +141,14 @@ export default class SelectionButtons extends React.Component {
     return (
       <>
         <MenuDivider />
-        {isSelected && <CountLabel title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}</CountLabel>}
+        {isSelected &&
+          <CountLabel
+            style={isShowForm ? { backgroundColor: '#ffbce1' } : null}
+            title={i18n.NUM_SELECTED_SIGNS(nSelected)}>{nSelected}
+          </CountLabel>
+        }
         {isEditMode && (<>
-          <HotKey selector={shortcuts.CUT} onKey={isEnableCopy ? onCut : null} />
+          <HotKey selector={shortcuts.CUT} onKey={(isEnableCopy && !isShowForm) ? onCut : null} />
           <Tooltip title={i18n.CUT} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
@@ -153,7 +159,7 @@ export default class SelectionButtons extends React.Component {
             />
           </Tooltip>
         </>)}
-        <HotKey selector={shortcuts.COPY} onKey={isEnableCopy ? onCopy : null} />
+        <HotKey selector={shortcuts.COPY} onKey={(isEnableCopy && !isShowForm) ? onCopy : null} />
         <Tooltip title={i18n.COPY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}

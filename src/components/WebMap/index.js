@@ -446,7 +446,9 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
-      this.map && this.map._container.focus()
+      if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+        this.map && this.map._container.focus()
+      }
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -1099,8 +1101,9 @@ export default class WebMap extends React.PureComponent {
 
         let [ result ] = all
 
-        this.map._container.focus()
-
+        if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+          this.map._container.focus()
+        }
         if (!result) {
           await this.onSelectedListChange([])
         } else {
@@ -2335,7 +2338,7 @@ export default class WebMap extends React.PureComponent {
           onDrop={this.dropHandler}
           ref={(container) => {
             this.container = container
-            this.container && this.container.removeAttribute('tabindex')
+            // this.container && this.container.removeAttribute('tabindex')
           }}
           className='catalog-leaflet-popup'
         >

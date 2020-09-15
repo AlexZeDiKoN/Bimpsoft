@@ -63,6 +63,7 @@ export default function reducer (state = initState, action) {
       if (preview) {
         res.list = [ preview.id || null ]
       }
+      // TODO изменить pencilCode для подхвата всех знаков "карандашей"
       if (res.code === pencilCode && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
         res.attributes.uniqueDesignation1 = res.attributes.staffComments
       }
