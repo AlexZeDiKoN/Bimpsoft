@@ -1102,7 +1102,7 @@ export default class WebMap extends React.PureComponent {
         let [ result ] = all
 
         if (document.activeElement.tagName.toUpperCase() === 'BODY') {
-          this.map._container.focus()
+          this.map._container && this.map._container.focus()
         }
         if (!result) {
           await this.onSelectedListChange([])
