@@ -3,12 +3,23 @@ import PropTypes from 'prop-types'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.pm/dist/leaflet.pm.css'
 import './Tactical.css'
-import L, { Map, TileLayer, Control, DomEvent, Point, control, point, popup } from 'leaflet'
+import L, {
+  Map,
+  TileLayer,
+  Control,
+  DomEvent,
+  Point,
+  control,
+  point,
+  // TODO: тимчасово відключаємо показ характеристик підрозділу
+  // popup,
+} from 'leaflet'
 import * as debounce from 'debounce'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
-import renderIndicators from '../../components/UnitIndicators'
+// TODO: тимчасово відключаємо показ характеристик підрозділу
+// import renderIndicators from '../../components/UnitIndicators'
 import i18n from '../../i18n'
 import { version } from '../../version'
 import 'leaflet.pm'
@@ -37,6 +48,7 @@ import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
+import { targetDesignationCode } from '../../constants/targetDesignation'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -68,16 +80,16 @@ const hintlineStyle = { // стиль лінії-підказки при ств�
 }
 
 // TODO: тимчасово відключаємо показ характеристик підрозділу
-// const openingAction = 'open'
-// const closingAction = 'close'
-const xBound = 160
-const yBound = 320
+/* const openingAction = 'open'
+const closingAction = 'close'
 const openPopUpInterval = 1000
 const clearLastUnitIdToGetNewRequestForIndicators = 30000
-
 const popupOptionsIndicators = {
   maxWidth: 310, maxHeight: 310, className: 'sign_Popup', autoPan: false, closeButton: false,
-}
+} */
+
+const xBound = 160
+const yBound = 320
 
 const switchScaleOptions = {
   scales: SCALES,
@@ -351,7 +363,7 @@ export default class WebMap extends React.PureComponent {
     onSelectUnit: PropTypes.func,
     stopMeasuring: PropTypes.func,
     requestAppInfo: PropTypes.func,
-    requestMaSources: PropTypes.func,
+    requestMapSources: PropTypes.func,
     warningLockObjectsMove: PropTypes.func,
     tryLockObject: PropTypes.func,
     tryUnlockObject: PropTypes.func,
@@ -397,15 +409,17 @@ export default class WebMap extends React.PureComponent {
   }
 
   async componentDidMount () {
-    const { sources, requestAppInfo, requestMaSources, getLockedObjects } = this.props
+    const { sources, requestAppInfo, requestMapSources, getLockedObjects } = this.props
 
     window.webMap = this
 
-    await requestAppInfo()
     this.setMapView()
     this.setMapSource(sources)
-    await requestMaSources()
-    await getLockedObjects()
+    await Promise.all([
+      requestAppInfo(),
+      requestMapSources(),
+      getLockedObjects(),
+    ])
     useTry(this.initObjects)()
     this.initCatalogObjects()
     this.updateScaleOptions()
@@ -433,7 +447,9 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
-      this.map && this.map._container.focus()
+      if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+        this.map._container.focus()
+      }
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -1021,7 +1037,7 @@ export default class WebMap extends React.PureComponent {
   isFlexGridEditingMode = () =>
     this.flexGrid && this.props.flexGridVisible && this.props.selection.list.includes(this.props.flexGridData.id)
 
-  canClickOnLayer = (item) => {
+  /* canClickOnLayer = (item) => {
     item = getFeatureParent(item)
 
     const { object, options: { tsType } = {} } = item
@@ -1043,10 +1059,11 @@ export default class WebMap extends React.PureComponent {
     }
 
     return doActivate
-  }
+  } */
 
-  onMouseClick = useDebounce((e) => {
+  onMouseClick = async (e) => {
     const { originalEvent: { detail } } = e // detail - порядковый номер сделанного клика с коротким промежутком времени
+    const doubleClick = detail > 1
 
     const {
       isMeasureOn,
@@ -1064,7 +1081,7 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
       !isTopographicObjectsOn && !marchMode
     ) {
-      if (this.boxSelected && detail <= 1) {
+      if (this.boxSelected && !doubleClick) {
         delete this.boxSelected
       } else if (!newShape.type) {
         const area = (layer) => {
@@ -1079,24 +1096,22 @@ export default class WebMap extends React.PureComponent {
         const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
         const all = [].map
           .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
-          .filter(Boolean)
-          .filter(this.canClickOnLayer)
+          .filter((item) => item && item.id) // отсекаем элемент "вся карта", оставляем только объекты
+          // .filter(this.canClickOnLayer)
           .sort(byArea)
 
         let [ result ] = all
 
-        this.map._container.focus()
-
+        if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+          this.map && this.map._container && this.map._container.focus()
+        }
         if (!result) {
-          this.onSelectedListChange([])
+          await this.onSelectedListChange([])
         } else {
           result = getFeatureParent(result)
-          if (detail <= 1) {
-            result.object && result.object.layer !== layer && onChangeLayer(result.object.layer)
-            return this.selectLayer(result.id, e.originalEvent.ctrlKey)
-          } else { // double click
-            return this.processDblClickOnLayer(result)
-          }
+          doubleClick && result.object && result.object.layer !== layer && await onChangeLayer(result.object.layer)
+          await this.selectLayer(result.id, e.originalEvent.ctrlKey)
+          doubleClick && await this.processDblClickOnLayer(result)
         }
       }
     }
@@ -1124,7 +1139,7 @@ export default class WebMap extends React.PureComponent {
     }
 
     onClick(e.latlng)
-  }, 200)
+  }
 
   onBoxSelectStart = () => {
     this.isBoxSelection = true
@@ -1224,7 +1239,7 @@ export default class WebMap extends React.PureComponent {
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
     if (item.object) {
-      const { layer, level = 0 } = item.object
+      const { layer, level = 0, code } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
@@ -1235,8 +1250,9 @@ export default class WebMap extends React.PureComponent {
       )
 
       const isSelectedLayer = selectedLayerId === layer
+      const isTargetDesignation = targetDesignationCode.has(code) // Определение знака целеуказания
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
-      const zIndexOffset = isSelectedLayer ? 1000000000 : 0
+      const zIndexOffset = isSelectedLayer ? (isTargetDesignation ? 1100000000 : 1000000000) : 0
 
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
@@ -1578,7 +1594,8 @@ export default class WebMap extends React.PureComponent {
     return newPosition
   }
 
-  getUnitIndicatorsInfoOnHover = () => {
+  // TODO: тимчасово відключаємо показ характеристик підрозділу
+  /* getUnitIndicatorsInfoOnHover = () => {
     let timer
     const lastUnits = {}
     const popupInner = popup(popupOptionsIndicators)
@@ -1640,7 +1657,7 @@ export default class WebMap extends React.PureComponent {
 
   showUnitIndicatorsHandler = this.getUnitIndicatorsInfoOnHover()
 
-  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {}
+  getUnitData = (unitId) => (this.props.unitsById && this.props.unitsById[unitId]) || {} */
 
   addObject = (object, prevLayer) => {
     const {
@@ -1682,7 +1699,7 @@ export default class WebMap extends React.PureComponent {
       layer.id = id
       layer.object = object
       // layer.on('click', this.clickOnLayer)
-      layer.on('dblclick', this.dblClickOnLayer)
+      layer.on('marker:dblclick', this.dblClickOnLayer)
       // TODO: тимчасово відключаємо показ характеристик підрозділу
       /* if (object.type === entityKind.POINT && unit) {
         layer.on('mouseover ', () => this.showUnitIndicatorsHandler(
@@ -1784,9 +1801,10 @@ export default class WebMap extends React.PureComponent {
   }, 250)
 
   moveListByOne = (layer) => {
-    const { selection: { list } } = this.props
-    if (list.length > 1) {
-      this._dragEndPx = this.map.project(layer._bounds._northEast)
+    let { selection: { list } } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
+    if (list.length >= 1) {
+      this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
       const delta = {
         x: this._dragEndPx.x - this._dragStartPx.x,
         y: this._dragEndPx.y - this._dragStartPx.y,
@@ -1822,15 +1840,18 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
-    const { selection: { list }, lockedObjects, warningLockObjectsMove } = this.props
-    if (list.length > 1) {
-      this._dragStartPx = this.map.project(layer._bounds._northEast)
+    let { selection: { list } } = this.props
+    const { lockedObjects, warningLockObjectsMove } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
+    if (list.length >= 1) {
+      this._dragStartPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
       this._savedDragStartPx = this._dragStartPx
       // Проверка выделенных объектов на блокировку
       if (list.some((objectId) => lockedObjects.has(objectId))) {
         // повідомлення про спробу переміщення заблокованого об'єкта
         warningLockObjectsMove()
         // зупиняємо процес переміщення об'єктів
+        // отрабатывает только для MilSymbol
         layer.dragging?._draggable?.finishDrag && layer.dragging._draggable.finishDrag()
       }
     }
@@ -1842,7 +1863,8 @@ export default class WebMap extends React.PureComponent {
 
   onDragEnded = ({ target: layer }) => {
     this.moveListByOne(layer)
-    const { selection: { list } } = this.props
+    let { selection: { list } } = this.props
+    list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length > 1) {
       const delta = calcMoveWM({
         x: this._dragEndPx.x - this._savedDragStartPx.x,
@@ -1907,21 +1929,16 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    // L.DomEvent.stopPropagation(event)
+    L.DomEvent.stopPropagation(event)
     return this.processDblClickOnLayer(event.target)
   }
 
   processDblClickOnLayer = async (layer) => {
     const { id, object } = layer
-    const { selection: { list }, editObject, onSelectUnit, getLockedObjects, myContactId } = this.props
+    const { selection: { list }, editObject, onSelectUnit, lockedObjects } = this.props
 
-    if (object && object.id && list.length === 1 && list[0] === object.id) {
-      const { payload = {} } = await getLockedObjects()
-      const lockedIndex = Object.keys(payload).findIndex((id) =>
-        object.id === id && String(payload[id].contactId) !== String(myContactId))
-      if (lockedIndex < 0) {
-        editObject(object.id)
-      }
+    if (object && object.id && list.length === 1 && list[0] === object.id && !lockedObjects.has(object.id)) {
+      editObject(object.id)
     } else {
       const targetLayer = object && object.layer
       if (targetLayer && targetLayer !== this.props.layer) {
@@ -1934,8 +1951,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDblClick = (event) => {
-    const { flexGridVisible, showDirectionNameForm } = this.props
-    if (this.flexGrid && flexGridVisible) {
+    L.DomEvent.stopPropagation(event)
+    const { flexGridVisible, showDirectionNameForm, selection: { list } } = this.props
+    if (this.flexGrid && flexGridVisible && (!list.length || list[0] === this.flexGrid.id)) {
       const { latlng } = event
       const cellClick = this.flexGrid.isInsideCell(latlng)
       if (cellClick) {
@@ -1999,7 +2017,7 @@ export default class WebMap extends React.PureComponent {
         result = list.indexOf(id) === -1
           ? [ ...list, id ]
           : list.filter((itemId) => itemId !== id)
-      } else if (list.length !== 1 || list[0] !== id) {
+      } else /* if (list.length !== 1 || list[0] !== id) */ {
         result = [ id ]
       }
     }
@@ -2126,6 +2144,7 @@ export default class WebMap extends React.PureComponent {
       this.flexGrid.removeFrom(this.map)
       delete this.flexGrid
       fixFlexGridInstance && fixFlexGridInstance(null)
+      this.map.objects = this.map.objects.filter((object) => object.id !== flexGridData.id)
     } else if (actual && !this.flexGrid) {
       this.dropFlexGrid(flexGridVisible)
     } else if (actual && this.flexGrid) {
@@ -2142,7 +2161,9 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  onDoubleClickEternal = (eternalProps) => eternalProps && this.props.showEternalDescriptionForm(eternalProps)
+  onDoubleClickEternal = (eternalProps) => {
+    eternalProps && this.props.showEternalDescriptionForm(eternalProps)
+  }
 
   updateCreatePoly = (type) => {
     const layerOptions = {
@@ -2319,7 +2340,6 @@ export default class WebMap extends React.PureComponent {
           onDrop={this.dropHandler}
           ref={(container) => {
             this.container = container
-            this.container && this.container.removeAttribute('tabindex')
           }}
           className='catalog-leaflet-popup'
         >

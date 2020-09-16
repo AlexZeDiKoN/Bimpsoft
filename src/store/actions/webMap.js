@@ -273,7 +273,7 @@ export const moveGroup = (id, shift) =>
   }))
 
 const deleteContour = (layer, contour) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) =>
     dispatch(batchActions([
       tryUnlockObject(contour),
       selection.selectedList(await webmapApi.contourDelete(layer, contour)),
@@ -281,7 +281,7 @@ const deleteContour = (layer, contour) =>
   )
 
 const restoreContour = (layer, contour, objects) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
     await webmapApi.contourRestore(layer, contour, objects)
     return dispatch(selection.selectedList([ contour ]))
   })
@@ -297,7 +297,7 @@ const restoreObject = (id) =>
   })
 
 export const deleteObject = (id, addUndoRecord = true) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDelete } }) => {
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objDelete } }) => {
     await objDelete(id)
 
     if (addUndoRecord) {
@@ -310,10 +310,14 @@ export const deleteObject = (id, addUndoRecord = true) =>
       })
     }
 
-    return dispatch({
-      type: actionNames.DEL_OBJECT,
-      payload: id,
-    })
+    const flexGridId = getState().flexGrid.get('id')
+
+    return id === flexGridId
+      ? dispatch(flexGrid.flexGridDeleted)
+      : dispatch({
+        type: actionNames.DEL_OBJECT,
+        payload: id,
+      })
   })
 
 export const deleteObjects = (list, addUndoRecord = true) =>
@@ -529,7 +533,7 @@ export const updateObjPartially = (id, attributes, geometry = {}) =>
 
 export const getAppInfo = () =>
   asyncAction.withNotification(
-    async (dispatch, getState, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
+    async (dispatch, _, { webmapApi: { getVersion, getContactId }, milOrgApi }) => {
       const [
         version,
         { contactId, positionContactId, unitId, countryId, formationId, contactFullName },
@@ -537,8 +541,8 @@ export const getAppInfo = () =>
         getVersion(),
         getContactId(),
       ])
-      const unitsById = await reloadUnits(dispatch, getState, milOrgApi)
-      const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi)
+      const unitsById = await reloadUnits(dispatch, milOrgApi, formationId)
+      const defOrgStructure = await getFormationInfo(formationId, unitsById, milOrgApi, dispatch)
 
       return dispatch({
         type: actionNames.APP_INFO,

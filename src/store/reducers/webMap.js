@@ -368,7 +368,10 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.ADD_OBJECT:
     case actionNames.UPD_OBJECT:
-      return update(state, 'objects', (map) => updateObject(map, payload))
+      // блокируем обработку FlexGrid (ОЗ)? иначе добавиться в WebMap.objects
+      return (payload.type === entityKind.FLEXGRID)
+        ? state
+        : update(state, 'objects', (map) => updateObject(map, payload))
     case actionNames.DEL_OBJECT:
       return payload
         ? state.deleteIn([ 'objects', payload ])
@@ -422,16 +425,14 @@ export default function webMapReducer (state = WebMapState(), action) {
     case actionNames.GET_LOCKED_OBJECTS: {
       const myContactId = state.get('contactId')
       return update(state, 'lockedObjects', (map) => Object.entries(payload)
-        .filter(([ objectId, { contactId } ]) => String(contactId) !== String(myContactId)) // TODO может фильтр от своих блокировок и не нужен
+        .filter(([ _, { contactId } ]) => String(contactId) !== String(myContactId))
         .map(([ objectId, { contactName } ]) => ({ objectId, contactName }))
         .reduce(lockObject, map))
     }
     case actionNames.OBJECT_LOCKED: {
-      // console.log(`OBJECT_LOCKED`, payload)
       return update(state, 'lockedObjects', (map) => lockObject(map, payload))
     }
     case actionNames.OBJECT_UNLOCKED: {
-      // console.log(`OBJECT_UNLOCKED`, payload)
       return update(state, 'lockedObjects', (map) => unlockObject(map, payload))
     }
     case actionNames.GET_TOPOGRAPHIC_OBJECTS: {

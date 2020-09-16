@@ -23,18 +23,24 @@ export default function reducer (state = initState, action) {
     case maps.DELETE_MAP: {
       const { mapId } = action
       byId = { ...byId }
-      if (byId[mapId].refreshTimer) {
-        clearInterval(byId[mapId].refreshTimer)
-      }
+      const { refreshTimer } = (byId[mapId] || {})
+      refreshTimer && clearInterval(refreshTimer)
       delete byId[mapId]
+      if (!Object.keys(byId).length && global.lockRefreshTimer) {
+        clearInterval(global.lockRefreshTimer)
+        delete global.lockRefreshTimer
+      }
       return { ...state, byId }
     }
     case maps.DELETE_ALL_MAPS: {
       Object.keys(byId).forEach((mapId) => {
-        if (byId[mapId].refreshTimer) {
-          clearInterval(byId[mapId].refreshTimer)
-        }
+        const { refreshTimer } = (byId[mapId] || {})
+        refreshTimer && clearInterval(refreshTimer)
       })
+      if (global.lockRefreshTimer) {
+        clearInterval(global.lockRefreshTimer)
+        delete global.lockRefreshTimer
+      }
       return { ...state, byId: {} }
     }
     case maps.EXPAND_MAP: {

@@ -1,11 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { IconNames } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import SelectionTypes from '../../constants/SelectionTypes'
-
-const { names: icons } = components.icons
 
 export default class LinesList extends React.Component {
   static propTypes = {
@@ -28,44 +26,37 @@ export default class LinesList extends React.Component {
       <ContextMenu>
         <ContextMenuItem
           text={i18n.SHAPE_POLYLINE}
-          icon={icons.BROKEN_LINE_ACTIVE}
-          hoverIcon={icons.BROKEN_LINE_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_BROKEN_LINE}
           {...this.getItemProps(SelectionTypes.POLYLINE)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_CURVE}
-          icon={icons.CURVE_ACTIVE}
-          hoverIcon={icons.CURVE_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_CURVE}
           {...this.getItemProps(SelectionTypes.CURVE)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_POLYGON}
-          icon={icons.POLYGON_ACTIVE}
-          hoverIcon={icons.POLYGON_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_POLYGON}
           {...this.getItemProps(SelectionTypes.POLYGON)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_AREA}
-          icon={icons.RANGE_ACTIVE}
-          hoverIcon={icons.RANGE_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_RANGE}
           {...this.getItemProps(SelectionTypes.AREA)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_RECTANGLE}
-          icon={icons.SQUARE_ACTIVE}
-          hoverIcon={icons.SQUARE_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_SQUARE}
           {...this.getItemProps(SelectionTypes.RECTANGLE)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_SQUARE}
-          icon={icons.SQUARE_ACTIVE}
-          hoverIcon={icons.SQUARE_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_SQUARE}
           {...this.getItemProps(SelectionTypes.SQUARE)}
         />
         <ContextMenuItem
           text={i18n.SHAPE_CIRCLE}
-          icon={icons.OVAL_ACTIVE}
-          hoverIcon={icons.OVAL_HOVER}
+          icon={IconNames.MAP_HEADER_ICON_OVAL}
           {...this.getItemProps(SelectionTypes.CIRCLE)}
         />
       </ContextMenu>

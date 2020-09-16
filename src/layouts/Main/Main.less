@@ -23,11 +23,20 @@
   .context-menu{
     border-top: none;
     margin-top: 2px;
+    padding: 0;
     border-radius: 0 0 5px 5px;
+    .context-Index-item{
+      margin: 0;
+      height: 32px;
+      &:hover{
+        color: #5e6269;
+      }
+    }
   }
 }
 .header-top{
   .flex;
+  height: 38px;
   flex-direction: row;
 }
 .header-left{
@@ -35,12 +44,16 @@
   flex-direction: row;
   justify-content: flex-start;
   flex: 1 1 auto;
+  width: calc(100% - 72px);
 }
 .header-right{
   .flex;
   flex-direction: row;
   justify-content: flex-end;
   flex: 0 0 auto;
+  .left-menu{
+    margin-right: 4px;
+  }
 }
 
 .app-body{

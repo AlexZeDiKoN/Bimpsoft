@@ -5,22 +5,30 @@ import { asyncAction, selection } from './index'
 export const createGroup = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { groupCreate } }) => {
     const state = getState()
-    const objects = selectedList(state)
+    let list = selectedList(state)
     const layer = selectedLayerId(state)
     const scale = state.webMap.zoom
+    const objects = state.webMap.objects
     const type = determineGroupType(selectedPoints(state))
-    const { id } = await groupCreate(type, objects, layer, scale)
-    return dispatch(selection.selectedList([ id ]))
+    list = list.filter((id) => objects.get(id).layer === layer)
+    if (list.length > 1) {
+      const { id } = await groupCreate(type, list, layer, scale)
+      return dispatch(selection.selectedList([ id ]))
+    }
   })
 
 export const createGroupRegion = () =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi: { groupCreate } }) => {
     const state = getState()
-    const objects = selectedList(state)
+    let list = selectedList(state)
+    const objects = state.webMap.objects
     const layer = selectedLayerId(state)
     const scale = state.webMap.zoom
-    const { id } = await groupCreate('region', objects, layer, scale)
-    return dispatch(selection.selectedList([ id ]))
+    list = list.filter((id) => objects.get(id).layer === layer)
+    if (list.length > 1) {
+      const { id } = await groupCreate('region', list, layer, scale)
+      return dispatch(selection.selectedList([ id ]))
+    }
   })
 
 export const dropGroup = () =>

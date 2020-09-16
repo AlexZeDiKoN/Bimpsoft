@@ -19,6 +19,7 @@ const objects = (state) => state.webMap.objects
 const defaultOrgStructure = (state) => state.webMap.defOrgStructure
 const selectedList = (state) => state.selection.list
 export const allUnits = (state) => state.orgStructures.unitsById
+export const allCommandPosts = (state) => state.orgStructures.commandPosts
 
 const selectedOur = (objects, list) => {
   if (list && list.length === 1) {

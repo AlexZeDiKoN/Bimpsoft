@@ -23,7 +23,7 @@ export default function reducer (state = initState, action) {
     }
     case actions.CLEAR_BY_LAYER_ID: {
       const { layerId } = action
-      const list = state.list.filter(({ layer }) => layer === layerId)
+      const list = state.list.filter((item) => item && item.layer === layerId)
       return list.length === state.list.length
         ? state
         : { ...state, list }
@@ -63,6 +63,7 @@ export default function reducer (state = initState, action) {
       if (preview) {
         res.list = [ preview.id || null ]
       }
+      // TODO изменить pencilCode для подхвата всех знаков "карандашей"
       if (res.code === pencilCode && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
         res.attributes.uniqueDesignation1 = res.attributes.staffComments
       }

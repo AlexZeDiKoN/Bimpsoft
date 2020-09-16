@@ -552,6 +552,7 @@ L.SVG.include({
     const {
       className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
       shadow, highlightMain,
+      borderLineOlovo,
     } = grid.options
     grid._path = group
     if (className) {
@@ -583,7 +584,7 @@ L.SVG.include({
     this._updateStyle({ _path: grid._directions, options: directionLines })
     this._updateStyle({ _path: grid._zones, options: olovo ? directionLines : zoneLines })
     this._updateStyle({ _path: grid._boundary, options: olovo ? directionLines : boundaryLine })
-    this._updateStyle({ _path: grid._border, options: olovo ? directionLines : borderLine })
+    this._updateStyle({ _path: grid._border, options: olovo ? borderLineOlovo : borderLine })
     this._updateStyle({ _path: grid._highlighted, options: highlight })
     this._updateStyle({ _path: grid._highlightMain, options: highlightMain })
     if (!olovo) {
@@ -628,10 +629,10 @@ L.SVG.include({
       const bounds = grid._map._renderer._bounds
       const path = `M${bounds.min.x} ${bounds.min.y}L${bounds.min.x} ${bounds.max.y}L${bounds.max.x} ${bounds.max.y}L${bounds.max.x} ${bounds.min.y}Z`
       grid._shadow.setAttribute('d', `${path}${border}`)
+      grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     }
     grid._zones.setAttribute('d', grid._zoneLines().map(prepareBezierPath).join(''))
     grid._directions.setAttribute('d', grid._directionLines().map(prepareBezierPath).join(''))
-    grid._boundary.setAttribute('d', prepareBezierPath(grid._boundaryLine()))
     grid._border.setAttribute('d', border)
     grid._highlighted.setAttribute('d', this._getHighlightDirectionsArea(grid))
     grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
