@@ -104,6 +104,7 @@ export default class LayersComponent extends React.Component {
     const mapsCollapsed = isEmpty(expandedIds) // все карты свернуты
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
+    const disabledControlButton = !roots?.length
     return (
       <div className="layers-component">
         <div className='container-layers'>
@@ -169,7 +170,7 @@ export default class LayersComponent extends React.Component {
             title={i18n.MAPS_VISIBILITY}
             className="layers-controls-control"
             visible={visible}
-            disabled={roots?.length === 0}
+            disabled={disabledControlButton}
             onChange={onChangeVisibility}
           />
           <div className='divider'/>
@@ -179,7 +180,7 @@ export default class LayersComponent extends React.Component {
             <IButton
               icon={mapsCollapsed ? IconNames.EXPAND_LAYER : IconNames.COLLAPSE_LAYER }
               colorType={ColorTypes.WITH_BG}
-              disabled={roots?.length === 0}
+              disabled={disabledControlButton}
               type={ButtonTypes.WHITE}
               onClick={() => onCloseMapSections(mapsCollapsed)}
             />
@@ -187,7 +188,7 @@ export default class LayersComponent extends React.Component {
           <div className='divider'/>
           <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
             <IButton
-              disabled={roots?.length === 0}
+              disabled={disabledControlButton}
               icon={IconNames.CLOSE_MAP}
               onClick={this.closeHandler}
             />
