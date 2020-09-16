@@ -32,6 +32,7 @@ export default class IntervalControl extends React.Component {
   }
 
   onChangeFrom = (e) => {
+    e && e.second && e.second(0) // сброс секунд при выборе интервала
     this.setState({ dateStart: e })
     this.props.onChangeFrom(e)
   }
