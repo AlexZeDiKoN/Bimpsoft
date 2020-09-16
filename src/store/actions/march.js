@@ -120,10 +120,10 @@ export const updateMetric = (payload, initSegments) => asyncAction.withNotificat
       segment = { ...segment }
       segment.metric = { children, distance, time, reference, untilPrevious }
       segment.children = segment.children && segment.children.map((child, childId) => {
-        let { distance, time } = segmentsDetails[id].children[childId]
+        const segmentsDetailsChildren = segmentsDetails[id]?.children || []
+        let { distance, time } = segmentsDetailsChildren[childId] || {}
         distance = distance || 0
         time = time || 0
-
         return { ...child, metric: { distance, time } }
       })
 
