@@ -48,6 +48,7 @@ import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
+import { targetDesignationCode } from '../../constants/targetDesignation'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -1238,7 +1239,7 @@ export default class WebMap extends React.PureComponent {
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
     if (item.object) {
-      const { layer, level = 0 } = item.object
+      const { layer, level = 0, code } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
@@ -1249,8 +1250,9 @@ export default class WebMap extends React.PureComponent {
       )
 
       const isSelectedLayer = selectedLayerId === layer
+      const isTargetDesignation = targetDesignationCode.has(code) // Определение знака целеуказания
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
-      const zIndexOffset = isSelectedLayer ? 1000000000 : 0
+      const zIndexOffset = isSelectedLayer ? (isTargetDesignation ? 1100000000 : 1000000000) : 0
 
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
