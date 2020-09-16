@@ -834,6 +834,7 @@ export function buildingDotted (result, points, count) {
 }
 // ----------------------------------------------------------------------------------------------
 // пунктир по точкам
+// count - количество елементов пунктира на отрезке
 export function drawDotted (result, points, dashArray, count = 3) {
   if (points.length < 2) {
     return ''
