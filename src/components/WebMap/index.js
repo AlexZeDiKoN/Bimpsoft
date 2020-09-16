@@ -1095,7 +1095,7 @@ export default class WebMap extends React.PureComponent {
         const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
         const all = [].map
           .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
-          .filter(Boolean)
+          .filter((item) => item && item.id) // отсекаем элемент "вся карта", оставляем только объекты
           // .filter(this.canClickOnLayer)
           .sort(byArea)
 
