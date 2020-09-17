@@ -42,7 +42,11 @@ const BaseForm = (props) => {
 
   return (
     ReactDOM.createPortal(
-      <MovablePanel title={title} bounds='div.app-body'>
+      <MovablePanel
+        title={title}
+        bounds='div.app-body'
+        minWidth={460}
+      >
         <FocusTrap className="form-direction_wrapper">
           <HotKeysContainer>
             <Form className="form-direction">
