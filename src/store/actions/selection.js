@@ -446,6 +446,7 @@ export const errorSymbol = {
   duplication: 1,
   code: 2,
 }
+
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     const {

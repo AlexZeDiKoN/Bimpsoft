@@ -244,7 +244,7 @@ export default class SelectionForm extends React.Component {
   checkSaveHandler = () => {
     const { onCheckSave } = this.props
     this.resetWereChange()
-    onCheckSave && onCheckSave()
+    return onCheckSave && onCheckSave()
   }
 
   addToTemplateHandler = (data) => {

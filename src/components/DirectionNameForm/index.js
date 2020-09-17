@@ -6,6 +6,7 @@ import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import * as shortcuts from '../../constants/shortcuts'
 import i18n from '../../i18n'
+import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../SelectionForm/parts/WithPointAmplifiers'
 
 const {
   default: Form,
@@ -48,7 +49,11 @@ export default function DirectionNameForm (props) {
         <HotKeysContainer>
           <Form className="direction_name--form">
             <FormRow label={`${i18n.DESIGNATION}:`}>
-              <Input value={name} onChange={handleChange} />
+              <Input
+                value={name}
+                onChange={handleChange}
+                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_DIRECTION}
+              />
             </FormRow>
             <FormRow label={i18n.MAIN_DIRECTION} alignLabel='left'>
               <Checkbox

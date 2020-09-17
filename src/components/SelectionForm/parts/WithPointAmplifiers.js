@@ -16,7 +16,8 @@ export const MAX_LENGTH_TEXT_AMPLIFIERS = {
   TEXT_MULTILINE: 128,
   INPUT: 15,
   TEXT_INPUT: 30,
-  TEXT_INSCRIPTION: 50, // для надписей
+  TEXT_INSCRIPTION: 50, // для надписів
+  TEXT_DIRECTION: 40, // для назв напрямку
 }
 
 const PAIR_LIST = Object.values(PAIRS)
