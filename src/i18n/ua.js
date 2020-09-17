@@ -118,6 +118,7 @@ export const ROW_MINE_SIGN_SIZE = 'Розмір елементів ліній т
 export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з засічками'
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
+export const AMPLIFIERS_POINT_SYMBOL = 'Ампліфікатори точкових знаків'
 export const AMPLIFIER = 'Ампліфікатор'
 export const AMPLIFIERS_DISPLAY = 'Відображення ампліфікаторів'
 export const AMP_LEFT = 'Зліва'

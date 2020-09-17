@@ -119,7 +119,7 @@ export default class SettingsForm extends React.Component {
                   <FormRow label={i18n.MINIMAP}>
                     <Checkbox checked={showMiniMap} onChange={onChangeShowMiniMap}/>
                   </FormRow>
-                  <FormRow label={i18n.AMPLIFIERS}>
+                  <FormRow label={i18n.AMPLIFIERS_POINT_SYMBOL}>
                     <Checkbox checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
                   </FormRow>
                 </div>

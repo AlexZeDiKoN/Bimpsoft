@@ -452,6 +452,7 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
       tsType: layer.options.tsType,
+      showAmplifiers: true, // layer.options.showAmplifiers,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {
