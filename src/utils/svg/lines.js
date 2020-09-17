@@ -999,6 +999,7 @@ export const getAmplifiers = ({
   graphicSize, // для печати
   strokeWidth, // для печати
   tsType, // тип линии
+  showAmplifiers, // разрешение вывода амплификаторов
 }, object) => {
   const result = {
     maskPath: [],
@@ -1064,7 +1065,7 @@ export const getAmplifiers = ({
     result.group += group
   }
 
-  { // формирование pointAmplifiers
+  if (showAmplifiers) { // формирование pointAmplifiers
     let amplifierOptions
 
     if (locked) { // замкнутая линия, pointAmplifiers в центре

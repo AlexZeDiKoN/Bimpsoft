@@ -118,6 +118,13 @@ export default L.Path.include({
     this._updateZoomStyles()
   },
 
+  setShowAmplifiers: function (showAmplifiers) {
+    if (this.options.showAmplifiers !== showAmplifiers) {
+      this.options.showAmplifiers = showAmplifiers
+      this.redraw()
+    }
+  },
+
   getEvents: function () {
     const events = _getEvents ? _getEvents.call(this) : {}
     events.zoomend = this._onZoomEnd.bind(this)

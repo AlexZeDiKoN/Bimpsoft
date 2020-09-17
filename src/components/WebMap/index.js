@@ -1312,7 +1312,10 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map && this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    if (this.map) {
+      this.map.options.showAmplifiers = showAmplifiers
+      this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    }
   }
 
   showCoordinates = ({ lat, lng }) => {
