@@ -444,7 +444,6 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    console.log('upd', layer)
     const amplifiers = getAmplifiers({
       points: layer._rings[0],
       bezier,
@@ -453,7 +452,7 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
       tsType: layer.options.tsType,
-      showAmplifiers: layer.options.showAmplifiers,
+      showAmplifiers: true, // layer.options.showAmplifiers,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {

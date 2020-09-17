@@ -767,6 +767,7 @@ const getTextAmplifiers = ({
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
   strokeWidth,
   amplifierIsNormal,
+  showAmplifiers = true, // вывод текстовых амплификаторов разрешён
 }) => {
   const result = {
     maskPath: [],
@@ -798,7 +799,7 @@ const getTextAmplifiers = ({
         }
       }
 
-      if (!value) {
+      if (!value || !showAmplifiers) {
         return null // canceling render of a text amplifier
       }
 
@@ -999,7 +1000,7 @@ export const getAmplifiers = ({
   graphicSize, // для печати
   strokeWidth, // для печати
   tsType, // тип линии
-  showAmplifiers, // разрешение вывода амплификаторов
+  showAmplifiers = true, // разрешение вывода амплификаторов
 }, object) => {
   const result = {
     maskPath: [],
@@ -1060,6 +1061,7 @@ export const getAmplifiers = ({
       fontSize,
       graphicSize,
       amplifierIsNormal,
+      showAmplifiers,
     })
     result.maskPath.push(...maskPath)
     result.group += group
