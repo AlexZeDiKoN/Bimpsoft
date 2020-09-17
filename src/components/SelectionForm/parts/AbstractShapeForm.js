@@ -65,7 +65,9 @@ export default class AbstractShapeForm extends React.Component {
       { saveButtonBlock: true },
       () => {
         const check = onCheckSave()
-        check?.finally && check.finally(this.enableSaveButton)
+        if (check && check.finally) {
+          check.finally(this.enableSaveButton)
+        }
       },
     )
   }
