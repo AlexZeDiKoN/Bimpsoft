@@ -102,7 +102,7 @@ const getFeatureParent = (item) => item.feature && item.options && item.options.
   ? item._eventParents[Object.keys(item._eventParents)[0]]
   : item
 
-const isLayerInBounds = (layer, bounds) => {
+const layerBounds = (layer) => {
   const geometryObj = getGeometry(layer)
   if (geometryObj === null) {
     return false
@@ -111,7 +111,11 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && geometry.length && L.latLngBounds(geometry)
+  return geometry && geometry.length && L.latLngBounds(geometry)
+}
+
+const isLayerInBounds = (layer, bounds) => {
+  const rect = layerBounds(layer)
   return rect && bounds.contains(rect)
 }
 
@@ -277,6 +281,7 @@ export default class WebMap extends React.PureComponent {
       lng: PropTypes.number,
     }).isRequired,
     zoom: PropTypes.number.isRequired,
+    highlighted: PropTypes.any,
     sources: PropTypes.arrayOf(
       PropTypes.shape({
         source: PropTypes.string,
@@ -438,7 +443,7 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects,
+      flexGridData, catalogObjects, highlighted,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
@@ -461,9 +466,9 @@ export default class WebMap extends React.PureComponent {
       this.setMapSource(sources)
     }
     if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
-      layer !== prevProps.layer || list !== prevProps.selection.list
+      layer !== prevProps.layer || list !== prevProps.selection.list || highlighted !== prevProps.highlighted
     ) {
-      this.updateShowLayers(level, layersById, hiddenOpacity, layer, list)
+      this.updateShowLayers(level, layersById, hiddenOpacity, layer, list, highlighted)
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
@@ -526,6 +531,9 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
+    if (highlighted !== prevProps.highlighted) {
+      this.resetHighlight(prevProps.highlighted, highlighted)
+    }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
@@ -559,6 +567,31 @@ export default class WebMap extends React.PureComponent {
         layer.id === activeObjectId && this.onSelectedListChange([])
       }
     })
+
+  zoomToSelection = () => {
+    const { selection: { list } } = this.props
+    if (list[0]) {
+      const layer = this.findLayerById(list[0])
+      if (layer) {
+        const bounds = layerBounds(layer)
+        if (bounds) {
+          for (const id of list) {
+            const layer = this.findLayerById(id)
+            if (layer) {
+              const itemBounds = layerBounds(layer)
+              if (itemBounds) {
+                bounds.extend(itemBounds)
+              }
+            }
+          }
+          this.map.fitBounds(bounds, {
+            padding: [ 80, 80 ],
+            maxZoom: 12,
+          })
+        }
+      }
+    }
+  }
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
@@ -841,6 +874,31 @@ export default class WebMap extends React.PureComponent {
     }
     this.setMapCursor(edit, type)
     this.updateCreatePoly(edit && type)
+  }
+
+  highlightLayer = (id, value) => {
+    const layer = this.findLayerById(id)
+    if (layer && layer.setHighlighted) {
+      if (this.highlightedTimer && this.highlightedValue) {
+        clearTimeout(this.highlightedTimer)
+      }
+      if (this.highlightedValue !== value) {
+        this.highlightedValue = value
+        this.highlightedTimer = setTimeout(() => {
+          delete this.highlightedTimer
+          layer.setHighlighted(value)
+        }, 50)
+      }
+    }
+  }
+
+  resetHighlight = (oldValue, newValue) => {
+    if (oldValue) {
+      oldValue.list.forEach((id) => this.highlightLayer(id, false))
+    }
+    if (newValue) {
+      newValue.list.forEach((id) => this.highlightLayer(id, true))
+    }
   }
 
   async onSelectedListChange (newList) {
@@ -1239,13 +1297,14 @@ export default class WebMap extends React.PureComponent {
     }
   }, 500)
 
-  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
+  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted) => {
     if (item.object) {
       const { layer, level = 0, code } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
-      const hidden = !isSelectedItem && (
+      const isHighlightedItem = highlighted?.list?.includes(item.id)
+      const hidden = !isSelectedItem && !isHighlightedItem && (
         (itemLevel < levelEdge) ||
         ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
         (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
@@ -1276,9 +1335,9 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
+  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list, highlighted) => {
     this.map && this.map.objects.forEach((item) =>
-      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
+      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted))
   }
 
   updateShowLayersByBounds = () => {

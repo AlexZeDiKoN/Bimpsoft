@@ -1,61 +1,63 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
+import { changeTypes } from '../../../store/actions/webMap'
+import i18n from '../../../i18n'
 
-const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-
-const dateOptions = {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  timeZone,
-}
-
-const timeOptions = {
-  hour: 'numeric',
-  minute: 'numeric',
-  timeZone,
+const changeDescription = {
+  [changeTypes.UPDATE_OBJECT]: i18n.UPDATE_OBJECT,
+  [changeTypes.INSERT_OBJECT]: i18n.INSERT_OBJECT,
+  [changeTypes.DELETE_OBJECT]: i18n.DELETE_OBJECT,
+  [changeTypes.DELETE_LIST]: i18n.DELETE_LIST,
 }
 
 const locales = window.navigator.language
 
 const ItemList = (props) => {
-  const { time, user, event, highlightObject, object, id } = props
-  const [ baseColor ] = useState(object ? object.attributes.color : null)
-  const onMouseOver = baseColor === null ? null : () => highlightObject(id)
-  const onMouseOut = baseColor === null ? null : () => highlightObject(id, baseColor)
+  const { time, user, event, highlightObject, clickObject, doubleClickObject, id } = props
+  const onMouseOver = () => highlightObject(id)
+  const onMouseOut = () => highlightObject(null)
+  const onClick = () => clickObject(id)
+  const onDoubleClick = () => doubleClickObject(id)
 
-  const formatDate = new Date(time).toLocaleDateString(locales, dateOptions)
-  const formatTime = new Date(time).toLocaleTimeString(locales, timeOptions)
+  const d = new Date(time)
+  const formatDate = d.toLocaleDateString(locales)
+  const formatTime = d.toLocaleTimeString(locales)
+
+  let description = changeDescription[event]
+  if (Array.isArray(id)) {
+    description += ` (${id.length})`
+  }
 
   return (
-    <div className={'item-list-log'}>
+    <div
+      className={'item-list-log'}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+    >
       <div className={'time-user'}>
-        <div className={'time'}>
-          {`${formatDate} ${formatTime}`}
-        </div>
-        <div className={'user'}>
-          <div>
-            {user}
-          </div>
-        </div>
+        <span className={'time'}>
+          {formatDate} {formatTime}
+        </span>
+        <span className={'user'}>
+          {user}
+        </span>
       </div>
-      <div
-        className={'event'}
-        onMouseOver={onMouseOver}
-        onMouseOut={onMouseOut}
-      >
-        {event}
+      <div className={'event'}>
+        {description}
       </div>
     </div>
   )
 }
 
 ItemList.propTypes = {
-  time: PropTypes.number.isRequired,
+  time: PropTypes.string.isRequired,
   event: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
   highlightObject: PropTypes.func.isRequired,
-  object: PropTypes.object,
+  clickObject: PropTypes.func.isRequired,
+  doubleClickObject: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
 }
 

@@ -8,6 +8,8 @@ export default {
     getDirect(`${webmapUrl}/version`, false),
   getContactId: () =>
     getDirect(`${webmapUrl}/contactId`, false),
+  getContactName: (contactId) =>
+    getDirect(`${webmapUrl}/contact-name`, { contactId }),
 
   // API параметрів користувацьких налаштувань
   paramGetAll: () =>
@@ -52,6 +54,8 @@ export default {
     getDirect(`${webmapUrl}/obj/restore`, { list }),
   objRefresh: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/refresh`, false),
+  objRefreshFull: (id = 0) =>
+    getDirect(`${webmapUrl}/obj/${id}/refresh-full`, false),
   objAccess: (id = 0) =>
     getDirect(`${webmapUrl}/obj/${id}/access`, false),
   objLock: (id = 0) =>

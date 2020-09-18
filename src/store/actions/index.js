@@ -17,6 +17,7 @@ import * as ovt from './ovt'
 import * as targeting from './targeting'
 import * as groups from './groups'
 import * as task from './task'
+import * as changeLog from './changeLog'
 
 export {
   viewModes,
@@ -38,4 +39,5 @@ export {
   groups,
   targetCatalog,
   task,
+  changeLog,
 }

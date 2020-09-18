@@ -26,6 +26,10 @@ export default L.Path.include({
     this.setStyle({ locked })
   },
 
+  setHighlighted: function (highlighted) {
+    this.setStyle({ highlighted })
+  },
+
   setFill: function (fillColor) {
     this.setStyle({ fillColor })
   },

@@ -89,7 +89,7 @@ L.SVG.include({
   _updateStyle: function (layer) {
     const {
       options: {
-        shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight,
+        shadowColor, opacity = 1, hidden, selected, inActiveLayer, locked, color, weight, highlighted,
         dashArray, dashOffset, lineCap = 'round',
       },
       _shadowPath,
@@ -140,7 +140,7 @@ L.SVG.include({
     }, {
       'dzvin-path-selected-on-active-layer': selected && inActiveLayer,
       'dzvin-path-selected': selected && !inActiveLayer,
-      'dzvin-path-locked': locked,
+      'dzvin-path-locked': locked || highlighted,
     })
   },
 
