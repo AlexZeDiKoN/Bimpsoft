@@ -21,7 +21,7 @@ lineDefinitions['170100'] = {
   allowMiddle: MIDDLE.lineWithAmplifiers(1),
 
   // Вершини, які дозволено вилучати
-  allowDelete: DELETE.allowNotEnd(1),
+  allowDelete: DELETE.allowNotEnd(3),
 
   // Взаємозв'язок розташування вершин (форма "каркасу" лінії)
   adjust: STRATEGY.lineWithRegulatedWidth(STRATEGY.shapeT()),
