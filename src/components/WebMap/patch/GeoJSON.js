@@ -13,6 +13,10 @@ export default L.GeoJSON.include({
     }
   },
 
+  setHighlighted: function (highlighted) {
+    this.setStyle({ highlighted })
+  },
+
   setOpacity: function (opacity) {
     this.setStyle({ opacity })
   },

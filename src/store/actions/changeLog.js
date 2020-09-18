@@ -17,7 +17,7 @@ const contactName = async (userId, getContactName) => {
       userName = contactName
       contacts[userId] = contactName
     } else {
-      userName = '?'
+      userName = `#${userId}`
     }
   }
   return userName
@@ -38,6 +38,29 @@ export const logDeleteList = (ids) => async (dispatch, getState, { webmapApi: { 
           objectId: ids.length > 1 ? ids : one,
           changeType: ids.length > 1 ? changeTypes.DELETE_LIST : changeTypes.DELETE_OBJECT,
           changeDate: updated.deleted,
+          userId,
+          userName: await contactName(userId, getContactName),
+        },
+      })
+    }
+  }
+}
+
+export const logRefreshList = (ids) => async (dispatch, getState, { webmapApi: { getContactName, objRefreshFull } }) => {
+  const one = ids && ids[0]
+  if (one) {
+    const updated = await objRefreshFull(one)
+    const mapId = layersById(getState())[updated.layer]?.mapId
+    const userId = updated.updated_by_id || updated.inserted_by_id
+    if (mapId) {
+      dispatch({
+        type: actionNames.LOG_CHANGE,
+        payload: {
+          mapId,
+          layerId: updated.layer,
+          objectId: ids.length > 1 ? ids : one,
+          changeType: ids.length > 1 ? 'INSERT_LIST' : changeTypes.INSERT_OBJECT,
+          changeDate: updated.updated || updated.inserted,
           userId,
           userName: await contactName(userId, getContactName),
         },
