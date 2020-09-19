@@ -4,7 +4,12 @@ import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import { viewModes, layers, webMap, task, selection } from '../store/actions'
 import {
-  canEditSelector, layerNameSelector, mapCOP, targetingModeSelector, taskModeSelector,
+  canEditSelector,
+  layerNameSelector,
+  mapCOP,
+  selectedLayerId,
+  targetingModeSelector,
+  taskModeSelector,
 } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 import { MapModes } from '../constants'
@@ -32,6 +37,7 @@ const mapStateToProps = (store) => {
   const targetingMode = targetingModeSelector(store)
   const isTaskMode = taskModeSelector(store)
   const isMapCOP = mapCOP(store)
+  const isSelectedLayer = Boolean(selectedLayerId(store))
 
   return {
     isMapCOP,
@@ -40,6 +46,7 @@ const mapStateToProps = (store) => {
     isTaskMode,
     isShowSubordinationLevel,
     isMeasureOn,
+    isSelectedLayer,
     subordinationLevel,
     subordinationAuto,
     marker,

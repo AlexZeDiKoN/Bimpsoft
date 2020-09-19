@@ -29,6 +29,7 @@ export default class LeftMenu extends React.Component {
     isTaskMode: PropTypes.bool,
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
+    isSelectedLayer: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
     mapSourceSelectComponent: PropTypes.any,
     selectionButtonsComponent: PropTypes.any,
@@ -132,6 +133,7 @@ export default class LeftMenu extends React.Component {
       isShowSubordinationLevel,
       isMeasureOn,
       is3DMapMode,
+      isSelectedLayer,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
       subordinationAuto,
       marker,
@@ -162,7 +164,7 @@ export default class LeftMenu extends React.Component {
             colorType={ColorTypes.MAP_HEADER_GREEN}
             active={isEditMode}
             onClick={this.clickEditModeHandler}
-            disabled={is3DMapMode}
+            disabled={is3DMapMode || !isSelectedLayer}
           />
         </Tooltip>
         <Tooltip title={i18n.TARGETING} placement='bottomLeft'>

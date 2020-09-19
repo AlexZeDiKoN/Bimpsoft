@@ -11,6 +11,7 @@ export const DELETE_ALL_MAPS = action('DELETE_ALL_MAPS')
 export const EXPAND_MAP = action('EXPAND_MAP')
 export const CLOSE_MAP_SECTIONS = action('CLOSE_MAP_SECTIONS')
 export const SET_CALC_VARIANT = action('SET_CALC_VARIANT')
+export const SET_MAP_LOADING = action('SET_MAP_LOADING')
 
 export const updateMap = (mapData) => ({
   type: UPDATE_MAP,
@@ -196,3 +197,8 @@ export const closeMapSections = (mapsCollapsed) => ({
 
 export const toggleExpandMap = (id) => (dispatch, getState) =>
   dispatch(expandMap(id, !Object.prototype.hasOwnProperty.call(getState().maps.expandedIds, id)))
+
+export const setStatusMapLoading = (loadingMap) => ({
+  type: SET_MAP_LOADING,
+  loadingMap,
+})
