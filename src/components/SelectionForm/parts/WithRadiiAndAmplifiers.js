@@ -9,9 +9,9 @@ import { colors } from '../../../constants'
 import { MINIMUM, MAXIMUM, EFFECTIVE } from '../../../i18n/ua'
 import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
 import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
+import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
 import { colorOption } from './render'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const {
   FormRow,
@@ -184,7 +184,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                   disabled={!canEdit}
                   onFocus={canEdit ? this.sectorFocusHandler(index) : null}
                   onBlur={canEdit ? this.amplifierBlurHandler(index) : null}
-                  maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                  maxLength={MAX_LENGTH_TEXT.TEXTAREA}
                 />
                 : <Input.TextArea
                   value={amplifierT}
@@ -196,7 +196,7 @@ const WithRadiiAndAmplifiers = (Component) => class RadiiAndAmplifiersComponent 
                   disabled={!canEdit}
                   autoSize={ maxRows ? { minRows: 1, maxRows: maxRows } : undefined}
                   rows={2}
-                  maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                  maxLength={MAX_LENGTH_TEXT.TEXTAREA}
                 />
               }
             </FormRow>

@@ -9,6 +9,7 @@ import { DATE_TIME_FORMAT } from '../../constants/formats'
 import i18n from '../../i18n'
 
 import './style.css'
+import { MAX_LENGTH_TEXT } from '../../constants/InputText'
 
 const POPUP_WINDOW_WIDTH = 300
 
@@ -88,7 +89,11 @@ export default class ReportMapModal extends React.Component {
           <div className='content' style={{ width: `${POPUP_WINDOW_WIDTH}px` }}>
             <div className='input-name'>
               <div>{i18n.NAME_OF_DOCUMENT}</div>
-              <Input value={nameMap} onChange={this.onChangeNameMap}/>
+              <Input
+                value={nameMap}
+                onChange={this.onChangeNameMap}
+                maxLength={MAX_LENGTH_TEXT.NAME_REPORT_MAP}
+              />
             </div>
             <div className='input-as-of'>
               <div>{i18n.AS_OF}</div>
