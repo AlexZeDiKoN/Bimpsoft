@@ -5,15 +5,11 @@ import { InputButton } from '../common'
 
 import './style.css'
 import i18n from '../../i18n'
-import ItemList from './children/ItemList'
+import LogMapItem from './children/Item'
 
 const LogMapTab = (props) => {
   const { highlightObject, clickObject, doubleClickObject, changeLog } = props
-  const [ search, onChange ] = useState('')
-
-  const onChangeSearch = (value) => {
-    onChange(value)
-  }
+  const [ search, onChangeSearch ] = useState('')
 
   return (
     <div className='log-map-wrapper'>
@@ -27,7 +23,7 @@ const LogMapTab = (props) => {
       <Scrollbar>
         {changeLog && changeLog.map((change) => {
           const { objectId, changeType, changeDate, userName } = change
-          return <ItemList
+          return <LogMapItem
             key={`${changeDate}-${objectId}`}
             id={objectId}
             time={changeDate}
@@ -36,6 +32,7 @@ const LogMapTab = (props) => {
             highlightObject={highlightObject}
             clickObject={clickObject}
             doubleClickObject={doubleClickObject}
+            search={search}
           />
         })}
       </Scrollbar>
