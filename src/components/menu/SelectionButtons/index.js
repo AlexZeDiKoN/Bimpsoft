@@ -111,6 +111,7 @@ export default class SelectionButtons extends React.Component {
       layerName,
       selectedTypes,
       selectedPoints,
+      layerId,
       objectsMap,
       onCopy,
       onCut,
@@ -131,7 +132,7 @@ export default class SelectionButtons extends React.Component {
     const isClipboardExist = Boolean(clipboardSize)
     const canContour = selectedTypes.length > 1 &&
       selectedTypes.every((item) => entityKindOutlinable.includes(item)) &&
-      objectsSameLayer(list, objectsMap)
+      objectsSameLayer(list, objectsMap, layerId)
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)

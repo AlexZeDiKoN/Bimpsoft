@@ -32,8 +32,7 @@ export const emptyParent = (objects) => !objects.some(({ parent }) => parent)
 // проверка на принадлежность всех объектов списка одному слою на карте
 export const sameLayer = (objects, commonLayer) => objects.every(({ layer }) => commonLayer === layer)
 
-// По списку ID объектов проверка принадлежности ссответствующих объектов к одному слою на карте
-export const objectsSameLayer = (selectedList, objectsMap) => {
-  const layer = objectsMap.getIn([ selectedList[0], 'layer' ])
-  return layer && selectedList.every((id) => layer === objectsMap.getIn([ id, 'layer' ]))
+// По списку ID объектов проверка принадлежности сответствующих объектов к активному слою карты
+export const objectsSameLayer = (selectedList, objectsMap, layerId) => {
+  return layerId && selectedList.every((id) => layerId === objectsMap.getIn([ id, 'layer' ]))
 }
