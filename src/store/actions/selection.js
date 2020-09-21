@@ -62,9 +62,17 @@ export const showEditForm = (id) => (dispatch, getState) => {
   }
 }
 
-export const hideForm = () => ({
+const closeForm = () => ({
   type: HIDE_FORM,
 })
+
+export const hideForm = () => async (dispatch) => {
+  await dispatch(closeForm())
+  // после закрытия модалок возвращаем фокус на карту
+  if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+    document.getElementById('main').focus()
+  }
+}
 
 export const disableDrawUnit = () => ({
   type: DISABLE_DRAW,
@@ -438,6 +446,7 @@ export const errorSymbol = {
   duplication: 1,
   code: 2,
 }
+
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     const {

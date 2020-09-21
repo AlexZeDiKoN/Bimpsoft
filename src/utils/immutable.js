@@ -33,6 +33,15 @@ export const merge = (record, payload) =>
       : record.set(key, newValue)
   }, record)
 
+export const mergePure = (record, payload) =>
+  Object.keys(payload).reduce((record, key) => {
+    const oldValue = record.get(key)
+    const newValue = payload[key]
+    return oldValue === undefined || eq(oldValue, newValue)
+      ? record
+      : record.set(key, newValue)
+  }, record)
+
 // Специфічні функції
 
 export const getArrayFromSet = (data, length) => length && data.size

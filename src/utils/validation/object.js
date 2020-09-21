@@ -7,7 +7,7 @@ import { validateMilsymbol } from './milsymbol'
 
 export function validateObject (object) {
   if (!object || !object.type) {
-    throw new ValidationError(i18n.ERROR_UNDEFINET_OBJECT_TYPE)
+    throw new ValidationError(i18n.ERROR_UNDEFINED_OBJECT_TYPE)
   }
   if (object.type !== SelectionTypes.FLEXGRID) {
     validateCoordinate(object.point)

@@ -1,15 +1,14 @@
 import React from 'react'
-import { Input, Select } from 'antd'
+import { Input } from 'antd'
 import PropTypes from 'prop-types'
 import { components, utils } from '@DZVIN/CommonComponents'
 import './style.css'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 import { colors } from '../../../../constants'
 import ColorPicker from '../../../common/ColorPicker'
-import { colorOption } from '../render'
 import { distanceAzimuth, sphereDirect, angleDegCheck, azimuthCheck } from '../../../WebMap/patch/utils/sectors'
 import i18n from '../../../../i18n'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
+import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 
 const MAX_RADIUS = 1000000
 const {
@@ -171,8 +170,8 @@ export default class SectorItem extends React.Component {
     const azimuthLIsWrong = !Number.isFinite(Number(azimuthL)) || (Math.abs(azimuthL) > 360)
     const azimuthRIsWrong = !Number.isFinite(Number(azimuthR)) || (Math.abs(azimuthR) > 360)
     const amplifierT = sectorInfo?.amplifier || ''
-    const color = sectorInfo?.color || colors.BLACK
-    const fill = sectorInfo?.fill || colors.TRANSPARENT
+    const color = sectorInfo?.color || 'black'
+    const fill = sectorInfo?.fill || 'transparent'
     return (
       <div className='sectors-item-container' key={`${coord1.lat}/${coord1.lng}`}>
         <div className='first-section'>
@@ -229,8 +228,8 @@ export default class SectorItem extends React.Component {
               onFocus={!readOnly ? this.onFocusHandler : null }
               onBlur={!readOnly ? this.onBlurHandler : null}
               disabled={readOnly}
-              autoSize={ { minRows: 1, maxRows: 3 } }
-              maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+              autoSize={ { maxRows: 3 } }
+              maxLength={MAX_LENGTH_TEXT.TEXTAREA}
             />
           </div>
         </div>
@@ -248,20 +247,14 @@ export default class SectorItem extends React.Component {
           </div>
 
           <div className='item'>
-            <div>{i18n.FILLING}</div>
-            <Select
-              value={fill}
+            <div>{i18n.FILL_COLOR}</div>
+            <ColorPicker
+              color={fill}
               disabled={readOnly}
               onChange={this.sectorFillChangeHandler}
-            >
-              {colorOption(colors.TRANSPARENT)}
-              {colorOption(colors.BLUE)}
-              {colorOption(colors.RED)}
-              {colorOption(colors.BLACK)}
-              {colorOption(colors.GREEN)}
-              {colorOption(colors.YELLOW)}
-              {colorOption(colors.WHITE)}
-            </Select>
+              zIndex={COLOR_PICKER_Z_INDEX}
+              presetColors={PRESET_COLORS}
+            />
           </div>
           <FormItem className={'sectorItems'}>
             { !readOnly && !addOnly && (<IconHovered

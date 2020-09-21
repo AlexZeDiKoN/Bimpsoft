@@ -26,6 +26,10 @@ export default L.Path.include({
     this.setStyle({ locked })
   },
 
+  setHighlighted: function (highlighted) {
+    this.setStyle({ highlighted })
+  },
+
   setFill: function (fillColor) {
     this.setStyle({ fillColor })
   },
@@ -116,6 +120,13 @@ export default L.Path.include({
   setScaleOptions: function (scaleOptions) {
     this.scaleOptions = scaleOptions
     this._updateZoomStyles()
+  },
+
+  setShowAmplifiers: function (showAmplifiers) {
+    if (this.options.showAmplifiers !== showAmplifiers) {
+      this.options.showAmplifiers = showAmplifiers
+      this.redraw()
+    }
   },
 
   getEvents: function () {

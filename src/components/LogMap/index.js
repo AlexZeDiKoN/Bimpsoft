@@ -5,24 +5,11 @@ import { InputButton } from '../common'
 
 import './style.css'
 import i18n from '../../i18n'
-import ItemList from './children/ItemList'
+import LogMapItem from './children/Item'
 
 const LogMapTab = (props) => {
-  const { userEvents, user, highlightObject } = props
-  const [ search, onChange ] = useState('')
-
-  const onChangeSearch = (value) => {
-    onChange(value)
-  }
-
-  const filteredEvent = (search) => {
-    if (search === '') {
-      return userEvents
-    } else {
-      search = search.toLowerCase()
-      return userEvents.filter(({ event }) => event.toLowerCase().includes(search))
-    }
-  }
+  const { highlightObject, clickObject, doubleClickObject, changeLog } = props
+  const [ search, onChangeSearch ] = useState('')
 
   return (
     <div className='log-map-wrapper'>
@@ -34,26 +21,30 @@ const LogMapTab = (props) => {
         />
       </div>
       <Scrollbar>
-        {filteredEvent(search).map(({ event, timestamp, id, object }) => (
-          <ItemList
-            key={id}
-            id={id}
-            time={timestamp}
-            user={user}
-            event={event}
-            object={object}
+        {changeLog && changeLog.map((change) => {
+          const { objectId, changeType, changeDate, userName } = change
+          return <LogMapItem
+            key={`${changeDate}-${objectId}`}
+            id={objectId}
+            time={changeDate}
+            user={userName}
+            event={changeType}
             highlightObject={highlightObject}
-          />))
-        }
+            clickObject={clickObject}
+            doubleClickObject={doubleClickObject}
+            search={search}
+          />
+        })}
       </Scrollbar>
     </div>
   )
 }
 
 LogMapTab.propTypes = {
-  userEvents: PropTypes.object.isRequired,
-  user: PropTypes.string.isRequired,
+  changeLog: PropTypes.object,
   highlightObject: PropTypes.func.isRequired,
+  clickObject: PropTypes.func.isRequired,
+  doubleClickObject: PropTypes.func.isRequired,
 }
 
 LogMapTab.displayName = 'LogMapTab'

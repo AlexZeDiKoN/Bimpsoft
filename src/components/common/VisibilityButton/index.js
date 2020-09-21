@@ -5,7 +5,7 @@ import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import './style.css'
 
 const VisibilityButton = (props) => {
-  const { title, visible, onChange, isDark } = props
+  const { title, visible, onChange, isDark, disabled } = props
 
   const clickHandler = (event) => {
     // Prevent event from triggering in other wrappers
@@ -16,8 +16,8 @@ const VisibilityButton = (props) => {
   const classNames = [ 'button_layers' ]
 
   isDark
-    ? (visible ? classNames.push('active') : classNames.push('unActive'))
-    : (visible ? classNames.push('closed') : classNames.push('unClosed'))
+    ? ((visible || disabled) ? classNames.push('active') : classNames.push('unActive'))
+    : ((visible || disabled) ? classNames.push('closed') : classNames.push('unClosed'))
 
   return (
     <div className={classNames.join(' ')}>
@@ -25,6 +25,7 @@ const VisibilityButton = (props) => {
         <IButton
           onClick={clickHandler}
           icon={IconNames.DARK_EYE_ON}
+          disabled={disabled}
         />
       </Tooltip>
     </div>
@@ -34,6 +35,7 @@ const VisibilityButton = (props) => {
 VisibilityButton.propTypes = {
   title: PropTypes.string,
   visible: PropTypes.bool,
+  disabled: PropTypes.bool,
   isDark: PropTypes.bool,
   onChange: PropTypes.func,
 }

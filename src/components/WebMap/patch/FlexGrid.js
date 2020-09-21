@@ -105,6 +105,13 @@ L.FlexGrid = L.Layer.extend({
       ...commonStyle,
       color: '#000',
     },
+    borderLineOlovo: {
+      ...commonStyle,
+      widht: 3,
+      color: '#000',
+      fill: true,
+      fillColor: 'transparent',
+    },
     highlight: {
       ...commonStyle,
       stroke: false,
@@ -343,7 +350,11 @@ L.FlexGrid = L.Layer.extend({
     this.zoneRings = this.zoneSegments.map(projectRings)
     this.cellRings = this._buildCellRings()
     this.cellSegments = this._buildCellSegments()
-    this._bounds = new L.LatLngBounds([ ...this.eternals, ...this.directionSegments.flat(), ...this.zoneSegments.flat() ])
+    this._bounds = new L.LatLngBounds([
+      ...this.eternals,
+      ...this.directionSegments.flat(),
+      ...this.zoneSegments.flat(),
+    ])
   },
 
   redraw () {

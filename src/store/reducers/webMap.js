@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import { Record, List, Map, Set } from 'immutable'
 import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
-import { update, comparator, filter, merge, eq } from '../../utils/immutable'
+import { update, comparator, filter, merge, eq, mergePure } from '../../utils/immutable'
 import { actionNames, changeTypes } from '../actions/webMap'
 import { MapSources, colors, MapModes } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
@@ -14,7 +14,7 @@ import entityKind from '../../components/WebMap/entityKind'
 import { makeHash } from '../../utils/mapObjConvertor'
 import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
-import { evaluateColor, RED } from '../../constants/colors'
+import { evaluateColor } from '../../constants/colors'
 import { settings } from '../../constants/drawLines'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
@@ -121,6 +121,7 @@ const WebMapState = Record({
   reportMap: {},
   geoLandmark: {},
   deleteMarchPointModal: {},
+  highlighted: null,
 })
 
 const checkLevel = (object) => {
@@ -175,7 +176,7 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
       obj = update(obj, 'attributes', comparator, WebMapAttributes(attributes))
     }
     obj = updateGeometry(obj, geometry)
-    return merge(obj, rest)
+    return mergePure(obj, rest)
   })
 
 const lockObject = (map, { objectId, contactName }) => map.get(objectId) !== contactName
@@ -464,18 +465,9 @@ export default function webMapReducer (state = WebMapState(), action) {
       return update(state, 'deleteMarchPointModal', { ...state.deleteMarchPointModal, ...payload })
     }
     case actionNames.HIGHLIGHT_OBJECT: {
-      const { id, restoreColor } = payload
-      const objects = state.get('objects')
-      const color = restoreColor || RED
-
-      const newObjects = objects.update(id, (object) => {
-        return Record({
-          ...object.toObject(),
-          attributes: object.attributes.update('color', (attribute) => color),
-        })()
-      })
-
-      return state.set('objects', newObjects)
+      return payload || state.get('highlighted')
+        ? state.set('highlighted', payload)
+        : state
     }
     default: {
       const setField = simpleSetField(type)

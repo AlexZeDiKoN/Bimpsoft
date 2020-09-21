@@ -8,7 +8,7 @@ import DeleteMapsForm from './DeleteMapsForm'
 
 export default class LayersControlsComponent extends React.Component {
   render () {
-    const { showCloseForm, okCloseHandler, cancelCloseHandler, backOpacity = 100, hiddenOpacity = 0 } = this.props
+    const { showCloseForm, okCloseHandler, cancelCloseHandler, backOpacity = 100, hiddenOpacity = 100 } = this.props
     return (
       <div className="layers-controls-component">
         {showCloseForm && (<DeleteMapsForm onCancel={cancelCloseHandler} onOk={okCloseHandler} />)}

@@ -193,6 +193,17 @@ const DzvinMarker = L.Marker.extend({
     }
   },
 
+  setHighlighted: function (value) {
+    const el = this.getElement()
+    if (el) {
+      if (value) {
+        el.classList.add('dzvin-marker-locked')
+      } else if (!this._locked) {
+        el.classList.remove('dzvin-marker-locked')
+      }
+    }
+  },
+
   setLocked: function (locked) {
     this._locked = locked
     const el = this.getElement()

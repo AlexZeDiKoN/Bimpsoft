@@ -18,6 +18,7 @@ const WithStartingCoordinate = (Component) => class StartingCoordinateComponent 
     const coord = this.getResult().getIn([ ...COORDINATE_PATH, 0 ])
     const beginCoordinate = { lat: coord.lat, lng: coord.lng }
     const canEdit = this.isCanEdit()
+    const { coordinatesType } = this.props
     return (
       <FormRow label={i18n.COORDINATES}>
         <Coordinates
@@ -28,6 +29,7 @@ const WithStartingCoordinate = (Component) => class StartingCoordinateComponent 
           onBlur={() => { this.onCoordinateBlurHandler(0) }}
           onExitWithChange={canEdit ? this.firstCoordinateExitChangeHandler : null}
           onSearch={placeSearch}
+          preferredType={coordinatesType}
         />
       </FormRow>
     )

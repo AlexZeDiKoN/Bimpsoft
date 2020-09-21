@@ -10,7 +10,7 @@ import { activeMapSelector } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
-import { asyncAction, flexGrid, layers, selection } from './'
+import { asyncAction, flexGrid, layers, selection, changeLog } from './'
 
 const { settings } = utils
 
@@ -340,10 +340,13 @@ export const deleteObjects = (list, addUndoRecord = true) =>
     })
   })
 
-export const removeObjects = (ids) => ({
-  type: actionNames.DEL_OBJECTS,
-  payload: ids,
-})
+export const removeObjects = (ids) => (dispatch) => {
+  dispatch(changeLog.logDeleteList(ids))
+  dispatch({
+    type: actionNames.DEL_OBJECTS,
+    payload: ids,
+  })
+}
 
 const restoreObjects = (ids) =>
   asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
@@ -363,13 +366,19 @@ export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAcc
 export const refreshObjectList = (list, layer) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objRefreshList } }) => {
     const { toUpdate, toDelete } = await objRefreshList(list, layer)
-    return dispatch({
+    dispatch({
       type: actionNames.OBJECT_LIST_REFRESH,
       payload: {
         toUpdate: toUpdate.map(fixServerObject),
         toDelete,
       },
     })
+    if (toDelete.length) {
+      dispatch(changeLog.logDeleteList(toDelete))
+    }
+    if (toUpdate.length) {
+      dispatch(changeLog.logRefreshList(toUpdate.map(({ id }) => id)))
+    }
   })
 
 export const refreshObjects = (ids) =>
@@ -381,10 +390,11 @@ export const refreshObjects = (ids) =>
         payload: { id, object },
       })
     }
+    dispatch(changeLog.logRefreshList(ids))
   })
 
 export const refreshObject = (id, type, layer) =>
-  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefresh } }) => {
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { objRefreshFull } }) => {
     const state = getState()
     const {
       layers: { byId },
@@ -401,7 +411,7 @@ export const refreshObject = (id, type, layer) =>
       return // Об'єкт не належить жодному з відкритих шарів
     }
 
-    const object = await objRefresh(id)
+    const object = await objRefreshFull(id)
     if (!object) {
       return
     }
@@ -411,16 +421,19 @@ export const refreshObject = (id, type, layer) =>
         type: flexGrid.GET_FLEXGRID,
         payload: object,
       })
-    } else if (object.id) {
-      return dispatch({
-        type: actionNames.REFRESH_OBJECT,
-        payload: { id, object: fixServerObject(object) },
-      })
     } else {
-      return dispatch({
-        type: actionNames.DEL_OBJECT,
-        payload: id,
-      })
+      dispatch(changeLog.logChange(object))
+      if (object.deleted) {
+        return dispatch({
+          type: actionNames.DEL_OBJECT,
+          payload: id,
+        })
+      } else {
+        return dispatch({
+          type: actionNames.REFRESH_OBJECT,
+          payload: { id, object: fixServerObject(object) },
+        })
+      }
     }
   })
 
@@ -815,7 +828,11 @@ window.addEventListener('beforeunload', () => {
   stopHeartBeat()
 })
 
-export const highlightObject = (id, restoreColor = null) => ({
+export const highlightObject = (id) => ({
   type: actionNames.HIGHLIGHT_OBJECT,
-  payload: { id, restoreColor },
+  payload: id
+    ? {
+      list: Array.isArray(id) ? id : [ id ]
+    }
+    : null,
 })

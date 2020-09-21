@@ -16,9 +16,19 @@ const fromURI = (url) => url
 export default (mapStateToProps, onHistoryChange) => (store, history) => {
   let uri = ''
   let push = ''
+  let authenticated = false
 
   const stateChangeHandler = () => {
-    const { pushProps, replaceProps } = mapStateToProps(store.getState())
+    const state = store.getState()
+    if (!authenticated) {
+      if (state.auth.authenticated) {
+        authenticated = true
+        locationChangeHandler()
+      }
+      return
+    }
+
+    const { pushProps, replaceProps } = mapStateToProps(state)
     const pushUri = toURI(pushProps)
     const replaceUri = toURI(replaceProps)
     const fullUri = [ pushUri, replaceUri ].filter((item) => item.length).join('&')
@@ -37,8 +47,6 @@ export default (mapStateToProps, onHistoryChange) => (store, history) => {
     onHistoryChange(fromURI(uri), fromURI(nextUri), store.dispatch)
     uri = nextUri
   }
-
-  locationChangeHandler()
 
   store.subscribe(stateChangeHandler)
   history.listen(async (location, action) => action === 'POP' && locationChangeHandler())

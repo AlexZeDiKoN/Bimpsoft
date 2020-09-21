@@ -15,7 +15,7 @@ import L, {
   // popup,
 } from 'leaflet'
 import * as debounce from 'debounce'
-import { utils } from '@DZVIN/CommonComponents'
+import { utils, PreloaderCover } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
 // TODO: тимчасово відключаємо показ характеристик підрозділу
@@ -48,6 +48,7 @@ import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
+import { targetDesignationCode } from '../../constants/targetDesignation'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -101,7 +102,7 @@ const getFeatureParent = (item) => item.feature && item.options && item.options.
   ? item._eventParents[Object.keys(item._eventParents)[0]]
   : item
 
-const isLayerInBounds = (layer, bounds) => {
+const layerBounds = (layer) => {
   const geometryObj = getGeometry(layer)
   if (geometryObj === null) {
     return false
@@ -110,7 +111,11 @@ const isLayerInBounds = (layer, bounds) => {
   if (Array.isArray(geometry)) {
     geometry = geometry.flat(3)
   }
-  const rect = geometry && geometry.length && L.latLngBounds(geometry)
+  return geometry && geometry.length && L.latLngBounds(geometry)
+}
+
+const isLayerInBounds = (layer, bounds) => {
+  const rect = layerBounds(layer)
   return rect && bounds.contains(rect)
 }
 
@@ -276,6 +281,7 @@ export default class WebMap extends React.PureComponent {
       lng: PropTypes.number,
     }).isRequired,
     zoom: PropTypes.number.isRequired,
+    highlighted: PropTypes.any,
     sources: PropTypes.arrayOf(
       PropTypes.shape({
         source: PropTypes.string,
@@ -305,6 +311,7 @@ export default class WebMap extends React.PureComponent {
     isMeasureOn: PropTypes.bool,
     isMarkersOn: PropTypes.bool,
     isTopographicObjectsOn: PropTypes.bool,
+    isLoadingMap: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -437,7 +444,7 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects,
+      flexGridData, catalogObjects, highlighted,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
@@ -446,7 +453,9 @@ export default class WebMap extends React.PureComponent {
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
       this.updateObjects(objects, preview)
-      this.map && this.map._container.focus()
+      if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+        this.map._container.focus()
+      }
     }
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
@@ -458,9 +467,9 @@ export default class WebMap extends React.PureComponent {
       this.setMapSource(sources)
     }
     if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
-      layer !== prevProps.layer || list !== prevProps.selection.list
+      layer !== prevProps.layer || list !== prevProps.selection.list || highlighted !== prevProps.highlighted
     ) {
-      this.updateShowLayers(level, layersById, hiddenOpacity, layer, list)
+      this.updateShowLayers(level, layersById, hiddenOpacity, layer, list, highlighted)
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
@@ -523,6 +532,9 @@ export default class WebMap extends React.PureComponent {
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
+    if (highlighted !== prevProps.highlighted) {
+      this.resetHighlight(prevProps.highlighted, highlighted)
+    }
     this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
@@ -556,6 +568,31 @@ export default class WebMap extends React.PureComponent {
         layer.id === activeObjectId && this.onSelectedListChange([])
       }
     })
+
+  zoomToSelection = () => {
+    const { selection: { list } } = this.props
+    if (list[0]) {
+      const layer = this.findLayerById(list[0])
+      if (layer) {
+        const bounds = layerBounds(layer)
+        if (bounds) {
+          for (const id of list) {
+            const layer = this.findLayerById(id)
+            if (layer) {
+              const itemBounds = layerBounds(layer)
+              if (itemBounds) {
+                bounds.extend(itemBounds)
+              }
+            }
+          }
+          this.map.fitBounds(bounds, {
+            padding: [ 80, 80 ],
+            maxZoom: 12,
+          })
+        }
+      }
+    }
+  }
 
   toggleIndicateMode = () => {
     this.indicateMode = (this.indicateMode + 1) % indicateModes.count
@@ -840,6 +877,31 @@ export default class WebMap extends React.PureComponent {
     this.updateCreatePoly(edit && type)
   }
 
+  highlightLayer = (id, value) => {
+    const layer = this.findLayerById(id)
+    if (layer && layer.setHighlighted) {
+      if (this.highlightedTimer && this.highlightedValue) {
+        clearTimeout(this.highlightedTimer)
+      }
+      if (this.highlightedValue !== value) {
+        this.highlightedValue = value
+        this.highlightedTimer = setTimeout(() => {
+          delete this.highlightedTimer
+          layer.setHighlighted(value)
+        }, 50)
+      }
+    }
+  }
+
+  resetHighlight = (oldValue, newValue) => {
+    if (oldValue) {
+      oldValue.list.forEach((id) => this.highlightLayer(id, false))
+    }
+    if (newValue) {
+      newValue.list.forEach((id) => this.highlightLayer(id, true))
+    }
+  }
+
   async onSelectedListChange (newList) {
     const {
       selection: { list },
@@ -1093,14 +1155,17 @@ export default class WebMap extends React.PureComponent {
         const elems = document.elementsFromPoint(e.originalEvent.clientX, e.originalEvent.clientY)
         const all = [].map
           .call(elems, (item) => this.map._targets[L.Util.stamp(item)])
-          .filter(Boolean)
+          .filter((item) => {
+            return item && (item.id || item.options?.tsType) // для объектов без id проверяем наличие "типа" линии
+          }) // отсекаем элемент "вся карта", оставляем только объекты
           // .filter(this.canClickOnLayer)
           .sort(byArea)
 
         let [ result ] = all
 
-        this.map._container.focus()
-
+        if (document.activeElement.tagName.toUpperCase() === 'BODY') {
+          this.map && this.map._container && this.map._container.focus()
+        }
         if (!result) {
           await this.onSelectedListChange([])
         } else {
@@ -1233,21 +1298,23 @@ export default class WebMap extends React.PureComponent {
     }
   }, 500)
 
-  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list) => {
+  updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted) => {
     if (item.object) {
-      const { layer, level = 0 } = item.object
+      const { layer, level = 0, code } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
-      const hidden = !isSelectedItem && (
+      const isHighlightedItem = highlighted?.list?.includes(item.id)
+      const hidden = !isSelectedItem && !isHighlightedItem && (
         (itemLevel < levelEdge) ||
         ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
         (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
 
       const isSelectedLayer = selectedLayerId === layer
+      const isTargetDesignation = targetDesignationCode.has(code) // Определение знака целеуказания
       const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
-      const zIndexOffset = isSelectedLayer ? 1000000000 : 0
+      const zIndexOffset = isSelectedLayer ? (isTargetDesignation ? 1100000000 : 1000000000) : 0
 
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
       item.setOpacity && item.setOpacity(opacity)
@@ -1269,9 +1336,9 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list) => {
+  updateShowLayers = (levelEdge, layersById, hiddenOpacity, selectedLayerId, list, highlighted) => {
     this.map && this.map.objects.forEach((item) =>
-      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list))
+      this.updateShowLayer(levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted))
   }
 
   updateShowLayersByBounds = () => {
@@ -1307,7 +1374,10 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
-    this.map && this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    if (this.map) {
+      this.map.options.showAmplifiers = showAmplifiers
+      this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+    }
   }
 
   showCoordinates = ({ lat, lng }) => {
@@ -2335,10 +2405,12 @@ export default class WebMap extends React.PureComponent {
           onDrop={this.dropHandler}
           ref={(container) => {
             this.container = container
-            this.container && this.container.removeAttribute('tabindex')
           }}
           className='catalog-leaflet-popup'
         >
+          {this.props.isLoadingMap && (
+            <PreloaderCover loading={true} />
+          )}
           <MapProvider value={this.map}>{this.props.children}</MapProvider>
           {this.props.flexGridVisible && (
             <FlexGridToolTip

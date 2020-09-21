@@ -17,6 +17,7 @@ const mapStateToProps = (store) => {
       list,
       clipboard,
       doubleObjects,
+      preview,
     },
     orgStructures,
     webMap: { objects },
@@ -34,6 +35,7 @@ const mapStateToProps = (store) => {
     list,
     clipboard,
     orgStructures,
+    isShowForm: Boolean(preview || showForm), // признак отображения на карте какой-либо формы ввода или подстверждения
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
   }

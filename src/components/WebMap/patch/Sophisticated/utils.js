@@ -818,8 +818,8 @@ function curveToPath (mCurve) {
   return pathCurve
 }
 // ----------------------------------------------------------------------------------------------
-// определение точек пунктирной линии перед стредкой
-export function buildingDotted (result, points) {
+// определение точек пунктирной линии перед стрелкой
+export function buildingDotted (result, points, count) {
   if (points.length < 3) {
     return ''
   }
@@ -830,23 +830,26 @@ export function buildingDotted (result, points) {
   const pointDottedL = increaseSection(pointBase, pointN, offset)
   const pointDottedR = increaseSection(pointBase, pointR, offset)
   const mLine = [ pointDottedL, pointO, pointDottedR ]
-  drawDotted(result, mLine)
+  drawDotted(result, mLine, [ 2, 1 ], count)
 }
 // ----------------------------------------------------------------------------------------------
 // пунктир по точкам
-export function drawDotted (result, points) {
+// count - количество елементов пунктира на отрезке
+export function drawDotted (result, points, dashArray, count = 3) {
   if (points.length < 2) {
     return ''
   }
   const color = result.layer._path.getAttribute('stroke')
   const width = result.layer._path.getAttribute('stroke-width')
   const pathDotted = 'M' + points.map((el) => `${el.x} ${el.y}`).join('L')
-  let dash = '20,12'
-  // по длине первого отрезка выбираем шаг пунктира
-  const ls = lengthLine(points[0], points[1]) / 10
-  if (ls > 10) {
-    dash = `${ls * 2}, ${ls}`
+  if (!(Array.isArray(dashArray) && dashArray.length === 2 && Number(dashArray[0]) && Number(dashArray[1]))) {
+    dashArray = [ 2, 1 ]
   }
+  // по длине первого отрезка рассчитываем шаг пунктира
+  const kfEnd = points.length === 2 ? 1 : 2
+  let ls = lengthLine(points[0], points[1]) / (count * (dashArray[0] + dashArray[1]) + dashArray[0] / kfEnd)
+  ls = ls < 2 ? 2 : ls // длина елемента пунктира не менее 2 px
+  const dash = `${ls * dashArray[0]}, ${ls * dashArray[1]}`
   result.amplifiers += `<path fill="transparent" stroke="${color}" stroke-width="${width}" stroke-dasharray="${dash}" d="${pathDotted}" />`
 }
 // -------------------------------------------------

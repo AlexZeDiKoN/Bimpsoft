@@ -19,6 +19,7 @@ import ovt from './ovt'
 import targeting from './targeting'
 import task from './task'
 import targetCatalog from './targetCatalog'
+import changeLog from './changeLog'
 
 export default combineReducers({
   viewModes,
@@ -41,4 +42,5 @@ export default combineReducers({
   task,
   targetCatalog,
   auth: authReducer,
+  changeLog,
 })

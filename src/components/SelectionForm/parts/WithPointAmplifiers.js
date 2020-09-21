@@ -2,6 +2,7 @@ import React from 'react'
 import { Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
 
 const { FormRow } = components.form
 
@@ -9,14 +10,6 @@ const PAIRS = {
   TOP: { id: 'top', name: 'T' },
   MIDDLE: { id: 'middle', name: 'N' },
   BOTTOM: { id: 'bottom', name: 'W' },
-}
-
-export const MAX_LENGTH_TEXT_AMPLIFIERS = {
-  TEXTAREA: 30,
-  TEXT_MULTILINE: 128,
-  INPUT: 15,
-  TEXT_INPUT: 30,
-  TEXT_INSCRIPTION: 50, // для надписей
 }
 
 const PAIR_LIST = Object.values(PAIRS)
@@ -51,7 +44,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
                 className={!canEdit ? 'modals-input-disabled' : ''}
                 readOnly={!canEdit}
                 rows={1}
-                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                maxLength={MAX_LENGTH_TEXT.TEXTAREA}
               />
             </FormRow>
           </div>

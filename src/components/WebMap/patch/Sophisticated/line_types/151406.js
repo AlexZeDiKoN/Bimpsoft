@@ -12,6 +12,7 @@ import lineDefinitions from '../lineDefinitions'
 const POINTS = 4
 const BINDING_TYPE = 'round'
 const LINE_TYPE = 'L'
+const COUNT_DASH = 2
 
 lineDefinitions['151406'] = {
   // Відрізки, на яких дозволено додавання вершин символа
@@ -33,7 +34,7 @@ lineDefinitions['151406'] = {
 
   // Рендер-функція
   render: (result, points) => {
-    buildingDotted(result, points)
+    buildingDotted(result, points, COUNT_DASH)
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }
