@@ -7,5 +7,5 @@ export const MAX_LENGTH_TEXT = {
   TEXT_INPUT: 30,
   TEXT_INSCRIPTION: 50, // для надписів
   TEXT_DIRECTION: 40, // для назв напрямку
-  NAME_REPORT_MAP: 255, // кількість символів для назви звітної карти
+  NAME_REPORT_MAP: 300, // кількість символів для назви звітної карти
 }
