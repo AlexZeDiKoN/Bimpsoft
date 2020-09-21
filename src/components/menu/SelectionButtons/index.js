@@ -13,7 +13,11 @@ import entityKind, {
   entityKindOutlinable,
   GROUPS,
 } from '../../WebMap/entityKind'
-import { determineGroupType, emptyParent } from '../../../store/utils'
+import {
+  determineGroupType,
+  emptyParent, objectsSameLayer,
+  sameLayer,
+} from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import { sameObjects } from '../../../store/selectors'
@@ -107,6 +111,8 @@ export default class SelectionButtons extends React.Component {
       layerName,
       selectedTypes,
       selectedPoints,
+      layerId,
+      objectsMap,
       onCopy,
       onCut,
       onDelete,
@@ -124,12 +130,14 @@ export default class SelectionButtons extends React.Component {
     const isSelected = Boolean(nSelected)
     const clipboardSize = clipboard ? clipboard.length : 0
     const isClipboardExist = Boolean(clipboardSize)
-    const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
+    const canContour = selectedTypes.length > 1 &&
+      selectedTypes.every((item) => entityKindOutlinable.includes(item)) &&
+      objectsSameLayer(list, objectsMap, layerId)
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
-      emptyParent(selectedPoints)
+      emptyParent(selectedPoints) && sameLayer(selectedPoints, layerId)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
       !isShowForm && onDelete()
