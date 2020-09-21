@@ -24,7 +24,12 @@ export default function changeLogReducer (state = new Map(), action) {
       } else if (list.size > MAX_COUNT) {
         list = list.slice(-MAX_COUNT)
       }
-      return state.set(payload.mapId, list.unshift(change))
+      return list.find((item) => (
+        item.changeDate === payload.changeDate && item.userId === payload.userId &&
+        item.changeType === payload.changeType && item.objectId === payload.objectId
+      ))
+        ? state
+        : state.set(payload.mapId, list.unshift(change))
     }
     default:
       return state
