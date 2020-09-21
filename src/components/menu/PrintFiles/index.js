@@ -44,14 +44,12 @@ export default class PrintFiles extends PureComponent {
           const { name, message, documentPath } = printFiles[fileId]
           return (
             <Menu.Item key={fileId} className='fileBox_unit'>
-              <Tooltip title={name}>
-                <div className='fileBox_mapName'>
-                  {name}
-                </div>
+              <Tooltip title={name} className='fileBox_mapName'>
+                {name}
               </Tooltip>
-              <div className='fileBox_status'>
+              <Tooltip title={Print.PRINT_STEPS_KEYS[message]} className='fileBox_status'>
                 {Print.PRINT_STEPS_KEYS[message]}
-              </div>
+              </Tooltip>
               <div className='fileBox_control'>
                 <IconBox
                   message={message}
