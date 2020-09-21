@@ -15,7 +15,7 @@ import entityKind, {
 } from '../../WebMap/entityKind'
 import {
   determineGroupType,
-  emptyParent,
+  emptyParent, objectsSameLayer,
   sameLayer,
 } from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
@@ -111,6 +111,7 @@ export default class SelectionButtons extends React.Component {
       layerName,
       selectedTypes,
       selectedPoints,
+      objectsMap,
       onCopy,
       onCut,
       onDelete,
@@ -128,7 +129,9 @@ export default class SelectionButtons extends React.Component {
     const isSelected = Boolean(nSelected)
     const clipboardSize = clipboard ? clipboard.length : 0
     const isClipboardExist = Boolean(clipboardSize)
-    const canContour = selectedTypes.length > 1 && selectedTypes.every((item) => entityKindOutlinable.includes(item))
+    const canContour = selectedTypes.length > 1 &&
+      selectedTypes.every((item) => entityKindOutlinable.includes(item)) &&
+      objectsSameLayer(list, objectsMap)
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
