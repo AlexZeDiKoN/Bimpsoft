@@ -28,3 +28,5 @@ export const determineGroupType = (objects) => {
 }
 
 export const emptyParent = (objects) => !objects.some(({ parent }) => parent)
+
+export const sameLayer = (objects, commonLayer) => objects.every(({ layer }) => commonLayer === layer)

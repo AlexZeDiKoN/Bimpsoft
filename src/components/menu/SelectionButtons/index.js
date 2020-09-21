@@ -13,7 +13,11 @@ import entityKind, {
   entityKindOutlinable,
   GROUPS,
 } from '../../WebMap/entityKind'
-import { determineGroupType, emptyParent } from '../../../store/utils'
+import {
+  determineGroupType,
+  emptyParent,
+  sameLayer,
+} from '../../../store/utils'
 import SaveMilSymbolForm from '../../SelectionForm/forms/MilSymbolForm/SaveMilSymbolForm'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import { sameObjects } from '../../../store/selectors'
@@ -129,7 +133,7 @@ export default class SelectionButtons extends React.Component {
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
-      emptyParent(selectedPoints)
+      emptyParent(selectedPoints) && sameLayer(selectedPoints, selectedPoints[0].layer)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
       !isShowForm && onDelete()
