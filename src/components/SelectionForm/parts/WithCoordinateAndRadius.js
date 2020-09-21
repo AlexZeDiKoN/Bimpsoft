@@ -62,6 +62,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
   renderCoordinateAndRadius () {
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const { radiusText = null } = this.state
+    const { coordinatesType } = this.props
 
     const radius = radiusText !== null ? radiusText : getRadiusFromCoordinatesArray(coordinatesArray)
 
@@ -81,6 +82,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
+            coordinatesType={coordinatesType}
           />
           <CoordinateRow
             label={i18n.BOUND}
@@ -90,6 +92,7 @@ const WithCoordinateAndRadius = (Component) => class CoordinateAndRadiusComponen
             onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
+            coordinatesType={coordinatesType}
           />
           <div className='coordinateRow-container'>
             <div className='coordinate-title'>{i18n.RADIUS}</div>

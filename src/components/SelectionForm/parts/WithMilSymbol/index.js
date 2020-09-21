@@ -105,7 +105,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const unit = result.getIn(UNIT_PATH)
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
-    const { orgStructures, ovtData } = this.props
+    const { orgStructures, ovtData, coordinatesType } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
     return (
       <SymbolEditorComponentStateless
@@ -125,6 +125,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onSearch={placeSearch}
         ovtData={ovtData}
         maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
+        preferredType={coordinatesType}
       />
     )
   }

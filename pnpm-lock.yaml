@@ -1,7 +1,7 @@
 dependencies:
-  '@DZVIN/CommonComponents': 16.2.533_8163dde90d88e02f48b04383611abbfe
-  '@DZVIN/MilSymbolEditor': 16.2.281
-  '@DZVIN/components': 16.2.585_react-dom@16.13.1+react@16.13.1
+  '@DZVIN/CommonComponents': 16.3.543_8163dde90d88e02f48b04383611abbfe
+  '@DZVIN/MilSymbolEditor': 16.3.282
+  '@DZVIN/components': 16.3.587_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 16.1.10
   '@DZVIN/milsymbol': 15.3.10
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
@@ -70,7 +70,7 @@ devDependencies:
   react-scripts: 3.4.1
 lockfileVersion: 5.1
 packages:
-  /@DZVIN/CommonComponents/16.2.533_8163dde90d88e02f48b04383611abbfe:
+  /@DZVIN/CommonComponents/16.3.543_8163dde90d88e02f48b04383611abbfe:
     dependencies:
       '@DZVIN/validators': 1.0.9
       classnames: 2.2.6
@@ -88,30 +88,30 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-FeDN8/6/uE//bA22IbpVWILfsC4ZJt8bzHFqHUCcfgLwRqV1G3s3H7sCjeva3/fblrRh6b8Sp9wirjgJVwMnDw==
-      tarball: '@DZVIN/CommonComponents/-/CommonComponents-16.2.533.tgz'
+      integrity: sha512-4tEx5lYImmayGAih6HLnRycWmqsqbF2VyW9XozK4eMh7znDCtZlxeC/km4EwnS+Rz18mrq2RUEXBv50GG9UySg==
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/16.2.281:
+  /@DZVIN/MilSymbolEditor/16.3.282:
     dependencies:
       '@DZVIN/milsymbol': 15.3.10
     dev: false
     resolution:
-      integrity: sha512-5IOfhlc7xoUmFmdanr04xj1C/B3vfXQWIo5fGRr4IZCRjepUY0y5n0Fk3HGbCQE6aTdJkYvv1cxZ/j+MurJP3g==
-  /@DZVIN/components/16.2.585_react-dom@16.13.1+react@16.13.1:
+      integrity: sha512-igCOT7JlQTvYMNXUeL6PwlOqfs7l1sMD121mf+x2z2iMw0/+icEJWrBI+1/LbkPA8Jq5/llkweWVw9VQNrdCwg==
+  /@DZVIN/components/16.3.587_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
       draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
-      draft-js-export-html: 1.4.1_draft-js@0.11.7
+      draft-js-export-html: 1.4.1_draft-js@0.11.7+immutable@3.8.2
     dev: false
     peerDependencies:
+      immutable: '*'
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-Z9XJA8e19xkeV4jmANENDXTh+FjhIgnriM6tLkiJBcUz/0gtGIEdE+1sP348uZdKrcfpyjHEuSrlZGYn3mLiKw==
+      integrity: sha512-CHwoYXnb+oSsiGsvAv1pMn1Jj20wPSkGXVzEBGc4iyenFApszLiXPFya52Mg5pOt2Rp6DL/nyyjaoDqduZFArQ==
   /@DZVIN/leaflet-measure-custom/16.1.10:
     dev: false
     resolution:
@@ -122,7 +122,7 @@ packages:
       integrity: sha512-sX2mw5nspRGjaK8xtxhIAeUOByhxtTqiPn8vUoSwBLT8g7L8qOaUQd4Hrju1CAGlZxsAG6LXpbqcWpCTco1vPw==
   /@DZVIN/validators/1.0.9:
     dependencies:
-      moment: 2.27.0
+      moment: 2.28.0
     dev: false
     resolution:
       integrity: sha512-1We4dPsz0AnI3YnoawWSwrYnFMmWx3PzCz/EtvtB5BjNSYCP4E4xLAYOLiyqKWhq9CmY2pwmltj/ypK2YJWSIQ==
@@ -4191,12 +4191,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-M+/3Q6E6DLO6Yx3OwrWjwHBnvfXXYA7W+dFjt/ZDBemHO1DDZhsalX/NUtnTYclN6GfnBDRh4qRHjcDHmlJBJg==
-  /cross-fetch/3.0.5:
+  /cross-fetch/3.0.6:
     dependencies:
-      node-fetch: 2.6.0
+      node-fetch: 2.6.1
     dev: false
     resolution:
-      integrity: sha512-FFLcLtraisj5eteosnX1gf01qYDCOc4fDy0+euOt8Kn9YBY2NtXL/pCoYPavw24NIQkQqm5ZOLsGD5Zzj0gyew==
+      integrity: sha512-KBPUbqgFjzWlVcURG+Svp9TlhA5uliYtiNx/0r8nv0pdypeQCRJ9IaSIc3q/x3q8t3F75cHuwxVql1HFGHCNJQ==
   /cross-spawn/5.1.0:
     dependencies:
       lru-cache: 4.1.5
@@ -5006,19 +5006,21 @@ packages:
     optional: true
     resolution:
       integrity: sha512-xqnBTVd/E+GxJVrX5/eUJiLYjCGPwMpdL+jGhGU57BvtcA7wwhtHVbXBeUk51kOpW3S7Jn3BQbN9Q1R1Km2qDQ==
-  /draft-js-export-html/1.4.1_draft-js@0.11.7:
+  /draft-js-export-html/1.4.1_draft-js@0.11.7+immutable@3.8.2:
     dependencies:
       draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
-      draft-js-utils: 1.4.0_draft-js@0.11.7
+      draft-js-utils: 1.4.0_draft-js@0.11.7+immutable@3.8.2
+      immutable: 3.8.2
     dev: false
     peerDependencies:
       draft-js: '>=0.10.0'
       immutable: 3.x.x
     resolution:
       integrity: sha512-G4VGBSalPowktIE4wp3rFbhjs+Ln9IZ2FhXeHjsZDSw0a2+h+BjKu5Enq+mcsyVb51RW740GBK8Xbf7Iic51tw==
-  /draft-js-utils/1.4.0_draft-js@0.11.7:
+  /draft-js-utils/1.4.0_draft-js@0.11.7+immutable@3.8.2:
     dependencies:
       draft-js: 0.11.7_react-dom@16.13.1+react@16.13.1
+      immutable: 3.8.2
     dev: false
     peerDependencies:
       draft-js: '>=0.10.0'
@@ -5955,20 +5957,20 @@ packages:
       object-assign: 4.1.1
       promise: 7.3.1
       setimmediate: 1.0.5
-      ua-parser-js: 0.7.21
+      ua-parser-js: 0.7.22
     dev: false
     resolution:
       integrity: sha1-xNWY6taUkRJlPWWIsBpc3Nn5D90=
   /fbjs/2.0.0:
     dependencies:
       core-js: 3.6.5
-      cross-fetch: 3.0.5
+      cross-fetch: 3.0.6
       fbjs-css-vars: 1.0.2
       loose-envify: 1.4.0
       object-assign: 4.1.1
       promise: 7.3.1
       setimmediate: 1.0.5
-      ua-parser-js: 0.7.21
+      ua-parser-js: 0.7.22
     dev: false
     resolution:
       integrity: sha512-8XA8ny9ifxrAWlyhAbexXcs3rRMtxWcs3M0lctLfB49jRDHiaxj+Mo0XxbwE7nKZYzgCFoq64FS+WFd4IycPPQ==
@@ -9801,10 +9803,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
-  /moment/2.27.0:
+  /moment/2.28.0:
     dev: false
     resolution:
-      integrity: sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
+      integrity: sha512-Z5KOjYmnHyd/ukynmFd/WwyXHd7L4J9vTI/nn5Ap9AVUgaAE15VvQ9MOGmJJygEUklupqIrFnor/tjTwRU+tQw==
   /move-concurrently/1.0.1:
     dependencies:
       aproba: 1.2.0
@@ -9913,12 +9915,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-NhZ4CsKx7cYm2vSrBAr2PvFOe6sWDf0UYLRqA6svUYg7+/TSfVAu49jYC4BvQ4Sms9SZgdqGBgroqfDhJdTyKQ==
-  /node-fetch/2.6.0:
+  /node-fetch/2.6.1:
     dev: false
     engines:
       node: 4.x || >=6.0.0
     resolution:
-      integrity: sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+      integrity: sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
   /node-forge/0.9.0:
     dev: true
     engines:
@@ -14969,10 +14971,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-  /ua-parser-js/0.7.21:
+  /ua-parser-js/0.7.22:
     dev: false
     resolution:
-      integrity: sha512-+O8/qh/Qj8CgC6eYBVBykMrNtp5Gebn4dlGD/kKXVkJNDwyrAwSIqwz8CDf+tsAIWVycKcku6gIXJ0qwx/ZXaQ==
+      integrity: sha512-YUxzMjJ5T71w6a8WWVcMGM6YWOTX27rCoIQgLXiWaxqXSx9D7DNjiGWn1aJIRSQ5qr0xuhra77bSIh6voR/46Q==
   /unbzip2-stream/1.3.3:
     dependencies:
       buffer: 5.5.0
@@ -15971,10 +15973,10 @@ packages:
     resolution:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
-  '@DZVIN/CommonComponents': ^16.2.533
-  '@DZVIN/MilSymbolEditor': ^16.2.281
-  '@DZVIN/components': ^16.2.585
-  '@DZVIN/leaflet-measure-custom': ^16.01.10
+  '@DZVIN/CommonComponents': ^16.3.543
+  '@DZVIN/MilSymbolEditor': ^16.3.282
+  '@DZVIN/components': ^16.3.587
+  '@DZVIN/leaflet-measure-custom': ^16.1.10
   '@DZVIN/milsymbol': ^15.3.10
   '@craco/craco': ^5.6.4
   antd: ^3.12.4

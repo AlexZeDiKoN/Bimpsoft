@@ -63,6 +63,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
   renderCoordinateAndWidth () {
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const { widthText = null } = this.state
+    const { coordinatesType } = this.props
 
     const width = widthText !== null ? widthText : getWidthFromCoordinatesArray(coordinatesArray)
 
@@ -82,6 +83,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
+            coordinatesType={coordinatesType}
           />
           <CoordinateRow
             label={i18n.SOUTH_EAST}
@@ -91,6 +93,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
+            coordinatesType={coordinatesType}
           />
           <div className='coordinateRow-container'>
             <div className='coordinate-title'>{i18n.SIDE_SIZE}</div>

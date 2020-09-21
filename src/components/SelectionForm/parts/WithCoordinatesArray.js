@@ -71,6 +71,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
 
   renderCoordinatesArray (lock = false) {
     const { editCoordinates, changeCoordinates } = this.state
+    const { coordinatesType } = this.props
     const formStore = this.getResult()
 
     const shownIntermediateAmplifiersSet = formStore.getIn(SHOWN_INTERMEDIATE_AMPLIFIERS_PATH)
@@ -132,6 +133,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                     onRemove={this.coordinateRemoveHandler}
                     onFocus={this.onCoordinateFocusHandler}
                     onBlur={this.onCoordinateBlurHandler}
+                    coordinatesType={coordinatesType}
                   />
                 </div>
                 {index !== coordinatesLength - (lock ? 0 : 1) ? (

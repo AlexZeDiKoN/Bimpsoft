@@ -18,6 +18,7 @@ export default class CoordinateRow extends React.Component {
     onBlur: PropTypes.func,
     onFocus: PropTypes.func,
     readOnly: PropTypes.bool,
+    coordinatesType: PropTypes.string,
   }
 
   changeHandler = (value) => {
@@ -41,7 +42,7 @@ export default class CoordinateRow extends React.Component {
   }
 
   render () {
-    const { coordinate = {}, index, label, readOnly } = this.props
+    const { coordinate = {}, index, label, readOnly, coordinatesType } = this.props
     return (
       <div className='coordinateRow-container'>
         <div className='coordinate-title'>{label || i18n.NODAL_POINT_INDEX(index + 1)}</div>
@@ -53,6 +54,7 @@ export default class CoordinateRow extends React.Component {
           onExitWithChange={this.onExitWithChangeHandler}
           onEnter={this.onFocusHandler}
           onSearch={placeSearch}
+          prerefredType={coordinatesType}
         />
       </div>
     )

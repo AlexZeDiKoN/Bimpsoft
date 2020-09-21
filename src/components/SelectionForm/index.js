@@ -304,7 +304,9 @@ export default class SelectionForm extends React.Component {
       onCoordinateFocusChange,
       wrapper: Wrapper,
       sidebarSelectedTabIndex,
+      coordinatesType,
     } = this.props
+
     if (data === null || !forms[data.type]) {
       return null
     }
@@ -393,6 +395,7 @@ export default class SelectionForm extends React.Component {
               onAddToTemplates={this.addToTemplateHandler}
               onCoordinateFocusChange={onCoordinateFocusChange}
               ovtData={ovtData}
+              coordinatesType={coordinatesType}
             />
             <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
           </HotKeysContainer>
@@ -423,4 +426,5 @@ SelectionForm.propTypes = {
   getOvtList: PropTypes.func,
   errorCode: PropTypes.number,
   sidebarSelectedTabIndex: PropTypes.number,
+  coordinatesType: PropTypes.string,
 }

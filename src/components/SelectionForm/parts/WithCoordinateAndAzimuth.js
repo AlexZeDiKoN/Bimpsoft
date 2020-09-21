@@ -69,6 +69,7 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
     const azimuth = azimuthText ?? distanceAzimuth(coordBegin, coordEnd).angledeg.toFixed(0)
     const canEdit = this.isCanEdit()
     const azimuthIsWrong = !angleDegCheck(azimuth)
+    const { coordinatesType } = this.props
 
     return (
       <FormRow label={i18n.COORDINATES}>
@@ -82,6 +83,7 @@ const WithCoordinateAndAzimuth = (Component) => class CoordinatesAndAzimuthCompo
                 onBlur={() => this.onCoordinateBlurHandler(0)}
                 onExitWithChange={canEdit ? this.firstCoordinateExitChangeHandler : null }
                 onSearch={placeSearch}
+                preferredType={coordinatesType}
               />
             </FormItem>
             <FormRow label={i18n.AZIMUTH}>

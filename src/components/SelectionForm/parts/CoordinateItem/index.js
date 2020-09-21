@@ -48,7 +48,7 @@ export default class CoordinateItem extends React.Component {
   }
 
   render () {
-    const { coordinate = {}, canRemove, readOnly } = this.props
+    const { coordinate = {}, canRemove, readOnly, coordinatesType } = this.props
     return (
       <FormItem className="coordinatesModal">
         <Coordinates
@@ -59,6 +59,7 @@ export default class CoordinateItem extends React.Component {
           onBlur={this.onBlurHandler}
           onExitWithChange={this.onExitWithChangeHandler}
           onSearch={placeSearch}
+          preferredType={coordinatesType}
         />
         { canRemove && (<IconHovered
           icon={canRemove ? IconNames.DELETE_24_DEFAULT : IconNames.DELETE_24_DISABLE}
