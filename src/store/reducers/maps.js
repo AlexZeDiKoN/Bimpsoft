@@ -6,6 +6,7 @@ const initState = {
   byId: {},
   expandedIds: {},
   calc: {},
+  loadingMap: false,
 }
 
 export default function reducer (state = initState, action) {
@@ -88,6 +89,10 @@ export default function reducer (state = initState, action) {
           })
       }
       return { ...state, calc }
+    }
+    case maps.SET_MAP_LOADING: {
+      const { loadingMap = true } = action
+      return { ...state, loadingMap }
     }
     default:
       return state

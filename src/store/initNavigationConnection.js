@@ -37,7 +37,7 @@ const mapStateToProps = createSelector(
       lng: +crop(lng),
       z,
     }, 'layer', layer),
-  })
+  }),
 )
 
 const onHistoryChange = async (prev, next, dispatch) => {
@@ -45,6 +45,7 @@ const onHistoryChange = async (prev, next, dispatch) => {
     await catchError(webMap.setCenter)({ lat: +next.lat, lng: +next.lng }, +next.z)(dispatch)
   }
   if (prev.maps !== next.maps) {
+    catchError(mapsActions.setStatusMapLoading)()(dispatch)
     const nextMaps = unpackMaps(next.maps)
     const prevMaps = unpackMaps(prev.maps)
     for (const map of nextMaps) {
@@ -61,6 +62,7 @@ const onHistoryChange = async (prev, next, dispatch) => {
         await catchError(mapsActions.deleteMap)(map.mapId)(dispatch)
       }
     }
+    catchError(mapsActions.setStatusMapLoading)(false)(dispatch)
   }
   if (next.layer && next.layer !== prev.layer) {
     await catchError(layersActions.selectLayer)(next.layer)(dispatch)
