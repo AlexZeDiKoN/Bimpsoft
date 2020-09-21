@@ -137,7 +137,7 @@ export default class SelectionButtons extends React.Component {
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
-      emptyParent(selectedPoints) && sameLayer(selectedPoints, selectedPoints[0].layer)
+      emptyParent(selectedPoints) && sameLayer(selectedPoints, layerId)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
     const deleteHandler = () => {
       !isShowForm && onDelete()

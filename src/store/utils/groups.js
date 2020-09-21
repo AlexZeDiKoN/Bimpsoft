@@ -29,7 +29,7 @@ export const determineGroupType = (objects) => {
 
 export const emptyParent = (objects) => !objects.some(({ parent }) => parent)
 
-// проверка на принадлежность всех объектов списка одному слою на карте
+// проверка на принадлежность всех объектов списка к слою commonLayer
 export const sameLayer = (objects, commonLayer) => objects.every(({ layer }) => commonLayer === layer)
 
 // По списку ID объектов проверка принадлежности сответствующих объектов к активному слою карты
