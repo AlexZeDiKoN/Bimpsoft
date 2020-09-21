@@ -3,9 +3,9 @@ import { Select, Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { MARK_TYPE } from '../../../constants/drawLines'
+import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 import './WithIntermediateAmplifiers.css'
 
@@ -76,7 +76,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
             className={!canEdit ? 'modals-input-disabled' : ''}
             readOnly={!canEdit}
             rows={1}
-            maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+            maxLength={MAX_LENGTH_TEXT.TEXTAREA}
           />
         </FormRow>
       </div>
@@ -119,7 +119,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
                 disabled={!canEdit || type !== TYPES.TEXT}
                 value={currentValue[PAIRS.MIDDLE.id] ?? ''}
                 onChange={this.createIntermediateAmplifierHandler(PAIRS.MIDDLE.id)}
-                maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.INPUT}
+                maxLength={MAX_LENGTH_TEXT.INPUT}
               />
             </FormRow>
           </div>

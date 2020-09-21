@@ -3,8 +3,8 @@ import { Tooltip, Input as antdInput } from 'antd'
 import { components, Input } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { amps } from '../../../constants/symbols'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 import './withAmplifiersStyle.css'
+import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
 
 const { FormRow } = components.form
 
@@ -91,8 +91,8 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                       onChange={this.createAmplifierHandler(id, pathAmplifiers, simpleObject)}
                       disabled={!canEdit}
                       maxLength={id === amps.A
-                        ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                        : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                        ? MAX_LENGTH_TEXT.TEXT_MULTILINE
+                        : MAX_LENGTH_TEXT.TEXTAREA}
                     />
                     : <antdInput.TextArea
                       value={currentValue[id] ?? ''}
@@ -102,8 +102,8 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                       rows={id === amps.A ? 6 : 1}
                       autoSize={maxRows ? { minRows: 1, maxRows } : undefined}
                       maxLength={id === amps.A
-                        ? MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_MULTILINE
-                        : MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+                        ? MAX_LENGTH_TEXT.TEXT_MULTILINE
+                        : MAX_LENGTH_TEXT.TEXTAREA}
                     />}
             </FormRow>
           </div>)

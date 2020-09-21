@@ -3,8 +3,8 @@ import { components } from '@DZVIN/CommonComponents'
 import TextSymbol from '../../common/TextSymbol'
 import { Align } from '../../../constants'
 import i18n from '../../../i18n'
+import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
 import TextItem from './TextItem'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from './WithPointAmplifiers'
 
 const { FormItem } = components.form
 const { names: IconNames, IconHovered, IconButton } = components.icons
@@ -90,7 +90,7 @@ const WithTexts = (Component) => class TextsComponent extends Component {
               data={item}
               index={index}
               readOnly={!canEdit}
-              maxLengthText={MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_INSCRIPTION}
+              maxLengthText={MAX_LENGTH_TEXT.TEXT_INSCRIPTION}
               canRemove={texts.size > 1}
               onChange={this.changeTextItemHandler}
               onPreview={this.previewTextItemHandler}
