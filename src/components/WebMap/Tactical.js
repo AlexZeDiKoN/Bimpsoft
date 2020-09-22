@@ -81,7 +81,6 @@ export const setLayerSelected = (layer, selected, active, activeLayer, isDraggab
   layer.setSelected && layer.setSelected(selected, activeLayer)
   if (layer.pm?.enabled() !== active) {
     if (active && isEdit) {
-      console.log('is enableEdit')
       enableEdit(layer)
     } else {
       disableEdit(layer)
