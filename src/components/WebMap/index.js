@@ -1223,12 +1223,15 @@ export default class WebMap extends React.PureComponent {
     this.boxSelected = true
   }
 
-  updateSelection = (prevProps) => {
+  updateSelection = async (prevProps) => {
     const {
       objects,
       layer: layerId,
       edit,
       selection: { list: selectedIds, preview },
+      lockedObjects,
+      activeObjectId,
+      checkObjectAccess,
     } = this.props
     if (
       objects !== prevProps.objects ||
@@ -1237,6 +1240,7 @@ export default class WebMap extends React.PureComponent {
       layerId !== prevProps.layer ||
       preview !== prevProps.selection.preview
     ) {
+    const success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
@@ -1246,13 +1250,14 @@ export default class WebMap extends React.PureComponent {
           const isSelected = selectedIdsSet.has(id)
           const isActiveLayer = (layer.options?.tsType === entityKind.FLEXGRID) ||
             (layer.object?.layer === layerId)
-          const isActive = canEditLayer && isSelected && isActiveLayer
+          let isActive = canEditLayer && isSelected && isActiveLayer
           const isDraggable = canDrag && isSelected && isActiveLayer
           if (layer._map === null) {
             layer._map = this.map
           }
-          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
-            isDraggable)
+          const isEdit = success && !lockedObjects.has(id)
+          isActive = isActive && !(preview && preview.id === id)
+          setLayerSelected(layer, isSelected, isActive, isActiveLayer, isDraggable, isEdit)
           if (isActive) {
             this.activeLayer = layer
           }
@@ -1272,7 +1277,7 @@ export default class WebMap extends React.PureComponent {
       if (success) {
         success = await tryLockObject(activeObjectId)
       }
-      if (!success && this.activeLayer.id === activeObjectId) {
+      if (!success && this.activeLayer && this.activeLayer.id === activeObjectId) {
         this.activeLayer.setLocked && this.activeLayer.setLocked(true)
         setLayerSelected(this.activeLayer, true, false)
         this.activeLayer = null

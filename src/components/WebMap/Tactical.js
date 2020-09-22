@@ -77,10 +77,10 @@ export const disableEdit = (layer) => {
   layer.pm.disable()
 }
 
-export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable) => {
+export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable, isEdit = true) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
   if (layer.pm?.enabled() !== active) {
-    if (active) {
+    if (active && isEdit) {
       enableEdit(layer)
     } else {
       disableEdit(layer)
