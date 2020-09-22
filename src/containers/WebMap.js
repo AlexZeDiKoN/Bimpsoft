@@ -24,6 +24,7 @@ const WebMapContainer = connect(
     highlighted: state.webMap.highlighted,
     isMarkersOn: state.webMap.isMarkersOn,
     isTopographicObjectsOn: state.webMap.isTopographicObjectsOn,
+    isLoadingMap: state.maps.loadingMap,
     edit: canEditSelector(state),
     marker: state.webMap.marker,
     scaleToSelection: state.webMap.scaleToSelection,

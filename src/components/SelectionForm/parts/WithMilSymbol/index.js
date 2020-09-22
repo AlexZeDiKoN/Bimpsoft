@@ -6,7 +6,7 @@ import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
 
 import './style.css'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
+import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 
 const configs = SymbolEditorComponentStateless.configs
 
@@ -105,7 +105,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const unit = result.getIn(UNIT_PATH)
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
-    const { orgStructures, ovtData } = this.props
+    const { orgStructures, ovtData, coordinatesType } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
     return (
       <SymbolEditorComponentStateless
@@ -124,7 +124,8 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         onUnitInfo={this.handlerUnitInfo}
         onSearch={placeSearch}
         ovtData={ovtData}
-        maxInputLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXT_INPUT}
+        maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
+        preferredType={coordinatesType}
       />
     )
   }

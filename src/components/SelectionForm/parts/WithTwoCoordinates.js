@@ -14,6 +14,8 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
 
     const readOnly = !this.isCanEdit()
 
+    const { coordinatesType } = this.props
+
     return (
       <FormDarkPart>
         <div className='coordinate-width-title'>{i18n.COORDINATES}</div>
@@ -25,6 +27,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
             onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
+            coordinatesType={coordinatesType}
           />
           <CoordinateRow
             readOnly={readOnly}
@@ -33,6 +36,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
             onExitWithChange={this.onCoordinateExitWithChangeHandler}
             onFocus={this.onCoordinateFocusHandler}
             onBlur={this.onCoordinateBlurHandler}
+            coordinatesType={coordinatesType}
           />
         </div>
       </FormDarkPart>

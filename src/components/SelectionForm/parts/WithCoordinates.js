@@ -77,6 +77,7 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
 
   renderCoordinates () {
     const { editCoordinates } = this.state
+    const { coordinatesType } = this.props
     const formStore = this.getResult()
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
     const canEdit = this.isCanEdit()
@@ -117,6 +118,7 @@ const WithCoordinates = (Component) => class CoordinatesComponent extends Coordi
                   onRemove={this.coordinateRemoveHandler}
                   onFocus={this.onCoordinateFocusHandler}
                   onBlur={this.onCoordinateBlurHandler}
+                  coordinatesType={coordinatesType}
                 />
                 {canAdd && <IconHovered
                   icon={iconNames.MAP_SCALE_PLUS_DEFAULT}

@@ -15,7 +15,7 @@ import L, {
   // popup,
 } from 'leaflet'
 import * as debounce from 'debounce'
-import { utils } from '@DZVIN/CommonComponents'
+import { utils, PreloaderCover } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
 // TODO: тимчасово відключаємо показ характеристик підрозділу
@@ -311,6 +311,7 @@ export default class WebMap extends React.PureComponent {
     isMeasureOn: PropTypes.bool,
     isMarkersOn: PropTypes.bool,
     isTopographicObjectsOn: PropTypes.bool,
+    isLoadingMap: PropTypes.bool,
     backOpacity: PropTypes.number,
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
@@ -2412,6 +2413,9 @@ export default class WebMap extends React.PureComponent {
           }}
           className='catalog-leaflet-popup'
         >
+          {this.props.isLoadingMap && (
+            <PreloaderCover loading={true} />
+          )}
           <MapProvider value={this.map}>{this.props.children}</MapProvider>
           {this.props.flexGridVisible && (
             <FlexGridToolTip

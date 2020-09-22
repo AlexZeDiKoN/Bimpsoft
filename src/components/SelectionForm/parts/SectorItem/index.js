@@ -8,7 +8,7 @@ import { colors } from '../../../../constants'
 import ColorPicker from '../../../common/ColorPicker'
 import { distanceAzimuth, sphereDirect, angleDegCheck, azimuthCheck } from '../../../WebMap/patch/utils/sectors'
 import i18n from '../../../../i18n'
-import { MAX_LENGTH_TEXT_AMPLIFIERS } from '../WithPointAmplifiers'
+import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 
 const MAX_RADIUS = 1000000
 const {
@@ -229,7 +229,7 @@ export default class SectorItem extends React.Component {
               onBlur={!readOnly ? this.onBlurHandler : null}
               disabled={readOnly}
               autoSize={ { maxRows: 3 } }
-              maxLength={MAX_LENGTH_TEXT_AMPLIFIERS.TEXTAREA}
+              maxLength={MAX_LENGTH_TEXT.TEXTAREA}
             />
           </div>
         </div>

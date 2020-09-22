@@ -232,6 +232,7 @@ const MarchForm = (props) => {
             onExitWithChange={onBlurCoordinates}
             isReadOnly={readOnly}
             getPopupContainer={() => document.getElementById(dotFormId)}
+            preferredType={coordTypeSystem}
           />
           <Tooltip placement='topRight' title={i18n.POINT_ON_MAP} align={ { offset: [ 6, 0 ] }}>
             <div
