@@ -1240,7 +1240,7 @@ export default class WebMap extends React.PureComponent {
       layerId !== prevProps.layer ||
       preview !== prevProps.selection.preview
     ) {
-    const success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
+      let success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
@@ -1255,6 +1255,7 @@ export default class WebMap extends React.PureComponent {
           if (layer._map === null) {
             layer._map = this.map
           }
+          success = success === null ? true : success
           const isEdit = success && !lockedObjects.has(id)
           isActive = isActive && !(preview && preview.id === id)
           setLayerSelected(layer, isSelected, isActive, isActiveLayer, isDraggable, isEdit)
