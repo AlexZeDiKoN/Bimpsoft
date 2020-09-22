@@ -41,7 +41,7 @@ lineDefinitions['120400'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const sign = points[points.length - 2]
     const ampl = points[points.length - 1]
     const area = points.slice(0, -2)
@@ -51,7 +51,8 @@ lineDefinitions['120400'] = {
     const symbol = new Symbol(CODE, { size }).asSVG()
     const d = size / 2
     result.amplifiers += `<g transform="translate(${sign.x - d}, ${sign.y - d})">${symbol}</g>`
-
-    drawMaskedText(result, ampl, 0, result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '')
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      drawMaskedText(result, ampl, 0, result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '')
+    }
   },
 }

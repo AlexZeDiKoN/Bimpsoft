@@ -6,6 +6,7 @@ import {
 
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
@@ -31,7 +32,7 @@ lineDefinitions['140601'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const [ p0, p1, ...rest ] = points
 
     const l = segmentLength(p0, p1)
@@ -39,7 +40,6 @@ lineDefinitions['140601'] = {
     const d = h * Math.sqrt(3)
     const angle = angleOf(p1, p0)
 
-    const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
     const p0e = segmentBy(p0, p1, 2 / 3 - d / l)
 
     if (l > d * 4) {
@@ -65,20 +65,23 @@ lineDefinitions['140601'] = {
       drawLine(result, p1, ...rest)
     }
 
-    drawMaskedText(
-      result,
-      segmentBy(p0, p0e, 0.6),
-      angle,
-      amplifiersInfo[amps.T] ?? '',
-    )
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
+      drawMaskedText(
+        result,
+        segmentBy(p0, p0e, 0.6),
+        angle,
+        amplifiersInfo[amps.T] ?? '',
+      )
 
-    const pW = getPointAt(p1, p0e, Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2, h * 1.1)
-    drawMaskedText(
-      result,
-      pW, // getPointAt(p1, p0e, Math.PI / 2, h),
-      angle,
-      amplifiersInfo[amps.W] ?? '',
-      0.75, 'middle', 'before-edge',
-    )
+      const pW = getPointAt(p1, p0e, Math.abs(angle) > halfPI ? halfPI : -halfPI, h * 1.1)
+      drawMaskedText(
+        result,
+        pW, // getPointAt(p1, p0e, Math.PI / 2, h),
+        angle,
+        amplifiersInfo[amps.W] ?? '',
+        0.75, 'middle', 'before-edge',
+      )
+    }
   },
 }
