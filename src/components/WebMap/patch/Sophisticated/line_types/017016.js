@@ -208,34 +208,36 @@ lineDefinitions['017016'] = {
     drawLineMark(result, MARK_TYPE.SERIF, start, angleOf(points[3], start))
     drawLineMark(result, MARK_TYPE.SERIF, points[indEnd], angleOf(points[indEnd - 3], points[indEnd]))
 
-    const angle = angleOf(start, points[3])
-    const top = angle < 0
-    const fontSize = getFontSize(result.layer)
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const angle = angleOf(start, points[3])
+      const top = angle < 0
+      const fontSize = getFontSize(result.layer)
 
-    const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
-    if (text && (result.layer?.options?.showAmplifiers || toPrint)) {
-      drawText(
-        result,
-        applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),
-        angle - Math.PI / 2,
-        text,
-        1,
-        'middle',
-        null,
-        top ? 'after-edge' : 'before-edge',
-      )
-    }
-
-    const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
-    if (number >= 0) {
-      for (let i = 0; i < c; i++) {
+      const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
+      if (text) {
         drawText(
           result,
-          points[i * 3 + 1],
-          angleOf(points[i * 3 + 3], points[i * 3]) + Math.PI / 2,
-          (number + i).toFixed(0),
-          NUMBERS_SIZE,
+          applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),
+          angle - Math.PI / 2,
+          text,
+          1,
+          'middle',
+          null,
+          top ? 'after-edge' : 'before-edge',
         )
+      }
+
+      const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
+      if (number >= 0) {
+        for (let i = 0; i < c; i++) {
+          drawText(
+            result,
+            points[i * 3 + 1],
+            angleOf(points[i * 3 + 3], points[i * 3]) + Math.PI / 2,
+            (number + i).toFixed(0),
+            NUMBERS_SIZE,
+          )
+        }
       }
     }
   },
