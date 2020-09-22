@@ -38,7 +38,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
                 {`${i18n.AMPLIFIER} "${name}"`}
               </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
               <Input.TextArea
-                autoSize={{ maxRows: 3, minRows: 1 }}
+                autoSize={{ maxRows: 3 }}
                 value={currentValue[id] ?? ''}
                 onChange={this.createPointAmplifierHandler(id)}
                 className={!canEdit ? 'modals-input-disabled' : ''}
