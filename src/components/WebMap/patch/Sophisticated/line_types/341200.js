@@ -41,7 +41,7 @@ lineDefinitions['341200'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const [ p0, p1 ] = points
     const SIDE_LENGTH = 50 * scale
     const arrowLine = emptyPath()
@@ -65,9 +65,11 @@ lineDefinitions['341200'] = {
 
     drawLine(result, a, b, c, center, d, a)
     drawZ(result)
-    drawText(result, segmentBy(p0, center, 0.4), a0,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
 
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      drawText(result, segmentBy(p0, center, 0.4), a0,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
+    }
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {
       drawArrowOutline(result, center, anchor, ARROW_LENGTH * scale, ARROW_WIDTH * scale, undefined, undefined, false)
       drawLine(arrowLine, center, anchor)
