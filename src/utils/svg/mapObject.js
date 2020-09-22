@@ -668,7 +668,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       },
     }
     try {
-      line.render(container, points, 1)
+      line.render(container, points, 1, true)
     } catch (e) {
       console.warn(e)
     }

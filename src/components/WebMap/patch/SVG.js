@@ -186,7 +186,11 @@ L.SVG.include({
 
   _updateCircle: function (layer) {
     const kind = layer.options?.tsType
-    if (kind === entityKind.CIRCLE && layer._point) {
+    let amplifiers = {
+      maskPath: [],
+      group: '',
+    }
+    if (kind === entityKind.CIRCLE && layer._point && layer.options.showAmplifiers) {
       const bounds = layer._map._renderer._bounds
       const zoom = layer._map.getZoom()
       const scale = 1
@@ -200,10 +204,10 @@ L.SVG.include({
           tsType: kind, // тип линии
           amplifier: layer.object.attributes.pointAmplifier,
         }
-        const amplifiers = getPointAmplifier(options)
-        this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+        amplifiers = getPointAmplifier(options)
       }
     }
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
     _updateCircle.call(this, layer)
   },
 
@@ -452,7 +456,7 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
       tsType: layer.options.tsType,
-      showAmplifiers: true, // layer.options.showAmplifiers,
+      showTextAmplifiers: layer.options.showAmplifiers,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {

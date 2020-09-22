@@ -176,7 +176,7 @@ lineDefinitions['017016'] = {
   },
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const indEnd = points.length - 1
     const c = (indEnd / 3) | 0
     let start = points[0]
@@ -213,7 +213,7 @@ lineDefinitions['017016'] = {
     const fontSize = getFontSize(result.layer)
 
     const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
-    if (text) {
+    if (text && (result.layer?.options?.showAmplifiers || toPrint)) {
       drawText(
         result,
         applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),

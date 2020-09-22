@@ -37,7 +37,7 @@ lineDefinitions['017015'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint = false) => {
     const [ p0, p1, p2 ] = points
 
     drawLine(result, p0, p1)
@@ -52,44 +52,46 @@ lineDefinitions['017015'] = {
     drawLineMark(result, MARK_TYPE.ARROW_45, a, angleOf(mid, a), 1)
     drawLine(result, mid, a)
 
-    const angle = angleOf(p0, p1) - Math.PI / 2
-    const angleArrow = angle3Points(mid, p0, p2)
-    const top = angleOf(p0, p1) < 0
-    const left = top ? angleArrow < 0 : angleArrow >= 0
-    const fontSize = getFontSize(result.layer)
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const angle = angleOf(p0, p1) - Math.PI / 2
+      const angleArrow = angle3Points(mid, p0, p2)
+      const top = angleOf(p0, p1) < 0
+      const left = top ? angleArrow < 0 : angleArrow >= 0
+      const fontSize = getFontSize(result.layer)
 
-    drawText(
-      result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
-      angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
-      1,
-      'middle',
-      null,
-      top ? 'after-edge' : 'before-edge',
-    )
+      drawText(
+        result,
+        applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
+        angle,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
+        1,
+        'middle',
+        null,
+        top ? 'after-edge' : 'before-edge',
+      )
 
-    const len = graphicSize / 2
-    drawText(
-      result,
-      applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
-      angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
-      1,
-      left ? 'start' : 'end',
-      null,
-      top ? 'before-edge' : 'after-edge',
-    )
+      const len = graphicSize / 2
+      drawText(
+        result,
+        applyVector(p0, setVectorLength(getVector(mid, p2), -len)),
+        angle,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
+        1,
+        left ? 'start' : 'end',
+        null,
+        top ? 'before-edge' : 'after-edge',
+      )
 
-    drawText(
-      result,
-      applyVector(mid, setVectorLength(getVector(mid, p2), fontSize / 10)),
-      angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
-      1,
-      left ? 'end' : 'start',
-      null,
-      top ? 'after-edge' : 'before-edge',
-    )
+      drawText(
+        result,
+        applyVector(mid, setVectorLength(getVector(mid, p2), fontSize / 10)),
+        angle,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
+        1,
+        left ? 'end' : 'start',
+        null,
+        top ? 'after-edge' : 'before-edge',
+      )
+    }
   },
 }
