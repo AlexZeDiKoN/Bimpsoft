@@ -77,10 +77,10 @@ export const disableEdit = (layer) => {
   layer.pm.disable()
 }
 
-export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable) => {
+export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable, isEdit = true) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
   if (layer.pm?.enabled() !== active) {
-    if (active) {
+    if (active && isEdit) {
       enableEdit(layer)
     } else {
       disableEdit(layer)
@@ -215,9 +215,8 @@ function createOlovo (data, layer, initMap) {
   const box = initMap.getBounds().pad(-0.4)
   const { directions, zones, start, title } = data.attributes.params
   let geometry = data.geometry.toJS()
-  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length || (
-    layer && (layer.options.directions !== directions || layer.options.zones !== zones)
-  )) {
+
+  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length) {
     if (layer) {
       const index = layer.map.objects.indexOf(layer)
       if (index >= 0) {
@@ -229,6 +228,7 @@ function createOlovo (data, layer, initMap) {
     geometry = generateGeometry(zones, directions, box)
   }
   const [ eternals, directionSegments, zoneSegments ] = geometry
+
   if (layer) {
     layer._map = initMap
     layer.updateProps(
