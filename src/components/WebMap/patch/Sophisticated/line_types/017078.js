@@ -45,27 +45,27 @@ lineDefinitions['017078'] = {
     const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
 
     if (result.layer?.options?.showAmplifiers || toPrint) {
-      const fontSize = getFontSize(result.layer)
+      const margin = getFontSize(result.layer) / 8
       drawText(
         result,
-        applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
+        applyVector(p0, setVectorLength(getVector(p1, p0), margin)),
         angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
       'black',
-      top ? 'after-edge' : 'before-edge',
+      top ? 'text-after-edge' : 'text-before-edge',
       )
 
       drawText(
         result,
-        getPointAt(p1, p0, Math.PI / 2, graphicSize / 2),
+        getPointAt(p1, p0, halfPI, graphicSize / 2),
         angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
       top ? 'start' : 'end',
       'black',
-      top ? 'before-edge' : 'after-edge',
+      top ? 'text-before-edge' : 'text-after-edge',
       )
     }
   },

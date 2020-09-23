@@ -7,6 +7,7 @@ import {
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -53,21 +54,21 @@ lineDefinitions['017015'] = {
     drawLine(result, mid, a)
 
     if (result.layer?.options?.showAmplifiers || toPrint) {
-      const angle = angleOf(p0, p1) - Math.PI / 2
+      const angle = angleOf(p0, p1) - halfPI
       const angleArrow = angle3Points(mid, p0, p2)
       const top = angleOf(p0, p1) < 0
       const left = top ? angleArrow < 0 : angleArrow >= 0
-      const fontSize = getFontSize(result.layer)
+      const margin = getFontSize(result.layer) / 8
 
       drawText(
         result,
-        applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
+        applyVector(p0, setVectorLength(getVector(p1, p0), margin)),
         angle,
         result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
         1,
         'middle',
         null,
-        top ? 'after-edge' : 'before-edge',
+        top ? 'text-after-edge' : 'text-before-edge',
       )
 
       const len = graphicSize / 2
@@ -79,18 +80,19 @@ lineDefinitions['017015'] = {
         1,
         left ? 'start' : 'end',
         null,
-        top ? 'before-edge' : 'after-edge',
+        top ? 'text-before-edge' : 'text-after-edge',
       )
 
+      const pOffsetX = applyVector(mid, setVectorLength(getVector(mid, p2), margin))
       drawText(
         result,
-        applyVector(mid, setVectorLength(getVector(mid, p2), fontSize / 10)),
+        applyVector(pOffsetX, setVectorLength(getVector(p1, p0), margin)),
         angle,
         result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
         1,
         left ? 'end' : 'start',
         null,
-        top ? 'after-edge' : 'before-edge',
+        top ? 'text-after-edge' : 'text-before-edge',
       )
     }
   },

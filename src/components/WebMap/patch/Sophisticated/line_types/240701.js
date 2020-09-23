@@ -45,7 +45,7 @@ lineDefinitions['240701'] = {
 
       drawText(
         result,
-        applyVector(p0, setVectorLength(getVector(p1, p0), offset)), // EDGE * scale)),
+        applyVector(p0, setVectorLength(getVector(p1, p0), offset)),
         angle,
         result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
         1,
@@ -56,7 +56,7 @@ lineDefinitions['240701'] = {
 
       drawText(
         result,
-        getPointAt(p1, p0, Math.PI / 2, len),
+        getPointAt(p1, p0, halfPI, len),
         angle,
         result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
         1,

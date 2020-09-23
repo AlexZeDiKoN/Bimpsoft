@@ -19,6 +19,7 @@ import {
 import { amps } from '../../../../../constants/symbols'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -211,19 +212,19 @@ lineDefinitions['017016'] = {
     if (result.layer?.options?.showAmplifiers || toPrint) {
       const angle = angleOf(start, points[3])
       const top = angle < 0
-      const fontSize = getFontSize(result.layer)
+      const margin = getFontSize(result.layer) / 8
 
       const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
       if (text) {
         drawText(
           result,
-          applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),
-          angle - Math.PI / 2,
+          applyVector(start, setVectorLength(getVector(points[3], start), margin)),
+          angle - halfPI,
           text,
           1,
           'middle',
           null,
-          top ? 'after-edge' : 'before-edge',
+          top ? 'text-after-edge' : 'text-before-edge',
         )
       }
 
@@ -233,7 +234,7 @@ lineDefinitions['017016'] = {
           drawText(
             result,
             points[i * 3 + 1],
-            angleOf(points[i * 3 + 3], points[i * 3]) + Math.PI / 2,
+            angleOf(points[i * 3 + 3], points[i * 3]) + halfPI,
             (number + i).toFixed(0),
             NUMBERS_SIZE,
           )

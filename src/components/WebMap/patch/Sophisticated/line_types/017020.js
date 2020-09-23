@@ -44,7 +44,6 @@ lineDefinitions['017020'] = {
     const [ p0 ] = points
 
     // Кола
-    // const r = interpolateSize(result.layer._map.getZoom(), result.layer.scaleOptions?.pointSizes)
     const r = getPointSize(result.layer)
     drawCircle(result, p0, r)
     const color = result.layer.object?.attributes?.color ?? 'black'
@@ -61,7 +60,7 @@ lineDefinitions['017020'] = {
         TEXT_SIZE,
         'end',
         TEXT_COLOR,
-        'after-edge',
+        'text-after-edge',
       )
       const [ , b2 ] = drawText(
         result,
@@ -71,7 +70,7 @@ lineDefinitions['017020'] = {
         TEXT_SIZE,
         'end',
         TEXT_COLOR,
-        'before-edge',
+        'text-before-edge',
       )
       const [ , b3 ] = drawText(
         result,
@@ -81,7 +80,7 @@ lineDefinitions['017020'] = {
         TEXT_SIZE,
         'start',
         TEXT_COLOR,
-        'after-edge',
+        'text-after-edge',
       )
       const [ , b4 ] = drawText(
         result,
@@ -91,7 +90,7 @@ lineDefinitions['017020'] = {
         TEXT_SIZE,
         'start',
         TEXT_COLOR,
-        'before-edge',
+        'text-before-edge',
       )
       const r04 = r * 0.4
       const leftLine = Math.max(b1.width, b2.width) + r04

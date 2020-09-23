@@ -89,16 +89,16 @@ lineDefinitions['270701'] = {
     if (result.layer?.options?.showAmplifiers || toPrint) {
       const amplifiers = result.layer?.object?.attributes?.pointAmplifier ?? { top: null, middle: null, bottom: null }
       // Ампліфікатор «N»
-      const fontSize = getFontSize(result.layer)
+      const margin = getFontSize(result.layer) / 8
       if (amplifiers.middle && amplifiers.middle.length !== 0) {
-        const offset = offsetX + fontSize / 8
+        const offset = offsetX + margin
         const pAR = { x: pO.x + offset, y: pO.y }
         const pAL = { x: pO.x - offset, y: pO.y }
         drawText(result, pAR, 0, amplifiers.middle, 1, 'start')
         drawText(result, pAL, 0, amplifiers.middle, 1, 'end')
       }
       // Ампліфікатор «H1» «H2»
-      const offset = offsetY + fontSize / 8 * SMALL_TEXT_SIZE
+      const offset = offsetY + margin * SMALL_TEXT_SIZE
       if (amplifiers.top && amplifiers.top.length !== 0) {
         drawText(
           result,

@@ -38,14 +38,15 @@ lineDefinitions['140603'] = {
       drawLine(result, p1, ...rest)
     }
 
+    const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
+    drawMaskedText(
+      result,
+      segmentBy(p0, p1, 1 / 3),
+      angle,
+      amplifiersInfo[amps.T] ?? '',
+    )
+
     if (result.layer?.options?.showAmplifiers || toPrint) {
-      const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
-      drawMaskedText(
-        result,
-        segmentBy(p0, p1, 1 / 3),
-        angle,
-        amplifiersInfo[amps.T] ?? '',
-      )
       const textSize = getFontSize(result.layer)
       const p05 = segmentBy(p0, p1, 1 / 2)
       const pW = getPointAt(p1, p05, Math.abs(angle) > halfPI ? halfPI : -halfPI, textSize * 1.1)

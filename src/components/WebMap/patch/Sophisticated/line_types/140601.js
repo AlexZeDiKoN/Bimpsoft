@@ -1,7 +1,7 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, getPointAt, drawLineMark,
+  drawLine, segmentBy, angleOf, segmentLength, drawMaskedText, getPointAt, drawLineMark, getGraphicSize,
 } from '../utils'
 
 import { amps } from '../../../../../constants/symbols'
@@ -11,8 +11,6 @@ import { halfPI } from '../../../../../constants/utils'
 // sign name: FRIENDLY AVIATION
 // task code: DZVIN-5519
 // hint: 'Напрямок удару своєї авіації'
-
-const BUT_HEIGHT = 48
 
 lineDefinitions['140601'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -36,7 +34,7 @@ lineDefinitions['140601'] = {
     const [ p0, p1, ...rest ] = points
 
     const l = segmentLength(p0, p1)
-    const h = BUT_HEIGHT * scale / 2
+    const h = getGraphicSize(result.layer)
     const d = h * Math.sqrt(3)
     const angle = angleOf(p1, p0)
 
@@ -46,13 +44,13 @@ lineDefinitions['140601'] = {
       const p1e = segmentBy(p0, p1, 2 / 3 + d / l)
       drawLine(result, p0e, p0)
       drawLine(result, p1, p1e)
-      const p = getPointAt(p1, p1e, -Math.PI / 2, h)
+      const p = getPointAt(p1, p1e, -halfPI, h)
       drawLine(
         result,
         p,
-        getPointAt(p1, p0e, Math.PI / 2, h),
-        getPointAt(p1, p0e, -Math.PI / 2, h),
-        getPointAt(p1, p1e, Math.PI / 2, h),
+        getPointAt(p1, p0e, halfPI, h),
+        getPointAt(p1, p0e, -halfPI, h),
+        getPointAt(p1, p1e, halfPI, h),
         p,
       )
     } else {
@@ -65,19 +63,19 @@ lineDefinitions['140601'] = {
       drawLine(result, p1, ...rest)
     }
 
-    if (result.layer?.options?.showAmplifiers || toPrint) {
-      const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
-      drawMaskedText(
-        result,
-        segmentBy(p0, p0e, 0.6),
-        angle,
-        amplifiersInfo[amps.T] ?? '',
-      )
+    const amplifiersInfo = result.layer?.object?.attributes?.pointAmplifier ?? { top: 'T', bottom: 'W' }
+    drawMaskedText(
+      result,
+      segmentBy(p0, p0e, 0.6),
+      angle,
+      amplifiersInfo[amps.T] ?? '',
+    )
 
+    if (result.layer?.options?.showAmplifiers || toPrint) {
       const pW = getPointAt(p1, p0e, Math.abs(angle) > halfPI ? halfPI : -halfPI, h * 1.1)
       drawMaskedText(
         result,
-        pW, // getPointAt(p1, p0e, Math.PI / 2, h),
+        pW,
         angle,
         amplifiersInfo[amps.W] ?? '',
         0.75, 'middle', 'before-edge',
