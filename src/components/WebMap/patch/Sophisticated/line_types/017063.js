@@ -38,10 +38,10 @@ lineDefinitions['017063'] = {
 
     drawLine(result, p0, p1, p2)
 
-    const point1 = getPointAt(p1, p0, halfPI * 2 / 3, len / 2)
-    const point12 = getPointAt(p0, point1, -halfPI / 3, len)
-    const point2 = getPointAt(p1, p0, -halfPI / 3, len / 2)
-    const point22 = getPointAt(p0, point2, halfPI / 3, len)
+    const point1 = getPointAt(p1, p0, Math.PI * 2 / 3, len / 2)
+    const point12 = getPointAt(p0, point1, -Math.PI * 2 / 3, len)
+    const point2 = getPointAt(p1, p0, -Math.PI * 2 / 3, len / 2)
+    const point22 = getPointAt(p0, point2, Math.PI * 2 / 3, len)
 
     drawLine(result, point12, point1, p0, point2, point22)
 
