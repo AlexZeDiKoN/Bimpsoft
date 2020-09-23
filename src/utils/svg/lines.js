@@ -767,7 +767,7 @@ const getTextAmplifiers = ({
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
   strokeWidth,
   amplifierIsNormal,
-  showAmplifiers = true, // вывод текстовых амплификаторов разрешён
+  showTextAmplifiers = true, // вывод текстовых амплификаторов разрешён
 }) => {
   const result = {
     maskPath: [],
@@ -799,7 +799,7 @@ const getTextAmplifiers = ({
         }
       }
 
-      if (!value || !showAmplifiers) {
+      if (!value || !showTextAmplifiers) {
         return null // canceling render of a text amplifier
       }
 
@@ -977,7 +977,7 @@ export const getPointAmplifier = ({
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
-    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и тапа амплификатора
+    getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и типа амплификатора
   }
   return getTextAmplifiers({
     scale,
@@ -1000,7 +1000,7 @@ export const getAmplifiers = ({
   graphicSize, // для печати
   strokeWidth, // для печати
   tsType, // тип линии
-  showAmplifiers = true, // разрешение вывода амплификаторов
+  showTextAmplifiers = true, // разрешение вывода амплификаторов
 }, object) => {
   const result = {
     maskPath: [],
@@ -1061,13 +1061,13 @@ export const getAmplifiers = ({
       fontSize,
       graphicSize,
       amplifierIsNormal,
-      showAmplifiers,
+      showTextAmplifiers,
     })
     result.maskPath.push(...maskPath)
     result.group += group
   }
 
-  if (showAmplifiers) { // формирование pointAmplifiers
+  if (showTextAmplifiers) { // формирование pointAmplifiers
     let amplifierOptions
 
     if (locked) { // замкнутая линия, pointAmplifiers в центре

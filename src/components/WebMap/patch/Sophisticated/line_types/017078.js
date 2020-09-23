@@ -6,6 +6,7 @@ import {
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -30,39 +31,42 @@ lineDefinitions['017078'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const [ p0, p1 ] = points
 
     const dashed = getDashSize(result.layer, scale) * 2
     drawLineDashed(result, p0, p1, dashed)
 
     const angleSerif = angleOf(p0, p1)
-    const angle = angleSerif - Math.PI / 2
+    const angle = angleSerif - halfPI
     const top = angleOf(p0, p1) < 0
 
     drawLineMark(result, MARK_TYPE.SERIF, p0, angleSerif)
     const graphicSize = drawLineMark(result, MARK_TYPE.SERIF, p1, angleSerif)
-    const fontSize = getFontSize(result.layer)
-    drawText(
-      result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), fontSize / 10)),
-      angle,
+
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const margin = getFontSize(result.layer) / 8
+      drawText(
+        result,
+        applyVector(p0, setVectorLength(getVector(p1, p0), margin)),
+        angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
       'black',
-      top ? 'after-edge' : 'before-edge',
-    )
+      top ? 'text-after-edge' : 'text-before-edge',
+      )
 
-    drawText(
-      result,
-      getPointAt(p1, p0, Math.PI / 2, graphicSize / 2),
-      angle,
+      drawText(
+        result,
+        getPointAt(p1, p0, halfPI, graphicSize / 2),
+        angle,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
       1,
       top ? 'start' : 'end',
       'black',
-      top ? 'before-edge' : 'after-edge',
-    )
+      top ? 'text-before-edge' : 'text-after-edge',
+      )
+    }
   },
 }

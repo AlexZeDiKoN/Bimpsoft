@@ -100,7 +100,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
                       readOnly={!canEdit}
                       className={!canEdit ? 'modals-input-disabled' : ''}
                       rows={id === amps.A ? 6 : 1}
-                      autoSize={maxRows ? { minRows: 1, maxRows } : undefined}
+                      autoSize={maxRows ? { maxRows } : undefined}
                       maxLength={id === amps.A
                         ? MAX_LENGTH_TEXT.TEXT_MULTILINE
                         : MAX_LENGTH_TEXT.TEXTAREA}

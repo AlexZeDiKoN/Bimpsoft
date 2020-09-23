@@ -30,7 +30,7 @@ lineDefinitions['017063'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const [ p0, p1, p2 ] = points
 
     const len = segmentLength(p0, p1)
@@ -47,17 +47,19 @@ lineDefinitions['017063'] = {
     drawLineMark(result, MARK_TYPE.ARROW_60, point12, angleOf(point1, point12))
     drawLineMark(result, MARK_TYPE.ARROW_60, point22, angleOf(point2, point22))
 
-    const fontSize = getFontSize(result.layer)
-    const text = result.layer.object.attributes.pointAmplifier?.[amps.T] ?? ''
-    const angle = angleOf(p1, p2)
-    const pointAmp = segmentBy(p1, p2)
-    drawText(result,
-      getPointMove(pointAmp, angle + (Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2), fontSize / 10),
-      angle,
-      text,
-      1,
-      'middle',
-      null,
-      'after-edge')
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const fontSize = getFontSize(result.layer)
+      const text = result.layer.object.attributes.pointAmplifier?.[amps.T] ?? ''
+      const angle = angleOf(p1, p2)
+      const pointAmp = segmentBy(p1, p2)
+      drawText(result,
+        getPointMove(pointAmp, angle + (Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2), fontSize / 10),
+        angle,
+        text,
+        1,
+        'middle',
+        null,
+        'after-edge')
+    }
   },
 }

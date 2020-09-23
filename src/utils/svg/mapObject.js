@@ -354,6 +354,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
     id,
     dpi,
   } = data
+  const showTextAmplifiers = true // пока в любом случае разрешаем вывода амплификаторов при печати
   const options = {} // дополнительные опции для path
   const fontColor = '#000000'
   const strokeColor = colors.evaluateColor(color)
@@ -441,6 +442,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
     fontColor,
     fontSize,
     graphicSize,
+    showTextAmplifiers,
   },
   { ...data, attributes })
 
@@ -503,6 +505,8 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
   const { coordToPixels, scale, bounds, printOptions: { getFontSize, getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
+  const showTextAmplifiers = true // пока в любом случае разрешаем вывода амплификаторов при печати
+
   if (point1 && point2) {
     const { x, y } = coordToPixels(point1)
     const p2 = coordToPixels(point2)
@@ -536,7 +540,18 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
         }
         const points = [ coordToPixels(point1), coordToPixels(point4), coordToPixels(point2), coordToPixels(point3) ]
         d = pointsToD(points, true)
-        amplifiers = getAmplifiers({ points, bezier: false, locked: true, bounds, tsType: kind, fontSize }, data)
+        amplifiers = getAmplifiers(
+          {
+            points,
+            bezier: false,
+            locked: true,
+            bounds,
+            tsType: kind,
+            fontSize,
+            showTextAmplifiers,
+          },
+          data,
+        )
         break
       }
       default: return
@@ -582,13 +597,14 @@ const getContourBuilder = () => (commonData, data, layerData) => {
 mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const { color: outlineColor = 'none' } = layerData
   const {
-    showAmplifiers,
+    showAmplifiers, // опция разрешения вывода амплификаторов при печати
     coordToPixels,
     printScale, // масштаб карты
     bounds,
     // scale, // масштаб к DPI 96
     dpi,
   } = commonData
+  const showAmplifiersPrint = true // пока в любом случае разрешаем вывода амплификаторов при печати
   const { code = '', attributes, point } = data
   const color = colors.evaluateColor(outlineColor)
   const mmSize = pointSizeFromScale.get(printScale) || printSettings.pointSizeDefault
@@ -596,7 +612,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const pointD = coordToPixels(point)
   const symbol = new Symbol(code, {
     ...(color ? { outlineWidth: 3, outlineColor: color } : {}),
-    ...(showAmplifiers ? model.parseAmplifiersConstants(filterSetEmpty(attributes)) : {}),
+    ...((showAmplifiers || showAmplifiersPrint) ? model.parseAmplifiersConstants(filterSetEmpty(attributes)) : {}),
     size, // размер символа в %, влияет на толщину линий в знаке, размер элемента(атрибуты width, height svg) и Anchor
   })
   const { bbox } = symbol
@@ -637,6 +653,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
   const { coordToPixels, bounds, printOptions, dpi } = commonData
   const { geometry, attributes, id } = objectData
   const line = lineDefinitions[extractLineCode(objectData.code)]
+  const showAmplifiers = true // опция разрешения вывода амплификаторов при печати
 
   if (line && geometry && geometry.size >= 1) {
     const points = geometry.toJS().map((point) => coordToPixels(point))
@@ -668,7 +685,7 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
       },
     }
     try {
-      line.render(container, points, 1)
+      line.render(container, points, 1, showAmplifiers)
     } catch (e) {
       console.warn(e)
     }

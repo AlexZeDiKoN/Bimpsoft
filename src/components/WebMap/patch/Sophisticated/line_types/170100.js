@@ -5,6 +5,7 @@ import {
   drawText, textBBox,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: AIR CORRIDOR
 // task code: DZVIN-5539
@@ -34,7 +35,7 @@ lineDefinitions['170100'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const sw = segmentLength(normalVectorTo(points[0], points[1], points[points.length - 1]))
 
     const calcSegmentPoints = (index, side) => {
@@ -78,6 +79,8 @@ lineDefinitions['170100'] = {
       return [ p1, p2 ]
     }
 
+    const isOutAmplifiers = result.layer?.options?.showAmplifiers || toPrint
+    const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] || ''
     for (let i = 0; i < points.length - 2; i++) {
       let p1, p2
       [ p1, p2 ] = adjustSegmentPoints(i, 1)
@@ -88,30 +91,32 @@ lineDefinitions['170100'] = {
       if (!ptEq(p1, p2)) {
         drawLine(result, p1, p2)
       }
-      drawText(
+      isOutAmplifiers && drawText(
         result,
         segmentBy(points[i], points[i + 1]),
         angleOf(points[i], points[i + 1]),
-        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] || '',
+        text,
         LARGE_TEXT_SIZE,
       )
     }
 
-    const amplifierA = (result.layer?.object?.attributes?.pointAmplifier?.[amps.A] || '').split('\n', 6)
-    const bb = textBBox('bp', result.layer, SMALL_TEXT_SIZE)
-    const p0 = points[0]
-    const p1 = points[1]
-    amplifierA.forEach((line, index, array) => {
-      if (line) {
-        drawText(
-          result,
-          getPointAt(p1, p0, Math.PI / 2, sw + (array.length - index) * bb.height * INTERLINE - bb.height / 2),
-          angleOf(p0, p1),
-          line,
-          SMALL_TEXT_SIZE,
-          'start',
-        )
-      }
-    })
+    if (isOutAmplifiers) {
+      const amplifierA = (result.layer?.object?.attributes?.pointAmplifier?.[amps.A] || '').split('\n', 6)
+      const bb = textBBox('bp', result.layer, SMALL_TEXT_SIZE)
+      const p0 = points[0]
+      const p1 = points[1]
+      amplifierA.forEach((line, index, array) => {
+        if (line) {
+          drawText(
+            result,
+            getPointAt(p1, p0, halfPI, sw + (array.length - index) * bb.height * INTERLINE - bb.height / 2),
+            angleOf(p0, p1),
+            line,
+            SMALL_TEXT_SIZE,
+            'start',
+          )
+        }
+      })
+    }
   },
 }

@@ -19,6 +19,7 @@ import {
 import { amps } from '../../../../../constants/symbols'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -176,7 +177,7 @@ lineDefinitions['017016'] = {
   },
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const indEnd = points.length - 1
     const c = (indEnd / 3) | 0
     let start = points[0]
@@ -208,34 +209,36 @@ lineDefinitions['017016'] = {
     drawLineMark(result, MARK_TYPE.SERIF, start, angleOf(points[3], start))
     drawLineMark(result, MARK_TYPE.SERIF, points[indEnd], angleOf(points[indEnd - 3], points[indEnd]))
 
-    const angle = angleOf(start, points[3])
-    const top = angle < 0
-    const fontSize = getFontSize(result.layer)
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const angle = angleOf(start, points[3])
+      const top = angle < 0
+      const margin = getFontSize(result.layer) / 8
 
-    const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
-    if (text) {
-      drawText(
-        result,
-        applyVector(start, setVectorLength(getVector(points[3], start), fontSize / 10)),
-        angle - Math.PI / 2,
-        text,
-        1,
-        'middle',
-        null,
-        top ? 'after-edge' : 'before-edge',
-      )
-    }
-
-    const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
-    if (number >= 0) {
-      for (let i = 0; i < c; i++) {
+      const text = result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? ''
+      if (text) {
         drawText(
           result,
-          points[i * 3 + 1],
-          angleOf(points[i * 3 + 3], points[i * 3]) + Math.PI / 2,
-          (number + i).toFixed(0),
-          NUMBERS_SIZE,
+          applyVector(start, setVectorLength(getVector(points[3], start), margin)),
+          angle - halfPI,
+          text,
+          1,
+          'middle',
+          null,
+          top ? 'text-after-edge' : 'text-before-edge',
         )
+      }
+
+      const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
+      if (number >= 0) {
+        for (let i = 0; i < c; i++) {
+          drawText(
+            result,
+            points[i * 3 + 1],
+            angleOf(points[i * 3 + 3], points[i * 3]) + halfPI,
+            (number + i).toFixed(0),
+            NUMBERS_SIZE,
+          )
+        }
       }
     }
   },

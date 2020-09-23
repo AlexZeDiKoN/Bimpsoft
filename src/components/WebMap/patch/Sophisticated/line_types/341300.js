@@ -36,7 +36,7 @@ lineDefinitions['341300'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const [ p0, p1 ] = points
     const SIDE_LENGTH = 50 * scale
 
@@ -59,8 +59,11 @@ lineDefinitions['341300'] = {
 
     drawLine(result, a, p0, b, c, center, d, a)
     drawZ(result)
-    drawText(result, segmentBy(p0, center, 0.4), a0,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
+
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      drawText(result, segmentBy(p0, center, 0.4), a0,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
+    }
 
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {
       drawLine(result, center, anchor)

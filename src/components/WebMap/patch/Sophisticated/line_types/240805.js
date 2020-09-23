@@ -4,6 +4,7 @@ import {
   drawLine, applyVector, angleOf, multiplyVector, getVector, drawText, setVectorLength, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ЗОНА ЦІЛІ
 // task code: DZVIN-5994
@@ -38,18 +39,18 @@ lineDefinitions['240805'] = {
     const v3 = applyVector(p0, getVector(v1, p0))
     drawLine(result, v0, v1, v2, v3, v0)
 
-    const fontSize = getFontSize(result.layer)
+    const margin = getFontSize(result.layer) / 8
     const angle = angleOf(p0, p2)
 
     drawText(
       result,
-      applyVector(p2, setVectorLength(getVector(p0, p2), fontSize / 10)),
-      angle + Math.PI / 2,
+      applyVector(p2, setVectorLength(getVector(p0, p2), margin)),
+      angle + halfPI,
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
       null,
-      angle > 0 ? 'after-edge' : 'before-edge',
+      angle > 0 ? 'text-after-edge' : 'text-before-edge',
     )
   },
 }
