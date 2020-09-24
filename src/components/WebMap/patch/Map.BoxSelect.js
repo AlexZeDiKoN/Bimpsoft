@@ -148,7 +148,7 @@ const BoxSelect = L.Handler.extend({
     )
 
     this._map
-      .fire('boxselectend', { boxSelectBounds: bounds })
+      .fire('boxselectend', { boxSelectBounds: bounds, altKey: e.altKey })
   },
 
   _onKeyDown: function (e) {

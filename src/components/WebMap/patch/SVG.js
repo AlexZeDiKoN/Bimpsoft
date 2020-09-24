@@ -555,9 +555,8 @@ L.SVG.include({
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
     const {
-      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
-      shadow, highlightMain,
-      borderLineOlovo,
+      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, shadow,
+      highlightMain, borderLineOlovo,
     } = grid.options
     grid._path = group
     if (className) {
@@ -601,15 +600,21 @@ L.SVG.include({
       grid._title = L.SVG.create('text')
       grid._title.style.userSelect = 'none'
       grid._olovo.appendChild(grid._title)
-      grid._cells = narr(directions).map(() => narr(zones).map(() => {
-        const text = L.SVG.create('text')
-        text.style.userSelect = 'none'
-        grid._olovo.appendChild(text)
-        return text
-      }))
+      this._recreateGridCells(grid)
       group.appendChild(grid._olovo)
     }
     this._layers[L.Util.stamp(grid)] = grid
+  },
+
+  _recreateGridCells: function (grid) {
+    const { zones, directions } = grid.options
+    grid._cells && grid._cells.forEach((row) => row.forEach((item) => item.remove()))
+    grid._cells = narr(directions).map(() => narr(zones).map(() => {
+      const text = L.SVG.create('text')
+      text.style.userSelect = 'none'
+      grid._olovo.appendChild(text)
+      return text
+    }))
   },
 
   _prepareTextAmplifier: function (layer, text, title, point, center = false, color) {
@@ -628,7 +633,7 @@ L.SVG.include({
   },
 
   _updateFlexGrid: function (grid) {
-    const { olovo, title, start, color, strokeWidth } = grid.options
+    const { olovo, title, start, color, strokeWidth, directions, zones } = grid.options
     const border = prepareBezierPath(grid._borderLine(), true)
     if (!olovo) {
       const bounds = grid._map._renderer._bounds
@@ -643,6 +648,9 @@ L.SVG.include({
     grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
     if (olovo) {
       this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
+      if (grid._cells.length !== directions || !grid._cells[0] || grid._cells[0].length !== zones) {
+        this._recreateGridCells(grid)
+      }
       grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
         this._prepareTextAmplifier(grid, item, `${start + dirIdx * 10 + zoneIdx}`, massCenter([
           grid.eternalRings[dirIdx][zoneIdx],
