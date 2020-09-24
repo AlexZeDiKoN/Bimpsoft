@@ -1206,16 +1206,16 @@ export default class WebMap extends React.PureComponent {
     this.isBoxSelection = true
   }
 
-  onBoxSelectEnd = ({ boxSelectBounds }) => {
+  onBoxSelectEnd = ({ boxSelectBounds, altKey }) => {
     this.isBoxSelection = false
     const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.objects.forEach((layer) => {
-      if (layer.options.tsType && !layer._hidden) {
+      if (layer.object && layer.options.tsType && !layer._hidden) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
-        const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
-        const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
+        const isOnActiveLayer = layer.object.layer === activeLayerId || altKey
+        const isLayerVisible = Object.prototype.hasOwnProperty.call(layersById, layer.object.layer)
+        const isSelected = isInBounds && isOnActiveLayer && isLayerVisible
         isSelected && selectedIds.push(layer.id)
       }
     })
