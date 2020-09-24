@@ -555,9 +555,8 @@ L.SVG.include({
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
     const {
-      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
-      shadow, highlightMain,
-      borderLineOlovo,
+      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, shadow,
+      highlightMain, borderLineOlovo,
     } = grid.options
     grid._path = group
     if (className) {
