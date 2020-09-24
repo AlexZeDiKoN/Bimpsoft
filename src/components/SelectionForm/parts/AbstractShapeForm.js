@@ -20,16 +20,15 @@ export const propTypes = {
   onSaveError: PropTypes.func,
   onCheckSave: PropTypes.func,
   orgStructures: PropTypes.object,
+  disableSaveButton: PropTypes.bool,
+  onEnableSaveButton: PropTypes.func,
 }
 
 export default class AbstractShapeForm extends React.Component {
   static propTypes = propTypes
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      saveButtonBlock: false,
-    }
+  componentDidMount () {
+    this.props.onEnableSaveButton()
   }
 
   setResult (resultFunc) {
@@ -60,28 +59,22 @@ export default class AbstractShapeForm extends React.Component {
   }
 
   saveEditElement = () => {
-    const { onCheckSave } = this.props
-    this.setState(
-      { saveButtonBlock: true },
-      () => {
-        const check = onCheckSave()
-        if (check && check.finally) {
-          check.finally(this.enableSaveButton)
-        }
-      },
-    )
+    const { onCheckSave, onEnableSaveButton } = this.props
+    const check = onCheckSave()
+    if (check && check.finally) {
+      check.finally(onEnableSaveButton) // После проверки включаем кнопку "Сохранить"
+    }
   }
 
   render () {
     const canEdit = this.isCanEdit()
-    const { saveButtonBlock } = this.state
-    const { onClose } = this.props
+    const { onClose, disableSaveButton } = this.props
     return (
       <Form className="shape-form">
         { this.renderContent() }
         <div className='footer-container'>
           {buttonClose(onClose)}
-          {canEdit && (<ButtonApply onClick={this.saveEditElement} disabled={saveButtonBlock}/>)}
+          {canEdit && (<ButtonApply onClick={this.saveEditElement} disabled={disableSaveButton}/>)}
         </div>
       </Form>
     )
