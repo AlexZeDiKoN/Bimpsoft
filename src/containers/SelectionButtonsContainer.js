@@ -6,6 +6,7 @@ import {
   layerNameSelector,
   selectedTypes,
   selectedPoints,
+  flexGridSelected,
 } from '../store/selectors'
 import { selection as selectionActions, groups as groupsActions } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
@@ -38,6 +39,7 @@ const mapStateToProps = (store) => {
     isShowForm: Boolean(preview || showForm), // признак отображения на карте какой-либо формы ввода или подстверждения
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
+    flexGridSelected: flexGridSelected(store),
   }
 }
 

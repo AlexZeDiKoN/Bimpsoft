@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 import entityKind from '../../components/WebMap/entityKind'
 
 const objects = ({ webMap: { objects } }) => objects
+const flexGrid = ({ flexGrid: { flexGrid } }) => flexGrid
 export const selectedList = ({ selection: { list } }) => list
 
 export const selectedTypes = createSelector(
@@ -10,6 +11,12 @@ export const selectedTypes = createSelector(
   (objects, list) => list
     ? list.map((id) => objects.getIn([ id, 'type' ]))
     : []
+)
+
+export const flexGridSelected = createSelector(
+  flexGrid,
+  selectedList,
+  (flexGrid, list) => list && flexGrid && list.length === 1 && list[0] === flexGrid.id
 )
 
 export const selectedPoints = createSelector(
