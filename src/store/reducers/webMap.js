@@ -287,6 +287,8 @@ function addUndoRecord (state, payload) {
     case changeTypes.CREATE_CONTOUR:
     case changeTypes.DELETE_CONTOUR:
     case changeTypes.COPY_CONTOUR:
+    case changeTypes.CREATE_GROUP:
+    case changeTypes.DROP_GROUP:
       break
     default:
       return state

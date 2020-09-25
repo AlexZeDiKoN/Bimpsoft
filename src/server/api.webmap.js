@@ -81,9 +81,9 @@ export default {
   buildZone: (objects, enemy) =>
     getDirect(`${webmapUrl}/zone/build`, { objects, enemy }),
   groupCreate: (type, objects, layer, scale) =>
-    getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }), /// ---(14)
+    getDirect(`${webmapUrl}/group/${type}/create`, { objects, layer, scale }), /// (14) Create group
   groupDrop: (group, layer) =>
-    getDirect(`${webmapUrl}/group/drop`, { group, layer }), /// ---(15)
+    getDirect(`${webmapUrl}/group/drop`, { group, layer }), /// (15) Drop group
   groupCopy: (id, layer, shift) =>
     getDirect(`${webmapUrl}/group/copy`, { id, layer, shift }), /// ---(16)
   groupMove: (id, shift) =>
@@ -92,6 +92,8 @@ export default {
     getDirect(`${webmapUrl}/obj/copy-list`, { fromLayer, toLayer, list }), /// ---(18)
   objRefreshList: (list, layer) =>
     getDirect(`${webmapUrl}/obj/refresh-list`, { list, layer }),
+  groupRestore: (layer, group, objects) =>
+    getDirect(`${webmapUrl}/group/restore`, { layer, group, objects }),
 
   // API друку карти
   getPrintBounds: (data) =>

@@ -7,7 +7,7 @@ import {
   marchDots, undoInfo, mapCOP,
 } from '../store/selectors'
 import {
-  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, groups, march,
+  webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
 } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 import { directionName, eternalPoint } from '../constants/viewModesKeys'
@@ -149,8 +149,6 @@ const WebMapContainer = connect(
     onMoveObjList: webMap.moveObjList,
     onMoveGroup: webMap.moveGroup,
     getZones: targeting.getZones,
-    createGroup: groups.createGroup,
-    dropGroup: groups.dropGroup,
     newShapeFromSymbol: selection.newShapeFromSymbol,
     newShapeFromLine: selection.newShapeFromLine,
     getCoordForMarch: march.setCoordFromMap,

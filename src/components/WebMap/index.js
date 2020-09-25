@@ -388,8 +388,6 @@ export default class WebMap extends React.PureComponent {
     onMoveObjList: PropTypes.func,
     onMoveGroup: PropTypes.func,
     getZones: PropTypes.func,
-    createGroup: PropTypes.func,
-    dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,

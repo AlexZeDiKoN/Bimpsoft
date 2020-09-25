@@ -89,6 +89,8 @@ export const changeTypes = {
   COPY_CONTOUR: '(11) Copy contour',
   MOVE_CONTOUR: '(12) Move contour',
   MOVE_LIST: '(13) Move list of objects',
+  CREATE_GROUP: '(14) Create group',
+  DROP_GROUP: '(15) Drop group',
   COPY_LIST: '(18) Copy list of objects',
 }
 
@@ -284,6 +286,20 @@ const restoreContour = (layer, contour, objects) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
     await webmapApi.contourRestore(layer, contour, objects)
     return dispatch(selection.selectedList([ contour ]))
+  })
+
+const deleteGroup = (layer, group) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) =>
+    dispatch(batchActions([
+      tryUnlockObject(group),
+      selection.selectedList(await webmapApi.groupDrop(group, layer)),
+    ])),
+  )
+
+const restoreGroup = (layer, group, objects) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi }) => {
+    await webmapApi.groupRestore(layer, group, objects)
+    return dispatch(selection.selectedList([ group ]))
   })
 
 const restoreObject = (id) =>
@@ -715,41 +731,22 @@ export const saveCopReport = (mapName, fromMapId, dateOn) =>
 
 async function performAction (record, direction, api, dispatch) {
   const { changeType, id, list, layer, oldData, newData } = record
-  const data = direction === 'undo' ? oldData : newData
+  const undo = direction === 'undo'
+  const data = undo ? oldData : newData
   switch (changeType) {
     case changeTypes.UPDATE_OBJECT:
       return dispatch(updateObject({ id, ...data }, false))
     case changeTypes.UPDATE_GEOMETRY:
       return dispatch(updateObjectGeometry(id, data, false))
     case changeTypes.INSERT_OBJECT:
-    case changeTypes.COPY_CONTOUR: {
-      if (direction === 'undo') {
-        return dispatch(deleteObject(id, false))
-      } else {
-        return dispatch(restoreObject(id))
-      }
-    }
-    case changeTypes.DELETE_OBJECT: {
-      if (direction === 'undo') {
-        return dispatch(restoreObject(id))
-      } else {
-        return dispatch(deleteObject(id, false))
-      }
-    }
-    case changeTypes.DELETE_LIST: {
-      if (direction === 'undo') {
-        return dispatch(restoreObjects(list))
-      } else {
-        return dispatch(deleteObjects(list, false))
-      }
-    }
-    case changeTypes.COPY_LIST: {
-      if (direction === 'undo') {
-        return dispatch(deleteObjects(list, false))
-      } else {
-        return dispatch(restoreObjects(list))
-      }
-    }
+    case changeTypes.COPY_CONTOUR:
+      return dispatch(undo ? deleteObject(id, false) : restoreObject(id))
+    case changeTypes.DELETE_OBJECT:
+      return dispatch(undo ? restoreObject(id) : deleteObject(id, false))
+    case changeTypes.DELETE_LIST:
+      return dispatch(undo ? restoreObjects(list) : deleteObjects(list, false))
+    case changeTypes.COPY_LIST:
+      return dispatch(undo ? deleteObjects(list, false) : restoreObjects(list))
     case changeTypes.LAYER_COLOR: {
       await api.layerSetColor(id, data)
       return dispatch({
@@ -760,24 +757,18 @@ async function performAction (record, direction, api, dispatch) {
         },
       })
     }
-    case changeTypes.CREATE_CONTOUR: {
-      if (direction === 'undo') {
-        return dispatch(deleteContour(layer, id))
-      } else {
-        return dispatch(restoreContour(layer, id, list))
-      }
-    }
-    case changeTypes.DELETE_CONTOUR: {
-      if (direction === 'undo') {
-        return dispatch(restoreContour(layer, id, list))
-      } else {
-        return dispatch(deleteContour(layer, id))
-      }
-    }
+    case changeTypes.CREATE_CONTOUR:
+      return dispatch(undo ? deleteContour(layer, id) : restoreContour(layer, id, list))
+    case changeTypes.DELETE_CONTOUR:
+      return dispatch(undo ? restoreContour(layer, id, list) : deleteContour(layer, id))
     case changeTypes.MOVE_CONTOUR:
       return dispatch(moveContour(id, data, false))
     case changeTypes.MOVE_LIST:
       return dispatch(moveObjList(list, data, false))
+    case changeTypes.CREATE_GROUP:
+      return dispatch(undo ? deleteGroup(layer, id) : restoreGroup(layer, id, list))
+    case changeTypes.DROP_GROUP:
+      return dispatch(undo ? restoreGroup(layer, id, list) : deleteGroup(layer, id))
     default:
       console.warn(`Unknown change type: ${changeType}`)
   }

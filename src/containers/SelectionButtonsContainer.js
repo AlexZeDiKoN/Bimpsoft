@@ -36,7 +36,7 @@ const mapStateToProps = (store) => {
     list,
     clipboard,
     orgStructures,
-    isShowForm: Boolean(preview || showForm), // признак отображения на карте какой-либо формы ввода или подстверждения
+    isShowForm: Boolean(preview || showForm), // ознака відображення на карті якої-небудь форми вводу або підтвердження
     selectedTypes: selectedTypes(store),
     selectedPoints: selectedPoints(store),
     flexGridSelected: flexGridSelected(store),
