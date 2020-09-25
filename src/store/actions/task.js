@@ -139,7 +139,7 @@ export const saveResponse = (errors, id, context) => withNotification(async (dis
   await dispatch(setValue({ id }))
   await dispatch(notifications.push({
     type: 'success',
-    message: i18n.TASK_SENT,
+    message: i18n.TASK_SAVED,
     description: i18n.TASK_SAVED,
   }))
   if (context && context.newObject) {
@@ -164,8 +164,8 @@ export const sendResponse = (errors, id, context) => withNotification(async (dis
   }
   await dispatch(notifications.push({
     type: 'success',
-    message: i18n.CREATE_TASK,
-    description: i18n.TASK_SENT,
+    message: i18n.TASK_SENT,
+    description: i18n.TASK_SENT_TO_EXECUTOR,
   }))
   await dispatch(setModalData(null, null))
   if (context && context.newObject) {
