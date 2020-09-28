@@ -98,6 +98,10 @@ export const GROUPS = {
     entityKind.GROUPED_LAND,
     entityKind.GROUPED_REGION,
   ],
+  GROUPED_NOT_DELETED: [
+    entityKind.GROUPED_HEAD,
+    entityKind.GROUPED_LAND,
+  ],
   COMBINED: [
     entityKind.CONTOUR,
     entityKind.GROUPED_HEAD,

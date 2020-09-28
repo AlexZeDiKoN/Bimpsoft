@@ -142,12 +142,15 @@ export default class SelectionButtons extends React.Component {
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       emptyParent(selectedPoints) && sameLayer(selectedPoints, layerId)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
+    const isSelectNotDeleted = selectedTypes.some((types) => (GROUPS.GROUPED_NOT_DELETED.includes(types)))
+
     const deleteHandler = () => {
       !isShowForm && onDelete()
     }
 
     const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
     const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.includes(selectedTypes[0])
+    const isEnableDelete = (isSelected && !isSelectNotDeleted && isAllSelectedOnActiveLayer) || flexGridSelected
 
     return (
       <>
@@ -201,14 +204,14 @@ export default class SelectionButtons extends React.Component {
           </div>
         </>)}
         {isEditMode && (<>
-          <HotKey selector={shortcuts.DELETE} onKey={isSelected ? deleteHandler : null} />
+          <HotKey selector={shortcuts.DELETE} onKey={ isEnableDelete ? deleteHandler : null} />
           <div className='btn-context-container'>
             <Tooltip title={i18n.DELETE} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
                 colorType={ColorTypes.MAP_HEADER_GREEN}
                 icon={IconNames.MAP_HEADER_ICON_MENU_DELETE}
-                disabled={!flexGridSelected && (!isSelected || !isAllSelectedOnActiveLayer)}
+                disabled={!isEnableDelete}
                 onClick={onDelete}
               />
             </Tooltip>
