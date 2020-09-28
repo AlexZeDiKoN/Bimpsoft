@@ -1,4 +1,3 @@
-import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { symbolOptions } from '@DZVIN/MilSymbolEditor/src/model'
 import { Record } from 'immutable'
@@ -9,16 +8,14 @@ import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
 import { adjustSquareCorner } from './patch/utils/helpers'
 
-const { Coordinates: Coord } = utils
-
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
     ? data.map(latLng2peerArr)
     : [ data.lng, data.lat ]
 
 // ------------- Ініціалізація атрибутів для точкових знаків ----------------------------------------------------------
-const SymbolAtributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
-const SymbolAttributesRec = Record(SymbolAtributesInitValue)
+const SymbolAttributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
+const SymbolAttributesRec = Record(SymbolAttributesInitValue)
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -439,16 +436,6 @@ function createRectangle (kind, data, layer) {
   }
   return layer
 }
-
-/* function createSquare (data, layer, map) {
-  let [ point1 = null, point2 = null ] = data.geometry.toJS()
-  if (!Coord.check(point1) || !Coord.check(point2)) {
-    return null
-  }
-  const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
-  point2 = L.CRS.Earth.calcPairRightDown(point1, width)
-  return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
-} */
 
 function prepareOptions (signType, color, js) {
   const options = {
