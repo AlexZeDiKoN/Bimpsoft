@@ -6,7 +6,13 @@ import { filterSetEmpty } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
-import { drawLine, emptyPath, extractLineCode, getMaxPolygon } from '../../components/WebMap/patch/Sophisticated/utils'
+import {
+  drawLine,
+  emptyPath,
+  extractLineCode,
+  getMaxPolygon,
+  drawZ,
+} from '../../components/WebMap/patch/Sophisticated/utils'
 import lineDefinitions from '../../components/WebMap/patch/Sophisticated/lineDefinitions'
 
 import { HATCH_TYPE } from '../../constants/drawLines'
@@ -756,7 +762,7 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
 
   const result = emptyPath()
   drawLine(result, ...rectanglePolygon)
-  // return `${result.d} z`
+  drawZ(result)
   const strokeWidth = getStrokeWidth(attributes.strokeWidth)
   return getSvgPath(result.d, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
 })
