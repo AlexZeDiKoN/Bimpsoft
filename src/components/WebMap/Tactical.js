@@ -7,6 +7,7 @@ import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
+import { adjustSquareCorner } from './patch/utils/helpers'
 
 const { Coordinates: Coord } = utils
 
@@ -121,7 +122,8 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.RECTANGLE:
       return createRectangle(entityKind.RECTANGLE, data, prevLayer)
     case entityKind.SQUARE:
-      return createSquare(data, map, prevLayer)
+      // return createSquare(data, prevLayer, map)
+      return createRectangle(entityKind.SQUARE, data, prevLayer)
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
     case entityKind.GROUPED_HEAD:
@@ -439,7 +441,7 @@ function createRectangle (kind, data, layer) {
   return layer
 }
 
-function createSquare (data, map, layer) {
+function createSquare (data, layer, map) {
   let [ point1 = null, point2 = null ] = data.geometry.toJS()
   if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
@@ -480,7 +482,7 @@ function prepareOptions (signType, color, js) {
   return options
 }
 
-export function getGeometry (layer) {
+export function getGeometry (layer, pmDraw) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
@@ -502,7 +504,16 @@ export function getGeometry (layer) {
       return formGeometry(result)
     }
     case entityKind.RECTANGLE:
+      return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.SQUARE:
+      // При создании нового объекта геометрию расчитываем по нанесенным на карту маркерам
+      if (pmDraw && pmDraw.Rectangle && pmDraw.Rectangle._hintMarker && pmDraw.Rectangle._startMarker) {
+        const newCoords = [
+          pmDraw.Rectangle._startMarker.getLatLng(),
+          adjustSquareCorner(null, pmDraw.Rectangle._hintMarker.getLatLng(), pmDraw.Rectangle._startMarker.getLatLng()),
+        ]
+        return formRectGeometry(newCoords)
+      }
       return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
@@ -597,5 +608,25 @@ function formCircleGeometry (point, radius) {
   return {
     point,
     geometry: [ point, { lat: point.lat, lng } ],
+  }
+}
+
+function formSquareGeometry (coords, pmDraw) {
+  let bounds, middlePoint
+  // При создании нового объекта геометрию расчитываем по нанесенным на карту маркерам
+  if (pmDraw && pmDraw.Rectangle && pmDraw.Rectangle._hintMarker && pmDraw.Rectangle._startMarker) {
+    const newCoords = [
+      pmDraw.Rectangle._startMarker.getLatLng(),
+      adjustSquareCorner(null, pmDraw.Rectangle._hintMarker.getLatLng(), pmDraw.Rectangle._startMarker.getLatLng()),
+    ]
+    bounds = L.latLngBounds(newCoords)
+    middlePoint = calcMiddlePoint(newCoords)
+  } else {
+    bounds = L.latLngBounds(coords)
+    middlePoint = calcMiddlePoint(coords)
+  }
+  return {
+    point: middlePoint,
+    geometry: [ bounds.getNorthWest(), bounds.getSouthEast() ],
   }
 }
