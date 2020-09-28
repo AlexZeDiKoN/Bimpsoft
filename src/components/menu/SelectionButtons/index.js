@@ -46,6 +46,7 @@ export default class SelectionButtons extends React.Component {
       PropTypes.object,
     ),
     doubleObjects: PropTypes.array,
+    flexGridSelected: PropTypes.bool,
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
     onPaste: PropTypes.func,
@@ -113,6 +114,7 @@ export default class SelectionButtons extends React.Component {
       selectedPoints,
       layerId,
       objectsMap,
+      flexGridSelected,
       onCopy,
       onCut,
       onDelete,
@@ -206,7 +208,7 @@ export default class SelectionButtons extends React.Component {
                 type={ButtonTypes.WITH_BG}
                 colorType={ColorTypes.MAP_HEADER_GREEN}
                 icon={IconNames.MAP_HEADER_ICON_MENU_DELETE}
-                disabled={!isSelected || !isAllSelectedOnActiveLayer}
+                disabled={!flexGridSelected && (!isSelected || !isAllSelectedOnActiveLayer)}
                 onClick={onDelete}
               />
             </Tooltip>

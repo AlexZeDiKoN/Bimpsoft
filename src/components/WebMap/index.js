@@ -388,8 +388,6 @@ export default class WebMap extends React.PureComponent {
     onMoveObjList: PropTypes.func,
     onMoveGroup: PropTypes.func,
     getZones: PropTypes.func,
-    createGroup: PropTypes.func,
-    dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,
@@ -1140,9 +1138,7 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
       !isTopographicObjectsOn && !marchMode
     ) {
-      if (this.boxSelected && !doubleClick) {
-        delete this.boxSelected
-      } else if (!newShape.type) {
+      if (!newShape.type) {
         const area = (layer) => {
           if (!layer.getBounds) {
             return 0
@@ -1220,7 +1216,6 @@ export default class WebMap extends React.PureComponent {
       }
     })
     this.onSelectedListChange(selectedIds)
-    this.boxSelected = true
   }
 
   updateSelection = async (prevProps) => {
