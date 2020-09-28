@@ -122,7 +122,6 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.RECTANGLE:
       return createRectangle(entityKind.RECTANGLE, data, prevLayer)
     case entityKind.SQUARE:
-      // return createSquare(data, prevLayer, map)
       return createRectangle(entityKind.SQUARE, data, prevLayer)
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
@@ -506,15 +505,7 @@ export function getGeometry (layer, pmDraw) {
     case entityKind.RECTANGLE:
       return formRectGeometry(layer.getLatLngs()[0])
     case entityKind.SQUARE:
-      // При создании нового объекта геометрию расчитываем по нанесенным на карту маркерам
-      if (pmDraw && pmDraw.Rectangle && pmDraw.Rectangle._hintMarker && pmDraw.Rectangle._startMarker) {
-        const newCoords = [
-          pmDraw.Rectangle._startMarker.getLatLng(),
-          adjustSquareCorner(null, pmDraw.Rectangle._hintMarker.getLatLng(), pmDraw.Rectangle._startMarker.getLatLng()),
-        ]
-        return formRectGeometry(newCoords)
-      }
-      return formRectGeometry(layer.getLatLngs()[0])
+      return formSquareGeometry(layer.getLatLngs()[0], pmDraw)
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     case entityKind.CONTOUR:
@@ -612,21 +603,16 @@ function formCircleGeometry (point, radius) {
 }
 
 function formSquareGeometry (coords, pmDraw) {
-  let bounds, middlePoint
   // При создании нового объекта геометрию расчитываем по нанесенным на карту маркерам
   if (pmDraw && pmDraw.Rectangle && pmDraw.Rectangle._hintMarker && pmDraw.Rectangle._startMarker) {
-    const newCoords = [
+    coords = [
       pmDraw.Rectangle._startMarker.getLatLng(),
       adjustSquareCorner(null, pmDraw.Rectangle._hintMarker.getLatLng(), pmDraw.Rectangle._startMarker.getLatLng()),
     ]
-    bounds = L.latLngBounds(newCoords)
-    middlePoint = calcMiddlePoint(newCoords)
-  } else {
-    bounds = L.latLngBounds(coords)
-    middlePoint = calcMiddlePoint(coords)
   }
+  const bounds = L.latLngBounds(coords)
   return {
-    point: middlePoint,
+    point: calcMiddlePoint(coords), // middlePoint,
     geometry: [ bounds.getNorthWest(), bounds.getSouthEast() ],
   }
 }
