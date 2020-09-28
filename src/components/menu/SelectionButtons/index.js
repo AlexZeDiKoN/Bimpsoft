@@ -205,7 +205,7 @@ export default class SelectionButtons extends React.Component {
           </div>
         </>)}
         {isEditMode && (<>
-          <HotKey selector={shortcuts.DELETE} onKey={ isEnableDelete ? deleteHandler : null} />
+          <HotKey selector={shortcuts.DELETE} onKey={isEnableDelete ? deleteHandler : null} />
           <div className='btn-context-container'>
             <Tooltip title={i18n.DELETE} placement='bottomLeft'>
               <IButton
