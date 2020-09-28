@@ -151,6 +151,7 @@ export default class SelectionButtons extends React.Component {
     const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
     const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.includes(selectedTypes[0])
     const isEnableDelete = (isSelected && !isSelectNotDeleted && isAllSelectedOnActiveLayer) || flexGridSelected
+    const isEnableCut = isEnableCopy && isEnableDelete
 
     return (
       <>
@@ -162,13 +163,13 @@ export default class SelectionButtons extends React.Component {
           </CountLabel>
         }
         {isEditMode && (<>
-          <HotKey selector={shortcuts.CUT} onKey={(isEnableCopy && !isShowForm) ? onCut : null} />
+          <HotKey selector={shortcuts.CUT} onKey={(isEnableCut && !isShowForm) ? onCut : null} />
           <Tooltip title={i18n.CUT} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               icon={IconNames.MAP_HEADER_ICON_MENU_CUT}
-              disabled={!isEnableCopy || !isAllSelectedOnActiveLayer}
+              disabled={!isEnableCut}
               onClick={onCut}
             />
           </Tooltip>
