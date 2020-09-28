@@ -18,7 +18,7 @@ const entityKind = { // ID в базі даних відповідних тип�
   SOPHISTICATED: 69, // складна лінія
   GROUP: 99, // група
   FLEXGRID: 100, // Операційна зона ("сіточка")
-  FLEXGRID_: undefined, // пока "Операційна зона" определяется так.
+  NOT_DEFINED: undefined, // неизвестные типы.
 }
 
 export default entityKind
@@ -105,8 +105,7 @@ export const GROUPS = {
   ],
   NOT_COPY: [
     entityKind.GROUPED_REGION,
-    entityKind.FLEXGRID,
-    entityKind.FLEXGRID_,
+    entityKind.NOT_DEFINED,
   ],
   COMBINED: [
     entityKind.CONTOUR,
