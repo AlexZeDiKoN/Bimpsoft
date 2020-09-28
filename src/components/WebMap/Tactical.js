@@ -440,7 +440,7 @@ function createRectangle (kind, data, layer) {
   return layer
 }
 
-function createSquare (data, layer, map) {
+/* function createSquare (data, layer, map) {
   let [ point1 = null, point2 = null ] = data.geometry.toJS()
   if (!Coord.check(point1) || !Coord.check(point2)) {
     return null
@@ -448,7 +448,7 @@ function createSquare (data, layer, map) {
   const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
   point2 = L.CRS.Earth.calcPairRightDown(point1, width)
   return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
-}
+} */
 
 function prepareOptions (signType, color, js) {
   const options = {
