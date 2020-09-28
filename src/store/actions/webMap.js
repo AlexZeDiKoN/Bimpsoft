@@ -823,7 +823,7 @@ export const highlightObject = (id) => ({
   type: actionNames.HIGHLIGHT_OBJECT,
   payload: id
     ? {
-      list: Array.isArray(id) ? id : [ id ]
+      list: Array.isArray(id) ? id : [ id ],
     }
     : null,
 })

@@ -29,6 +29,8 @@ export const SET_PREVIEW_COORDINATE = action('SET_PREVIEW_COORDINATE')
 export const SHOW_DIVIDE_FORM = action('SHOW_DIVIDE_FORM')
 export const SHOW_COMBINE_FORM = action('SHOW_COMBINE_FORM')
 export const CLEAR_BY_LAYER_ID = action('CLEAR_BY_LAYER_ID')
+export const DISABLE_SAVE_BUTTON = action('DISABLE_SAVE_BUTTON')
+export const ENABLE_SAVE_BUTTON = action('ENABLE_SAVE_BUTTON')
 
 const {
   APP6Code: {
@@ -447,8 +449,17 @@ export const errorSymbol = {
   code: 2,
 }
 
+export const disableSaveButton = () => ({
+  type: DISABLE_SAVE_BUTTON,
+})
+
+export const enableSaveButton = () => ({
+  type: ENABLE_SAVE_BUTTON,
+})
+
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
+    dispatch(disableSaveButton())
     const {
       selection: { preview },
       webMap: { objects },

@@ -1871,6 +1871,9 @@ export default class WebMap extends React.PureComponent {
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
       this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
+      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении  layer._bounds._northEast = undefined
+        return
+      }
       const delta = {
         x: this._dragEndPx.x - this._dragStartPx.x,
         y: this._dragEndPx.y - this._dragStartPx.y,
@@ -2264,9 +2267,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   createNewShape = (e) => {
-    const { layer } = e
+    const { layer, target: { pm: { Draw } } } = e
     layer.removeFrom(this.map)
-    const geometry = getGeometry(layer)
+    const geometry = getGeometry(layer, Draw)
     this.props.onFinishDrawNewShape(geometry)
   }
 

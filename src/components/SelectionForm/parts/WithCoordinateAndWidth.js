@@ -2,6 +2,7 @@ import L from 'leaflet'
 import React from 'react'
 import { components, utils } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
+import { adjustSquareCorner } from '../../WebMap/patch/utils/helpers'
 import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
 
@@ -34,8 +35,16 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
     }
   }
 
-  coordinateChangeHandler = async (index, value) => {
-    await this.onCoordinateExitWithChangeHandler(index, value)
+  coordinateChangeHandler = async (index, value, isSquare) => {
+    // проверка, преобразование координат для квадрата
+    if (isSquare) {
+      const coords = this.getResult().getIn(COORDINATE_PATH).toJS()
+      const opossiteIndex = (index + 1) % 2
+      const adjustValue = adjustSquareCorner(null, value, coords[opossiteIndex])
+      await this.onCoordinateExitWithChangeHandler(index, adjustValue)
+    } else {
+      await this.onCoordinateExitWithChangeHandler(index, value)
+    }
     this.setState({ widthText: null })
   }
 
@@ -60,7 +69,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
 
   widthBlurHandler = () => this.setState({ widthText: null })
 
-  renderCoordinateAndWidth () {
+  renderCoordinateAndWidth (isSquare) {
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
     const { widthText = null } = this.state
     const { coordinatesType } = this.props
@@ -80,7 +89,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             coordinate={coordinatesArray[0]}
             index={0}
             readOnly={!canEdit}
-            onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
+            onExitWithChange={canEdit ? (index, value) => this.coordinateChangeHandler(index, value, isSquare) : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
             coordinatesType={coordinatesType}
@@ -90,7 +99,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             coordinate={coordinatesArray[1]}
             index={1}
             readOnly={!canEdit}
-            onExitWithChange={canEdit ? this.coordinateChangeHandler : null}
+            onExitWithChange={canEdit ? (index, value) => this.coordinateChangeHandler(index, value, isSquare) : null}
             onBlur={this.onCoordinateBlurHandler}
             onFocus={this.onCoordinateFocusHandler}
             coordinatesType={coordinatesType}

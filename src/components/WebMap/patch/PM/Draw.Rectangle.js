@@ -8,11 +8,15 @@ const parent = { _syncRectangleSize }
 L.PM.Draw.Rectangle.include({
   _syncRectangleSize: function () {
     if (this._layer.options.tsType === entityKind.SQUARE) {
-      this._hintMarker.off('move', this._syncRectangleSize, this)
-      this._hintMarker.setLatLng(adjustSquareCorner(this._hintMarker._map,
-        this._hintMarker.getLatLng(), this._startMarker.getLatLng()))
-      this._hintMarker.on('move', this._syncRectangleSize, this)
+      const hintM = this._hintMarker
+      hintM.off('move', this._syncRectangleSize, this) // блокировка циклического вызова
+
+      hintM.setLatLng(adjustSquareCorner(hintM._map, hintM.getLatLng(), this._startMarker.getLatLng()))
+      parent._syncRectangleSize.call(this)
+
+      hintM.on('move', this._syncRectangleSize, this)
+    } else {
+      parent._syncRectangleSize.call(this)
     }
-    parent._syncRectangleSize.call(this)
   },
 })
