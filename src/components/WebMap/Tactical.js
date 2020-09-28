@@ -1,4 +1,3 @@
-import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { symbolOptions } from '@DZVIN/MilSymbolEditor/src/model'
 import { Record } from 'immutable'
@@ -8,8 +7,6 @@ import './patch'
 import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
 import { adjustSquareCorner } from './patch/utils/helpers'
-
-const { Coordinates: Coord } = utils
 
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
