@@ -7,7 +7,7 @@ import { catchErrors } from '../store/actions/asyncAction'
 
 const mapStateToProps = (store) => {
   const {
-    selection: { preview, showForm, errorCode },
+    selection: { preview, showForm, errorCode, disableSaveButton },
     orgStructures, ovt: ovtReducer,
     viewModes: { sidebarSelectedTabIndex },
     webMap: { coordinatesType },
@@ -27,6 +27,7 @@ const mapStateToProps = (store) => {
     ovtLoaded: ovtReducer.loaded,
     errorCode,
     coordinatesType,
+    disableSaveButton,
   }
 }
 
@@ -39,6 +40,7 @@ const mapDispatchToProps = {
   onCloseSaveError: selection.hideForm,
   onCoordinateFocusChange: selection.setPreviewCoordinate,
   getOvtList: ovtActions.getOvtList,
+  onEnableSaveButton: selection.enableSaveButton,
 }
 
 const SelectionFormContainer = connect(
