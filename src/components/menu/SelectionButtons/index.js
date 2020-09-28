@@ -142,15 +142,15 @@ export default class SelectionButtons extends React.Component {
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       emptyParent(selectedPoints) && sameLayer(selectedPoints, layerId)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
-    const isSelectNotDeleted = selectedTypes.some((types) => (GROUPS.GROUPED_NOT_DELETED.includes(types)))
-
+    const isNotDeleted = selectedTypes.some((types) => (GROUPS.GROUPED_NOT_DELETED.includes(types)))
+    const isNotCopyable = flexGridSelected || selectedTypes.some((types) => (GROUPS.NOT_COPY.includes(types)))
     const deleteHandler = () => {
       !isShowForm && onDelete()
     }
 
-    const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
+    const isEnableCopy = isSelected && !isNotCopyable
     const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.includes(selectedTypes[0])
-    const isEnableDelete = (isSelected && !isSelectNotDeleted && isAllSelectedOnActiveLayer) || flexGridSelected
+    const isEnableDelete = (isSelected && !isNotDeleted && isAllSelectedOnActiveLayer) || flexGridSelected
     const isEnableCut = isEnableCopy && isEnableDelete
 
     return (
