@@ -1,6 +1,6 @@
 /* global DOMParser */
-import { drawLine, emptyPath, getMaxPolygon } from '../Sophisticated/utils'
-import { epsilon, interpolateSize } from './helpers'
+import { drawLine, drawZ, emptyPath, getMaxPolygon, getPointSize } from '../Sophisticated/utils'
+import { epsilon } from './helpers'
 
 // ------------------------ Функції роботи з нутрощами SVG -------------------------------------------------------------
 export function parseSvgPath (svg) {
@@ -238,12 +238,11 @@ export function prepareLinePath (js, d, rings) {
   return wrapSvgPath(decodedPath)
 }
 
-export function makeRegionGroup (layer) {
-  const points = layer._groupChildren.map((marker) => layer._map.latLngToLayerPoint(marker._latlng))
+export function buildRegionGroup (points, pointSymbolSize) {
   const polygon = getMaxPolygon(points)
   const rectanglePoints = []
 
-  const dy = interpolateSize(layer._map.getZoom(), layer.scaleOptions?.pointSizes) * 0.5 * 1.2
+  const dy = pointSymbolSize * 0.5 * 1.2 // половина высоты знака в px + отступ от знака 20%
   const dx = dy * 1.5
 
   polygon.forEach((elm, number) => {
@@ -257,9 +256,16 @@ export function makeRegionGroup (layer) {
   const result = emptyPath()
   if (rectanglePolygon && rectanglePolygon.length > 2) {
     drawLine(result, ...rectanglePolygon)
-    return `${result.d} z`
+    drawZ(result)
+    return result.d
   }
   return ''
+}
+
+export function makeRegionGroup (layer) {
+  const points = layer._groupChildren.map((marker) => layer._map.latLngToLayerPoint(marker._latlng))
+
+  return buildRegionGroup(points, getPointSize(layer))
 }
 
 export function svgToJS (svg) {

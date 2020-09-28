@@ -6,16 +6,11 @@ import { filterSetEmpty } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { prepareBezierPath } from '../../components/WebMap/patch/utils/Bezier'
 import * as colors from '../../constants/colors'
-import {
-  drawLine,
-  emptyPath,
-  extractLineCode,
-  getMaxPolygon,
-  drawZ,
-} from '../../components/WebMap/patch/Sophisticated/utils'
+import { extractLineCode } from '../../components/WebMap/patch/Sophisticated/utils'
 import lineDefinitions from '../../components/WebMap/patch/Sophisticated/lineDefinitions'
 
 import { HATCH_TYPE } from '../../constants/drawLines'
+import { buildRegionGroup } from '../../components/WebMap/patch/utils/SVG'
 import {
   circleToD,
   getAmplifiers,
@@ -26,7 +21,6 @@ import {
   getStylesForLineType,
   blockage,
   getPointAmplifier,
-
 } from './lines'
 import { renderTextSymbol } from './index'
 
@@ -746,25 +740,10 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   if (points.length === 0) {
     return null
   }
-  const polygon = getMaxPolygon(points)
-  const rectanglePoints = []
 
-  const dy = pointSymbolSize * 0.5 * 1.2 // половина высоты знака в px + отступ от знака 20%
-  const dx = dy * 1.5
-
-  polygon.forEach((elm, number) => {
-    rectanglePoints.push({ x: elm.x - dx, y: elm.y - dy, number })
-    rectanglePoints.push({ x: elm.x + dx, y: elm.y - dy, number })
-    rectanglePoints.push({ x: elm.x - dx, y: elm.y + dy, number })
-    rectanglePoints.push({ x: elm.x + dx, y: elm.y + dy, number })
-  })
-  const rectanglePolygon = getMaxPolygon(rectanglePoints)
-
-  const result = emptyPath()
-  drawLine(result, ...rectanglePolygon)
-  drawZ(result)
+  const pathD = buildRegionGroup(points, pointSymbolSize)
   const strokeWidth = getStrokeWidth(attributes.strokeWidth)
-  return getSvgPath(result.d, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
+  return getSvgPath(pathD, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
 })
 
 mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
