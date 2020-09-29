@@ -12,6 +12,7 @@ const initState = {
   list: [],
   preview: null,
   previewCoordinateIndex: null,
+  disableSaveButton: false,
 }
 
 export default function reducer (state = initState, action) {
@@ -93,6 +94,12 @@ export default function reducer (state = initState, action) {
     }
     case actions.SHOW_COMBINE_FORM: {
       return { ...state, showForm: FormTypes.COMBINE_DIR }
+    }
+    case actions.DISABLE_SAVE_BUTTON: {
+      return { ...state, disableSaveButton: true }
+    }
+    case actions.ENABLE_SAVE_BUTTON: {
+      return { ...state, disableSaveButton: false }
     }
     default:
       return state

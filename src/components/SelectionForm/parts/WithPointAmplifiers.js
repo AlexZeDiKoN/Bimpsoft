@@ -2,7 +2,7 @@ import React from 'react'
 import { Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
-import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
+import { MAX_LENGTH_TEXT, MAX_ROW } from '../../../constants/InputText'
 
 const { FormRow } = components.form
 
@@ -17,9 +17,13 @@ const PAIR_LIST = Object.values(PAIRS)
 const PATH = [ 'attributes', 'pointAmplifier' ]
 
 const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extends Component {
-  createPointAmplifierHandler = (id) => (event) => (
-    this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
-  )
+  createPointAmplifierHandler = (id) => (event) => {
+    const strs = event.target.value.split('\n')
+    if (strs.length > MAX_ROW.POINT_AMP) {
+      return
+    }
+    return this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
+  }
 
   renderPointAmplifiers (svg) {
     const currentValue = this.getResult().getIn(PATH)
@@ -38,7 +42,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
                 {`${i18n.AMPLIFIER} "${name}"`}
               </Tooltip> : `${i18n.AMPLIFIER} "${name}"`}>
               <Input.TextArea
-                autoSize={{ maxRows: 3, minRows: 1 }}
+                autoSize={{ maxRows: 3 }}
                 value={currentValue[id] ?? ''}
                 onChange={this.createPointAmplifierHandler(id)}
                 className={!canEdit ? 'modals-input-disabled' : ''}

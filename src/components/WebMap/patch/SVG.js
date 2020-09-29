@@ -136,7 +136,7 @@ L.SVG.include({
 
     this._setLayerPathStyle(layer, {
       opacity,
-      display: hidden ? 'none' : '',
+      display: hidden && !selected ? 'none' : '',
     }, {
       'dzvin-path-selected-on-active-layer': selected && inActiveLayer,
       'dzvin-path-selected': selected && !inActiveLayer,
@@ -186,7 +186,11 @@ L.SVG.include({
 
   _updateCircle: function (layer) {
     const kind = layer.options?.tsType
-    if (kind === entityKind.CIRCLE && layer._point) {
+    let amplifiers = {
+      maskPath: [],
+      group: '',
+    }
+    if (kind === entityKind.CIRCLE && layer._point && layer.options.showAmplifiers) {
       const bounds = layer._map._renderer._bounds
       const zoom = layer._map.getZoom()
       const scale = 1
@@ -200,10 +204,10 @@ L.SVG.include({
           tsType: kind, // тип линии
           amplifier: layer.object.attributes.pointAmplifier,
         }
-        const amplifiers = getPointAmplifier(options)
-        this._setMask(layer, amplifiers.group, amplifiers.maskPath)
+        amplifiers = getPointAmplifier(options)
       }
     }
+    this._setMask(layer, amplifiers.group, amplifiers.maskPath)
     _updateCircle.call(this, layer)
   },
 
@@ -452,7 +456,7 @@ L.SVG.include({
       scale: 1.0,
       zoom: layer._map.getZoom(),
       tsType: layer.options.tsType,
-      showAmplifiers: true, // layer.options.showAmplifiers,
+      showTextAmplifiers: layer.options.showAmplifiers,
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {
@@ -551,9 +555,8 @@ L.SVG.include({
   _initFlexGrid: function (grid) {
     const group = L.SVG.create('g')
     const {
-      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, zones, directions,
-      shadow, highlightMain,
-      borderLineOlovo,
+      className, interactive, zoneLines, directionLines, boundaryLine, borderLine, highlight, olovo, shadow,
+      highlightMain, borderLineOlovo,
     } = grid.options
     grid._path = group
     if (className) {
@@ -597,15 +600,21 @@ L.SVG.include({
       grid._title = L.SVG.create('text')
       grid._title.style.userSelect = 'none'
       grid._olovo.appendChild(grid._title)
-      grid._cells = narr(directions).map(() => narr(zones).map(() => {
-        const text = L.SVG.create('text')
-        text.style.userSelect = 'none'
-        grid._olovo.appendChild(text)
-        return text
-      }))
+      this._recreateGridCells(grid)
       group.appendChild(grid._olovo)
     }
     this._layers[L.Util.stamp(grid)] = grid
+  },
+
+  _recreateGridCells: function (grid) {
+    const { zones, directions } = grid.options
+    grid._cells && grid._cells.forEach((row) => row.forEach((item) => item.remove()))
+    grid._cells = narr(directions).map(() => narr(zones).map(() => {
+      const text = L.SVG.create('text')
+      text.style.userSelect = 'none'
+      grid._olovo.appendChild(text)
+      return text
+    }))
   },
 
   _prepareTextAmplifier: function (layer, text, title, point, center = false, color) {
@@ -624,7 +633,7 @@ L.SVG.include({
   },
 
   _updateFlexGrid: function (grid) {
-    const { olovo, title, start, color, strokeWidth } = grid.options
+    const { olovo, title, start, color, strokeWidth, directions, zones } = grid.options
     const border = prepareBezierPath(grid._borderLine(), true)
     if (!olovo) {
       const bounds = grid._map._renderer._bounds
@@ -639,6 +648,9 @@ L.SVG.include({
     grid._highlightMain.setAttribute('d', this._getHighlightMainDirectionsArea(grid))
     if (olovo) {
       this._prepareTextAmplifier(grid, grid._title, title, grid.eternalRings[0][0])
+      if (grid._cells.length !== directions || !grid._cells[0] || grid._cells[0].length !== zones) {
+        this._recreateGridCells(grid)
+      }
       grid._cells.forEach((row, dirIdx) => row.forEach((item, zoneIdx) =>
         this._prepareTextAmplifier(grid, item, `${start + dirIdx * 10 + zoneIdx}`, massCenter([
           grid.eternalRings[dirIdx][zoneIdx],

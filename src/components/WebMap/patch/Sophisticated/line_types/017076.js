@@ -64,7 +64,7 @@ lineDefinitions['017076'] = {
   },
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const pO = points[0]
     const pE = points[1]
     if (!isDefPoint(pO) || !isDefPoint(pE)) {
@@ -127,9 +127,10 @@ lineDefinitions['017076'] = {
       drawMaskedText(result, pA2, 0, infoArray[iA]?.azimut2, amplifSize)
       // відображення радіусу та ампліфікатору
       const pR = pointsToSegment(pO, pE, heightSector)
-      drawMaskedText(result, pR, 0, infoArray[iA]?.radius, amplifSize, 'middle', 'after-edge')
-      drawMaskedText(result, pR, 0, sectorsInfo[iA]?.amplifier ?? '', amplifSize, 'middle', 'before-edge')
-
+      drawMaskedText(result, pR, 0, infoArray[iA]?.radius, amplifSize, 'middle', 'text-after-edge')
+      if (result.layer?.options?.showAmplifiers || toPrint) {
+        drawMaskedText(result, pR, 0, sectorsInfo[iA]?.amplifier ?? '', amplifSize, 'middle', 'text-before-edge')
+      }
       // построение верха секторов
       s1topNext = points[i + 2]
       s2topNext = points[i + 3]

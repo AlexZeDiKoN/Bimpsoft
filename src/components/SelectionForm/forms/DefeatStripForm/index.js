@@ -12,7 +12,6 @@ import {
   WithStrokeWidth,
   WithColor,
   WithAmplifiers,
-  WithCoordinates,
 } from '../../parts'
 
 import './DefeatStripForm.css'
@@ -61,7 +60,6 @@ export default class SophisticatedForm extends compose(
   WithStrokeWidth,
   WithColor,
   WithAmplifiers,
-  WithCoordinates,
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 

@@ -58,7 +58,7 @@ export function MilSymbolGroup (symbols) {
 		const paddingLeft = size
 		for (const symbol of symbols){
 			const Geometry = L.SVG.create('g')
-			Geometry.setAttribute('transform', `translate(${maxX - symbol.symbolAnchor.x + paddingLeft},${height + 5})`)
+			Geometry.setAttribute('transform', `translate(${maxX - symbol.symbolAnchor.x + paddingLeft},${height + 12})`)
 			Geometry.setAttribute('overflow', 'visible')
 			Geometry.appendChild(symbol.asDOM())
 			object.appendChild(Geometry)
@@ -66,6 +66,8 @@ export function MilSymbolGroup (symbols) {
 			// Getting the height of all symbols
 			height += symbol.height
 		}
+
+		height += 12
 	  y = height / 2
 	  width = width + paddingLeft
 	  x = 0
@@ -74,10 +76,10 @@ export function MilSymbolGroup (symbols) {
 	  const path = `M 0,${y} l ${paddingLeft / 2},0 M ${paddingLeft},5 l -${paddingLeft / 2},0 0,${height} ${paddingLeft / 2},0`
 		Geometry.setAttribute('d', path)
 		Geometry.setAttribute('stroke', 'black')
-		Geometry.setAttribute('stroke-width', strokeWidth * size / 100)
+		Geometry.setAttribute('stroke-width', (strokeWidth + 2) * size / 100)
 		Geometry.setAttribute('fill', 'none')
 		object.appendChild(Geometry)
-		height += 10
+		height += 24
 	}
 
 	// if(_MilSymbol.userAgentIE){svgSymbol.setAttribute("xmlns", svgNS)};

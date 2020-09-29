@@ -46,6 +46,7 @@ export default class SelectionButtons extends React.Component {
       PropTypes.object,
     ),
     doubleObjects: PropTypes.array,
+    flexGridSelected: PropTypes.bool,
     onCopy: PropTypes.func,
     onCut: PropTypes.func,
     onPaste: PropTypes.func,
@@ -113,6 +114,7 @@ export default class SelectionButtons extends React.Component {
       selectedPoints,
       layerId,
       objectsMap,
+      flexGridSelected,
       onCopy,
       onCut,
       onDelete,
@@ -130,21 +132,26 @@ export default class SelectionButtons extends React.Component {
     const isSelected = Boolean(nSelected)
     const clipboardSize = clipboard ? clipboard.length : 0
     const isClipboardExist = Boolean(clipboardSize)
+    const isAllSelectedOnActiveLayer = objectsSameLayer(list, objectsMap, layerId)
     const canContour = selectedTypes.length > 1 &&
       selectedTypes.every((item) => entityKindOutlinable.includes(item)) &&
-      objectsSameLayer(list, objectsMap, layerId)
+      isAllSelectedOnActiveLayer
     const canDecontour = selectedTypes.length === 1 && selectedTypes[0] === entityKind.CONTOUR
     const canGroup = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       determineGroupType(selectedPoints)
     const canGroupRegion = selectedTypes.length > 1 && selectedPoints.length === selectedTypes.length &&
       emptyParent(selectedPoints) && sameLayer(selectedPoints, layerId)
     const canUngroup = selectedTypes.length === 1 && GROUPS.GENERALIZE.includes(selectedTypes[0])
+    const isNotDeleted = selectedTypes.some((types) => (GROUPS.GROUPED_NOT_DELETED.includes(types)))
+    const isNotCopyable = flexGridSelected || selectedTypes.some((types) => (GROUPS.NOT_COPY.includes(types)))
     const deleteHandler = () => {
       !isShowForm && onDelete()
     }
 
-    const isEnableCopy = isSelected && selectedTypes.every((type) => type && type !== entityKind.FLEXGRID)
+    const isEnableCopy = isSelected && !isNotCopyable
     const isEnableMirror = selectedTypes.length === 1 && entityKindCanMirror.includes(selectedTypes[0])
+    const isEnableDelete = (isSelected && !isNotDeleted && isAllSelectedOnActiveLayer) || flexGridSelected
+    const isEnableCut = isEnableCopy && isEnableDelete
 
     return (
       <>
@@ -156,13 +163,13 @@ export default class SelectionButtons extends React.Component {
           </CountLabel>
         }
         {isEditMode && (<>
-          <HotKey selector={shortcuts.CUT} onKey={(isEnableCopy && !isShowForm) ? onCut : null} />
+          <HotKey selector={shortcuts.CUT} onKey={(isEnableCut && !isShowForm) ? onCut : null} />
           <Tooltip title={i18n.CUT} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               icon={IconNames.MAP_HEADER_ICON_MENU_CUT}
-              disabled={!isEnableCopy}
+              disabled={!isEnableCut}
               onClick={onCut}
             />
           </Tooltip>
@@ -198,14 +205,14 @@ export default class SelectionButtons extends React.Component {
           </div>
         </>)}
         {isEditMode && (<>
-          <HotKey selector={shortcuts.DELETE} onKey={isSelected ? deleteHandler : null} />
+          <HotKey selector={shortcuts.DELETE} onKey={isEnableDelete ? deleteHandler : null} />
           <div className='btn-context-container'>
             <Tooltip title={i18n.DELETE} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
                 colorType={ColorTypes.MAP_HEADER_GREEN}
                 icon={IconNames.MAP_HEADER_ICON_MENU_DELETE}
-                disabled={!isSelected}
+                disabled={!isEnableDelete}
                 onClick={onDelete}
               />
             </Tooltip>

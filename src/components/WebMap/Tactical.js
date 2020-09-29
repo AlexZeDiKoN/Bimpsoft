@@ -1,4 +1,3 @@
-import { utils } from '@DZVIN/CommonComponents'
 import { model } from '@DZVIN/MilSymbolEditor'
 import { symbolOptions } from '@DZVIN/MilSymbolEditor/src/model'
 import { Record } from 'immutable'
@@ -7,8 +6,7 @@ import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
 import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
-
-const { Coordinates: Coord } = utils
+import { adjustSquareCorner } from './patch/utils/helpers'
 
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
@@ -16,8 +14,8 @@ const latLng2peerArr = (data) =>
     : [ data.lng, data.lat ]
 
 // ------------- Ініціалізація атрибутів для точкових знаків ----------------------------------------------------------
-const SymbolAtributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
-const SymbolAttributesRec = Record(SymbolAtributesInitValue)
+const SymbolAttributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
+const SymbolAttributesRec = Record(SymbolAttributesInitValue)
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -77,10 +75,10 @@ export const disableEdit = (layer) => {
   layer.pm.disable()
 }
 
-export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable) => {
+export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable, isEdit = true) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
   if (layer.pm?.enabled() !== active) {
-    if (active) {
+    if (active && isEdit) {
       enableEdit(layer)
     } else {
       disableEdit(layer)
@@ -121,7 +119,7 @@ export function createTacticalSign (data, map, prevLayer) {
     case entityKind.RECTANGLE:
       return createRectangle(entityKind.RECTANGLE, data, prevLayer)
     case entityKind.SQUARE:
-      return createSquare(data, map, prevLayer)
+      return createRectangle(entityKind.SQUARE, data, prevLayer)
     case entityKind.CONTOUR:
       return createContour(data, prevLayer)
     case entityKind.GROUPED_HEAD:
@@ -215,9 +213,8 @@ function createOlovo (data, layer, initMap) {
   const box = initMap.getBounds().pad(-0.4)
   const { directions, zones, start, title } = data.attributes.params
   let geometry = data.geometry.toJS()
-  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length || (
-    layer && (layer.options.directions !== directions || layer.options.zones !== zones)
-  )) {
+
+  if (directions + 1 !== geometry[0].length || zones + 1 !== geometry[0][0].length) {
     if (layer) {
       const index = layer.map.objects.indexOf(layer)
       if (index >= 0) {
@@ -229,6 +226,7 @@ function createOlovo (data, layer, initMap) {
     geometry = generateGeometry(zones, directions, box)
   }
   const [ eternals, directionSegments, zoneSegments ] = geometry
+
   if (layer) {
     layer._map = initMap
     layer.updateProps(
@@ -439,16 +437,6 @@ function createRectangle (kind, data, layer) {
   return layer
 }
 
-function createSquare (data, map, layer) {
-  let [ point1 = null, point2 = null ] = data.geometry.toJS()
-  if (!Coord.check(point1) || !Coord.check(point2)) {
-    return null
-  }
-  const width = map.distance(point1, { lat: point1.lat, lng: point2.lng })
-  point2 = L.CRS.Earth.calcPairRightDown(point1, width)
-  return createRectangle(entityKind.SQUARE, [ point1, point2 ], layer)
-}
-
 function prepareOptions (signType, color, js) {
   const options = {
     tsType: signType,
@@ -480,7 +468,7 @@ function prepareOptions (signType, color, js) {
   return options
 }
 
-export function getGeometry (layer) {
+export function getGeometry (layer, pmDraw) {
   switch (layer.options.tsType) {
     case entityKind.POINT:
     case entityKind.TEXT:
@@ -502,8 +490,9 @@ export function getGeometry (layer) {
       return formGeometry(result)
     }
     case entityKind.RECTANGLE:
-    case entityKind.SQUARE:
       return formRectGeometry(layer.getLatLngs()[0])
+    case entityKind.SQUARE:
+      return formSquareGeometry(layer.getLatLngs()[0], pmDraw)
     case entityKind.CIRCLE:
       return formCircleGeometry(layer.getLatLng(), layer.getRadius())
     case entityKind.CONTOUR:
@@ -597,5 +586,20 @@ function formCircleGeometry (point, radius) {
   return {
     point,
     geometry: [ point, { lat: point.lat, lng } ],
+  }
+}
+
+function formSquareGeometry (coords, pmDraw) {
+  // При создании нового объекта геометрию расчитываем по нанесенным на карту маркерам
+  if (pmDraw && pmDraw.Rectangle && pmDraw.Rectangle._hintMarker && pmDraw.Rectangle._startMarker) {
+    coords = [
+      pmDraw.Rectangle._startMarker.getLatLng(),
+      adjustSquareCorner(null, pmDraw.Rectangle._hintMarker.getLatLng(), pmDraw.Rectangle._startMarker.getLatLng()),
+    ]
+  }
+  const bounds = L.latLngBounds(coords)
+  return {
+    point: calcMiddlePoint(coords), // middlePoint,
+    geometry: [ bounds.getNorthWest(), bounds.getSouthEast() ],
   }
 }

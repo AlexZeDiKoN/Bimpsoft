@@ -299,12 +299,14 @@ export default class SelectionForm extends React.Component {
       ovtData,
       canEdit,
       onSaveError,
+      onEnableSaveButton,
       showErrorSave,
       orgStructures,
       onCoordinateFocusChange,
       wrapper: Wrapper,
       sidebarSelectedTabIndex,
       coordinatesType,
+      disableSaveButton,
     } = this.props
 
     if (data === null || !forms[data.type]) {
@@ -396,6 +398,8 @@ export default class SelectionForm extends React.Component {
               onCoordinateFocusChange={onCoordinateFocusChange}
               ovtData={ovtData}
               coordinatesType={coordinatesType}
+              disableSaveButton={disableSaveButton}
+              onEnableSaveButton={onEnableSaveButton}
             />
             <HotKey onKey={this.cancelButtonClick} selector={shortcuts.ESC}/>
           </HotKeysContainer>
@@ -410,12 +414,14 @@ SelectionForm.propTypes = {
   canEdit: PropTypes.bool,
   showForm: PropTypes.string,
   showErrorSave: PropTypes.bool,
+  disableSaveButton: PropTypes.bool,
   onChange: PropTypes.func,
   onOk: PropTypes.func,
   onCancel: PropTypes.func,
   onError: PropTypes.func,
   onSaveError: PropTypes.func,
   onCheckSave: PropTypes.func,
+  onEnableSaveButton: PropTypes.func,
   onCloseSaveError: PropTypes.func,
   onAddToTemplates: PropTypes.func,
   onCoordinateFocusChange: PropTypes.func,

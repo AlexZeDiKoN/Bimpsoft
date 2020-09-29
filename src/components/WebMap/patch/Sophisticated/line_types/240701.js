@@ -1,16 +1,15 @@
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, drawLineMark,
+  drawLine, applyVector, angleOf, drawText, setVectorLength, getVector, getPointAt, drawLineMark, getFontSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { halfPI } from '../../../../../constants/utils'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
 // hint: 'Одинарний нерухомий загороджувальний вогонь'
-
-const EDGE = 4
 
 lineDefinitions['240701'] = {
   // Ампліфікатори, що використовуються на лінії
@@ -31,7 +30,7 @@ lineDefinitions['240701'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
+  render: (result, points, scale, toPrint) => {
     const [ p0, p1 ] = points
 
     drawLine(result, p0, p1)
@@ -39,29 +38,32 @@ lineDefinitions['240701'] = {
     const len = drawLineMark(result, MARK_TYPE.SERIF, p0, angleOf(p1, p0)) / 2
     drawLineMark(result, MARK_TYPE.SERIF, p1, angle)
 
-    const top = angle < 0
-    angle -= Math.PI / 2
+    if (result.layer?.options?.showAmplifiers || toPrint) {
+      const top = angle < 0
+      angle -= halfPI
+      const offset = getFontSize(result.layer, 1) / 8
 
-    drawText(
-      result,
-      applyVector(p0, setVectorLength(getVector(p1, p0), EDGE * scale)),
-      angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
-      1,
-      'middle',
-      'black',
-      top ? 'after-edge' : 'before-edge',
-    )
+      drawText(
+        result,
+        applyVector(p0, setVectorLength(getVector(p1, p0), offset)),
+        angle,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
+        1,
+        'middle',
+        'black',
+        top ? 'text-after-edge' : 'text-before-edge',
+      )
 
-    drawText(
-      result,
-      getPointAt(p1, p0, Math.PI / 2, len),
-      angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
-      1,
-      top ? 'start' : 'end',
-      'black',
-      top ? 'before-edge' : 'after-edge',
-    )
+      drawText(
+        result,
+        getPointAt(p1, p0, halfPI, len),
+        angle,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
+        1,
+        top ? 'start' : 'end',
+        'black',
+        top ? 'text-before-edge' : 'text-after-edge',
+      )
+    }
   },
 }

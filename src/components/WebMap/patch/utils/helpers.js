@@ -1,6 +1,7 @@
 import L from 'leaflet'
 import { settings } from '../../../../constants/drawLines'
 import { halfPoint } from './Bezier'
+import { distanceAzimuth } from './sectors'
 
 export const epsilon = 1e-5 // Досить мале число, яке можемо вважати нулем
 // export const MIN_ZOOM = 0
@@ -43,20 +44,20 @@ export function hookSplice (arr) {
 }
 
 export function adjustSquareCorner (map, point, opposite) {
-  let bounds = L.latLngBounds(point, opposite)
-  const nw = bounds.getNorthWest()
-  const ne = bounds.getNorthEast()
-  bounds = opposite.toBounds(map.distance(nw, ne) * 2)
+  let pointNew
+  const distance = !map
+    ? distanceAzimuth(opposite, { lat: opposite.lat, lng: point.lng }).distance
+    : map.distance(opposite, { lat: opposite.lat, lng: point.lng })
   if (point.lat > opposite.lat && point.lng > opposite.lng) {
-    point = bounds.getNorthEast()
+    pointNew = L.CRS.Earth.calcPairRightUp(opposite, distance)
   } else if (point.lng > opposite.lng && point.lat < opposite.lat) {
-    point = bounds.getSouthEast()
+    pointNew = L.CRS.Earth.calcPairRightDown(opposite, distance)
   } else if (point.lng < opposite.lng && point.lat < opposite.lat) {
-    point = bounds.getSouthWest()
+    pointNew = L.CRS.Earth.calcPairLeftDown(opposite, distance)
   } else {
-    point = bounds.getNorthWest()
+    pointNew = L.CRS.Earth.calcPairLeftUp(opposite, distance)
   }
-  return point
+  return pointNew
 }
 
 export function setClassName (el, name, enable) {

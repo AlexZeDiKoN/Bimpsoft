@@ -388,8 +388,6 @@ export default class WebMap extends React.PureComponent {
     onMoveObjList: PropTypes.func,
     onMoveGroup: PropTypes.func,
     getZones: PropTypes.func,
-    createGroup: PropTypes.func,
-    dropGroup: PropTypes.func,
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,
@@ -1140,9 +1138,7 @@ export default class WebMap extends React.PureComponent {
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
       !isTopographicObjectsOn && !marchMode
     ) {
-      if (this.boxSelected && !doubleClick) {
-        delete this.boxSelected
-      } else if (!newShape.type) {
+      if (!newShape.type) {
         const area = (layer) => {
           if (!layer.getBounds) {
             return 0
@@ -1206,29 +1202,31 @@ export default class WebMap extends React.PureComponent {
     this.isBoxSelection = true
   }
 
-  onBoxSelectEnd = ({ boxSelectBounds }) => {
+  onBoxSelectEnd = ({ boxSelectBounds, altKey }) => {
     this.isBoxSelection = false
     const { layer: activeLayerId, layersById } = this.props
     const selectedIds = []
     this.map.objects.forEach((layer) => {
-      if (layer.options.tsType && !layer._hidden) {
+      if (layer.object && layer.options.tsType && !layer._hidden) {
         const isInBounds = isLayerInBounds(layer, boxSelectBounds)
-        const isOnActiveLayer = layer.object && (layer.object.layer === activeLayerId)
-        const isActiveLayerVisible = Object.prototype.hasOwnProperty.call(layersById, activeLayerId)
-        const isSelected = isInBounds && isOnActiveLayer && isActiveLayerVisible
+        const isOnActiveLayer = layer.object.layer === activeLayerId || altKey
+        const isLayerVisible = Object.prototype.hasOwnProperty.call(layersById, layer.object.layer)
+        const isSelected = isInBounds && isOnActiveLayer && isLayerVisible
         isSelected && selectedIds.push(layer.id)
       }
     })
     this.onSelectedListChange(selectedIds)
-    this.boxSelected = true
   }
 
-  updateSelection = (prevProps) => {
+  updateSelection = async (prevProps) => {
     const {
       objects,
       layer: layerId,
       edit,
       selection: { list: selectedIds, preview },
+      lockedObjects,
+      activeObjectId,
+      checkObjectAccess,
     } = this.props
     if (
       objects !== prevProps.objects ||
@@ -1237,6 +1235,7 @@ export default class WebMap extends React.PureComponent {
       layerId !== prevProps.layer ||
       preview !== prevProps.selection.preview
     ) {
+      let success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
@@ -1246,13 +1245,15 @@ export default class WebMap extends React.PureComponent {
           const isSelected = selectedIdsSet.has(id)
           const isActiveLayer = (layer.options?.tsType === entityKind.FLEXGRID) ||
             (layer.object?.layer === layerId)
-          const isActive = canEditLayer && isSelected && isActiveLayer
+          let isActive = canEditLayer && isSelected && isActiveLayer
           const isDraggable = canDrag && isSelected && isActiveLayer
           if (layer._map === null) {
             layer._map = this.map
           }
-          setLayerSelected(layer, isSelected, isActive && !(preview && preview.id === id), isActiveLayer,
-            isDraggable)
+          success = success === null ? true : success
+          const isEdit = success && !lockedObjects.has(id)
+          isActive = isActive && !(preview && preview.id === id)
+          setLayerSelected(layer, isSelected, isActive, isActiveLayer, isDraggable, isEdit)
           if (isActive) {
             this.activeLayer = layer
           }
@@ -1272,7 +1273,7 @@ export default class WebMap extends React.PureComponent {
       if (success) {
         success = await tryLockObject(activeObjectId)
       }
-      if (!success && this.activeLayer.id === activeObjectId) {
+      if (!success && this.activeLayer && this.activeLayer.id === activeObjectId) {
         this.activeLayer.setLocked && this.activeLayer.setLocked(true)
         setLayerSelected(this.activeLayer, true, false)
         this.activeLayer = null
@@ -1870,6 +1871,9 @@ export default class WebMap extends React.PureComponent {
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
       this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
+      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении  layer._bounds._northEast = undefined
+        return
+      }
       const delta = {
         x: this._dragEndPx.x - this._dragStartPx.x,
         y: this._dragEndPx.y - this._dragStartPx.y,
@@ -2263,9 +2267,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   createNewShape = (e) => {
-    const { layer } = e
+    const { layer, target: { pm: { Draw } } } = e
     layer.removeFrom(this.map)
-    const geometry = getGeometry(layer)
+    const geometry = getGeometry(layer, Draw)
     this.props.onFinishDrawNewShape(geometry)
   }
 

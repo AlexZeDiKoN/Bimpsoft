@@ -39,7 +39,7 @@ lineDefinitions['017019'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, _, toPrint) => {
     const width = getStrokeWidth(result.layer)
     const coordArray = result.layer?.getLatLng ? [ result.layer.getLatLng() ] : result.layer?.getLatLngs()
     const sectorsInfo = result.layer?.object?.attributes?.sectorsInfo?.toJS()
@@ -72,8 +72,10 @@ lineDefinitions['017019'] = {
         // вывод радиуса и амплификатора
         const radiusM = Earth.distance(pgO, coordArray[ind]).toFixed(0)
         const amplifier = sectorsInfo[ind]?.amplifier ?? ''
-        drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'after-edge')
-        drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, 1, 'middle', null, 'before-edge')
+        drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'text-after-edge')
+        if (result.layer?.options?.showAmplifiers || toPrint) {
+          drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, 1, 'middle', null, 'text-before-edge')
+        }
       }
     })
   },

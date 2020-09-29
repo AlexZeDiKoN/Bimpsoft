@@ -78,7 +78,7 @@ export default class SquareForm extends
               </FormDarkPart>
             </div>
             <div className="square-container__itemWidth50">
-              {this.renderCoordinateAndWidth()}
+              {this.renderCoordinateAndWidth(true)}
             </div>
           </div>
         </div>
