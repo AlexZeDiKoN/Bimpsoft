@@ -69,7 +69,7 @@ export const CHOOSE_DIRECTIONS = 'Оберіть напрямки'
 export const CLOSE_MAP = 'Закрити карту?'
 export const CLOSE_MAPS = 'Закриття карт'
 export const CLOSE_MAPS_CONFIRM = 'Закрити всі карти?'
-export const LAYER_WITH_NAME = (layerName) => `Шар: ${layerName}`
+export const LAYER = 'Шар'
 export const MAP_WITH_NAME = (mapName) => `Карта: ${mapName}`
 export const NUM_SELECTED_SIGNS = (n) => `Вибрано знаків: ${n}`
 export const NUM_BUFFERED_SIGNS = (n) => `Кількість знаків в буфері: ${n}`

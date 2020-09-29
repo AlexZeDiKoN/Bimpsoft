@@ -27,6 +27,13 @@
   .confirm-text{
     text-align: left;
     padding: 5px 25px;
+    display: flex;
+    & > span{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-left: 5px;
+    }
   }
 
   .dzvin-form-item:first-child {

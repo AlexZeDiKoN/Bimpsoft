@@ -4,6 +4,7 @@ import { components, ModalContainer, MovablePanel } from '@DZVIN/CommonComponent
 import './style.css'
 import FocusTrap from 'react-focus-lock'
 import ReactDOM from 'react-dom'
+import { Tooltip } from 'antd'
 import { shortcuts } from '../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
@@ -23,14 +24,16 @@ export default class DeleteSelectionForm extends React.Component {
     return (
       ReactDOM.createPortal(
         <ModalContainer>
-          <MovablePanel title={i18n.REMOVING_SIGNS} bounds='div.app-body'>
+          <MovablePanel title={i18n.REMOVING_SIGNS} maxWidth={500} bounds='div.app-body'>
             <FocusTrap className="confirm-delete-overflow">
               <HotKeysContainer>
                 <Form className="confirm-delete">
                   <FormItem>
                     <div className="confirm-icon-warning">!</div>
                     <div className="confirm-modal-window">
-                      <div className="confirm-text">{i18n.LAYER_WITH_NAME(layerName)}</div>
+                      <div className="confirm-text">{i18n.LAYER}:
+                        <Tooltip title={layerName} mouseEnterDelay={2}>{layerName}</Tooltip>
+                      </div>
                       <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>
                     </div>
                   </FormItem>
