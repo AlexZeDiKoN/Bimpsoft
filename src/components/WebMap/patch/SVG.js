@@ -136,7 +136,7 @@ L.SVG.include({
 
     this._setLayerPathStyle(layer, {
       opacity,
-      display: hidden ? 'none' : '',
+      display: hidden && !selected ? 'none' : '',
     }, {
       'dzvin-path-selected-on-active-layer': selected && inActiveLayer,
       'dzvin-path-selected': selected && !inActiveLayer,
