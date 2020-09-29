@@ -6,6 +6,9 @@ import i18n from '../../../i18n'
 
 import './style.css'
 
+const idStart = 'dataPickerStart'
+const idEnd = 'dataPickerEnd'
+
 export default class IntervalControl extends React.Component {
   constructor (props) {
     super(props)
@@ -42,29 +45,56 @@ export default class IntervalControl extends React.Component {
     this.props.onChangeTo(e)
   }
 
+  onOkFrom = () => {
+    var event = new MouseEvent('mouseout', {
+      'bubbles': true,
+      'cancelable': true,
+    })
+    var cb = document.getElementById('dataPickerFrom')
+    cb.dispatchEvent(event)
+  }
+
+  onOk = (id) => {
+    var event = new MouseEvent('mouseout', {
+      'bubbles': true,
+      'cancelable': true,
+    })
+    const cb = document.getElementById(id)
+    if (cb) {
+      cb.dispatchEvent(event)
+    }
+  }
+
   render () {
     return (
       <div className='interval-control'>
         <span>{i18n.PERIOD_FROM}</span>
         <Tooltip title={i18n.PERIOD_START} placement='topRight'>
           <DatePicker
+            id={idStart}
             value={this.state.dateStart}
-            style={{ width: 'auto', minWidth: 'auto' }}
+            style={{ minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeFrom}
+            onOk={() => this.onOk(idStart)}
             placeholder={''}
             disabledDate={this.disabledDateAfter}
           />
         </Tooltip>
         <span>{i18n.PERIOD_TO}</span>
-        <Tooltip title={i18n.PERIOD_END} placement='topRight'>
+        <Tooltip
+          title={i18n.PERIOD_END}
+          placement='topRight'
+        >
           <DatePicker
+            id={idEnd}
             value={this.state.dateEnd}
-            style={{ width: 'auto', minWidth: 'auto' }}
+            style={{ minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeTo}
+            onOk={() => this.onOk(idEnd)}
             placeholder={''}
             disabledDate={this.disabledDateBefore}
           />
