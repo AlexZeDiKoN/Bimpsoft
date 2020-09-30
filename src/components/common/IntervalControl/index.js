@@ -45,15 +45,6 @@ export default class IntervalControl extends React.Component {
     this.props.onChangeTo(e)
   }
 
-  onOkFrom = () => {
-    var event = new MouseEvent('mouseout', {
-      'bubbles': true,
-      'cancelable': true,
-    })
-    var cb = document.getElementById('dataPickerFrom')
-    cb.dispatchEvent(event)
-  }
-
   onOk = (id) => {
     var event = new MouseEvent('mouseout', {
       'bubbles': true,
