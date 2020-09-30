@@ -9,9 +9,14 @@ import './style.css'
 const idStart = 'dataPickerStart'
 const idEnd = 'dataPickerEnd'
 
+let addId = 0
+
 export default class IntervalControl extends React.Component {
   constructor (props) {
     super(props)
+    addId += 1
+    this.idDataEnd = idEnd + addId
+    this.idDataStart = idStart + addId
     this.state = {
       dateStart: this.props.from,
       dateEnd: this.props.to,
@@ -62,13 +67,13 @@ export default class IntervalControl extends React.Component {
         <span>{i18n.PERIOD_FROM}</span>
         <Tooltip title={i18n.PERIOD_START} placement='topRight'>
           <DatePicker
-            id={idStart}
+            id={this.idDataStart}
             value={this.state.dateStart}
             style={{ minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeFrom}
-            onOk={() => this.onOk(idStart)}
+            onOk={() => this.onOk(this.idDataStart)}
             placeholder={''}
             disabledDate={this.disabledDateAfter}
           />
@@ -79,13 +84,13 @@ export default class IntervalControl extends React.Component {
           placement='topRight'
         >
           <DatePicker
-            id={idEnd}
+            id={this.idDataEnd}
             value={this.state.dateEnd}
             style={{ minWidth: 'auto' }}
             showTime={{ format: TIME_FORMAT }}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeTo}
-            onOk={() => this.onOk(idEnd)}
+            onOk={() => this.onOk(this.idDataEnd)}
             placeholder={''}
             disabledDate={this.disabledDateBefore}
           />
