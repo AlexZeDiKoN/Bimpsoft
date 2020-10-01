@@ -66,7 +66,6 @@ export default class IntervalControl extends React.Component {
       >
         <div className={'calendar-picker'}>
           <DatePicker
-            className='calendar-picker'
             value={this.state.dateEnd}
             style={{ minWidth: 'auto' }}
             showTime={true}
