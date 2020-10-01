@@ -20,16 +20,22 @@ export default class IntervalControl extends React.Component {
     if (this.state.dateStart === null) {
       return true
     }
-
-    return current.isAfter(this.state.dateEnd)
+    if (this.state.dateEnd?.isValid && this.state.dateEnd.isValid()) {
+      current.hour(this.state.dateEnd.hour())
+      current.minute(this.state.dateEnd.minute())
+    }
+    return current.isAfter(this.state.dateStart)
   }
 
   ValidDateBefore = (current) => {
     if (this.state.dateEnd === null) {
       return true
     }
-
-    return current.isBefore(this.state.dateStart)
+    if (this.state.dateStart?.isValid && this.state.dateStart.isValid()) {
+      current.hour(this.state.dateStart.hour())
+      current.minute(this.state.dateStart.minute())
+    }
+    return current.isBefore(this.state.dateEnd)
   }
 
   onChangeFrom = (e) => {
