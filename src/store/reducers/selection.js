@@ -68,6 +68,7 @@ export default function reducer (state = initState, action) {
       if (res.code === pencilCode && res.attributes.staffComments !== res.attributes.uniqueDesignation1) {
         res.attributes.uniqueDesignation1 = res.attributes.staffComments
       }
+      console.log('reduser set ', res)
       return res
     }
     case actions.SET_PREVIEW_COORDINATE: {

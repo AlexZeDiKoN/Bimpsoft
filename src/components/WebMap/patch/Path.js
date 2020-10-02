@@ -35,11 +35,13 @@ export default L.Path.include({
   },
 
   setLineType: function (lineType) {
+    console.log('setLineType')
     this.lineType = lineType
     this._updateZoomStyles()
   },
 
   setStrokeWidth: function (strokeWidth) {
+    console.log('setStrokeWidth')
     this.strokeWidth = strokeWidth
     this._updateZoomStyles()
   },
@@ -118,6 +120,7 @@ export default L.Path.include({
   },
 
   setScaleOptions: function (scaleOptions) {
+    console.log('setScaleOptions')
     this.scaleOptions = scaleOptions
     this._updateZoomStyles()
   },
@@ -136,10 +139,13 @@ export default L.Path.include({
   },
 
   _onZoomEnd: function () {
+    console.log('zoomEnd')
     this._updateZoomStyles()
   },
 
   _updateZoomStyles: function () {
+    console.log('updZoomNot_Map', this._map)
+    console.log('Map', this.map)
     if (!this._map) {
       return
     }
@@ -152,6 +158,7 @@ export default L.Path.include({
       lineType,
       lineTypePrev,
     } = this
+    console.log('updZoom', scaleOptions)
     if (scaleOptions !== undefined) {
       const zoom = this._map.getZoom()
       const scaleChanged = scaleOptions !== scaleOptionsPrev || zoom !== zoomPrev
@@ -172,8 +179,11 @@ export default L.Path.include({
       if (scaleChanged || lineTypePrev !== lineType) {
         this.lineTypePrev = lineType
         styles.dashArray = getStylesForLineType(lineType, scale).strokeDasharray
+        console.log('getdashed', this)
         hasStyles = true
         needRedraw = true
+      } else {
+        console.log('Not getdashed', this)
       }
       hasStyles && this.setStyle(styles)
       needRedraw && this.redraw()

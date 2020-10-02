@@ -464,6 +464,7 @@ export default class WebMap extends React.PureComponent {
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
+    console.log('didUpdate', level)
     if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
       layer !== prevProps.layer || list !== prevProps.selection.list || highlighted !== prevProps.highlighted
     ) {
@@ -1301,6 +1302,7 @@ export default class WebMap extends React.PureComponent {
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted) => {
     if (item.object) {
+      console.log('itemUpdShLayer', item)
       const { layer, level = 0, code } = item.object
 
       const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
@@ -1756,8 +1758,10 @@ export default class WebMap extends React.PureComponent {
       return null
     }
 
+    console.log('addOb', object)
     const layer = createTacticalSign(object, this.map, prevLayer)
 
+    console.log('addOb', { layer, ltp: layer.lineTypePrev })
     if (layer) {
       layer.map = this.map
       layer.options.lineCap = 'butt'
@@ -2296,6 +2300,7 @@ export default class WebMap extends React.PureComponent {
     } catch (e) {
       return
     }
+    console.log('drop', data)
     if (data.type === 'unit') {
       const point = this.map.mouseEventToLatLng(e)
       const { lat, lng } = point
@@ -2346,6 +2351,7 @@ export default class WebMap extends React.PureComponent {
       }
       this.props.newShapeFromLine(data, this.map.containerPointToLatLng(point), geometry)
     }
+    console.log('drop end')
   }
 
   disableDrawLineSquareMark = () => {
