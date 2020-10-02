@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@DZVIN/CommonComponents@^16.3.548":
-  version "16.3.548"
-  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-16.3.548.tgz#75de1537c43434404aa595fe0a8b016e10ac5f4d"
-  integrity sha512-LTaKMUJwGXAXzE1D7keEgy6i5GJNNkqbVxfffxKM2VeVnpvp+Ur+IXmNdoEdPSpJccNaQRjgu1OSuI4dtyEfLA==
+"@DZVIN/CommonComponents@^16.3.549":
+  version "16.3.549"
+  resolved "http://172.16.95.16:4873/@DZVIN%2fCommonComponents/-/CommonComponents-16.3.549.tgz#3a44f3f147a96b4f33cb43ff854c838d91398e1b"
+  integrity sha512-4UynDCmtX/mWOewQpMb58n6NftDbDVjEIH9R6+3VziDGzQ5DFsWzeKYqVGACyCZDvprtRMFGLBC7Sk+A+AK/2w==
   dependencies:
     "@DZVIN/validators" "^1.0.9"
     classnames "^2.2.6"
