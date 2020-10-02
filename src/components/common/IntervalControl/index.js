@@ -16,7 +16,7 @@ export default class IntervalControl extends React.Component {
     }
   }
 
-  ValidDateAfter = (current) => {
+  validDateAfter = (current) => {
     if (this.state.dateStart === null) {
       return true
     }
@@ -27,7 +27,7 @@ export default class IntervalControl extends React.Component {
     return current.isAfter(this.state.dateStart)
   }
 
-  ValidDateBefore = (current) => {
+  validDateBefore = (current) => {
     if (this.state.dateEnd === null) {
       return true
     }
@@ -61,7 +61,7 @@ export default class IntervalControl extends React.Component {
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeFrom}
             placeholder={''}
-            isValidDate={this.ValidDateBefore}>
+            isValidDate={this.validDateBefore}>
           </DatePicker>
         </div>
       </Tooltip>
@@ -78,7 +78,7 @@ export default class IntervalControl extends React.Component {
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeTo}
             placeholder={''}
-            isValidDate={this.ValidDateAfter}
+            isValidDate={this.validDateAfter}
           />
         </div>
       </Tooltip>
