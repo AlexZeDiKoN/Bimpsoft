@@ -60,7 +60,6 @@ export const showEditForm = (id) => (dispatch, getState) => {
   if (
     !taskModeSelector(state) && !targetingModeSelector(state) && (!object || !GROUPS.GENERALIZE.includes(object.type))
   ) {
-    console.log('showEditForm', object)
     dispatch(setPreview(object))
   }
 }
