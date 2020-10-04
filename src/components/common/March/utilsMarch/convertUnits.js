@@ -92,6 +92,41 @@ const convertSegmentsForExplorer = (segments) => {
   return { segments: convertSegments }
 }
 
+const getDataRoute = ({ waypoints = [] }) => {
+  const distances = []
+  const coordinates = []
+  waypoints.forEach(({ distance, location = [] }) => {
+    distances.push(distance)
+    coordinates.push({ lat: location[0], lng: location[1] })
+  })
+  return {
+    coordinates,
+    distances,
+  }
+}
+
+const getTwoPointsRoute = (segments, segmentId, childId) => {
+  let firstPoint, secondPoint
+  if (childId === undefined) {
+    firstPoint = segments[segmentId].coordinates
+    if (segments[segmentId].children && segments[segmentId].children.length) {
+      secondPoint = segments[segmentId].children[0].coordinates
+    } else {
+      secondPoint = (segmentId + 1) < segments.length ? segments[segmentId + 1].coordinates : null
+    }
+  } else {
+    firstPoint = segments[segmentId].children[childId].coordinates
+    if ((childId + 1) === segments[segmentId].children.length) {
+      secondPoint = (segmentId + 1) < segments.length ? segments[segmentId + 1].coordinates : null
+    } else {
+      secondPoint = segments[segmentId].children[childId + 1].coordinates
+    }
+  }
+  firstPoint = firstPoint && Object.keys(firstPoint).length === 2 ? firstPoint : null
+  secondPoint = secondPoint && Object.keys(secondPoint).length === 2 ? secondPoint : null
+  return [ firstPoint, secondPoint ]
+}
+
 export default {
   azimuthToCardinalDirection,
   getFilteredGeoLandmarks,
@@ -99,4 +134,6 @@ export default {
   msToTime,
   msToHours,
   convertSegmentsForExplorer,
+  getDataRoute,
+  getTwoPointsRoute,
 }

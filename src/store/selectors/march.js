@@ -33,6 +33,7 @@ export const marchDots = createSelector(
           coordinates: it.coordinates,
           options: { color: getSegmentColor(it.type) },
           refPoint: it.refPoint,
+          route: it.route,
         })
       }
       if (it.children && it.children.length > 0) {
@@ -42,6 +43,7 @@ export const marchDots = createSelector(
               coordinates: it2.coordinates,
               options: { color: getSegmentColor(it.type) },
               refPoint: it2.refPoint,
+              route: it.route,
             })
           }
         })

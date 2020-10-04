@@ -26,9 +26,16 @@ export const CLOSE_MARCH = action('CLOSE_MARCH')
 export const SET_GEO_LANDMARKS = action('SET_GEO_LANDMARKS')
 export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 export const SET_METRIC = action('SET_METRIC')
+export const SET_ROUTE = action('SET_ROUTE')
 
 const { getMarchMetric } = api
-const { convertSegmentsForExplorer, getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
+const {
+  convertSegmentsForExplorer,
+  getFilteredGeoLandmarks,
+  azimuthToCardinalDirection,
+  getDataRoute,
+  getTwoPointsRoute,
+} = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -427,6 +434,8 @@ export const setCoordFromMap = (value) => asyncAction.withNotification(
     const { segments, coordModeData, geoLandmarks } = march
     const data = { ...coordModeData, val: value, fieldName: 'coordinates' }
 
+    console.log('----------------data', data)
+
     const { updateSegments } = getUpdateSegments(segments, data, geoLandmarks, dispatch)
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
@@ -611,5 +620,102 @@ export const setGeoLandmarks = (data) => asyncAction.withNotification(
     dispatch({
       type: SET_GEO_LANDMARKS,
       payload,
+    })
+  })
+
+export const getRoute = (segmentId, childId) => asyncAction.withNotification(
+  async (dispatch, getState) => {
+    const { march: { segments } } = getState()
+
+    const twoPointsRoute = getTwoPointsRoute(segments.toArray(), segmentId, childId)
+
+    console.log('-----------------twoPointsRoute', twoPointsRoute)
+
+    // console.log('---------------march', march.segments.get(0))
+
+    // const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(type))
+
+    // const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
+
+    // dispatch(updateMetric(march.payload, updateSegments))
+
+    // const payload = { segments: updateSegments, isCoordFilled }
+
+    const mocData = {
+      'waypoints': [
+        {
+          'nodes': [
+            2264199819,
+            0,
+          ],
+          'hint': 'KSoKADRYroqUBAEAEAAAABkAAAAGAAAAAAAAABhnCQCLtwAA_0vMAKlYIQM8TMwArVghAwEAAQH1a66g',
+          'distance': 4.152629,
+          'name': 'Friedrichstraße',
+          'location': [
+            49.77417,
+            30.08057,
+          ],
+        },
+        {
+          'nodes': [
+            2045820592,
+            0,
+          ],
+          'hint': 'KSoKADRYroqUBAEABgAAAAAAAAAAAAAAKQAAABhnCQCLtwAA7kvMAAxZIQM8TMwArVghAwAAAQH1a66g',
+          'distance': 11.811961,
+          'name': 'Friedrichstraße',
+          'location': [
+            49.30364,
+            29.75098,
+          ],
+        },
+        {
+          'nodes': [
+            0,
+            21487242,
+          ],
+          'hint': 'KioKgDbbDgCUBAEAAAAAABoAAAAAAAAAPAAAABlnCQCLtwAA50vMADJZIQM8TMwArVghAwAAAQH1a66g',
+          'distance': 15.872438,
+          'name': 'Friedrichstraße',
+          'location': [
+            48.81410,
+            30.24536,
+          ],
+        },
+      ],
+      'code': 'Ok',
+    }
+
+    const dataRoute = getDataRoute(mocData)
+
+    console.log('---------------dataRoute', dataRoute)
+
+    let updateSegments
+
+    if (childId || childId === 0) {
+      updateSegments = segments.update(segmentId, (segment) => ({
+        ...segment,
+        children: segment.children.map((it, id) => {
+          return (id === childId) ? {
+            ...it,
+            route: dataRoute,
+          } : it
+        }),
+      }))
+    } else {
+      const children = segments.get(segmentId).children
+
+      updateSegments = segments.update(segmentId, (segment) => {
+        return {
+          ...segment,
+          route: dataRoute,
+          children,
+        }
+      })
+    }
+
+    dispatch({
+      type: SET_ROUTE,
+      payload: { segments: updateSegments },
     })
   })

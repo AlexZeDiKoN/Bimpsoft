@@ -68,6 +68,7 @@ const MarchForm = (props) => {
     toggleGeoLandmarkModal,
     toggleDeleteMarchPointModal,
     setGeoLandmarks,
+    getRoute,
   } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
@@ -151,6 +152,10 @@ const MarchForm = (props) => {
 
   const onHandlerOwnGeoLandmark = () => {
     toggleGeoLandmarkModal(true, coordinates, segmentId, childId)
+  }
+
+  const onGetRoute = () => {
+    getRoute(segmentId, childId)
   }
 
   let dotClass
@@ -273,7 +278,9 @@ const MarchForm = (props) => {
                 <span><strong>+ {i18n.OWN_VARIANT}</strong></span>
               </div>
             </Option>
+
           </Select>
+          <button onClick={onGetRoute} style={{ right: '0px', position: 'absolute' }}>asd</button>
         </Tooltip>
         {isStaticPointType
           ? <Input
@@ -340,6 +347,7 @@ MarchForm.propTypes = {
     toggleGeoLandmarkModal: PropTypes.func.isRequired,
     toggleDeleteMarchPointModal: PropTypes.func.isRequired,
     setGeoLandmarks: PropTypes.func.isRequired,
+    getRoute: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
