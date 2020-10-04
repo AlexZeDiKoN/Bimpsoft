@@ -35,13 +35,13 @@ export function post (url, data = {}, operation, route = '/do') {
   return getDirect(`${url}${route}`, request)
 }
 
-export function getDirect (url, data = {}) {
-  const options = _getOptions(data ? 'POST' : 'GET')
+export function getDirect (url, data = {}, withoutCredentials) {
+  const options = _getOptions(data ? 'POST' : 'GET', withoutCredentials)
   setOptionsData(options, data)
   return _createRequest(url, options)
 }
 
-function _getOptions (method) {
+function _getOptions (method, withoutCredentials) {
   const auth = window.session
     ? window.session.authHeader()
     : null
@@ -49,12 +49,15 @@ function _getOptions (method) {
   if (auth) {
     headers.append('Authorization', auth)
   }
-  return {
-    mode: 'cors',
-    credentials: 'include',
+  const result = {
     method,
     headers,
   }
+  if (!withoutCredentials) {
+    result.mode = 'cors'
+    result.credentials = 'include'
+  }
+  return result
 }
 
 const _getServerName = (url) => {

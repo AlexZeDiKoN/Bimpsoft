@@ -1,13 +1,11 @@
 import React from 'react'
-import { DatePicker, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { TIME_FORMAT, DATE_TIME_FORMAT } from '../../../constants/formats'
+import DatePicker from '@DZVIN/CommonComponents/build/components/inputs/DatePicker'
+import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
 
 import './style.css'
-
-const idStart = 'dataPickerStart'
-const idEnd = 'dataPickerEnd'
 
 export default class IntervalControl extends React.Component {
   constructor (props) {
@@ -18,89 +16,73 @@ export default class IntervalControl extends React.Component {
     }
   }
 
-  disabledDateAfter = (current) => {
-    if (this.state.dateEnd === null) {
-      return false
+  validDateAfter = (current) => {
+    if (this.state.dateStart === null) {
+      return true
     }
-
-    return current.isAfter(this.state.dateEnd)
+    if (this.state.dateEnd?.isValid && this.state.dateEnd.isValid()) {
+      current.hour(this.state.dateEnd.hour())
+      current.minute(this.state.dateEnd.minute())
+    }
+    return current.isAfter(this.state.dateStart)
   }
 
-  disabledDateBefore = (current) => {
-    if (this.state.dateStart === null) {
-      return false
+  validDateBefore = (current) => {
+    if (this.state.dateEnd === null) {
+      return true
     }
-
-    return current.isBefore(this.state.dateStart)
+    if (this.state.dateStart?.isValid && this.state.dateStart.isValid()) {
+      current.hour(this.state.dateStart.hour())
+      current.minute(this.state.dateStart.minute())
+    }
+    return current.isBefore(this.state.dateEnd)
   }
 
   onChangeFrom = (e) => {
-    e && e.second && e.second(0) // сброс секунд при выборе интервала
-    this.setState({ dateStart: e })
-    this.props.onChangeFrom(e)
+    this.setState({ dateStart: e.target.value })
+    this.props.onChangeFrom(e.target.value)
   }
 
   onChangeTo = (e) => {
-    this.setState({ dateEnd: e })
-    this.props.onChangeTo(e)
-  }
-
-  onOkFrom = () => {
-    var event = new MouseEvent('mouseout', {
-      'bubbles': true,
-      'cancelable': true,
-    })
-    var cb = document.getElementById('dataPickerFrom')
-    cb.dispatchEvent(event)
-  }
-
-  onOk = (id) => {
-    var event = new MouseEvent('mouseout', {
-      'bubbles': true,
-      'cancelable': true,
-    })
-    const cb = document.getElementById(id)
-    if (cb) {
-      cb.dispatchEvent(event)
-    }
+    this.setState({ dateEnd: e.target.value })
+    this.props.onChangeTo(e.target.value)
   }
 
   render () {
-    return (
-      <div className='interval-control'>
-        <span>{i18n.PERIOD_FROM}</span>
-        <Tooltip title={i18n.PERIOD_START} placement='topRight'>
+    return <div className='interval-control'>
+      <span>{i18n.PERIOD_FROM}</span>
+      <Tooltip
+        title={i18n.PERIOD_START}
+        placement='topRight'>
+        <div className={'calendar-picker'}>
           <DatePicker
-            id={idStart}
             value={this.state.dateStart}
-            style={{ minWidth: 'auto' }}
-            showTime={{ format: TIME_FORMAT }}
+            showTime={true}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeFrom}
-            onOk={() => this.onOk(idStart)}
             placeholder={''}
-            disabledDate={this.disabledDateAfter}
-          />
-        </Tooltip>
-        <span>{i18n.PERIOD_TO}</span>
-        <Tooltip
-          title={i18n.PERIOD_END}
-          placement='topRight'
-        >
+            isValidDate={this.validDateBefore}>
+          </DatePicker>
+        </div>
+      </Tooltip>
+      <span>{i18n.PERIOD_TO}</span>
+      <Tooltip
+        title={i18n.PERIOD_END}
+        placement='topRight'
+      >
+        <div className={'calendar-picker'}>
           <DatePicker
-            id={idEnd}
             value={this.state.dateEnd}
             style={{ minWidth: 'auto' }}
-            showTime={{ format: TIME_FORMAT }}
+            showTime={true}
             format={DATE_TIME_FORMAT}
             onChange={this.onChangeTo}
-            onOk={() => this.onOk(idEnd)}
             placeholder={''}
-            disabledDate={this.disabledDateBefore}
+            isValidDate={this.validDateAfter}
           />
-        </Tooltip>
-      </div>
-    )
+        </div>
+      </Tooltip>
+    </div>
   }
 }
 
