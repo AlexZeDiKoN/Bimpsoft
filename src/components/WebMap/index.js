@@ -1323,7 +1323,6 @@ export default class WebMap extends React.PureComponent {
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
       item.setShadowColor && item.setShadowColor(color)
-      // item.setDasharray && item.setDasharray()
     }
   }
 
