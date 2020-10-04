@@ -5,6 +5,7 @@ import {
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import { degrees120, halfPI } from '../../../../../constants/utils'
 
 // sign name: Створення активних перешкод
 // task code: DZVIN-5990
@@ -37,10 +38,10 @@ lineDefinitions['017063'] = {
 
     drawLine(result, p0, p1, p2)
 
-    const point1 = getPointAt(p1, p0, Math.PI * 2 / 3, len / 2)
-    const point12 = getPointAt(p0, point1, -Math.PI * 2 / 3, len)
-    const point2 = getPointAt(p1, p0, -Math.PI * 2 / 3, len / 2)
-    const point22 = getPointAt(p0, point2, Math.PI * 2 / 3, len)
+    const point1 = getPointAt(p1, p0, degrees120, len / 2)
+    const point12 = getPointAt(p0, point1, -degrees120, len)
+    const point2 = getPointAt(p1, p0, -degrees120, len / 2)
+    const point22 = getPointAt(p0, point2, degrees120, len)
 
     drawLine(result, point12, point1, p0, point2, point22)
 
@@ -48,18 +49,18 @@ lineDefinitions['017063'] = {
     drawLineMark(result, MARK_TYPE.ARROW_60, point22, angleOf(point2, point22))
 
     if (result.layer?.options?.showAmplifiers || toPrint) {
-      const fontSize = getFontSize(result.layer)
+      const margin = getFontSize(result.layer) / 8
       const text = result.layer.object.attributes.pointAmplifier?.[amps.T] ?? ''
       const angle = angleOf(p1, p2)
       const pointAmp = segmentBy(p1, p2)
       drawText(result,
-        getPointMove(pointAmp, angle + (Math.abs(angle) > Math.PI / 2 ? Math.PI / 2 : -Math.PI / 2), fontSize / 10),
+        getPointMove(pointAmp, angle + (Math.abs(angle) > halfPI ? halfPI : -halfPI), margin),
         angle,
         text,
         1,
         'middle',
         null,
-        'after-edge')
+        'text-after-edge')
     }
   },
 }

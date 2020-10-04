@@ -3,26 +3,50 @@
 
 .interval-control{
   .flex;
+  height: auto;
   overflow: hidden;
-  .ant-calendar-picker{
+  .calendar-picker {
     margin: 6px;
+    width: auto;
+
     & > div {
       position: relative;
-      max-width: 130px;
+      max-width: 110px;
+    }
+
+    .dzvin-input {
+      //overflow: hidden;
+      //text-overflow: ellipsis;
+      //white-space: nowrap;
+      padding: 4px;
+      font-size: 12px;
+      height: 28px;
+      color: @toolbar-light-background;
+      background: @sidebar-control-background-color;
+      border: 0;
+
+      & > input {
+        margin: 0;
+        color: @toolbar-light-background;
+        background: @sidebar-control-background-color;
+      }
+
+      .align-left {
+        margin: 0;
+      }
+
+      .dzvin-input-after {
+        margin-right: 0;
+
+        .datePicker__controls {
+          .dzvin-icon-CALENDAR {
+            display: none;
+          }
+        }
+      }
     }
   }
-  .ant-input{
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 5px;
-    font-size: 12px;
-    color: @toolbar-light-background;
-    height: 24px;
-    background: @sidebar-control-background-color;
-    border: 0;
-  }
-  .ant-calendar-picker-icon{
+    .ant-calendar-picker-icon{
     display: none;
   }
   .ant-calendar-picker-clear{

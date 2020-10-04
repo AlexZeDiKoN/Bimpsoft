@@ -3,7 +3,7 @@ import { Select, Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { MARK_TYPE } from '../../../constants/drawLines'
-import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
+import { MAX_LENGTH_TEXT, MAX_ROW } from '../../../constants/InputText'
 import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 
@@ -47,9 +47,13 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
     })
   }
 
-  createIntermediateAmplifierHandler = (id) => (event) => (
-    this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
-  )
+  createIntermediateAmplifierHandler = (id) => (event) => {
+    const strs = event.target.value.split('\n')
+    if (strs.length > MAX_ROW.INTERMEDIATE_AMP) {
+      return
+    }
+    return this.setResult((result) => result.setIn([ ...PATH, id ], event.target.value))
+  }
 
   renderIntermediateAmplifiers (svg) {
     const state = this.getResult()
