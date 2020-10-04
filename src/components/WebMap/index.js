@@ -216,7 +216,7 @@ const serializeCoordinate = (mode, lat, lng) => {
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
-const setScaleOptions = (layer, params) => {
+const setScaleOptions = (layer, params, needRedraw) => {
   const pointSizes = {
     min: Number(params[paramsNames.POINT_SIZE_MIN]),
     max: Number(params[paramsNames.POINT_SIZE_MAX]),
@@ -232,17 +232,17 @@ const setScaleOptions = (layer, params) => {
   }
   if (layer?.object) {
     if (layer.object.catalogId) {
-      layer.setScaleOptions(pointSizes)
+      layer.setScaleOptions(pointSizes, needRedraw)
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
         case entityKind.GROUPED_REGION:
-          layer.setScaleOptions(pointSizes)
+          layer.setScaleOptions(pointSizes, needRedraw)
           break
         case entityKind.TEXT:
-          layer.setScaleOptions(textSizes)
+          layer.setScaleOptions(textSizes, needRedraw)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
@@ -254,7 +254,7 @@ const setScaleOptions = (layer, params) => {
         case entityKind.SQUARE:
         case entityKind.CONTOUR:
         case entityKind.SOPHISTICATED:
-          layer.setScaleOptions(lineSizes)
+          layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:
       }
@@ -464,7 +464,6 @@ export default class WebMap extends React.PureComponent {
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
     }
-    console.log('didUpdate', level)
     if (level !== prevProps.level || layersById !== prevProps.layersById || hiddenOpacity !== prevProps.hiddenOpacity ||
       layer !== prevProps.layer || list !== prevProps.selection.list || highlighted !== prevProps.highlighted
     ) {
@@ -1302,28 +1301,29 @@ export default class WebMap extends React.PureComponent {
 
   updateShowLayer = (levelEdge, layersById, hiddenOpacity, selectedLayerId, item, list, highlighted) => {
     if (item.object) {
-      console.log('itemUpdShLayer', item)
       const { layer, level = 0, code } = item.object
 
-      const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
+      const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW) // если уровень подчинения не выбран - приравнивается экипажу
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
-      const isHighlightedItem = highlighted?.list?.includes(item.id)
+      const isHighlightedItem = Boolean(highlighted?.list?.includes(item.id))
       const hidden = !isSelectedItem && !isHighlightedItem && (
         (itemLevel < levelEdge) ||
         ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
-        (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
+        (Boolean(item._groupParent) && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
+      const isSelectedLayer = selectedLayerId === layer // объект принадлежит активному слою
 
-      const isSelectedLayer = selectedLayerId === layer
       const isTargetDesignation = targetDesignationCode.has(code) // Определение знака целеуказания
-      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? (isTargetDesignation ? 1100000000 : 1000000000) : 0
-
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
+
+      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       item.setOpacity && item.setOpacity(opacity)
+
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
       item.setShadowColor && item.setShadowColor(color)
+      // item.setDasharray && item.setDasharray()
     }
   }
 
@@ -1373,13 +1373,18 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
+    // обновляем масштабные настройки всех объектов карты
     this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
     if (this.map) {
       this.map.options.showAmplifiers = showAmplifiers
-      this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+      this.map.objects.forEach((layer) => {
+        if (layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)) {
+          layer.redraw()
+        }
+      })
     }
   }
 
@@ -1758,10 +1763,7 @@ export default class WebMap extends React.PureComponent {
       return null
     }
 
-    console.log('addOb', object)
     const layer = createTacticalSign(object, this.map, prevLayer)
-
-    console.log('addOb', { layer, ltp: layer.lineTypePrev })
     if (layer) {
       layer.map = this.map
       layer.options.lineCap = 'butt'
@@ -1792,7 +1794,6 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:dragend', this.onDragEnded)
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
-
       if (layer === prevLayer) {
         layer.update && layer.update()
         if (layer.pm && layer.pm.enabled()) {
@@ -1802,11 +1803,9 @@ export default class WebMap extends React.PureComponent {
       } else {
         this.map.objects.push(layer)
       }
-
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
 
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
-
       if (color !== null && color !== '') {
         layer.setColor && layer.setColor(colors.evaluateColor(color))
       }
@@ -1819,10 +1818,8 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-
-      setScaleOptions(layer, params)
-
-      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+      setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
     }
 
     return layer
@@ -2300,7 +2297,6 @@ export default class WebMap extends React.PureComponent {
     } catch (e) {
       return
     }
-    console.log('drop', data)
     if (data.type === 'unit') {
       const point = this.map.mouseEventToLatLng(e)
       const { lat, lng } = point
@@ -2319,10 +2315,10 @@ export default class WebMap extends React.PureComponent {
       const w = Math.max(Math.min(size.x, size.y) / 4, 128)
       const sw = w / 2
       const c2g = (p) => this.map.containerPointToLatLng(p)
-      let geometry = []
+      let geometry
       if (amp.type === entityKind.SOPHISTICATED) {
-        geometry = (geometry && geometry.length) ||
-          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+        geometry = findDefinition(data.code).init(data.amp).map(
+          ({ x: dx, y: dy }) => ({
             x: x - w + dx * w * 2,
             y: y - w + dy * w * 2,
           })).map(c2g)
@@ -2351,7 +2347,6 @@ export default class WebMap extends React.PureComponent {
       }
       this.props.newShapeFromLine(data, this.map.containerPointToLatLng(point), geometry)
     }
-    console.log('drop end')
   }
 
   disableDrawLineSquareMark = () => {
