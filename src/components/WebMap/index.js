@@ -551,8 +551,7 @@ export default class WebMap extends React.PureComponent {
   sources = []
 
   updateMinimap = (showMiniMap) => showMiniMap
-    ? this.mini.addTo(this.map) &&
-    this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', ({ target: { _renderer: r } }) => r?._update())
     : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
@@ -1871,7 +1870,7 @@ export default class WebMap extends React.PureComponent {
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
       this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
-      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении  layer._bounds._northEast = undefined
+      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении layer._bounds._northEast = undefined
         return
       }
       const delta = {
