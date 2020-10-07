@@ -316,6 +316,7 @@ export default class WebMap extends React.PureComponent {
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
     edit: PropTypes.bool,
+    flexGridSelected: PropTypes.bool,
     selection: PropTypes.shape({
       showForm: PropTypes.string,
       newShape: PropTypes.shape({
@@ -434,7 +435,7 @@ export default class WebMap extends React.PureComponent {
     window.explorerBridge.init(true)
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  async componentDidUpdate (prevProps, prevState, snapshot) {
     if (!this.map || !this.map._container) {
       return // Exit if map is not yet initialized
     }
@@ -490,8 +491,8 @@ export default class WebMap extends React.PureComponent {
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
       this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
-    this.updateSelection(prevProps)
-    this.updateActiveObject(prevProps)
+    await this.updateSelection(prevProps)
+    await this.updateActiveObject(prevProps)
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType, this.indicateMode)
     }
@@ -904,6 +905,7 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
     } = this.props
+
     if (newList.length === 0 && list.length === 0) {
       return
     }
@@ -1214,7 +1216,7 @@ export default class WebMap extends React.PureComponent {
         isSelected && selectedIds.push(layer.id)
       }
     })
-    this.onSelectedListChange(selectedIds)
+    return this.onSelectedListChange(selectedIds)
   }
 
   updateSelection = async (prevProps) => {
@@ -1226,15 +1228,18 @@ export default class WebMap extends React.PureComponent {
       lockedObjects,
       activeObjectId,
       checkObjectAccess,
+      flexGridSelected,
     } = this.props
+
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
       edit !== prevProps.edit ||
       layerId !== prevProps.layer ||
-      preview !== prevProps.selection.preview
+      preview !== prevProps.selection.preview ||
+      flexGridSelected !== prevProps.flexGridSelected
     ) {
-      let success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
+      const success = flexGridSelected || (activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE)
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
@@ -1249,8 +1254,7 @@ export default class WebMap extends React.PureComponent {
           if (layer._map === null) {
             layer._map = this.map
           }
-          success = success === null ? true : success
-          const isEdit = success && !lockedObjects.has(id)
+          const isEdit = Boolean(success && !lockedObjects.has(id))
           isActive = isActive && !(preview && preview.id === id)
           setLayerSelected(layer, isSelected, isActive, isActiveLayer, isDraggable, isEdit)
           if (isActive) {
@@ -1794,7 +1798,7 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:vertexadded', this.onVertexAdded)
       if (layer === prevLayer) {
         layer.update && layer.update()
-        if (layer.pm && layer.pm.enabled()) {
+        if (layer.pm?.enabled()) {
           layer.pm.disable()
           layer.pm.enable()
         }
@@ -1908,6 +1912,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
+    this.draggingObject = true
     let { selection: { list } } = this.props
     const { lockedObjects, warningLockObjectsMove } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
@@ -1930,6 +1935,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragEnded = ({ target: layer }) => {
+    this.draggingObject = false
     this.moveListByOne(layer)
     let { selection: { list } } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)

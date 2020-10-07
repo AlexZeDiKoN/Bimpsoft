@@ -71,14 +71,15 @@ export const disableEdit = (layer) => {
     marker.off('click')
     marker.off('dblclick')
   })
-
   layer.pm.disable()
 }
 
 export const setLayerSelected = (layer, selected, active, activeLayer, isDraggable, isEdit = true) => {
   layer.setSelected && layer.setSelected(selected, activeLayer)
-  if (layer.pm?.enabled() !== active && isEdit) {
-    if (active && isEdit) {
+  const editing = layer.pm?.enabled()
+  const willEdit = active && isEdit
+  if (editing !== willEdit) {
+    if (willEdit) {
       enableEdit(layer)
     } else {
       disableEdit(layer)
@@ -86,7 +87,7 @@ export const setLayerSelected = (layer, selected, active, activeLayer, isDraggab
   }
   if (isDraggable !== undefined && isDraggable !== layer.options.draggable) {
     layer.options.draggable = isDraggable
-    if (layer._map && layer.pm) { //  && layer.dragging
+    if (layer._map && layer.pm) { // && layer.dragging
       if (isDraggable) {
         layer.pm.enableLayerDrag()
       } else {
