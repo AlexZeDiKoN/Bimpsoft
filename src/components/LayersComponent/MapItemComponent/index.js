@@ -7,6 +7,7 @@ import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import DeleteMapForm from './DeleteMapForm'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { TextFilter } = data
 const { common: { TreeComponent, HighlightedText } } = components
@@ -91,13 +92,13 @@ export default class MapItemComponent extends React.Component {
           <HighlightedText text={name} textFilter={textFilter} />
         </span>
         <div className='color-picker-hover'>
-          <Tooltip title={i18n.CREATE_REPORT_MAP} placement='topRight'>
+          <Tooltip title={i18n.CREATE_REPORT_MAP} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
             <IButton
               icon={IconNames.BAR_2_SAVE}
               onClick={() => this.onShowReportMapModal(this.props.data)}
             />
           </Tooltip>
-          <Tooltip title={i18n.PRINT_BUTTON} placement='topRight'>
+          <Tooltip title={i18n.PRINT_BUTTON} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
             <IButton
               icon={IconNames.MENU_PRINT}
               onClick={this.onPrintMapHandler}
@@ -111,7 +112,7 @@ export default class MapItemComponent extends React.Component {
             color={color}
             onChange={this.changeColorHandler}
           />
-          <Tooltip title={i18n.LAYERS_CLOSE_CURRENT_MAP} placement='topRight'>
+          <Tooltip title={i18n.LAYERS_CLOSE_CURRENT_MAP} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
             <IButton
               icon={IconNames.CLOSE_MAP}
               onClick={this.closeHandler}

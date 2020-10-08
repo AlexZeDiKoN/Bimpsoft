@@ -8,6 +8,7 @@ import { IButton } from '@DZVIN/CommonComponents'
 import { Tooltip } from 'antd'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import ColorPickerPopup from './ColorPickerPopup'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const PRESENT_COLORS = [
   'transparent',
@@ -114,7 +115,7 @@ const ColorPicker = (props) => {
         popupStyle={POPUP_STYLE}
         popup={popup}>
         {props.icon
-          ? <Tooltip title={props.title} placement='topRight'>
+          ? <Tooltip title={props.title} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
             <IButton
               icon={props.icon}
               onClick={handleButtonClick}/>

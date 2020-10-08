@@ -10,6 +10,7 @@ import { MAX_DIRECTIONS } from '../../../store/reducers/flexGrid'
 import formFor from './DirectionForms'
 import Combine from './DirectionForms/Combine'
 import Divide from './DirectionForms/Divide'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const DivideDirectionForm = formFor(Divide)
 const CombineDirectionsForm = formFor(Combine)
@@ -60,7 +61,7 @@ export default class FlexGridButtons extends React.Component {
       <>
         <MenuDivider />
         <HotKey selector={shortcuts.DROP_FLEX_GRID} onKey={dropHandler} />
-        <Tooltip title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`} placement='bottomLeft'>
+        <Tooltip title={`${i18n.FLEX_GRID} (${i18n.FLEX_GRID_SHORTCUT})`} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -69,7 +70,7 @@ export default class FlexGridButtons extends React.Component {
             onClick={dropHandler}
           />
         </Tooltip>
-        <Tooltip title={i18n.SEND_TO_ICT} placement='bottomLeft'>
+        <Tooltip title={i18n.SEND_TO_ICT} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -79,7 +80,7 @@ export default class FlexGridButtons extends React.Component {
           />
         </Tooltip>
         <div className='btn-context-container'>
-          <Tooltip title={i18n.DIVIDE_DIRECTION} placement='bottomLeft'>
+          <Tooltip title={i18n.DIVIDE_DIRECTION} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -98,7 +99,7 @@ export default class FlexGridButtons extends React.Component {
           />}
         </div>
         <div className='btn-context-container'>
-          <Tooltip title={i18n.COMBINE_DIRECTIONS} placement='bottomLeft'>
+          <Tooltip title={i18n.COMBINE_DIRECTIONS} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}

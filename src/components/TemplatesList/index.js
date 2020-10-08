@@ -5,6 +5,7 @@ import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../i18n'
 import './style.css'
 import Item from './Item'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 const { IconHovered, names } = components.icons
 
@@ -34,7 +35,7 @@ export default class TemplatesList extends React.Component {
             onEditTemplate={this.props.onEditTemplate}
           />
         ))}
-        <Tooltip title={i18n.ADD_POINT_SIGN_TEMPLATE} >
+        <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.ADD_POINT_SIGN_TEMPLATE} >
           <IconHovered
             icon={names.ADD_TABLE_DEFAULT}
             hoverIcon={names.ADD_TABLE_HOVER}
