@@ -255,7 +255,7 @@ export const ERROR_TEXT_NULL = 'текстового поля.'
 export const CANNOT_OPEN_LAYER_WO_PARENT = 'Неможливо відкрити шар, для якого не задана карта'
 // export const CANNOT_OPEN_LAYER_WO_FORMATION = 'Неможливо відкрити шар, для якого не задана організаційна структура'
 
-export const ERROR_ACCESS_DENIED = 'Доступ заборонено'
+export const ERROR_ACCESS_DENIED = 'Доступ заборонено або карту/шар було видалено'
 export const ERROR_ACCESS_DENIED_TO_OBJECT = 'Відсутній доступ на редагування цього тактичного знаку на карті СОР'
 export const ERROR_NO_CONNECTION = 'Сервер недоступний'
 export const ERROR_SOMETHING_WENT_WRONG = 'Щось пішло не так...'

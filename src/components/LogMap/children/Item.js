@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import moment from 'moment'
+import i18n from '../../../i18n'
 import { changeTypes } from '../../../store/actions/webMap'
 import { components, data } from '@DZVIN/CommonComponents'
-import i18n from '../../../i18n'
+import { DATE_TIME_FORMAT_FULL } from '../../../constants/formats'
 
 const { TextFilter } = data
 const { common: { HighlightedText } } = components
@@ -15,8 +17,6 @@ const changeDescription = {
   'INSERT_LIST': i18n.INSERT_LIST,
 }
 
-const locales = window.navigator.language
-
 const LogMapItem = (props) => {
   const { time, user, event, highlightObject, clickObject, doubleClickObject, id, search } = props
   const textFilter = TextFilter.create(search)
@@ -25,16 +25,14 @@ const LogMapItem = (props) => {
   const onClick = () => clickObject(id)
   const onDoubleClick = () => doubleClickObject(id)
 
-  const d = new Date(time)
-  const formatDate = d.toLocaleDateString(locales)
-  const formatTime = d.toLocaleTimeString(locales)
+  const date = moment(time).format(DATE_TIME_FORMAT_FULL)
 
   let description = changeDescription[event]
   if (Array.isArray(id)) {
     description += ` (${id.length})`
   }
 
-  return !textFilter || textFilter.test(`${formatDate} ${formatTime} ${user} ${description}`)
+  return !textFilter || textFilter.test(`${date} ${user} ${description}`)
     ? (
       <div
         className={'item-list-log'}
@@ -45,7 +43,7 @@ const LogMapItem = (props) => {
       >
         <div className={'time-user'}>
           <span className={'time'}>
-            <HighlightedText text={`${formatDate} ${formatTime}`} textFilter={textFilter} />
+            <HighlightedText text={date} textFilter={textFilter} />
           </span>
           <span className={'user'}>
             <HighlightedText text={user} textFilter={textFilter} />
