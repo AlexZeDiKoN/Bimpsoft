@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import { Tooltip } from 'antd'
 import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const VisibilityButton = (props) => {
   const { title, visible, onChange, isDark, disabled } = props
@@ -21,7 +22,7 @@ const VisibilityButton = (props) => {
 
   return (
     <div className={classNames.join(' ')}>
-      <Tooltip title={title} placement='topRight'>
+      <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={title} placement='topRight'>
         <IButton
           onClick={clickHandler}
           icon={IconNames.DARK_EYE_ON}

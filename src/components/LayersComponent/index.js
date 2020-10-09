@@ -16,6 +16,7 @@ import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import LayersControlsComponent from './LayersControlsComponent'
 import ItemTemplate from './ItemTemplate'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -110,7 +111,7 @@ export default class LayersComponent extends React.Component {
         <div className='container-layers'>
           <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
           <div className='container-layers__btnContainer'>
-            <Tooltip title={i18n.LAYERS_VISIBILITY} placement='topRight'>
+            <Tooltip title={i18n.LAYERS_VISIBILITY} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
               <IButton
                 icon={IconNames.COLORS}
                 colorType={ColorTypes.WHITE}
@@ -120,7 +121,7 @@ export default class LayersComponent extends React.Component {
                 onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
               />
             </Tooltip>
-            {!isMapCOP && isMapCOP !== undefined && <Tooltip title={i18n.DISPLAY_PERIOD} placement='topRight'>
+            {!isMapCOP && isMapCOP !== undefined && <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.DISPLAY_PERIOD} placement='topRight'>
               <IButton
                 icon={IconNames.CALENDAR}
                 colorType={ColorTypes.WHITE}
@@ -175,6 +176,7 @@ export default class LayersComponent extends React.Component {
           />
           <div className='divider'/>
           <Tooltip
+            mouseEnterDelay={MOUSE_ENTER_DELAY}
             title={mapsCollapsed ? i18n.EXPAND_LAYERS : i18n.COLLAPSE_LAYERS}
             placement='topRight'>
             <IButton
@@ -186,7 +188,7 @@ export default class LayersComponent extends React.Component {
             />
           </Tooltip>
           <div className='divider'/>
-          <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} placement='topRight'>
+          <Tooltip title={i18n.LAYERS_CLOSE_ALL_MAPS} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
             <IButton
               disabled={disabledControlButton}
               icon={IconNames.CLOSE_MAP}

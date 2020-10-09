@@ -7,6 +7,7 @@ import { march } from '../../../../../store/actions'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from '../../../../../i18n'
 import { MARCH_TYPES } from '../../../../../constants/March'
+import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'
 
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -55,7 +56,7 @@ const PopupPanel = (props) => {
   const typeOfMove = nameTypeById(correctedMB001, segmentType).name
 
   return <div className={'march-popup-form'}>
-    <Tooltip placement='left' title={i18n.TYPE_OF_MOVE}>
+    <Tooltip placement='left' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.TYPE_OF_MOVE}>
       {segmentId === 0
         ? <Input
           value={typeOfMove}
@@ -82,7 +83,7 @@ const PopupPanel = (props) => {
       }
     </Tooltip>
     {(segmentType === OWN_RESOURCES) &&
-    <Tooltip placement='left' title={i18n.NATURE_OF_TERRAIN}>
+    <Tooltip placement='left' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.NATURE_OF_TERRAIN}>
       <Select
         defaultValue={nameTypeById(MB007, terrain).name}
         onChange={onEditFormField('terrain')}
@@ -116,7 +117,7 @@ const PopupPanel = (props) => {
     <div className={'bottom-panel'}>
       <div><span>{i18n.TIME_OF_PASSING}: </span> {convertUnits.msToTime(time)}</div>
       { !required &&
-      <Tooltip placement='topRight' title={i18n.DELETE_SEGMENT} align={ { offset: [ 12, 0 ] }}>
+      <Tooltip placement='topRight' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.DELETE_SEGMENT} align={ { offset: [ 12, 0 ] }}>
         <div
           onClick={(e) => { !readOnly && showDeleteConfirm(e) }}
           className={`delete-segment ${readOnly ? 'march-disabled-element' : ''}`} />

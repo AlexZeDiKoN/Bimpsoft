@@ -9,6 +9,7 @@ import {
 } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const InputButton = (props) => {
   const {
@@ -37,7 +38,7 @@ const InputButton = (props) => {
             }}/>}
         </Input>
         {!showSearch &&
-        <Tooltip title={placeholder} placement='topRight'>
+        <Tooltip title={placeholder} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
           <IButton
             icon={IconNames.MENU_SEARCH}
             colorType={ColorTypes.WHITE}

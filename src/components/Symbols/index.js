@@ -19,6 +19,7 @@ import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
 import spriteUrl from './sprite.svg'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 const SymbolSvg = (props) => {
   const { name } = props
@@ -32,6 +33,7 @@ const SymbolSvg = (props) => {
 const ButtonComponent = (props) =>
   <Collapse.Button {...props} active={false}>
     <Tooltip
+      mouseEnterDelay={MOUSE_ENTER_DELAY}
       title={props?.children}
       placement='left'
       className={props?.value ? 'symbols-title symbols-title-opened' : 'symbols-title'}
@@ -99,7 +101,7 @@ const SymbolsTab = (props) => {
 
       return <Tooltip
         key={`${hint}${code}`}
-        mouseEnterDelay={1}
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={!listMode && <HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/>}
       >
         { elemToRender }

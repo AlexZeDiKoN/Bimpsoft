@@ -6,6 +6,7 @@ import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
 
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 export default class IntervalControl extends React.Component {
   constructor (props) {
@@ -52,6 +53,7 @@ export default class IntervalControl extends React.Component {
     return <div className='interval-control'>
       <span>{i18n.PERIOD_FROM}</span>
       <Tooltip
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={i18n.PERIOD_START}
         placement='topRight'>
         <div className={'calendar-picker'}>
@@ -67,6 +69,7 @@ export default class IntervalControl extends React.Component {
       </Tooltip>
       <span>{i18n.PERIOD_TO}</span>
       <Tooltip
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={i18n.PERIOD_END}
         placement='topRight'
       >

@@ -4,6 +4,7 @@ import { Tooltip } from 'antd'
 import { IButton, IconNames } from '@DZVIN/CommonComponents'
 import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 export default class TabsPanel extends React.Component {
   state = {
@@ -44,7 +45,7 @@ export default class TabsPanel extends React.Component {
           this.state.isMounted && tabs.map(({ title, icon }, index) => (
             <div
               key={index}>
-              <Tooltip title={title} placement='left'>
+              <Tooltip title={title} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='left'>
                 <IButton
                   colorType={ColorTypes.WHITE}
                   type={ButtonTypes.WITH_BG}

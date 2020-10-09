@@ -4,6 +4,7 @@ import { IButton } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
 import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 const OpacityControl = (props) => {
   const { title, icon, opacity, className, onChange } = props
 
@@ -14,7 +15,7 @@ const OpacityControl = (props) => {
 
   return (
     <div className={'opacity-control ' + className}>
-      <Tooltip title={title} placement='topRight' className="opacity-control-block">
+      <Tooltip title={title} placement='topRight' mouseEnterDelay={MOUSE_ENTER_DELAY} className="opacity-control-block">
         <IButton
           colorType={ColorTypes.WHITE}
           className="opacity-control-icon"
