@@ -5,8 +5,8 @@ import PropTypes from 'prop-types'
 import { MARCH_TYPES } from '../../../../../constants/March'
 import placeSearch from '../../../../../server/places'
 import TimeInput from '../TimeInput'
-import i18n from './../../../../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'
+import i18n from './../../../../../i18n'
 
 const { Option } = Select
 const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS } = MARCH_TYPES
@@ -225,12 +225,22 @@ const MarchForm = (props) => {
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
-        <Tooltip placement='topRight' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.MARCH_LOCATION} align={ { offset: [ isLast ? 0 : 13, 0 ] }}>
+        <Tooltip
+          placement='topRight'
+          mouseEnterDelay={MOUSE_ENTER_DELAY}
+          title={i18n.MARCH_LOCATION}
+          align={ { offset: [ isLast ? 0 : 13, 0 ] }}
+        >
           <div className={`dot ${dotClass}`}/>
         </Tooltip>
         {(segmentType || childId || childId === 0)
           ? <div className={`vertical-block vertical-line ${lineColorClass}`}>
-            <Tooltip placement='topRight' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.ADD_POINT} align={ { offset: [ 13, 0 ] }}>
+            <Tooltip
+              placement='topRight'
+              mouseEnterDelay={MOUSE_ENTER_DELAY}
+              title={i18n.ADD_POINT}
+              align={ { offset: [ 13, 0 ] }}
+            >
               {!(segmentType === OWN_RESOURCES && childId === undefined) && !readOnly &&
               <div className={'add-dot'} onClick={() => addChild(segmentId, childId)}/>
               }
@@ -249,14 +259,23 @@ const MarchForm = (props) => {
             getPopupContainer={() => document.getElementById(dotFormId)}
             preferredType={coordTypeSystem}
           />
-          <Tooltip placement='topRight' mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.POINT_ON_MAP} align={ { offset: [ 6, 0 ] }}>
+          <Tooltip
+            placement='topRight'
+            mouseEnterDelay={MOUSE_ENTER_DELAY}
+            title={i18n.POINT_ON_MAP}
+            align={ { offset: [ 6, 0 ] }}
+          >
             <div
               className={`logo-map ${readOnly ? 'march-disabled-element' : ''}`}
               onClick={() => { !readOnly && setCoordMode({ segmentId, childId }) }}
             />
           </Tooltip>
         </div>
-        <Tooltip placement='left' mouseEnterDelay={MOUSE_ENTER_DELAY} title={ refPoint ? '' : i18n.GEOGRAPHICAL_LANDMARK}>
+        <Tooltip
+          placement='left'
+          mouseEnterDelay={MOUSE_ENTER_DELAY}
+          title={ refPoint ? '' : i18n.GEOGRAPHICAL_LANDMARK}
+        >
           <Select
             className={'select-point'}
             value={refPoint}
@@ -314,7 +333,12 @@ const MarchForm = (props) => {
         <div className={'bottom-panel'}>
           {isOwnResources && !point.notEditableTime && isChild && !isFirstChild
             ? <div className={'time-block'}>
-              <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight' title={i18n.REST_TIME} align={ { offset: [ 10, 0 ] }}>
+              <Tooltip
+                mouseEnterDelay={MOUSE_ENTER_DELAY}
+                placement='topRight'
+                title={i18n.REST_TIME}
+                align={ { offset: [ 10, 0 ] }}
+              >
                 <div className={'logo-time'}/>
               </Tooltip>
               <TimeInput
