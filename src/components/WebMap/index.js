@@ -1240,6 +1240,7 @@ export default class WebMap extends React.PureComponent {
       activeObjectId,
       checkObjectAccess,
       flexGridSelected,
+      isMapCOP,
     } = this.props
 
     if (
@@ -1250,7 +1251,8 @@ export default class WebMap extends React.PureComponent {
       preview !== prevProps.selection.preview ||
       flexGridSelected !== prevProps.flexGridSelected
     ) {
-      const success = flexGridSelected || (activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE)
+      const success = flexGridSelected ||
+        (activeObjectId && await checkObjectAccess(activeObjectId, isMapCOP) === access.WRITE)
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)

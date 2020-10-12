@@ -367,13 +367,15 @@ export const removeObjects = (ids) => (dispatch) => {
 const restoreObjects = (ids) =>
   asyncAction.withNotification((dispatch, _, { webmapApi: { objRestoreList } }) => objRestoreList(ids))
 
-export const getObjectAccess = (id) => async (dispatch, _, { webmapApi: { objAccess } }) => {
+export const getObjectAccess = (id, isMapCOP = true) => async (dispatch, _, { webmapApi: { objAccess } }) => {
   const result = await objAccess(id)
   if (result.access !== access.WRITE) {
     dispatch(notifications.push({
       type: 'warning',
       message: i18n.ERROR_ACCESS_DENIED,
-      description: i18n.ERROR_ACCESS_DENIED_TO_OBJECT,
+      description: isMapCOP
+        ? i18n.ERROR_ACCESS_DENIED_TO_OBJECT
+        : i18n.ERROR_ACCESS_DENIED,
     }))
   }
   return result.access
