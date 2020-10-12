@@ -229,6 +229,7 @@ const getSvgPath = (
   dpi,
   dashSize,
   options = {},
+  point = { x: 0, y: 0 },
 ) => {
   const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
@@ -263,13 +264,16 @@ const getSvgPath = (
     const cs = strokeWidthToScale + printSettings.crossSize
     const sw = strokeWidthToScale * 2
     const code = idObject
+    const sqrt2 = Math.sqrt(2)
+    const px = point.x * sqrt2 + point.y * sqrt2
+    const py = point.y * sqrt2 - point.x * sqrt2
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
     const fillColor = `url('#${fillId}')`
     fillOption = <>
       <pattern
         id={fillId}
-        x="0" y="0"
+        x={px} y={py}
         width={cs}
         height={cs}
         patternUnits="userSpaceOnUse"
@@ -463,7 +467,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
         />
       )}
       {/* eslint-disable-next-line max-len */}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options, points[0])}
       {resultFilled}
     </>
   )
