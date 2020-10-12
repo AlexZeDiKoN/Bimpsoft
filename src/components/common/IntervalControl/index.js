@@ -1,12 +1,10 @@
 import React from 'react'
-import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
 import DatePicker from '@DZVIN/CommonComponents/build/components/inputs/DatePicker'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
 
 import './style.css'
-import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 export default class IntervalControl extends React.Component {
   constructor (props) {
@@ -52,39 +50,30 @@ export default class IntervalControl extends React.Component {
   render () {
     return <div className='interval-control'>
       <span>{i18n.PERIOD_FROM}</span>
-      <Tooltip
-        mouseEnterDelay={MOUSE_ENTER_DELAY}
-        title={i18n.PERIOD_START}
-        placement='topRight'>
-        <div className={'calendar-picker'}>
-          <DatePicker
-            value={this.state.dateStart}
-            showTime={true}
-            format={DATE_TIME_FORMAT}
-            onChange={this.onChangeFrom}
-            placeholder={''}
-            isValidDate={this.validDateBefore}>
-          </DatePicker>
-        </div>
-      </Tooltip>
+      <div className={'calendar-picker'}>
+        <DatePicker
+          title={i18n.PERIOD_START}
+          value={this.state.dateStart}
+          showTime={true}
+          format={DATE_TIME_FORMAT}
+          onChange={this.onChangeFrom}
+          placeholder={''}
+          isValidDate={this.validDateBefore}>
+        </DatePicker>
+      </div>
       <span>{i18n.PERIOD_TO}</span>
-      <Tooltip
-        mouseEnterDelay={MOUSE_ENTER_DELAY}
-        title={i18n.PERIOD_END}
-        placement='topRight'
-      >
-        <div className={'calendar-picker'}>
-          <DatePicker
-            value={this.state.dateEnd}
-            style={{ minWidth: 'auto' }}
-            showTime={true}
-            format={DATE_TIME_FORMAT}
-            onChange={this.onChangeTo}
-            placeholder={''}
-            isValidDate={this.validDateAfter}
-          />
-        </div>
-      </Tooltip>
+      <div className={'calendar-picker'}>
+        <DatePicker
+          title={i18n.PERIOD_END}
+          value={this.state.dateEnd}
+          style={{ minWidth: 'auto' }}
+          showTime={true}
+          format={DATE_TIME_FORMAT}
+          onChange={this.onChangeTo}
+          placeholder={''}
+          isValidDate={this.validDateAfter}
+        />
+      </div>
     </div>
   }
 }
