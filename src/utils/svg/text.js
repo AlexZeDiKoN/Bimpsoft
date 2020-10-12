@@ -68,10 +68,11 @@ export const renderTextSymbol = ({
 
     const y = fullHeight
     const lineSpace = underline ? 4 * scale / 100 : 0
-    const lineStrokeWidth = underline ? (bold ? 7 : 1) * scale / 100 : 0
+    const lineStrokeWidth = underline ? (bold ? 4 : 1) * scale / 100 : 0
+    const fontWeightText = bold ? 700 : 400
     fullHeight += lineSpace * 2 + lineStrokeWidth
     endUnderLine = underline
-    return { underline, fontSize, align, y, text, yUnderline: y + lineSpace + lineStrokeWidth / 2, lineStrokeWidth }
+    return { underline, fontSize, align, y, text, yUnderline: y + lineSpace + lineStrokeWidth / 2, lineStrokeWidth, fontWeightText }
   })
 
   maxWidth += 6
@@ -83,7 +84,7 @@ export const renderTextSymbol = ({
     endUnderLine && (fullHeight = fullHeight + strokeWidth * 2) // увеличиваем высоту svg на высоту подсветки слоя последней линии подчеркивания
     outlineProps = { stroke: outlineColor, strokeWidth, fill: 'none' }
   }
-  const textsEls = texts.map(({ text, fontSize, align, y, yUnderline, lineStrokeWidth }, i) => {
+  const textsEls = texts.map(({ text, fontSize, align, y, yUnderline, lineStrokeWidth, fontWeightText }, i) => {
     const x = (align === Align.CENTER) ? (maxWidth / 2) : (align === Align.RIGHT) ? maxWidth : 0
     const textAnchor = (align === Align.CENTER) ? 'middle' : (align === Align.RIGHT) ? 'end' : 'start'
     const isUnderline = Boolean(lineStrokeWidth)
@@ -106,6 +107,7 @@ export const renderTextSymbol = ({
         fill="#000"
         stroke="none"
         fontFamily={FONT_FAMILY}
+        fontWeight={fontWeightText}
         fontSize={fontSize}
         textAnchor={textAnchor}
         dominantBaseline={'text-after-edge'}>

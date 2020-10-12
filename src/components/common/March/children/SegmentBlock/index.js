@@ -8,6 +8,7 @@ import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
 import AddSegmentContextMenu from '../AddSegmentContextMenu'
 import utilsMarch from '../../utilsMarch'
 import i18n from './../../../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'
 
 const { getAllowedTypeSegments } = utilsMarch.reducersHelpers
 
@@ -95,7 +96,7 @@ const SegmentBlock = (props) => {
       : <div className={'height-segment'}/>
     }
 
-    <Tooltip placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={{ offset: [ -7, 25 ] }}>
+    <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight' title={i18n.SEGMENT_PARAMETERS} align={{ offset: [ -7, 25 ] }}>
       <SegmentButtonPopover
         type={type}
         content={
@@ -129,7 +130,7 @@ const SegmentBlock = (props) => {
     })}
 
     <div className={'hover-add-segment-button'}>
-      <Tooltip placement='topRight' title={i18n.ADD_SEGMENT} align={{ offset: [ 13, 0 ] }}>
+      <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight' title={i18n.ADD_SEGMENT} align={{ offset: [ 13, 0 ] }}>
         {!readOnly && <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>}
       </Tooltip>
       {isViewContextMenu && <AddSegmentContextMenu

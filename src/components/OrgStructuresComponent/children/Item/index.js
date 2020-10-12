@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { MilSymbol } from '@DZVIN/MilSymbolEditor'
 import { Symbol } from '@DZVIN/milsymbol'
+import { MOUSE_ENTER_DELAY } from '../../../../constants/tooltip'
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons
 const { TextFilter } = data
@@ -86,7 +87,7 @@ export default class Item extends React.Component {
       <Tooltip
         title={(<HighlightedText text={fullName} textFilter={textFilter} />)}
         placement="left"
-        mouseEnterDelay={1.2}
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
       >
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')} >
           {icon}

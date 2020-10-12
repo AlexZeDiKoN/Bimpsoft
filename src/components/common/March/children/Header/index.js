@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { IButton, IconNames, ColorTypes } from '@DZVIN/CommonComponents'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'
 
 const Header = (props) => {
   const { changeTimeDistanceView,
@@ -25,6 +26,7 @@ const Header = (props) => {
       </div>
       <Tooltip
         placement='topRight'
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={isCoordFilled ? i18n.CREATE_BTN_TITLE : i18n.NOT_ALL_COORDINATES_ENTERED}
         align={ { offset: [ 5, 0 ] }}
       >
@@ -37,6 +39,7 @@ const Header = (props) => {
       </Tooltip>
       <Tooltip
         placement='topRight'
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={i18n.CLOSE_MARCH}
         align={ { offset: [ 5, 0 ] }}
       >
@@ -48,6 +51,7 @@ const Header = (props) => {
     </div>
     <div className={'march-title-bottom'}>
       <Tooltip
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         placement='left'
         title={timeDistanceView ? i18n.FROM_DEPARTURE_POINT : i18n.FROM_PREVIOUS_POINT}>
         <Switch

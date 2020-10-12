@@ -8,6 +8,7 @@ import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
@@ -69,7 +70,7 @@ export default class LayerItemComponent extends React.Component {
         <div className={'layer-item-component ' + (isSelected ? 'layer-item-component-selected ' : ' ') +
           (this.state.showColor ? 'layer-item-component-hover' : '')}>
           <div className="layer-item-component-title">
-            <Tooltip title={breadCrumbs} placement='topLeft'>
+            <Tooltip title={breadCrumbs} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topLeft'>
               <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
             </Tooltip>
             {!isMapCOP && <div className="layer-date">{dateString}</div>}
@@ -85,6 +86,7 @@ export default class LayerItemComponent extends React.Component {
             />
           </div>
           {readOnly && <Tooltip
+            mouseEnterDelay={MOUSE_ENTER_DELAY}
             placement='topRight'
             title={i18n.ACCESS_READONLY}>
             <Icon

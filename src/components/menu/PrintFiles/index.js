@@ -7,6 +7,7 @@ import i18n from '../../../i18n'
 import { Print } from '../../../constants'
 import IconBox from './IconBox'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const sidebarWidth = 285
 
@@ -44,10 +45,10 @@ export default class PrintFiles extends PureComponent {
           const { name, message, documentPath } = printFiles[fileId]
           return (
             <Menu.Item key={fileId} className='fileBox_unit'>
-              <Tooltip title={name} className='fileBox_mapName'>
+              <Tooltip title={name} mouseEnterDelay={MOUSE_ENTER_DELAY} className='fileBox_mapName'>
                 {name}
               </Tooltip>
-              <Tooltip title={Print.PRINT_STEPS_KEYS[message]} className='fileBox_status'>
+              <Tooltip title={Print.PRINT_STEPS_KEYS[message]} mouseEnterDelay={MOUSE_ENTER_DELAY} className='fileBox_status'>
                 {Print.PRINT_STEPS_KEYS[message]}
               </Tooltip>
               <div className='fileBox_control'>

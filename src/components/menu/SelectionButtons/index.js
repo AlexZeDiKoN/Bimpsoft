@@ -24,6 +24,7 @@ import { sameObjects } from '../../../store/selectors'
 import { errorSymbol } from '../../../store/actions/selection'
 import DeleteSelectionForm from './DeleteSelectionForm'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const ALLOW_GROUP = true
 
@@ -164,7 +165,7 @@ export default class SelectionButtons extends React.Component {
         }
         {isEditMode && (<>
           <HotKey selector={shortcuts.CUT} onKey={(isEnableCut && !isShowForm) ? onCut : null} />
-          <Tooltip title={i18n.CUT} placement='bottomLeft'>
+          <Tooltip title={i18n.CUT} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -175,7 +176,7 @@ export default class SelectionButtons extends React.Component {
           </Tooltip>
         </>)}
         <HotKey selector={shortcuts.COPY} onKey={(isEnableCopy && !isShowForm) ? onCopy : null} />
-        <Tooltip title={i18n.COPY} placement='bottomLeft'>
+        <Tooltip title={i18n.COPY} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -187,7 +188,7 @@ export default class SelectionButtons extends React.Component {
         {isEditMode && (<>
           <HotKey selector={shortcuts.PASTE} onKey={isClipboardExist ? this.onPasteObject : null} />
           <div className='btn-context-container'>
-            <Tooltip title={i18n.PASTE} placement='bottomLeft'>
+            <Tooltip title={i18n.PASTE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
                 colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -207,7 +208,7 @@ export default class SelectionButtons extends React.Component {
         {isEditMode && (<>
           <HotKey selector={shortcuts.DELETE} onKey={isEnableDelete ? deleteHandler : null} />
           <div className='btn-context-container'>
-            <Tooltip title={i18n.DELETE} placement='bottomLeft'>
+            <Tooltip title={i18n.DELETE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
               <IButton
                 type={ButtonTypes.WITH_BG}
                 colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -228,7 +229,7 @@ export default class SelectionButtons extends React.Component {
         </>)}
         {isEditMode && (<>
           <MenuDivider />
-          <Tooltip title={i18n.MIRROR_IMAGE} placement='bottomLeft'>
+          <Tooltip title={i18n.MIRROR_IMAGE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -237,7 +238,7 @@ export default class SelectionButtons extends React.Component {
               onClick={debounce(onMirrorImage, 350)}
             />
           </Tooltip>
-          <Tooltip title={i18n.CONTOUR} placement='bottomLeft'>
+          <Tooltip title={i18n.CONTOUR} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -248,6 +249,7 @@ export default class SelectionButtons extends React.Component {
           </Tooltip>
           {ALLOW_GROUP &&
           <Tooltip
+            mouseEnterDelay={MOUSE_ENTER_DELAY}
             title={canGroup ? i18n.GROUPING : canUngroup ? i18n.UNGROUPING : `${i18n.GROUPING} / ${i18n.UNGROUPING}`}
             placement='bottomLeft'>
             <IButton
@@ -258,7 +260,7 @@ export default class SelectionButtons extends React.Component {
               disabled={!canGroup && !canUngroup}
               onClick={canGroup ? onGroup : canUngroup ? onUngroup : undefined}
             /></Tooltip>}
-          <Tooltip title={i18n.GROUPING_REGION} placement='bottomLeft'>
+          <Tooltip title={i18n.GROUPING_REGION} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               type={ButtonTypes.WITH_BG}
               colorType={ColorTypes.MAP_HEADER_GREEN}

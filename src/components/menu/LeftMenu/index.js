@@ -16,6 +16,7 @@ import ContextMenuItem from '../ContextMenu/ContextMenuItem'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
 import SearchOptions from '../../../containers/SearchOptionsContainer'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { Coordinates: Coord } = utils
 let timerId
@@ -157,7 +158,7 @@ export default class LeftMenu extends React.Component {
 
     return (
       <div className='left-menu' >
-        <Tooltip title={i18n.EDIT_MODE} placement='bottomLeft'>
+        <Tooltip title={i18n.EDIT_MODE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_MENU_EDIT}
             type={ButtonTypes.WITH_BG}
@@ -167,7 +168,7 @@ export default class LeftMenu extends React.Component {
             disabled={is3DMapMode || !isSelectedLayer}
           />
         </Tooltip>
-        <Tooltip title={i18n.TARGETING} placement='bottomLeft'>
+        <Tooltip title={i18n.TARGETING} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -177,7 +178,7 @@ export default class LeftMenu extends React.Component {
           />
         </Tooltip>
         {isMapCOP && <>
-          <Tooltip title={i18n.CREATE_TASK} placement='bottomLeft'>
+          <Tooltip title={i18n.CREATE_TASK} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               icon={IconNames.MAP_HEADER_ICON_TASK}
               type={ButtonTypes.WITH_BG}
@@ -189,7 +190,7 @@ export default class LeftMenu extends React.Component {
         </>}
         <CreateButtonsComponent />
         <MenuDivider />
-        <Tooltip title={i18n.VOLUME_VIEW} placement='bottomRight'>
+        <Tooltip title={i18n.VOLUME_VIEW} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomRight'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_MAP_3D}
             type={ButtonTypes.WITH_BG}
@@ -200,7 +201,7 @@ export default class LeftMenu extends React.Component {
         </Tooltip>
         <MapSourceSelectComponent />
         <div className='btn-context-container'>
-          <Tooltip title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })} placement='bottomLeft'>
+          <Tooltip title={i18n.SITUATION_DETAILS({ level: subordinationLevelViewData.title })} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               icon={subordinationLevelViewData.icon2}
               type={ButtonTypes.WITH_BG}
@@ -232,7 +233,7 @@ export default class LeftMenu extends React.Component {
           )}
         </div>
         <MenuDivider />
-        <Tooltip title={i18n.MEASURE} placement='topLeft'>
+        <Tooltip title={i18n.MEASURE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topLeft'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_MENU_RULER}
             active={isMeasureOn}
@@ -242,7 +243,7 @@ export default class LeftMenu extends React.Component {
             disabled={is3DMapMode}
           />
         </Tooltip>
-        <Tooltip title={i18n.MARKER} placement='bottomLeft'>
+        <Tooltip title={i18n.MARKER} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_MENU_MARKER}
             active={marker}
@@ -252,7 +253,7 @@ export default class LeftMenu extends React.Component {
             disabled={is3DMapMode}
           />
         </Tooltip>
-        <Tooltip title={i18n.TOPOGRAPHIC_OBJECTS} placement='bottomLeft'>
+        <Tooltip title={i18n.TOPOGRAPHIC_OBJECTS} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_MENU_TOPOGRAPHY_1}
             type={ButtonTypes.WITH_BG}
@@ -281,7 +282,7 @@ export default class LeftMenu extends React.Component {
         <MenuDivider />
         <Tooltip
           title={layerName}
-          mouseEnterDelay={1.5}
+          mouseEnterDelay={MOUSE_ENTER_DELAY}
           placement='bottomLeft'
           className="menu-layer-name"
         >

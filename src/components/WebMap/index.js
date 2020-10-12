@@ -216,7 +216,7 @@ const serializeCoordinate = (mode, lat, lng) => {
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
-const setScaleOptions = (layer, params) => {
+const setScaleOptions = (layer, params, needRedraw) => {
   const pointSizes = {
     min: Number(params[paramsNames.POINT_SIZE_MIN]),
     max: Number(params[paramsNames.POINT_SIZE_MAX]),
@@ -232,17 +232,17 @@ const setScaleOptions = (layer, params) => {
   }
   if (layer?.object) {
     if (layer.object.catalogId) {
-      layer.setScaleOptions(pointSizes)
+      layer.setScaleOptions(pointSizes, needRedraw)
     } else if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
         case entityKind.GROUPED_LAND:
         case entityKind.GROUPED_REGION:
-          layer.setScaleOptions(pointSizes)
+          layer.setScaleOptions(pointSizes, needRedraw)
           break
         case entityKind.TEXT:
-          layer.setScaleOptions(textSizes)
+          layer.setScaleOptions(textSizes, needRedraw)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
@@ -254,7 +254,7 @@ const setScaleOptions = (layer, params) => {
         case entityKind.SQUARE:
         case entityKind.CONTOUR:
         case entityKind.SOPHISTICATED:
-          layer.setScaleOptions(lineSizes)
+          layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:
       }
@@ -316,6 +316,7 @@ export default class WebMap extends React.PureComponent {
     hiddenOpacity: PropTypes.number,
     print: PropTypes.bool,
     edit: PropTypes.bool,
+    flexGridSelected: PropTypes.bool,
     selection: PropTypes.shape({
       showForm: PropTypes.string,
       newShape: PropTypes.shape({
@@ -434,7 +435,7 @@ export default class WebMap extends React.PureComponent {
     window.explorerBridge.init(true)
   }
 
-  componentDidUpdate (prevProps, prevState, snapshot) {
+  async componentDidUpdate (prevProps, prevState, snapshot) {
     if (!this.map || !this.map._container) {
       return // Exit if map is not yet initialized
     }
@@ -490,8 +491,8 @@ export default class WebMap extends React.PureComponent {
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
       this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
-    this.updateSelection(prevProps)
-    this.updateActiveObject(prevProps)
+    await this.updateSelection(prevProps)
+    await this.updateActiveObject(prevProps)
     if (coordinatesType !== prevProps.coordinatesType) {
       this.indicateMode = type2mode(coordinatesType, this.indicateMode)
     }
@@ -551,8 +552,7 @@ export default class WebMap extends React.PureComponent {
   sources = []
 
   updateMinimap = (showMiniMap) => showMiniMap
-    ? this.mini.addTo(this.map) &&
-    this.mini._miniMap.on('move', (e) => e.target._renderer && e.target._renderer._update())
+    ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', ({ target: { _renderer: r } }) => r?._update())
     : this.mini.remove()
 
   updateLockedObjects = (lockedObjects) => Object.keys(this.map._layers)
@@ -905,6 +905,7 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       onSelectedList, onSelectUnit, edit,
     } = this.props
+
     if (newList.length === 0 && list.length === 0) {
       return
     }
@@ -1226,7 +1227,7 @@ export default class WebMap extends React.PureComponent {
         isSelected && selectedIds.push(layer.id)
       }
     })
-    this.onSelectedListChange(selectedIds)
+    return this.onSelectedListChange(selectedIds)
   }
 
   updateSelection = async (prevProps) => {
@@ -1238,15 +1239,18 @@ export default class WebMap extends React.PureComponent {
       lockedObjects,
       activeObjectId,
       checkObjectAccess,
+      flexGridSelected,
     } = this.props
+
     if (
       objects !== prevProps.objects ||
       selectedIds !== prevProps.selection.list ||
       edit !== prevProps.edit ||
       layerId !== prevProps.layer ||
-      preview !== prevProps.selection.preview
+      preview !== prevProps.selection.preview ||
+      flexGridSelected !== prevProps.flexGridSelected
     ) {
-      let success = activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE
+      const success = flexGridSelected || (activeObjectId && await checkObjectAccess(activeObjectId) === access.WRITE)
       const selectedIdsSet = new Set(selectedIds)
       const canEditLayer = edit && (selectedIds.length === 1)
       const canDrag = edit && (selectedIds.length > 1)
@@ -1261,8 +1265,7 @@ export default class WebMap extends React.PureComponent {
           if (layer._map === null) {
             layer._map = this.map
           }
-          success = success === null ? true : success
-          const isEdit = success && !lockedObjects.has(id)
+          const isEdit = Boolean(success && !lockedObjects.has(id))
           isActive = isActive && !(preview && preview.id === id)
           setLayerSelected(layer, isSelected, isActive, isActiveLayer, isDraggable, isEdit)
           if (isActive) {
@@ -1314,22 +1317,23 @@ export default class WebMap extends React.PureComponent {
     if (item.object) {
       const { layer, level = 0, code } = item.object
 
-      const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW)
+      const itemLevel = Math.max(level, SubordinationLevel.TEAM_CREW) // если уровень подчинения не выбран - приравнивается экипажу
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
-      const isHighlightedItem = highlighted?.list?.includes(item.id)
+      const isHighlightedItem = Boolean(highlighted?.list?.includes(item.id))
       const hidden = !isSelectedItem && !isHighlightedItem && (
         (itemLevel < levelEdge) ||
         ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
-        (item._groupParent && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
+        (Boolean(item._groupParent) && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
+      const isSelectedLayer = selectedLayerId === layer // объект принадлежит активному слою
 
-      const isSelectedLayer = selectedLayerId === layer
       const isTargetDesignation = targetDesignationCode.has(code) // Определение знака целеуказания
-      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       const zIndexOffset = isSelectedLayer ? (isTargetDesignation ? 1100000000 : 1000000000) : 0
-
       item.setZIndexOffset && item.setZIndexOffset(zIndexOffset)
+
+      const opacity = isSelectedLayer ? 1 : (hiddenOpacity / 100)
       item.setOpacity && item.setOpacity(opacity)
+
       item.setHidden && item.setHidden(hidden)
       const color = layer && layersById[layer] ? layersById[layer].color : null
       item.setShadowColor && item.setShadowColor(color)
@@ -1382,13 +1386,18 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
+    // обновляем масштабные настройки всех объектов карты
     this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
   updateShowAmplifiers = (showAmplifiers) => {
     if (this.map) {
       this.map.options.showAmplifiers = showAmplifiers
-      this.map.objects.forEach((layer) => layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+      this.map.objects.forEach((layer) => {
+        if (layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)) {
+          layer.redraw()
+        }
+      })
     }
   }
 
@@ -1768,7 +1777,6 @@ export default class WebMap extends React.PureComponent {
     }
 
     const layer = createTacticalSign(object, this.map, prevLayer)
-
     if (layer) {
       layer.map = this.map
       layer.options.lineCap = 'butt'
@@ -1799,21 +1807,18 @@ export default class WebMap extends React.PureComponent {
       layer.on('pm:dragend', this.onDragEnded)
       layer.on('pm:vertexremoved', this.onVertexRemoved)
       layer.on('pm:vertexadded', this.onVertexAdded)
-
       if (layer === prevLayer) {
         layer.update && layer.update()
-        if (layer.pm && layer.pm.enabled()) {
+        if (layer.pm?.enabled()) {
           layer.pm.disable()
           layer.pm.enable()
         }
       } else {
         this.map.objects.push(layer)
       }
-
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
 
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
-
       if (color !== null && color !== '') {
         layer.setColor && layer.setColor(colors.evaluateColor(color))
       }
@@ -1826,10 +1831,8 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-
-      setScaleOptions(layer, params)
-
-      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)
+      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+      setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
     }
 
     return layer
@@ -1882,7 +1885,7 @@ export default class WebMap extends React.PureComponent {
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
     if (list.length >= 1) {
       this._dragEndPx = layer._pxBounds ? layer._pxBounds.min : this.map.project(layer._bounds._northEast)
-      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении  layer._bounds._northEast = undefined
+      if (!this._dragEndPx) { // Иногда вылетает ошибка при перемещении layer._bounds._northEast = undefined
         return
       }
       const delta = {
@@ -1920,6 +1923,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragStarted = ({ target: layer }) => {
+    this.draggingObject = true
     let { selection: { list } } = this.props
     const { lockedObjects, warningLockObjectsMove } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
@@ -1942,6 +1946,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   onDragEnded = ({ target: layer }) => {
+    this.draggingObject = false
     this.moveListByOne(layer)
     let { selection: { list } } = this.props
     list = list.filter((id) => this.findLayerById(id).options.inActiveLayer)
@@ -2325,10 +2330,10 @@ export default class WebMap extends React.PureComponent {
       const w = Math.max(Math.min(size.x, size.y) / 4, 128)
       const sw = w / 2
       const c2g = (p) => this.map.containerPointToLatLng(p)
-      let geometry = []
+      let geometry
       if (amp.type === entityKind.SOPHISTICATED) {
-        geometry = (geometry && geometry.length) ||
-          findDefinition(data.code).init(data.amp).map(({ x: dx, y: dy }) => ({
+        geometry = findDefinition(data.code).init(data.amp).map(
+          ({ x: dx, y: dy }) => ({
             x: x - w + dx * w * 2,
             y: y - w + dy * w * 2,
           })).map(c2g)

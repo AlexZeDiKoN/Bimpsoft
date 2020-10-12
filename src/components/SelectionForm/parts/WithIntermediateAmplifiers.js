@@ -8,6 +8,7 @@ import { typeOption } from './render'
 import { SUBORDINATION_LEVEL_PATH } from './WithSubordinationLevel'
 
 import './WithIntermediateAmplifiers.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { FormRow } = components.form
 
@@ -68,7 +69,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
           title={null}
           label={svg ? <Tooltip
             overlayClassName='shape-form-svg-tooltip'
-            mouseEnterDelay={1}
+            mouseEnterDelay={MOUSE_ENTER_DELAY}
             placement={'left'}
             title={() => svg}>
             {`${i18n.AMPLIFIER} "${name}"`}
@@ -94,7 +95,7 @@ const WithIntermediateAmplifiers = (Component) => class IntermediateAmplifiersCo
               title={null}
               label={svg ? <Tooltip
                 overlayClassName='shape-form-svg-tooltip'
-                mouseEnterDelay={1}
+                mouseEnterDelay={MOUSE_ENTER_DELAY}
                 placement={'left'}
                 title={() => svg}>
                 {`${i18n.AMPLIFIER} "${PAIRS.MIDDLE.name}"`}

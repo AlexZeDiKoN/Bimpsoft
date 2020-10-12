@@ -1,4 +1,4 @@
-import L, { Draggable, DomUtil } from 'leaflet'
+import L, { Draggable, DomUtil, Util } from 'leaflet'
 import { setOpacity, setClassName, setShadowColor } from './utils/helpers'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng } = L.Marker.prototype
@@ -91,6 +91,7 @@ const DzvinMarker = L.Marker.extend({
     if (this._selected !== selected || this._inActiveLayer !== inActiveLayer) {
       this._selected = selected
       this._inActiveLayer = inActiveLayer
+      Util.setOptions(this, { selected, inActiveLayer })
       const el = this.getElement()
       setClassName(el, 'dzvin-marker-selected', selected && !inActiveLayer)
       setClassName(el, 'dzvin-marker-selected-on-active-layer', selected && inActiveLayer)
