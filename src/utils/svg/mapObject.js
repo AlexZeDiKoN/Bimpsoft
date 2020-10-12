@@ -229,11 +229,12 @@ const getSvgPath = (
   dpi,
   dashSize,
   options = {},
+  point = { x: 0, y: 0 },
 ) => {
   const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
   const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
-  const strokeWidthToScale = strokeWidthPrint || strokeWidth
+  const width = strokeWidthPrint || strokeWidth
   let maskBody = null
   let maskUrl = null
   // сборка маски под амплификаторы линии
@@ -260,21 +261,24 @@ const getSvgPath = (
   // заливка або штрихування
   let fillOption = null
   if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
-    const cs = strokeWidthToScale + printSettings.crossSize
-    const sw = strokeWidthToScale * 2
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
     const fillColor = `url('#${fillId}')`
+    const sqrt2 = Math.sqrt(2)
+    const cs = (width + printSettings.crossSize) * sqrt2
+    const p1 = cs / 2 + width
+    const p2 = cs / 2 - width
+    const p3 = cs + width
     fillOption = <>
       <pattern
         id={fillId}
-        x="0" y="0"
+        x={point.x} y={point.y}
         width={cs}
         height={cs}
-        patternUnits="userSpaceOnUse"
-        patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2={cs} stroke={hatchColor} strokeWidth={sw}/>
+        patternUnits="userSpaceOnUse">
+        <line x1={-width} y1={p1} x2={p1} y2={-width} stroke={hatchColor} strokeWidth={width}/>
+        <line x1={p2} y1={p3} x2={p3} y2={p2} stroke={hatchColor} strokeWidth={width}/>
       </pattern>
       <path
         fill={fillColor}
@@ -305,13 +309,13 @@ const getSvgPath = (
         {fillOption}
         {Boolean(outlineColor) && <path
           stroke={outlineColor}
-          strokeWidth={strokeWidthToScale + printSettings.shadowWidth * getPixelInMm(dpi)}
+          strokeWidth={width + printSettings.shadowWidth * getPixelInMm(dpi)}
           fill="none"
           d={d}
         />}
         <path
           stroke={colors.evaluateColor(color)}
-          strokeWidth={strokeWidthToScale}
+          strokeWidth={width}
           {...styles}
           fill="none"
           d={d}
@@ -463,7 +467,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
         />
       )}
       {/* eslint-disable-next-line max-len */}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options)}
+      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options, points[0])}
       {resultFilled}
     </>
   )
