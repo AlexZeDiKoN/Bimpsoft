@@ -1,8 +1,6 @@
 import { List } from 'immutable'
 import { march } from '../actions'
 import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
-
-import { SET_ROUTE } from '../actions/march'
 import i18n from './../../i18n'
 
 const initState = {
@@ -62,7 +60,6 @@ export default function reducer (state = initState, action) {
     case march.DELETE_CHILD:
     case march.SET_COORD_FROM_MAP:
     case march.SET_ROUTE:
-      console.log('---reduce', payload)
       return { ...state, ...payload, isChanged: true }
     case march.INIT_MARCH:
       return { ...state, ...payload }

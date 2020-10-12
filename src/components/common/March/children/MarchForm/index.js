@@ -1,5 +1,5 @@
 import { Input, Select, Tooltip, Divider } from 'antd'
-import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
+import { components, IButton, IconNames, ColorTypes, ButtonTypes } from '@DZVIN/CommonComponents'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { MARCH_TYPES } from '../../../../../constants/March'
@@ -59,6 +59,7 @@ const MarchForm = (props) => {
     coordTypeSystem,
     geoLandmarks,
     readOnly,
+    route,
   } = props
   const {
     editFormField,
@@ -78,6 +79,7 @@ const MarchForm = (props) => {
   const formattedGeoLandmarks = geoLandmarks[geoKey]
   const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
   const point = getPointById(marchPoints, type)
+  const isRoutePresent = Boolean(route)
 
   const onChangeTime = (value) => {
     if (point.notEditableTime) {
@@ -155,7 +157,11 @@ const MarchForm = (props) => {
   }
 
   const onGetRoute = () => {
-    getRoute(segmentId, childId)
+    getRoute({ segmentId, childId })
+  }
+
+  const onClearRoute = () => {
+    getRoute({ segmentId, childId, isClearRoute: true })
   }
 
   let dotClass
@@ -204,7 +210,10 @@ const MarchForm = (props) => {
     isStaticPointType = childId === 0
   }
 
-  const isViewBottomPanel = (childId !== undefined) && !(segmentType === OWN_RESOURCES && childId === 0)
+  const isOwnResources = segmentType === OWN_RESOURCES
+  const isChild = childId !== undefined
+  const isFirstChild = childId === 0
+  const isViewBottomPanel = (isChild && !(segmentType === OWN_RESOURCES && isFirstChild)) || isOwnResources
 
   const showDeletePointConfirm = () => {
     toggleDeleteMarchPointModal(true, segmentId, childId)
@@ -278,9 +287,7 @@ const MarchForm = (props) => {
                 <span><strong>+ {i18n.OWN_VARIANT}</strong></span>
               </div>
             </Option>
-
           </Select>
-          <button onClick={onGetRoute} style={{ right: '0px', position: 'absolute' }}>asd</button>
         </Tooltip>
         {isStaticPointType
           ? <Input
@@ -304,7 +311,7 @@ const MarchForm = (props) => {
         }
         {isViewBottomPanel &&
         <div className={'bottom-panel'}>
-          {segmentType === OWN_RESOURCES && point.notEditableTime !== true
+          {isOwnResources && !point.notEditableTime && isChild && !isFirstChild
             ? <div className={'time-block'}>
               <Tooltip placement='topRight' title={i18n.REST_TIME} align={ { offset: [ 10, 0 ] }}>
                 <div className={'logo-time'}/>
@@ -317,13 +324,41 @@ const MarchForm = (props) => {
                 className={'time-input'}
                 disabled={readOnly}
               />
-
             </div>
             : <div/>
           }
-          <Tooltip placement='topRight' title={i18n.DELETE_MARCH_POINT} align={ { offset: [ 5, 0 ] }}>
-            <IButton disabled={readOnly} icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
-          </Tooltip>
+          <div className={'right-buttons-container'}>
+            {
+              isOwnResources &&
+                <>
+                  <Tooltip placement='topRight' title={i18n.ROUTE_HAND} align={ { offset: [ 5, 0 ] }}>
+                    <IButton
+                      icon={IconNames.ROUTE_2}
+                      active={!isRoutePresent}
+                      colorType={ColorTypes.DARK_GREEN}
+                      type={ButtonTypes.WITH_BG}
+                      onClick={onClearRoute}
+                    />
+                  </Tooltip>
+                  <Tooltip placement='topRight' title={i18n.ROUTE_AUTO} align={ { offset: [ 5, 0 ] }}>
+                    <IButton
+                      icon={IconNames.ROUTE}
+                      active={isRoutePresent}
+                      type={ButtonTypes.WITH_BG}
+                      colorType={ColorTypes.DARK_GREEN}
+                      onClick={onGetRoute}
+                    />
+                  </Tooltip>
+                </>
+            }
+            {isChild && (!isFirstChild || !isOwnResources) && <Tooltip
+              placement='topRight'
+              title={i18n.DELETE_MARCH_POINT}
+              align={ { offset: [ 5, 0 ] }}
+            >
+              <IButton disabled={readOnly} icon={IconNames.BAR_2_DELETE} onClick={showDeletePointConfirm}/>
+            </Tooltip>}
+          </div>
         </div>
         }
       </div>
@@ -356,6 +391,10 @@ MarchForm.propTypes = {
   coordTypeSystem: PropTypes.string.isRequired,
   geoLandmarks: PropTypes.object.isRequired,
   readOnly: PropTypes.bool.isRequired,
+  route: PropTypes.oneOfType([
+    PropTypes.object.isRequired,
+    PropTypes.oneOf([ null ]).isRequired,
+  ]),
 }
 
 GeoLandmarkItem.propTypes = {

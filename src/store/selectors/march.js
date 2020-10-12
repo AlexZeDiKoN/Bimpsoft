@@ -26,7 +26,6 @@ export const marchDots = createSelector(
   (segments) => {
     const coordArray = []
     segments = segments ? segments.toArray() : []
-
     segments.forEach((it) => {
       if (it.coordinates.lat || it.coordinates.lng) {
         coordArray.push({
@@ -43,7 +42,7 @@ export const marchDots = createSelector(
               coordinates: it2.coordinates,
               options: { color: getSegmentColor(it.type) },
               refPoint: it2.refPoint,
-              route: it.route,
+              route: it2.route,
             })
           }
         })
@@ -52,5 +51,4 @@ export const marchDots = createSelector(
 
     return coordArray
   },
-
 )

@@ -968,7 +968,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
-    console.log('==============------------------------')
     const drawMarchLine = () => {
       if (!this.marchLines) {
         this.marchLines = []
@@ -981,25 +980,17 @@ export default class WebMap extends React.PureComponent {
       }
       marchDots.forEach(({ coordinates, options, route }, id) => {
         if (id !== marchDots.length - 1) {
-          console.log('==============coordinates', coordinates)
-          let marchLine// = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
-          console.log('==============route', route)
-          //marchLine.addTo(this.map)
-          //this.marchLines.push(marchLine)
-          console.log('==============------------------------22')
+          let marchLine
           if (route && route.coordinates && route.coordinates.length) {
-            console.log('==============------------------------33')
-            route.coordinates.forEach((pointCoordinates, idRoute) => {
-              console.log('==============------------------------44', pointCoordinates)
-              const nextPoint = (idRoute + 1) === route.coordinates.length
-                ? marchDots[id + 1].coordinates
-                : route.coordinates[idRoute + 1]
-              marchLine = L.polyline([ pointCoordinates, nextPoint ], options)
-              marchLine.addTo(this.map)
-            })
+            const { coordinates } = route
+            marchLine = L.polyline(coordinates, options)
+            marchLine.addTo(this.map)
+            this.marchLines.push(marchLine)
+            marchLine = L.polyline([ coordinates[ coordinates.length - 1 ], marchDots[id + 1].coordinates ], options)
+            marchLine.addTo(this.map)
+            this.marchLines.push(marchLine)
           } else {
-            let marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
-
+            marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
             marchLine.addTo(this.map)
             this.marchLines.push(marchLine)
           }
@@ -1008,7 +999,6 @@ export default class WebMap extends React.PureComponent {
     }
 
     if (marchDots !== prevMarchDots) {
-      console.log('------marchDots', marchDots)
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
         this.marchMarkers = []
