@@ -9,8 +9,7 @@ export default {
   // Автоматичне прокладання маршрутів автомобільними дорогами
   getRoute: async (point1, point2) => {
     try {
-      const result = await getDirect(`${osrmUrl}${routeUrl}/${key(point1)};${key(point2)}?geometries=geojson&overview=full`, false, true)
-      return result.routes[0].geometry.coordinates.map(([ lng, lat ]) => ({ lng, lat }))
+      return getDirect(`${osrmUrl}${routeUrl}/${key(point1)};${key(point2)}?geometries=geojson&overview=full`, false, true)
     } catch (err) {
       console.warn(err)
       return null

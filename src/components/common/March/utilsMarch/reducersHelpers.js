@@ -25,6 +25,7 @@ const defaultChild = () => ({
     time: 0,
     distance: 0,
   },
+  route: null,
 })
 
 const defaultSegment = (type) => {
@@ -58,6 +59,7 @@ const defaultSegment = (type) => {
     metric: getDefaultMetric(type !== OWN_RESOURCES),
     children: [],
     ...specificFields,
+    route: null,
   }
 }
 
