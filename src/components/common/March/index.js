@@ -72,6 +72,7 @@ const March = (props) => {
     readOnly,
     isChanged,
     setGeoLandmarks,
+    getRoute,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
@@ -89,6 +90,7 @@ const March = (props) => {
       toggleGeoLandmarkModal,
       toggleDeleteMarchPointModal,
       setGeoLandmarks,
+      getRoute,
     }
 
     return <div className={'dots-forms'}>
@@ -186,6 +188,7 @@ March.propTypes = {
   readOnly: PropTypes.bool.isRequired,
   isChanged: PropTypes.bool.isRequired,
   setGeoLandmarks: PropTypes.func.isRequired,
+  getRoute: PropTypes.func.isRequired,
 }
 
 export default React.memo(March)

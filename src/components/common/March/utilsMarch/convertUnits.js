@@ -92,6 +92,52 @@ const convertSegmentsForExplorer = (segments) => {
   return { segments: convertSegments }
 }
 
+const getDataRoute = ({ routes = [] }) => {
+  const [ route ] = routes
+  const { geometry = {}, legs = [] } = route
+  const coordinates = geometry?.coordinates?.map(([ lng, lat ]) => ({ lng, lat }))
+  const distance = Number(legs[0]?.distance)
+  const distanceInKm = distance && distance > 0 ? (distance / 1000).toFixed(1) : 0
+
+  return {
+    coordinates,
+    distance: distanceInKm,
+  }
+}
+
+const getTwoPointsRoute = (segments, segmentId, childId) => {
+  let firstPoint, secondPoint
+  if (childId === undefined || childId === null) {
+    firstPoint = segments[segmentId].coordinates
+    if (segments[segmentId].children && segments[segmentId].children.length) {
+      secondPoint = segments[segmentId].children[0].coordinates
+    } else {
+      secondPoint = (segmentId + 1) < segments.length ? segments[segmentId + 1].coordinates : null
+    }
+  } else {
+    firstPoint = segments[segmentId].children[childId].coordinates
+    if ((childId + 1) === segments[segmentId].children.length) {
+      secondPoint = (segmentId + 1) < segments.length ? segments[segmentId + 1].coordinates : null
+    } else {
+      secondPoint = segments[segmentId].children[childId + 1].coordinates
+    }
+  }
+  firstPoint = firstPoint && Object.keys(firstPoint).length === 2 ? firstPoint : null
+  secondPoint = secondPoint && Object.keys(secondPoint).length === 2 ? secondPoint : null
+  return [ firstPoint, secondPoint ]
+}
+
+const isValidIncomingPoints = (pointsRoute) => {
+  return pointsRoute &&
+  pointsRoute.length === 2 &&
+  pointsRoute[0] &&
+  pointsRoute[1] &&
+  pointsRoute[0].lat &&
+  pointsRoute[0].lng &&
+  pointsRoute[1].lat &&
+  pointsRoute[1].lng
+}
+
 export default {
   azimuthToCardinalDirection,
   getFilteredGeoLandmarks,
@@ -99,4 +145,7 @@ export default {
   msToTime,
   msToHours,
   convertSegmentsForExplorer,
+  getDataRoute,
+  getTwoPointsRoute,
+  isValidIncomingPoints,
 }
