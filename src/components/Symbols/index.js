@@ -18,8 +18,8 @@ import { symbols } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
-import spriteUrl from './sprite.svg'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
+import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
   const { name } = props
@@ -134,20 +134,22 @@ const SymbolsTab = (props) => {
           initValue={search}
           title={i18n.SYMBOLS}
         />
-        <IButton
-          active={!listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(false)}
-          title={i18n.GRID}
-          icon={IconNames.GRID}/>
-        <IButton
-          active={listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(true)}
-          title={i18n.LIST}
-          icon={IconNames.LIST}/>
+        <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={!listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(false)}
+            icon={IconNames.GRID}/>
+        </Tooltip>
+        <Tooltip title={i18n.LIST} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(true)}
+            icon={IconNames.LIST}/>
+        </Tooltip>
       </div>
       <Scrollbar className='parts-container'>
         {partsJSX}
