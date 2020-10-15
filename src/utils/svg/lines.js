@@ -1050,7 +1050,8 @@ export const getAmplifiers = ({
       points: buildPoints(
         points,
         segments,
-        () => 0.5,
+        // для крайних сегментов немного корректируем середину(иначе имеем явный дисбаланс)
+        (index) => locked ? 0.5 : (index === 0 ? 0.575 : (index === segments.length - 1 ? 0.425 : 0.5)),
         bezier,
         locked,
       ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),

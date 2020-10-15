@@ -36,7 +36,8 @@ export const getPixelInMm = (dpi) => dpi / MM_IN_INCH
 const SHADOW_WIDTH = 1 // ширина подсветки слоя при печати в мм
 const LINE_WIDTH = 2 // индекс ширины для линий без определенной толщины
 const CROSS_SIZE = 32 // индекс ширины между линиями штриховки
-const POINT_SIZE_DEFAULT = 12 // базовый размер шрифта
+const POINT_SIZE_DEFAULT = 12 // базовый размер точечсного знака
+const FONT_SIZE_DEFAULT = 12 // базовый размер шрифта
 const MERGE_SYMBOL = 5 // отступы при генерации символов
 
 // Размер базового элемента пунктира (мм) в зависимости от маcштаба карты
@@ -103,6 +104,7 @@ export const printSettings = {
   strokeSizeFromScale,
   dashSizeFromScale,
   pointSizeDefault: POINT_SIZE_DEFAULT,
+  fontSizeDefault: FONT_SIZE_DEFAULT,
   shadowWidth: SHADOW_WIDTH,
   lineWidth: LINE_WIDTH,
   crossSize: CROSS_SIZE,
@@ -110,9 +112,9 @@ export const printSettings = {
 }
 // printScale - масштаб карты
 // dpi - разрешение печати
-export const getFontSizeByDpi = (printScale, dpi) => (fontSize = printSettings.pointSizeDefault) => {
+export const getFontSizeByDpi = (printScale, dpi) => (fontSize = printSettings.fontSizeDefault) => {
   return Math.round(printSettings.fontSizeFromScale.get(printScale) * getPixelInMm(dpi) * fontSize /
-    printSettings.pointSizeDefault)
+    printSettings.fontSizeDefault)
 }
 
 export const getGraphicSizeByDpi = (printScale, dpi) => {
@@ -221,15 +223,14 @@ const getSvgPath = (
   d,
   attributes,
   layerData,
-  scale,
   mask,
   bounds,
   idObject,
   strokeWidthPrint,
   dpi,
+  point = { x: 0, y: 0 },
   dashSize,
   options = {},
-  point = { x: 0, y: 0 },
 ) => {
   const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
   const { color: outlineColor } = layerData
@@ -265,8 +266,7 @@ const getSvgPath = (
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
     const fillColor = `url('#${fillId}')`
-    const sqrt2 = Math.sqrt(2)
-    const cs = (width + printSettings.crossSize) * sqrt2
+    const cs = (width + printSettings.crossSize) * Math.sqrt(2)
     const p1 = cs / 2 + width
     const p2 = cs / 2 - width
     const p3 = cs + width
@@ -467,7 +467,7 @@ const getLineSvg = (points, attributes, data, layerData) => {
         />
       )}
       {/* eslint-disable-next-line max-len */}
-      {getSvgPath(result, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi, dashSize, options, points[0])}
+      {getSvgPath(result, attributes, layerData, amplifiers.maskPath, bounds, id, strokeWidth, dpi, points[0], dashSize, options)}
       {resultFilled}
     </>
   )
@@ -506,7 +506,7 @@ const getLineBuilder = (bezier, locked, minPoints) => (commonData, object, layer
 
 // сборка Квадрата, Прямоугольника, Круга
 const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
-  const { coordToPixels, scale, bounds, printOptions: { getFontSize, getStrokeWidth }, dpi } = commonData
+  const { coordToPixels, bounds, printOptions: { getFontSize, getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   const [ point1, point2 ] = geometry.toJS()
   const showTextAmplifiers = true // пока в любом случае разрешаем вывода амплификаторов при печати
@@ -570,7 +570,7 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
             dangerouslySetInnerHTML={{ __html: amplifiers.group }}
           />
         )}
-        {getSvgPath(d, attributes, layerData, scale, amplifiers.maskPath, bounds, id, strokeWidth, dpi)}
+        {getSvgPath(d, attributes, layerData, amplifiers.maskPath, bounds, id, strokeWidth, dpi, point1)}
       </>)
   }
 }
@@ -580,7 +580,7 @@ const contourPathBuilder = (geometry, coordToPixels) => Array.isArray(geometry[0
   : pointsToD(geometry.map((point) => coordToPixels(point)), true)
 
 const getContourBuilder = () => (commonData, data, layerData) => {
-  const { coordToPixels, scale, printOptions: { getStrokeWidth }, dpi } = commonData
+  const { coordToPixels, printOptions: { getStrokeWidth }, dpi } = commonData
   const { attributes, geometry, id } = data
   if (geometry) {
     const js = geometry.toJS()
@@ -588,7 +588,6 @@ const getContourBuilder = () => (commonData, data, layerData) => {
       contourPathBuilder(js, coordToPixels),
       attributes,
       layerData,
-      scale,
       null,
       null,
       id,
@@ -706,7 +705,19 @@ mapObjectBuilders.set(SelectionTypes.SOPHISTICATED, (commonData, objectData, lay
     }
     return (
       <g id={id}>
-        {getSvgPath(container.d, attributes, layerData, 1, container.mask, bounds, id, strokeWidth, dpi, null, options)}
+        {getSvgPath(
+          container.d,
+          attributes,
+          layerData,
+          container.mask,
+          bounds,
+          id,
+          strokeWidth,
+          dpi,
+          points[0],
+          null,
+          options)
+        }
         {Boolean(container.amplifiers) && (
           <g
             stroke={strokeColor}
@@ -730,7 +741,6 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
   const {
     coordToPixels,
     bounds,
-    scale, // масштаб к DPI 96
     objects, // все объекты карты
     printOptions: { getStrokeWidth, pointSymbolSize },
     dpi,
@@ -747,7 +757,7 @@ mapObjectBuilders.set(SelectionTypes.GROUPED_REGION, (commonData, object, layer)
 
   const pathD = buildRegionGroup(points, pointSymbolSize)
   const strokeWidth = getStrokeWidth(attributes.strokeWidth)
-  return getSvgPath(pathD, attributes, layer, scale, null, bounds, id, strokeWidth, dpi)
+  return getSvgPath(pathD, attributes, layer, null, bounds, id, strokeWidth, dpi)
 })
 
 mapObjectBuilders.set(SelectionTypes.OLOVO, (commonData, object, layer) => {
