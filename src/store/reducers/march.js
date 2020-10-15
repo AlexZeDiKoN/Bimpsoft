@@ -1,6 +1,7 @@
 import { List } from 'immutable'
 import { march } from '../actions'
 import { uuid } from '../../components/WebMap/patch/Sophisticated/utils'
+import { MARCH_POINT_TYPES as pointTypes } from '../../constants/March'
 import i18n from './../../i18n'
 
 const initState = {
@@ -18,11 +19,11 @@ const initState = {
   distance: 0,
   coordRefPoint: null,
   pointsTypes: [
-    { id: 0, name: i18n.POINT_ON_MARCH },
-    { id: 1, name: i18n.REST_POINT },
-    { id: 2, name: i18n.DAY_NIGHT_REST_POINT },
-    { id: 3, name: i18n.DAILY_REST_POINT },
-    { id: 4, name: i18n.LINE_OF_REGULATION },
+    { id: pointTypes.POINT_ON_MARCH, name: i18n.POINT_ON_MARCH },
+    { id: pointTypes.REST_POINT, name: i18n.REST_POINT },
+    { id: pointTypes.DAY_NIGHT_REST_POINT, name: i18n.DAY_NIGHT_REST_POINT },
+    { id: pointTypes.DAILY_REST_POINT, name: i18n.DAILY_REST_POINT },
+    { id: pointTypes.LINE_OF_REGULATION, name: i18n.LINE_OF_REGULATION },
   ],
   payload: null,
   segments: List([]),

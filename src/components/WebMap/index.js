@@ -1005,7 +1005,8 @@ export default class WebMap extends React.PureComponent {
         this.marchMarkers = []
       }
       marchDots.forEach((dot) => {
-        const marker = createSearchMarker(dot.coordinates, false)
+        const iconName = dot.restPoint ? 'camp.png' : null
+        const marker = createSearchMarker(dot.coordinates, false, iconName)
         const { lat, lng } = dot.coordinates
         const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
 
@@ -1026,7 +1027,9 @@ export default class WebMap extends React.PureComponent {
             dot.options.color !== prevMarchDots[id].options.color
           ) {
             redrawLine = true
-            const marker = createSearchMarker(dot.coordinates, false)
+            const iconName = dot.restPoint ? 'camp.png' : null
+            const marker = createSearchMarker(dot.coordinates, false, iconName)
+
             marker.addTo(this.map)
             if (this.marchMarkers.length && this.marchMarkers[id]) {
               this.marchMarkers[id].removeFrom(this.map)
