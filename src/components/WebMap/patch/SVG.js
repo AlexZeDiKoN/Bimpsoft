@@ -451,34 +451,38 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
-    const pointsG = Array.isArray(layer._latlngs[0]) ? layer._latlngs[0] : layer._latlngs
-    const points = pointsG.map((pointG) => {
-      if (pointG && pointG.lat && pointG.lng) {
-        return layer._map.latLngToLayerPoint(pointG)
-      } else {
-        return null
-      }
-    }).filter(Boolean) || []
-
-    if (bezier) {
-      points.forEach((point, ind, points) => {
-        if (!locked && (ind === 0 || ind === points.length - 1)) {
-          point.cp1 = { x: point.x, y: point.y }
-          point.cp2 = { x: point.x, y: point.y }
+    if (!layer.points || layer.oldRings !== layer._rings[0]) {
+      const pointsG = Array.isArray(layer._latlngs[0]) ? layer._latlngs[0] : layer._latlngs
+      const points = pointsG.map((pointG) => {
+        if (pointG && pointG.lat && pointG.lng) {
+          return layer._map.latLngToLayerPoint(pointG)
         } else {
-          const indP = ind === 0 ? points.length - 1 : ind - 1
-          const indN = ind === points.length - 1 ? 0 : ind + 1
-          const [ cp1, cp2 ] = calcControlPoint(
-            [ points[indP].x, points[indP].y ],
-            [ point.x, point.y ],
-            [ points[indN].x, points[indN].y ])
-          point.cp1 = { x: cp1[0], y: cp1[1] }
-          point.cp2 = { x: cp2[0], y: cp2[1] }
+          return null
         }
-      })
+      }).filter(Boolean) || []
+
+      if (bezier) {
+        points.forEach((point, ind, points) => {
+          if (!locked && (ind === 0 || ind === points.length - 1)) {
+            point.cp1 = { x: point.x, y: point.y }
+            point.cp2 = { x: point.x, y: point.y }
+          } else {
+            const indP = ind === 0 ? points.length - 1 : ind - 1
+            const indN = ind === points.length - 1 ? 0 : ind + 1
+            const [ cp1, cp2 ] = calcControlPoint(
+              [ points[indP].x, points[indP].y ],
+              [ point.x, point.y ],
+              [ points[indN].x, points[indN].y ])
+            point.cp1 = { x: cp1[0], y: cp1[1] }
+            point.cp2 = { x: cp2[0], y: cp2[1] }
+          }
+        })
+      }
+      layer.oldRings = layer._rings[0]
+      layer.points = points
     }
     const amplifiers = getAmplifiers({
-      points,
+      points: layer.points,
       bezier,
       locked,
       bounds,

@@ -1,5 +1,6 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
+import { TWO_PI } from 'proj4/lib/constants/values'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
 import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
@@ -1032,7 +1033,7 @@ export const getAmplifiers = ({
     points.forEach((point, index, points) => {
       let ang = angle3Points(point, points[(index - 1 + kolPoints) % kolPoints], points[(index + 1) % kolPoints])
       if (ang < 0) {
-        ang = ang + Math.PI * 2
+        ang = ang + TWO_PI
       }
       angleL += ang
     })
@@ -1050,8 +1051,8 @@ export const getAmplifiers = ({
       points: buildPoints(
         points,
         segments,
-        // для крайних сегментов немного корректируем середину(иначе имеем явный дисбаланс)
-        (index) => locked ? 0.5 : (index === 0 ? 0.575 : (index === segments.length - 1 ? 0.425 : 0.5)),
+        // для крайних сегментов кривой немного корректируем середину(иначе имеем явный дисбаланс)
+        (index) => (locked || !bezier) ? 0.5 : (index === 0 ? 0.575 : (index === segments.length - 1 ? 0.425 : 0.5)),
         bezier,
         locked,
       ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
