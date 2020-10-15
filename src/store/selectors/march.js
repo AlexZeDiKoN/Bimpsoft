@@ -44,7 +44,7 @@ export const marchDots = createSelector(
               options: { color: getSegmentColor(it.type) },
               refPoint: it2.refPoint,
               route: it2.route,
-              restPoint: pointRest.includes(it2.type),
+              isRestPoint: pointRest.includes(it2.type),
             })
           }
         })
