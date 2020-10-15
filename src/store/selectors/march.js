@@ -43,7 +43,11 @@ export const marchDots = createSelector(
               options: { color: getSegmentColor(it.type) },
               refPoint: it2.refPoint,
               route: it2.route,
-              restPoint: Boolean(it2.type > pointTypes.POINT_ON_MARCH && it2.type < pointTypes.LINE_OF_REGULATION),
+              restPoint: Boolean(
+                it2.type === pointTypes.REST_POINT ||
+                it2.type === pointTypes.DAY_NIGHT_REST_POINT ||
+                it2.type === pointTypes.DAILY_REST_POINT,
+              ),
             })
           }
         })
