@@ -1,5 +1,8 @@
 import lineDefinitions from '../lineDefinitions'
-import { buildingAirborne, getDashSize } from '../utils'
+import {
+  buildingAirborne,
+  getDashSize,
+} from '../utils'
 import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 // sign name: SUPPORTING ATTACK

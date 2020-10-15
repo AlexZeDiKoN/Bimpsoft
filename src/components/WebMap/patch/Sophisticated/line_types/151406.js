@@ -1,7 +1,8 @@
 import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import {
   buildingArrow,
-  buildingDotted, getDashSize,
+  buildingDotted,
+  getDashSize,
 } from '../utils'
 import lineDefinitions from '../lineDefinitions'
 import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
