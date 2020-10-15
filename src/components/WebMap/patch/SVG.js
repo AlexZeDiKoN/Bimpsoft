@@ -14,9 +14,12 @@ import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
 import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
 import { prepareLinePath, makeRegionGroup } from './utils/SVG'
-import { prepareBezierPath } from './utils/Bezier'
+import { calcControlPoint, prepareBezierPath } from './utils/Bezier'
 import { setClassName, scaleValue, interpolateSize } from './utils/helpers'
-import { getFontSize, getStrokeWidth } from './Sophisticated/utils'
+import {
+  getFontSize,
+  getStrokeWidth,
+} from './Sophisticated/utils'
 import './SVG.css'
 
 // ------------------------ Патч ядра Leaflet для візуалізації поліліній і полігонів засобами SVG ----------------------
@@ -448,8 +451,38 @@ L.SVG.include({
 
   _updateMask: function (layer, bezier, locked) {
     const bounds = layer._map._renderer._bounds
+    if (!layer.points || layer.oldRings !== layer._rings[0]) {
+      const pointsG = Array.isArray(layer._latlngs[0]) ? layer._latlngs[0] : layer._latlngs
+      const points = pointsG.map((pointG) => {
+        if (pointG && pointG.lat && pointG.lng) {
+          return layer._map.latLngToLayerPoint(pointG)
+        } else {
+          return null
+        }
+      }).filter(Boolean) || []
+
+      if (bezier) {
+        points.forEach((point, ind, points) => {
+          if (!locked && (ind === 0 || ind === points.length - 1)) {
+            point.cp1 = { x: point.x, y: point.y }
+            point.cp2 = { x: point.x, y: point.y }
+          } else {
+            const indP = ind === 0 ? points.length - 1 : ind - 1
+            const indN = ind === points.length - 1 ? 0 : ind + 1
+            const [ cp1, cp2 ] = calcControlPoint(
+              [ points[indP].x, points[indP].y ],
+              [ point.x, point.y ],
+              [ points[indN].x, points[indN].y ])
+            point.cp1 = { x: cp1[0], y: cp1[1] }
+            point.cp2 = { x: cp2[0], y: cp2[1] }
+          }
+        })
+      }
+      layer.oldRings = layer._rings[0]
+      layer.points = points
+    }
     const amplifiers = getAmplifiers({
-      points: layer._rings[0],
+      points: layer.points,
       bezier,
       locked,
       bounds,

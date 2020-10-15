@@ -1,9 +1,9 @@
 import React from 'react'
-import { Menu, Dropdown } from 'antd'
+import { Menu, Dropdown, Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { IButton, IconNames } from '@DZVIN/CommonComponents'
-import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+import { IButton, IconNames, ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents'
 import i18n from '../../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../../constants/tooltip'
 
 export default class Index extends React.Component {
   static propTypes = {
@@ -37,12 +37,13 @@ export default class Index extends React.Component {
         overlay={menu}
         trigger={[ 'click' ]}
       >
-        <IButton
-          title={i18n.EXTRA_FUNCTIONS}
-          colorType={ColorTypes.WHITE}
-          type={ButtonTypes.WITH_BG}
-          icon={IconNames.TABLE_SETING}
-        />
+        <Tooltip title={i18n.EXTRA_FUNCTIONS} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            colorType={ColorTypes.WHITE}
+            type={ButtonTypes.WITH_BG}
+            icon={IconNames.TABLE_SETING}
+          />
+        </Tooltip>
       </Dropdown>
     )
   }
