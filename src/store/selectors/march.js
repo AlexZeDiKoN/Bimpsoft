@@ -3,6 +3,7 @@ import { MARCH_TYPES, MARCH_COLOR, MARCH_POINT_TYPES as pointTypes } from '../..
 
 const { OWN_RESOURCES, BY_RAILROAD, BY_SHIPS, COMBINED } = MARCH_TYPES
 const { OWN_RESOURCES_LINE, BY_RAILROAD_LINE, BY_SHIPS_LINE, COMBINED_LINE, DEFAULT_LINE } = MARCH_COLOR
+const pointRest = [ pointTypes.REST_POINT, pointTypes.DAY_NIGHT_REST_POINT, pointTypes.DAILY_REST_POINT ]
 
 const getSegmentColor = (segmentType) => {
   switch (segmentType) {
@@ -43,11 +44,7 @@ export const marchDots = createSelector(
               options: { color: getSegmentColor(it.type) },
               refPoint: it2.refPoint,
               route: it2.route,
-              restPoint: Boolean(
-                it2.type === pointTypes.REST_POINT ||
-                it2.type === pointTypes.DAY_NIGHT_REST_POINT ||
-                it2.type === pointTypes.DAILY_REST_POINT,
-              ),
+              restPoint: pointRest.includes(it2.type),
             })
           }
         })
