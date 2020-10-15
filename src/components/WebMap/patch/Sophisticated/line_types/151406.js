@@ -2,8 +2,10 @@ import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
 import {
   buildingArrow,
   buildingDotted,
+  getDashSize,
 } from '../utils'
 import lineDefinitions from '../lineDefinitions'
+import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
@@ -15,6 +17,8 @@ const LINE_TYPE = 'L'
 const COUNT_DASH = 2
 
 lineDefinitions['151406'] = {
+  useStatus: true,
+
   // Відрізки, на яких дозволено додавання вершин символа
   allowMiddle: MIDDLE.allowOverAndNotEnd(POINTS - 2),
 
@@ -33,7 +37,13 @@ lineDefinitions['151406'] = {
   ],
 
   // Рендер-функція
-  render: (result, points) => {
+  render: (result, points, scale) => {
+    const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
+    if (status === STATUSES.PLANNED) {
+      const dash = getDashSize(result.layer, scale)
+      result.layer.options.dashArray = dash
+      result.layer._path.setAttribute('stroke-dasharray', dash)
+    }
     buildingDotted(result, points, COUNT_DASH)
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
