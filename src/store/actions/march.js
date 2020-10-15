@@ -255,6 +255,7 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'
     let previousLineSegment = null
+    const isCoordinatesField = fieldName[i] === 'coordinates'
 
     if (childId || childId === 0) {
       if (childId) {
@@ -264,13 +265,13 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
       }
       updateSegments = updateSegments.update(segmentId, (segment) => ({
         ...segment,
-        route: childId === 0 ? null : segment.route,
+        route: (childId === 0 && isCoordinatesField) ? null : segment.route,
         children: segment.children.map((it, id) => (id === childId) ? {
           ...it,
           [fieldName[i]]: val[i],
           refPoint: fieldName[i] === 'refPoint' ? val[i] : it.refPoint,
-          route: null,
-        } : previousLineSegment.childId === id ? { ...it, route: null } : it),
+          route: isCoordinatesField ? null : it.route,
+        } : (previousLineSegment.childId === id && isCoordinatesField) ? { ...it, route: null } : it),
       }))
     } else {
       let children = segments.get(segmentId).children
@@ -321,7 +322,7 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
       })
     }
 
-    if (fieldName[i] === 'coordinates') {
+    if (isCoordinatesField) {
       const coordinates = val[i]
       dispatch(setGeoLandmarks({
         coordinates: { ...coordinates },
@@ -384,8 +385,7 @@ export const editFormField = (data) => asyncAction.withNotification(
     const { updateSegments } = getUpdateSegments(segments, data, geoLandmarks, dispatch)
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
-
-    dispatch(updateMetric(march.payload))
+    dispatch(updateMetric(march.payload, updateSegments))
 
     const payload = {
       segments: updateSegments,
