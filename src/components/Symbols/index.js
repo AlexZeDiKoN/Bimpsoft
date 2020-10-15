@@ -110,7 +110,7 @@ const SymbolsTab = (props) => {
 
     const value = (search !== '') ? { value: true } : {}
 
-    return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
+    return (sortedPart.length !== 0) && <div key={part.name} className={search !== '' ? 'collapseSection collapseSectionFiltered' : 'collapseSection'}>
       <FormBlock vertical>
         <Collapse
           {...sections(index)}
