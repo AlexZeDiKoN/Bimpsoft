@@ -279,7 +279,7 @@ const MarchForm = (props) => {
           <Select
             className={'select-point'}
             value={refPoint}
-            showArrow={false}
+            showArrow={true}
             onChange={onChangeRefPoint}
             placeholder={i18n.GEOGRAPHICAL_LANDMARK}
             onDropdownVisibleChange={onDropdownVisibleChange}
@@ -316,7 +316,7 @@ const MarchForm = (props) => {
           />
           : <Select
             className={'select-point'}
-            showArrow={false}
+            showArrow={true}
             defaultValue={pointTypeName}
             value={pointTypeName}
             onChange={onChangeMarchPointType}
