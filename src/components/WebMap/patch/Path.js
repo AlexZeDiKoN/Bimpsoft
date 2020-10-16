@@ -36,12 +36,10 @@ export default L.Path.include({
 
   setLineType: function (lineType) {
     this.lineType = lineType
-    this._updateZoomStyles()
   },
 
   setStrokeWidth: function (strokeWidth) {
     this.strokeWidth = strokeWidth
-    this._updateZoomStyles()
   },
 
   setShadowColor: function (shadowColor) {
@@ -117,16 +115,17 @@ export default L.Path.include({
     }
   },
 
-  setScaleOptions: function (scaleOptions) {
+  setScaleOptions: function (scaleOptions, needRedraw) {
     this.scaleOptions = scaleOptions
-    this._updateZoomStyles()
+    this._updateZoomStyles(needRedraw)
   },
 
   setShowAmplifiers: function (showAmplifiers) {
     if (this.options.showAmplifiers !== showAmplifiers) {
       this.options.showAmplifiers = showAmplifiers
-      this.redraw()
+      return true // this.redraw()
     }
+    return false
   },
 
   getEvents: function () {
@@ -139,10 +138,7 @@ export default L.Path.include({
     this._updateZoomStyles()
   },
 
-  _updateZoomStyles: function () {
-    if (!this._map) {
-      return
-    }
+  _updateZoomStyles: function (needRedraw = false) {
     const {
       strokeWidth,
       scaleOptions,
@@ -153,17 +149,16 @@ export default L.Path.include({
       lineTypePrev,
     } = this
     if (scaleOptions !== undefined) {
-      const zoom = this._map.getZoom()
+      const zoom = this.map.getZoom()
       const scaleChanged = scaleOptions !== scaleOptionsPrev || zoom !== zoomPrev
       if (scaleChanged) {
         this.scaleOptionsPrev = scaleOptions
         this.zoomPrev = zoom
-        this.scale = interpolateSize(zoom, scaleOptions, 10.0, 5, 20)
+        this.scale = interpolateSize(zoom, scaleOptions, 10.0)
       }
       const scale = this.scale ? this.scale / 100 : 1
       const styles = {}
       let hasStyles = false
-      let needRedraw = false
       if (scaleChanged || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
         styles.weight = scale * strokeWidth
@@ -176,7 +171,7 @@ export default L.Path.include({
         needRedraw = true
       }
       hasStyles && this.setStyle(styles)
-      needRedraw && this.redraw()
+      this._map && needRedraw && this.redraw() // если у объекта нет _map он скрытый
     }
   },
 })

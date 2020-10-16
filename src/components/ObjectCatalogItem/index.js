@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import { data, components } from '@DZVIN/CommonComponents'
 import { VisibilityButton } from '../common'
 import i18n from '../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 // export const catalogLevel = () => SubordinationLevel.COMMAND
 
@@ -69,7 +70,7 @@ export default class Item extends React.Component {
           <HighlightedText text={name} textFilter={textFilter}/>
         )}
         placement="left"
-        mouseEnterDelay={1.2}
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
       >
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')}>
           {indicator}

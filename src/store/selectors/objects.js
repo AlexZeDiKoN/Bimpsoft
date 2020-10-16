@@ -23,10 +23,10 @@ export const activeObjectId = createSelector(
       return null
     }
     const selectedObject = objects.get(selected)
-    if (!selectedObject || selectedObject.layer !== layer) {
-      return null
+    if (selectedObject && selectedObject.layer === layer) {
+      return selected
     }
-    return selected
+    return null
   },
 )
 

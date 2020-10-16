@@ -5,6 +5,7 @@ import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import { MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
+import osrmApi from '../../server/api.osrm'
 import i18n from './../../i18n'
 import { openMapFolder, deleteMap } from './maps'
 import * as notifications from './notifications'
@@ -26,9 +27,17 @@ export const CLOSE_MARCH = action('CLOSE_MARCH')
 export const SET_GEO_LANDMARKS = action('SET_GEO_LANDMARKS')
 export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 export const SET_METRIC = action('SET_METRIC')
+export const SET_ROUTE = action('SET_ROUTE')
 
 const { getMarchMetric } = api
-const { convertSegmentsForExplorer, getFilteredGeoLandmarks, azimuthToCardinalDirection } = utilsMarch.convertUnits
+const {
+  convertSegmentsForExplorer,
+  getFilteredGeoLandmarks,
+  azimuthToCardinalDirection,
+  getDataRoute,
+  getTwoPointsRoute,
+  isValidIncomingPoints,
+} = utilsMarch.convertUnits
 const { getDefaultMetric, defaultChild, defaultSegment } = utilsMarch.reducersHelpers
 const { OWN_RESOURCES } = MARCH_TYPES
 
@@ -87,6 +96,30 @@ const initDefaultSegments = () => ([
     children: [],
   },
 ])
+
+const clearPreviousRoute = (previousLineSegment, updateSegments) => {
+  if (previousLineSegment) {
+    const { segmentId: prevSegmentId, childId: prevChildId } = previousLineSegment
+    if (prevChildId !== null) {
+      updateSegments = updateSegments.update(prevSegmentId, (segment) => ({
+        ...segment,
+        children: segment.children.map((it, id) => (id === prevChildId) ? {
+          ...it,
+          route: null,
+        } : it),
+      }))
+    } else {
+      updateSegments = updateSegments.update(previousLineSegment.segmentId, (segment) => {
+        return {
+          ...segment,
+          route: null,
+        }
+      })
+    }
+  }
+
+  return updateSegments
+}
 
 export const updateMetric = (payload, initSegments) => asyncAction.withNotification(
   async (dispatch, getState) => {
@@ -221,18 +254,38 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
 
   for (let i = 0; i < fieldName.length; i++) {
     const isSegmentTypeField = fieldName[i] === 'type'
+    let previousLineSegment = null
+    const isCoordinatesField = fieldName[i] === 'coordinates'
 
     if (childId || childId === 0) {
+      if (childId) {
+        previousLineSegment = { segmentId, childId: childId - 1 }
+      } else {
+        previousLineSegment = { segmentId, childId: null }
+      }
       updateSegments = updateSegments.update(segmentId, (segment) => ({
         ...segment,
+        route: (childId === 0 && isCoordinatesField) ? null : segment.route,
         children: segment.children.map((it, id) => (id === childId) ? {
           ...it,
           [fieldName[i]]: val[i],
           refPoint: fieldName[i] === 'refPoint' ? val[i] : it.refPoint,
-        } : it),
+          route: isCoordinatesField ? null : it.route,
+        } : (previousLineSegment.childId === id && isCoordinatesField) ? { ...it, route: null } : it),
       }))
     } else {
       let children = segments.get(segmentId).children
+      if (segmentId) {
+        const previousSegmentId = segmentId - 1
+        let lastChildId = null
+        const childrenSize = segments.get(previousSegmentId).children.length
+        lastChildId = childrenSize ? childrenSize - 1 : null
+        previousLineSegment = { segmentId: previousSegmentId, childId: lastChildId }
+      } else {
+        previousLineSegment = { segmentId: segmentId, childId: null }
+      }
+      updateSegments = clearPreviousRoute(previousLineSegment, updateSegments)
+
       if (isSegmentTypeField) {
         if (val[i] === OWN_RESOURCES) {
           children = children.map((child) => ({ ...child, coordinates: clearCoordinate(), refPoint: '' }))
@@ -269,7 +322,7 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
       })
     }
 
-    if (fieldName[i] === 'coordinates') {
+    if (isCoordinatesField) {
       const coordinates = val[i]
       dispatch(setGeoLandmarks({
         coordinates: { ...coordinates },
@@ -277,6 +330,26 @@ const getUpdateSegments = (segments, data, geoLandmarks, dispatch) => {
         childId,
         selectFirstItem: true,
       }))
+
+      if (previousLineSegment) {
+        const { segmentId: prevSegmentId, childId: prevChildId } = previousLineSegment
+        const previousSegmentNode = segments.get(prevSegmentId)
+        const previousChildNode = prevChildId !== null ? previousSegmentNode.children[prevChildId] : null
+        const previousNode = previousChildNode || previousSegmentNode
+
+        if (previousNode && previousNode.route) {
+          dispatch(getRoute({
+            segmentId: prevSegmentId,
+            childId: prevChildId,
+            dataSegments: updateSegments,
+          }))
+          dispatch(getRoute({
+            segmentId,
+            childId,
+            dataSegments: updateSegments,
+          }))
+        }
+      }
     }
   }
 
@@ -312,8 +385,7 @@ export const editFormField = (data) => asyncAction.withNotification(
     const { updateSegments } = getUpdateSegments(segments, data, geoLandmarks, dispatch)
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
-
-    dispatch(updateMetric(march.payload))
+    dispatch(updateMetric(march.payload, updateSegments))
 
     const payload = {
       segments: updateSegments,
@@ -330,8 +402,21 @@ export const editFormField = (data) => asyncAction.withNotification(
 export const addSegment = (segmentId, type) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
+    let updateSegments = march.segments.insert(segmentId + 1, defaultSegment(type))
 
-    const updateSegments = march.segments.insert(segmentId + 1, defaultSegment(type))
+    const previousChildren = updateSegments.get(segmentId).children
+    const lastPreviousChildId = previousChildren.length - 1
+    if (lastPreviousChildId !== -1 && previousChildren[lastPreviousChildId].route) {
+      updateSegments = updateSegments.update(segmentId, (segment) => ({
+        ...segment,
+        children: segment.children.map((it, id) => (id === lastPreviousChildId) ? {
+          ...it,
+          route: null,
+        } : it),
+      }))
+    } else {
+      updateSegments = updateSegments.update(segmentId, (segment) => ({ ...segment, route: null }))
+    }
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
 
@@ -349,7 +434,21 @@ export const deleteSegment = (segmentId) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
-    const updateSegments = march.segments.delete(segmentId)
+    let updateSegments = march.segments.delete(segmentId)
+    if (segmentId) {
+      const childrenSize = updateSegments.get(segmentId - 1).children.length
+      if (childrenSize) {
+        updateSegments = updateSegments.update(segmentId - 1, (segment) => ({
+          ...segment,
+          children: segment.children.map((it, id) => (id === childrenSize - 1) ? {
+            ...it,
+            route: null,
+          } : it),
+        }))
+      } else {
+        updateSegments = updateSegments.update(segmentId, (segment) => ({ ...segment, route: null }))
+      }
+    }
 
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
 
@@ -394,9 +493,14 @@ export const deleteChild = (segmentId, childId) => asyncAction.withNotification(
     const { march } = getState()
     const segment = march.segments.get(segmentId)
 
-    const children = segment.children
+    let children = segment.children
     children.splice(childId, 1)
     segment.metric.children.splice(childId, 1)
+    if (childId) {
+      children = children.map((it, id) => {
+        return (id === childId - 1) ? { ...it, route: null } : it
+      })
+    }
 
     const updateSegments = march.segments.update(segmentId, (segment) => ({
       ...segment,
@@ -426,9 +530,7 @@ export const setCoordFromMap = (value) => asyncAction.withNotification(
     const { march } = getState()
     const { segments, coordModeData, geoLandmarks } = march
     const data = { ...coordModeData, val: value, fieldName: 'coordinates' }
-
     const { updateSegments } = getUpdateSegments(segments, data, geoLandmarks, dispatch)
-
     const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
 
     dispatch(updateMetric(march.payload, updateSegments))
@@ -611,5 +713,60 @@ export const setGeoLandmarks = (data) => asyncAction.withNotification(
     dispatch({
       type: SET_GEO_LANDMARKS,
       payload,
+    })
+  })
+
+export const getRoute = ({
+  segmentId,
+  childId,
+  dataSegments = null,
+  isClearRoute = false,
+}) => asyncAction.withNotification(
+  async (dispatch, getState) => {
+    let state = getState()
+    const { march: { payload } } = state
+
+    let segments = dataSegments || state.march.segments
+    let dataRoute
+
+    if (isClearRoute) {
+      dataRoute = null
+    } else {
+      const twoPointsRoute = getTwoPointsRoute(segments.toArray(), segmentId, childId)
+      if (!isValidIncomingPoints(twoPointsRoute)) {
+        return
+      }
+
+      const rawRoute = await osrmApi.getRoute(twoPointsRoute[0], twoPointsRoute[1])
+      dataRoute = getDataRoute(rawRoute)
+    }
+
+    state = getState()
+    segments = state.march.segments
+
+    let updateSegments
+    if (childId || childId === 0) {
+      updateSegments = segments.update(segmentId, (segment) => ({
+        ...segment,
+        children: segment.children.map((it, id) => {
+          return (id === childId) ? {
+            ...it,
+            route: dataRoute,
+          } : it
+        }),
+      }))
+    } else {
+      updateSegments = segments.update(segmentId, (segment) => {
+        return {
+          ...segment,
+          route: dataRoute,
+        }
+      })
+    }
+    dispatch(updateMetric(payload, updateSegments))
+
+    dispatch({
+      type: SET_ROUTE,
+      payload: { segments: updateSegments },
     })
   })

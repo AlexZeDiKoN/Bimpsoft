@@ -3,6 +3,7 @@ import { Input, Tooltip } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import { MAX_LENGTH_TEXT, MAX_ROW } from '../../../constants/InputText'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { FormRow } = components.form
 
@@ -36,7 +37,7 @@ const WithPointAmplifiers = (Component) => class PointAmplifiersComponent extend
               title={null}
               label={svg ? <Tooltip
                 overlayClassName='shape-form-svg-tooltip'
-                mouseEnterDelay={1}
+                mouseEnterDelay={MOUSE_ENTER_DELAY}
                 placement={'left'}
                 title={() => svg}>
                 {`${i18n.AMPLIFIER} "${name}"`}

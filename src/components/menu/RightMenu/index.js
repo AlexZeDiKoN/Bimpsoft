@@ -6,6 +6,7 @@ import i18n from '../../../i18n'
 import PrintFilesContainer from '../../../containers/PrintFiles'
 
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 export default class RightMenu extends React.Component {
   static propTypes = {
@@ -26,7 +27,7 @@ export default class RightMenu extends React.Component {
         {Object.keys(printFiles).length !== 0 && (
           <PrintFilesContainer/>
         )}
-        <Tooltip title={i18n.SETTINGS} placement='bottomRight'>
+        <Tooltip title={i18n.SETTINGS} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomRight'>
           <IButton
             icon={IconNames.MENU_SETTING}
             active={isSettingsShow}

@@ -8,6 +8,7 @@ import SelectionTypes from '../../../constants/SelectionTypes'
 import LinesList from '../../LinesList'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 import MenuDivider from '../MenuDivider'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const lineTypes = [
   SelectionTypes.AREA, SelectionTypes.CURVE, SelectionTypes.POLYGON, SelectionTypes.POLYLINE, SelectionTypes.CIRCLE,
@@ -63,7 +64,7 @@ export default class CreateButtons extends React.PureComponent {
     return (
       <>
         <MenuDivider />
-        <Tooltip title={i18n.UNDO} placement='bottomLeft'>
+        <Tooltip title={i18n.UNDO} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             icon={IconNames.MAP_HEADER_ICON_UNDO}
             type={ButtonTypes.WITH_BG}
@@ -72,7 +73,7 @@ export default class CreateButtons extends React.PureComponent {
             onClick={undo}
           />
         </Tooltip>
-        <Tooltip title={i18n.REDO} placement='bottomLeft'>
+        <Tooltip title={i18n.REDO} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -82,7 +83,7 @@ export default class CreateButtons extends React.PureComponent {
           />
         </Tooltip>
         <MenuDivider />
-        <Tooltip title={i18n.POINT_SIGN} placement='bottomLeft'>
+        <Tooltip title={i18n.POINT_SIGN} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
@@ -92,7 +93,7 @@ export default class CreateButtons extends React.PureComponent {
           />
         </Tooltip>
         <div className='btn-context-container'>
-          <Tooltip title={i18n.LINE_SIGN} placement='bottomLeft'>
+          <Tooltip title={i18n.LINE_SIGN} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
             <IButton
               icon={IconNames.MAP_HEADER_ICON_MENU_GROUPING_GRAPHIC_PRIMITIVES}
               type={ButtonTypes.WITH_BG}
@@ -109,7 +110,7 @@ export default class CreateButtons extends React.PureComponent {
             />
           )}
         </div>
-        <Tooltip title={i18n.ADD_TEXT} placement='bottomLeft'>
+        <Tooltip title={i18n.ADD_TEXT} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}

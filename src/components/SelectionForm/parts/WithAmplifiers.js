@@ -5,6 +5,7 @@ import i18n from '../../../i18n'
 import { amps } from '../../../constants/symbols'
 import './withAmplifiersStyle.css'
 import { MAX_LENGTH_TEXT } from '../../../constants/InputText'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { FormRow } = components.form
 
@@ -50,7 +51,7 @@ const WithAmplifiers = (Component) => class AmplifiersComponent extends Componen
               label={svg
                 ? <Tooltip
                   overlayClassName='shape-form-svg-tooltip'
-                  mouseEnterDelay={1}
+                  mouseEnterDelay={MOUSE_ENTER_DELAY}
                   placement={'left'}
                   title={() => svg}>
                   {`${i18n.AMPLIFIER} "${name}"`}

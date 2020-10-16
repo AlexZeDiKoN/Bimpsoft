@@ -5,6 +5,7 @@ import { Tooltip } from 'antd'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 import i18n from '../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 export default class MapSourceSelect extends React.Component {
   static propTypes = {
@@ -27,7 +28,7 @@ export default class MapSourceSelect extends React.Component {
     const filteredSources = sources.filter(({ isTerrain, title }) => !isTerrain && title)
     return (
       <div className='btn-context-container'>
-        <Tooltip title={i18n.MAP_SOURCE} placement='bottomLeft'>
+        <Tooltip title={i18n.MAP_SOURCE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <IButton
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}

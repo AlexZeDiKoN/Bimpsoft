@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import webmapApi from '../../../server/api.webmap'
+import { MARCH_POINT_TYPES as pointTypes } from '../../../constants/March'
 import Header from './children/Header'
 import SegmentBlock from './children/SegmentBlock'
 import MarchForm from './children/MarchForm'
@@ -46,15 +47,15 @@ const getMarchPoints = (pointsTypes) => {
   const { point, dayNight, daily } = defaultRestTimeInHours
 
   const MarchPoints = [
-    { rest: false, time: 0 },
-    { rest: true, time: hoursToMs(point) },
-    { rest: true, time: hoursToMs(dayNight) },
-    { rest: true, time: hoursToMs(daily) },
-    { rest: false, time: 0, notEditableTime: true },
+    { id: pointTypes.POINT_ON_MARCH, rest: false, time: 0 },
+    { id: pointTypes.REST_POINT, rest: true, time: hoursToMs(point) },
+    { id: pointTypes.DAY_NIGHT_REST_POINT, rest: true, time: hoursToMs(dayNight) },
+    { id: pointTypes.DAILY_REST_POINT, rest: true, time: hoursToMs(daily) },
+    { id: pointTypes.LINE_OF_REGULATION, rest: false, time: 0, notEditableTime: true },
     { rest: false, time: 0 },
   ]
 
-  return MarchPoints.map((point, id) => ({ ...point, ...pointsTypes[id] }))
+  return MarchPoints.map((point) => ({ ...point, ...pointsTypes[point.id] }))
 }
 
 const March = (props) => {
@@ -72,6 +73,7 @@ const March = (props) => {
     readOnly,
     isChanged,
     setGeoLandmarks,
+    getRoute,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
@@ -89,6 +91,7 @@ const March = (props) => {
       toggleGeoLandmarkModal,
       toggleDeleteMarchPointModal,
       setGeoLandmarks,
+      getRoute,
     }
 
     return <div className={'dots-forms'}>
@@ -186,6 +189,7 @@ March.propTypes = {
   readOnly: PropTypes.bool.isRequired,
   isChanged: PropTypes.bool.isRequired,
   setGeoLandmarks: PropTypes.func.isRequired,
+  getRoute: PropTypes.func.isRequired,
 }
 
 export default React.memo(March)

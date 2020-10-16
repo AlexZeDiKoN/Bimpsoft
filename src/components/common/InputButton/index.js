@@ -9,6 +9,7 @@ import {
 } from '@DZVIN/CommonComponents'
 import i18n from '../../../i18n'
 import './style.css'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const InputButton = (props) => {
   const {
@@ -28,16 +29,19 @@ const InputButton = (props) => {
           onChangeValue(value)
           onChange(value)
         }}>
-          {showSearch && <IButton
-            icon={IconNames.MENU_SEARCH}
-            onClick={() => {
-              onChangeValue('')
-              onChange('')
-              setShowSearch(false)
-            }}/>}
+          {showSearch &&
+          <Tooltip title={i18n.CLEAR} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+            <IButton
+              icon={IconNames.DARK_CLOSE_ROUND}
+              onClick={() => {
+                onChangeValue('')
+                onChange('')
+                setShowSearch(false)
+              }}/>
+          </Tooltip>}
         </Input>
         {!showSearch &&
-        <Tooltip title={placeholder} placement='topRight'>
+        <Tooltip title={placeholder} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
           <IButton
             icon={IconNames.MENU_SEARCH}
             colorType={ColorTypes.WHITE}

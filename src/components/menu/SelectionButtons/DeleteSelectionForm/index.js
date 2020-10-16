@@ -8,6 +8,7 @@ import { Tooltip } from 'antd'
 import { shortcuts } from '../../../../constants'
 import { HotKeysContainer, HotKey } from '../../../common/HotKeys'
 import i18n from '../../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../../constants/tooltip'
 
 const { default: Form, buttonNo, buttonYes, FormItem } = components.form
 
@@ -32,7 +33,7 @@ export default class DeleteSelectionForm extends React.Component {
                     <div className="confirm-icon-warning">!</div>
                     <div className="confirm-modal-window">
                       <div className="confirm-text">{i18n.LAYER}:
-                        <Tooltip title={layerName} mouseEnterDelay={2}>{layerName}</Tooltip>
+                        <Tooltip title={layerName} mouseEnterDelay={MOUSE_ENTER_DELAY}>{layerName}</Tooltip>
                       </div>
                       <div className="confirm-text">{i18n.NUM_SELECTED_SIGNS(list.length)}</div>
                     </div>

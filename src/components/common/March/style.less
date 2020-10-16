@@ -54,7 +54,7 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  background-color: @toolbar-light-background;
+  background-color: @modals-background-color;
 
   .form-container{
     display: flex;
@@ -115,7 +115,7 @@
   flex-direction: column;
   width: 320px;
   height: 100%;
-  background: @toolbar-light-background;
+  background: @modals-background-color;
 
   .header {
     width: 100%;
@@ -148,7 +148,7 @@
     }
 
     .march-title-bottom {
-      background: #FAFAFA;
+      background: @modals-background-color;
       font-family: HelveticaNeueCyr, sans-serif;
       font-style: normal;
       font-weight: normal;
@@ -183,7 +183,7 @@
     padding-top: 3%;
     width: 100%;
     overflow: auto;
-    background: @toolbar-light-background;
+    background: @modals-background-color;
     padding-right: 5px;
     &::-webkit-scrollbar {
       width: 6px;
@@ -383,6 +383,11 @@
           align-items: flex-start;
           display: flex;
           flex-direction: column;
+          .ant-select-open{
+            .ant-select-arrow{
+              transform: rotate(180deg) scale(0.6);
+            }
+          }
 
           .ant-select-arrow {
             width: 0;
@@ -434,6 +439,18 @@
                 background-size: 16px;
                 background-repeat: no-repeat;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='10' height='11' viewBox='0 0 10 11' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M5 0.924316C2.24305 0.924316 0 3.16737 0 5.92432C0 8.68127 2.24305 10.9243 5 10.9243C7.75695 10.9243 10 8.68127 10 5.92432C10 3.16737 7.75695 0.924316 5 0.924316ZM5 10.2993C2.58758 10.2993 0.625003 8.33673 0.625003 5.92432C0.625003 3.5119 2.58758 1.54932 5 1.54932C7.41242 1.54932 9.375 3.5119 9.375 5.92432C9.375 8.33673 7.41242 10.2993 5 10.2993Z' fill='%23A7A7A7'/%3e %3cpath transform='translate(4,2)' d='M1.3125 0.799316H0.6875V4.0537L2.65405 6.02025L3.09594 5.57836L1.3125 3.79491V0.799316Z' fill='%23A7A7A7'/%3e %3c/svg%3e ");
+              }
+            }
+            .right-buttons-container{
+              height: 28px;
+              display: flex;
+              align-items: center;
+              .dzvin-ibutton{
+                height: 24px;
+                width: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
               }
             }
           }

@@ -5,6 +5,7 @@ import { components } from '@DZVIN/CommonComponents'
 import { Dropdown, Tooltip } from 'antd'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import i18n from '../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 const { names } = components.icons
 
@@ -56,7 +57,7 @@ export default class Item extends React.Component {
     const className = selected ? ' template-item-selected' : ''
     return (
       <Dropdown overlay={ this.menu } trigger={[ 'contextMenu' ]}>
-        <Tooltip title={ name } placement="bottomLeft">
+        <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={ name } placement="bottomLeft">
           <div className={'template-item' + className}>
             <MilSymbol code={code} onClick={this.selectHandler} amplifiers={amplifiers} />
           </div>

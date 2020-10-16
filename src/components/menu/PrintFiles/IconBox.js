@@ -1,9 +1,10 @@
 import React, { Fragment, Component } from 'react'
-import { Icon } from 'antd'
+import { Icon, Tooltip } from 'antd'
 import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import { DOC_CLASS_ID } from '../../../constants/Print'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const { names: iconNames, IconButton } = components.icons
 
@@ -41,16 +42,19 @@ export default class IconBox extends Component {
         {message !== 'error'
           ? message !== 'done'
             ? <Icon className='loader-icon' type="compass" spin/>
-            : <IconButton
-              title={i18n.OPEN_FILE}
-              icon={iconNames.MAP_DEFAULT}
-              onClick={this.handleTransition}
+            : <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.OPEN_FILE}>
+              <IconButton
+                icon={iconNames.MAP_DEFAULT}
+                onClick={this.handleTransition}
+              />
+            </Tooltip>
+          : <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.OPEN_FILE}>
+            <IconButton
+              title={i18n.RETRY_FILE}
+              icon={iconNames.REFRESH_DEFAULT}
+              onClick={this.handleRetry}
             />
-          : <IconButton
-            title={i18n.RETRY_FILE}
-            icon={iconNames.REFRESH_DEFAULT}
-            onClick={this.handleRetry}
-          />}
+          </Tooltip>}
         <IButton
           title={message === 'done' ? i18n.CLEAN_FILE : i18n.DELETE_FILE}
           icon={IconNames.BAR_2_DELETE}

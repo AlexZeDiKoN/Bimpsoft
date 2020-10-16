@@ -18,6 +18,7 @@ import { symbols } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -32,6 +33,7 @@ const SymbolSvg = (props) => {
 const ButtonComponent = (props) =>
   <Collapse.Button {...props} active={false}>
     <Tooltip
+      mouseEnterDelay={MOUSE_ENTER_DELAY}
       title={props?.children}
       placement='left'
       className={props?.value ? 'symbols-title symbols-title-opened' : 'symbols-title'}
@@ -99,7 +101,7 @@ const SymbolsTab = (props) => {
 
       return <Tooltip
         key={`${hint}${code}`}
-        mouseEnterDelay={1}
+        mouseEnterDelay={MOUSE_ENTER_DELAY}
         title={!listMode && <HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/>}
       >
         { elemToRender }
@@ -108,7 +110,7 @@ const SymbolsTab = (props) => {
 
     const value = (search !== '') ? { value: true } : {}
 
-    return (sortedPart.length !== 0) && <div key={part.name} className={'collapseSection'}>
+    return (sortedPart.length !== 0) && <div key={part.name} className={search !== '' ? 'collapseSection collapseSectionFiltered' : 'collapseSection'}>
       <FormBlock vertical>
         <Collapse
           {...sections(index)}
@@ -132,20 +134,22 @@ const SymbolsTab = (props) => {
           initValue={search}
           title={i18n.SYMBOLS}
         />
-        <IButton
-          active={!listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(false)}
-          title={i18n.GRID}
-          icon={IconNames.GRID}/>
-        <IButton
-          active={listMode}
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.WHITE}
-          onClick={() => setListMode(true)}
-          title={i18n.LIST}
-          icon={IconNames.LIST}/>
+        <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={!listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(false)}
+            icon={IconNames.GRID}/>
+        </Tooltip>
+        <Tooltip title={i18n.LIST} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(true)}
+            icon={IconNames.LIST}/>
+        </Tooltip>
       </div>
       <Scrollbar className='parts-container'>
         {partsJSX}
