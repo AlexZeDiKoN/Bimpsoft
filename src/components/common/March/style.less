@@ -54,7 +54,7 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  background-color: @toolbar-light-background;
+  background-color: @modals-background-color;
 
   .form-container{
     display: flex;
@@ -115,7 +115,7 @@
   flex-direction: column;
   width: 320px;
   height: 100%;
-  background: @toolbar-light-background;
+  background: @modals-background-color;
 
   .header {
     width: 100%;
@@ -148,7 +148,7 @@
     }
 
     .march-title-bottom {
-      background: #FAFAFA;
+      background: @modals-background-color;
       font-family: HelveticaNeueCyr, sans-serif;
       font-style: normal;
       font-weight: normal;
@@ -183,7 +183,7 @@
     padding-top: 3%;
     width: 100%;
     overflow: auto;
-    background: @toolbar-light-background;
+    background: @modals-background-color;
     padding-right: 5px;
     &::-webkit-scrollbar {
       width: 6px;
@@ -383,6 +383,11 @@
           align-items: flex-start;
           display: flex;
           flex-direction: column;
+          .ant-select-open{
+            .ant-select-arrow{
+              transform: rotate(180deg) scale(0.6);
+            }
+          }
 
           .ant-select-arrow {
             width: 0;
@@ -437,7 +442,16 @@
               }
             }
             .right-buttons-container{
-              height: 24px;
+              height: 28px;
+              display: flex;
+              align-items: center;
+              .dzvin-ibutton{
+                height: 24px;
+                width: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
             }
           }
           .ant-input, .ant-select, .ant-select-selection{
