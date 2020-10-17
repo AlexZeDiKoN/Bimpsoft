@@ -8,7 +8,7 @@ import placeSearch from '../../../../server/places'
 import './style.css'
 import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 
-const LIST_WIDTH = 500 // максимальна ширина списку для вибору "Військового формування" (px)
+const LIST_WIDTH = 600 // максимальна ширина списку для вибору "Військового формування" (px)
 const configs = SymbolEditorComponentStateless.configs
 
 const readOnly = { readonly: true }
