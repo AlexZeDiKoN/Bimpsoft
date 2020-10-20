@@ -73,14 +73,17 @@ export default class PrintFiles extends PureComponent {
     const { sidebarSelectedTabIndex } = this.props
     return (
       <>
-        <IButton
-          type={ButtonTypes.WITH_BG}
-          colorType={ColorTypes.MAP_HEADER_GREEN}
+        <Tooltip
           title={i18n.FILES_TO_PRINT}
-          icon={IconNames.PRINT_QUEUE}
-          onClick={this.handleVisibleChange}
-          active={visible}
-        />
+          mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            icon={IconNames.PRINT_QUEUE}
+            onClick={this.handleVisibleChange}
+            active={visible}
+          />
+        </Tooltip>
         {visible && ReactDOM.createPortal(
           <MovablePanel
             minWidth={400}
