@@ -29,13 +29,16 @@ const InputButton = (props) => {
           onChangeValue(value)
           onChange(value)
         }}>
-          {showSearch && <IButton
-            icon={IconNames.MENU_SEARCH}
-            onClick={() => {
-              onChangeValue('')
-              onChange('')
-              setShowSearch(false)
-            }}/>}
+          {showSearch &&
+          <Tooltip title={i18n.CLEAR} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+            <IButton
+              icon={IconNames.DARK_CLOSE_ROUND}
+              onClick={() => {
+                onChangeValue('')
+                onChange('')
+                setShowSearch(false)
+              }}/>
+          </Tooltip>}
         </Input>
         {!showSearch &&
         <Tooltip title={placeholder} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
