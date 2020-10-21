@@ -71,11 +71,13 @@ const MarchForm = (props) => {
     toggleDeleteMarchPointModal,
     setGeoLandmarks,
     getRoute,
+    setActivePoint,
   } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
   const { lat, lng } = coordinates
+  const isValidCoordinates = lat && lng
   const geoKey = `${lat}:${lng}`
   const formattedGeoLandmarks = geoLandmarks[geoKey]
   const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
@@ -222,6 +224,14 @@ const MarchForm = (props) => {
 
   const dotFormId = `dot-form${type}${childId === undefined ? '' : childId}`
 
+  const onSetActivePoint = () => {
+    setActivePoint(segmentId, childId)
+  }
+
+  const onClearActivePoint = () => {
+    setActivePoint(null, null)
+  }
+
   return (
     <div className={'dot-and-form'}>
       <div className={'dots'}>
@@ -250,7 +260,7 @@ const MarchForm = (props) => {
         }
       </div>
       <div className={'dot-form'} id={dotFormId} style={{ position: 'relative' }}>
-        <div className={'march-coord'}>
+        <div className={`march-coord${!isValidCoordinates ? ' not-correct-point' : ''}`}>
           <Coordinates
             coordinates={coordinatesWithType}
             onSearch={placeSearch}
@@ -258,6 +268,8 @@ const MarchForm = (props) => {
             isReadOnly={readOnly}
             getPopupContainer={() => document.getElementById(dotFormId)}
             preferredType={coordTypeSystem}
+            onBlur={onClearActivePoint}
+            onFocus={onSetActivePoint}
           />
           <Tooltip
             placement='topRight'
@@ -409,6 +421,7 @@ MarchForm.propTypes = {
     toggleDeleteMarchPointModal: PropTypes.func.isRequired,
     setGeoLandmarks: PropTypes.func.isRequired,
     getRoute: PropTypes.func.isRequired,
+    setActivePoint: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
