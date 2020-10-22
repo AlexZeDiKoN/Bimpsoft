@@ -1005,8 +1005,25 @@ export default class WebMap extends React.PureComponent {
         this.marchMarkers = []
       }
       marchDots.forEach((dot) => {
-        const iconName = dot.isRestPoint ? 'camp.png' : null
-        const marker = createSearchMarker(dot.coordinates, false, iconName)
+        let iconName
+        let options
+        if (dot.isActivePoint) {
+          if (dot.isRestPoint) {
+            iconName = 'camp-red.png'
+            options = { iconAnchor: [ 11, 11 ] }
+          } else {
+            iconName = 'marker-icon-red.png'
+            options = {
+              iconSize: [ 25, 41 ],
+              iconAnchor: [ 12, 41 ],
+            }
+          }
+        } else if (dot.isRestPoint) {
+          iconName = 'camp-blue.png'
+          options = { iconAnchor: [ 11, 11 ] }
+        }
+
+        const marker = createSearchMarker(dot.coordinates, false, iconName, options)
         const { lat, lng } = dot.coordinates
         const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
 
@@ -1027,8 +1044,8 @@ export default class WebMap extends React.PureComponent {
             dot.options.color !== prevMarchDots[id].options.color
           ) {
             redrawLine = true
-            const iconName = dot.isRestPoint ? 'camp.png' : null
-            const marker = createSearchMarker(dot.coordinates, false, iconName)
+            const iconName = dot.isRestPoint ? 'camp-blue.png' : null
+            const marker = createSearchMarker(dot.coordinates, false, iconName, { iconAnchor: [ 10, 10 ] })
 
             marker.addTo(this.map)
             if (this.marchMarkers.length && this.marchMarkers[id]) {
@@ -1055,7 +1072,11 @@ export default class WebMap extends React.PureComponent {
 
     let marker = null
     if (marchRefPoint) {
-      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
+      const options = {
+        iconSize: [ 25, 41 ],
+        iconAnchor: [ 12, 41 ],
+      }
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png', options)
       marker.addTo(this.map)
     }
 

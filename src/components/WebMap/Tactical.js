@@ -144,9 +144,9 @@ export function createTacticalSign (data, map, prevLayer) {
   }
 }
 
-export function createSearchMarker (point, bounce = true, iconName) {
+export function createSearchMarker (point, bounce = true, iconName, iconOptions) {
   const icon = iconName
-    ? new L.Icon({ iconUrl: `${process.env.REACT_APP_PREFIX}/images/${iconName}` })
+    ? new L.Icon({ iconUrl: `${process.env.REACT_APP_PREFIX}/images/${iconName}`, ...iconOptions })
     : new L.Icon.Default({ imagePath: `${process.env.REACT_APP_PREFIX}/images/` })
 
   return L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: false, bounceOnAdd: bounce })
