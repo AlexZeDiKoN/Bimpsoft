@@ -24,6 +24,7 @@ import {
   ReportMapModalContainer,
   GeoLandmarkModalContainer,
   DeleteMarchModalContainer,
+  ZoneProfileModalContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -67,6 +68,7 @@ export default class Main extends React.Component {
         <DirectionNameContainer wrapper={MovablePanel}/>
         <EternalDescriptionContainer wrapper={MovablePanel}/>
         <TopoObjModal wrapper={MovablePanel} />
+        <ZoneProfileModalContainer wrapper={MovablePanel} />
         <TaskModalContainer wrapper={MovablePanel} />
         <ReportMapModalContainer wrapper={MovablePanel} />
         <GeoLandmarkModalContainer wrapper={MovablePanel} />
