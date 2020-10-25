@@ -1,17 +1,14 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Scrollbar } from '@DZVIN/CommonComponents'
-import { connect } from 'react-redux'
 import { InputButton } from '../common'
 
 import './style.css'
 import i18n from '../../i18n'
-import { catchErrors } from '../../store/actions/asyncAction'
-import { setShowModalState } from '../../store/actions/elevationProfile'
 import LogMapItem from './children/Item'
 
 const LogMapTab = (props) => {
-  const { highlightObject, clickObject, doubleClickObject, changeLog, openElevationModal } = props
+  const { highlightObject, clickObject, doubleClickObject, changeLog } = props
   const [ search, onChangeSearch ] = useState('')
   return (
     <div className='log-map-wrapper'>
