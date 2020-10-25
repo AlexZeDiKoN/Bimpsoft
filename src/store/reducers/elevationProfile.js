@@ -23,6 +23,9 @@ export default function (state = initialState, action) {
       const { payload } = action
       return { ...state, isModalOpen: payload }
     }
+    case elevationProfile.CLEAR_STATE: {
+      return { ...initialState }
+    }
     default:
       return state
   }
