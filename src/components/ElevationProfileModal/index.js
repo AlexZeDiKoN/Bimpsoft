@@ -28,6 +28,7 @@ const ElevationProfileModal = ({
     visible={isModalOpen}
     width={900}
     onCancel={closeModal}
+    footer={null}
   >
     <NivoLine
       data={[
