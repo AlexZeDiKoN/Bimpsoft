@@ -382,6 +382,7 @@ export default class WebMap extends React.PureComponent {
     showDirectionNameForm: PropTypes.func,
     showEternalDescriptionForm: PropTypes.func,
     getTopographicObjects: PropTypes.func,
+    getHeight: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
     selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
@@ -954,17 +955,25 @@ export default class WebMap extends React.PureComponent {
     if (Array.isArray(coordinates)) {
       coordinates = coordinates.join(`<br/>`)
     }
-    const text = 'Орієнтир' // TODO
-    return `<strong>${text}</strong><br/><br/>${coordinates}`
+    return `<strong>${i18n.LANDMARK}</strong><br/><br/>${coordinates}`
   }
 
   addUserMarker = (point) => {
+    const getHeight = this.props.getHeight(point)
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
-      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+      setTimeout(() => {
+        marker.bindPopup(text).openPopup()
+        getHeight.then((data) => {
+          if (data?.height) {
+            const popupContent = `${text}<br/><br/><strong>${i18n.HEIGHT}</strong><br/><br/>${data.height} ${i18n.ABBR_METERS}`
+            marker._popup.setContent(popupContent)
+          }
+        }).catch((err) => console.error(err))
+      }, 1000)
     }, 50)
   }
 
