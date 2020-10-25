@@ -382,6 +382,7 @@ export default class WebMap extends React.PureComponent {
     showDirectionNameForm: PropTypes.func,
     showEternalDescriptionForm: PropTypes.func,
     getTopographicObjects: PropTypes.func,
+    getHeight: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
     selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
@@ -959,12 +960,23 @@ export default class WebMap extends React.PureComponent {
   }
 
   addUserMarker = (point) => {
+    const getHeight = this.props.getHeight(point)
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point)
       marker.addTo(this.map)
       this.markers.push(marker)
-      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+      setTimeout(() => {
+        marker.bindPopup(text).openPopup()
+        getHeight.then((data) => {
+          if (data) {
+            const val = 'Висота'
+            const popupContent = `${text}<br/><br/><strong>${val}</strong><br/><br/>${data} м`
+            marker._popup.setContent(popupContent)
+          }
+        // eslint-disable-next-line no-console
+        }).catch((err) => console.err(err))
+      }, 1000)
     }, 50)
   }
 

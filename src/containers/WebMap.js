@@ -14,6 +14,7 @@ import { directionName, eternalPoint } from '../constants/viewModesKeys'
 import { MapModes } from '../constants'
 import * as notifications from '../store/actions/notifications'
 import i18n from '../i18n'
+import webMapApi from '../server/api.webmap'
 
 const WebMapContainer = connect(
   (state) => ({
@@ -157,6 +158,7 @@ const WebMapContainer = connect(
     redo: webMap.redo,
     checkObjectAccess: webMap.getObjectAccess,
     onShadowDelete: webMap.removeObjects,
+    getHeight: webMapApi.getHeight,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
