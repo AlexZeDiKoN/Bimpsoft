@@ -2,6 +2,7 @@ import React from 'react'
 import { Modal, Checkbox } from 'antd'
 import * as R from 'ramda'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types'
 import i18n from '../../i18n'
 import NivoLine from '../NivoLine'
 import { catchErrors } from '../../store/actions/asyncAction'
@@ -46,6 +47,19 @@ const ElevationProfileModal = ({
       {i18n.DIRECT_VISIBILITY}
     </Checkbox>
   </Modal>
+}
+
+ElevationProfileModal.propTypes = {
+  closeModal: PropTypes.func.isRequired,
+  onChangeStraightLineState: PropTypes.func.isRequired,
+  isModalOpen: PropTypes.bool,
+  showStraightLine: PropTypes.bool,
+  elProfileData: PropTypes.object.isRequired,
+}
+
+ElevationProfileModal.defaultProps = {
+  isModalOpen: false,
+  showStraightLine: false,
 }
 
 const mapStateToProps = (store) => {
