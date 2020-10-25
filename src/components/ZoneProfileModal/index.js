@@ -1,7 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel, FormBlock, Input, FormRow, NotClickableArea, ButtonSave, ButtonCancel, HotKey, HotKeysContainer } from '@DZVIN/CommonComponents'
+import {
+  MovablePanel,
+  FormBlock,
+  Input,
+  FormRow,
+  NotClickableArea,
+  ButtonSave,
+  ButtonCancel,
+  HotKey,
+  HotKeysContainer,
+} from '@DZVIN/CommonComponents'
 import { shortcuts } from '../../constants'
 import i18n from '../../i18n'
 
@@ -10,7 +20,7 @@ const HEIGHT_SETTING_MODAL = 200
 const WIDTH_SETTING_MODAL = 300
 
 const inputWrap = {
-	width: 80,
+  width: 85,
 }
 
 const heightTarget = 'heightTarget'
@@ -23,6 +33,7 @@ export default class ZoneProfileModal extends React.Component {
     selectTopographicItem: PropTypes.func,
     serviceStatus: PropTypes.bool,
   }
+
   state = {
     [heightTarget]: DEFAULT_STATE,
     [heightObserver]: DEFAULT_STATE,
@@ -33,7 +44,7 @@ export default class ZoneProfileModal extends React.Component {
     this.props.onClose()
   }
 
-  onChange = ({target: { name, value }}) => {
+  onChange = ({ target: { name, value } }) => {
     this.setState({ [name]: value })
   }
 
@@ -42,12 +53,13 @@ export default class ZoneProfileModal extends React.Component {
     isOk && this.onClose()
   }
 
-  getProps = (name) => ({
-  	name,
-	  value: this.state[name] ?? '',
-	  onChange: this.onChange,
-	  min: 0,
-  })
+  getProps = (name) => (
+    {
+      name,
+      value: this.state[name] ?? '',
+      onChange: this.onChange,
+      min: 0,
+    })
 
   render () {
     if (!this.props.visible) {
@@ -61,34 +73,34 @@ export default class ZoneProfileModal extends React.Component {
       <>
         <NotClickableArea/>
         <Wrapper
-          title={i18n.TOPOGRAPHIC_OBJECT_CARD}
-					minWidth={WIDTH_SETTING_MODAL}
-					minHeight={HEIGHT_SETTING_MODAL}
+          title={i18n.ZONE_PROFILE}
+          minWidth={WIDTH_SETTING_MODAL}
+          minHeight={HEIGHT_SETTING_MODAL}
           onClose={this.onClose}
         >
           <FocusTrap>
-	          <HotKeysContainer>
-            <FormBlock vertical marginH paddingV>
-              <FormBlock vertical paddingV>
-                <FormRow label={i18n.HEIGHT_OBSERVER} paddingV>
-	                <div style={inputWrap}>
-                  <Input.Number {...this.getProps(heightObserver)} />
-	                </div>
-                </FormRow>
-                <FormRow label={i18n.HEIGHT_TARGET} paddingV>
-	                <div style={inputWrap}>
-                  <Input.Number {...this.getProps(heightTarget)}/>
-	                </div>
-                </FormRow>
+            <HotKeysContainer>
+              <FormBlock vertical marginH paddingV>
+                <FormBlock vertical paddingV>
+                  <FormRow label={i18n.HEIGHT_OBSERVER} paddingV>
+                    <div style={inputWrap}>
+                      <Input.Number {...this.getProps(heightObserver)} />
+                    </div>
+                  </FormRow>
+                  <FormRow label={i18n.HEIGHT_TARGET} paddingV>
+                    <div style={inputWrap}>
+                      <Input.Number {...this.getProps(heightTarget)}/>
+                    </div>
+                  </FormRow>
+                </FormBlock>
+                <FormBlock>
+                  <ButtonSave onClick={this.handleSave}/>
+                  <ButtonCancel onClick={this.onClose}/>
+                  <HotKey onKey={this.onClose} selector={shortcuts.ESC}/>
+                  <HotKey onKey={this.handleSave} selector={shortcuts.ENTER}/>
+                </FormBlock>
               </FormBlock>
-	            <FormBlock>
-		            <ButtonSave onClick={this.handleSave}/>
-		            <ButtonCancel onClick={this.onClose}/>
-		            <HotKey onKey={this.onClose} selector={shortcuts.ESC}/>
-		            <HotKey onKey={this.handleSave} selector={shortcuts.ENTER}/>
-	            </FormBlock>
-            </FormBlock>
-	          </HotKeysContainer>
+            </HotKeysContainer>
           </FocusTrap>
         </Wrapper>
       </>
