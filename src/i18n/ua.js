@@ -39,6 +39,8 @@ export const ABBR_KILOMETERS = 'км' // Константа використов
 export const ABBR_GRADUS = '˚'
 // export const LONGITUDE = 'Довгота'
 // export const LATITUDE = 'Широта'
+export const HEIGHT = 'Висота'
+export const LANDMARK = 'Орієнтир'
 export const ADD_POINT_SIGN_TEMPLATE = 'Додати шаблон умовного знаку'
 export const MSG_TITLE_SIGN_TEMPLATE_CREATED = 'Шаблону умовного знаку створено'
 export const MSG_TEXT_SIGN_TEMPLATE_CREATED = ({ name, code }) => `Назва:${name}\r\n Код: ${code}`
