@@ -225,6 +225,9 @@ export const copyContour = (id, layer, shift, addUndoRecord = true) =>
     })
   })
 
+export const getHeight = ({ lng: x, lat: y }) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getHeight } }) => getHeight(x, y))
+
 export const copyGroup = (id, layer, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupCopy } }) => dispatch({
     type: actionNames.ADD_OBJECT,

@@ -969,13 +969,12 @@ export default class WebMap extends React.PureComponent {
       setTimeout(() => {
         marker.bindPopup(text).openPopup()
         getHeight.then((data) => {
-          if (data) {
+          if (data?.height) {
             const val = 'Висота'
-            const popupContent = `${text}<br/><br/><strong>${val}</strong><br/><br/>${data} м`
+            const popupContent = `${text}<br/><br/><strong>${val}</strong><br/><br/>${data.height} м`
             marker._popup.setContent(popupContent)
           }
-        // eslint-disable-next-line no-console
-        }).catch((err) => console.err(err))
+        }).catch((err) => console.error(err))
       }, 1000)
     }, 50)
   }

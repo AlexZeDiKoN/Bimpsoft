@@ -127,6 +127,6 @@ export default {
     getDirect(`${webmapUrl}/nearestSettlement`, { x: lng, y: lat }),
   getTopographicObjects: (data) =>
     getDirect(`${webmapUrl}/topographicObjects/list`, { data }),
-  getHeight: (data) =>
-    getDirect(`${webmapUrl}/height`, data),
+  getHeight: (x, y) =>
+    getDirect(`${webmapUrl}/height`, { x, y }),
 }
