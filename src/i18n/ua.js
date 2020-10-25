@@ -510,7 +510,6 @@ export const UNDO = 'Скасувати останню дію'
 export const REDO = 'Повторити останню скасовану дію'
 
 export const ELEVATION_PROFILE = 'Профіль висот'
-export const HEIGHT = 'Висота'
 export const HEIGHT_2 = 'Висота (м)'
 export const PATH_LENGTH = 'Довжина шляху (м)'
 export const DIRECT_VISIBILITY = 'Пряма видимість'
