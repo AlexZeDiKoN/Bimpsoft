@@ -38,7 +38,8 @@ export default class ZoneProfileModal extends React.Component {
   }
 
   handleSave = () => {
-    this.props.onSave()
+    const isOk = this.props.onSave(this.state)
+    isOk && this.onClose()
   }
 
   getProps = (name) => ({

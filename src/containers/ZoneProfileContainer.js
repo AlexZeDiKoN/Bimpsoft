@@ -2,6 +2,23 @@ import { connect } from 'react-redux'
 import ZoneProfileModal from '../components/ZoneProfileModal'
 import { viewModesKeys } from '../constants'
 import { close } from '../store/actions/task'
+import { createZoneProfile } from '../store/actions/elevationProfile';
+
+const saveHandler = (values) => async (dispatch, getState, { webmapApi: { heightProfile }} ) => {
+  const items = getState().task?.modalData?.targets
+  const data = {
+    x1: items[0]._latlng.lat,
+    y1: items[0]._latlng.lng,
+    x2: items[1]._latlng.lat,
+    y2: items[1]._latlng.lng,
+  }
+  const res = await heightProfile(data)
+  const success = typeof res === 'object'
+  if (success){
+    dispatch(createZoneProfile({...res, ...values}))
+  }
+  return success
+}
 
 const mapStateToProps = (store) => ({
   visible: store.task?.modalData?.type === viewModesKeys.zoneProfile,
@@ -11,17 +28,7 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchToProps = {
     onClose: close,
-    onSave: () => async (dispatch, getState, { webmapApi: { heightProfile }} ) => {
-      const items = getState().task?.modalData?.targets
-      const data = {
-        x1: items[0]._latlng.lat,
-        y1: items[0]._latlng.lng,
-        x2: items[1]._latlng.lat,
-        y2: items[1]._latlng.lng,
-      }
-      const res = await heightProfile(data)
-      console.log(res)
-    }
+    onSave: saveHandler,
 }
 
 export default connect(
