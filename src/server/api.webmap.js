@@ -31,7 +31,7 @@ export default {
   createCOPReport: (mapName, fromMapId, dateOn) =>
     getDirect(`${webmapUrl}/createCOPReport`, { mapName, dateOn, fromMapId }),
   heightProfile: (body) =>
-    getDirect(`${webmapUrl}/heightProfile`, { ...body }),
+    getDirect(`${webmapUrl}/heightProfile`, body),
 
   // API тактичних знаків
   objGetList: (layer = null) =>
