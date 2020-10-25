@@ -5,7 +5,7 @@ import i18n from '../../i18n'
 import NivoLine from "../NivoLine";
 import {connect} from "react-redux";
 import {catchErrors} from "../../store/actions/asyncAction";
-import { getElevationProfile, setStraightLineState, setShowModalState } from "../../store/actions/elevationProfile";
+import { getElevationProfile, setStraightLineState, setShowModalState, clearElevationProfile } from "../../store/actions/elevationProfile";
 import { getElProfileDataWithStraightLine, getStraightLineState, getShowModalState } from "../../store/selectors";
 
 const ElevationProfileModal = ({
@@ -15,9 +15,11 @@ const ElevationProfileModal = ({
    onChangeStraightLineState,
    isModalOpen,
    closeModal,
+   // clearState,
  }) => {
   useEffect(() => {
     getElevationProfile()
+    // return clearState
   }, [ getElevationProfile ])
 
   const points = R.pathOr([], ['points'], elProfileData)
@@ -29,6 +31,7 @@ const ElevationProfileModal = ({
     width={900}
     onCancel={closeModal}
     footer={null}
+    // destroyOnClose={true}
   >
     <NivoLine
       data={[
@@ -71,6 +74,11 @@ const mapDispatchToProps = {
   },
   closeModal: () => async (dispatch) => {
     await dispatch(setShowModalState(false))
+  },
+
+  clearState: () => async (dispatch) => {
+    debugger
+    await dispatch(clearElevationProfile())
   },
 }
 
