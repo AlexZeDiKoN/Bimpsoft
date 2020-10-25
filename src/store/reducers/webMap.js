@@ -98,6 +98,7 @@ const WebMapState = Record({
   // generalization: false,
   isMeasureOn: false,
   isMarkersOn: false,
+  isZoneProfileOn: false,
   isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
@@ -227,6 +228,9 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
   field: 'isTopographicObjectsOn',
+}, {
+  action: actionNames.TOGGLE_ZONE_PROFILE,
+  field: 'isZoneProfileOn',
 } ]
 
 const findField = (actionName, list) => {

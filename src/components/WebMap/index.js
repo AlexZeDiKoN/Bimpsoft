@@ -33,7 +33,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access, viewModesKeys } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -444,7 +444,7 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects, highlighted,
+      flexGridData, catalogObjects, highlighted, isZoneProfileOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
@@ -488,6 +488,9 @@ export default class WebMap extends React.PureComponent {
     }
     if (isMarkersOn !== prevProps.isMarkersOn) {
       this.updateMarkersOn(isMarkersOn)
+    }
+    if (isZoneProfileOn !== prevProps.isZoneProfileOn) {
+      this.updateZoneProfileOn(isZoneProfileOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
       this.updateTopographicMarkersOn(isTopographicObjectsOn)
@@ -940,6 +943,21 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  clearMarkers = () => {
+    Array.isArray(this.markersProfile) && this.markersProfile.forEach((marker) => marker.removeFrom(this.map))
+    this.markersProfile = []
+  }
+
+  updateZoneProfileOn = (isZoneProfileOn) => {
+    this.addZoneProfileMode = isZoneProfileOn
+    if (!isZoneProfileOn && this.markersProfile && this.markersProfile.length && this.map) {
+      this.markersProfile.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markersProfile
+    } else {
+      this.markersProfile = this.markersProfile || []
+    }
+  }
+
   updateTopographicMarkersOn = (isTopographicMarkersOn) => {
     this.addTopographicMarkersMode = isTopographicMarkersOn
     if (!isTopographicMarkersOn && this.topographicMarkers && this.topographicMarkers.length && this.map) {
@@ -958,22 +976,13 @@ export default class WebMap extends React.PureComponent {
     return `<strong>${i18n.LANDMARK}</strong><br/><br/>${coordinates}`
   }
 
-  addUserMarker = (point) => {
-    const getHeight = this.props.getHeight(point)
+  addUserMarker = (point, storage) => {
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point)
       marker.addTo(this.map)
-      this.markers.push(marker)
-      setTimeout(() => {
-        marker.bindPopup(text).openPopup()
-        getHeight.then((data) => {
-          if (data?.height) {
-            const popupContent = `${text}<br/><br/><strong>${i18n.HEIGHT}</strong><br/><br/>${data.height} ${i18n.ABBR_METERS}`
-            marker._popup.setContent(popupContent)
-          }
-        }).catch((err) => console.error(err))
-      }, 1000)
+      storage.push(marker)
+      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
     }, 50)
   }
 
@@ -1177,11 +1186,12 @@ export default class WebMap extends React.PureComponent {
       printStatus,
       onClick,
       getCoordForMarch,
+      isZoneProfileOn,
       selection: { newShape, preview },
     } = this.props
 
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
-      !isTopographicObjectsOn && !marchMode
+      !isTopographicObjectsOn && !marchMode && !isZoneProfileOn
     ) {
       if (!newShape.type) {
         const area = (layer) => {
@@ -1220,7 +1230,17 @@ export default class WebMap extends React.PureComponent {
 
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
-        this.addUserMarker(e.latlng)
+        this.addUserMarker(e.latlng, this.markers)
+      }
+      if (this.addZoneProfileMode) {
+        this.addUserMarker(e.latlng, this.markersProfile)
+        if (this.markersProfile?.length === 1) {
+          this.props.setModalProps({
+            type: viewModesKeys.zoneProfile,
+            onClear: this.clearMarkers,
+            targets: this.markersProfile,
+          }, null)
+        }
       }
       if (this.addTopographicMarkersMode) {
         const { getTopographicObjects } = this.props
