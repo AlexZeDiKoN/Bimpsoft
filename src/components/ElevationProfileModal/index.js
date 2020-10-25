@@ -74,8 +74,8 @@ const mapDispatchToProps = {
   onChangeStraightLineState: ({ target: { checked } }) => async (dispatch) => {
     await dispatch(setStraightLineState(checked))
   },
-  closeModal: () => async (dispatch) => {
-    await dispatch(setShowModalState(false))
+  closeModal: () => (dispatch) => {
+    return dispatch(setShowModalState(false))
   },
 }
 
