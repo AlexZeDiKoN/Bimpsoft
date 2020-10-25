@@ -18,8 +18,6 @@ const LogMapTab = (props) => {
   const [ search, onChangeSearch ] = useState('')
   return (
     <div className='log-map-wrapper'>
-      <Button onClick={openElevationModal} type="primary">Primary Button</Button>
-      <ElevationProfileModal/>
       <div className='log-map-header'>
         <InputButton
           onChange={onChangeSearch}

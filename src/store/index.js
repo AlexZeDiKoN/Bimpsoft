@@ -9,7 +9,6 @@ import milOrgApi from '../server/api.server.org'
 import marchApi from '../server/api.march'
 import catalogApi from '../server/api.catalog'
 import ovtApi from '../server/api.ovt'
-import elevationProfileApi from '../server/api.elevationProfile'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import initNavigationConnection from './initNavigationConnection'
@@ -37,7 +36,6 @@ export default function initStore (options = {}) {
       marchApi,
       catalogApi,
       ovtApi,
-      elevationProfileApi,
     }),
   ]
 
