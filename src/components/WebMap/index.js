@@ -955,8 +955,7 @@ export default class WebMap extends React.PureComponent {
     if (Array.isArray(coordinates)) {
       coordinates = coordinates.join(`<br/>`)
     }
-    const text = 'Орієнтир' // TODO
-    return `<strong>${text}</strong><br/><br/>${coordinates}`
+    return `<strong>${i18n.LANDMARK}</strong><br/><br/>${coordinates}`
   }
 
   addUserMarker = (point) => {
@@ -970,8 +969,7 @@ export default class WebMap extends React.PureComponent {
         marker.bindPopup(text).openPopup()
         getHeight.then((data) => {
           if (data?.height) {
-            const val = 'Висота'
-            const popupContent = `${text}<br/><br/><strong>${val}</strong><br/><br/>${data.height} м`
+            const popupContent = `${text}<br/><br/><strong>${i18n.HEIGHT}</strong><br/><br/>${data.height} ${i18n.ABBR_METERS}`
             marker._popup.setContent(popupContent)
           }
         }).catch((err) => console.error(err))
