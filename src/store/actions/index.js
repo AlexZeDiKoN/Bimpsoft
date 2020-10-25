@@ -18,6 +18,7 @@ import * as targeting from './targeting'
 import * as groups from './groups'
 import * as task from './task'
 import * as changeLog from './changeLog'
+import * as elevationProfile from './elevationProfile'
 
 export {
   viewModes,
@@ -40,4 +41,5 @@ export {
   targetCatalog,
   task,
   changeLog,
+  elevationProfile,
 }
