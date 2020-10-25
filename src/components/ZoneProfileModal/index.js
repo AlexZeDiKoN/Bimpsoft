@@ -30,8 +30,9 @@ export default class ZoneProfileModal extends React.Component {
   static propTypes = {
     wrapper: PropTypes.oneOf([ MovablePanel ]),
     onClose: PropTypes.func,
-    selectTopographicItem: PropTypes.func,
-    serviceStatus: PropTypes.bool,
+    onClear: PropTypes.func,
+    onSave: PropTypes.func,
+    visible: PropTypes.bool,
   }
 
   state = {
