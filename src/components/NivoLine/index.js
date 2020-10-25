@@ -23,7 +23,7 @@ export function getLegendHeight (legendItemsAmount) {
   return legendItemsAmount * legendItemHeightWithSpacing + LEGEND_MARGIN_FROM_X_AXIS
 }
 
-function NivoLine ({ data, curve = "cardinal", bottomAxisName, leftAxisName }) {
+function NivoLine ({ data, curve = 'cardinal', bottomAxisName, leftAxisName }) {
   const legendHeight = getLegendHeight(data.length)
   return (
     <Line
@@ -53,7 +53,7 @@ function NivoLine ({ data, curve = "cardinal", bottomAxisName, leftAxisName }) {
         tickRotation: 0,
         legend: bottomAxisName,
         legendOffset: 36,
-        legendPosition: 'middle'
+        legendPosition: 'middle',
       }}
       axisLeft={{
         'orient': 'left',
@@ -74,7 +74,6 @@ function NivoLine ({ data, curve = "cardinal", bottomAxisName, leftAxisName }) {
     />
   )
 }
-
 
 NivoLine.propTypes = {
   data: PropTypes.array.isRequired,

@@ -1,20 +1,14 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { Scrollbar } from '@DZVIN/CommonComponents'
-import { Button } from 'antd'
-
 import { InputButton } from '../common'
-import ElevationProfileModal from '../ElevationProfileModal'
 
 import './style.css'
 import i18n from '../../i18n'
 import LogMapItem from './children/Item'
-import {connect} from "react-redux";
-import {catchErrors} from "../../store/actions/asyncAction";
-import {setShowModalState} from "../../store/actions/elevationProfile";
 
 const LogMapTab = (props) => {
-  const { highlightObject, clickObject, doubleClickObject, changeLog, openElevationModal } = props
+  const { highlightObject, clickObject, doubleClickObject, changeLog } = props
   const [ search, onChangeSearch ] = useState('')
   return (
     <div className='log-map-wrapper'>
@@ -54,14 +48,4 @@ LogMapTab.propTypes = {
 
 LogMapTab.displayName = 'LogMapTab'
 
-const mapDispatchToProps = {
-  openElevationModal: () => (dispatch) => {
-    dispatch(setShowModalState(true))
-  },
-}
-
-export default connect(
-  null,
-  catchErrors(mapDispatchToProps),
-)(LogMapTab)
-// export default LogMapTab
+export default LogMapTab
