@@ -1,5 +1,4 @@
 import { connect } from 'react-redux'
-import { angle3Points } from '../components/WebMap/patch/Sophisticated/utils'
 import ZoneVisionModal from '../components/ZoneVisionModal'
 import { viewModesKeys } from '../constants'
 import { close } from '../store/actions/task'
