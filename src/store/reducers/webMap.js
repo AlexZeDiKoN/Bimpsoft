@@ -324,7 +324,7 @@ export default function webMapReducer (state = WebMapState(), action) {
       const { layerId, objects } = payload
       return update(state, 'objects', (map) => {
         map = objects
-          .filter(({ code, type }) => (type !== entityKind.POINT) || code)
+          .filter(({ code, type }) => (type !== entityKind.POINT && type !== entityKind.SOPHISTICATED) || code)
           .filter(notFlexGrid)
           .reduce(updateObject, map)
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
