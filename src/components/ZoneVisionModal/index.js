@@ -15,7 +15,7 @@ import {
 import { shortcuts } from '../../constants'
 import i18n from '../../i18n'
 
-const DEFAULT_STATE = 1.7
+const DEFAULT_HEIGHT = 1.7
 const DEFAULT_ANGLE = 45
 const HEIGHT_SETTING_MODAL = 200
 const WIDTH_SETTING_MODAL = 300
@@ -29,8 +29,8 @@ const heightObserver = 'heightObserver'
 const angle = 'angle'
 
 const defaultState = {
-  [heightTarget]: DEFAULT_STATE,
-  [heightObserver]: DEFAULT_STATE,
+  [heightTarget]: DEFAULT_HEIGHT,
+  [heightObserver]: DEFAULT_HEIGHT,
   [angle]: DEFAULT_ANGLE,
 }
 

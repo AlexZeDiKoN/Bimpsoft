@@ -1,12 +1,11 @@
-/**
- * Created by pavlo.cherevko (melight@ex.ua) on 7/15/2019
- */
 import { elevationProfile } from '../actions'
 const initialState = {
   elProfileData: {},
   zoneProfileData: {},
   showStraightLine: false,
   isModalOpen: false,
+  visibleZone: null,
+  visibleZoneSector: null,
 }
 
 export default function (state = initialState, action) {
@@ -27,6 +26,10 @@ export default function (state = initialState, action) {
     case elevationProfile.CREATE_ZONE_PROFILE: {
       const { payload } = action
       return { ...state, isModalOpen: true, zoneProfileData: payload }
+    }
+    case elevationProfile.SET_BLIND_ZONE_DATA: {
+      const { payload } = action
+      return { ...state, visibleZone: payload[1], visibleZoneSector: payload[0] }
     }
     default:
       return state
