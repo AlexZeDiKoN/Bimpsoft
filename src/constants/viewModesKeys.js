@@ -9,3 +9,5 @@ export const directionName = 'directionName'
 export const eternalPoint = 'eternalPoint'
 export const map3D = 'map3D'
 export const sidebarSelectedTabIndex = 'sidebarSelectedTabIndex'
+
+export const zoneProfile = 'zoneProfile'

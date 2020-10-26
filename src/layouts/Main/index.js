@@ -24,11 +24,13 @@ import {
   ReportMapModalContainer,
   GeoLandmarkModalContainer,
   DeleteMarchModalContainer,
+  ZoneProfileModalContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
 import { HotKeysContainer } from '../../components/common/HotKeys'
+import ElevationProfileModal from "../../components/ElevationProfileModal";
 
 export default class Main extends React.Component {
   render () {
@@ -67,10 +69,12 @@ export default class Main extends React.Component {
         <DirectionNameContainer wrapper={MovablePanel}/>
         <EternalDescriptionContainer wrapper={MovablePanel}/>
         <TopoObjModal wrapper={MovablePanel} />
+        <ZoneProfileModalContainer wrapper={MovablePanel} />
         <TaskModalContainer wrapper={MovablePanel} />
         <ReportMapModalContainer wrapper={MovablePanel} />
         <GeoLandmarkModalContainer wrapper={MovablePanel} />
         <DeleteMarchModalContainer wrapper={MovablePanel} />
+        <ElevationProfileModal/>
       </HotKeysContainer>
     )
   }

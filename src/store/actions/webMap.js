@@ -60,6 +60,7 @@ export const actionNames = {
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
   TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
+  TOGGLE_ZONE_PROFILE: action('TOGGLE_ZONE_PROFILE'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
@@ -694,6 +695,10 @@ export const isObjectStillLocked = (objectId) =>
 
 export const toggleMeasure = () => ({
   type: actionNames.TOGGLE_MEASURE,
+})
+
+export const toggleZoneProfile = () => ({
+  type: actionNames.TOGGLE_ZONE_PROFILE,
 })
 
 export const toggleMarkers = () => ({
