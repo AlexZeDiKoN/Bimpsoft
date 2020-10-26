@@ -1,4 +1,6 @@
 import React from 'react'
+import L from 'leaflet'
+import area from '@turf/area'
 import { components } from '@DZVIN/CommonComponents'
 import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
@@ -21,11 +23,11 @@ const {
 
 const { icons: { IconHovered, names: iconNames } } = components
 
-const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
-const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
+const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = ['attributes', 'shownIntermediateAmplifiers']
+const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = ['attributes', 'shownNodalPointAmplifiers']
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       ...this.state,
@@ -44,7 +46,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
       coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
     ),
-  this.setState({ changeCoordinates: true }),
+    this.setState({ changeCoordinates: true }),
   )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
@@ -66,10 +68,10 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         return coordinatesArray.push({ text: '' })
       }
     }),
-  this.setState({ changeCoordinates: true }),
+    this.setState({ changeCoordinates: true }),
   )
 
-  renderCoordinatesArray (lock = false) {
+  renderCoordinatesArray(lock = false) {
     const { editCoordinates, changeCoordinates } = this.state
     const { coordinatesType } = this.props
     const formStore = this.getResult()
@@ -78,6 +80,11 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const shownNodalPointAmplifiersSet = formStore.getIn(SHOWN_NODAL_POINT_AMPLIFIERS_PATH)
 
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
+
+    const path = coordinatesArray.map(({ lat, lng }) => [ lat, lng ])
+    const polygon = L.polygon(path)
+    const sqMeters = area(polygon.toGeoJSON())
+
     const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
     const readOnly = !canEdit || !editCoordinates
@@ -86,7 +93,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const noNodalPointAmplifier = nodalPointIcon === NODAL_POINT_ICONS.NONE
     return (
       <FormDarkPart>
-        <FormDivider/>
+        <FormDivider />
         <FormRow label={i18n.NODAL_POINTS}>
           {canEdit && (<IconHovered
             icon={editCoordinates ? iconNames.BAR_2_EDIT_ACTIVE : iconNames.BAR_2_EDIT_DEFAULT}
@@ -147,6 +154,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                 ) : null}
               </div>
             ))}
+            {sqMeters && <div><strong>{`${i18n.FIGURE_AREA}: ${sqMeters.toFixed(2)} ${i18n.ABBR_SQUARE_METERS}`}</strong></div>}
           </div>
         </div>
       </FormDarkPart>
