@@ -1007,12 +1007,21 @@ export default class WebMap extends React.PureComponent {
   }
 
   addUserMarker = (point, storage) => {
+    const getHeight = this.props.getHeight(point)
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point)
       marker.addTo(this.map)
       storage.push(marker)
-      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+      setTimeout(() => {
+        marker.bindPopup(text).openPopup()
+        getHeight.then((data) => {
+          if (data?.height) {
+            const popupContent = `${text}<br/><br/><strong>${i18n.HEIGHT}</strong><br/><br/>${data.height} ${i18n.ABBR_METERS}`
+            marker._popup.setContent(popupContent)
+          }
+        }).catch((err) => console.error(err))
+      }, 1000)
     }, 50)
   }
 

@@ -22,7 +22,7 @@ export default function (state = initialState, action) {
     }
     case elevationProfile.CHANGE_SHOW_MODAL_STATE: {
       const { payload } = action
-      return { ...state, isModalOpen: payload }
+      return { ...state, isModalOpen: payload, showStraightLine: false }
     }
     case elevationProfile.CREATE_ZONE_PROFILE: {
       const { payload } = action

@@ -38,7 +38,7 @@ const forms = {
   [SelectionTypes.POINT]: {
     title: i18n.MIL_SYMBOL,
     component: MilSymbolForm,
-    minWidth: 825,
+    maxWidth: 825,
     minHeight: 'calc(100vh - 150px)',
     maxHeight: 'calc(100vh - 150px)',
   },
