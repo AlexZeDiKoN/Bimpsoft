@@ -357,8 +357,8 @@ export default function webMapReducer (state = WebMapState(), action) {
     }
     case actionNames.SET_VISION_ZONE_DATA: {
       return state
-        .set('visibleZone', payload.sources)
-        .set('visibleZoneSector', payload.source)
+        .set('visibleZone', payload[1])
+        .set('visibleZoneSector', payload[0])
     }
     case actionNames.SET_MAP_MODE: {
       return state.mode === payload ? state : state.set('mode', payload)

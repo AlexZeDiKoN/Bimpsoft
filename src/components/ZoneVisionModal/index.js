@@ -5,7 +5,7 @@ import { MovablePanel, FormBlock, Input, FormRow, NotClickableArea, ButtonSave, 
 import { shortcuts } from '../../constants'
 import i18n from '../../i18n'
 
-const DEFAULT_STATE = 1.7
+// const DEFAULT_STATE = 1.7
 const DEFAULT_ANGLE = 45
 const HEIGHT_SETTING_MODAL = 200
 const WIDTH_SETTING_MODAL = 300
@@ -14,13 +14,13 @@ const inputWrap = {
   width: 80,
 }
 
-const heightTarget = 'heightTarget'
-const heightObserver = 'heightObserver'
+// const heightTarget = 'heightTarget'
+// const heightObserver = 'heightObserver'
 const angle = 'angle'
 
 const defaultState = {
-  [heightTarget]: DEFAULT_STATE,
-  [heightObserver]: DEFAULT_STATE,
+  // [heightTarget]: DEFAULT_STATE,
+  // [heightObserver]: DEFAULT_STATE,
   [angle]: DEFAULT_ANGLE,
 }
 
@@ -80,7 +80,7 @@ export default class ZoneVisionModal extends React.Component {
             <HotKeysContainer>
               <FormBlock vertical marginH paddingV>
                 <FormBlock vertical paddingV>
-                  <FormRow label={i18n.HEIGHT_OBSERVER} paddingV>
+                  {/* <FormRow label={i18n.HEIGHT_OBSERVER} paddingV>
                     <div style={inputWrap}>
                       <Input.Number step={0.1} {...this.getProps(heightObserver)} />
                     </div>
@@ -89,7 +89,7 @@ export default class ZoneVisionModal extends React.Component {
                     <div style={inputWrap}>
                       <Input.Number step={0.1} {...this.getProps(heightTarget)} />
                     </div>
-                  </FormRow>
+                  </FormRow> */}
                   <FormRow label={i18n.ANGLE} paddingV>
                     <div style={inputWrap}>
                       <Input.Number min={0} {...this.getProps(angle)} />

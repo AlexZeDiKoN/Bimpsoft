@@ -40,6 +40,7 @@ import { flexGridPropTypes } from '../../store/selectors'
 import {
   BACK_LIGHT_STYLE_LINE,
   BACK_LIGHT_STYLE_POLYGON,
+  BACK_LIGHT_STYLE_SECTOR_POLYGON,
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
@@ -417,6 +418,7 @@ export default class WebMap extends React.PureComponent {
     this.activeLayer = null
     this.marchMarkers = []
     this.marchRefPoint = null
+    this.backLightingVisionZones = []
   }
 
   async componentDidMount () {
@@ -541,12 +543,11 @@ export default class WebMap extends React.PureComponent {
         : this.removeBacklightingTopographicObject()
     }
     if (visibleZone !== prevProps.visibleZone) {
-      visibleZone?.features &&
-        this.backLightingTopographicObject(visibleZone.features)
+      visibleZone?.features && this.backLightingVisionZoneObject(visibleZone.features, BACK_LIGHT_STYLE_POLYGON)
     }
     if (visibleZoneSector !== prevProps.visibleZoneSector) {
       visibleZoneSector?.features &&
-        this.backLightingTopographicObject(visibleZoneSector.features)
+        this.backLightingVisionZoneObject(visibleZoneSector.features, BACK_LIGHT_STYLE_SECTOR_POLYGON)
     }
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
@@ -984,6 +985,13 @@ export default class WebMap extends React.PureComponent {
     } else {
       this.markersVision = this.markersVision || []
     }
+
+    if (!isZoneVisionOn && this.backLightingVisionZones && this.backLightingVisionZones.length && this.map) {
+      this.backLightingVisionZones.forEach((marker) => marker.removeFrom(this.map))
+      delete this.backLightingVisionZones
+    } else {
+      this.backLightingVisionZones = this.backLightingVisionZones || []
+    }
   }
 
   updateTopographicMarkersOn = (isTopographicMarkersOn) => {
@@ -1157,6 +1165,17 @@ export default class WebMap extends React.PureComponent {
     this.removeBacklightingTopographicObject()
   }
 
+  backLightingVisionZoneObject = (object, style) => {
+    if (this.markersVision) {
+      this.removeBacklightingVisionZoneObject()
+    } else {
+      this.markersVision = []
+    }
+    const backLighting = L.geoJSON(object, style)
+    this.backLightingVisionZones.push(backLighting)
+    backLighting.addTo(this.map)
+  }
+
   backLightingTopographicObject = (object) => {
     if (this.backLights) {
       this.removeBacklightingTopographicObject()
@@ -1180,6 +1199,10 @@ export default class WebMap extends React.PureComponent {
 
   removeBacklightingTopographicObject = () => {
     this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
+  }
+
+  removeBacklightingVisionZoneObject = () => {
+    this.backLightsVisionZone && this.backLightsVisionZone.forEach((item) => item.removeFrom(this.map))
   }
 
   isFlexGridEditingMode = () =>
