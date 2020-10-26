@@ -274,7 +274,6 @@ export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути р
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
 export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
-export const EXCESS_ZONE_DISTANCE = (maxDistance) => `Відстань між точками має бути меншою ніж ${maxDistance} м`
 
 export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'
