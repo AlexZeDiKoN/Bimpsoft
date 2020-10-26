@@ -1283,23 +1283,14 @@ export default class WebMap extends React.PureComponent {
         }
       }
       if (this.addZoneVisionMode) {
-        if (!this.markersVision?.length) {
-          this.addUserMarker(e.latlng, this.markersVision)
-        }
+        this.addUserMarker(e.latlng, this.markersVision)
         if (this.markersVision?.length === 1) {
-          const firstPointLatLng = this.markersVision[0]?._latlng
-          const distance = firstPointLatLng.distanceTo(e.latlng)
-          if (distance <= MAX_ZONE_DISTANCE) {
-            this.addUserMarker(e.latlng, this.markersVision)
-            this.props.setModalProps({
-              type: viewModesKeys.zoneVision,
-              onClear: this.clearMarkers,
-              targets: this.markersVision,
-            }, null)
-          } else {
-            // TODO: add some user notification
-            console.error(i18n.EXCESS_ZONE_DISTANCE(MAX_ZONE_DISTANCE))
-          }
+          this.addUserMarker(e.latlng, this.markersVision)
+          this.props.setModalProps({
+            type: viewModesKeys.zoneVision,
+            onClear: this.clearMarkers,
+            targets: this.markersVision,
+          }, null)
         }
       }
       if (this.addTopographicMarkersMode) {
