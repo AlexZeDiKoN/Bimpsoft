@@ -99,6 +99,9 @@ const WebMapState = Record({
   isMeasureOn: false,
   isMarkersOn: false,
   isZoneProfileOn: false,
+  isZoneVisionOn: false,
+  visibleZone: null,
+  visibleZoneSector: null,
   isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
@@ -231,6 +234,9 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_ZONE_PROFILE,
   field: 'isZoneProfileOn',
+}, {
+  action: actionNames.TOGGLE_ZONE_VISION,
+  field: 'isZoneVisionOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -351,6 +357,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       return state
         .set('sources', payload.sources)
         .set('source', payload.source)
+    }
+    case actionNames.SET_VISION_ZONE_DATA: {
+      return state
+        .set('visibleZone', payload[1])
+        .set('visibleZoneSector', payload[0])
     }
     case actionNames.SET_MAP_MODE: {
       return state.mode === payload ? state : state.set('mode', payload)

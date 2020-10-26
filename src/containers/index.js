@@ -29,3 +29,4 @@ export { default as GeoLandmarkModalContainer } from './GeoLandmarkModalContaine
 export { default as DeleteMarchModalContainer } from './DeleteMarchModalContainer'
 export { default as LogMapContainer } from './LogMapContainer'
 export { default as ZoneProfileModalContainer } from './ZoneProfileContainer'
+export { default as ZoneVisionModalContainer } from './ZoneVisionContainer'

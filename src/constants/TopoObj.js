@@ -12,6 +12,10 @@ export const BACK_LIGHT_STYLE_POLYGON = {
   color: 'red',
 }
 
+export const BACK_LIGHT_STYLE_SECTOR_POLYGON = {
+  color: 'blue',
+}
+
 export const BACK_LIGHT_STYLE_LINE = {
   color: 'red',
   fillOpacity: 0,
