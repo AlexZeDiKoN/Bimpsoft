@@ -7,6 +7,7 @@ dependencies:
   '@nivo/bar': 0.52.1_eb0d650be231ffd0ace4a30b38162117
   '@nivo/line': 0.53.1_eb0d650be231ffd0ace4a30b38162117
   '@nivo/pie': 0.53.0_eb0d650be231ffd0ace4a30b38162117
+  '@turf/area': 6.0.1
   antd: 3.26.14_react-dom@16.13.1+react@16.13.1
   bezier-js: 2.5.1
   cesium: 1.72.0
@@ -92,6 +93,7 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-wOxI/Keue5qGsPGD6h9x1pPMLqDX9QssCaBM5A6FnY0WqvWhDg5LVS2YhcJ4OK8syFx0RBk1LZN+OIVfHmabNQ==
+      tarball: '@DZVIN/CommonComponents/-/CommonComponents-17.1.558.tgz'
   /@DZVIN/EuSign/0.0.2:
     dev: false
     resolution:
@@ -102,6 +104,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-lZihFvgIyKs0YEVFLFEtsOAkhHB2g4l4kEq72tE/7DPMuBRUxqBnBdhwbK1vGSaIP1NIKoRRQVzd6fdS63RTpQ==
+      tarball: '@DZVIN/MilSymbolEditor/-/MilSymbolEditor-17.1.288.tgz'
   /@DZVIN/components/17.1.595_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
@@ -115,6 +118,7 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-UwQh090GsFC36ZBq5cfluUlH5GKdZ32qjge+liZN4MvmmrwopclJWo/XwXJRHisy33Jfcz2+NN/kDymGrDrjHA==
+      tarball: '@DZVIN/components/-/components-17.1.595.tgz'
   /@DZVIN/leaflet-measure-custom/16.3.11:
     dev: false
     resolution:
@@ -16284,6 +16288,7 @@ specifiers:
   '@nivo/bar': ^0.52.1
   '@nivo/line': ^0.53.1
   '@nivo/pie': ^0.53.0
+  '@turf/area': ^6.0.1
   antd: ^3.12.4
   bezier-js: 2.5.1
   cesium: ^1.72.0
