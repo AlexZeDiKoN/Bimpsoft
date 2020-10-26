@@ -90,6 +90,7 @@ export const SHAPE_AREA = 'Область'
 export const SHAPE_RECTANGLE = 'Прямокутник'
 export const SHAPE_CIRCLE = 'Коло'
 export const SHAPE_SQUARE = 'Квадрат'
+export const ANGLE = 'Кут, град'
 // export const SHAPE_TEXT = 'Текстова мітка'
 // export const SHAPE_AIRBORNE = 'Умовний знак'
 // export const SHAPE_MANOEUVRE = 'Напрямок'
@@ -273,6 +274,7 @@ export const CANNOT_ENABLE_EDIT_MODE = 'Неможливо увімкнути р
 export const NO_ACTIVE_LAYER = 'Немає активного шару'
 export const READ_ONLY_LAYER_ACCESS = (name) => `Доступ до шару "${name}" тільки на перегляд`
 export const CANNOT_EDIT_SIGNED_MAP = (name) => `Карта "${name}" підписана, редагування неможливе`
+export const EXCESS_ZONE_DISTANCE = (maxDistance) => `Відстань між точками має бути меншою ніж ${maxDistance} м`
 
 export const MAPS_VISIBILITY = 'Видимість усіх карт'
 export const MAP_VISIBILITY = 'Видимість карти'
@@ -296,6 +298,8 @@ export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
 export const TOPOGRAPHIC_OBJECTS = 'Топографічні об’єкти'
 export const ZONE_PROFILE_ABBREVIATION = 'ПВ'
+export const ZONE_VISION_ABBREVIATION = 'ЗВ'
+export const ZONE_VISION = 'Зона видимості'
 export const ZONE_PROFILE = 'Профіль висот'
 export const MARKER = 'Маркер'
 export const MESSAGE = 'Повідомлення'
@@ -510,7 +514,6 @@ export const UNDO = 'Скасувати останню дію'
 export const REDO = 'Повторити останню скасовану дію'
 
 export const ELEVATION_PROFILE = 'Профіль висот'
-export const HEIGHT = 'Висота'
 export const HEIGHT_2 = 'Висота (м)'
 export const PATH_LENGTH = 'Довжина шляху (м)'
 export const DIRECT_VISIBILITY = 'Пряма видимість'

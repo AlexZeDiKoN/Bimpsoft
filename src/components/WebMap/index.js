@@ -91,6 +91,8 @@ const popupOptionsIndicators = {
 const xBound = 160
 const yBound = 320
 
+const MAX_ZONE_DISTANCE = 5000
+
 const switchScaleOptions = {
   scales: SCALES,
   splitScale: true,
@@ -310,6 +312,10 @@ export default class WebMap extends React.PureComponent {
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     isMarkersOn: PropTypes.bool,
+    isZoneProfileOn: PropTypes.bool,
+    isZoneVisionOn: PropTypes.bool,
+    visibleZone: PropTypes.object,
+    visibleZoneSector: PropTypes.object,
     isTopographicObjectsOn: PropTypes.bool,
     isLoadingMap: PropTypes.bool,
     backOpacity: PropTypes.number,
@@ -358,6 +364,7 @@ export default class WebMap extends React.PureComponent {
     }),
     isMapCOP: PropTypes.bool,
     // Redux actions
+    setModalProps: PropTypes.func,
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onChangeLayer: PropTypes.func,
@@ -444,11 +451,11 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects, highlighted, isZoneProfileOn,
+      flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects, marchDots, marchMode, marchRefPoint,
+      targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -492,6 +499,9 @@ export default class WebMap extends React.PureComponent {
     if (isZoneProfileOn !== prevProps.isZoneProfileOn) {
       this.updateZoneProfileOn(isZoneProfileOn)
     }
+    if (isZoneVisionOn !== prevProps.isZoneVisionOn) {
+      this.updateZoneVisionOn(isZoneVisionOn)
+    }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
       this.updateTopographicMarkersOn(isTopographicObjectsOn)
     }
@@ -531,6 +541,14 @@ export default class WebMap extends React.PureComponent {
       features
         ? this.backLightingTopographicObject(features[selectedItem])
         : this.removeBacklightingTopographicObject()
+    }
+    if (visibleZone !== prevProps.visibleZone) {
+      visibleZone?.features &&
+        this.backLightingTopographicObject(visibleZone.features)
+    }
+    if (visibleZoneSector !== prevProps.visibleZoneSector) {
+      visibleZoneSector?.features &&
+        this.backLightingTopographicObject(visibleZoneSector.features)
     }
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
@@ -944,8 +962,10 @@ export default class WebMap extends React.PureComponent {
   }
 
   clearMarkers = () => {
-    Array.isArray(this.markersProfile) && this.markersProfile.forEach((marker) => marker.removeFrom(this.map))
+    const data = this.props.isZoneProfileOn ? this.markersProfile : this.markersVision
+    Array.isArray(data) && data.forEach((marker) => marker.removeFrom(this.map))
     this.markersProfile = []
+    this.markersVision = []
   }
 
   updateZoneProfileOn = (isZoneProfileOn) => {
@@ -955,6 +975,16 @@ export default class WebMap extends React.PureComponent {
       delete this.markersProfile
     } else {
       this.markersProfile = this.markersProfile || []
+    }
+  }
+
+  updateZoneVisionOn = (isZoneVisionOn) => {
+    this.addZoneVisionMode = isZoneVisionOn
+    if (!isZoneVisionOn && this.markersVision && this.markersVision.length && this.map) {
+      this.markersVision.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markersVision
+    } else {
+      this.markersVision = this.markersVision || []
     }
   }
 
@@ -1187,11 +1217,12 @@ export default class WebMap extends React.PureComponent {
       onClick,
       getCoordForMarch,
       isZoneProfileOn,
+      isZoneVisionOn,
       selection: { newShape, preview },
     } = this.props
 
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
-      !isTopographicObjectsOn && !marchMode && !isZoneProfileOn
+      !isTopographicObjectsOn && !marchMode && !isZoneProfileOn && !isZoneVisionOn
     ) {
       if (!newShape.type) {
         const area = (layer) => {
@@ -1240,6 +1271,26 @@ export default class WebMap extends React.PureComponent {
             onClear: this.clearMarkers,
             targets: this.markersProfile,
           }, null)
+        }
+      }
+      if (this.addZoneVisionMode) {
+        if (!this.markersVision?.length) {
+          this.addUserMarker(e.latlng, this.markersVision)
+        }
+        if (this.markersVision?.length === 1) {
+          const firstPointLatLng = this.markersVision[0]?._latlng
+          const distance = firstPointLatLng.distanceTo(e.latlng)
+          if (distance <= MAX_ZONE_DISTANCE) {
+            this.addUserMarker(e.latlng, this.markersVision)
+            this.props.setModalProps({
+              type: viewModesKeys.zoneVision,
+              onClear: this.clearMarkers,
+              targets: this.markersVision,
+            }, null)
+          } else {
+            // TODO: add some user notification
+            console.error(i18n.EXCESS_ZONE_DISTANCE(MAX_ZONE_DISTANCE))
+          }
         }
       }
       if (this.addTopographicMarkersMode) {

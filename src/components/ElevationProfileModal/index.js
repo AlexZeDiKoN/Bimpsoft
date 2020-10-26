@@ -17,7 +17,7 @@ const ElevationProfileModal = ({
    closeModal,
  }) => {
   useEffect(() => {
-    getElevationProfile()
+    // getElevationProfile()
   }, [ getElevationProfile ])
 
   const points = R.pathOr([], ['points'], elProfileData)

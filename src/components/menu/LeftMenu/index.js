@@ -31,6 +31,7 @@ export default class LeftMenu extends React.Component {
     isShowSubordinationLevel: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     isZoneProfileOn: PropTypes.bool,
+    isZoneVisionOn: PropTypes.bool,
     isSelectedLayer: PropTypes.bool,
     createButtonsComponent: PropTypes.any,
     mapSourceSelectComponent: PropTypes.any,
@@ -50,6 +51,7 @@ export default class LeftMenu extends React.Component {
     onSetSubordinationLevelAuto: PropTypes.func,
     onMeasureChange: PropTypes.func,
     onZoneProfileChange: PropTypes.func,
+    onZoneVisionChange: PropTypes.func,
     onMarkerChange: PropTypes.func,
     onTopographicObjectsChange: PropTypes.func,
     onChangeTargetingMode: PropTypes.func,
@@ -82,10 +84,12 @@ export default class LeftMenu extends React.Component {
 
   clickMap3D = () => {
     const { onClick3D, is3DMapMode, isMeasureOn, onMeasureChange, marker, onMarkerChange, topographicObjects,
-      onTopographicObjectsChange, isZoneProfileOn, onZoneProfileChange } = this.props
+      onTopographicObjectsChange, isZoneProfileOn, onZoneProfileChange,
+      isZoneVisionOn, onZoneVisionChange } = this.props
     if (!is3DMapMode) {
       isMeasureOn && onMeasureChange()
       isZoneProfileOn && onZoneProfileChange()
+      isZoneVisionOn && onZoneVisionChange()
       marker && onMarkerChange()
       topographicObjects && onTopographicObjectsChange()
     }
@@ -137,6 +141,7 @@ export default class LeftMenu extends React.Component {
       isShowSubordinationLevel,
       isMeasureOn,
       isZoneProfileOn,
+      isZoneVisionOn,
       is3DMapMode,
       isSelectedLayer,
       subordinationLevel = SubordinationLevel.TEAM_CREW,
@@ -148,6 +153,7 @@ export default class LeftMenu extends React.Component {
       onSetSubordinationLevelAuto,
       onMeasureChange,
       onZoneProfileChange,
+      onZoneVisionChange,
       onMarkerChange,
       onTopographicObjectsChange,
       createButtonsComponent: CreateButtonsComponent,
@@ -268,17 +274,30 @@ export default class LeftMenu extends React.Component {
             disabled={is3DMapMode}
           />
         </Tooltip>
-	      <Tooltip title={i18n.ZONE_PROFILE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
+        <Tooltip title={i18n.ZONE_PROFILE} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
           <div className="button--with-icon-text">
-          <IButton
-            type={ButtonTypes.WITH_BG}
-            colorType={ColorTypes.MAP_HEADER_GREEN}
-            active={isZoneProfileOn}
-            onClick={onZoneProfileChange}
-            disabled={is3DMapMode}
-          >
-            <b>{i18n.ZONE_PROFILE_ABBREVIATION}</b>
-          </IButton>
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              active={isZoneProfileOn}
+              onClick={onZoneProfileChange}
+              disabled={is3DMapMode}
+            >
+              <b>{i18n.ZONE_PROFILE_ABBREVIATION}</b>
+            </IButton>
+          </div>
+        </Tooltip>
+        <Tooltip title={i18n.ZONE_VISION} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='bottomLeft'>
+          <div className="button--with-icon-text">
+            <IButton
+              type={ButtonTypes.WITH_BG}
+              colorType={ColorTypes.MAP_HEADER_GREEN}
+              active={isZoneVisionOn}
+              onClick={onZoneVisionChange}
+              disabled={is3DMapMode}
+            >
+              <b>{i18n.ZONE_VISION_ABBREVIATION}</b>
+            </IButton>
           </div>
         </Tooltip>
         <SelectionButtonsComponent />

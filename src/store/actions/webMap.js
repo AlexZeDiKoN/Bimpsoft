@@ -31,10 +31,10 @@ export const stopHeartBeat = () => {
     dropLock = null
   }
 }
-
 export const actionNames = {
   SET_MAP_MODE: action('SET_MAP_MODE'),
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
+  SET_VISION_ZONE_DATA: action('SET_VISION_ZONE_DATA'),
   SET_MINIMAP: action('SET_MINIMAP'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
@@ -61,6 +61,7 @@ export const actionNames = {
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
   TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
   TOGGLE_ZONE_PROFILE: action('TOGGLE_ZONE_PROFILE'),
+  TOGGLE_ZONE_VISION: action('TOGGLE_ZONE_VISION'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
@@ -173,6 +174,11 @@ export const setCenter = (center, zoom) => ({
 export const setScaleToSelection = (scaleToSelected) => ({
   type: actionNames.SET_SCALE_TO_SELECTION,
   payload: scaleToSelected,
+})
+
+export const setVisionZoneData = (visionZoneData) => ({
+  type: actionNames.SET_VISION_ZONE_DATA,
+  payload: visionZoneData,
 })
 
 export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
@@ -699,6 +705,10 @@ export const toggleMeasure = () => ({
 
 export const toggleZoneProfile = () => ({
   type: actionNames.TOGGLE_ZONE_PROFILE,
+})
+
+export const toggleZoneVision = () => ({
+  type: actionNames.TOGGLE_ZONE_VISION,
 })
 
 export const toggleMarkers = () => ({

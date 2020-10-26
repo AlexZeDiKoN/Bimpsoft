@@ -11,3 +11,4 @@ export const map3D = 'map3D'
 export const sidebarSelectedTabIndex = 'sidebarSelectedTabIndex'
 
 export const zoneProfile = 'zoneProfile'
+export const zoneVision = 'zoneVision'
