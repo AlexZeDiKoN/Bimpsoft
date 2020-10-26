@@ -342,7 +342,7 @@ export const deleteObject = (id, addUndoRecord = true) =>
 
 export const deleteObjects = (list, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDeleteList } }) => {
-    await objDeleteList(list)
+    list = await objDeleteList(list)
 
     if (addUndoRecord) {
       dispatch({
@@ -658,6 +658,7 @@ export const tryLockObject = (objectId) =>
         const result = await objLock(objectId)
         success = result.success
         if (success) {
+          stopHeartBeat()
           lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
         } else {
           lockedBy = result.lockedBy
