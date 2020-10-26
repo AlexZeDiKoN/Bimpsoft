@@ -91,8 +91,6 @@ const popupOptionsIndicators = {
 const xBound = 160
 const yBound = 320
 
-const MAX_ZONE_DISTANCE = 5000
-
 const switchScaleOptions = {
   scales: SCALES,
   splitScale: true,
