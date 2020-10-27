@@ -11,6 +11,7 @@ import { webMap } from './index'
 
 export const SET_FRIEND_ID = action('TASK_SET_FRIEND_ID')
 export const SET_TASK_MODAL_DATA = action('SET_TASK_MODAL_DATA')
+export const SET_ZONE_VISION_MODAL_DATA = action('SET_ZONE_VISION_MODAL_DATA')
 export const SET_TASK_VALUE = action('SET_TASK_VALUE')
 export const SET_TASK_CONTEXT_VALUE = action('SET_TASK_CONTEXT_VALUE')
 
@@ -24,6 +25,7 @@ export const setModalData = (modalData, context) => ({
   type: SET_TASK_MODAL_DATA,
   payload: { modalData, context },
 })
+
 export const setValue = (payload) => ({ type: SET_TASK_VALUE, payload })
 export const setContextValue = (payload) => ({ type: SET_TASK_CONTEXT_VALUE, payload })
 export const setFriendObject = (payload) => ({ type: SET_FRIEND_ID, payload })

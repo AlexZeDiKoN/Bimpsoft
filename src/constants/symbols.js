@@ -815,7 +815,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [ amps.T ]: '' },
+          pointAmplifier: { [amps.T]: '' },
           color: '#3366ff',
         },
       },
@@ -825,7 +825,7 @@ export const symbols = [
         amp: {
           isSvg: true,
           type: entityKind.SOPHISTICATED,
-          pointAmplifier: { [ amps.T ]: '' },
+          pointAmplifier: { [amps.T]: '' },
           color: '#3366ff',
         },
       },
@@ -1244,7 +1244,7 @@ export const symbols = [
           isSvg: true,
           type: entityKind.POLYGON,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'POУ' },
+          pointAmplifier: { [amps.T]: 'РОУ' },
         },
       },
       {
