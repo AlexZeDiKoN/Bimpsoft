@@ -3,7 +3,7 @@ import api from '../../server/api.march'
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
-import { MARCH_TYPES } from '../../constants/March'
+import { MARCH_POINT_TYPES, MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
 import osrmApi from '../../server/api.osrm'
 import i18n from './../../i18n'
@@ -25,6 +25,7 @@ export const SET_REF_POINT_ON_MAP = action('SET_REF_POINT_ON_MAP')
 export const INIT_MARCH = action('INIT_MARCH')
 export const CLOSE_MARCH = action('CLOSE_MARCH')
 export const SET_GEO_LANDMARKS = action('SET_GEO_LANDMARKS')
+export const SET_VISIBLE_INTERMEDIATE = action('SET_VISIBLE_INTERMEDIATE')
 export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 export const SET_METRIC = action('SET_METRIC')
 export const SET_ROUTE = action('SET_ROUTE')
@@ -462,14 +463,21 @@ export const deleteSegment = (segmentId) => asyncAction.withNotification(
     })
   })
 
-export const addChild = (segmentId, childId) => asyncAction.withNotification(
+export const addChild = (segmentId, childId, intermediate = false, coords) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const { march } = getState()
 
     const segment = march.segments.get(segmentId)
     const children = segment.children
     segment.metric.children.splice((childId || childId === 0) ? childId + 1 : 0, 0, { distance: 0, time: 0 })
-    children.splice((childId || childId === 0) ? childId + 1 : 0, 0, defaultChild())
+
+    const child = defaultChild()
+    if (intermediate && coords) { // вставка промежуточного пункта с карты
+      child.coordinates = coords
+      child.type = MARCH_POINT_TYPES.INTERMEDIATE_POINT
+    }
+
+    children.splice((childId || childId === 0) ? childId + 1 : 0, 0, child)
 
     const updateSegments = march.segments.update(segmentId, (segment) => ({
       ...segment,
@@ -524,6 +532,30 @@ export const setCoordMode = (data) => ({
   type: SET_COORD_MODE,
   payload: data,
 })
+
+// изменение координат точки марша value = { segmentId , childId, val }
+// val - новые latlng координаты
+export const setCoordDotFromMap = (value) => asyncAction.withNotification(
+  async (dispatch, getState) => {
+    const { march } = getState()
+    const { segments, geoLandmarks } = march
+    const data = { ...value, fieldName: 'coordinates' }
+    const { updateSegments } = getUpdateSegments(segments, data, geoLandmarks, dispatch)
+    const isCoordFilled = isFilledMarchCoordinates(updateSegments.toArray())
+
+    dispatch(updateMetric(march.payload, updateSegments))
+
+    const payload = {
+      segments: updateSegments,
+      coordMode: false,
+      isCoordFilled,
+    }
+
+    dispatch({
+      type: SET_COORD_FROM_MAP,
+      payload,
+    })
+  })
 
 export const setCoordFromMap = (value) => asyncAction.withNotification(
   async (dispatch, getState) => {
@@ -715,6 +747,14 @@ export const setGeoLandmarks = (data) => asyncAction.withNotification(
       payload,
     })
   })
+
+export const setVisibleIntermediate = (segmentId, visibleIntermediate) => ({
+  type: SET_VISIBLE_INTERMEDIATE,
+  payload: {
+    segmentId,
+    visibleIntermediate,
+  },
+})
 
 export const getRoute = ({
   segmentId,

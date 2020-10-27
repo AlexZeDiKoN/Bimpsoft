@@ -8,6 +8,7 @@ const mapStateToProps = ({ march: {
   segments,
   integrity,
   pointsTypes,
+  pointsTypesM,
   time,
   distance,
   isCoordFilled,
@@ -18,6 +19,7 @@ const mapStateToProps = ({ march: {
   segmentList: segments,
   integrity,
   pointsTypes,
+  pointsTypesM,
   time,
   distance,
   isCoordFilled,
@@ -44,6 +46,7 @@ const mapDispatchToProps = {
   toggleDeleteMarchPointModal: webMap.toggleDeleteMarchPointModal,
   setGeoLandmarks: march.setGeoLandmarks,
   getRoute: march.getRoute,
+  setVisibleIntermediate: march.setVisibleIntermediate,
 }
 
 const MarchContainer = connect(

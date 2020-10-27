@@ -71,6 +71,7 @@ import {
 import { MapProvider } from './MapContext'
 import { findDefinition } from './patch/Sophisticated/utils'
 import { generateGeometry } from './patch/FlexGrid'
+import { marchMarker } from './march'
 
 const { Coordinates: Coord } = utils
 
@@ -392,6 +393,9 @@ export default class WebMap extends React.PureComponent {
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,
+    setCoordDotForMarch: PropTypes.func,
+    addChildMarch: PropTypes.func,
+    deleteChildMarch: PropTypes.func,
     marchMode: PropTypes.bool,
     marchDots: PropTypes.array,
     marchRefPoint: PropTypes.object,
@@ -969,54 +973,78 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
-    const drawMarchLine = () => {
-      if (!this.marchLines) {
-        this.marchLines = []
-      }
-      if (this.marchLines.length > 0) {
-        this.marchLines.forEach((line) => {
-          line.removeFrom(this.map)
-        })
-        this.marchLines = []
-      }
-      marchDots.forEach(({ coordinates, options, route }, id) => {
-        if (id !== marchDots.length - 1) {
-          let marchLine
-          if (route && route.coordinates && route.coordinates.length) {
-            const { coordinates } = route
-            marchLine = L.polyline(coordinates, options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-            marchLine = L.polyline([ coordinates[ coordinates.length - 1 ], marchDots[id + 1].coordinates ], options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-          } else {
-            marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-          }
-        }
-      })
-    }
+    // const drawMarchLine = () => {
+    //   if (!this.marchLines) {
+    //     this.marchLines = []
+    //   }
+    //   if (this.marchLines.length > 0) {
+    //     this.marchLines.forEach((line) => {
+    //       line.removeFrom(this.map)
+    //     })
+    //     this.marchLines = []
+    //   }
+    //   marchDots.forEach(({ coordinates, options, route }, id) => {
+    //     if (id !== marchDots.length - 1) {
+    //       let marchLine
+    //       if (route && route.coordinates && route.coordinates.length) {
+    //         const { coordinates } = route
+    //         marchLine = L.polyline(coordinates, options)
+    //         marchLine.addTo(this.map)
+    //         this.marchLines.push(marchLine)
+    //         marchLine = L.polyline([ coordinates[ coordinates.length - 1 ], marchDots[id + 1].coordinates ], options)
+    //         marchLine.addTo(this.map)
+    //         this.marchLines.push(marchLine)
+    //       } else {
+    //         marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
+    //         marchLine.addTo(this.map)
+    //         this.marchLines.push(marchLine)
+    //       }
+    //     }
+    //   })
+    // }
 
     if (marchDots !== prevMarchDots) {
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
         this.marchMarkers = []
       }
-      marchDots.forEach((dot) => {
+      marchDots.forEach((dot, index) => {
         const iconName = dot.isRestPoint ? 'camp.png' : null
-        const marker = createSearchMarker(dot.coordinates, false, iconName)
+        let marker
+        if (dot.isIntermediatePoint) {
+          marker = marchMarker.createIntermediateMarker(dot.coordinates, false, this)
+          marker.on('contextmenu', () => this.props.deleteChildMarch(dot.segmentId, dot.childId), this)
+          // marker._marchDots = marchDots
+          marker.baseDot = dot
+        } else {
+          marker = createSearchMarker(dot.coordinates, false, iconName)
+        }
         const { lat, lng } = dot.coordinates
-        const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
-
+        const msgTooltip = `${lat} ${lng} | ${dot.refPoint ? dot.refPoint : ''}`
         marker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
 
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
-      })
 
-      drawMarchLine()
+        // средние маркеры проставляем только для children
+        if (index < marchDots.length - 1 && Number.isInteger(dot.childId)) {
+          const middleDot = {
+            lng: (dot.coordinates.lng + marchDots[index + 1].coordinates.lng) / 2,
+            lat: (dot.coordinates.lat + marchDots[index + 1].coordinates.lat) / 2,
+          }
+          // console.log('middle', intermediateDot)
+          const middleMarker = marchMarker.createIntermediateMarker(middleDot, true, this)
+          middleMarker._marchDots = marchDots
+          middleMarker.baseDot = dot // запоминаем базовую точку
+          const { lat, lng } = middleDot
+          const msgTooltip = `${lat} ${lng}`
+          middleMarker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
+
+          middleMarker.addTo(this.map)
+          this.marchMarkers.push(middleMarker)
+        }
+      })
+      marchMarker.drawMarchLine(this, marchDots)
     } else {
       if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
         let redrawLine = false
@@ -1041,7 +1069,7 @@ export default class WebMap extends React.PureComponent {
         })
         if (marchDots.length > 1) {
           if (redrawLine) {
-            drawMarchLine()
+            marchMarker.drawMarchLine(this, marchDots)
           }
         }
       }

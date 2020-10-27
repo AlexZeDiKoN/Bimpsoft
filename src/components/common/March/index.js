@@ -43,7 +43,7 @@ const getMemoGeoLandmarks = (() => {
   }
 })()
 
-const getMarchPoints = (pointsTypes) => {
+const getMarchPoints = (pointsTypesM) => {
   const { point, dayNight, daily } = defaultRestTimeInHours
 
   const MarchPoints = [
@@ -52,15 +52,16 @@ const getMarchPoints = (pointsTypes) => {
     { id: pointTypes.DAY_NIGHT_REST_POINT, rest: true, time: hoursToMs(dayNight) },
     { id: pointTypes.DAILY_REST_POINT, rest: true, time: hoursToMs(daily) },
     { id: pointTypes.LINE_OF_REGULATION, rest: false, time: 0, notEditableTime: true },
+    { id: pointTypes.INTERMEDIATE_POINT, rest: false, time: 0 },
     { rest: false, time: 0 },
   ]
 
-  return MarchPoints.map((point) => ({ ...point, ...pointsTypes[point.id] }))
+  return MarchPoints.map((point) => ({ ...point, ...pointsTypesM.get(point.id) }))
 }
 
 const March = (props) => {
   const {
-    pointsTypes,
+    pointsTypesM,
     segmentList,
     time,
     distance,
@@ -74,11 +75,11 @@ const March = (props) => {
     isChanged,
     setGeoLandmarks,
     getRoute,
+    setVisibleIntermediate,
   } = props
   const segments = segmentList.toArray()
   const [ timeDistanceView, changeTimeDistanceView ] = useState(true)
-  const marchPoints = getMarchPoints(pointsTypes)
-
+  const marchPoints = getMarchPoints(pointsTypesM)
   const renderDotsForms = () => {
     const { editFormField, addChild, deleteChild, setCoordMode, setRefPointOnMap, coordTypeSystem } = props
     const handlers = {
@@ -92,12 +93,14 @@ const March = (props) => {
       toggleDeleteMarchPointModal,
       setGeoLandmarks,
       getRoute,
+      setVisibleIntermediate,
     }
 
     return <div className={'dots-forms'}>
       { segments.map((segment, segmentId) => {
         const { children, metric } = segment
-
+        const childrenIsPresent = children && children.length > 0
+        const hideIntermediate = !(segment.showIntermediate || false)
         return (<div key={segment.id} className={'segment-with-form'}>
           <div className={'segment-block'}>
             <SegmentBlock
@@ -109,6 +112,8 @@ const March = (props) => {
               segments={segments}
               toggleDeleteMarchPointModal={toggleDeleteMarchPointModal}
               readOnly={readOnly}
+              hideIntermediate={hideIntermediate}
+              childrenIsPresent={childrenIsPresent}
             />
           </div>
           <div className={'form-container'}>
@@ -124,8 +129,13 @@ const March = (props) => {
               coordTypeSystem={coordTypeSystem}
               geoLandmarks={geoLandmarks}
               readOnly={readOnly}
+              visibleIntermediate={segment.showIntermediate}
+              childrenIsPresent={childrenIsPresent}
             />
             {children && children.map((child, childId) => {
+              if (hideIntermediate && child.type === pointTypes.INTERMEDIATE_POINT) {
+                return null
+              }
               return <MarchForm
                 key={child.id}
                 segmentId={segmentId}
@@ -177,6 +187,7 @@ March.propTypes = {
     toArray: PropTypes.func.isRequired,
   }).isRequired,
   pointsTypes: PropTypes.array.isRequired,
+  pointsTypesM: PropTypes.object.isRequired,
   time: PropTypes.number.isRequired,
   distance: PropTypes.number.isRequired,
   sendMarchToExplorer: PropTypes.func.isRequired,
@@ -190,6 +201,7 @@ March.propTypes = {
   isChanged: PropTypes.bool.isRequired,
   setGeoLandmarks: PropTypes.func.isRequired,
   getRoute: PropTypes.func.isRequired,
+  setVisibleIntermediate: PropTypes.func.isRequired,
 }
 
 export default React.memo(March)
