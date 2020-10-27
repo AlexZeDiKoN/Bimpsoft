@@ -50,7 +50,6 @@ export default class ZoneVisionModal extends React.Component {
   onClose = () => {
     this.props.onClear()
     this.props.onClose()
-    this.setState(defaultState)
   }
 
   onChange = ({ target: { name, value } }) => {

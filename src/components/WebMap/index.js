@@ -555,7 +555,8 @@ export default class WebMap extends React.PureComponent {
     if (highlighted !== prevProps.highlighted) {
       this.resetHighlight(prevProps.highlighted, highlighted)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode ||
+      isZoneProfileOn || isZoneVisionOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
