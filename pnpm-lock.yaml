@@ -1,7 +1,7 @@
 dependencies:
   '@DZVIN/CommonComponents': 17.1.558_8163dde90d88e02f48b04383611abbfe
-  '@DZVIN/MilSymbolEditor': 17.1.288
-  '@DZVIN/components': 17.1.595_56c0a69b77661e2a2e6d79d63bcec91c
+  '@DZVIN/MilSymbolEditor': 17.1.292
+  '@DZVIN/components': 17.1.599_56c0a69b77661e2a2e6d79d63bcec91c
   '@DZVIN/leaflet-measure-custom': 16.3.11
   '@DZVIN/milsymbol': 17.1.11
   '@nivo/bar': 0.52.1_eb0d650be231ffd0ace4a30b38162117
@@ -98,14 +98,13 @@ packages:
     dev: false
     resolution:
       integrity: sha512-t9mNCe20imXmBYYYAzpXAepbuYOzJ68cFoYECDUPwrRJCHtnLGsUd6cM5Ee4YtKDIMo5sdBS1x/aeTAoGpPDXw==
-  /@DZVIN/MilSymbolEditor/17.1.288:
+  /@DZVIN/MilSymbolEditor/17.1.292:
     dependencies:
       '@DZVIN/milsymbol': 17.1.11
     dev: false
     resolution:
-      integrity: sha512-lZihFvgIyKs0YEVFLFEtsOAkhHB2g4l4kEq72tE/7DPMuBRUxqBnBdhwbK1vGSaIP1NIKoRRQVzd6fdS63RTpQ==
-      tarball: '@DZVIN/MilSymbolEditor/-/MilSymbolEditor-17.1.288.tgz'
-  /@DZVIN/components/17.1.595_56c0a69b77661e2a2e6d79d63bcec91c:
+      integrity: sha512-ZfsS/62B/8FigS8r4r5ptmeJBGjnRCM2qwLWEXcEdbSXOWuq8z0rrZjr/3WG61tx0nesPRNapb1vhXsLAbSTIw==
+  /@DZVIN/components/17.1.599_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
       '@unitybase/ub-pub': 5.5.9
@@ -117,8 +116,7 @@ packages:
       react: '*'
       react-dom: '*'
     resolution:
-      integrity: sha512-UwQh090GsFC36ZBq5cfluUlH5GKdZ32qjge+liZN4MvmmrwopclJWo/XwXJRHisy33Jfcz2+NN/kDymGrDrjHA==
-      tarball: '@DZVIN/components/-/components-17.1.595.tgz'
+      integrity: sha512-9SeNbuj7OdHUnSlOt6SWFvEBzrZYQ1RZkF8b9HW7qMh03mJZXeqXskljJ+po2OX6nx3EAxC7dddUEpOrY527xw==
   /@DZVIN/leaflet-measure-custom/16.3.11:
     dev: false
     resolution:
@@ -16280,8 +16278,8 @@ packages:
       integrity: sha1-x+sXyT4RLLEIb6bY5R+wZnt5pfk=
 specifiers:
   '@DZVIN/CommonComponents': ^17.1.558
-  '@DZVIN/MilSymbolEditor': ^17.1.288
-  '@DZVIN/components': ^17.1.595
+  '@DZVIN/MilSymbolEditor': ^17.1.291
+  '@DZVIN/components': ^17.1.598
   '@DZVIN/leaflet-measure-custom': ^16.03.11
   '@DZVIN/milsymbol': ^17.01.11
   '@craco/craco': ^5.6.4

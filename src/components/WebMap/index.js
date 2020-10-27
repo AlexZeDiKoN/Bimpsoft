@@ -40,7 +40,6 @@ import { flexGridPropTypes } from '../../store/selectors'
 import {
   BACK_LIGHT_STYLE_LINE,
   BACK_LIGHT_STYLE_POLYGON,
-  BACK_LIGHT_STYLE_SECTOR_POLYGON,
   LINE_STRING,
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
@@ -543,11 +542,11 @@ export default class WebMap extends React.PureComponent {
         : this.removeBacklightingTopographicObject()
     }
     if (visibleZone !== prevProps.visibleZone) {
-      visibleZone?.features && this.backLightingVisionZoneObject(visibleZone.features, BACK_LIGHT_STYLE_POLYGON)
+      visibleZone?.features && this.backLightingVisionZoneObject(visibleZone.features, { color: 'red', stroke: false })
     }
     if (visibleZoneSector !== prevProps.visibleZoneSector) {
       visibleZoneSector?.features &&
-        this.backLightingVisionZoneObject(visibleZoneSector.features, BACK_LIGHT_STYLE_SECTOR_POLYGON)
+        this.backLightingVisionZoneObject(visibleZoneSector.features, { color: 'blue', stroke: false })
     }
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
