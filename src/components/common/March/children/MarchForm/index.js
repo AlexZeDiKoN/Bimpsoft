@@ -394,7 +394,10 @@ const MarchForm = (props) => {
                     />
                   </Tooltip>
                   { childrenIsPresent &&
-                  <Tooltip placement='topRight' title={i18n.ROUTE_INTERMEDIATE} align={ { offset: [ 5, 0 ] }}>
+                  <Tooltip
+                    placement='topRight'
+                    title={i18n.SHOW_POINT_MARCH_INTERMEDIATE}
+                    align={ { offset: [ 5, 0 ] }}>
                     <IButton
                       icon={isRoutePresent ? IconNames.MAP_HEADER_ICON_CURVE : IconNames.MAP_HEADER_ICON_BROKEN_LINE}
                       active={visibleIntermediate}
