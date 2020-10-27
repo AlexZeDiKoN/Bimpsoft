@@ -28,7 +28,6 @@ export const marchDots = createSelector(
   marchActivePoint,
   (segments, marchActivePoint) => {
     const coordArray = []
-    // const { segmentId, childId } = marchActivePoint
     segments = segments ? segments.toArray() : []
     segments.forEach((it, segmentId) => {
       const isActiveSegment = marchActivePoint.segmentId === segmentId
