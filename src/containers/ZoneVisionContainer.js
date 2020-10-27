@@ -12,6 +12,8 @@ const saveHandler = (values) => async (dispatch, getState, { webmapApi: { getZon
     x2: items[1]._latlng.lng,
     y2: items[1]._latlng.lat,
     sector: values?.angle,
+    src_height: values?.heightObserver,
+    dst_height: values?.heightTarget,
   }
 
   let success
