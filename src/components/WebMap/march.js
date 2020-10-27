@@ -87,8 +87,8 @@ const _onMarkerDrag = (layer) => (markerEvent) => {
 export const marchMarker = {
   drawMarchLine: drawMarchLine,
 
-  createIntermediateMarker: (point, middle, parent) => {
-    const icon = L.divIcon({ className: `marker-icon ${middle ? 'marker-icon-middle' : ''}` })
+  createIntermediateMarker: (point, middle, active = false, parent) => {
+    const icon = L.divIcon({ className: `marker-icon ${middle ? 'marker-icon-middle' : ''} ${active ? 'marker-icon-active' : ''}` })
     const markerMarch = L.marker([ point.lat, point.lng ], { icon, keyboard: false, draggable: true })
     markerMarch._middle = middle
     markerMarch.on('move', _onMarkerDrag(parent), parent)

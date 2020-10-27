@@ -1091,12 +1091,12 @@ export default class WebMap extends React.PureComponent {
         }
         let marker
         if (dot.isIntermediatePoint) {
-          marker = marchMarker.createIntermediateMarker(dot.coordinates, false, this)
+          marker = marchMarker.createIntermediateMarker(dot.coordinates, false, dot.isActivePoint, this)
           marker.on('contextmenu', () => this.props.deleteChildMarch(dot.segmentId, dot.childId), this)
           // marker._marchDots = marchDots
           marker.baseDot = dot
         } else {
-          marker = createSearchMarker(dot.coordinates, false, iconName)
+          marker = createSearchMarker(dot.coordinates, false, iconName, options)
         }
         const { lat, lng } = dot.coordinates
         const msgTooltip = `${lat} ${lng} | ${dot.refPoint ? dot.refPoint : ''}`
@@ -1111,8 +1111,7 @@ export default class WebMap extends React.PureComponent {
             lng: (dot.coordinates.lng + marchDots[index + 1].coordinates.lng) / 2,
             lat: (dot.coordinates.lat + marchDots[index + 1].coordinates.lat) / 2,
           }
-          // console.log('middle', intermediateDot)
-          const middleMarker = marchMarker.createIntermediateMarker(middleDot, true, this)
+          const middleMarker = marchMarker.createIntermediateMarker(middleDot, true, false, this)
           middleMarker._marchDots = marchDots
           middleMarker.baseDot = dot // запоминаем базовую точку
           const { lat, lng } = middleDot
