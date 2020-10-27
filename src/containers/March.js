@@ -46,6 +46,7 @@ const mapDispatchToProps = {
   toggleDeleteMarchPointModal: webMap.toggleDeleteMarchPointModal,
   setGeoLandmarks: march.setGeoLandmarks,
   getRoute: march.getRoute,
+  setActivePoint: march.setActivePoint,
   setVisibleIntermediate: march.setVisibleIntermediate,
 }
 

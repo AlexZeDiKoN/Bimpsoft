@@ -1239,7 +1239,7 @@ export const multiplyVector = (vector, value) => ({
 // Протилежний вектор
 export const oppositeVector = (vector) => multiplyVector(vector, -1)
 
-// Встановлення довжини ветокра
+// Встановлення довжини вектора
 export const setVectorLength = (vector, length) => {
   const oldLength = segmentLength(vector)
   if (oldLength === 0) {

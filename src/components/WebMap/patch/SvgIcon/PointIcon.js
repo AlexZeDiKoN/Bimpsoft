@@ -23,13 +23,14 @@ const PointIcon = L.Icon.extend({
 
   createIcon: function () { // (oldIcon)
     const { data, zoom, scaleOptions, showAmplifiers } = this.options
-    const { code = '', attributes } = data
+    const { code = '', attributes, point } = data
     const scale = this.getScale(zoom, scaleOptions)
     const symbol = new Symbol(code, {
       size: scale,
       outlineWidth: 3,
       outlineColor: 'var(--outline-color)',
       ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
+      ...model.parseCoordinatesConstants(point.toJS()),
     })
     const svg = symbol.asSVG()
     const anchor = symbol.getAnchor()

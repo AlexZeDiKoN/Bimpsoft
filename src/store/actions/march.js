@@ -29,6 +29,7 @@ export const SET_VISIBLE_INTERMEDIATE = action('SET_VISIBLE_INTERMEDIATE')
 export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 export const SET_METRIC = action('SET_METRIC')
 export const SET_ROUTE = action('SET_ROUTE')
+export const SET_ACTIVE_POINT = action('SET_ACTIVE_POINT')
 
 const { getMarchMetric } = api
 const {
@@ -407,14 +408,17 @@ export const addSegment = (segmentId, type) => asyncAction.withNotification(
 
     const previousChildren = updateSegments.get(segmentId).children
     const lastPreviousChildId = previousChildren.length - 1
-    if (lastPreviousChildId !== -1 && previousChildren[lastPreviousChildId].route) {
-      updateSegments = updateSegments.update(segmentId, (segment) => ({
-        ...segment,
-        children: segment.children.map((it, id) => (id === lastPreviousChildId) ? {
-          ...it,
-          route: null,
-        } : it),
-      }))
+
+    if (lastPreviousChildId !== -1) {
+      if (previousChildren[lastPreviousChildId].route) {
+        updateSegments = updateSegments.update(segmentId, (segment) => ({
+          ...segment,
+          children: segment.children.map((it, id) => (id === lastPreviousChildId) ? {
+            ...it,
+            route: null,
+          } : it),
+        }))
+      }
     } else {
       updateSegments = updateSegments.update(segmentId, (segment) => ({ ...segment, route: null }))
     }
@@ -810,3 +814,11 @@ export const getRoute = ({
       payload: { segments: updateSegments },
     })
   })
+
+export const setActivePoint = (segmentId = null, childId = null) => ({
+  type: SET_ACTIVE_POINT,
+  payload: { activePoint: {
+    segmentId,
+    childId,
+  } },
+})

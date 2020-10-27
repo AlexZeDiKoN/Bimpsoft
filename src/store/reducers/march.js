@@ -15,6 +15,10 @@ const initState = {
   coordModeData: { },
   geoLandmarks: {},
   isCoordFilled: false,
+  activePoint: {
+    segmentId: null,
+    childId: null,
+  },
   time: 0,
   distance: 0,
   coordRefPoint: null,
@@ -141,7 +145,8 @@ export default function reducer (state = initState, action) {
       return { ...state, segments: updateSegments, geoLandmarks: updaterGeoLandmarks, isChanged: true }
     }
     case march.SET_GEO_LANDMARKS:
-    case march.SET_METRIC: {
+    case march.SET_METRIC:
+    case march.SET_ACTIVE_POINT: {
       return { ...state, ...payload }
     }
     case march.SET_VISIBLE_INTERMEDIATE: { // вкл./отк. отображения промежуточных точек маршрута на форме марша

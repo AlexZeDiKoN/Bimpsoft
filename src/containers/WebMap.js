@@ -23,6 +23,10 @@ const WebMapContainer = connect(
     zoom: state.webMap.zoom,
     highlighted: state.webMap.highlighted,
     isMarkersOn: state.webMap.isMarkersOn,
+    isZoneProfileOn: state.webMap.isZoneProfileOn,
+    isZoneVisionOn: state.webMap.isZoneVisionOn,
+    visibleZone: state.webMap.visibleZone,
+    visibleZoneSector: state.webMap.visibleZoneSector,
     isTopographicObjectsOn: state.webMap.isTopographicObjectsOn,
     isLoadingMap: state.maps.loadingMap,
     edit: canEditSelector(state),
@@ -113,6 +117,7 @@ const WebMapContainer = connect(
     },
     onDropUnit: selection.newShapeFromUnit,
     stopMeasuring: webMap.toggleMeasure,
+    setModalProps: task.setModalData,
     onRemoveMarker: () => webMap.setMarker(null),
     addObject: webMap.addObject,
     requestAppInfo: webMap.getAppInfo,
@@ -160,6 +165,7 @@ const WebMapContainer = connect(
     redo: webMap.redo,
     checkObjectAccess: webMap.getObjectAccess,
     onShadowDelete: webMap.removeObjects,
+    getHeight: webMap.getHeight,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

@@ -75,6 +75,7 @@ const March = (props) => {
     isChanged,
     setGeoLandmarks,
     getRoute,
+    setActivePoint,
     setVisibleIntermediate,
   } = props
   const segments = segmentList.toArray()
@@ -93,6 +94,7 @@ const March = (props) => {
       toggleDeleteMarchPointModal,
       setGeoLandmarks,
       getRoute,
+      setActivePoint,
       setVisibleIntermediate,
     }
 
@@ -201,6 +203,7 @@ March.propTypes = {
   isChanged: PropTypes.bool.isRequired,
   setGeoLandmarks: PropTypes.func.isRequired,
   getRoute: PropTypes.func.isRequired,
+  setActivePoint: PropTypes.func.isRequired,
   setVisibleIntermediate: PropTypes.func.isRequired,
 }
 
