@@ -8,7 +8,7 @@ import { VisibilityButton } from '../../common'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
-import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
+import { MOUSE_ENTER_DELAY, DBL_CLICK_TIME } from '../../../constants/tooltip'
 
 const { TextFilter } = data
 const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedText } } = components
@@ -16,6 +16,22 @@ const { icons: { Icon, names: iconNames }, common: { TreeComponent, HighlightedT
 export default class LayerItemComponent extends React.Component {
   state = {
     showColor: false,
+    clickTime: 0,
+  }
+
+  updateLayer = () => {
+    const { onUpdateLayer, data: { layerId } } = this.props
+    onUpdateLayer && onUpdateLayer(layerId)
+  }
+
+  onUpdateLayerHandler = () => {
+    const { clickTime } = this.state
+    const now = Date.now()
+    if (clickTime && now - clickTime < DBL_CLICK_TIME) {
+      this.setState({ clickTime: 0 }, this.updateLayer)
+    } else {
+      this.setState({ clickTime: now })
+    }
   }
 
   onHandlerColor = (value) => this.setState({ showColor: value })
@@ -71,7 +87,9 @@ export default class LayerItemComponent extends React.Component {
           (this.state.showColor ? 'layer-item-component-hover' : '')}>
           <div className="layer-item-component-title">
             <Tooltip title={breadCrumbs} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topLeft'>
-              <div className="layer-name"><HighlightedText text={name} textFilter={textFilter}/></div>
+              <div className="layer-name" onClick={this.onUpdateLayerHandler}>
+                <HighlightedText text={name} textFilter={textFilter} />
+              </div>
             </Tooltip>
             {!isMapCOP && <div className="layer-date">{dateString}</div>}
           </div>
@@ -109,4 +127,5 @@ LayerItemComponent.propTypes = {
   onSelectLayer: PropTypes.func,
   onChangeLayerVisibility: PropTypes.func,
   onChangeLayerColor: PropTypes.func,
+  onUpdateLayer: PropTypes.func,
 }

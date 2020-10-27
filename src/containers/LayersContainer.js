@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { batchActions } from 'redux-batched-actions'
 import LayersComponent from '../components/LayersComponent'
-import { layers, maps, params, print } from '../store/actions'
+import { layers, maps, params, print, webMap } from '../store/actions'
 import { layersTree, taskModeSelector, targetingModeSelector, mapCOP } from '../store/selectors'
 import * as paramNames from '../constants/params'
 import * as viewModesKeys from '../constants/viewModesKeys'
@@ -60,6 +60,8 @@ const mapDispatchToProps = {
   onChangeMapColor: (mapId, color) => layers.updateLayersByMapId(mapId, { color }),
   onCloseMap: maps.deleteMap,
   onPrintMap: print.print,
+  onUpdateMap: maps.openMapFolder,
+  onUpdateLayer: webMap.updateObjectsByLayerId,
   onChangeLayerVisibility: (layerId, visible) => layers.updateLayer({ layerId, visible }),
   onChangeLayerColor: (layerId, color) => layers.updateLayer({ layerId, color }),
   onSelectLayer: layers.selectLayer,

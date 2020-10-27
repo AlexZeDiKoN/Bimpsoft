@@ -104,6 +104,7 @@ packages:
     dev: false
     resolution:
       integrity: sha512-ZfsS/62B/8FigS8r4r5ptmeJBGjnRCM2qwLWEXcEdbSXOWuq8z0rrZjr/3WG61tx0nesPRNapb1vhXsLAbSTIw==
+      tarball: '@DZVIN/MilSymbolEditor/-/MilSymbolEditor-17.1.292.tgz'
   /@DZVIN/components/17.1.599_56c0a69b77661e2a2e6d79d63bcec91c:
     dependencies:
       '@DZVIN/EuSign': 0.0.2
@@ -117,6 +118,7 @@ packages:
       react-dom: '*'
     resolution:
       integrity: sha512-9SeNbuj7OdHUnSlOt6SWFvEBzrZYQ1RZkF8b9HW7qMh03mJZXeqXskljJ+po2OX6nx3EAxC7dddUEpOrY527xw==
+      tarball: '@DZVIN/components/-/components-17.1.599.tgz'
   /@DZVIN/leaflet-measure-custom/16.3.11:
     dev: false
     resolution:
@@ -1184,6 +1186,12 @@ packages:
       regenerator-runtime: 0.13.7
     resolution:
       integrity: sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
+  /@babel/runtime/7.12.1:
+    dependencies:
+      regenerator-runtime: 0.13.7
+    dev: false
+    resolution:
+      integrity: sha512-J5AIf3vPj3UwXaAzb5j1xM4WAQDX3EMgemF8rjCP3SoW09LfRKAXQKt6CoVYl230P6iWdRcBbnLDDdnqWxZSCA==
   /@babel/runtime/7.9.0:
     dependencies:
       regenerator-runtime: 0.13.7
@@ -13008,7 +13016,7 @@ packages:
       integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
   /react-measure/2.5.2_react-dom@16.13.1+react@16.13.1:
     dependencies:
-      '@babel/runtime': 7.11.2
+      '@babel/runtime': 7.12.1
       get-node-dimensions: 1.2.1
       prop-types: 15.7.2
       react: 16.13.1
