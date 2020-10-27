@@ -188,7 +188,6 @@ March.propTypes = {
   segmentList: PropTypes.shape({
     toArray: PropTypes.func.isRequired,
   }).isRequired,
-  pointsTypes: PropTypes.array.isRequired,
   pointsTypesM: PropTypes.object.isRequired,
   time: PropTypes.number.isRequired,
   distance: PropTypes.number.isRequired,
