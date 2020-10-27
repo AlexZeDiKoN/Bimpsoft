@@ -1036,36 +1036,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
-    // const drawMarchLine = () => {
-    //   if (!this.marchLines) {
-    //     this.marchLines = []
-    //   }
-    //   if (this.marchLines.length > 0) {
-    //     this.marchLines.forEach((line) => {
-    //       line.removeFrom(this.map)
-    //     })
-    //     this.marchLines = []
-    //   }
-    //   marchDots.forEach(({ coordinates, options, route }, id) => {
-    //     if (id !== marchDots.length - 1) {
-    //       let marchLine
-    //       if (route && route.coordinates && route.coordinates.length) {
-    //         const { coordinates } = route
-    //         marchLine = L.polyline(coordinates, options)
-    //         marchLine.addTo(this.map)
-    //         this.marchLines.push(marchLine)
-    //         marchLine = L.polyline([ coordinates[ coordinates.length - 1 ], marchDots[id + 1].coordinates ], options)
-    //         marchLine.addTo(this.map)
-    //         this.marchLines.push(marchLine)
-    //       } else {
-    //         marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
-    //         marchLine.addTo(this.map)
-    //         this.marchLines.push(marchLine)
-    //       }
-    //     }
-    //   })
-    // }
-
     if (marchDots !== prevMarchDots) {
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
