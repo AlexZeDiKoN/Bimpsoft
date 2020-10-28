@@ -42,7 +42,7 @@ const SegmentBlock = (props) => {
   prevDistance = prevDistance || 0
 
   if (type === 0) {
-    return null
+    return <div className={'segment'}/>
   }
   let color
   switch (type) {
@@ -100,7 +100,8 @@ const SegmentBlock = (props) => {
       mouseEnterDelay={MOUSE_ENTER_DELAY}
       placement='topRight'
       title={i18n.SEGMENT_PARAMETERS}
-      align={{ offset: [ -7, 25 ] }}>
+      align={{ offset: [ -7, 25 ] }}
+    >
       <SegmentButtonPopover
         type={type}
         content={
@@ -138,7 +139,8 @@ const SegmentBlock = (props) => {
         mouseEnterDelay={MOUSE_ENTER_DELAY}
         placement='topRight'
         title={i18n.ADD_SEGMENT}
-        align={{ offset: [ 13, 0 ] }}>
+        align={{ offset: [ 13, 0 ] }}
+      >
         {!readOnly && <div className={'add-segment-button'} onClick={() => onAddSegment(segmentId)}/>}
       </Tooltip>
       {isViewContextMenu && <AddSegmentContextMenu

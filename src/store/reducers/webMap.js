@@ -100,8 +100,6 @@ const WebMapState = Record({
   isMarkersOn: false,
   isZoneProfileOn: false,
   isZoneVisionOn: false,
-  visibleZone: null,
-  visibleZoneSector: null,
   isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
@@ -357,11 +355,6 @@ export default function webMapReducer (state = WebMapState(), action) {
       return state
         .set('sources', payload.sources)
         .set('source', payload.source)
-    }
-    case actionNames.SET_VISION_ZONE_DATA: {
-      return state
-        .set('visibleZone', payload[1])
-        .set('visibleZoneSector', payload[0])
     }
     case actionNames.SET_MAP_MODE: {
       return state.mode === payload ? state : state.set('mode', payload)

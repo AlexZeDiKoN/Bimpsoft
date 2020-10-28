@@ -42,8 +42,13 @@
   .search-options-sub-panel {
     width: auto !important;
     position: relative;
-    top: 5px;
+    top: 3px;
     z-index: 1050;
+    .context-menu{
+      border-color: @select-outline-color;
+      outline-color: @select-outline-color;
+      box-shadow: 0 0 0 2px @select-box-shadow-color;
+    }
   }
 
   .search-options-sub-panel-right {
