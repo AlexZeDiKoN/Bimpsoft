@@ -72,7 +72,7 @@ export default class LineForm extends compose(
             </div>
             {this.renderIntermediateAmplifiers(elem)}
             {this.renderPointAmplifiers(elem)}
-            {this.renderCoordinatesArray()}
+            {this.renderCoordinatesArray(false)}
           </div>
         </div>
       </Scrollbar>

@@ -23,11 +23,11 @@ const {
 
 const { icons: { IconHovered, names: iconNames } } = components
 
-const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = ['attributes', 'shownIntermediateAmplifiers']
-const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = ['attributes', 'shownNodalPointAmplifiers']
+const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
+const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       ...this.state,
@@ -46,7 +46,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     result.updateIn(COORDINATE_PATH, (coordinatesArray) =>
       coordinatesArray.size <= 2 ? coordinatesArray : coordinatesArray.delete(index),
     ),
-    this.setState({ changeCoordinates: true }),
+  this.setState({ changeCoordinates: true }),
   )
 
   coordinatesEditClickHandler = () => this.setState((state) => ({
@@ -68,10 +68,10 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
         return coordinatesArray.push({ text: '' })
       }
     }),
-    this.setState({ changeCoordinates: true }),
+  this.setState({ changeCoordinates: true }),
   )
 
-  renderCoordinatesArray(lock = false) {
+  renderCoordinatesArray (lock = false) {
     const { editCoordinates, changeCoordinates } = this.state
     const { coordinatesType } = this.props
     const formStore = this.getResult()
@@ -83,7 +83,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
 
     const path = coordinatesArray.map(({ lat, lng }) => [ lat, lng ])
     const polygon = L.polygon(path)
-    const sqMeters = area(polygon.toGeoJSON())
+    const sqMeters = lock && area(polygon.toGeoJSON())
 
     const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
