@@ -2137,7 +2137,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    L.DomEvent.stopPropagation(event)
+    event.target.id !== this.flexGrid.id && L.DomEvent.stopPropagation(event)
     return this.processDblClickOnLayer(event.target)
   }
 
