@@ -15,7 +15,7 @@ import {
 import { shortcuts } from '../../constants'
 import i18n from '../../i18n'
 
-const DEFAULT_STATE = 1.7
+const DEFAULT_HEIGHT = 1.7
 const HEIGHT_SETTING_MODAL = 200
 const WIDTH_SETTING_MODAL = 300
 
@@ -36,8 +36,8 @@ export default class ZoneProfileModal extends React.Component {
   }
 
   state = {
-    [heightTarget]: DEFAULT_STATE,
-    [heightObserver]: DEFAULT_STATE,
+    [heightTarget]: DEFAULT_HEIGHT,
+    [heightObserver]: DEFAULT_HEIGHT,
   }
 
   onClose = () => {

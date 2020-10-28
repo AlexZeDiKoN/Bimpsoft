@@ -31,9 +31,9 @@ export default {
   createCOPReport: (mapName, fromMapId, dateOn) =>
     getDirect(`${webmapUrl}/createCOPReport`, { mapName, dateOn, fromMapId }),
   heightProfile: (body) =>
-    getDirect(`${webmapUrl}/heightProfile`, { ...body }),
-  getZoneVision: (body) => 
-    getDirect(`${webmapUrl}/blindZone`, { ...body }),
+    getDirect(`${webmapUrl}/heightProfile`, body),
+  getBlindZone: (body) =>
+    getDirect(`${webmapUrl}/blindZone`, body),
 
   // API тактичних знаків
   objGetList: (layer = null) =>

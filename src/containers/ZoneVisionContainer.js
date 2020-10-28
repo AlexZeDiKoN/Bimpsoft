@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import ZoneVisionModal from '../components/ZoneVisionModal'
 import { viewModesKeys } from '../constants'
 import { close } from '../store/actions/task'
-import { setVisionZoneData } from '../store/actions/webMap'
+import { getBlindZone } from '../store/actions/elevationProfile'
 
 const saveHandler = (values) => async (dispatch, getState, { webmapApi: { getZoneVision } }) => {
   const items = getState().task?.modalData?.targets
@@ -15,18 +15,7 @@ const saveHandler = (values) => async (dispatch, getState, { webmapApi: { getZon
     src_height: values?.heightObserver,
     dst_height: values?.heightTarget,
   }
-
-  let success
-  try {
-    const res = await getZoneVision(data)
-    success = typeof res === 'object'
-    if (success) {
-      dispatch(setVisionZoneData(res))
-    }
-  } catch (err) {
-    console.error(err)
-  }
-  return success
+  dispatch(getBlindZone(data))
 }
 
 const mapStateToProps = (store) => ({

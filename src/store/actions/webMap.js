@@ -34,7 +34,6 @@ export const stopHeartBeat = () => {
 export const actionNames = {
   SET_MAP_MODE: action('SET_MAP_MODE'),
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
-  SET_VISION_ZONE_DATA: action('SET_VISION_ZONE_DATA'),
   SET_MINIMAP: action('SET_MINIMAP'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
@@ -176,10 +175,6 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
-export const setVisionZoneData = (visionZoneData) => ({
-  type: actionNames.SET_VISION_ZONE_DATA,
-  payload: visionZoneData,
-})
 
 export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   ...rest,
