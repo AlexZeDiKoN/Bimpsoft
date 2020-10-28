@@ -28,7 +28,16 @@ const initState = {
     { id: pointTypes.DAY_NIGHT_REST_POINT, name: i18n.DAY_NIGHT_REST_POINT },
     { id: pointTypes.DAILY_REST_POINT, name: i18n.DAILY_REST_POINT },
     { id: pointTypes.LINE_OF_REGULATION, name: i18n.LINE_OF_REGULATION },
+    { id: pointTypes.INTERMEDIATE_POINT, name: i18n.POINT_ON_MARCH_INTERMEDIATE },
   ],
+  pointsTypesM: new Map([
+    [ pointTypes.POINT_ON_MARCH, { id: pointTypes.POINT_ON_MARCH, name: i18n.POINT_ON_MARCH } ],
+    [ pointTypes.REST_POINT, { id: pointTypes.REST_POINT, name: i18n.REST_POINT } ],
+    [ pointTypes.DAY_NIGHT_REST_POINT, { id: pointTypes.DAY_NIGHT_REST_POINT, name: i18n.DAY_NIGHT_REST_POINT } ],
+    [ pointTypes.DAILY_REST_POINT, { id: pointTypes.DAILY_REST_POINT, name: i18n.DAILY_REST_POINT } ],
+    [ pointTypes.LINE_OF_REGULATION, { id: pointTypes.LINE_OF_REGULATION, name: i18n.LINE_OF_REGULATION } ],
+    [ pointTypes.INTERMEDIATE_POINT, { id: pointTypes.INTERMEDIATE_POINT, name: i18n.POINT_ON_MARCH_INTERMEDIATE } ],
+  ]),
   payload: null,
   segments: List([]),
   existingSegmentsById: {},
@@ -47,7 +56,7 @@ export default function reducer (state = initState, action) {
     case march.SET_MARCH_PARAMS: {
       const { marchType, template } = payload
       if (marchType) {
-        const segments = template.map((item) => ({ ...item, id: uuid() }))
+        const segments = template.map((item) => ({ showIntermediate: true, ...item, id: uuid() }))
         const params = { ...state.params, ...{ marchType, segments } }
         return { ...state, params }
       } else {
@@ -139,6 +148,16 @@ export default function reducer (state = initState, action) {
     case march.SET_METRIC:
     case march.SET_ACTIVE_POINT: {
       return { ...state, ...payload }
+    }
+    case march.SET_VISIBLE_INTERMEDIATE: { // вкл./отк. отображения промежуточных точек маршрута на форме марша
+      const { segmentId, visibleIntermediate } = payload
+      const updateSegments = state.segments.update(segmentId, (segment) => {
+        return {
+          ...segment,
+          showIntermediate: visibleIntermediate,
+        }
+      })
+      return { ...state, segments: updateSegments }
     }
     default:
       return state

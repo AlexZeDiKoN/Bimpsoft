@@ -4,7 +4,7 @@ import { Tooltip } from 'antd'
 import PopupPanel from '../PopupPanel'
 import SegmentButtonPopover from '../SegmentButtonPopover'
 import convertUnits from '../../utilsMarch/convertUnits'
-import { MARCH_COLOR, MARCH_TYPES } from '../../../../../constants/March'
+import { MARCH_COLOR, MARCH_POINT_TYPES as pointTypes, MARCH_TYPES } from '../../../../../constants/March'
 import AddSegmentContextMenu from '../AddSegmentContextMenu'
 import utilsMarch from '../../utilsMarch'
 import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'
@@ -25,6 +25,8 @@ const SegmentBlock = (props) => {
     segments,
     toggleDeleteMarchPointModal,
     readOnly,
+    hideIntermediate,
+    childrenIsPresent,
   } = props
   const { type, children, metric = {} } = segment
 
@@ -68,8 +70,6 @@ const SegmentBlock = (props) => {
     time: msToTime(timeDistanceView ? refTime : prevTime),
     distance: (timeDistanceView ? refDistance : prevDistance).toFixed(1),
   }
-
-  const childrenIsPresent = children && children.length > 0
 
   const onAddSegment = (segmentId) => {
     const allowedTypeSegments = getAllowedTypeSegments(segments, segmentId)
@@ -119,7 +119,7 @@ const SegmentBlock = (props) => {
     </Tooltip>
 
     {childrenIsPresent && children.map((child, id) => {
-      if (!metric.children[id]) {
+      if (!metric.children[id] || (hideIntermediate && child.type === pointTypes.INTERMEDIATE_POINT)) {
         return null
       }
       const { distance, time } = metric.children[id]
@@ -185,6 +185,8 @@ SegmentBlock.propTypes = {
   segments: PropTypes.array.isRequired,
   toggleDeleteMarchPointModal: PropTypes.func.isRequired,
   readOnly: PropTypes.bool.isRequired,
+  childrenIsPresent: PropTypes.bool.isRequired,
+  hideIntermediate: PropTypes.bool.isRequired,
 }
 
 export default React.memo(SegmentBlock)

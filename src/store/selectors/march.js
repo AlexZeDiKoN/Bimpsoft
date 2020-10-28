@@ -28,20 +28,21 @@ export const marchDots = createSelector(
   marchActivePoint,
   (segments, marchActivePoint) => {
     const coordArray = []
-    const { segmentId, childId } = marchActivePoint
     segments = segments ? segments.toArray() : []
-    segments.forEach((it, id) => {
+    segments.forEach((it, segmentId) => {
+      const isActiveSegment = marchActivePoint.segmentId === segmentId
       if (it.coordinates.lat || it.coordinates.lng) {
         coordArray.push({
           coordinates: it.coordinates,
           options: { color: getSegmentColor(it.type) },
           refPoint: it.refPoint,
           route: it.route,
-          isActivePoint: Boolean(segmentId === id && childId === null),
+          segmentId,
+          isActivePoint: Boolean(isActiveSegment && marchActivePoint.childId === null),
         })
       }
       if (it.children && it.children.length > 0) {
-        it.children.forEach((it2, id2) => {
+        it.children.forEach((it2, childId) => {
           if (it2.coordinates.lat || it2.coordinates.lng) {
             coordArray.push({
               coordinates: it2.coordinates,
@@ -49,7 +50,10 @@ export const marchDots = createSelector(
               refPoint: it2.refPoint,
               route: it2.route,
               isRestPoint: pointRest.includes(it2.type),
-              isActivePoint: Boolean(segmentId === id && childId === id2),
+              isIntermediatePoint: it2.type === pointTypes.INTERMEDIATE_POINT,
+              segmentId,
+              childId,
+              isActivePoint: Boolean(isActiveSegment && marchActivePoint.childId === childId),
             })
           }
         })
