@@ -85,7 +85,7 @@ const _onMarkerDrag = (layer) => (markerEvent) => {
 }
 
 export const marchMarker = {
-  drawMarchLine: drawMarchLine,
+  drawMarchLine,
 
   createIntermediateMarker: (point, middle, active = false, parent) => {
     const icon = L.divIcon({ className: `marker-icon ${middle ? 'marker-icon-middle' : ''} ${active ? 'marker-icon-active' : ''}` })
