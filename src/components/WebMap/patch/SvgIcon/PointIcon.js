@@ -30,7 +30,7 @@ const PointIcon = L.Icon.extend({
       outlineWidth: 3,
       outlineColor: 'var(--outline-color)',
       ...(showAmplifiers ? model.parseAmplifiersConstants(filterSet(attributes)) : {}),
-      ...model.parseCoordinatesConstants(point.toJS()),
+      ...model.parseCoordinatesConstants(point.toJS ? point.toJS() : point),
     })
     const svg = symbol.asSVG()
     const anchor = symbol.getAnchor()
