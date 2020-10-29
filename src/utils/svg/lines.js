@@ -1303,12 +1303,16 @@ export const drawLineHatch = (layer, scale, hatch) => {
     layer._path.setAttribute('fill', fillColor)
     layer._path.setAttribute('fill-opacity', 1)
     // layer._path.setAttribute('width', 100)
+    const pathFill = `${layer._path.outerHTML}`
+    console.log('Hatch', { layer, pathFill })
+    layer._path.setAttribute('fill', 'none')
     layer.options.fillColor = fillColor
     layer.options.fillOpacity = 1
     return ` 
       <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
-      </pattern>`
+      </pattern>
+      ${pathFill}`
   } else {
     layer.options.fillColor = evaluateColor(layer.object?.attributes?.fill) || 'transparent'
     layer.options.fillOpacity = 0.22
