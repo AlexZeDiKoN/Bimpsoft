@@ -538,8 +538,9 @@ class PrintPanel extends React.Component {
             <div className='printPanel_signatories'>
               {requisites?.signatories?.map((rowData) => {
                 const { position, role, name, date } = rowData
+                const dateText = date && !!date.length ? moment(date).format('DD.MM.YYYY | HH:mm') : null
                 return (
-                  <TextArea key={date} rows={5} disabled value={`${position} ${role} ${name} ${date}`}/>
+                  <TextArea key={date} rows={5} disabled value={`${position} ${role} ${name} ${dateText}`}/>
                 )
               })}
             </div>
