@@ -493,7 +493,7 @@ L.SVG.include({
     }, layer.object)
 
     if (layer.object?.attributes?.hatch) {
-      amplifiers.group = drawLineHatch(layer, scaleValue(1000, layer) / 1000, layer.object?.attributes?.hatch) + amplifiers.group
+      amplifiers.group += drawLineHatch(layer, scaleValue(1000, layer) / 1000, layer.object?.attributes?.hatch)
     }
 
     this._setMask(layer, amplifiers.group, amplifiers.maskPath)
