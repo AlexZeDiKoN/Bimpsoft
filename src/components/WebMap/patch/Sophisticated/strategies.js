@@ -568,6 +568,9 @@ export const RENDER = {
   hatchedAreaWihSymbol: (code, sizeScale,
     hatchingColor = 'yellow', hatchingWidth = 3, hatchingStep = settings.CROSS_SIZE) =>
     (result, points) => {
+      if (!Array.isArray(points) || points.length < 3) {
+        return
+      }
       const sign = points[points.length - 1]
       const area = points.slice(0, -1)
 
@@ -576,7 +579,7 @@ export const RENDER = {
       const hf = `url('#hatching${result.layer.id}')`
       const strokeWidth = result.layer._path.getAttribute('stroke-width')
       result.amplifiers += `
-        <pattern id="hatching${result.layer.id}" x="0" y="0" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
+        <pattern id="hatching${result.layer.id}" x="${points[0].x}" y="${points[0].y}" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
           <line stroke-linecap="butt" x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
         </pattern>
         <path fill="${hf}" fill-rule="nonzero" stroke-width="${strokeWidth}" stroke-opacity="1" d="${result.d}"/>`
