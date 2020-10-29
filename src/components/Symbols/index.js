@@ -110,20 +110,29 @@ const SymbolsTab = (props) => {
 
     const value = (search !== '') ? { value: true } : {}
 
-    return (sortedPart.length !== 0) && <div key={part.name} className={search !== '' ? 'collapseSection collapseSectionFiltered' : 'collapseSection'}>
-      <FormBlock vertical>
-        <Collapse
-          {...sections(index)}
-          ButtonComponent={ButtonComponent}
-          label={part.name}
-          {...value}
-        >
-          <Scrollbar className={listMode ? 'symbol-container-nowrap symbol-container' : 'symbol-container'}>
-            { symbolJSX }
-          </Scrollbar>
-        </Collapse>
-      </FormBlock>
-    </div>
+    return (sortedPart.length !== 0) &&
+      <div
+        key={part.name}
+        className={search !== '' ? 'collapseSection collapseSectionFiltered' : 'collapseSection'}
+      >
+        <FormBlock vertical>
+          <Collapse
+            {...sections(index)}
+            ButtonComponent={ButtonComponent}
+            label={<span className={'symbols-title'}>
+              <HighlightedText
+                text={part.name}
+                textFilter={data.TextFilter.create(search)}
+              />
+            </span>}
+            {...value}
+          >
+            <Scrollbar className={listMode ? 'symbol-container-nowrap symbol-container' : 'symbol-container'}>
+              { symbolJSX }
+            </Scrollbar>
+          </Collapse>
+        </FormBlock>
+      </div>
   })
 
   return (
