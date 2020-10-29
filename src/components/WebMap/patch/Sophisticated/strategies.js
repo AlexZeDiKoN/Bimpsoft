@@ -568,24 +568,24 @@ export const RENDER = {
   hatchedAreaWihSymbol: (code, sizeScale,
     hatchingColor = 'yellow', hatchingWidth = 3, hatchingStep = settings.CROSS_SIZE) =>
     (result, points) => {
+      if (!Array.isArray(points) || points.length < 3) {
+        return
+      }
       const sign = points[points.length - 1]
       const area = points.slice(0, -1)
 
       drawBezierSpline(result, area, true)
 
-      const hf = 'url(\'#hatching\')'
-      result.layer._path.setAttribute('fill', hf)
-      result.layer._path.setAttribute('width', 100)
-      result.layer.options.fillColor = hf
-      result.layer.options.fillOpacity = 1
+      const hf = `url('#hatching${result.layer.id}')`
+      const strokeWidth = result.layer._path.getAttribute('stroke-width')
       result.amplifiers += `
-        <pattern id="hatching" x="0" y="0" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
+        <pattern id="hatching${result.layer.id}" x="${points[0].x}" y="${points[0].y}" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
           <line stroke-linecap="butt" x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
-        </pattern>`
-      const sizeSymbol = getPointSize(result.layer) * sizeScale
-      const symbol = new Symbol(code, { size: sizeSymbol }).asSVG()
-      const d = sizeSymbol / 2
-      result.amplifiers += `<g transform="translate(${sign.x - d * 1.57}, ${sign.y - d * 0.95})">${symbol}</g>`
+        </pattern>
+        <path fill="${hf}" fill-rule="nonzero" stroke-width="${strokeWidth}" stroke-opacity="1" d="${result.d}"/>`
+      const sizeSymbol = getPointSize(result.layer) // учтывается текущий масштаб карты
+      const symbol = new Symbol(code, { size: sizeSymbol })
+      result.amplifiers += `<g transform="translate(${sign.x - symbol.width / 2}, ${sign.y - symbol.height / 2})">${symbol.asSVG()}</g>`
     },
 }
 
