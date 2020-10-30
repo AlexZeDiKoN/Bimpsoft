@@ -1,12 +1,12 @@
 import React from 'react'
 import L from 'leaflet'
-import area from '@turf/area'
 import { components } from '@DZVIN/CommonComponents'
 import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
+import SelectionTypes from '../../../constants/SelectionTypes'
 import CoordinateItem from './CoordinateItem'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
-import { renderNodes } from './render'
+import { figureArea, renderNodes } from './render'
 import {
   NODAL_POINT_ICON_PATH,
   NODAL_POINT_ICONS,
@@ -25,6 +25,7 @@ const { icons: { IconHovered, names: iconNames } } = components
 
 const SHOWN_INTERMEDIATE_AMPLIFIERS_PATH = [ 'attributes', 'shownIntermediateAmplifiers' ]
 const SHOWN_NODAL_POINT_AMPLIFIERS_PATH = [ 'attributes', 'shownNodalPointAmplifiers' ]
+const TYPE_PATH = [ 'type' ]
 
 const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent extends CoordinatesMixin(Component) {
   constructor (props) {
@@ -80,10 +81,8 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
     const shownNodalPointAmplifiersSet = formStore.getIn(SHOWN_NODAL_POINT_AMPLIFIERS_PATH)
 
     const coordinatesArray = formStore.getIn(COORDINATE_PATH).toJS()
-
-    const path = coordinatesArray.map(({ lat, lng }) => [ lat, lng ])
-    const polygon = L.polygon(path)
-    const sqMeters = lock && area(polygon.toGeoJSON())
+    // определение nипа фигуры, для расчета площади нужен полигон
+    const isPoligon = this.getResult().getIn(TYPE_PATH) === SelectionTypes.POLYGON
 
     const nodalPointIcon = formStore.getIn(NODAL_POINT_ICON_PATH)
     const canEdit = this.isCanEdit()
@@ -154,7 +153,7 @@ const WithCoordinatesArray = (Component) => class CoordinatesArrayComponent exte
                 ) : null}
               </div>
             ))}
-            {sqMeters && <div><strong>{`${i18n.FIGURE_AREA}: ${sqMeters.toFixed(2)} ${i18n.ABBR_SQUARE_METERS}`}</strong></div>}
+            {isPoligon && figureArea(L.polygon(coordinatesArray.map(({ lat, lng }) => [ lat, lng ])))}
           </div>
         </div>
       </FormDarkPart>

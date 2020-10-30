@@ -1,11 +1,13 @@
 import React from 'react'
 import { Select } from 'antd'
 import { components } from '@DZVIN/CommonComponents'
+import area from '@turf/area'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'
 import { evaluateColor, TRANSPARENT } from '../../../constants/colors'
 import { getStylesForLineType } from '../../../utils/svg/lines'
 import { MARK_TYPE, settings } from '../../../constants/drawLines'
+import i18n from '../../../i18n'
 import { TYPE_LINE_PATH } from './WithLineType'
 
 const { LINE_WIDTH } = settings
@@ -374,3 +376,16 @@ export const nodesOption = (nodesInfo) => (
     {nodesDiv(nodesInfo)}
   </Option>
 )
+
+// вывод площади фигуры
+// m2 - <sup><small>2</small></sup>
+export const figureArea = (figure) => {
+  const sqMeters = '' + area(figure.toGeoJSON()).toFixed(2)
+  // добавляем разделитель разрядов
+  const _sqMeters = sqMeters.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1\u00A0')
+  return <div>
+    <strong>
+      {`${i18n.FIGURE_AREA}: ${_sqMeters} ${i18n.ABBR_SQUARE_METERS}`}
+    </strong>
+  </div>
+}
