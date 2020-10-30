@@ -74,7 +74,7 @@ const SymbolsTab = (props) => {
             code={code}
             amplifiers={amp}
             className={'symbol'}
-          /><div>{hint}</div></>
+          /><div>{<HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/>}</div></>
             : <MilSymbol
               code={code}
               amplifiers={amp}
