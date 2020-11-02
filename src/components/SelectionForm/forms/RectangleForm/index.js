@@ -78,7 +78,7 @@ export default class SquareForm extends
               </FormDarkPart>
             </div>
             <div className="rectangle-container__itemWidth50">
-              {this.renderTwoCoordinates()}
+              {this.renderTwoCoordinates(true)}
             </div>
           </div>
         </div>

@@ -1,15 +1,17 @@
 import React from 'react'
 import { components } from '@DZVIN/CommonComponents'
+import L from 'leaflet'
 import i18n from '../../../i18n'
 import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { figureArea } from './render'
 
 const {
   FormDarkPart,
 } = components.form
 
 const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends CoordinatesMixin(Component) {
-  renderTwoCoordinates () {
+  renderTwoCoordinates (lock) {
     const coordinatesArray = this.getResult().getIn(COORDINATE_PATH).toJS()
 
     const readOnly = !this.isCanEdit()
@@ -39,6 +41,7 @@ const WithTwoCoordinates = (Component) => class TwoCoordinatesComponent extends 
             coordinatesType={coordinatesType}
           />
         </div>
+        {lock && figureArea(L.rectangle(coordinatesArray.map(({ lat, lng }) => [ lat, lng ])))}
       </FormDarkPart>
     )
   }
