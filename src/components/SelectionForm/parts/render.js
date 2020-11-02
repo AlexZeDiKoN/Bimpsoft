@@ -380,7 +380,7 @@ export const nodesOption = (nodesInfo) => (
 // вывод площади фигуры
 // m2 - <sup><small>2</small></sup>
 export const figureArea = (figure) => {
-  const sqMeters = `${area(figure.toGeoJSON()).toFixed(2)}`
+  const sqMeters = area(figure.toGeoJSON()).toFixed(2)
   // добавляем разделитель разрядов
   const _sqMeters = sqMeters.replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1\u00A0')
   return <div>
