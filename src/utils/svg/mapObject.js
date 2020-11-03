@@ -616,6 +616,7 @@ mapObjectBuilders.set(SelectionTypes.POINT, (commonData, data, layerData) => {
   const symbol = new Symbol(code, {
     ...(color ? { outlineWidth: 3, outlineColor: color } : {}),
     ...((showAmplifiers || showAmplifiersPrint) ? model.parseAmplifiersConstants(filterSetEmpty(attributes)) : {}),
+    ...(point ? model.parseCoordinatesConstants(point.toJS ? point.toJS() : point) : undefined),
     size, // размер символа в %, влияет на толщину линий в знаке, размер элемента(атрибуты width, height svg) и Anchor
   })
   const { bbox } = symbol
