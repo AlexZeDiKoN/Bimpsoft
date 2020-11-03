@@ -10,7 +10,6 @@ import LogMapItem from './children/Item'
 const LogMapTab = (props) => {
   const { highlightObject, clickObject, doubleClickObject, changeLog } = props
   const [ search, onChangeSearch ] = useState('')
-
   return (
     <div className='log-map-wrapper'>
       <div className='log-map-header'>

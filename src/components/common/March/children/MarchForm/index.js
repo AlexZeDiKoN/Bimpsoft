@@ -61,6 +61,8 @@ const MarchForm = (props) => {
     geoLandmarks,
     readOnly,
     route,
+    visibleIntermediate,
+    childrenIsPresent,
   } = props
   const {
     editFormField,
@@ -71,11 +73,14 @@ const MarchForm = (props) => {
     toggleDeleteMarchPointModal,
     setGeoLandmarks,
     getRoute,
+    setVisibleIntermediate,
+    setActivePoint,
   } = props.handlers
   const [ pointTime, setPointTime ] = useState(restTime)
   const [ isSelectGeoLandmarksVisible, changeSelectGeoLandmarksVisible ] = useState(false)
 
   const { lat, lng } = coordinates
+  const isValidCoordinates = lat && lng
   const geoKey = `${lat}:${lng}`
   const formattedGeoLandmarks = geoLandmarks[geoKey]
   const coordinatesWithType = { ...coordinates, type: coordTypeSystem }
@@ -92,10 +97,10 @@ const MarchForm = (props) => {
   }
 
   const onChangeMarchPointType = (value) => {
-    const { time: msTime } = getPointById(marchPoints, value)
+    const { time: msTime, id } = marchPoints[value]
 
     editFormField({
-      val: [ value, msTime ],
+      val: [ id, msTime ],
       segmentId,
       childId,
       fieldName: [ 'type', 'restTime' ],
@@ -164,12 +169,17 @@ const MarchForm = (props) => {
   const onClearRoute = () => {
     getRoute({ segmentId, childId, isClearRoute: true })
   }
+  const onIntermediate = () => {
+    setVisibleIntermediate(segmentId, !visibleIntermediate)
+  }
+
+  const isOwnResources = segmentType === OWN_RESOURCES
 
   let dotClass
   if (childId === undefined) {
     dotClass = isLast ? 'flag-dot' : 'empty-dot'
   } else {
-    dotClass = point.rest && segmentType === OWN_RESOURCES ? 'camp-dot' : 'cross-dot'
+    dotClass = point.rest && isOwnResources ? 'camp-dot' : 'cross-dot'
   }
 
   let lineColorClass
@@ -187,7 +197,7 @@ const MarchForm = (props) => {
   let pointTypeName
   const pointOnMarch = marchPoints[0].name
 
-  if (segmentType === OWN_RESOURCES) {
+  if (isOwnResources) {
     if (childId === undefined) {
       pointTypeName = segmentId === 0 ? name : pointOnMarch
     } else {
@@ -204,23 +214,30 @@ const MarchForm = (props) => {
   let isStaticPointType
   if (segmentType === 0 ||
     (segmentId === 0 && childId === undefined) ||
-    segmentType !== OWN_RESOURCES ||
-    (segmentType === OWN_RESOURCES && childId === undefined)) {
+    !isOwnResources ||
+    (isOwnResources && childId === undefined)) {
     isStaticPointType = true
   } else {
     isStaticPointType = childId === 0
   }
 
-  const isOwnResources = segmentType === OWN_RESOURCES
   const isChild = childId !== undefined
   const isFirstChild = childId === 0
-  const isViewBottomPanel = (isChild && !(segmentType === OWN_RESOURCES && isFirstChild)) || isOwnResources
+  const isViewBottomPanel = (isChild && !(isOwnResources && isFirstChild)) || isOwnResources
 
   const showDeletePointConfirm = () => {
     toggleDeleteMarchPointModal(true, segmentId, childId)
   }
 
   const dotFormId = `dot-form${type}${childId === undefined ? '' : childId}`
+
+  const onSetActivePoint = () => {
+    setActivePoint(segmentId, childId)
+  }
+
+  const onClearActivePoint = () => {
+    setActivePoint(null, null)
+  }
 
   return (
     <div className={'dot-and-form'}>
@@ -250,7 +267,7 @@ const MarchForm = (props) => {
         }
       </div>
       <div className={'dot-form'} id={dotFormId} style={{ position: 'relative' }}>
-        <div className={'march-coord'}>
+        <div className={`march-coord${!isValidCoordinates ? ' not-correct-point' : ''}`}>
           <Coordinates
             coordinates={coordinatesWithType}
             onSearch={placeSearch}
@@ -258,6 +275,8 @@ const MarchForm = (props) => {
             isReadOnly={readOnly}
             getPopupContainer={() => document.getElementById(dotFormId)}
             preferredType={coordTypeSystem}
+            onBlur={onClearActivePoint}
+            onFocus={onSetActivePoint}
           />
           <Tooltip
             placement='topRight'
@@ -322,8 +341,8 @@ const MarchForm = (props) => {
             onChange={onChangeMarchPointType}
             disabled={readOnly}
           >
-            {marchPoints.map(({ name }, id) => (
-              <Option key={id} value={id}>
+            {marchPoints.map(({ name }, ind) => (
+              <Option key={ind} value={ind}>
                 {name}
               </Option>
             ))}
@@ -374,6 +393,19 @@ const MarchForm = (props) => {
                       onClick={onGetRoute}
                     />
                   </Tooltip>
+                  { childrenIsPresent &&
+                  <Tooltip
+                    placement='topRight'
+                    title={i18n.SHOW_POINT_MARCH_INTERMEDIATE}
+                    align={ { offset: [ 5, 0 ] }}>
+                    <IButton
+                      icon={isRoutePresent ? IconNames.MAP_HEADER_ICON_CURVE : IconNames.MAP_HEADER_ICON_BROKEN_LINE}
+                      active={visibleIntermediate}
+                      type={ButtonTypes.WITH_BG}
+                      colorType={ColorTypes.DARK_GREEN}
+                      onClick={onIntermediate}
+                    />
+                  </Tooltip>}
                 </>
             }
             {isChild && (!isFirstChild || !isOwnResources) && <Tooltip
@@ -409,6 +441,8 @@ MarchForm.propTypes = {
     toggleDeleteMarchPointModal: PropTypes.func.isRequired,
     setGeoLandmarks: PropTypes.func.isRequired,
     getRoute: PropTypes.func.isRequired,
+    setActivePoint: PropTypes.func.isRequired,
+    setVisibleIntermediate: PropTypes.func.isRequired,
   }).isRequired,
   isLast: PropTypes.bool,
   restTime: PropTypes.number,
@@ -421,6 +455,8 @@ MarchForm.propTypes = {
     PropTypes.object.isRequired,
     PropTypes.oneOf([ null ]).isRequired,
   ]),
+  visibleIntermediate: PropTypes.bool,
+  childrenIsPresent: PropTypes.bool,
 }
 
 GeoLandmarkItem.propTypes = {

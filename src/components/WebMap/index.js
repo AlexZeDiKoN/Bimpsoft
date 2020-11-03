@@ -33,7 +33,7 @@ import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.css'
 import 'leaflet.coordinates/dist/Leaflet.Coordinates-0.1.5.min'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl.css'
 import 'leaflet-switch-scale-control/src/L.Control.SwitchScaleControl'
-import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access } from '../../constants'
+import { colors, SCALES, SubordinationLevel, paramsNames, shortcuts, access, viewModesKeys } from '../../constants'
 import { HotKey } from '../common/HotKeys'
 import { validateObject } from '../../utils/validation'
 import { flexGridPropTypes } from '../../store/selectors'
@@ -71,6 +71,7 @@ import {
 import { MapProvider } from './MapContext'
 import { findDefinition } from './patch/Sophisticated/utils'
 import { generateGeometry } from './patch/FlexGrid'
+import { marchMarker } from './march'
 
 const { Coordinates: Coord } = utils
 
@@ -310,6 +311,10 @@ export default class WebMap extends React.PureComponent {
     showAmplifiers: PropTypes.bool,
     isMeasureOn: PropTypes.bool,
     isMarkersOn: PropTypes.bool,
+    isZoneProfileOn: PropTypes.bool,
+    isZoneVisionOn: PropTypes.bool,
+    visibleZone: PropTypes.object,
+    visibleZoneSector: PropTypes.object,
     isTopographicObjectsOn: PropTypes.bool,
     isLoadingMap: PropTypes.bool,
     backOpacity: PropTypes.number,
@@ -358,6 +363,7 @@ export default class WebMap extends React.PureComponent {
     }),
     isMapCOP: PropTypes.bool,
     // Redux actions
+    setModalProps: PropTypes.func,
     editObject: PropTypes.func,
     updateObjectGeometry: PropTypes.func,
     onChangeLayer: PropTypes.func,
@@ -382,6 +388,7 @@ export default class WebMap extends React.PureComponent {
     showDirectionNameForm: PropTypes.func,
     showEternalDescriptionForm: PropTypes.func,
     getTopographicObjects: PropTypes.func,
+    getHeight: PropTypes.func,
     toggleTopographicObjModal: PropTypes.func,
     selectEternal: PropTypes.func,
     disableDrawUnit: PropTypes.func,
@@ -392,6 +399,9 @@ export default class WebMap extends React.PureComponent {
     newShapeFromSymbol: PropTypes.func,
     newShapeFromLine: PropTypes.func,
     getCoordForMarch: PropTypes.func,
+    setCoordDotForMarch: PropTypes.func,
+    addChildMarch: PropTypes.func,
+    deleteChildMarch: PropTypes.func,
     marchMode: PropTypes.bool,
     marchDots: PropTypes.array,
     marchRefPoint: PropTypes.object,
@@ -411,6 +421,7 @@ export default class WebMap extends React.PureComponent {
     this.activeLayer = null
     this.marchMarkers = []
     this.marchRefPoint = null
+    this.backLightingVisionZones = []
   }
 
   async componentDidMount () {
@@ -443,11 +454,11 @@ export default class WebMap extends React.PureComponent {
     const {
       objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects, highlighted,
+      flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
-      targetingObjects, marchDots, marchMode, marchRefPoint,
+      targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -487,6 +498,12 @@ export default class WebMap extends React.PureComponent {
     }
     if (isMarkersOn !== prevProps.isMarkersOn) {
       this.updateMarkersOn(isMarkersOn)
+    }
+    if (isZoneProfileOn !== prevProps.isZoneProfileOn) {
+      this.updateZoneProfileOn(isZoneProfileOn)
+    }
+    if (isZoneVisionOn !== prevProps.isZoneVisionOn) {
+      this.updateZoneVisionOn(isZoneVisionOn)
     }
     if (isTopographicObjectsOn !== prevProps.isTopographicObjectsOn) {
       this.updateTopographicMarkersOn(isTopographicObjectsOn)
@@ -528,13 +545,21 @@ export default class WebMap extends React.PureComponent {
         ? this.backLightingTopographicObject(features[selectedItem])
         : this.removeBacklightingTopographicObject()
     }
+    if (visibleZone !== prevProps.visibleZone) {
+      visibleZone?.features && this.backLightingVisionZoneObject(visibleZone.features, { color: 'red', stroke: false })
+    }
+    if (visibleZoneSector !== prevProps.visibleZoneSector) {
+      visibleZoneSector?.features &&
+        this.backLightingVisionZoneObject(visibleZoneSector.features, { color: 'blue', stroke: false })
+    }
     if (catalogObjects !== prevProps.catalogObjects) {
       this.updateCatalogObjects(catalogObjects)
     }
     if (highlighted !== prevProps.highlighted) {
       this.resetHighlight(prevProps.highlighted, highlighted)
     }
-    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode)
+    this.crosshairCursor(isMeasureOn || isMarkersOn || isTopographicObjectsOn || marchMode ||
+      isZoneProfileOn || isZoneVisionOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
@@ -939,6 +964,40 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  clearMarkers = () => {
+    const data = this.props.isZoneProfileOn ? this.markersProfile : this.markersVision
+    Array.isArray(data) && data.forEach((marker) => marker.removeFrom(this.map))
+    this.markersProfile = []
+    this.markersVision = []
+  }
+
+  updateZoneProfileOn = (isZoneProfileOn) => {
+    this.addZoneProfileMode = isZoneProfileOn
+    if (!isZoneProfileOn && this.markersProfile && this.markersProfile.length && this.map) {
+      this.markersProfile.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markersProfile
+    } else {
+      this.markersProfile = this.markersProfile || []
+    }
+  }
+
+  updateZoneVisionOn = (isZoneVisionOn) => {
+    this.addZoneVisionMode = isZoneVisionOn
+    if (!isZoneVisionOn && this.markersVision && this.markersVision.length && this.map) {
+      this.markersVision.forEach((marker) => marker.removeFrom(this.map))
+      delete this.markersVision
+    } else {
+      this.markersVision = this.markersVision || []
+    }
+
+    if (!isZoneVisionOn && this.backLightingVisionZones && this.backLightingVisionZones.length && this.map) {
+      this.backLightingVisionZones.forEach((marker) => marker.removeFrom(this.map))
+      delete this.backLightingVisionZones
+    } else {
+      this.backLightingVisionZones = this.backLightingVisionZones || []
+    }
+  }
+
   updateTopographicMarkersOn = (isTopographicMarkersOn) => {
     this.addTopographicMarkersMode = isTopographicMarkersOn
     if (!isTopographicMarkersOn && this.topographicMarkers && this.topographicMarkers.length && this.map) {
@@ -954,69 +1013,86 @@ export default class WebMap extends React.PureComponent {
     if (Array.isArray(coordinates)) {
       coordinates = coordinates.join(`<br/>`)
     }
-    const text = 'Орієнтир' // TODO
-    return `<strong>${text}</strong><br/><br/>${coordinates}`
+    return `<strong>${i18n.LANDMARK}</strong><br/><br/>${coordinates}`
   }
 
-  addUserMarker = (point) => {
+  addUserMarker = (point, storage) => {
+    const getHeight = this.props.getHeight(point)
     const text = this.createUserMarkerText(point)
     setTimeout(() => {
       const marker = createSearchMarker(point)
       marker.addTo(this.map)
-      this.markers.push(marker)
-      setTimeout(() => marker.bindPopup(text).openPopup(), 1000)
+      storage.push(marker)
+      setTimeout(() => {
+        marker.bindPopup(text).openPopup()
+        getHeight.then((data) => {
+          if (data?.height) {
+            const popupContent = `${text}<br/><br/><strong>${i18n.HEIGHT}</strong><br/><br/>${data.height} ${i18n.ABBR_METERS}`
+            marker._popup.setContent(popupContent)
+          }
+        }).catch((err) => console.error(err))
+      }, 1000)
     }, 50)
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
-    const drawMarchLine = () => {
-      if (!this.marchLines) {
-        this.marchLines = []
-      }
-      if (this.marchLines.length > 0) {
-        this.marchLines.forEach((line) => {
-          line.removeFrom(this.map)
-        })
-        this.marchLines = []
-      }
-      marchDots.forEach(({ coordinates, options, route }, id) => {
-        if (id !== marchDots.length - 1) {
-          let marchLine
-          if (route && route.coordinates && route.coordinates.length) {
-            const { coordinates } = route
-            marchLine = L.polyline(coordinates, options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-            marchLine = L.polyline([ coordinates[ coordinates.length - 1 ], marchDots[id + 1].coordinates ], options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-          } else {
-            marchLine = L.polyline([ coordinates, marchDots[id + 1].coordinates ], options)
-            marchLine.addTo(this.map)
-            this.marchLines.push(marchLine)
-          }
-        }
-      })
-    }
-
     if (marchDots !== prevMarchDots) {
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
         this.marchMarkers = []
       }
-      marchDots.forEach((dot) => {
-        const iconName = dot.isRestPoint ? 'camp.png' : null
-        const marker = createSearchMarker(dot.coordinates, false, iconName)
+      marchDots.forEach((dot, index) => {
+        let iconName
+        let options
+        if (dot.isActivePoint) {
+          if (dot.isRestPoint) {
+            iconName = 'camp-red.png'
+            options = { iconAnchor: [ 11, 11 ] }
+          } else {
+            iconName = 'marker-icon-red.png'
+            options = {
+              iconSize: [ 25, 41 ],
+              iconAnchor: [ 12, 41 ],
+            }
+          }
+        } else if (dot.isRestPoint) {
+          iconName = 'camp-blue.png'
+          options = { iconAnchor: [ 11, 11 ] }
+        }
+        let marker
+        if (dot.isIntermediatePoint) {
+          marker = marchMarker.createIntermediateMarker(dot.coordinates, false, dot.isActivePoint, this)
+          marker.on('contextmenu', () => this.props.deleteChildMarch(dot.segmentId, dot.childId), this)
+          // marker._marchDots = marchDots
+          marker.baseDot = dot
+        } else {
+          marker = createSearchMarker(dot.coordinates, false, iconName, options)
+        }
         const { lat, lng } = dot.coordinates
-        const msgTooltip = `${lat} ${lng} | ${dot.refPoint}`
-
+        const msgTooltip = `${lat} ${lng} | ${dot.refPoint ? dot.refPoint : ''}`
         marker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
 
         marker.addTo(this.map)
         this.marchMarkers.push(marker)
-      })
 
-      drawMarchLine()
+        // средние маркеры проставляем только для children
+        if (index < marchDots.length - 1 && Number.isInteger(dot.childId)) {
+          const middleDot = {
+            lng: (dot.coordinates.lng + marchDots[index + 1].coordinates.lng) / 2,
+            lat: (dot.coordinates.lat + marchDots[index + 1].coordinates.lat) / 2,
+          }
+          const middleMarker = marchMarker.createIntermediateMarker(middleDot, true, false, this)
+          middleMarker._marchDots = marchDots
+          middleMarker.baseDot = dot // запоминаем базовую точку
+          const { lat, lng } = middleDot
+          const msgTooltip = `${lat} ${lng}`
+          middleMarker.bindTooltip(msgTooltip, { direction: 'top', offset: new Point(0, -15) })
+
+          middleMarker.addTo(this.map)
+          this.marchMarkers.push(middleMarker)
+        }
+      })
+      marchMarker.drawMarchLine(this, marchDots)
     } else {
       if (marchDots.length !== 0 && prevMarchDots.length !== 0) {
         let redrawLine = false
@@ -1027,8 +1103,8 @@ export default class WebMap extends React.PureComponent {
             dot.options.color !== prevMarchDots[id].options.color
           ) {
             redrawLine = true
-            const iconName = dot.isRestPoint ? 'camp.png' : null
-            const marker = createSearchMarker(dot.coordinates, false, iconName)
+            const iconName = dot.isRestPoint ? 'camp-blue.png' : null
+            const marker = createSearchMarker(dot.coordinates, false, iconName, { iconAnchor: [ 10, 10 ] })
 
             marker.addTo(this.map)
             if (this.marchMarkers.length && this.marchMarkers[id]) {
@@ -1041,7 +1117,7 @@ export default class WebMap extends React.PureComponent {
         })
         if (marchDots.length > 1) {
           if (redrawLine) {
-            drawMarchLine()
+            marchMarker.drawMarchLine(this, marchDots)
           }
         }
       }
@@ -1055,7 +1131,11 @@ export default class WebMap extends React.PureComponent {
 
     let marker = null
     if (marchRefPoint) {
-      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png')
+      const options = {
+        iconSize: [ 25, 41 ],
+        iconAnchor: [ 12, 41 ],
+      }
+      marker = createSearchMarker(marchRefPoint, false, 'marker-icon-red.png', options)
       marker.addTo(this.map)
     }
 
@@ -1081,6 +1161,17 @@ export default class WebMap extends React.PureComponent {
     this.removeBacklightingTopographicObject()
   }
 
+  backLightingVisionZoneObject = (object, style) => {
+    if (this.markersVision) {
+      this.removeBacklightingVisionZoneObject()
+    } else {
+      this.markersVision = []
+    }
+    const backLighting = L.geoJSON(object, style)
+    this.backLightingVisionZones.push(backLighting)
+    backLighting.addTo(this.map)
+  }
+
   backLightingTopographicObject = (object) => {
     if (this.backLights) {
       this.removeBacklightingTopographicObject()
@@ -1104,6 +1195,10 @@ export default class WebMap extends React.PureComponent {
 
   removeBacklightingTopographicObject = () => {
     this.backLights && this.backLights.forEach((item) => item.removeFrom(this.map))
+  }
+
+  removeBacklightingVisionZoneObject = () => {
+    this.backLightsVisionZone && this.backLightsVisionZone.forEach((item) => item.removeFrom(this.map))
   }
 
   isFlexGridEditingMode = () =>
@@ -1147,11 +1242,13 @@ export default class WebMap extends React.PureComponent {
       printStatus,
       onClick,
       getCoordForMarch,
+      isZoneProfileOn,
+      isZoneVisionOn,
       selection: { newShape, preview },
     } = this.props
 
     if (!this.isBoxSelection && !this.draggingObject && !this.map._customDrag && !isMeasureOn && !isMarkersOn &&
-      !isTopographicObjectsOn && !marchMode
+      !isTopographicObjectsOn && !marchMode && !isZoneProfileOn && !isZoneVisionOn
     ) {
       if (!newShape.type) {
         const area = (layer) => {
@@ -1190,7 +1287,28 @@ export default class WebMap extends React.PureComponent {
 
     if (!newShape.type && !preview && !printStatus) {
       if (this.addMarkerMode) {
-        this.addUserMarker(e.latlng)
+        this.addUserMarker(e.latlng, this.markers)
+      }
+      if (this.addZoneProfileMode) {
+        this.addUserMarker(e.latlng, this.markersProfile)
+        if (this.markersProfile?.length === 1) {
+          this.props.setModalProps({
+            type: viewModesKeys.zoneProfile,
+            onClear: this.clearMarkers,
+            targets: this.markersProfile,
+          }, null)
+        }
+      }
+      if (this.addZoneVisionMode) {
+        this.addUserMarker(e.latlng, this.markersVision)
+        if (this.markersVision?.length === 1) {
+          this.addUserMarker(e.latlng, this.markersVision)
+          this.props.setModalProps({
+            type: viewModesKeys.zoneVision,
+            onClear: this.clearMarkers,
+            targets: this.markersVision,
+          }, null)
+        }
       }
       if (this.addTopographicMarkersMode) {
         const { getTopographicObjects } = this.props
@@ -2019,7 +2137,7 @@ export default class WebMap extends React.PureComponent {
   }
 
   dblClickOnLayer = (event) => {
-    L.DomEvent.stopPropagation(event)
+    event.target.id !== this.flexGrid.id && L.DomEvent.stopPropagation(event)
     return this.processDblClickOnLayer(event.target)
   }
 

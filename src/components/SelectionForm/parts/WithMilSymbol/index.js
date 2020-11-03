@@ -8,6 +8,7 @@ import placeSearch from '../../../../server/places'
 import './style.css'
 import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 
+const LIST_WIDTH = 600 // максимальна ширина списку для вибору "Військового формування" (px)
 const configs = SymbolEditorComponentStateless.configs
 
 const readOnly = { readonly: true }
@@ -49,6 +50,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     }),
     elementsConfigs: PropTypes.object,
     ovtData: PropTypes.object,
+    coordinatesType: PropTypes.string,
   }
 
   codeChangeHandler = (code, subordinationLevel) => this.setResult((result) => {
@@ -126,6 +128,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
         ovtData={ovtData}
         maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
         preferredType={coordinatesType}
+        listWidth={LIST_WIDTH}
       />
     )
   }

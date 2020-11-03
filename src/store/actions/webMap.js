@@ -31,7 +31,6 @@ export const stopHeartBeat = () => {
     dropLock = null
   }
 }
-
 export const actionNames = {
   SET_MAP_MODE: action('SET_MAP_MODE'),
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
@@ -60,6 +59,8 @@ export const actionNames = {
   REFRESH_OBJECT: action('REFRESH_OBJECT'),
   ALLOCATE_OBJECTS_BY_LAYER_ID: action('ALLOCATE_OBJECTS_BY_LAYER_ID'),
   TOGGLE_MEASURE: action('TOGGLE_MEASURE'),
+  TOGGLE_ZONE_PROFILE: action('TOGGLE_ZONE_PROFILE'),
+  TOGGLE_ZONE_VISION: action('TOGGLE_ZONE_VISION'),
   TOGGLE_MARKERS: action('TOGGLE_MARKERS'),
   TOGGLE_TOPOGRAPHIC_OBJECTS: action('TOGGLE_TOPOGRAPHIC_OBJECTS'),
   GET_TOPOGRAPHIC_OBJECTS: action('GET_TOPOGRAPHIC_OBJECTS'),
@@ -174,6 +175,7 @@ export const setScaleToSelection = (scaleToSelected) => ({
   payload: scaleToSelected,
 })
 
+
 export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   ...rest,
   unit: unit !== null ? Number(unit) : null,
@@ -224,6 +226,9 @@ export const copyContour = (id, layer, shift, addUndoRecord = true) =>
       payload,
     })
   })
+
+export const getHeight = ({ lng: x, lat: y }) =>
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { getHeight } }) => getHeight(x, y))
 
 export const copyGroup = (id, layer, shift) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { groupCopy } }) => dispatch({
@@ -338,7 +343,7 @@ export const deleteObject = (id, addUndoRecord = true) =>
 
 export const deleteObjects = (list, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objDeleteList } }) => {
-    await objDeleteList(list)
+    list = await objDeleteList(list)
 
     if (addUndoRecord) {
       dispatch({
@@ -654,6 +659,7 @@ export const tryLockObject = (objectId) =>
         const result = await objLock(objectId)
         success = result.success
         if (success) {
+          stopHeartBeat()
           lockHeartBeat = setInterval(heartBeat(objLock, objUnlock, objectId), lockHeartBeatInterval * 1000)
         } else {
           lockedBy = result.lockedBy
@@ -691,6 +697,14 @@ export const isObjectStillLocked = (objectId) =>
 
 export const toggleMeasure = () => ({
   type: actionNames.TOGGLE_MEASURE,
+})
+
+export const toggleZoneProfile = () => ({
+  type: actionNames.TOGGLE_ZONE_PROFILE,
+})
+
+export const toggleZoneVision = () => ({
+  type: actionNames.TOGGLE_ZONE_VISION,
 })
 
 export const toggleMarkers = () => ({

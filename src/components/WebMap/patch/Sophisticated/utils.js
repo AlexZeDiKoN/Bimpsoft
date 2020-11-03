@@ -1239,7 +1239,7 @@ export const multiplyVector = (vector, value) => ({
 // Протилежний вектор
 export const oppositeVector = (vector) => multiplyVector(vector, -1)
 
-// Встановлення довжини ветокра
+// Встановлення довжини вектора
 export const setVectorLength = (vector, length) => {
   const oldLength = segmentLength(vector)
   if (oldLength === 0) {
@@ -1373,13 +1373,13 @@ export const lineTo = (result, p) => (result.d += ` L${p.x} ${p.y}`)
 
 export const bezierTo = (result, cp1, cp2, p) => (result.d += ` C${cp1.x} ${cp1.y} ${cp2.x} ${cp2.y} ${p.x} ${p.y}`)
 
-// Ломана лінія між вказаними точками
+// Ламана лінія між вказаними точками
 export const drawLine = (result, p1, ...rest) => {
   moveTo(result, p1)
   rest.forEach((point) => lineTo(result, point))
 }
 
-// продовження ломаної лінія між вказаними точками
+// продовження ламаної лінія між вказаними точками
 export const drawLineProceed = (result, p1, ...rest) => {
   rest.forEach((point) => lineTo(result, point))
 }

@@ -98,6 +98,8 @@ const WebMapState = Record({
   // generalization: false,
   isMeasureOn: false,
   isMarkersOn: false,
+  isZoneProfileOn: false,
+  isZoneVisionOn: false,
   isTopographicObjectsOn: false,
   sources: MapSources,
   source: MapSources[0],
@@ -227,6 +229,12 @@ const toggleSetFields = [ {
 }, {
   action: actionNames.TOGGLE_TOPOGRAPHIC_OBJECTS,
   field: 'isTopographicObjectsOn',
+}, {
+  action: actionNames.TOGGLE_ZONE_PROFILE,
+  field: 'isZoneProfileOn',
+}, {
+  action: actionNames.TOGGLE_ZONE_VISION,
+  field: 'isZoneVisionOn',
 } ]
 
 const findField = (actionName, list) => {
@@ -319,7 +327,10 @@ export default function webMapReducer (state = WebMapState(), action) {
       }
       const { layerId, objects } = payload
       return update(state, 'objects', (map) => {
-        map = objects.filter(notFlexGrid).reduce(updateObject, map)
+        map = objects
+          .filter(({ code, type }) => (type !== entityKind.POINT && type !== entityKind.SOPHISTICATED) || code)
+          .filter(notFlexGrid)
+          .reduce(updateObject, map)
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })

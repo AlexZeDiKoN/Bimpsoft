@@ -45,6 +45,8 @@ export default class LayersComponent extends React.Component {
       onChangeMapVisibility,
       onCloseMap,
       onPrintMap,
+      onUpdateMap,
+      onUpdateLayer,
       onChangeLayerVisibility,
       onChangeLayerColor,
     } = this.props
@@ -57,6 +59,8 @@ export default class LayersComponent extends React.Component {
       onChangeMapVisibility,
       onCloseMap,
       onPrintMap,
+      onUpdateMap,
+      onUpdateLayer,
       onChangeLayerVisibility,
       onChangeLayerColor,
     }
@@ -219,6 +223,8 @@ LayersComponent.propTypes = {
   onChangeLayerColor: PropTypes.func,
   onCloseMap: PropTypes.func,
   onPrintMap: PropTypes.func,
+  onUpdateMap: PropTypes.func,
+  onUpdateLayer: PropTypes.func,
   timelineFrom: PropTypes.any,
   timelineTo: PropTypes.any,
   onChangeTimeLineFrom: PropTypes.func,

@@ -7,7 +7,7 @@ import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import DeleteMapForm from './DeleteMapForm'
-import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
+import { MOUSE_ENTER_DELAY, DBL_CLICK_TIME } from '../../../constants/tooltip'
 
 const { TextFilter } = data
 const { common: { TreeComponent, HighlightedText } } = components
@@ -16,6 +16,7 @@ export default class MapItemComponent extends React.Component {
   state = {
     showCloseForm: false,
     showColor: false,
+    clickTime: 0,
   }
 
   onHandlerColor = (value) => this.setState({ showColor: value })
@@ -48,6 +49,21 @@ export default class MapItemComponent extends React.Component {
   onPrintMapHandler = () => {
     const { onPrintMap, data: { mapId, name } } = this.props
     onPrintMap && onPrintMap(mapId, name)
+  }
+
+  updateMap = () => {
+    const { onUpdateMap, data: { mapId } } = this.props
+    onUpdateMap && onUpdateMap(mapId)
+  }
+
+  onUpdateMapHandler = () => {
+    const { clickTime } = this.state
+    const now = Date.now()
+    if (clickTime && now - clickTime < DBL_CLICK_TIME) {
+      this.setState({ clickTime: 0 }, this.updateMap)
+    } else {
+      this.setState({ clickTime: now })
+    }
   }
 
   onShowReportMapModal = (dataMap) => {
@@ -88,8 +104,11 @@ export default class MapItemComponent extends React.Component {
         <div className='map-item-component-icon'>
           <IButton icon={IconNames.OPEN_MAP}/>
         </div>
-        <span className="map-item-component-title" title={breadCrumbs}>
-          <HighlightedText text={name} textFilter={textFilter} />
+        <span className="map-item-component-title" title={breadCrumbs} onClick={this.onUpdateMapHandler}>
+          <HighlightedText
+            text={name}
+            textFilter={textFilter}
+          />
         </span>
         <div className='color-picker-hover'>
           <Tooltip title={i18n.CREATE_REPORT_MAP} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
@@ -132,4 +151,5 @@ MapItemComponent.propTypes = {
   onChangeMapColor: PropTypes.func,
   onCloseMap: PropTypes.func,
   onPrintMap: PropTypes.func,
+  onUpdateMap: PropTypes.func,
 }
