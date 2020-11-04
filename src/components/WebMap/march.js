@@ -86,7 +86,8 @@ const _onMarkerDrag = (layer) => (markerEvent) => {
 }
 
 const createRegulationMarker = (dot, nextDot, zoom) => {
-  const { lat, lng } = dot.coordinates
+  const { isActivePoint, coordinates } = dot
+  const { lat, lng } = coordinates
   const { lat: nextLatY, lng: nextLngX } = nextDot.coordinates
   const ly = lat - nextLatY
   const lx = lng - nextLngX
@@ -101,13 +102,14 @@ const createRegulationMarker = (dot, nextDot, zoom) => {
     width = height = ZOOM_BORDER.get('last').size
   }
   const iconAnchorOffset = width / 2
+  const colorLine = isActivePoint ? '#FF4500' : '#2B2A29'
 
   const svgRegulationIcon = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="${width}" height="${height}" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
 viewBox="0 0 2150 400">
  <defs>
   <style>
-    .str0 {stroke:#2B2A29;stroke-width:50;stroke-miterlimit:22.9256}
-    .str1 {stroke:#2B2A29;stroke-width:50;stroke-miterlimit:22.9256;stroke-dasharray:250.000000 150.000000}
+    .str0 {stroke:${colorLine};stroke-width:50;stroke-miterlimit:22.9256}
+    .str1 {stroke:${colorLine};stroke-width:50;stroke-miterlimit:22.9256;stroke-dasharray:250.000000 150.000000}
     .fil0 {fill:none}
   </style>
  </defs>

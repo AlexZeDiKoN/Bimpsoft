@@ -1048,9 +1048,6 @@ export default class WebMap extends React.PureComponent {
           if (dot.isRestPoint) {
             iconName = 'camp-red.png'
             options = { iconAnchor: [ 11, 11 ] }
-          } if (dot.isRegulationPoint) {
-            iconName = 'dot.png'
-            options = { iconAnchor: [ 11, 11 ] }
           } else {
             iconName = 'marker-icon-red.png'
             options = {
