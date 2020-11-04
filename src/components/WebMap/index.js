@@ -1036,9 +1036,6 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateMarchDots = (marchDots, prevMarchDots) => {
-    // -
-    // const size = getPointSize(result.layer) * SYMBOL_SCALE
-
     if (marchDots !== prevMarchDots) {
       if (this.marchMarkers.length !== 0) {
         this.marchMarkers.forEach((marker) => marker.removeFrom(this.map))
