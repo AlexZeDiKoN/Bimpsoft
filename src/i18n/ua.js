@@ -84,7 +84,7 @@ export const NAME_OF_DOCUMENT = 'Назва документа (обов’яз�
 export const AS_OF = 'Станом на (обов’язково)'
 export const REPORTING_CARD = 'Звітна карта'
 
-export const SHAPE_POLYLINE = 'Ломана лінія'
+export const SHAPE_POLYLINE = 'Ламана лінія'
 export const SHAPE_CURVE = 'Крива'
 export const SHAPE_POLYGON = 'Багатокутник'
 export const SHAPE_AREA = 'Область'

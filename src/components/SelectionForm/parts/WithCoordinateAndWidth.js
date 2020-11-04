@@ -5,6 +5,7 @@ import i18n from '../../../i18n'
 import { adjustSquareCorner } from '../../WebMap/patch/utils/helpers'
 import CoordinateRow from './CoordinateRow'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'
+import { figureArea } from './render'
 
 const {
   FormDarkPart,
@@ -116,6 +117,7 @@ const WithCoordinateAndWidth = (Component) => class CoordinateAndWidthComponent 
             />
           </div>
         </div>
+        {isSquare && figureArea(L.rectangle(coordinatesArray.map(({ lat, lng }) => [ lat, lng ])))}
       </FormDarkPart>
     )
   }
