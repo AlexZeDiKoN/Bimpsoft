@@ -1,4 +1,5 @@
 import L from 'leaflet'
+import { ZOOM_BORDER } from '../../constants/March'
 
 const drawMarchLine = (layer, marchDots) => {
   if (!layer.marchLines) {
@@ -84,6 +85,63 @@ const _onMarkerDrag = (layer) => (markerEvent) => {
   }
 }
 
+const createRegulationMarker = (dot, nextDot, zoom) => {
+  const { isActivePoint, coordinates } = dot
+  const { lat, lng } = coordinates
+  const { lat: nextLatY, lng: nextLngX } = nextDot.coordinates
+  const ly = lat - nextLatY
+  const lx = lng - nextLngX
+  const tanValue = ly / lx
+  const radTanAngle = Math.atan(tanValue)
+  const degreesTanAngle = radTanAngle * 180 / Math.PI
+  let width, height
+
+  if (zoom > ZOOM_BORDER.get('first').scale) {
+    width = height = ZOOM_BORDER.get('first').size
+  } else {
+    width = height = ZOOM_BORDER.get('last').size
+  }
+  const iconAnchorOffset = width / 2
+  const colorLine = isActivePoint ? '#FF4500' : '#2B2A29'
+
+  const svgRegulationIcon = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="${width}" height="${height}" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 2150 400">
+ <defs>
+  <style>
+    .str0 {stroke:${colorLine};stroke-width:50;stroke-miterlimit:22.9256}
+    .str1 {stroke:${colorLine};stroke-width:50;stroke-miterlimit:22.9256;stroke-dasharray:250.000000 150.000000}
+    .fil0 {fill:none}
+  </style>
+ </defs>
+ <g transform="rotate(${90 - degreesTanAngle} 1075 200)">
+  <circle class="fil0 str0" cx="204.01" cy="197.65" r="147.52"/>
+  <line class="fil0 str0" x1="104.9" y1="88.38" x2="303.05" y2= "306.98" />
+  <line class="fil0 str0" x1="92.14" y1="293.82" x2="315.96" y2= "101.58" />
+  <line class="fil0 str1" x1="351.52" y1="196.87" x2="1793.97" y2= "194.71" />
+  <circle class="fil0 str0" cx="1932.47" cy="197.65" r="147.52"/>
+  <line class="fil0 str0" x1="1833.36" y1="88.38" x2="2031.51" y2= "306.98" />
+  <line class="fil0 str0" x1="1820.6" y1="293.82" x2="2044.43" y2= "101.58" />
+ </g>
+</svg>`
+
+  const regulationIcon = L.divIcon({
+    className: '',
+    html: svgRegulationIcon,
+    iconAnchor: [ iconAnchorOffset, iconAnchorOffset ],
+  })
+
+  return L.marker(dot.coordinates, { icon: regulationIcon })
+}
+
+export const getScaleBorderNameByValue = (scaleValue) => {
+  for (const [ key, value ] of ZOOM_BORDER) {
+    if (scaleValue > value.scale) {
+      return key
+    }
+  }
+  return null
+}
+
 export const marchMarker = {
   drawMarchLine,
 
@@ -96,5 +154,7 @@ export const marchMarker = {
     markerMarch.on('dragend', _onMarkerDragEnd(parent), parent)
     return markerMarch
   },
+
+  createRegulationMarker,
 
 }

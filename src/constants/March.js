@@ -14,6 +14,11 @@ export const MARCH_SEGMENT_KEYS = {
   TERRAIN_TYPE: 'terrain',
 }
 
+export const ZOOM_BORDER = new Map([
+  [ 'first', { scale: 7, size: 80 } ],
+  [ 'last', { scale: null, size: 50 } ],
+])
+
 export const MARCH_INDICATORS_GROUP = {
   movementType: 'МШВ001',
   segmentType: 'МШВ002',

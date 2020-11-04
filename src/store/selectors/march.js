@@ -50,6 +50,7 @@ export const marchDots = createSelector(
               refPoint: it2.refPoint,
               route: it2.route,
               isRestPoint: pointRest.includes(it2.type),
+              isRegulationPoint: it2.type === pointTypes.LINE_OF_REGULATION,
               isIntermediatePoint: it2.type === pointTypes.INTERMEDIATE_POINT,
               segmentId,
               childId,

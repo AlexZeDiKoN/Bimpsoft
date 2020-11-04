@@ -71,7 +71,7 @@ import {
 import { MapProvider } from './MapContext'
 import { findDefinition } from './patch/Sophisticated/utils'
 import { generateGeometry } from './patch/FlexGrid'
-import { marchMarker } from './march'
+import { marchMarker, getScaleBorderNameByValue } from './march'
 
 const { Coordinates: Coord } = utils
 
@@ -1065,6 +1065,13 @@ export default class WebMap extends React.PureComponent {
           marker.on('contextmenu', () => this.props.deleteChildMarch(dot.segmentId, dot.childId), this)
           // marker._marchDots = marchDots
           marker.baseDot = dot
+        } else if (dot.isRegulationPoint) {
+          marker = marchMarker.createRegulationMarker(dot, marchDots[index + 1], this.map._zoom)
+          marker._regulationMarkerData = {
+            dot,
+            nextDot: marchDots[index + 1],
+            zoom: this.map._zoom,
+          }
         } else {
           marker = createSearchMarker(dot.coordinates, false, iconName, options)
         }
@@ -1418,6 +1425,24 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  updateMarchRegulationMarkers = (zoom) => {
+    this.marchMarkers.forEach(({ _regulationMarkerData }, index) => {
+      if (_regulationMarkerData) {
+        const { dot, nextDot, zoom: zoomItem } = _regulationMarkerData
+        if (getScaleBorderNameByValue(zoom) === getScaleBorderNameByValue(zoomItem)) {
+          return
+        }
+
+        _regulationMarkerData.zoom = zoom
+        const resizedMarker = marchMarker.createRegulationMarker(dot, nextDot, zoom)
+        resizedMarker._regulationMarkerData = _regulationMarkerData
+        this.marchMarkers[index].removeFrom(this.map)
+        this.marchMarkers[index] = resizedMarker
+        resizedMarker.addTo(this.map)
+      }
+    })
+  }
+
   onStopMeasuring = () => {
     if (!this.byReact) {
       this.props.stopMeasuring()
@@ -1427,6 +1452,9 @@ export default class WebMap extends React.PureComponent {
   moveHandler = useDebounce(() => {
     const center = this.map.getCenter()
     const zoom = this.map.getZoom()
+
+    this.updateMarchRegulationMarkers(zoom)
+
     const isZoomChanged = zoom !== this.view.zoom
     if (!geomPointEquals(center, this.view.center) || isZoomChanged) {
       this.view = { center, zoom }
