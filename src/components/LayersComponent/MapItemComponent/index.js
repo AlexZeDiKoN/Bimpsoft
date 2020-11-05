@@ -3,11 +3,13 @@ import PropTypes from 'prop-types'
 import './style.css'
 import { data, components, IconNames, IButton } from '@DZVIN/CommonComponents'
 import { Tooltip } from 'antd'
+import moment from 'moment'
 import { VisibilityButton } from '../../common'
 import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
-import DeleteMapForm from './DeleteMapForm'
 import { MOUSE_ENTER_DELAY, DBL_CLICK_TIME } from '../../../constants/tooltip'
+import { DATE_TIME_FORMAT_FULL } from '../../../constants/formats'
+import DeleteMapForm from './DeleteMapForm'
 
 const { TextFilter } = data
 const { common: { TreeComponent, HighlightedText } } = components
@@ -48,7 +50,8 @@ export default class MapItemComponent extends React.Component {
 
   onPrintMapHandler = () => {
     const { onPrintMap, data: { mapId, name } } = this.props
-    onPrintMap && onPrintMap(mapId, name)
+    const currentDateTime = moment(Date.now()).format(DATE_TIME_FORMAT_FULL)
+    onPrintMap && onPrintMap(mapId, `${name}[${currentDateTime}]`)
   }
 
   updateMap = () => {
