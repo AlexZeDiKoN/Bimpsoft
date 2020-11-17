@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { SymbolEditorComponentStateless } from '@DZVIN/MilSymbolEditor'
+import { SymbolEditorComponentStateless } from '@C4/MilSymbolEditor'
 import { SUBORDINATION_LEVEL_PATH } from '../WithSubordinationLevel'
 import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'

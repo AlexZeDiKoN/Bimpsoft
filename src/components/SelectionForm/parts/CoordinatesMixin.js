@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { utils } from '@DZVIN/CommonComponents'
+import { utils } from '@C4/CommonComponents'
 import { distanceAzimuth, moveCoordinate } from '../../WebMap/patch/utils/sectors'
 const { Coordinates: Coord } = utils
 

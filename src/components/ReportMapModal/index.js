@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MovablePanel, components } from '@DZVIN/CommonComponents'
+import { MovablePanel, components } from '@C4/CommonComponents'
 import { Input, DatePicker } from 'antd'
 import moment from 'moment'
 import { SIDEBAR_SIZE_DEFAULT } from '../../layouts/Sidebar'

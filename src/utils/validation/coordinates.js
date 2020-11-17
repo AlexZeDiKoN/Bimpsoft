@@ -1,4 +1,4 @@
-import { utils } from '@DZVIN/CommonComponents'
+import { utils } from '@C4/CommonComponents'
 import i18n from '../../i18n'
 import { ValidationError } from '../../constants/errors'
 

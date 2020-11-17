@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 import React from 'react'
-import { Scrollbar } from '@DZVIN/CommonComponents'
+import { Scrollbar } from '@C4/CommonComponents'
 import { DIRECTION_LEFT, DIRECTION_RIGHT } from '../../parts/WithLineEnds'
 import {
   WithColor,

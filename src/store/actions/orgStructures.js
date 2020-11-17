@@ -1,5 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
-import { APP6Code } from '@DZVIN/MilSymbolEditor/build/model'
+import { APP6Code } from '@C4/MilSymbolEditor/build/model'
 import { action } from '../../utils/services'
 import { asyncAction } from './index'
 

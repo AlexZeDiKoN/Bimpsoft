@@ -1,6 +1,6 @@
 import React from 'react'
 import { Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import area from '@turf/area'
 import { colors } from '../../../constants'
 import { extractSubordinationLevelSVG } from '../../../utils/svg/milsymbol'

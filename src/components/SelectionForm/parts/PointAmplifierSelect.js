@@ -1,6 +1,6 @@
 import React from 'react'
 import { Input } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 // import { Map } from 'immutable'
 // import { PointInfo } from '../../../store/reducers/webMap.js'
 import i18n from '../../../i18n'

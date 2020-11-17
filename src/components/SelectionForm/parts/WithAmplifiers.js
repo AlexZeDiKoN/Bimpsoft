@@ -1,6 +1,6 @@
 import React from 'react'
 import { Tooltip, Input as antdInput } from 'antd'
-import { components, Input } from '@DZVIN/CommonComponents'
+import { components, Input } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import { amps } from '../../../constants/symbols'
 import './withAmplifiersStyle.css'

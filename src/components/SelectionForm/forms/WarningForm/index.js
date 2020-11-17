@@ -1,7 +1,7 @@
 import React from 'react'
-import { Button, ModalContainer, MovablePanel, TextItem } from '@DZVIN/CommonComponents'
+import { Button, ModalContainer, MovablePanel, TextItem } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
-import { body } from '@DZVIN/CommonComponents/build/components/form'
+import { body } from '@C4/CommonComponents/build/components/form'
 import i18n from '../../../../i18n'
 
 export const WarningForm = (props) => {

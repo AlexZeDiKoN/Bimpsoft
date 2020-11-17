@@ -1,7 +1,7 @@
 import React from 'react'
 import memoizeOne from 'memoize-one'
 import PropTypes from 'prop-types'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
+import { MilSymbol } from '@C4/MilSymbolEditor'
 import ObjectCatalog from '../ObjectCatalog'
 import i18n from '../../i18n'
 

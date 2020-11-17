@@ -1,4 +1,4 @@
-import { utils } from '@DZVIN/CommonComponents'
+import { utils } from '@C4/CommonComponents'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {

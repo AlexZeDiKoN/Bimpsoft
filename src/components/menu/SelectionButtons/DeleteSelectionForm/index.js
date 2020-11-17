@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, ModalContainer, MovablePanel } from '@DZVIN/CommonComponents'
+import { components, ModalContainer, MovablePanel } from '@C4/CommonComponents'
 import './style.css'
 import FocusTrap from 'react-focus-lock'
 import ReactDOM from 'react-dom'

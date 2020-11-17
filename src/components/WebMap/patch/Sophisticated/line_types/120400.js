@@ -1,4 +1,4 @@
-import { Symbol } from '@DZVIN/milsymbol'
+import { Symbol } from '@C4/milsymbol'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {

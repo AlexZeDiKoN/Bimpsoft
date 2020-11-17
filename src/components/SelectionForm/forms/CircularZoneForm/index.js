@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 import React from 'react'
-import { Scrollbar } from '@DZVIN/CommonComponents'
+import { Scrollbar } from '@C4/CommonComponents'
 import AbstractShapeForm, {
   propTypes as abstractShapeFormPropTypes,
 } from '../../parts/AbstractShapeForm'

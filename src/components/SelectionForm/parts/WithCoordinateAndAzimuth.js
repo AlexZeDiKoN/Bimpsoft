@@ -1,5 +1,5 @@
 import React from 'react'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components, utils } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import { angleDegCheck, distanceAzimuth, moveCoordinate } from '../../WebMap/patch/utils/sectors'
 import placeSearch from '../../../server/places'

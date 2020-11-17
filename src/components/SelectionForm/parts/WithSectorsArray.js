@@ -1,5 +1,5 @@
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import { distanceAzimuth, sphereDirect } from '../../WebMap/patch/utils/sectors'

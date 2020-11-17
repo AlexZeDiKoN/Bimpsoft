@@ -1,7 +1,7 @@
 import { Switch, Tooltip } from 'antd'
 import React from 'react'
 import PropTypes from 'prop-types'
-import { IButton, IconNames, ColorTypes } from '@DZVIN/CommonComponents'
+import { IButton, IconNames, ColorTypes } from '@C4/CommonComponents'
 import convertUnits from '../../utilsMarch/convertUnits'
 import i18n from './../../../../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../../../../constants/tooltip'

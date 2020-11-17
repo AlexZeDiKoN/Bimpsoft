@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { Scrollbar } from '@DZVIN/CommonComponents'
+import { Scrollbar } from '@C4/CommonComponents'
 import { InputButton } from '../common'
 
 import './style.css'

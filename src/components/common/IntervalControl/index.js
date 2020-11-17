@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import DatePicker from '@DZVIN/CommonComponents/build/components/inputs/DatePicker'
+import DatePicker from '@C4/CommonComponents/build/components/inputs/DatePicker'
 import { DATE_TIME_FORMAT } from '../../../constants/formats'
 import i18n from '../../../i18n'
 

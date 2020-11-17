@@ -1,5 +1,5 @@
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import L from 'leaflet'
 import i18n from '../../../i18n'
 import CoordinateRow from './CoordinateRow'

@@ -6,7 +6,7 @@ import {
   IButton,
   IconNames,
   Input,
-} from '@DZVIN/CommonComponents'
+} from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import './style.css'
 import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'

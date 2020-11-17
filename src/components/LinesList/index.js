@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { IconNames } from '@DZVIN/CommonComponents'
+import { IconNames } from '@C4/CommonComponents'
 import i18n from '../../i18n'
 import ContextMenu, { ContextMenuItem } from '../menu/ContextMenu'
 import SelectionTypes from '../../constants/SelectionTypes'

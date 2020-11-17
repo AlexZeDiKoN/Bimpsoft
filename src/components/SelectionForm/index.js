@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MovablePanel, NotClickableArea, ResizeEnable } from '@DZVIN/CommonComponents'
+import { MovablePanel, NotClickableArea, ResizeEnable } from '@C4/CommonComponents'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
 import SelectionTypes from '../../constants/SelectionTypes'

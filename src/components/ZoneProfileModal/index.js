@@ -11,7 +11,7 @@ import {
   ButtonCancel,
   HotKey,
   HotKeysContainer,
-} from '@DZVIN/CommonComponents'
+} from '@C4/CommonComponents'
 import { shortcuts } from '../../constants'
 import i18n from '../../i18n'
 

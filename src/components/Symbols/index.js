@@ -12,8 +12,8 @@ import {
   FormBlock,
   HighlightedText,
   data,
-} from '@DZVIN/CommonComponents'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
+} from '@C4/CommonComponents'
+import { MilSymbol } from '@C4/MilSymbolEditor'
 import { symbols } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'

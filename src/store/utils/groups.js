@@ -1,4 +1,4 @@
-import { model } from '@DZVIN/MilSymbolEditor'
+import { model } from '@C4/MilSymbolEditor'
 import { isFriendObject } from '../../utils/affiliations'
 
 export const determineGroupType = (objects) => {
