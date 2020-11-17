@@ -1,6 +1,6 @@
 import L from 'leaflet'
-import { Symbol } from '@DZVIN/milsymbol'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { Symbol } from '@C4/milsymbol'
+import { model } from '@C4/MilSymbolEditor'
 import { interpolateSize } from '../utils/helpers'
 import { filterSet, setActivePointSignColors } from './utils'
 import { MilSymbolGroup } from '../../MilSymbolGroup'

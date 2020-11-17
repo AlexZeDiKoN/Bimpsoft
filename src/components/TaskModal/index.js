@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
-import { MovablePanel, ResizeEnable } from '@DZVIN/CommonComponents'
-import { TaskComponentStatefull } from '@DZVIN/components'
+import { MovablePanel, ResizeEnable } from '@C4/CommonComponents'
+import { TaskComponentStatefull } from '@C4/components'
 import i18n from '../../i18n'
 import './style.css'
 

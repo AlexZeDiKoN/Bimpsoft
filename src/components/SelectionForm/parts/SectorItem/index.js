@@ -1,7 +1,7 @@
 import React from 'react'
 import { Input } from 'antd'
 import PropTypes from 'prop-types'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components, utils } from '@C4/CommonComponents'
 import './style.css'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 import { colors } from '../../../../constants'

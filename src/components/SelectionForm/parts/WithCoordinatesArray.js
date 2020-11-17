@@ -1,6 +1,6 @@
 import React from 'react'
 import L from 'leaflet'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import { Checkbox } from 'antd'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'

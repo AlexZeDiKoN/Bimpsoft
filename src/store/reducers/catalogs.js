@@ -1,4 +1,4 @@
-import { data } from '@DZVIN/CommonComponents'
+import { data } from '@C4/CommonComponents'
 import { catalogs } from '../actions'
 
 const { TextFilter } = data

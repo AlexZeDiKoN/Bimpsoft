@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
-import { Symbol } from '@DZVIN/milsymbol'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { Symbol } from '@C4/milsymbol'
+import { model } from '@C4/MilSymbolEditor'
 import L from 'leaflet'
 import { filterSetEmpty } from '../../components/WebMap/patch/SvgIcon/utils'
 import SelectionTypes from '../../constants/SelectionTypes'

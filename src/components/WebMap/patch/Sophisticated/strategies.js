@@ -1,5 +1,5 @@
 import Bezier from 'bezier-js'
-import { Symbol } from '@DZVIN/milsymbol'
+import { Symbol } from '@C4/milsymbol'
 import { rotate, applyToPoint } from 'transformation-matrix'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 import { settings } from '../../../../constants/drawLines'

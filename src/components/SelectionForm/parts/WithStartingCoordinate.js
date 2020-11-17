@@ -1,5 +1,5 @@
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import placeSearch from '../../../server/places'
 import CoordinatesMixin, { COORDINATE_PATH } from './CoordinatesMixin'

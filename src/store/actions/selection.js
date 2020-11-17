@@ -1,6 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { model } from '@C4/MilSymbolEditor'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'

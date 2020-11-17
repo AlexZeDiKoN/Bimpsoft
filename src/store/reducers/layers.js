@@ -1,4 +1,4 @@
-import { data } from '@DZVIN/CommonComponents'
+import { data } from '@C4/CommonComponents'
 import * as R from 'ramda'
 import { layers } from '../actions'
 

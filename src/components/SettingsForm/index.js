@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Checkbox, Tabs, Select } from 'antd'
-import { components, utils, MovablePanel } from '@DZVIN/CommonComponents'
+import { components, utils, MovablePanel } from '@C4/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import i18n from '../../i18n'

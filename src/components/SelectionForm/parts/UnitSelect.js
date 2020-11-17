@@ -1,6 +1,6 @@
 import React from 'react'
-import { OrgStructureSelect } from '@DZVIN/MilSymbolEditor'
-import { components } from '@DZVIN/CommonComponents'
+import { OrgStructureSelect } from '@C4/MilSymbolEditor'
+import { components } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 
 const { form: { FormRow } } = components

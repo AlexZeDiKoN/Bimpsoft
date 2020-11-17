@@ -1,9 +1,9 @@
 import React from 'react'
 import { InputNumber, Tooltip } from 'antd'
-import { IButton } from '@DZVIN/CommonComponents'
+import { IButton } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
 import './style.css'
-import { ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+import { ColorTypes } from '@C4/CommonComponents/src/constants'
 import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 const OpacityControl = (props) => {
   const { title, icon, opacity, className, onChange } = props

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import SelectionTypes from '../../../constants/SelectionTypes'
 import { iconOption, iconDiv } from './render'

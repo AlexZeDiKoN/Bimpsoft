@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import React from 'react'
 import './style.css'
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { compose } from 'redux'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import i18n from '../../../../i18n'
 
 import {

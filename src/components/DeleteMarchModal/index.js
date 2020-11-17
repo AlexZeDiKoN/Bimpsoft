@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MovablePanel, components } from '@DZVIN/CommonComponents'
+import { MovablePanel, components } from '@C4/CommonComponents'
 
 import i18n from '../../i18n'
 import './style.css'

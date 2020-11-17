@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { components, data, HighlightedText } from '@DZVIN/CommonComponents'
+import { components, data, HighlightedText } from '@C4/CommonComponents'
 import { getClickOutsideRef } from '../../utils/clickOutside'
 
 const { ContextMenu } = components.common

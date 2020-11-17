@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Input } from '@DZVIN/CommonComponents'
+import { Input } from '@C4/CommonComponents'
 import './style.css'
 
 export default class NumberControl extends React.Component {

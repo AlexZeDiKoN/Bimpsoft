@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { Input } from '@DZVIN/CommonComponents'
+import { Input } from '@C4/CommonComponents'
 import { getClickOutsideRef } from '../../../utils/clickOutside'
 
 const fontSizes = [

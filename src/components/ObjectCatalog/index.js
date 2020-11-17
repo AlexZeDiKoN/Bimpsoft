@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import memoizeOne from 'memoize-one'
-import { components, data } from '@DZVIN/CommonComponents'
+import { components, data } from '@C4/CommonComponents'
 import Item from '../ObjectCatalogItem'
 import { InputButton } from '../common'
 import './style.css'

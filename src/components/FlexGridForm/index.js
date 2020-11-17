@@ -1,7 +1,7 @@
 import React from 'react'
 import FocusTrap from 'react-focus-lock'
 import PropTypes from 'prop-types'
-import { components, Input, ButtonTypes, ColorTypes, FormBlock, IButton } from '@DZVIN/CommonComponents'
+import { components, Input, ButtonTypes, ColorTypes, FormBlock, IButton } from '@C4/CommonComponents'
 import { Switch } from 'antd'
 import i18n from '../../i18n'
 import * as shortcuts from '../../constants/shortcuts'

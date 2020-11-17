@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { authReducer } from '@DZVIN/components'
+import { authReducer } from '@C4/components'
 import { routerReducer as routing } from 'react-router-redux'
 import viewModes from './viewModes'
 import webMap from './webMap'

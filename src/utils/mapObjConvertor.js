@@ -13,8 +13,8 @@ import {
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
 import { chunk } from 'lodash'
-import { Symbol } from '@DZVIN/milsymbol'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { Symbol } from '@C4/milsymbol'
+import { model } from '@C4/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
 import { bezierArray } from '../utils/svg/lines'
 

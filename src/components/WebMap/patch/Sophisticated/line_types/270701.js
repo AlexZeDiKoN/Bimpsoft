@@ -1,4 +1,4 @@
-import { Symbol } from '@DZVIN/milsymbol'
+import { Symbol } from '@C4/milsymbol'
 import { CODE_MINE_TYPES, MINE_TYPES, CONTROL_TYPES } from '../../../../../constants/symbols'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'

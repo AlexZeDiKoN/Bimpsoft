@@ -1,5 +1,5 @@
 import L from 'leaflet'
-import { utils } from '@DZVIN/CommonComponents'
+import { utils } from '@C4/CommonComponents'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 const { Coordinates: Coord } = utils
 

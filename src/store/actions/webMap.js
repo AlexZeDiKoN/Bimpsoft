@@ -1,5 +1,5 @@
 import { batchActions } from 'redux-batched-actions'
-import { utils } from '@DZVIN/CommonComponents'
+import { utils } from '@C4/CommonComponents'
 import { MapSources, ZOOMS, paramsNames, access } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'

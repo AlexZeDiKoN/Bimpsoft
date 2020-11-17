@@ -1,4 +1,4 @@
-import milsymbol from '@DZVIN/milsymbol'
+import milsymbol from '@C4/milsymbol'
 import getBounds from 'svg-path-bounds'
 
 const simpleLevelSymbolCode = (level) => `10031000${`0${level}`.slice(-2)}0000000000`

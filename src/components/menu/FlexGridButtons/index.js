@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { IButton, IconNames, ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents'
+import { IButton, IconNames, ButtonTypes, ColorTypes } from '@C4/CommonComponents'
 import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'

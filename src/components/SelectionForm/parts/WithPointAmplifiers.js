@@ -1,6 +1,6 @@
 import React from 'react'
 import { Input, Tooltip } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import { MAX_LENGTH_TEXT, MAX_ROW } from '../../../constants/InputText'
 import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'

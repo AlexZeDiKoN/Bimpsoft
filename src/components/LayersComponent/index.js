@@ -10,7 +10,7 @@ import {
   IconNames,
   ButtonTypes,
   IButton,
-} from '@DZVIN/CommonComponents'
+} from '@C4/CommonComponents'
 import { isEmpty } from 'ramda'
 import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'

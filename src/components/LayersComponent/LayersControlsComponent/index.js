@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
-import { IconNames } from '@DZVIN/CommonComponents'
+import { IconNames } from '@C4/CommonComponents'
 import { OpacityControl } from '../../common'
 import i18n from '../../../i18n'
 import DeleteMapsForm from './DeleteMapsForm'

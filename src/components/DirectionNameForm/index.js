@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
-import { components, Checkbox } from '@DZVIN/CommonComponents'
+import { components, Checkbox } from '@C4/CommonComponents'
 import FocusTrap from 'react-focus-lock'
 import { HotKeysContainer, HotKey } from '../common/HotKeys'
 import * as shortcuts from '../../constants/shortcuts'

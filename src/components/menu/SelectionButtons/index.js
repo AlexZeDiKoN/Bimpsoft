@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { debounce } from 'lodash/function'
-import { ButtonTypes, ColorTypes, IButton, IconNames } from '@DZVIN/CommonComponents'
+import { ButtonTypes, ColorTypes, IButton, IconNames } from '@C4/CommonComponents'
 import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
 import MenuDivider from '../MenuDivider'
