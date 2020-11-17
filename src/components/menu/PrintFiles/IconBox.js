@@ -1,6 +1,6 @@
 import React, { Fragment, Component } from 'react'
 import { Icon, Tooltip } from 'antd'
-import { components, IButton, IconNames } from '@DZVIN/CommonComponents'
+import { components, IButton, IconNames } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import { DOC_CLASS_ID } from '../../../constants/Print'

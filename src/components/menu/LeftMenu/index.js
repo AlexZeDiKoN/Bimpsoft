@@ -6,7 +6,7 @@ import {
   ColorTypes,
   IButton,
   IconNames,
-} from '@DZVIN/CommonComponents'
+} from '@C4/CommonComponents'
 import './style.css'
 import { Input, Tooltip } from 'antd'
 import i18n from '../../../i18n'

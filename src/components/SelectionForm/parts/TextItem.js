@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Input } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import FontSizePicker from '../../common/FontSizePicker'
 
 const { IconHovered, names: IconNames } = components.icons

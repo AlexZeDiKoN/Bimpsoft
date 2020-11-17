@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { MovablePanel } from '@DZVIN/CommonComponents'
-import { SymbolEditorComponent } from '@DZVIN/MilSymbolEditor'
+import { MovablePanel } from '@C4/CommonComponents'
+import { SymbolEditorComponent } from '@C4/MilSymbolEditor'
 import i18n from '../i18n'
 
 export default class TemplateForm extends React.Component {

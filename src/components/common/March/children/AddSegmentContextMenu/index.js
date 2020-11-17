@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import useOutsideClick from '../useOutsideClick'

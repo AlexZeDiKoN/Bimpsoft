@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { model } from '@DZVIN/MilSymbolEditor'
+import { model } from '@C4/MilSymbolEditor'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import entityKind from '../../components/WebMap/entityKind'
 import { MapModes } from '../../constants'

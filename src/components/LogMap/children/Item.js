@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import i18n from '../../../i18n'
 import { changeTypes } from '../../../store/actions/webMap'
-import { components, data } from '@DZVIN/CommonComponents'
+import { components, data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT_FULL } from '../../../constants/formats'
 
 const { TextFilter } = data

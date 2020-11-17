@@ -1,6 +1,6 @@
 import React from 'react'
 import { Select } from 'antd'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
 import i18n from '../../../i18n'
 import * as ENTITY from '../../../components/WebMap/entityKind'

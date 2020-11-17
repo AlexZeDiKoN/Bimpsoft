@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { IButton } from '@DZVIN/CommonComponents'
+import { IButton } from '@C4/CommonComponents'
 
 export default class ContextMenuItem extends React.Component {
   static propTypes = {

@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Tooltip } from 'antd'
-import { IButton, IconNames } from '@DZVIN/CommonComponents'
-import { ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents/src/constants'
+import { IButton, IconNames } from '@C4/CommonComponents'
+import { ButtonTypes, ColorTypes } from '@C4/CommonComponents/src/constants'
 import './style.css'
 import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 

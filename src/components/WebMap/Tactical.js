@@ -1,5 +1,5 @@
-import { model } from '@DZVIN/MilSymbolEditor'
-import { symbolOptions } from '@DZVIN/MilSymbolEditor/src/model'
+import { model } from '@C4/MilSymbolEditor'
+import { symbolOptions } from '@C4/MilSymbolEditor/src/model'
 import { Record } from 'immutable'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'

@@ -3,7 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import { MovablePanel } from '@DZVIN/CommonComponents'
+import { MovablePanel } from '@C4/CommonComponents'
 import {
   LeftMenuContainer,
   RightMenuContainer,

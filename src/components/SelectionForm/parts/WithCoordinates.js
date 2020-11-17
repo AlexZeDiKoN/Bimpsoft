@@ -1,5 +1,5 @@
 import React from 'react'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import { List } from 'immutable'
 import i18n from '../../../i18n'
 import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'

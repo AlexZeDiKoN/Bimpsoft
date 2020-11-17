@@ -1,6 +1,6 @@
 import L from 'leaflet'
 import React from 'react'
-import { components, utils } from '@DZVIN/CommonComponents'
+import { components, utils } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import { adjustSquareCorner } from '../../WebMap/patch/utils/helpers'
 import CoordinateRow from './CoordinateRow'

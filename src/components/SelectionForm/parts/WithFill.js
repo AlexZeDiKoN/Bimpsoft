@@ -1,7 +1,7 @@
 import React from 'react'
 import { Select } from 'antd'
 import './withFillStyle.css'
-import { components } from '@DZVIN/CommonComponents'
+import { components } from '@C4/CommonComponents'
 import { colors } from '../../../constants'
 import i18n from '../../../i18n'
 import ColorPicker from '../../common/ColorPicker'

@@ -2,9 +2,9 @@ import React from 'react'
 import './style.css'
 import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { data, components } from '@DZVIN/CommonComponents'
-import { MilSymbol } from '@DZVIN/MilSymbolEditor'
-import { Symbol } from '@DZVIN/milsymbol'
+import { data, components } from '@C4/CommonComponents'
+import { MilSymbol } from '@C4/MilSymbolEditor'
+import { Symbol } from '@C4/milsymbol'
 import { MOUSE_ENTER_DELAY } from '../../../../constants/tooltip'
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons

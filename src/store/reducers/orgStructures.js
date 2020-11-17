@@ -1,4 +1,4 @@
-import { data, utils } from '@DZVIN/CommonComponents'
+import { data, utils } from '@C4/CommonComponents'
 import { orgStructures } from '../actions'
 
 const { TextFilter } = data

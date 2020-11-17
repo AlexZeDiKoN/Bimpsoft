@@ -1,4 +1,4 @@
-import { model } from '@DZVIN/MilSymbolEditor'
+import { model } from '@C4/MilSymbolEditor'
 
 const { SubordinationLevel } = model
 

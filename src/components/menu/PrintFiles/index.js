@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react'
 import { Menu, Tooltip } from 'antd'
-import { MovablePanel, IButton, IconNames, ButtonTypes, ColorTypes } from '@DZVIN/CommonComponents'
+import { MovablePanel, IButton, IconNames, ButtonTypes, ColorTypes } from '@C4/CommonComponents'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import i18n from '../../../i18n'
