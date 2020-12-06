@@ -5,7 +5,7 @@
   "dependencies": {
     "@C4/CommonComponents": "^17.1.559",
     "@C4/MilSymbolEditor": "^17.1.294",
-    "@C4/components": "^17.1.601",
+    "@C4/components": "^17.1.607",
     "@C4/leaflet-measure-custom": "^17.1.11",
     "@C4/milsymbol": "^17.1.12",
     "@nivo/bar": "^0.52.1",
