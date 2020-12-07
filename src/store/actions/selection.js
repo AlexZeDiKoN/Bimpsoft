@@ -41,7 +41,11 @@ const {
 } = model
 
 export const LENGTH_APP6_CODE = 20 // кол-во символов в коде
-const DEFAULT_APP6_CODE = setStatus(setSymbol(setIdentity2('10000000000000000000', '3'), '10'), '0')
+const GET_DEFAULT_APP6_CODE = (identity = '3') => setStatus(
+  setSymbol(
+    setIdentity2('10000000000000000000', identity)
+    , '10')
+  , '0')
 
 export const selectedList = (list) => ({
   type: SELECTED_LIST,
@@ -124,16 +128,17 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     selection: { newShape: { type } },
     layers: { selectedId: layer },
     webMap: { subordinationLevel: level },
+    orgStructures,
   } = getState()
-
   geometry = List(geometry)
   const object = WebMapObject({ type, layer, level, geometry, point })
+  const affiliationTypeID = orgStructures?.formation?.affiliationTypeID
 
   switch (type) {
     case SelectionTypes.POINT:
       await dispatch(batchActions([
         setNewShape({}),
-        setPreview(object.set('code', DEFAULT_APP6_CODE)),
+        setPreview(object.set('code', GET_DEFAULT_APP6_CODE(affiliationTypeID))),
       ]))
       break
     case SelectionTypes.TEXT:
