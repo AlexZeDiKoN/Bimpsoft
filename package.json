@@ -1,6 +1,6 @@
 {
   "name": "web-map",
-  "version": "17.01.1202",
+  "version": "17.01.1203",
   "private": true,
   "dependencies": {
     "@C4/CommonComponents": "^17.1.559",
