@@ -86,7 +86,10 @@ const ColorPicker = (props) => {
     }
   }
   const handleChange = useCallback(() => (color) => setColor(color[colorType]), [ colorType ])
-  const handleChangeComplete = useCallback((color) => props.onChange?.(color[colorType]), [ props.onChange, colorType ])
+  const handleChangeComplete = useCallback((color) => {
+    return props.onChange?.(color[colorType])
+    // eslint-disable-next-line
+  }, [ props.onChange, colorType ])
 
   const clickOutsideRef = getClickOutsideRef(() => {
     if (props.onHandlerColor) {
