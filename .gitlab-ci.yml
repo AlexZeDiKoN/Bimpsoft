@@ -1,57 +1,39 @@
 variables:
-  exe7z: 'C:\Tools\7z\7za.exe'
-  releaseDir: 'C:\Production'
-  deployDir: 'MAKET\SpaceHub\WebMap'
-  gitlabPath: 'gitlab.intecracy.com/DZVIN/WebMap.git'
-  push_version: 'gitlab.intecracy.com/DZVIN/install_update.git'
-  DeployDirTemp: 'Dzvin\SpaceHub\WebMap'
-  ErrorActionPreference: STOP
+  deployDir: 'C:\C4\SpaceHub\WebMap'
 
 
 stages:
   - build
   - deploy
-  - increment-dzvin
-
-.base: &base-dev
-  only:
-    - develop
-  tags:
-    - webmap-dev
-
-.base: &base
-  only:
-    - master
-  tags:
-    - webmap-dev
 
 build:
   stage: build
   only:
     - develop
-  tags: 
-    - explorer-build
+  tags:
+    - webpack
+  before_script:
+    - chcp 65001
+    - git config --global user.email "tumak.oleksandr@gmail.com"
+    - git config --global user.name "Oleksandr Tumak"
   script:
-    - a=($(cat package.json | python2 -c "import sys, json; print json.load(sys.stdin)['version']" | tr '.' '\n'));
-        patch=${a[2]};
-        updated=`expr $patch + 1`; 
-        old=${a[0]}.${a[1]}.${a[2]};
-        sed -i "s/${old}/${CURRENT_VERSION}.${updated}/g" package.json;
-        echo "Version  $CURRENT_VERSION.$updated"
-    - yarn
-    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
-    - cp .env .env.backup
-    - rm .env 
-    - cp .env.production .env
-    - yarn run svg-sprite2
-    - yarn run build
-    - rm .env
-    - cp .env.backup .env
-    - rm .env.backup
+    - echo Incrementing version...
+    - call node ./scripts/inc-version.js
+    - set jsonfile=package.json
+    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+    - call npm install
+    #- call npm install @C4/blank-editor@latest @C4/EuSign@latest @C4/validators@latest @C4/CommonComponents@latest @C4/MilSymbolEditor@latest @C4/components@latest
+    - copy .env .env.backup
+    - copy .env.production .env
+    - set NODE_OPTIONS="--max-old-space-size=8192"
+    - call npm run svg-sprite2
+    - call npm run build
+    - copy .env.backup .env
+    - del /q .env.backup
     - git status
-    - git commit -a -m "[CI skip] $CURRENT_VERSION.$updated (autocommit)"
-    - git push https://$PUSH_USER:$PUSH_TOKEN@$gitlabPath HEAD:develop
-    - yarn cache clean
+    - git commit -a -m "[CI skip] %version% (autocommit)"
+    - git push https://%ACCESS_USER%:%ACCESS_TOKEN%@%CI_SERVER_HOST%/%CI_PROJECT_PATH%.git HEAD:%CI_COMMIT_REF_NAME%
     - echo Done
   artifacts:
     expire_in: 7 day
@@ -68,212 +50,70 @@ build:
       - ./build/cesium/
   interruptible: true
 
-deploy-qa-11:
+deploy-qa-palermo:
   stage: deploy
-  <<: *base-dev
-  cache: {}
+  only:
+    - develop
+  tags:
+    - palermo
+  before_script:
+    - chcp 65001
   script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 11 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.95.11\c$\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.95.11\e$\maps
+    - Write-Host "Deploying to QA environment..."
+    - if(Test-Path $Env:deployDir) {Remove-Item $Env:deployDir -Recurse -Force}
+    - New-Item -ItemType "directory" -Path $Env:deployDir
+    - Copy-Item .\build\* -Destination $Env:deployDir -Recurse
+    - Write-Host "Done"
   interruptible: true
 
-deploy-self(17):
+deploy-qa-tokio:
   stage: deploy
-  <<: *base-dev
-  cache: {}
+  only:
+    - develop
+  tags:
+    - tokio
+  before_script:
+    - chcp 65001
   script:
-    - 'echo ========= Deploy: 17 (local) ========='
-    - rmdir /s /q C:\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y build C:\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y index.json e:\maps
+    - echo Deploying to QA environment...
+    - rmdir /s /q %deployDir%
+    - xcopy /E /C /I /Q /H /R /Y build %deployDir%
     - echo Done
   interruptible: true
 
-Increment_dzvin_dev:
-  stage: increment-dzvin
-  <<: *base-dev
-  script:
-    - echo run build
-    - echo Done
-    - cd C:\Version-dev\install_update
-    - git checkout develop
-    - git pull
-    - powershell.exe .\Versionalyze_dev.ps1
-    - powershell.exe Start-sleep -s 10
-    - git commit -a -m "autocommit"
-    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:develop
-  dependencies: []
-  interruptible: true
-######################### START MASTER ##############################
+#deploy-zip:
+#  stage: deploy
+#  <<: *base
+#  script:
+#    - echo Packing bundle into ZIP file...
+#    - set jsonfile=package.json
+#    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
+#    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
+#    - 'echo Version: %version%'
+#    - set pack="WebmapFrontend_v%version%.zip"
+#    - echo %pack%
+#    - del /Q build\static\css\*.map
+#    - del /Q build\static\js\*.map
+#    - copy index.json .\build
+#    - cd build
+#    - echo Zipping...
+#    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
+#    - echo "copy to remote"
+#    - call pscp -batch -pw %SSH_PASS% %releaseDir%\WebmapFrontend_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
+##  after_script:
+##    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
 
-build-master:
-  stage: build
-  only:
-    - master
-  tags: 
-    - explorer-build
-  script:
-    - yarn
-    - yarn add @DZVIN/CommonComponents @DZVIN/MilSymbolEditor @DZVIN/components --mutex network:55000 --network-concurrency 1 
-    - cp .env .env.backup
-    - rm .env 
-    - cp .env.production .env
-    - yarn run svg-sprite2
-    - yarn run build
-    - echo Done
-  artifacts:
-    expire_in: 1 hour
-    paths:
-      - ./build/index.html
-      - ./build/manifest.json
-      - ./build/favicon.ico
-      - ./build/service-worker.js
-      - ./build/asset-manifest.json
-      - ./build/images/*.*
-      - ./build/static/css/*.*
-      - ./build/static/js/*.*
-      - ./build/static/media/*.*
-      - ./build/cesium/
-
-deploy-qa29:
-  stage: deploy
-  <<: *base
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 29 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.95.29\c$\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.95.29\e$\maps
-  after_script:
-    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
-
-#
-deploy-qa43:
-  stage: deploy
-  <<: *base
-  cache: {}
-  script:
-    - echo Deploying to QA environment...
-    - 'echo ========= Deploy: 43 (remote) ========='
-    - xcopy /E /C /I /Q /H /R /Y build \\172.16.95.43\c$\%deployDir%
-    - xcopy /E /C /I /Q /H /R /Y index.json \\172.16.95.43\e$\maps
-#  after_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
-
-deploy-zip:
-  stage: deploy
-  <<: *base
-  script:
-    - echo Packing bundle into ZIP file...
-    - set jsonfile=package.json
-    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
-    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
-    - 'echo Version: %version%'
-    - set pack="WebmapFrontend_v%version%.zip"
-    - echo %pack%
-    - del /Q build\static\css\*.map
-    - del /Q build\static\js\*.map
-    - copy index.json .\build
-    - cd build
-    - echo Zipping...
-    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
-    - echo "copy to remote"
-    - call pscp -batch -pw %SSH_PASS% %releaseDir%\WebmapFrontend_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
-#  after_script:
-#    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
-
-Increment_dzvin:
-  stage: increment-dzvin
-  <<: *base
-  script:
-    - echo run increment
-    - echo Done
-    - cd c:\Production\Version\install_update
-    - git checkout master
-    - git pull
-    - powershell.exe .\Versionalyze.ps1
-    - powershell.exe Start-sleep -s 10
-    - git commit -a -m "autocommit"
-    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
-  dependencies: []
-
-############## master Temp ##################
-
-build-master-temp:
-  stage: build
-  only:
-    - master-temporary
-  tags: 
-    - explorer-build
-  script:
-    - yarn
-    - rm .env 
-    - cp .env.production .env
-    - yarn run svg-sprite2
-    - yarn run build
-    - echo Done
-  artifacts:
-    expire_in: 7 day
-    paths:
-      - ./build/index.html
-      - ./build/manifest.json
-      - ./build/favicon.ico
-      - ./build/service-worker.js
-      - ./build/asset-manifest.json
-      - ./build/images/*.*
-      - ./build/static/css/*.*
-      - ./build/static/js/*.*
-      - ./build/static/media/*.*
-      - ./build/cesium/
-      
-
-deploy-18:
-  stage: deploy
-  only:
-    - master-temporary
-  tags:
-    - master-2
-  script:
-    - rm .git -recurse -force
-    - cp .\build\* C:\$DeployDirTemp -recurse -force
-    - cp index.json e:\maps -force
-
-deploy-21:
-  stage: deploy
-  only:
-    - master-temporary
-  tags:
-    - master-2
-  script:
-    - rm -recurse -force .git
-    - cp .\build\* \\172.16.95.21\c$\$DeployDirTemp -recurse -force
-    - cp index.json \\172.16.95.21\e$\maps  -force
-
-        
-deploy-zip-temp:
-  stage: deploy
-  only:
-    - master-temporary
-  tags:
-    - rabbitbroker-dev
-  script:
-    - echo Packing bundle into ZIP file...
-    - del package-lock.json
-    - del .gitignore
-    - del .gitlab-ci.yml
-    - rmdir /s /q .git
-    - set jsonfile=package.json
-    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
-    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
-    - 'echo Version: %version%'
-    - set pack="WebmapFrontend-temp_v%version%.zip"
-    - echo %pack%
-    - del /Q build\static\css\*.map
-    - del /Q build\static\js\*.map
-    - copy index.json .\build
-    - cd build
-    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
-    - call pscp -pw %SSH_PASS% %releaseDir%\WebmapFrontend-temp_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
-
+#Increment_dzvin:
+#  stage: increment-dzvin
+#  <<: *base
+#  script:
+#    - echo run increment
+#    - echo Done
+#    - cd c:\Production\Version\install_update
+#    - git checkout master
+#    - git pull
+#    - powershell.exe .\Versionalyze.ps1
+#    - powershell.exe Start-sleep -s 10
+#    - git commit -a -m "autocommit"
+#    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
+#  dependencies: []
