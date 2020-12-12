@@ -1,6 +1,6 @@
 import React from 'react'
 import { FormRow } from '@C4/CommonComponents'
-import ColorPicker from '../../common/ColorPicker'
+import  ColorPicker from '../../common/ColorPicker'
 import { colors } from '../../../constants'
 import i18n from '../../../i18n'
 import { colorDiv } from './render'

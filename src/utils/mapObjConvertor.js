@@ -9,6 +9,7 @@ import {
   NearFarScalar,
   CircleOutlineGeometry,
   GeoJsonDataSource,
+  Cartesian2,
 } from 'cesium'
 import { sha256 } from 'js-sha256'
 import memoize from 'memoize-one'
@@ -16,7 +17,8 @@ import { chunk } from 'lodash'
 import { Symbol } from '@C4/milsymbol'
 import { model } from '@C4/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
-import { bezierArray } from '../utils/svg/lines'
+import { bezierArray } from './svg/lines'
+import { Map } from 'immutable'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
@@ -105,8 +107,9 @@ export const zoom2height = (latitude, zoom, altitude) => {
 
 export const buildSVG = (data) => {
   const { code = '', attributes } = data
-  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(attributes) })
-  return symbol.asSVG()
+  const amplifiers = attributes._map ? Object.fromEntries(attributes) : attributes
+  const symbol = new Symbol(code, { ...model.parseAmplifiersConstants(amplifiers) })
+  return { svg: symbol.asSVG(), anchor: symbol.getAnchor() }
 }
 
 const BILLBOARD_HEIGHT = 400
@@ -166,12 +169,14 @@ const buildPolyline = (positions, color, width) => ({
   material: Color.fromCssColorString(mapColors.evaluateColor(color)),
 })
 
-const buildBillboard = (image, isCP) => ({
+const buildBillboard = (image, isCP, anchor) => ({
   image,
   scaleByDistance,
   heightReference: HeightReference[isCP ? 'CLAMP_TO_GROUND' : 'NONE'],
-  verticalOrigin: VerticalOrigin[isCP ? 'BOTTOM' : 'CENTER'],
-  horizontalOrigin: HorizontalOrigin[isCP ? 'LEFT' : 'CENTER'],
+  verticalOrigin: VerticalOrigin['TOP'],
+  horizontalOrigin: HorizontalOrigin['LEFT'],
+  pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
+  pixelOffsetScaleByDistance: scaleByDistance,
 })
 
 // @TODO: в утилиты
@@ -212,18 +217,19 @@ const buildOutlineC = (data, finalArray) => {
   }
 }
 
-export const objectsToSvg = memoize(async (list, positionHeightUp) => {
+export const
+    objectsToSvg = memoize(async (list, positionHeightUp) => {
   const acc = []
   const listArr = list.toArray()
   for (let i = 0; i < listArr.length; i++) {
     const { type, point, geometry, id, attributes } = listArr[i]
     if (type === objTypes.POINT) {
       const { lat, lng } = point
-      const svg = buildSVG(listArr[i])
+      const { svg, anchor } = buildSVG(listArr[i])
       const { code } = listArr[i]
       const isCP = model.APP6Code.isCommandPost(code)
       const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-      const billboard = buildBillboard(image, isCP)
+      const billboard = buildBillboard(image, isCP, anchor)
       const position = Cartesian3.fromDegrees(lng, lat)
       const sign = { id, billboard, type, position }
       if (!isCP) {
@@ -236,6 +242,7 @@ export const objectsToSvg = memoize(async (list, positionHeightUp) => {
         sign.position = billboardPosition
         sign.polyline = polyline
       }
+      console.log('sign', { isCP, sign, anchor })
       acc.push(sign)
     } else {
       let color = attributes.get('color')
