@@ -18,7 +18,6 @@ import { Symbol } from '@C4/milsymbol'
 import { model } from '@C4/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
 import { bezierArray } from './svg/lines'
-import { Map } from 'immutable'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
