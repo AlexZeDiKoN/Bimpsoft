@@ -241,7 +241,6 @@ export const
         sign.position = billboardPosition
         sign.polyline = polyline
       }
-      console.log('sign', { isCP, sign, anchor })
       acc.push(sign)
     } else {
       let color = attributes.get('color')
