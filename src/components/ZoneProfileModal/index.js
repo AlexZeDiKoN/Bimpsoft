@@ -59,7 +59,8 @@ export default class ZoneProfileModal extends React.Component {
       name,
       value: this.state[name] ?? '',
       onChange: this.onChange,
-      min: 0,
+      min: 0.1,
+      max: 9999.9,
     })
 
   render () {
