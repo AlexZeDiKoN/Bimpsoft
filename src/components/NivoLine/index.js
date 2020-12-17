@@ -2,11 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Line } from '@nivo/line'
 
-export const LEGEND_ITEM_HEIGHT = 16
 export const LEGEND_SYMBOL_SIZE = 12
+export const LEGEND_ITEM_HEIGHT = 16
 export const LEGEND_ITEM_SPACING = 2
 export const BOTTOM_AXIS_LEGEND_MARKER_OFFSET = 35
 export const LEGEND_MARGIN_FROM_X_AXIS = BOTTOM_AXIS_LEGEND_MARKER_OFFSET + 15
+
+const containerStyles = {
+  width: '100%',
+  overflow: 'auto',
+}
 
 /**
  * Calculate legend height (in pixels) based on legend items amount
@@ -26,52 +31,54 @@ export function getLegendHeight (legendItemsAmount) {
 function NivoLine ({ data, curve = 'cardinal', bottomAxisName, leftAxisName }) {
   const legendHeight = getLegendHeight(data.length)
   return (
-    <Line
-      data={data}
-      width={850}
-      height={400}
-      curve={curve}
-      margin={{
-        'top': 30,
-        'right': 20,
-        'bottom': legendHeight + 10,
-        'left': 40,
-      }}
-      xScale={{
-        'type': 'linear',
-      }}
-      yScale={{
-        'type': 'linear',
-        'stacked': false,
-        'min': 'auto',
-        'max': 'auto',
-      }}
-      axisBottom={{
-        orient: 'bottom',
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: bottomAxisName,
-        legendOffset: 36,
-        legendPosition: 'middle',
-      }}
-      axisLeft={{
-        'orient': 'left',
-        'tickSize': 5,
-        'tickPadding': 5,
-        'tickRotation': 0,
-        'legend': leftAxisName,
-        'legendOffset': -35,
-        'legendPosition': 'middle',
-      }}
-      dotSize={8}
-      dotColor='inherit:darker(0.3)'
-      dotBorderWidth={0}
-      dotBorderColor='#ffffff'
-      dotLabel='y'
-      dotLabelYOffset={-12}
-      animate={false}
-    />
+    <div style={containerStyles}>
+      <Line
+        data={data}
+        width={1250}
+        height={400}
+        curve={curve}
+        margin={{
+          'top': 30,
+          'right': 20,
+          'bottom': legendHeight + 10,
+          'left': 40,
+        }}
+        xScale={{
+          'type': 'linear',
+        }}
+        yScale={{
+          'type': 'linear',
+          'stacked': false,
+          'min': 'auto',
+          'max': 'auto',
+        }}
+        axisBottom={{
+          orient: 'bottom',
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: bottomAxisName,
+          legendOffset: 36,
+          legendPosition: 'middle',
+        }}
+        axisLeft={{
+          'orient': 'left',
+          'tickSize': 5,
+          'tickPadding': 5,
+          'tickRotation': 0,
+          'legend': leftAxisName,
+          'legendOffset': -35,
+          'legendPosition': 'middle',
+        }}
+        dotSize={8}
+        dotColor='inherit:darker(0.3)'
+        dotBorderWidth={0}
+        dotBorderColor='#ffffff'
+        dotLabel='y'
+        dotLabelYOffset={-12}
+        animate={false}
+      />
+    </div>
   )
 }
 
