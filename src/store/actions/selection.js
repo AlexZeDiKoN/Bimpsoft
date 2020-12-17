@@ -1,6 +1,7 @@
 import { batchActions } from 'redux-batched-actions'
 import { List } from 'immutable'
 import { model } from '@C4/MilSymbolEditor'
+import moment from 'moment'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
@@ -8,6 +9,7 @@ import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects }
 import { GROUPS, entityKindCanMirror } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
+import { amps } from '../../constants/symbols'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
 
@@ -174,7 +176,7 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
   dispatch(disableDrawUnit())
 })
 
-export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, getState) => {
+export const newShapeFromUnit = (unitID, point) => withNotification(async (dispatch, getState, { milOrgApi }) => {
   const {
     orgStructures,
     layers: {
@@ -186,6 +188,15 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
 
   const { app6Code: code, id, symbolData, natoLevelID } = unit
 
+  const dictionaries = await milOrgApi.allDc()
+  const formationCountryId = orgStructures?.formation?.countryID
+  const countriesList = dictionaries?.Countries ?? []
+  const countryFormation = countriesList.find(({ id }) => formationCountryId === id)
+
+  const attributes = symbolData || {}
+  attributes[amps.dtg] = moment()
+  attributes[amps.country] = countryFormation?.codeA3 ?? ''
+
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
     code,
@@ -194,7 +205,7 @@ export const newShapeFromUnit = (unitID, point) => withNotification((dispatch, g
     level: natoLevelID,
     geometry: List([ point ]),
     point: point,
-    attributes: WebMapAttributes(symbolData || {}),
+    attributes: WebMapAttributes(attributes),
   })))
 })
 

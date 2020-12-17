@@ -1,5 +1,6 @@
 import { batchActions } from 'redux-batched-actions'
 import { utils } from '@C4/CommonComponents'
+import moment from 'moment'
 import { MapSources, ZOOMS, paramsNames, access } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
@@ -8,6 +9,7 @@ import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
 import { activeMapSelector } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
+import { amps } from '../../constants/symbols'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
 import { asyncAction, flexGrid, layers, selection, changeLog } from './'
@@ -174,7 +176,6 @@ export const setScaleToSelection = (scaleToSelected) => ({
   type: actionNames.SET_SCALE_TO_SELECTION,
   payload: scaleToSelected,
 })
-
 
 export const fixServerObject = ({ unit = null, type = null, ...rest }) => ({
   ...rest,
@@ -521,10 +522,14 @@ export const allocateObjectsByLayerId = (layerId) => ({
 })
 
 export const updateObjectGeometry = (id, geometry, addUndoRecord = true, flexGridPrevState) =>
-  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry } }) => {
+  asyncAction.withNotification(async (dispatch, _, { webmapApi: { objUpdateGeometry, objUpdateAttr } }) => {
     stopHeartBeat()
 
-    const payload = fixServerObject(await objUpdateGeometry(id, geometry))
+    const payloadGeometryUpdate = fixServerObject(await objUpdateGeometry(id, geometry))
+
+    const attributes = payloadGeometryUpdate?.attributes || {}
+    attributes[amps.dtg] = moment()
+    const payload = fixServerObject(await objUpdateAttr(id, attributes))
 
     if (addUndoRecord) {
       dispatch({
