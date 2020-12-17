@@ -22,7 +22,7 @@ const ElevationProfileModal = ({
   return <Modal
     title={i18n.ELEVATION_PROFILE}
     visible={isModalOpen}
-    width={900}
+    width="75%"
     onCancel={closeModal}
     footer={null}
   >
