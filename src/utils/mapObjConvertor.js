@@ -22,6 +22,7 @@ import { bezierArray } from './svg/lines'
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
 import * as mapColors from '../constants/colors'
+import {findDefinition} from "../components/WebMap/patch/Sophisticated/utils";
 
 const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
@@ -295,6 +296,15 @@ export const
             const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
             fill.alpha = 0.5
             acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
+          }
+          break
+        }
+        case objTypes.SOPHISTICATED: {
+          const { code } = listArr[i]
+          const lineDefinition = findDefinition(code)
+          if(lineDefinition?.build3d) {
+            const build = lineDefinition.build3d( acc, id, geometry.toArray(), attributes )
+            console.log('3d', build)
           }
           break
         }

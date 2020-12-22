@@ -14,6 +14,10 @@ import {
   angleOf,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import {Cartesian3, Color} from "cesium";
+import {distanceAzimuth, moveCoordinate} from "../../utils/sectors";
+import * as mapColors from "../../../../../constants/colors";
+import objTypes from "../../../entityKind";
 
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986
@@ -70,5 +74,40 @@ lineDefinitions['017006'] = {
 
     const p2p = applyToPoint(ang(-hpSign * 270, b2), p1)
     drawArc(result, p1, p2p, len, 0, 0, +!hp)
+  },
+
+  // рендер функция для 3D карты
+  build3d: (acc, id, basePoints, attributes) => {
+    const color = Color.fromCssColorString(mapColors.evaluateColor(attributes.get('color')))
+    const width = attributes.get('strokeWidth')
+    const { angledeg, distance } = distanceAzimuth(basePoints[0], basePoints[1])
+    const middlePoint = moveCoordinate(basePoints[0], {distance : distance / 2, angledeg})
+    const entities = []
+    entities.push( {polyline: {
+        positions: [ basePoints[0], basePoints[1] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+        width,
+        clampToGround: true,
+        followSurface: true,
+        material: color,
+      }})
+    entities.push( {polyline: {
+        positions: [ middlePoint, basePoints[2] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+        width,
+        clampToGround: true,
+        followSurface: true,
+        material: color,
+      }})
+    const arrowVector = distanceAzimuth(middlePoint, basePoints[2])
+    const arrowL = moveCoordinate(basePoints[2], {distance : -arrowVector.distance / 12, angledeg: arrowVector.angledeg + 30})
+    const arrowR = moveCoordinate(basePoints[2], {distance : -arrowVector.distance / 12, angledeg: arrowVector.angledeg - 30})
+    entities.push( {polyline: {
+        positions: [ arrowL, basePoints[2],arrowR ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+        width,
+        clampToGround: true,
+        followSurface: true,
+        material: color,
+      }})
+    acc.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return acc
   },
 }
