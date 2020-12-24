@@ -206,6 +206,7 @@ export const LINE_MINES_LAND = 'Ряд протипіхотних мін'
 export const HATCH = 'Штриховка'
 export const LEFT_TO_RIGHT = 'Зліва направо'
 export const HATCH_LEFT_TO_RIGHT = 'Штриховка зліва направо'
+export const HATCH_RIGHT_TO_LEFT = 'Штриховка справа наліво'
 
 export const REGULAR = 'Звичайний'
 export const LINE_ENDS_LEFT = 'Лівий край' // Константа використовується!
