@@ -20,6 +20,7 @@ export const amps = {
   commonIdentifier: 'commonIdentifier', // Загальний ідентифікатор
   additionalInformation: 'additionalInformation', // 1Додаткова інформація
   reinforcedReduced: 'reinforcedReduced', // 1Посилення/Послаблення
+  country: 'country', // Країна
   staffComments: 'staffComments', // 1Коментар
   affiliation: 'affiliation',
   dtg: 'dtg', // 1Дата-час

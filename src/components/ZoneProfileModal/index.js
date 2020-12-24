@@ -26,6 +26,11 @@ const inputWrap = {
 const heightTarget = 'heightTarget'
 const heightObserver = 'heightObserver'
 
+const defaultState = {
+  [heightTarget]: DEFAULT_HEIGHT,
+  [heightObserver]: DEFAULT_HEIGHT,
+}
+
 export default class ZoneProfileModal extends React.Component {
   static propTypes = {
     wrapper: PropTypes.oneOf([ MovablePanel ]),
@@ -35,12 +40,10 @@ export default class ZoneProfileModal extends React.Component {
     visible: PropTypes.bool,
   }
 
-  state = {
-    [heightTarget]: DEFAULT_HEIGHT,
-    [heightObserver]: DEFAULT_HEIGHT,
-  }
+  state = defaultState
 
   onClose = () => {
+    this.setState(defaultState)
     this.props.onClear()
     this.props.onClose()
   }
@@ -59,7 +62,9 @@ export default class ZoneProfileModal extends React.Component {
       name,
       value: this.state[name] ?? '',
       onChange: this.onChange,
-      min: 0,
+      min: 0.1,
+      max: 9999.9,
+      emptyValue: 0.1,
     })
 
   render () {
