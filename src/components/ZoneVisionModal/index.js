@@ -34,6 +34,12 @@ const defaultState = {
   [angle]: DEFAULT_ANGLE,
 }
 
+const additionalProps = {
+  [angle]: { min: 1, max: 359, emptyValue: 1 },
+  [heightObserver]: { min: 0.1, max: 9999.9, emptyValue: 0.1 },
+  [heightTarget]: { min: 0.1, max: 9999.9, emptyValue: 0.1 },
+}
+
 export default class ZoneVisionModal extends React.Component {
   static propTypes = {
     wrapper: PropTypes.oneOf([ MovablePanel ]),
@@ -48,6 +54,7 @@ export default class ZoneVisionModal extends React.Component {
   state = defaultState
 
   onClose = () => {
+    this.setState(defaultState)
     this.props.onClear()
     this.props.onClose()
   }
@@ -65,7 +72,7 @@ export default class ZoneVisionModal extends React.Component {
     name,
     value: this.state[name] ?? '',
     onChange: this.onChange,
-    min: 0,
+    ...additionalProps[name],
   })
 
   render () {

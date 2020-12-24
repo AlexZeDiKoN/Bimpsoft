@@ -18,6 +18,7 @@ const PATH_FILL = [ 'attributes', 'fill' ]
 const HATCH_TYPES = {
   none: { text: i18n.FILL_FULL, value: HATCH_TYPE.NONE },
   leftToRight: { text: i18n.HATCH_LEFT_TO_RIGHT, value: HATCH_TYPE.LEFT_TO_RIGHT },
+  rightToLeft: { text: i18n.HATCH_RIGHT_TO_LEFT, value: HATCH_TYPE.RIGHT_TO_LEFT },
 }
 
 const TYPE_LIST_JSX = Object.values(HATCH_TYPES).map(({ value, text }) => (

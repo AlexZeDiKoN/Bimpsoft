@@ -43,6 +43,7 @@ export const settings = {
 export const HATCH_TYPE = {
   NONE: 'none',
   LEFT_TO_RIGHT: 'left-to-right',
+  RIGHT_TO_LEFT: 'right-to-left',
 }
 export const MARK_TYPE = {
   ARROW_90: 'arrow90',

@@ -11,6 +11,7 @@ const { FormRow } = components.form
 export const HATCH_TYPES = {
   none: { text: i18n.NO_ONE, value: HATCH_TYPE.NONE },
   leftToRight: { text: i18n.LEFT_TO_RIGHT, value: HATCH_TYPE.LEFT_TO_RIGHT },
+  rightToLeft: { text: i18n.HATCH_RIGHT_TO_LEFT, value: HATCH_TYPE.RIGHT_TO_LEFT },
 }
 
 const PATH_HATCH = [ 'attributes', 'hatch' ]
