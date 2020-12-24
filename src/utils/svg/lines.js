@@ -1291,7 +1291,7 @@ export const getLineEnds = (points, objectAttributes, bezier, strokeWidth, graph
 }
 
 export const drawLineHatch = (layer, scale, hatch) => {
-  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) {
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT || hatch === HATCH_TYPE.RIGHT_TO_LEFT) {
     const strokeWidth = layer.options.weight
     const cs = strokeWidth + settings.CROSS_SIZE * scale
     const sw = strokeWidth // settings.STROKE_WIDTH * scale
@@ -1305,9 +1305,15 @@ export const drawLineHatch = (layer, scale, hatch) => {
     // layer._path.setAttribute('width', 100)
     layer.options.fillColor = fillColor
     layer.options.fillOpacity = 1
+    const angleHatch = hatch === HATCH_TYPE.LEFT_TO_RIGHT ? 45 : -45
     return ` 
-      <pattern id="${fillId}" x="0" y="0" width="${cs}" height="${cs}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-        <line x1="${0}" y1="${0}" x2=${0} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
+      <pattern 
+        id="${fillId}"
+        x="0" y="0"
+        width="${cs}" height="${cs}"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(${angleHatch})">
+        <line x1="${sw}" y1="${0}" x2=${sw} y2=${cs} stroke="${hatchColor}" stroke-width="${sw}" />
       </pattern>`
   } else {
     layer.options.fillColor = evaluateColor(layer.object?.attributes?.fill) || 'transparent'

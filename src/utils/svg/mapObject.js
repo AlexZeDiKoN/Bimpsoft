@@ -261,7 +261,7 @@ const getSvgPath = (
 
   // заливка або штрихування
   let fillOption = null
-  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT) { // штриховка
+  if (hatch === HATCH_TYPE.LEFT_TO_RIGHT  || hatch === HATCH_TYPE.RIGHT_TO_LEFT) { // штриховка
     const code = idObject
     const hatchColor = colors.evaluateColor(fill) || 'black'
     const fillId = `SVG-fill-pattern-${code}`
@@ -277,8 +277,15 @@ const getSvgPath = (
         width={cs}
         height={cs}
         patternUnits="userSpaceOnUse">
-        <line x1={-width} y1={p1} x2={p1} y2={-width} stroke={hatchColor} strokeWidth={width}/>
-        <line x1={p2} y1={p3} x2={p3} y2={p2} stroke={hatchColor} strokeWidth={width}/>
+        ${hatch === HATCH_TYPE.RIGHT_TO_LEFT ? <>
+            <line x1={-width} y1={p2} x2={p1} y2={p3} stroke={hatchColor} strokeWidth={width}/>
+            <line x1={p2} y1={-width} x2={p3} y2={p1} stroke={hatchColor} strokeWidth={width}/>
+          </> :
+          <>
+            <line x1={-width} y1={p1} x2={p1} y2={-width} stroke={hatchColor} strokeWidth={width}/>
+            <line x1={p2} y1={p3} x2={p3} y2={p2} stroke={hatchColor} strokeWidth={width}/>
+          </>
+        }
       </pattern>
       <path
         fill={fillColor}
