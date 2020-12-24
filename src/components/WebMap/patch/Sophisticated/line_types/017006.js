@@ -1,4 +1,5 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
+import { Cartesian3, Color } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -13,11 +14,14 @@ import {
   drawLineMark,
   angleOf,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../constants/drawLines'
-import {Cartesian3, Color} from "cesium";
-import {distanceAzimuth, moveCoordinate} from "../../utils/sectors";
-import * as mapColors from "../../../../../constants/colors";
-import objTypes from "../../../entityKind";
+import {
+  MARK_DIRECTION,
+  MARK_TYPE,
+} from '../../../../../constants/drawLines'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import * as mapColors from '../../../../../constants/colors'
+import objTypes from '../../../entityKind'
+import { marker3D } from '../3dLib'
 
 // sign name: АТАКУВАТИ ВОГНЕМ
 // task code: DZVIN-5986
@@ -78,35 +82,39 @@ lineDefinitions['017006'] = {
 
   // рендер функция для 3D карты
   build3d: (acc, id, basePoints, attributes) => {
-    const color = Color.fromCssColorString(mapColors.evaluateColor(attributes.get('color')))
+    const color = attributes.get('color')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
     const width = attributes.get('strokeWidth')
     const { angledeg, distance } = distanceAzimuth(basePoints[0], basePoints[1])
-    const middlePoint = moveCoordinate(basePoints[0], {distance : distance / 2, angledeg})
+
+    const middlePoint = moveCoordinate(basePoints[0], { distance: distance / 2, angledeg })
     const entities = []
-    entities.push( {polyline: {
-        positions: [ basePoints[0], basePoints[1] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
-        width,
-        clampToGround: true,
-        followSurface: true,
-        material: color,
-      }})
-    entities.push( {polyline: {
-        positions: [ middlePoint, basePoints[2] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
-        width,
-        clampToGround: true,
-        followSurface: true,
-        material: color,
-      }})
-    const arrowVector = distanceAzimuth(middlePoint, basePoints[2])
-    const arrowL = moveCoordinate(basePoints[2], {distance : -arrowVector.distance / 12, angledeg: arrowVector.angledeg + 30})
-    const arrowR = moveCoordinate(basePoints[2], {distance : -arrowVector.distance / 12, angledeg: arrowVector.angledeg - 30})
-    entities.push( {polyline: {
-        positions: [ arrowL, basePoints[2],arrowR ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
-        width,
-        clampToGround: true,
-        followSurface: true,
-        material: color,
-      }})
+    entities.push({ polyline: {
+      positions: [ basePoints[0], basePoints[1] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    entities.push({ polyline: {
+      positions: [ middlePoint, basePoints[2] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    const { distance: distance2 } = distanceAzimuth(middlePoint, basePoints[2])
+    const markerLength = Math.max(distance / 2, distance2) / 5
+    entities.push(marker3D(middlePoint, basePoints[2], MARK_TYPE.ARROW_60,
+      { color, width, markerLength }))
+    // отрисовка загибов на концах линии
+    const { angledeg: angledeg2 } = distanceAzimuth(basePoints[0], basePoints[2])
+    const revers = angledeg < angledeg2
+    entities.push(marker3D(middlePoint, basePoints[revers ? 1 : 0], MARK_TYPE.BEND,
+      { color, width, direction: MARK_DIRECTION.LEFT, markerLength }))
+    entities.push(marker3D(middlePoint, basePoints[revers ? 0 : 1], MARK_TYPE.BEND,
+      { color, width, direction: MARK_DIRECTION.RIGHT, markerLength }))
     acc.push({ id, type: objTypes.SOPHISTICATED, entities })
     return acc
   },
