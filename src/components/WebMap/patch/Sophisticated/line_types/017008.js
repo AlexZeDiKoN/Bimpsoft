@@ -3,7 +3,7 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
-  drawMaskedText, drawLineMark,
+  drawMaskedText, drawLineMark, deg,
 } from '../utils'
 import {
   MARK_TYPE,
@@ -23,7 +23,7 @@ import objTypes from '../../../entityKind'
 // task code: DZVIN-5778
 // hint: 'Демонструвати - ввести противника в оману демонстрацією сили без контакту з противником.'
 
-const TEXT = 'Й-BgDj-'
+const TEXT = 'D'
 
 lineDefinitions['017008'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -96,7 +96,29 @@ lineDefinitions['017008'] = {
     entities.push(marker3D(basePoints[2], basePoints[3], MARK_TYPE.ARROW_60,
       { color, width, markerLength: distance / lengthRatio }))
     // Сборка текста
-    entities.push(text3D(basePoints, LabelType.GROUND, { text: TEXT, fillOpacity: '50%' }))
+    const dd = distanceAzimuth(basePoints[1], basePoints[2])
+    const heightBox = dd.distance / 5
+    const ddP1 = distanceAzimuth(basePoints[1], basePoints[0])
+    const ddP2 = distanceAzimuth(basePoints[2], basePoints[3])
+    const leg1 = (ddP1.distance + ddP2.distance) / 4
+    const leg2 = dd.distance / 2
+    const dAngle = deg(Math.atan2(leg2, leg1))
+    const center = moveCoordinate(
+      basePoints[1],
+      {
+        angledeg: ddP1.angledeg + dAngle * (revers ? 1 : -1),
+        distance: Math.sqrt(leg2 * leg2 + leg1 * leg1),
+      },
+    )
+    entities.push(text3D(center, LabelType.GROUND, {
+      text: TEXT,
+      angle: ddP1.angledeg,
+      heightBox,
+      fillOpacity: '50%',
+    }))
+    entities.push(text3D(basePoints, LabelType.OPPOSITE, {
+      text: TEXT,
+    }))
     acc.push({ id, type: objTypes.SOPHISTICATED, entities })
     return acc
   },

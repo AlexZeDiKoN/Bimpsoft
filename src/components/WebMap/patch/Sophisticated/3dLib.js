@@ -12,12 +12,14 @@ import {
   PolygonHierarchy,
   ImageMaterialProperty,
 } from 'cesium'
+import { utils } from '@C4/CommonComponents'
 import { distanceAzimuth, moveCoordinate } from '../utils/sectors'
 import * as mapColors from '../../../../constants/colors'
 import {
   MARK_DIRECTION,
   MARK_TYPE,
 } from '../../../../constants/drawLines'
+import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
 export const lengthRatio = 8
@@ -27,21 +29,22 @@ export const LabelType = {
   GROUND: 'ground', // текст выводится на поверхность
 }
 
-const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
+const scaleByDistanceLabel = new NearFarScalar(500, 1, 1000000, 0.1)
 
 // шрифт текстовых меток по умолчанию
 const LabelFont = {
-  size: 20,
+  size: 64,
   font: 'sans-serif',
 }
 
 // генерация текстовых элементов
+// coordinate - координата места привязки или массив координат по которому находится центр масс координат
 // type:
 //   OPPOSITE - вывод меткой, текст всегда повернут к камере
 //   GROUND   - вывод через полигон, текст на поверхности карты
 // attributes {
 // text,
-// color,
+// color = Color.BLACK, - цвет текста
 // fillOpacite = 1, - прозрачность подложки текста
 // fillColor = rgb(200,200,200), - цвет подложки
 // }
@@ -50,87 +53,87 @@ export const text3D = (coordinate, type, attributes) => {
   if (text === '') {
     return null
   }
-  let center
-  let points
-  if (Array.isArray(coordinate)) { // определяем центр массива координат
-    points = coordinate.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-    const sum = points.reduce((sum, current) => {
-      sum.x += current.x
-      sum.y += current.y
-      sum.z += current.z
-      return sum
-    })
-    center = new Cartesian3(sum.x / points.length, sum.y / points.length, sum.z / points.length)
-  } else {
-    center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
-  }
+
   switch (type) {
     case LabelType.OPPOSITE: {
-      const label = {}
-      label.position = center // artesian3.fromDegrees(coordinate.lng, coordinate.lat)
-      label.label = {
-        text,
-        font: `${LabelFont.size}px ${LabelFont.font}`,
-        style: LabelStyle.FILL,
-        fillColor: color,
-        // pixelOffset: new Cartesian2(0.0, 20),
-        // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
-        showBackground: false,
-        // backgroundColor : new Color(0.165, 0.165, 0.165, 0.8),
-        // backgroundPadding : new Cartesian2(7, 5),
-        outline: false,
-        // outlineColor: Color.BLACK,
-        // outlineWidth: 1.0,
-        horizontalOrigin: HorizontalOrigin.CENTER,
-        verticalOrigin: VerticalOrigin.BASELINE,
-        scale: 1.0,
-        // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
-        pixelOffset: Cartesian2.ZERO,
-        eyeOffset: Cartesian3.ZERO,
-        heightReference: HeightReference.NONE,
-        distanceDisplayCondition: undefined,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
+      let center
+      let points
+      if (Array.isArray(coordinate)) { // определяем центр массива координат
+        points = coordinate.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+        const sum = points.reduce((sum, current) => {
+          sum.x += current.x
+          sum.y += current.y
+          sum.z += current.z
+          return sum
+        })
+        center = new Cartesian3(sum.x / points.length, sum.y / points.length, sum.z / points.length)
+      } else {
+        center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
+      }
+      const label = {
+        position: center,
+        label: {
+          text,
+          font: `${LabelFont.size}px ${LabelFont.font}`,
+          style: LabelStyle.FILL,
+          fillColor: color,
+          // pixelOffset: new Cartesian2(0.0, 20),
+          // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
+          showBackground: false,
+          // backgroundColor : new Color(0.165, 0.165, 0.165, 0.8),
+          // backgroundPadding : new Cartesian2(7, 5),
+          outline: false,
+          // outlineColor: Color.BLACK,
+          // outlineWidth: 1.0,
+          horizontalOrigin: HorizontalOrigin.CENTER,
+          verticalOrigin: VerticalOrigin.BASELINE,
+          scale: 1.0,
+          scaleByDistance: scaleByDistanceLabel,
+          // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
+          pixelOffset: Cartesian2.ZERO,
+          eyeOffset: Cartesian3.ZERO,
+          heightReference: HeightReference.NONE,
+          distanceDisplayCondition: undefined,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
+        },
       }
       return label
     }
     case LabelType.GROUND: {
-      const height = 32
-      const heightView = Math.round(height * 1.2)
-      const width = height * 0.6 * text.length
-      const { fillOpacity = '1' } = attributes
+      const heightView = Math.round(LabelFont.size * 1.2)
+      const widthView = LabelFont.size * 0.6 * text.length
+      if (!utils.Coordinates.check(coordinate)) {
+        return null
+      }
+      const center = coordinate
+      const {
+        fillOpacity = '1',
+        angle = 0,
+        heightBox = 1,
+      } = attributes
       const image = `data:image/svg+xml,
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${heightView}" >
-  <rect x="0" y="0" width="${width}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
-  <text font-size="${height}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
+  <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
+  <text font-size="${LabelFont.size}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
  </svg>`
-      // const billboard = {
-      //   image,
-      //   scaleByDistance,
-      //   heightReference: HeightReference.CLAMP_TO_GROUND,
-      //   verticalOrigin: VerticalOrigin.BASELINE,
-      //   horizontalOrigin: HorizontalOrigin.CENTER,
-      // pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
-      // pixelOffsetScaleByDistance: scaleByDistance,
-      // }
-      const { distance, angledeg } = distanceAzimuth(coordinate[1], coordinate[2])
-      const { angleRad } = distanceAzimuth(coordinate[1], coordinate[2])
+      const angleRad = rad(angle)
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
-      const heightPolygon = distance / 5 * 1.2
-      const widthPoligon = distance / 5 * 0.6 * text.length
+      const heightPolygon = heightBox
+      const widthPolygon = heightBox * 0.5 * text.length
+      const dAngle = deg(Math.atan2(heightPolygon, widthPolygon))
+      const distance = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon) / 2
       const coords = []
-      coords.push(moveCoordinate(coordinate[1], { distance: (distance - heightPolygon) / 2, angledeg }))
-      coords.push(moveCoordinate(coordinate[1], { distance: (distance + heightPolygon) / 2, angledeg }))
-      coords.push(moveCoordinate(coords[1], { distance: widthPoligon, angledeg: angledeg - 90 }))
-      coords.push(moveCoordinate(coords[0], { distance: widthPoligon, angledeg: angledeg - 90 }))
+      coords.push(moveCoordinate(center, { distance, angledeg: angle + dAngle })) // center, { distance: (distance - heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(center, { distance, angledeg: angle - dAngle })) // coordinate[1], { distance: (distance + heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(center, { distance: -distance, angledeg: angle + dAngle })) // coords[1], { distance: widthPolygon, angledeg: angledeg - 90 }))
+      coords.push(moveCoordinate(center, { distance: -distance, angledeg: angle - dAngle })) // coords[0], { distance: widthPolygon, angledeg: angledeg - 90 }))
       coords.push(coords[0])
-      // console.log('dc', { coords, heightPolygon, widthPoligon, angleRad })
       const material = new ImageMaterialProperty({ image, transparent: true })
-      // console.log('dc', { material })
       const polygon = {
         hierarchy: new PolygonHierarchy(coords.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))), // Rectangle.fromDegrees(coordinate[0].lat, coordinate[0].lng, coordinate[1].lat, coordinate[1].lng), // fromCartesianArray([ center, rec2 ]),
         material,
         classificationType: ClassificationType.TERRAIN,
-        stRotation: angleRad + Math.PI * revers,
+        stRotation: angleRad - Math.PI / 2 + Math.PI * revers,
       }
       return { polygon }
     }
