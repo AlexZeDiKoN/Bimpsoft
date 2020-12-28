@@ -79,7 +79,7 @@ lineDefinitions['017008'] = {
     const angleDifference = angledeg2 - angledeg
     const revers = (angleDifference < 0 && angleDifference > -180) || angleDifference > 180
     const arc = [ basePoints[0], basePoints[1] ]
-    for (let angle = 180; angle > 0; angle -= stepAngle) { // создание координат сектора круга
+    for (let angle = 180 - stepAngle; angle > 0; angle -= stepAngle) { // создание координат сектора круга
       arc.push(moveCoordinate(middlePoint, { distance: distance / 2, angledeg: angledeg + (revers ? angle : -angle) }))
     }
     arc.push(basePoints[2])
@@ -96,8 +96,7 @@ lineDefinitions['017008'] = {
     entities.push(marker3D(basePoints[2], basePoints[3], MARK_TYPE.ARROW_60,
       { color, width, markerLength: distance / lengthRatio }))
     // Сборка текста
-    entities.push(text3D(basePoints, LabelType.GROUND, { text: TEXT }))
-    console.log('tyte', entities)
+    entities.push(text3D(basePoints, LabelType.GROUND, { text: TEXT, fillOpacity: '50%' }))
     acc.push({ id, type: objTypes.SOPHISTICATED, entities })
     return acc
   },

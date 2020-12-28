@@ -9,7 +9,8 @@ import {
   LabelStyle,
   HeightReference,
   NearFarScalar,
-  Rectangle,
+  PolygonHierarchy,
+  ImageMaterialProperty,
 } from 'cesium'
 import { distanceAzimuth, moveCoordinate } from '../utils/sectors'
 import * as mapColors from '../../../../constants/colors'
@@ -18,11 +19,12 @@ import {
   MARK_TYPE,
 } from '../../../../constants/drawLines'
 
-export const stepAngle = 10 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
+export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
 export const lengthRatio = 8
 export const LabelType = {
-  FLAT: 'flat',
-  GROUND: 'ground',
+  OPPOSITE: 'opposite', // текст выводиться прямо на камеру
+  FLAT: 'flat', // текст выводится на поверхность
+  GROUND: 'ground', // текст выводится на поверхность
 }
 
 const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
@@ -34,8 +36,16 @@ const LabelFont = {
 }
 
 // генерация текстовых элементов
+// type:
+//   OPPOSITE - вывод меткой, текст всегда повернут к камере
+//   GROUND   - вывод через полигон, текст на поверхности карты
+// attributes {
+// text,
+// color,
+// fillOpacite = 1, - прозрачность подложки текста
+// fillColor = rgb(200,200,200), - цвет подложки
+// }
 export const text3D = (coordinate, type, attributes) => {
-  const label = {}
   const { text = '', color = Color.BLACK } = attributes
   if (text === '') {
     return null
@@ -55,7 +65,8 @@ export const text3D = (coordinate, type, attributes) => {
     center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
   }
   switch (type) {
-    case LabelType.FLAT: {
+    case LabelType.OPPOSITE: {
+      const label = {}
       label.position = center // artesian3.fromDegrees(coordinate.lng, coordinate.lat)
       label.label = {
         text,
@@ -80,46 +91,52 @@ export const text3D = (coordinate, type, attributes) => {
         distanceDisplayCondition: undefined,
         disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
       }
-      break
+      return label
     }
     case LabelType.GROUND: {
       const height = 32
-      const heightView = Math.round(height * 1.1) + 2
+      const heightView = Math.round(height * 1.2)
       const width = height * 0.6 * text.length
-      const dCartesian = new Cartesian3()
-      Cartesian3.subtract(points[1], points[2], dCartesian)
-      const heightC = new Cartesian3()
-      Cartesian3.multiplyByScalar(dCartesian, 0.25, heightC)
-      // width="${width}" height="${heightView}"
-      const image = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${heightView}" >
- <rect x="0" y="0" width="128" height="${heightView}" style="fill:rgba(0,0,255,0.2)"/>
- <text font-size="${height}" text-anchor="middle" dominant-baseline="central" fill="%23000000" x="50%" y="50%">${text}</text>
+      const { fillOpacity = '1' } = attributes
+      const image = `data:image/svg+xml,
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${heightView}" >
+  <rect x="0" y="0" width="${width}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
+  <text font-size="${height}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
  </svg>`
-      // ;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-      const billboard = {
-        image,
-        scaleByDistance,
-        heightReference: HeightReference.CLAMP_TO_GROUND,
-        verticalOrigin: VerticalOrigin.BASELINE,
-        horizontalOrigin: HorizontalOrigin.CENTER,
-        // pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
-        // pixelOffsetScaleByDistance: scaleByDistance,
-      }
-      const rec2 = new Cartesian3()
-      Cartesian3.add(center, heightC, rec2)
-      console.log('dc', { center, dCartesian, heightC, rec2 })
-      const rectangle = {
-        coordinates: Rectangle.fromCartesianArray([ center, rec2 ]),
-        material: image, // "../images/Cesium_Logo_Color.jpg",
+      // const billboard = {
+      //   image,
+      //   scaleByDistance,
+      //   heightReference: HeightReference.CLAMP_TO_GROUND,
+      //   verticalOrigin: VerticalOrigin.BASELINE,
+      //   horizontalOrigin: HorizontalOrigin.CENTER,
+      // pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
+      // pixelOffsetScaleByDistance: scaleByDistance,
+      // }
+      const { distance, angledeg } = distanceAzimuth(coordinate[1], coordinate[2])
+      const { angleRad } = distanceAzimuth(coordinate[1], coordinate[2])
+      const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
+      const heightPolygon = distance / 5 * 1.2
+      const widthPoligon = distance / 5 * 0.6 * text.length
+      const coords = []
+      coords.push(moveCoordinate(coordinate[1], { distance: (distance - heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(coordinate[1], { distance: (distance + heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(coords[1], { distance: widthPoligon, angledeg: angledeg - 90 }))
+      coords.push(moveCoordinate(coords[0], { distance: widthPoligon, angledeg: angledeg - 90 }))
+      coords.push(coords[0])
+      // console.log('dc', { coords, heightPolygon, widthPoligon, angleRad })
+      const material = new ImageMaterialProperty({ image, transparent: true })
+      // console.log('dc', { material })
+      const polygon = {
+        hierarchy: new PolygonHierarchy(coords.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))), // Rectangle.fromDegrees(coordinate[0].lat, coordinate[0].lng, coordinate[1].lat, coordinate[1].lng), // fromCartesianArray([ center, rec2 ]),
+        material,
         classificationType: ClassificationType.TERRAIN,
-        // stRotation: Cesium.Math.toRadians(45),
+        stRotation: angleRad + Math.PI * revers,
       }
-      const position = center
-      return { billboard, rectangle, position }
+      return { polygon }
     }
     default:
   }
-  return label
+  return null
 }
 
 // генерация окончаний линий (стрелки, засечки и т.п.)
