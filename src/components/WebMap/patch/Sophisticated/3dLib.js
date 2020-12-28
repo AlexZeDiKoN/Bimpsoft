@@ -3,6 +3,13 @@ import {
   Color,
   PolylineArrowMaterialProperty,
   ClassificationType,
+  Cartesian2,
+  HorizontalOrigin,
+  VerticalOrigin,
+  LabelStyle,
+  HeightReference,
+  NearFarScalar,
+  Rectangle,
 } from 'cesium'
 import { distanceAzimuth, moveCoordinate } from '../utils/sectors'
 import * as mapColors from '../../../../constants/colors'
@@ -11,9 +18,111 @@ import {
   MARK_TYPE,
 } from '../../../../constants/drawLines'
 
-const stepAngle = 10 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
-const lengthRatio = 8
+export const stepAngle = 10 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
+export const lengthRatio = 8
+export const LabelType = {
+  FLAT: 'flat',
+  GROUND: 'ground',
+}
 
+const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
+
+// шрифт текстовых меток по умолчанию
+const LabelFont = {
+  size: 20,
+  font: 'sans-serif',
+}
+
+// генерация текстовых элементов
+export const text3D = (coordinate, type, attributes) => {
+  const label = {}
+  const { text = '', color = Color.BLACK } = attributes
+  if (text === '') {
+    return null
+  }
+  let center
+  let points
+  if (Array.isArray(coordinate)) { // определяем центр массива координат
+    points = coordinate.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+    const sum = points.reduce((sum, current) => {
+      sum.x += current.x
+      sum.y += current.y
+      sum.z += current.z
+      return sum
+    })
+    center = new Cartesian3(sum.x / points.length, sum.y / points.length, sum.z / points.length)
+  } else {
+    center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
+  }
+  switch (type) {
+    case LabelType.FLAT: {
+      label.position = center // artesian3.fromDegrees(coordinate.lng, coordinate.lat)
+      label.label = {
+        text,
+        font: `${LabelFont.size}px ${LabelFont.font}`,
+        style: LabelStyle.FILL,
+        fillColor: color,
+        // pixelOffset: new Cartesian2(0.0, 20),
+        // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
+        showBackground: false,
+        // backgroundColor : new Color(0.165, 0.165, 0.165, 0.8),
+        // backgroundPadding : new Cartesian2(7, 5),
+        outline: false,
+        // outlineColor: Color.BLACK,
+        // outlineWidth: 1.0,
+        horizontalOrigin: HorizontalOrigin.CENTER,
+        verticalOrigin: VerticalOrigin.BASELINE,
+        scale: 1.0,
+        // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
+        pixelOffset: Cartesian2.ZERO,
+        eyeOffset: Cartesian3.ZERO,
+        heightReference: HeightReference.NONE,
+        distanceDisplayCondition: undefined,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
+      }
+      break
+    }
+    case LabelType.GROUND: {
+      const height = 32
+      const heightView = Math.round(height * 1.1) + 2
+      const width = height * 0.6 * text.length
+      const dCartesian = new Cartesian3()
+      Cartesian3.subtract(points[1], points[2], dCartesian)
+      const heightC = new Cartesian3()
+      Cartesian3.multiplyByScalar(dCartesian, 0.25, heightC)
+      // width="${width}" height="${heightView}"
+      const image = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${heightView}" >
+ <rect x="0" y="0" width="128" height="${heightView}" style="fill:rgba(0,0,255,0.2)"/>
+ <text font-size="${height}" text-anchor="middle" dominant-baseline="central" fill="%23000000" x="50%" y="50%">${text}</text>
+ </svg>`
+      // ;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+      const billboard = {
+        image,
+        scaleByDistance,
+        heightReference: HeightReference.CLAMP_TO_GROUND,
+        verticalOrigin: VerticalOrigin.BASELINE,
+        horizontalOrigin: HorizontalOrigin.CENTER,
+        // pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
+        // pixelOffsetScaleByDistance: scaleByDistance,
+      }
+      const rec2 = new Cartesian3()
+      Cartesian3.add(center, heightC, rec2)
+      console.log('dc', { center, dCartesian, heightC, rec2 })
+      const rectangle = {
+        coordinates: Rectangle.fromCartesianArray([ center, rec2 ]),
+        material: image, // "../images/Cesium_Logo_Color.jpg",
+        classificationType: ClassificationType.TERRAIN,
+        // stRotation: Cesium.Math.toRadians(45),
+      }
+      const position = center
+      return { billboard, rectangle, position }
+    }
+    default:
+  }
+  return label
+}
+
+// генерация окончаний линий (стрелки, засечки и т.п.)
 export const marker3D = (coordinateStart, coordinateEnd, type, attributes) => {
   const { markerLength, width = 1, color = Color.BLACK } = attributes
   const colorFill = Color.fromCssColorString(mapColors.evaluateColor(color))

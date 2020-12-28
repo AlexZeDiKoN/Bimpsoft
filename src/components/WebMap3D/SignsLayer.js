@@ -11,12 +11,12 @@ import {
   PolygonHierarchy,
   PolylineColorAppearance,
 } from 'cesium'
-import {Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource, GroundPolylinePrimitive} from 'resium'
+import { Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource, GroundPolylinePrimitive } from 'resium'
+import { isArray } from 'leaflet/src/core/Util'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 import objTypes from '../../components/WebMap/entityKind'
-import {isArray} from "leaflet/src/core/Util";
 
-//import * as mapColors from "../../constants/colors";
+// import * as mapColors from "../../constants/colors";
 
 const fromColorAlpha = (color, alpha) => {
   const _color = ColorGeometryInstanceAttribute.fromColor(color)
@@ -27,7 +27,6 @@ const fromColorAlpha = (color, alpha) => {
 const instanceSophisticated = (rest, vide) => {
   const { type, options, attributes } = rest
   let instance
-  console.log('rest', rest)
   if (vide === 'line') {
     switch (type) {
       case 'polyline': {
@@ -45,7 +44,7 @@ const instanceSophisticated = (rest, vide) => {
     switch (type) {
       case 'polygon': {
         const polygon = new PolygonGeometry(options)
-  //      const fillColor = fromColorAlpha(fill, alpha)
+        //      const fillColor = fromColorAlpha(fill, alpha)
         instance = new GeometryInstance({
           geometry: polygon,
           attributes: attributes,
@@ -59,11 +58,10 @@ const instanceSophisticated = (rest, vide) => {
   return instance
 }
 
-
 const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...rest }) => {
   switch (type) {
     case objTypes.POLYGON: {
-      const {fill, positions, alpha = 127} = rest
+      const { fill, positions, alpha = 127 } = rest
       // @TODO: make it stop rerendering
       const polygon = new PolygonGeometry({
         polygonHierarchy: new PolygonHierarchy(positions),
@@ -78,46 +76,44 @@ const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...re
       })
 
       return (
-          <GroundPrimitive
-              key={id}
-              geometryInstances={instance}
-          />
+        <GroundPrimitive
+          key={id}
+          geometryInstances={instance}
+        />
       )
     }
     case objTypes.SOPHISTICATED: {
       const { primitives, entities, ...entity } = rest
-      if(entities) {
+      if (entities) {
         if (isArray(entities)) {
           return entities.map((entity, ind) => <Entity key={`${id}${ind}`} onDoubleClick={edit(id)} {...entity}/>)
         } else {
           return <Entity key={id} onDoubleClick={edit(id)} {...entity}/>
         }
       }
-      if(primitives) {
+      if (primitives) {
         const instances = {}
         if (isArray(primitives)) {
           instances.area = primitives.map((rest) => instanceSophisticated(rest, 'area')).filter(Boolean)
           instances.line = primitives.map((rest) => instanceSophisticated(rest, 'line')).filter(Boolean)
-          console.log('inst', instances)
         } else {
-          console.log('noArray')
           instances.area = instanceSophisticated(primitives, 'area')
           instances.line = instanceSophisticated(primitives, 'line')
         }
         const outInstances = []
         instances.line && outInstances.push(
-            <GroundPolylinePrimitive
-                key={`${id}line`}
-                onDoubleClick={edit(id)}
-                geometryInstances={instances.line}
-                appearance={new PolylineColorAppearance()}
-            />)
+          <GroundPolylinePrimitive
+            key={`${id}line`}
+            onDoubleClick={edit(id)}
+            geometryInstances={instances.line}
+            appearance={new PolylineColorAppearance()}
+          />)
         instances.area && outInstances.push(
-            <GroundPrimitive // Valid geometries are CircleGeometry, CorridorGeometry, EllipseGeometry, PolygonGeometry, and RectangleGeometry.
-                key={`${id}area`}
-                onDoubleClick={edit(id)}
-                geometryInstances={instances.area}
-            />)
+          <GroundPrimitive // Valid geometries are CircleGeometry, CorridorGeometry, EllipseGeometry, PolygonGeometry, and RectangleGeometry.
+            key={`${id}area`}
+            onDoubleClick={edit(id)}
+            geometryInstances={instances.area}
+          />)
         return outInstances
       }
       return <Entity key={id} onDoubleClick={edit(id)} {...entity}/>
@@ -126,6 +122,7 @@ const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...re
       return <GeoJsonDataSource key={id} {...rest}/>
     }
     default: {
+      console.log('entiti', rest)
       return <Entity key={id} onDoubleClick={edit(id)} {...rest}/>
     }
   }

@@ -1,16 +1,29 @@
+import { Cartesian3, Color } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
   drawMaskedText, drawLineMark,
 } from '../utils'
-import { MARK_TYPE } from '../../../../../constants/drawLines'
+import {
+  MARK_TYPE,
+} from '../../../../../constants/drawLines'
+import * as mapColors from '../../../../../constants/colors'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import {
+  LabelType,
+  lengthRatio,
+  marker3D,
+  stepAngle,
+  text3D,
+} from '../3dLib'
+import objTypes from '../../../entityKind'
 
 // sign name: ДЕМОНСТРУВАТИ
 // task code: DZVIN-5778
 // hint: 'Демонструвати - ввести противника в оману демонстрацією сили без контакту з противником.'
 
-const TEXT = 'D'
+const TEXT = 'Й-BgDj-'
 
 lineDefinitions['017008'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
@@ -52,6 +65,41 @@ lineDefinitions['017008'] = {
       angleOf(a1, p2),
       TEXT,
     )
+  },
+
+  // рендер функция для 3D карты
+  build3d: (acc, id, basePoints, attributes) => {
+    const color = attributes.get('color')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const { angledeg, distance } = distanceAzimuth(basePoints[1], basePoints[2])
+    const radius = distance / 2
+    const middlePoint = moveCoordinate(basePoints[1], { distance: radius, angledeg })
+    const { angledeg: angledeg2 } = distanceAzimuth(basePoints[1], basePoints[3])
+    const angleDifference = angledeg2 - angledeg
+    const revers = (angleDifference < 0 && angleDifference > -180) || angleDifference > 180
+    const arc = [ basePoints[0], basePoints[1] ]
+    for (let angle = 180; angle > 0; angle -= stepAngle) { // создание координат сектора круга
+      arc.push(moveCoordinate(middlePoint, { distance: distance / 2, angledeg: angledeg + (revers ? angle : -angle) }))
+    }
+    arc.push(basePoints[2])
+    arc.push(basePoints[3])
+    const entities = []
+    entities.push({ polyline: {
+      positions: arc.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    entities.push(marker3D(basePoints[2], basePoints[3], MARK_TYPE.ARROW_60,
+      { color, width, markerLength: distance / lengthRatio }))
+    // Сборка текста
+    entities.push(text3D(basePoints, LabelType.GROUND, { text: TEXT }))
+    console.log('tyte', entities)
+    acc.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return acc
   },
 
 }
