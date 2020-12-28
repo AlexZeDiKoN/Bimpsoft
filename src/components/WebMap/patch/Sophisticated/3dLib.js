@@ -250,3 +250,38 @@ export const marker3D = (coordinateStart, coordinateEnd, type, attributes) => {
     default: return null
   }
 }
+
+export const getCenter = (basePoints) => {
+  const { angledeg } = distanceAzimuth(basePoints[1], basePoints[2])
+  const { angledeg: angledeg2 } = distanceAzimuth(basePoints[1], basePoints[3])
+  const angleDifference = angledeg2 - angledeg
+  const revers = (angleDifference < 0 && angleDifference > -180) || angleDifference > 180
+  const dd = distanceAzimuth(basePoints[1], basePoints[2])
+  const ddP1 = distanceAzimuth(basePoints[1], basePoints[0])
+  const ddP2 = distanceAzimuth(basePoints[2], basePoints[3])
+  const leg1 = (ddP1.distance + ddP2.distance) / 4
+  const leg2 = dd.distance / 2
+  const dAngle = deg(Math.atan2(leg2, leg1))
+  return moveCoordinate(
+    basePoints[1],
+    {
+      angledeg: ddP1.angledeg + dAngle * (revers ? 1 : -1),
+      distance: Math.sqrt(leg2 * leg2 + leg1 * leg1),
+    },
+  )
+}
+
+export const getArc = (pointStart, pointEnd, napramok) => {
+  const { angledeg, distance } = distanceAzimuth(pointStart, pointEnd)
+  const radius = distance / 2
+  const middlePoint = moveCoordinate(pointStart, { distance: radius, angledeg })
+  const arc = [ pointStart ]
+  for (let angle = 180 - stepAngle; angle > 0; angle -= stepAngle) { // создание координат сектора круга
+    arc.push(moveCoordinate(middlePoint, { distance: distance / 2, angledeg: angledeg + (napramok ? angle : -angle) }))
+  }
+  arc.push(pointEnd)
+  return arc
+}
+export const isFlip = (angle) => {
+  return (angle < 0 && angle > -180) || angle > 180
+}

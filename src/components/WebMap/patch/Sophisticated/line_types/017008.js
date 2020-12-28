@@ -3,18 +3,20 @@ import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawLine, normalVectorTo, applyVector, segmentBy, halfPlane, drawArc, angleOf, segmentLength,
-  drawMaskedText, drawLineMark, deg,
+  drawMaskedText, drawLineMark,
 } from '../utils'
 import {
   MARK_TYPE,
 } from '../../../../../constants/drawLines'
 import * as mapColors from '../../../../../constants/colors'
-import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import { distanceAzimuth } from '../../utils/sectors'
 import {
+  getArc,
+  getCenter,
+  isFlip,
   LabelType,
   lengthRatio,
   marker3D,
-  stepAngle,
   text3D,
 } from '../3dLib'
 import objTypes from '../../../entityKind'
@@ -72,18 +74,12 @@ lineDefinitions['017008'] = {
     const color = attributes.get('color')
     const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
     const width = attributes.get('strokeWidth')
+
     const { angledeg, distance } = distanceAzimuth(basePoints[1], basePoints[2])
-    const radius = distance / 2
-    const middlePoint = moveCoordinate(basePoints[1], { distance: radius, angledeg })
     const { angledeg: angledeg2 } = distanceAzimuth(basePoints[1], basePoints[3])
-    const angleDifference = angledeg2 - angledeg
-    const revers = (angleDifference < 0 && angleDifference > -180) || angleDifference > 180
-    const arc = [ basePoints[0], basePoints[1] ]
-    for (let angle = 180 - stepAngle; angle > 0; angle -= stepAngle) { // создание координат сектора круга
-      arc.push(moveCoordinate(middlePoint, { distance: distance / 2, angledeg: angledeg + (revers ? angle : -angle) }))
-    }
-    arc.push(basePoints[2])
-    arc.push(basePoints[3])
+    const revers = isFlip(angledeg2 - angledeg)
+    const arc = [ basePoints[0], ...getArc(basePoints[1], basePoints[2], revers), basePoints[3] ]
+
     const entities = []
     entities.push({ polyline: {
       positions: arc.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
@@ -98,21 +94,11 @@ lineDefinitions['017008'] = {
     // Сборка текста
     const dd = distanceAzimuth(basePoints[1], basePoints[2])
     const heightBox = dd.distance / 5
-    const ddP1 = distanceAzimuth(basePoints[1], basePoints[0])
-    const ddP2 = distanceAzimuth(basePoints[2], basePoints[3])
-    const leg1 = (ddP1.distance + ddP2.distance) / 4
-    const leg2 = dd.distance / 2
-    const dAngle = deg(Math.atan2(leg2, leg1))
-    const center = moveCoordinate(
-      basePoints[1],
-      {
-        angledeg: ddP1.angledeg + dAngle * (revers ? 1 : -1),
-        distance: Math.sqrt(leg2 * leg2 + leg1 * leg1),
-      },
-    )
+    const { angledeg: angle } = distanceAzimuth(basePoints[1], basePoints[0])
+    const center = getCenter(basePoints)
     entities.push(text3D(center, LabelType.GROUND, {
       text: TEXT,
-      angle: ddP1.angledeg,
+      angle,
       heightBox,
       fillOpacity: '50%',
     }))
