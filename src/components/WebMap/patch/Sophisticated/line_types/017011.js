@@ -1,10 +1,20 @@
 import { applyToPoint, compose, translate, rotate } from 'transformation-matrix'
+import { Cartesian3, Color } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawArc, angleOf, segmentLength, drawMaskedText, rad, drawLineMark,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import * as mapColors from '../../../../../constants/colors'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import {
+  getSector,
+  LabelType,
+  lengthRatio,
+  marker3D,
+  text3D } from '../3dLib'
+import objTypes from '../../../entityKind'
 
 // sign name: ЗАКРІПИТИСЯ
 // task code: DZVIN-6007
@@ -56,5 +66,57 @@ lineDefinitions['017011'] = {
       angle,
       TEXT,
     )
+  },
+
+  // рендер функция для 3D карты
+  build3d: (result, id, basePoints, attributes) => {
+    const color = attributes.get('color')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const entities = []
+
+    const { angledeg, distance: radius } = distanceAzimuth(basePoints[0], basePoints[1])
+    const heightBox = radius / 2
+    const markerLength = radius / lengthRatio * 2
+    const angleText = heightBox / radius * 60
+
+    const sector1 = getSector(basePoints[0], radius, angledeg, 165 - angleText / 2, 'clockwise')
+    entities.push({ polyline: {
+      positions: sector1.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    entities.push(marker3D(sector1[sector1.length - 2], sector1[sector1.length - 1], MARK_TYPE.ARROW_60,
+      { color, width, markerLength }))
+
+    const sector2 = getSector(basePoints[0], radius, angledeg + 165 + angleText / 2, 165 - angleText / 2, 'clockwise')
+    entities.push({ polyline: {
+      positions: sector2.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    entities.push(marker3D(sector2[1], sector2[0], MARK_TYPE.ARROW_60,
+      { color, width, markerLength }))
+
+    // Сборка текста
+    const center = moveCoordinate(basePoints[0], { distance: radius, angledeg: angledeg + 165 })
+    entities.push(text3D(center, LabelType.GROUND, {
+      text: TEXT,
+      angle: angledeg + 165,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: true,
+    }))
+    entities.push(text3D(center, LabelType.OPPOSITE, {
+      text: TEXT,
+    }))
+    result.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return result
   },
 }

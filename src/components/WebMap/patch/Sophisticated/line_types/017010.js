@@ -1,3 +1,4 @@
+import { Cartesian3, Color } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -13,6 +14,10 @@ import {
   drawLineMark,
 } from '../utils'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
+import * as mapColors from '../../../../../constants/colors'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import { getArc, getCenter, getWidthText, isFlip, LabelType, lengthRatio, marker3D, text3D } from '../3dLib'
+import objTypes from '../../../entityKind'
 
 // sign name: ПЕРЕСЛІДУВАТИ
 // task code: DZVIN-6008
@@ -59,5 +64,60 @@ lineDefinitions['017010'] = {
       angleOf(p0, p1),
       TEXT,
     )
+  },
+
+  // рендер функция для 3D карты
+  build3d: (acc, id, basePoints, attributes) => {
+    const color = attributes.get('color')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const entities = []
+
+    const { angledeg, distance } = distanceAzimuth(basePoints[1], basePoints[2])
+    const heightBox = distance / 5
+    const widthBox = getWidthText(heightBox, TEXT) + heightBox / 4
+
+    const { angledeg: angle, distance: distance2 } = distanceAzimuth(basePoints[0], basePoints[1])
+    const revers = isFlip(angle - angledeg)
+    const line1 = [
+      basePoints[0],
+      moveCoordinate(basePoints[0], { distance: (distance2 - widthBox) / 2, angledeg: angle }),
+    ]
+    entities.push({ polyline: {
+      positions: line1.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+
+    const line2 = [
+      moveCoordinate(basePoints[0], { distance: (distance2 + widthBox) / 2, angledeg: angle }),
+      ...getArc(basePoints[1], basePoints[2], !revers),
+    ]
+    entities.push({ polyline: {
+      positions: line2.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    entities.push(marker3D(line2[line2.length - 2], line2[line2.length - 1], MARK_TYPE.ARROW_60,
+      { color, width, markerLength: distance / lengthRatio }))
+    // Сборка текста
+    const center = getCenter([ basePoints[0], basePoints[1] ])
+    entities.push(text3D(center, LabelType.GROUND, {
+      text: TEXT,
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: true,
+    }))
+    entities.push(text3D(center, LabelType.OPPOSITE, {
+      text: TEXT,
+    }))
+    acc.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return acc
   },
 }

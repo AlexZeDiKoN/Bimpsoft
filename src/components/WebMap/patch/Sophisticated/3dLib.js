@@ -47,6 +47,7 @@ const LabelFont = {
 // color = Color.BLACK, - цвет текста
 // fillOpacite = 1, - прозрачность подложки текста
 // fillColor = rgb(200,200,200), - цвет подложки
+// overturn = true, - переворачивать верх текста в северном направлении
 // }
 export const text3D = (coordinate, type, attributes) => {
   const { text = '', color = Color.BLACK } = attributes
@@ -110,6 +111,7 @@ export const text3D = (coordinate, type, attributes) => {
         fillOpacity = '1',
         angle = 0,
         heightBox = 1,
+        overturn = true,
       } = attributes
       const image = `data:image/svg+xml,
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
@@ -133,7 +135,7 @@ export const text3D = (coordinate, type, attributes) => {
         hierarchy: new PolygonHierarchy(coords.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))), // Rectangle.fromDegrees(coordinate[0].lat, coordinate[0].lng, coordinate[1].lat, coordinate[1].lng), // fromCartesianArray([ center, rec2 ]),
         material,
         classificationType: ClassificationType.TERRAIN,
-        stRotation: angleRad - Math.PI / 2 + Math.PI * revers,
+        stRotation: angleRad - Math.PI / 2 + (overturn ? Math.PI * revers : 0),
       }
       return { polygon }
     }
@@ -252,6 +254,11 @@ export const marker3D = (coordinateStart, coordinateEnd, type, attributes) => {
 }
 
 export const getCenter = (basePoints) => {
+  if (basePoints.length === 2) { // определяем среднюю точку между двух координат
+    const da = distanceAzimuth(basePoints[0], basePoints[1])
+    return moveCoordinate(basePoints[0], { distance: da.distance / 2, angledeg: da.angledeg })
+  }
+  // средняя точка прямоугольной трапеции
   const { angledeg } = distanceAzimuth(basePoints[1], basePoints[2])
   const { angledeg: angledeg2 } = distanceAzimuth(basePoints[1], basePoints[3])
   const angleDifference = angledeg2 - angledeg
@@ -282,6 +289,23 @@ export const getArc = (pointStart, pointEnd, napramok) => {
   arc.push(pointEnd)
   return arc
 }
+
+export const getSector = (pointCenter, radius, angleStart, angleDif, direction = 'clockwise') => {
+  const arc = []
+  const left = direction === 'clockwise'
+  for (let angle = angleDif; angle > 0; angle -= stepAngle) { // создание координат сектора круга
+    arc.push(moveCoordinate(pointCenter, { distance: radius, angledeg: angleStart + (left ? angle : -angle) }))
+  }
+  arc.push(moveCoordinate(pointCenter, { distance: radius, angledeg: angleStart }))
+  return arc
+}
+
+// определение необходимости переворота текста на карте
 export const isFlip = (angle) => {
   return (angle < 0 && angle > -180) || angle > 180
+}
+
+// расчет ширины блока под текст по его высоте
+export const getWidthText = (heightText, text) => {
+  return heightText * 0.5 * text.length
 }
