@@ -12,6 +12,7 @@ import { halfPI } from '../../../../../constants/utils'
 import * as mapColors from '../../../../../constants/colors'
 import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
 import {
+  isFlip,
   LabelType,
   lengthRatio,
   marker3D,
@@ -117,7 +118,8 @@ lineDefinitions['017015'] = {
 
     const { angledeg, distance } = distanceAzimuth(basePoints[0], basePoints[1])
     const midPoint = moveCoordinate(basePoints[0], { angledeg, distance: distance / 2 })
-    const heightBox = distance / lengthRatio * 2
+    const angle = angledeg - 90
+    const heightBox = distance / lengthRatio
     const markerLength = distance / lengthRatio
     // const angleText = angledeg - 90
 
@@ -144,27 +146,40 @@ lineDefinitions['017015'] = {
     entities.push(marker3D(basePoints[0], basePoints[1], MARK_TYPE.SERIF,
       { color, width, markerLength }))
 
+    const { angledeg: angleArrow } = distanceAzimuth(midPoint, basePoints[2])
+    const revers = !isFlip((angleArrow - angledeg) % 360)
     // Сборка текста
     entities.push(text3D(basePoints[0], LabelType.GROUND, {
       text: amp[amps.N],
-      angle: angledeg - 90,
+      angle,
       heightBox,
       fillOpacity: '50%',
-      overturn: true,
+      overturn: false,
       align: {
         baseline: 'bottom',
-        anchor: 'center',
+        anchor: 'middle',
       },
     }))
     entities.push(text3D(basePoints[0], LabelType.GROUND, {
       text: amp[amps.B],
-      angle: angledeg - 90,
+      angle,
       heightBox,
       fillOpacity: '50%',
-      overturn: true,
+      overturn: false,
       align: {
         baseline: 'top',
-        anchor: 'end',
+        anchor: revers ? 'start' : 'end',
+      },
+    }))
+    entities.push(text3D(midPoint, LabelType.GROUND, {
+      text: amp[amps.T],
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: false,
+      align: {
+        baseline: 'bottom',
+        anchor: revers ? 'end' : 'start',
       },
     }))
     entities.push(text3D(basePoints[0], LabelType.OPPOSITE, {
