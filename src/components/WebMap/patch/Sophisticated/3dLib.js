@@ -50,10 +50,11 @@ const LabelFont = {
 // overturn = true, - переворачивать верх текста в северном направлении
 // }
 export const text3D = (coordinate, type, attributes) => {
-  const { text = '', color = Color.BLACK } = attributes
+  const { text = '', color = Color.BLACK, align = {} } = attributes
   if (text === '') {
     return null
   }
+  const { baseline = 'center', anchor = 'center' } = align
 
   switch (type) {
     case LabelType.OPPOSITE: {
@@ -122,13 +123,67 @@ export const text3D = (coordinate, type, attributes) => {
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
       const heightPolygon = heightBox
       const widthPolygon = heightBox * 0.5 * text.length
-      const dAngle = deg(Math.atan2(heightPolygon, widthPolygon))
-      const distance = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon) / 2
+      // const dAngle = deg(Math.atan2(heightPolygon, widthPolygon))
+      // const distance = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
+      const dioganal = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
+      const dioganalHalf = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon / 4)
+      let dXY1, dXY2, dXY3, dXY4
+      let angle1, angle2, angle3, angle4
+      let distanceBottom, distanceTop
+      let dAngleBottom, dAngleTop
+      switch (baseline) {
+        case 'bottom': {
+          distanceTop = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon * 4)
+          distanceBottom = widthPolygon
+          dAngleTop = -deg(Math.atan2(heightPolygon, widthPolygon / 2))
+          dAngleBottom = 0
+          break
+        }
+        case 'top': {
+          distanceBottom = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon * 4)
+          distanceTop = widthPolygon
+          dAngleBottom = deg(Math.atan2(heightPolygon, widthPolygon / 2))
+          dAngleTop = 0
+          break
+        }
+        case 'center':
+        default: {
+          distanceBottom = distanceTop = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
+          dAngleBottom = deg(Math.atan2(heightPolygon, widthPolygon))
+          dAngleTop = -dAngleBottom
+        }
+      }
+      switch (anchor) {
+        case 'end' : {
+          dXY1 = (align === 'center') ? heightPolygon / 2 : ((align === 'bottom') ? heightPolygon : 0)
+          dXY2 = (align === 'center') ? heightPolygon / 2 : ((align === 'bottom') ? 0 : heightPolygon)
+          dXY3 = (align === 'center') ? -dioganalHalf : (align === 'bottom') ? -widthPolygon : -dioganal
+          dXY4 = (align === 'center') ? -dioganalHalf : (align === 'bottom') ? -dioganal : -widthPolygon
+          angle1 = angle + ((align === 'center') ? -90 : ((align === 'bottom') ? -90 : 0))
+          angle2 = angle + ((align === 'center') ? 90 : ((align === 'bottom') ? 0 : 90))
+          angle3 = angle + ((align === 'center')
+            ? -deg(Math.atan2(heightPolygon / 2, widthPolygon))
+            : ((align === 'bottom') ? 0 : -deg(Math.atan2(heightPolygon, widthPolygon))))
+          angle4 = angle - dAngleTop
+          break
+        }
+        case 'center':
+        default: {
+          dXY1 = distanceTop / 2
+          dXY2 = distanceBottom / 2
+          dXY3 = -distanceBottom / 2
+          dXY4 = -distanceTop / 2
+          angle1 = angle + dAngleTop
+          angle2 = angle + dAngleBottom
+          angle3 = angle - dAngleBottom
+          angle4 = angle - dAngleTop
+        }
+      }
       const coords = []
-      coords.push(moveCoordinate(center, { distance, angledeg: angle + dAngle })) // center, { distance: (distance - heightPolygon) / 2, angledeg }))
-      coords.push(moveCoordinate(center, { distance, angledeg: angle - dAngle })) // coordinate[1], { distance: (distance + heightPolygon) / 2, angledeg }))
-      coords.push(moveCoordinate(center, { distance: -distance, angledeg: angle + dAngle })) // coords[1], { distance: widthPolygon, angledeg: angledeg - 90 }))
-      coords.push(moveCoordinate(center, { distance: -distance, angledeg: angle - dAngle })) // coords[0], { distance: widthPolygon, angledeg: angledeg - 90 }))
+      coords.push(moveCoordinate(center, { distance: dXY1, angledeg: angle1 })) // center, { distance: (distance - heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(center, { distance: dXY2, angledeg: angle2 })) // coordinate[1], { distance: (distance + heightPolygon) / 2, angledeg }))
+      coords.push(moveCoordinate(center, { distance: dXY3, angledeg: angle3 })) // coords[1], { distance: widthPolygon, angledeg: angledeg - 90 }))
+      coords.push(moveCoordinate(center, { distance: dXY4, angledeg: angle4 })) // coords[0], { distance: widthPolygon, angledeg: angledeg - 90 }))
       coords.push(coords[0])
       const material = new ImageMaterialProperty({ image, transparent: true })
       const polygon = {
@@ -242,6 +297,19 @@ export const marker3D = (coordinateStart, coordinateEnd, type, attributes) => {
       arrow.push(moveCoordinate(coordinateCenter, { distance: markerSize, angledeg: angledeg }))
       build.polyline = {
         positions: arrow.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+        width: width,
+        clampToGround: true,
+        followSurface: true,
+        material: colorFill,
+      }
+      return build
+    }
+    case MARK_TYPE.SERIF: {
+      const serif = []
+      serif.push(moveCoordinate(coordinateEnd, { distance: markerSize / 2, angledeg: angledeg - 90 }))
+      serif.push(moveCoordinate(coordinateEnd, { distance: markerSize / 2, angledeg: angledeg + 90 }))
+      build.polyline = {
+        positions: serif.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
         width: width,
         clampToGround: true,
         followSurface: true,
