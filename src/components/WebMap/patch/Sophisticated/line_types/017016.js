@@ -29,7 +29,10 @@ const NUMBERS_SIZE = 0.75
 
 lineDefinitions['017016'] = {
   // Ампліфікатори на лінії
-  useAmplifiers: [ { id: amps.T, name: 'T', maxRows: 1 }, { id: amps.N, name: 'Початковий номер', type: 'num' } ],
+  useAmplifiers: [
+    { id: amps.T, name: 'T', maxRows: 1 },
+    { id: amps.N, name: 'Початковий номер', type: 'integer', minNumber: 1 , maxNumber: 999999 },
+  ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.end,
   // Вершини, які дозволено вилучати
