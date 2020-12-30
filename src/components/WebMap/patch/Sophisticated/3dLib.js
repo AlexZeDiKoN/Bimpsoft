@@ -50,10 +50,11 @@ const LabelFont = {
 // overturn = true, - переворачивать верх текста в северном направлении
 // }
 export const text3D = (coordinate, type, attributes) => {
-  const { text = '', color = Color.BLACK, align = {} } = attributes
-  if (text === '') {
+  const { text: allText = '', color = Color.BLACK, align = {} } = attributes
+  if (allText === '') {
     return null
   }
+  const text = `${allText}`
   const { baseline = 'center', anchor = 'middle' } = align
 
   switch (type) {
@@ -114,6 +115,7 @@ export const text3D = (coordinate, type, attributes) => {
         overturn = true,
       } = attributes
 
+      const angleText = angle % 360
       const image = `data:image/svg+xml,
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
   <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
@@ -121,7 +123,7 @@ export const text3D = (coordinate, type, attributes) => {
  </svg>`
       const material = new ImageMaterialProperty({ image, transparent: true })
 
-      const angleRad = rad(angle)
+      const angleRad = rad(angleText)
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
       const heightPolygon = heightBox
       const widthPolygon = heightBox * 0.5 * text.length + heightPolygon / 4
@@ -130,7 +132,7 @@ export const text3D = (coordinate, type, attributes) => {
       switch (anchor) {
         case 'end' : {
           dXY1 = (baseline === 'center') ? heightPolygon / 2 : ((baseline === 'bottom') ? heightPolygon : 0) // 1
-          angle1 = angle + ((baseline === 'center') ? -90 : ((baseline === 'bottom') ? -90 : 0))
+          angle1 = angleText + ((baseline === 'center') ? -90 : ((baseline === 'bottom') ? -90 : 0))
           break
         }
         case 'start' : {
@@ -138,7 +140,7 @@ export const text3D = (coordinate, type, attributes) => {
             ? Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon / 4)
             : ((baseline === 'bottom') ? diagonal : widthPolygon)
 
-          angle1 = angle + ((baseline === 'center')
+          angle1 = angleText + ((baseline === 'center')
             ? -deg(Math.atan2(heightPolygon / 2, widthPolygon))
             : ((baseline === 'bottom') ? -deg(Math.atan2(heightPolygon, widthPolygon)) : 0))
           break
@@ -150,18 +152,17 @@ export const text3D = (coordinate, type, attributes) => {
             : ((baseline === 'bottom')
               ? Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon * 4) : widthPolygon)) / 2
 
-          angle1 = angle + ((baseline === 'center')
+          angle1 = angleText + ((baseline === 'center')
             ? -deg(Math.atan2(heightPolygon, widthPolygon))
             : ((baseline === 'bottom') ? -deg(Math.atan2(heightPolygon, widthPolygon / 2)) : 0))
         }
       }
       const coords = []
       coords.push(dXY1 ? moveCoordinate(coordinate, { distance: dXY1, angledeg: angle1 }) : coordinate)
-      coords.push(moveCoordinate(coords[0], { distance: heightPolygon, angledeg: angle + 90 }))
-      coords.push(moveCoordinate(coords[1], { distance: -widthPolygon, angledeg: angle }))
-      coords.push(moveCoordinate(coords[0], { distance: -widthPolygon, angledeg: angle }))
+      coords.push(moveCoordinate(coords[0], { distance: heightPolygon, angledeg: angleText + 90 }))
+      coords.push(moveCoordinate(coords[1], { distance: -widthPolygon, angledeg: angleText }))
+      coords.push(moveCoordinate(coords[0], { distance: -widthPolygon, angledeg: angleText }))
       coords.push(coords[0])
-
       const polygon = {
         hierarchy: new PolygonHierarchy(coords.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))),
         material,
