@@ -122,7 +122,6 @@ const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...re
       return <GeoJsonDataSource key={id} {...rest}/>
     }
     default: {
-      console.log('entiti', rest)
       return <Entity key={id} onDoubleClick={edit(id)} {...rest}/>
     }
   }

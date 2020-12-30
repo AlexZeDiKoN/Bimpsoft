@@ -1,9 +1,20 @@
+import {
+  Cartesian2,
+  ClassificationType,
+  Color,
+  ImageMaterialProperty,
+  PolygonHierarchy,
+  PolygonGeometry,
+} from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
   drawBezierSpline,
   getGraphicSize,
 } from '../utils'
+import * as mapColors from '../../../../../constants/colors'
+import objTypes from '../../../entityKind'
+import { buldCurve } from '../../../../../utils/mapObjConvertor'
 
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
@@ -54,4 +65,43 @@ lineDefinitions[CODE] = {
         <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
       </pattern>`
   },
+
+  build3d: (result, id, points, attributes) => {
+    const color = attributes.get('color')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const entities = []
+    const widthView = 64
+    const heightView = 64
+    const image = `data:image/svg+xml,
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
+   <path fill="transparent" stroke="black" d="M0 8 h16 M8 0 v16 M32 40 h16 M40 32 v16"/>
+ </svg>`
+
+    const corners = buldCurve(points, true)
+    const polygonHierarchy = new PolygonHierarchy(corners)
+    const rectangle = PolygonGeometry.computeRectangle({ polygonHierarchy })
+    const koef = rectangle.width / rectangle.height
+    const material = new ImageMaterialProperty({ image, repeat: new Cartesian2(3 * koef, 3), transparent: true })
+    // console.log('rectangle', { polygonHierarchy, rectangle, corners })
+    const entitie = {
+      polygon: {
+        hierarchy: new PolygonHierarchy(corners),
+        material,
+        classificationType: ClassificationType.TERRAIN,
+        stRotation: 0,
+      },
+      polyline: {
+        positions: corners,
+        width,
+        clampToGround: true,
+        followSurface: true,
+        material: colorM,
+      },
+    }
+    entities.push(entitie)
+    result.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return result
+  },
+
 }

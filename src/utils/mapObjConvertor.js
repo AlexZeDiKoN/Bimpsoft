@@ -117,7 +117,7 @@ const BILLBOARD_HEIGHT = 400
 const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
-const buldCurve = (points, locked) => {
+export const buldCurve = (points, locked) => {
   const last = points.length - 1
   const result = []
   const withCP = points.map((p, i) => {
