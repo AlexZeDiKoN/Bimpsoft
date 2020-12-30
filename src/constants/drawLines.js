@@ -65,6 +65,12 @@ export const MARK_TYPE = {
   SERIF: 'serif',
   ANGLE: 'angle',
   SERIF_CROSS: 'serif_cross',
+  BEND: 'bend',
+}
+
+export const MARK_DIRECTION = {
+  LEFT: 'left',
+  RIGHT: 'right',
 }
 export const SIN45 = 0.707
 export const SIN60 = 0.866

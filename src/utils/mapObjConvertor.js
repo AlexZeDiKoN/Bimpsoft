@@ -17,11 +17,12 @@ import { chunk } from 'lodash'
 import { Symbol } from '@C4/milsymbol'
 import { model } from '@C4/MilSymbolEditor'
 import objTypes from '../components/WebMap/entityKind'
-import { bezierArray } from './svg/lines'
 
 import { SHIFT_PASTE_LAT, SHIFT_PASTE_LNG } from '../constants/utils'
 import { calcControlPoint } from '../components/WebMap/patch/utils/Bezier'
 import * as mapColors from '../constants/colors'
+import { findDefinition } from '../components/WebMap/patch/Sophisticated/utils'
+import { bezierArray } from './svg/lines'
 
 const shiftOne = (p) => {
   const f = window.webMap.map.project(latLng(p))
@@ -217,103 +218,113 @@ const buildOutlineC = (data, finalArray) => {
 }
 
 export const
-    objectsToSvg = memoize(async (list, positionHeightUp) => {
-  const acc = []
-  const listArr = list.toArray()
-  for (let i = 0; i < listArr.length; i++) {
-    const { type, point, geometry, id, attributes } = listArr[i]
-    if (type === objTypes.POINT) {
-      const { lat, lng } = point
-      const { svg, anchor } = buildSVG(listArr[i])
-      const { code } = listArr[i]
-      const isCP = model.APP6Code.isCommandPost(code)
-      const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
-      const billboard = buildBillboard(image, isCP, anchor)
-      const position = Cartesian3.fromDegrees(lng, lat)
-      const sign = { id, billboard, type, position }
-      if (!isCP) {
-        const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
-        const polyline = {
-          width: 2,
-          material: Color.WHITE,
-          positions: [ positionHeightUp(position, 0), billboardPosition ],
-        }
-        sign.position = billboardPosition
-        sign.polyline = polyline
-      }
-      acc.push(sign)
-    } else {
-      let color = attributes.get('color')
-      const width = attributes.get('strokeWidth')
-      // @TODO: if sign's color is black make it white
-      color === mapColors.BLACK && (color = mapColors.WHITE)
-      const fillColor = attributes.get('fill')
-      const basePoints = geometry.toArray()
-      let positions = []
-      switch (type) {
-        case objTypes.POLYLINE:
-          positions = basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-          break
-        case objTypes.CURVE:
-        case objTypes.AREA:
-          positions = buldCurve(basePoints, type === objTypes.AREA)
-          break
-        case objTypes.POLYGON:
-          positions = [ ...basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)) ]
-          positions.push(Cartesian3.fromDegrees(basePoints[0].lng, basePoints[0].lat))
-          break
-        case objTypes.SQUARE:
-        case objTypes.RECTANGLE: {
-          const [ p1, p3 ] = basePoints
-          const p2 = { lat: p3.lat, lng: p1.lng }
-          const p4 = { lat: p1.lat, lng: p3.lng }
-          positions = [ p1, p2, p3, p4, p1 ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-          break
-        }
-        case objTypes.CIRCLE: {
-          const [ p1, p2 ] = geometry.toArray()
-          positions = buildCircle(p1, p2)
-          break
-        }
-        case objTypes.CONTOUR: {
-          const points = geometry.toJS()
-          const lines = fakeOutlineContour(points)
-          lines.forEach((list, i) => {
-            const polyline = buildPolyline(list, color, width)
-            acc.push({ id: `${id}contour${i}`, polyline, type: objTypes.POLYLINE })
-          })
-          if (fillColor !== mapColors.TRANSPARENT) {
-            const coordinates = latLng2peerArr(points)
-            let data
-            try {
-              data = makeGeoJSON(coordinates, 'Polygon')
-              await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
-            } catch (err) {
-              data = makeGeoJSON(coordinates, 'MultiPolygon')
-            }
-            // @TODO: осветление в утилиты
-            const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
-            fill.alpha = 0.5
-            acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
+  objectsToSvg = memoize(async (list, positionHeightUp) => {
+    const acc = []
+    const listArr = list.toArray()
+    for (let i = 0; i < listArr.length; i++) {
+      const { type, point, geometry, id, attributes } = listArr[i]
+      if (type === objTypes.POINT) {
+        const { lat, lng } = point
+        const { svg, anchor } = buildSVG(listArr[i])
+        const { code } = listArr[i]
+        const isCP = model.APP6Code.isCommandPost(code)
+        const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+        const billboard = buildBillboard(image, isCP, anchor)
+        const position = Cartesian3.fromDegrees(lng, lat)
+        const sign = { id, billboard, type, position }
+        if (!isCP) {
+          const billboardPosition = positionHeightUp(position, BILLBOARD_HEIGHT)
+          const polyline = {
+            width: 2,
+            material: Color.WHITE,
+            positions: [ positionHeightUp(position, 0), billboardPosition ],
           }
-          break
+          sign.position = billboardPosition
+          sign.polyline = polyline
         }
-        default:
-          console.warn('Object ', listArr[i], 'wasn\'t drawn due to untreated type')
-      }
+        acc.push(sign)
+      } else {
+        let color = attributes.get('color')
+        const width = attributes.get('strokeWidth')
+        // @TODO: if sign's color is black make it white
+        color === mapColors.BLACK && (color = mapColors.WHITE)
+        const fillColor = attributes.get('fill')
+        const basePoints = geometry.toArray()
+        let positions = []
+        switch (type) {
+          case objTypes.POLYLINE:
+            positions = basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+            break
+          case objTypes.CURVE:
+          case objTypes.AREA:
+            positions = buldCurve(basePoints, type === objTypes.AREA)
+            break
+          case objTypes.POLYGON:
+            positions = [ ...basePoints.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)) ]
+            positions.push(Cartesian3.fromDegrees(basePoints[0].lng, basePoints[0].lat))
+            break
+          case objTypes.SQUARE:
+          case objTypes.RECTANGLE: {
+            const [ p1, p3 ] = basePoints
+            const p2 = { lat: p3.lat, lng: p1.lng }
+            const p4 = { lat: p1.lat, lng: p3.lng }
+            positions = [ p1, p2, p3, p4, p1 ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+            break
+          }
+          case objTypes.CIRCLE: {
+            const [ p1, p2 ] = geometry.toArray()
+            positions = buildCircle(p1, p2)
+            break
+          }
+          case objTypes.CONTOUR: {
+            const points = geometry.toJS()
+            const lines = fakeOutlineContour(points)
+            lines.forEach((list, i) => {
+              const polyline = buildPolyline(list, color, width)
+              acc.push({ id: `${id}contour${i}`, polyline, type: objTypes.POLYLINE })
+            })
+            if (fillColor !== mapColors.TRANSPARENT) {
+              const coordinates = latLng2peerArr(points)
+              let data
+              try {
+                data = makeGeoJSON(coordinates, 'Polygon')
+                await GeoJsonDataSource.load(makeGeoJSON(coordinates, 'Polygon'))
+              } catch (err) {
+                data = makeGeoJSON(coordinates, 'MultiPolygon')
+              }
+              // @TODO: осветление в утилиты
+              const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
+              fill.alpha = 0.5
+              acc.push({ id, data, fill, type: objTypes.CONTOUR, clampToGround: true })
+            }
+            break
+          }
+          case objTypes.SOPHISTICATED: {
+            const { code } = listArr[i]
+            const lineDefinition = findDefinition(code)
+            if (lineDefinition?.build3d) {
+              lineDefinition.build3d(acc, id, geometry.toArray(), attributes)
+            } else {
+              console.warn('Object ', listArr[i], 'wasn\'t drawn due to lack of function "build3d"')
+            }
+            break
+          }
+          default:
+            console.warn('Object ', listArr[i], 'wasn\'t drawn due to untreated type')
+        }
 
-      if (positions.length) {
-        const polyline = buildPolyline(positions, color, width)
-        acc.push({ id, polyline, type: objTypes.POLYLINE })
-      }
-      if (fillColor !== mapColors.TRANSPARENT) {
-        const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
-        acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
+        if (positions.length) {
+          const polyline = buildPolyline(positions, color, width)
+          acc.push({ id, polyline, type: objTypes.POLYLINE })
+        }
+        if (fillColor !== mapColors.TRANSPARENT) {
+          const fill = Color.fromCssColorString(mapColors.evaluateColor(fillColor))
+          acc.push({ id: `${id}_fill`, positions, type: objTypes.POLYGON, fill })
+        }
       }
     }
-  }
-  return acc
-})
+    return acc
+  })
 
 export const fixTilesUrl = (url) =>
   (process.env.NODE_ENV === 'development' && process.env.REACT_APP_TILES)

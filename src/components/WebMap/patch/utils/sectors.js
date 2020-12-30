@@ -2,6 +2,8 @@ import L from 'leaflet'
 import { utils } from '@C4/CommonComponents'
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
 const { Coordinates: Coord } = utils
+const DEG_PER_RAD = Math.PI / 180.0
+const RAD_PER_DEG = 180 / Math.PI
 
 export function angleDegCheck (angle) {
   return Number.isFinite(Number(angle)) && (Math.abs(angle) < 360)
@@ -96,30 +98,30 @@ function cartToSpher (x) {
 export function sphereDirect (pt0, angledeg, distM) {
   let x
   const dist = distM / Earth.R
-  const azi = angledeg * Math.PI / 180 // в радианы
-  const lat = pt0.lat * Math.PI / 180
-  const lng = pt0.lng * Math.PI / 180
+  const azi = angledeg * DEG_PER_RAD // в радианы
+  const lat = pt0.lat * DEG_PER_RAD
+  const lng = pt0.lng * DEG_PER_RAD
   const pt = [ Math.PI / 2 - dist, Math.PI - azi ]
   x = spherToCart(pt) // сферические -> декартовы
   x = rotate(x, lat - Math.PI / 2, 1) // первое вращение
   x = rotate(x, -lng, 2) // второе вращение
   const pt1 = cartToSpher(x) // декартовы -> сферические
-  return { lat: (pt1[0] * 180 / Math.PI), lng: (pt1[1] * 180 / Math.PI) }
+  return { lat: (pt1[0] * RAD_PER_DEG), lng: (pt1[1] * RAD_PER_DEG) }
 }
 
 export function moveCoordinate (pt0, moveTo) {
   let x
   const dist = moveTo.distance / Earth.R
-  const GtoR = Math.PI / 180
-  const azi = moveTo.angledeg * GtoR // в радианы
-  const lat = pt0.lat * GtoR
-  const lng = pt0.lng * GtoR
+  // const GtoR = Math.PI / 180
+  const azi = moveTo.angledeg * DEG_PER_RAD // в радианы
+  const lat = pt0.lat * DEG_PER_RAD
+  const lng = pt0.lng * DEG_PER_RAD
   const pt = [ Math.PI / 2 - dist, Math.PI - azi ]
   x = spherToCart(pt) // сферические -> декартовы
   x = rotate(x, lat - Math.PI / 2, 1) // первое вращение
   x = rotate(x, -lng, 2) // второе вращение
   const ptNew = cartToSpher(x) // декартовы -> сферические
-  return { lat: (ptNew[0] * 180 / Math.PI), lng: (ptNew[1] * 180 / Math.PI) }
+  return { lat: (ptNew[0] * RAD_PER_DEG), lng: (ptNew[1] * RAD_PER_DEG) }
 }
 
 //
@@ -194,10 +196,10 @@ export function distanceAzimuth (coord1, coord2) { // rad - радиус сфе�
   if (!Coord.check(coord1) || !Coord.check(coord2)) {
     return { angledeg: 0, distance: 0 }
   }
-  const lat1 = coord1.lat * Math.PI / 180.0
-  const lat2 = coord2.lat * Math.PI / 180.0
-  const long1 = coord1.lng * Math.PI / 180.0
-  const long2 = coord2.lng * Math.PI / 180.0
+  const lat1 = coord1.lat * DEG_PER_RAD
+  const lat2 = coord2.lat * DEG_PER_RAD
+  const long1 = coord1.lng * DEG_PER_RAD
+  const long2 = coord2.lng * DEG_PER_RAD
   const cl1 = Math.cos(lat1)
   const cl2 = Math.cos(lat2)
   const sl1 = Math.sin(lat1)
@@ -215,7 +217,7 @@ export function distanceAzimuth (coord1, coord2) { // rad - радиус сфе�
   x = (cl1 * sl2) - (sl1 * cl2 * cdelta)
   y = sdelta * cl2
   const zr = Math.atan2(-y, x)
-  const z = zr * 180.0 / Math.PI // перевод в градусы
+  const z = zr * RAD_PER_DEG // перевод в градусы
   return { angledeg: ((z < 0) ? -z : (360.0 - z)), distance, angleRad: -zr }
 }
 //

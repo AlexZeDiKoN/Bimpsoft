@@ -1,4 +1,5 @@
 import { applyToPoint, applyToPoints, compose, inverse, rotate } from 'transformation-matrix'
+import { Cartesian3, Color } from 'cesium'
 import { DELETE, MIDDLE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -17,9 +18,15 @@ import {
   translateTo,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
-import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import {
+  distanceAzimuth,
+  moveCoordinate,
+} from '../../utils/sectors'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
 import { halfPI } from '../../../../../constants/utils'
+import * as mapColors from '../../../../../constants/colors'
+import objTypes from '../../../entityKind'
+import { LabelType, lengthRatio, marker3D, text3D } from '../3dLib'
 
 // sign name: ПОСЛІДОВНЕ ЗОСЕРЕДЖЕННЯ ВОГНЮ
 // task code: DZVIN-5995
@@ -244,5 +251,79 @@ lineDefinitions['017016'] = {
         }
       }
     }
+  },
+
+  // рендер функция для 3D карты
+  build3d: (result, id, points, attributes) => {
+    const color = attributes.get('color')
+    const amp = attributes.get('pointAmplifier')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const entities = []
+    const indEnd = points.length - 1
+    const c = (indEnd / 3) | 0
+    const { angledeg, distance } = distanceAzimuth(points[0], points[1])
+    const angle = angledeg - 90
+    const heightBox = distance / lengthRatio
+    const number = Number(amp[amps.N] ?? 0)
+    entities.push(text3D(points[0], LabelType.GROUND, {
+      text: amp[amps.T],
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: false,
+      align: {
+        baseline: 'bottom',
+        anchor: 'middle',
+      },
+    }))
+    entities.push(marker3D(points[1], points[0], MARK_TYPE.SERIF, { width, color }))
+    entities.push(marker3D(points[indEnd - 2], points[indEnd], MARK_TYPE.SERIF, { width, color }))
+    let start = null // points[0]
+    for (let i = 0; i < c; i++) {
+      const corners = []
+      const center = points[i * 3 + 1]
+      const { angledeg: angle1, angleRad: angleRad1, distance } = distanceAzimuth(center, points[ i * 3 + 2 ])
+      const { angledeg: angle2, angleRad: angleRad2 } = distanceAzimuth(center, points[ i * 3 ])
+      const difference = angle1 - angle2
+      const angleRad = angleRad1 - angleRad2
+      start && corners.push(start)
+      corners.push(points[i * 3])
+      const corner = moveCoordinate(center, { distance: distance * Math.cos(angleRad), angledeg: angle1 - difference })
+      corners.push(corner)
+      corners.push(moveCoordinate(center, { distance, angledeg: angle1 - difference * 2 }))
+      corners.push(moveCoordinate(center, { distance: -distance, angledeg: angle1 }))
+      corners.push(moveCoordinate(center, { distance: -distance, angledeg: angle1 - difference * 2 }))
+      corners.push(points[i * 3 + 2])
+      corners.push(corner)
+      start = moveCoordinate(center, { distance: -distance * Math.cos(angleRad), angledeg: angle1 - difference })
+      entities.push({
+        polyline: {
+          positions: corners.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+          width,
+          clampToGround: true,
+          followSurface: true,
+          material: colorM,
+        },
+      })
+      entities.push(text3D(center, LabelType.GROUND, {
+        text: number + i,
+        angle: angle2 + 90,
+        heightBox,
+        fillOpacity: '50%',
+        overturn: false,
+      }))
+    }
+    entities.push({
+      polyline: {
+        positions: [ start, points[indEnd] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+        width,
+        clampToGround: true,
+        followSurface: true,
+        material: colorM,
+      },
+    })
+    result.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return result
   },
 }

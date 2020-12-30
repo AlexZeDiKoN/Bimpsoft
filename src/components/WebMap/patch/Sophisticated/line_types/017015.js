@@ -1,3 +1,4 @@
+import { Cartesian3, Color } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -8,6 +9,16 @@ import {
 import { amps } from '../../../../../constants/symbols'
 import { MARK_TYPE } from '../../../../../constants/drawLines'
 import { halfPI } from '../../../../../constants/utils'
+import * as mapColors from '../../../../../constants/colors'
+import { distanceAzimuth, moveCoordinate } from '../../utils/sectors'
+import {
+  isFlip,
+  LabelType,
+  lengthRatio,
+  marker3D,
+  text3D,
+} from '../3dLib'
+import objTypes from '../../../entityKind'
 
 // sign name: ЗАГОРОДЖУВАЛЬНИЙ ВОГОНЬ
 // task code: DZVIN-5996
@@ -95,5 +106,86 @@ lineDefinitions['017015'] = {
         top ? 'text-after-edge' : 'text-before-edge',
       )
     }
+  },
+
+  // рендер функция для 3D карты
+  build3d: (result, id, basePoints, attributes) => {
+    const color = attributes.get('color')
+    const amp = attributes.get('pointAmplifier')
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+    const width = attributes.get('strokeWidth')
+    const entities = []
+
+    const { angledeg, distance } = distanceAzimuth(basePoints[0], basePoints[1])
+    const midPoint = moveCoordinate(basePoints[0], { angledeg, distance: distance / 2 })
+    const angle = angledeg - 90
+    const heightBox = distance / lengthRatio
+    const markerLength = distance / lengthRatio
+    // const angleText = angledeg - 90
+
+    entities.push({ polyline: {
+      positions: [ basePoints[0], basePoints[1] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    entities.push({ polyline: {
+      positions: [ midPoint, basePoints[2] ].map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat)),
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    } })
+    // отрисовка направляющей стрелки
+    entities.push(marker3D(midPoint, basePoints[2], MARK_TYPE.ARROW_60,
+      { color, width, markerLength }))
+    // отрисовка засечек
+    entities.push(marker3D(basePoints[1], basePoints[0], MARK_TYPE.SERIF,
+      { color, width, markerLength }))
+    entities.push(marker3D(basePoints[0], basePoints[1], MARK_TYPE.SERIF,
+      { color, width, markerLength }))
+
+    const { angledeg: angleArrow } = distanceAzimuth(midPoint, basePoints[2])
+    const revers = !isFlip((angleArrow - angledeg) % 360)
+    // Сборка текста
+    entities.push(text3D(basePoints[0], LabelType.GROUND, {
+      text: amp[amps.N],
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: false,
+      align: {
+        baseline: 'bottom',
+        anchor: 'middle',
+      },
+    }))
+    entities.push(text3D(basePoints[0], LabelType.GROUND, {
+      text: amp[amps.B],
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: false,
+      align: {
+        baseline: 'top',
+        anchor: revers ? 'start' : 'end',
+      },
+    }))
+    entities.push(text3D(midPoint, LabelType.GROUND, {
+      text: amp[amps.T],
+      angle,
+      heightBox,
+      fillOpacity: '50%',
+      overturn: false,
+      align: {
+        baseline: 'bottom',
+        anchor: revers ? 'end' : 'start',
+      },
+    }))
+    entities.push(text3D(basePoints[0], LabelType.OPPOSITE, {
+      text: amp[amps.N],
+    }))
+    result.push({ id, type: objTypes.SOPHISTICATED, entities })
+    return result
   },
 }
