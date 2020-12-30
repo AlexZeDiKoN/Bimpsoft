@@ -1,5 +1,6 @@
 import {
   Cartesian2,
+  Cartesian3,
   ClassificationType,
   Color,
   ImageMaterialProperty,
@@ -22,6 +23,8 @@ import { buldCurve } from '../../../../../utils/mapObjConvertor'
 
 const STROKE_WIDTH_SCALE = 0.1
 const CROSS_SCALE = 1
+const SIZE_RATIO = 10000 // на каждые 10км увеличиваем на 1 количество повторов фона
+const NUMBER_TILES = 3
 
 const CODE = '017018'
 
@@ -67,7 +70,7 @@ lineDefinitions[CODE] = {
   },
 
   build3d: (result, id, points, attributes) => {
-    const color = attributes.get('color')
+    const color = attributes.get('color') || 'black'
     const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
     const width = attributes.get('strokeWidth')
     const entities = []
@@ -75,15 +78,21 @@ lineDefinitions[CODE] = {
     const heightView = 64
     const image = `data:image/svg+xml,
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
-   <path fill="transparent" stroke="black" d="M0 8 h16 M8 0 v16 M32 40 h16 M40 32 v16"/>
+   <path fill="transparent" stroke="${colorM.toCssColorString()}" d="M0 8 h16 M8 0 v16 M32 40 h16 M40 32 v16"/>
  </svg>`
-
     const corners = buldCurve(points, true)
     const polygonHierarchy = new PolygonHierarchy(corners)
     const rectangle = PolygonGeometry.computeRectangle({ polygonHierarchy })
-    const koef = rectangle.width / rectangle.height
-    const material = new ImageMaterialProperty({ image, repeat: new Cartesian2(3 * koef, 3), transparent: true })
-    // console.log('rectangle', { polygonHierarchy, rectangle, corners })
+    const p1 = Cartesian3.fromRadians(rectangle.east, rectangle.north)
+    const p2 = Cartesian3.fromRadians(rectangle.east, rectangle.south)
+    const p3 = Cartesian3.fromRadians(rectangle.west, rectangle.south)
+    const heightPolygon = Cartesian3.distance(p1, p2)
+    const widthPolygon = Cartesian3.distance(p2, p3)
+    const maximum = heightPolygon < widthPolygon ? widthPolygon : heightPolygon
+    const koef = widthPolygon / heightPolygon
+    const num = (NUMBER_TILES + maximum / SIZE_RATIO)
+    const k = (koef > 1 ? { x: num, y: num / koef } : { x: num * koef, y: num })
+    const material = new ImageMaterialProperty({ image, repeat: new Cartesian2(k.x, k.y), transparent: true })
     const entitie = {
       polygon: {
         hierarchy: new PolygonHierarchy(corners),
