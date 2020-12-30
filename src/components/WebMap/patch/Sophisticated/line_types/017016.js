@@ -33,6 +33,8 @@ import { LabelType, lengthRatio, marker3D, text3D } from '../3dLib'
 // hint: 'Послідовне зосередження вогню'
 
 const NUMBERS_SIZE = 0.75
+const TEXT_3D_CORRECTION = 1.5
+const NUMBER_3D_CORRECTION = 2
 
 lineDefinitions['017016'] = {
   // Ампліфікатори на лінії
@@ -261,12 +263,13 @@ lineDefinitions['017016'] = {
     const c = (indEnd / 3) | 0
     const { angledeg, distance } = distanceAzimuth(points[0], points[1])
     const angle = angledeg - 90
-    const heightBox = distance / lengthRatio
+    const heightBoxAmp = distance / lengthRatio * TEXT_3D_CORRECTION
+    const heightBoxNumber = distance / lengthRatio * NUMBER_3D_CORRECTION
     const number = Number(amp[amps.N] ?? 0)
     entities.push(text3D(points[0], LabelType.GROUND, {
       text: amp[amps.T],
       angle,
-      heightBox,
+      heightBox: heightBoxAmp,
       fillOpacity: '50%',
       overturn: false,
       align: {
@@ -306,7 +309,7 @@ lineDefinitions['017016'] = {
       entities.push(text3D(center, LabelType.GROUND, {
         text: number + i,
         angle: angle2 + 90,
-        heightBox,
+        heightBox: heightBoxNumber,
         fillOpacity: '50%',
         overturn: false,
       }))

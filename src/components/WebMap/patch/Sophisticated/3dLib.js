@@ -22,10 +22,10 @@ import {
 import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
-export const lengthRatio = 8
+export const lengthRatio = 8 // Коэфициент размаера амплификаторов, окончаний линий к размеру отрисовываемого объекта
 export const LabelType = {
   OPPOSITE: 'opposite', // текст выводиться прямо на камеру
-  FLAT: 'flat', // текст выводится на поверхность
+  FLAT: 'flat', // текст выводится на плоскость
   GROUND: 'ground', // текст выводится на поверхность
 }
 
@@ -95,9 +95,9 @@ export const text3D = (coordinate, type, attributes) => {
           // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
           pixelOffset: Cartesian2.ZERO,
           eyeOffset: Cartesian3.ZERO,
-          heightReference: HeightReference.NONE,
+          heightReference: HeightReference.CLAMP_TO_GROUND,
           distanceDisplayCondition: undefined,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
+          // disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
         },
       }
       return label
