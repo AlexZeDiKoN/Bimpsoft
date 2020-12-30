@@ -1,12 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { SymbolEditorComponentStateless } from '@C4/MilSymbolEditor'
+import { HotKeysContainer, HotKey } from '@C4/CommonComponents'
 import { SUBORDINATION_LEVEL_PATH } from '../WithSubordinationLevel'
 import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
 
 import './style.css'
 import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
+import { REDO, UNDO } from '../../../../constants/shortcuts'
 
 const LIST_WIDTH = 600 // максимальна ширина списку для вибору "Військового формування" (px)
 const configs = SymbolEditorComponentStateless.configs
@@ -53,7 +55,27 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     coordinatesType: PropTypes.string,
   }
 
+  undoRecord = []
+
+  recordIndex = null
+
+  undoHandler = () => this.setResult(() => {
+    this.recordIndex = Math.max(0, this.recordIndex - 1)
+    return this.undoRecord[this.recordIndex]
+  })
+
+  redoHandler = () => this.setResult(() => {
+    this.recordIndex = Math.min(this.recordIndex + 1, this.undoRecord.length - 1)
+    return this.undoRecord[this.recordIndex]
+  })
+
+  setUndoRecord = (data) => {
+    this.undoRecord.push(data)
+    this.recordIndex = this.undoRecord.length
+  }
+
   codeChangeHandler = (code, subordinationLevel) => this.setResult((result) => {
+    this.setUndoRecord(result)
     if (code.length > 20 || !code.match(/^[0-9]+$/)) {
       return result
     }
@@ -61,6 +83,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
   })
 
   unitChangeHandler = (unit) => this.setResult((result) => {
+    this.setUndoRecord(result)
     const { orgStructures: { byIds } } = this.props
     const {
       symbolData,
@@ -75,12 +98,15 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
       .updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge({ uniqueDesignation, higherFormation }))
   })
 
-  coordinatesChangeHandler = (coordinate) => this.setResult((result) => result
-    .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
-    .set('point', coordinate),
-  )
+  coordinatesChangeHandler = (coordinate) => this.setResult((result) => {
+    this.setUndoRecord(result)
+    return result
+      .updateIn(COORDINATE_PATH, (coordinates) => coordinates.set(0, coordinate))
+      .set('point', coordinate)
+  })
 
   attributesChangeHandler = (newAttributes) => this.setResult((result) => {
+    this.setUndoRecord(result)
     const { quantity, speed } = newAttributes
     if (quantity !== undefined) {
       newAttributes.quantity = Math.abs(parseInt(String(quantity).slice(0, 10)) || 0)
@@ -110,26 +136,30 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const { orgStructures, ovtData, coordinatesType } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
     return (
-      <SymbolEditorComponentStateless
-        code={code}
-        coordinates={coordinates}
-        orgStructureId={unit}
-        amplifiers={attributes}
-        subordinationLevel={subordinationLevel}
-        orgStructures={orgStructures}
-        elementsConfigs={elementsConfigs}
-        onCodeAndLevelChange={this.codeChangeHandler}
-        onAmplifiersChange={this.attributesChangeHandler}
-        // onNameChange={this.nameChangeHandler}
-        onCoordinatesChange={this.coordinatesChangeHandler}
-        onOrgStructureChange={this.unitChangeHandler}
-        onUnitInfo={this.handlerUnitInfo}
-        onSearch={placeSearch}
-        ovtData={ovtData}
-        maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
-        preferredType={coordinatesType}
-        listWidth={LIST_WIDTH}
-      />
+      <HotKeysContainer>
+        <HotKey selector={UNDO} onKey={this.undoHandler}/>
+        <HotKey selector={REDO} onKey={this.redoHandler}/>
+        <SymbolEditorComponentStateless
+          code={code}
+          coordinates={coordinates}
+          orgStructureId={unit}
+          amplifiers={attributes}
+          subordinationLevel={subordinationLevel}
+          orgStructures={orgStructures}
+          elementsConfigs={elementsConfigs}
+          onCodeAndLevelChange={this.codeChangeHandler}
+          onAmplifiersChange={this.attributesChangeHandler}
+          // onNameChange={this.nameChangeHandler}
+          onCoordinatesChange={this.coordinatesChangeHandler}
+          onOrgStructureChange={this.unitChangeHandler}
+          onUnitInfo={this.handlerUnitInfo}
+          onSearch={placeSearch}
+          ovtData={ovtData}
+          maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
+          preferredType={coordinatesType}
+          listWidth={LIST_WIDTH}
+        />
+      </HotKeysContainer>
     )
   }
 }
