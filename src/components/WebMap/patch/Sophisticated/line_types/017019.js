@@ -1,4 +1,5 @@
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
+import { Cartesian3, ClassificationType, Color, PolygonHierarchy } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -8,7 +9,10 @@ import {
   lengthLine,
   isDefPoint,
 } from '../utils'
-import { colors } from '../../../../../constants'
+import objTypes from '../../../entityKind'
+import { buildSector, LabelType, text3D } from '../3dLib'
+import { distanceAzimuth } from '../../utils/sectors'
+import * as mapColors from '../../../../../constants/colors'
 
 // sign name: Дальність дії (кругові)
 // task code: DZVIN-5769 (part 3)
@@ -55,7 +59,7 @@ lineDefinitions['017019'] = {
       if (isDefPoint(elm) && (ind > 0)) {
         const radius = lengthLine(pO, elm)
         const color = sectorsInfo[ind]?.color ?? COLORS[ind]
-        const fillColor = colors.values[sectorsInfo[ind]?.fill] ?? 'transparent'
+        const fillColor = mapColors.evaluateColor(sectorsInfo[ind]?.fill ?? 'transparent')
         // отрисовка круговых секторов для выбора их на карте
         drawCircle(result, pO, radius + !ind * 2)
         // заливка сектора + цвет круга
@@ -78,5 +82,44 @@ lineDefinitions['017019'] = {
         }
       }
     })
+  },
+
+  build3d: (result, id, points, attributes) => {
+    const width = attributes.get('strokeWidth')
+    const sectorsInfo = attributes.get('sectorsInfo').toJS()
+    const entities = []
+    let prevCoords = []
+    for (let i = 1; i < points.length; i++) {
+      const { distance } = distanceAzimuth(points[0], points[i])
+      const coords = buildSector(points[0], distance).map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+      const colorF = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.fill ?? 'transparent'))
+      colorF.alpha = 0.25
+      const colorM = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.color ?? COLORS[i]))
+      const polygon = {
+        hierarchy: new PolygonHierarchy(coords, new PolygonHierarchy(prevCoords)),
+        outline: false,
+        material: colorF,
+        classificationType: ClassificationType.TERRAIN,
+      }
+      const polyline = {
+        positions: coords,
+        width: width,
+        clampToGround: true,
+        followSurface: true,
+        material: colorM,
+      }
+      entities.push({ polygon, polyline })
+      entities.push(text3D(points[i], LabelType.OPPOSITE, {
+        text: Math.round(distance),
+        background: '#b7b7b7',
+      }))
+      prevCoords = coords
+    }
+    result.push({
+      id,
+      type: objTypes.SOPHISTICATED,
+      entities,
+    })
+    return result
   },
 }

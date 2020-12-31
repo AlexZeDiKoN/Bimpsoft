@@ -63,7 +63,7 @@ const LabelFont = {
 // overturn = true, - переворачивать верх текста в северном направлении
 // }
 export const text3D = (coordinate, type, attributes) => {
-  const { text: allText = '', color = Color.BLACK, align = {} } = attributes
+  const { text: allText = '', color = Color.BLACK, align = {}, background } = attributes
   if (allText === '') {
     return null
   }
@@ -86,6 +86,8 @@ export const text3D = (coordinate, type, attributes) => {
       } else {
         center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
       }
+      const backgroundColor = Color.fromCssColorString(mapColors.evaluateColor(background || 'transparent'))
+      backgroundColor.alpha = 0.25
       const label = {
         position: center,
         label: {
@@ -95,8 +97,9 @@ export const text3D = (coordinate, type, attributes) => {
           fillColor: color,
           // pixelOffset: new Cartesian2(0.0, 20),
           // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
-          showBackground: false,
-          // backgroundColor : new Color(0.165, 0.165, 0.165, 0.8),
+          showBackground: Boolean(background),
+          backgroundColor,
+          // backgroundColor: new Color(0.165, 0.165, 0.165, 0.8),
           // backgroundPadding : new Cartesian2(7, 5),
           outline: false,
           // outlineColor: Color.BLACK,
@@ -418,4 +421,37 @@ const getAreaAspectRatio = (corners) => {
   const ratio = widthPolygon / heightPolygon
   const num = (NUMBER_TILES + maximum / SIZE_RATIO)
   return (ratio > 1 ? { x: num, y: num / ratio } : { x: num * ratio, y: num })
+}
+
+export const buildSector = (
+  center,
+  distance,
+  angleStart = 0,
+  angleEnd = 360,
+  direction = 'clockwise',
+  step = stepAngle,
+) => {
+  const points = []
+  let revers = false
+  let aStart = (angleStart < 0 ? (angleStart + 720) : angleStart) % 360
+  let aEnd = (angleEnd < 0 ? (angleEnd + 720) : angleEnd) % 360
+  // конвертруем в генерацию по часовой
+  if (direction !== 'clockwise') {
+    revers = true
+    const a = aEnd
+    aEnd = aStart
+    aStart = a
+  }
+  // приведение углов
+  if (aStart >= aEnd) {
+    aEnd += 360
+  }
+  for (let angledeg = aStart; angledeg < aEnd; angledeg += step) {
+    points.push(moveCoordinate(center, { distance, angledeg: angledeg % 360 }))
+  }
+  points.push(moveCoordinate(center, { distance, angledeg: aEnd % 360 }))
+  if (revers) { // обратная конвертация
+    return points.reverse()
+  }
+  return points
 }
