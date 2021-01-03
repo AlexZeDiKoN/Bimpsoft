@@ -226,6 +226,7 @@ export const
       if (type === objTypes.POINT) {
         const { lat, lng } = point
         const { svg, anchor } = buildSVG(listArr[i])
+        // console.log('svg', svg)
         const { code } = listArr[i]
         const isCP = model.APP6Code.isCommandPost(code)
         const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))

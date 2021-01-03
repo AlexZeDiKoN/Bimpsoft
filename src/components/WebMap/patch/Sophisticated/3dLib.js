@@ -29,6 +29,10 @@ export const LabelType = {
   FLAT: 'flat', // текст выводится на плоскость
   GROUND: 'ground', // текст выводится на поверхность
 }
+export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
+export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
+
+const scaleByDistance = new NearFarScalar(100, 1, 3000000, 0.1)
 
 // для областей
 const SIZE_RATIO = 10000 // на каждые 10км увеличиваем на 1 количество повторов фона
@@ -58,17 +62,18 @@ const LabelFont = {
 // attributes {
 // text,
 // color = Color.BLACK, - цвет текста
-// fillOpacite = 1, - прозрачность подложки текста
+// fillOpacity = 1, - прозрачность подложки текста
 // fillColor = rgb(200,200,200), - цвет подложки
 // overturn = true, - переворачивать верх текста в северном направлении
+// anchor = center, - варианты выраванивания по горизонтали: start, middle, end
+// baseline = middle - варианты выраванивания по вертикали: top, center, bottom
 // }
 export const text3D = (coordinate, type, attributes) => {
-  const { text: allText = '', color = Color.BLACK, align = {}, background } = attributes
+  const { text: allText = '', color = Color.BLACK, baseline = 'center', anchor = 'middle', background } = attributes
   if (allText === '') {
     return null
   }
   const text = `${allText}`
-  const { baseline = 'center', anchor = 'middle' } = align
 
   switch (type) {
     case LabelType.OPPOSITE: {
@@ -125,7 +130,7 @@ export const text3D = (coordinate, type, attributes) => {
         return null
       }
       const {
-        fillOpacity = '1',
+        fillOpacity = FILL_OPACITY,
         angle = 0,
         heightBox = 1,
         overturn = true,
@@ -142,7 +147,7 @@ export const text3D = (coordinate, type, attributes) => {
       const angleRad = rad(angleText)
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
       const heightPolygon = heightBox
-      const widthPolygon = heightBox * 0.5 * text.length + heightPolygon / 4
+      const widthPolygon = widthText(text, heightPolygon)
       const diagonal = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
       let dXY1, angle1
       switch (anchor) {
@@ -190,6 +195,10 @@ export const text3D = (coordinate, type, attributes) => {
     default:
   }
   return null
+}
+
+export const widthText = (text, height) => {
+  return height * 0.5 * text.length + height / 4
 }
 
 // генерация окончаний линий (стрелки, засечки и т.п.)
@@ -375,7 +384,6 @@ export const curve3D = (points, type, locked = false, typeFill = 'none', attribu
   const color = attributes.get('color') || 'black'
   const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
   const width = attributes.get('strokeWidth')
-
   const corners = buldCurve(points, locked)
   const k = getAreaAspectRatio(corners)
   let material
@@ -454,4 +462,18 @@ export const buildSector = (
     return points.reverse()
   }
   return points
+}
+
+export const svgBillboard3D = (renderSvg) => {
+  const { svg, anchor } = renderSvg()
+  const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+  return {
+    image,
+    scaleByDistance,
+    heightReference: HeightReference['CLAMP_TO_GROUND'],
+    verticalOrigin: VerticalOrigin['TOP'],
+    horizontalOrigin: HorizontalOrigin['LEFT'],
+    pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
+    pixelOffsetScaleByDistance: scaleByDistance,
+  }
 }

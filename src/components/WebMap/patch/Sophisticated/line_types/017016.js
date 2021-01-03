@@ -40,7 +40,7 @@ lineDefinitions['017016'] = {
   // Ампліфікатори на лінії
   useAmplifiers: [
     { id: amps.T, name: 'T', maxRows: 1 },
-    { id: amps.N, name: 'Початковий номер', type: 'integer', minNumber: 1 , maxNumber: 999999 },
+    { id: amps.N, name: 'Початковий номер', type: 'integer', minNumber: 1, maxNumber: 999999 },
   ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.end,
@@ -275,10 +275,8 @@ lineDefinitions['017016'] = {
       heightBox: heightBoxAmp,
       fillOpacity: '50%',
       overturn: false,
-      align: {
-        baseline: 'bottom',
-        anchor: 'middle',
-      },
+      baseline: 'bottom',
+      anchor: 'middle',
     }))
     entities.push(marker3D(points[1], points[0], MARK_TYPE.SERIF, { width, color }))
     entities.push(marker3D(points[indEnd - 2], points[indEnd], MARK_TYPE.SERIF, { width, color }))

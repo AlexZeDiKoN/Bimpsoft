@@ -10,7 +10,12 @@ import {
   isDefPoint,
 } from '../utils'
 import objTypes from '../../../entityKind'
-import { buildSector, LabelType, text3D } from '../3dLib'
+import {
+  buildSector,
+  LABEL_BACKGROUND,
+  LabelType,
+  text3D,
+} from '../3dLib'
 import { distanceAzimuth } from '../../utils/sectors'
 import * as mapColors from '../../../../../constants/colors'
 
@@ -111,7 +116,7 @@ lineDefinitions['017019'] = {
       entities.push({ polygon, polyline })
       entities.push(text3D(points[i], LabelType.OPPOSITE, {
         text: Math.round(distance),
-        background: '#b7b7b7',
+        background: LABEL_BACKGROUND,
       }))
       prevCoords = coords
     }

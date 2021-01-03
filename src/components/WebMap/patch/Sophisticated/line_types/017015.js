@@ -155,10 +155,8 @@ lineDefinitions['017015'] = {
       heightBox,
       fillOpacity: '50%',
       overturn: false,
-      align: {
-        baseline: 'bottom',
-        anchor: 'middle',
-      },
+      baseline: 'bottom',
+      anchor: 'middle',
     }))
     entities.push(text3D(basePoints[0], LabelType.GROUND, {
       text: amp[amps.B],
@@ -166,10 +164,8 @@ lineDefinitions['017015'] = {
       heightBox,
       fillOpacity: '50%',
       overturn: false,
-      align: {
-        baseline: 'top',
-        anchor: revers ? 'start' : 'end',
-      },
+      baseline: 'top',
+      anchor: revers ? 'start' : 'end',
     }))
     entities.push(text3D(midPoint, LabelType.GROUND, {
       text: amp[amps.T],
@@ -177,10 +173,8 @@ lineDefinitions['017015'] = {
       heightBox,
       fillOpacity: '50%',
       overturn: false,
-      align: {
-        baseline: 'bottom',
-        anchor: revers ? 'end' : 'start',
-      },
+      baseline: 'bottom',
+      anchor: revers ? 'end' : 'start',
     }))
     entities.push(text3D(basePoints[0], LabelType.OPPOSITE, {
       text: amp[amps.N],
