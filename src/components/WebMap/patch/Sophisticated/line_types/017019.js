@@ -1,5 +1,9 @@
 import { Earth } from 'leaflet/src/geo/crs/CRS.Earth'
-import { Cartesian3, ClassificationType, Color, PolygonHierarchy } from 'cesium'
+import {
+  Cartesian3,
+  ClassificationType,
+  PolygonHierarchy, VerticalOrigin,
+} from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
@@ -13,7 +17,7 @@ import objTypes from '../../../entityKind'
 import {
   buildSector,
   LABEL_BACKGROUND,
-  LabelType,
+  LabelType, materialColor,
   text3D,
 } from '../3dLib'
 import { distanceAzimuth } from '../../utils/sectors'
@@ -97,9 +101,8 @@ lineDefinitions['017019'] = {
     for (let i = 1; i < points.length; i++) {
       const { distance } = distanceAzimuth(points[0], points[i])
       const coords = buildSector(points[0], distance).map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-      const colorF = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.fill ?? 'transparent'))
-      colorF.alpha = 0.25
-      const colorM = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.color ?? COLORS[i]))
+      const colorF = materialColor(sectorsInfo[i]?.fill, 0.25, 'transparent')
+      const colorM = materialColor(sectorsInfo[i]?.color, 1, COLORS[i])
       const polygon = {
         hierarchy: new PolygonHierarchy(coords, new PolygonHierarchy(prevCoords)),
         outline: false,
@@ -114,9 +117,16 @@ lineDefinitions['017019'] = {
         material: colorM,
       }
       entities.push({ polygon, polyline })
+      // вывод радиуса секторов
       entities.push(text3D(points[i], LabelType.OPPOSITE, {
         text: Math.round(distance),
         background: LABEL_BACKGROUND,
+      }))
+      // вывод амплификаторов
+      entities.push(text3D(points[i], LabelType.OPPOSITE, {
+        text: sectorsInfo[i]?.amplifier,
+        background: LABEL_BACKGROUND,
+        verticalOrigin: VerticalOrigin.TOP,
       }))
       prevCoords = coords
     }

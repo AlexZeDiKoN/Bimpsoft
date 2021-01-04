@@ -22,9 +22,10 @@ import {
 import { buldCurve } from '../../../../utils/mapObjConvertor'
 import {
   FONT_FAMILY,
-  FONT_WEIGHT,
+  FONT_WEIGHT, getTextWidth,
 } from '../../../../utils'
 import { deg, rad } from './utils'
+import { CONFIG } from './index'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
 export const lengthRatio = 8 // Коэфициент размаера амплификаторов, окончаний линий к размеру отрисовываемого объекта
@@ -33,10 +34,9 @@ export const LabelType = {
   FLAT: 'flat', // текст выводится на плоскость
   GROUND: 'ground', // текст выводится на поверхность
 }
-export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
-export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
 
-export const scaleByDistance = new NearFarScalar(100, 1, 3000000, 0.1)
+// для billboard
+export const scaleByDistance = new NearFarScalar(1000, 1, 1000000, 0.1)
 
 // для областей
 const SIZE_RATIO = 10000 // на каждые 10км увеличиваем на 1 количество повторов фона
@@ -50,15 +50,25 @@ export const FILL_TYPE = {
   RIGHT_TO_LEFT: 'right-left',
 }
 
-const scaleByDistanceLabel = new NearFarScalar(500, 1, 1000000, 0.1)
-
+const scaleByDistanceLabel = new NearFarScalar(1000, 1, 1000000, 0.1)
+export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
+export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
+const LABEL_PADDING = 4
 // шрифт текстовых меток по умолчанию
 const LabelFont = {
-  size: 64,
+  size: 32,
   font: 'sans-serif',
+  fill: 'rgb(183,183,183)',
+  color: 'rgb(0,0,0)',
+}
+const amplifiersFont = {
+  size: 32,
+  font: 'sans-serif',
+  fill: 'rgb(183,183,183)',
+  color: 'rgb(0,0,0)',
 }
 
-// генерация текстовых элементов
+// генерация текстовых элементов, амплификаторов
 // coordinate - координата места привязки или массив координат по которому находится центр масс координат
 // type:
 //   OPPOSITE - вывод меткой, текст всегда повернут к камере
@@ -95,8 +105,8 @@ export const text3D = (coordinate, type, attributes) => {
       } else {
         center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
       }
-      const backgroundColor = Color.fromCssColorString(mapColors.evaluateColor(background || 'transparent'))
-      backgroundColor.alpha = 0.25
+      const { horizontalOrigin = HorizontalOrigin.CENTER, verticalOrigin = VerticalOrigin.BASELINE } = attributes
+      const backgroundColor = materialColor(background, 0.25, 'transparent')
       const label = {
         position: center,
         label: {
@@ -107,14 +117,13 @@ export const text3D = (coordinate, type, attributes) => {
           // pixelOffset: new Cartesian2(0.0, 20),
           // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
           showBackground: Boolean(background),
-          backgroundColor,
-          // backgroundColor: new Color(0.165, 0.165, 0.165, 0.8),
-          // backgroundPadding : new Cartesian2(7, 5),
+          backgroundColor, // new Color(0.165, 0.165, 0.165, 0.8),
+          backgroundPadding: new Cartesian2(LABEL_PADDING, LABEL_PADDING),
           outline: false,
           // outlineColor: Color.BLACK,
           // outlineWidth: 1.0,
-          horizontalOrigin: HorizontalOrigin.CENTER,
-          verticalOrigin: VerticalOrigin.BASELINE,
+          horizontalOrigin,
+          verticalOrigin,
           scale: 1.0,
           scaleByDistance: scaleByDistanceLabel,
           // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
@@ -128,8 +137,7 @@ export const text3D = (coordinate, type, attributes) => {
       return label
     }
     case LabelType.GROUND: {
-      const heightView = Math.round(LabelFont.size * 1.2)
-      const widthView = LabelFont.size * 0.6 * text.length + LabelFont.size / 4
+      // LabelFont.size * 0.6 * text.length + LabelFont.size / 4
       if (!utils.Coordinates.check(coordinate)) {
         return null
       }
@@ -140,18 +148,29 @@ export const text3D = (coordinate, type, attributes) => {
         overturn = true,
       } = attributes
 
+      const padding = Math.round(LabelFont.size / 5)
+      const heightView = LabelFont.size + padding
+      const widthView = getTextWidth(text, `${CONFIG.FONT_WEIGHT} ${Math.round(LabelFont.size)}px ${CONFIG.FONT_FAMILY}`) + padding
       const angleText = angle % 360
       const image = `data:image/svg+xml,
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
-  <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
-  <text font-size="${LabelFont.size}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
+ <svg xmlns="http://www.w3.org/2000/svg" height="${heightView}" viewBox="0 0 ${widthView} ${heightView}" >
+  <rect x="0" y="0" width="${widthView}" height="${heightView}" fill-opacity="${fillOpacity}" style="fill: ${amplifiersFont.fill}"/>
+  <text 
+    font-family="${CONFIG.FONT_FAMILY}"
+    font-weight="${CONFIG.FONT_WEIGHT}"
+    font-size="${amplifiersFont.size}"
+    fill="${amplifiersFont.color}"
+    text-anchor="middle"
+    dominant-baseline="central"
+    x="50%" y="50%">
+      ${text}
+  </text>
  </svg>`
       const material = new ImageMaterialProperty({ image, transparent: true })
-
       const angleRad = rad(angleText)
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
       const heightPolygon = heightBox
-      const widthPolygon = widthText(text, heightPolygon)
+      const widthPolygon = heightBox / heightView * widthView // widthText(text, heightPolygon)
       const diagonal = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
       let dXY1, angle1
       switch (anchor) {
@@ -499,4 +518,12 @@ export const svgText3d = (result, point, text, fontSize, textAlign = 'middle', t
     dominant-baseline="${textAlign}" 
   >${text}</text>`
   return result
+}
+
+// форматирование цвета в материал для 3Д и rgb(r,g,b) для svg блоков
+export const materialColor = (color, alpha = 1, defaultColor = 'black') => {
+  const eColor = mapColors.evaluateColor(color) || defaultColor
+  const mColor = Color.fromCssColorString(eColor)
+  eColor === 'transparent' ? mColor.alpha = 0 : mColor.alpha = alpha
+  return mColor
 }

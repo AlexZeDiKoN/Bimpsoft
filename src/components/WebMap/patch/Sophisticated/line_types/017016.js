@@ -273,7 +273,6 @@ lineDefinitions['017016'] = {
       text: amp[amps.T],
       angle,
       heightBox: heightBoxAmp,
-      fillOpacity: '50%',
       overturn: false,
       baseline: 'bottom',
       anchor: 'middle',

@@ -153,7 +153,6 @@ lineDefinitions['017015'] = {
       text: amp[amps.N],
       angle,
       heightBox,
-      fillOpacity: '50%',
       overturn: false,
       baseline: 'bottom',
       anchor: 'middle',
@@ -162,7 +161,6 @@ lineDefinitions['017015'] = {
       text: amp[amps.B],
       angle,
       heightBox,
-      fillOpacity: '50%',
       overturn: false,
       baseline: 'top',
       anchor: revers ? 'start' : 'end',
@@ -171,13 +169,9 @@ lineDefinitions['017015'] = {
       text: amp[amps.T],
       angle,
       heightBox,
-      fillOpacity: '50%',
       overturn: false,
       baseline: 'bottom',
       anchor: revers ? 'end' : 'start',
-    }))
-    entities.push(text3D(basePoints[0], LabelType.OPPOSITE, {
-      text: amp[amps.N],
     }))
     result.push({ id, type: objTypes.SOPHISTICATED, entities })
     return result

@@ -17,7 +17,7 @@ import { amps } from '../../../../../constants/symbols'
 import objTypes from '../../../entityKind'
 import {
   svgText3d,
-  scaleByDistance,
+  scaleByDistance, materialColor,
 } from '../3dLib'
 import { getTextWidth } from '../../../../../utils'
 import { CONFIG } from '../index'
@@ -32,9 +32,8 @@ const SYMBOL_SIZE = 100 // px
 
 const renderBillboard = (attributes, showAmplifiers) => {
   const width = attributes.get('strokeWidth')
-  const color = attributes.get('color') || 'black'
   const amp = attributes.get('pointAmplifier')
-
+  const color = materialColor(attributes.get('color')).toCssColorString()
   const result = {
     d: '',
     amplifiers: '',
@@ -192,7 +191,7 @@ lineDefinitions['017020'] = {
 
   build3d: (result, id, points, attributes) => {
     const entities = []
-    /*
+    /* // вывод на поверхность
     const width = attributes.get('strokeWidth')
     const color = attributes.get('color') || 'black'
     const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))

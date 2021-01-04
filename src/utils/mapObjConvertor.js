@@ -114,7 +114,7 @@ export const buildSVG = (data) => {
 
 const BILLBOARD_HEIGHT = 400
 // @TODO: change scale limits (use zoom2height)
-const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
+const scaleByDistance = new NearFarScalar(500, 1, 1000000, 0.1)
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
 export const buldCurve = (points, locked) => {
