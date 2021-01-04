@@ -34,6 +34,7 @@ export const HIDE_CATALOG = 'Приховати об’єкти каталогу
 export const SHOW_CATALOG = 'Показати об’єкти каталогу'
 export const ZOOM_IN = 'Збільшити'
 export const ZOOM_OUT = 'Зменшити'
+export const ABBR_GRADUS = '˚'
 export const ABBR_METERS = 'м' // Константа використовується!
 export const ABBR_KILOMETERS = 'км' // Константа використовується!
 export const ABBR_SQUARE_METERS = 'кв. м' // Константа використовується!
