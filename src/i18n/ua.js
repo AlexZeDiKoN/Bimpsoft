@@ -369,6 +369,9 @@ export const DELETE_LIST = 'Видалено тактичні знаки'
 export const INSERT_OBJECT = 'Додано тактичний знак'
 export const INSERT_LIST = 'Додано тактичні знаки'
 
+export const DELETE_OBJECT_MSG = 'Неможливо відобразити тактичний знак, оскільки він був видалений'
+export const DELETE_LIST_MSG = 'Неможливо відобразити тактичні знаки, оскільки вони були видалені'
+
 // Марш
 export const MARCH_TITLE = 'Маршрут переміщення'
 // export const MARCH_DISTANCE = 'Довжина маршруту'
