@@ -20,6 +20,10 @@ import {
   MARK_TYPE,
 } from '../../../../constants/drawLines'
 import { buldCurve } from '../../../../utils/mapObjConvertor'
+import {
+  FONT_FAMILY,
+  FONT_WEIGHT,
+} from '../../../../utils'
 import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
@@ -32,7 +36,7 @@ export const LabelType = {
 export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
 export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
 
-const scaleByDistance = new NearFarScalar(100, 1, 3000000, 0.1)
+export const scaleByDistance = new NearFarScalar(100, 1, 3000000, 0.1)
 
 // для областей
 const SIZE_RATIO = 10000 // на каждые 10км увеличиваем на 1 количество повторов фона
@@ -476,4 +480,23 @@ export const svgBillboard3D = (renderSvg) => {
     pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
     pixelOffsetScaleByDistance: scaleByDistance,
   }
+}
+
+export const svgText3d = (result, point, text, fontSize, textAlign = 'middle', textAnchor = 'middle', color) => {
+  const fill = color ? `fill = "${color}"` : `fill="black"`
+  const transform = ''
+  result.amplifiers += `<text 
+    font-family="${FONT_FAMILY}"
+    font-weight="${FONT_WEIGHT}"
+    stroke="none" 
+    ${fill}
+    transform="${transform}"
+    x="${point.x}" 
+    y="${point.y}" 
+    text-anchor="${textAnchor}" 
+    font-size="${fontSize}"
+    alignment-baseline="${textAlign}" 
+    dominant-baseline="${textAlign}" 
+  >${text}</text>`
+  return result
 }
