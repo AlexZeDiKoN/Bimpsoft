@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import PropTypes, { string } from 'prop-types'
 import memoize from 'memoize-one'
 import {
   Cartographic,
@@ -86,7 +86,10 @@ const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...re
       const { primitives, entities, ...entity } = rest
       if (entities) {
         if (isArray(entities)) {
-          return entities.map((entity, ind) => <Entity key={`${id}${ind}`} onDoubleClick={edit(id)} {...entity}/>)
+          return entities.map((entity, ind) => {
+            console.log('render arr', { key: `${id}${ind}`, entity })
+            return <Entity key={`${id}${ind}`} onDoubleClick={edit(id)} {...entity}/>
+          })
         } else {
           return <Entity key={id} onDoubleClick={edit(id)} {...entity}/>
         }
@@ -116,6 +119,7 @@ const renderEntities = memoize((signs, edit) => signs.flatMap(({ type, id, ...re
           />)
         return outInstances
       }
+      console.log('render end', { id, rest })
       return <Entity key={id} onDoubleClick={edit(id)} {...entity}/>
     }
     case objTypes.CONTOUR: {

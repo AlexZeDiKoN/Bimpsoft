@@ -100,6 +100,7 @@ lineDefinitions['017019'] = {
       const colorF = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.fill ?? 'transparent'))
       colorF.alpha = 0.25
       const colorM = Color.fromCssColorString(mapColors.evaluateColor(sectorsInfo[i]?.color ?? COLORS[i]))
+      console.log('19', { colorF })
       const polygon = {
         hierarchy: new PolygonHierarchy(coords, new PolygonHierarchy(prevCoords)),
         outline: false,

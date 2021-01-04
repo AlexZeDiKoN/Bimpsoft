@@ -3,6 +3,7 @@ import {
   ClassificationType,
   Color,
   PolygonHierarchy,
+  ColorMaterialProperty,
 } from 'cesium'
 import { MIDDLE, DELETE, STRATEGY } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
@@ -18,6 +19,7 @@ import {
   buildSector,
   LabelType,
   stepAngle,
+  svgText3d,
   text3D,
   widthText,
 } from '../3dLib'
@@ -25,6 +27,8 @@ import * as mapColors from '../../../../../constants/colors'
 import {
   moveCoordinate,
 } from '../../utils/sectors'
+import { getTextWidth } from '../../../../../utils/svg'
+import { CONFIG } from '../index'
 
 // sign name: Ракетний удар
 // task code: DZVIN-6009
@@ -32,6 +36,77 @@ import {
 
 const TEXT_SIZE = 1
 const TEXT_COLOR = 'black'
+
+// const renderSvg = (attributes, showAmplifiers) => {
+//   const width = attributes.get('strokeWidth') * 4
+//   const color = attributes.get('color') || 'black'
+//   const amp = attributes.get('pointAmplifier')
+//
+//   const result = {
+//     d: '',
+//     amplifiers: '',
+//     attributes,
+//   }
+//   Кола
+  // const margin = width
+  // const r = 100 // px
+  // const fontSize = r / 1.2
+  // const dyText = r * 0.05
+  // const r02 = r / 5
+  // const r12 = r + r02
+  // let leftLine = r02
+  // let rightLine = r02
+  // const x = r
+  // const y = r
+  // const center = { x, y }
+  // drawCircle(result, center, r)
+  // result.amplifiers += `<circle stroke-width="0" stroke="none" fill="${color}" cx="${x}" cy="${y}" r="${r / 4}"/> `
+  // const bbox = {
+  //   top: 0,
+  //   bottom: r * 2,
+  //   left: 0,
+  //   right: r * 2,
+  // }
+  // Ампліфікатори
+  // if (showAmplifiers) {
+  //   const fontConfig = `${CONFIG.FONT_WEIGHT} ${Math.round(fontSize)}px ${CONFIG.FONT_FAMILY}`
+  //   if (amp[amps.N] && amp[amps.N] !== '') {
+  //     svgText3d(result, { x: x - r12, y: y - dyText }, amp[amps.N], fontSize, 'text-after-edge', 'end', TEXT_COLOR)
+  //     bbox.left = Math.min(bbox.left, x - r12 - getTextWidth(amp[amps.N], fontConfig))
+  //   }
+  //   if (amp[amps.T] && amp[amps.T] !== '') {
+  //     svgText3d(result, { x: x - r12, y: y + dyText }, amp[amps.T], fontSize, 'text-before-edge', 'end', TEXT_COLOR)
+  //     bbox.left = Math.min(bbox.left, x - r12 - getTextWidth(amp[amps.T], fontConfig))
+  //   }
+  //   if (amp[amps.W] && amp[amps.W] !== '') {
+  //     svgText3d(result, { x: x + r12, y: y - dyText }, amp[amps.W], fontSize, 'text-after-edge', 'start', TEXT_COLOR)
+  //     bbox.right = Math.max(bbox.right, x + r12 + getTextWidth(amp[amps.W], fontConfig))
+  //   }
+  //   if (amp[amps.B] && amp[amps.B] !== '') {
+  //     svgText3d(result, { x: x + r12, y: y + dyText }, amp[amps.B], fontSize, 'text-before-edge', 'start', TEXT_COLOR)
+  //     bbox.right = Math.max(bbox.right, x + r12 + getTextWidth(amp[amps.B], fontConfig))
+  //   }
+  //   leftLine = bbox.left
+  //   rightLine = bbox.right
+  // }
+  // bbox.left -= margin
+  // bbox.right += margin
+  // bbox.top -= margin
+  // bbox.bottom += margin
+  // drawLine(result, { x: x - r12, y }, { x: leftLine, y })
+  // drawLine(result, { x: x + r12, y }, { x: rightLine, y })
+  // return {
+  //   svg: `
+  //     <svg xmlns="http://www.w3.org/2000/svg" viewBox="${bbox.left} ${bbox.top} ${bbox.right - bbox.left} ${bbox.bottom - bbox.top}" >
+  //       <path stroke-width="${width}" stroke="${color}" fill="transparent" d="${result.d}"/>
+  //       ${result.amplifiers}
+  //      </svg>`,
+  //   anchor: {
+  //     x: x - leftLine + margin,
+  //     y: y + margin,
+  //   },
+  // }
+// }
 
 lineDefinitions['017020'] = {
   // Ампліфікатори на лінії
@@ -122,26 +197,32 @@ lineDefinitions['017020'] = {
   build3d: (result, id, points, attributes) => {
     const width = attributes.get('strokeWidth')
     const color = attributes.get('color') || 'black'
-    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
-    const entities = []
-    const radius = 1000
+    const colorM = Color.fromCssColorString(mapColors.evaluateColor(color ?? 'black'))
+    const colorF = Color.fromCssColorString(mapColors.evaluateColor(color ?? 'transparent'))
+    const radius = 10000
     const heightBox = radius * 1.1
     const coordOut = buildSector(points[0], radius).map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
-    const coordIn = buildSector(points[0], radius / 5, 0, 360, null, stepAngle * 3)
-    const polygon = {
-      hierarchy: new PolygonHierarchy(coordIn.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))),
-      outline: false,
-      material: colorM,
-      classificationType: ClassificationType.TERRAIN,
-    }
-    const polyline = {
-      positions: coordOut,
-      width: width,
-      clampToGround: true,
-      followSurface: true,
-      material: colorM,
-    }
-    entities.push({ polygon, polyline })
+    const coordIn = buildSector(points[0], radius / 5, 0, 360, null, stepAngle * 3).map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))
+    const entities = []
+    entities.push({
+      id,
+      polygon: {
+        hierarchy: new PolygonHierarchy(coordIn),
+        outline: false,
+        material: new ColorMaterialProperty(colorF),
+        // classificationType: ClassificationType.TERRAIN,
+        clampToGround: true,
+      },
+    })
+    entities.push({
+      polyline: {
+        positions: coordOut,
+        width: width,
+        clampToGround: true,
+        followSurface: true,
+        material: colorM,
+      },
+    })
     const angledeg = 90
     const angle = angledeg
     const coordLeft = moveCoordinate(points[0], { distance: -heightBox, angledeg })
@@ -173,6 +254,7 @@ lineDefinitions['017020'] = {
         material: colorM,
       },
     })
+
     // вывод амплификаторов
     entities.push(text3D(coordLeft, LabelType.GROUND,
       {
@@ -211,82 +293,8 @@ lineDefinitions['017020'] = {
       type: objTypes.SOPHISTICATED,
       entities,
     })
+    // const { svg, anchor } = renderSvg(attributes, true)
     return result
-  },
-
-  renderSvg: (points, attributes, showAmplifiers) => {
-    const [ p0 ] = points
-    const width = attributes.get('strokeWidth')
-    const color = attributes.get('color') || 'black'
-    const amp = attributes.get('pointAmplifier')
-
-    const result = {
-      d: '',
-      amplifiers: '',
-      attributes,
-    }
-    // Кола
-    const r = 100 // px
-    drawCircle(result, p0, r)
-    result.amplifiers += `<circle stroke-width="0" stroke="none" fill="${color}" cx="${p0.x}" cy="${p0.y}" r="${r / 4}"/> `
-    const r02 = r / 5
-    const r12 = r + r02
-    let leftLine = r02
-    let rightLine = r02
-    // Ампліфікатори
-    if (showAmplifiers) {
-      const [ , b1 ] = drawText(
-        result,
-        { x: p0.x - r12, y: p0.y - r02 },
-        0,
-        amp[amps.N] ?? '',
-        TEXT_SIZE,
-        'end',
-        TEXT_COLOR,
-        'text-after-edge',
-      )
-      const [ , b2 ] = drawText(
-        result,
-        { x: p0.x - r12, y: p0.y + r02 },
-        0,
-        amp[amps.T] ?? '',
-        TEXT_SIZE,
-        'end',
-        TEXT_COLOR,
-        'text-before-edge',
-      )
-      const [ , b3 ] = drawText(
-        result,
-        { x: p0.x + r12, y: p0.y - r02 },
-        0,
-        amp[amps.W] ?? '',
-        TEXT_SIZE,
-        'start',
-        TEXT_COLOR,
-        'text-after-edge',
-      )
-      const [ , b4 ] = drawText(
-        result,
-        { x: p0.x + r12, y: p0.y + r02 },
-        0,
-        amp[amps.B] ?? '',
-        TEXT_SIZE,
-        'start',
-        TEXT_COLOR,
-        'text-before-edge',
-      )
-      leftLine = Math.max(b1.width, b2.width) + r02
-      rightLine = Math.max(b3.width, b4.width) + r02
-    }
-    drawLine(result, { x: p0.x - r12, y: p0.y }, { x: p0.x - r12 - leftLine, y: p0.y })
-    drawLine(result, { x: p0.x + r12, y: p0.y }, { x: p0.x + r12 + rightLine, y: p0.y })
-    return {
-      svg: `path stroke-width="${width}" stroke="${color}" fill="transparent" d="${result.d}" ${result.amplifiers.split(' ')}`,
-      anchor: {
-        x: r12 + leftLine,
-        y: r,
-      },
-    }
   },
 
 }

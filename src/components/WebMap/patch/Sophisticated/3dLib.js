@@ -20,6 +20,10 @@ import {
   MARK_TYPE,
 } from '../../../../constants/drawLines'
 import { buldCurve } from '../../../../utils/mapObjConvertor'
+import {
+  FONT_FAMILY,
+  FONT_WEIGHT,
+} from '../../../../utils/svg'
 import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
@@ -29,7 +33,7 @@ export const LabelType = {
   FLAT: 'flat', // текст выводится на плоскость
   GROUND: 'ground', // текст выводится на поверхность
 }
-export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
+export const LABEL_BACKGROUND = 'rgb(183,183,183)' // '#b7b7b7' // для прозрачного "transparent"
 export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
 
 const scaleByDistance = new NearFarScalar(100, 1, 3000000, 0.1)
@@ -139,7 +143,7 @@ export const text3D = (coordinate, type, attributes) => {
       const angleText = angle % 360
       const image = `data:image/svg+xml,
  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
-  <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
+  <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: ${LABEL_BACKGROUND}"/>
   <text font-size="${LabelFont.size}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
  </svg>`
       const material = new ImageMaterialProperty({ image, transparent: true })
@@ -187,7 +191,7 @@ export const text3D = (coordinate, type, attributes) => {
       const polygon = {
         hierarchy: new PolygonHierarchy(coords.map(({ lat, lng }) => Cartesian3.fromDegrees(lng, lat))),
         material,
-        classificationType: ClassificationType.TERRAIN,
+        // classificationType: ClassificationType.TERRAIN,
         stRotation: angleRad - Math.PI / 2 + (overturn ? Math.PI * revers : 0),
       }
       return { polygon }
@@ -476,4 +480,22 @@ export const svgBillboard3D = (renderSvg) => {
     pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
     pixelOffsetScaleByDistance: scaleByDistance,
   }
+}
+
+export const svgText3d = (result, point, text, fontSize, textAlign = 'middle', textAnchor = 'middle', color) => {
+  const fill = color ? `fill = "${color}"` : `fill="black"`
+  const transform = ''
+  result.amplifiers += `<text 
+    font-family="${FONT_FAMILY}"
+    font-weight="${FONT_WEIGHT}"
+    stroke="none" 
+    ${fill}
+    transform="${transform}"
+    x="${point.x}" 
+    y="${point.y}" 
+    text-anchor="${textAnchor}" 
+    font-size="${fontSize}"
+    alignment-baseline="${textAlign}" 
+  >${text}</text>`
+  return result
 }
