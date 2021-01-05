@@ -120,9 +120,10 @@ export default L.Path.include({
     this._updateZoomStyles(needRedraw)
   },
 
-  setShowAmplifiers: function (showAmplifiers) {
+  setShowAmplifiers: function (showAmplifiers, shownAmplifiers) {
     if (this.options.showAmplifiers !== showAmplifiers) {
       this.options.showAmplifiers = showAmplifiers
+      this.options.shownAmplifiers = shownAmplifiers
       return true // this.redraw()
     }
     return false

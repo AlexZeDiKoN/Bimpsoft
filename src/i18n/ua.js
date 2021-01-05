@@ -1,5 +1,6 @@
 export const AUTO = 'Автоматично'
 export const EDIT_MODE = 'Режим роботи'
+export const ALL = 'Всі'
 // export const DATE = 'Дата'
 export const ADD_TEXT = 'Додати надпис'
 export const PRINT = 'Друк'
@@ -524,3 +525,5 @@ export const ELEVATION_PROFILE = 'Профіль висот'
 export const HEIGHT_2 = 'Висота, м'
 export const PATH_LENGTH = 'Довжина шляху, м'
 export const DIRECT_VISIBILITY = 'Пряма видимість'
+
+export const EVALUATION_RATING = 'Ступінь достовірності'

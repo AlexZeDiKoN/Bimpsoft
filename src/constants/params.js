@@ -1,3 +1,6 @@
+import { model } from '@C4/MilSymbolEditor'
+const { symbolOptions } = model
+
 export const POINT_SIZE_MIN = 'point_size_min'
 export const POINT_SIZE_MAX = 'point_size_max'
 export const TEXT_SIZE_MIN = 'text_size_min'
@@ -24,3 +27,17 @@ export const SCALE_VIEW_LEVEL = 'scale_view_level'
 export const MAP_BASE_OPACITY = 'map_base_opacity'
 export const INACTIVE_LAYERS_OPACITY = 'inactive_layers_opacity'
 export const DEFAULT_COORD_SYSTEM = 'default_coord_system'
+
+export const COORDINATES = 'coordinates'
+
+export const AMPLIFIERS_GROUPS = [
+  [ COORDINATES, symbolOptions.altitudeDepth ],
+  [ symbolOptions.dtg ],
+  [ symbolOptions.staffComments ],
+  [ symbolOptions.type, symbolOptions.equipmentTeardownTime, symbolOptions.platformType ],
+  [ symbolOptions.additionalInformation, symbolOptions.commonIdentifier ],
+  [ symbolOptions.higherFormation ],
+  [ symbolOptions.uniqueDesignation ],
+  [ symbolOptions.speed ],
+  [ symbolOptions.combatEffectiveness, symbolOptions.iffSif, symbolOptions.evaluationRating ],
+]

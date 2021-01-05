@@ -38,6 +38,7 @@ export const actionNames = {
   SET_COORDINATES_TYPE: action('SET_COORDINATES_TYPE'),
   SET_MINIMAP: action('SET_MINIMAP'),
   SET_AMPLIFIERS: action('SET_AMPLIFIERS'),
+  SET_AMPLIFIERS_FILTER: action('SET_AMPLIFIERS_FILTER'),
   SET_GENERALIZATION: action('SET_GENERALIZATION'),
   SET_SOURCES: action('SET_SOURCES'),
   SET_SOURCE: action('SET_SOURCE'),
@@ -127,6 +128,11 @@ export const setMiniMap = (value) => ({
 export const setAmplifiers = (value) => ({
   type: actionNames.SET_AMPLIFIERS,
   payload: value.target.checked,
+})
+
+export const setAmplifiersFilter = (value) => ({
+  type: actionNames.SET_AMPLIFIERS_FILTER,
+  payload: value,
 })
 
 export const setGeneralization = (value) => ({
