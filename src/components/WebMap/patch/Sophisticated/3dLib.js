@@ -22,10 +22,10 @@ import {
 import { buldCurve } from '../../../../utils/mapObjConvertor'
 import {
   FONT_FAMILY,
-  FONT_WEIGHT, getTextWidth,
+  FONT_WEIGHT,
+  getTextWidth,
 } from '../../../../utils'
 import { deg, rad } from './utils'
-import { CONFIG } from './index'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
 export const lengthRatio = 8 // Коэфициент размаера амплификаторов, окончаний линий к размеру отрисовываемого объекта
@@ -57,13 +57,15 @@ const LABEL_PADDING = 4
 // шрифт текстовых меток по умолчанию
 const LabelFont = {
   size: 32,
-  font: 'sans-serif',
+  font: FONT_FAMILY,
+  weight: FONT_WEIGHT,
   fill: 'rgb(183,183,183)',
   color: 'rgb(0,0,0)',
 }
 const amplifiersFont = {
   size: 32,
-  font: 'sans-serif',
+  font: FONT_FAMILY,
+  weight: FONT_WEIGHT,
   fill: 'rgb(183,183,183)',
   color: 'rgb(0,0,0)',
 }
@@ -148,17 +150,17 @@ export const text3D = (coordinate, type, attributes) => {
         overturn = true,
       } = attributes
 
-      const padding = Math.round(LabelFont.size / 5)
-      const heightView = LabelFont.size + padding
-      const widthView = getTextWidth(text, `${CONFIG.FONT_WEIGHT} ${Math.round(LabelFont.size)}px ${CONFIG.FONT_FAMILY}`) + padding
+      const padding = Math.round(amplifiersFont.size / 5)
+      const heightView = amplifiersFont.size + padding
+      const widthView = getTextWidth(text, `${amplifiersFont.weight} ${Math.round(amplifiersFont.size)}px ${amplifiersFont.font}`) + padding
       const angleText = angle % 360
+
       const image = `data:image/svg+xml,
- <svg xmlns="http://www.w3.org/2000/svg" height="${heightView}" viewBox="0 0 ${widthView} ${heightView}" >
+ <svg xmlns="http://www.w3.org/2000/svg" height="${heightView}" viewBox="0 0 ${widthView} ${heightView}">
   <rect x="0" y="0" width="${widthView}" height="${heightView}" fill-opacity="${fillOpacity}" style="fill: ${amplifiersFont.fill}"/>
-  <text 
-    font-family="${CONFIG.FONT_FAMILY}"
-    font-weight="${CONFIG.FONT_WEIGHT}"
+  <text font-weight="${amplifiersFont.weight}" 
     font-size="${amplifiersFont.size}"
+    font-family="${amplifiersFont.font}"
     fill="${amplifiersFont.color}"
     text-anchor="middle"
     dominant-baseline="central"
