@@ -6,8 +6,10 @@ import {
   angleOf,
   applyVector,
   drawLine,
+  drawZ,
   drawLineMark,
-  drawText, getFontSize,
+  drawText,
+  getFontSize,
   getVector,
   normalVectorTo,
   oppositeVector,
@@ -208,6 +210,7 @@ lineDefinitions['017016'] = {
         { x: corner.x, y: corner.y },
       ])
       drawLine(result, ...corners)
+      drawZ(result)
       const middles = applyToPoints(inv, [
         { x: corner.x, y: 0 },
         { x: -corner.x, y: 0 },
