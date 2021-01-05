@@ -62,31 +62,37 @@ export default class Sidebar extends React.Component {
                   Component: LayersContainer,
                   title: i18n.LAYERS,
                   icon: IconNames.LAYERS,
+                  enabled: true,
                 },
                 {
                   Component: OrgStructuresContainer,
                   title: i18n.ORG_STRUCTURE_SHORT,
                   icon: IconNames.ORG_STRUCTURE,
+                  enabled: true,
                 },
-                !is3DMapMode && {
+                {
                   Component: CatalogsContainer,
                   title: i18n.CATALOGS,
                   icon: IconNames.CATALOG,
+                  enabled: !is3DMapMode,
                 },
-                isMapCOP && {
+                {
                   Component: TargetCatalogContainer,
                   title: i18n.TARGETS,
                   icon: IconNames.TARGETS,
+                  enabled: isMapCOP,
                 },
                 {
                   Component: SymbolsContainer,
                   title: i18n.SYMBOLS,
                   icon: IconNames.SYMBOLS,
+                  enabled: true,
                 },
                 {
                   Component: LogMapContainer,
                   title: i18n.LOG_MAP,
                   icon: IconNames.LOG_EVENT,
+                  enabled: true,
                 },
               ].filter(Boolean)}
               onToggle={this.onToggle}
