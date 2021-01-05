@@ -11,6 +11,11 @@ import {
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
 import { HATCH_TYPE, MARK_TYPE } from './drawLines'
+// вывод промежуточных амплификаторов
+export const directionAmps = {
+  ACROSS_LINE: 'acrossLine', // перпендикулярно линии
+  ALONG_LINE: 'alongLine', // параллельно линии
+}
 
 export const amps = {
   specialHeadquarters: 'specialHeadquarters', // 1Назва командування
@@ -1283,6 +1288,7 @@ export const symbols = [
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0, 2 ],
           intermediateAmplifier: { [amps.N]: 'РВП' },
+          directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
         },
       },
       {

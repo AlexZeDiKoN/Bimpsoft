@@ -176,6 +176,7 @@ export const extractTextsSVG = ({
   margin,
   getOffset,
   angle = 0,
+  numLineCenter,
 }) => {
   const lines = string.split('\n')
   const numberOfLines = lines.length
@@ -185,20 +186,24 @@ export const extractTextsSVG = ({
 
   const tspans = []
   const masks = []
-  lines.forEach((line, index) => {
-    const width = getTextWidth(line, getFont(fontSize, false))
-    const widthWithMargin = width + 2 * margin
-    const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
-      ? getOffset(widthWithMargin, height, numberOfLines, index)
-      : { y: 0, x: 0, xMask: 0, yMask: 0 }
-    tspans.push(`<tspan x = "${x}" dy="${index === 0 ? y : height}">${line}</tspan>`)
-    masks.push({
-      x: xMask,
-      y: yMask - height / 2,
-      width: widthWithMargin,
-      height: height,
+  if (numLineCenter) {
+    console.log('extract', lines)
+  } else {
+    lines.forEach((line, index) => {
+      const width = getTextWidth(line, getFont(fontSize, false))
+      const widthWithMargin = width + 2 * margin
+      const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
+        ? getOffset(widthWithMargin, height, numberOfLines, index)
+        : { y: 0, x: 0, xMask: 0, yMask: 0 }
+      tspans.push(`<tspan x = "${x}" dy="${index === 0 ? y : height}">${line}</tspan>`)
+      masks.push({
+        x: xMask,
+        y: yMask - height / 2,
+        width: widthWithMargin,
+        height: height,
+      })
     })
-  })
+  }
 
   return {
     sign: `<text font-family="${FONT_FAMILY}"

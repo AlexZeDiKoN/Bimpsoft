@@ -16,6 +16,7 @@ import { LS } from '../../utils'
 import { version as front } from '../../../package.json'
 import { evaluateColor } from '../../constants/colors'
 import { settings } from '../../constants/drawLines'
+import { directionAmps } from '../../constants/symbols'
 
 const { APP6Code: { getAmplifier }, symbolOptions } = model
 
@@ -44,6 +45,7 @@ const webMapAttributesInitValues = {
   hatch: 'none',
   intermediateAmplifierType: 'none',
   intermediateAmplifier: LineAmplifier(),
+  directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
   shownIntermediateAmplifiers: Set(),
   shownNodalPointAmplifiers: Set(),
   pointAmplifier: LineAmplifier(),

@@ -1,10 +1,12 @@
 import Bezier from 'bezier-js'
 import * as R from 'ramda'
+import { Map } from 'immutable'
 import { TWO_PI } from 'proj4/lib/constants/values'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
 import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
 import { angle3Points } from '../../components/WebMap/patch/Sophisticated/utils'
+import { amps } from '../../constants/symbols'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import {
   extractTextsSVG,
@@ -768,6 +770,7 @@ const getTextAmplifiers = ({
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
   strokeWidth,
   amplifierIsNormal,
+  numLineCenter,
   showTextAmplifiers = true, // вывод текстовых амплификаторов разрешён
 }) => {
   const result = {
@@ -812,6 +815,7 @@ const getTextAmplifiers = ({
       // текстовый амплификатор
       return [ type, extractTextsSVG({
         string: value,
+        numLineCenter,
         fontSize,
         fontColor,
         margin: amplifierMargin,
@@ -963,6 +967,29 @@ const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermedi
   }
 }
 
+// пересборка амплификаторров в один
+const ampsName = [
+  amps.T,
+  amps.N,
+  amps.W,
+]
+const rebuildAmplifiers = (amplifiers, reverse = false, amplifierType = 'text') => {
+  const amp = []
+  let toCenter = 0
+  let countStr = 0
+  ampsName.forEach((name, ind) => {
+    const value = amplifiers.get(name) || ''
+    const count = value.split('\n').length
+    if (name === amps.N) {
+      toCenter = countStr + count / 2
+    }
+    if (value !== '' || name === amps.N) {
+      reverse ? amp.unshift(value) : amp.push(value)
+      countStr += count
+    }
+  })
+  return { amplifier: amp.join('\n'), toCenter: reverse ? (countStr - toCenter) : toCenter, countStr }
+}
 // сборка pointAmlifier в указанной точке
 export const getPointAmplifier = ({
   centroid,
@@ -975,15 +1002,20 @@ export const getPointAmplifier = ({
   const step = fontSize || settings.AMPLIFIERS_SIZE * scale
   // функция проверки попадания амплификатора в область вывода.
   const insideMap = getBoundsFunc(bounds, step) // TODO Надо переработать
+
+  const { amplifier: amplifiersBuild, toCenter } = rebuildAmplifiers(amplifier)
+  const buildAmps = new Map([ [ amps.N, amplifiersBuild ] ])
+  console.log('pointAmps', { amplifiersBuild, amplifier, toCenter })
   centroid.r = 0 // Угол поворота текста ампливикаторов
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
     getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и типа амплификатора
+    numLineCenter: toCenter,
   }
   return getTextAmplifiers({
     scale,
     zoom,
-    amplifier,
+    amplifier: buildAmps,
     fontSize,
     ...amplifierOptions,
   })
@@ -1014,6 +1046,7 @@ export const getAmplifiers = ({
     intermediateAmplifierType,
     intermediateAmplifier,
     shownIntermediateAmplifiers,
+    directionIntermediateAmplifiers,
     shownNodalPointAmplifiers,
     pointAmplifier,
     nodalPointIcon,
