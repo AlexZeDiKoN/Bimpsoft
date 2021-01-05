@@ -42,6 +42,7 @@ const WebMapContainer = connect(
     coordinatesType: state.webMap.coordinatesType,
     showMiniMap: state.webMap.showMiniMap,
     showAmplifiers: state.webMap.showAmplifiers,
+    shownAmplifiers: state.webMap.shownAmplifiers,
     isMeasureOn: state.webMap.isMeasureOn,
     params: state.params,
     isGridActive: state.viewModes.print,

@@ -309,6 +309,7 @@ export default class WebMap extends React.PureComponent {
     params: PropTypes.object,
     coordinatesType: PropTypes.string,
     showAmplifiers: PropTypes.bool,
+    shownAmplifiers: PropTypes.object,
     isMeasureOn: PropTypes.bool,
     isMarkersOn: PropTypes.bool,
     isZoneProfileOn: PropTypes.bool,
@@ -452,7 +453,7 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
+      objects, showMiniMap, showAmplifiers, shownAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
@@ -470,8 +471,8 @@ export default class WebMap extends React.PureComponent {
     if (showMiniMap !== prevProps.showMiniMap) {
       this.updateMinimap(showMiniMap)
     }
-    if (showAmplifiers !== prevProps.showAmplifiers) {
-      this.updateShowAmplifiers(showAmplifiers)
+    if (showAmplifiers !== prevProps.showAmplifiers || shownAmplifiers !== prevProps.shownAmplifiers) {
+      this.updateShowAmplifiers(showAmplifiers, shownAmplifiers)
     }
     if (sources !== prevProps.sources) {
       this.setMapSource(sources)
@@ -1541,11 +1542,12 @@ export default class WebMap extends React.PureComponent {
     this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
   }
 
-  updateShowAmplifiers = (showAmplifiers) => {
+  updateShowAmplifiers = (showAmplifiers, shownAmplifiers) => {
     if (this.map) {
       this.map.options.showAmplifiers = showAmplifiers
+      this.map.options.shownAmplifiers = shownAmplifiers
       this.map.objects.forEach((layer) => {
-        if (layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers)) {
+        if (layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers)) {
           layer.redraw()
         }
       })
@@ -1905,6 +1907,7 @@ export default class WebMap extends React.PureComponent {
       hiddenOpacity,
       params,
       showAmplifiers,
+      shownAmplifiers,
       layer: selectedLayerId,
       selection: { list },
     } = this.props
@@ -1982,7 +1985,7 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers))
+      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
       setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
     }
 

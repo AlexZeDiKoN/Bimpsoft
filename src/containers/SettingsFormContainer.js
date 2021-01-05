@@ -12,6 +12,7 @@ const mapStateToProps = (store) => ({
   showMiniMap: store.webMap.showMiniMap,
   params: store.params,
   showAmplifiers: store.webMap.showAmplifiers,
+  shownAmplifiers: store.webMap.shownAmplifiers,
   // generalization: store.webMap.generalization,
 })
 const mapDispatchToProps = (dispatch) => ({
@@ -28,6 +29,9 @@ const mapDispatchToProps = (dispatch) => ({
   onChangeShowAmplifier: (showAmplifiers) => {
     dispatch(webMapActions.setAmplifiers(showAmplifiers))
   },
+  onChangeShownAmplifiers: (shownAmplifiers) => {
+    dispatch(webMapActions.setAmplifiersFilter(shownAmplifiers))
+  },
   /* onChangeGeneralization: (generalization) => {
     dispatch(webMapActions.setGeneralization(generalization))
   }, */
@@ -38,5 +42,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(SettingsForm)
