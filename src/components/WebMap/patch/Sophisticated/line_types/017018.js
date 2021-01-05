@@ -4,6 +4,11 @@ import {
   drawBezierSpline,
   getGraphicSize,
 } from '../utils'
+import objTypes from '../../../entityKind'
+import {
+  curve3D,
+  FILL_TYPE,
+} from '../3dLib'
 
 // sign name: Район розповсюдження агітаційного матеріалу
 // task code: DZVIN-5796
@@ -54,4 +59,14 @@ lineDefinitions[CODE] = {
         <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
       </pattern>`
   },
+
+  build3d: (result, id, points, attributes) => {
+    result.push({
+      id,
+      type: objTypes.SOPHISTICATED,
+      entities: [ curve3D(points, 'area', true, FILL_TYPE.CROSS, attributes) ],
+    })
+    return result
+  },
+
 }

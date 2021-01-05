@@ -114,10 +114,10 @@ export const buildSVG = (data) => {
 
 const BILLBOARD_HEIGHT = 400
 // @TODO: change scale limits (use zoom2height)
-const scaleByDistance = new NearFarScalar(100, 0.6, 3000000, 0.15)
+const scaleByDistance = new NearFarScalar(500, 1, 1000000, 0.1)
 
 // @TODO: finish method which turns points into curvePoints OPTIMIZE!!!!!!!
-const buldCurve = (points, locked) => {
+export const buldCurve = (points, locked) => {
   const last = points.length - 1
   const result = []
   const withCP = points.map((p, i) => {
@@ -226,6 +226,7 @@ export const
       if (type === objTypes.POINT) {
         const { lat, lng } = point
         const { svg, anchor } = buildSVG(listArr[i])
+        // console.log('svg', svg)
         const { code } = listArr[i]
         const isCP = model.APP6Code.isCommandPost(code)
         const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))

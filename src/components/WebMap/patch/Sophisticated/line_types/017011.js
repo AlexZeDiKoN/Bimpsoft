@@ -110,11 +110,7 @@ lineDefinitions['017011'] = {
       text: TEXT,
       angle: angledeg + 165,
       heightBox,
-      fillOpacity: '50%',
       overturn: true,
-    }))
-    entities.push(text3D(center, LabelType.OPPOSITE, {
-      text: TEXT,
     }))
     result.push({ id, type: objTypes.SOPHISTICATED, entities })
     return result

@@ -100,10 +100,6 @@ lineDefinitions['017008'] = {
       text: TEXT,
       angle,
       heightBox,
-      fillOpacity: '50%',
-    }))
-    entities.push(text3D(basePoints, LabelType.OPPOSITE, {
-      text: TEXT,
     }))
     acc.push({ id, type: objTypes.SOPHISTICATED, entities })
     return acc
