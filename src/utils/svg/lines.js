@@ -4,7 +4,7 @@ import { TWO_PI } from 'proj4/lib/constants/values'
 import { interpolateSize } from '../../components/WebMap/patch/utils/helpers'
 import { evaluateColor } from '../../constants/colors'
 import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
-import { angle3Points, rad } from '../../components/WebMap/patch/Sophisticated/utils'
+import { angle3Points, deg, rad } from '../../components/WebMap/patch/Sophisticated/utils'
 import { amps } from '../../constants/symbols'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import {
@@ -205,7 +205,7 @@ const buildPoints = (points, segments, pointLocationResolver, bezier, locked) =>
     const point = segment.get(t)
     point.n = segment.normal(t)
     point.t = t
-    point.r = (Math.atan2(point.n.y, point.n.x) / Math.PI + 0.5) * 180
+    point.r = deg(Math.atan2(point.n.y, point.n.x)) + 90 // Для текста коррекция угла от оси X к оси -Y
     return point
   })
 }
@@ -771,6 +771,7 @@ const getTextAmplifiers = ({
   amplifierIsNormal = true,
   textAnchor,
   showTextAmplifiers = true, // вывод текстовых амплификаторов разрешён
+  alwaysUp = true, // вывод текстовых амплификаторов разрешён
 }) => {
   const result = {
     maskPath: [],
@@ -793,16 +794,16 @@ const getTextAmplifiers = ({
       // рівень підпорядкування
       if (amplifierType === 'level' && level) {
         // получаем знак уровня подчинения в массиве
-        makeAmps.push([ amps.N, [ extractSubordinationLevelSVG(
+        makeAmps.push([ extractSubordinationLevelSVG(
           level,
           graphicSize,
           amplifierMargin,
-        ) ] ])
+        ) ])
       }
       // стрелки на промежуточных точкакх
       if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
         // получаем знак стрелки в массиве
-        makeAmps.push([ amps.N, drawIntermediateArrow(amplifierType, graphicSize, strokeWidth) ])
+        makeAmps.push(drawIntermediateArrow(amplifierType, graphicSize, strokeWidth))
       }
     }
 
@@ -819,7 +820,7 @@ const getTextAmplifiers = ({
     } = rebuildAmplifiers(amplifier, amplifierType, !amplifierIsNormal)
 
     if (amplifiersBuild !== '') { // генерация текстового svg блока
-      makeAmps.push([ amps.N, extractTextsSVG({ // возврвщает один объект
+      makeAmps.push(extractTextsSVG({ // возврвщает один объект
         string: amplifiersBuild,
         numLineCenter,
         fontSize,
@@ -829,7 +830,8 @@ const getTextAmplifiers = ({
         getOffset: getOffset.bind(null, amps.N, pointN),
         angle: point.r,
         type: amps.N,
-      }) ])
+        alwaysUp,
+      }))
     }
 
     const amplifiersExtract = [ ...amplifier.entries() ].map(([ type, value ]) => {
@@ -870,7 +872,7 @@ const getTextAmplifiers = ({
     }).filter(Boolean)
 
     // amplifiersExtract
-    makeAmps.forEach(([ type, amplifiers ]) => {
+    makeAmps.forEach((amplifiers) => {
       if (Array.isArray(amplifiers)) { // обработка графических амплификаторов
         amplifiers.forEach((amplifier) => {
           const { x, y, r } = point
@@ -1147,6 +1149,7 @@ export const getAmplifiers = ({
       amplifierIsNormal,
       showTextAmplifiers,
       textAnchor: 'middle', // межузловые всегда центируются по горизонтали текста
+      alwaysUp: !locked, // для замкнутых фигур не переворачиваем текст к верху
     })
     result.maskPath.push(...maskPath)
     result.group += group
