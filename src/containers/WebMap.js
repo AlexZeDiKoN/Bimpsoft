@@ -58,8 +58,8 @@ const WebMapContainer = connect(
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
+    catalogModalData: state.webMap.catalogModalData,
     catalogObjects: state.catalogs.objects,
-    catalogs: state.catalogs.byIds,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
@@ -167,6 +167,7 @@ const WebMapContainer = connect(
     checkObjectAccess: webMap.getObjectAccess,
     onShadowDelete: webMap.removeObjects,
     getHeight: webMap.getHeight,
+    setCatalogModalData: webMap.setCatalogModalData,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'
