@@ -18,20 +18,35 @@ export default class TabsPanel extends React.Component {
   }
 
   componentDidUpdate (prevProps) {
-    const { tabs } = this.props
     const { selectedIndex } = this.state
-    if (prevProps.tabs.length !== tabs.length && !tabs[selectedIndex]) {
-      this.selectHandler(-1)
-    } else if (selectedIndex >= 0 && tabs[selectedIndex].displayName !== prevProps.tabs[selectedIndex].displayName) {
-      this.selectHandler(tabs.findIndex((it) => it.displayName === prevProps.tabs[selectedIndex].displayName))
+    if (selectedIndex < 0) {
+      return
+    }
+    const { tabs } = this.props
+    const { tabs: prevTabs } = prevProps
+    const prevDisplayName = prevTabs[selectedIndex]?.Component.displayName
+
+    if (prevTabs.length !== tabs.length || tabs[selectedIndex]?.Component.displayName !== prevDisplayName) {
+      // изменились пункты панели
+      // ранее на панели был выбран пункт
+      // попытаться найти предыдущий выбранный пункт
+      const index = tabs.findIndex((it) => it.Component.displayName === prevDisplayName)
+      if (index !== selectedIndex) {
+        // пункт меню не найден или изменился индекс пункта
+        this.selectHandler(index)
+      }
+    } else if (tabs[selectedIndex].enabled !== prevTabs[selectedIndex].enabled) {
+      // изменилось разрешение на отображение данного пункта панели
+      this.selectHandler(selectedIndex, true)
     }
   }
 
-  selectHandler = (selectedIndex) => () => {
-    if (selectedIndex === this.state.selectedIndex) {
+  selectHandler = (selectedIndex, toggleVisibility = false) => {
+    if (selectedIndex === this.state.selectedIndex && !toggleVisibility) {
       selectedIndex = -1
     }
-    this.props.onToggle(selectedIndex)
+    const { tabs } = this.props
+    this.props.onToggle((selectedIndex >= 0 && tabs[selectedIndex]?.enabled) ? selectedIndex : -1)
     this.setState({ selectedIndex })
   }
 
@@ -42,27 +57,29 @@ export default class TabsPanel extends React.Component {
     return (
       <div className="tabs-panel">
         <div className="tabs-panel-headers">{
-          this.state.isMounted && tabs.map(({ title, icon }, index) => (
-            <div
-              key={index}>
-              <Tooltip title={title} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='left'>
-                <IButton
-                  colorType={ColorTypes.WHITE}
-                  type={ButtonTypes.WITH_BG}
-                  active={index === selectedIndex}
-                  icon={icon || IconNames.ORG_STRUCTURE}
-                  onClick={this.selectHandler(index)}
-                />
-              </Tooltip>
-            </div>
+          this.state.isMounted && tabs.map(({ title, icon, enabled }, index) => (
+            enabled
+              ? <div
+                key={index}>
+                <Tooltip title={title} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='left'>
+                  <IButton
+                    colorType={ColorTypes.WHITE}
+                    type={ButtonTypes.WITH_BG}
+                    active={index === selectedIndex}
+                    icon={icon || IconNames.ORG_STRUCTURE}
+                    onClick={() => this.selectHandler(index)}
+                  />
+                </Tooltip>
+              </div>
+              : <></>
           ))
         }</div>
         <div className="tabs-panel-content">{
-          this.state.isMounted && tabs.map(({ Component }, index) => (
+          this.state.isMounted && tabs.map(({ Component, enabled }, index) => (
             <div
               key={index}
               className='tabs-panel-container'
-              style={{ display: index === selectedIndex ? '' : 'none' }}
+              style={{ display: (index === selectedIndex && enabled) ? '' : 'none' }}
             >
               <Component />
             </div>
@@ -75,4 +92,5 @@ export default class TabsPanel extends React.Component {
 
 TabsPanel.propTypes = {
   tabs: PropTypes.array,
+  onToggle: PropTypes.func,
 }

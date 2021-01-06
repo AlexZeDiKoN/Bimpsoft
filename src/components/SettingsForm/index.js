@@ -9,6 +9,7 @@ import ScaleControl from '../common/ScaleControl'
 import { SubordinationLevel, paramsNames, SCALES, shortcuts } from '../../constants'
 
 import './style.css'
+import { AmplifiersChecker } from './AmplifiersTab'
 
 const {
   form: { default: Form, FormRow, FormDarkPart },
@@ -30,10 +31,12 @@ export default class SettingsForm extends React.Component {
     coordinatesType: PropTypes.string,
     showMiniMap: PropTypes.bool,
     params: PropTypes.object,
+    shownAmplifiers: PropTypes.object,
     showAmplifiers: PropTypes.bool,
     // generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
+    onChangeShownAmplifiers: PropTypes.func,
     onChangeShowAmplifier: PropTypes.func,
     onChangeGeneralization: PropTypes.func,
     onChangeParam: PropTypes.func,
@@ -80,11 +83,13 @@ export default class SettingsForm extends React.Component {
       wrapper: Wrapper,
       coordinatesType = Coord.types.WGS_84,
       showMiniMap,
+      shownAmplifiers,
       showAmplifiers,
       // generalization,
       onClose,
       onChangeCoordinatesType,
       onChangeShowMiniMap,
+      onChangeShownAmplifiers,
       onChangeShowAmplifier,
       // onChangeGeneralization,
     } = this.props
@@ -229,6 +234,13 @@ export default class SettingsForm extends React.Component {
                       </div>
                     ))}
                   </div>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={i18n.AMPLIFIERS} key={3}>
+                  <AmplifiersChecker
+                    onChange={onChangeShownAmplifiers}
+                    value={shownAmplifiers}
+                    disabled={!showAmplifiers}
+                  />
                 </Tabs.TabPane>
               </Tabs>
               {/* <FormRow label={i18n.GENERALIZATION}> */}

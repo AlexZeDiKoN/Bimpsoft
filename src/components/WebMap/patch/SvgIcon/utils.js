@@ -1,5 +1,6 @@
 /* global DOMParser */
 import { List, Set } from 'immutable'
+import { omit } from 'ramda'
 
 const parser = new DOMParser()
 
@@ -32,6 +33,13 @@ export const filterSet = (data) => {
     }
   })
   return result
+}
+
+export const filterByObject = (data = {}, enableObj = {}) => {
+  const disabledList = Object.entries(enableObj)
+    .filter(([ , state ]) => state === false)
+    .map(([ key ]) => key)
+  return omit(disabledList, data)
 }
 
 // Проверка объекта на пустое содержимое

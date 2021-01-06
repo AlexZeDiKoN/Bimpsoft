@@ -1,10 +1,10 @@
 {
   "name": "web-map",
-  "version": "17.01.1209",
+  "version": "17.01.1213",
   "private": true,
   "dependencies": {
     "@C4/CommonComponents": "^17.1.559",
-    "@C4/MilSymbolEditor": "^17.1.302",
+    "@C4/MilSymbolEditor": "^17.1.304",
     "@C4/components": "^17.1.609",
     "@C4/leaflet-measure-custom": "^17.1.11",
     "@C4/milsymbol": "^17.1.12",

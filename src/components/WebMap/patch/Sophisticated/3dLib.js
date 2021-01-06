@@ -10,7 +10,7 @@ import {
   HeightReference,
   NearFarScalar,
   PolygonHierarchy,
-  ImageMaterialProperty,
+  ImageMaterialProperty, PolygonGeometry,
 } from 'cesium'
 import { utils } from '@C4/CommonComponents'
 import { distanceAzimuth, moveCoordinate } from '../utils/sectors'
@@ -19,25 +19,58 @@ import {
   MARK_DIRECTION,
   MARK_TYPE,
 } from '../../../../constants/drawLines'
+import { buldCurve } from '../../../../utils/mapObjConvertor'
+import {
+  FONT_FAMILY,
+  FONT_WEIGHT,
+  getTextWidth,
+} from '../../../../utils'
 import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка
-export const lengthRatio = 8
+export const lengthRatio = 8 // Коэфициент размаера амплификаторов, окончаний линий к размеру отрисовываемого объекта
 export const LabelType = {
   OPPOSITE: 'opposite', // текст выводиться прямо на камеру
-  FLAT: 'flat', // текст выводится на поверхность
+  FLAT: 'flat', // текст выводится на плоскость
   GROUND: 'ground', // текст выводится на поверхность
 }
 
-const scaleByDistanceLabel = new NearFarScalar(500, 1, 1000000, 0.1)
+// для billboard
+export const scaleByDistance = new NearFarScalar(1000, 1, 1000000, 0.1)
 
-// шрифт текстовых меток по умолчанию
-const LabelFont = {
-  size: 64,
-  font: 'sans-serif',
+// для областей
+const SIZE_RATIO = 10000 // на каждые 10км увеличиваем на 1 количество повторов фона
+const NUMBER_TILES = 3
+export const FILL_TYPE = {
+  NONE: 'none',
+  SOLID: 'solid',
+  PATTERN: 'pattern',
+  CROSS: 'cross',
+  LEFT_TO_RIGHT: 'left-right',
+  RIGHT_TO_LEFT: 'right-left',
 }
 
-// генерация текстовых элементов
+const scaleByDistanceLabel = new NearFarScalar(1000, 1, 1000000, 0.1)
+export const LABEL_BACKGROUND = '#b7b7b7' // для прозрачного "transparent"
+export const FILL_OPACITY = '50%' // прозрачность фона текстовых амплификаторов на поверхности по умолчанию, 100% || 1 = transparent
+const LABEL_PADDING = 4
+// шрифт текстовых меток по умолчанию
+const LabelFont = {
+  size: 32,
+  font: FONT_FAMILY,
+  weight: FONT_WEIGHT,
+  fill: 'rgb(183,183,183)',
+  color: 'rgb(0,0,0)',
+}
+const amplifiersFont = {
+  size: 32,
+  font: FONT_FAMILY,
+  weight: FONT_WEIGHT,
+  fill: 'rgb(183,183,183)',
+  color: 'rgb(0,0,0)',
+}
+
+// генерация текстовых элементов, амплификаторов
 // coordinate - координата места привязки или массив координат по которому находится центр масс координат
 // type:
 //   OPPOSITE - вывод меткой, текст всегда повернут к камере
@@ -45,17 +78,18 @@ const LabelFont = {
 // attributes {
 // text,
 // color = Color.BLACK, - цвет текста
-// fillOpacite = 1, - прозрачность подложки текста
+// fillOpacity = 1, - прозрачность подложки текста
 // fillColor = rgb(200,200,200), - цвет подложки
 // overturn = true, - переворачивать верх текста в северном направлении
+// anchor = center, - варианты выраванивания по горизонтали: start, middle, end
+// baseline = middle - варианты выраванивания по вертикали: top, center, bottom
 // }
 export const text3D = (coordinate, type, attributes) => {
-  const { text: allText = '', color = Color.BLACK, align = {} } = attributes
+  const { text: allText = '', color = Color.BLACK, baseline = 'center', anchor = 'middle', background } = attributes
   if (allText === '') {
     return null
   }
   const text = `${allText}`
-  const { baseline = 'center', anchor = 'middle' } = align
 
   switch (type) {
     case LabelType.OPPOSITE: {
@@ -73,6 +107,8 @@ export const text3D = (coordinate, type, attributes) => {
       } else {
         center = Cartesian3.fromDegrees(coordinate.lng, coordinate.lat)
       }
+      const { horizontalOrigin = HorizontalOrigin.CENTER, verticalOrigin = VerticalOrigin.BASELINE } = attributes
+      const backgroundColor = materialColor(background, 0.25, 'transparent')
       const label = {
         position: center,
         label: {
@@ -82,51 +118,61 @@ export const text3D = (coordinate, type, attributes) => {
           fillColor: color,
           // pixelOffset: new Cartesian2(0.0, 20),
           // pixelOffsetScaleByDistance: new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
-          showBackground: false,
-          // backgroundColor : new Color(0.165, 0.165, 0.165, 0.8),
-          // backgroundPadding : new Cartesian2(7, 5),
+          showBackground: Boolean(background),
+          backgroundColor, // new Color(0.165, 0.165, 0.165, 0.8),
+          backgroundPadding: new Cartesian2(LABEL_PADDING, LABEL_PADDING),
           outline: false,
           // outlineColor: Color.BLACK,
           // outlineWidth: 1.0,
-          horizontalOrigin: HorizontalOrigin.CENTER,
-          verticalOrigin: VerticalOrigin.BASELINE,
+          horizontalOrigin,
+          verticalOrigin,
           scale: 1.0,
           scaleByDistance: scaleByDistanceLabel,
           // translucencyByDistance: new NearFarScalar(1.5e2, 1.0, 1.5e8, 0.0),
           pixelOffset: Cartesian2.ZERO,
           eyeOffset: Cartesian3.ZERO,
-          heightReference: HeightReference.NONE,
+          heightReference: HeightReference.CLAMP_TO_GROUND,
           distanceDisplayCondition: undefined,
-          disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
+          // disableDepthTestDistance: Number.POSITIVE_INFINITY, // draws the label in front of terrain
         },
       }
       return label
     }
     case LabelType.GROUND: {
-      const heightView = Math.round(LabelFont.size * 1.2)
-      const widthView = LabelFont.size * 0.6 * text.length + LabelFont.size / 4
+      // LabelFont.size * 0.6 * text.length + LabelFont.size / 4
       if (!utils.Coordinates.check(coordinate)) {
         return null
       }
       const {
-        fillOpacity = '1',
+        fillOpacity = FILL_OPACITY,
         angle = 0,
         heightBox = 1,
         overturn = true,
       } = attributes
 
+      const padding = Math.round(amplifiersFont.size / 5)
+      const heightView = amplifiersFont.size + padding
+      const widthView = getTextWidth(text, `${amplifiersFont.weight} ${Math.round(amplifiersFont.size)}px ${amplifiersFont.font}`) + padding
       const angleText = angle % 360
+
       const image = `data:image/svg+xml,
- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${widthView} ${heightView}" >
-  <rect x="0" y="0" width="${widthView}" height="${heightView}"  fill-opacity="${fillOpacity}" style="fill: rgb(200,200,200)"/>
-  <text font-size="${LabelFont.size}" text-anchor="middle" dominant-baseline="central" fill="black" x="50%" y="50%">${text}</text>
+ <svg xmlns="http://www.w3.org/2000/svg" height="${heightView}" viewBox="0 0 ${widthView} ${heightView}">
+  <rect x="0" y="0" width="${widthView}" height="${heightView}" fill-opacity="${fillOpacity}" style="fill: ${amplifiersFont.fill}"/>
+  <text font-weight="${amplifiersFont.weight}" 
+    font-size="${amplifiersFont.size}"
+    font-family="${amplifiersFont.font}"
+    fill="${amplifiersFont.color}"
+    text-anchor="middle"
+    dominant-baseline="central"
+    x="50%" y="50%">
+      ${text}
+  </text>
  </svg>`
       const material = new ImageMaterialProperty({ image, transparent: true })
-
       const angleRad = rad(angleText)
       const revers = (angleRad > Math.PI || (angleRad < 0 && angleRad > -Math.PI)) ? 1 : 0
       const heightPolygon = heightBox
-      const widthPolygon = heightBox * 0.5 * text.length + heightPolygon / 4
+      const widthPolygon = heightBox / heightView * widthView // widthText(text, heightPolygon)
       const diagonal = Math.sqrt(widthPolygon * widthPolygon + heightPolygon * heightPolygon)
       let dXY1, angle1
       switch (anchor) {
@@ -174,6 +220,10 @@ export const text3D = (coordinate, type, attributes) => {
     default:
   }
   return null
+}
+
+export const widthText = (text, height) => {
+  return height * 0.5 * text.length + height / 4
 }
 
 // генерация окончаний линий (стрелки, засечки и т.п.)
@@ -353,4 +403,129 @@ export const isFlip = (angle) => {
 // расчет ширины блока под текст по его высоте
 export const getWidthText = (heightText, text) => {
   return heightText * 0.5 * text.length
+}
+
+export const curve3D = (points, type, locked = false, typeFill = 'none', attributes) => {
+  const color = attributes.get('color') || 'black'
+  const colorM = Color.fromCssColorString(mapColors.evaluateColor(color))
+  const width = attributes.get('strokeWidth')
+  const corners = buldCurve(points, locked)
+  const k = getAreaAspectRatio(corners)
+  let material
+  switch (typeFill) {
+    case FILL_TYPE.CROSS: {
+      const patternWidth = 64
+      const image = `data:image/svg+xml,
+ <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${patternWidth} ${patternWidth}" >
+   <path fill="transparent" stroke="${colorM.toCssColorString()}" d="M0 8 h16 M8 0 v16 M32 40 h16 M40 32 v16"/>
+ </svg>`
+      material = new ImageMaterialProperty({ image, repeat: new Cartesian2(k.x, k.y), transparent: true })
+      break
+    }
+    default:
+  }
+
+  return {
+    polygon: {
+      hierarchy: new PolygonHierarchy(corners),
+      material,
+      classificationType: ClassificationType.TERRAIN,
+      stRotation: 0,
+    },
+    polyline: {
+      positions: corners,
+      width,
+      clampToGround: true,
+      followSurface: true,
+      material: colorM,
+    },
+  }
+}
+
+const getAreaAspectRatio = (corners) => {
+  const polygonHierarchy = new PolygonHierarchy(corners)
+  const rectangle = PolygonGeometry.computeRectangle({ polygonHierarchy })
+  const p1 = Cartesian3.fromRadians(rectangle.east, rectangle.north)
+  const p2 = Cartesian3.fromRadians(rectangle.east, rectangle.south)
+  const p3 = Cartesian3.fromRadians(rectangle.west, rectangle.south)
+  const heightPolygon = Cartesian3.distance(p1, p2)
+  const widthPolygon = Cartesian3.distance(p2, p3)
+  const maximum = heightPolygon < widthPolygon ? widthPolygon : heightPolygon
+  const ratio = widthPolygon / heightPolygon
+  const num = (NUMBER_TILES + maximum / SIZE_RATIO)
+  return (ratio > 1 ? { x: num, y: num / ratio } : { x: num * ratio, y: num })
+}
+
+export const buildSector = (
+  center,
+  distance,
+  angleStart = 0,
+  angleEnd = 360,
+  direction = 'clockwise',
+  step = stepAngle,
+) => {
+  const points = []
+  let revers = false
+  let aStart = (angleStart < 0 ? (angleStart + 720) : angleStart) % 360
+  let aEnd = (angleEnd < 0 ? (angleEnd + 720) : angleEnd) % 360
+  // конвертруем в генерацию по часовой
+  if (direction !== 'clockwise') {
+    revers = true
+    const a = aEnd
+    aEnd = aStart
+    aStart = a
+  }
+  // приведение углов
+  if (aStart >= aEnd) {
+    aEnd += 360
+  }
+  for (let angledeg = aStart; angledeg < aEnd; angledeg += step) {
+    points.push(moveCoordinate(center, { distance, angledeg: angledeg % 360 }))
+  }
+  points.push(moveCoordinate(center, { distance, angledeg: aEnd % 360 }))
+  if (revers) { // обратная конвертация
+    return points.reverse()
+  }
+  return points
+}
+
+export const svgBillboard3D = (renderSvg) => {
+  const { svg, anchor } = renderSvg()
+  const image = 'data:image/svg+xml;base64,' + window.btoa(window.unescape(window.encodeURIComponent(svg)))
+  return {
+    image,
+    scaleByDistance,
+    heightReference: HeightReference['CLAMP_TO_GROUND'],
+    verticalOrigin: VerticalOrigin['TOP'],
+    horizontalOrigin: HorizontalOrigin['LEFT'],
+    pixelOffset: new Cartesian2(-anchor.x, -anchor.y),
+    pixelOffsetScaleByDistance: scaleByDistance,
+  }
+}
+
+export const svgText3d = (result, point, text, fontSize, textAlign = 'middle', textAnchor = 'middle', color) => {
+  const fill = color ? `fill = "${color}"` : `fill="black"`
+  const transform = ''
+  result.amplifiers += `<text 
+    font-family="${FONT_FAMILY}"
+    font-weight="${FONT_WEIGHT}"
+    stroke="none" 
+    ${fill}
+    transform="${transform}"
+    x="${point.x}" 
+    y="${point.y}" 
+    text-anchor="${textAnchor}" 
+    font-size="${fontSize}"
+    alignment-baseline="${textAlign}" 
+    dominant-baseline="${textAlign}" 
+  >${text}</text>`
+  return result
+}
+
+// форматирование цвета в материал для 3Д и rgb(r,g,b) для svg блоков
+export const materialColor = (color, alpha = 1, defaultColor = 'black') => {
+  const eColor = mapColors.evaluateColor(color) || defaultColor
+  const mColor = Color.fromCssColorString(eColor)
+  eColor === 'transparent' ? mColor.alpha = 0 : mColor.alpha = alpha
+  return mColor
 }

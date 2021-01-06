@@ -6,8 +6,10 @@ import {
   angleOf,
   applyVector,
   drawLine,
+  drawZ,
   drawLineMark,
-  drawText, getFontSize,
+  drawText,
+  getFontSize,
   getVector,
   normalVectorTo,
   oppositeVector,
@@ -33,12 +35,14 @@ import { LabelType, lengthRatio, marker3D, text3D } from '../3dLib'
 // hint: 'Послідовне зосередження вогню'
 
 const NUMBERS_SIZE = 0.75
+const TEXT_3D_CORRECTION = 1.5
+const NUMBER_3D_CORRECTION = 2
 
 lineDefinitions['017016'] = {
   // Ампліфікатори на лінії
   useAmplifiers: [
     { id: amps.T, name: 'T', maxRows: 1 },
-    { id: amps.N, name: 'Початковий номер', type: 'integer', minNumber: 1 , maxNumber: 999999 },
+    { id: amps.N, name: 'Початковий номер', type: 'integer', minNumber: 1, maxNumber: 999999 },
   ],
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.end,
@@ -206,6 +210,7 @@ lineDefinitions['017016'] = {
         { x: corner.x, y: corner.y },
       ])
       drawLine(result, ...corners)
+      drawZ(result)
       const middles = applyToPoints(inv, [
         { x: corner.x, y: 0 },
         { x: -corner.x, y: 0 },
@@ -264,18 +269,16 @@ lineDefinitions['017016'] = {
     const c = (indEnd / 3) | 0
     const { angledeg, distance } = distanceAzimuth(points[0], points[1])
     const angle = angledeg - 90
-    const heightBox = distance / lengthRatio
+    const heightBoxAmp = distance / lengthRatio * TEXT_3D_CORRECTION
+    const heightBoxNumber = distance / lengthRatio * NUMBER_3D_CORRECTION
     const number = Number(amp[amps.N] ?? 0)
     entities.push(text3D(points[0], LabelType.GROUND, {
       text: amp[amps.T],
       angle,
-      heightBox,
-      fillOpacity: '50%',
+      heightBox: heightBoxAmp,
       overturn: false,
-      align: {
-        baseline: 'bottom',
-        anchor: 'middle',
-      },
+      baseline: 'bottom',
+      anchor: 'middle',
     }))
     entities.push(marker3D(points[1], points[0], MARK_TYPE.SERIF, { width, color }))
     entities.push(marker3D(points[indEnd - 2], points[indEnd], MARK_TYPE.SERIF, { width, color }))
@@ -309,7 +312,7 @@ lineDefinitions['017016'] = {
       entities.push(text3D(center, LabelType.GROUND, {
         text: number + i,
         angle: angle2 + 90,
-        heightBox,
+        heightBox: heightBoxNumber,
         fillOpacity: '50%',
         overturn: false,
       }))

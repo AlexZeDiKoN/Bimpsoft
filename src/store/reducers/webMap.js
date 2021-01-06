@@ -5,7 +5,7 @@ import { utils } from '@C4/CommonComponents'
 import { model } from '@C4/MilSymbolEditor'
 import { update, comparator, filter, merge, eq, mergePure } from '../../utils/immutable'
 import { actionNames, changeTypes } from '../actions/webMap'
-import { MapSources, colors, MapModes } from '../../constants'
+import { MapSources, colors, MapModes, paramsNames } from '../../constants'
 import SubordinationLevel from '../../constants/SubordinationLevel'
 import { IDENTITIES } from '../../utils/affiliations'
 import { UNDEFINED_CLASSIFIER } from '../../components/SelectionForm/parts/WithLineClassifier'
@@ -89,6 +89,7 @@ export const WebMapObject = Record({
 
 const center = LS.get('view', 'center') || { lat: 48, lng: 35 }
 const zoom = Number(LS.get('view', 'zoom')) || 7
+const shownAmplifiers = Object.fromEntries(paramsNames.AMPLIFIERS_GROUPS.flat(2).map((id) => [ id, true ]))
 
 const WebMapState = Record({
   mode: MapModes.NONE,
@@ -97,6 +98,7 @@ const WebMapState = Record({
   coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
+  shownAmplifiers,
   // generalization: false,
   isMeasureOn: false,
   isMarkersOn: false,
@@ -202,6 +204,9 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SET_AMPLIFIERS,
   field: 'showAmplifiers',
+}, {
+  action: actionNames.SET_AMPLIFIERS_FILTER,
+  field: 'shownAmplifiers',
 }, /* {
   action: actionNames.SET_GENERALIZATION,
   field: 'generalization',

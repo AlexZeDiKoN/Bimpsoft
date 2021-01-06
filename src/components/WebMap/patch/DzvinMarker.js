@@ -115,9 +115,10 @@ const DzvinMarker = L.Marker.extend({
     this.update()
   },
 
-  setShowAmplifiers: function (showAmplifiers) {
+  setShowAmplifiers: function (showAmplifiers, shownAmplifiers) {
     const { icon } = this.options
     icon.options.showAmplifiers = showAmplifiers
+    icon.options.shownAmplifiers = shownAmplifiers
   },
 
   _animateZoom: function (opt) {
