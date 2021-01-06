@@ -31,7 +31,8 @@ import { ApplicationContent } from '../../layouts'
 import './Main.css'
 import SidebarContainer from '../../containers/SidebarContainer'
 import { HotKeysContainer } from '../../components/common/HotKeys'
-import ElevationProfileModal from "../../components/ElevationProfileModal";
+import ElevationProfileModal from '../../components/ElevationProfileModal'
+import CatalogItemModal from '../../containers/CatalogItemModal'
 
 export default class Main extends React.Component {
   render () {
@@ -77,6 +78,7 @@ export default class Main extends React.Component {
         <GeoLandmarkModalContainer wrapper={MovablePanel} />
         <DeleteMarchModalContainer wrapper={MovablePanel} />
         <ElevationProfileModal/>
+        <CatalogItemModal wrapper={MovablePanel} />
       </HotKeysContainer>
     )
   }
