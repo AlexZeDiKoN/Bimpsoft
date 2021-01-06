@@ -178,11 +178,12 @@ export const extractTextsSVG = ({
   angle = 0,
   numLineCenter,
   textAnchor = 'middle',
+  alwaysUp = true,
 }) => {
   const lines = string.split('\n')
   const numberOfLines = lines.length
   const fillColor = fontColor ? `fill="${fontColor}"` : ``
-  const rotate = Math.abs(angle) >= 90 ? 180 : 0
+  const rotate = (alwaysUp && Math.abs(angle) >= 90) ? 180 : 0
   const height = fontSize * LINE_COEFFICIENT
 
   const tspans = []
@@ -203,6 +204,7 @@ export const extractTextsSVG = ({
           y: correctY + index * height,
           width: widthWithMargin,
           height: height,
+          rotate,
         })
         dy = 0
       }
