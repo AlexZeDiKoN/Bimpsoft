@@ -535,7 +535,7 @@ const getSimpleFiguresBuilder = (kind) => (commonData, data, layerData) => {
             bounds,
             fontSize,
             amplifier: attributes.pointAmplifier,
-            textAnchor: 'middle',
+            getAnchor: () => 'middle',
           },
         )
         break

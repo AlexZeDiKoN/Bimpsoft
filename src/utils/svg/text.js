@@ -174,14 +174,12 @@ export const extractTextsSVG = ({
   fontSize,
   fontColor,
   margin = 0,
-  getOffset,
   angle = 0,
   numLineCenter,
   textAnchor = 'middle',
   alwaysUp = true,
 }) => {
   const lines = string.split('\n')
-  const numberOfLines = lines.length
   const fillColor = fontColor ? `fill="${fontColor}"` : ``
   const rotate = (alwaysUp && Math.abs(angle) >= 90) ? 180 : 0
   const height = fontSize * LINE_COEFFICIENT
@@ -192,6 +190,7 @@ export const extractTextsSVG = ({
     let dy = 0
     const textTranslateY = -height * (numLineCenter - 0.5)
     const correctY = textTranslateY - height / 2
+    // сборка маски и строчек текста
     lines.forEach((line, index) => {
       const width = getTextWidth(line, getFont(fontSize, false))
       const widthWithMargin = width + 2 * margin
@@ -221,32 +220,5 @@ export const extractTextsSVG = ({
            </text>`,
       masksRect: masks,
     }
-  }
-  lines.forEach((line, index) => {
-    const width = getTextWidth(line, getFont(fontSize, false))
-    const widthWithMargin = width + 2 * margin
-    const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
-      ? getOffset(widthWithMargin, height, numberOfLines, index)
-      : { y: 0, x: 0, xMask: 0, yMask: 0 }
-    tspans.push(`<tspan x = "${x}" dy="${index === 0 ? y : height}">${line === '' ? '&nbsp' : line}</tspan>`)
-    masks.push({
-      x: xMask,
-      y: yMask - height / 2,
-      width: widthWithMargin,
-      height: height,
-    })
-  })
-
-  return {
-    sign: `<text font-family="${FONT_FAMILY}"
-           stroke="none"
-           text-anchor="middle"
-           dominant-baseline="middle"
-           font-size="${fontSize}"
-           ${fillColor}
-           transform="rotate(${rotate})">
-           ${tspans.join('')}
-           </text>`,
-    masksRect: masks,
   }
 }

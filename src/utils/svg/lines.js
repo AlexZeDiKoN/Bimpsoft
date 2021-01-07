@@ -207,6 +207,8 @@ const buildPoints = (points, segments, pointLocationResolver, bezier, locked) =>
     point.t = t
     point.r = deg(Math.atan2(point.n.y, point.n.x)) + 90 // Для текста коррекция угла от оси X к оси -Y
     point.i = locked && (Math.abs(point.r) > 90)
+    point.a = t ? (Math.abs(point.r) > 90 ? 'start' : 'end') : (Math.abs(point.r) > 90 ? 'end' : 'start')
+    // Math.abs(point.r) > 90 ? (point.t ? 'start' : 'end') : (point.t ? 'end' : 'start')
     return point
   })
 }
@@ -759,8 +761,7 @@ const getTextAmplifiers = ({
   points,
   amplifier,
   amplifierType,
-  getOffset,
-  getRotate,
+  getAnchor,
   level,
   scale,
   zoom,
@@ -770,7 +771,6 @@ const getTextAmplifiers = ({
   graphicSize = interpolateSize(zoom, settings.GRAPHIC_AMPLIFIER_SIZE, scale),
   strokeWidth,
   amplifierIsNormal = true,
-  textAnchor,
   showTextAmplifiers = true, // вывод текстовых амплификаторов разрешён
   alwaysUp = true, // вывод текстовых верхом ближе на север
 }) => {
@@ -787,8 +787,6 @@ const getTextAmplifiers = ({
   const fillColor = color ? `fill="${color}"` : ``
 
   points.forEach((point) => {
-    // const isLast = points[index] === points.length - 1
-
     // графический промежуточный амплификатор
     const makeAmps = []
     if (amplifierType && amplifierType !== 'text') { // разбираем графический амплификатор
@@ -808,67 +806,29 @@ const getTextAmplifiers = ({
       }
     }
 
-    // текстовый амплификатор
-    // корректировка позиции внутреннего/наружного амплификатора для областей
-    const pointN = { ...point }
-    // сборка текстовых амплификаторов в один общий
-    const {
-      amplifier: amplifiersBuild,
-      lineCenter: numLineCenter,
-    } = rebuildAmplifiers(amplifier, amplifierType, amplifierIsNormal ? point.i : !point.i)
+    // любой текстовый амплификатор
+    if (showTextAmplifiers) {
+      // сборка текстовых амплификаторов в один общий
+      const {
+        amplifier: amplifiersBuild,
+        lineCenter: numLineCenter,
+      } = rebuildAmplifiers(amplifier, amplifierType, amplifierIsNormal ? point.i : !point.i)
 
-    if (amplifiersBuild !== '') { // генерация текстового svg блока
-      makeAmps.push(extractTextsSVG({ // возврвщает один объект
-        string: amplifiersBuild,
-        fontSize,
-        fontColor,
-        margin: amplifierMargin,
-        getOffset: getOffset.bind(null, amps.N, pointN),
-        angle: point.r,
-        numLineCenter,
-        textAnchor,
-        alwaysUp,
-      }))
+      if (amplifiersBuild !== '') { // генерация текстового svg блока
+        makeAmps.push(extractTextsSVG({ // возврвщает один объект
+          string: amplifiersBuild,
+          fontSize,
+          fontColor,
+          margin: amplifierMargin,
+          textAnchor: getAnchor ? getAnchor(point) : 'middle',
+          angle: point.r,
+          numLineCenter,
+          alwaysUp,
+        }))
+      }
     }
 
-    const amplifiersExtract = [ ...amplifier.entries() ].map(([ type, value ]) => {
-      if (type === 'middle') {
-        if (amplifierType === 'level' && level) { // рівень підпорядкування
-          return [ type, [ extractSubordinationLevelSVG(
-            level,
-            graphicSize,
-            amplifierMargin,
-          ) ] ]
-        }
-        // стрелки на промежуточных точкакх
-        if (amplifierType === MARK_TYPE.ARROW_90 || amplifierType === MARK_TYPE.ARROW_30_FILL) {
-          return [ type, drawIntermediateArrow(amplifierType, graphicSize, strokeWidth) ]
-        }
-      }
-
-      if (!value || !showTextAmplifiers) {
-        return null // canceling render of a text amplifier
-      }
-
-      // корректировка позиции внутреннего/наружного амплификатора для областей
-      // const pointN = { ...point }
-      // if (amplifierIsNormal === false) { // область вывернута, переворачиваем амлификаторы T и W
-      //   pointN.r += point.r < 0 ? 180 : -180
-      // }
-      // текстовый амплификатор
-      return [ type, extractTextsSVG({
-        string: value,
-        fontSize,
-        fontColor,
-        margin: amplifierMargin,
-        textAnchor,
-        getOffset: getOffset.bind(null, type, pointN),
-        angle: point.r,
-        type,
-      }) ]
-    }).filter(Boolean)
-
-    // amplifiersExtract
+    // генерация SVG кода для амплификаторов
     makeAmps.forEach((amplifiers) => {
       if (Array.isArray(amplifiers)) { // обработка графических амплификаторов
         amplifiers.forEach((amplifier) => {
@@ -903,11 +863,8 @@ const getTextAmplifiers = ({
                 if (R.isNil(r) || r === 0) {
                   return movedPoint
                 }
-                let rmask = r + (maskRect.rotate || 0)
-                if (amplifierIsNormal === false) { // область вывернута, переворачиваем маску для амлификаторов T и W
-                  rmask += r < 0 ? 180 : -180
-                }
-                return rotate(movedPoint, x, y, rmask)
+                const rMask = r + (maskRect.rotate || 0)
+                return rotate(movedPoint, x, y, rMask)
               }), true),
             )
           })
@@ -968,7 +925,7 @@ export const getOffsetForIntermediateAmplifier = (type, point, lineWidth, lineHe
       break
   }
 }
-
+/*
 const getOffsetForNodalPointAmplifier = function (type, point, lineWidth, lineHeight, numberOfLines, index) {
   let t = point.t === 0 ? -1 : 1
   if (Math.abs(point.r) > 90) {
@@ -1011,7 +968,7 @@ const getRotateForIntermediateAmplifier = (amplifierType, pointRotate, intermedi
     return pointRotate - 180
   }
 }
-
+*/
 // пересборка амплификаторров в один
 const ampsName = [
   amps.T,
@@ -1036,7 +993,7 @@ const rebuildAmplifiers = (amplifiers, amplifierType = 'text', reverse = false) 
   })
   return { amplifier: amp.join('\n'), lineCenter: reverse ? (countStr - toCenter) : toCenter, countStr }
 }
-// сборка pointAmlifier в указанной точке
+// сборка pointAmplifier в указанной точке
 export const getPointAmplifier = ({
   centroid,
   bounds,
@@ -1044,7 +1001,7 @@ export const getPointAmplifier = ({
   zoom = -1,
   fontSize, // для печати
   amplifier,
-  textAnchor,
+  getAnchor,
 }) => {
   const step = fontSize || settings.AMPLIFIERS_SIZE * scale
   // функция проверки попадания амплификатора в область вывода.
@@ -1054,7 +1011,7 @@ export const getPointAmplifier = ({
   const amplifierOptions = {
     points: insideMap(centroid) ? [ centroid ] : [],
     getOffset: getOffsetPointAmplifier, // определение смещеня строки текста в зависимости от номера строки и типа амплификатора
-    textAnchor,
+    getAnchor,
   }
   return getTextAmplifiers({
     scale,
@@ -1079,7 +1036,6 @@ export const getAmplifiers = ({
   strokeWidth, // для печати
   tsType, // тип линии
   showTextAmplifiers = true, // разрешение вывода амплификаторов
-  textAnchor,
 }, object) => {
   const result = {
     maskPath: [],
@@ -1092,7 +1048,6 @@ export const getAmplifiers = ({
     intermediateAmplifierType,
     intermediateAmplifier,
     shownIntermediateAmplifiers,
-    directionIntermediateAmplifiers,
     shownNodalPointAmplifiers,
     pointAmplifier,
     nodalPointIcon,
@@ -1130,7 +1085,6 @@ export const getAmplifiers = ({
       zoom,
       amplifier: intermediateAmplifier,
       amplifierType: intermediateAmplifierType,
-      amplifierDirection: directionIntermediateAmplifiers,
       points: buildPoints(
         points,
         segments,
@@ -1139,15 +1093,13 @@ export const getAmplifiers = ({
         bezier,
         locked,
       ).filter((point, index) => shownIntermediateAmplifiers.has(index) && insideMap(point)),
-      getOffset: getOffsetIntermediateAmplifier,
-      getRotate: getRotateForIntermediateAmplifier,
       color,
       fontColor,
       fontSize,
       graphicSize,
       amplifierIsNormal,
       showTextAmplifiers,
-      textAnchor: 'middle', // межузловые всегда центируются по горизонтали текста
+      getAnchor: () => 'middle', // межузловые всегда выравниваются по центру
       alwaysUp: true,
     })
     result.maskPath.push(...maskPath)
@@ -1174,11 +1126,8 @@ export const getAmplifiers = ({
           bezier,
           locked,
         ).filter(insideMap),
-        getOffset: getOffsetForNodalPointAmplifier,
-        getRotate: (amplifierType, pointRotate) => {
-          return amplifierType !== 'middle'
-            ? getRotateForLineAmplifier(amplifierType, pointRotate)
-            : 0 // Амплификатор N выводится горизонтально
+        getAnchor: (point) => { // корректировка выравнивания текста влево или вправо
+          return Math.abs(point.r) > 90 ? (point.t ? 'start' : 'end') : (point.t ? 'end' : 'start')
         },
       }
     }
