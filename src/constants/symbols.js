@@ -15,6 +15,7 @@ import { HATCH_TYPE, MARK_TYPE } from './drawLines'
 export const directionAmps = {
   ACROSS_LINE: 'acrossLine', // перпендикулярно линии
   ALONG_LINE: 'alongLine', // параллельно линии
+  UP: 'up', // вверх, ровно на север
 }
 
 export const amps = {
@@ -1288,7 +1289,7 @@ export const symbols = [
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0, 2 ],
           intermediateAmplifier: { [amps.N]: 'РВП' },
-          directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
+          directionIntermediateAmplifier: directionAmps.UP,
         },
       },
       {
