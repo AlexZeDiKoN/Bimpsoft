@@ -32,6 +32,7 @@ export default class TopoObjModal extends React.Component {
       selectTopographicItem,
     } = this.props
     const objectsCount = features ? features.length : undefined
+    const getValue = (key) => features[ selectedItem ].properties[ key ]
     return (
       <div className='topographicCard'>
         <Wrapper
@@ -54,14 +55,17 @@ export default class TopoObjModal extends React.Component {
                 </div>
                 <div className='propertiesContainer'>
                   <div className='mainPropertiesContainer'>
-                    <div
-                      className='mainProperties'>{`${TopoObj.OBJECT_TYPE}: ${features[ selectedItem ].properties[ TopoObj.OBJECT_TYPE ]}`}</div>
-                    <div
-                      className='mainProperties'>{`${TopoObj.TOPCODE}: ${features[ selectedItem ].properties[ TopoObj.TOPCODE ]}`}</div>
+                    {getValue(TopoObj.OBJECT_TYPE) && <div
+                      className='mainProperties'>{`${TopoObj.OBJECT_TYPE}: ${getValue(TopoObj.OBJECT_TYPE)}`}
+                    </div>}
+                    {getValue(TopoObj.TOPCODE) && <div
+                      className='mainProperties'>{`${TopoObj.TOPCODE}: ${getValue(TopoObj.TOPCODE)}`}
+                    </div>}
                     <div
                       className='mainProperties'>{`${TopoObj.POINT_COORDINATE}: ${location.lat} ${location.lng}`}</div>
-                    <div
-                      className='mainProperties'>{`${TopoObj.POINT_HEIGHT}: ${features[ selectedItem ].properties[ TopoObj.POINT_HEIGHT ]}`}</div>
+                    {getValue(TopoObj.POINT_HEIGHT) && <div
+                      className='mainProperties'>{`${TopoObj.POINT_HEIGHT}: ${getValue(TopoObj.POINT_HEIGHT)}`}
+                    </div>}
                   </div>
                   <div className='secondaryPropertiesContainer'>
                     {Object.keys(features[ selectedItem ].properties)
@@ -69,7 +73,7 @@ export default class TopoObjModal extends React.Component {
                         item !== TopoObj.OBJECT_TYPE && item !== TopoObj.TOPCODE && item !== TopoObj.POINT_HEIGHT)
                       .map((item, index) =>
                         <div className='secondaryProperties' key={index}>
-                          {`${item}: ${features[ selectedItem ].properties[ item ]}`}
+                          {`${item}: ${getValue(item)}`}
                         </div>)
                     }
                   </div>

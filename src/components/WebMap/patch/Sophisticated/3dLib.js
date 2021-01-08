@@ -24,7 +24,7 @@ import {
   FONT_FAMILY,
   FONT_WEIGHT,
   getTextWidth,
-} from '../../../../utils'
+} from '../../../../utils/svg'
 import { deg, rad } from './utils'
 
 export const stepAngle = 5 // шаг угола при интерполяции дуги, желательно чтобы угол дуги делился на шаг без остатка

@@ -356,13 +356,13 @@ export default class WebMap extends React.PureComponent {
     inICTMode: PropTypes.any,
     topographicObjects: PropTypes.object,
     catalogObjects: PropTypes.object,
-    catalogs: PropTypes.object,
     targetingObjects: PropTypes.object,
     undoInfo: PropTypes.shape({
       canUndo: PropTypes.bool,
       canRedo: PropTypes.bool,
     }),
     isMapCOP: PropTypes.bool,
+    catalogModalData: PropTypes.object,
     // Redux actions
     setModalProps: PropTypes.func,
     editObject: PropTypes.func,
@@ -411,6 +411,7 @@ export default class WebMap extends React.PureComponent {
     checkObjectAccess: PropTypes.func,
     onShadowDelete: PropTypes.func,
     myContactId: PropTypes.number,
+    setCatalogModalData: PropTypes.func,
   }
 
   constructor (props) {
@@ -1621,14 +1622,15 @@ export default class WebMap extends React.PureComponent {
   }
 
   removeLayer = (layer) => {
+    const { catalogModalData, setCatalogModalData } = this.props
     const index = this.map.objects.indexOf(layer)
     if (index >= 0) {
       this.map.objects.splice(index, 1)
     }
     layer.pm && layer.pm.disable()
     layer.remove()
-    if (this.catalogsPopup && this.catalogsPopup.isOpen() && this.catalogsPopup._openOver === layer) {
-      this.catalogsPopup.remove()
+    if (catalogModalData.visible && catalogModalData.layer === layer) {
+      setCatalogModalData({ visible: false })
     }
   }
 
@@ -2141,23 +2143,9 @@ export default class WebMap extends React.PureComponent {
 
   clickOnCatalogLayer = (event) => {
     L.DomEvent.stopPropagation(event)
-    const { target: layer, target: { object: { name, state, catalogId, country, affiliation } } } = event
-    const { catalogs } = this.props
-    const catalogName = catalogs[catalogId].name
-    let text = `<strong>${catalogName}</strong><br/>`
-    name && (text += `<u>${i18n.DESIGNATION}:</u>&nbsp;<span class="nameValue">${name}</span><br/>`)
-    state && (text += `<u>${i18n.STATE}:</u>&nbsp;${state}<br/>`)
-    country && (text += `<u>${i18n.COUNTRY}:</u>&nbsp;${country}<br/>`)
-    affiliation && (text += `<u>${i18n.IDENTITY}:</u>&nbsp;${affiliation}`)
-    text = `<div style="overflow:auto;">${text}</div>`
-    if (!this.catalogsPopup) {
-      this.catalogsPopup = L.popup()
-    }
-    this.catalogsPopup._openOver = layer
-    this.catalogsPopup
-      .setLatLng(layer.getLatLng())
-      .setContent(text)
-      .openOn(layer._map)
+    const { target: layer, target: { object }, latlng } = event
+    const { setCatalogModalData } = this.props
+    setCatalogModalData({ visible: true, layer, object, location: latlng })
   }
 
   dblClickOnCatalogLayer = (event) => {
