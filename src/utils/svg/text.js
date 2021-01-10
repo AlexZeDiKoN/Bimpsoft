@@ -72,7 +72,16 @@ export const renderTextSymbol = ({
     const fontWeightText = bold ? 700 : 400
     fullHeight += lineSpace * 2 + lineStrokeWidth
     endUnderLine = underline
-    return { underline, fontSize, align, y, text, yUnderline: y + lineSpace + lineStrokeWidth / 2, lineStrokeWidth, fontWeightText }
+    return {
+      underline,
+      fontSize,
+      align,
+      y,
+      text,
+      yUnderline: y + lineSpace + lineStrokeWidth / 2,
+      lineStrokeWidth,
+      fontWeightText,
+    }
   })
 
   maxWidth += 6
@@ -173,43 +182,53 @@ export const extractTextsSVG = ({
   string,
   fontSize,
   fontColor,
-  margin,
-  getOffset,
+  margin = 0,
   angle = 0,
+  numLineCenter,
+  textAnchor = 'middle',
+  lettersAlwaysUp = true,
 }) => {
   const lines = string.split('\n')
-  const numberOfLines = lines.length
   const fillColor = fontColor ? `fill="${fontColor}"` : ``
-  const rotate = Math.abs(angle) >= 90 ? 180 : 0
+  const rotateLetter = (lettersAlwaysUp && Math.abs(angle) >= 90) ? 180 : 0
   const height = fontSize * LINE_COEFFICIENT
 
   const tspans = []
   const masks = []
-  lines.forEach((line, index) => {
-    const width = getTextWidth(line, getFont(fontSize, false))
-    const widthWithMargin = width + 2 * margin
-    const { y = 0, x = 0, xMask = -widthWithMargin / 2, yMask = 0 } = getOffset
-      ? getOffset(widthWithMargin, height, numberOfLines, index)
-      : { y: 0, x: 0, xMask: 0, yMask: 0 }
-    tspans.push(`<tspan x = "${x}" dy="${index === 0 ? y : height}">${line}</tspan>`)
-    masks.push({
-      x: xMask,
-      y: yMask - height / 2,
-      width: widthWithMargin,
-      height: height,
+  if (numLineCenter) {
+    let dy = 0
+    const dx = textAnchor === 'middle' ? 0 : (textAnchor === 'start' ? margin : -margin)
+    const textTranslateY = -height * (numLineCenter - 0.5)
+    const correctY = textTranslateY - height / 2
+    // сборка маски и строчек текста
+    lines.forEach((line, index) => {
+      const width = getTextWidth(line, getFont(fontSize, false))
+      const widthWithMargin = width + 2 * margin
+      if (line === '') {
+        dy += height
+      } else {
+        tspans.push(`<tspan x = "${dx}" dy="${index === 0 ? 0 : dy + height}">${line}</tspan>`)
+        masks.push({
+          x: textAnchor === 'middle' ? -widthWithMargin / 2 : (textAnchor === 'start' ? 0 : -widthWithMargin),
+          y: correctY + index * height,
+          width: widthWithMargin,
+          height: height,
+          rotate: rotateLetter,
+        })
+        dy = 0
+      }
     })
-  })
-
-  return {
-    sign: `<text font-family="${FONT_FAMILY}"
+    return {
+      sign: `<text font-family="${FONT_FAMILY}"
            stroke="none"
-           text-anchor="middle"
+           text-anchor="${textAnchor}"
            dominant-baseline="middle"
            font-size="${fontSize}"
            ${fillColor}
-           transform="rotate(${rotate})">
+           transform="rotate(${rotateLetter}) translate(0 ${textTranslateY})">
            ${tspans.join('')}
            </text>`,
-    masksRect: masks,
+      masksRect: masks,
+    }
   }
 }
