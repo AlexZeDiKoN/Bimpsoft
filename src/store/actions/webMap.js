@@ -125,12 +125,12 @@ export const setMarker = (marker) => (dispatch) => {
 
 export const setMiniMap = (value) => ({
   type: actionNames.SET_MINIMAP,
-  payload: value.target.checked,
+  payload: value,
 })
 
 export const setAmplifiers = (value) => ({
   type: actionNames.SET_AMPLIFIERS,
-  payload: value.target.checked,
+  payload: value,
 })
 
 export const setAmplifiersFilter = (value) => ({

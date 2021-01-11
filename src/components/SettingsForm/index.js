@@ -33,7 +33,7 @@ export default class SettingsForm extends React.Component {
     params: PropTypes.object,
     shownAmplifiers: PropTypes.object,
     showAmplifiers: PropTypes.bool,
-    // generalization: PropTypes.bool,
+    generalization: PropTypes.bool,
     onChangeCoordinatesType: PropTypes.func,
     onChangeShowMiniMap: PropTypes.func,
     onChangeShownAmplifiers: PropTypes.func,
@@ -85,13 +85,13 @@ export default class SettingsForm extends React.Component {
       showMiniMap,
       shownAmplifiers,
       showAmplifiers,
-      // generalization,
+      generalization,
       onClose,
       onChangeCoordinatesType,
       onChangeShowMiniMap,
       onChangeShownAmplifiers,
       onChangeShowAmplifier,
-      // onChangeGeneralization,
+      onChangeGeneralization,
     } = this.props
 
     const clientWidth = document?.documentElement?.clientWidth
@@ -119,13 +119,15 @@ export default class SettingsForm extends React.Component {
                     </Select>
                   </FormRow>
                 </div>
-
                 <div className="checkedContainer">
                   <FormRow label={i18n.MINIMAP}>
                     <Checkbox checked={showMiniMap} onChange={onChangeShowMiniMap}/>
                   </FormRow>
                   <FormRow label={i18n.AMPLIFIERS_POINT_SYMBOL}>
                     <Checkbox checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
+                  </FormRow>
+                  <FormRow label={i18n.GENERALIZATION}>
+                    <Checkbox checked={generalization} onChange={onChangeGeneralization}/>
                   </FormRow>
                 </div>
               </div>
@@ -243,9 +245,6 @@ export default class SettingsForm extends React.Component {
                   />
                 </Tabs.TabPane>
               </Tabs>
-              {/* <FormRow label={i18n.GENERALIZATION}> */}
-              {/* <Switch checked={generalization} onChange={onChangeGeneralization}/> */}
-              {/* </FormRow> */}
             </Form>
             <HotKey onKey={onClose} selector={shortcuts.ESC}/>
           </HotKeysContainer>
