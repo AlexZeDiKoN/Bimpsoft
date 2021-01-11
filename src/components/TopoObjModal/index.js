@@ -1,15 +1,33 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import FocusTrap from 'react-focus-lock'
-import { MovablePanel } from '@C4/CommonComponents'
+import { MovablePanel, IButton, FormBlock, ColorTypes } from '@C4/CommonComponents'
 import i18n from '../../i18n'
 import { TopoObj } from '../../constants'
 
 import './style.css'
 
+const renderElement = (label, value, key = label) => <FormBlock wrap paddingV paddingH key={key}>{`${label}: ${value}`}</FormBlock>
+const renderButtonElement = ({ index, onClick, value, isSelected }) => (
+  <IButton
+    onClick={onClick}
+    key={index}
+    colorType={isSelected ? ColorTypes.DARK_GREEN : null}
+  >
+    {value}
+  </IButton>
+)
+
+const MAIN_ROWS_KEYS = [
+  TopoObj.OBJECT_TYPE,
+  TopoObj.TOPCODE,
+  TopoObj.POINT_COORDINATE,
+  TopoObj.POINT_HEIGHT,
+]
+
 export default class TopoObjModal extends React.Component {
   static propTypes = {
     wrapper: PropTypes.oneOf([ MovablePanel ]),
+    title: PropTypes.string,
     topographicObjects: PropTypes.object,
     onClose: PropTypes.func,
     selectTopographicItem: PropTypes.func,
@@ -24,6 +42,7 @@ export default class TopoObjModal extends React.Component {
     const {
       wrapper: Wrapper,
       onClose,
+      title,
       topographicObjects: {
         features,
         location,
@@ -31,58 +50,46 @@ export default class TopoObjModal extends React.Component {
       },
       selectTopographicItem,
     } = this.props
+
     const objectsCount = features ? features.length : undefined
     const getValue = (key) => features[ selectedItem ].properties[ key ]
-    return (
-      <div className='topographicCard'>
-        <Wrapper
-          title={i18n.TOPOGRAPHIC_OBJECT_CARD}
-          onClose={onClose}
-        >
-          <FocusTrap>
-            {objectsCount
-              ? <div className='objInfoContainer'>
-                <div className='elementListContainer'>
-                  {features.map((element, index) => <div
-                    key={index}
-                    className={`element ${index === selectedItem ? 'active' : ''}`}
-                    onClick={() => selectTopographicItem(index)}
-                  >
-                    {element.properties[ TopoObj.UKR_NAME ] ||
-                  element.properties[ TopoObj.PROPER_NAME ] ||
-                  element.properties[ TopoObj.OBJECT_TYPE ]}
-                  </div>)}
-                </div>
-                <div className='propertiesContainer'>
-                  <div className='mainPropertiesContainer'>
-                    {getValue(TopoObj.OBJECT_TYPE) && <div
-                      className='mainProperties'>{`${TopoObj.OBJECT_TYPE}: ${getValue(TopoObj.OBJECT_TYPE)}`}
-                    </div>}
-                    {getValue(TopoObj.TOPCODE) && <div
-                      className='mainProperties'>{`${TopoObj.TOPCODE}: ${getValue(TopoObj.TOPCODE)}`}
-                    </div>}
-                    <div
-                      className='mainProperties'>{`${TopoObj.POINT_COORDINATE}: ${location.lat} ${location.lng}`}</div>
-                    {getValue(TopoObj.POINT_HEIGHT) && <div
-                      className='mainProperties'>{`${TopoObj.POINT_HEIGHT}: ${getValue(TopoObj.POINT_HEIGHT)}`}
-                    </div>}
-                  </div>
-                  <div className='secondaryPropertiesContainer'>
-                    {Object.keys(features[ selectedItem ].properties)
-                      .filter((item) =>
-                        item !== TopoObj.OBJECT_TYPE && item !== TopoObj.TOPCODE && item !== TopoObj.POINT_HEIGHT)
-                      .map((item, index) =>
-                        <div className='secondaryProperties' key={index}>
-                          {`${item}: ${getValue(item)}`}
-                        </div>)
-                    }
-                  </div>
-                </div>
-              </div>
-              : <div className='elementListContainer'>{i18n.NO_OBJECTS}</div>}
-          </FocusTrap>
-        </Wrapper>
-      </div>
-    )
+    const renderIfExist = (key) => getValue(key) && renderElement(key, getValue(key))
+
+    return <div className="topographic-object--wrap">
+      <Wrapper
+        title={title}
+        onClose={onClose}
+        minWidth={300}
+        minHeight={200}
+        defaultSize={{ height: 300 }}
+      >
+        {objectsCount
+          ? <div className="topographic-object--content">
+            <FormBlock vertical underline justifyContent="center">
+              { features.map((element, index) => renderButtonElement({
+                index,
+                onClick: () => selectTopographicItem(index),
+                isSelected: index === selectedItem,
+                value: element.properties[TopoObj.UKR_NAME] ||
+                  element.properties[TopoObj.PROPER_NAME] ||
+                  element.properties[TopoObj.OBJECT_TYPE],
+              }))}
+            </FormBlock>
+            <FormBlock underline vertical>
+              { renderIfExist(TopoObj.OBJECT_TYPE) }
+              { renderIfExist(TopoObj.TOPCODE) }
+              { renderElement(TopoObj.POINT_COORDINATE, `${location.lat} ${location.lng}`) }
+              { renderIfExist(TopoObj.POINT_HEIGHT) }
+            </FormBlock>
+            <FormBlock vertical>
+              {Object.keys(features[ selectedItem ].properties)
+                .filter((item) => !MAIN_ROWS_KEYS.includes(item))
+                .map((item, index) => renderIfExist(item, index))
+              }
+            </FormBlock>
+          </div>
+          : <div className='topographic-object--no-data'>{i18n.NO_OBJECTS}</div>}
+      </Wrapper>
+    </div>
   }
 }

@@ -1,61 +1,24 @@
-.topographicCard {
-  position: fixed;
-  z-index: 1001;
-  right: 150px;
-  top: 85px;
-  margin-top: 180px;
-
-  .objInfoContainer {
-    max-width: 300px;
-    height: 100%;
-
-    .propertiesContainer {
-      display: flex;
-      flex-direction: column;
-      border-top: 2px solid #a9b06c;
-      background: #fff;
-      height: 100%;
-      overflow: auto;
-
-      .mainPropertiesContainer {
-        border-bottom: 1px solid #a9b06c;
-
-        .mainProperties {
-          text-align: start;
-          padding: 3px;
-        }
-      }
-
-      .secondaryPropertiesContainer {
-        max-height: 30vh;
-        background: #fff;
-
-        .secondaryProperties {
-          text-align: start;
-          padding: 3px;
-        }
-      }
+.topographic-object {
+    &--wrap {
+    position: fixed;
+    z-index: 1001;
+    right: 150px;
+    top: 85px;
+    margin-top: 180px;
+  }
+  &--content {
+    height: calc(100% - 40px);
+    width: 100%;
+    overflow: auto;
+    text-align: start;
+    & .dzvin-ibutton {
+      align-self: center;
     }
   }
-  .elementListContainer {
-    display: flex;
-    min-width: 300px;
-    flex-direction: column;
-    cursor: pointer;
-    background: #eee;
-
-    .element {
-      padding: 3px;
-      border-bottom: 1px solid lightgray;
-    }
-
-    .element:hover {
-      background: lightgrey;
-    }
-
-    .element.active {
-      color: #a9b06c;
-      font-weight: 500;
-    }
+  &--no-data {
+    height: calc(100% - 40px);
+    width: 100%;
+    display: grid;
+    place-items: center;
   }
 }

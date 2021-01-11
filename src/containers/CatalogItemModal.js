@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { MovablePanel } from '@C4/CommonComponents'
 import TopoObjModal from '../components/TopoObjModal'
 import { actionNames } from '../store/actions/webMap'
+import { CATALOG_OBJECT_CARD } from '../i18n/ua'
 
 const emptyFunc = () => null
 
@@ -25,7 +26,7 @@ const CatalogItemModal = ({ wrapper }) => {
       } ],
     },
   }
-  return <TopoObjModal {...props} />
+  return <TopoObjModal {...props} title={CATALOG_OBJECT_CARD}/>
 }
 
 CatalogItemModal.propTypes = {

@@ -33,6 +33,7 @@ import SidebarContainer from '../../containers/SidebarContainer'
 import { HotKeysContainer } from '../../components/common/HotKeys'
 import ElevationProfileModal from '../../components/ElevationProfileModal'
 import CatalogItemModal from '../../containers/CatalogItemModal'
+import { TOPOGRAPHIC_OBJECT_CARD } from '../../i18n/ua'
 
 export default class Main extends React.Component {
   render () {
@@ -70,7 +71,7 @@ export default class Main extends React.Component {
         <FlexGridOptionsContainer wrapper={MovablePanel} />
         <DirectionNameContainer wrapper={MovablePanel}/>
         <EternalDescriptionContainer wrapper={MovablePanel}/>
-        <TopoObjModal wrapper={MovablePanel} />
+        <TopoObjModal wrapper={MovablePanel} title={TOPOGRAPHIC_OBJECT_CARD} />
         <ZoneProfileModalContainer wrapper={MovablePanel} />
         <ZoneVisionModalContainer wrapper={MovablePanel} />
         <TaskModalContainer wrapper={MovablePanel} />
