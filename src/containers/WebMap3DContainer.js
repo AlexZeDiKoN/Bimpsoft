@@ -17,6 +17,7 @@ const mapStateToProps = (state) => {
     layers: { byId: layers },
     selection: { list },
   } = state
+  const boundsMap = window.webMap?.getBoundsMap()
   const filteredObjects = filterObjects(subordinationLevel, objects, layers)
   return {
     sources,
@@ -24,6 +25,7 @@ const mapStateToProps = (state) => {
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
     zoom: state.webMap3D.zoom || state.webMap.zoom,
+    boundsMap: boundsMap || state.webMap.bounds,
     mode,
     selected: list,
   }

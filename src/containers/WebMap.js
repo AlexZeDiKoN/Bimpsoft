@@ -108,9 +108,9 @@ const WebMapContainer = connect(
       orgStructures.expandTreeByOrgStructureItem(unitID),
     ]),
     onChangeLayer: layers.selectLayer,
-    onMove: (center, zoom, isZoomChangedByUser) => {
+    onMove: (center, zoom, bounds, isZoomChangedByUser) => {
       const batch = [
-        webMap.setCenter(center, zoom),
+        webMap.setCenter(center, zoom, bounds),
         webMap.setScaleToSelection(false),
       ]
       isZoomChangedByUser && batch.push(webMap.setSubordinationLevelByZoom(zoom))

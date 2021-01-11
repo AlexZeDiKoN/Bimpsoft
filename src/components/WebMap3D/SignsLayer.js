@@ -170,6 +170,7 @@ export default class SignsLayer extends Component {
     const cartographic = camera.positionCartographic
     const { latitude, height } = cartographic
     const currentZoom = zoom2height(latitude, null, height)
+    console.log('zoom', { currentZoom, zoom, latitude, height })
     currentZoom !== zoom && setZoom(currentZoom)
   }
 

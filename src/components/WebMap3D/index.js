@@ -1,7 +1,13 @@
 import React from 'react'
 import {
-  CesiumTerrainProvider, Cartesian3, KeyboardEventModifier, ScreenSpaceEventType,
-  CameraEventType, UrlTemplateImageryProvider, TrustedServers,
+  CesiumTerrainProvider,
+  Cartesian3,
+  KeyboardEventModifier,
+  ScreenSpaceEventType,
+  CameraEventType,
+  UrlTemplateImageryProvider,
+  TrustedServers,
+  Rectangle,
 } from 'cesium'
 import memoize from 'memoize-one'
 import {
@@ -46,6 +52,7 @@ export default class WebMap3D extends React.PureComponent {
         lng: PropTypes.number,
       }).isRequired,
       zoom: PropTypes.number.isRequired,
+      boundsMap: PropTypes.object,
       mode: PropTypes.any,
       objects: PropTypes.object,
       sources: PropTypes.array,
@@ -88,8 +95,12 @@ export default class WebMap3D extends React.PureComponent {
     }
 
     render () {
-      const { objects, center, zoom, setZoom, selected, editObject, source: { sources } } = this.props
+      const { objects, center, zoom, setZoom, selected, editObject, source: { sources }, boundsMap } = this.props
       const imageryLayers = getImageryLayers(sources)
+      const camera = Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))
+      const camera0 = Cartesian3.fromDegrees(center.lng, center.lat, 0)
+      const height = zoom2height(center.lat, zoom)
+      // console.log('3d', { zoom, camera, camera0, height, fly: this.shouldFly })
       return imageryLayers
         ? (
           <Viewer
@@ -119,14 +130,21 @@ export default class WebMap3D extends React.PureComponent {
               ref={ (e) => { this.camera = e && e.cesiumElement }}
               onMoveEnd={this.updatePosition}
             />
-            {this.shouldFly &&
-            <CameraFlyTo
-              maximumHeight={MAX_ZOOM}
-              duration={0}
-              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
-              onCancel={this.stopAutoMove}
-              onComplete={this.stopAutoMove}
-            />
+            { // this.shouldFly &&
+              <CameraFlyTo
+                maximumHeight={MAX_ZOOM}
+                duration={0}
+                destination={ boundsMap
+                  ? Rectangle.fromDegrees(
+                    boundsMap.getWest(),
+                    boundsMap.getSouth(),
+                    boundsMap.getEast(),
+                    boundsMap.getNorth())
+                  : Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
+                // onCancel={this.stopAutoMove}
+                // onComplete={this.stopAutoMove}
+                once={true}
+              />
             }
             <SignsLayer
               objects={objects}

@@ -176,9 +176,9 @@ export const setSubordinationLevelAuto = (value) => ({
   payload: value,
 })
 
-export const setCenter = (center, zoom) => ({
+export const setCenter = (center, zoom, bounds) => ({
   type: actionNames.SET_MAP_CENTER,
-  payload: { center, zoom },
+  payload: { center, zoom, bounds },
 })
 
 export const setScaleToSelection = (scaleToSelected) => ({

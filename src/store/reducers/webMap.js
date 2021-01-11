@@ -93,6 +93,7 @@ const WebMapState = Record({
   mode: MapModes.NONE,
   center,
   zoom,
+  bounds: null,
   coordinatesType: Coord.types.WGS_84,
   showMiniMap: true,
   showAmplifiers: true,
@@ -414,7 +415,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         : state.deleteIn([ 'objects', id ]) // Об'єкт видалено
     }
     case actionNames.SET_MAP_CENTER: {
-      const { center, zoom } = payload
+      const { center, zoom, bounds } = payload
       if (center) {
         state = update(state, 'center', center)
         LS.set('view', 'center', center)
@@ -422,6 +423,9 @@ export default function webMapReducer (state = WebMapState(), action) {
       if (zoom) {
         state = update(state, 'zoom', zoom)
         LS.set('view', 'zoom', zoom)
+      }
+      if (bounds) {
+        state = update(state, 'bounds', bounds)
       }
       return state
     }
