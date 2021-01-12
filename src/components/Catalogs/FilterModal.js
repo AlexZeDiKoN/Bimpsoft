@@ -47,6 +47,7 @@ export const CatalogFilterModal = ({
   title,
   onClose,
   onSave,
+  onRemove,
   fields = DEFAULT_ARRAY,
   data = DEFAULT_VALUE,
   catalogId,
@@ -62,8 +63,10 @@ export const CatalogFilterModal = ({
   }
 
   const onSaveHandler = () => {
-    const filteredValues = Object.fromEntries(Object.entries(value).filter(([ , value ]) => Boolean(value)))
-    onSave({ [catalogId]: filteredValues })
+    const filteredValues = Object.entries(value).filter(([ , value ]) => Boolean(value))
+    filteredValues.length
+      ? onSave({ [catalogId]: Object.fromEntries(filteredValues) })
+      : onRemove(catalogId)
     onClose()
   }
 
@@ -108,6 +111,7 @@ CatalogFilterModal.propTypes = {
   wrapper: PropTypes.oneOf([ MovablePanel ]),
   onClose: PropTypes.func,
   onSave: PropTypes.func,
+  onRemove: PropTypes.func,
   fields: PropTypes.object,
   data: PropTypes.object,
   visible: PropTypes.bool,

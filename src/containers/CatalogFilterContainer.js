@@ -4,7 +4,7 @@ import { close } from '../store/actions/task'
 import { CATALOG_FILTER_TYPE } from '../constants/modals'
 import { catalogFilters, getModalData, catalogsFields } from '../store/selectors'
 import { CatalogFilterModal } from '../components/Catalogs/FilterModal'
-import { setFilterCatalog } from '../store/actions/filter'
+import { removeFilterCatalog, setFilterCatalog } from '../store/actions/filter'
 
 const mapStateToProps = (store) => {
   const modalData = getModalData(store)
@@ -20,6 +20,7 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = {
   onClose: close,
   onSave: setFilterCatalog,
+  onRemove: removeFilterCatalog,
 }
 
 const ModalForm = connect(mapStateToProps, mapDispatchToProps)(CatalogFilterModal)
