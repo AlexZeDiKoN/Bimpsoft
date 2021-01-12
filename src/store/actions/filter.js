@@ -7,11 +7,13 @@ export const SET_FILTER_CATALOG = action('SET_FILTER_CATALOG')
 export const REMOVE_FILTER_CATALOG = action('REMOVE_FILTER_CATALOG')
 export const SET_CATALOGS_FIELDS = action('SET_CATALOGS_FIELDS')
 
-export const removeFilterCatalog = (payload) => ({ type: REMOVE_FILTER_CATALOG, payload })
+export const setFilter = (type, payload) => ({ type, payload })
 
-export const setCatalogFields = (payload) => ({ type: SET_CATALOGS_FIELDS, payload })
+export const removeFilterCatalog = setFilter.bind(null, REMOVE_FILTER_CATALOG)
 
-export const setFilterCatalog = (payload) => ({ type: SET_FILTER_CATALOG, payload })
+export const setCatalogFields = setFilter.bind(null, SET_CATALOGS_FIELDS)
+
+export const setFilterCatalog = setFilter.bind(null, SET_FILTER_CATALOG)
 
 export const setModalCatalogFilter = (id) => asyncAction.withNotification(
   async (dispatch, getState, { catalogApi }) => {

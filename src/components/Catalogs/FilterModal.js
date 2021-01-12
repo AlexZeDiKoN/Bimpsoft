@@ -76,6 +76,7 @@ export const CatalogFilterModal = ({
     title={`${i18n.FILTER} "${title}"`}
     minWidth={WIDTH_SETTING_MODAL}
     minHeight={HEIGHT_SETTING_MODAL}
+    className="catalog-filter"
     defaultSize={{
       width: 800,
       height: 600,
