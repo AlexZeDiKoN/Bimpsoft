@@ -10,11 +10,13 @@ import {
   ColorGeometryInstanceAttribute,
   PolygonHierarchy,
   PolylineColorAppearance,
+  Cartesian2,
 } from 'cesium'
 import { Camera, Globe, Entity, GroundPrimitive, Scene, Fog, GeoJsonDataSource, GroundPolylinePrimitive } from 'resium'
 import { isArray } from 'leaflet/src/core/Util'
 import { zoom2height, objectsToSvg } from '../../utils/mapObjConvertor'
 import objTypes from '../../components/WebMap/entityKind'
+import { deg } from '../WebMap/patch/Sophisticated/utils'
 
 // import * as mapColors from "../../constants/colors";
 
@@ -132,6 +134,7 @@ export default class SignsLayer extends Component {
     objects: PropTypes.object,
     zoom: PropTypes.number.isRequired,
     setZoom: PropTypes.func.isRequired,
+    setCenter: PropTypes.func.isRequired,
     editObject: PropTypes.func.isRequired,
     selected: PropTypes.array,
   }
@@ -165,12 +168,26 @@ export default class SignsLayer extends Component {
 
   checkZoom = () => {
     if (!this.scene.current) { return }
-    const { zoom, setZoom } = this.props
+    const { zoom, setZoom, setCenter } = this.props
     const camera = this.scene.current.cesiumElement.camera
-    const cartographic = camera.positionCartographic
-    const { latitude, height } = cartographic
+    const canvas = this.scene.current.cesiumElement.canvas
+    const ellipsoid = this.scene.current.cesiumElement.globe.ellipsoid
+    const position = camera.positionCartographic
+    const fovy = camera.frustum.fovy // угол обзора снизу вверх
+    const { latitude, height } = position
+    const magnitude = camera.getMagnitude()
+
+    const radius = magnitude - height // радиус сферы
+    const angle = Math.asin(radius / magnitude) // угол касательной от камеры к поверхности сферы
+    const pitch = Math.PI / 2 + camera.pitch // угол наклона камеры
+    const da = pitch + fovy / 2 - angle
+    const k = (da < 0) ? 1 : (1 - da / fovy) // коэфициент уменьшения перекрытичя камеры сферой
+    const pos = new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight * (1 - k / 2))
+    const pick = camera.pickEllipsoid(pos, ellipsoid)
+
+    const center = pick ? Cartographic.fromCartesian(pick, ellipsoid) : null
     const currentZoom = zoom2height(latitude, null, height)
-    console.log('zoom', { currentZoom, zoom, latitude, height })
+    center && setCenter({ lng: deg(center.longitude), lat: deg(center.latitude) }, currentZoom)
     currentZoom !== zoom && setZoom(currentZoom)
   }
 

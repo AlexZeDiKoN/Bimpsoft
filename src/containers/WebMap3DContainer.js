@@ -24,7 +24,7 @@ const mapStateToProps = (state) => {
     source,
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
-    zoom: state.webMap3D.zoom || state.webMap.zoom,
+    zoom: state.webMap.zoom, // state.webMap3D.zoom
     boundsMap: boundsMap || state.webMap.bounds,
     mode,
     selected: list,
