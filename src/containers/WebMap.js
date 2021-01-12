@@ -4,7 +4,7 @@ import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
   activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
-  marchDots, undoInfo, mapCOP, flexGridSelected,
+  marchDots, undoInfo, mapCOP, flexGridSelected, getFilteredCatalogsObjects,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
@@ -59,7 +59,7 @@ const WebMapContainer = connect(
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
     catalogModalData: state.webMap.catalogModalData,
-    catalogObjects: state.catalogs.objects,
+    catalogObjects: getFilteredCatalogsObjects(state),
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
