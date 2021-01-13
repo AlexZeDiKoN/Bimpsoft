@@ -182,7 +182,7 @@ export default class SignsLayer extends Component {
     const angle = Math.asin(radius / magnitude) // угол касательной от камеры к поверхности сферы
     const pitch = Math.PI / 2 + camera.pitch // угол наклона камеры
     const da = pitch + fovy / 2 - angle
-    const k = (da < 0) ? 1 : (1 - da / fovy) // коэфициент уменьшения перекрытичя камеры сферой
+    const k = (da < 0) ? 1 : (1 - da / fovy) // коэфициент уменьшения перекрытия камеры сферой
     const pos = new Cartesian2(canvas.clientWidth / 2, canvas.clientHeight * (1 - k / 2))
     const pick = camera.pickEllipsoid(pos, ellipsoid) // геометрические координаты точки сцены карты
 
