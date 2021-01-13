@@ -454,7 +454,8 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, shownAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
+      objects, showMiniMap, showAmplifiers, shownAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit,
+      coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
@@ -930,7 +931,9 @@ export default class WebMap extends React.PureComponent {
   async onSelectedListChange (newList) {
     const {
       selection: { list },
-      onSelectedList, onSelectUnit, edit,
+      onSelectedList,
+      onSelectUnit,
+      edit,
     } = this.props
 
     if (newList.length === 0 && list.length === 0) {
@@ -945,12 +948,13 @@ export default class WebMap extends React.PureComponent {
     // get unit from new selection
     let selectedUnit = null
     if (newList.length === 1 && list[0] !== newList[0]) {
+      // TODO если ранее было выбрано более одного юнита, неизвестно, что было в list[0]
+      // поидее надо обновлять даже если list[0] === newList[0]
       const id = newList[0]
       const layer = this.findLayerById(id)
       selectedUnit = (layer?.object?.unit) || null
     }
     await onSelectUnit(selectedUnit)
-
     return onSelectedList(newList)
   }
 

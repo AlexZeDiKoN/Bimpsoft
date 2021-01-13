@@ -71,6 +71,8 @@ export const disableEdit = (layer) => {
     marker.off('click')
     marker.off('dblclick')
   })
+  layer.off('pm:dragstart')
+  layer.off('pm:dragend')
   layer.pm.disable()
 }
 
