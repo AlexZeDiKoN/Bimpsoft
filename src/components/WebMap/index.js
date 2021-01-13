@@ -419,6 +419,7 @@ export default class WebMap extends React.PureComponent {
     this.view = {
       center: { lat: 0, lng: 0 },
       zoom: 0,
+      bounds: null,
     }
     this.activeLayer = null
     this.marchMarkers = []
@@ -454,8 +455,19 @@ export default class WebMap extends React.PureComponent {
     }
 
     const {
-      objects, showMiniMap, showAmplifiers, shownAmplifiers, sources, level, layersById, hiddenOpacity, layer, edit, coordinatesType,
-      isMeasureOn, isMarkersOn, isTopographicObjectsOn, backOpacity, params, lockedObjects, flexGridVisible,
+      objects,
+      showMiniMap,
+      showAmplifiers,
+      shownAmplifiers,
+      sources,
+      level,
+      layersById,
+      hiddenOpacity,
+      layer,
+      edit,
+      coordinatesType,
+      isMeasureOn, isMarkersOn, isTopographicObjectsOn,
+      backOpacity, params, lockedObjects, flexGridVisible,
       flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
@@ -577,6 +589,10 @@ export default class WebMap extends React.PureComponent {
   indicateMode = indicateModes.WGS
 
   sources = []
+
+  getBoundsMap = () => {
+    return this.map.getBounds()
+  }
 
   updateMinimap = (showMiniMap) => showMiniMap
     ? this.mini.addTo(this.map) && this.mini._miniMap.on('move', ({ target: { _renderer: r } }) => r?._update())
@@ -742,8 +758,9 @@ export default class WebMap extends React.PureComponent {
   }
 
   updateViewport = (prevProps) => {
-    const { center, zoom, scaleToSelection, selection: { list: selectedIds } } = this.props
-
+    const { center: oldCenter, zoom: oldZoom, scaleToSelection, selection: { list: selectedIds } } = this.props
+    let center = oldCenter
+    let zoom = oldZoom
     if (scaleToSelection !== prevProps.scaleToSelection || selectedIds !== prevProps.selection.list) {
       if (scaleToSelection) {
         const selectedIdsSet = new Set(selectedIds)
@@ -754,17 +771,21 @@ export default class WebMap extends React.PureComponent {
         if (points.length > 0) {
           const bounds = L.latLngBounds(points)
           if (bounds.isValid() && !this.map.getBounds().contains(bounds)) {
-            const center = bounds.getCenter()
-            const zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
-            setTimeout(() => this.props.onMove(center.wrap(), zoom), 0) // eslint-disable-line react/prop-types
+            // установка зоны просмотра по выбранным объекта
+            center = bounds.getCenter().wrap()
+            zoom = Math.min(this.map.getBoundsZoom(bounds), this.map.getZoom())
+            // setTimeout(() => this.props.onMove(center, zoom), 0) // eslint-disable-line react/prop-types
           }
         }
       }
     }
 
     if (!geomPointEquals(center, this.view.center) || zoom !== this.view.zoom) {
-      this.view = { center, zoom }
-      this.map.setView(this.view.center, this.view.zoom, { animate: false })
+      this.map.setView(center, zoom, { animate: false })
+      const bounds = this.map.getBounds()
+      this.view = { center, zoom, bounds }
+      // обновить state.bounds
+      setTimeout(() => this.props.onMove(center, zoom, bounds), 0)
     }
   }
 
@@ -1459,9 +1480,9 @@ export default class WebMap extends React.PureComponent {
 
     const isZoomChanged = zoom !== this.view.zoom
     if (!geomPointEquals(center, this.view.center) || isZoomChanged) {
-      this.view = { center, zoom }
-      const { onMove } = this.props
-      onMove(center.wrap(), zoom, isZoomChanged)
+      const bounds = this.map.getBounds()
+      this.view = { center, zoom, bounds }
+      this.props.onMove(center.wrap(), zoom, bounds, isZoomChanged)
       this.updateShowLayersByBounds()
     }
   }, 500)
