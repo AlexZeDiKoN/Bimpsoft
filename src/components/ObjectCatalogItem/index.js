@@ -36,11 +36,6 @@ export default class Item extends React.Component {
     onFilterClick(data.id)
   }
 
-  clickRemoveFilter = () => {
-    const { data, onFilterRemove } = this.props
-    onFilterRemove(data.id)
-  }
-
   clickItem = () => {
     const {
       data: { id, shown },
@@ -60,7 +55,6 @@ export default class Item extends React.Component {
       milSymbolRenderer,
       onVisibleChange,
       onFilterClick,
-      onFilterRemove,
       getFilterStatus = emptyFunc,
     } = this.props
     const { name, id, shown } = data
@@ -79,19 +73,12 @@ export default class Item extends React.Component {
     const filter = onFilterClick && buttonWrap(
       <IButton
         title={i18n.FILTER_CATALOG}
+        disabled={!shown}
         data-test="button-filter-catalog"
         icon={IconNames.FILTER}
         type={ButtonTypes.WITH_BG}
         active={getFilterStatus(id)}
         onClick={this.clickFilter}
-      />,
-    )
-    const removeFilter = getFilterStatus(id) && onFilterRemove && buttonWrap(
-      <IButton
-        title={i18n.REMOVE_FILTER_CATALOG}
-        data-test="button-remove-filter-catalog"
-        icon={IconNames.DELETE}
-        onClick={this.clickRemoveFilter}
       />,
     )
     const icon = tree.canExpand && (
@@ -117,7 +104,6 @@ export default class Item extends React.Component {
         <div ref={isSelected ? scrollRef : null} className={classes.join(' ')}>
           {indicator}
           {filter}
-          {removeFilter}
           {icon}
           <div
             onDoubleClick={this.doubleClickHandler}
@@ -151,5 +137,4 @@ Item.propTypes = {
   scrollRef: PropTypes.any,
   getFilterStatus: PropTypes.func,
   onFilterClick: PropTypes.func,
-  onFilterRemove: PropTypes.func,
 }

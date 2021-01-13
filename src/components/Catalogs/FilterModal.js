@@ -13,6 +13,7 @@ import {
   Coordinates,
   FormColumnFloat,
   MovablePanel,
+  ButtonDelete,
 } from '@C4/CommonComponents'
 import i18n from '../../i18n'
 import { shortcuts } from '../../constants'
@@ -70,6 +71,11 @@ export const CatalogFilterModal = ({
     onClose()
   }
 
+  const onRemoveHandler = () => {
+    onRemove(catalogId)
+    onClose()
+  }
+
   const components = getElementsByType(fields)
 
   return <Wrapper
@@ -100,6 +106,7 @@ export const CatalogFilterModal = ({
         </div>
         <ButtonSave onClick={onSaveHandler}/>
         <ButtonCancel onClick={onClose}/>
+        <ButtonDelete onClick={onRemoveHandler} disabled={value === DEFAULT_VALUE}/>
         <HotKey onKey={onSaveHandler} selector={shortcuts.ENTER}/>
         <HotKey onKey={onClose} selector={shortcuts.ESC}/>
       </div>

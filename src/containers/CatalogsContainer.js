@@ -16,7 +16,6 @@ const mapDispatchToProps = {
   onHide: catalogs.dropList,
   onFilterTextChange: catalogs.setFilterText,
   onFilterClick: filter.setModalCatalogFilter,
-  onFilterRemove: filter.removeFilterCatalog,
   onClick: catalogs.setSelectedId,
   preloadCatalogList: catalogs.getTree,
 }

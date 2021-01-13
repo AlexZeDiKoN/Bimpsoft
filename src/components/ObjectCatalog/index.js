@@ -51,7 +51,6 @@ export default class CatalogsComponent extends React.PureComponent {
     canEdit,
     milSymbolRenderer,
     onFilterClick,
-    onFilterRemove,
     getFilterStatus,
   ) => (
     {
@@ -64,7 +63,6 @@ export default class CatalogsComponent extends React.PureComponent {
       scrollRef: this.scrollRef,
       milSymbolRenderer,
       onFilterClick,
-      onFilterRemove,
       getFilterStatus,
     }
   ))
@@ -85,7 +83,6 @@ export default class CatalogsComponent extends React.PureComponent {
       milSymbolRenderer,
       onVisibleChange,
       onFilterClick,
-      onFilterRemove,
       getFilterStatus,
       title,
     } = this.props
@@ -100,7 +97,6 @@ export default class CatalogsComponent extends React.PureComponent {
       canEdit,
       milSymbolRenderer,
       onFilterClick,
-      onFilterRemove,
       getFilterStatus,
     )
 
@@ -144,6 +140,5 @@ CatalogsComponent.propTypes = {
   milSymbolRenderer: PropTypes.func.isRequired,
   onVisibleChange: PropTypes.func,
   onFilterClick: PropTypes.func,
-  onFilterRemove: PropTypes.func,
   getFilterStatus: PropTypes.func,
 }
