@@ -17,13 +17,15 @@ const mapStateToProps = (state) => {
     layers: { byId: layers },
     selection: { list },
   } = state
+  const boundsMap = window.webMap?.getBoundsMap()
   const filteredObjects = filterObjects(subordinationLevel, objects, layers)
   return {
     sources,
     source,
     objects: filteredObjects,
     center: state.webMap3D.center || state.webMap.center,
-    zoom: state.webMap3D.zoom || state.webMap.zoom,
+    zoom: state.webMap.zoom, // state.webMap3D.zoom
+    boundsMap: boundsMap || state.webMap.bounds,
     mode,
     selected: list,
   }

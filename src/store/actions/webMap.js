@@ -176,9 +176,9 @@ export const setSubordinationLevelAuto = (value) => ({
   payload: value,
 })
 
-export const setCenter = (center, zoom) => ({
+export const setCenter = (center, zoom, bounds) => ({
   type: actionNames.SET_MAP_CENTER,
-  payload: { center, zoom },
+  payload: { center, zoom, bounds },
 })
 
 export const setScaleToSelection = (scaleToSelected) => ({
@@ -885,6 +885,6 @@ export const setCatalogModalData = (data) => withNotification(async (dispatch, g
         return [ label, getText(value) ]
       }),
   )
-  properties[TopoObj.OBJECT_TYPE] = state?.catalogs?.byIds?.[object?.catalogId]?.name ?? ''
+  properties[TopoObj.PROPER_NAME] = state?.catalogs?.byIds?.[object?.catalogId]?.name ?? ''
   dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: true, properties, location, layer } })
 })
