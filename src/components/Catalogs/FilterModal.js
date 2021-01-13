@@ -18,8 +18,8 @@ import i18n from '../../i18n'
 import { shortcuts } from '../../constants'
 import './style.css'
 
-const HEIGHT_SETTING_MODAL = 600
-const WIDTH_SETTING_MODAL = 300
+const HEIGHT_MODAL = 600
+const WIDTH_MODAL = 300
 const DEFAULT_VALUE = Object.freeze({})
 const DEFAULT_ARRAY = []
 
@@ -74,8 +74,8 @@ export const CatalogFilterModal = ({
 
   return <Wrapper
     title={`${i18n.FILTER} "${title}"`}
-    minWidth={WIDTH_SETTING_MODAL}
-    minHeight={HEIGHT_SETTING_MODAL}
+    minWidth={WIDTH_MODAL}
+    minHeight={HEIGHT_MODAL}
     className="catalog-filter"
     defaultSize={{
       width: 800,
