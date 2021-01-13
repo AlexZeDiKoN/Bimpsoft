@@ -23,6 +23,7 @@ const MAIN_ROWS_KEYS = [
   TopoObj.POINT_COORDINATE,
   TopoObj.POINT_HEIGHT,
   TopoObj.NAME,
+  TopoObj.STATE,
 ]
 
 const DEFAULT_SIZE = { width: 400 }
@@ -91,6 +92,7 @@ export default class TopoObjModal extends React.Component {
               { renderIfExist(TopoObj.OBJECT_TYPE) }
               { renderIfExist(TopoObj.NAME) }
               { renderIfExist(TopoObj.TOPCODE) }
+              { renderIfExist(TopoObj.STATE) }
               { renderElement(TopoObj.POINT_COORDINATE, `${location.lat} ${location.lng}`) }
               { renderIfExist(TopoObj.POINT_HEIGHT) }
             </FormBlock>
