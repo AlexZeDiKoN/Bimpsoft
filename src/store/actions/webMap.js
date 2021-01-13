@@ -885,6 +885,6 @@ export const setCatalogModalData = (data) => withNotification(async (dispatch, g
         return [ label, getText(value) ]
       }),
   )
-  properties[TopoObj.OBJECT_TYPE] = state?.catalogs?.byIds?.[object?.catalogId]?.name ?? ''
+  properties[TopoObj.PROPER_NAME] = state?.catalogs?.byIds?.[object?.catalogId]?.name ?? ''
   dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: true, properties, location, layer } })
 })

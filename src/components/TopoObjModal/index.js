@@ -7,9 +7,9 @@ import { TopoObj } from '../../constants'
 import './style.css'
 
 const renderElement = (label, value, key = label) => <FormBlock wrap paddingV paddingH key={key}>{`${label}: ${value}`}</FormBlock>
-const renderButtonElement = ({ index, onClick, value, isSelected }) => (
+const renderButtonElement = ({ index, onClick, value, isSelected, disabled }) => (
   <IButton
-    onClick={onClick}
+    onClick={disabled ? null : onClick}
     key={index}
     colorType={isSelected ? ColorTypes.DARK_GREEN : null}
   >
@@ -22,7 +22,15 @@ const MAIN_ROWS_KEYS = [
   TopoObj.TOPCODE,
   TopoObj.POINT_COORDINATE,
   TopoObj.POINT_HEIGHT,
+  TopoObj.NAME,
 ]
+
+const DEFAULT_SIZE = { width: 400 }
+const MAX_HEIGHT = document?.documentElement?.clientHeight - 100
+const MAX_WIDTH = document?.documentElement?.clientWidth - 100
+const MIN_HEIGHT = 200
+const MIN_WIDTH = 300
+const DEFAULT_POSITION = { x: -(310 + 15 + DEFAULT_SIZE.width), y: 0 }
 
 export default class TopoObjModal extends React.Component {
   static propTypes = {
@@ -59,15 +67,19 @@ export default class TopoObjModal extends React.Component {
       <Wrapper
         title={title}
         onClose={onClose}
-        minWidth={300}
-        minHeight={200}
-        defaultSize={{ height: 300 }}
+        minWidth={MIN_WIDTH}
+        maxWidth={MAX_WIDTH}
+        minHeight={MIN_HEIGHT}
+        maxHeight={MAX_HEIGHT}
+        defaultSize={DEFAULT_SIZE}
+        defaultPosition={DEFAULT_POSITION}
       >
         {objectsCount
           ? <div className="topographic-object--content">
             <FormBlock vertical underline justifyContent="center">
               { features.map((element, index) => renderButtonElement({
                 index,
+                disabled: features.length === 1,
                 onClick: () => selectTopographicItem(index),
                 isSelected: index === selectedItem,
                 value: element.properties[TopoObj.UKR_NAME] ||
@@ -77,6 +89,7 @@ export default class TopoObjModal extends React.Component {
             </FormBlock>
             <FormBlock underline vertical>
               { renderIfExist(TopoObj.OBJECT_TYPE) }
+              { renderIfExist(TopoObj.NAME) }
               { renderIfExist(TopoObj.TOPCODE) }
               { renderElement(TopoObj.POINT_COORDINATE, `${location.lat} ${location.lng}`) }
               { renderIfExist(TopoObj.POINT_HEIGHT) }
