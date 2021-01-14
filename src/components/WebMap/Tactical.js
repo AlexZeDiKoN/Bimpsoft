@@ -53,7 +53,9 @@ export const enableEdit = (layer) => {
         _helperLayers && _helperLayers.clearLayers()
       })
       layer.on('pm:dragend', () => {
-        layer.pm._initMarkers()
+        if (layer.pm._enabled) { // инициализируем маркеры, если объект в режиме редактирования
+          layer.pm._initMarkers()
+        }
       })
     }
     layer.pm.enable()
@@ -71,8 +73,6 @@ export const disableEdit = (layer) => {
     marker.off('click')
     marker.off('dblclick')
   })
-  layer.off('pm:dragstart')
-  layer.off('pm:dragend')
   layer.pm.disable()
 }
 
