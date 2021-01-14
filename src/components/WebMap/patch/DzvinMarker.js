@@ -222,6 +222,7 @@ const DzvinMarker = L.Marker.extend({
   },
 
   _setPos: function (pos) {
+    this._pos = pos
     const el = this.getElement()
     if (el) {
       const { x, y } = pos

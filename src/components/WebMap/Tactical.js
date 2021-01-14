@@ -276,6 +276,7 @@ function createPoint (data, layer) {
   const icon = new L.PointIcon({ data })
   layer = createMarker(point, icon, layer)
   layer.options.tsType = entityKind.POINT
+  layer.options.generalizable = true
   return layer
 }
 

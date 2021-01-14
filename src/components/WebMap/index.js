@@ -56,6 +56,7 @@ import entityKind, {
   GROUPS,
 } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
+import Generalization from './patch/Generalization'
 import {
   createTacticalSign,
   createCatalogIcon,
@@ -864,7 +865,9 @@ export default class WebMap extends React.PureComponent {
     this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.on('dblclick', this.onDblClick)
     this.map.doubleClickZoom.disable()
+
     this.updater = new UpdateQueue(this.map)
+    this.generalizer = new Generalization(this.map)
   }
 
   enableLookAfterMouseMove = (func) => this.map && func && this.map.on('mousemove', func)
