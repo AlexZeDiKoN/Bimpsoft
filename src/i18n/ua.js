@@ -24,6 +24,7 @@ export const POINT_SIGN = 'Точковий знак'
 export const LINE_SIGN = 'Лінійний/площинний знак'
 // export const HISTORY = 'Журнал'
 // export const ORG_STRUCTURE = 'Організаційна структура'
+export const ADD = 'Додати'
 export const LAYERS = 'Шари'
 export const FILTER = 'Фільтрувати'
 export const CLEAR = 'Очистити'
@@ -299,6 +300,7 @@ export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карт�
 export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 export const HEIGHT_OBSERVER = 'Висота спостерігача, м'
 export const HEIGHT_TARGET = 'Висота цілі, м'
+export const CURRENT_LAYER = 'Поточний шар'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
@@ -341,6 +343,9 @@ export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'
 export const LOG_MAP = 'Журнал подій'
+export const STRAINERS = 'Фільтри'
+export const NAME_STRAINER = 'Назва фільтру'
+export const STRAINER = 'Фільтр'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`

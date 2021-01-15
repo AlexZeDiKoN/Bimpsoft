@@ -9,7 +9,7 @@ import {
   CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
-  LogMapContainer,
+  LogMapContainer, FilterContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 import i18n from '../../i18n'
@@ -92,6 +92,12 @@ export default class Sidebar extends React.Component {
                   Component: LogMapContainer,
                   title: i18n.LOG_MAP,
                   icon: IconNames.LOG_EVENT,
+                  enabled: true,
+                },
+                {
+                  Component: FilterContainer,
+                  title: i18n.STRAINERS,
+                  icon: IconNames.FILTER,
                   enabled: true,
                 },
               ].filter(Boolean)}

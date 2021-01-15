@@ -1,0 +1,25 @@
+@import '../../../assets/styles/_mixins.less';
+
+.catalog-filter{
+  .dzvin-form-header-title{
+    .text-hidden-overflow();
+    padding: 0 5px;
+  }
+  &__wrap {
+    height: calc(100% - 40px);
+    overflow: hidden;
+  }
+  &__content {
+    height: 90%;
+    overflow: auto;
+  }
+}
+
+.mil-symbol-filter__content{
+  height: 100%;
+  display: grid;
+  grid-template-columns: 75% 25%;
+  padding: 0 20px;
+  align-items: end;
+  margin-bottom: -10px;
+}

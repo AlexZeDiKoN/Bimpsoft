@@ -1,21 +1,34 @@
-import { REMOVE_FILTER_CATALOG, SET_CATALOGS_FIELDS, SET_FILTER_CATALOG } from '../actions/filter'
+import { MERGE_FILTERS, REMOVE_FILTER, SET_FILTERS } from '../actions/filter'
+import { CATALOG_FILTERS, CATALOGS_FIELDS, MIL_SYMBOL_FILTER, SEARCH_FILTER } from '../../constants/filter'
 
 const initState = {
-  catalogFilters: { },
-  catalogsFields: { },
+  [CATALOG_FILTERS]: { },
+  [CATALOGS_FIELDS]: { },
+  [SEARCH_FILTER]: '',
+  [MIL_SYMBOL_FILTER]: [ ],
 }
 
 export default function reducer (state = initState, action) {
   const { type, payload } = action
   switch (type) {
-    case SET_FILTER_CATALOG :
-      return { ...state, catalogFilters: { ...state.catalogFilters, ...payload } }
-    case SET_CATALOGS_FIELDS :
-      return { ...state, catalogsFields: { ...state.catalogsFields, ...payload } }
-    case REMOVE_FILTER_CATALOG : {
-      const catalogFilters = { ...state.catalogFilters }
-      delete catalogFilters[payload]
-      return { ...state, catalogFilters }
+    case SET_FILTERS : {
+      const { name, value } = payload
+      return { ...state, [name]: value }
+    }
+    case MERGE_FILTERS : {
+      const { name, value, index } = payload
+      const nameState = state[name]
+      return Array.isArray(nameState)
+        ? typeof index === 'number'
+          ? { ...state, [name]: nameState.map((item, curIndex) => index === curIndex ? value : item) }
+          : { ...state, [name]: [ ...nameState, value ] }
+        : { ...state, [name]: { ...nameState, ...value } }
+    }
+    case REMOVE_FILTER : {
+      const { name, value } = payload
+      const selectedState = { ...state[name] }
+      delete selectedState[value]
+      return { ...state, [name]: selectedState }
     }
     default:
       return state

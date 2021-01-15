@@ -15,8 +15,8 @@ import {
   MovablePanel,
   ButtonDelete,
 } from '@C4/CommonComponents'
-import i18n from '../../i18n'
-import { shortcuts } from '../../constants'
+import i18n from '../../../i18n'
+import { shortcuts } from '../../../constants'
 import './style.css'
 
 const HEIGHT_MODAL = 600
@@ -54,6 +54,8 @@ export const CatalogFilterModal = ({
   catalogId,
 }) => {
   const [ value, onChange ] = useState(data)
+
+  const isNew = data === DEFAULT_VALUE
 
   const onChangeHandler = (target, targetName) => {
     if (target?.target) {
@@ -106,7 +108,7 @@ export const CatalogFilterModal = ({
         </div>
         <ButtonSave onClick={onSaveHandler}/>
         <ButtonCancel onClick={onClose}/>
-        <ButtonDelete onClick={onRemoveHandler} disabled={value === DEFAULT_VALUE}/>
+        { !isNew && <ButtonDelete onClick={onRemoveHandler}/> }
         <HotKey onKey={onSaveHandler} selector={shortcuts.ENTER}/>
         <HotKey onKey={onClose} selector={shortcuts.ESC}/>
       </div>
@@ -122,7 +124,6 @@ CatalogFilterModal.propTypes = {
   onRemove: PropTypes.func,
   fields: PropTypes.object,
   data: PropTypes.object,
-  visible: PropTypes.bool,
   catalogId: PropTypes.string,
   title: PropTypes.string,
 }
