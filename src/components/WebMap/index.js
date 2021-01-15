@@ -364,6 +364,7 @@ export default class WebMap extends React.PureComponent {
     }),
     isMapCOP: PropTypes.bool,
     catalogModalData: PropTypes.object,
+    generalization: PropTypes.bool,
     // Redux actions
     setModalProps: PropTypes.func,
     editObject: PropTypes.func,
@@ -474,6 +475,7 @@ export default class WebMap extends React.PureComponent {
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
       targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
+      generalization,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -580,6 +582,9 @@ export default class WebMap extends React.PureComponent {
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
+    if (generalization !== prevProps.generalization) {
+      this.updateGeneralization(generalization)
+    }
   }
 
   componentWillUnmount () {
@@ -593,6 +598,14 @@ export default class WebMap extends React.PureComponent {
 
   getBoundsMap = () => {
     return this.map.getBounds()
+  }
+
+  updateGeneralization = (generalization) => {
+    if (generalization) {
+      this.generalizer.start()
+    } else {
+      this.generalizer.stop()
+    }
   }
 
   updateMinimap = (showMiniMap) => showMiniMap
@@ -1795,6 +1808,8 @@ export default class WebMap extends React.PureComponent {
           layer._groupChildren.forEach(this.removeLayer)
         }
       })
+
+      this.generalizer.go()
     }
   }
 

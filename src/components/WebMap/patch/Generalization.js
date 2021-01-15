@@ -10,12 +10,23 @@ export default class Generalization {
     this.map.on('movestart', this.pause)
     this.map.on('moveend', this.resume)
     this.timer = null
+    this.run = false
     this.layers = []
     this.domains = []
   }
 
-  force () {
+  go () {
     this.resume()
+  }
+
+  start () {
+    this.run = true
+    this.resume()
+  }
+
+  stop () {
+    this.run = false
+    this.pause()
   }
 
   pause = () => {
@@ -29,7 +40,9 @@ export default class Generalization {
     if (this.timer) {
       clearTimeout(this.timer)
     }
-    this.timer = setTimeout(this.processRebuildGroups, REBUILD_TIMEOUT)
+    if (this.run) {
+      this.timer = setTimeout(this.processRebuildGroups, REBUILD_TIMEOUT)
+    }
   }
 
   layerAddHandler = ({ layer }) => {
@@ -49,9 +62,13 @@ export default class Generalization {
 
   processRebuildGroups = () => {
     console.log('processRebuildGroups')
+    const forRecreateIcon = []
     this.domains = []
     this.layers.forEach((layer) => {
       layer._generalDomain = null
+      if (layer._generalGroup) {
+        forRecreateIcon.push(layer)
+      }
       layer._generalGroup = null
     })
     this.layers.forEach((layer) => {
@@ -104,10 +121,16 @@ export default class Generalization {
               if (!group.layers.includes(layer1)) {
                 group.layers.push(layer1)
                 layer1._generalGroup = group
+                if (!forRecreateIcon.includes(layer1)) {
+                  forRecreateIcon.push(layer1)
+                }
               }
               if (!group.layers.includes(layer2)) {
                 group.layers.push(layer2)
                 layer2._generalGroup = group
+                if (!forRecreateIcon.includes(layer2)) {
+                  forRecreateIcon.push(layer2)
+                }
               }
             }
           }
@@ -120,6 +143,11 @@ export default class Generalization {
         console.log(domain.key, group.layers)
       }
     }
+
+    forRecreateIcon.forEach((layer) => {
+      layer._reinitIcon()
+      layer.update()
+    })
 
     this.timer = null
   }
