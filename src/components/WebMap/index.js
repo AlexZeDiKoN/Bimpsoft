@@ -1311,6 +1311,7 @@ export default class WebMap extends React.PureComponent {
           doubleClick && result.object && result.object.layer !== layer && await onChangeLayer(result.object.layer)
           await this.selectLayer(result.id, e.originalEvent.ctrlKey)
           doubleClick && await this.processDblClickOnLayer(result)
+          return
         }
       }
     }
