@@ -966,6 +966,8 @@ export default class WebMap extends React.PureComponent {
     // get unit from new selection
     let selectedUnit = null
     if (newList.length === 1 && list[0] !== newList[0]) {
+      // TODO если ранее было выбрано более одного юнита, неизвестно, что было в list[0]
+      // поидее надо обновлять даже если list[0] === newList[0]
       const id = newList[0]
       const layer = this.findLayerById(id)
       selectedUnit = (layer?.object?.unit) || null
