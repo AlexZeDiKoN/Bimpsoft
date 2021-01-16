@@ -8,7 +8,6 @@ import {
   catalogsFields,
   layersById,
   loadingFiltersStatus,
-  getLayerValuesList,
 } from '../store/selectors'
 import { CatalogFilterModal, MilSymbolFilterModal, CreateNewLayerModal } from '../components/Filter/Modals'
 import {
@@ -44,7 +43,6 @@ const MilSymbolModalForm = connect(
     return {
       ...modalData,
       layerData: layersById(store)?.[modalData?.data?.layer],
-      layersList: getLayerValuesList(store),
       orgStructures: {
         byIds: orgStructures.byIds,
         roots: orgStructures.roots,
