@@ -32,13 +32,12 @@ export const SidebarFilterComponent = ({
     title={i18n.STRAINERS}
     onChangeSearch={onSearch}
     rightButtons={<>
-      {isItemExists &&
-        <VisibilityButton
-          visible={isAllItemsVisible}
-          onChange={onChangeAllVisible}
-          colorType={ColorTypes.WHITE}
-        />
-      }
+      <VisibilityButton
+        visible={isAllItemsVisible}
+        disabled={isItemExists}
+        onChange={onChangeAllVisible}
+        colorType={ColorTypes.WHITE}
+      />
       <IButton
         icon={IconNames.CREATE}
         colorType={ColorTypes.WHITE}
