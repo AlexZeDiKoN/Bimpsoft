@@ -18,6 +18,7 @@ export const SidebarFilterComponent = ({
   onChangeVisible,
   onOpen,
   onOpenCreateLayer,
+  isCOP,
   isSaveActive,
 }) => {
   const isItemExists = Boolean(items.length)
@@ -34,7 +35,7 @@ export const SidebarFilterComponent = ({
     rightButtons={<>
       <VisibilityButton
         visible={isAllItemsVisible}
-        disabled={isItemExists}
+        disabled={!isItemExists}
         onChange={onChangeAllVisible}
         colorType={ColorTypes.WHITE}
       />
@@ -43,9 +44,10 @@ export const SidebarFilterComponent = ({
         colorType={ColorTypes.WHITE}
         onClick={onOpenFilter}
       />
-      {isSaveActive && isAnyItemsVisible &&
+      {!isCOP &&
         <IButton
           icon={IconNames.BAR_2_SAVE}
+          disabled={!isAnyItemsVisible || !isSaveActive}
           colorType={ColorTypes.WHITE}
           onClick={onOpenCreateLayer}
         />
@@ -79,4 +81,5 @@ SidebarFilterComponent.propTypes = {
   onOpenCreateLayer: PropTypes.func,
   onOpen: PropTypes.func,
   isSaveActive: PropTypes.bool,
+  isCOP: PropTypes.bool,
 }

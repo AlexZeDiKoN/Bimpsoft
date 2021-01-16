@@ -10,10 +10,11 @@ const openModalCreateLayer = setModalData.bind(null, { type: CREATE_NEW_LAYER_TY
 const mapStateToProps = (state) => ({
   items: milSymbolFilters(state),
   search: filterSearch(state),
+  isCOP: mapCOP(state),
   isSaveActive: Boolean(
     getFilteredObjectsPoints(state)?.size &&
-    milSymbolFilters(state).length &&
-    !mapCOP(state)),
+    milSymbolFilters(state).length,
+  ),
 })
 
 const mapDispatchToProps = {
