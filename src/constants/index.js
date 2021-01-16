@@ -4,7 +4,7 @@ import MapSources from './MapSources'
 import Align from './Align'
 import * as colors from './colors'
 import * as shortcuts from './shortcuts'
-import { SCALES, ZOOMS, INIT_VALUES } from './scales'
+import { SCALES, ZOOMS, INIT_VALUES, ZOOMS_SCALES } from './scales'
 import * as FormTypes from './FormTypes'
 import * as paramsNames from './params'
 import * as Print from './Print'
@@ -27,6 +27,7 @@ export {
   paramsNames,
   SCALES,
   ZOOMS,
+  ZOOMS_SCALES,
   INIT_VALUES,
   FormTypes,
   Print,

@@ -1,12 +1,23 @@
 import React from 'react'
 import {
-  CesiumTerrainProvider, Cartesian3, KeyboardEventModifier, ScreenSpaceEventType,
-  CameraEventType, UrlTemplateImageryProvider, TrustedServers,
+  CesiumTerrainProvider,
+  Cartesian3,
+  KeyboardEventModifier,
+  ScreenSpaceEventType,
+  CameraEventType,
+  UrlTemplateImageryProvider,
+  TrustedServers,
+  Rectangle,
 } from 'cesium'
 import memoize from 'memoize-one'
 import {
-  Viewer, CameraFlyTo, ScreenSpaceCameraController, ImageryLayer, Camera,
-  ScreenSpaceEventHandler, ScreenSpaceEvent, ImageryLayerCollection,
+  Viewer,
+  CameraFlyTo,
+  ScreenSpaceCameraController,
+  ImageryLayer,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEvent,
+  ImageryLayerCollection,
 } from 'resium'
 import PropTypes from 'prop-types'
 import { zoom2height, fixTilesUrl } from '../../utils/mapObjConvertor'
@@ -19,10 +30,9 @@ const imageryProviderStableProps = {
   enablePickFeatures: false,
 }
 
-const MIN_ZOOM = zoom2height(0, 17)
+const MIN_ZOOM = zoom2height(0, 16)
 const MAX_ZOOM = zoom2height(0, 5)
 const DIV = document.createElement('div')
-const RAD2DEG = 180 / Math.PI
 
 const getImageryLayers = memoize((sources) => {
   if (!sources) { return }
@@ -46,6 +56,7 @@ export default class WebMap3D extends React.PureComponent {
         lng: PropTypes.number,
       }).isRequired,
       zoom: PropTypes.number.isRequired,
+      boundsMap: PropTypes.object,
       mode: PropTypes.any,
       objects: PropTypes.object,
       sources: PropTypes.array,
@@ -77,18 +88,18 @@ export default class WebMap3D extends React.PureComponent {
       defaultSource && this.props.setSource(defaultSource)
     }
 
-    shouldFly = true
-
-    stopAutoMove = () => (this.shouldFly = false)
-
-    updatePosition = () => {
-      const { zoom, setCenter } = this.props
-      const pos = this.camera.positionCartographic
-      setCenter({ lng: pos.longitude * RAD2DEG, lat: pos.latitude * RAD2DEG }, zoom)
-    }
-
     render () {
-      const { objects, center, zoom, setZoom, selected, editObject, source: { sources } } = this.props
+      const {
+        objects,
+        center,
+        zoom,
+        setZoom,
+        setCenter,
+        selected,
+        editObject,
+        source: { sources },
+        boundsMap,
+      } = this.props
       const imageryLayers = getImageryLayers(sources)
       return imageryLayers
         ? (
@@ -115,23 +126,23 @@ export default class WebMap3D extends React.PureComponent {
             <ImageryLayerCollection>
               {imageryLayers}
             </ImageryLayerCollection>
-            <Camera
-              ref={ (e) => { this.camera = e && e.cesiumElement }}
-              onMoveEnd={this.updatePosition}
-            />
-            {this.shouldFly &&
             <CameraFlyTo
               maximumHeight={MAX_ZOOM}
               duration={0}
-              destination={Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
-              onCancel={this.stopAutoMove}
-              onComplete={this.stopAutoMove}
+              destination={ boundsMap
+                ? Rectangle.fromDegrees(
+                  boundsMap.getWest(),
+                  boundsMap.getSouth(),
+                  boundsMap.getEast(),
+                  boundsMap.getNorth())
+                : Cartesian3.fromDegrees(center.lng, center.lat, zoom2height(center.lat, zoom))}
+              once={true}
             />
-            }
             <SignsLayer
               objects={objects}
               zoom={zoom}
               setZoom={setZoom}
+              setCenter={setCenter}
               selected={selected}
               editObject={editObject}
             />

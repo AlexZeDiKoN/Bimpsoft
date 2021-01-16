@@ -2,6 +2,20 @@ import SubordinationLevel from './SubordinationLevel'
 
 export const SCALES = [ 5000, 10000, 25000, 50000, 100000, 200000, 500000, 1000000, 2500000, 5000000 ]
 
+export const ZOOMS_SCALES = {
+  16: 5000,
+  15: 10000,
+  14: 25000,
+  13: 50000,
+  12: 100000,
+  11: 200000,
+  10: 500000,
+  9: 1000000,
+  8: 2000000,
+  7: 2500000,
+  6: 5000000,
+}
+
 export const ZOOMS = {
   20: 5000,
   19: 5000,

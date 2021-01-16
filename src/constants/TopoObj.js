@@ -1,6 +1,8 @@
 export const TOPCODE = 'Топокод'
 export const OBJECT_TYPE = 'Тип об\'єкта'
 export const PROPER_NAME = 'Власна назва'
+export const NAME = 'Назва'
+export const STATE = 'Стан'
 export const POINT_COORDINATE = 'Координати точки'
 export const POINT_HEIGHT = 'Висота над рівнем моря'
 export const UKR_NAME = 'Українська назва'
