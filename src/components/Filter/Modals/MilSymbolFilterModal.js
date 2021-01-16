@@ -32,6 +32,7 @@ const propTypes = {
 
   // redux selectors
   ...MilSymbolPropTypes,
+  layerData: PropTypes.object,
   wrapper: PropTypes.oneOf([ MovablePanel ]),
 
   // handlers
@@ -77,10 +78,10 @@ export class MilSymbolFilterModal extends Decorator {
   onChange = ({ target: { name, value } }) => this.setState({ [name]: value })
 
   render () {
-    const { wrapper: Wrapper, onClose, isNew, name: propsName, onRemove } = this.props
+    const { wrapper: Wrapper, onClose, isNew, onRemove, layerData } = this.props
     const { inCurrentLayer, name, errors } = this.state
     return <Wrapper
-      title={isNew ? `${i18n.ADD} ${i18n.STRAINER.toLocaleLowerCase()}` : `${i18n.STRAINER} "${propsName}"`}
+      title={i18n.STRAINER_MIL_SYMBOL}
       maxWidth={WIDTH_MODAL}
       minWidth={WIDTH_MODAL}
       minHeight={HEIGHT_MODAL}
@@ -93,7 +94,7 @@ export class MilSymbolFilterModal extends Decorator {
             <FormColumnFloat label={i18n.NAME_STRAINER} hasValue={Boolean(name)}>
               <Input name={'name'} errors={errors.name} value={name} onChange={this.onChange}/>
             </FormColumnFloat>
-            <FormRow label={i18n.CURRENT_LAYER} alignLabel="right">
+            <FormRow label={`${i18n.LAYER}: ${layerData?.name}`} alignLabel="right">
               <Checkbox name={'inCurrentLayer'} value={inCurrentLayer} onChange={this.onChange}/>
             </FormRow>
           </div>

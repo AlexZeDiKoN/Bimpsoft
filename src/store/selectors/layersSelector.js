@@ -10,8 +10,8 @@ const mapsById = (state) => state.maps.byId
 const webMapModeSelector = ({ webMap: { mode } }) => mode
 const is3DMapMode = ({ viewModes: { [viewModesKeys.map3D]: mode } }) => mode
 
-export const layersById = (state) => state.layers.byId
-export const selectedLayerId = (state) => state.layers.selectedId
+export const layersById = (state) => state?.layers?.byId
+export const selectedLayerId = (state) => state?.layers?.selectedId
 
 export const layersByIdFromStore = createSelector(layersById, R.identity)
 

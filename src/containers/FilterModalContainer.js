@@ -1,14 +1,21 @@
 import React from 'react'
 import { connect, useSelector } from 'react-redux'
-import { close } from '../store/actions/task'
-import { CATALOG_FILTER_TYPE, MIL_SYMBOL_FILTER_TYPE } from '../constants/modals'
-import { catalogFilters, getModalData, catalogsFields } from '../store/selectors'
-import { CatalogFilterModal, MilSymbolFilterModal } from '../components/Filter/Modals'
+import { close as onClose } from '../store/actions/task'
+import { CATALOG_FILTER_TYPE, CREATE_NEW_LAYER_TYPE, MIL_SYMBOL_FILTER_TYPE } from '../constants/modals'
+import {
+  catalogFilters,
+  getModalData,
+  catalogsFields,
+  layersById,
+  loadingFiltersStatus,
+  getLayerValuesList,
+} from '../store/selectors'
+import { CatalogFilterModal, MilSymbolFilterModal, CreateNewLayerModal } from '../components/Filter/Modals'
 import {
   onSaveMilSymbolFilters,
   onRemoveMilSymbolFilter,
   removeFilterCatalog,
-  setFilterCatalog,
+  setFilterCatalog, onCreateLayerAndCopyUnits,
 } from '../store/actions/filter'
 
 // ------------------------------------------ Catalog Container -----------------------------------------------
@@ -24,7 +31,7 @@ const CatalogModalForm = connect(
     }
   },
   {
-    onClose: close,
+    onClose,
     onSave: setFilterCatalog,
     onRemove: removeFilterCatalog,
   },
@@ -33,8 +40,11 @@ const CatalogModalForm = connect(
 // ------------------------------------------ Mil Symbol Container -------------------------------------------
 const MilSymbolModalForm = connect(
   ({ orgStructures, ovt, ...store }) => {
+    const modalData = getModalData(store)
     return {
-      ...getModalData(store),
+      ...modalData,
+      layerData: layersById(store)?.[modalData?.data?.layer],
+      layersList: getLayerValuesList(store),
       orgStructures: {
         byIds: orgStructures.byIds,
         roots: orgStructures.roots,
@@ -43,11 +53,21 @@ const MilSymbolModalForm = connect(
     }
   },
   {
-    onClose: close,
+    onClose,
     onSave: onSaveMilSymbolFilters,
     onRemove: onRemoveMilSymbolFilter,
   },
 )(MilSymbolFilterModal)
+
+// ------------------------------------------ Create New Layer Container -------------------------------------------
+const CreateNewLayerModalForm = connect((store) => ({
+  disabled: loadingFiltersStatus(store),
+}),
+{
+  onClose,
+  onSave: onCreateLayerAndCopyUnits,
+},
+)(CreateNewLayerModal)
 
 // ------------------------------------------ Filter Modals Switch ------------------------------------------------
 export default function FilterModalContainer (props) {
@@ -55,6 +75,7 @@ export default function FilterModalContainer (props) {
   switch (type) {
     case (CATALOG_FILTER_TYPE): return <CatalogModalForm {...props}/>
     case (MIL_SYMBOL_FILTER_TYPE): return <MilSymbolModalForm {...props}/>
+    case (CREATE_NEW_LAYER_TYPE): return <CreateNewLayerModalForm {...props}/>
     default: return <></>
   }
 }

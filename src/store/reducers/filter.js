@@ -1,11 +1,12 @@
 import { MERGE_FILTERS, REMOVE_FILTER, SET_FILTERS } from '../actions/filter'
-import { CATALOG_FILTERS, CATALOGS_FIELDS, MIL_SYMBOL_FILTER, SEARCH_FILTER } from '../../constants/filter'
+import { CATALOG_FILTERS, CATALOGS_FIELDS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
 
 const initState = {
   [CATALOG_FILTERS]: { },
   [CATALOGS_FIELDS]: { },
   [SEARCH_FILTER]: '',
   [MIL_SYMBOL_FILTER]: [ ],
+  [LOADING]: false,
 }
 
 export default function reducer (state = initState, action) {

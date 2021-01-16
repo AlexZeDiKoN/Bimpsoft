@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import moment from 'moment'
 import { model } from '@C4/MilSymbolEditor'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
-import { CATALOGS_FIELDS, CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER } from '../../constants/filter'
+import { CATALOGS_FIELDS, CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
@@ -64,6 +64,7 @@ export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
 export const catalogsFields = (state) => state.filter[CATALOGS_FIELDS]
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
+export const loadingFiltersStatus = (state) => state.filter[LOADING]
 
 export const catalogObjects = (state) => state.catalogs.objects
 
@@ -82,12 +83,12 @@ export const getFilteredCatalogsObjects = createSelector(catalogFilters, catalog
 export const getFilteredObjects = createSelector(milSymbolFilters, objects, selectedLayerId,
   (filters, objects = {}, layerId) => {
     const visibleFilters = filters
-      .filter(({ visible, inCurrentLayer, data: { layer } }) => visible && (inCurrentLayer ? layer === layerId : true))
+      .filter(({ visible, inCurrentLayer, data }) => visible && (inCurrentLayer ? data?.layer === layerId : true))
       .map(({ data }) => (data))
-    return objects.filter(({ type, ...curObject }) => {
-      return type === SelectionTypes.POINT
+    return objects.filter((item) => {
+      return item.type === SelectionTypes.POINT
         ? visibleFilters.every((filterItem) => {
-          const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = curObject
+          const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = item
           const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filterItem
           const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
             compareByCode(filterCode, objectCode, func, length))
@@ -99,3 +100,7 @@ export const getFilteredObjects = createSelector(milSymbolFilters, objects, sele
         : true
     })
   })
+
+export const getFilteredObjectsPoints = createSelector(getFilteredObjects, (filtered) => {
+  return filtered.filter((item) => item.type === SelectionTypes.POINT)
+})
