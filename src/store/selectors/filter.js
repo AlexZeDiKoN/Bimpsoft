@@ -80,26 +80,27 @@ export const getFilteredCatalogsObjects = createSelector(catalogFilters, catalog
   return Object.fromEntries(filteredCatalogs)
 })
 
-export const getFilteredObjects = createSelector(milSymbolFilters, objects, selectedLayerId,
-  (filters, objects = {}, layerId) => {
-    const visibleFilters = filters
-      .filter(({ visible, inCurrentLayer, data }) => visible && (inCurrentLayer ? data?.layer === layerId : true))
-      .map(({ data }) => (data))
-    return objects.filter((item) => {
-      return item.type === SelectionTypes.POINT
-        ? visibleFilters.every((filterItem) => {
-          const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = item
-          const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filterItem
-          const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
-            compareByCode(filterCode, objectCode, func, length))
-          const isLevelEqual = compareByType(filterLevel, objectLevel)
-          const isPointEqual = compareByType(filterPoint, objectPoint)
-          const isAttributesEqual = compareObjectValues(JSParser(objectAttributes), JSParser(filterAttributes))
-          return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual
-        })
-        : true
-    })
+export const getCurrentFilters = createSelector(milSymbolFilters, selectedLayerId, (filters, selectedLayer) => {
+  return filters.filter(({ inCurrentLayer, data }) => inCurrentLayer ? data?.layer === selectedLayer : true)
+})
+
+export const getFilteredObjects = createSelector(getCurrentFilters, objects, (filters, objects = {}) => {
+  const visibleFilters = filters.filter(({ visible }) => visible).map(({ data }) => (data))
+  return objects.filter((item) => {
+    return item.type === SelectionTypes.POINT
+      ? visibleFilters.every((filterItem) => {
+        const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = item
+        const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filterItem
+        const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
+          compareByCode(filterCode, objectCode, func, length))
+        const isLevelEqual = compareByType(filterLevel, objectLevel)
+        const isPointEqual = compareByType(filterPoint, objectPoint)
+        const isAttributesEqual = compareObjectValues(JSParser(objectAttributes), JSParser(filterAttributes))
+        return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual
+      })
+      : true
   })
+})
 
 export const getFilteredObjectsPoints = createSelector(getFilteredObjects, (filtered) => {
   return filtered.filter((item) => item.type === SelectionTypes.POINT)
