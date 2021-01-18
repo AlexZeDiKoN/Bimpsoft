@@ -13,6 +13,7 @@ import * as TopoObj from './TopoObj'
 import * as utils from './utils'
 import * as MapModes from './MapModes'
 import access from './access'
+import * as cop from './cop'
 
 export {
   SubordinationLevel,
@@ -33,4 +34,5 @@ export {
   TopoObj,
   utils,
   MapModes,
+  cop,
 }
