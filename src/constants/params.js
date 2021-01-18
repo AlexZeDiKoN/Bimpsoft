@@ -34,7 +34,8 @@ export const GENERALIZATION = 'generalization'
 export const COORDINATES = 'coordinates'
 
 export const AMPLIFIERS_GROUPS = [
-  [ COORDINATES, symbolOptions.altitudeDepth ],
+  [ COORDINATES ],
+  [ symbolOptions.altitudeDepth ],
   [ symbolOptions.dtg ],
   [ symbolOptions.staffComments ],
   [ symbolOptions.type, symbolOptions.equipmentTeardownTime, symbolOptions.platformType ],

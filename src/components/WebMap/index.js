@@ -982,6 +982,8 @@ export default class WebMap extends React.PureComponent {
     // get unit from new selection
     let selectedUnit = null
     if (newList.length === 1 && list[0] !== newList[0]) {
+      // TODO если ранее было выбрано более одного юнита, неизвестно, что было в list[0]
+      // поидее надо обновлять даже если list[0] === newList[0]
       const id = newList[0]
       const layer = this.findLayerById(id)
       selectedUnit = (layer?.object?.unit) || null
@@ -1327,6 +1329,7 @@ export default class WebMap extends React.PureComponent {
           doubleClick && result.object && result.object.layer !== layer && await onChangeLayer(result.object.layer)
           await this.selectLayer(result.id, e.originalEvent.ctrlKey)
           doubleClick && await this.processDblClickOnLayer(result)
+          return // иначе в onClick() сбросится FriendObject выбранный для режима целеуказания
         }
       }
     }

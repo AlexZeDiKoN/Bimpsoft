@@ -9,6 +9,8 @@ import milOrgApi from '../server/api.server.org'
 import marchApi from '../server/api.march'
 import catalogApi from '../server/api.catalog'
 import ovtApi from '../server/api.ovt'
+import nodeApi from '../server/api.node'
+import dictionariesApi from '../server/api.dictionaries'
 import rootReducer from './reducers'
 import { initSocketEvents } from './SocketEvents'
 import initNavigationConnection from './initNavigationConnection'
@@ -36,6 +38,8 @@ export default function initStore (options = {}) {
       marchApi,
       catalogApi,
       ovtApi,
+      dictionariesApi,
+      nodeApi,
     }),
   ]
 

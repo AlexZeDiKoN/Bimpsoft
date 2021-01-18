@@ -226,6 +226,7 @@ export default class SelectionForm extends React.Component {
 
   componentDidMount () {
     !this.props.ovtLoaded && this.props.getOvtList()
+    !this.props.dictionariesLoaded && this.props.getDictionaries()
   }
 
   changeHandler = (data) => {
@@ -297,6 +298,8 @@ export default class SelectionForm extends React.Component {
     const {
       data,
       ovtData,
+      ovtSubKind,
+      ovtKind,
       canEdit,
       onSaveError,
       onEnableSaveButton,
@@ -397,6 +400,8 @@ export default class SelectionForm extends React.Component {
               onAddToTemplates={this.addToTemplateHandler}
               onCoordinateFocusChange={onCoordinateFocusChange}
               ovtData={ovtData}
+              ovtSubKind={ovtSubKind}
+              ovtKind={ovtKind}
               coordinatesType={coordinatesType}
               disableSaveButton={disableSaveButton}
               onEnableSaveButton={onEnableSaveButton}
@@ -429,7 +434,11 @@ SelectionForm.propTypes = {
   orgStructures: PropTypes.object,
   ovtData: PropTypes.object,
   ovtLoaded: PropTypes.bool,
+  dictionariesLoaded: PropTypes.bool,
   getOvtList: PropTypes.func,
+  getDictionaries: PropTypes.func,
+  ovtSubKind: PropTypes.object,
+  ovtKind: PropTypes.object,
   errorCode: PropTypes.number,
   sidebarSelectedTabIndex: PropTypes.number,
   coordinatesType: PropTypes.string,

@@ -9,7 +9,7 @@ import {
   CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
-  LogMapContainer,
+  LogMapContainer, FilterContainer,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 import i18n from '../../i18n'
@@ -26,6 +26,7 @@ const SIDEBAR_OPEN_MIN_SIZE = 275
 export default class Sidebar extends React.Component {
   static propTypes = {
     isMapCOP: PropTypes.bool,
+    isHaveActiveLayer: PropTypes.bool,
     is3DMapMode: PropTypes.bool,
     visible: PropTypes.bool,
     printStatus: PropTypes.bool,
@@ -45,7 +46,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP, is3DMapMode } = this.props
+    const { printStatus, marchEdit, isMapCOP, is3DMapMode, isHaveActiveLayer } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -93,6 +94,12 @@ export default class Sidebar extends React.Component {
                   title: i18n.LOG_MAP,
                   icon: IconNames.LOG_EVENT,
                   enabled: true,
+                },
+                {
+                  Component: FilterContainer,
+                  title: i18n.STRAINERS,
+                  icon: IconNames.FILTER,
+                  enabled: isHaveActiveLayer,
                 },
               ].filter(Boolean)}
               onToggle={this.onToggle}

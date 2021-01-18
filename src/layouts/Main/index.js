@@ -26,6 +26,7 @@ import {
   DeleteMarchModalContainer,
   ZoneProfileModalContainer,
   ZoneVisionModalContainer,
+  FilterModalContainer,
 } from '../../containers'
 import { ApplicationContent } from '../../layouts'
 import './Main.css'
@@ -80,6 +81,7 @@ export default class Main extends React.Component {
         <DeleteMarchModalContainer wrapper={MovablePanel} />
         <ElevationProfileModal/>
         <CatalogItemModal wrapper={MovablePanel} />
+        <FilterModalContainer wrapper={MovablePanel} />
       </HotKeysContainer>
     )
   }
