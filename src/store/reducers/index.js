@@ -21,6 +21,7 @@ import task from './task'
 import targetCatalog from './targetCatalog'
 import changeLog from './changeLog'
 import elevationProfile from './elevationProfile'
+import dictionaries from './dictionaries'
 
 export default combineReducers({
   viewModes,
@@ -45,4 +46,5 @@ export default combineReducers({
   auth: authReducer,
   changeLog,
   elevationProfile,
+  dictionaries,
 })
