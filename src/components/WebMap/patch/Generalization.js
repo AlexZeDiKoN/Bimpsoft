@@ -61,7 +61,6 @@ export default class Generalization {
   }
 
   processRebuildGroups = () => {
-    console.log('processRebuildGroups')
     const forRecreateIcon = []
     this.domains = []
     this.layers.forEach((layer) => {
@@ -141,6 +140,12 @@ export default class Generalization {
     for (const domain of this.domains) {
       for (const group of domain.groups) {
         console.log(domain.key, group.layers)
+        group.layers.sort((layer1, layer2) => (layer2.object.level ?? 0) - (layer1.object.level ?? 0))
+        const n = group.layers.length
+        group.pos = {
+          x: group.layers.reduce((acc, layer) => acc + layer._pos.x, 0) / n,
+          y: group.layers.reduce((acc, layer) => acc + layer._pos.y, 0) / n,
+        }
       }
     }
 
@@ -151,4 +156,19 @@ export default class Generalization {
 
     this.timer = null
   }
+}
+
+export const calcShift = (group, layer, scale) => {
+  const result = {
+    x: 0,
+    y: 0,
+  }
+  const index = group.layers.indexOf(layer)
+  if (index >= 0) {
+    for (let i = group.layers.length - 1; i > index; i--) {
+      result.y -= group.layers[i].options.icon.state.height * scale
+    }
+  }
+
+  return result
 }

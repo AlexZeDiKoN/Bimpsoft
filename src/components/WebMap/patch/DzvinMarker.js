@@ -1,5 +1,6 @@
 import L, { Draggable, DomUtil, Util } from 'leaflet'
 import { setOpacity, setClassName, setShadowColor } from './utils/helpers'
+import { calcShift } from './Generalization'
 
 const { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng } = L.Marker.prototype
 const parent = { update, initialize, onAdd, _initIcon, _animateZoom, _removeIcon, setLatLng }
@@ -240,10 +241,16 @@ const DzvinMarker = L.Marker.extend({
         const { anchor, scale: iconScale } = el.state
         const currentScale = icon.getScale(this._map.getZoom(), scaleOptions)
         const scale = currentScale / iconScale
-        L.DomUtil.setTransform(el, {
+        const offset = {
           x: Math.round(x - anchor.x * scale),
           y: Math.round(y - anchor.y * scale),
-        }, scale)
+        }
+        if (this._generalGroup) {
+          const shift = this._calcShift(scale)
+          offset.x += shift.x
+          offset.y += shift.y
+        }
+        L.DomUtil.setTransform(el, offset, scale)
         this._zIndex = y + this.options.zIndexOffset
         this._resetZIndex()
       }
@@ -253,6 +260,10 @@ const DzvinMarker = L.Marker.extend({
   setLatLng: function (latLng) {
     parent.setLatLng.call(this, latLng)
     this._bounds = L.latLngBounds([ latLng ])
+  },
+
+  _calcShift: function (scale) {
+    return calcShift(this._generalGroup, this, scale)
   },
 })
 
