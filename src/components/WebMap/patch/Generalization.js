@@ -27,6 +27,7 @@ export default class Generalization {
   stop () {
     this.run = false
     this.pause()
+    this.clearGroups()
   }
 
   pause = () => {
@@ -60,9 +61,21 @@ export default class Generalization {
     }
   }
 
+  clearGroups = () => {
+    this.layers.forEach((layer) => {
+      layer._generalDomain = null
+      if (layer._generalGroup) {
+        layer._generalGroup = null
+        layer._reinitIcon()
+        layer.update()
+      }
+    })
+  }
+
   processRebuildGroups = () => {
     const forRecreateIcon = []
     this.domains = []
+
     this.layers.forEach((layer) => {
       layer._generalDomain = null
       if (layer._generalGroup) {
@@ -70,6 +83,7 @@ export default class Generalization {
       }
       layer._generalGroup = null
     })
+
     this.layers.forEach((layer) => {
       const { affiliation, dimension, unit, headquarters } = layer.options.icon.state.metadata
       if (unit) {
@@ -88,6 +102,7 @@ export default class Generalization {
         layer._generalDomain = domain
       }
     })
+
     this.domains.forEach((domain) => {
       const { headquarters, layers, groups } = domain
       if (layers.length > 1) {
@@ -160,13 +175,13 @@ export default class Generalization {
 
 export const calcShift = (group, layer, scale) => {
   const result = {
-    x: 0,
-    y: 0,
+    x: group.pos.x - layer._pos.x,
+    y: group.pos.y - layer._pos.y,
   }
   const index = group.layers.indexOf(layer)
   if (index >= 0) {
     for (let i = group.layers.length - 1; i > index; i--) {
-      result.y -= group.layers[i].options.icon.state.height * scale
+      result.y -= group.layers[i].options.icon.state.height
     }
   }
 

@@ -500,6 +500,7 @@ export default class WebMap extends React.PureComponent {
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
+      this.updateGeneralization(generalization, edit)
     }
     if (
       preview !== prevProps.selection.preview ||
@@ -583,7 +584,7 @@ export default class WebMap extends React.PureComponent {
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
     if (generalization !== prevProps.generalization) {
-      this.updateGeneralization(generalization)
+      this.updateGeneralization(generalization, edit)
     }
   }
 
@@ -600,8 +601,8 @@ export default class WebMap extends React.PureComponent {
     return this.map.getBounds()
   }
 
-  updateGeneralization = (generalization) => {
-    if (generalization) {
+  updateGeneralization = (generalization, edit) => {
+    if (generalization && !edit) {
       this.generalizer.start()
     } else {
       this.generalizer.stop()
