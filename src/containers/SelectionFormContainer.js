@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import SelectionForm from '../components/SelectionForm'
-import { selection, ovt as ovtActions } from '../store/actions'
+import { selection, ovt as ovtActions, dictionaries } from '../store/actions'
 import { canEditSelector } from '../store/selectors'
 import { FormTypes } from '../constants'
 import { catchErrors } from '../store/actions/asyncAction'
@@ -11,6 +11,7 @@ const mapStateToProps = (store) => {
     orgStructures, ovt: ovtReducer,
     viewModes: { sidebarSelectedTabIndex },
     webMap: { coordinatesType },
+    dictionaries: dictionariesState,
   } = store
 
   const canEdit = canEditSelector(store)
@@ -25,6 +26,9 @@ const mapStateToProps = (store) => {
     sidebarSelectedTabIndex,
     ovtData: ovtReducer.ovtData,
     ovtLoaded: ovtReducer.loaded,
+    dictionariesLoaded: dictionariesState.loaded,
+    ovtKind: dictionariesState.dictionaries?.ovtKind,
+    ovtSubKind: dictionariesState.dictionaries?.ovtSubkind,
     errorCode,
     coordinatesType,
     disableSaveButton,
@@ -40,6 +44,7 @@ const mapDispatchToProps = {
   onCloseSaveError: selection.hideForm,
   onCoordinateFocusChange: selection.setPreviewCoordinate,
   getOvtList: ovtActions.getOvtList,
+  getDictionaries: dictionaries.getDictionaries,
   onEnableSaveButton: selection.enableSaveButton,
 }
 

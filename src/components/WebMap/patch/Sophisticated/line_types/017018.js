@@ -47,10 +47,8 @@ lineDefinitions[CODE] = {
     const sw = graphicSize * STROKE_WIDTH_SCALE
     const fillId = `SVG-fill-pattern-${result.layer.object.id}`
     const fillColor = `url('#${fillId}')`
-    const color = result.layer.object.attributes.color // _path.getAttribute('stroke')
-    result.layer._path.setAttribute('fill', fillColor)
-    result.layer._path.setAttribute('fill-opacity', 1)
-    result.layer._path.setAttribute('width', 100)
+    const color = result.layer.object.attributes.color
+    result.layer.options.fill = true
     result.layer.options.fillColor = fillColor
     result.layer.options.fillOpacity = 1
     result.amplifiers += ` 

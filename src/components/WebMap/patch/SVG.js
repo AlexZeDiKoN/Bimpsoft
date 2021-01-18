@@ -26,13 +26,6 @@ import './SVG.css'
 
 const DASH_ON = false
 
-const getViewBox = (element) => {
-  while (element && (element.nodeName !== 'svg')) {
-    element = element.parentElement
-  }
-  return element && element.getAttribute('viewBox').split(' ')
-}
-
 const massCenter = (array) => {
   const zero = { x: 0, y: 0 }
   if (!array || !array.length) {
@@ -504,7 +497,15 @@ L.SVG.include({
       mask = mask.length ? `<path fill="black" fill-rule="nonzero" d="${mask.join(' ')}" />` : null
     }
     if (mask) {
-      const vb = getViewBox(layer._path) || [ 0, 0, '100%', '100%' ]
+      const boundsLayer = layer._map?._renderer?._bounds
+      const vb = boundsLayer
+        ? [
+          boundsLayer.min.x,
+          boundsLayer.min.y,
+          boundsLayer.max.x - boundsLayer.min.x,
+          boundsLayer.max.y - boundsLayer.min.y,
+        ]
+        : [ 0, 0, '100%', '100%' ] // крайний случай, череват частичной или полной потерей изображения знака
       mask = `<rect fill="white" x="${vb[0]}" y="${vb[1]}" width="${vb[2]}" height="${vb[3]}" />${mask}`
       layer.getMask().innerHTML = mask
       const maskURL = `url(#mask-${layer.object?.id ?? 'NewObject'})`

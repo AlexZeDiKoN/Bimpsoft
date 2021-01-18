@@ -31,7 +31,8 @@ export const DEFAULT_COORD_SYSTEM = 'default_coord_system'
 export const COORDINATES = 'coordinates'
 
 export const AMPLIFIERS_GROUPS = [
-  [ COORDINATES, symbolOptions.altitudeDepth ],
+  [ COORDINATES ],
+  [ symbolOptions.altitudeDepth ],
   [ symbolOptions.dtg ],
   [ symbolOptions.staffComments ],
   [ symbolOptions.type, symbolOptions.equipmentTeardownTime, symbolOptions.platformType ],

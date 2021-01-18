@@ -74,7 +74,7 @@ export const CreateNewLayerModal = ({
   </Wrapper>
 }
 
-CreateNewLayerModal.displayName = 'CatalogFilterModal'
+CreateNewLayerModal.displayName = 'CreateNewLayerModal'
 CreateNewLayerModal.propTypes = {
   wrapper: PropTypes.oneOf([ MovablePanel ]),
   onClose: PropTypes.func,

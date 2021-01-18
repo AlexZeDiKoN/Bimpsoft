@@ -101,7 +101,7 @@ export default class Item extends React.Component {
         placement="left"
         mouseEnterDelay={MOUSE_ENTER_DELAY}
       >
-        <div ref={isSelected ? scrollRef : null} className={classes.join(' ')}>
+        <div ref={isSelected ? scrollRef : null} onClick={this.clickItem} className={classes.join(' ')}>
           {indicator}
           {filter}
           {icon}

@@ -3,8 +3,13 @@ import { batchActions } from 'redux-batched-actions'
 import WebMapInner from '../components/WebMap'
 import {
   canEditSelector, visibleLayersSelector, activeObjectId, flexGridParams, flexGridVisible, flexGridData,
-  activeMapSelector, inICTMode, targetingObjects, targetingModeSelector, taskModeSelector, layersByIdFromStore,
-  marchDots, undoInfo, mapCOP, flexGridSelected, getFilteredCatalogsObjects, getFilteredObjects,
+  activeMapSelector, inICTMode,
+  targetingObjects,
+  targetingModeSelector,
+  taskModeSelector,
+  layersByIdFromStore,
+  marchDots, undoInfo, mapCOP, flexGridSelected,
+  getFilteredCatalogsObjects, getFilteredObjects,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,

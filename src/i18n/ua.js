@@ -345,7 +345,7 @@ export const SYMBOLS = 'Умовні знаки'
 export const LOG_MAP = 'Журнал подій'
 export const STRAINERS = 'Фільтри'
 export const NAME_STRAINER = 'Назва фільтру'
-export const STRAINER_MIL_SYMBOL = 'Визначення фильтру по атрибутам ТЗ'
+export const STRAINER_MIL_SYMBOL = 'Визначення фильтру за атрибутам ТЗ'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`
@@ -536,4 +536,4 @@ export const DIRECT_VISIBILITY = 'Пряма видимість'
 
 export const EVALUATION_RATING = 'Ступінь достовірності'
 
-export const REQUIRED = (text) => `${text}(обов’язково)`
+export const REQUIRED = (text) => `${text} (обов’язково)`

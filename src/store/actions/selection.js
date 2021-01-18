@@ -5,11 +5,18 @@ import moment from 'moment'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects } from '../selectors'
+import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects, mapCOP } from '../selectors'
 import { GROUPS, entityKindCanMirror } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import { Align } from '../../constants'
 import { amps } from '../../constants/symbols'
+import {
+  layersCOP,
+  verificationNotReliableInformation,
+  verificationNotReliableSource,
+  verificationReliableInformation,
+  verificationReliableSource,
+} from '../../constants/cop'
 import { withNotification } from './asyncAction'
 import { webMap } from './'
 
@@ -40,6 +47,7 @@ const {
     setSymbol,
     setStatus,
   },
+  symbolOptions,
 } = model
 
 export const LENGTH_APP6_CODE = 20 // кол-во символов в коде
@@ -473,6 +481,22 @@ export const enableSaveButton = () => ({
   type: ENABLE_SAVE_BUTTON,
 })
 
+const changeLayerByCredibilityCOP = () => (dispatch, getState) => {
+  const state = getState()
+  const isCOP = mapCOP(state)
+  if (isCOP) {
+    const { selection: { preview } } = state
+    const evaluationRating = preview.getIn([ 'attributes', symbolOptions.evaluationRating ])
+    const [ source, info ] = String(evaluationRating || '').split('')
+    if (verificationReliableSource.includes(source) && verificationReliableInformation.includes(info)) {
+      dispatch(setPreview(preview.set('layer', layersCOP.intelligenceReliable)))
+    }
+    if (verificationNotReliableSource.includes(source) || verificationNotReliableInformation.includes(info)) {
+      dispatch(setPreview(preview.set('layer', layersCOP.intelligenceNotReliable)))
+    }
+  }
+}
+
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     dispatch(disableSaveButton())
@@ -496,6 +520,7 @@ export const checkSaveSymbol = () =>
       if (errorCode) {
         return dispatch(showErrorSaveForm(errorCode))
       }
+      dispatch(changeLayerByCredibilityCOP())
     }
     return dispatch(savePreview())
   })
