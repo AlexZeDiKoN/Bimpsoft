@@ -44,16 +44,18 @@ const CODE_PATH = [ 'code' ]
 const UNIT_PATH = [ 'unit' ]
 const ATTRIBUTES_PATH = [ 'attributes' ]
 
+export const propTypes = {
+  orgStructures: PropTypes.shape({
+    roots: PropTypes.array,
+    byIds: PropTypes.object,
+  }),
+  elementsConfigs: PropTypes.object,
+  ovtData: PropTypes.object,
+  coordinatesType: PropTypes.string,
+}
+
 const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Component {
-  static propTypes = {
-    orgStructures: PropTypes.shape({
-      roots: PropTypes.array,
-      byIds: PropTypes.object,
-    }),
-    elementsConfigs: PropTypes.object,
-    ovtData: PropTypes.object,
-    coordinatesType: PropTypes.string,
-  }
+  static propTypes = propTypes
 
   undoRecord = []
 

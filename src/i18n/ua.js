@@ -24,6 +24,7 @@ export const POINT_SIGN = 'Точковий знак'
 export const LINE_SIGN = 'Лінійний/площинний знак'
 // export const HISTORY = 'Журнал'
 // export const ORG_STRUCTURE = 'Організаційна структура'
+export const ADD = 'Додати'
 export const LAYERS = 'Шари'
 export const FILTER = 'Фільтрувати'
 export const CLEAR = 'Очистити'
@@ -34,6 +35,8 @@ export const HIDE_MINIMAP = 'Приховати міні-карту'
 export const SHOW_MINIMAP = 'Показати міні-карту'
 export const HIDE_CATALOG = 'Приховати об’єкти каталогу'
 export const SHOW_CATALOG = 'Показати об’єкти каталогу'
+export const FILTER_CATALOG = 'Фільтрувати об’єкт каталогу'
+export const REMOVE_FILTER_CATALOG = 'Видалити фільтр об’єкту каталогу'
 export const ZOOM_IN = 'Збільшити'
 export const ZOOM_OUT = 'Зменшити'
 export const ABBR_GRADUS = '˚'
@@ -297,6 +300,7 @@ export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карт�
 export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 export const HEIGHT_OBSERVER = 'Висота спостерігача, м'
 export const HEIGHT_TARGET = 'Висота цілі, м'
+export const CURRENT_LAYER = 'Поточний шар'
 
 export const ELEMENT_SIZES = 'Розміри елементів'
 export const ELEMENT_SCALES = 'Деталізація обстановки'
@@ -339,6 +343,9 @@ export const DESIGNATION = `Назва`
 export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'
 export const LOG_MAP = 'Журнал подій'
+export const STRAINERS = 'Фільтри'
+export const NAME_STRAINER = 'Назва фільтру'
+export const STRAINER_MIL_SYMBOL = 'Визначення фільтру за атрибутами ТЗ'
 // кнопка меню
 export const PRINT_BUTTON = `Роздрукувати карту`
 export const FLEX_GRID = `Операційна зона`
@@ -528,3 +535,5 @@ export const PATH_LENGTH = 'Довжина шляху, м'
 export const DIRECT_VISIBILITY = 'Пряма видимість'
 
 export const EVALUATION_RATING = 'Ступінь достовірності'
+
+export const REQUIRED = (text) => `${text} (обов’язково)`

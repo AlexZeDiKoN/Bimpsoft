@@ -1,13 +1,15 @@
 import * as R from 'ramda'
+import moment from 'moment'
+import { vld } from '@C4/CommonComponents'
 import { MapModes } from '../../constants'
 import { action } from '../../utils/services'
 import { getNextLayerId } from '../../utils/layers'
-import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLayerId } from '../selectors'
+import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLayerId, selectedLayer } from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
 import { actionNames, changeTypes } from './webMap'
-import { asyncAction, orgStructures, webMap, selection, flexGrid } from './index'
+import { asyncAction, orgStructures, webMap, selection, flexGrid, maps } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -232,4 +234,27 @@ export const setHiddenOpacity = (opacity) => ({
 export const setFilterText = (filterText) => ({
   type: SET_LAYERS_FILTER_TEXT,
   filterText,
+})
+
+export const createLayer = (data) => asyncAction.withNotification(async (dispatch, getState, { nodeApi }) => {
+  const validation = vld.validate({
+    name: R.pipe(vld.defined, vld.notNull, vld.text(1, 200)),
+    dateFor: moment.isMoment,
+  }, data)
+  if (!vld.isValid(validation)) {
+    return { errors: validation.messages, success: false, payload: null }
+  }
+  const state = getState()
+  const formationId = state?.orgStructures?.formation?.id
+  const mapId = selectedLayer(state)?.mapId
+  const createLayerResponse = await nodeApi.addMapLayer({
+    formationId,
+    mapId,
+    name: data.name,
+    dateFor: data.dateFor || moment(),
+  })
+  const success = createLayerResponse?.data?.code === 2000
+  const payload = createLayerResponse?.data?.message?.id
+  success && await dispatch(maps.openMapFolder(mapId, payload))
+  return { errors: {}, success, payload }
 })

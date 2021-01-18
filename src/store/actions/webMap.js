@@ -7,7 +7,7 @@ import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
 import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
-import { activeMapSelector } from '../selectors'
+import { activeMapSelector, catalogsFields } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { amps } from '../../constants/symbols'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
@@ -865,13 +865,13 @@ const getTextSelectorByInputType = (type) => {
   }
 }
 
-export const setCatalogModalData = (data) => withNotification(async (dispatch, getState, { catalogApi }) => {
+export const setCatalogModalData = (data) => withNotification(async (dispatch, getState) => {
   if (!data?.visible) {
     return dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: false } })
   }
   const state = getState()
   const { object = {}, location, layer } = data ?? {}
-  const { attributes = [] } = await catalogApi.getCatalogItemInfo(object?.catalogId) ?? {}
+  const attributes = catalogsFields(state)[object?.catalogId] ?? []
 
   const fieldsLabels = Object.fromEntries(attributes
     .filter(({ typeOfValue }) => typeOfValue === 'string' || typeOfValue === 'number')

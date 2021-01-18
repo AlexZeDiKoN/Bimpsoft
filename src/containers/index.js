@@ -30,3 +30,5 @@ export { default as DeleteMarchModalContainer } from './DeleteMarchModalContaine
 export { default as LogMapContainer } from './LogMapContainer'
 export { default as ZoneProfileModalContainer } from './ZoneProfileContainer'
 export { default as ZoneVisionModalContainer } from './ZoneVisionContainer'
+export { default as FilterModalContainer } from './FilterModalContainer'
+export { default as FilterContainer } from './FilterContainer'
