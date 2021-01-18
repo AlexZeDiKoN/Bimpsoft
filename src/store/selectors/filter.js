@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import moment from 'moment'
 import { model } from '@C4/MilSymbolEditor'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
-import { CATALOGS_FIELDS, CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
+import { CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
@@ -61,7 +61,8 @@ const compareObjectValues = (object = {}, filterItem = {}, compareFn = compareBy
 // ------------------------------------ selectors ---------------------------------------------------------------
 
 export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
-export const catalogsFields = (state) => state.filter[CATALOGS_FIELDS]
+export const catalogsFields = (state) => state.catalogs.attributes
+export const getCatalogsByIds = (state) => state.catalogs.byIds
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
 export const loadingFiltersStatus = (state) => state.filter[LOADING]

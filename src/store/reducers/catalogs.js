@@ -13,6 +13,7 @@ const initState = {
   textFilter: null,
   expandedIds: {},
   objects: {},
+  attributes: {},
 }
 
 export default function reducer (state = initState, action) {
@@ -21,6 +22,7 @@ export default function reducer (state = initState, action) {
     case catalogs.CATALOG_SET_TREE: {
       const byIds = {}
       let roots = []
+      const attributes = Object.fromEntries(payload.map(({ id, attributes }) => [ id, attributes ]))
       const tree = payload
         .map(({ id, name, attributes, parent_id: parent }) => ({
           id: Number(id),
@@ -30,7 +32,7 @@ export default function reducer (state = initState, action) {
         }))
         .filter(({ id, geo }) =>
           ![ catalogRoot, KOATUU ].includes(id) &&
-          (geo || payload.find(({ parent_id: parent }) => Number(parent) === id))
+          (geo || payload.find(({ parent_id: parent }) => Number(parent) === id)),
         )
       tree.forEach((item) => (byIds[item.id] = { ...item, children: [] }))
       tree.forEach(({ id, parent }) => ((parent && byIds[parent] && byIds[parent].children) || roots).push(id))
@@ -38,7 +40,7 @@ export default function reducer (state = initState, action) {
       if (roots.length === 1) {
         roots = byIds[roots[0]].children
       }
-      return { ...state, byIds, roots }
+      return { ...state, byIds, roots, attributes }
     }
     case catalogs.CATALOG_SET_LIST: {
       const { catalogId, list } = payload

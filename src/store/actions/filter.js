@@ -3,8 +3,8 @@ import { utils } from '@C4/CommonComponents'
 import * as R from 'ramda'
 import { action } from '../../utils/services'
 import { CATALOG_FILTER_TYPE, MIL_SYMBOL_FILTER_TYPE } from '../../constants/modals'
-import { CATALOG_FILTERS, CATALOGS_FIELDS, LOADING, MIL_SYMBOL_FILTER, SEARCH_FILTER } from '../../constants/filter'
-import { catalogsFields, getFilteredObjects, getModalData, milSymbolFilters, selectedLayerId } from '../selectors'
+import { CATALOG_FILTERS, LOADING, MIL_SYMBOL_FILTER, SEARCH_FILTER } from '../../constants/filter'
+import { getFilteredObjects, getModalData, milSymbolFilters, selectedLayerId } from '../selectors'
 import { WebMapObject } from '../reducers/webMap'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { setModalData, close } from './task'
@@ -15,7 +15,6 @@ const { vld } = utils
 
 export const MERGE_FILTERS = action('MERGE_FILTERS')
 export const mergeFilter = (name, value, index) => ({ type: MERGE_FILTERS, payload: { name, value, index } })
-export const setCatalogFields = mergeFilter.bind(null, CATALOGS_FIELDS)
 export const setFilterCatalog = mergeFilter.bind(null, CATALOG_FILTERS)
 export const mergeMilSymbolFilter = mergeFilter.bind(null, MIL_SYMBOL_FILTER)
 
@@ -29,15 +28,7 @@ export const setSearchFilter = setFilter.bind(null, SEARCH_FILTER)
 export const setMilSymbolFilter = setFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setLoading = setFilter.bind(null, LOADING)
 
-export const openModalCatalogFilter = (id) => asyncAction.withNotification(
-  async (dispatch, getState, { catalogApi }) => {
-    const state = getState()
-    if (!catalogsFields(state)[id]) {
-      const catalogFields = await catalogApi.getCatalogItemInfo(id)
-      dispatch(setCatalogFields({ [id]: catalogFields }))
-    }
-    dispatch(setModalData({ type: CATALOG_FILTER_TYPE, id }))
-  })
+export const openModalCatalogFilter = (id) => (dispatch) => dispatch(setModalData({ type: CATALOG_FILTER_TYPE, id }))
 
 export const openMilSymbolModal = (index) => (dispatch, getState) => {
   const state = getState()

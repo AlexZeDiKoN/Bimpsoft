@@ -8,6 +8,7 @@ import {
   catalogsFields,
   layersById,
   loadingFiltersStatus,
+  getCatalogsByIds,
 } from '../store/selectors'
 import { CatalogFilterModal, MilSymbolFilterModal, CreateNewLayerModal } from '../components/Filter/Modals'
 import {
@@ -21,11 +22,10 @@ import {
 const CatalogModalForm = connect(
   (store) => {
     const modalData = getModalData(store)
-    const catalogFieldsData = catalogsFields(store)?.[modalData?.id]
     return {
       data: catalogFilters(store)?.[modalData?.id],
-      fields: catalogFieldsData?.attributes,
-      title: catalogFieldsData?.name,
+      fields: catalogsFields(store)?.[modalData?.id],
+      title: getCatalogsByIds(store)?.[modalData?.id]?.name,
       catalogId: modalData?.id,
     }
   },
