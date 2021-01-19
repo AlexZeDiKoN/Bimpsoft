@@ -881,7 +881,7 @@ export default class WebMap extends React.PureComponent {
     this.map.doubleClickZoom.disable()
 
     this.updater = new UpdateQueue(this.map)
-    this.generalizer = new Generalization(this.map)
+    this.generalizer = new Generalization(this.map, settings)
   }
 
   enableLookAfterMouseMove = (func) => this.map && func && this.map.on('mousemove', func)

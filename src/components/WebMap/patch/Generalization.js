@@ -1,13 +1,25 @@
-const REBUILD_TIMEOUT = 500
+import L from 'leaflet'
+import { interpolateSize } from './utils/helpers'
+
+const REBUILD_TIMEOUT = 50
+const LINE_OPTIONS = {
+  interactive: false,
+  noClip: true,
+  color: 'black',
+  weight: 1.25,
+}
+
+const plus = (p1, p2) => ({ x: p1.x + p2.x, y: p1.y + p2.y })
 
 export default class Generalization {
-  constructor (map) {
+  constructor (map, settings) {
     this.map = map
+    this.settings = settings
     this.map.on('layeradd', this.layerAddHandler)
     this.map.on('layerremove', this.layerRemoveHandler)
-    this.map.on('zoomstart', this.pause)
+    this.map.on('zoomstart', this.zoomStart)
     this.map.on('zoomend', this.resume)
-    this.map.on('movestart', this.pause)
+    this.map.on('movestart', this.moveStart)
     this.map.on('moveend', this.resume)
     this.timer = null
     this.run = false
@@ -28,6 +40,15 @@ export default class Generalization {
     this.run = false
     this.pause()
     this.clearGroups()
+  }
+
+  zoomStart = () => {
+    this.pause()
+    this.clearLines()
+  }
+
+  moveStart = () => {
+    this.pause()
   }
 
   pause = () => {
@@ -61,7 +82,20 @@ export default class Generalization {
     }
   }
 
+  clearLines = () => {
+    this.map.off('layerremove', this.layerRemoveHandler)
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        for (const line of group.lines) {
+          this.map.removeLayer(line)
+        }
+      }
+    }
+    this.map.on('layerremove', this.layerRemoveHandler)
+  }
+
   clearGroups = () => {
+    this.clearLines()
     this.layers.forEach((layer) => {
       layer._generalDomain = null
       if (layer._generalGroup) {
@@ -72,7 +106,10 @@ export default class Generalization {
     })
   }
 
+  getScale = () => interpolateSize(this.map.getZoom(), this.settings.POINT_SYMBOL_SIZE)
+
   processRebuildGroups = () => {
+    this.clearLines()
     const forRecreateIcon = []
     this.domains = []
 
@@ -85,21 +122,24 @@ export default class Generalization {
     })
 
     this.layers.forEach((layer) => {
-      const { affiliation, dimension, unit, headquarters } = layer.options.icon.state.metadata
-      if (unit) {
-        const key = `${affiliation}_${dimension}_${headquarters}`
-        let domain = this.domains.find((item) => item.key === key)
-        if (!domain) {
-          domain = {
-            key,
-            headquarters,
-            layers: [],
-            groups: [],
+      const state = layer.options.icon.state
+      if (state) {
+        const { affiliation, dimension, unit, headquarters } = state.metadata
+        if (unit) {
+          const key = `${affiliation}_${dimension}_${headquarters}`
+          let domain = this.domains.find((item) => item.key === key)
+          if (!domain) {
+            domain = {
+              key,
+              headquarters,
+              layers: [],
+              groups: [],
+            }
+            this.domains.push(domain)
           }
-          this.domains.push(domain)
+          domain.layers.push(layer)
+          layer._generalDomain = domain
         }
-        domain.layers.push(layer)
-        layer._generalDomain = domain
       }
     })
 
@@ -126,9 +166,11 @@ export default class Generalization {
               let group = groups.find((group) => group.layers.includes(layer1) || group.layers.includes(layer2))
               if (!group) {
                 group = {
+                  map: layer1._map,
                   domain,
                   headquarters,
                   layers: [],
+                  offset: { x: 0, y: 0 },
                 }
                 groups.push(group)
               }
@@ -152,18 +194,95 @@ export default class Generalization {
       }
     })
 
-    for (const domain of this.domains) {
-      for (const group of domain.groups) {
-        console.log(domain.key, group.layers)
-        group.layers.sort((layer1, layer2) => (layer2.object.level ?? 0) - (layer1.object.level ?? 0))
-        const n = group.layers.length
-        group.pos = {
-          x: group.layers.reduce((acc, layer) => acc + layer._pos.x, 0) / n,
-          y: group.layers.reduce((acc, layer) => acc + layer._pos.y, 0) / n,
+    const precalcGroups = () => {
+      for (const domain of this.domains) {
+        for (const group of domain.groups) {
+          const n = group.layers.length
+          group.pos = {
+            x: group.layers.reduce((acc, layer) => acc + layer._pos.x, 0) / n,
+            y: group.layers.reduce((acc, layer) => acc + layer._pos.y, 0) / n,
+          }
+          const hScale = group.headquarters ? 0.75 : 1
+          group.height = group.layers.reduce((acc, layer) => acc + layer.options.icon.state.height * hScale, 0)
+          group.width = group.layers.reduce((acc, layer) => Math.max(acc, layer.options.icon.state.width * hScale), 0)
+          group.xAnchor =
+            group.layers.reduce((acc, layer) => Math.max(acc, layer.options.icon.state.octagonAnchor.x * hScale), 0)
         }
       }
     }
 
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        // console.log(domain.key, group.layers)
+        group.layers.sort((layer1, layer2) => (layer2.object.level ?? 0) - (layer1.object.level ?? 0))
+      }
+    }
+
+    precalcGroups()
+
+    // Перший прохід (для визначення розмірів знаків)
+    forRecreateIcon.forEach((layer) => {
+      layer._reinitIcon()
+      // layer.update()
+    })
+
+    precalcGroups()
+
+    this.map.off('layeradd', this.layerAddHandler)
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        const signSize = this.getScale()
+        if (group.headquarters) {
+          group.offset = {
+            x: signSize,
+            y: -signSize,
+          }
+          group.lines = [
+            L.polyline([
+              this.map.layerPointToLatLng(group.pos),
+              this.map.layerPointToLatLng(plus(group.pos, group.offset)),
+            ], LINE_OPTIONS),
+          ]
+        } else {
+          group.offset = {
+            x: 2 * signSize,
+            y: -signSize,
+          }
+          group.lines = [
+            L.polyline([
+              this.map.layerPointToLatLng(group.pos),
+              this.map.layerPointToLatLng(plus(plus(group.pos, group.offset), { x: -signSize, y: 0 })),
+              this.map.layerPointToLatLng(plus(group.pos, group.offset)),
+            ], LINE_OPTIONS),
+            L.polyline([
+              this.map.layerPointToLatLng({
+                x: group.pos.x + group.offset.x + signSize / 4,
+                y: group.pos.y + group.offset.y - group.height / 2,
+              }),
+              this.map.layerPointToLatLng({
+                x: group.pos.x + group.offset.x,
+                y: group.pos.y + group.offset.y - group.height / 2,
+              }),
+              this.map.layerPointToLatLng({
+                x: group.pos.x + group.offset.x,
+                y: group.pos.y + group.offset.y + group.height / 2,
+              }),
+              this.map.layerPointToLatLng({
+                x: group.pos.x + group.offset.x + signSize / 4,
+                y: group.pos.y + group.offset.y + group.height / 2,
+              }),
+            ], LINE_OPTIONS),
+          ]
+        }
+        for (const line of group.lines) {
+          this.map.addLayer(line)
+        }
+      }
+    }
+    this.map.on('layeradd', this.layerAddHandler)
+
+    // Потрібно два проходи, за першим буде визначено висоту кожного знаку, а за другим розрахується положення
+    // (воно залежить від висоти інших знаків у групі)
     forRecreateIcon.forEach((layer) => {
       layer._reinitIcon()
       layer.update()
@@ -173,15 +292,22 @@ export default class Generalization {
   }
 }
 
-export const calcShift = (group, layer, scale) => {
+export const calcShift = (group, layer) => {
+  const l0 = group.layers[0].options.icon.state
+  const vScale = group.headquarters ? 0.75 : 1
+  const hShift = group.headquarters ? 0 : group.xAnchor + l0.scale / 4
+  const vShift = group.headquarters ? 0 : l0.height - l0.octagonAnchor.y
   const result = {
-    x: group.pos.x - layer._pos.x,
-    y: group.pos.y - layer._pos.y,
+    x: group.pos.x + group.offset.x - layer._pos.x + hShift,
+    y: group.pos.y + group.offset.y - layer._pos.y - vShift,
+  }
+  if (!group.headquarters) {
+    result.y += group.height / 2
   }
   const index = group.layers.indexOf(layer)
   if (index >= 0) {
     for (let i = group.layers.length - 1; i > index; i--) {
-      result.y -= group.layers[i].options.icon.state.height
+      result.y -= group.layers[i].options.icon.state.height * vScale
     }
   }
 

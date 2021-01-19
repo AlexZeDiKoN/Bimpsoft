@@ -246,7 +246,7 @@ const DzvinMarker = L.Marker.extend({
           y: Math.round(y - anchor.y * scale),
         }
         if (this._generalGroup) {
-          const shift = this._calcShift(scale)
+          const shift = calcShift(this._generalGroup, this)
           offset.x += shift.x
           offset.y += shift.y
         }
@@ -260,10 +260,6 @@ const DzvinMarker = L.Marker.extend({
   setLatLng: function (latLng) {
     parent.setLatLng.call(this, latLng)
     this._bounds = L.latLngBounds([ latLng ])
-  },
-
-  _calcShift: function (scale) {
-    return calcShift(this._generalGroup, this, scale)
   },
 })
 
