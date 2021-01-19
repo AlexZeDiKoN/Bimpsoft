@@ -1,7 +1,9 @@
 import { batchActions } from 'redux-batched-actions'
-import { APP6Code } from '@C4/MilSymbolEditor/build/model'
+import { model } from '@C4/MilSymbolEditor'
 import { action } from '../../utils/services'
 import { asyncAction } from './index'
+
+const { APP6Code } = model
 
 export const SET_ORG_STRUCTURE_UNITS = action('SET_ORG_STRUCTURE_UNITS')
 export const SET_ORG_STRUCTURE_TREE = action('SET_ORG_STRUCTURE_TREE')
