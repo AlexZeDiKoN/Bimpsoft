@@ -31,9 +31,10 @@ export default class Item extends React.Component {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
   }
 
-  clickFilter = () => {
+  clickFilter = (e) => {
     const { data, onFilterClick } = this.props
     onFilterClick(data.id)
+    e.stopPropagation()
   }
 
   clickItem = () => {

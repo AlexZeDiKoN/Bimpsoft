@@ -1,11 +1,14 @@
 import { createSelector } from 'reselect'
 import moment from 'moment'
 import { model } from '@C4/MilSymbolEditor'
+import { data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
 import { CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
+
+const { TextFilter } = data
 
 const { APP6Code: {
   getAmplifier, getIcon,
@@ -49,8 +52,8 @@ const compareByType = (aValue, bValue) => {
     return aValue?.lat === bValue?.lat && aValue?.lng === bValue?.lng
   }
   switch (type) {
-    case 'string': return String(aValue).toLocaleLowerCase() === String(bValue).toLocaleLowerCase()
-    case 'number': return aValue === bValue
+    case 'string': return TextFilter.create(aValue).test(bValue)
+    case 'number': return TextFilter.create(String(aValue)).test(String(bValue))
     default: return true
   }
 }
