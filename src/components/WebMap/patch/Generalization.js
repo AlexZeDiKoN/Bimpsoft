@@ -227,7 +227,7 @@ export default class Generalization {
                   headquarters,
                   layers: [],
                   offset: { x: 0, y: 0 },
-                  orientation: {},
+                  orientation: { x: 1, x2: 0, y: 0 },
                 }
                 groups.push(group)
               }
@@ -289,35 +289,47 @@ export default class Generalization {
     precalcGroups()
 
     // Визначення орієнтації груп
+    const bounds = this.map.getBounds()
     const box = { left: 1e6, top: 1e6, right: -1e6, bottom: -1e6 }
+    let boxValid = false
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        if (group.pos.x < box.left) {
-          box.left = group.pos.x
-        }
-        if (group.pos.x > box.right) {
-          box.right = group.pos.x
-        }
-        if (group.pos.y < box.top) {
-          box.top = group.pos.y
-        }
-        if (group.pos.y > box.bottom) {
-          box.bottom = group.pos.y
+        if (bounds.contains(this.map.layerPointToLatLng(group.pos))) {
+          boxValid = true
+          if (group.pos.x < box.left) {
+            box.left = group.pos.x
+          }
+          if (group.pos.x > box.right) {
+            box.right = group.pos.x
+          }
+          if (group.pos.y < box.top) {
+            box.top = group.pos.y
+          }
+          if (group.pos.y > box.bottom) {
+            box.bottom = group.pos.y
+          }
         }
       }
     }
-    box.width = box.right - box.left
-    box.height = box.bottom - box.top
-    for (const domain of this.domains) {
-      for (const group of domain.groups) {
-        group.orientation.x = group.pos.x >= box.left + box.width * 0.5
-          ? 1
-          : -1
-        group.orientation.y = group.pos.y >= box.top + box.height * 0.625
-          ? 1
-          : group.pos.y >= box.top + box.height * 0.375
-            ? 0
+    if (boxValid) {
+      box.width = box.right - box.left
+      box.height = box.bottom - box.top
+      for (const domain of this.domains) {
+        for (const group of domain.groups) {
+          group.orientation.x = group.pos.x >= box.left + box.width * 0.5
+            ? 1
             : -1
+          group.orientation.x2 = group.pos.x > box.left + box.width * 0.625
+            ? 1
+            : group.pos.x >= box.left + box.width * 0.375
+              ? 0
+              : -1
+          group.orientation.y = group.pos.y > box.top + box.height * 0.625
+            ? 1
+            : group.pos.y >= box.top + box.height * 0.375
+              ? 0
+              : -1
+        }
       }
     }
 
@@ -327,7 +339,7 @@ export default class Generalization {
     for (const domain of this.domains) {
       for (const group of domain.groups) {
         const offset = group.headquarters
-          ? { x: 0, y: 0 }
+          ? { x: group.orientation.x2 * signSize, y: group.orientation.y * signSize }
           : { x: group.orientation.x * signSize, y: group.orientation.y * signSize }
         this.buildGroupLines(group, offset)
       }
