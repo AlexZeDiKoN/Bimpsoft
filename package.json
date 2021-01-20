@@ -1,10 +1,10 @@
 {
   "name": "web-map",
-  "version": "17.01.1220",
+  "version": "17.01.1221",
   "private": true,
   "dependencies": {
     "@C4/CommonComponents": "^17.1.569",
-    "@C4/MilSymbolEditor": "^17.1.309",
+    "@C4/MilSymbolEditor": "^17.1.310",
     "@C4/components": "^17.1.609",
     "@C4/leaflet-measure-custom": "^17.1.11",
     "@C4/milsymbol": "^17.1.12",
@@ -24,7 +24,7 @@
     "js-sha256": "^0.9.0",
     "keycode-js": "^1.0.2",
     "kld-intersections": "^0.7.0",
-    "leaflet": "^1.7.1",
+    "leaflet": "^1.3.1",
     "leaflet-graphicscale": "0.0.2",
     "leaflet-minimap": "^3.6.1",
     "leaflet-switch-scale-control": "^0.7.0",

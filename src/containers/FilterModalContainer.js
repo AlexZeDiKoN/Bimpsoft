@@ -38,7 +38,7 @@ const CatalogModalForm = connect(
 
 // ------------------------------------------ Mil Symbol Container -------------------------------------------
 const MilSymbolModalForm = connect(
-  ({ orgStructures, ovt, ...store }) => {
+  ({ orgStructures, ovt, dictionaries, ...store }) => {
     const modalData = getModalData(store)
     return {
       ...modalData,
@@ -48,6 +48,8 @@ const MilSymbolModalForm = connect(
         roots: orgStructures.roots,
       },
       ovtData: ovt?.ovtData,
+      ovtKind: dictionaries.dictionaries?.ovtKind,
+      ovtSubKind: dictionaries.dictionaries?.ovtSubkind,
     }
   },
   {
@@ -72,7 +74,7 @@ export default function FilterModalContainer (props) {
   const type = useSelector((state) => getModalData(state)?.type)
   switch (type) {
     case (CATALOG_FILTER_TYPE): return <CatalogModalForm {...props}/>
-    case (MIL_SYMBOL_FILTER_TYPE): return <MilSymbolModalForm {...props}/>
+    case (MIL_SYMBOL_FILTER_TYPE): return <MilSymbolModalForm {...props} isFilterMode />
     case (CREATE_NEW_LAYER_TYPE): return <CreateNewLayerModalForm {...props}/>
     default: return <></>
   }
