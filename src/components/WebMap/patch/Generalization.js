@@ -108,6 +108,50 @@ export default class Generalization {
 
   getScale = () => interpolateSize(this.map.getZoom(), this.settings.POINT_SYMBOL_SIZE)
 
+  buildGroupLines = (group, offset) => {
+    const signSize = this.getScale()
+    group.offset = offset
+    if (group.headquarters) {
+      group.lines = [
+        L.polyline([
+          this.map.layerPointToLatLng(group.pos),
+          this.map.layerPointToLatLng(plus(group.pos, offset)),
+        ], LINE_OPTIONS),
+      ]
+    } else {
+      group.leftSided = offset.x < 0
+      const d = group.leftSided ? -1 : 1
+      group.lines = [
+        L.polyline([
+          this.map.layerPointToLatLng(group.pos),
+          this.map.layerPointToLatLng(plus(group.pos, offset)),
+          this.map.layerPointToLatLng(plus(plus(group.pos, offset), { x: d * signSize, y: 0 })),
+        ], LINE_OPTIONS),
+        L.polyline([
+          this.map.layerPointToLatLng({
+            x: group.pos.x + offset.x + d * signSize * 1.25,
+            y: group.pos.y + offset.y - group.height / 2,
+          }),
+          this.map.layerPointToLatLng({
+            x: group.pos.x + offset.x + d * signSize,
+            y: group.pos.y + offset.y - group.height / 2,
+          }),
+          this.map.layerPointToLatLng({
+            x: group.pos.x + offset.x + d * signSize,
+            y: group.pos.y + offset.y + group.height / 2,
+          }),
+          this.map.layerPointToLatLng({
+            x: group.pos.x + offset.x + d * signSize * 1.25,
+            y: group.pos.y + offset.y + group.height / 2,
+          }),
+        ], LINE_OPTIONS),
+      ]
+    }
+    for (const line of group.lines) {
+      this.map.addLayer(line)
+    }
+  }
+
   processRebuildGroups = () => {
     this.clearLines()
     const forRecreateIcon = []
@@ -202,11 +246,13 @@ export default class Generalization {
             x: group.layers.reduce((acc, layer) => acc + layer._pos.x, 0) / n,
             y: group.layers.reduce((acc, layer) => acc + layer._pos.y, 0) / n,
           }
-          const hScale = group.headquarters ? 0.75 : 1
-          group.height = group.layers.reduce((acc, layer) => acc + layer.options.icon.state.height * hScale, 0)
-          group.width = group.layers.reduce((acc, layer) => Math.max(acc, layer.options.icon.state.width * hScale), 0)
-          group.xAnchor =
-            group.layers.reduce((acc, layer) => Math.max(acc, layer.options.icon.state.octagonAnchor.x * hScale), 0)
+          const vScale = group.headquarters ? 0.75 : 1
+          group.height = group.layers.reduce((acc, layer) => acc + layer.options.icon.state.height * vScale, 0)
+          group.width = group.layers.reduce((acc, layer) => Math.max(acc, layer.options.icon.state.width), 0)
+          group.xAnchor = group.layers.reduce((acc, layer) =>
+            Math.max(acc, layer.options.icon.state.octagonAnchor.x), 0)
+          group.xAnchorLeft = group.layers.reduce((acc, layer) =>
+            Math.max(acc, layer.options.icon.state.width - layer.options.icon.state.octagonAnchor.x), 0)
         }
       }
     }
@@ -228,55 +274,14 @@ export default class Generalization {
 
     precalcGroups()
 
+    const signSize = this.getScale()
     this.map.off('layeradd', this.layerAddHandler)
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        const signSize = this.getScale()
-        if (group.headquarters) {
-          group.offset = {
-            x: signSize,
-            y: -signSize,
-          }
-          group.lines = [
-            L.polyline([
-              this.map.layerPointToLatLng(group.pos),
-              this.map.layerPointToLatLng(plus(group.pos, group.offset)),
-            ], LINE_OPTIONS),
-          ]
-        } else {
-          group.offset = {
-            x: 2 * signSize,
-            y: -signSize,
-          }
-          group.lines = [
-            L.polyline([
-              this.map.layerPointToLatLng(group.pos),
-              this.map.layerPointToLatLng(plus(plus(group.pos, group.offset), { x: -signSize, y: 0 })),
-              this.map.layerPointToLatLng(plus(group.pos, group.offset)),
-            ], LINE_OPTIONS),
-            L.polyline([
-              this.map.layerPointToLatLng({
-                x: group.pos.x + group.offset.x + signSize / 4,
-                y: group.pos.y + group.offset.y - group.height / 2,
-              }),
-              this.map.layerPointToLatLng({
-                x: group.pos.x + group.offset.x,
-                y: group.pos.y + group.offset.y - group.height / 2,
-              }),
-              this.map.layerPointToLatLng({
-                x: group.pos.x + group.offset.x,
-                y: group.pos.y + group.offset.y + group.height / 2,
-              }),
-              this.map.layerPointToLatLng({
-                x: group.pos.x + group.offset.x + signSize / 4,
-                y: group.pos.y + group.offset.y + group.height / 2,
-              }),
-            ], LINE_OPTIONS),
-          ]
-        }
-        for (const line of group.lines) {
-          this.map.addLayer(line)
-        }
+        this.buildGroupLines(group, {
+          x: -signSize,
+          y: -signSize,
+        })
       }
     }
     this.map.on('layeradd', this.layerAddHandler)
@@ -295,7 +300,9 @@ export default class Generalization {
 export const calcShift = (group, layer) => {
   const l0 = group.layers[0].options.icon.state
   const vScale = group.headquarters ? 0.75 : 1
-  const hShift = group.headquarters ? 0 : group.xAnchor + l0.scale / 4
+  const hShift = group.headquarters ? 0 : group.leftSided
+    ? -group.xAnchorLeft - l0.scale * 1.25
+    : group.xAnchor + l0.scale * 1.25
   const vShift = group.headquarters ? 0 : l0.height - l0.octagonAnchor.y
   const result = {
     x: group.pos.x + group.offset.x - layer._pos.x + hShift,
