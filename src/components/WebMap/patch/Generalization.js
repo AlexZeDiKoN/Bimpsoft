@@ -2,6 +2,9 @@ import L from 'leaflet'
 import { interpolateSize } from './utils/helpers'
 
 const REBUILD_TIMEOUT = 50
+/* const FRIEND_SIZE = -1
+const ENEMY_SIZE = 1
+const ENEMY_AFFILIATION = 'Hostile' */
 const LINE_OPTIONS = {
   interactive: false,
   noClip: true,
@@ -108,6 +111,7 @@ export default class Generalization {
 
   getScale = () => interpolateSize(this.map.getZoom(), this.settings.POINT_SYMBOL_SIZE)
 
+  // Визначення графічних позначок груп залежно від типу і орієнтації
   buildGroupLines = (group, offset) => {
     const signSize = this.getScale()
     group.offset = offset
@@ -153,10 +157,15 @@ export default class Generalization {
   }
 
   processRebuildGroups = () => {
+    // Вилучаємо позначки попередніх груп з карти
     this.clearLines()
+
+    // Ініціалізація
     const forRecreateIcon = []
     this.domains = []
+    this.timer = null
 
+    // Очищуємо попередні групи
     this.layers.forEach((layer) => {
       layer._generalDomain = null
       if (layer._generalGroup) {
@@ -165,6 +174,7 @@ export default class Generalization {
       layer._generalGroup = null
     })
 
+    // Визначаємо домени і списки знаків у них
     this.layers.forEach((layer) => {
       const state = layer.options.icon.state
       if (state) {
@@ -176,6 +186,7 @@ export default class Generalization {
             domain = {
               key,
               headquarters,
+              // enemy: affiliation === ENEMY_AFFILIATION,
               layers: [],
               groups: [],
             }
@@ -187,6 +198,7 @@ export default class Generalization {
       }
     })
 
+    // Визначаємо в доменах групи знаків, що перекриваються
     this.domains.forEach((domain) => {
       const { headquarters, layers, groups } = domain
       if (layers.length > 1) {
@@ -215,6 +227,7 @@ export default class Generalization {
                   headquarters,
                   layers: [],
                   offset: { x: 0, y: 0 },
+                  orientation: {},
                 }
                 groups.push(group)
               }
@@ -238,6 +251,7 @@ export default class Generalization {
       }
     })
 
+    // Розрахунок положення і розмірів груп
     const precalcGroups = () => {
       for (const domain of this.domains) {
         for (const group of domain.groups) {
@@ -259,41 +273,72 @@ export default class Generalization {
 
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        // console.log(domain.key, group.layers)
         group.layers.sort((layer1, layer2) => (layer2.object.level ?? 0) - (layer1.object.level ?? 0))
       }
     }
 
+    // Перший прохід розрахунку
     precalcGroups()
 
-    // Перший прохід (для визначення розмірів знаків)
+    // Перший прохід створення іконок знаків (для визначення їхніх розмірів)
     forRecreateIcon.forEach((layer) => {
       layer._reinitIcon()
-      // layer.update()
     })
 
+    // Другий прохід розрахунку
     precalcGroups()
 
+    // Визначення орієнтації груп
+    const box = { left: 1e6, top: 1e6, right: -1e6, bottom: -1e6 }
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        if (group.pos.x < box.left) {
+          box.left = group.pos.x
+        }
+        if (group.pos.x > box.right) {
+          box.right = group.pos.x
+        }
+        if (group.pos.y < box.top) {
+          box.top = group.pos.y
+        }
+        if (group.pos.y > box.bottom) {
+          box.bottom = group.pos.y
+        }
+      }
+    }
+    box.width = box.right - box.left
+    box.height = box.bottom - box.top
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        group.orientation.x = group.pos.x >= box.left + box.width * 0.5
+          ? 1
+          : -1
+        group.orientation.y = group.pos.y >= box.top + box.height * 0.625
+          ? 1
+          : group.pos.y >= box.top + box.height * 0.375
+            ? 0
+            : -1
+      }
+    }
+
+    // Створення позначок груп, зі зміщенням залежно від орієнтації
     const signSize = this.getScale()
     this.map.off('layeradd', this.layerAddHandler)
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        this.buildGroupLines(group, {
-          x: -signSize,
-          y: -signSize,
-        })
+        const offset = group.headquarters
+          ? { x: 0, y: 0 }
+          : { x: group.orientation.x * signSize, y: group.orientation.y * signSize }
+        this.buildGroupLines(group, offset)
       }
     }
     this.map.on('layeradd', this.layerAddHandler)
 
-    // Потрібно два проходи, за першим буде визначено висоту кожного знаку, а за другим розрахується положення
-    // (воно залежить від висоти інших знаків у групі)
+    // Другий прохід створення іконок знаків (для визначення їхнього положення)
     forRecreateIcon.forEach((layer) => {
       layer._reinitIcon()
       layer.update()
     })
-
-    this.timer = null
   }
 }
 
