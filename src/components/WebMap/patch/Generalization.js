@@ -112,14 +112,14 @@ export default class Generalization {
   getScale = () => interpolateSize(this.map.getZoom(), this.settings.POINT_SYMBOL_SIZE)
 
   // Визначення графічних позначок груп залежно від типу і орієнтації
-  buildGroupLines = (group, offset) => {
+  buildGroupLines = (group) => {
+    const { pos, offset, height, headquarters } = group
     const signSize = this.getScale()
-    group.offset = offset
-    if (group.headquarters) {
+    if (headquarters) {
       group.lines = [
         L.polyline([
-          this.map.layerPointToLatLng(group.pos),
-          this.map.layerPointToLatLng(plus(group.pos, offset)),
+          this.map.layerPointToLatLng(pos),
+          this.map.layerPointToLatLng(plus(pos, offset)),
         ], LINE_OPTIONS),
       ]
     } else {
@@ -127,26 +127,26 @@ export default class Generalization {
       const d = group.leftSided ? -1 : 1
       group.lines = [
         L.polyline([
-          this.map.layerPointToLatLng(group.pos),
-          this.map.layerPointToLatLng(plus(group.pos, offset)),
-          this.map.layerPointToLatLng(plus(plus(group.pos, offset), { x: d * signSize, y: 0 })),
+          this.map.layerPointToLatLng(pos),
+          this.map.layerPointToLatLng(plus(pos, offset)),
+          this.map.layerPointToLatLng(plus(plus(pos, offset), { x: d * signSize * 0.5, y: 0 })),
         ], LINE_OPTIONS),
         L.polyline([
           this.map.layerPointToLatLng({
-            x: group.pos.x + offset.x + d * signSize * 1.25,
-            y: group.pos.y + offset.y - group.height / 2,
+            x: pos.x + offset.x + d * signSize * 0.75,
+            y: pos.y + offset.y - height / 2,
           }),
           this.map.layerPointToLatLng({
-            x: group.pos.x + offset.x + d * signSize,
-            y: group.pos.y + offset.y - group.height / 2,
+            x: pos.x + offset.x + d * signSize * 0.5,
+            y: pos.y + offset.y - height / 2,
           }),
           this.map.layerPointToLatLng({
-            x: group.pos.x + offset.x + d * signSize,
-            y: group.pos.y + offset.y + group.height / 2,
+            x: pos.x + offset.x + d * signSize * 0.5,
+            y: pos.y + offset.y + height / 2,
           }),
           this.map.layerPointToLatLng({
-            x: group.pos.x + offset.x + d * signSize * 1.25,
-            y: group.pos.y + offset.y + group.height / 2,
+            x: pos.x + offset.x + d * signSize * 0.75,
+            y: pos.y + offset.y + height / 2,
           }),
         ], LINE_OPTIONS),
       ]
@@ -161,6 +161,8 @@ export default class Generalization {
     this.clearLines()
 
     // Ініціалізація
+    const signSize = this.getScale()
+    const bounds = this.map.getBounds()
     const forRecreateIcon = []
     this.domains = []
     this.timer = null
@@ -271,14 +273,21 @@ export default class Generalization {
       }
     }
 
+    // Перший прохід розрахунку
+    precalcGroups()
+
+    // Відкидаємо групи, положення яких поза межами видимої області карти
+    for (const domain of this.domains) {
+      domain.groups = domain.groups.filter((group) => bounds.contains(this.map.layerPointToLatLng(group.pos)))
+    }
+    this.domains = this.domains.filter((domain) => domain.groups.length)
+
+    // Визначаємо порядок слідування знаків у групі
     for (const domain of this.domains) {
       for (const group of domain.groups) {
         group.layers.sort((layer1, layer2) => (layer2.object.level ?? 0) - (layer1.object.level ?? 0))
       }
     }
-
-    // Перший прохід розрахунку
-    precalcGroups()
 
     // Перший прохід створення іконок знаків (для визначення їхніх розмірів)
     forRecreateIcon.forEach((layer) => {
@@ -289,25 +298,22 @@ export default class Generalization {
     precalcGroups()
 
     // Визначення орієнтації груп
-    const bounds = this.map.getBounds()
     const box = { left: 1e6, top: 1e6, right: -1e6, bottom: -1e6 }
     let boxValid = false
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        if (bounds.contains(this.map.layerPointToLatLng(group.pos))) {
-          boxValid = true
-          if (group.pos.x < box.left) {
-            box.left = group.pos.x
-          }
-          if (group.pos.x > box.right) {
-            box.right = group.pos.x
-          }
-          if (group.pos.y < box.top) {
-            box.top = group.pos.y
-          }
-          if (group.pos.y > box.bottom) {
-            box.bottom = group.pos.y
-          }
+        boxValid = true
+        if (group.pos.x < box.left) {
+          box.left = group.pos.x
+        }
+        if (group.pos.x > box.right) {
+          box.right = group.pos.x
+        }
+        if (group.pos.y < box.top) {
+          box.top = group.pos.y
+        }
+        if (group.pos.y > box.bottom) {
+          box.bottom = group.pos.y
         }
       }
     }
@@ -333,15 +339,44 @@ export default class Generalization {
       }
     }
 
+    // Збирання груп у сектори
+    const sectors = {}
+    for (const domain of this.domains) {
+      for (const group of domain.groups) {
+        const key = `x[${group.orientation.x}]y[${group.orientation.y}]`
+        group.key = key
+        if (!sectors[key]) {
+          sectors[key] = {
+            orientation: group.orientation,
+            groups: [],
+          }
+        }
+        sectors[key].groups.push(group)
+      }
+    }
+
+    // Розрідження груп на площині у рамках секторів
+    for (const sector of Object.values(sectors)) {
+      sector.groups.sort((group1, group2) => sector.orientation.x * (group1.pos.x - group2.pos.x))
+      let shift = 0
+      let prevX = sector.groups[0].pos.x
+      for (const group of sector.groups) {
+        shift -= sector.orientation.x * (group.pos.x - prevX)
+        if (shift < signSize * 0.5) {
+          shift = signSize * 0.5
+        }
+        group.offset.x = sector.orientation.x * shift
+        group.offset.y = group.offset.x ? group.orientation.y * signSize : 0
+        shift = group.width + signSize * 0.75
+        prevX = group.pos.x + group.offset.x
+      }
+    }
+
     // Створення позначок груп, зі зміщенням залежно від орієнтації
-    const signSize = this.getScale()
     this.map.off('layeradd', this.layerAddHandler)
     for (const domain of this.domains) {
       for (const group of domain.groups) {
-        const offset = group.headquarters
-          ? { x: group.orientation.x2 * signSize, y: group.orientation.y * signSize }
-          : { x: group.orientation.x * signSize, y: group.orientation.y * signSize }
-        this.buildGroupLines(group, offset)
+        this.buildGroupLines(group)
       }
     }
     this.map.on('layeradd', this.layerAddHandler)
@@ -358,8 +393,8 @@ export const calcShift = (group, layer) => {
   const l0 = group.layers[0].options.icon.state
   const vScale = group.headquarters ? 0.75 : 1
   const hShift = group.headquarters ? 0 : group.leftSided
-    ? -group.xAnchorLeft - l0.scale * 1.25
-    : group.xAnchor + l0.scale * 1.25
+    ? -group.xAnchorLeft - l0.scale * 0.75
+    : group.xAnchor + l0.scale * 0.75
   const vShift = group.headquarters ? 0 : l0.height - l0.octagonAnchor.y
   const result = {
     x: group.pos.x + group.offset.x - layer._pos.x + hShift,
