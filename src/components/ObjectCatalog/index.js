@@ -52,6 +52,7 @@ export default class CatalogsComponent extends React.PureComponent {
     milSymbolRenderer,
     onFilterClick,
     getFilterStatus,
+    filterCount,
   ) => (
     {
       textFilter,
@@ -64,6 +65,7 @@ export default class CatalogsComponent extends React.PureComponent {
       milSymbolRenderer,
       onFilterClick,
       getFilterStatus,
+      filterCount,
     }
   ))
 
@@ -85,6 +87,7 @@ export default class CatalogsComponent extends React.PureComponent {
       onFilterClick,
       getFilterStatus,
       title,
+      filterCount,
     } = this.props
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
@@ -98,6 +101,7 @@ export default class CatalogsComponent extends React.PureComponent {
       milSymbolRenderer,
       onFilterClick,
       getFilterStatus,
+      filterCount,
     )
 
     return (
@@ -141,4 +145,5 @@ CatalogsComponent.propTypes = {
   onVisibleChange: PropTypes.func,
   onFilterClick: PropTypes.func,
   getFilterStatus: PropTypes.func,
+  filterCount: PropTypes.object,
 }

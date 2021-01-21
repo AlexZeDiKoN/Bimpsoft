@@ -6,6 +6,7 @@ import { data, components, IButton, IconNames, ButtonTypes } from '@C4/CommonCom
 import { VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
+import { CountBox } from '../common/Sidebar'
 
 // export const catalogLevel = () => SubordinationLevel.COMMAND
 const emptyFunc = () => null
@@ -56,6 +57,7 @@ export default class Item extends React.Component {
       milSymbolRenderer,
       onVisibleChange,
       onFilterClick,
+      filterCount,
       getFilterStatus = emptyFunc,
     } = this.props
     const { name, id, shown } = data
@@ -82,6 +84,11 @@ export default class Item extends React.Component {
         onClick={this.clickFilter}
       />,
     )
+    const count = filterCount && onFilterClick &&
+      <CountBox
+        isHidden={!getFilterStatus(id) || !shown}
+        count={filterCount?.[id]}
+      />
     const icon = tree.canExpand && (
       <Icon
         icon={Icon.names.DROP_RIGHT_DEFAULT}
@@ -117,6 +124,7 @@ export default class Item extends React.Component {
             <div className="catalog-item-text">
               <HighlightedText text={name} textFilter={textFilter}/>
             </div>
+            {count}
           </div>
         </div>
       </Tooltip>

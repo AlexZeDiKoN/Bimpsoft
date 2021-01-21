@@ -23,3 +23,11 @@ SidebarWrap.propTypes = {
   title: PropTypes.oneOfType([ PropTypes.node, PropTypes.string ]),
   onChangeSearch: PropTypes.func,
 }
+
+export const CountBox = ({ count = 0, isHidden = false }) =>
+  <div className="sidebar--count-box" hidden={isHidden}>{count}</div>
+CountBox.displayName = 'CountBox'
+CountBox.propTypes = {
+  count: PropTypes.oneOfType([ PropTypes.string, PropTypes.number ]),
+  isHidden: PropTypes.bool,
+}
