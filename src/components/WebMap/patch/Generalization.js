@@ -2,9 +2,6 @@ import L from 'leaflet'
 import { interpolateSize } from './utils/helpers'
 
 const REBUILD_TIMEOUT = 50
-/* const FRIEND_SIZE = -1
-const ENEMY_SIZE = 1
-const ENEMY_AFFILIATION = 'Hostile' */
 const LINE_OPTIONS = {
   interactive: false,
   noClip: true,
@@ -188,7 +185,6 @@ export default class Generalization {
             domain = {
               key,
               headquarters,
-              // enemy: affiliation === ENEMY_AFFILIATION,
               layers: [],
               groups: [],
             }
