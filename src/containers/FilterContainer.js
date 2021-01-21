@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { SidebarFilterComponent } from '../components/Filter'
 import { onChangeMilSymbolVisible, openMilSymbolModal, setSearchFilter } from '../store/actions/filter'
-import { filterSearch, getCurrentFilters, getFilteredObjectsPoints, mapCOP } from '../store/selectors'
+import { filterSearch, getCurrentFilters, getFilteredObjectsCount, mapCOP } from '../store/selectors'
 import { setModalData } from '../store/actions/task'
 import { CREATE_NEW_LAYER_TYPE } from '../constants/modals'
 
@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
     items,
     search: filterSearch(state),
     isCOP: mapCOP(state),
-    isSaveActive: Boolean(getFilteredObjectsPoints(state)?.size && items.length),
+    filtersCount: getFilteredObjectsCount(state),
+    isSaveActive: Boolean(items.length),
   }
 }
 
