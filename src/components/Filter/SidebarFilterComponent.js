@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@C4/MilSymbolEditor'
 import { IButton, IconNames, ColorTypes, Scrollbar, data, HighlightedText } from '@C4/CommonComponents'
-import { SidebarWrap } from '../common/Sidebar'
+import { CountBox, SidebarWrap } from '../common/Sidebar'
 import i18n from '../../i18n'
 import VisibilityButton from '../common/VisibilityButton'
 import './style.css'
@@ -20,6 +20,7 @@ export const SidebarFilterComponent = ({
   onOpenCreateLayer,
   isCOP,
   isSaveActive,
+  filtersCount,
 }) => {
   const isItemExists = Boolean(items.length)
   const textFilter = TextFilter.create(search)
@@ -66,6 +67,7 @@ export const SidebarFilterComponent = ({
               <HighlightedText text={name} textFilter={textFilter} />
             </span>
           </span>
+          <CountBox isHidden={!visible} count={filtersCount?.[index]}/>
         </div>
         ))}
     </Scrollbar>
@@ -82,4 +84,5 @@ SidebarFilterComponent.propTypes = {
   onOpen: PropTypes.func,
   isSaveActive: PropTypes.bool,
   isCOP: PropTypes.bool,
+  filtersCount: PropTypes.object,
 }

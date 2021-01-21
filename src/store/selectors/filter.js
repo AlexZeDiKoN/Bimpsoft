@@ -61,6 +61,16 @@ const compareByType = (aValue, bValue) => {
 const compareObjectValues = (object = {}, filterItem = {}, compareFn = compareByType) =>
   Object.entries(filterItem).every(([ key, value ]) => compareFn(value, object[key]))
 
+const filterPointType = (filter, current) => {
+  const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = current
+  const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filter
+  const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
+    compareByCode(filterCode, objectCode, func, length))
+  const isLevelEqual = compareByType(filterLevel, objectLevel)
+  const isPointEqual = compareByType(filterPoint, objectPoint)
+  const isAttributesEqual = compareObjectValues(JSParser(objectAttributes), JSParser(filterAttributes))
+  return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual
+}
 // ------------------------------------ selectors ---------------------------------------------------------------
 
 export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
@@ -70,7 +80,7 @@ export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
 export const loadingFiltersStatus = (state) => state.filter[LOADING]
 
-export const catalogObjects = (state) => state.catalogs.objects
+export const catalogObjects = (state) => state.catalogs?.objects
 
 export const getFilterStatusSelector = createSelector(catalogFilters, (filtered) => (id) => Boolean(filtered[id]))
 
@@ -84,28 +94,30 @@ export const getFilteredCatalogsObjects = createSelector(catalogFilters, catalog
   return Object.fromEntries(filteredCatalogs)
 })
 
+export const getFilteredCatalogsCount = createSelector(getFilteredCatalogsObjects, (catalogs) => {
+  const count = Object.entries(catalogs).map(([ id, elements ]) => [ id, elements?.length ])
+  return Object.fromEntries(count)
+})
+
 export const getCurrentFilters = createSelector(milSymbolFilters, selectedLayerId, (filters, selectedLayer) => {
   return filters.filter(({ inCurrentLayer, data }) => inCurrentLayer ? data?.layer === selectedLayer : true)
 })
 
 export const getFilteredObjects = createSelector(getCurrentFilters, objects, (filters, objects = {}) => {
   const visibleFilters = filters.filter(({ visible }) => visible).map(({ data }) => (data))
-  return objects.filter((item) => {
-    return item.type === SelectionTypes.POINT
-      ? visibleFilters.every((filterItem) => {
-        const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = item
-        const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filterItem
-        const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
-          compareByCode(filterCode, objectCode, func, length))
-        const isLevelEqual = compareByType(filterLevel, objectLevel)
-        const isPointEqual = compareByType(filterPoint, objectPoint)
-        const isAttributesEqual = compareObjectValues(JSParser(objectAttributes), JSParser(filterAttributes))
-        return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual
-      })
-      : true
-  })
+  return objects.filter((item) =>
+    item.type === SelectionTypes.POINT ? visibleFilters.every((filterItem) => filterPointType(filterItem, item)) : true,
+  )
 })
 
-export const getFilteredObjectsPoints = createSelector(getFilteredObjects, (filtered) => {
-  return filtered.filter((item) => item.type === SelectionTypes.POINT)
+export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters, (objectsMap = [], filters) => {
+  const count = {}
+  const points = objectsMap.filter((item) => item.type === SelectionTypes.POINT)
+  filters.forEach(({ data, visible }, index) => {
+    if (visible) {
+      const filtered = points.filter((item) => filterPointType(data, item))
+      count[index] = filtered?.size
+    }
+  })
+  return count
 })

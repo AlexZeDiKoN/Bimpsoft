@@ -1,14 +1,18 @@
 import { connect } from 'react-redux'
 import CatalogsComponent from '../components/Catalogs'
 import { catalogs, filter } from '../store/actions'
-import { getFilterStatusSelector } from '../store/selectors'
+import { getFilteredCatalogsCount, getFilterStatusSelector } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = ({ catalogs, ...state }) => ({
-  ...catalogs,
-  shownIds: Object.keys(catalogs.objects).reduce((res, key) => ({ [key]: true, ...res }), {}),
-  getFilterStatus: getFilterStatusSelector(state),
-})
+const mapStateToProps = (state) => {
+  const { catalogs } = state
+  return ({
+    ...catalogs,
+    shownIds: Object.keys(catalogs.objects).reduce((res, key) => ({ [key]: true, ...res }), {}),
+    getFilterStatus: getFilterStatusSelector(state),
+    filterCount: getFilteredCatalogsCount(state),
+  })
+}
 
 const mapDispatchToProps = {
   onExpand: catalogs.expandItem,

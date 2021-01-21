@@ -76,7 +76,7 @@ export const onRemoveMilSymbolFilter = () => (dispatch, getState) => {
 export const onChangeMilSymbolVisible = (visible, index) => (dispatch, getState) => {
   const state = getState()
   const dataList = milSymbolFilters(state) ?? []
-  index === 'number'
+  typeof index === 'number'
     ? dispatch(mergeMilSymbolFilter({ ...dataList[index], visible }, index))
     : dispatch(setMilSymbolFilter(dataList.map((data) => ({ ...data, visible }))))
 }
