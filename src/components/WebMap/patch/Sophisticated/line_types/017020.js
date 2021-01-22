@@ -147,8 +147,8 @@ lineDefinitions['017020'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
         TEXT_SIZE,
         'end',
-        TEXT_COLOR,
         'text-after-edge',
+        TEXT_COLOR,
       )
       const [ , b2 ] = drawText(
         result,
@@ -157,8 +157,8 @@ lineDefinitions['017020'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
         TEXT_SIZE,
         'end',
-        TEXT_COLOR,
         'text-before-edge',
+        TEXT_COLOR,
       )
       const [ , b3 ] = drawText(
         result,
@@ -167,8 +167,8 @@ lineDefinitions['017020'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.W] ?? '',
         TEXT_SIZE,
         'start',
-        TEXT_COLOR,
         'text-after-edge',
+        TEXT_COLOR,
       )
       const [ , b4 ] = drawText(
         result,
@@ -177,8 +177,8 @@ lineDefinitions['017020'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
         TEXT_SIZE,
         'start',
-        TEXT_COLOR,
         'text-before-edge',
+        TEXT_COLOR,
       )
       const r04 = r * 0.4
       const leftLine = Math.max(b1.width, b2.width) + r04

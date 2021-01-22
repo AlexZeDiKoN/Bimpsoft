@@ -59,8 +59,8 @@ lineDefinitions['017063'] = {
         text,
         1,
         'middle',
-        null,
-        'text-after-edge')
+        'text-after-edge',
+      )
     }
   },
 }

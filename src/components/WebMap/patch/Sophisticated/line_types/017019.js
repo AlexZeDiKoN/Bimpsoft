@@ -85,9 +85,9 @@ lineDefinitions['017019'] = {
         // вывод радиуса и амплификатора
         const radiusM = Earth.distance(pgO, coordArray[ind]).toFixed(0)
         const amplifier = sectorsInfo[ind]?.amplifier ?? ''
-        drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', null, 'text-after-edge')
+        drawText(result, { x: elm.x, y: elm.y }, 0, radiusM, SMALL_TEXT_SIZE, 'middle', 'text-after-edge')
         if (result.layer?.options?.showAmplifiers || toPrint) {
-          drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, 1, 'middle', null, 'text-before-edge')
+          drawText(result, { x: elm.x, y: elm.y }, 0, amplifier, 1, 'middle', 'text-before-edge')
         }
       }
     })

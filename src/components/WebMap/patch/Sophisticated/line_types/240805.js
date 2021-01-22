@@ -49,7 +49,6 @@ lineDefinitions['240805'] = {
       result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
       1,
       'middle',
-      null,
       angle > 0 ? 'text-after-edge' : 'text-before-edge',
     )
   },
