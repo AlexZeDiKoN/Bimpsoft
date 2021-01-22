@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { SymbolEditorComponentStateless } from '@C4/MilSymbolEditor'
-import { HotKeysContainer, HotKey } from '@C4/CommonComponents'
+import { HotKeysContainer, HotKey, FilterInput, Tree, HighlightedText } from '@C4/CommonComponents'
 import { SUBORDINATION_LEVEL_PATH } from '../WithSubordinationLevel'
 import { COORDINATE_PATH } from '../CoordinatesMixin'
 import placeSearch from '../../../../server/places'
@@ -9,6 +9,11 @@ import placeSearch from '../../../../server/places'
 import './style.css'
 import { MAX_LENGTH_TEXT } from '../../../../constants/InputText'
 import { REDO, UNDO } from '../../../../constants/shortcuts'
+import {
+  getIdSymbols,
+  getPartsSymbols,
+} from '../../../Symbols'
+import entityKind from '../../../WebMap/entityKind'
 
 const LIST_WIDTH = 600 // максимальна ширина списку для вибору "Військового формування" (px)
 const configs = SymbolEditorComponentStateless.configs
@@ -38,6 +43,14 @@ const elementsConfigsReadOnly = {
       ...readOnly,
     },
   }), {}),
+}
+
+const renderItem = (itemProps) => {
+  return <Tree.ExpandItem {...itemProps}>
+    <Tree.HoverItem>
+      {itemProps.data.render}
+    </Tree.HoverItem>
+  </Tree.ExpandItem>
 }
 
 const CODE_PATH = [ 'code' ]
@@ -125,6 +138,25 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     window.explorerBridge.showUnitInfo(itemType, unitId)
   }
 
+  onChangeSymbol = (target, treeSymbols) => {
+    const { value } = target
+    if (!value) {
+      return
+    }
+    const index = treeSymbols.findIndex((symbol) => symbol.id === value)
+    if (index < 0 || !treeSymbols[index].parentID) {
+      return
+    }
+    const { code, amp = {} } = JSON.parse(treeSymbols[index].data)
+    this.setResult((result) => {
+      this.setUndoRecord(result)
+      if (code.length > 20 || !code.match(/^[0-9]+$/)) {
+        return result
+      }
+      return result.setIn(CODE_PATH, code).updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(amp))
+    })
+  }
+
   renderMilSymbol () {
     const result = this.getResult()
     const code = result.getIn(CODE_PATH)
@@ -135,10 +167,33 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
     const { orgStructures, ovtData, coordinatesType } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
+    const name = '* нет соответствия *'
+    const treeSymbols = getPartsSymbols(entityKind.POINT, '')
+    const id = getIdSymbols({ code, attributes }, '')
+    const thisSymbol = {
+      id,
+      name: name,
+      render: <div className={'list'} >
+        <HighlightedText text={name}/>
+      </div>,
+    }
     return (
       <HotKeysContainer>
         <HotKey selector={UNDO} onKey={this.undoHandler}/>
         <HotKey selector={REDO} onKey={this.redoHandler}/>
+        <div className={'symbol-container'}>
+          <FilterInput
+            values={id ? treeSymbols : [ thisSymbol, ...treeSymbols ]}
+            value={id}
+            name={'id'}
+            onChange={({ target }) => this.onChangeSymbol(target, treeSymbols)}
+            listHeight={600}
+            dropDownFitToParent={true}
+            listWidth={500}
+          >
+            {renderItem}
+          </FilterInput>
+        </div>
         <SymbolEditorComponentStateless
           code={code}
           coordinates={coordinates}

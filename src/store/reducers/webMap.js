@@ -37,6 +37,7 @@ const LineAmplifier = Record({
 })
 
 const webMapAttributesInitValues = {
+  name: null,
   template: '',
   color: evaluateColor(colors.BLACK),
   fill: colors.TRANSPARENT,
