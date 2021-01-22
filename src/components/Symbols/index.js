@@ -165,7 +165,7 @@ export const getPartsSymbols = (type, search) => {
 
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 const SymbolsTab = (props) => {
-  const { canEdit, listModeOnly = false } = props
+  const { canEdit } = props
   const [ search, onChange ] = useState('')
   const [ listMode, setListMode ] = useState(false)
   const sections = useToggleGroup()
@@ -187,11 +187,11 @@ const SymbolsTab = (props) => {
 
       const elemToRender = (!amp.isSvg)
         ? <div
-          className={(listMode || listModeOnly) ? 'list' : ''}
+          className={listMode ? 'list' : ''}
           onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'symbol') : null}
           draggable={canEdit}
         >
-          {(listMode || listModeOnly) ? <> <MilSymbol
+          {listMode ? <> <MilSymbol
             code={code}
             amplifiers={amp}
             className={'symbol'}
@@ -203,11 +203,11 @@ const SymbolsTab = (props) => {
             />}
         </div>
         : <div
-          className={(listMode || listModeOnly) ? 'list' : 'symbol'}
+          className={listMode ? 'list' : 'symbol'}
           draggable={canEdit}
           onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'line') : null}
         >
-          {(listMode || listModeOnly) ? <>
+          {listMode ? <>
             <div className='symbol'>
               <SymbolSvg
                 name={`${code}`}
@@ -248,9 +248,7 @@ const SymbolsTab = (props) => {
             </span>}
             {...value}
           >
-            <Scrollbar className={
-              (listMode || listModeOnly) ? 'symbol-container-nowrap symbol-container' : 'symbol-container'
-            }>
+            <Scrollbar className={listMode ? 'symbol-container-nowrap symbol-container' : 'symbol-container'}>
               { symbolJSX }
             </Scrollbar>
           </Collapse>
@@ -266,24 +264,22 @@ const SymbolsTab = (props) => {
           initValue={search}
           title={i18n.SYMBOLS}
         />
-        {!listModeOnly && <>
-          <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
-            <IButton
-              active={!listMode}
-              type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.WHITE}
-              onClick={() => setListMode(false)}
-              icon={IconNames.GRID}/>
-          </Tooltip>
-          <Tooltip title={i18n.LIST} mouseEnterDelay={MOUSE_ENTER_DELAY}>
-            <IButton
-              active={listMode}
-              type={ButtonTypes.WITH_BG}
-              colorType={ColorTypes.WHITE}
-              onClick={() => setListMode(true)}
-              icon={IconNames.LIST}/>
-          </Tooltip>
-        </>}
+        <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={!listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(false)}
+            icon={IconNames.GRID}/>
+        </Tooltip>
+        <Tooltip title={i18n.LIST} mouseEnterDelay={MOUSE_ENTER_DELAY}>
+          <IButton
+            active={listMode}
+            type={ButtonTypes.WITH_BG}
+            colorType={ColorTypes.WHITE}
+            onClick={() => setListMode(true)}
+            icon={IconNames.LIST}/>
+        </Tooltip>
       </div>
       <Scrollbar className='parts-container'>
         {partsJSX}
@@ -294,7 +290,6 @@ const SymbolsTab = (props) => {
 
 SymbolsTab.propTypes = {
   canEdit: PropTypes.bool,
-  listModeOnly: PropTypes.bool,
 }
 
 SymbolsTab.displayName = 'SymbolsTab'

@@ -145,7 +145,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
 
   onChangeSymbol = (target, treeSymbols) => {
     const { value } = target
-    if (!value) {
+    if (!value || !this.isCanEdit()) {
       return
     }
     const index = treeSymbols.findIndex((symbol) => symbol.id === value)
