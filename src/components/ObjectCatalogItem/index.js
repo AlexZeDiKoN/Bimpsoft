@@ -2,12 +2,15 @@ import React from 'react'
 import './style.css'
 import { Tooltip } from 'antd'
 import PropTypes from 'prop-types'
-import { data, components } from '@C4/CommonComponents'
+import { data, components, IButton, IconNames, ButtonTypes } from '@C4/CommonComponents'
 import { VisibilityButton } from '../common'
 import i18n from '../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
+import { CountBox } from '../common/Sidebar'
 
 // export const catalogLevel = () => SubordinationLevel.COMMAND
+const emptyFunc = () => null
+const buttonWrap = (node) => <div className="button_layers">{node}</div>
 
 const { common: { TreeComponent, HighlightedText } } = components
 const { Icon } = components.icons
@@ -29,6 +32,12 @@ export default class Item extends React.Component {
     e.dataTransfer.setData('text', JSON.stringify({ type: 'unit', id: data.id }))
   }
 
+  clickFilter = (e) => {
+    const { data, onFilterClick } = this.props
+    onFilterClick(data.id)
+    e.stopPropagation()
+  }
+
   clickItem = () => {
     const {
       data: { id, shown },
@@ -38,7 +47,19 @@ export default class Item extends React.Component {
   }
 
   render () {
-    const { tree, textFilter, data, scrollRef, selectedId, canEdit, milSymbolRenderer, onVisibleChange } = this.props
+    const {
+      tree,
+      textFilter,
+      data,
+      scrollRef,
+      selectedId,
+      canEdit,
+      milSymbolRenderer,
+      onVisibleChange,
+      onFilterClick,
+      filterCount,
+      getFilterStatus = emptyFunc,
+    } = this.props
     const { name, id, shown } = data
     const iclasses = [ 'catalog-arrows-right' ]
     if (tree.expanded) {
@@ -52,6 +73,22 @@ export default class Item extends React.Component {
         onChange={this.clickItem}
       />
     ) : null
+    const filter = onFilterClick && buttonWrap(
+      <IButton
+        title={i18n.FILTER_CATALOG}
+        disabled={!shown}
+        data-test="button-filter-catalog"
+        icon={IconNames.FILTER}
+        type={ButtonTypes.WITH_BG}
+        active={getFilterStatus(id)}
+        onClick={this.clickFilter}
+      />,
+    )
+    const count = filterCount && onFilterClick &&
+      <CountBox
+        isHidden={!getFilterStatus(id) || !shown}
+        count={filterCount?.[id]}
+      />
     const icon = tree.canExpand && (
       <Icon
         icon={Icon.names.DROP_RIGHT_DEFAULT}
@@ -74,6 +111,7 @@ export default class Item extends React.Component {
       >
         <div ref={isSelected ? scrollRef : null} onClick={this.clickItem} className={classes.join(' ')}>
           {indicator}
+          {filter}
           {icon}
           <div
             onDoubleClick={this.doubleClickHandler}
@@ -86,6 +124,7 @@ export default class Item extends React.Component {
             <div className="catalog-item-text">
               <HighlightedText text={name} textFilter={textFilter}/>
             </div>
+            {count}
           </div>
         </div>
       </Tooltip>
@@ -105,4 +144,6 @@ Item.propTypes = {
   onVisibleChange: PropTypes.func,
   onDoubleClick: PropTypes.func,
   scrollRef: PropTypes.any,
+  getFilterStatus: PropTypes.func,
+  onFilterClick: PropTypes.func,
 }

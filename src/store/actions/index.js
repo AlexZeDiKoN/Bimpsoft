@@ -20,6 +20,7 @@ import * as task from './task'
 import * as changeLog from './changeLog'
 import * as elevationProfile from './elevationProfile'
 import * as dictionaries from './dictionaries'
+import * as filter from './filter'
 
 export {
   viewModes,
@@ -44,4 +45,5 @@ export {
   changeLog,
   elevationProfile,
   dictionaries,
+  filter,
 }

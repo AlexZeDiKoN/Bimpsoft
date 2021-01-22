@@ -1,5 +1,4 @@
 import { action } from '../../utils/services'
-import dictionariesApi from '../../server/api.dictionaries'
 import { asyncAction } from './index'
 
 export const GET_DICTIONARIES = action('GET_DICTIONARIES')

@@ -57,16 +57,21 @@ const CODE_PATH = [ 'code' ]
 const UNIT_PATH = [ 'unit' ]
 const ATTRIBUTES_PATH = [ 'attributes' ]
 
+export const propTypes = {
+  orgStructures: PropTypes.shape({
+    roots: PropTypes.array,
+    byIds: PropTypes.object,
+  }),
+  elementsConfigs: PropTypes.object,
+  ovtData: PropTypes.object,
+  ovtSubKind: PropTypes.instanceOf(Map),
+  ovtKind: PropTypes.instanceOf(Map),
+  coordinatesType: PropTypes.string,
+  isFilterMode: PropTypes.bool,
+}
+
 const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Component {
-  static propTypes = {
-    orgStructures: PropTypes.shape({
-      roots: PropTypes.array,
-      byIds: PropTypes.object,
-    }),
-    elementsConfigs: PropTypes.object,
-    ovtData: PropTypes.object,
-    coordinatesType: PropTypes.string,
-  }
+  static propTypes = propTypes
 
   undoRecord = []
 
@@ -165,7 +170,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const unit = result.getIn(UNIT_PATH)
     const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
-    const { orgStructures, ovtData, coordinatesType } = this.props
+    const { orgStructures, ovtData, coordinatesType, ovtSubKind, ovtKind, isFilterMode } = this.props
     const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
     const name = '* нет соответствия *'
     const treeSymbols = getPartsSymbols(entityKind.POINT, '')
@@ -213,6 +218,9 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
           maxInputLength={MAX_LENGTH_TEXT.TEXT_INPUT}
           preferredType={coordinatesType}
           listWidth={LIST_WIDTH}
+          isFilterMode={isFilterMode}
+          ovtKindData={ovtKind}
+          ovtSubKindData={ovtSubKind}
         />
       </HotKeysContainer>
     )

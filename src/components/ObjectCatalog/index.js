@@ -50,6 +50,9 @@ export default class CatalogsComponent extends React.PureComponent {
     selectedId,
     canEdit,
     milSymbolRenderer,
+    onFilterClick,
+    getFilterStatus,
+    filterCount,
   ) => (
     {
       textFilter,
@@ -60,6 +63,9 @@ export default class CatalogsComponent extends React.PureComponent {
       canEdit,
       scrollRef: this.scrollRef,
       milSymbolRenderer,
+      onFilterClick,
+      getFilterStatus,
+      filterCount,
     }
   ))
 
@@ -78,7 +84,10 @@ export default class CatalogsComponent extends React.PureComponent {
       canEdit,
       milSymbolRenderer,
       onVisibleChange,
+      onFilterClick,
+      getFilterStatus,
       title,
+      filterCount,
     } = this.props
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
@@ -90,6 +99,9 @@ export default class CatalogsComponent extends React.PureComponent {
       selectedId,
       canEdit,
       milSymbolRenderer,
+      onFilterClick,
+      getFilterStatus,
+      filterCount,
     )
 
     return (
@@ -131,4 +143,7 @@ CatalogsComponent.propTypes = {
   onDoubleClick: PropTypes.func,
   milSymbolRenderer: PropTypes.func.isRequired,
   onVisibleChange: PropTypes.func,
+  onFilterClick: PropTypes.func,
+  getFilterStatus: PropTypes.func,
+  filterCount: PropTypes.object,
 }

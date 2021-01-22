@@ -1,5 +1,4 @@
 import { model } from '@C4/MilSymbolEditor'
-import { symbolOptions } from '@C4/MilSymbolEditor/src/model'
 import { Record } from 'immutable'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
@@ -7,6 +6,8 @@ import './patch'
 import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
 import { adjustSquareCorner } from './patch/utils/helpers'
+
+const { symbolOptions } = model
 
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)

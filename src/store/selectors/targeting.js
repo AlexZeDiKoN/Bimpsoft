@@ -15,7 +15,7 @@ const ARMED = [
 
 export const targetingModeSelector = (state) => state.webMap.mode === MapModes.TARGET
 const unitId = (state) => state.webMap.unitId
-const objects = (state) => state.webMap.objects
+export const objects = (state) => state.webMap.objects
 const defaultOrgStructure = (state) => state.webMap.defOrgStructure
 const selectedList = (state) => state.selection.list
 export const allUnits = (state) => state.orgStructures.unitsById

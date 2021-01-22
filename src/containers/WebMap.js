@@ -9,6 +9,7 @@ import {
   taskModeSelector,
   layersByIdFromStore,
   marchDots, undoInfo, mapCOP, flexGridSelected,
+  getFilteredCatalogsObjects, getFilteredObjects,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
@@ -22,7 +23,7 @@ import i18n from '../i18n'
 const WebMapContainer = connect(
   (state) => ({
     sources: state.webMap.source.sources,
-    objects: state.webMap.objects,
+    objects: getFilteredObjects(state),
     center: state.webMap.center,
     zoom: state.webMap.zoom,
     highlighted: state.webMap.highlighted,
@@ -63,7 +64,7 @@ const WebMapContainer = connect(
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
     catalogModalData: state.webMap.catalogModalData,
-    catalogObjects: state.catalogs.objects,
+    catalogObjects: getFilteredCatalogsObjects(state),
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
