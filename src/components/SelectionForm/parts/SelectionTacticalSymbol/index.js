@@ -9,9 +9,6 @@ import {
 import './styleList.css'
 import i18n from '../../../../i18n'
 
-// const NO_APPROPRIATE = '* немає відповідного тактичного знака *'
-// const MANY_MATCH = '* множинний збіг тактичних знаків *' + i18n.ALL
-
 const renderItem = (itemProps) => {
   return <Tree.ExpandItem {...itemProps}>
     <Tree.HoverItem>
