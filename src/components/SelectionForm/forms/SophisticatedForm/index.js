@@ -44,6 +44,9 @@ export default class SophisticatedForm extends compose(
     if (!code) {
       // return
     }
+    // обработка амплификаторов
+    if (amp.pointAmplifier) {
+    }
     // console.log('soph', data)
   }
 
