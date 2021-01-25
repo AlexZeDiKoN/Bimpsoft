@@ -355,8 +355,8 @@ export const symbols = [
       {
         hint: 'Вихідний рубіж, вихідний рубіж для форсування, рубіж регулювання',
         code: '10032500001410000000ld',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
@@ -367,8 +367,8 @@ export const symbols = [
       {
         hint: 'Рубіж розгортання у колони',
         code: '10032500001100000000rrbk',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
@@ -380,8 +380,8 @@ export const symbols = [
       {
         hint: 'Рубіж переходу в атаку (введення в бій, розгортання для контратаки)',
         code: '10032500001100000000rpa',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
@@ -393,8 +393,8 @@ export const symbols = [
       {
         hint: 'Рубіж оборони (позиція), зайнятий військами',
         code: '10032500001401000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
@@ -405,8 +405,8 @@ export const symbols = [
       {
         hint: 'Вогневий рубіж',
         code: '10032500001521000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -414,8 +414,8 @@ export const symbols = [
       {
         hint: 'Рубіж загороджувального вогню підрозділу',
         code: '10032500000170020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           left: ENDS_STROKE1,
           right: ENDS_STROKE1,
@@ -427,8 +427,8 @@ export const symbols = [
       {
         hint: 'Рубіж дії підрозділу',
         code: '10032500000170010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
         },
@@ -436,8 +436,8 @@ export const symbols = [
       {
         hint: 'Район зосередження',
         code: '10032500001502000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'AA' },
           color: '#3366ff',
@@ -446,8 +446,8 @@ export const symbols = [
       {
         hint: 'Район оборони',
         code: '10032500001512000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
         },
@@ -455,8 +455,8 @@ export const symbols = [
       {
         hint: 'Район базування військової частини, підрозділу авіації',
         code: '10032500001204000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -469,16 +469,16 @@ export const symbols = [
       {
         hint: 'Межа смуги вогню основного сектора обстрілу',
         code: '10032500001405000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Ділянка прориву',
         code: '10032500003402000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -491,16 +491,16 @@ export const symbols = [
       {
         hint: 'Ділянка форсування',
         code: '10032500002713000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район десантування (висадки розвідгруп)',
         code: '10032500001508000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'Дес' },
           color: '#3366ff',
@@ -509,8 +509,8 @@ export const symbols = [
       {
         hint: 'Район розвантаження',
         code: '10032500001506000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'Розвантаж' },
           color: '#3366ff',
@@ -519,8 +519,8 @@ export const symbols = [
       {
         hint: 'Зона приземлення (для евакуації розвідгруп)',
         code: '10032500001507000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'Евак' },
           color: '#3366ff',
@@ -529,8 +529,8 @@ export const symbols = [
       {
         hint: 'Вихідний район десантування (район завантаження)',
         code: '10032500001509000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'ВРД' },
           color: '#3366ff',
@@ -539,8 +539,8 @@ export const symbols = [
       {
         hint: 'Район базування',
         code: '10032500000170030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
         },
         color: '#3366ff',
@@ -553,8 +553,8 @@ export const symbols = [
       {
         hint: 'Площадка підскоку',
         code: '10032500003103000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'FAPR' },
           color: '#3366ff',
@@ -563,8 +563,8 @@ export const symbols = [
       {
         hint: 'Майданчик посадочний',
         code: '10032500000170040000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'МПос' },
           color: '#3366ff',
@@ -573,8 +573,8 @@ export const symbols = [
       {
         hint: 'Майданчик підскоку, засідки',
         code: '10032500000170050000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'МПідск' },
           color: '#3366ff',
@@ -583,8 +583,8 @@ export const symbols = [
       {
         hint: 'Майданчик евакуації',
         code: '10032500001507000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'ЕВАК' },
           color: '#3366ff',
@@ -593,8 +593,8 @@ export const symbols = [
       {
         hint: 'Район висадки тактичного повітряного десанту',
         code: '10032500000170030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
         },
@@ -602,8 +602,8 @@ export const symbols = [
       {
         hint: 'Атакувати вогнем – вогневе ураження противника без зближення та захоплення його об\'єктів',
         code: '10032500000170060000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -611,8 +611,8 @@ export const symbols = [
       {
         hint: 'Підрозділи, які зупинені на рубежі (атака відбита)',
         code: '10032500000170070000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           right: ENDS_ARROW1,
           color: '#3366ff',
@@ -621,8 +621,8 @@ export const symbols = [
       {
         hint: 'Напрямок головного удару',
         code: '10032500001514030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -630,8 +630,8 @@ export const symbols = [
       {
         hint: 'Інший напрямок удару',
         code: '10032500001514040000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -639,8 +639,8 @@ export const symbols = [
       {
         hint: 'Хибний напрямок наступу',
         code: '10032500001514060000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -648,8 +648,8 @@ export const symbols = [
       {
         hint: 'Засідка – ведення раптового вогню з підготовлених позицій по противнику, який рухається або зупинився',
         code: '10032500001417000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
         color: '#3366ff',
@@ -657,8 +657,8 @@ export const symbols = [
       {
         hint: 'Рубіж блокування противника (блокування)',
         code: '10032500003401000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -666,8 +666,8 @@ export const symbols = [
       {
         hint: 'Обхід маневр навколо перешкоди або позицій противника з метою збереження темпу просування',
         code: '10032500003403000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -675,8 +675,8 @@ export const symbols = [
       {
         hint: 'Втягування противника у  вогневий район (мішок), обмеження руху противника у визначеній зоні',
         code: '10032500003404000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -684,8 +684,8 @@ export const symbols = [
       {
         hint: 'Прочісування',
         code: '10032500003405000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -693,8 +693,8 @@ export const symbols = [
       {
         hint: 'Дезорганізувати - порушення бойового порядку противника',
         code: '10032500003410000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -702,8 +702,8 @@ export const symbols = [
       {
         hint: 'Сковування противника',
         code: '10032500001512040000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -711,8 +711,8 @@ export const symbols = [
       {
         hint: 'Вклинення',
         code: '10032500003418000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
         color: '#3366ff',
@@ -720,8 +720,8 @@ export const symbols = [
       {
         hint: 'Затримати - затримання маневру противника у визначеному місці та у визначений час',
         code: '10032500003408000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -729,8 +729,8 @@ export const symbols = [
       {
         hint: 'Демонструвати - ввести противника в оману демонстрацією сили без контакту з противником',
         code: '10032500000170080000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -738,8 +738,8 @@ export const symbols = [
       {
         hint: `Хибні дії – хибні дії, які здійснюються для примушення противника до використання резервів або маневру ними, викриття системи вогню, перенесення вогню засобів вогневої підтримки`,
         code: '10032500000170090000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -747,8 +747,8 @@ export const symbols = [
       {
         hint: 'Відхід – здійснення відходу без контакту з противником',
         code: '10032500003420000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -756,8 +756,8 @@ export const symbols = [
       {
         hint: 'Відхід під натиском',
         code: '10032500003424000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -765,8 +765,8 @@ export const symbols = [
       {
         hint: 'Замінити підрозділи – здійснення заміни підрозділів',
         code: '10032500003419000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -774,8 +774,8 @@ export const symbols = [
       {
         hint: 'Переслідувати – зайняття позицій на маршрутах відходу противника в ході переслідування',
         code: '10032500000170100000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -783,8 +783,8 @@ export const symbols = [
       {
         hint: 'Захоплення ‒ знищити противника у визначеному районі, захопити його',
         code: '10032500003423000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -792,8 +792,8 @@ export const symbols = [
       {
         hint: `Прикрити - забезпечення безпеки головних сил затримкою, дезорганізацією бойового порядку, введенням в оману противника`,
         code: '10032500003422010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -801,8 +801,8 @@ export const symbols = [
       {
         hint: 'Охороняти - захистити головні сили від раптового нападу противника, затримати просування противника',
         code: '10032500003422020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -810,8 +810,8 @@ export const symbols = [
       {
         hint: 'Спостерігати - спостереження, виявлення та передача інформації про противника головним силам',
         code: '10032500003422030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -819,8 +819,8 @@ export const symbols = [
       {
         hint: 'Просування та заміна  – рух за першим ешелоном в готовності до його заміни',
         code: '10032500003412000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: '' },
           color: '#3366ff',
@@ -829,8 +829,8 @@ export const symbols = [
       {
         hint: 'Просування та підтримка підрозділів – рух за першим ешелоном та підтримка його дії',
         code: '10032500003413000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: '' },
           color: '#3366ff',
@@ -854,8 +854,8 @@ export const symbols = [
       {
         hint: 'Ізолювання противника',
         code: '10032500003415000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -863,8 +863,8 @@ export const symbols = [
       {
         hint: 'Зайняти - зайняття визначеного району без вогневого контакту з противником',
         code: '10032500003417000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -872,8 +872,8 @@ export const symbols = [
       {
         hint: `Закріпитися – захопити (зайняти) та утримувати позицію, яку противник може використати в ході ведення бою та запобігти її руйнуванню`,
         code: '10032500000170110000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -881,8 +881,8 @@ export const symbols = [
       {
         hint: 'Запобігти – запобігти захопленню визначеної ділянки місцевості (об\'єкту) противником',
         code: '10032500001512050000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -890,8 +890,8 @@ export const symbols = [
       {
         hint: `Взяти під контроль – встановлення контролю над визначеним районом з метою недопущення оволодіння ним противником`,
         code: '10032500003421000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -899,8 +899,8 @@ export const symbols = [
       {
         hint: 'Напрямок удару своєї авіації',
         code: '10032500001406010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: 'AVON', [amps.W]: '' },
         },
@@ -908,8 +908,8 @@ export const symbols = [
       {
         hint: 'Імовірний напрямок удару повітряного противника',
         code: '10062500001514010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#ff0404',
         },
@@ -917,8 +917,8 @@ export const symbols = [
       {
         hint: 'Рубіж постановки завад (придушення ППО)',
         code: '10032500000170120000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           pointAmplifier: { [amps.T]: 'SEAD' },
           color: '#ff0404',
@@ -927,8 +927,8 @@ export const symbols = [
       {
         hint: 'Рубіж пуску КР, ПРР',
         code: '10032500000170130000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#ff0404',
           lineType: types.dashed.value,
@@ -938,8 +938,8 @@ export const symbols = [
       {
         hint: 'Зона чергування постановників завад',
         code: '10032500001408000000red', // исходный код линии - '10062500001701000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#ff0404',
         },
@@ -947,8 +947,8 @@ export const symbols = [
       {
         hint: 'Зона баражування літаків-розвідників (ДРЛВ, ДРЛВУ)',
         code: '10032500000170140000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#ff0404',
           lineType: types.dashed.value,
@@ -959,8 +959,8 @@ export const symbols = [
       {
         hint: 'Головний напрямок атаки',
         code: '10032500001406020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: 'MAIN', [amps.W]: '' },
         },
@@ -968,8 +968,8 @@ export const symbols = [
       {
         hint: 'Підтримка атаки',
         code: '10032500001406030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: 'SUP', [amps.W]: '' },
         },
@@ -977,8 +977,8 @@ export const symbols = [
       {
         hint: 'Хибна атака',
         code: '10032500001406050000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: 'FEINT', [amps.W]: '' },
         },
@@ -1161,8 +1161,8 @@ export const symbols = [
       {
         hint: 'Зосереджений вогонь',
         code: '10032500002408020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           pointAmplifier: { [amps.W]: '№' },
         },
@@ -1170,8 +1170,8 @@ export const symbols = [
       {
         hint: 'Одинарний нерухомий загороджувальний вогонь (воневий вал)',
         code: '10032500002407010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B' },
@@ -1180,8 +1180,8 @@ export const symbols = [
       {
         hint: 'Одинарний нерухомий загороджувальний вогонь (воневий вал)',
         code: '10032500000170780000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1189,8 +1189,8 @@ export const symbols = [
       {
         hint: 'Рухомий загороджувальний вогонь',
         code: '10032500000170150000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'N', [amps.B]: 'B', [amps.T]: 'T' },
@@ -1199,8 +1199,8 @@ export const symbols = [
       {
         hint: 'Послідовне зосередження вогню',
         code: '10032500000170160000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'T', [amps.N]: '101' },
@@ -1210,8 +1210,8 @@ export const symbols = [
       {
         hint: 'Зона цілі',
         code: '10032500002408050000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: '№' },
@@ -1220,8 +1220,8 @@ export const symbols = [
       {
         hint: 'Смуга ураження керованими снарядами дивізіону (Олово) із зазначенням смуг (зон) ураження батарей',
         code: '10032500000170170000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.OLOVO,
           params: { directions: 3, zones: 4, start: 11, title: 'Олово' },
         },
@@ -1229,8 +1229,8 @@ export const symbols = [
       {
         hint: 'Район дистанційного мінування місцевості',
         code: '10032500002708000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
@@ -1238,8 +1238,8 @@ export const symbols = [
       {
         hint: 'Район розповсюдження агітаційного матеріалу',
         code: '10032500000170180000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1247,8 +1247,8 @@ export const symbols = [
       {
         hint: 'Район особливої уваги',
         code: '10032500001202000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYGON,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'РОУ' },
@@ -1257,8 +1257,8 @@ export const symbols = [
       {
         hint: 'Основний напрямок стрільби (пуску)',
         code: '10032500000170790000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           right: ENDS_ARROW2,
@@ -1282,8 +1282,8 @@ export const symbols = [
       {
         hint: 'Район вогневих позицій',
         code: '10032500002405000000rvp',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1295,8 +1295,8 @@ export const symbols = [
       {
         hint: 'Основний позиційний район',
         code: '10032500002405000000opr',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1307,8 +1307,8 @@ export const symbols = [
       {
         hint: 'Рубіж досяжності вогневих засобів',
         code: '10032500000170190000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -1316,8 +1316,8 @@ export const symbols = [
       {
         hint: 'Ракетний удар',
         code: '10032500000170200000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '', [amps.B]: '' },
@@ -1326,8 +1326,8 @@ export const symbols = [
       {
         hint: 'Район зосередження',
         code: '10032500001502000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'AA' },
@@ -1336,8 +1336,8 @@ export const symbols = [
       {
         hint: 'Район евакуації',
         code: '10032500001507000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'Евак' },
@@ -1351,8 +1351,8 @@ export const symbols = [
       {
         hint: 'Зона детальної розвідки бригади',
         code: '10032500000170230000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗДР' },
@@ -1361,8 +1361,8 @@ export const symbols = [
       {
         hint: 'Зона оглядової розвідки бригади',
         code: '10032500000170220000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗОР' },
@@ -1371,8 +1371,8 @@ export const symbols = [
       {
         hint: 'Розвідка боєм',
         code: '10032500001520000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
         color: '#3366ff',
@@ -1380,8 +1380,8 @@ export const symbols = [
       {
         hint: 'Підрозділ (група), який проводить пошук (наліт), із зазначенням належності',
         code: '10032500000170240000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1399,8 +1399,8 @@ export const symbols = [
       {
         hint: 'Район висадки розвідувальної групи із зазначенням складу, часу і дати висадки та способу висадки',
         code: '10032500000170260000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'П(В)' },
         },
@@ -1413,8 +1413,8 @@ export const symbols = [
       {
         hint: 'Район зосередження військовополонених',
         code: '10032500003102000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           pointAmplifier: { [amps.T]: 'EPWHA' },
         },
@@ -1502,16 +1502,16 @@ export const symbols = [
       {
         hint: 'Рубіж відкриття вогню (танків, БМП, стрілецької зброї)',
         code: '10032500000170300000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
         },
       },
       {
         hint: 'Зона суцільного багатошарового протитанкового і стрілецького вогню',
         code: '10032500000170310000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           lineType: types.chain.value,
         },
@@ -1549,8 +1549,8 @@ export const symbols = [
       {
         hint: 'Мостова переправа',
         code: '10032500002714000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1558,8 +1558,8 @@ export const symbols = [
       {
         hint: 'В брід',
         code: '10032500002716000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1567,8 +1567,8 @@ export const symbols = [
       {
         hint: 'Паромна переправа',
         code: '10032500002907000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           right: ENDS_ARROW2,
@@ -1578,8 +1578,8 @@ export const symbols = [
       {
         hint: 'На підручних засобах',
         code: '10032500002908000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           left: ENDS_FORK,
@@ -1644,8 +1644,8 @@ export const symbols = [
       {
         hint: 'Сектор відповідальності підрозділу ППО',
         code: '10032500000170320000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -1653,8 +1653,8 @@ export const symbols = [
       {
         hint: 'Кочуюча БМ',
         code: '10032500000170330000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           lineType: types.dashed.value,
           color: '#3366ff',
@@ -1665,8 +1665,8 @@ export const symbols = [
       {
         hint: 'Зона розвідки повітряного противника',
         code: '10032500000170190000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -1739,8 +1739,8 @@ export const symbols = [
       {
         hint: 'Лінія радіозв\'язку',
         code: '10032500000170340000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1751,8 +1751,8 @@ export const symbols = [
       {
         hint: 'Лінія транкінгового зв\'язку',
         code: '10032500000170350000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1763,8 +1763,8 @@ export const symbols = [
       {
         hint: 'Лінія радіорелейного зв\'язку',
         code: '10032500000170360000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1775,8 +1775,8 @@ export const symbols = [
       {
         hint: 'Лінія тропосферного зв\'язку',
         code: '10032500000170370000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1787,8 +1787,8 @@ export const symbols = [
       {
         hint: 'Лінія супутникового зв\'язку',
         code: '10032500000170380000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1799,8 +1799,8 @@ export const symbols = [
       {
         hint: 'Лінія проводового зв\'язку',
         code: '10032500000170390000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1811,8 +1811,8 @@ export const symbols = [
       {
         hint: 'Вісь (рокада) зв\'язку в опорній мережі зв\'язку',
         code: '10032500000170400000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -1903,8 +1903,8 @@ export const symbols = [
       {
         hint: 'Маршрут фельд\'єгерсько-поштового зв\'язку',
         code: '10032500000170410000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           right: ENDS_ARROW2,
@@ -2569,8 +2569,8 @@ export const symbols = [
       {
         hint: 'Рубіж введення винищувачів до бою',
         code: '10032500000170420000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           left: ENDS_STROKE1,
@@ -2580,8 +2580,8 @@ export const symbols = [
       {
         hint: 'Район повітряного бою',
         code: '10032500001200000000rpb',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'РПБ' },
@@ -2590,8 +2590,8 @@ export const symbols = [
       {
         hint: 'Завдання повітряного удару',
         code: '10032500000170430000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           color: '#3366ff',
           right: ENDS_ARROW2,
@@ -2600,8 +2600,8 @@ export const symbols = [
       {
         hint: 'Напрямок дій авіації / Напрямок дій повітряного десанту',
         code: '10032500001514010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -2609,8 +2609,8 @@ export const symbols = [
       {
         hint: 'Напрямок дій вертольотів',
         code: '10032500001514020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -2668,8 +2668,8 @@ export const symbols = [
       {
         hint: 'Зона ураження / виявлення (кругова)',
         code: '10032500000170190000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -2677,8 +2677,8 @@ export const symbols = [
       {
         hint: 'Зона ураження / виявлення (сектор)',
         code: '10032500000170760000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -2696,8 +2696,8 @@ export const symbols = [
       {
         hint: 'Коридор прольоту авіації через зону вогню військової частини ЗРВ',
         code: '10032500001701000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: {
             [amps.A]: 'NAME:\nWIDTH:\nMIN ALT:\nMAX ALT:\nDTG START:\nDTG END:',
@@ -2858,8 +2858,8 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (кругова)',
         code: '10032500000170190000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -2867,8 +2867,8 @@ export const symbols = [
       {
         hint: 'Зона радіолокаційної інформації, Поле ближньої радіонавігації, Поле управління авіацією (сектор)',
         code: '10032500000170760000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -2876,8 +2876,8 @@ export const symbols = [
       {
         hint: 'Потрібний рубіж видачі розвідувальної інформації',
         code: '10032500001100000000pi',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           pointAmplifier: { [amps.N]: 'PL РІ' },
         },
@@ -2885,8 +2885,8 @@ export const symbols = [
       {
         hint: 'Потрібний рубіж видачі бойової інформації',
         code: '10032500001100000000bi',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           pointAmplifier: { [amps.N]: 'PL БІ' },
         },
@@ -3389,8 +3389,8 @@ export const symbols = [
       {
         hint: 'Район тралення',
         code: '10032500000170440000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYGON,
           lineType: types.dashed.value,
         },
@@ -3453,8 +3453,8 @@ export const symbols = [
       {
         hint: 'Несення дозорної служби, спостереження',
         code: '10032500003422010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3462,8 +3462,8 @@ export const symbols = [
       {
         hint: 'Несення дозорної служби, охорона об\'єкту',
         code: '10032500003422020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3471,8 +3471,8 @@ export const symbols = [
       {
         hint: 'Несення дозорної служби, патрулювання',
         code: '10032500003422030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3480,8 +3480,8 @@ export const symbols = [
       {
         hint: 'Район протимінних дій',
         code: '10032500000170460000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           pointAmplifier: { [amps.T]: 'РПД' },
         },
@@ -3489,8 +3489,8 @@ export const symbols = [
       {
         hint: 'Район пошуку підводних човнів',
         code: '10032500000170470000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           pointAmplifier: { [amps.T]: 'РП' },
         },
@@ -3498,8 +3498,8 @@ export const symbols = [
       {
         hint: 'Район постановки мін',
         code: '10032500000170480000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           pointAmplifier: { [amps.T]: 'MW' },
         },
@@ -3507,8 +3507,8 @@ export const symbols = [
       {
         hint: 'Підтримка вогнем, ведення прямого вогню по противнику з метою підтримки маневру іншого підрозділу',
         code: '10032500001521000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3516,8 +3516,8 @@ export const symbols = [
       {
         hint: 'Охорона та оборона пункту базування',
         code: '10032500003421000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3525,16 +3525,16 @@ export const symbols = [
       {
         hint: 'Стеження за противником',
         code: '10032500000170490000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район ізоляції',
         code: '10032500000170500000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYGON,
           lineType: types.blockageIsolation.value,
         },
@@ -3842,8 +3842,8 @@ export const symbols = [
       {
         hint: 'Ведення спеціальної розвідки Гр СпП ССпО',
         code: '10032500001522000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3851,8 +3851,8 @@ export const symbols = [
       {
         hint: 'Район підрозділу зі складу руху опору',
         code: '10032500000170520000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#ff0404',
           lineType: types.solidWithDots.value,
@@ -3862,8 +3862,8 @@ export const symbols = [
       {
         hint: 'Район виконання завдань Гр СпП ССпО',
         code: '100325000012000000000spr',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -3874,8 +3874,8 @@ export const symbols = [
       {
         hint: 'Район евакуації',
         code: '10032500001507000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'ЕВАК' },
@@ -3884,8 +3884,8 @@ export const symbols = [
       {
         hint: 'Виведення через державний кордон',
         code: '10032500000170540000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0 ],
@@ -3896,8 +3896,8 @@ export const symbols = [
       {
         hint: 'Повернення через лінію зіткнення військ',
         code: '10032500000170550000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0 ],
@@ -3908,8 +3908,8 @@ export const symbols = [
       {
         hint: 'Розвідувальні завдання пошуком',
         code: '10032500000170560000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3917,8 +3917,8 @@ export const symbols = [
       {
         hint: 'Розвідувальні (спеціальні) завдання засідкою',
         code: '10032500001417000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3926,8 +3926,8 @@ export const symbols = [
       {
         hint: 'Розвідувальні (спеціальні) завдання нападом',
         code: '10032500001520000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3985,8 +3985,8 @@ export const symbols = [
       {
         hint: `Ефект руйнування спрямований на використання вогню і ефекту загороджень, щоб примусити противника розділити свої формування, порушити бойовий порядок, витратити час, змінити план, поспішно здійснити розмінування та зірвати атаку`,
         code: '10032500002705020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -3994,8 +3994,8 @@ export const symbols = [
       {
         hint: `Ефект блокування  об'єднує вогонь, що прикриває загородження та загородження з метою зупинки противника вздовж шляхів підходу або перешкоджає його проходженню через зону бойових дій`,
         code: '10032500002705010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4003,8 +4003,8 @@ export const symbols = [
       {
         hint: `Ефект затримання  спрямований на планування вогню і загороджень для затримання атакуючих у певній зоні, зазвичай в зоні бойових дій`,
         code: '10032500003411000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4012,8 +4012,8 @@ export const symbols = [
       {
         hint: 'Система траншей',
         code: '10032500002909000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           lineType: types.trenches.value,
         },
@@ -4037,8 +4037,8 @@ export const symbols = [
         hint: 'Зона загороджень',
         code: '10032500000170580000',
         isFlip: true,
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYGON,
           color: '#339966',
           lineType: types.blockage.value,
@@ -4047,8 +4047,8 @@ export const symbols = [
       {
         hint: 'Завал',
         code: '10032500002801000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#339966',
         },
@@ -4056,8 +4056,8 @@ export const symbols = [
       {
         hint: 'Рубіж мінування',
         code: '10032500000170600000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           lineType: types.dashed.value,
@@ -4068,8 +4068,8 @@ export const symbols = [
       {
         hint: 'Мінне поле (Мінне загородження)',
         code: '10032500002707010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifiers: { [amps.N]: '', [amps.T]: '', [amps.W]: '' },
           params: {
@@ -4082,8 +4082,8 @@ export const symbols = [
       {
         hint: 'Ряд протитанкових мін',
         code: '10032500000170610000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           lineType: types.rowMinesAntyTank.value,
         },
@@ -4091,8 +4091,8 @@ export const symbols = [
       {
         hint: 'Ряд протипіхотних мін',
         code: '10032500000170620000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           lineType: types.rowMinesLand.value,
         },
@@ -4115,8 +4115,8 @@ export const symbols = [
       {
         hint: 'Розтяжка',
         code: '10032500002905000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4138,8 +4138,8 @@ export const symbols = [
       {
         hint: 'Район мінування',
         code: '10032500002708000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           pointAmplifier: { [amps.T]: '', [amps.W]: '' },
         },
@@ -4147,16 +4147,16 @@ export const symbols = [
       {
         hint: 'Група мін',
         code: '10032500002904000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Прохід в протитанковому мінному полі (шириною до 6 метрів)',
         code: '10032500002906000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           right: ENDS_FORK,
@@ -4166,8 +4166,8 @@ export const symbols = [
       {
         hint: `Прохід в протитанковому мінному полі (шириною більше 6 метрів) із зазначенням часу відкриття та закриття проходу`,
         code: '10032500002711000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4175,8 +4175,8 @@ export const symbols = [
       {
         hint: 'Протитанковий рів',
         code: '10032500002902020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.moatAntiTank.value,
@@ -4185,8 +4185,8 @@ export const symbols = [
       {
         hint: 'Протитанковий рів посилений протираковими мінами',
         code: '10032500002902030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.moatAntiTankMine.value,
@@ -4195,8 +4195,8 @@ export const symbols = [
       {
         hint: 'Протитанковий рів в процесі обладнання',
         code: '10032500002902010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.moatAntiTankUnfin.value,
@@ -4205,8 +4205,8 @@ export const symbols = [
       {
         hint: 'Лінія загороджень (яка поєднує в собі різні типи загороджень)',
         code: '10032500002901000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockage.value,
@@ -4215,8 +4215,8 @@ export const symbols = [
       {
         hint: 'Однорядне дротяне загородження',
         code: '10032500002903020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageWire1.value,
@@ -4225,8 +4225,8 @@ export const symbols = [
       {
         hint: 'Дворядне дротяне загородження',
         code: '10032500002903030000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageWire2.value,
@@ -4235,8 +4235,8 @@ export const symbols = [
       {
         hint: 'Дротяне загородження на низьких кілках (типу спотикач)',
         code: '10032500002903050000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageWireLow.value,
@@ -4245,8 +4245,8 @@ export const symbols = [
       {
         hint: 'Дротяне загородження на високих кілках',
         code: '10032500002903060000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageWireHigh.value,
@@ -4255,8 +4255,8 @@ export const symbols = [
       {
         hint: 'Спіральне однорядне дротяне загородження',
         code: '10032500002903070000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageSpiral.value,
@@ -4265,8 +4265,8 @@ export const symbols = [
       {
         hint: 'Спіральне дворядне дротяне загородження',
         code: '10032500002903080000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageSpiral2.value,
@@ -4275,8 +4275,8 @@ export const symbols = [
       {
         hint: 'Спіральне трьохрядне дротяне загородження',
         code: '10032500002903090000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#339966',
           lineType: types.blockageSpiral3.value,
@@ -4285,16 +4285,16 @@ export const symbols = [
       {
         hint: 'Ділянка десантної переправи із зазначенням засобів переправи',
         code: '10032500002713000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Паромна переправа',
         code: '10032500002907000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           right: ENDS_ARROW2,
           left: ENDS_ARROW2,
@@ -4303,8 +4303,8 @@ export const symbols = [
       {
         hint: 'Ділянка переправ',
         code: '10032500002908000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           right: ENDS_FORK,
           left: ENDS_FORK,
@@ -4313,8 +4313,8 @@ export const symbols = [
       {
         hint: 'Наплавний міст з парку ПМП',
         code: '10032500002714000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4326,8 +4326,8 @@ export const symbols = [
       {
         hint: 'Хибний об\'єкт',
         code: '1003250000230200',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4550,8 +4550,8 @@ export const symbols = [
       {
         hint: 'Створення активних перешкод радіоелектронним засобам противника',
         code: '10032500000170630000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4559,8 +4559,8 @@ export const symbols = [
       {
         hint: 'Район контролю радіоелектронної обстановки',
         code: '10032500001200000000rez',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -4571,8 +4571,8 @@ export const symbols = [
       {
         hint: 'Район, вільний від радіоелектронних засобів',
         code: '10032500000170650000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYGON,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'FREE\nCOM' },
@@ -4582,8 +4582,8 @@ export const symbols = [
       {
         hint: 'Межа зони розвідки КХ засобів зв\'язку',
         code: '10032500000170660000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           pointAmplifier: { [amps.T]: 'P KX' },
         },
@@ -4591,8 +4591,8 @@ export const symbols = [
       {
         hint: 'Межа зони радіоподавлення (КХ радіозв\'язк)',
         code: '10032500000170670000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           pointAmplifier: { [amps.T]: 'РЕП КХ' },
         },
@@ -4601,8 +4601,8 @@ export const symbols = [
       {
         hint: 'Зона морської радіотехнічної розвідки, Межа зони подавлення',
         code: '10032500000170190000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: 'transparent',
         },
@@ -4645,8 +4645,8 @@ export const symbols = [
       {
         hint: 'Район зосередження',
         code: '10032500001502000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'AA' },
@@ -4765,8 +4765,8 @@ export const symbols = [
       {
         hint: 'Дозор ХБРЯ розвідки',
         code: '10032500003422020000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4774,8 +4774,8 @@ export const symbols = [
       {
         hint: 'Район (сектор) ХБРЯ розвідки',
         code: '10032500001522000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -4813,8 +4813,8 @@ export const symbols = [
       {
         hint: 'Рубіж переведення засобів індивідуального та колективного захисту в бойове положення',
         code: '10032500001101000000rpzikz',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'PL РПЗІКЗ' },
@@ -4826,8 +4826,8 @@ export const symbols = [
       {
         hint: `Рубіж одягання засобів індивідуального захисту та увімкнення систем фільтровентиляції засобів колективного захисту`,
         code: '10032500001101000000roziz',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'PL РОЗІЗ' },
@@ -4859,8 +4859,8 @@ export const symbols = [
       {
         hint: 'Межа зони радіаційного забруднення місцевості за даними розвідки',
         code: '10032500002722000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -4876,8 +4876,8 @@ export const symbols = [
       {
         hint: 'Аміакопровід',
         code: '10032500000170690000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.CURVE,
           lineType: types.chain.value,
         },
@@ -4910,8 +4910,8 @@ export const symbols = [
       {
         hint: 'Район спеціальної обробки  (РСО)',
         code: '10032500001501000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'PCO' },
@@ -4920,8 +4920,8 @@ export const symbols = [
       {
         hint: 'Продегазований прохід на зараженій ділянці місцевості',
         code: '10032500000170800000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           left: ENDS_FORK,
@@ -4931,64 +4931,64 @@ export const symbols = [
       {
         hint: 'Район хімічного зараження',
         code: '10032500002718000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район біологічного зараження',
         code: '10032500002717000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район радіологічного зараження',
         code: '10032500002720000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район ядерного зараження',
         code: '10032500002719000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район хімічного зараження - токсичні промислові речовини',
         code: '10032500002718010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район біологічного зараження - токсичні промислові речовини',
         code: '10032500002717010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Район радіологічного зараження - токсичні промислові речовини',
         code: '10032500002720010000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
       {
         hint: 'Аерозольне маскування рубежу безпосередньо перед районами розташування своїх військ',
         code: '10032500001102000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.POLYLINE,
           color: '#3366ff',
           shownIntermediateAmplifiers: [ 0 ],
@@ -5000,8 +5000,8 @@ export const symbols = [
       {
         hint: 'Район, який маскується аерозолем в районах розташування своїх військ',
         code: '10032500001200000000am',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'AM' },
@@ -5010,8 +5010,8 @@ export const symbols = [
       {
         hint: 'Головний напрямок ведення вогню',
         code: '10032500001405000000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -5259,8 +5259,8 @@ export const symbols = [
                 'Кд – кодована \n' +
                 'Ор – орієнтирів \n',
         code: '10032500000170700000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -5271,8 +5271,8 @@ export const symbols = [
       {
         hint: 'Район створення (виправлення) плану міста (масштаб 1:5 000)',
         code: '10032500000170710000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -5283,8 +5283,8 @@ export const symbols = [
       {
         hint: 'Район створення фотодокументів про місцевість (масштаб 1:30 000)',
         code: '10032500000170710000',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           lineType: types.chain.value,
@@ -5662,8 +5662,8 @@ export const symbols = [
       {
         hint: `Райони зосередження пошкоджених зразків ОВТ (масового виходу зі строю ОВТ) з вказівкою часу координат та кількістю ОВТ`,
         code: '10032500001502000000rzp',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
@@ -6182,8 +6182,8 @@ export const symbols = [
       {
         hint: 'Район компактного проживання національних меншин',
         code: '10032500001200000000kpnm',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           hatch: HATCH_TYPE.LEFT_TO_RIGHT,
           fill: 'black',
@@ -6376,8 +6376,8 @@ export const symbols = [
       {
         hint: 'Район запуску космічних засобів',
         code: '10032500001200000000rzap',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'РЗапКосм' },
@@ -6386,8 +6386,8 @@ export const symbols = [
       {
         hint: 'Район посадки космічних засобів',
         code: '10032500001200000000rpos',
+        isSvg: true,
         amp: {
-          isSvg: true,
           type: entityKind.AREA,
           color: '#3366ff',
           pointAmplifier: { [amps.T]: 'РПосКосм' },

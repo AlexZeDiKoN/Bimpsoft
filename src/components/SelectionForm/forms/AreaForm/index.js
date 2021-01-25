@@ -19,6 +19,7 @@ import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../.
 import './areaForm.css'
 import SelectionTypes from '../../../../constants/SelectionTypes'
 import { PATH_LINE_TYPE, types } from '../../parts/WithLineType'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
 
 const Extenders = compose(
   UnitSelect, // Підрозділ
@@ -87,13 +88,55 @@ const SVG_POLYGON = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBo
 </svg>
 
 const TYPE_PATH = [ 'type' ]
+const ATTRIBUTES_PATH = [ 'attributes' ]
+const POINT_AMPLIFIER_PATH = [ 'attributes', 'pointAmplifier' ]
+const INTERMEDIATE_AMPLIFIER_PATH = [ 'attributes', 'intermediateAmplifier' ]
+const CODE_PATH = [ 'code' ]
 
 export default class AreaForm extends Extenders(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
+  onChangeSymbol = (data) => {
+    if (!data) {
+      return
+    }
+    const { code, amp = {} } = JSON.parse(data)
+    const newAmp = {
+      lineType: 'solid',
+      ...amp,
+    }
+    delete newAmp.pointAmplifier
+    delete newAmp.intermediateAmplifier
+    this.setResult((result) => {
+      result = result.setIn(CODE_PATH, code).updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAmp))
+      if (amp.pointAmplifier) {
+        const pointAmplifier = {
+          top: null,
+          middle: null,
+          bottom: null,
+          ...amp.pointAmplifier,
+        }
+        result = result.updateIn(POINT_AMPLIFIER_PATH, (attributes) => attributes.merge(pointAmplifier))
+      }
+      if (amp.intermediateAmplifier) {
+        const intermediateAmplifier = {
+          top: null,
+          middle: null,
+          bottom: null,
+          ...amp.intermediateAmplifier,
+        }
+        result = result.updateIn(INTERMEDIATE_AMPLIFIER_PATH, (attributes) => attributes.merge(intermediateAmplifier))
+      }
+      return result
+    })
+  }
+
   renderContent () {
-    const type = this.getResult().getIn(TYPE_PATH) ?? SelectionTypes.AREA
-    const lineType = this.getResult().getIn(PATH_LINE_TYPE)
+    const result = this.getResult()
+    const type = result.getIn(TYPE_PATH) ?? SelectionTypes.AREA
+    const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
+    const code = result.getIn(CODE_PATH)
+    const lineType = result.getIn(PATH_LINE_TYPE)
     const isContinuousArea = lineType !== types.blockageWire.value // область имеет сплошной контур
     const elem = <div className="containers-svg-tooltip">
       {type === SelectionTypes.AREA ? SVG_AREA : SVG_POLYGON }
@@ -101,6 +144,12 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
     return (
       <div className="area-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={code}
+            type={type}
+            attributes={attributes}
+            onChange={this.onChangeSymbol}
+          />
           <div className="area-container__item--firstSection">
             <div className="area-container__itemWidth-right">
               {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}

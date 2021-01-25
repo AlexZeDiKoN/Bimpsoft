@@ -14,7 +14,11 @@ import {
   data,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
-import { symbols } from '../../constants/symbols'
+import {
+  symbols,
+  amps,
+  directionAmps,
+} from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
@@ -44,6 +48,36 @@ const ButtonComponent = (props) =>
   </Collapse.Button>
 
 // определение id в списке тактических знаков по заданым условиям
+// Для области проверяем следующие атрибуты со возможными значениями по умолчанию
+const allAmpsDefault = {
+  [amps.T]: [ null, '' ],
+  [amps.N]: [ null, '' ],
+  [amps.W]: [ null, '' ],
+}
+
+const isMatchAttr = (attr1, attr2) => {
+  if (Array.isArray(attr1)) {
+    return attr1.some((value) => value === attr2)
+  }
+  if (Object.prototype.toString.call(attr1) === '[object Object]' &&
+    Object.prototype.toString.call(attr2) === '[object Object]') {
+    for (const key in attr1) {
+      if (!attr1.hasOwnProperty(key)) {
+        continue
+      }
+      if (!attr2.hasOwnProperty(key)) {
+        return false
+      }
+      if (!isMatchAttr(attr1[key], attr2[key])) {
+        return false
+      }
+    }
+    return true
+  }
+  return false
+}
+//
+// Для точечного знака
 // если заданы атрибуты(амплификаторы), то будет жесткая проверка соответствия знака с учетом амплификаторов
 // Настройка игнорирования полей в коде знака
 // 4 символ "Принадлежность"
@@ -68,38 +102,97 @@ const isMatchCode = (code1, code2) => {
   return true
 }
 
+// поиск соответствующего тактического знака в справочном перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
-  const { code, attributes: amp } = searchTerms
+  const { code, attributes: amp, type } = searchTerms
+  if (!code) {
+    return null
+  }
   let id = null
-  if (code) {
-    symbols.findIndex((parent, indexParent) => {
-      const sortedPart = (searchFilter && searchFilter !== '')
-        ? parent.children.filter((it) => {
-          return it.hint.toLowerCase().includes(searchFilter.toLowerCase()) || it.code.includes(searchFilter)
-        })
-        : parent.children
-      const index = sortedPart.findIndex((children) => {
-        if (isMatchCode(children.code, code)) {
-          if (amp && children.amp) {
-            // перебор предустановленных амплификаторов тактического знака
-            for (const key in children.amp) {
-              // eslint-disable-next-line no-prototype-builtins
-              if (!children.amp.hasOwnProperty(key) || !amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
-                return false
+  symbols.findIndex((parent, indexParent) => {
+    // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
+    const sortedPart = (searchFilter && searchFilter !== '')
+      ? parent.children.filter((it) => {
+        return it.hint.toLowerCase().includes(searchFilter.toLowerCase()) || it.code.includes(searchFilter)
+      })
+      : parent.children
+    // перебор элементов раздела
+    const index = sortedPart.findIndex((children) => {
+      switch (type) {
+        case entityKind.POINT: {
+          if (isMatchCode(children.code, code)) {
+            if (amp && children.amp) {
+              // перебор предустановленных амплификаторов тактического знака
+              for (const key in children.amp) {
+                // eslint-disable-next-line no-prototype-builtins
+                if (!children.amp.hasOwnProperty(key) || !amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
+                  return false
+                }
               }
             }
+            return true
           }
-          return true
+          return false
         }
-        return false
-      })
-      if (index < 0) {
-        return false
+        case entityKind.AREA: {
+          if (children.code === code) {
+            if (amp && children.amp) {
+              // установка возможных аттриутов для знака из перечня
+              const buildAmps = {
+                lineType: [ 'solid' ],
+                fill: [ 'transparent', 'app6_transparent' ],
+                hatch: [ 'none' ],
+                pointAmplifier: { ...allAmpsDefault },
+                intermediateAmplifier: { ...allAmpsDefault },
+                intermediateAmplifierType: [ 'none' ],
+                nodalPointIcon: [ 'none' ],
+                direction: [ '' ],
+                directionIntermediateAmplifier: [ directionAmps.ACROSS_LINE, '', null ],
+              }
+              const initialAmp = { ...children.amp }
+              // перебор предустановленных амплификаторов тактического знака
+              for (const key in initialAmp) {
+                // eslint-disable-next-line no-prototype-builtins
+                if (initialAmp.hasOwnProperty(key)) {
+                  if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
+                    const amplifiers = initialAmp[key]
+                    for (const key2 in amplifiers) {
+                      if (amplifiers.hasOwnProperty(key2)) {
+                        buildAmps[key][key2] = [ amplifiers[key2] ]
+                      }
+                    }
+                  } else {
+                    buildAmps[key] = [ initialAmp[key] ]
+                  }
+                }
+              }
+              // сравнение тактических знаков
+              for (const key in buildAmps) {
+                if (!buildAmps.hasOwnProperty(key)) {
+                  continue
+                }
+                if (!amp.hasOwnProperty(key)) {
+                  return false // для сравнени не хватает атрибутов
+                }
+                if (!isMatchAttr(buildAmps[key], amp[key])) {
+                  return false // не соответствие аттрибутов тактических знаков
+                }
+              }
+              return true
+            }
+          }
+          return false
+        }
+        default:
       }
-      id = `${indexParent}_${index}`
-      return true
+      return false
     })
-  }
+    if (index < 0) {
+      return false
+    }
+    id = `${indexParent}_${index}`
+    return true
+  })
   return id
 }
 
@@ -122,15 +215,15 @@ export const getPartsSymbols = (type, search) => {
     }
 
     const symbolJSX = sortedPart.map((symbol, index) => {
-      const { hint, code, amp } = symbol
+      const { hint, code, isSvg, amp } = symbol
 
       // фильтрация по типу знака
-      if ((amp.isSvg && amp.type !== type) || (type !== entityKind.POINT && !amp.isSvg)) {
+      if ((isSvg && amp.type !== type) || (type !== entityKind.POINT && !isSvg)) {
         return null
       }
       const elemToRender =
         <div className={'list'} >
-          {(!amp.isSvg)
+          {(!isSvg)
             ? <>
               <MilSymbol
                 code={code}
@@ -183,9 +276,9 @@ const SymbolsTab = (props) => {
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
       : part.children
     const symbolJSX = sortedPart.map((symbol) => {
-      const { hint, code, amp } = symbol
+      const { hint, code, isSvg, amp } = symbol
 
-      const elemToRender = (!amp.isSvg)
+      const elemToRender = (!isSvg)
         ? <div
           className={listMode ? 'list' : ''}
           onDragStart={canEdit ? (e) => dragStartHandler(e, symbol, 'symbol') : null}
