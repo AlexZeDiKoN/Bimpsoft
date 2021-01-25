@@ -20,6 +20,7 @@ import './areaForm.css'
 import SelectionTypes from '../../../../constants/SelectionTypes'
 import { PATH_LINE_TYPE, types } from '../../parts/WithLineType'
 import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
 
 const Extenders = compose(
   UnitSelect, // Підрозділ
@@ -87,12 +88,6 @@ const SVG_POLYGON = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBo
   </g>
 </svg>
 
-const TYPE_PATH = [ 'type' ]
-const ATTRIBUTES_PATH = [ 'attributes' ]
-const POINT_AMPLIFIER_PATH = [ 'attributes', 'pointAmplifier' ]
-const INTERMEDIATE_AMPLIFIER_PATH = [ 'attributes', 'intermediateAmplifier' ]
-const CODE_PATH = [ 'code' ]
-
 export default class AreaForm extends Extenders(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
@@ -108,7 +103,8 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
     delete newAmp.pointAmplifier
     delete newAmp.intermediateAmplifier
     this.setResult((result) => {
-      result = result.setIn(CODE_PATH, code).updateIn(ATTRIBUTES_PATH, (attributes) => attributes.merge(newAmp))
+      result = result.setIn(PATH.CODE, code)
+        .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
       if (amp.pointAmplifier) {
         const pointAmplifier = {
           top: null,
@@ -116,7 +112,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
           bottom: null,
           ...amp.pointAmplifier,
         }
-        result = result.updateIn(POINT_AMPLIFIER_PATH, (attributes) => attributes.merge(pointAmplifier))
+        result = result.updateIn(PATH.POINT_AMPLIFIER, (attributes) => attributes.merge(pointAmplifier))
       }
       if (amp.intermediateAmplifier) {
         const intermediateAmplifier = {
@@ -125,7 +121,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
           bottom: null,
           ...amp.intermediateAmplifier,
         }
-        result = result.updateIn(INTERMEDIATE_AMPLIFIER_PATH, (attributes) => attributes.merge(intermediateAmplifier))
+        result = result.updateIn(PATH.INTERMEDIATE_AMPLIFIER, (attributes) => attributes.merge(intermediateAmplifier))
       }
       return result
     })
@@ -133,9 +129,9 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
 
   renderContent () {
     const result = this.getResult()
-    const type = result.getIn(TYPE_PATH) ?? SelectionTypes.AREA
-    const attributes = result.getIn(ATTRIBUTES_PATH).toJS()
-    const code = result.getIn(CODE_PATH)
+    const type = result.getIn(PATH.TYPE) ?? SelectionTypes.AREA
+    const attributes = result.getIn(PATH.ATTRIBUTES).toJS()
+    const code = result.getIn(PATH.CODE)
     const lineType = result.getIn(PATH_LINE_TYPE)
     const isContinuousArea = lineType !== types.blockageWire.value // область имеет сплошной контур
     const elem = <div className="containers-svg-tooltip">

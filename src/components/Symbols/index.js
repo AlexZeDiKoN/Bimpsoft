@@ -62,9 +62,11 @@ const isMatchAttr = (attr1, attr2) => {
   if (Object.prototype.toString.call(attr1) === '[object Object]' &&
     Object.prototype.toString.call(attr2) === '[object Object]') {
     for (const key in attr1) {
+      // eslint-disable-next-line no-prototype-builtins
       if (!attr1.hasOwnProperty(key)) {
         continue
       }
+      // eslint-disable-next-line no-prototype-builtins
       if (!attr2.hasOwnProperty(key)) {
         return false
       }
@@ -82,8 +84,8 @@ const isMatchAttr = (attr1, attr2) => {
 // Настройка игнорирования полей в коде знака
 // 4 символ "Принадлежность"
 // 7 символ "Стан"
-// 8 символ кода биты [ 0, 2 ] - "Макет/хибній", "Угруповання"
-const maskIgnore = [ 0, 0, 0, 7, 0, 0, 7, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+// 8 символ кода биты [ 0, 1, 2 ] - "Макет/хибній", "Пункт управління", "Угруповання"
+const maskIgnore = [ 0, 0, 0, 7, 0, 0, 7, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
 const isMatchCode = (code1, code2) => {
   if (code1.length !== code2.length || code1.length !== 20) {
     return false
@@ -105,11 +107,11 @@ const isMatchCode = (code1, code2) => {
 // поиск соответствующего тактического знака в справочном перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
   const { code, attributes: amp, type } = searchTerms
-  if (!code) {
+  if (!code || !amp) {
     return null
   }
   let id = null
-  symbols.findIndex((parent, indexParent) => {
+  const isTwoResults = symbols.some((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
       ? parent.children.filter((it) => {
@@ -117,82 +119,95 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       })
       : parent.children
     // перебор элементов раздела
-    const index = sortedPart.findIndex((children) => {
+    const isTwoResults = sortedPart.some((children, index) => {
       switch (type) {
         case entityKind.POINT: {
-          if (isMatchCode(children.code, code)) {
-            if (amp && children.amp) {
-              // перебор предустановленных амплификаторов тактического знака
-              for (const key in children.amp) {
-                // eslint-disable-next-line no-prototype-builtins
-                if (!children.amp.hasOwnProperty(key) || !amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
-                  return false
-                }
+          if (!isMatchCode(children.code, code)) {
+            return false // Коды не совпали
+          }
+          if (children.amp) {
+            // перебор предустановленных амплификаторов тактического знака
+            for (const key in children.amp) {
+              // eslint-disable-next-line no-prototype-builtins
+              if (!children.amp.hasOwnProperty(key) || !amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
+                return false
               }
             }
-            return true
           }
-          return false
+          break
         }
+        case entityKind.POLYGON:
         case entityKind.AREA: {
-          if (children.code === code) {
-            if (amp && children.amp) {
-              // установка возможных аттриутов для знака из перечня
-              const buildAmps = {
-                lineType: [ 'solid' ],
-                fill: [ 'transparent', 'app6_transparent' ],
-                hatch: [ 'none' ],
-                pointAmplifier: { ...allAmpsDefault },
-                intermediateAmplifier: { ...allAmpsDefault },
-                intermediateAmplifierType: [ 'none' ],
-                nodalPointIcon: [ 'none' ],
-                direction: [ '' ],
-                directionIntermediateAmplifier: [ directionAmps.ACROSS_LINE, '', null ],
-              }
-              const initialAmp = { ...children.amp }
-              // перебор предустановленных амплификаторов тактического знака
-              for (const key in initialAmp) {
-                // eslint-disable-next-line no-prototype-builtins
-                if (initialAmp.hasOwnProperty(key)) {
-                  if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
-                    const amplifiers = initialAmp[key]
-                    for (const key2 in amplifiers) {
-                      if (amplifiers.hasOwnProperty(key2)) {
-                        buildAmps[key][key2] = [ amplifiers[key2] ]
-                      }
+          if (children.code !== code || !children.isSvg) {
+            return false // Коды не совпали или это точечный знак
+          }
+          if (children.amp) {
+            // установка возможных аттриутов для знака из перечня
+            const buildAmps = {
+              lineType: [ 'solid' ],
+              fill: [ 'transparent', 'app6_transparent' ],
+              hatch: [ 'none' ],
+              pointAmplifier: { ...allAmpsDefault },
+              intermediateAmplifier: { ...allAmpsDefault },
+              intermediateAmplifierType: [ 'none' ],
+              nodalPointIcon: [ 'none' ],
+              direction: [ '' ],
+              directionIntermediateAmplifier: [ directionAmps.ACROSS_LINE, '', null ],
+            }
+            const initialAmp = { ...children.amp }
+            // перебор предустановленных амплификаторов тактического знака
+            for (const key in initialAmp) {
+              // eslint-disable-next-line no-prototype-builtins
+              if (initialAmp.hasOwnProperty(key)) {
+                if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
+                  const amplifiers = initialAmp[key]
+                  for (const key2 in amplifiers) {
+                    // eslint-disable-next-line no-prototype-builtins
+                    if (amplifiers.hasOwnProperty(key2)) {
+                      buildAmps[key][key2] = [ amplifiers[key2] ]
                     }
-                  } else {
-                    buildAmps[key] = [ initialAmp[key] ]
                   }
+                } else {
+                  buildAmps[key] = [ initialAmp[key] ]
                 }
               }
-              // сравнение тактических знаков
-              for (const key in buildAmps) {
-                if (!buildAmps.hasOwnProperty(key)) {
-                  continue
-                }
-                if (!amp.hasOwnProperty(key)) {
-                  return false // для сравнени не хватает атрибутов
-                }
-                if (!isMatchAttr(buildAmps[key], amp[key])) {
-                  return false // не соответствие аттрибутов тактических знаков
-                }
+            }
+            // сравнение тактических знаков
+            for (const key in buildAmps) {
+              // eslint-disable-next-line no-prototype-builtins
+              if (!buildAmps.hasOwnProperty(key)) {
+                continue
               }
-              return true
+              // eslint-disable-next-line no-prototype-builtins
+              if (!amp.hasOwnProperty(key)) {
+                return false // для сравнени не хватает атрибутов
+              }
+              if (!isMatchAttr(buildAmps[key], amp[key])) {
+                return false // не соответствие аттрибутов тактических знаков
+              }
             }
           }
-          return false
+          break
         }
-        default:
+        case entityKind.SOPHISTICATED: {
+          if (children.code !== code || !children.isSvg) {
+            return false // Коды не совпали или это точечный знак
+          }
+          break
+        }
+        default: return false
       }
-      return false
+      if (id) {
+        return true // имеем более одного совпадения, прекращаем перебор перечня
+      }
+      id = `${indexParent}_${index}`
+      return false // продолжаем поиск
     })
-    if (index < 0) {
-      return false
-    }
-    id = `${indexParent}_${index}`
-    return true
+    return isTwoResults
   })
+  if (isTwoResults) {
+    return undefined // множественное совпадение
+  }
   return id
 }
 

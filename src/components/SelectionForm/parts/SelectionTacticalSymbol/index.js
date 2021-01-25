@@ -7,8 +7,10 @@ import {
 } from '../../../Symbols'
 
 import './styleList.css'
+import i18n from '../../../../i18n'
 
-const NO_MATCH = '* нет соответствия *'
+// const NO_APPROPRIATE = '* немає відповідного тактичного знака *'
+// const MANY_MATCH = '* множинний збіг тактичних знаків *' + i18n.ALL
 
 const renderItem = (itemProps) => {
   return <Tree.ExpandItem {...itemProps}>
@@ -44,18 +46,20 @@ export default class SelectionTacticalSymbol extends React.Component {
   }
 
   render () {
-    const { type, code, name = NO_MATCH, attributes } = this.props
+    const { type, code, name = '', attributes } = this.props
+    // console.log('props', this.props)
     const treeSymbols = getPartsSymbols(type, '')
-    const id = getIdSymbols({ type, code, attributes }, '')
+    let id = getIdSymbols({ type, code, attributes }, '')
+    const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`
+    id = id || null
     const thisSymbol = id ? {}
       : {
         id,
-        name: name,
+        name: nameSymbol,
         render: <div className={'list'} >
-          <HighlightedText text={name}/>
+          <HighlightedText text={nameSymbol}/>
         </div>,
       }
-
     return (
       <div className={'symbol-container'}>
         <FilterInput
