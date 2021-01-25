@@ -47,7 +47,6 @@ export default class SelectionTacticalSymbol extends React.Component {
 
   render () {
     const { type, code, name = '', attributes } = this.props
-    // console.log('props', this.props)
     const treeSymbols = getPartsSymbols(type, '')
     let id = getIdSymbols({ type, code, attributes }, '')
     const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`

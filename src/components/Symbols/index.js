@@ -61,11 +61,7 @@ const isMatchAttr = (attr1, attr2) => {
   }
   if (Object.prototype.toString.call(attr1) === '[object Object]' &&
     Object.prototype.toString.call(attr2) === '[object Object]') {
-    for (const key in attr1) {
-      // eslint-disable-next-line no-prototype-builtins
-      if (!attr1.hasOwnProperty(key)) {
-        continue
-      }
+    for (const key of Object.keys(attr1)) {
       // eslint-disable-next-line no-prototype-builtins
       if (!attr2.hasOwnProperty(key)) {
         return false
@@ -119,7 +115,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       })
       : parent.children
     // перебор элементов раздела
-    const isTwoResults = sortedPart.some((children, index) => {
+    return sortedPart.some((children, index) => {
       switch (type) {
         case entityKind.POINT: {
           if (!isMatchCode(children.code, code)) {
@@ -127,9 +123,9 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           if (children.amp) {
             // перебор предустановленных амплификаторов тактического знака
-            for (const key in children.amp) {
+            for (const key of Object.keys(children.amp)) {
               // eslint-disable-next-line no-prototype-builtins
-              if (!children.amp.hasOwnProperty(key) || !amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
+              if (!amp.hasOwnProperty(key) || children.amp[key] !== amp[key]) {
                 return false
               }
             }
@@ -156,28 +152,18 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
             }
             const initialAmp = { ...children.amp }
             // перебор предустановленных амплификаторов тактического знака
-            for (const key in initialAmp) {
-              // eslint-disable-next-line no-prototype-builtins
-              if (initialAmp.hasOwnProperty(key)) {
-                if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
-                  const amplifiers = initialAmp[key]
-                  for (const key2 in amplifiers) {
-                    // eslint-disable-next-line no-prototype-builtins
-                    if (amplifiers.hasOwnProperty(key2)) {
-                      buildAmps[key][key2] = [ amplifiers[key2] ]
-                    }
-                  }
-                } else {
-                  buildAmps[key] = [ initialAmp[key] ]
+            for (const key of Object.keys(initialAmp)) {
+              if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
+                const amplifiers = initialAmp[key]
+                for (const key2 of Object.keys(amplifiers)) {
+                  buildAmps[key][key2] = [ amplifiers[key2] ]
                 }
+              } else {
+                buildAmps[key] = [ initialAmp[key] ]
               }
             }
             // сравнение тактических знаков
-            for (const key in buildAmps) {
-              // eslint-disable-next-line no-prototype-builtins
-              if (!buildAmps.hasOwnProperty(key)) {
-                continue
-              }
+            for (const key of Object.keys(buildAmps)) {
               // eslint-disable-next-line no-prototype-builtins
               if (!amp.hasOwnProperty(key)) {
                 return false // для сравнени не хватает атрибутов
@@ -203,7 +189,6 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       id = `${indexParent}_${index}`
       return false // продолжаем поиск
     })
-    return isTwoResults
   })
   if (isTwoResults) {
     return undefined // множественное совпадение
