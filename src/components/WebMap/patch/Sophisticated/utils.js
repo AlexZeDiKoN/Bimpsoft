@@ -1,12 +1,12 @@
 import L from 'leaflet'
-import { applyToPoint, compose, rotate, translate } from 'transformation-matrix' // inverse, applyToPoints,
+import { applyToPoint, compose, rotate, translate } from 'transformation-matrix'
 import infinity from 'cesium/Source/Shaders/Builtin/Constants/infinity'
 import Bezier from 'bezier-js'
 import { Intersection, ShapeInfo } from 'kld-intersections'
 import { prepareBezierPath } from '../utils/Bezier'
 import { interpolateSize } from '../utils/helpers'
 import { drawArrowFill } from '../../../../utils/svg/lines'
-import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg'
+import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg/text'
 import { evaluateColor } from '../../../../constants/colors'
 import { MARK_TYPE, settings } from '../../../../constants/drawLines'
 import lineDefinitions from './lineDefinitions'
@@ -15,6 +15,7 @@ import { CONFIG } from '.'
 const coefTangent = 3
 const coefArrowWing = 0.33 // коэффициент выступа стрелки над телом стрелки
 const coefArrow = 0.3 // отношение головы стрелки к телу стрелки по умолчанию
+const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
 
 function getKoefArrow () {
   return coefArrowWing
@@ -30,7 +31,6 @@ export const isDefPoint = (v) => isDef(v) && v.x !== undefined && v.x !== null &
 // TypeLine L - прямые
 //          * - кривые Безье
 export function buildingAirborne (datapt, typeLine, bindingType) {
-  const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) {
     return null
   }
@@ -98,7 +98,6 @@ export function buildingAirborne (datapt, typeLine, bindingType) {
 // TypeLine L - прямые
 //          * - кривые Безье
 export function buildingAttackHelicopter (datapt, typeLine, bindingType) {
-  const coeffH = 0.5 // коэффициент выступа стрелки над телом символа
   if (!datapt) {
     return null
   }
@@ -1662,7 +1661,15 @@ export const continueLine = (result, p1, p2, x, y) => {
 
 // Виведення тексту
 // eslint-disable-next-line max-len
-export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', color = null, textAlign = 'middle') => {
+export const drawText = (
+  result,
+  textPoint,
+  textAngle,
+  text,
+  sizeFactor = 1,
+  textAnchor = 'middle',
+  textAlign = 'middle',
+  color = null) => {
   if (!text || !text.length) {
     return [ '', { width: 0, height: 0 } ]
   }
@@ -1694,11 +1701,20 @@ export const drawText = (result, textPoint, textAngle, text, sizeFactor = 1, tex
 // font-size="${Math.round(CONFIG.FONT_SIZE * sizeFactor * 10) / 10}em"
 // Виведення тексту у прямокутнику, вирізаному маскою з основного зображення
 // eslint-disable-next-line max-len
-export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 1, textAnchor = 'middle', textAlign = 'middle', color) => {
+export const drawMaskedText = (
+  result,
+  textPoint,
+  textAngle,
+  text,
+  sizeFactor = 1,
+  textAnchor = 'middle',
+  textAlign = 'middle',
+  color,
+  isNumber = false) => {
   if (!text || !text.length) {
     return
   }
-  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, color, textAlign)
+  const [ transform, box ] = drawText(result, textPoint, textAngle, text, sizeFactor, textAnchor, textAlign, color)
   // Маска
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
@@ -1716,7 +1732,7 @@ export const drawMaskedText = (result, textPoint, textAngle, text, sizeFactor = 
     x="-${w}" 
     y="-${y}" 
     width="${w * 2}" 
-    height="${h * 2}"
+    height="${h * 2 * (isNumber ? 0.85 : 1)}"
   />`
 }
 

@@ -50,8 +50,8 @@ lineDefinitions['240701'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
         1,
         'middle',
-        'black',
         top ? 'text-after-edge' : 'text-before-edge',
+        'black',
       )
 
       drawText(
@@ -61,8 +61,8 @@ lineDefinitions['240701'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
         1,
         top ? 'start' : 'end',
-        'black',
         top ? 'text-before-edge' : 'text-after-edge',
+        'black',
       )
     }
   },

@@ -78,7 +78,6 @@ lineDefinitions['017015'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
         1,
         'middle',
-        null,
         top ? 'text-after-edge' : 'text-before-edge',
       )
 
@@ -90,7 +89,6 @@ lineDefinitions['017015'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
         1,
         left ? 'start' : 'end',
-        null,
         top ? 'text-before-edge' : 'text-after-edge',
       )
 
@@ -102,7 +100,6 @@ lineDefinitions['017015'] = {
         result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
         1,
         left ? 'end' : 'start',
-        null,
         top ? 'text-after-edge' : 'text-before-edge',
       )
     }

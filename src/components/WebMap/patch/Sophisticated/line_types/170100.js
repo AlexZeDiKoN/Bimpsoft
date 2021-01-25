@@ -116,7 +116,6 @@ lineDefinitions['170100'] = {
         tspans.join(''),
         SMALL_TEXT_SIZE,
         'start',
-        null,
         'text-after-edge',
       )
     }
