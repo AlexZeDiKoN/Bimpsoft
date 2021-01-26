@@ -132,6 +132,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           break
         }
+        case entityKind.RECTANGLE:
         case entityKind.POLYGON:
         case entityKind.AREA: {
           if (children.code !== code || !children.isSvg) {
@@ -169,6 +170,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
                 return false // для сравнени не хватает атрибутов
               }
               if (!isMatchAttr(buildAmps[key], amp[key])) {
+                console.log('!==', { build: buildAmps[key], amp: amp[key] })
                 return false // не соответствие аттрибутов тактических знаков
               }
             }

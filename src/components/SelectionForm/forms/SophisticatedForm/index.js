@@ -36,38 +36,6 @@ export default class SophisticatedForm extends compose(
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
-  onChangeSymbol = (data) => {
-    if (!data) {
-      return
-    }
-    const { code, amp = {} } = JSON.parse(data)
-    if (!code) {
-      return
-    }
-    // обработка амплификаторов
-    const newAmp = {
-      lineType: 'solid',
-      ...amp,
-    }
-    for (const key of Object.keys(newAmp)) {
-      if (Object.prototype.toString.call(newAmp[key]) === '[object Object]') {
-        // удаляем объекты
-        delete newAmp[key]
-      }
-    }
-    this.setResult((result) => {
-      result = result.setIn(PATH.CODE, code)
-        .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
-        // переустанавливаем заданные вложенные свойства
-      for (const key of Object.keys(amp)) {
-        if (Object.prototype.toString.call(amp[key]) === '[object Object]') {
-          result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => attributes.merge(amp[key]))
-        }
-      }
-      return result
-    })
-  }
-
   renderContent () {
     const useStatus = lineDefinitions[extractLineCode(this.props.data.code)]?.useStatus
     const useAmplifiers = lineDefinitions[extractLineCode(this.props.data.code)]?.useAmplifiers
@@ -79,7 +47,7 @@ export default class SophisticatedForm extends compose(
             code={result.getIn(PATH.CODE)}
             type={result.getIn(PATH.TYPE)}
             attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
-            onChange={this.onChangeSymbol}
+            onChange={this.onChangeTacticalSymbol}
           />
           <div className="sophisticated-container__item--firstSection">
             <div className="sophisticated-container__itemWidth-right">
