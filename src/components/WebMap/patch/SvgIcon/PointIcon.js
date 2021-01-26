@@ -13,12 +13,11 @@ const PointIcon = L.Icon.extend({
   },
 
   shouldRecreate: function (oldIcon) {
-    const { data, zoom, scaleOptions, showAmplifiers, shownAmplifiers } = this.options
+    const { data, zoom, scaleOptions, shownAmplifiers } = this.options
     const state = oldIcon && oldIcon.state
     return !state ||
       state.zoom !== zoom ||
       state.scaleOptions !== scaleOptions ||
-      state.showAmplifiers !== showAmplifiers ||
       state.shownAmplifiers !== shownAmplifiers ||
       data !== state.data
   },
@@ -32,7 +31,7 @@ const PointIcon = L.Icon.extend({
       size: scale,
       outlineWidth: 3,
       outlineColor: 'var(--outline-color)',
-      ...(showAmplifiers ? model.parseAmplifiersConstants(filterByObject(filterSet(attributes), shownAmplifiers)) : {}),
+      ...model.parseAmplifiersConstants(filterByObject(filterSet(attributes), shownAmplifiers)),
       ...((point && isShowPoint) ? model.parseCoordinatesConstants(point.toJS ? point.toJS() : point) : undefined),
     })
     const svg = symbol.asSVG()
