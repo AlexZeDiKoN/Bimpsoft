@@ -20,6 +20,8 @@ import './AttackForm.css'
 import spriteUrl from '../../../Symbols/sprite.svg'
 import { amps } from '../../../../constants/symbols'
 import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
 
 const { FormDarkPart } = components.form
 const svgAmplifier = <path
@@ -54,6 +56,38 @@ export default class SophisticatedForm extends compose(
 )(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
+  onChangeSymbol = (data) => {
+    if (!data) {
+      return
+    }
+    const { code, amp = {} } = JSON.parse(data)
+    if (!code) {
+      return
+    }
+    // обработка амплификаторов
+    const newAmp = {
+      lineType: 'solid',
+      ...amp,
+    }
+    for (const key of Object.keys(newAmp)) {
+      if (Object.prototype.toString.call(newAmp[key]) === '[object Object]') {
+        // удаляем объекты
+        delete newAmp[key]
+      }
+    }
+    this.setResult((result) => {
+      result = result.setIn(PATH.CODE, code)
+        .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
+      // переустанавливаем заданные вложенные свойства
+      for (const key of Object.keys(amp)) {
+        if (Object.prototype.toString.call(amp[key]) === '[object Object]') {
+          result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => attributes.merge(amp[key]))
+        }
+      }
+      return result
+    })
+  }
+
   renderContent () {
     const code = this.props.data.code
     const pathSymbol = SVG[code] || <use xlinkHref={`${spriteUrl}#${code}`}/>
@@ -64,9 +98,16 @@ export default class SophisticatedForm extends compose(
           {svgAmplifier}
         </svg>
       </div>
+    const result = this.getResult()
     return (
       <div className="attack-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE)}
+            attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeSymbol}
+          />
           <div className="attack-container__item--firstSection">
             <div className="attack-container__itemWidth-right">
               {this.renderSubordinationLevel()}

@@ -2686,12 +2686,18 @@ export const symbols = [
       // {
       //   hint: 'Основний сектор стрільби на середніх та великих висотах',
       //   code: '10032500000170810000',
-      //   amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+      //   isSvg: true,
+      //   amp: {
+      //     type: entityKind.SOPHISTICATED,
+      //     },
       // },
       // {
       //   hint: 'Відповідальний сектор стрільби зенітного ракетного підрозділу на малих та гранично-малих висотах',
       //   code: '10032500000170820000',
-      //   amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+      //   isSvg: true,
+      //   amp: {
+      //     type: entityKind.SOPHISTICATED,
+      //   },
       // },
       {
         hint: 'Коридор прольоту авіації через зону вогню військової частини ЗРВ',
@@ -4871,7 +4877,11 @@ export const symbols = [
       {
         hint: 'Мінімально безпечні відстані радіаційного забруднення місцевості',
         code: '10032500002721000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
+        isSvg: true,
+        amp: {
+          type: entityKind.SOPHISTICATED,
+          color: 'transparent',
+        },
       },
       {
         hint: 'Аміакопровід',
@@ -4885,7 +4895,10 @@ export const symbols = [
       {
         hint: `Обхід зон з високою концентрацією отруйних та небезпечних хімічних речовин (високими рівнями потужності дози випромінювання)`,
         code: '10032500003403000000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED },
+        isSvg: true,
+        amp: {
+          type: entityKind.SOPHISTICATED,
+        },
       },
       // TODO when done karandash (done)
       {
@@ -6246,12 +6259,20 @@ export const symbols = [
       {
         hint: 'Сектор, межі (зони) стійкого прийому цивільних радіозасобів та телезасобів',
         code: '10032500000170760000',
-        amp: { isSvg: true, type: entityKind.SOPHISTICATED, color: 'transparent' },
+        isSvg: true,
+        amp: {
+          type: entityKind.SOPHISTICATED,
+          color: 'transparent',
+        },
       },
       {
         hint: 'Район, до якого сплановано відселення (евакуацію) населення, біженців із районів воєнних дій',
         code: '10032500000170770000',
-        amp: { isSvg: true, type: entityKind.AREA, pointAmplifier: { [amps.T]: 'DPRE' } },
+        isSvg: true,
+        amp: {
+          type: entityKind.AREA,
+          pointAmplifier: { [amps.T]: 'DPRE' },
+        },
       },
       {
         hint: 'Загальновійськовий полігон',
