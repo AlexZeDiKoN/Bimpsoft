@@ -229,15 +229,14 @@ export const newShapeFromSymbol = (data, point) => withNotification((dispatch, g
     },
   } = getState()
 
-  const { code, amp } = data
-
+  const { code, amp, hint } = data
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
     code,
     layer,
     geometry: List([ point ]),
     point: point,
-    attributes: WebMapAttributes(amp || {}),
+    attributes: WebMapAttributes({ name: hint, ...amp } || {}),
   }),
   ))
 })
