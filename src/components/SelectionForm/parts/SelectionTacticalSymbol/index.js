@@ -47,7 +47,7 @@ export default class SelectionTacticalSymbol extends React.Component {
     if (!code) { // соответствие возможно только для тактического знака
       return null
     }
-    const treeSymbols = getPartsSymbols(type, '')
+    const treeSymbols = getPartsSymbols(type, code, '')
     let id = getIdSymbols({ type, code, attributes }, '')
     const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`
     id = id || null

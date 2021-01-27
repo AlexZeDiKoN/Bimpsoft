@@ -18,12 +18,14 @@ import {
   symbols,
   amps,
   directionAmps,
+  CompatibilityTacticalSymbol,
 } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import entityKind from '../WebMap/entityKind'
+import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -198,8 +200,8 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
   return id
 }
 
-// сборка списка тектических знаков
-export const getPartsSymbols = (type, search) => {
+// сборка списка тактических знаков
+export const getPartsSymbols = (type, code, search) => {
   return symbols.map((part, indexParent) => {
     const sortedPart = (search !== '')
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
@@ -215,13 +217,29 @@ export const getPartsSymbols = (type, search) => {
       name: part.name,
       render: parentToRender,
     }
-
+    const thisCode = extractLineCode(code)
+    const indexCompatibility = type === entityKind.SOPHISTICATED
+      ? CompatibilityTacticalSymbol.findIndex((spisok) => {
+        console.log(`spisok ${spisok.indexOf(thisCode)}`, spisok)
+        return spisok.indexOf(thisCode) > -1
+      })
+      : -2
     const symbolJSX = sortedPart.map((symbol, index) => {
       const { hint, code, isSvg, amp } = symbol
-
       // фильтрация по типу знака
       if ((isSvg && amp.type !== type) || (type !== entityKind.POINT && !isSvg)) {
         return null
+      }
+      // фильтрация по совместимости знаков
+      const symbolCode = extractLineCode(code)
+      if (type === entityKind.SOPHISTICATED && thisCode !== symbolCode) {
+        console.log('===', { thisCode, symbolCode, indexCompatibility })
+        if (indexCompatibility === 0) {
+          return null
+        }
+        if (indexCompatibility !== CompatibilityTacticalSymbol.findIndex((spisok) => spisok.indexOf(symbolCode) > -1)) {
+          return null
+        }
       }
       const elemToRender =
         <div className={'list'} >
