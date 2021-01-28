@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import { components } from '@C4/CommonComponents'
 import React from 'react'
 import './style.css'
+import { Set } from 'immutable'
 import { PROPERTY_PATH as PATH } from '../../../constants/propertyPath'
 import entityKind from '../../WebMap/entityKind'
 import { directionAmps } from '../../../constants/symbols'
@@ -93,32 +94,36 @@ export default class AbstractShapeForm extends React.Component {
     // обработка амплификаторов
     const newAmp = {
       lineType: 'solid',
+      hatch: 'none',
+      intermediateAmplifierType: 'none',
       directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
+      shownIntermediateAmplifiers: Set(),
+      shownNodalPointAmplifiers: Set(),
+      nodalPointIcon: 'none',
+      direction: '',
       ...amp,
     }
-    console.log('amp', newAmp)
-    for (const key of Object.keys(newAmp)) {
-      const objectType = Object.prototype.toString.call(newAmp[key])
-      if (objectType === '[object Object]' || objectType === '[object Array]') {
+    for (const key of Object.keys(amp)) {
+      const objectType = Object.prototype.toString.call(amp[key])
+      if (objectType === '[object Object]') {
         // удаляем объекты (вложенные свойства)
-        console.log(`delete ${key}`, newAmp[key])
         delete newAmp[key]
+      } else if (objectType === '[object Array]') {
+        newAmp[key] = Set(amp[key])
       }
     }
     this.setResult((result) => {
       if (type === entityKind.SOPHISTICATED) {
-        // проверить список совместимых линий (был до выбора знака)
-        // если необходимо, перегенерация опорных точе
+        // TODO проверить список совместимых линий (был до выбора знака)
+        // TODO если необходимо, перегенерация опорных точе
       }
-      console.log(`symbol`, result.attributes)
       // обновляем свойства знака
       result = result.setIn(PATH.CODE, code)
         .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
-      console.log('merge', result.attributes)
       // переустанавливаем заданные вложенные свойства
       for (const key of Object.keys(amp)) {
-        console.log(`update ${key}`, amp[key])
-        if (Object.prototype.toString.call(amp[key]) === '[object Object]') {
+        const objectType = Object.prototype.toString.call(amp[key])
+        if (objectType === '[object Object]') {
           result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => attributes.merge(amp[key]))
         }
       }
