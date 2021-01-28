@@ -148,7 +148,10 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     case SelectionTypes.POINT:
       await dispatch(batchActions([
         setNewShape({}),
-        setPreview(object.set('code', GET_DEFAULT_APP6_CODE(affiliationTypeID))),
+        setPreview(object
+          .set('code', GET_DEFAULT_APP6_CODE(affiliationTypeID))
+          .setIn([ 'attributes', amps.dtg ], moment()),
+        ),
       ]))
       break
     case SelectionTypes.TEXT:
@@ -230,6 +233,9 @@ export const newShapeFromSymbol = (data, point) => withNotification((dispatch, g
   } = getState()
 
   const { code, amp, hint } = data
+
+  amp[amps.dtg] = moment()
+
   dispatch(setPreview(WebMapObject({
     type: SelectionTypes.POINT,
     code,
