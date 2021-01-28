@@ -14,7 +14,7 @@ import {
   data,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
-import { List } from 'immutable'
+import { List, Set } from 'immutable'
 import {
   symbols,
   amps,
@@ -27,6 +27,7 @@ import { InputButton } from '../common'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import entityKind from '../WebMap/entityKind'
 import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
+import { colors } from '../../constants'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -60,21 +61,22 @@ const allAmpsDefault = {
 
 const isMatchAttr = (attr1, attr2) => {
   if (List.isList(attr1)) { // по умолчанию возможны варианты
-    console.log('include', attr1.includes(attr2))
     return attr1.includes(attr2)
   }
   if (Array.isArray(attr1)) {
     if (!Array.isArray(attr2) || attr1.length !== attr2.length) {
-      console.log('!length || !Array(attr2)')
       return false
     }
     // сравниваем массивы, значения должны быть в обоих массивах
     for (let ind = 0; ind < attr1.length; ind++) {
       if (attr2.indexOf(attr1[ind]) < 0) {
-        console.log('no element Array')
         return false
       }
     }
+    return true
+  }
+  if (Set.isSet(attr1)) {
+    console.log('Set', { attr1, attr2 })
     return true
   }
   if (Object.prototype.toString.call(attr1) === '[object Object]' &&
@@ -90,7 +92,6 @@ const isMatchAttr = (attr1, attr2) => {
     }
     return true
   }
-  console.log('===', attr1 === attr2)
   return attr1 === attr2
 }
 //
@@ -158,21 +159,27 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
             return false // Коды не совпали или это точечный знак
           }
           if (children.amp) {
-            // установка возможных аттриутов для знака из перечня
+            // установка по умолчанию проверяемых аттриутов для знака из перечня
             const buildAmps = {
+              // color: evaluateColor(colors.BLACK),
+              fill: List([ 'transparent', colors.TRANSPARENT ]),
               lineType: 'solid',
-              fill: List([ 'transparent', 'app6_transparent' ]),
+              // strokeWidth: settings.LINE_WIDTH,
               hatch: 'none',
-              pointAmplifier: { ...allAmpsDefault },
-              intermediateAmplifier: { ...allAmpsDefault },
               intermediateAmplifierType: 'none',
-              shownIntermediateAmplifiers: [],
+              intermediateAmplifier: { ...allAmpsDefault },
+              directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
+              shownIntermediateAmplifiers: Set(),
+              shownNodalPointAmplifiers: Set(),
+              pointAmplifier: { ...allAmpsDefault },
+              textAmplifiers: {},
+              // sectorsInfo: List(),
+              params: {},
               nodalPointIcon: 'none',
               direction: '',
-              directionIntermediateAmplifier: List([ directionAmps.ACROSS_LINE, '', null ]),
             }
             const initialAmp = { ...children.amp }
-            // заполнение предустановленных амплификаторов тактического знака новыми данными
+            // заполнение предустановленных амплификаторов тактического знака данными из перечня
             for (const key of Object.keys(initialAmp)) {
               const objectType = Object.prototype.toString.call(initialAmp[key])
               if (objectType === '[object Object]') {
@@ -181,17 +188,20 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
                   buildAmps[key][key2] = amplifiers[key2]
                 }
               } else {
-                buildAmps[key] = initialAmp[key]
+                if (Set.isSet(buildAmps[key])) {
+                  buildAmps[key] = Set(initialAmp[key])
+                } else {
+                  buildAmps[key] = initialAmp[key]
+                }
               }
             }
             // сравнение тактических знаков
             for (const key of Object.keys(buildAmps)) {
               // eslint-disable-next-line no-prototype-builtins
               if (!amp.hasOwnProperty(key)) {
-                return false // для сравнени не хватает атрибутов
+                return false // для сравнения не хватает атрибутов
               }
               if (!isMatchAttr(buildAmps[key], amp[key])) {
-                console.log('!==', { build: buildAmps[key], amp: amp[key] })
                 return false // не соответствие аттрибутов тактических знаков
               }
             }
@@ -239,7 +249,6 @@ export const getPartsSymbols = (type, code, search) => {
     const thisCode = extractLineCode(code)
     const indexCompatibility = type === entityKind.SOPHISTICATED
       ? CompatibilityTacticalSymbol.findIndex((spisok) => {
-        console.log(`spisok ${spisok.indexOf(thisCode)}`, spisok)
         return spisok.indexOf(thisCode) > -1
       })
       : -2
@@ -252,7 +261,6 @@ export const getPartsSymbols = (type, code, search) => {
       // фильтрация по совместимости знаков
       const symbolCode = extractLineCode(code)
       if (type === entityKind.SOPHISTICATED && thisCode !== symbolCode) {
-        console.log('===', { thisCode, symbolCode, indexCompatibility })
         if (indexCompatibility === 0) {
           return null
         }
