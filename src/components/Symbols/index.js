@@ -14,7 +14,7 @@ import {
   data,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
-import { List, Set } from 'immutable'
+import { List } from 'immutable'
 import {
   symbols,
   amps,
@@ -75,10 +75,10 @@ const isMatchAttr = (attr1, attr2) => {
     }
     return true
   }
-  if (Set.isSet(attr1)) {
-    console.log('Set', { attr1, attr2 })
-    return true
-  }
+  // if (Set.isSet(attr1)) {
+  //   console.log('Set', { attr1, attr2, '=': attr1.equals(attr2) })
+  //   return attr1.equals(attr2)
+  // }
   if (Object.prototype.toString.call(attr1) === '[object Object]' &&
     Object.prototype.toString.call(attr2) === '[object Object]') {
     for (const key of Object.keys(attr1)) {
@@ -169,8 +169,8 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
               intermediateAmplifierType: 'none',
               intermediateAmplifier: { ...allAmpsDefault },
               directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
-              shownIntermediateAmplifiers: Set(),
-              shownNodalPointAmplifiers: Set(),
+              shownIntermediateAmplifiers: [],
+              shownNodalPointAmplifiers: [],
               pointAmplifier: { ...allAmpsDefault },
               textAmplifiers: {},
               // sectorsInfo: List(),
@@ -188,11 +188,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
                   buildAmps[key][key2] = amplifiers[key2]
                 }
               } else {
-                if (Set.isSet(buildAmps[key])) {
-                  buildAmps[key] = Set(initialAmp[key])
-                } else {
-                  buildAmps[key] = initialAmp[key]
-                }
+                buildAmps[key] = initialAmp[key]
               }
             }
             // сравнение тактических знаков

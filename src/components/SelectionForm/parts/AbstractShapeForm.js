@@ -115,7 +115,7 @@ export default class AbstractShapeForm extends React.Component {
     this.setResult((result) => {
       if (type === entityKind.SOPHISTICATED) {
         // TODO проверить список совместимых линий (был до выбора знака)
-        // TODO если необходимо, перегенерация опорных точе
+        // TODO если необходимо, перегенерация опорных точек
       }
       // обновляем свойства знака
       result = result.setIn(PATH.CODE, code)
