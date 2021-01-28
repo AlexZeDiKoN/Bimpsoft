@@ -151,7 +151,7 @@ export const AMP_LANES_NUMBER = 'Кількість смуг'
 export const AMP_ZONES_NUMBER = 'Кількість зон у смузі'
 export const AMP_STARTING_NUMBER = 'Початковий номер'
 export const AMP_TITLE = 'Назва'
-export const NO_APPROPRIATE = 'Немає відповідного тактичного знаку'
+export const NO_APPROPRIATE = 'Немає відповідного тактичного знака'
 export const MANY_MATCH = 'Немає однозначного збігу' // 'Множинний збіг тактичних знаків'
 
 // export const UNIT = 'Підрозділ'

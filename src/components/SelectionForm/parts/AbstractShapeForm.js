@@ -4,8 +4,7 @@ import React from 'react'
 import './style.css'
 import { PROPERTY_PATH as PATH } from '../../../constants/propertyPath'
 import entityKind from '../../WebMap/entityKind'
-import lineDefinitions from '../../WebMap/patch/Sophisticated/lineDefinitions'
-import { extractLineCode } from '../../WebMap/patch/Sophisticated/utils'
+import { directionAmps } from '../../../constants/symbols'
 
 const {
   default: Form,
@@ -94,29 +93,32 @@ export default class AbstractShapeForm extends React.Component {
     // обработка амплификаторов
     const newAmp = {
       lineType: 'solid',
+      directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
       ...amp,
     }
+    console.log('amp', newAmp)
     for (const key of Object.keys(newAmp)) {
-      if (Object.prototype.toString.call(newAmp[key]) === '[object Object]') {
+      const objectType = Object.prototype.toString.call(newAmp[key])
+      if (objectType === '[object Object]' || objectType === '[object Array]') {
         // удаляем объекты (вложенные свойства)
+        console.log(`delete ${key}`, newAmp[key])
         delete newAmp[key]
       }
     }
     this.setResult((result) => {
       if (type === entityKind.SOPHISTICATED) {
-        // проверить список совместимых линий
+        // проверить список совместимых линий (был до выбора знака)
         // если необходимо, перегенерация опорных точе
-        const newSize = lineDefinitions[extractLineCode(code)].init().length
-        const oldSize = result.geometry?.size
-        console.log(`symbol`, { result, newSize, oldSize })
       }
+      console.log(`symbol`, result.attributes)
       // обновляем свойства знака
       result = result.setIn(PATH.CODE, code)
         .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
+      console.log('merge', result.attributes)
       // переустанавливаем заданные вложенные свойства
       for (const key of Object.keys(amp)) {
+        console.log(`update ${key}`, amp[key])
         if (Object.prototype.toString.call(amp[key]) === '[object Object]') {
-          console.log(`update ${key}`, amp[key])
           result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => attributes.merge(amp[key]))
         }
       }
