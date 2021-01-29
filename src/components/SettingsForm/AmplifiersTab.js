@@ -15,24 +15,26 @@ const getLabel = (id) => {
   }
 }
 
-const renderCheckItem = (label, value, onChange, disabled, key) =>
+const renderCheckItem = (label, value, onChange, key) =>
   <FormRow label={label} key={key} alignLabel="right">
     <Checkbox
       onChange={onChange}
       value={value}
-      disabled={disabled}
     />
   </FormRow>
 
-export const AmplifiersChecker = ({ value = {}, onChange, disabled }) => {
-  const isAllChecked = Object.values(value).every(Boolean)
+export const AmplifiersChecker = ({ value = {}, onChange, isLineAndAreaChecked, onChangeLineAndAreaVisible }) => {
+  const isAllChecked = Object.values(value).every(Boolean) && isLineAndAreaChecked
 
   const onChangeAll = ({ target: { value: currentV } }) => {
     const changedValues = Object.fromEntries(
       Object.keys(value).map((item) => [ item, currentV ]),
     )
     onChange(changedValues)
+    onChangeLineAndAreaVisible(currentV)
   }
+
+  const onChangeLineAndArea = ({ target: { value } }) => onChangeLineAndAreaVisible(value)
 
   const renderCheckGroup = (ids, index) => {
     const label = ids.map(getLabel).join(', ')
@@ -43,12 +45,13 @@ export const AmplifiersChecker = ({ value = {}, onChange, disabled }) => {
       onChange({ ...value, ...changed })
     }
 
-    return renderCheckItem(label, currentValue, onChangeHandler, disabled, index)
+    return renderCheckItem(label, currentValue, onChangeHandler, index)
   }
 
   return <div className={'amplifiers-container'}>
-    {renderCheckItem(i18n.ALL, isAllChecked, onChangeAll, disabled)}
+    {renderCheckItem(i18n.ALL, isAllChecked, onChangeAll)}
     {AMPLIFIERS_GROUPS.map(renderCheckGroup)}
+    {renderCheckItem(i18n.AMPLIFIERS_LINE_AND_AREA_POINT, isLineAndAreaChecked, onChangeLineAndArea)}
   </div>
 }
 
@@ -56,5 +59,6 @@ AmplifiersChecker.displayName = 'AmplifiersChecker'
 AmplifiersChecker.propTypes = {
   value: PropTypes.object,
   onChange: PropTypes.func,
-  disabled: PropTypes.bool,
+  isLineAndAreaChecked: PropTypes.bool,
+  onChangeLineAndAreaVisible: PropTypes.func,
 }

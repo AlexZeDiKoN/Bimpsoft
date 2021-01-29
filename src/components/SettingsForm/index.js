@@ -124,9 +124,6 @@ export default class SettingsForm extends React.Component {
                   <FormRow label={i18n.MINIMAP}>
                     <Checkbox checked={showMiniMap} onChange={onChangeShowMiniMap}/>
                   </FormRow>
-                  <FormRow label={i18n.AMPLIFIERS_POINT_SYMBOL}>
-                    <Checkbox checked={showAmplifiers} onChange={onChangeShowAmplifier}/>
-                  </FormRow>
                 </div>
               </div>
 
@@ -239,7 +236,8 @@ export default class SettingsForm extends React.Component {
                   <AmplifiersChecker
                     onChange={onChangeShownAmplifiers}
                     value={shownAmplifiers}
-                    disabled={!showAmplifiers}
+                    isLineAndAreaChecked={showAmplifiers}
+                    onChangeLineAndAreaVisible={onChangeShowAmplifier}
                   />
                 </Tabs.TabPane>
               </Tabs>
