@@ -4093,7 +4093,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.SOPHISTICATED,
-          pointAmplifiers: { [amps.N]: '', [amps.T]: '', [amps.W]: '' },
+          pointAmplifier: { [amps.N]: '', [amps.T]: '', [amps.W]: '' },
           params: {
             mineType: MINE_TYPES.ANTI_TANK,
             controlType: CONTROL_TYPES.UNCONTROLLED,
