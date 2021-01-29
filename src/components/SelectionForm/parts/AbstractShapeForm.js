@@ -6,6 +6,7 @@ import { Set } from 'immutable'
 import { PROPERTY_PATH as PATH } from '../../../constants/propertyPath'
 import entityKind from '../../WebMap/entityKind'
 import { directionAmps } from '../../../constants/symbols'
+import { objectArray, objectIsObject, objectObject } from '../../../utils/whatIsIt'
 
 const {
   default: Form,
@@ -105,10 +106,10 @@ export default class AbstractShapeForm extends React.Component {
     }
     for (const key of Object.keys(amp)) {
       const objectType = Object.prototype.toString.call(amp[key])
-      if (objectType === '[object Object]') {
+      if (objectType === objectObject) {
         // удаляем объекты (вложенные свойства)
         delete newAmp[key]
-      } else if (objectType === '[object Array]') {
+      } else if (objectType === objectArray) {
         newAmp[key] = Set(amp[key])
       }
     }
@@ -122,8 +123,7 @@ export default class AbstractShapeForm extends React.Component {
         .updateIn(PATH.ATTRIBUTES, (attributes) => attributes.merge(newAmp))
       // переустанавливаем заданные вложенные свойства
       for (const key of Object.keys(amp)) {
-        const objectType = Object.prototype.toString.call(amp[key])
-        if (objectType === '[object Object]') {
+        if (objectIsObject(amp[key])) {
           result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => {
             return attributes?.merge ? attributes.merge(amp[key]) : attributes
           })

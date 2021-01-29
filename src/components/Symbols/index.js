@@ -28,6 +28,7 @@ import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import entityKind from '../WebMap/entityKind'
 import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
 import { colors } from '../../constants'
+import { objectIsObject } from '../../utils/whatIsIt'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -79,8 +80,7 @@ const isMatchAttr = (attr1, attr2) => {
   //   console.log('Set', { attr1, attr2, '=': attr1.equals(attr2) })
   //   return attr1.equals(attr2)
   // }
-  if (Object.prototype.toString.call(attr1) === '[object Object]' &&
-    Object.prototype.toString.call(attr2) === '[object Object]') {
+  if (objectIsObject(attr1) && objectIsObject(attr2)) {
     for (const key of Object.keys(attr1)) {
       // eslint-disable-next-line no-prototype-builtins
       if (!attr2.hasOwnProperty(key)) {
@@ -181,8 +181,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
             const initialAmp = { ...children.amp }
             // заполнение предустановленных амплификаторов тактического знака данными из перечня
             for (const key of Object.keys(initialAmp)) {
-              const objectType = Object.prototype.toString.call(initialAmp[key])
-              if (objectType === '[object Object]') {
+              if (objectIsObject(initialAmp[key])) {
                 const amplifiers = initialAmp[key]
                 for (const key2 of Object.keys(amplifiers)) {
                   buildAmps[key][key2] = amplifiers[key2]
@@ -244,8 +243,8 @@ export const getPartsSymbols = (type, code, search) => {
     }
     const thisCode = extractLineCode(code)
     const indexCompatibility = type === entityKind.SOPHISTICATED
-      ? CompatibilityTacticalSymbol.findIndex((spisok) => {
-        return spisok.indexOf(thisCode) > -1
+      ? CompatibilityTacticalSymbol.findIndex((sublist) => {
+        return sublist.indexOf(thisCode) > -1
       })
       : -2
     const symbolJSX = sortedPart.map((symbol, index) => {
