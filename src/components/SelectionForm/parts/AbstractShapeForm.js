@@ -124,7 +124,9 @@ export default class AbstractShapeForm extends React.Component {
       for (const key of Object.keys(amp)) {
         const objectType = Object.prototype.toString.call(amp[key])
         if (objectType === '[object Object]') {
-          result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => attributes.merge(amp[key]))
+          result = result.updateIn([ ...PATH.ATTRIBUTES, key ], (attributes) => {
+            return attributes?.merge ? attributes.merge(amp[key]) : attributes
+          })
         }
       }
       return result
