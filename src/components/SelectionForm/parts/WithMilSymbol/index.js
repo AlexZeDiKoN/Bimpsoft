@@ -54,6 +54,7 @@ export const propTypes = {
   ovtKind: PropTypes.instanceOf(Map),
   coordinatesType: PropTypes.string,
   isFilterMode: PropTypes.bool,
+  fixElementsConfig: PropTypes.func,
 }
 
 const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Component {
@@ -153,7 +154,10 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     const attributes = result.getIn(PROPERTY_PATH.ATTRIBUTES).toJS()
     const subordinationLevel = result.getIn(SUBORDINATION_LEVEL_PATH)
     const { orgStructures, ovtData, coordinatesType, ovtSubKind, ovtKind, isFilterMode } = this.props
-    const elementsConfigs = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
+    const elementsConfigsByEdit = this.isCanEdit() ? elementsConfigsEditable : elementsConfigsReadOnly
+    const elementsConfigs = typeof this.fixElementsConfig === 'function'
+      ? this.fixElementsConfig(elementsConfigsByEdit)
+      : elementsConfigsByEdit
     return (
       <HotKeysContainer>
         <HotKey selector={UNDO} onKey={this.undoHandler}/>

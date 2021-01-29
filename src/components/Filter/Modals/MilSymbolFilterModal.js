@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FocusTrap from 'react-focus-lock'
+import { model } from '@C4/MilSymbolEditor'
 import {
   ButtonSave,
   ButtonCancel,
@@ -10,16 +11,18 @@ import {
   Checkbox,
   FormRow,
   ButtonDelete,
+  FilterInput,
   components,
 } from '@C4/CommonComponents'
 import { compose } from 'recompose'
+import memoize from 'memoize-one'
 import i18n from '../../../i18n'
 import { WithMilSymbol } from '../../SelectionForm/parts'
 import { propTypes as MilSymbolPropTypes } from '../../SelectionForm/parts/WithMilSymbol'
 import './style.css'
 
 const { form: { default: Form } } = components
-
+const { credibilities, symbolOptions } = model
 const HEIGHT_MODAL = 'calc(100vh - 80px)'
 const WIDTH_MODAL = 825
 
@@ -41,7 +44,13 @@ const propTypes = {
   onRemove: PropTypes.func,
 }
 
+const fixConfig = memoize((config) => ({ ...config, CREDIBILITY: { hidden: true } }))
 const Decorator = compose(WithMilSymbol)(React.Component)
+
+const INFORMATION = 'INFORMATION'
+const SOURCE = 'SOURCE'
+const informationKeys = credibilities.informationValues.map(({ id }) => id).filter(Boolean)
+const sourceKeys = credibilities.sourceValues.map(({ id }) => id).filter(Boolean)
 
 export class MilSymbolFilterModal extends Decorator {
   static displayName = 'MilSymbolFilterModal'
@@ -50,11 +59,21 @@ export class MilSymbolFilterModal extends Decorator {
 
   constructor (props) {
     super(props)
+    const dataState = props?.data?.attributes?.[symbolOptions.evaluationRating]
+    const [ sourceState = '', informationState = '' ] = (dataState ?? '').split('')
+    const source = sourceKeys.includes(sourceState) ? sourceState : ''
+    const information = informationKeys.includes(sourceState)
+      ? sourceState
+      : informationKeys.includes(informationState)
+        ? informationState
+        : ''
     this.state = {
       data: props?.data,
       name: props?.name,
       inCurrentLayer: props?.inCurrentLayer,
       errors: {},
+      [INFORMATION]: information,
+      [SOURCE]: source,
     }
   }
 
@@ -77,6 +96,20 @@ export class MilSymbolFilterModal extends Decorator {
 
   onChange = ({ target: { name, value } }) => this.setState({ [name]: value })
 
+  fixElementsConfig = fixConfig
+
+  onChangeCredibility = (target) => {
+    const { target: { name, value } } = target
+    this.onChange(target)
+    const source = name === SOURCE ? value : this.state[SOURCE]
+    const information = name === INFORMATION ? value : this.state[INFORMATION]
+    this.setResult((result) => {
+      return result.updateIn([ 'attributes' ], (attributes) => attributes.set(symbolOptions.evaluationRating, source + information))
+    })
+  }
+
+  getValueState = (key) => this.state[key]
+
   render () {
     const { wrapper: Wrapper, onClose, isNew, onRemove, layerData } = this.props
     const { inCurrentLayer, name, errors } = this.state
@@ -89,7 +122,7 @@ export class MilSymbolFilterModal extends Decorator {
       onClose={onClose}
     >
       <FocusTrap>
-        <Form className="shape-form">
+        <Form className="shape-form mil-symbol-filter--wrap">
           <div className="mil-symbol-filter__content">
             <FormColumnFloat label={i18n.NAME_STRAINER} hasValue={Boolean(name)}>
               <Input name={'name'} errors={errors.name} value={name} onChange={this.onChange}/>
@@ -99,6 +132,24 @@ export class MilSymbolFilterModal extends Decorator {
             </FormRow>
           </div>
           { this.renderMilSymbol() }
+          <div className="mil-symbol-filter__content--footer">
+            <FormColumnFloat label={i18n.SOURCE} hasValue>
+              <FilterInput
+                values={credibilities.sourceValues}
+                value={this.getValueState(SOURCE)}
+                name={SOURCE}
+                onChange={this.onChangeCredibility}
+              />
+            </FormColumnFloat>
+            <FormColumnFloat label={i18n.INFORMATION} hasValue>
+              <FilterInput
+                values={credibilities.informationValues}
+                value={this.getValueState(INFORMATION)}
+                name={INFORMATION}
+                onChange={this.onChangeCredibility}
+              />
+            </FormColumnFloat>
+          </div>
           <div className='footer-container'>
             <ButtonSave onClick={this.onSaveHandler}/>
             <ButtonCancel onClick={onClose}/>

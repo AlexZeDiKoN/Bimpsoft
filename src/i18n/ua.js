@@ -259,6 +259,8 @@ export const CONTOUR = 'Контур'
 export const CONTOUR_REGION_UNIT = 'Позиційний район підрозділу'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
+export const SOURCE = 'Джерело'
+export const INFORMATION = 'Інформація'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
 
 export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'
