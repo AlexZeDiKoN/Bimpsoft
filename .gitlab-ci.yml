@@ -132,3 +132,26 @@ deploy-master:
   after_script: 
     - rasdial %connection_name% /disconnect
   resource_group: master
+
+deploy-master-2:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - tokio
+  before_script:
+    - chcp 65001
+    - rasdial %connection_name% %connection_user% %connection_password%
+  script:
+    - echo .git >> not_for_copy.txt
+    - echo .gitignore >> not_for_copy.txt
+    - echo .gitlab-ci.yml >> not_for_copy.txt
+    - echo scripts  >> not_for_copy.txt
+    - echo "start copy"
+    - echo %Service_stop% >> service_stop.ps1
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 stop %Serv_Name_2%
+    - xcopy /E /C /I /Q /H /R /Y /Exclude:not_for_copy.txt build %DeployServer%\%folder%
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 start %Serv_Name_2%
+  after_script: 
+    - rasdial %connection_name% /disconnect
+  resource_group: master

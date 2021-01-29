@@ -128,9 +128,9 @@ export const setMiniMap = (value) => ({
   payload: value.target.checked,
 })
 
-export const setAmplifiers = (value) => ({
+export const setAmplifiers = (payload) => ({
   type: actionNames.SET_AMPLIFIERS,
-  payload: value.target.checked,
+  payload: payload,
 })
 
 export const setAmplifiersFilter = (value) => ({
