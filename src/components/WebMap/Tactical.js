@@ -6,7 +6,6 @@ import './patch'
 import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
 import { adjustSquareCorner } from './patch/utils/helpers'
-import { findDefinition } from './patch/Sophisticated/utils'
 
 const { symbolOptions } = model
 
@@ -200,10 +199,7 @@ export function createCatalogIcon (code, amplifiers, point, layer) {
 function createSophisticated (data, layer, initMap) {
   if (layer && (layer instanceof L.Polyline)) {
     if (data.code !== layer.object.code) { // при смене кода обновляем определение тактического знака
-      layer.lineDefinition = findDefinition(data.code)
-      if (!layer.lineDefinition) {
-        console.warn(`No line definition for code: `, data.code)
-      }
+      layer.reInitialize && layer.reInitialize(data.code)
     }
     layer.setLatLngs(data.geometry.toJS())
   } else {
