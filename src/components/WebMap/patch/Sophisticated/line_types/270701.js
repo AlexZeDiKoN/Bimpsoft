@@ -107,7 +107,6 @@ lineDefinitions['270701'] = {
           amplifiers.top ?? '',
           SMALL_TEXT_SIZE,
           'middle',
-          null,
           'text-after-edge',
         )
       }
@@ -119,7 +118,6 @@ lineDefinitions['270701'] = {
           amplifiers.bottom ?? '',
           SMALL_TEXT_SIZE,
           'middle',
-          null,
           'text-before-edge',
         )
       }

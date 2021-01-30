@@ -50,22 +50,22 @@ lineDefinitions['017078'] = {
         result,
         applyVector(p0, setVectorLength(getVector(p1, p0), margin)),
         angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
-      1,
-      'middle',
-      'black',
-      top ? 'text-after-edge' : 'text-before-edge',
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? '',
+        1,
+        'middle',
+        top ? 'text-after-edge' : 'text-before-edge',
+        'black',
       )
 
       drawText(
         result,
         getPointAt(p1, p0, halfPI, graphicSize / 2),
         angle,
-      result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
-      1,
-      top ? 'start' : 'end',
-      'black',
-      top ? 'text-before-edge' : 'text-after-edge',
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.B] ?? '',
+        1,
+        top ? 'start' : 'end',
+        top ? 'text-before-edge' : 'text-after-edge',
+        'black',
       )
     }
   },

@@ -18,6 +18,7 @@ import {
   setVectorLength,
   translateFrom,
   translateTo,
+  drawMaskedText,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 import {
@@ -238,7 +239,6 @@ lineDefinitions['017016'] = {
           text,
           1,
           'middle',
-          null,
           top ? 'text-after-edge' : 'text-before-edge',
         )
       }
@@ -246,12 +246,16 @@ lineDefinitions['017016'] = {
       const number = Number(result.layer?.object?.attributes?.pointAmplifier?.[amps.N] ?? 0)
       if (number >= 0) {
         for (let i = 0; i < c; i++) {
-          drawText(
+          drawMaskedText(
             result,
             points[i * 3 + 1],
             angleOf(points[i * 3 + 3], points[i * 3]) + halfPI,
             (number + i).toFixed(0),
             NUMBERS_SIZE,
+            'middle',
+            'middle',
+            null,
+            true,
           )
         }
       }

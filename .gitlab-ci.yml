@@ -1,6 +1,6 @@
 variables:
   deployDir: 'C:\C4\SpaceHub\WebMap'
-
+  folder: 'SpaceHub\WebMap'
 
 stages:
   - build
@@ -36,7 +36,7 @@ build:
     - git push https://%ACCESS_USER%:%ACCESS_TOKEN%@%CI_SERVER_HOST%/%CI_PROJECT_PATH%.git HEAD:%CI_COMMIT_REF_NAME%
     - echo Done
   artifacts:
-    expire_in: 7 day
+    expire_in: 3 day
     paths:
       - ./build/index.html
       - ./build/manifest.json
@@ -81,39 +81,77 @@ deploy-qa-tokio:
     - echo Done
   interruptible: true
 
-#deploy-zip:
-#  stage: deploy
-#  <<: *base
-#  script:
-#    - echo Packing bundle into ZIP file...
-#    - set jsonfile=package.json
-#    - set psCmd="add-type -As System.Web.Extensions;$JSON = new-object Web.Script.Serialization.JavaScriptSerializer;$JSON.DeserializeObject($input).version"
-#    - for /f %%I in ('^<"%jsonfile%" powershell -noprofile %psCmd%') do set "version=%%I"
-#    - 'echo Version: %version%'
-#    - set pack="WebmapFrontend_v%version%.zip"
-#    - echo %pack%
-#    - del /Q build\static\css\*.map
-#    - del /Q build\static\js\*.map
-#    - copy index.json .\build
-#    - cd build
-#    - echo Zipping...
-#    - '"%exe7z%" a -tzip "%releaseDir%\%pack%" "*"'
-#    - echo "copy to remote"
-#    - call pscp -batch -pw %SSH_PASS% %releaseDir%\WebmapFrontend_v%version%.zip %SSH_USER_HOST%:%REMOTE_PATH%/%CURRENT_VERSION_MASTER%/
-##  after_script:
-##    - C:\Production\Version\curl-win\bin\curl.exe -s -X POST %TELEGRAM_URL% -d chat_id=%CHAT_ID% -d text=" %CI_PROJECT_NAME% %CI_JOB_NAME% Success"
+build_master:
+  stage: build
+  only:
+    - master
+  tags:
+    - nssm
+  before_script:
+    - chcp 65001
+  script:
+    - call npm install
+    - copy .env .env.backup
+    - copy .env.production .env
+    - set NODE_OPTIONS="--max-old-space-size=8192"
+    - call npm run svg-sprite2
+    - call npm run build
+  artifacts:
+    expire_in: 2 day
+    paths:
+      - ./build/index.html
+      - ./build/manifest.json
+      - ./build/favicon.ico
+      - ./build/service-worker.js
+      - ./build/asset-manifest.json
+      - ./build/images/*.*
+      - ./build/static/css/*.*
+      - ./build/static/js/*.*
+      - ./build/static/media/*.*
+      - ./build/cesium/
 
-#Increment_dzvin:
-#  stage: increment-dzvin
-#  <<: *base
-#  script:
-#    - echo run increment
-#    - echo Done
-#    - cd c:\Production\Version\install_update
-#    - git checkout master
-#    - git pull
-#    - powershell.exe .\Versionalyze.ps1
-#    - powershell.exe Start-sleep -s 10
-#    - git commit -a -m "autocommit"
-#    - git push https://%PUSH_USER%:%PUSH_TOKEN%@%push_version% HEAD:master
-#  dependencies: []
+deploy-master:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - tokio
+  before_script:
+    - chcp 65001
+    - rasdial %connection_name% %connection_user% %connection_password%
+  script:
+    - echo .git >> not_for_copy.txt
+    - echo .gitignore >> not_for_copy.txt
+    - echo .gitlab-ci.yml >> not_for_copy.txt
+    - echo scripts  >> not_for_copy.txt
+    - echo "start copy"
+    - echo %Service_stop% >> service_stop.ps1
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 stop %Serv_Name%
+    - xcopy /E /C /I /Q /H /R /Y /Exclude:not_for_copy.txt build %DeployServer%\%folder%
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 start %Serv_Name%
+  after_script: 
+    - rasdial %connection_name% /disconnect
+  resource_group: master
+
+deploy-master-2:
+  stage: deploy
+  only:
+    - master
+  tags:
+    - tokio
+  before_script:
+    - chcp 65001
+    - rasdial %connection_name% %connection_user% %connection_password%
+  script:
+    - echo .git >> not_for_copy.txt
+    - echo .gitignore >> not_for_copy.txt
+    - echo .gitlab-ci.yml >> not_for_copy.txt
+    - echo scripts  >> not_for_copy.txt
+    - echo "start copy"
+    - echo %Service_stop% >> service_stop.ps1
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 stop %Serv_Name_2%
+    - xcopy /E /C /I /Q /H /R /Y /Exclude:not_for_copy.txt build %DeployServer%\%folder%
+    - powershell.exe -f C:\gitlab-runner\mount.ps1 start %Serv_Name_2%
+  after_script: 
+    - rasdial %connection_name% /disconnect
+  resource_group: master

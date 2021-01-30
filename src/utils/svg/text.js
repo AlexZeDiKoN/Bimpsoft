@@ -54,7 +54,7 @@ export const renderTextSymbol = ({
   magnification,
   texts = [],
   outlineColor = null,
-}, scale = 100, isSvg = false) => {
+}, scale = 100, wrapInSvg = false) => {
   let maxWidth = 0
   let fullHeight = 0
   let endUnderLine = false
@@ -129,7 +129,7 @@ export const renderTextSymbol = ({
       }
     </Fragment>
   })
-  return isSvg
+  return wrapInSvg
     ? <svg
       width={maxWidth}
       height={fullHeight}

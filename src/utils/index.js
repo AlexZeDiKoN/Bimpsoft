@@ -5,6 +5,8 @@ import createNotificator from './createNotificator'
 import * as mapObjConvertor from './mapObjConvertor'
 import getLoopOrderStartingFromNextValue from './getLoopOrderStartingFromNextValue'
 import { LS } from './localStorage'
+import * as whatIsIt from './whatIsIt'
+
 export * from './redux'
 export * from './svg'
 
@@ -16,4 +18,5 @@ export {
   mapObjConvertor,
   LS,
   getLoopOrderStartingFromNextValue,
+  whatIsIt,
 }

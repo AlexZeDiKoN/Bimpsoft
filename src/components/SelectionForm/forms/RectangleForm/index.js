@@ -19,6 +19,8 @@ import {
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './RectangleForm.css'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
 
 const { FormDarkPart } = components.form
 
@@ -43,9 +45,16 @@ export default class SquareForm extends
     const elem = <div className="containers-svg-tooltip">
       <img src={`${process.env.PUBLIC_URL}/images/schema-square-amplifiers.svg`} alt=""/>
     </div>
+    const result = this.getResult()
     return (
       <div className="rectangle-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE)}
+            attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeTacticalSymbol}
+          />
           <div className="rectangle-container__item--firstSection">
             <div className="rectangle-container__itemWidth-right">
               {this.renderSubordinationLevel()}

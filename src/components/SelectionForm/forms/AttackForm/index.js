@@ -20,6 +20,8 @@ import './AttackForm.css'
 import spriteUrl from '../../../Symbols/sprite.svg'
 import { amps } from '../../../../constants/symbols'
 import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
 
 const { FormDarkPart } = components.form
 const svgAmplifier = <path
@@ -64,9 +66,16 @@ export default class SophisticatedForm extends compose(
           {svgAmplifier}
         </svg>
       </div>
+    const result = this.getResult()
     return (
       <div className="attack-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE)}
+            attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeTacticalSymbol}
+          />
           <div className="attack-container__item--firstSection">
             <div className="attack-container__itemWidth-right">
               {this.renderSubordinationLevel()}

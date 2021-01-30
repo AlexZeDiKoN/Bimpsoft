@@ -130,6 +130,7 @@ export const STROKE_SIGN_SIZE = 'Розмір елементів лінії з �
 export const MINIMAP = 'Мінікарта'
 export const AMPLIFIERS = 'Ампліфікатори'
 export const AMPLIFIERS_POINT_SYMBOL = 'Ампліфікатори точкових знаків'
+export const AMPLIFIERS_LINE_AND_AREA_POINT = 'Ампліфікатори лінійних та площинних знаків'
 export const AMPLIFIER = 'Ампліфікатор'
 export const AMPLIFIERS_DISPLAY = 'Відображення ампліфікаторів'
 export const AMP_LEFT = 'Зліва'
@@ -151,6 +152,8 @@ export const AMP_LANES_NUMBER = 'Кількість смуг'
 export const AMP_ZONES_NUMBER = 'Кількість зон у смузі'
 export const AMP_STARTING_NUMBER = 'Початковий номер'
 export const AMP_TITLE = 'Назва'
+export const NO_APPROPRIATE = 'Немає відповідного тактичного знака'
+export const MANY_MATCH = 'Немає однозначного збігу' // 'Множинний збіг тактичних знаків'
 
 // export const UNIT = 'Підрозділ'
 export const MILITARY_FORMATION = 'Військове формування'
@@ -257,6 +260,8 @@ export const CONTOUR = 'Контур'
 export const CONTOUR_REGION_UNIT = 'Позиційний район підрозділу'
 
 export const MAP_SOURCE = 'Джерело картографічної інформації'
+export const SOURCE = 'Джерело'
+export const INFORMATION = 'Інформація'
 export const SITUATION_DETAILS = ({ level }) => `Деталізація обстановки: ${level}`
 
 export const INCORRECT_COORDINATE = 'Не вірно задана вузлова точка'

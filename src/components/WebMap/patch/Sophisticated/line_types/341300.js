@@ -61,8 +61,12 @@ lineDefinitions['341300'] = {
     drawZ(result)
 
     if (result.layer?.options?.showAmplifiers || toPrint) {
-      drawText(result, segmentBy(p0, center, 0.4), a0,
-        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '')
+      drawText(
+        result,
+        segmentBy(p0, center, 0.4),
+        a0,
+        result.layer?.object?.attributes?.pointAmplifier?.[amps.T] ?? '',
+      )
     }
 
     if (segmentLength(p0, p1) < segmentLength(p0, center) + k) {

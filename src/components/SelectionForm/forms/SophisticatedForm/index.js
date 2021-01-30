@@ -19,6 +19,8 @@ import {
 
 import './SophisticatedForm.css'
 import { extractLineCode } from '../../../WebMap/patch/Sophisticated/utils'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
 
 const { FormDarkPart } = components.form
 
@@ -37,9 +39,16 @@ export default class SophisticatedForm extends compose(
   renderContent () {
     const useStatus = lineDefinitions[extractLineCode(this.props.data.code)]?.useStatus
     const useAmplifiers = lineDefinitions[extractLineCode(this.props.data.code)]?.useAmplifiers
+    const result = this.getResult()
     return (
       <div className="sophisticated-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE)}
+            attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeTacticalSymbol}
+          />
           <div className="sophisticated-container__item--firstSection">
             <div className="sophisticated-container__itemWidth-right">
               {this.renderSubordinationLevel()}
