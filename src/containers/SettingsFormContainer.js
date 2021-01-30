@@ -27,7 +27,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(webMapActions.setMiniMap(showMiniMap))
     dispatch(paramsActions.saveParam(paramNames.MINI_MAP, showMiniMap))
   },
-  onChangeShowAmplifier: ({ target: { checked: showAmplifiers } }) => {
+  onChangeShowAmplifier: (showAmplifiers) => {
     dispatch(webMapActions.setAmplifiers(showAmplifiers))
     dispatch(paramsActions.saveParam(paramNames.SHOW_AMPLIFIERS, showAmplifiers))
   },
