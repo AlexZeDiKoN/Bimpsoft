@@ -14,16 +14,21 @@ import {
   data,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
+import { List } from 'immutable'
 import {
   symbols,
   amps,
   directionAmps,
+  CompatibilityTacticalSymbol,
 } from '../../constants/symbols'
 import './style.css'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import entityKind from '../WebMap/entityKind'
+import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
+import { colors } from '../../constants'
+import { objectIsObject } from '../../utils/whatIsIt'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -50,17 +55,32 @@ const ButtonComponent = (props) =>
 // определение id в списке тактических знаков по заданым условиям
 // Для области проверяем следующие атрибуты со возможными значениями по умолчанию
 const allAmpsDefault = {
-  [amps.T]: [ null, '' ],
-  [amps.N]: [ null, '' ],
-  [amps.W]: [ null, '' ],
+  [amps.T]: List([ null, '' ]),
+  [amps.N]: List([ null, '' ]),
+  [amps.W]: List([ null, '' ]),
 }
 
 const isMatchAttr = (attr1, attr2) => {
-  if (Array.isArray(attr1)) {
-    return attr1.some((value) => value === attr2)
+  if (List.isList(attr1)) { // по умолчанию возможны варианты
+    return attr1.includes(attr2)
   }
-  if (Object.prototype.toString.call(attr1) === '[object Object]' &&
-    Object.prototype.toString.call(attr2) === '[object Object]') {
+  if (Array.isArray(attr1)) {
+    if (!Array.isArray(attr2) || attr1.length !== attr2.length) {
+      return false
+    }
+    // сравниваем массивы, значения должны быть в обоих массивах
+    for (let ind = 0; ind < attr1.length; ind++) {
+      if (attr2.indexOf(attr1[ind]) < 0) {
+        return false
+      }
+    }
+    return true
+  }
+  // if (Set.isSet(attr1)) {
+  //   console.log('Set', { attr1, attr2, '=': attr1.equals(attr2) })
+  //   return attr1.equals(attr2)
+  // }
+  if (objectIsObject(attr1) && objectIsObject(attr2)) {
     for (const key of Object.keys(attr1)) {
       // eslint-disable-next-line no-prototype-builtins
       if (!attr2.hasOwnProperty(key)) {
@@ -72,7 +92,7 @@ const isMatchAttr = (attr1, attr2) => {
     }
     return true
   }
-  return false
+  return attr1 === attr2
 }
 //
 // Для точечного знака
@@ -132,41 +152,49 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           break
         }
+        case entityKind.RECTANGLE:
         case entityKind.POLYGON:
         case entityKind.AREA: {
           if (children.code !== code || !children.isSvg) {
             return false // Коды не совпали или это точечный знак
           }
           if (children.amp) {
-            // установка возможных аттриутов для знака из перечня
+            // установка по умолчанию проверяемых аттриутов для знака из перечня
             const buildAmps = {
-              lineType: [ 'solid' ],
-              fill: [ 'transparent', 'app6_transparent' ],
-              hatch: [ 'none' ],
-              pointAmplifier: { ...allAmpsDefault },
+              // color: evaluateColor(colors.BLACK),
+              fill: List([ 'transparent', colors.TRANSPARENT ]),
+              lineType: 'solid',
+              // strokeWidth: settings.LINE_WIDTH,
+              hatch: 'none',
+              intermediateAmplifierType: 'none',
               intermediateAmplifier: { ...allAmpsDefault },
-              intermediateAmplifierType: [ 'none' ],
-              nodalPointIcon: [ 'none' ],
-              direction: [ '' ],
-              directionIntermediateAmplifier: [ directionAmps.ACROSS_LINE, '', null ],
+              directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
+              shownIntermediateAmplifiers: [],
+              shownNodalPointAmplifiers: [],
+              pointAmplifier: { ...allAmpsDefault },
+              textAmplifiers: {},
+              // sectorsInfo: List(),
+              params: {},
+              nodalPointIcon: 'none',
+              direction: '',
             }
             const initialAmp = { ...children.amp }
-            // перебор предустановленных амплификаторов тактического знака
+            // заполнение предустановленных амплификаторов тактического знака данными из перечня
             for (const key of Object.keys(initialAmp)) {
-              if (Object.prototype.toString.call(initialAmp[key]) === '[object Object]') {
+              if (objectIsObject(initialAmp[key])) {
                 const amplifiers = initialAmp[key]
                 for (const key2 of Object.keys(amplifiers)) {
-                  buildAmps[key][key2] = [ amplifiers[key2] ]
+                  buildAmps[key][key2] = amplifiers[key2]
                 }
               } else {
-                buildAmps[key] = [ initialAmp[key] ]
+                buildAmps[key] = initialAmp[key]
               }
             }
             // сравнение тактических знаков
             for (const key of Object.keys(buildAmps)) {
               // eslint-disable-next-line no-prototype-builtins
               if (!amp.hasOwnProperty(key)) {
-                return false // для сравнени не хватает атрибутов
+                return false // для сравнения не хватает атрибутов
               }
               if (!isMatchAttr(buildAmps[key], amp[key])) {
                 return false // не соответствие аттрибутов тактических знаков
@@ -196,8 +224,8 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
   return id
 }
 
-// сборка списка тектических знаков
-export const getPartsSymbols = (type, search) => {
+// сборка списка тактических знаков
+export const getPartsSymbols = (type, code, search) => {
   return symbols.map((part, indexParent) => {
     const sortedPart = (search !== '')
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
@@ -213,13 +241,27 @@ export const getPartsSymbols = (type, search) => {
       name: part.name,
       render: parentToRender,
     }
-
+    const thisCode = extractLineCode(code)
+    const indexCompatibility = type === entityKind.SOPHISTICATED
+      ? CompatibilityTacticalSymbol.findIndex((sublist) => {
+        return sublist.indexOf(thisCode) > -1
+      })
+      : -2
     const symbolJSX = sortedPart.map((symbol, index) => {
       const { hint, code, isSvg, amp } = symbol
-
       // фильтрация по типу знака
       if ((isSvg && amp.type !== type) || (type !== entityKind.POINT && !isSvg)) {
         return null
+      }
+      // фильтрация по совместимости знаков
+      const symbolCode = extractLineCode(code)
+      if (type === entityKind.SOPHISTICATED && thisCode !== symbolCode) {
+        if (indexCompatibility === 0) {
+          return null
+        }
+        if (indexCompatibility !== CompatibilityTacticalSymbol.findIndex((spisok) => spisok.indexOf(symbolCode) > -1)) {
+          return null
+        }
       }
       const elemToRender =
         <div className={'list'} >

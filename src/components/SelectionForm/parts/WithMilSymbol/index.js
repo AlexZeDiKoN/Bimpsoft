@@ -130,21 +130,6 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
     window.explorerBridge.showUnitInfo(itemType, unitId)
   }
 
-  onChangeSymbol = (data) => {
-    if (!data) {
-      return
-    }
-    const { code, amp = {} } = JSON.parse(data)
-    this.setResult((result) => {
-      this.setUndoRecord(result)
-      if (code.length > 20 || !code.match(/^[0-9]+$/)) {
-        return result
-      }
-      return result.setIn(PROPERTY_PATH.CODE, code)
-        .updateIn(PROPERTY_PATH.ATTRIBUTES, (attributes) => attributes.merge(amp))
-    })
-  }
-
   renderMilSymbol () {
     const result = this.getResult()
     const code = result.getIn(PROPERTY_PATH.CODE)
@@ -166,7 +151,7 @@ const WithMilSymbol = (Component) => class WithMilSymbolComponent extends Compon
           code={code}
           type={entityKind.POINT}
           attributes={attributes}
-          onChange={this.onChangeSymbol}
+          onChange={this.onChangeTacticalSymbol}
         />
         <SymbolEditorComponentStateless
           code={code}

@@ -130,8 +130,6 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
   renderContent () {
     const result = this.getResult()
     const type = result.getIn(PATH.TYPE) ?? SelectionTypes.AREA
-    const attributes = result.getIn(PATH.ATTRIBUTES).toJS()
-    const code = result.getIn(PATH.CODE)
     const lineType = result.getIn(PATH_LINE_TYPE)
     const isContinuousArea = lineType !== types.blockageWire.value // область имеет сплошной контур
     const elem = <div className="containers-svg-tooltip">
@@ -141,9 +139,9 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
       <div className="area-container">
         <div className='scroll-container'>
           <SelectionTacticalSymbol
-            code={code}
+            code={result.getIn(PATH.CODE)}
             type={type}
-            attributes={attributes}
+            attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
             onChange={this.onChangeSymbol}
           />
           <div className="area-container__item--firstSection">

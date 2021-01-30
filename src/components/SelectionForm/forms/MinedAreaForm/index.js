@@ -16,6 +16,9 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './MinedAreaForm.css'
 import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
+import SelectionTypes from '../../../../constants/SelectionTypes'
 
 const PAIRS_AMPLIFIERS = [
   { id: 'middle', name: 'N', maxRows: 1 },
@@ -53,9 +56,16 @@ export default class MinedAreaForm extends compose(
     const elem = <div className="containers-svg-tooltip">
       {SVG_MINED_AREA}
     </div>
+    const result = this.getResult()
     return (
       <div className="minedarea-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE) ?? SelectionTypes.SOPHISTICATED}
+            attributes={ result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeTacticalSymbol}
+          />
           <div className="minedarea-container__item--firstSection">
             <div className="minedarea-container__itemWidth-right">
               {this.renderSubordinationLevel()} { /* Рівень підпорядкування */}
