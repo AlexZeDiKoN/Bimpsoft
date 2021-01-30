@@ -7,7 +7,7 @@ import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
 import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
-import { activeMapSelector, catalogsFields } from '../selectors'
+import { activeMapSelector, catalogsFields, objects as mapObjects } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { amps } from '../../constants/symbols'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
@@ -270,6 +270,7 @@ export const moveContour = (id, shift, addUndoRecord = true) =>
 export const moveObjList = (ids, shift, addUndoRecord = true) =>
   asyncAction.withNotification(async (dispatch, _, { webmapApi: { objListMove } }) => {
     await objListMove(ids, shift)
+    await dispatch(setObjectsCurrentDate(ids))
 
     if (addUndoRecord) {
       dispatch({
@@ -888,3 +889,14 @@ export const setCatalogModalData = (data) => withNotification(async (dispatch, g
   properties[TopoObj.PROPER_NAME] = state?.catalogs?.byIds?.[object?.catalogId]?.name ?? ''
   dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: true, properties, location, layer } })
 })
+
+export const setObjectsCurrentDate = (idsList) => (dispatch, getState) => {
+  const objectsList = mapObjects(getState())
+  Array.isArray(idsList) && idsList.forEach(async (id) => {
+    const currentObject = objectsList.get(id)
+    if (!currentObject || currentObject.get('type') !== entityKind.POINT) { return null }
+    const currentAttributes = currentObject.get('attributes')
+    const updatedAttributes = currentAttributes.merge({ [amps.dtg]: moment() }).toJS()
+    await dispatch(updateObjectAttributes(id, updatedAttributes))
+  })
+}
