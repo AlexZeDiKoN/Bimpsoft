@@ -27,6 +27,9 @@ export const SCALE_VIEW_LEVEL = 'scale_view_level'
 export const MAP_BASE_OPACITY = 'map_base_opacity'
 export const INACTIVE_LAYERS_OPACITY = 'inactive_layers_opacity'
 export const DEFAULT_COORD_SYSTEM = 'default_coord_system'
+export const MINI_MAP = 'show_mini_map'
+export const SHOW_AMPLIFIERS = 'show_amplifiers'
+export const GENERALIZATION = 'generalization'
 
 export const COORDINATES = 'coordinates'
 

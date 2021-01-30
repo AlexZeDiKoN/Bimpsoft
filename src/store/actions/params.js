@@ -23,6 +23,15 @@ export const loadAllParams = () =>
     if (payload[paramNames.INACTIVE_LAYERS_OPACITY] !== undefined) {
       payload[paramNames.INACTIVE_LAYERS_OPACITY] = Number(payload[paramNames.INACTIVE_LAYERS_OPACITY])
     }
+    if (payload[paramNames.MINI_MAP] === 'false') {
+      payload[paramNames.MINI_MAP] = false
+    }
+    if (payload[paramNames.SHOW_AMPLIFIERS] === 'false') {
+      payload[paramNames.SHOW_AMPLIFIERS] = false
+    }
+    if (payload[paramNames.GENERALIZATION] === 'false') {
+      payload[paramNames.GENERALIZATION] = false
+    }
     dispatch(batchActions([
       {
         type: actionNames.LOAD_PARAMS,
@@ -31,8 +40,10 @@ export const loadAllParams = () =>
       layers.setBackOpacity(payload[paramNames.MAP_BASE_OPACITY]),
       layers.setHiddenOpacity(payload[paramNames.INACTIVE_LAYERS_OPACITY]),
       webMap.setCoordinatesType(payload[paramNames.DEFAULT_COORD_SYSTEM] || Coord.types.WGS_84),
+      webMap.setMiniMap(payload[paramNames.MINI_MAP]),
+      webMap.setAmplifiers(payload[paramNames.SHOW_AMPLIFIERS]),
+      webMap.setGeneralization(payload[paramNames.GENERALIZATION]),
     ]))
-    // TODO
   })
 
 export const loadParam = (name) =>

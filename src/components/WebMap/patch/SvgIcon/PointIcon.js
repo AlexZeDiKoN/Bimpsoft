@@ -36,11 +36,18 @@ const PointIcon = L.Icon.extend({
     })
     const svg = symbol.asSVG()
     const anchor = symbol.getAnchor()
+    const octagonAnchor = symbol.getOctagonAnchor()
+    const metadata = symbol.getMetadata()
+    const width = symbol.width
+    const height = symbol.height
     const node = getSvgNodeFromString(svg)
     node.setAttribute('width', Math.round(node.getAttribute('width')))
     node.setAttribute('height', Math.round(node.getAttribute('height')))
     setActivePointSignColors(node)
-    node.state = { anchor, zoom, scale, scaleOptions, showAmplifiers, data, shownAmplifiers }
+    this.state = {
+      anchor, octagonAnchor, metadata, zoom, scale, scaleOptions, showAmplifiers, data, shownAmplifiers, width, height,
+    }
+    node.state = this.state
     return node
   },
 

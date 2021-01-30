@@ -73,6 +73,7 @@ const WebMapContainer = connect(
     undoInfo: undoInfo(state),
     isMapCOP: mapCOP(state),
     flexGridSelected: flexGridSelected(state),
+    generalization: state.webMap.generalization,
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
