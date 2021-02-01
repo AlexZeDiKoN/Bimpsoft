@@ -112,6 +112,13 @@ L.Sophisticated = L.Polyline.extend({
     this.setLatLngs(points)
   },
 
+  reInitialize (code) {
+    this.lineDefinition = findDefinition(code)
+    if (!this.lineDefinition) {
+      console.warn(`No line definition for code: `, code)
+    }
+  },
+
   _adjustPoints: function (changed, from, to) {
     const map = this._map || this._initMap
     const project = (x) => map.latLngToLayerPoint(x)

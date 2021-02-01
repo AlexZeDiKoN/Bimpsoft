@@ -264,7 +264,7 @@ export const getPartsSymbols = (type, code, search) => {
         }
       }
       const elemToRender =
-        <div className={'list'} >
+        <div className={'compilation-list'} >
           {(!isSvg)
             ? <>
               <MilSymbol
