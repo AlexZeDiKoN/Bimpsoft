@@ -101,7 +101,7 @@ const WebMapState = Record({
   showMiniMap: true,
   showAmplifiers: true,
   shownAmplifiers,
-  // generalization: false,
+  generalization: false,
   isMeasureOn: false,
   isMarkersOn: false,
   isZoneProfileOn: false,
@@ -210,10 +210,10 @@ const simpleSetFields = [ {
 }, {
   action: actionNames.SET_AMPLIFIERS_FILTER,
   field: 'shownAmplifiers',
-}, /* {
+}, {
   action: actionNames.SET_GENERALIZATION,
   field: 'generalization',
-}, */{
+}, {
   action: actionNames.SET_SOURCE,
   field: 'source',
 }, {

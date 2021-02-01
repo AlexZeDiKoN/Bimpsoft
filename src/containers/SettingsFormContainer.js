@@ -13,7 +13,7 @@ const mapStateToProps = (store) => ({
   params: store.params,
   showAmplifiers: store.webMap.showAmplifiers,
   shownAmplifiers: store.webMap.shownAmplifiers,
-  // generalization: store.webMap.generalization,
+  generalization: store.webMap.generalization,
 })
 const mapDispatchToProps = (dispatch) => ({
   onClose: () => {
@@ -23,18 +23,21 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(webMapActions.setCoordinatesType(coordinatesType))
     dispatch(paramsActions.saveParam(paramNames.DEFAULT_COORD_SYSTEM, coordinatesType))
   },
-  onChangeShowMiniMap: (showMiniMap) => {
+  onChangeShowMiniMap: ({ target: { checked: showMiniMap } }) => {
     dispatch(webMapActions.setMiniMap(showMiniMap))
+    dispatch(paramsActions.saveParam(paramNames.MINI_MAP, showMiniMap))
   },
   onChangeShowAmplifier: (showAmplifiers) => {
     dispatch(webMapActions.setAmplifiers(showAmplifiers))
+    dispatch(paramsActions.saveParam(paramNames.SHOW_AMPLIFIERS, showAmplifiers))
   },
   onChangeShownAmplifiers: (shownAmplifiers) => {
     dispatch(webMapActions.setAmplifiersFilter(shownAmplifiers))
   },
-  /* onChangeGeneralization: (generalization) => {
+  onChangeGeneralization: ({ target: { checked: generalization } }) => {
     dispatch(webMapActions.setGeneralization(generalization))
-  }, */
+    dispatch(paramsActions.saveParam(paramNames.GENERALIZATION, generalization))
+  },
   onChangeParam: (type, value) => {
     dispatch(paramsActions.saveParam(type, value))
   },

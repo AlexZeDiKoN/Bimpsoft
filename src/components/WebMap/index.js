@@ -56,6 +56,7 @@ import entityKind, {
   GROUPS,
 } from './entityKind'
 import UpdateQueue from './patch/UpdateQueue'
+import Generalization from './patch/Generalization'
 import {
   createTacticalSign,
   createCatalogIcon,
@@ -363,6 +364,7 @@ export default class WebMap extends React.PureComponent {
     }),
     isMapCOP: PropTypes.bool,
     catalogModalData: PropTypes.object,
+    generalization: PropTypes.bool,
     // Redux actions
     setModalProps: PropTypes.func,
     editObject: PropTypes.func,
@@ -473,6 +475,7 @@ export default class WebMap extends React.PureComponent {
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features },
       targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
+      generalization,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -497,6 +500,7 @@ export default class WebMap extends React.PureComponent {
     }
     if (edit !== prevProps.edit || newShape.type !== prevProps.selection.newShape.type) {
       this.adjustEditMode(edit, newShape)
+      this.updateGeneralization(generalization, edit)
     }
     if (
       preview !== prevProps.selection.preview ||
@@ -579,6 +583,9 @@ export default class WebMap extends React.PureComponent {
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
+    if (generalization !== prevProps.generalization) {
+      this.updateGeneralization(generalization, edit)
+    }
   }
 
   componentWillUnmount () {
@@ -592,6 +599,14 @@ export default class WebMap extends React.PureComponent {
 
   getBoundsMap = () => {
     return this.map.getBounds()
+  }
+
+  updateGeneralization = (generalization, edit) => {
+    if (generalization && !edit) {
+      this.generalizer.start()
+    } else {
+      this.generalizer.stop()
+    }
   }
 
   updateMinimap = (showMiniMap) => showMiniMap
@@ -864,7 +879,9 @@ export default class WebMap extends React.PureComponent {
     this.map.on('boxselectend', this.onBoxSelectEnd)
     this.map.on('dblclick', this.onDblClick)
     this.map.doubleClickZoom.disable()
+
     this.updater = new UpdateQueue(this.map)
+    this.generalizer = new Generalization(this.map, settings)
   }
 
   enableLookAfterMouseMove = (func) => this.map && func && this.map.on('mousemove', func)
@@ -1795,6 +1812,8 @@ export default class WebMap extends React.PureComponent {
           layer._groupChildren.forEach(this.removeLayer)
         }
       })
+
+      this.generalizer.go()
     }
   }
 
