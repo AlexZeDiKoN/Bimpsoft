@@ -18,9 +18,11 @@ import {
 } from '../../parts'
 
 import './MineFieldForm.css'
-// import spriteUrl from '../../../Symbols/sprite.svg'
 import { amps } from '../../../../constants/symbols'
 import { PATH_AMPLIFIERS } from '../../parts/WithAmplifiers'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import SelectionTypes from '../../../../constants/SelectionTypes'
 
 const PAIRS_AMPLIFIERS = [
   { id: amps.N, name: 'N', maxRows: 1 },
@@ -62,9 +64,16 @@ export default class MineFieldForm extends compose(
     const elem = <div className="containers-svg-tooltip">
       {svgMines}
     </div>
+    const result = this.getResult()
     return (
       <div className="minefield-container">
         <div className='scroll-container'>
+          <SelectionTacticalSymbol
+            code={result.getIn(PATH.CODE)}
+            type={result.getIn(PATH.TYPE) ?? SelectionTypes.SOPHISTICATED}
+            attributes={ result.getIn(PATH.ATTRIBUTES).toJS()}
+            onChange={this.onChangeTacticalSymbol}
+          />
           <div className="minefield-container__item--firstSection">
             <div className="minefield-container__itemWidth-right">
               {this.renderSubordinationLevel()}

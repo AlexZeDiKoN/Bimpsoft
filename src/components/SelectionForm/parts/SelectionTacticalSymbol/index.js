@@ -55,7 +55,7 @@ export default class SelectionTacticalSymbol extends React.Component {
       : {
         id,
         name: nameSymbol,
-        render: <div className={'list'} >
+        render: <div className={'compilation-list compilation-list-first'} >
           <HighlightedText text={nameSymbol}/>
         </div>,
       }
