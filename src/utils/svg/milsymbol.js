@@ -1,7 +1,7 @@
 import milsymbol from '@C4/milsymbol'
 import getBounds from '@C4/svg-path-bounds'
 
-const simpleLevelSymbolCode = (level) => `10031000${`0${level}`.slice(-2)}0000000000`
+export const simpleLevelSymbolCode = (level) => `10031000${`0${level}`.slice(-2)}0000000000`
 
 const filterItems = (c, tag) => {
   const result = []

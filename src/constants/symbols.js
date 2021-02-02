@@ -1370,11 +1370,21 @@ export const symbols = [
         code: '10032500000170230000',
         isSvg: true,
         amp: {
-          type: entityKind.POLYLINE,
+          type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗДР' },
         },
       },
+      // {
+      //   hint: 'Зона детальної розвідки бригади',
+      //   code: '10032500000170230000',
+      //   isSvg: true,
+      //   amp: {
+      //     type: entityKind.POLYLINE,
+      //     color: '#3366ff',
+      //     pointAmplifier: { [amps.N]: 'ЗДР' },
+      //   },
+      // },
       {
         hint: 'Зона оглядової розвідки бригади',
         code: '10032500000170220000',
