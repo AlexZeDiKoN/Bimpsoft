@@ -1318,6 +1318,7 @@ export const symbols = [
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0, 2 ],
           intermediateAmplifier: { [amps.N]: 'ОПР' },
+          directionIntermediateAmplifier: directionAmps.UP,
         },
       },
       {
