@@ -83,7 +83,7 @@ export const CompatibilityTacticalSymbol = [
   [ '151401', '151402', '151403', '151404', '151406' ], // напрямки
 ]
 
-// Все, что с пустым кодом - Линии, все у которых isSvh = true - Линии. TODO - добавить свгши, или ссылки на них
+// Все, что с пустым кодом - Линии, все у которых isSvg = true - Линии. TODO - добавить свгши, или ссылки на них
 // isFlip === true - Реверсирует сгенерированные координаты (для переворота типовой линии в замкнутых фигурах)
 export const symbols = [
   {
@@ -1318,6 +1318,7 @@ export const symbols = [
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 0, 2 ],
           intermediateAmplifier: { [amps.N]: 'ОПР' },
+          directionIntermediateAmplifier: directionAmps.UP,
         },
       },
       {
@@ -1369,7 +1370,7 @@ export const symbols = [
         code: '10032500000170230000',
         isSvg: true,
         amp: {
-          type: entityKind.POLYLINE,
+          type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗДР' },
         },
@@ -1379,7 +1380,7 @@ export const symbols = [
         code: '10032500000170220000',
         isSvg: true,
         amp: {
-          type: entityKind.POLYLINE,
+          type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗОР' },
         },

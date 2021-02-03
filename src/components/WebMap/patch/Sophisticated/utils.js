@@ -1682,6 +1682,7 @@ export const drawText = (
   }
   // Ампліфікатор
   // font-weight="${CONFIG.FONT_WEIGHT}"
+  const padding = textAnchor === 'middle' ? 0 : (textAnchor === 'start' ? CONFIG.TEXT_EDGE : -CONFIG.TEXT_EDGE)
   const fill = color ? `fill = "${color}"` : `fill="black"`
   const transform = `translate(${textPoint.x},${textPoint.y}) rotate(${deg(cropAngle(textAngle))})`
   result.amplifiers += `<text 
@@ -1690,7 +1691,7 @@ export const drawText = (
     stroke="none" 
     ${fill}
     transform="${transform}"
-    x="${0}" 
+    x="${padding}" 
     y="${0}" 
     text-anchor="${textAnchor}" 
     font-size="${fontSize}"
@@ -1719,6 +1720,7 @@ export const drawMaskedText = (
   const w = box.width / 2 + CONFIG.TEXT_EDGE
   const h = box.height / 2 + CONFIG.TEXT_EDGE
   let y
+  let x = w
   if (textAlign === 'baseline' || textAlign === 'after-edge' || textAlign === 'text-after-edge') {
     y = h * 2
   } else if (textAlign === 'before-edge' || textAlign === 'text-before-edge') {
@@ -1726,10 +1728,15 @@ export const drawMaskedText = (
   } else {
     y = h
   }
+  if (textAnchor === 'start') {
+    x = 0
+  } else if (textAnchor === 'end') {
+    x = w * 2
+  }
   result.mask += `<rect
     fill="black"
     transform="${transform}" 
-    x="-${w}" 
+    x="-${x}" 
     y="-${y}" 
     width="${w * 2}" 
     height="${h * 2 * (isNumber ? 0.85 : 1)}"
