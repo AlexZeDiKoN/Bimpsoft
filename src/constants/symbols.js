@@ -83,7 +83,7 @@ export const CompatibilityTacticalSymbol = [
   [ '151401', '151402', '151403', '151404', '151406' ], // напрямки
 ]
 
-// Все, что с пустым кодом - Линии, все у которых isSvh = true - Линии. TODO - добавить свгши, или ссылки на них
+// Все, что с пустым кодом - Линии, все у которых isSvg = true - Линии. TODO - добавить свгши, или ссылки на них
 // isFlip === true - Реверсирует сгенерированные координаты (для переворота типовой линии в замкнутых фигурах)
 export const symbols = [
   {
@@ -1375,22 +1375,12 @@ export const symbols = [
           pointAmplifier: { [amps.N]: 'ЗДР' },
         },
       },
-      // {
-      //   hint: 'Зона детальної розвідки бригади',
-      //   code: '10032500000170230000',
-      //   isSvg: true,
-      //   amp: {
-      //     type: entityKind.POLYLINE,
-      //     color: '#3366ff',
-      //     pointAmplifier: { [amps.N]: 'ЗДР' },
-      //   },
-      // },
       {
         hint: 'Зона оглядової розвідки бригади',
         code: '10032500000170220000',
         isSvg: true,
         amp: {
-          type: entityKind.POLYLINE,
+          type: entityKind.SOPHISTICATED,
           color: '#3366ff',
           pointAmplifier: { [amps.N]: 'ЗОР' },
         },

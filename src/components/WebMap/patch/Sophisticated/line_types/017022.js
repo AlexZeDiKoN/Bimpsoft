@@ -16,11 +16,11 @@ import { subordinationLevelSVG } from '../../../../../utils/svg/milsymbol'
 
 // sign name:
 // task code: C4-477
-// hint: 'Зона детальної розвідки бригади'
+// hint: 'Зона оглядової розвідки бригади'
 
-const SYMBOL_SCALE = 0.75
+const LEVEL_SCALE = 0.75
 
-lineDefinitions['017023'] = {
+lineDefinitions['017022'] = {
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.none,
 
@@ -52,7 +52,7 @@ lineDefinitions['017023'] = {
     const amplifierMargin = settings.AMPLIFIERS_WINDOW_MARGIN
     const level = 18
     const angle = angleOf(a, p0)
-    const size = getPointSize(result.layer) * SYMBOL_SCALE
+    const size = getPointSize(result.layer) * LEVEL_SCALE
     const subordinationLevel = subordinationLevelSVG(levelPoints, angle, level, size, amplifierMargin)
     result.mask += subordinationLevel.mask
     result.amplifiers += subordinationLevel.amplifiers

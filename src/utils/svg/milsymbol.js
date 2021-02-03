@@ -1,5 +1,7 @@
 import milsymbol from '@C4/milsymbol'
 import getBounds from '@C4/svg-path-bounds'
+import { deg } from '../../components/WebMap/patch/Sophisticated/utils'
+import { settings } from '../../constants/drawLines'
 
 export const simpleLevelSymbolCode = (level) => `10031000${`0${level}`.slice(-2)}0000000000`
 
@@ -70,4 +72,21 @@ export const extractSubordinationLevelSVG = (level, maxWidth, margin, boxWidth =
       height: height + 2 * margin,
     },
   }
+}
+export const subordinationLevelSVG = (points, angle, level, maxWidth, margin, boxWidth = 0, boxHeight = 0) => {
+  const subordinationLevel = extractSubordinationLevelSVG(level, maxWidth, margin, boxWidth, boxHeight)
+  const fillColor = 'black'
+  let mask = ''
+  let amplifiers = ''
+  const levelPoints = Array.isArray(points) ? points : [ points ]
+  levelPoints.forEach((point) => {
+    const { x, y } = point
+    const transform = `translate(${x},${y}) rotate(${deg(angle)})`
+    if (subordinationLevel.maskRect) {
+      const { x, y, height, width } = subordinationLevel.maskRect
+      mask += `<rect fill="black" transform="${transform}" x="${x}" y="${y}" width="${width}" height="${height}" />`
+    }
+    amplifiers += `<g stroke-width="${settings.AMPLIFIERS_STROKE_WIDTH}" transform="${transform}" fill="${fillColor}">${subordinationLevel.sign}</g>`
+  })
+  return { mask, amplifiers }
 }
