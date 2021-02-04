@@ -414,6 +414,7 @@ export default class WebMap extends React.PureComponent {
     onShadowDelete: PropTypes.func,
     myContactId: PropTypes.number,
     setCatalogModalData: PropTypes.func,
+    topographicObjectsList: PropTypes.array,
   }
 
   constructor (props) {
@@ -473,7 +474,7 @@ export default class WebMap extends React.PureComponent {
       flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
-      topographicObjects: { selectedItem, features },
+      topographicObjects: { selectedItem, features }, topographicObjectsList,
       targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
       generalization,
     } = this.props
@@ -580,6 +581,9 @@ export default class WebMap extends React.PureComponent {
       isZoneProfileOn || isZoneVisionOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
+    }
+    if (topographicObjectsList !== prevProps.topographicObjectsList) {
+      this.backLightingTopographicObjectsList(topographicObjectsList)
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
@@ -1230,6 +1234,24 @@ export default class WebMap extends React.PureComponent {
     const backLighting = L.geoJSON(object, this.backLightingStyles(object))
     backLighting.addTo(this.map)
     this.backLights.push(backLighting)
+  }
+
+  backLightingTopographicObjectsList = (objectsList) => {
+    if (Array.isArray(this.backLightsList)) {
+      this.backLightsList.forEach((item) => item.removeFrom(this.map))
+    } else {
+      this.backLightsList = []
+    }
+    objectsList.forEach((object) => {
+      const backLighting = L.geoJSON({ type: 'Feature', ...object }, {
+        style: this.backLightingStyles,
+        pointToLayer: (geoJsonPoint, latlng) => {
+          return new L.CircleMarker(latlng, { interactive: false, radius: 1 })
+        },
+      })
+      backLighting.addTo(this.map)
+      this.backLightsList.push(backLighting)
+    })
   }
 
   backLightingStyles = (object) => {

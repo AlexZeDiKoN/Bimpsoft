@@ -1,7 +1,7 @@
 import { data } from '@C4/CommonComponents'
 import { catalogs } from '../actions'
 
-const { TextFilter } = data
+const { TextFilter, getNormilizeTree } = data
 
 const catalogRoot = 35
 const KOATUU = 37
@@ -14,6 +14,10 @@ const initState = {
   expandedIds: {},
   objects: {},
   attributes: {},
+  topographicObjectsData: {
+    byIds: {},
+    roots: [],
+  },
 }
 
 export default function reducer (state = initState, action) {
@@ -92,6 +96,13 @@ export default function reducer (state = initState, action) {
     case catalogs.CATALOG_SELECT_ITEM: {
       const { selectedId } = action
       return { ...state, selectedId }
+    }
+    case catalogs.CATALOG_SET_TOPOGRAPHIC_FIELDS: {
+      const treeData = getNormilizeTree(payload ?? [])
+      return { ...state, topographicObjectsData: { ...state.topographicObjectsData, ...treeData } }
+    }
+    case catalogs.CATALOG_SET_TOPOGRAPHIC_BY_IDS: {
+      return { ...state, topographicObjectsData: { ...state.topographicObjectsData, byIds: payload } }
     }
     default:
       return state

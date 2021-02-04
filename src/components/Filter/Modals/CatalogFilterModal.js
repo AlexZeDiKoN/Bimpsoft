@@ -102,6 +102,7 @@ export const CatalogFilterModal = ({
                 name={name}
                 value={value[name] ?? ''}
                 onChange={(target) => onChangeHandler(target, name)}
+                autoComplete="off"
               />
             </FormColumnFloat>,
           )}

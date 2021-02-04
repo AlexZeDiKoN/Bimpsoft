@@ -1,10 +1,20 @@
 import { MERGE_FILTERS, REMOVE_FILTER, SET_FILTERS } from '../actions/filter'
-import { CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
+import {
+  CATALOG_FILTERS,
+  MIL_SYMBOL_FILTER,
+  SEARCH_FILTER,
+  LOADING,
+  SEARCH_TOPOGRAPHIC_FILTER,
+  TOPOGRAPHIC_OBJECT_FILTER,
+} from '../../constants/filter'
 
 const initState = {
   [CATALOG_FILTERS]: { },
   [SEARCH_FILTER]: '',
+  [SEARCH_TOPOGRAPHIC_FILTER]: '',
   [MIL_SYMBOL_FILTER]: [ ],
+  [MIL_SYMBOL_FILTER]: [ ],
+  [TOPOGRAPHIC_OBJECT_FILTER]: { },
   [LOADING]: false,
 }
 

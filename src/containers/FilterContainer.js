@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { SidebarFilterComponent } from '../components/Filter'
+import { PointsFilterComponent } from '../components/Filter/Sidebar'
 import { onChangeMilSymbolVisible, openMilSymbolModal, setSearchFilter } from '../store/actions/filter'
 import { filterSearch, getCurrentFilters, getFilteredObjectsCount, mapCOP } from '../store/selectors'
 import { setModalData } from '../store/actions/task'
@@ -25,5 +25,5 @@ const mapDispatchToProps = {
   onOpenCreateLayer: openModalCreateLayer,
 }
 
-const FilterContainer = connect(mapStateToProps, mapDispatchToProps)(SidebarFilterComponent)
+const FilterContainer = connect(mapStateToProps, mapDispatchToProps)(PointsFilterComponent)
 export default FilterContainer

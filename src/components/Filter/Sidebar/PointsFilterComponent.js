@@ -2,16 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@C4/MilSymbolEditor'
 import { IButton, IconNames, ColorTypes, Scrollbar, data, HighlightedText } from '@C4/CommonComponents'
-import { CountBox, SidebarWrap } from '../common/Sidebar'
-import i18n from '../../i18n'
-import VisibilityButton from '../common/VisibilityButton'
+import { CountBox, SidebarWrap } from '../../common/Sidebar'
+import i18n from '../../../i18n'
+import VisibilityButton from '../../common/VisibilityButton'
 import './style.css'
 
 const { TextFilter } = data
 const ARRAY = []
 const buttonWrap = (node) => <div className="button_layers">{node}</div>
 
-export const SidebarFilterComponent = ({
+export const PointsFilterComponent = ({
   items = ARRAY,
   search,
   onSearch,
@@ -74,8 +74,8 @@ export const SidebarFilterComponent = ({
   </SidebarWrap>
 }
 
-SidebarFilterComponent.displayName = 'SidebarFilterComponent'
-SidebarFilterComponent.propTypes = {
+PointsFilterComponent.displayName = 'PointsFilterComponent'
+PointsFilterComponent.propTypes = {
   items: PropTypes.array,
   search: PropTypes.string,
   onSearch: PropTypes.func,
