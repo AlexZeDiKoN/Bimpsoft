@@ -2,10 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
-import { data, components } from '@C4/CommonComponents'
+import { data, components, HotKeysContainer } from '@C4/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
+import { blockHotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import Item from './children/Item'
 import OrgStructureMenu from './children/OrgStructureMenu'
 
@@ -110,13 +112,15 @@ export default class OrgStructuresComponent extends React.PureComponent {
     if (formation === null) {
       return (
         <div className="org-structures">
-          <div className='org-structures-searchBlock'>
-            <Input.Search
-              ref={this.inputRef}
-              placeholder={i18n.FILTER}
-              disabled
-            />
-          </div>
+          <HotKeysContainer>
+            <div className='org-structures-searchBlock'>
+              <Input.Search
+                ref={this.inputRef}
+                placeholder={i18n.FILTER}
+                disabled
+              />
+            </div>
+          </HotKeysContainer>
           <b>{i18n.NO_ORG_STRUCTURE}</b>
         </div>
       )
@@ -138,7 +142,10 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
     return (
       <div className="org-structures">
-        <div className='org-structures-searchBlock'>
+        <div
+          className='org-structures-searchBlock'
+          onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+        >
           <InputButton
             title={i18n.ORG_STRUCTURE_SHORT}
             onChange={this.filterTextChangeHandler}

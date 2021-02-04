@@ -5,6 +5,8 @@ import { InputButton } from '../common'
 
 import './style.css'
 import i18n from '../../i18n'
+import { blockHotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import LogMapItem from './children/Item'
 
 const LogMapTab = (props) => {
@@ -12,7 +14,10 @@ const LogMapTab = (props) => {
   const [ search, onChangeSearch ] = useState('')
   return (
     <div className='log-map-wrapper'>
-      <div className='log-map-header'>
+      <div
+        className='log-map-header'
+        onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+      >
         <InputButton
           onChange={onChangeSearch}
           value={search}

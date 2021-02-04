@@ -22,3 +22,4 @@ export const ESC = (e) => e.key === 'Escape'
 export const SPACE = (e) => e.key === ' '
 export const UNDO = (e) => e.key === 'Undo' || (e.ctrlKey && !e.shiftKey && e.keyCode === KeyCode.KEY_Z)
 export const REDO = (e) => e.key === 'Redo' || (e.ctrlKey && e.shiftKey && e.keyCode === KeyCode.KEY_Z)
+export const ANY_KEY = () => true

@@ -14,9 +14,11 @@ import {
 import { isEmpty } from 'ramda'
 import { InputButton, IntervalControl, VisibilityButton } from '../common'
 import i18n from '../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
+import { BlockHotKeyContainer } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import LayersControlsComponent from './LayersControlsComponent'
 import ItemTemplate from './ItemTemplate'
-import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -113,7 +115,9 @@ export default class LayersComponent extends React.Component {
     return (
       <div className="layers-component">
         <div className='container-layers'>
-          <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
+          <BlockHotKeyContainer hotKey={[ shortcuts.DELETE ]}>
+            <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
+          </BlockHotKeyContainer>
           <div className='container-layers__btnContainer'>
             <Tooltip title={i18n.LAYERS_VISIBILITY} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
               <IButton
@@ -125,7 +129,8 @@ export default class LayersComponent extends React.Component {
                 onClick={() => this.setState((prev) => ({ showLayers: !prev.showLayers }))}
               />
             </Tooltip>
-            {!isMapCOP && isMapCOP !== undefined && <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.DISPLAY_PERIOD} placement='topRight'>
+            {!isMapCOP && isMapCOP !== undefined &&
+            <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={i18n.DISPLAY_PERIOD} placement='topRight'>
               <IButton
                 icon={IconNames.CALENDAR}
                 colorType={ColorTypes.WHITE}
