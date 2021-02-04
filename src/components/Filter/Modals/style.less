@@ -1,6 +1,9 @@
 @import '../../../assets/styles/_mixins.less';
 
 .catalog-filter{
+  .dzvin-form-body{
+    height: calc(100% - 2.8em);
+  }
   .dzvin-form-header-title{
     .text-hidden-overflow();
     padding: 0 5px;
@@ -31,5 +34,16 @@
       padding: 0 13px 10px 13px;
       margin-top: -10px;
     }
+  }
+}
+
+.modal-objects{
+  &__filter--wrap{
+    display: grid;
+    grid-template-rows: 1fr 60px;
+    height: 100%;
+  }
+  &__filter--content{
+    overflow: auto;
   }
 }

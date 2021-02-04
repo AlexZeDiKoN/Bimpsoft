@@ -9,7 +9,9 @@ import {
   CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
-  LogMapContainer, FilterContainer,
+  LogMapContainer,
+  FilterContainer,
+  FilterTopographicObjects,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 import i18n from '../../i18n'
@@ -100,6 +102,12 @@ export default class Sidebar extends React.Component {
                   title: i18n.STRAINERS,
                   icon: IconNames.FILTER,
                   enabled: isHaveActiveLayer,
+                },
+                {
+                  Component: FilterTopographicObjects,
+                  title: i18n.TOPOGRAPHIC_OBJECTS,
+                  icon: IconNames.MAP_HEADER_ICON_MENU_TOPOGRAPHY_1,
+                  enabled: true,
                 },
               ].filter(Boolean)}
               onToggle={this.onToggle}

@@ -3,10 +3,18 @@ import moment from 'moment'
 import { model } from '@C4/MilSymbolEditor'
 import { data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
-import { CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
+import {
+  CATALOG_FILTERS,
+  MIL_SYMBOL_FILTER,
+  SEARCH_FILTER,
+  LOADING,
+  SEARCH_TOPOGRAPHIC_FILTER,
+  TOPOGRAPHIC_OBJECT_FILTER,
+} from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
+import { catalogsTopographicByIds } from './catalogs'
 
 const { TextFilter } = data
 
@@ -78,7 +86,9 @@ export const catalogsFields = (state) => state.catalogs.attributes
 export const getCatalogsByIds = (state) => state.catalogs.byIds
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
+export const filterTopographicSearch = (state) => state.filter[SEARCH_TOPOGRAPHIC_FILTER]
 export const loadingFiltersStatus = (state) => state.filter[LOADING]
+export const topographicObjectsFilters = (state) => state.filter[TOPOGRAPHIC_OBJECT_FILTER]
 
 export const catalogObjects = (state) => state.catalogs?.objects
 
@@ -120,4 +130,17 @@ export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters
     }
   })
   return count
+})
+
+export const getTopographicObjectsList = createSelector(catalogsTopographicByIds, topographicObjectsFilters,
+  (byIds, filtersData) => {
+    const shownFilters = Object.values(byIds).filter(({ shown }) => shown)
+    return shownFilters.map(({ id }) => {
+      const data = filtersData[id]?.objects ?? []
+      return data.map((geometry) => ({ geometry: geometry.location }))
+    }).flat(1)
+  })
+
+export const getTopographicObjectsCount = createSelector(topographicObjectsFilters, (filtersData) => {
+  return Object.fromEntries(Object.entries(filtersData).map(([ id, { objects } ]) => [ id, objects?.length ?? 0 ]))
 })
