@@ -29,6 +29,7 @@ import entityKind from '../WebMap/entityKind'
 import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
 import { colors } from '../../constants'
 import { objectIsObject } from '../../utils/whatIsIt'
+import { HotKeysContainer } from '../common/HotKeys'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -394,11 +395,13 @@ const SymbolsTab = (props) => {
   return (
     <div className='symbols-wrapper'>
       <div className='symbols-header'>
-        <InputButton
-          onChange={onChangeSearch}
-          initValue={search}
-          title={i18n.SYMBOLS}
-        />
+        <HotKeysContainer>
+          <InputButton
+            onChange={onChangeSearch}
+            initValue={search}
+            title={i18n.SYMBOLS}
+          />
+        </HotKeysContainer>
         <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
           <IButton
             active={!listMode}
@@ -419,6 +422,7 @@ const SymbolsTab = (props) => {
       <Scrollbar className='parts-container'>
         {partsJSX}
       </Scrollbar>
+
     </div>
   )
 }
