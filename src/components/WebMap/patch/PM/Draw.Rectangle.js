@@ -16,13 +16,8 @@ L.PM.Draw.Rectangle.include({
 
       hintM.on('move', this._syncRectangleSize, this)
     } else {
-      console.log('_syncRectangleSize')
       parent._syncRectangleSize.call(this)
     }
   },
 
-  setLatLngs: function (latlangs) {
-    console.log('PM setLatLngs')
-    parent.setLatLngs.call(this, latlangs)
-  },
 })

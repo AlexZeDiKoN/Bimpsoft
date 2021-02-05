@@ -1,5 +1,4 @@
 import L from 'leaflet'
-import { LatLngBounds } from 'leaflet/src/geo/LatLngBounds'
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
@@ -27,11 +26,7 @@ L.PM.Edit.Rectangle.include({
     var e = this._findCorners()
     this._adjustAllMarkers(e)
     this._cornerMarkers.forEach(function (t) { delete t._oppositeCornerLatLng })
-    const bounds = new LatLngBounds(e)
-    console.log('_onMarkerDragEnd polygon', { e, bounds })
-    // this._layer.setBounds(bounds)
-    this._layer.setBounds(e)
-    this._layer.setLatLngs(e)
+    this._layer.setBounds(e) // вместо this._layer.setLatLngs(e)
     this._layer.fire('pm:markerdragend', { markerEvent: t })
     this._fireEdit()
   },
