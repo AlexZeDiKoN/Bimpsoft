@@ -25,7 +25,10 @@ export const TopographicObjectsFilterComponent = ({
   onFilterClick,
   preloadFields,
 }) => {
-  React.useEffect(preloadFields, [ preloadFields ])
+  React.useEffect(() => {
+    async function load () { await preloadFields() }
+    load()
+  }, [ preloadFields ])
 
   const items = React.useMemo(() => Object.values(byIds), [ byIds ])
   const textFilter = getTextFilter(search)
