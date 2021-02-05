@@ -3,7 +3,7 @@
   "version": "17.01.1233",
   "private": true,
   "dependencies": {
-    "@C4/CommonComponents": "^17.1.569",
+    "@C4/CommonComponents": "^17.1.572",
     "@C4/MilSymbolEditor": "^17.1.313",
     "@C4/components": "^17.1.609",
     "@C4/leaflet-measure-custom": "^17.1.11",
