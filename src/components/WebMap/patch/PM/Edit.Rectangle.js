@@ -1,9 +1,10 @@
 import L from 'leaflet'
+import { LatLngBounds } from 'leaflet/src/geo/LatLngBounds'
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
-const { _onMarkerDrag } = L.PM.Edit.Rectangle.prototype
-const parent = { _onMarkerDrag }
+const { _onMarkerDrag, _onMarkerDragEnd } = L.PM.Edit.Rectangle.prototype
+const parent = { _onMarkerDrag, _onMarkerDragEnd }
 
 L.PM.Edit.Rectangle.include({
   _onMarkerDrag: function (e) {
@@ -19,5 +20,19 @@ L.PM.Edit.Rectangle.include({
     } else {
       parent._onMarkerDrag.call(this, e) // потрібен для не SQUARE
     }
+  },
+
+  // от polygon + коррекция
+  _onMarkerDragEnd: function (t) {
+    var e = this._findCorners()
+    this._adjustAllMarkers(e)
+    this._cornerMarkers.forEach(function (t) { delete t._oppositeCornerLatLng })
+    const bounds = new LatLngBounds(e)
+    console.log('_onMarkerDragEnd polygon', { e, bounds })
+    // this._layer.setBounds(bounds)
+    this._layer.setBounds(e)
+    this._layer.setLatLngs(e)
+    this._layer.fire('pm:markerdragend', { markerEvent: t })
+    this._fireEdit()
   },
 })

@@ -101,6 +101,7 @@ L.PM.Edit.Line.include({
   },
 
   _onMarkerDrag: function (e) {
+    console.log('_onMarkerDragEnd line')
     this._markers = this._markers ?? []
     parent._onMarkerDrag.call(this, e)
     const marker = e.target

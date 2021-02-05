@@ -473,6 +473,7 @@ L.SVG.include({
       }
       layer.oldRings = layer._rings[0]
       layer.points = points
+      console.log('updateMask', { pointsG, points })
     }
     const amplifiers = getAmplifiers({
       points: layer.points,
