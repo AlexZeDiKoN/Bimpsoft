@@ -19,5 +19,4 @@ L.PM.Draw.Rectangle.include({
       parent._syncRectangleSize.call(this)
     }
   },
-
 })
