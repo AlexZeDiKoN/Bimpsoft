@@ -679,7 +679,6 @@ export const sendMarchToExplorer = () =>
         message: i18n.MESSAGE,
         description: i18n.SUCCESS_SEND_MARCH_TO_EXPLORER,
       }))
-      dispatch(closeMarch())
 
       return res
     }
