@@ -2,8 +2,8 @@ import L from 'leaflet'
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
-const { _syncRectangleSize, setLatLngs } = L.PM.Draw.Rectangle.prototype
-const parent = { _syncRectangleSize, setLatLngs }
+const { _syncRectangleSize } = L.PM.Draw.Rectangle.prototype
+const parent = { _syncRectangleSize }
 
 L.PM.Draw.Rectangle.include({
   _syncRectangleSize: function () {
