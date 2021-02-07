@@ -117,6 +117,7 @@ export default L.Path.include({
 
   setScaleOptions: function (scaleOptions, needRedraw) {
     this.scaleOptions = scaleOptions
+    console.log('setScale')
     this._updateZoomStyles(needRedraw)
   },
 
@@ -166,8 +167,10 @@ export default L.Path.include({
         hasStyles = true
       }
       if (scaleChanged || lineTypePrev !== lineType) {
+        console.log('updateZoomStyles', { scaleOptions, scaleOptionsPrev, so: scaleOptions !== scaleOptionsPrev, lt: lineTypePrev !== lineType })
+        const status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
         this.lineTypePrev = lineType
-        styles.dashArray = getStylesForLineType(lineType, scale).strokeDasharray
+        styles.dashArray = getStylesForLineType(lineType, scale, undefined, status).strokeDasharray
         hasStyles = true
         needRedraw = true
       }

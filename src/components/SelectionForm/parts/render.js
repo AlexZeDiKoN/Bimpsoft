@@ -50,9 +50,11 @@ const optionsSvg = (children) => (
   </svg>
 )
 
+// генерация вида стилей линий для селекторов
 export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) => {
   const dash = getStylesForLineType(borderStyle)
   const amplifier = level ? extractSubordinationLevelSVG(level, 16, 4, 56, 20) : null
+  let additionalPath = ''
   if (amplifier) {
     return optionsSvg(
       <>
@@ -82,7 +84,6 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
         return optionsSvg(
           <>
             <path
-              mask="url(#sign)"
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={strokeWidth}
               d="M0,10 h56 m1,1"
@@ -108,10 +109,20 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
             d="M0,10 h56 m-24,4l-12-4l12-4z"
           />,
         )
+      case 'waved':
+      case 'waved2': {
+        additionalPath =
+          <path
+            stroke="#adadad"
+            strokeWidth={strokeWidth}
+            d={borderStyle === 'waved'
+              ? 'M55 13 H0 M0 15l2-2M3 19l6-6M10 19l6-6 M17 19l6-6 M24 19l6-6M31 19l6-6M38 19l6-6M45 19l6-6M52 19l2-2'
+              : 'M55 8 H0 M0 4L2 2M3 8l6-6M10 8l6-6M17 8l6-6 M24 8l6-6M31 8l6-6M38 8l6-6M45 8l6-6M52 8l2-2'}
+          />
+      }
+      // eslint-disable-next-line no-fallthrough
       case 'solidWithDots':
       case 'stroked':
-      case 'waved':
-      case 'waved2':
       case 'blockage':
       case 'blockageIsolation':
       case 'moatAntiTankUnfin':
@@ -131,16 +142,7 @@ export const renderStyledLine = (borderStyle, level, strokeWidth = LINE_WIDTH) =
       case 'trenches':
         return optionsSvg(
           <>
-            {borderStyle === 'waved' && <path
-              stroke="#adadad"
-              strokeWidth={strokeWidth / 2}
-              d="M55 13 H0 M0 15l2-2M3 19l6-6M10 19l6-6 M17 19l6-6 M24 19l6-6M31 19l6-6M38 19l6-6M45 19l6-6M52 19l2-2"
-            />}
-            {borderStyle === 'waved2' && <path
-              stroke="#adadad"
-              strokeWidth={strokeWidth / 2}
-              d="M55 8 H0 M0 4L2 2M3 8l6-6M10 8l6-6M17 8l6-6 M24 8l6-6M31 8l6-6M38 8l6-6M45 8l6-6M52 8l2-2"
-            />}
+            {additionalPath}
             <path
               stroke="rgba(0,0,0,0.65)"
               strokeWidth={TYPE_LINE_PATH[borderStyle]?.strokeWidth || strokeWidth}

@@ -6,6 +6,7 @@ import { evaluateColor } from '../../constants/colors'
 import { HATCH_TYPE, MARK_TYPE, settings, SIN30, SIN45, SIN60, SIN60_05 } from '../../constants/drawLines'
 import { angle3Points, deg, rad } from '../../components/WebMap/patch/Sophisticated/utils'
 import { amps, directionAmps } from '../../constants/symbols'
+import { STATUSES } from '../../components/SelectionForm/parts/WithStatus'
 import { extractSubordinationLevelSVG } from './milsymbol'
 import {
   extractTextsSVG,
@@ -1304,13 +1305,20 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graph
   return `${res}</g>`
 }
 
-export const getStylesForLineType = (type, scale = 1, dashSize = 6) => {
+export const getStylesForLineType = (type, scale = 1, dashSize = 6, status = STATUSES.EXISTING) => {
   const styles = {}
   switch (type) {
     case 'chain': {
       styles.strokeDasharray = [ dashSize, dashSize / 2, dashSize / 3, dashSize / 2 ]
       break
     }
+    case 'waved' :
+    case 'solid' : {
+      if (status !== STATUSES.PLANNED) {
+        return styles
+      }
+    }
+    // eslint-disable-next-line no-fallthrough
     case 'dashed': {
       styles.strokeDasharray = [ dashSize, dashSize ]
       break
