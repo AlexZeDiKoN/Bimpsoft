@@ -219,30 +219,19 @@ const serializeCoordinate = (mode, lat, lng) => {
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
-const setScaleOptions = (layer, params, needRedraw, paramsType) => {
-  const pointSizes = paramsType ? paramsType.pointParams
-    : {
-      min: Number(params[paramsNames.POINT_SIZE_MIN]),
-      max: Number(params[paramsNames.POINT_SIZE_MAX]),
-    }
-  // const lineSizes = paramsType ? paramsType.lineParams
-  //   : linesParams.reduce((acc, name) => {
-  //     acc[name] = Number(params[name])
-  //     return acc
-  //   }, {
-  //     min: Number(params[paramsNames.LINE_SIZE_MIN]),
-  //     max: Number(params[paramsNames.LINE_SIZE_MAX]),
-  //     isLine: true,
-  // pointSizes,
-    // })
+const setScaleOptions = (layer, params, needRedraw) => {
+  const pointSizes = {
+    min: Number(params[paramsNames.POINT_SIZE_MIN]),
+    max: Number(params[paramsNames.POINT_SIZE_MAX]),
+  }
+  const lineSizes = {
+    min: Number(params[paramsNames.LINE_SIZE_MIN]),
+    max: Number(params[paramsNames.LINE_SIZE_MAX]),
+  }
   if (layer?.object) {
     if (layer.object.catalogId) {
       layer.setScaleOptions(pointSizes, needRedraw)
     } else if (layer.object.type) {
-      const lineSizes = {
-        min: Number(params[paramsNames.LINE_SIZE_MIN]),
-        max: Number(params[paramsNames.LINE_SIZE_MAX]),
-      }
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
@@ -278,7 +267,6 @@ const setScaleOptions = (layer, params, needRedraw, paramsType) => {
         case entityKind.CIRCLE:
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
-          console.log('lineSizes', lineSizes)
           layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:
@@ -1625,26 +1613,8 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
-    const paramsType = {
-      pointParams: {
-        min: Number(params[paramsNames.POINT_SIZE_MIN]),
-        max: Number(params[paramsNames.POINT_SIZE_MAX]),
-      },
-      textParams: {
-        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-      },
-      lineParams: linesParams.reduce((acc, name) => {
-        acc[name] = Number(params[name])
-        return acc
-      }, {
-        min: Number(params[paramsNames.LINE_SIZE_MIN]),
-        max: Number(params[paramsNames.LINE_SIZE_MAX]),
-        isLine: true,
-      }),
-    }
     // обновляем масштабные настройки всех объектов карты
-    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params, undefined, paramsType))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params)) // + перерисовка
   }
 
   updateShowAmplifiers = (showAmplifiers, shownAmplifiers) => {
@@ -2014,8 +1984,6 @@ export default class WebMap extends React.PureComponent {
       layersById,
       hiddenOpacity,
       params,
-      showAmplifiers,
-      shownAmplifiers,
       layer: selectedLayerId,
       selection: { list },
     } = this.props
@@ -2093,9 +2061,9 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
-      console.log('addObject', { needRedraw, showAmplifiers, shownAmplifiers })
-      setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
+      // TODO якщо сюды дійшли всерівно преререндрювати layer
+      // const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
+      setScaleOptions(layer, params, true) // обновляем объект в соответствии с масштабными настройками
     }
 
     return layer
@@ -2129,7 +2097,7 @@ export default class WebMap extends React.PureComponent {
       }
 
       const { params } = this.props
-      setScaleOptions(layer, params)
+      setScaleOptions(layer, params) // отрисовка объекта каталога с опциями params
     }
     return layer
   }

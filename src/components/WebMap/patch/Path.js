@@ -177,10 +177,7 @@ export default L.Path.include({
       }
       hasStyles && this.setStyle(styles)
       if (this._map && needRedraw) {
-        console.log('redraw')
         this.redraw() // если у объекта нет _map он скрытый
-      } else {
-        console.log('no redraw')
       }
     }
   },
