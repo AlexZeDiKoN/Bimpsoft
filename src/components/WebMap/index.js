@@ -225,25 +225,24 @@ const setScaleOptions = (layer, params, needRedraw, paramsType) => {
       min: Number(params[paramsNames.POINT_SIZE_MIN]),
       max: Number(params[paramsNames.POINT_SIZE_MAX]),
     }
-  const textSizes = paramsType ? paramsType.textParams
-    : {
-      min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-      max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-    }
-  const lineSizes = paramsType ? paramsType.lineParams
-    : linesParams.reduce((acc, name) => {
-      acc[name] = Number(params[name])
-      return acc
-    }, {
-      min: Number(params[paramsNames.LINE_SIZE_MIN]),
-      max: Number(params[paramsNames.LINE_SIZE_MAX]),
-      isLine: true,
-      // pointSizes,
-    })
+  // const lineSizes = paramsType ? paramsType.lineParams
+  //   : linesParams.reduce((acc, name) => {
+  //     acc[name] = Number(params[name])
+  //     return acc
+  //   }, {
+  //     min: Number(params[paramsNames.LINE_SIZE_MIN]),
+  //     max: Number(params[paramsNames.LINE_SIZE_MAX]),
+  //     isLine: true,
+  // pointSizes,
+    // })
   if (layer?.object) {
     if (layer.object.catalogId) {
       layer.setScaleOptions(pointSizes, needRedraw)
     } else if (layer.object.type) {
+      const lineSizes = {
+        min: Number(params[paramsNames.LINE_SIZE_MIN]),
+        max: Number(params[paramsNames.LINE_SIZE_MAX]),
+      }
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
@@ -251,19 +250,35 @@ const setScaleOptions = (layer, params, needRedraw, paramsType) => {
         case entityKind.GROUPED_REGION:
           layer.setScaleOptions(pointSizes, needRedraw)
           break
-        case entityKind.TEXT:
+        case entityKind.TEXT: {
+          const textSizes = {
+            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+          }
           layer.setScaleOptions(textSizes, needRedraw)
+          break
+        }
+        case entityKind.CONTOUR:
+          lineSizes.pointSizes = pointSizes
+          layer.setScaleOptions(lineSizes, needRedraw)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
         case entityKind.CURVE:
         case entityKind.POLYGON:
         case entityKind.POLYLINE:
+        case entityKind.SOPHISTICATED:
+          linesParams.forEach((name) => {
+            lineSizes[name] = {
+              min: Number(params[`${name}_min`]),
+              max: Number(params[`${name}_max`]),
+            }
+          })
+        // eslint-disable-next-line no-fallthrough
         case entityKind.CIRCLE:
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
-        case entityKind.CONTOUR:
-        case entityKind.SOPHISTICATED:
+          console.log('lineSizes', lineSizes)
           layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:

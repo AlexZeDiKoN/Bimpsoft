@@ -163,23 +163,24 @@ export default L.Path.include({
       const scale = this.scale ? this.scale / 100 : 1 // масштаб основного размерного свойства знака
       const styles = {}
       let hasStyles = false
-      if (scaleOptions.isLine) {
-        if (strokeWidth !== strokeWidthPrev || scaleChange) {
-          this.strokeWidthPrev = strokeWidth
-          styles.weight = scale * strokeWidth
-          hasStyles = true
-        }
-        if (hasStyles || scaleOptionChanged || lineTypePrev !== lineType || status !== this.object?.attributes?.status) {
-          console.log('updateZoomStyles', lineTypePrev !== lineType)
-          this.status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
-          this.lineTypePrev = lineType
-          styles.dashArray = getStylesForLineType(lineType, 1, styles.weight * 3, this.status).strokeDasharray
-          hasStyles = true
-          needRedraw = true
-        }
+      if (strokeWidth !== strokeWidthPrev || scaleChange) {
+        this.strokeWidthPrev = strokeWidth
+        styles.weight = scale * strokeWidth
+        hasStyles = true
+      }
+      if (hasStyles || scaleOptionChanged || lineTypePrev !== lineType || status !== this.object?.attributes?.status) {
+        this.status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
+        this.lineTypePrev = lineType
+        console.log('lineType', lineType)
+        styles.dashArray = getStylesForLineType(lineType, 1, scale * strokeWidth * 3, this.status).strokeDasharray
+        hasStyles = true
+        needRedraw = true
       }
       hasStyles && this.setStyle(styles)
-      this._map && needRedraw && this.redraw() // если у объекта нет _map он скрытый
+      if (this._map && needRedraw) {
+        console.log('redraw')
+        this.redraw() // если у объекта нет _map он скрытый
+      }
     }
   },
 })

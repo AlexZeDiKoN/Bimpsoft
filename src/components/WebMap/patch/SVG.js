@@ -124,7 +124,7 @@ L.SVG.include({
     }
 
     // здесь опции слоя устанавливаются атрибутами в _path
-    console.log('updStyle', layer.options)
+    // console.log('updStyle', layer.options)
     _updateStyle.call(this, layer)
 
     _amplifierGroup && _amplifierGroup.setAttribute('stroke', color)
