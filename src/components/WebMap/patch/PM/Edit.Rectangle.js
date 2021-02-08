@@ -2,8 +2,8 @@ import L from 'leaflet'
 import entityKind from '../../entityKind'
 import { adjustSquareCorner } from '../utils/helpers'
 
-const { _onMarkerDrag, _onMarkerDragEnd } = L.PM.Edit.Rectangle.prototype
-const parent = { _onMarkerDrag, _onMarkerDragEnd }
+const { _onMarkerDrag } = L.PM.Edit.Rectangle.prototype
+const parent = { _onMarkerDrag }
 
 L.PM.Edit.Rectangle.include({
   _onMarkerDrag: function (e) {
