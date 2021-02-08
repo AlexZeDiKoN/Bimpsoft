@@ -171,7 +171,6 @@ export default L.Path.include({
       if (hasStyles || scaleOptionChanged || lineTypePrev !== lineType || status !== this.object?.attributes?.status) {
         this.status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
         this.lineTypePrev = lineType
-        console.log('lineType', lineType)
         styles.dashArray = getStylesForLineType(lineType, 1, scale * strokeWidth * 3, this.status).strokeDasharray
         hasStyles = true
         needRedraw = true
@@ -180,6 +179,8 @@ export default L.Path.include({
       if (this._map && needRedraw) {
         console.log('redraw')
         this.redraw() // если у объекта нет _map он скрытый
+      } else {
+        console.log('no redraw')
       }
     }
   },

@@ -2094,7 +2094,7 @@ export default class WebMap extends React.PureComponent {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
       const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
-      console.log('addObject', needRedraw)
+      console.log('addObject', { needRedraw, showAmplifiers, shownAmplifiers })
       setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
     }
 

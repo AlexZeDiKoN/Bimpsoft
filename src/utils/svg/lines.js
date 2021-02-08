@@ -1222,7 +1222,7 @@ export const getAmplifiers = ({
             rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
             true,
           ))
-          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y}) stroke-dasharray="${dashArray}"">
+          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})" stroke-dasharray="${dashArray}">
             <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
         })
