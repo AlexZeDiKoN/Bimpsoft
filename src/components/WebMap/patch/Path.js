@@ -117,7 +117,6 @@ export default L.Path.include({
 
   setScaleOptions: function (scaleOptions, needRedraw) {
     this.scaleOptions = scaleOptions
-    console.log('setScale')
     this._updateZoomStyles(needRedraw)
   },
 
@@ -149,30 +148,35 @@ export default L.Path.include({
       zoomPrev,
       lineType,
       lineTypePrev,
+      status,
     } = this
     if (scaleOptions !== undefined) {
       const zoom = this.map.getZoom()
-      const scaleChanged = scaleOptions !== scaleOptionsPrev || zoom !== zoomPrev
-      if (scaleChanged) {
+      const scaleOptionChanged = JSON.stringify(scaleOptions) !== JSON.stringify(scaleOptionsPrev) // scaleOptions !== scaleOptionsPrev || zoom !== zoomPrev
+      const scaleChange = zoom !== zoomPrev ||
+        scaleOptions?.min !== scaleOptionsPrev?.min || scaleOptions?.max !== scaleOptionsPrev?.max
+      if (scaleChange) {
         this.scaleOptionsPrev = scaleOptions
         this.zoomPrev = zoom
         this.scale = interpolateSize(zoom, scaleOptions, 10.0)
       }
-      const scale = this.scale ? this.scale / 100 : 1
+      const scale = this.scale ? this.scale / 100 : 1 // масштаб основного размерного свойства знака
       const styles = {}
       let hasStyles = false
-      if (scaleChanged || strokeWidth !== strokeWidthPrev) {
-        this.strokeWidthPrev = strokeWidth
-        styles.weight = scale * strokeWidth
-        hasStyles = true
-      }
-      if (scaleChanged || lineTypePrev !== lineType) {
-        console.log('updateZoomStyles', { scaleOptions, scaleOptionsPrev, so: scaleOptions !== scaleOptionsPrev, lt: lineTypePrev !== lineType })
-        const status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
-        this.lineTypePrev = lineType
-        styles.dashArray = getStylesForLineType(lineType, scale, undefined, status).strokeDasharray
-        hasStyles = true
-        needRedraw = true
+      if (scaleOptions.isLine) {
+        if (strokeWidth !== strokeWidthPrev || scaleChange) {
+          this.strokeWidthPrev = strokeWidth
+          styles.weight = scale * strokeWidth
+          hasStyles = true
+        }
+        if (hasStyles || scaleOptionChanged || lineTypePrev !== lineType || status !== this.object?.attributes?.status) {
+          console.log('updateZoomStyles', lineTypePrev !== lineType)
+          this.status = this.object?.attributes?.status // учитываем состояние объекта для корректировки вида линии
+          this.lineTypePrev = lineType
+          styles.dashArray = getStylesForLineType(lineType, 1, styles.weight * 3, this.status).strokeDasharray
+          hasStyles = true
+          needRedraw = true
+        }
       }
       hasStyles && this.setStyle(styles)
       this._map && needRedraw && this.redraw() // если у объекта нет _map он скрытый

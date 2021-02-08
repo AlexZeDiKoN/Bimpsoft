@@ -1085,6 +1085,8 @@ export const getAmplifiers = ({
     pointAmplifier,
     nodalPointIcon,
     color,
+    lineType,
+    status,
   } = object.attributes
   const { level } = object
   if (zoom < 0) {
@@ -1192,38 +1194,43 @@ export const getAmplifiers = ({
     }
   }
 
+  // генерация узловых амплификаторов
   const insideMapNodal = getBoundsFunc(bounds, interpolatedNodeSize) // функция проверки попадания узлового амплификатора в область вывода
-  points = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
-  const strokeWidthNodes = strokeWidth ? strokeWidth / 2 : settings.NODES_STROKE_WIDTH * scale
+  const pointsNodal = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
+  if (pointsNodal.length) {
+    const strokeWidthNodes = strokeWidth ? strokeWidth / 2 : settings.NODES_STROKE_WIDTH * scale
+    const dash = strokeWidthNodes
+    const dashArray = (status === STATUSES.PLANNED && (lineType === 'solid' || lineType >= 'waved')) ? `${dash * 3} ${dash * 2}` : ''
 
-  switch (nodalPointIcon) {
-    case 'cross-circle': {
-      const d = Number((interpolatedNodeSize * Math.sqrt(2) / 4).toFixed(2))
-      const dx2 = d * 2
-      points.forEach(({ x, y }) => {
-        result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
-        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
+    switch (nodalPointIcon) {
+      case 'cross-circle': {
+        const d = Number((interpolatedNodeSize * Math.sqrt(2) / 4).toFixed(2))
+        const dx2 = d * 2
+        pointsNodal.forEach(({ x, y }) => {
+          result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
+          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})" stroke-dasharray="${dashArray}">
             <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
             <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
-      })
-      break
-    }
-    case 'square': {
-      const d = interpolatedNodeSize / 2
-      points.forEach(({ x, y }) => {
-        result.maskPath.push(pointsToD(
-          rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
-          true,
-        ))
-        result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
+        })
+        break
+      }
+      case 'square': {
+        const d = interpolatedNodeSize / 2
+        pointsNodal.forEach(({ x, y }) => {
+          result.maskPath.push(pointsToD(
+            rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
+            true,
+          ))
+          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y}) stroke-dasharray="${dashArray}"">
             <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
-      })
-      break
+        })
+        break
+      }
+      default:
+        break
     }
-    default:
-      break
   }
   /* if (result.maskPath.length) {
     result.maskPath.push(`M${bounds.min.x} ${bounds.min.y}H${bounds.max.x}V${bounds.max.y}H${bounds.min.x} z`)
@@ -1307,6 +1314,7 @@ export const drawLineEnd = (type, { x, y }, angle, scale, strokeWidth = 2, graph
 
 export const getStylesForLineType = (type, scale = 1, dashSize = 6, status = STATUSES.EXISTING) => {
   const styles = {}
+  let dashSizeGap = dashSize
   switch (type) {
     case 'chain': {
       styles.strokeDasharray = [ dashSize, dashSize / 2, dashSize / 3, dashSize / 2 ]
@@ -1317,10 +1325,11 @@ export const getStylesForLineType = (type, scale = 1, dashSize = 6, status = STA
       if (status !== STATUSES.PLANNED) {
         return styles
       }
+      dashSizeGap = dashSize / 3 * 2
     }
     // eslint-disable-next-line no-fallthrough
     case 'dashed': {
-      styles.strokeDasharray = [ dashSize, dashSize ]
+      styles.strokeDasharray = [ dashSize, dashSizeGap ]
       break
     }
     default: {

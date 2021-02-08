@@ -45,3 +45,14 @@ export const AMPLIFIERS_GROUPS = [
   [ symbolOptions.speed ],
   [ symbolOptions.combatEffectiveness, symbolOptions.iffSif, symbolOptions.evaluationRating ],
 ]
+
+export const linesParams = [
+  NODE_SIZE_MIN,
+  NODE_SIZE_MAX,
+  TEXT_AMPLIFIER_SIZE_MAX,
+  TEXT_AMPLIFIER_SIZE_MIN,
+  GRAPHIC_AMPLIFIER_SIZE_MAX,
+  GRAPHIC_AMPLIFIER_SIZE_MIN,
+  WAVE_SIZE_MIN,
+  WAVE_SIZE_MAX,
+]

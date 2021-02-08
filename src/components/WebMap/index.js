@@ -49,6 +49,7 @@ import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
 import { targetDesignationCode } from '../../constants/targetDesignation'
+import { linesParams } from '../../constants/params'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -218,20 +219,27 @@ const serializeCoordinate = (mode, lat, lng) => {
   return `${Coord.names[type]}: ${serialized}`.replace(' ', '\xA0')
 }
 
-const setScaleOptions = (layer, params, needRedraw) => {
-  const pointSizes = {
-    min: Number(params[paramsNames.POINT_SIZE_MIN]),
-    max: Number(params[paramsNames.POINT_SIZE_MAX]),
-  }
-  const textSizes = {
-    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-  }
-  const lineSizes = {
-    min: Number(params[paramsNames.LINE_SIZE_MIN]),
-    max: Number(params[paramsNames.LINE_SIZE_MAX]),
-    pointSizes,
-  }
+const setScaleOptions = (layer, params, needRedraw, paramsType) => {
+  const pointSizes = paramsType ? paramsType.pointParams
+    : {
+      min: Number(params[paramsNames.POINT_SIZE_MIN]),
+      max: Number(params[paramsNames.POINT_SIZE_MAX]),
+    }
+  const textSizes = paramsType ? paramsType.textParams
+    : {
+      min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+      max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+    }
+  const lineSizes = paramsType ? paramsType.lineParams
+    : linesParams.reduce((acc, name) => {
+      acc[name] = Number(params[name])
+      return acc
+    }, {
+      min: Number(params[paramsNames.LINE_SIZE_MIN]),
+      max: Number(params[paramsNames.LINE_SIZE_MAX]),
+      isLine: true,
+      // pointSizes,
+    })
   if (layer?.object) {
     if (layer.object.catalogId) {
       layer.setScaleOptions(pointSizes, needRedraw)
@@ -1602,8 +1610,26 @@ export default class WebMap extends React.PureComponent {
     settings.GRAPHIC_AMPLIFIER_SIZE.min = params[paramsNames.GRAPHIC_AMPLIFIER_SIZE_MIN]
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
+    const paramsType = {
+      pointParams: {
+        min: Number(params[paramsNames.POINT_SIZE_MIN]),
+        max: Number(params[paramsNames.POINT_SIZE_MAX]),
+      },
+      textParams: {
+        min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+        max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+      },
+      lineParams: linesParams.reduce((acc, name) => {
+        acc[name] = Number(params[name])
+        return acc
+      }, {
+        min: Number(params[paramsNames.LINE_SIZE_MIN]),
+        max: Number(params[paramsNames.LINE_SIZE_MAX]),
+        isLine: true,
+      }),
+    }
     // обновляем масштабные настройки всех объектов карты
-    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params, undefined, paramsType))
   }
 
   updateShowAmplifiers = (showAmplifiers, shownAmplifiers) => {
@@ -2053,6 +2079,7 @@ export default class WebMap extends React.PureComponent {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
       const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
+      console.log('addObject', needRedraw)
       setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
     }
 
