@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { data, components, IButton, IconNames, ButtonTypes } from '@C4/CommonComponents'
+import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 import { CountBox } from '../../common/Sidebar'
 import { VisibilityButton } from '../../common'
 import './style.css'
@@ -25,31 +27,39 @@ export const Item = ({
   const onClickVisibleHandler = (visible) => onVisibleClick(visible, data.id)
 
   const isFilterActive = activeFilters[id]
-  return <div className="sidebar__filter--list-item">
-    <VisibilityButton
-      title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
-      visible={shown}
-      disabled={!isFilterActive}
-      onChange={onClickVisibleHandler}
-    />
-    {buttonWrap(
-      <IButton
-        title={i18n.FILTER_CATALOG}
-        data-test="button-filter-topo-object"
-        icon={IconNames.FILTER}
-        type={ButtonTypes.WITH_BG}
-        active={isFilterActive}
-        onClick={onClickFilterHandler}
-      />,
-    )}
-    <div className="sidebar__filter--list-item--text">
+  return <Tooltip
+    title={(
       <HighlightedText text={name} textFilter={textFilter}/>
+    )}
+    placement="left"
+    mouseEnterDelay={MOUSE_ENTER_DELAY}
+  >
+    <div className="sidebar__filter--list-item">
+      <VisibilityButton
+        title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
+        visible={shown}
+        disabled={!isFilterActive}
+        onChange={onClickVisibleHandler}
+      />
+      {buttonWrap(
+        <IButton
+          title={i18n.FILTER_CATALOG}
+          data-test="button-filter-topo-object"
+          icon={IconNames.FILTER}
+          type={ButtonTypes.WITH_BG}
+          active={isFilterActive}
+          onClick={onClickFilterHandler}
+        />,
+      )}
+      <div className="sidebar__filter--list-item--text">
+        <HighlightedText text={name} textFilter={textFilter}/>
+      </div>
+      <CountBox
+        isHidden={!isFilterActive}
+        count={filterCount?.[id]}
+      />
     </div>
-    <CountBox
-      isHidden={!isFilterActive}
-      count={filterCount?.[id]}
-    />
-  </div>
+  </Tooltip>
 }
 
 Item.propTypes = {
