@@ -2061,7 +2061,7 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-      // TODO якщо сюды дійшли всерівно преререндрювати layer
+      // якщо сюди дійшли всерівно преререндрювати layer
       // const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
       setScaleOptions(layer, params, true) // обновляем объект в соответствии с масштабными настройками
     }
