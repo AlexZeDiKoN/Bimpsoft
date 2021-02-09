@@ -232,9 +232,9 @@ const getSvgPath = (
   dashSize,
   options = {},
 ) => {
-  const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1 } = attributes
+  const { color, fill, lineType, hatch, fillOpacity, strokeWidth = 1, status } = attributes
   const { color: outlineColor } = layerData
-  const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize) } // для пунктира
+  const styles = { ...options, ...getStylesForLineType(lineType, 1, dashSize, status) } // для пунктира
   const width = strokeWidthPrint || strokeWidth
   let maskBody = null
   let maskUrl = null

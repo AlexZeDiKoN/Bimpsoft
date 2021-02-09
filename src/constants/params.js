@@ -32,6 +32,14 @@ export const SHOW_AMPLIFIERS = 'show_amplifiers'
 export const GENERALIZATION = 'generalization'
 
 export const COORDINATES = 'coordinates'
+const NODE_SIZE = 'node_size'
+const TEXT_AMPLIFIER_SIZE = 'text_amplif_size'
+const GRAPHIC_AMPLIFIER_SIZE = 'graphic_amplif_size'
+const WAVE_SIZE = 'wave_size'
+const BLOCKAGE_SIZE = 'blockage_size'
+const MOAT_SIZE = 'moat_size'
+const ROW_MINE_SIZE = 'row_mine_size'
+const STROKE_SIZE = 'stroke_size'
 
 export const AMPLIFIERS_GROUPS = [
   [ COORDINATES ],
@@ -44,4 +52,15 @@ export const AMPLIFIERS_GROUPS = [
   [ symbolOptions.uniqueDesignation ],
   [ symbolOptions.speed ],
   [ symbolOptions.combatEffectiveness, symbolOptions.iffSif, symbolOptions.evaluationRating ],
+]
+
+export const linesParams = [
+  NODE_SIZE,
+  TEXT_AMPLIFIER_SIZE,
+  GRAPHIC_AMPLIFIER_SIZE,
+  WAVE_SIZE,
+  BLOCKAGE_SIZE,
+  MOAT_SIZE,
+  ROW_MINE_SIZE,
+  STROKE_SIZE,
 ]

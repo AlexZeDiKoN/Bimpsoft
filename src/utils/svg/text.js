@@ -196,10 +196,10 @@ export const extractTextsSVG = ({
   const tspans = []
   const masks = []
   if (numLineCenter) {
-    let dy = 0
     const dx = textAnchor === 'middle' ? 0 : (textAnchor === 'start' ? margin : -margin)
     const textTranslateY = -height * (numLineCenter - 0.5)
     const correctY = textTranslateY - height / 2
+    let dy = -height
     // сборка маски и строчек текста
     lines.forEach((line, index) => {
       const width = getTextWidth(line, getFont(fontSize, false))
@@ -207,7 +207,7 @@ export const extractTextsSVG = ({
       if (line === '') {
         dy += height
       } else {
-        tspans.push(`<tspan x = "${dx}" dy="${index === 0 ? 0 : dy + height}">${line}</tspan>`)
+        tspans.push(`<tspan x = "${dx}" dy="${dy + height}">${line}</tspan>`)
         masks.push({
           x: textAnchor === 'middle' ? -widthWithMargin / 2 : (textAnchor === 'start' ? 0 : -widthWithMargin),
           y: correctY + index * height,

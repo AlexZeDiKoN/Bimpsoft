@@ -49,6 +49,7 @@ import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
 import { targetDesignationCode } from '../../constants/targetDesignation'
+import { linesParams } from '../../constants/params'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -223,14 +224,9 @@ const setScaleOptions = (layer, params, needRedraw) => {
     min: Number(params[paramsNames.POINT_SIZE_MIN]),
     max: Number(params[paramsNames.POINT_SIZE_MAX]),
   }
-  const textSizes = {
-    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-  }
   const lineSizes = {
     min: Number(params[paramsNames.LINE_SIZE_MIN]),
     max: Number(params[paramsNames.LINE_SIZE_MAX]),
-    pointSizes,
   }
   if (layer?.object) {
     if (layer.object.catalogId) {
@@ -243,19 +239,34 @@ const setScaleOptions = (layer, params, needRedraw) => {
         case entityKind.GROUPED_REGION:
           layer.setScaleOptions(pointSizes, needRedraw)
           break
-        case entityKind.TEXT:
+        case entityKind.TEXT: {
+          const textSizes = {
+            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+          }
           layer.setScaleOptions(textSizes, needRedraw)
+          break
+        }
+        case entityKind.CONTOUR:
+          lineSizes.pointSizes = pointSizes
+          layer.setScaleOptions(lineSizes, needRedraw)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
         case entityKind.CURVE:
         case entityKind.POLYGON:
         case entityKind.POLYLINE:
+        case entityKind.SOPHISTICATED:
+          linesParams.forEach((name) => {
+            lineSizes[name] = {
+              min: Number(params[`${name}_min`]),
+              max: Number(params[`${name}_max`]),
+            }
+          })
+        // eslint-disable-next-line no-fallthrough
         case entityKind.CIRCLE:
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
-        case entityKind.CONTOUR:
-        case entityKind.SOPHISTICATED:
           layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:
@@ -1603,7 +1614,7 @@ export default class WebMap extends React.PureComponent {
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
     // обновляем масштабные настройки всех объектов карты
-    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params)) // + перерисовка
   }
 
   updateShowAmplifiers = (showAmplifiers, shownAmplifiers) => {
@@ -1973,8 +1984,6 @@ export default class WebMap extends React.PureComponent {
       layersById,
       hiddenOpacity,
       params,
-      showAmplifiers,
-      shownAmplifiers,
       layer: selectedLayerId,
       selection: { list },
     } = this.props
@@ -2052,8 +2061,9 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
-      setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
+      // якщо сюди дійшли всерівно преререндрювати layer
+      // const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
+      setScaleOptions(layer, params, true) // обновляем объект в соответствии с масштабными настройками
     }
 
     return layer
@@ -2087,7 +2097,7 @@ export default class WebMap extends React.PureComponent {
       }
 
       const { params } = this.props
-      setScaleOptions(layer, params)
+      setScaleOptions(layer, params) // отрисовка объекта каталога с опциями params
     }
     return layer
   }
