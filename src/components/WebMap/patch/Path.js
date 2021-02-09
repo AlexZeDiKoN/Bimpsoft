@@ -163,7 +163,7 @@ export default L.Path.include({
       const scale = this.scale ? this.scale / 100 : 1 // масштаб основного размерного свойства знака
       const styles = {}
       let hasStyles = false
-      if (strokeWidth !== strokeWidthPrev || scaleChange) {
+      if (scaleChange || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
         styles.weight = scale * strokeWidth
         hasStyles = true
