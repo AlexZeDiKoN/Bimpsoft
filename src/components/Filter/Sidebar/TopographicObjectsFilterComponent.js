@@ -50,7 +50,7 @@ export const TopographicObjectsFilterComponent = ({
   }, [ items, textFilter ])
 
   return <SidebarWrap
-    title={i18n.STRAINERS}
+    title={i18n.TOPOGRAPHIC_OBJECTS}
     onChangeSearch={onSearch}
     rightButtons={
       <VisibilityButton
