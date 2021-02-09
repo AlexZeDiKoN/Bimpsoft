@@ -153,9 +153,9 @@ export default L.Path.include({
     if (scaleOptions !== undefined) {
       const zoom = this.map.getZoom()
       const scaleOptionChanged = JSON.stringify(scaleOptions) !== JSON.stringify(scaleOptionsPrev) // scaleOptions !== scaleOptionsPrev || zoom !== zoomPrev
-      const scaleChange = zoom !== zoomPrev ||
+      const scaleChanged = zoom !== zoomPrev ||
         scaleOptions?.min !== scaleOptionsPrev?.min || scaleOptions?.max !== scaleOptionsPrev?.max
-      if (scaleChange) {
+      if (scaleChanged) {
         this.scaleOptionsPrev = scaleOptions
         this.zoomPrev = zoom
         this.scale = interpolateSize(zoom, scaleOptions, 10.0)
@@ -163,7 +163,7 @@ export default L.Path.include({
       const scale = this.scale ? this.scale / 100 : 1 // масштаб основного размерного свойства знака
       const styles = {}
       let hasStyles = false
-      if (scaleChange || strokeWidth !== strokeWidthPrev) {
+      if (scaleChanged || strokeWidth !== strokeWidthPrev) {
         this.strokeWidthPrev = strokeWidth
         styles.weight = scale * strokeWidth
         hasStyles = true
