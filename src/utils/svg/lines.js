@@ -837,7 +837,7 @@ const getTextAmplifiers = ({
           lettersAlwaysUp,
         }))
       }
-      if (amplifierEdge !== '') { // генерация 2 текстового svg блока c обратным выравниванием
+      if (amplifierEdge !== '') { // генерация 2 текстового svg блока c обратным выравниванием (N)
         const numLineCenter = amplifierEdge.split('\n').length / 2
         makeAmps.push(extractTextsSVG({ // возврвщает один объект
           string: amplifierEdge,
