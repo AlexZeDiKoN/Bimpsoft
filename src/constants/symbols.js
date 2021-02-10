@@ -4585,9 +4585,9 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.RECTANGLE,
-          color: '#3366ff',
+          color: '#0000ff',
           intermediateAmplifierType: 'text',
-          shownIntermediateAmplifiers: [ 0, 2 ],
+          shownIntermediateAmplifiers: [ 1 ],
           intermediateAmplifier: { [amps.N]: 'РЕЗ' },
         },
       },
@@ -5294,7 +5294,7 @@ export const symbols = [
           type: entityKind.RECTANGLE,
           color: '#3366ff',
           intermediateAmplifierType: 'text',
-          shownIntermediateAmplifiers: [ 0, 2 ],
+          shownIntermediateAmplifiers: [ 1, 3 ],
           intermediateAmplifier: { [amps.N]: 'ОВ' },
         },
       },
@@ -5304,23 +5304,28 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.RECTANGLE,
-          color: '#3366ff',
+          color: '#0000ff',
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 1 ],
           intermediateAmplifier: { [amps.N]: '1:5000' },
         },
       },
       {
-        hint: 'Район створення фотодокументів про місцевість (масштаб 1:30 000)',
-        code: '10032500000170710000',
+        hint: 'Район створення фотодокументів про місцевість (масштаб 1:30 000): ' +
+          'АФЗ - окремі арознімки; ' +
+          'ФС - фотосхема; ' +
+          'ФП - фотоплан; ' +
+          'ФК - фотокартка; ' +
+          'АЗК - аерознімок з координатною сіткою.',
+        code: '10032500000170710000f',
         isSvg: true,
         amp: {
           type: entityKind.RECTANGLE,
-          color: '#3366ff',
+          color: '#0000ff',
           lineType: types.chain.value,
           intermediateAmplifierType: 'text',
           shownIntermediateAmplifiers: [ 1 ],
-          intermediateAmplifier: { [amps.N]: '1:30000' },
+          intermediateAmplifier: { [amps.T]: 'ФС', [amps.N]: '1:30000' },
         },
       },
     ],
