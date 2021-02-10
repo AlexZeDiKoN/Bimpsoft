@@ -16,7 +16,7 @@ const LogMapTab = (props) => {
     <div className='log-map-wrapper'>
       <div
         className='log-map-header'
-        onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+        onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
       >
         <InputButton
           onChange={onChangeSearch}
