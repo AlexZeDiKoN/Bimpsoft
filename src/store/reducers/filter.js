@@ -6,6 +6,7 @@ import {
   LOADING,
   SEARCH_TOPOGRAPHIC_FILTER,
   TOPOGRAPHIC_OBJECT_FILTER,
+  LOADING_TOPOGRAPHIC_OBJECT,
 } from '../../constants/filter'
 
 const initState = {
@@ -16,6 +17,7 @@ const initState = {
   [MIL_SYMBOL_FILTER]: [ ],
   [TOPOGRAPHIC_OBJECT_FILTER]: { },
   [LOADING]: false,
+  [LOADING_TOPOGRAPHIC_OBJECT]: {},
 }
 
 export default function reducer (state = initState, action) {

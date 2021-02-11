@@ -24,6 +24,7 @@ export const TopographicObjectsFilterComponent = ({
   activeFilters,
   onFilterClick,
   preloadFields,
+  loadingObjects,
 }) => {
   React.useEffect(() => {
     async function load () { await preloadFields() }
@@ -42,7 +43,8 @@ export const TopographicObjectsFilterComponent = ({
     textFilter,
     onFilterClick,
     onVisibleClick: onChangeVisible,
-  }), [ activeFilters, filterCount, onChangeVisible, onFilterClick, textFilter ])
+    loadingObjects,
+  }), [ activeFilters, filterCount, onChangeVisible, onFilterClick, textFilter, loadingObjects ])
 
   const filteredIds = React.useMemo(() => {
     const filtered = items.map(({ id, name }) => [ id, testName(textFilter, name) ])
@@ -75,6 +77,7 @@ export const TopographicObjectsFilterComponent = ({
 TopographicObjectsFilterComponent.propTypes = {
   roots: PropTypes.array,
   byIds: PropTypes.object,
+  loadingObjects: PropTypes.object,
   search: PropTypes.string,
   onSearch: PropTypes.func,
   onChangeVisible: PropTypes.func,
