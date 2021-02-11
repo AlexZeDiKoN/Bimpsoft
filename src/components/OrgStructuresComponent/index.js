@@ -117,7 +117,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
         <div className="org-structures">
           <div
             className='org-structures-searchBlock'
-            onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+            onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
           >
             <Input.Search
               ref={this.inputRef}
@@ -148,7 +148,7 @@ export default class OrgStructuresComponent extends React.PureComponent {
       <div className="org-structures">
         <div
           className='org-structures-searchBlock'
-          onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+          onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
         >
           <InputButton
             title={i18n.ORG_STRUCTURE_SHORT}

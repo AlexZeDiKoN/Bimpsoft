@@ -6,7 +6,7 @@ import './style.css'
 import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 
 const VisibilityButton = (props) => {
-  const { title, visible, onChange, isDark, disabled, colorType } = props
+  const { title, visible, onChange, isDark, disabled, colorType, tooltipPlacement = 'topRight' } = props
 
   const clickHandler = (event) => {
     // Prevent event from triggering in other wrappers
@@ -22,7 +22,7 @@ const VisibilityButton = (props) => {
 
   return (
     <div className={classNames.join(' ')}>
-      <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={title} placement='topRight'>
+      <Tooltip mouseEnterDelay={MOUSE_ENTER_DELAY} title={title} placement={tooltipPlacement}>
         <IButton
           colorType={colorType}
           onClick={clickHandler}
@@ -41,6 +41,7 @@ VisibilityButton.propTypes = {
   isDark: PropTypes.bool,
   onChange: PropTypes.func,
   colorType: PropTypes.string,
+  tooltipPlacement: PropTypes.string,
 }
 
 VisibilityButton.defaultProps = {

@@ -1,11 +1,16 @@
 .sidebar__filter {
     &--list-item {
         display: flex;
+        position: relative;
         align-items: center;
         height: 34px;
         background: #EDEDED;
         border-top: 1px solid #C1C1C1;
         width: 100%;
+
+        .loaderContainer{
+            padding: 20px 10px;
+        }
 
         &--container {
             flex: 1 1 auto;
@@ -22,12 +27,18 @@
             }
         }
 
+        &--tooltip {
+            display: flex;
+            width: 100%;
+        }
+
         &--text {
             flex: 1 1 auto;
             width: 10px;
             text-align: left;
             padding: 0 0.3em;
             font-size: 14px;
+            place-self: center;
             font-family: Roboto, "Open Sans", sans-serif;
             overflow: hidden;
             white-space: nowrap;

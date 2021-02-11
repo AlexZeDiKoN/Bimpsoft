@@ -37,7 +37,7 @@ const GroupIcon = L.Icon.extend({
     node.setAttribute('width', Math.round(result.width))
     node.setAttribute('height', Math.round(result.height))
     setActivePointSignColors(node)
-    node.state = { anchor, zoom, scale, scaleOptions, showAmplifiers, data }
+    node.state = { anchor, zoom, scale, scaleOptions, showAmplifiers, shownAmplifiers, data }
     return node
   },
 

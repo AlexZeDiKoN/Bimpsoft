@@ -9,7 +9,7 @@ import {
   SEARCH_FILTER,
   LOADING,
   SEARCH_TOPOGRAPHIC_FILTER,
-  TOPOGRAPHIC_OBJECT_FILTER,
+  TOPOGRAPHIC_OBJECT_FILTER, LOADING_TOPOGRAPHIC_OBJECT,
 } from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { objects } from './targeting'
@@ -89,6 +89,7 @@ export const filterSearch = (state) => state.filter[SEARCH_FILTER]
 export const filterTopographicSearch = (state) => state.filter[SEARCH_TOPOGRAPHIC_FILTER]
 export const loadingFiltersStatus = (state) => state.filter[LOADING]
 export const topographicObjectsFilters = (state) => state.filter[TOPOGRAPHIC_OBJECT_FILTER]
+export const loadingTopographicObjects = (state) => state.filter[LOADING_TOPOGRAPHIC_OBJECT]
 
 export const catalogObjects = (state) => state.catalogs?.objects
 
