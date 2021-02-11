@@ -56,7 +56,9 @@ export const TopographicObjectsFilterComponent = ({
     onChangeSearch={onSearch}
     rightButtons={
       <VisibilityButton
+        title={!isAllItemsHidden ? i18n.HIDE_ALL_CATALOG : i18n.SHOW_ALL_CATALOG}
         disabled={isAllItemsHidden}
+        tooltipPlacement="bottomRight"
         onChange={onChangeAllVisible}
         colorType={ColorTypes.WHITE}
       />
