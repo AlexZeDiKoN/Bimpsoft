@@ -29,31 +29,30 @@ export const Item = ({
 
   const isLoading = Boolean(loadingObjects[id])
   const isFilterActive = activeFilters[id]
-  return <Tooltip
-    title={(
-      <HighlightedText text={name} textFilter={textFilter}/>
+  return <div className="sidebar__filter--list-item">
+    <PreloaderCover loading={isLoading} />
+    <VisibilityButton
+      title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
+      visible={shown}
+      disabled={!isFilterActive}
+      onChange={onClickVisibleHandler}
+    />
+    {buttonWrap(
+      <IButton
+        title={i18n.FILTER_CATALOG}
+        data-test="button-filter-topo-object"
+        icon={IconNames.FILTER}
+        type={ButtonTypes.WITH_BG}
+        active={isFilterActive}
+        onClick={onClickFilterHandler}
+      />,
     )}
-    placement="left"
-    mouseEnterDelay={MOUSE_ENTER_DELAY}
-  >
-    <div className="sidebar__filter--list-item">
-      <PreloaderCover loading={isLoading} />
-      <VisibilityButton
-        title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
-        visible={shown}
-        disabled={!isFilterActive}
-        onChange={onClickVisibleHandler}
-      />
-      {buttonWrap(
-        <IButton
-          title={i18n.FILTER_CATALOG}
-          data-test="button-filter-topo-object"
-          icon={IconNames.FILTER}
-          type={ButtonTypes.WITH_BG}
-          active={isFilterActive}
-          onClick={onClickFilterHandler}
-        />,
-      )}
+    <Tooltip
+      title={(<HighlightedText text={name} textFilter={textFilter}/>)}
+      placement="topLeft"
+      className="sidebar__filter--list-item--tooltip"
+      mouseEnterDelay={MOUSE_ENTER_DELAY}
+    >
       <div className="sidebar__filter--list-item--text">
         <HighlightedText text={name} textFilter={textFilter}/>
       </div>
@@ -61,8 +60,8 @@ export const Item = ({
         isHidden={isLoading || !isFilterActive}
         count={filterCount?.[id]}
       />
-    </div>
-  </Tooltip>
+    </Tooltip>
+  </div>
 }
 
 Item.propTypes = {
