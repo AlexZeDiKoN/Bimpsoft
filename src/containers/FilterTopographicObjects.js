@@ -11,6 +11,7 @@ import {
   catalogsTopographicRoots,
   topographicObjectsFilters,
   getTopographicObjectsCount,
+  loadingTopographicObjects,
 } from '../store/selectors'
 import { getTopographicObjectFields } from '../store/actions/catalogs'
 
@@ -20,6 +21,7 @@ const mapStateToProps = (state) => ({
   byIds: catalogsTopographicByIds(state),
   filterCount: getTopographicObjectsCount(state),
   activeFilters: topographicObjectsFilters(state),
+  loadingObjects: loadingTopographicObjects(state),
 })
 
 const mapDispatchToProps = {

@@ -7,6 +7,7 @@ import { CATALOG_FILTER_TYPE, MIL_SYMBOL_FILTER_TYPE, TOPOGRAPHIC_OBJECT_FILTER_
 import {
   CATALOG_FILTERS,
   LOADING,
+  LOADING_TOPOGRAPHIC_OBJECT,
   MIL_SYMBOL_FILTER,
   SEARCH_FILTER,
   SEARCH_TOPOGRAPHIC_FILTER,
@@ -35,6 +36,7 @@ export const mergeFilter = (name, value, index) => ({ type: MERGE_FILTERS, paylo
 export const setFilterCatalog = mergeFilter.bind(null, CATALOG_FILTERS)
 export const mergeMilSymbolFilter = mergeFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setTopographicObjectFilters = mergeFilter.bind(null, TOPOGRAPHIC_OBJECT_FILTER)
+export const setLoadingTopographicObjects = mergeFilter.bind(null, LOADING_TOPOGRAPHIC_OBJECT)
 
 export const REMOVE_FILTER = action('REMOVE_FILTER')
 export const removeFilter = (name, value) => ({ type: REMOVE_FILTER, payload: { name, value } })
@@ -49,7 +51,8 @@ export const setMilSymbolFilter = setFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setLoading = setFilter.bind(null, LOADING)
 
 export const openModalCatalogFilter = (id) => (dispatch) => dispatch(setModalData({ type: CATALOG_FILTER_TYPE, id }))
-export const openModalTopographicFilter = (id) => (dispatch) => dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
+export const openModalTopographicFilter = (id) => (dispatch) =>
+  dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
 
 export const openMilSymbolModal = (index) => (dispatch, getState) => {
   const state = getState()
@@ -146,6 +149,7 @@ export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) =
 
 const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
   async (dispatch, getState, { catalogApi }) => {
+    dispatch(setLoadingTopographicObjects({ [topocode]: true }))
     const state = getState()
     const filtersData = topographicObjectsFilters(state)[topocode]
     const { filters } = filtersData
@@ -164,6 +168,7 @@ const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
       points = [ firstPoint, secondPoint ]
     }
     const objects = await catalogApi.getTopographicObjects({ topocode, points, zoom: state.webMap.zoom, filters })
+      .finally(() => { dispatch(setLoadingTopographicObjects({ [topocode]: false })) })
     dispatch(setTopographicObjectFilters({ [topocode]: { ...filtersData, objects } }))
   })
 
