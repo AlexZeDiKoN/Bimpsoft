@@ -1986,6 +1986,8 @@ export default class WebMap extends React.PureComponent {
       params,
       layer: selectedLayerId,
       selection: { list },
+      showAmplifiers,
+      shownAmplifiers,
     } = this.props
 
     const {
@@ -2047,6 +2049,8 @@ export default class WebMap extends React.PureComponent {
         this.map.objects.push(layer)
       }
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
+
+      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers)
 
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
       if (color !== null && color !== '') {
