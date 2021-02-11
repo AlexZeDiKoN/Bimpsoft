@@ -23,3 +23,10 @@ export const SPACE = (e) => e.key === ' '
 export const UNDO = (e) => e.key === 'Undo' || (e.ctrlKey && !e.shiftKey && e.keyCode === KeyCode.KEY_Z)
 export const REDO = (e) => e.key === 'Redo' || (e.ctrlKey && e.shiftKey && e.keyCode === KeyCode.KEY_Z)
 export const ANY_KEY = () => true
+export const EDIT_KEY = (e) => e.key === 'Delete' ||
+  e.key === 'Enter' ||
+  e.key === 'Copy' || (e.ctrlKey && e.keyCode === KeyCode.KEY_C) ||
+  e.key === 'Paste' || (e.ctrlKey && e.keyCode === KeyCode.KEY_V) ||
+  e.key === 'Cut' || (e.ctrlKey && e.keyCode === KeyCode.KEY_X) ||
+  e.key === 'Escape' ||
+  e.key === ' '
