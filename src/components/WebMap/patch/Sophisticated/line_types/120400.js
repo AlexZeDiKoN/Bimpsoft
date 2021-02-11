@@ -2,7 +2,9 @@ import { Symbol } from '@C4/milsymbol'
 import { MIDDLE, DELETE, STRATEGY, SEQUENCE } from '../strategies'
 import lineDefinitions from '../lineDefinitions'
 import {
-  drawBezierSpline, drawMaskedText, getPointSize,
+  drawBezierSpline,
+  drawMaskedText,
+  getPointSize,
 } from '../utils'
 import { amps } from '../../../../../constants/symbols'
 
@@ -18,6 +20,8 @@ lineDefinitions['120400'] = {
   useAmplifiers: [ { id: amps.N, name: 'H', maxRows: 1 } ],
   // Спеціальний випадок
   isArea: true,
+
+  useStatus: true,
 
   // Відрізки, на яких дозволено додавання вершин лінії
   allowMiddle: MIDDLE.areaWithAmplifiers(2),

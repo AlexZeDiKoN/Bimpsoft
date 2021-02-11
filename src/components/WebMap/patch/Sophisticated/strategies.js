@@ -582,10 +582,11 @@ export const RENDER = {
         <pattern id="hatching${result.layer.id}" x="${points[0].x}" y="${points[0].y}" width="${hatchingStep}" height="${hatchingStep}" patternUnits="userSpaceOnUse">
           <line stroke-linecap="butt" x1="${hatchingStep}" y1="0" x2="0" y2="${hatchingStep}" stroke="${hatchingColor}" stroke-width="${hatchingWidth}" />
         </pattern>
-        <path fill="${hf}" fill-rule="nonzero" stroke-width="${strokeWidth}" stroke-opacity="1" d="${result.d}"/>`
+        <path fill="${hf}" fill-rule="nonzero" stroke-width="${0}" stroke-opacity="1" d="${result.d}"/>`
       const sizeSymbol = getPointSize(result.layer) // учтывается текущий масштаб карты
       const symbol = new Symbol(code, { size: sizeSymbol })
       result.amplifiers += `<g transform="translate(${sign.x - symbol.width / 2}, ${sign.y - symbol.height / 2})">${symbol.asSVG()}</g>`
+      console.log('xbrj', strokeWidth)
     },
 }
 

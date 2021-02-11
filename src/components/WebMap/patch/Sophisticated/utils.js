@@ -9,6 +9,7 @@ import { drawArrowFill } from '../../../../utils/svg/lines'
 import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg/text'
 import { evaluateColor } from '../../../../constants/colors'
 import { MARK_TYPE, settings } from '../../../../constants/drawLines'
+import { STATUSES } from '../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from './lineDefinitions'
 import { CONFIG } from '.'
 
@@ -1341,6 +1342,12 @@ export const hasIntersection = (p1, p2, s1, s2) => {
 
 export const drawBezierSpline = (result, points, locked) => (result.d += prepareBezierPath(points, locked))
 
+export const setStatusToPath = (result, status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING) => {
+  if (status === STATUSES.PLANNED) {
+    const dash = getStrokeWidth(result.layer)
+    result.layer.options.dashArray = `${dash * 3} ${dash * 2}`
+  }
+}
 // === Utils ===
 
 // Визначення піксельних розмірів текстового блоку

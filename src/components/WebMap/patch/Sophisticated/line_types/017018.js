@@ -20,6 +20,9 @@ const CROSS_SCALE = 1
 const CODE = '017018'
 
 lineDefinitions[CODE] = {
+  // Використання в карточыі знаку поля "Статус"
+  useStatus: true,
+
   // Спеціальний випадок
   isPolygon: true,
 
@@ -56,6 +59,8 @@ lineDefinitions[CODE] = {
         <line x1="${sw}" y1="${sw}" x2="${cs - sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
         <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
       </pattern>`
+    result.layer.options.fillColor = fillColor
+    result.layer._path.setAttribute('fill-color', fillColor)
   },
 
   build3d: (result, id, points, attributes) => {

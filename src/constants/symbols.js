@@ -10,6 +10,7 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
+import { STATUSES } from '../components/SelectionForm/parts/WithStatus'
 import { HATCH_TYPE, MARK_TYPE } from './drawLines'
 // вывод промежуточных амплификаторов
 export const directionAmps = {
@@ -473,8 +474,9 @@ export const symbols = [
         code: '10032500001204000000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
-          color: '#3366ff',
+          color: '#0000ff',
         },
       },
       {
@@ -1256,8 +1258,9 @@ export const symbols = [
         code: '10032500000170180000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
-          color: '#3366ff',
+          color: '#0000ff',
         },
       },
       {
@@ -4963,6 +4966,7 @@ export const symbols = [
         code: '10032500002718000000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4971,6 +4975,7 @@ export const symbols = [
         code: '10032500002717000000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4979,6 +4984,7 @@ export const symbols = [
         code: '10032500002720000000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4987,6 +4993,7 @@ export const symbols = [
         code: '10032500002719000000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -4995,6 +5002,7 @@ export const symbols = [
         code: '10032500002718010000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -5003,6 +5011,7 @@ export const symbols = [
         code: '10032500002717010000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },
@@ -5011,6 +5020,7 @@ export const symbols = [
         code: '10032500002720010000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
         },
       },

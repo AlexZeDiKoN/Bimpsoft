@@ -37,8 +37,9 @@ export default class SophisticatedForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
-    const useStatus = lineDefinitions[extractLineCode(this.props.data.code)]?.useStatus
-    const useAmplifiers = lineDefinitions[extractLineCode(this.props.data.code)]?.useAmplifiers
+    const lineDefinition = lineDefinitions[extractLineCode(this.props.data.code)]
+    const useStatus = lineDefinition?.useStatus
+    const useAmplifiers = lineDefinition?.useAmplifiers
     const result = this.getResult()
     return (
       <div className="sophisticated-container">
