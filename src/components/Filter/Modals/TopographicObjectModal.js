@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
   Input,
-  ButtonSave,
+  ButtonApply,
   ButtonCancel,
   HotKey,
   HotKeysContainer,
@@ -12,6 +12,8 @@ import {
   useController,
   InputsController,
   FilterInput,
+  Checkbox,
+  FormRow,
 } from '@C4/CommonComponents'
 import i18n from '../../../i18n'
 import { shortcuts } from '../../../constants'
@@ -24,6 +26,7 @@ const MIN_HEIGHT_MODAL = '165px'
 const DEFAULT_VALUE = Object.freeze({})
 const DEFAULT_ARRAY = []
 const valuesWithUndefined = (arr) => [ { id: '', name: i18n.UNDEFINED } ].concat(arr)
+export const IS_OPERATION_ZONE = 'isOperationZone'
 
 export const TopographicObjectFilterModal = ({
   wrapper: Wrapper,
@@ -33,6 +36,7 @@ export const TopographicObjectFilterModal = ({
   onRemove,
   fields = DEFAULT_ARRAY,
   data = DEFAULT_VALUE,
+  flexGridPresent,
 }) => {
   const [ value, onChange ] = useState(data)
   const isNew = data === DEFAULT_VALUE
@@ -66,7 +70,7 @@ export const TopographicObjectFilterModal = ({
       default: return withWrap(<Input {...inputs.input(id)} autoComplete="off"/>)
     }
   }
-
+  const inputOperationZone = inputs.bool(IS_OPERATION_ZONE)
   return <Wrapper
     title={`${i18n.FILTER} "${title}"`}
     maxWidth={WIDTH_MODAL}
@@ -82,10 +86,17 @@ export const TopographicObjectFilterModal = ({
     <HotKeysContainer>
       <div className="modal-objects__filter--wrap">
         <div className="modal-objects__filter--content">
+          <FormRow label={i18n.FILTER_BY_OPERATION_ZONE} alignLabel="right" paddingH>
+            <Checkbox
+              {...inputOperationZone}
+              value={flexGridPresent ? inputOperationZone.value : false}
+              disabled={!flexGridPresent}
+            />
+          </FormRow>
           {fields.map(getElement)}
         </div>
         <div className="modal-objects__filter--buttons">
-          <ButtonSave onClick={onSaveHandler}/>
+          <ButtonApply onClick={onSaveHandler}/>
           <ButtonCancel onClick={onClose}/>
           { !isNew && <ButtonDelete onClick={onRemove}/> }
           <HotKey onKey={onSaveHandler} selector={shortcuts.ENTER}/>
@@ -104,4 +115,5 @@ TopographicObjectFilterModal.propTypes = {
   fields: PropTypes.object,
   data: PropTypes.object,
   title: PropTypes.string,
+  flexGridPresent: PropTypes.bool,
 }

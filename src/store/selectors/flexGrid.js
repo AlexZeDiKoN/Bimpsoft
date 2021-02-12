@@ -6,6 +6,7 @@ const optionsForm = ({ flexGrid }) => flexGrid.options
 const visibleFlag = ({ flexGrid }) => flexGrid.visible
 const optionDirections = ({ flexGrid }) => flexGrid.flexGrid.directions
 const optionZones = ({ flexGrid }) => flexGrid.flexGrid.zones
+export const flexGridPresent = ({ flexGrid }) => flexGrid.present
 const optionVertical = ({ flexGrid }) => flexGrid.vertical
 const directionNames = ({ flexGrid }) => flexGrid.flexGrid.directionNames
 const mainDirectionSigns = ({ flexGrid }) => flexGrid.flexGrid.mainDirectionSigns

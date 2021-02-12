@@ -28,13 +28,13 @@ export const Item = ({
   const onClickVisibleHandler = (visible) => onVisibleClick(visible, data.id)
 
   const isLoading = Boolean(loadingObjects[id])
-  const isFilterActive = activeFilters[id]
+  const isFilterActive = Boolean(activeFilters[id]?.filters)
+
   return <div className="sidebar__filter--list-item">
     <PreloaderCover loading={isLoading} />
     <VisibilityButton
       title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
       visible={shown}
-      disabled={!isFilterActive}
       onChange={onClickVisibleHandler}
     />
     {buttonWrap(
@@ -57,7 +57,7 @@ export const Item = ({
         <HighlightedText text={name} textFilter={textFilter}/>
       </div>
       <CountBox
-        isHidden={isLoading || !isFilterActive}
+        isHidden={isLoading || (!shown && !isFilterActive)}
         count={filterCount?.[id]}
       />
     </Tooltip>
