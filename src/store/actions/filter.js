@@ -23,13 +23,14 @@ import {
   selectedLayerId,
   topographicObjectsFilters,
 } from '../selectors'
-import { WebMapObject } from '../reducers/webMap'
+import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogsTopographicByIds } from '../selectors/catalogs'
 import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
+import { catalogsCommonData, isCatalogLayer } from '../../constants/catalogs'
 import { setModalData, close } from './task'
 import { copyList } from './webMap'
-import { setTopographicObjectByIds } from './catalogs'
+import { getCatalogAttributesFields, setTopographicObjectByIds } from './catalogs'
 import { asyncAction, layers } from './index'
 
 const { vld } = utils
@@ -57,8 +58,15 @@ export const openModalCatalogFilter = (id) => (dispatch) => dispatch(setModalDat
 export const openModalTopographicFilter = (id) => (dispatch) =>
   dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
 
-export const openMilSymbolModal = (index) => (dispatch, getState) => {
+export const openMilSymbolModal = (index) => asyncAction.withNotification(async (dispatch, getState) => {
   const state = getState()
+  const selectedLayer = selectedLayerId(state)
+  const isLayerCatalog = isCatalogLayer(selectedLayer)
+  let defaultProps = { type: SelectionTypes.POINT, code: '10000000000000000000', attributes: {} }
+  if (isLayerCatalog) {
+    await dispatch(getCatalogAttributesFields(selectedLayer))
+    defaultProps = { ...defaultProps, ...catalogsCommonData[selectedLayer] }
+  }
   typeof index === 'number'
     ? dispatch(setModalData({
       ...milSymbolFilters(state)[index],
@@ -73,13 +81,14 @@ export const openMilSymbolModal = (index) => (dispatch, getState) => {
       visible: true,
       name: null,
       data: new WebMapObject({
-        type: SelectionTypes.POINT,
-        code: '10000000000000000000',
-        layer: selectedLayerId(state),
+        type: defaultProps.type,
+        code: defaultProps.code,
+        layer: selectedLayer,
         geometry: List([ ]),
+        attributes: WebMapAttributes(defaultProps.attributes),
       }),
     }))
-}
+})
 
 export const onSaveMilSymbolFilters = (data) => (dispatch, getState) => {
   const validation = vld.validate({ name: R.pipe(vld.defined, vld.notNull, vld.text(1, 200)) }, data)
@@ -134,14 +143,17 @@ export const onCreateLayerAndCopyUnits = (data) => asyncAction.withNotification(
 
 export const onChangeVisibleTopographicObject = (shown, id) => asyncAction.withNotification(
   async (dispatch, getState) => {
-    const byIds = catalogsTopographicByIds(getState())
+    const state = getState()
+    const byIds = catalogsTopographicByIds(state)
+    const filtersData = topographicObjectsFilters(state)[id]
     const result = id
       ? { ...byIds, [id]: { ...byIds[id], shown } }
       : Object.fromEntries(Object.entries(byIds)
         .map(([ id, data ]) => [ id, { ...data, shown } ]),
       )
     dispatch(setTopographicObjectByIds(result))
-    shown && await dispatch(loadTopographicObjectById(id))
+    !shown && !filtersData?.filters && dispatch(setTopographicObjectFilters({ [id]: { ...filtersData, objects: [] } }))
+    shown && !filtersData?.filters && await dispatch(loadTopographicObjectById(id))
   })
 
 export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) => {

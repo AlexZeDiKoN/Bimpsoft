@@ -16,6 +16,7 @@ import {
   WithPointAmplifiers,
   WithIntermediateAmplifiersTune,
   WithTwoCoordinates,
+  WithCatalogsFields,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './RectangleForm.css'
@@ -24,7 +25,7 @@ import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
 
 const { FormDarkPart } = components.form
 
-export default class SquareForm extends
+class RectangleForm extends
   compose(
     UnitSelect,
     WithSubordinationLevel,
@@ -95,3 +96,7 @@ export default class SquareForm extends
     )
   }
 }
+
+const SquareFormWithDecorator = WithCatalogsFields(RectangleForm)
+
+export default SquareFormWithDecorator

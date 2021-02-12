@@ -16,13 +16,14 @@ import {
   WithPointAmplifiers,
   WithIntermediateAmplifiersTune,
   WithCoordinateAndWidth,
+  WithCatalogsFields,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './SquareForm.css'
 
 const { FormDarkPart } = components.form
 
-export default class SquareForm extends
+class SquareForm extends
   compose(
     UnitSelect,
     WithSubordinationLevel,
@@ -86,3 +87,7 @@ export default class SquareForm extends
     )
   }
 }
+
+const SquareFormWithDecorator = WithCatalogsFields(SquareForm)
+
+export default SquareFormWithDecorator

@@ -5,4 +5,6 @@ export const PROPERTY_PATH = {
   INTERMEDIATE_AMPLIFIER: [ 'attributes', 'intermediateAmplifier' ],
   CODE: [ 'code' ],
   UNIT: [ 'unit' ],
+  CATALOG_ATTRIBUTES: [ 'attributes', 'catalogAttributes' ],
+  COORDINATES: [ 'geometry' ],
 }

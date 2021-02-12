@@ -22,13 +22,27 @@
   &--wrap .symbol-generator-content .version{
     border: none;
   }
-  &__content{
+  &--content {
+    width: 100%;
     height: 100%;
-    display: grid;
-    grid-template-columns: 68% 32%;
-    padding: 0 20px;
-    align-items: end;
-    &--footer{
+    overflow: auto;
+    max-height: calc(100vh - 140px);
+
+    .milsymbol {
+      width: 150px;
+      margin: 0 30px;
+      height: 100px;
+    }
+
+    .additional-filters {
+      height: fit-content;
+      display: grid;
+      grid-template-columns: 68% 32%;
+      padding: 0 20px;
+      align-items: end;
+    }
+
+    .footer {
       display: grid;
       grid-template-columns: 50% 50%;
       padding: 0 13px 10px 13px;

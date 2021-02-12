@@ -6,7 +6,6 @@ import {
   LayersContainer,
   OrgStructuresContainer,
   MarchContainer,
-  CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
   LogMapContainer,
@@ -48,7 +47,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP, is3DMapMode, isHaveActiveLayer } = this.props
+    const { printStatus, marchEdit, isMapCOP, isHaveActiveLayer } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -72,12 +71,6 @@ export default class Sidebar extends React.Component {
                   title: i18n.ORG_STRUCTURE_SHORT,
                   icon: IconNames.ORG_STRUCTURE,
                   enabled: true,
-                },
-                {
-                  Component: CatalogsContainer,
-                  title: i18n.CATALOGS,
-                  icon: IconNames.CATALOG,
-                  enabled: !is3DMapMode,
                 },
                 {
                   Component: TargetCatalogContainer,

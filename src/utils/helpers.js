@@ -6,3 +6,5 @@ export class Deferred {
     })
   }
 }
+
+export const objectHas = (object, key) => Object.prototype.hasOwnProperty.call(object, key)

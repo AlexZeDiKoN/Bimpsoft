@@ -9,11 +9,12 @@ import {
   WithStrokeWidth,
   UnitSelect,
   WithPointAmplifiers,
+  WithCatalogsFields,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './CircleForm.css'
 
-export default class SquareForm extends
+class CircleForm extends
   compose(
     WithSubordinationLevel,
     WithCoordinateAndRadius,
@@ -53,3 +54,7 @@ export default class SquareForm extends
     )
   }
 }
+
+const CircleFormWithDecorator = WithCatalogsFields(CircleForm)
+
+export default CircleFormWithDecorator

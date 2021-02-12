@@ -12,6 +12,7 @@ import {
   FormRow,
   ButtonDelete,
   FilterInput,
+  FormBlock,
   components,
 } from '@C4/CommonComponents'
 import { compose } from 'recompose'
@@ -20,6 +21,11 @@ import i18n from '../../../i18n'
 import { WithMilSymbol } from '../../SelectionForm/parts'
 import { propTypes as MilSymbolPropTypes } from '../../SelectionForm/parts/WithMilSymbol'
 import './style.css'
+import { CollapsibleSign } from '../../SelectionForm/parts/WithCatalogsFields/CollapsibleSign'
+import { PROPERTY_PATH } from '../../../constants/propertyPath'
+import { isCatalogLayer } from '../../../constants/catalogs'
+import { getElementsByType } from '../../SelectionForm/parts/WithCatalogsFields'
+import { propertyPath } from '../../../constants'
 
 const { form: { default: Form } } = components
 const { credibilities, symbolOptions } = model
@@ -104,51 +110,111 @@ export class MilSymbolFilterModal extends Decorator {
     const source = name === SOURCE ? value : this.state[SOURCE]
     const information = name === INFORMATION ? value : this.state[INFORMATION]
     this.setResult((result) => {
-      return result.updateIn([ 'attributes' ], (attributes) => attributes.set(symbolOptions.evaluationRating, source + information))
+      return result.updateIn([ 'attributes' ],
+        (attributes) => attributes.set(symbolOptions.evaluationRating, source + information))
     })
   }
 
+  getCatalogAttribute = (name) => {
+    const attributes = this.getResult().getIn(propertyPath.PROPERTY_PATH.CATALOG_ATTRIBUTES)
+    return attributes[name]
+  }
+
+  onChangeCatalogAttribute = ({ target: { name, value } }) => this.setResult((result) => {
+    return result.updateIn(PROPERTY_PATH.CATALOG_ATTRIBUTES,
+      (attributes) => ({ ...attributes, [name]: value }),
+    )
+  })
+
   getValueState = (key) => this.state[key]
+
+  renderMilSymbolContent () {
+    return <>
+      { this.renderMilSymbol() }
+      <div className="footer">
+        <FormColumnFloat label={i18n.SOURCE} hasValue>
+          <FilterInput
+            values={credibilities.sourceValues}
+            value={this.getValueState(SOURCE)}
+            name={SOURCE}
+            onChange={this.onChangeCredibility}
+          />
+        </FormColumnFloat>
+        <FormColumnFloat label={i18n.INFORMATION} hasValue>
+          <FilterInput
+            values={credibilities.informationValues}
+            value={this.getValueState(INFORMATION)}
+            name={INFORMATION}
+            onChange={this.onChangeCredibility}
+          />
+        </FormColumnFloat>
+      </div>
+    </>
+  }
+
+  renderCatalogContent () {
+    const result = this.getResult()
+    const attributes = result.getIn(PROPERTY_PATH.ATTRIBUTES)
+    const type = result.getIn(PROPERTY_PATH.TYPE)
+    const code = result.getIn(PROPERTY_PATH.CODE)
+    const coordinatesArray = result.getIn(PROPERTY_PATH.COORDINATES).toJS()
+    const coordinates = coordinatesArray[0]
+    const components = getElementsByType(this.props.catalogAttributesFields)
+    return <>
+
+      <CollapsibleSign
+        amplifiers={attributes}
+        code={code}
+        type={type}
+        coordinates={coordinates}
+      >
+        {this.renderMilSymbolContent()}
+      </CollapsibleSign>
+      <FormBlock paddingH paddingV marginH vertical>
+        {components.map(({ Component, props: { label, typeOfInput, hasValue, name, ...propsByTypeInput } }, key) =>
+          <FormColumnFloat label={label} hasValue={hasValue || Boolean(this.getCatalogAttribute(name))} key={key} marginH>
+            <Component
+              key={name}
+              name={name}
+              value={this.getCatalogAttribute(name)}
+              onChange={this.onChangeCatalogAttribute}
+              {...propsByTypeInput}
+            />
+          </FormColumnFloat>,
+        )}
+      </FormBlock>
+
+    </>
+  }
 
   render () {
     const { wrapper: Wrapper, onClose, isNew, onRemove, layerData } = this.props
-    const { inCurrentLayer, name, errors } = this.state
+    const { inCurrentLayer, name, errors, data } = this.state
+    const isLayerCatalog = isCatalogLayer(data?.layer)
     return <Wrapper
       title={i18n.STRAINER_MIL_SYMBOL}
       maxWidth={WIDTH_MODAL}
       minWidth={WIDTH_MODAL}
       minHeight={HEIGHT_MODAL}
       maxHeight={HEIGHT_MODAL}
+      enableResizing={false}
       onClose={onClose}
     >
       <FocusTrap>
         <Form className="shape-form mil-symbol-filter--wrap">
-          <div className="mil-symbol-filter__content">
-            <FormColumnFloat label={i18n.NAME_STRAINER} hasValue={Boolean(name)}>
-              <Input name={'name'} errors={errors.name} value={name} onChange={this.onChange}/>
-            </FormColumnFloat>
-            <FormRow label={`${i18n.LAYER}: ${layerData?.name}`} alignLabel="right">
-              <Checkbox name={'inCurrentLayer'} value={inCurrentLayer} onChange={this.onChange}/>
-            </FormRow>
-          </div>
-          { this.renderMilSymbol() }
-          <div className="mil-symbol-filter__content--footer">
-            <FormColumnFloat label={i18n.SOURCE} hasValue>
-              <FilterInput
-                values={credibilities.sourceValues}
-                value={this.getValueState(SOURCE)}
-                name={SOURCE}
-                onChange={this.onChangeCredibility}
-              />
-            </FormColumnFloat>
-            <FormColumnFloat label={i18n.INFORMATION} hasValue>
-              <FilterInput
-                values={credibilities.informationValues}
-                value={this.getValueState(INFORMATION)}
-                name={INFORMATION}
-                onChange={this.onChangeCredibility}
-              />
-            </FormColumnFloat>
+          <div className="mil-symbol-filter--content">
+            <div className="additional-filters">
+              <FormColumnFloat label={i18n.NAME_STRAINER} hasValue={Boolean(name)}>
+                <Input name={'name'} errors={errors.name} value={name} onChange={this.onChange}/>
+              </FormColumnFloat>
+              <FormRow label={`${i18n.LAYER}: ${layerData?.name}`} alignLabel="right">
+                <Checkbox name={'inCurrentLayer'} value={inCurrentLayer} onChange={this.onChange}/>
+              </FormRow>
+            </div>
+            {isLayerCatalog
+              ? this.renderCatalogContent()
+              : this.renderMilSymbolContent()
+            }
           </div>
           <div className='footer-container'>
             <ButtonSave onClick={this.onSaveHandler}/>

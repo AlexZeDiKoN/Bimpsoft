@@ -23,7 +23,6 @@ const ACTION_CLOSE = 'close'
 const ACTION_SHOW_UNIT = 'show unit'
 const ACTION_GET_UNIT_INDICATORS = 'get unit indicators'
 const ACTION_RETURN_UNIT_INDICATORS = 'unit indicators result'
-const ACTION_SHOW_CATALOG_OBJECT = 'show catalog object'
 const ACTION_OPEN_COORDINATE = 'open coordinate'
 const ACTION_OPEN_MILSYMBOL = 'open milsymbol'
 const OPEN_MARCH = 'open march'
@@ -147,9 +146,6 @@ export default class ExplorerBridge {
   showUnitInfo = (type, unitId) => this.send({ action: ACTION_SHOW_UNIT, type, unitId })
 
   getUnitIndicators = (unitId, formationId) => this.send({ action: ACTION_GET_UNIT_INDICATORS, unitId, formationId })
-
-  showCatalogObject = (catalogId, objectId) => this.send({ action: ACTION_SHOW_CATALOG_OBJECT, catalogId, objectId }) ||
-    window.open(`/explorer/#/_/catalogCategory/${catalogId}/${objectId}`, `explorer`, '', true)
 
   saveMarch = (data = {}) => this.send({ action: SAVE_MARSH, payload: data })
 }

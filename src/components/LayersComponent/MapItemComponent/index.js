@@ -9,6 +9,7 @@ import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import { MOUSE_ENTER_DELAY, DBL_CLICK_TIME } from '../../../constants/tooltip'
 import { DATE_TIME_FORMAT_FULL } from '../../../constants/formats'
+import { isCatalogMap } from '../../../constants/catalogs'
 import DeleteMapForm from './DeleteMapForm'
 
 const { TextFilter } = data
@@ -77,9 +78,12 @@ export default class MapItemComponent extends React.Component {
     const { showCloseForm, showColor } = this.state
     const {
       textFilter,
-      data: { visible, name, color, breadCrumbs },
+      data: { visible, name, color, breadCrumbs, mapId },
       tree: { expanded, canExpand, onExpand },
     } = this.props
+
+    const isDisabledViabilityButton = isCatalogMap(mapId)
+
     return (
       <div className={'map-item-component ' + (showColor ? 'map-item-component-hover' : '')}>
         <div className={'color-container'} style={{ border: `6px solid ${color}` }}>
@@ -87,6 +91,7 @@ export default class MapItemComponent extends React.Component {
             title={i18n.MAP_VISIBILITY}
             className="map-item-component-control"
             visible={visible}
+            disabled={isDisabledViabilityButton}
             isDark={true}
             onChange={this.changeMapVisibilityHandler}
           />
