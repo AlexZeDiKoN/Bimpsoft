@@ -351,6 +351,7 @@ export const DESCRIPTION = `Опис`
 export const SYMBOLS = 'Умовні знаки'
 export const LOG_MAP = 'Журнал подій'
 export const STRAINERS = 'Фільтри'
+export const FILTER_BY_OPERATION_ZONE = 'Фільтрувати по операційній зоні'
 export const NAME_STRAINER = 'Назва фільтру'
 export const STRAINER_MIL_SYMBOL = 'Визначення фільтру за атрибутами ТЗ'
 // кнопка меню

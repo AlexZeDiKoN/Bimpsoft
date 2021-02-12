@@ -136,10 +136,7 @@ export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters
 export const getTopographicObjectsList = createSelector(catalogsTopographicByIds, topographicObjectsFilters,
   (byIds, filtersData) => {
     const shownFilters = Object.values(byIds).filter(({ shown }) => shown)
-    return shownFilters.map(({ id }) => {
-      const data = filtersData[id]?.objects ?? []
-      return data.map((geometry) => ({ geometry: geometry.location }))
-    }).flat(1)
+    return shownFilters.map(({ id }) => filtersData[id]?.objects ?? []).flat(1)
   })
 
 export const getTopographicObjectsCount = createSelector(topographicObjectsFilters, (filtersData) => {

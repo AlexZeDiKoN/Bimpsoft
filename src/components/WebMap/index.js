@@ -439,6 +439,7 @@ export default class WebMap extends React.PureComponent {
     this.marchMarkers = []
     this.marchRefPoint = null
     this.backLightingVisionZones = []
+    this.backLightingTimeouts = []
   }
 
   async componentDidMount () {
@@ -594,6 +595,8 @@ export default class WebMap extends React.PureComponent {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
     if (topographicObjectsList !== prevProps.topographicObjectsList) {
+      this.backLightingTimeouts.forEach(clearInterval)
+      this.backLightingTimeouts = []
       this.backLightingTopographicObjectsList(topographicObjectsList)
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
@@ -1254,14 +1257,17 @@ export default class WebMap extends React.PureComponent {
       this.backLightsList = []
     }
     objectsList.forEach((object) => {
-      const backLighting = L.geoJSON({ type: 'Feature', ...object }, {
+      const backLighting = L.geoJSON(object, {
         style: this.backLightingStyles,
         pointToLayer: (geoJsonPoint, latlng) => {
           return new L.CircleMarker(latlng, { interactive: false, radius: 1 })
         },
       })
-      backLighting.addTo(this.map)
-      this.backLightsList.push(backLighting)
+      const timoutId = setTimeout(() => { // таймаут чтобы при большой нагрузке не засорял стек и рисовал елементы по мере поступления
+        backLighting.addTo(this.map)
+        this.backLightsList.push(backLighting)
+      })
+      this.backLightingTimeouts.push(timoutId)
     })
   }
 
