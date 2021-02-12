@@ -13,9 +13,9 @@ import {
   catalogsFields,
   layersById,
   loadingFiltersStatus,
-  getCatalogsByIds,
   catalogsTopographicByIds,
   topographicObjectsFilters,
+  catalogAttributesFieldsById,
   flexGridPresent,
 } from '../store/selectors'
 import {
@@ -33,6 +33,7 @@ import {
   onSaveTopographicObjectFilter,
   onRemoveTopographicObjectFilter,
 } from '../store/actions/filter'
+import i18n from '../i18n'
 
 // ------------------------------------------ Catalog Container -----------------------------------------------
 const CatalogModalForm = connect(
@@ -41,7 +42,7 @@ const CatalogModalForm = connect(
     return {
       data: catalogFilters(store)?.[modalData?.id],
       fields: catalogsFields(store)?.[modalData?.id],
-      title: getCatalogsByIds(store)?.[modalData?.id]?.name,
+      title: i18n.CATALOGS,
       catalogId: modalData?.id,
     }
   },
@@ -63,6 +64,7 @@ const MilSymbolModalForm = connect(
         byIds: orgStructures.byIds,
         roots: orgStructures.roots,
       },
+      catalogAttributesFields: catalogAttributesFieldsById(modalData?.data?.layer)(store),
       ovtData: ovt?.ovtData,
       ovtKind: dictionaries.dictionaries?.ovtKind,
       ovtSubKind: dictionaries.dictionaries?.ovtSubkind,

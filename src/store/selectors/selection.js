@@ -4,6 +4,8 @@ import entityKind from '../../components/WebMap/entityKind'
 const objects = ({ webMap: { objects } }) => objects
 const flexGrid = ({ flexGrid: { flexGrid } }) => flexGrid
 export const selectedList = ({ selection: { list } }) => list
+export const selectedNewShape = ({ selection: { newShape } }) => newShape
+export const getObjectPreview = ({ selection: { preview } }) => preview
 
 export const selectedTypes = createSelector(
   objects,
