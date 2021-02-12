@@ -192,19 +192,16 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
   dispatch(disableDrawUnit())
 })
 
-export const newShapeFromUnit = (unitID, point) => withNotification(async (dispatch, getState, { milOrgApi }) => {
+export const getUnitObj = ({ unitID, point, dictionaries, state }) => {
   const {
     orgStructures,
     layers: {
       selectedId: layer,
     },
-  } = getState()
-
+  } = state
   const unit = orgStructures.byIds[unitID] || {}
 
   const { app6Code: code, id, symbolData, natoLevelID } = unit
-
-  const dictionaries = await milOrgApi.allDc()
   const formationCountryId = orgStructures?.formation?.countryID
   const countriesList = dictionaries?.Countries ?? []
   const countryFormation = countriesList.find(({ id }) => formationCountryId === id)
@@ -213,7 +210,7 @@ export const newShapeFromUnit = (unitID, point) => withNotification(async (dispa
   attributes[amps.dtg] = moment()
   attributes[amps.country] = countryFormation?.codeA3 ?? ''
 
-  dispatch(setPreview(WebMapObject({
+  return {
     type: SelectionTypes.POINT,
     code,
     layer,
@@ -222,7 +219,12 @@ export const newShapeFromUnit = (unitID, point) => withNotification(async (dispa
     geometry: List([ point ]),
     point: point,
     attributes: WebMapAttributes(attributes),
-  })))
+  }
+}
+
+export const newShapeFromUnit = (unitID, point) => withNotification(async (dispatch, getState, { milOrgApi }) => {
+  const dictionaries = await milOrgApi.allDc()
+  dispatch(setPreview(WebMapObject(getUnitObj({ unitID, point, dictionaries, state: getState() }))))
 })
 
 export const newShapeFromSymbol = (data, point) => withNotification((dispatch, getState) => {
