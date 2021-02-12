@@ -16,9 +16,6 @@ import {
 // task code: DZVIN-5796
 // hint: 'Район розповсюдження агітаційного матеріалу'
 
-// const STROKE_WIDTH_SCALE = 0.1
-// const CROSS_SCALE = 1
-
 const CODE = '017018'
 
 lineDefinitions[CODE] = {

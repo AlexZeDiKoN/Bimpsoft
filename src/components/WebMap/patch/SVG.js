@@ -95,6 +95,7 @@ L.SVG.include({
       _amplifierGroup,
       _lineEndsGroup,
     } = layer
+
     if (_shadowPath) {
       layer.options.fill = layer.options.fill || (layer.options.tsType && !shadowColor)
       if (shadowColor) {
@@ -124,6 +125,7 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
+
     // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 

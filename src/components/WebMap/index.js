@@ -2073,7 +2073,6 @@ export default class WebMap extends React.PureComponent {
       }
       // якщо сюди дійшли всерівно преререндрювати layer
       // const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
-      console.log('createTacticalSign')
       setScaleOptions(layer, params, true) // обновляем объект в соответствии с масштабными настройками
     }
 

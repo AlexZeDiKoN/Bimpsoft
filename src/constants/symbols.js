@@ -641,6 +641,7 @@ export const symbols = [
         code: '10032500001514030000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -650,6 +651,7 @@ export const symbols = [
         code: '10032500001514040000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -659,6 +661,7 @@ export const symbols = [
         code: '10032500001514060000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
           color: '#3366ff',
         },
@@ -928,6 +931,7 @@ export const symbols = [
         code: '10062500001514010000',
         isSvg: true,
         amp: {
+          status: STATUSES.EXISTING,
           type: entityKind.SOPHISTICATED,
           color: '#ff0404',
         },
