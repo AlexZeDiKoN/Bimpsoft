@@ -20,4 +20,14 @@ L.PM.Edit.Rectangle.include({
       parent._onMarkerDrag.call(this, e) // потрібен для не SQUARE
     }
   },
+
+  // от polygon + коррекция
+  _onMarkerDragEnd: function (t) {
+    var e = this._findCorners()
+    this._adjustAllMarkers(e)
+    this._cornerMarkers.forEach(function (t) { delete t._oppositeCornerLatLng })
+    this._layer.setBounds(e) // вместо this._layer.setLatLngs(e)
+    this._layer.fire('pm:markerdragend', { markerEvent: t })
+    this._fireEdit()
+  },
 })

@@ -115,7 +115,7 @@ export default class LayersComponent extends React.Component {
     return (
       <div className="layers-component">
         <div className='container-layers'>
-          <BlockHotKeyContainer hotKey={[ shortcuts.DELETE ]}>
+          <BlockHotKeyContainer hotKey={[ shortcuts.EDIT_KEY ]}>
             <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
           </BlockHotKeyContainer>
           <div className='container-layers__btnContainer'>

@@ -16,6 +16,7 @@ import {
   getCatalogsByIds,
   catalogsTopographicByIds,
   topographicObjectsFilters,
+  flexGridPresent,
 } from '../store/selectors'
 import {
   CatalogFilterModal,
@@ -92,6 +93,7 @@ const TopographicObjectModalForm = connect((store) => {
     title: name,
     fields: attributes,
     data: topographicObjectsFilters(store)?.[modalData.id]?.filters,
+    flexGridPresent: flexGridPresent(store),
   }
 },
 {

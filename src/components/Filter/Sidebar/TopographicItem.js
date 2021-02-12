@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { data, components, IButton, IconNames, ButtonTypes } from '@C4/CommonComponents'
+import { data, components, IButton, IconNames, ButtonTypes, PreloaderCover } from '@C4/CommonComponents'
+import { Tooltip } from 'antd'
 import i18n from '../../../i18n'
+import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 import { CountBox } from '../../common/Sidebar'
 import { VisibilityButton } from '../../common'
 import './style.css'
@@ -18,18 +20,21 @@ export const Item = ({
   data,
   activeFilters = {},
   filterCount = {},
+  loadingObjects = {},
 }) => {
   const { id, shown, name } = data
 
   const onClickFilterHandler = () => onFilterClick(data.id)
   const onClickVisibleHandler = (visible) => onVisibleClick(visible, data.id)
 
-  const isFilterActive = activeFilters[id]
+  const isLoading = Boolean(loadingObjects[id])
+  const isFilterActive = Boolean(activeFilters[id]?.filters)
+
   return <div className="sidebar__filter--list-item">
+    <PreloaderCover loading={isLoading} />
     <VisibilityButton
       title={shown ? i18n.HIDE_CATALOG : i18n.SHOW_CATALOG}
       visible={shown}
-      disabled={!isFilterActive}
       onChange={onClickVisibleHandler}
     />
     {buttonWrap(
@@ -42,13 +47,20 @@ export const Item = ({
         onClick={onClickFilterHandler}
       />,
     )}
-    <div className="sidebar__filter--list-item--text">
-      <HighlightedText text={name} textFilter={textFilter}/>
-    </div>
-    <CountBox
-      isHidden={!isFilterActive}
-      count={filterCount?.[id]}
-    />
+    <Tooltip
+      title={(<HighlightedText text={name} textFilter={textFilter}/>)}
+      placement="topLeft"
+      className="sidebar__filter--list-item--tooltip"
+      mouseEnterDelay={MOUSE_ENTER_DELAY}
+    >
+      <div className="sidebar__filter--list-item--text">
+        <HighlightedText text={name} textFilter={textFilter}/>
+      </div>
+      <CountBox
+        isHidden={isLoading || (!shown && !isFilterActive)}
+        count={filterCount?.[id]}
+      />
+    </Tooltip>
   </div>
 }
 

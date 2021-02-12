@@ -110,7 +110,7 @@ export default class CatalogsComponent extends React.PureComponent {
       <div className='catalog-container'>
         <div
           className='catalog-container__header'
-          onKeyDown={blockHotKey([ shortcuts.DELETE ])}
+          onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
         >
           <InputButton
             title={title}

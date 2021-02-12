@@ -398,7 +398,7 @@ const SymbolsTab = (props) => {
   return (
     <div className='symbols-wrapper'>
       <div className='symbols-header'>
-        <BlockHotKeyContainer hotKey={[ shortcuts.DELETE ]}>
+        <BlockHotKeyContainer hotKey={[ shortcuts.EDIT_KEY ]}>
           <InputButton
             onChange={onChangeSearch}
             initValue={search}

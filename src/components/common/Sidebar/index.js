@@ -9,7 +9,7 @@ export const SidebarWrap = ({ children, title, rightButtons, onChangeSearch }) =
   return <div className="sidebar--content-wrap">
     <div
       className="sidebar--content-header"
-      onKeyDown={blockHotKey([ shortcuts.DELETE ]) }
+      onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ]) }
     >
       <InputButton
         onChange={onChangeSearch}

@@ -9,8 +9,11 @@ import {
   drawLineHatch,
   getPointAmplifier,
 } from '../../../utils/svg/lines'
+import {
+  FONT_FAMILY,
+  FONT_WEIGHT,
+} from '../../../utils/svg/text'
 import { evaluateColor } from '../../../constants/colors'
-import { FONT_FAMILY, FONT_WEIGHT } from '../../../utils/svg'
 import { settings } from '../../../constants/drawLines'
 import { narr } from './FlexGrid'
 import { prepareLinePath, makeRegionGroup } from './utils/SVG'

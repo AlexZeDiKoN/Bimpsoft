@@ -2,18 +2,21 @@ import { List } from 'immutable'
 import { utils } from '@C4/CommonComponents'
 import * as R from 'ramda'
 import Bezier from 'bezier-js'
+import L from 'leaflet'
+import cloneDeep from 'lodash/cloneDeep'
 import { action } from '../../utils/services'
 import { CATALOG_FILTER_TYPE, MIL_SYMBOL_FILTER_TYPE, TOPOGRAPHIC_OBJECT_FILTER_TYPE } from '../../constants/modals'
 import {
   CATALOG_FILTERS,
   LOADING,
+  LOADING_TOPOGRAPHIC_OBJECT,
   MIL_SYMBOL_FILTER,
   SEARCH_FILTER,
   SEARCH_TOPOGRAPHIC_FILTER,
   TOPOGRAPHIC_OBJECT_FILTER,
 } from '../../constants/filter'
 import {
-  flexGridVisible,
+  flexGridPresent,
   getFilteredObjects,
   getModalData,
   milSymbolFilters,
@@ -23,6 +26,7 @@ import {
 import { WebMapObject } from '../reducers/webMap'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogsTopographicByIds } from '../selectors/catalogs'
+import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
 import { setModalData, close } from './task'
 import { copyList } from './webMap'
 import { setTopographicObjectByIds } from './catalogs'
@@ -35,6 +39,7 @@ export const mergeFilter = (name, value, index) => ({ type: MERGE_FILTERS, paylo
 export const setFilterCatalog = mergeFilter.bind(null, CATALOG_FILTERS)
 export const mergeMilSymbolFilter = mergeFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setTopographicObjectFilters = mergeFilter.bind(null, TOPOGRAPHIC_OBJECT_FILTER)
+export const setLoadingTopographicObjects = mergeFilter.bind(null, LOADING_TOPOGRAPHIC_OBJECT)
 
 export const REMOVE_FILTER = action('REMOVE_FILTER')
 export const removeFilter = (name, value) => ({ type: REMOVE_FILTER, payload: { name, value } })
@@ -49,7 +54,8 @@ export const setMilSymbolFilter = setFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setLoading = setFilter.bind(null, LOADING)
 
 export const openModalCatalogFilter = (id) => (dispatch) => dispatch(setModalData({ type: CATALOG_FILTER_TYPE, id }))
-export const openModalTopographicFilter = (id) => (dispatch) => dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
+export const openModalTopographicFilter = (id) => (dispatch) =>
+  dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
 
 export const openMilSymbolModal = (index) => (dispatch, getState) => {
   const state = getState()
@@ -126,15 +132,17 @@ export const onCreateLayerAndCopyUnits = (data) => asyncAction.withNotification(
   dispatch(setLoading(false))
 })
 
-export const onChangeVisibleTopographicObject = (shown, id) => (dispatch, getState) => {
-  const byIds = catalogsTopographicByIds(getState())
-  const result = id
-    ? { ...byIds, [id]: { ...byIds[id], shown } }
-    : Object.fromEntries(Object.entries(byIds)
-      .map(([ id, data ]) => [ id, { ...data, shown } ]),
-    )
-  dispatch(setTopographicObjectByIds(result))
-}
+export const onChangeVisibleTopographicObject = (shown, id) => asyncAction.withNotification(
+  async (dispatch, getState) => {
+    const byIds = catalogsTopographicByIds(getState())
+    const result = id
+      ? { ...byIds, [id]: { ...byIds[id], shown } }
+      : Object.fromEntries(Object.entries(byIds)
+        .map(([ id, data ]) => [ id, { ...data, shown } ]),
+      )
+    dispatch(setTopographicObjectByIds(result))
+    shown && await dispatch(loadTopographicObjectById(id))
+  })
 
 export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) => {
   const state = getState()
@@ -146,24 +154,39 @@ export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) =
 
 const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
   async (dispatch, getState, { catalogApi }) => {
+    dispatch(setLoadingTopographicObjects({ [topocode]: true }))
     const state = getState()
     const filtersData = topographicObjectsFilters(state)[topocode]
-    const { filters } = filtersData
+    const filters = { ...filtersData?.filters }
     let points
-    if (flexGridVisible(state)) {
-      const layerPoints = window.webMap.flexGrid._borderLine()
+    if (filters[IS_OPERATION_ZONE] && flexGridPresent(state)) {
+      const layerPointToLatLng = window.webMap.map.layerPointToLatLng.bind(window.webMap.map)
+      const isFlexGridInit = window.webMap.flexGrid._leaflet_id
+      const flexGrid = isFlexGridInit ? window.webMap.flexGrid : cloneDeep(window.webMap.flexGrid)
+      if (!isFlexGridInit) {
+        const latLngToLayerPoint = window.webMap.map.latLngToLayerPoint.bind(window.webMap.map)
+        const render = {
+          _layers: {},
+          ...L.SVG.prototype,
+        }
+        render._initFlexGrid(flexGrid)
+        flexGrid._map = { latLngToLayerPoint }
+        flexGrid._project()
+      }
+      const layerPoints = flexGrid._borderLine()
       const group2points = layerPoints
         .map((item, index) => [ layerPoints[index - 1 < 0 ? layerPoints.length - 1 : index - 1], item ])
       const calculatedBezierPath = group2points
         .map(([ { cp2, ...rest1 }, item2 ]) => new Bezier(rest1, cp2, item2).getLUT(20))
         .flat(1)
-      const pointsToCoordinates = window.webMap.map.layerPointToLatLng.bind(window.webMap.map)
-      points = calculatedBezierPath.map(pointsToCoordinates)
+      points = calculatedBezierPath.map(layerPointToLatLng)
     } else {
       const { _southWest: firstPoint, _northEast: secondPoint } = window.webMap?.getBoundsMap() || state.webMap.bounds
       points = [ firstPoint, secondPoint ]
     }
+    delete filters[IS_OPERATION_ZONE]
     const objects = await catalogApi.getTopographicObjects({ topocode, points, zoom: state.webMap.zoom, filters })
+      .finally(() => { dispatch(setLoadingTopographicObjects({ [topocode]: false })) })
     dispatch(setTopographicObjectFilters({ [topocode]: { ...filtersData, objects } }))
   })
 
