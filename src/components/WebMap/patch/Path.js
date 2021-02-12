@@ -175,6 +175,7 @@ export default L.Path.include({
         hasStyles = true
         needRedraw = true
       }
+      console.log('_updateZoomStyles', JSON.stringify(styles))
       hasStyles && this.setStyle(styles)
       if (this._map && needRedraw) {
         this.redraw() // если у объекта нет _map он скрытый

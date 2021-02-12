@@ -53,16 +53,16 @@ lineDefinitions[CODE] = {
     const fillId = `SVG-fill-pattern-${layer.object.id}`
     const fillColor = `url('#${fillId}')`
     const color = layer.object.attributes.color
-    result.layer.options.fill = true
-    result.layer.options.fillColor = fillColor
-    result.layer.options.fillOpacity = 1
+    // result.layer.options.fill = true
+    // result.layer.options.fillColor = fillColor
+    // result.layer.options.fillOpacity = 1
     result.amplifiers += ` 
       <pattern id="${fillId}" x="0" y="0" width="${cs * 3}" height="${cs * 3}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
         <line x1="${sw}" y1="${sw}" x2="${cs - sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
         <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
       </pattern>
       <path fill="${fillColor}" fill-rule="nonzero" stroke-width="${strokeWidth}" stroke-opacity="0" d="${result.d}"/>`
-    // result.layer._path.setAttribute('fill-color', fillColor)
+    // result.layer._path.setAttribute('fill', fillColor)
   },
 
   build3d: (result, id, points, attributes) => {

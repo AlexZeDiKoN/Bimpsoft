@@ -95,7 +95,6 @@ L.SVG.include({
       _amplifierGroup,
       _lineEndsGroup,
     } = layer
-
     if (_shadowPath) {
       layer.options.fill = layer.options.fill || (layer.options.tsType && !shadowColor)
       if (shadowColor) {
@@ -125,7 +124,7 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
-
+    console.log('to updateStyle', JSON.stringify(layer.options))
     // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 
@@ -247,6 +246,7 @@ L.SVG.include({
           console.warn(e)
         }
         result = container.d
+        console.log('render', { path: layer._path, option: layer.options })
         this._setMask(layer, container.amplifiers, container.mask)
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
@@ -521,6 +521,7 @@ L.SVG.include({
     }
     if (amplifiers) {
       layer.getAmplifierGroup().innerHTML = amplifiers
+      console.log('setMask', JSON.stringify(layer.options))
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
