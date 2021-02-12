@@ -7,6 +7,7 @@ export const GREEN = 'app6_green'
 export const YELLOW = 'app6_yellow'
 export const WHITE = 'app6_white'
 export const TRANSPARENT = 'app6_transparent'
+export const FRIENDLY = BLUE
 
 export const values = {
   [TRANSPARENT]: 'transparent',
