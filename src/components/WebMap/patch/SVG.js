@@ -213,7 +213,7 @@ L.SVG.include({
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     let resultFilled = ''
-    const lineType = layer.lineType || 'solid'
+    const lineType = layer.lineType ?? 'solid'
     const skipStart = layer.options?.skipStart
     const skipEnd = layer.options?.skipEnd
     const kind = layer.options?.tsType

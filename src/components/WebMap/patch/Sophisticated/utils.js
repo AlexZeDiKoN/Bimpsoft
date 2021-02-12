@@ -9,6 +9,7 @@ import { drawArrowFill } from '../../../../utils/svg/lines'
 import { FONT_FAMILY, FONT_WEIGHT, getTextWidth } from '../../../../utils/svg/text'
 import { evaluateColor } from '../../../../constants/colors'
 import { MARK_TYPE, settings } from '../../../../constants/drawLines'
+import { STATUSES } from '../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from './lineDefinitions'
 import { CONFIG } from '.'
 
@@ -1341,6 +1342,45 @@ export const hasIntersection = (p1, p2, s1, s2) => {
 
 export const drawBezierSpline = (result, points, locked) => (result.d += prepareBezierPath(points, locked))
 
+export const setStatusToPath = (result, status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING) => {
+  if (status === STATUSES.PLANNED) {
+    const dash = getStrokeWidth(result.layer)
+    result.layer.options.dashArray = `${dash * 3} ${dash * 2}`
+  }
+}
+
+const STROKE_WIDTH_SCALE = 0.1
+const CROSS_SCALE = 1
+export const PATERN_TYPE = {
+  CROSS: 'cross',
+  HATCH_LEFT_TO_RIGHT: 'hatchLR',
+  HATCH_RIGHT_TO_LEFT: 'hatchRL',
+}
+export const setPaternToPath = (result, patern) => {
+  const layer = result.layer
+  const strokeWidth = getStrokeWidth(layer)
+  const fillId = `SVG-fill-pattern-${layer.object.id}`
+  const fillColor = `url('#${fillId}')`
+  const color = layer.object.attributes.color
+  switch (patern) {
+    case PATERN_TYPE.CROSS: {
+      const graphicSize = getGraphicSize(layer)
+      const cs = graphicSize * CROSS_SCALE
+      const sw = graphicSize * STROKE_WIDTH_SCALE
+      result.amplifiers += ` 
+       <pattern id="${fillId}" x="0" y="0" width="${cs * 3}" height="${cs * 3}" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+         <line x1="${sw}" y1="${sw}" x2="${cs - sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
+         <line x1="${cs - sw}" y1="${sw}" x2="${sw}" y2="${cs - sw}" stroke="${color}" stroke-width="${sw}" />
+       </pattern>
+       <path fill="${fillColor}" fill-rule="nonzero" stroke-width="${strokeWidth}" stroke-opacity="0" d="${result.d}"/>`
+      break
+    }
+    case PATERN_TYPE.HATCH_LEFT_TO_RIGHT:
+    case PATERN_TYPE.HATCH_RIGHT_TO_LEFT:
+      break
+    default:
+  }
+}
 // === Utils ===
 
 // Визначення піксельних розмірів текстового блоку

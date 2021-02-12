@@ -1,10 +1,8 @@
 import lineDefinitions from '../lineDefinitions'
 import {
   buildingAirborne,
-  getDashSize,
 } from '../utils'
 import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
-import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 // sign name: SUPPORTING ATTACK
 // task code: DZVIN-5769 (part 3)
 // hint: 'Напрямок дій авіації / повітряного десанту'
@@ -34,13 +32,7 @@ lineDefinitions['151401'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
-    const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
-    if (status === STATUSES.PLANNED) {
-      const dash = getDashSize(result.layer, scale)
-      result.layer.options.dashArray = dash
-      result.layer._path.setAttribute('stroke-dasharray', dash)
-    }
+  render: (result, points) => {
     result.d = buildingAirborne(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }

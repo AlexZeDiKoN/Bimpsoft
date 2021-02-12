@@ -1,8 +1,6 @@
 import { STRATEGY_ARROW, MIDDLE, DELETE } from '../strategies'
-import { STATUSES } from '../../../../SelectionForm/parts/WithStatus'
 import lineDefinitions from '../lineDefinitions'
 import {
-  getDashSize,
   buildingArrow,
 } from '../utils'
 
@@ -35,13 +33,7 @@ lineDefinitions['151404'] = {
   ],
 
   // Рендер-функція
-  render: (result, points, scale) => {
-    const status = result.layer?.object?.attributes?.status ?? STATUSES.EXISTING
-    if (status === STATUSES.PLANNED) {
-      const dash = getDashSize(result.layer, scale)
-      result.layer.options.dashArray = dash
-      result.layer._path.setAttribute('stroke-dasharray', dash)
-    }
+  render: (result, points) => {
     result.d = buildingArrow(JSON.stringify(points), LINE_TYPE, BINDING_TYPE)
   },
 }
