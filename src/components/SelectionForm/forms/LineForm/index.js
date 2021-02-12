@@ -16,12 +16,13 @@ import {
   UnitSelect,
   WithLineClassifier,
   WithAffiliation,
+  WithCatalogsFields,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './LineForm.css'
 import WithStatus from '../../parts/WithStatus'
 
-export default class LineForm extends compose(
+class LineForm extends compose(
   WithSubordinationLevel,
   WithCoordinatesArray,
   WithLineType,
@@ -79,3 +80,7 @@ export default class LineForm extends compose(
     )
   }
 }
+
+const LineFormWithDecorator = WithCatalogsFields(LineForm)
+
+export default LineFormWithDecorator

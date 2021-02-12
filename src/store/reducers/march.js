@@ -146,7 +146,8 @@ export default function reducer (state = initState, action) {
     }
     case march.SET_GEO_LANDMARKS:
     case march.SET_METRIC:
-    case march.SET_ACTIVE_POINT: {
+    case march.SET_ACTIVE_POINT:
+    case march.SET_MAP_OBJECTS_IDS: {
       return { ...state, ...payload }
     }
     case march.SET_VISIBLE_INTERMEDIATE: { // вкл./отк. отображения промежуточных точек маршрута на форме марша

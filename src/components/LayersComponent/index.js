@@ -17,6 +17,7 @@ import i18n from '../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import { BlockHotKeyContainer } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
+import { isCatalogLayer, catalogMapId } from '../../constants/catalogs'
 import LayersControlsComponent from './LayersControlsComponent'
 import ItemTemplate from './ItemTemplate'
 
@@ -96,6 +97,9 @@ export default class LayersComponent extends React.Component {
       onChangeBackOpacity,
       hiddenOpacity,
       onChangeHiddenOpacity,
+      onClickNewCatalogElement,
+      isSelectedNewCatalogShapeType,
+      isEditMode,
       byIds,
       roots,
       selectedLayerId,
@@ -112,6 +116,9 @@ export default class LayersComponent extends React.Component {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
     const disabledControlButton = !roots?.length
+    const isCurrentLayerCatalog = isCatalogLayer(selectedLayerId)
+    const mapsIncludesCatalog = roots.includes(`m${catalogMapId}`)
+
     return (
       <div className="layers-component">
         <div className='container-layers'>
@@ -119,6 +126,19 @@ export default class LayersComponent extends React.Component {
             <InputButton title={i18n.LAYERS} initValue={valueFilterLayers} onChange={this.filterTextChangeHandler}/>
           </BlockHotKeyContainer>
           <div className='container-layers__btnContainer'>
+            { mapsIncludesCatalog &&
+                <Tooltip title={ i18n.ADD_CATALOG_ITEM } mouseEnterDelay={ MOUSE_ENTER_DELAY } placement='topRight'>
+                  <IButton
+                    icon={ IconNames.CREATE }
+                    data-test="add_new_catalog_element"
+                    active={ isSelectedNewCatalogShapeType }
+                    colorType={ ColorTypes.WHITE }
+                    type={ ButtonTypes.WITH_BG }
+                    disabled={ !isCurrentLayerCatalog || !isEditMode }
+                    onClick={ onClickNewCatalogElement }
+                  />
+                </Tooltip>
+            }
             <Tooltip title={i18n.LAYERS_VISIBILITY} mouseEnterDelay={MOUSE_ENTER_DELAY} placement='topRight'>
               <IButton
                 icon={IconNames.COLORS}
@@ -243,5 +263,8 @@ LayersComponent.propTypes = {
   onCloseAllMaps: PropTypes.func,
   onCloseMapSections: PropTypes.func,
   onFilterTextChange: PropTypes.func,
+  onClickNewCatalogElement: PropTypes.func,
+  isSelectedNewCatalogShapeType: PropTypes.bool,
+  isEditMode: PropTypes.bool,
   is3DMapMode: PropTypes.bool.isRequired,
 }

@@ -1,6 +1,7 @@
 import { data } from '@C4/CommonComponents'
 import * as R from 'ramda'
 import { layers } from '../actions'
+import { isCatalogLayer } from '../../constants/catalogs'
 
 const { TextFilter } = data
 const defItem = { visible: true, locked: false, color: null, readOnly: true }
@@ -38,7 +39,12 @@ export default function reducer (state = initState, action) {
       byId = { ...byId }
       layersData.forEach((layerData) => {
         const { layerId } = layerData
-        const item = byId.hasOwnProperty(layerId) ? byId[layerId] : defItem
+        const isByIdsHaveLayer = Object.prototype.hasOwnProperty.call(byId, layerId)
+        const isCatalogLayerData = isCatalogLayer(layerId)
+        let item = isByIdsHaveLayer ? byId[layerId] : defItem
+        if (!isByIdsHaveLayer && isCatalogLayerData) {
+          item = { ...item, visible: false }
+        }
         byId[layerId] = { ...item, ...layerData }
       })
       return { ...state, byId }

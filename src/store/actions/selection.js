@@ -5,10 +5,19 @@ import moment from 'moment'
 import { action } from '../../utils/services'
 import { getShift, calcMiddlePoint, calcShiftWM } from '../../utils/mapObjConvertor'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { canEditSelector, taskModeSelector, targetingModeSelector, sameObjects, mapCOP } from '../selectors'
+import {
+  canEditSelector,
+  taskModeSelector,
+  targetingModeSelector,
+  sameObjects,
+  mapCOP,
+  selectedLayerId,
+  selectedNewShape,
+  catalogCurrentLayerAttributesFields,
+} from '../selectors'
 import { GROUPS, entityKindCanMirror } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
-import { Align } from '../../constants'
+import { Align, catalogs as catalogsConstants, propertyPath } from '../../constants'
 import { amps } from '../../constants/symbols'
 import {
   layersCOP,
@@ -18,7 +27,7 @@ import {
   verificationReliableSource,
 } from '../../constants/cop'
 import { withNotification } from './asyncAction'
-import { webMap } from './'
+import { webMap, catalogs as catalogActions } from './'
 
 export const SHOW_CREATE_FORM = action('SHOW_CREATE_FORM')
 export const SHOW_EDIT_FORM = action('SHOW_EDIT_FORM')
@@ -75,6 +84,7 @@ export const showEditForm = (id) => (dispatch, getState) => {
     !taskModeSelector(state) && !targetingModeSelector(state) && (!object || !GROUPS.GENERALIZE.includes(object.type))
   ) {
     dispatch(setPreview(object))
+    dispatch(catalogActions.loadCatalogContactsNames(id))
   }
 }
 
@@ -119,6 +129,7 @@ export const savePreview = () => withNotification(async (dispatch, getState) => 
 
 export const clearPreview = () => batchActions([
   hideForm(),
+  catalogActions.setCatalogErrors(),
   setPreview(null),
 ])
 
@@ -144,12 +155,25 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
   const object = WebMapObject({ type, layer, level, geometry, point })
   const affiliationTypeID = orgStructures?.formation?.affiliationTypeID
 
+  const isCatalogLayer = catalogsConstants.isCatalogLayer(layer)
+  const commonCatalogLayerProps = catalogsConstants.catalogsCommonData[layer]
+  if (isCatalogLayer && commonCatalogLayerProps) {
+    object.updateIn(propertyPath.PROPERTY_PATH.ATTRIBUTES,
+      (attributes) => attributes.merge(commonCatalogLayerProps.attributes ?? {}),
+    )
+  }
+
   switch (type) {
     case SelectionTypes.POINT:
       await dispatch(batchActions([
         setNewShape({}),
         setPreview(object
-          .set('code', GET_DEFAULT_APP6_CODE(affiliationTypeID))
+          .set(
+            'code',
+            (isCatalogLayer && commonCatalogLayerProps)
+              ? commonCatalogLayerProps.code
+              : GET_DEFAULT_APP6_CODE(affiliationTypeID),
+          )
           .setIn([ 'attributes', amps.dtg ], moment()),
         ),
       ]))
@@ -192,19 +216,16 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
   dispatch(disableDrawUnit())
 })
 
-export const newShapeFromUnit = (unitID, point) => withNotification(async (dispatch, getState, { milOrgApi }) => {
+export const getUnitObj = ({ unitID, point, dictionaries, state }) => {
   const {
     orgStructures,
     layers: {
       selectedId: layer,
     },
-  } = getState()
-
+  } = state
   const unit = orgStructures.byIds[unitID] || {}
 
   const { app6Code: code, id, symbolData, natoLevelID } = unit
-
-  const dictionaries = await milOrgApi.allDc()
   const formationCountryId = orgStructures?.formation?.countryID
   const countriesList = dictionaries?.Countries ?? []
   const countryFormation = countriesList.find(({ id }) => formationCountryId === id)
@@ -213,7 +234,7 @@ export const newShapeFromUnit = (unitID, point) => withNotification(async (dispa
   attributes[amps.dtg] = moment()
   attributes[amps.country] = countryFormation?.codeA3 ?? ''
 
-  dispatch(setPreview(WebMapObject({
+  return {
     type: SelectionTypes.POINT,
     code,
     layer,
@@ -222,7 +243,12 @@ export const newShapeFromUnit = (unitID, point) => withNotification(async (dispa
     geometry: List([ point ]),
     point: point,
     attributes: WebMapAttributes(attributes),
-  })))
+  }
+}
+
+export const newShapeFromUnit = (unitID, point) => withNotification(async (dispatch, getState, { milOrgApi }) => {
+  const dictionaries = await milOrgApi.allDc()
+  dispatch(setPreview(WebMapObject(getUnitObj({ unitID, point, dictionaries, state: getState() }))))
 })
 
 export const newShapeFromSymbol = (data, point) => withNotification((dispatch, getState) => {
@@ -502,6 +528,28 @@ const changeLayerByCredibilityCOP = () => (dispatch, getState) => {
   }
 }
 
+const checkCatalogSuccess = () => (dispatch, getState) => {
+  const state = getState()
+  const { selection: { preview } } = state
+  const catalogAttributeFields = catalogCurrentLayerAttributesFields(state)
+  const catalogAttributes = preview.getIn(propertyPath.PROPERTY_PATH.CATALOG_ATTRIBUTES)
+
+  const errorsFields = catalogAttributeFields.filter((field) => {
+    const { required, fieldName } = field
+    return (required && fieldName !== 'location') ? !catalogAttributes[fieldName] : false
+  })
+  if (errorsFields.length) {
+    dispatch(catalogActions.setCatalogErrors(
+      Object.fromEntries(errorsFields.map(({ fieldName }) => [ fieldName, true ])),
+    ))
+    return false
+  }
+  dispatch(catalogActions.setCatalogErrors())
+
+  dispatch(setPreview(preview))
+  return true
+}
+
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     dispatch(disableSaveButton())
@@ -527,5 +575,16 @@ export const checkSaveSymbol = () =>
       }
       dispatch(changeLayerByCredibilityCOP())
     }
+    if (catalogsConstants.isCatalogLayer(selectedId) && !dispatch(checkCatalogSuccess())) {
+      return false
+    }
     return dispatch(savePreview())
   })
+
+export const onToggleCatalogElementSelection = () => (dispatch, getState) => {
+  const state = getState()
+  const selectedLayer = selectedLayerId(state)
+  const selectedShapeType = selectedNewShape(state)?.type
+  const commonLayerType = catalogsConstants.catalogsCommonData[selectedLayer]?.type
+  dispatch(setNewShape(selectedShapeType !== commonLayerType ? { type: commonLayerType } : {}))
+}

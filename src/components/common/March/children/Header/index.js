@@ -11,13 +11,13 @@ const Header = (props) => {
     timeDistanceView,
     time,
     distance,
-    sendMarchToExplorer,
+    onSaveMarch,
     closeMarch,
     isCoordFilled,
     isChanged,
   } = props
 
-  const onSendMarchToExplorer = () => isCoordFilled && sendMarchToExplorer()
+  const onSaveMarchCoordFilled = () => isCoordFilled && onSaveMarch()
 
   return <>
     <div className={'march-title-top'}>
@@ -31,7 +31,7 @@ const Header = (props) => {
         align={ { offset: [ 5, 0 ] }}
       >
         <IButton
-          onClick={onSendMarchToExplorer}
+          onClick={onSaveMarchCoordFilled}
           colorType={ColorTypes.WHITE}
           icon={IconNames.BAR_2_SAVE}
           disabled={!isCoordFilled || !isChanged}
@@ -79,7 +79,7 @@ Header.propTypes = {
   timeDistanceView: PropTypes.bool.isRequired,
   time: PropTypes.number.isRequired,
   distance: PropTypes.number.isRequired,
-  sendMarchToExplorer: PropTypes.func.isRequired,
+  onSaveMarch: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
   isChanged: PropTypes.bool.isRequired,

@@ -14,6 +14,7 @@ import {
   WithIntermediateAmplifiers,
   WithPointAmplifiers,
   WithStrokeWidth,
+  WithCatalogsFields,
 } from '../../parts'
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './areaForm.css'
@@ -88,7 +89,7 @@ const SVG_POLYGON = <svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBo
   </g>
 </svg>
 
-export default class AreaForm extends Extenders(AbstractShapeForm) {
+class AreaForm extends Extenders(AbstractShapeForm) {
   static propTypes = abstractShapeFormPropTypes
 
   onChangeSymbol = (data) => {
@@ -178,3 +179,7 @@ export default class AreaForm extends Extenders(AbstractShapeForm) {
     )
   }
 }
+
+const AreaFormWithDecorator = WithCatalogsFields(AreaForm)
+
+export default AreaFormWithDecorator

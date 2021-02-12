@@ -3,7 +3,6 @@ import { UPDATE_LAYER } from './actions/layers'
 import * as webMapActions from './actions/webMap'
 import { printFileSet } from './actions/print'
 import { catchError } from './actions/asyncAction'
-import * as catalogActions from './actions/catalogs'
 
 const server = process.env.REACT_APP_SERVER_URL
 
@@ -26,11 +25,6 @@ const updateLayer = (dispatch) => ({ id: layerId, color }) => dispatch({
   type: UPDATE_LAYER,
   layerData: { layerId, color },
 })
-
-const updateCatalogObject = (dispatch) => ({ itemId, catalogId }) => {
-  // console.log('socket.io: update object', { id, type, layer })
-  catchError(catalogActions.updateCatalogObject)(itemId, catalogId)(dispatch)
-}
 
 const updateObject = (dispatch) => ({ id, type, layer }) => {
   // console.log('socket.io: update object', { id, type, layer })
@@ -82,7 +76,6 @@ export const initSocketEvents = async (dispatch, getState) => {
     socket.on('map:lock object', lockObject(dispatch, getState))
     socket.on('map:unlock object', unlockObject(dispatch))
     socket.on('map:printStatus', printGeneratingStatus(dispatch))
-    socket.on('catalog:createOrUpdateCriticalObjectItem', updateCatalogObject(dispatch))
   } catch (err) {
     console.warn('Вебсокет-сервер недоступний')
   }

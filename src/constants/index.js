@@ -16,12 +16,16 @@ import access from './access'
 import * as cop from './cop'
 import * as modals from './modals'
 import * as filter from './filter'
+import * as catalogs from './catalogs'
+import * as propertyPath from './propertyPath'
 
 export {
   SubordinationLevel,
   MapSources,
   colors,
   access,
+  catalogs,
+  propertyPath,
   Align,
   viewModesKeys,
   shortcuts,

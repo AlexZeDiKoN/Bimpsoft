@@ -21,6 +21,7 @@ export const PointsFilterComponent = ({
   isCOP,
   isSaveActive,
   filtersCount,
+  isCatalogLayer,
 }) => {
   const isItemExists = Boolean(items.length)
   const textFilter = TextFilter.create(search)
@@ -48,7 +49,7 @@ export const PointsFilterComponent = ({
       {!isCOP &&
         <IButton
           icon={IconNames.BAR_2_SAVE}
-          disabled={!isAnyItemsVisible || !isSaveActive}
+          disabled={!isAnyItemsVisible || !isSaveActive || isCatalogLayer}
           colorType={ColorTypes.WHITE}
           onClick={onOpenCreateLayer}
         />
@@ -84,5 +85,6 @@ PointsFilterComponent.propTypes = {
   onOpen: PropTypes.func,
   isSaveActive: PropTypes.bool,
   isCOP: PropTypes.bool,
+  isCatalogLayer: PropTypes.bool,
   filtersCount: PropTypes.object,
 }
