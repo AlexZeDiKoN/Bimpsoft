@@ -172,8 +172,10 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       await dispatch(webMap.updateObjectsByLayerId(layerId))
       await dispatch(layers.updateColorByLayerId(layerId))
     }
+
     if (layersData.length > 0) {
-      const selectedLayer = layersData[0]
+      const selectedLayer = layersData.find((layer) => layer.layerId === layerId) || layersData[0]
+
       if (selectedLayer) {
         await dispatch(layers.selectLayer(selectedLayer.layerId))
         dispatch(orgStructures.expandTreeByOrgStructureItem(unitId))

@@ -65,7 +65,7 @@ const March = (props) => {
     segmentList,
     time,
     distance,
-    sendMarchToExplorer,
+    onSaveMarch,
     closeMarch,
     isCoordFilled,
     geoLandmarks,
@@ -165,7 +165,7 @@ const March = (props) => {
         timeDistanceView={timeDistanceView}
         time={time}
         distance={distance}
-        sendMarchToExplorer={sendMarchToExplorer}
+        onSaveMarch={onSaveMarch}
         closeMarch={closeMarch}
         isCoordFilled={isCoordFilled}
         isChanged={isChanged}
@@ -191,7 +191,7 @@ March.propTypes = {
   pointsTypesM: PropTypes.object.isRequired,
   time: PropTypes.number.isRequired,
   distance: PropTypes.number.isRequired,
-  sendMarchToExplorer: PropTypes.func.isRequired,
+  onSaveMarch: PropTypes.func.isRequired,
   closeMarch: PropTypes.func.isRequired,
   isCoordFilled: PropTypes.bool.isRequired,
   coordTypeSystem: PropTypes.string.isRequired,

@@ -3,17 +3,22 @@ import WrappedMarch from '../components/common/March'
 import { march, webMap } from '../store/actions'
 import { catchErrors } from '../store/actions/asyncAction'
 
-const mapStateToProps = ({ march: {
-  indicators,
-  segments,
-  integrity,
-  pointsTypesM,
-  time,
-  distance,
-  isCoordFilled,
-  geoLandmarks,
-  readOnly,
-  isChanged }, webMap }) => ({
+const mapStateToProps = (
+  {
+    march: {
+      indicators,
+      segments,
+      integrity,
+      pointsTypesM,
+      time,
+      distance,
+      isCoordFilled,
+      geoLandmarks,
+      readOnly,
+      isChanged,
+    },
+    webMap,
+  }) => ({
   indicators,
   segmentList: segments,
   integrity,
@@ -38,7 +43,7 @@ const mapDispatchToProps = {
   setCoordMode: march.setCoordMode,
   setRefPointOnMap: march.setRefPointOnMap,
   openMarch: march.openMarch,
-  sendMarchToExplorer: march.sendMarchToExplorer,
+  onSaveMarch: march.onSaveMarch,
   closeMarch: march.closeMarch,
   toggleGeoLandmarkModal: webMap.toggleGeoLandmarkModal,
   toggleDeleteMarchPointModal: webMap.toggleDeleteMarchPointModal,

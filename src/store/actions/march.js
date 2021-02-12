@@ -1,11 +1,14 @@
 import { List } from 'immutable'
+import { model } from '@C4/MilSymbolEditor'
 import api from '../../server/api.march'
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
+import entityKind from '../../../src/components/WebMap/entityKind'
 import { MARCH_POINT_TYPES, MARCH_TYPES } from '../../constants/March'
 import webmapApi from '../../server/api.webmap'
 import osrmApi from '../../server/api.osrm'
+import { getUnitObj } from '../../store/actions/selection'
 import i18n from './../../i18n'
 import { openMapFolder, deleteMap } from './maps'
 import * as notifications from './notifications'
@@ -30,6 +33,7 @@ export const ADD_GEO_LANDMARK = action('ADD_GEO_LANDMARK')
 export const SET_METRIC = action('SET_METRIC')
 export const SET_ROUTE = action('SET_ROUTE')
 export const SET_ACTIVE_POINT = action('SET_ACTIVE_POINT')
+export const SET_MAP_OBJECTS_IDS = action('SET_MAP_OBJECTS_IDS')
 
 const { getMarchMetric } = api
 const {
@@ -590,11 +594,11 @@ export const setRefPointOnMap = (data = null) => ({
 
 export const openMarch = (data) => asyncAction.withNotification(
   async (dispatch) => {
-    const { mapId, readOnly } = data
+    const { mapId, layerId, readOnly, unitId, mapObjectsIds } = data
 
     const geoLandmarks = {}
 
-    dispatch(openMapFolder(mapId))
+    dispatch(openMapFolder(mapId, layerId))
     let segments
     if (!data || !data.segments || !data.segments.length) {
       segments = initDefaultSegments()
@@ -657,6 +661,9 @@ export const openMarch = (data) => asyncAction.withNotification(
       isCoordFilled,
       readOnly,
       mapId,
+      unitId,
+      layerId,
+      mapObjectsIds,
       geoLandmarks,
     }
 
@@ -666,14 +673,80 @@ export const openMarch = (data) => asyncAction.withNotification(
     })
   })
 
-export const sendMarchToExplorer = () =>
-  (dispatch, getState) => {
+const saveMarchUnit = (startRouteCoodr, endRouteCoodr) =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi, milOrgApi }) => {
+    const state = getState()
+    const { march } = state
+    const dictionaries = await milOrgApi.allDc()
+
+    const unitCurrent = getUnitObj({
+      unitID: march.unitId,
+      point: startRouteCoodr,
+      dictionaries,
+      state,
+    })
+    const unitPlanned = getUnitObj({
+      unitID: march.unitId,
+      point: endRouteCoodr,
+      dictionaries,
+      state,
+    })
+    unitPlanned.code = model.APP6Code.setStatus(unitPlanned.code, '1')
+
+    if (!march.mapObjectsIds) {
+      const { id: unitCurrentId } = await webmapApi.objInsert(unitCurrent)
+      const { id: unitPlannedId } = await webmapApi.objInsert(unitPlanned)
+      return {
+        unitCurrentId,
+        unitPlannedId,
+      }
+    } else {
+      const { id: unitCurrentId } = await webmapApi.objUpdate(march.mapObjectsIds.unitCurrentId, unitCurrent)
+      const { id: unitPlannedId } = await webmapApi.objUpdate(march.mapObjectsIds.unitPlannedId, unitPlanned)
+      return {
+        unitCurrentId,
+        unitPlannedId,
+      }
+    }
+  })
+
+const saveMarchRoute = (geometry) =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
+    const { march } = getState()
+
+    const marchObj = {
+      attributes: {
+      },
+      code: '',
+      geometry,
+      hash: null,
+      layer: march.layerId,
+      level: null,
+      parent: null,
+      point: geometry[0],
+      type: entityKind.POLYLINE,
+      unit: null,
+    }
+
+    if (!march.mapObjectsIds) {
+      const { id: routeId } = await webmapApi.objInsert(marchObj)
+      return routeId
+    } else {
+      marchObj.id = march.mapObjectsIds.routeId
+      const { id: routeId } = await webmapApi.objUpdate(march.mapObjectsIds.routeId, marchObj)
+      return routeId
+    }
+  })
+
+export const sendMarchToExplorer = (mapObjectsIds) =>
+  async (dispatch, getState) => {
     const { march: { segments, isCoordFilled, readOnly } } = getState()
 
     if (isCoordFilled && !readOnly) {
-      const segmentsForExplorer = convertSegmentsForExplorer(segments)
+      const payload = convertSegmentsForExplorer(segments)
+      payload.mapObjectsIds = mapObjectsIds
 
-      const res = window.explorerBridge.saveMarch(segmentsForExplorer)
+      const res = window.explorerBridge.saveMarch(payload)
       dispatch(notifications.push({
         type: 'success',
         message: i18n.MESSAGE,
@@ -685,6 +758,32 @@ export const sendMarchToExplorer = () =>
 
     return null
   }
+
+const getMarchRouteGeometry = (march) =>
+  march.segments.toJS().reduce((acc, segment) => {
+    acc.push(segment.coordinates)
+    if (segment.children && segment.children.length) {
+      acc = acc.concat(segment.children.map(({ coordinates }) => coordinates))
+    }
+    return acc
+  }, [])
+
+export const onSaveMarch = () =>
+  asyncAction.withNotification(async (dispatch, getState) => {
+    const { march } = getState()
+    const geometry = getMarchRouteGeometry(march)
+    const startRouteCoodr = geometry[0]
+    const endRouteCoodr = geometry[geometry.length - 1]
+
+    const routeId = await dispatch(saveMarchRoute(geometry))
+    const { unitCurrentId, unitPlannedId } = await dispatch(saveMarchUnit(startRouteCoodr, endRouteCoodr))
+    const mapObjectsIds = { routeId, unitCurrentId, unitPlannedId }
+    dispatch({
+      type: SET_MAP_OBJECTS_IDS,
+      payload: { mapObjectsIds },
+    })
+    dispatch(sendMarchToExplorer(mapObjectsIds))
+  })
 
 export const closeMarch = () =>
   (dispatch, getState) => {
