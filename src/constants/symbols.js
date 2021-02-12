@@ -456,7 +456,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'AA' },
+          pointAmplifier: { [amps.N]: 'AA' },
           color: '#3366ff',
         },
       },
@@ -520,7 +520,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'Дес' },
+          pointAmplifier: { [amps.N]: 'Дес' },
           color: '#3366ff',
         },
       },
@@ -530,7 +530,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'Розвантаж' },
+          pointAmplifier: { [amps.N]: 'Розвантаж' },
           color: '#3366ff',
         },
       },
@@ -540,7 +540,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'Евак' },
+          pointAmplifier: { [amps.N]: 'Евак' },
           color: '#3366ff',
         },
       },
@@ -550,7 +550,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'ВРД' },
+          pointAmplifier: { [amps.N]: 'ВРД' },
           color: '#3366ff',
         },
       },
@@ -574,7 +574,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'FAPR' },
+          pointAmplifier: { [amps.N]: 'FAPR' },
           color: '#3366ff',
         },
       },
@@ -584,7 +584,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'МПос' },
+          pointAmplifier: { [amps.N]: 'МПос' },
           color: '#3366ff',
         },
       },
@@ -594,7 +594,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'МПідск' },
+          pointAmplifier: { [amps.N]: 'МПідск' },
           color: '#3366ff',
         },
       },
@@ -604,7 +604,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'ЕВАК' },
+          pointAmplifier: { [amps.N]: 'ЕВАК' },
           color: '#3366ff',
         },
       },
@@ -1350,7 +1350,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'AA' },
+          pointAmplifier: { [amps.N]: 'AA' },
         },
       },
       {
@@ -1360,7 +1360,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'Евак' },
+          pointAmplifier: { [amps.N]: 'Евак' },
         },
       },
       {
@@ -1422,7 +1422,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'П(В)' },
+          pointAmplifier: { [amps.N]: 'П(В)' },
         },
       },
       {
@@ -1436,7 +1436,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'EPWHA' },
+          pointAmplifier: { [amps.N]: 'EPWHA' },
         },
       },
       {
@@ -2604,7 +2604,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'РПБ' },
+          pointAmplifier: { [amps.N]: 'РПБ' },
         },
       },
       {
@@ -3904,7 +3904,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'ЕВАК' },
+          pointAmplifier: { [amps.N]: 'ЕВАК' },
         },
       },
       {
@@ -4675,7 +4675,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'AA' },
+          pointAmplifier: { [amps.N]: 'AA' },
         },
       },
       {
@@ -4947,7 +4947,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'PCO' },
+          pointAmplifier: { [amps.N]: 'PCO' },
         },
       },
       {
@@ -6232,7 +6232,7 @@ export const symbols = [
           type: entityKind.AREA,
           hatch: HATCH_TYPE.LEFT_TO_RIGHT,
           fill: 'black',
-          pointAmplifier: { [amps.T]: 'КПНМ' },
+          pointAmplifier: { [amps.N]: 'КПНМ' },
         },
       },
       {
@@ -6303,7 +6303,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.AREA,
-          pointAmplifier: { [amps.T]: 'DPRE' },
+          pointAmplifier: { [amps.N]: 'DPRE' },
         },
       },
       {
@@ -6433,7 +6433,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'РЗапКосм' },
+          pointAmplifier: { [amps.N]: 'РЗапКосм' },
         },
       },
       {
@@ -6443,7 +6443,7 @@ export const symbols = [
         amp: {
           type: entityKind.AREA,
           color: '#3366ff',
-          pointAmplifier: { [amps.T]: 'РПосКосм' },
+          pointAmplifier: { [amps.N]: 'РПосКосм' },
         },
       },
     ],
