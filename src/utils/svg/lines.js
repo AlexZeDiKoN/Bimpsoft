@@ -1085,8 +1085,6 @@ export const getAmplifiers = ({
     pointAmplifier,
     nodalPointIcon,
     color,
-    lineType,
-    status,
   } = object.attributes
   const { level } = object
   if (zoom < 0) {
@@ -1199,8 +1197,9 @@ export const getAmplifiers = ({
   const pointsNodal = points.filter((point, index) => shownNodalPointAmplifiers.has(index) && insideMapNodal(point))
   if (pointsNodal.length) {
     const strokeWidthNodes = strokeWidth ? strokeWidth / 2 : settings.NODES_STROKE_WIDTH * scale
-    const dash = strokeWidthNodes
-    const dashArray = (status === STATUSES.PLANNED && (lineType === 'solid' || lineType >= 'waved')) ? `${dash * 3} ${dash * 2}` : ''
+    // пока отключаем статус для узловых маркеров
+    // const dash = strokeWidthNodes
+    // const dashArray = (status === STATUSES.PLANNED && (lineType === 'solid' || lineType >= 'waved')) ? `${dash * 3} ${dash * 2}` : ''
 
     switch (nodalPointIcon) {
       case 'cross-circle': {
@@ -1208,7 +1207,7 @@ export const getAmplifiers = ({
         const dx2 = d * 2
         pointsNodal.forEach(({ x, y }) => {
           result.maskPath.push(circleToD(interpolatedNodeSize / 2, x, y))
-          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})" stroke-dasharray="${dashArray}">
+          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
             <circle cx="0" cy="0" r="${interpolatedNodeSize / 2}" />
             <path d="M${-d} ${-d} l${dx2} ${dx2} M${-d} ${d} l${dx2} ${-dx2}" />
           </g>`
@@ -1222,7 +1221,7 @@ export const getAmplifiers = ({
             rectToPoints({ x: -d, y: -d, width: interpolatedNodeSize }).map((point) => add(point, x, y)),
             true,
           ))
-          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})" stroke-dasharray="${dashArray}">
+          result.group += `<g stroke-width="${strokeWidthNodes}" fill="none" transform="translate(${x},${y})">
             <rect x="${-d}" y="${-d}" width="${interpolatedNodeSize}" height="${interpolatedNodeSize}" />
           </g>`
         })
