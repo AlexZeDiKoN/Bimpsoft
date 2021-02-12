@@ -124,7 +124,6 @@ L.SVG.include({
     if (layer.options.fill && entityKindNonFillable.indexOf(layer.options.tsType) >= 0) {
       layer.options.fill = false
     }
-    console.log('to updateStyle', JSON.stringify(layer.options))
     // здесь опции слоя устанавливаются атрибутами в _path
     _updateStyle.call(this, layer)
 
@@ -212,7 +211,7 @@ L.SVG.include({
   _updatePoly: function (layer, closed) {
     let result = L.SVG.pointsToPath(layer._rings, closed)
     let resultFilled = ''
-    const lineType = layer.lineType || 'solid'
+    const lineType = layer.lineType ?? 'solid'
     const skipStart = layer.options?.skipStart
     const skipEnd = layer.options?.skipEnd
     const kind = layer.options?.tsType
@@ -246,7 +245,6 @@ L.SVG.include({
           console.warn(e)
         }
         result = container.d
-        console.log('render', { path: layer._path, option: layer.options })
         this._setMask(layer, container.amplifiers, container.mask)
       }
     } else if (GROUPS.GROUPED.includes(kind) && length === 2) {
@@ -521,7 +519,6 @@ L.SVG.include({
     }
     if (amplifiers) {
       layer.getAmplifierGroup().innerHTML = amplifiers
-      console.log('setMask', JSON.stringify(layer.options))
     } else {
       layer.deleteAmplifierGroup && layer.deleteAmplifierGroup()
     }
