@@ -123,14 +123,30 @@ const isMatchCode = (code1, code2) => {
   }
   return true
 }
+const isMatchCodeNoPoint = (code1, code2) => {
+  const maxIndex = Math.min(code1.length, code2.length, 20) || 0
+  for (let i = 0; i < maxIndex; i++) {
+    if (maskIgnore[i]) {
+      const number1 = parseInt(code1[i], 10)
+      const number2 = parseInt(code2[i], 10)
+      if (isNaN(number1) || isNaN(number2) || ((number1 ^ number2) & ~maskIgnore[i])) {
+        return false
+      }
+    } else if (code1[i] !== code2[i]) {
+      return false
+    }
+  }
+  return true
+}
 
 // поиск соответствующего тактического знака в справочном перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
-  const { code, attributes: amp, type } = searchTerms
+  const { code, attributes: amp, type, coordinatesSize } = searchTerms
   if (!code || !amp) {
     return null
   }
   let id = null
+  console.log('poisk', searchTerms)
   const isTwoResults = symbols.some((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
@@ -140,6 +156,10 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       : parent.children
     // перебор элементов раздела
     return sortedPart.some((children, index) => {
+      const childrenType = children.amp.type ? children.amp.type : entityKind.POINT
+      if (type !== childrenType) {
+        return false
+      }
       switch (type) {
         case entityKind.POINT: {
           if (!isMatchCode(children.code, code)) {
@@ -156,11 +176,21 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           break
         }
+        case entityKind.POLYLINE:
+        case entityKind.CURVE: {
+          console.log('line', children)
+          // для незамкнутых линий проверяем количество опорных точек = 2
+          if (!isMatchCodeNoPoint(code, children.code) || coordinatesSize !== 2) {
+            return false
+          }
+          console.log('POLYLINE')
+        }
+        // eslint-disable-next-line no-fallthrough
         case entityKind.RECTANGLE:
         case entityKind.POLYGON:
         case entityKind.AREA: {
-          if (children.code !== code || !children.isSvg) {
-            return false // Коды не совпали или это точечный знак
+          if (children.code !== code) {
+            return false // Коды не совпали
           }
           if (children.amp) {
             // установка по умолчанию проверяемых аттриутов для знака из перечня
@@ -213,7 +243,8 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           break
         }
-        default: return false
+        default:
+          return false
       }
       if (id) {
         return true // имеем более одного совпадения, прекращаем перебор перечня
@@ -253,8 +284,9 @@ export const getPartsSymbols = (type, code, search) => {
       : -2
     const symbolJSX = sortedPart.map((symbol, index) => {
       const { hint, code, isSvg, amp } = symbol
+      const symbolType = amp.type || entityKind.POINT
       // фильтрация по типу знака
-      if ((isSvg && amp.type !== type) || (type !== entityKind.POINT && !isSvg)) {
+      if (symbolType !== type) {
         return null
       }
       // фильтрация по совместимости знаков

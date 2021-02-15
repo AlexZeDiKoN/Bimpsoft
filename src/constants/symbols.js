@@ -4844,6 +4844,8 @@ export const symbols = [
           lineType: types.waved.value,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
+          left: 'none',
+          right: 'none',
         },
       },
       {
@@ -4857,6 +4859,8 @@ export const symbols = [
           lineType: types.waved.value,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
+          left: 'none',
+          right: 'none',
         },
       },
       {

@@ -21,6 +21,9 @@ import {
 import AbstractShapeForm, { propTypes as abstractShapeFormPropTypes } from '../../parts/AbstractShapeForm'
 import './LineForm.css'
 import WithStatus from '../../parts/WithStatus'
+import SelectionTacticalSymbol from '../../parts/SelectionTacticalSymbol'
+import { PROPERTY_PATH as PATH } from '../../../../constants/propertyPath'
+import SelectionTypes from '../../../../constants/SelectionTypes'
 
 class LineForm extends compose(
   WithSubordinationLevel,
@@ -41,6 +44,7 @@ class LineForm extends compose(
   static propTypes = abstractShapeFormPropTypes
 
   renderContent () {
+    const result = this.getResult()
     const elem = <div className="containers-svg-tooltip">
       <img src={`${process.env.PUBLIC_URL}/images/schema-line-amplifiers.svg`} alt=""/>
     </div>
@@ -48,6 +52,13 @@ class LineForm extends compose(
       <Scrollbar>
         <div className="line-container">
           <div className='scroll-container'>
+            <SelectionTacticalSymbol
+              code={result.getIn(PATH.CODE)}
+              type={result.getIn(PATH.TYPE) ?? SelectionTypes.POLYLINE}
+              coordinatesSize={result.getIn(PATH.COORDINATES).size}
+              attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
+              onChange={this.onChangeSymbol}
+            />
             <div className="line-container__item--firstSection">
               <div className="line-container__itemWidth-right">
                 {this.renderSubordinationLevel()}

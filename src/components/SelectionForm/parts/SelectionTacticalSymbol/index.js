@@ -23,6 +23,7 @@ export default class SelectionTacticalSymbol extends React.Component {
     type: PropTypes.number,
     name: PropTypes.string,
     attributes: PropTypes.object,
+    coordinatesSize: PropTypes.number,
     onChange: PropTypes.func,
     onExitWithChange: PropTypes.func,
     onBlur: PropTypes.func,
@@ -43,12 +44,18 @@ export default class SelectionTacticalSymbol extends React.Component {
   }
 
   render () {
-    const { type, code, name = '', attributes } = this.props
+    const {
+      type,
+      code,
+      name = '',
+      attributes,
+      coordinatesSize,
+    } = this.props
     if (!code) { // соответствие возможно только для тактического знака
       return null
     }
     const treeSymbols = getPartsSymbols(type, code, '')
-    let id = getIdSymbols({ type, code, attributes }, '')
+    let id = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
     const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`
     id = id || null
     const thisSymbol = id ? {}
