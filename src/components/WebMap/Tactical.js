@@ -1,5 +1,3 @@
-import { model } from '@C4/MilSymbolEditor'
-import { Record } from 'immutable'
 import L from 'leaflet'
 import { calcMiddlePoint } from '../../utils/mapObjConvertor'
 import './patch'
@@ -7,16 +5,10 @@ import entityKind, { GROUPS } from './entityKind'
 import { generateGeometry } from './patch/FlexGrid'
 import { adjustSquareCorner } from './patch/utils/helpers'
 
-const { symbolOptions } = model
-
 const latLng2peerArr = (data) =>
   data && Array.isArray(data)
     ? data.map(latLng2peerArr)
     : [ data.lng, data.lat ]
-
-// ------------- Ініціалізація атрибутів для точкових знаків ----------------------------------------------------------
-const SymbolAttributesInitValue = Object.fromEntries(Object.keys(symbolOptions).map((key) => ([ key, '' ])))
-const SymbolAttributesRec = Record(SymbolAttributesInitValue)
 
 // ------------------------ Фіксація активного тактичного знака --------------------------------------------------------
 
@@ -179,21 +171,6 @@ function createMarker (point, icon, layer) {
   }
   layer._bounds = L.latLngBounds([ point ])
   return layer
-}
-
-export function createCatalogIcon (code, amplifiers, point, layer) {
-  if (point) {
-    if (amplifiers.affiliation !== undefined) {
-      code = model.APP6Code.setIdentity2(code, amplifiers.affiliation)
-    }
-    const attributes = SymbolAttributesRec(amplifiers)
-    const data = { code, affiliation: amplifiers.affiliation, attributes }
-    const icon = new L.PointIcon({ data })
-    icon.options.showAmplifiers = true // Включение использования атрибутов при генерации знака
-    const marker = createMarker(point, icon, layer)
-    marker.options.tsType = entityKind.POINT
-    return marker
-  }
 }
 
 function createSophisticated (data, layer, initMap) {

@@ -2,10 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import './style.css'
 import { Input } from 'antd'
-import { data, components } from '@C4/CommonComponents'
+import {
+  data,
+  components,
+} from '@C4/CommonComponents'
 import memoizeOne from 'memoize-one'
 import i18n from '../../i18n'
 import { InputButton } from '../common'
+import { blockHotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 import Item from './children/Item'
 import OrgStructureMenu from './children/OrgStructureMenu'
 
@@ -110,7 +115,10 @@ export default class OrgStructuresComponent extends React.PureComponent {
     if (formation === null) {
       return (
         <div className="org-structures">
-          <div className='org-structures-searchBlock'>
+          <div
+            className='org-structures-searchBlock'
+            onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
+          >
             <Input.Search
               ref={this.inputRef}
               placeholder={i18n.FILTER}
@@ -138,7 +146,10 @@ export default class OrgStructuresComponent extends React.PureComponent {
 
     return (
       <div className="org-structures">
-        <div className='org-structures-searchBlock'>
+        <div
+          className='org-structures-searchBlock'
+          onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
+        >
           <InputButton
             title={i18n.ORG_STRUCTURE_SHORT}
             onChange={this.filterTextChangeHandler}

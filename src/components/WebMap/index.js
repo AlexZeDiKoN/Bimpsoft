@@ -16,7 +16,6 @@ import L, {
 } from 'leaflet'
 import * as debounce from 'debounce'
 import { utils, PreloaderCover } from '@C4/CommonComponents'
-import { model } from '@C4/MilSymbolEditor'
 import FlexGridToolTip from '../../components/FlexGridTooltip'
 // TODO: тимчасово відключаємо показ характеристик підрозділу
 // import renderIndicators from '../../components/UnitIndicators'
@@ -44,11 +43,11 @@ import {
   MULTI_LINE_STRING,
 } from '../../constants/TopoObj'
 import { ETERNAL, ZONE } from '../../constants/FormTypes'
-import { catalogSign } from '../Catalogs'
 import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 // import { isEnemy } from '../../utils/affiliations' /* isFriend, */
 import { settings } from '../../constants/drawLines'
 import { targetDesignationCode } from '../../constants/targetDesignation'
+import { linesParams } from '../../constants/params'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -59,7 +58,6 @@ import UpdateQueue from './patch/UpdateQueue'
 import Generalization from './patch/Generalization'
 import {
   createTacticalSign,
-  createCatalogIcon,
   getGeometry,
   createSearchMarker,
   setLayerSelected,
@@ -223,19 +221,12 @@ const setScaleOptions = (layer, params, needRedraw) => {
     min: Number(params[paramsNames.POINT_SIZE_MIN]),
     max: Number(params[paramsNames.POINT_SIZE_MAX]),
   }
-  const textSizes = {
-    min: Number(params[paramsNames.TEXT_SIZE_MIN]),
-    max: Number(params[paramsNames.TEXT_SIZE_MAX]),
-  }
   const lineSizes = {
     min: Number(params[paramsNames.LINE_SIZE_MIN]),
     max: Number(params[paramsNames.LINE_SIZE_MAX]),
-    pointSizes,
   }
   if (layer?.object) {
-    if (layer.object.catalogId) {
-      layer.setScaleOptions(pointSizes, needRedraw)
-    } else if (layer.object.type) {
+    if (layer.object.type) {
       switch (Number(layer.object.type)) {
         case entityKind.POINT:
         case entityKind.GROUPED_HEAD:
@@ -243,19 +234,34 @@ const setScaleOptions = (layer, params, needRedraw) => {
         case entityKind.GROUPED_REGION:
           layer.setScaleOptions(pointSizes, needRedraw)
           break
-        case entityKind.TEXT:
+        case entityKind.TEXT: {
+          const textSizes = {
+            min: Number(params[paramsNames.TEXT_SIZE_MIN]),
+            max: Number(params[paramsNames.TEXT_SIZE_MAX]),
+          }
           layer.setScaleOptions(textSizes, needRedraw)
+          break
+        }
+        case entityKind.CONTOUR:
+          lineSizes.pointSizes = pointSizes
+          layer.setScaleOptions(lineSizes, needRedraw)
           break
         case entityKind.SEGMENT:
         case entityKind.AREA:
         case entityKind.CURVE:
         case entityKind.POLYGON:
         case entityKind.POLYLINE:
+        case entityKind.SOPHISTICATED:
+          linesParams.forEach((name) => {
+            lineSizes[name] = {
+              min: Number(params[`${name}_min`]),
+              max: Number(params[`${name}_max`]),
+            }
+          })
+        // eslint-disable-next-line no-fallthrough
         case entityKind.CIRCLE:
         case entityKind.RECTANGLE:
         case entityKind.SQUARE:
-        case entityKind.CONTOUR:
-        case entityKind.SOPHISTICATED:
           layer.setScaleOptions(lineSizes, needRedraw)
           break
         default:
@@ -356,7 +362,6 @@ export default class WebMap extends React.PureComponent {
     activeMapId: PropTypes.any,
     inICTMode: PropTypes.any,
     topographicObjects: PropTypes.object,
-    catalogObjects: PropTypes.object,
     targetingObjects: PropTypes.object,
     undoInfo: PropTypes.shape({
       canUndo: PropTypes.bool,
@@ -414,6 +419,7 @@ export default class WebMap extends React.PureComponent {
     onShadowDelete: PropTypes.func,
     myContactId: PropTypes.number,
     setCatalogModalData: PropTypes.func,
+    topographicObjectsList: PropTypes.array,
   }
 
   constructor (props) {
@@ -427,6 +433,7 @@ export default class WebMap extends React.PureComponent {
     this.marchMarkers = []
     this.marchRefPoint = null
     this.backLightingVisionZones = []
+    this.backLightingTimeouts = []
   }
 
   async componentDidMount () {
@@ -442,7 +449,6 @@ export default class WebMap extends React.PureComponent {
       getLockedObjects(),
     ])
     useTry(this.initObjects)()
-    this.initCatalogObjects()
     this.updateScaleOptions()
     window.addEventListener('beforeunload', () => {
       this.onSelectedListChange([])
@@ -470,10 +476,10 @@ export default class WebMap extends React.PureComponent {
       coordinatesType,
       isMeasureOn, isMarkersOn, isTopographicObjectsOn,
       backOpacity, params, lockedObjects, flexGridVisible,
-      flexGridData, catalogObjects, highlighted, isZoneProfileOn, isZoneVisionOn,
+      flexGridData, highlighted, isZoneProfileOn, isZoneVisionOn,
       flexGridParams: { selectedDirections, selectedEternal, mainDirectionIndex },
       selection: { newShape, preview, previewCoordinateIndex, list },
-      topographicObjects: { selectedItem, features },
+      topographicObjects: { selectedItem, features }, topographicObjectsList,
       targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
       generalization,
     } = this.props
@@ -570,9 +576,6 @@ export default class WebMap extends React.PureComponent {
       visibleZoneSector?.features &&
         this.backLightingVisionZoneObject(visibleZoneSector.features, { color: 'blue', stroke: false })
     }
-    if (catalogObjects !== prevProps.catalogObjects) {
-      this.updateCatalogObjects(catalogObjects)
-    }
     if (highlighted !== prevProps.highlighted) {
       this.resetHighlight(prevProps.highlighted, highlighted)
     }
@@ -580,6 +583,11 @@ export default class WebMap extends React.PureComponent {
       isZoneProfileOn || isZoneVisionOn)
     if (targetingObjects !== prevProps.targetingObjects || list !== prevProps.selection.list) {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
+    }
+    if (topographicObjectsList !== prevProps.topographicObjectsList) {
+      this.backLightingTimeouts.forEach(clearInterval)
+      this.backLightingTimeouts = []
+      this.backLightingTopographicObjectsList(topographicObjectsList)
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
@@ -1232,6 +1240,27 @@ export default class WebMap extends React.PureComponent {
     this.backLights.push(backLighting)
   }
 
+  backLightingTopographicObjectsList = (objectsList) => {
+    if (Array.isArray(this.backLightsList)) {
+      this.backLightsList.forEach((item) => item.removeFrom(this.map))
+    } else {
+      this.backLightsList = []
+    }
+    objectsList.forEach((object) => {
+      const backLighting = L.geoJSON(object, {
+        style: this.backLightingStyles,
+        pointToLayer: (geoJsonPoint, latlng) => {
+          return new L.CircleMarker(latlng, { interactive: false, radius: 1 })
+        },
+      })
+      const timoutId = setTimeout(() => { // таймаут чтобы при большой нагрузке не засорял стек и рисовал елементы по мере поступления
+        backLighting.addTo(this.map)
+        this.backLightsList.push(backLighting)
+      })
+      this.backLightingTimeouts.push(timoutId)
+    })
+  }
+
   backLightingStyles = (object) => {
     switch (object.geometry.type) {
       case LINE_STRING:
@@ -1516,7 +1545,7 @@ export default class WebMap extends React.PureComponent {
       const isHighlightedItem = Boolean(highlighted?.list?.includes(item.id))
       const hidden = !isSelectedItem && !isHighlightedItem && (
         (itemLevel < levelEdge) ||
-        ((!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) && !item.catalogId) ||
+        (!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) ||
         (Boolean(item._groupParent) && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
       const isSelectedLayer = selectedLayerId === layer // объект принадлежит активному слою
@@ -1581,7 +1610,7 @@ export default class WebMap extends React.PureComponent {
     settings.POINT_SYMBOL_SIZE.max = params[paramsNames.POINT_SIZE_MAX]
     settings.POINT_SYMBOL_SIZE.min = params[paramsNames.POINT_SIZE_MIN]
     // обновляем масштабные настройки всех объектов карты
-    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params))
+    this.map && this.map.objects.forEach((layer) => setScaleOptions(layer, params)) // + перерисовка
   }
 
   updateShowAmplifiers = (showAmplifiers, shownAmplifiers) => {
@@ -1658,10 +1687,6 @@ export default class WebMap extends React.PureComponent {
     this.updateObjects(this.props.objects)
   }
 
-  initCatalogObjects = () => {
-    this.updateCatalogObjects(this.props.catalogObjects)
-  }
-
   removeLayer = (layer) => {
     const { catalogModalData, setCatalogModalData } = this.props
     const index = this.map.objects.indexOf(layer)
@@ -1694,7 +1719,7 @@ export default class WebMap extends React.PureComponent {
             if (layer.object !== object) {
               changes.push({ object, layer })
             }
-          } else if (!layer.catalogId) {
+          } else {
             toDelete.push(layer)
             if (GROUPS.GENERALIZE.includes(layer.options.tsType) && layer._groupChildren) {
               layer._groupChildren.forEach((child) => toDelete.push(child))
@@ -1817,47 +1842,6 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
-  updateCatalogObjects = (catalogObjects) => {
-    if (this.map) {
-      const existsIds = new Set()
-      const changes = []
-      const toDelete = []
-
-      this.map.objects.forEach((layer) => {
-        const { id, catalogId } = layer
-        if (id && catalogId) {
-          const catalog = catalogObjects[Number(catalogId)]
-          const object = catalog && catalog.find(({ id: objId }) => objId === id)
-          if (object) {
-            existsIds.add(id)
-            if (layer.catalogObject !== object) {
-              changes.push({ object, layer })
-            }
-          } else {
-            toDelete.push(layer)
-          }
-        }
-      })
-      toDelete.forEach(this.removeLayer)
-
-      for (let i = 0; i < changes.length; i++) {
-        const { object, layer } = changes[i]
-        const newLayer = this.addCatalogObject(object, layer)
-        if (newLayer !== layer) {
-          this.removeLayer(layer)
-        }
-      }
-
-      Object.values(catalogObjects).forEach((objects) => {
-        objects && objects.forEach((object) => {
-          if (!existsIds.has(object.id)) {
-            this.addCatalogObject(object)
-          }
-        })
-      })
-    }
-  }
-
   findLayerDirection = (map, layer) => {
     const pointLocation = map.latLngToContainerPoint(layer._latlng)
     const mapSize = map.getSize()
@@ -1951,10 +1935,10 @@ export default class WebMap extends React.PureComponent {
       layersById,
       hiddenOpacity,
       params,
-      showAmplifiers,
-      shownAmplifiers,
       layer: selectedLayerId,
       selection: { list },
+      showAmplifiers,
+      shownAmplifiers,
     } = this.props
 
     const {
@@ -2017,6 +2001,8 @@ export default class WebMap extends React.PureComponent {
       }
       this.updateShowLayer(level, layersById, hiddenOpacity, selectedLayerId, layer, list)
 
+      layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers)
+
       const { color = null, fill = null, lineType = null, strokeWidth = null } = attributes
       if (color !== null && color !== '') {
         layer.setColor && layer.setColor(colors.evaluateColor(color))
@@ -2030,43 +2016,11 @@ export default class WebMap extends React.PureComponent {
       if (strokeWidth !== null) {
         layer.setStrokeWidth && layer.setStrokeWidth(strokeWidth)
       }
-      const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
-      setScaleOptions(layer, params, needRedraw) // обновляем стиль объекта в соответствии с масштабными настройками
+      // якщо сюди дійшли всерівно преререндрювати layer
+      // const needRedraw = Boolean(layer.setShowAmplifiers && layer.setShowAmplifiers(showAmplifiers, shownAmplifiers))
+      setScaleOptions(layer, params, true) // обновляем объект в соответствии с масштабными настройками
     }
 
-    return layer
-  }
-
-  addCatalogObject = (object, prevLayer) => {
-    const { id, location, catalogId } = object
-    const [ app6Code, amplifiers ] = catalogSign(catalogId) // TODO: amplifiers
-    const affiliation = model.app6Data.identities.find(({ title }) => title === object.affiliation) || null
-    if (affiliation) {
-      amplifiers.affiliation = affiliation.id
-    }
-    const layer = createCatalogIcon(app6Code, amplifiers, location, prevLayer)
-    if (layer) {
-      layer.id = id
-      layer.object = object
-      layer.map = this.map
-      // layer.object.level = catalogLevel(catalogId)
-      layer.catalogId = catalogId
-      layer.on('click', this.clickOnCatalogLayer)
-      layer.on('dblclick', this.dblClickOnCatalogLayer)
-      // layer.on('pm:markerdragstart', this.onMarkerDragStart)
-      // layer.on('pm:markerdragend', this.onMarkerDragEnd)
-      // TODO: events
-
-      if (layer === prevLayer) {
-        layer.update && layer.update()
-      } else {
-        this.map.objects.push(layer)
-        layer.addTo(this.map)
-      }
-
-      const { params } = this.props
-      setScaleOptions(layer, params)
-    }
     return layer
   }
 
@@ -2182,20 +2136,6 @@ export default class WebMap extends React.PureComponent {
       event.target = workingLayer || layer
       this.dblClickOnLayer(event)
     })
-  }
-
-  clickOnCatalogLayer = (event) => {
-    L.DomEvent.stopPropagation(event)
-    const { target: layer, target: { object }, latlng } = event
-    const { setCatalogModalData } = this.props
-    setCatalogModalData({ visible: true, layer, object, location: latlng })
-  }
-
-  dblClickOnCatalogLayer = (event) => {
-    L.DomEvent.stopPropagation(event)
-    const { target: { object: { id, catalogId } } } = event
-    // todo: move this call outside component (in the actions)
-    window.explorerBridge.showCatalogObject(catalogId, id)
   }
 
   dblClickOnLayer = (event) => {

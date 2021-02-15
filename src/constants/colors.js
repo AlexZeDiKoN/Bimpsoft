@@ -28,3 +28,13 @@ export const titles = {
 }
 
 export const evaluateColor = (color) => values.hasOwnProperty(color) ? values[color] : color
+
+export const AFFILIATION_COLOR = [
+  values[YELLOW],
+  values[YELLOW],
+  values[BLUE],
+  values[BLUE],
+  values[GREEN],
+  values[RED],
+  values[RED],
+]

@@ -21,7 +21,7 @@ const HEIGHT_SETTING_MODAL = 200
 const WIDTH_SETTING_MODAL = 300
 
 const inputWrap = {
-  width: 80,
+  width: 100,
 }
 
 const heightTarget = 'heightTarget'
@@ -35,9 +35,9 @@ const defaultState = {
 }
 
 const additionalProps = {
-  [angle]: { min: 1, max: 359, emptyValue: 1 },
-  [heightObserver]: { min: 0.1, max: 9999.9, emptyValue: 0.1 },
-  [heightTarget]: { min: 0.1, max: 9999.9, emptyValue: 0.1 },
+  [angle]: { min: 1, max: 359, emptyValue: 1, round: 1000 },
+  [heightObserver]: { min: 0.1, max: 9999.9, emptyValue: 0.1, round: 1000 },
+  [heightTarget]: { min: 0.1, max: 9999.9, emptyValue: 0.1, round: 1000 },
 }
 
 export default class ZoneVisionModal extends React.Component {

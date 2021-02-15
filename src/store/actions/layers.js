@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import moment from 'moment'
 import { vld } from '@C4/CommonComponents'
-import { MapModes } from '../../constants'
+import { MapModes, catalogs as catalogsConstants } from '../../constants'
 import { action } from '../../utils/services'
 import { getNextLayerId } from '../../utils/layers'
 import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLayerId, selectedLayer } from '../selectors'
@@ -9,7 +9,7 @@ import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
 import { actionNames, changeTypes } from './webMap'
-import { asyncAction, orgStructures, webMap, selection, flexGrid, maps } from './index'
+import { asyncAction, orgStructures, webMap, selection, flexGrid, maps, catalogs as catalogsActions } from './index'
 
 export const UPDATE_LAYERS = action('UPDATE_LAYERS')
 export const UPDATE_LAYER = action('UPDATE_LAYER')
@@ -51,6 +51,7 @@ export const updateLayer = (layerData) =>
     const store = getStore()
     const allLayersById = layersById(store)
     const currentlySelectedLayerId = selectedLayerId(store)
+    const isLayerDataHasVisible = Object.prototype.hasOwnProperty.call(layerData, 'visible')
     if (
       currentlySelectedLayerId === layerData.layerId &&
       R.has('visible', layerData) &&
@@ -65,6 +66,9 @@ export const updateLayer = (layerData) =>
     } else if (!currentlySelectedLayerId && layerData.visible) {
       // при отсутствии активного слоя выбираем первый попавшийся слой
       dispatch(selectLayer(layerData.layerId))
+    }
+    if (catalogsConstants.isCatalogLayer(layerData.layerId) && isLayerDataHasVisible && layerData.visible) {
+      await dispatch(catalogsActions.getCatalogAttributesFields(layerData.layerId))
     }
 
     await dispatch({

@@ -1,7 +1,7 @@
 import * as Modals from './Modals'
-import { SidebarFilterComponent } from './SidebarFilterComponent'
+import * as Sidebar from './Sidebar'
 
 export {
   Modals,
-  SidebarFilterComponent,
+  Sidebar,
 }

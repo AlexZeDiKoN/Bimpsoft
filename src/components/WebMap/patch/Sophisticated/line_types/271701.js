@@ -9,6 +9,7 @@ const SYMBOL_SCALE = 2 // оношение к размеру точечных з
 const CODE = '10032500002814010000'
 
 lineDefinitions['271701'] = {
+  useStatus: true,
   // Спеціальний випадок
   isArea: true,
 

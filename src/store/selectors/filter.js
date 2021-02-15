@@ -3,10 +3,19 @@ import moment from 'moment'
 import { model } from '@C4/MilSymbolEditor'
 import { data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
-import { CATALOG_FILTERS, MIL_SYMBOL_FILTER, SEARCH_FILTER, LOADING } from '../../constants/filter'
+import {
+  CATALOG_FILTERS,
+  MIL_SYMBOL_FILTER,
+  SEARCH_FILTER,
+  LOADING,
+  SEARCH_TOPOGRAPHIC_FILTER,
+  TOPOGRAPHIC_OBJECT_FILTER, LOADING_TOPOGRAPHIC_OBJECT,
+} from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
+import { isCatalogLayer } from '../../constants/catalogs'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
+import { catalogsTopographicByIds } from './catalogs'
 
 const { TextFilter } = data
 
@@ -62,42 +71,29 @@ const compareObjectValues = (object = {}, filterItem = {}, compareFn = compareBy
   Object.entries(filterItem).every(([ key, value ]) => compareFn(value, object[key]))
 
 const filterPointType = (filter, current) => {
-  const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes } = current
+  const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes, layer: objectLayer } = current
   const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filter
+  const [ jsObjectAttributes, jsFilterAttributes ] = [ JSParser(objectAttributes), JSParser(filterAttributes) ]
   const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
     compareByCode(filterCode, objectCode, func, length))
   const isLevelEqual = compareByType(filterLevel, objectLevel)
   const isPointEqual = compareByType(filterPoint, objectPoint)
-  const isAttributesEqual = compareObjectValues(JSParser(objectAttributes), JSParser(filterAttributes))
-  return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual
+  const isAttributesEqual = compareObjectValues(jsObjectAttributes, jsFilterAttributes)
+  const isCatalogAttributesEqual = isCatalogLayer(objectLayer)
+    ? compareObjectValues(jsObjectAttributes.catalogAttributes, jsFilterAttributes.catalogAttributes)
+    : true
+  return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual && isCatalogAttributesEqual
 }
 // ------------------------------------ selectors ---------------------------------------------------------------
 
 export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
 export const catalogsFields = (state) => state.catalogs.attributes
-export const getCatalogsByIds = (state) => state.catalogs.byIds
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
+export const filterTopographicSearch = (state) => state.filter[SEARCH_TOPOGRAPHIC_FILTER]
 export const loadingFiltersStatus = (state) => state.filter[LOADING]
-
-export const catalogObjects = (state) => state.catalogs?.objects
-
-export const getFilterStatusSelector = createSelector(catalogFilters, (filtered) => (id) => Boolean(filtered[id]))
-
-export const getFilteredCatalogsObjects = createSelector(catalogFilters, catalogObjects, (filters, catalogs = {}) => {
-  const filteredCatalogs = Object.entries(catalogs).map(([ catalogId, catalogData ]) => {
-    const filteredCatalog = filters[catalogId]
-      ? catalogData.filter((catalogItem) => compareObjectValues(catalogItem, filters[catalogId]))
-      : catalogData
-    return [ catalogId, filteredCatalog ]
-  })
-  return Object.fromEntries(filteredCatalogs)
-})
-
-export const getFilteredCatalogsCount = createSelector(getFilteredCatalogsObjects, (catalogs) => {
-  const count = Object.entries(catalogs).map(([ id, elements ]) => [ id, elements?.length ])
-  return Object.fromEntries(count)
-})
+export const topographicObjectsFilters = (state) => state.filter[TOPOGRAPHIC_OBJECT_FILTER]
+export const loadingTopographicObjects = (state) => state.filter[LOADING_TOPOGRAPHIC_OBJECT]
 
 export const getCurrentFilters = createSelector(milSymbolFilters, selectedLayerId, (filters, selectedLayer) => {
   return filters.filter(({ inCurrentLayer, data }) => inCurrentLayer ? data?.layer === selectedLayer : true)
@@ -120,4 +116,14 @@ export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters
     }
   })
   return count
+})
+
+export const getTopographicObjectsList = createSelector(catalogsTopographicByIds, topographicObjectsFilters,
+  (byIds, filtersData) => {
+    const shownFilters = Object.values(byIds).filter(({ shown }) => shown)
+    return shownFilters.map(({ id }) => filtersData[id]?.objects ?? []).flat(1)
+  })
+
+export const getTopographicObjectsCount = createSelector(topographicObjectsFilters, (filtersData) => {
+  return Object.fromEntries(Object.entries(filtersData).map(([ id, { objects } ]) => [ id, objects?.length ?? 0 ]))
 })

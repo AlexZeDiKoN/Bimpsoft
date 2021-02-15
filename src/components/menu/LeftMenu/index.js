@@ -9,6 +9,7 @@ import {
 } from '@C4/CommonComponents'
 import './style.css'
 import { Input, Tooltip } from 'antd'
+import throttle from 'lodash/throttle'
 import i18n from '../../../i18n'
 import SubordinationLevel from '../../../constants/SubordinationLevel'
 import ContextMenu from '../ContextMenu'
@@ -21,9 +22,12 @@ import { MOUSE_ENTER_DELAY } from '../../../constants/tooltip'
 const { Coordinates: Coord } = utils
 let timerId
 
+const throttleTimeSeconds = 30
+
 export default class LeftMenu extends React.Component {
   static propTypes = {
     isMapCOP: PropTypes.bool,
+    isMapIncludeCatalogs: PropTypes.bool,
     isEditMode: PropTypes.bool,
     is3DMapMode: PropTypes.bool,
     targetingMode: PropTypes.bool,
@@ -63,6 +67,7 @@ export default class LeftMenu extends React.Component {
     onManyCoords: PropTypes.func,
     onClearSearchError: PropTypes.func,
     onCloseSearch: PropTypes.func,
+    loadCatalogsMap: PropTypes.func,
   }
 
   clickOutsideSubordinationLevelRef = getClickOutsideRef(() => this.props.onSubordinationLevelClose())
@@ -132,9 +137,15 @@ export default class LeftMenu extends React.Component {
     onCloseSearch && (timerId = setTimeout(() => onCloseSearch(), 500))
   }
 
+  onClickCatalogs = throttle(async () => {
+    const { loadCatalogsMap } = this.props
+    await loadCatalogsMap()
+  }, throttleTimeSeconds * 1000)
+
   render () {
     const {
       isMapCOP,
+      isMapIncludeCatalogs,
       isEditMode,
       targetingMode,
       isTaskMode,
@@ -208,6 +219,15 @@ export default class LeftMenu extends React.Component {
             colorType={ColorTypes.MAP_HEADER_GREEN}
             active={is3DMapMode}
             onClick={this.clickMap3D}
+          />
+        </Tooltip>
+        <Tooltip title={i18n.CATALOGS} mouseEnterDelay={MOUSE_ENTER_DELAY} placement="bottomLeft">
+          <IButton
+            icon={IconNames.CATALOG}
+            type={ButtonTypes.WITH_BG}
+            disabled={isMapIncludeCatalogs}
+            colorType={ColorTypes.MAP_HEADER_GREEN}
+            onClick={this.onClickCatalogs}
           />
         </Tooltip>
         <MapSourceSelectComponent />

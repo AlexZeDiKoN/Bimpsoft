@@ -2,13 +2,21 @@ import { connect } from 'react-redux'
 import { createSelector } from 'reselect'
 import { batchActions } from 'redux-batched-actions'
 import LayersComponent from '../components/LayersComponent'
-import { layers, maps, params, print, webMap } from '../store/actions'
-import { layersTree, taskModeSelector, targetingModeSelector, mapCOP } from '../store/selectors'
+import { layers, maps, params, print, webMap, selection } from '../store/actions'
+import {
+  layersTree,
+  taskModeSelector,
+  targetingModeSelector,
+  mapCOP,
+  selectedNewShape,
+  canEditSelector,
+} from '../store/selectors'
 import * as paramNames from '../constants/params'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as notifications from '../store/actions/notifications'
 import { catchErrors } from '../store/actions/asyncAction'
 import i18n from '../i18n'
+import { isCatalogLayer } from '../constants/catalogs'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
@@ -38,6 +46,8 @@ const mapStateToProps = (store) => {
   const { byIds, roots, visible } = layersTree(store)
   const expandedIds = expandedIdsSelector(store)
   const isMapCOP = mapCOP(store)
+  const isSelectedNewCatalogShapeType = isCatalogLayer(selectedLayerId) && Boolean(selectedNewShape(store)?.type)
+  const isEditMode = canEditSelector(store)
 
   return {
     textFilter,
@@ -52,12 +62,15 @@ const mapStateToProps = (store) => {
     hiddenOpacity: taskModeSelector(store) || targetingModeSelector(store) ? 100 : hiddenOpacity,
     is3DMapMode,
     isMapCOP,
+    isSelectedNewCatalogShapeType,
+    isEditMode,
   }
 }
 
 const mapDispatchToProps = {
   onChangeMapVisibility: (mapId, visible) => layers.updateLayersByMapId(mapId, { visible }),
   onChangeMapColor: (mapId, color) => layers.updateLayersByMapId(mapId, { color }),
+  onClickNewCatalogElement: selection.onToggleCatalogElementSelection,
   onCloseMap: maps.deleteMap,
   onPrintMap: print.print,
   onUpdateMap: maps.openMapFolder,

@@ -27,8 +27,12 @@ import { InputButton } from '../common'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import entityKind from '../WebMap/entityKind'
 import { extractLineCode } from '../WebMap/patch/Sophisticated/utils'
-import { colors } from '../../constants'
+import {
+  colors,
+  shortcuts,
+} from '../../constants'
 import { objectIsObject } from '../../utils/whatIsIt'
+import { BlockHotKeyContainer } from '../common/HotKeys'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -394,11 +398,13 @@ const SymbolsTab = (props) => {
   return (
     <div className='symbols-wrapper'>
       <div className='symbols-header'>
-        <InputButton
-          onChange={onChangeSearch}
-          initValue={search}
-          title={i18n.SYMBOLS}
-        />
+        <BlockHotKeyContainer hotKey={[ shortcuts.EDIT_KEY ]}>
+          <InputButton
+            onChange={onChangeSearch}
+            initValue={search}
+            title={i18n.SYMBOLS}
+          />
+        </BlockHotKeyContainer>
         <Tooltip title={i18n.GRID} mouseEnterDelay={MOUSE_ENTER_DELAY}>
           <IButton
             active={!listMode}
@@ -419,6 +425,7 @@ const SymbolsTab = (props) => {
       <Scrollbar className='parts-container'>
         {partsJSX}
       </Scrollbar>
+
     </div>
   )
 }

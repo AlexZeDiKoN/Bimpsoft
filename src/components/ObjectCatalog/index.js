@@ -5,6 +5,8 @@ import { components, data } from '@C4/CommonComponents'
 import Item from '../ObjectCatalogItem'
 import { InputButton } from '../common'
 import './style.css'
+import { blockHotKey } from '../common/HotKeys'
+import { shortcuts } from '../../constants'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
@@ -106,7 +108,10 @@ export default class CatalogsComponent extends React.PureComponent {
 
     return (
       <div className='catalog-container'>
-        <div className='catalog-container__header'>
+        <div
+          className='catalog-container__header'
+          onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ])}
+        >
           <InputButton
             title={title}
             initValue={textFilter ? textFilter.regExpTest.source : ''}

@@ -4,8 +4,9 @@ import * as viewModesKeys from '../constants/viewModesKeys'
 import * as viewModesActions from '../store/actions/viewModes'
 import * as webmapActions from '../store/actions/webMap'
 import * as selectionActions from '../store/actions/selection'
-import { canEditSelector, undoInfo } from '../store/selectors'
+import { canEditSelector, selectedLayerId, undoInfo } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
+import { isCatalogLayer } from '../constants/catalogs'
 
 const mapStateToProps = (store) => {
   const {
@@ -14,9 +15,12 @@ const mapStateToProps = (store) => {
   } = store
 
   const isEditMode = canEditSelector(store)
+  const currentLayer = selectedLayerId(store)
+
   return {
     isEditMode,
     isShowLines,
+    isCatalogLayer: isCatalogLayer(currentLayer),
     newShape,
     undoInfo: undoInfo(store),
   }
@@ -30,7 +34,7 @@ const mapDispatchToProps = {
 }
 const CreateButtonsContainer = connect(
   mapStateToProps,
-  catchErrors(mapDispatchToProps)
+  catchErrors(mapDispatchToProps),
 )(CreateButtons)
 
 export default CreateButtonsContainer

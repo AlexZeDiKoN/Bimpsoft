@@ -2,16 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { MilSymbol } from '@C4/MilSymbolEditor'
 import { IButton, IconNames, ColorTypes, Scrollbar, data, HighlightedText } from '@C4/CommonComponents'
-import { CountBox, SidebarWrap } from '../common/Sidebar'
-import i18n from '../../i18n'
-import VisibilityButton from '../common/VisibilityButton'
+import { CountBox, SidebarWrap } from '../../common/Sidebar'
+import i18n from '../../../i18n'
+import VisibilityButton from '../../common/VisibilityButton'
 import './style.css'
 
 const { TextFilter } = data
 const ARRAY = []
 const buttonWrap = (node) => <div className="button_layers">{node}</div>
 
-export const SidebarFilterComponent = ({
+export const PointsFilterComponent = ({
   items = ARRAY,
   search,
   onSearch,
@@ -21,6 +21,7 @@ export const SidebarFilterComponent = ({
   isCOP,
   isSaveActive,
   filtersCount,
+  isCatalogLayer,
 }) => {
   const isItemExists = Boolean(items.length)
   const textFilter = TextFilter.create(search)
@@ -48,7 +49,7 @@ export const SidebarFilterComponent = ({
       {!isCOP &&
         <IButton
           icon={IconNames.BAR_2_SAVE}
-          disabled={!isAnyItemsVisible || !isSaveActive}
+          disabled={!isAnyItemsVisible || !isSaveActive || isCatalogLayer}
           colorType={ColorTypes.WHITE}
           onClick={onOpenCreateLayer}
         />
@@ -74,8 +75,8 @@ export const SidebarFilterComponent = ({
   </SidebarWrap>
 }
 
-SidebarFilterComponent.displayName = 'SidebarFilterComponent'
-SidebarFilterComponent.propTypes = {
+PointsFilterComponent.displayName = 'PointsFilterComponent'
+PointsFilterComponent.propTypes = {
   items: PropTypes.array,
   search: PropTypes.string,
   onSearch: PropTypes.func,
@@ -84,5 +85,6 @@ SidebarFilterComponent.propTypes = {
   onOpen: PropTypes.func,
   isSaveActive: PropTypes.bool,
   isCOP: PropTypes.bool,
+  isCatalogLayer: PropTypes.bool,
   filtersCount: PropTypes.object,
 }

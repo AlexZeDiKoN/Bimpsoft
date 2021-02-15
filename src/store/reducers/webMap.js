@@ -62,6 +62,7 @@ const webMapAttributesInitValues = {
   lineClassifier: UNDEFINED_CLASSIFIER,
   status: STATUSES.EXISTING,
   uniqueDesignation1: '',
+  catalogAttributes: {},
 }
 
 for (const key of Object.keys(symbolOptions)) {
@@ -131,6 +132,7 @@ const WebMapState = Record({
   geoLandmark: {},
   deleteMarchPointModal: {},
   highlighted: null,
+  objectsInfo: {},
 })
 
 const checkLevel = (object) => {
@@ -187,6 +189,23 @@ const updateObject = (map, { id, geometry, point, attributes, ...rest }) =>
     obj = updateGeometry(obj, geometry)
     return mergePure(obj, rest)
   })
+
+const updateObjectInfo = (mapState, fullObjects, isDelete) => {
+  const newState = { ...mapState }
+  Array.isArray(fullObjects) && fullObjects.forEach((item) => {
+    if (isDelete) {
+      delete newState[item]
+    } else {
+      newState[item?.id] = {
+        inserted: item?.inserted,
+        insertedById: item?.inserted_by_id,
+        updated: item?.updated,
+        updatedById: item?.updated_by_id,
+      }
+    }
+  })
+  return newState
+}
 
 const lockObject = (map, { objectId, contactName }) => map.get(objectId) !== contactName
   ? map.set(objectId, contactName)
@@ -339,7 +358,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         return state
       }
       const { layerId, objects } = payload
-      return update(state, 'objects', (map) => {
+      const newState = update(state, 'objects', (map) => {
         map = objects
           .filter(({ code, type }) => (type !== entityKind.POINT && type !== entityKind.SOPHISTICATED) || code)
           .filter(notFlexGrid)
@@ -347,6 +366,7 @@ export default function webMapReducer (state = WebMapState(), action) {
         map = filter(map, ({ id, layer }) => (layer !== layerId) || objects.find((object) => object.id === id))
         return map
       })
+      return update(newState, 'objectsInfo', (map) => updateObjectInfo(map, objects))
     }
     case actionNames.RETURN_UNIT_INDICATORS: {
       const { indicatorsData, unitId } = payload
@@ -387,9 +407,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       const { toUpdate, toDelete } = payload
       if (toUpdate && toUpdate.length) {
         state = update(state, 'objects', (map) => toUpdate.reduce(updateObject, map))
+        state = update(state, 'objectsInfo', (map) => updateObjectInfo(map, toUpdate))
       }
       if (toDelete && toDelete.length) {
         state = update(state, 'objects', (map) => map.filter((value, key) => !toDelete.includes(key)))
+        state = update(state, 'objectsInfo', (map) => updateObjectInfo(map, toDelete, true))
       }
       return state
     }
@@ -398,7 +420,11 @@ export default function webMapReducer (state = WebMapState(), action) {
       // блокируем обработку FlexGrid (ОЗ)? иначе добавиться в WebMap.objects
       return (payload.type === entityKind.FLEXGRID)
         ? state
-        : update(state, 'objects', (map) => updateObject(map, payload))
+        : update(
+          update(state, 'objects', (map) => updateObject(map, payload)),
+          'objectsInfo',
+          (map) => updateObjectInfo(map, [ payload ]),
+        )
     case actionNames.DEL_OBJECT:
       return payload
         ? state.deleteIn([ 'objects', payload ])

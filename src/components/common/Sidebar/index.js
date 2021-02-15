@@ -2,10 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { InputButton } from '../index'
 import './style.css'
+import { shortcuts } from '../../../constants'
+import { blockHotKey } from '../HotKeys'
 
 export const SidebarWrap = ({ children, title, rightButtons, onChangeSearch }) => {
   return <div className="sidebar--content-wrap">
-    <div className="sidebar--content-header">
+    <div
+      className="sidebar--content-header"
+      onKeyDown={blockHotKey([ shortcuts.EDIT_KEY ]) }
+    >
       <InputButton
         onChange={onChangeSearch}
         title={title}

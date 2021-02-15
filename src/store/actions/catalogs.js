@@ -1,59 +1,74 @@
 import { action } from '../../utils/services'
+import { TOPOCODES } from '../../constants/TopoObj'
+import { catalogs as catalogsConstants } from '../../constants'
+import { getContactsInfo, getObjectsInfo } from '../selectors'
 import { asyncAction } from './index'
 
-export const CATALOG_SET_TREE = action('CATALOG_SET_TREE')
-export const CATALOG_SET_LIST = action('CATALOG_SET_LIST')
-export const CATALOG_DROP_LIST = action('CATALOG_DROP_LIST')
-export const CATALOG_SELECT_ITEM = action('CATALOG_SELECT_ITEM')
-export const CATALOG_EXPAND_ITEM = action('CATALOG_EXPAND_ITEM')
-export const CATALOG_FILTER_TEXT = action('CATALOG_FILTER_TEXT')
-export const UPDATE_CATALOG_LIST_ITEM = action('UPDATE_CATALOG_LIST_ITEM')
+export const CATALOG_SET_TOPOGRAPHIC_FIELDS = action('CATALOG_SET_TOPOGRAPHIC_FIELDS')
+export const CATALOG_SET_TOPOGRAPHIC_BY_IDS = action('CATALOG_SET_TOPOGRAPHIC_BY_IDS')
+export const CATALOG_SET_ATTRIBUTES = action('CATALOG_SET_ATTRIBUTES')
+export const CATALOG_SET_ERRORS = action('CATALOG_SET_ERRORS')
+export const CATALOG_SET_CONTACT_NAME = action('CATALOG_SET_CONTACT_NAME')
 
-export const setTree = (payload) => ({
-  type: CATALOG_SET_TREE,
+export const setTopographicObjectFields = (payload) => ({
+  type: CATALOG_SET_TOPOGRAPHIC_FIELDS,
   payload,
 })
 
-export const setList = (catalogId, list) => ({
-  type: CATALOG_SET_LIST,
-  payload: { catalogId, list },
+export const setTopographicObjectByIds = (payload) => ({
+  type: CATALOG_SET_TOPOGRAPHIC_BY_IDS,
+  payload,
 })
 
-export const getTree = () =>
+const setContactName = (payload) => ({
+  type: CATALOG_SET_CONTACT_NAME,
+  payload,
+})
+
+export const getTopographicObjectFields = () =>
   asyncAction.withNotification(async (dispatch, _, { catalogApi }) =>
-    dispatch(setTree(await catalogApi.getTree())))
+    dispatch(setTopographicObjectFields(await catalogApi.getTopographicObjectFields(TOPOCODES))))
 
-export const getList = (catalogId) =>
-  asyncAction.withNotification(async (dispatch, _, { catalogApi }) =>
-    dispatch(setList(catalogId, await catalogApi.getList(catalogId))))
+const loadContactName = (id) =>
+  asyncAction.withNotification(async (dispatch, getState, { webmapApi: { getContactName } }) => {
+    const state = getState()
+    const contacts = getContactsInfo(state)
+    if (!contacts[id]) {
+      const response = await getContactName(id)
+      response?.contactName && dispatch(setContactName({ [id]: response.contactName }))
+    }
+  })
 
-export const dropList = (catalogId) => ({
-  type: CATALOG_DROP_LIST,
-  payload: catalogId,
+export const loadCatalogContactsNames = (id) => asyncAction.withNotification(async (dispatch, getState) => {
+  const state = getState()
+  const objectsInfo = getObjectsInfo(state)
+  const objectInfo = objectsInfo[id]
+  objectInfo?.insertedById && await dispatch(loadContactName(objectInfo?.insertedById))
+  objectInfo?.updatedById && await dispatch(loadContactName(objectInfo?.updatedById))
 })
 
-export const setSelectedId = (selectedId) => ({
-  type: CATALOG_SELECT_ITEM,
-  selectedId,
+/**
+ * @param payload {object | undefined}
+ * @description set object or default empty object to errors catalogs
+*/
+export const setCatalogErrors = (payload) => ({
+  type: CATALOG_SET_ERRORS,
+  payload,
 })
 
-export const setFilterText = (filterText) => ({
-  type: CATALOG_FILTER_TEXT,
-  filterText,
+const setCatalogAttributes = (payload) => ({
+  type: CATALOG_SET_ATTRIBUTES,
+  payload,
 })
 
-export const expandItem = (itemId) => ({
-  type: CATALOG_EXPAND_ITEM,
-  itemId,
-})
-
-export const updateListItem = (id, catalogId, item) => ({
-  type: UPDATE_CATALOG_LIST_ITEM,
-  payload: { id, catalogId, item },
-})
-
-export const updateCatalogObject = (id, catalogId) =>
-  asyncAction.withNotification(async (dispatch, _, { catalogApi }) => {
-    const item = await catalogApi.getCatalogItem(id, catalogId)
-    return dispatch(updateListItem(id, catalogId, item))
+export const getCatalogAttributesFields = (layer) =>
+  asyncAction.withNotification(async (dispatch, getState, { catalogApi }) => {
+    const state = getState()
+    const isAttributesExistInState = Object.prototype.hasOwnProperty.call(state.catalogs.attributes, layer)
+    if (isAttributesExistInState) {
+      return true
+    }
+    const catalogId = catalogsConstants.catalogsCommonData[layer].catalog
+    const catalogData = await catalogApi.getCatalogItemInfo(catalogId)
+    dispatch(setCatalogAttributes({ name: layer, value: catalogData?.attributes ?? [] }))
   })

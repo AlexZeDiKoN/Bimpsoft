@@ -77,3 +77,28 @@ HotKey.propTypes = {
   selector: PropTypes.func,
   onKey: PropTypes.func,
 }
+
+// сопоставление и блокировка горячих клавиш
+export const blockHotKey = (shortcuts) => (e) => {
+  if (Array.isArray(shortcuts)) {
+    shortcuts.some((shortcut) => ((typeof shortcut === 'function') && shortcut(e))) && e.stopPropagation()
+  } else {
+    (typeof shortcuts === 'function') && shortcuts(e) && e.stopPropagation()
+  }
+}
+
+// Контейнер блокировки горячих клавиш
+// hotKey - массив определений блокируемых клавиш из shortcuts.js, например shortcuts.DELETE
+export class BlockHotKeyContainer extends React.Component {
+  static propTypes = {
+    children: PropTypes.any,
+    hotKey: PropTypes.instanceOf(Array),
+  }
+
+  render () {
+    const { children, ...otherProps } = this.props
+    return <div onKeyDown={blockHotKey(otherProps.hotKey)}>
+      {children}
+    </div>
+  }
+}

@@ -9,7 +9,7 @@ import {
   taskModeSelector,
   layersByIdFromStore,
   marchDots, undoInfo, mapCOP, flexGridSelected,
-  getFilteredCatalogsObjects, getFilteredObjects,
+  getFilteredObjects, getTopographicObjectsList,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
@@ -64,7 +64,6 @@ const WebMapContainer = connect(
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
     catalogModalData: state.webMap.catalogModalData,
-    catalogObjects: getFilteredCatalogsObjects(state),
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
@@ -73,6 +72,7 @@ const WebMapContainer = connect(
     undoInfo: undoInfo(state),
     isMapCOP: mapCOP(state),
     flexGridSelected: flexGridSelected(state),
+    topographicObjectsList: getTopographicObjectsList(state),
     generalization: state.webMap.generalization,
   }),
   catchErrors({

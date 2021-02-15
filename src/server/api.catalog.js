@@ -9,4 +9,8 @@ export default {
     getDirect(`${catalogUrl}/catalogCategoryObjects/?catalogId=${catalogId}`, false),
   getCatalogItem: (itemId) => getDirect(`${catalogUrl}/catalogCategoryObjects/${itemId}`, false),
   getCatalogItemInfo: (itemId) => getDirect(`${catalogUrl}/catalogCategory/${itemId}`, false),
+  getTopographicObjectFields: (codes) => getDirect(`${catalogUrl}/topographicObjects/getFields`, { codes }),
+  getTopographicObjects: ({ zoom, points, filters, topocode }) =>
+    getDirect(`${catalogUrl}/topographicObjects/get`, { zoom, points, filters, topocode }),
+
 }

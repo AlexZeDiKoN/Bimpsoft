@@ -1,4 +1,7 @@
 export const CATALOG_FILTERS = 'catalog'
 export const SEARCH_FILTER = 'search'
+export const SEARCH_TOPOGRAPHIC_FILTER = 'searchTopographic'
 export const MIL_SYMBOL_FILTER = 'milSymbolFilter'
 export const LOADING = 'loading'
+export const TOPOGRAPHIC_OBJECT_FILTER = 'topographicObjectFilter'
+export const LOADING_TOPOGRAPHIC_OBJECT = 'loadingTopographicObjects'

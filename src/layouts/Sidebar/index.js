@@ -6,10 +6,11 @@ import {
   LayersContainer,
   OrgStructuresContainer,
   MarchContainer,
-  CatalogsContainer,
   TargetCatalogContainer,
   SymbolsContainer,
-  LogMapContainer, FilterContainer,
+  LogMapContainer,
+  FilterContainer,
+  FilterTopographicObjects,
 } from '../../containers'
 import { TabsPanel, PrintPanel } from '../../components/common'
 import i18n from '../../i18n'
@@ -46,7 +47,7 @@ export default class Sidebar extends React.Component {
   }
 
   changeSidebarPanels = () => {
-    const { printStatus, marchEdit, isMapCOP, is3DMapMode, isHaveActiveLayer } = this.props
+    const { printStatus, marchEdit, isMapCOP, isHaveActiveLayer } = this.props
     if (printStatus) {
       return <PrintPanel/>
     } else if (marchEdit) {
@@ -72,12 +73,6 @@ export default class Sidebar extends React.Component {
                   enabled: true,
                 },
                 {
-                  Component: CatalogsContainer,
-                  title: i18n.CATALOGS,
-                  icon: IconNames.CATALOG,
-                  enabled: !is3DMapMode,
-                },
-                {
                   Component: TargetCatalogContainer,
                   title: i18n.TARGETS,
                   icon: IconNames.TARGETS,
@@ -100,6 +95,12 @@ export default class Sidebar extends React.Component {
                   title: i18n.STRAINERS,
                   icon: IconNames.FILTER,
                   enabled: isHaveActiveLayer,
+                },
+                {
+                  Component: FilterTopographicObjects,
+                  title: i18n.TOPOGRAPHIC_OBJECTS,
+                  icon: IconNames.MAP_HEADER_ICON_MENU_TOPOGRAPHY_1,
+                  enabled: true,
                 },
               ].filter(Boolean)}
               onToggle={this.onToggle}

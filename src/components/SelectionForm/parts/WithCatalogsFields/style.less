@@ -1,0 +1,22 @@
+.catalog_mil_symbol_editor {
+  height: 100%;
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+  [data-entity-kind = '1'] {
+    max-height: calc(100vh - 240px);
+  }
+  .catalog_mil_symbol_collapsible {
+    .milsymbol {
+      width: 150px;
+      margin: 0 15px;
+      height: 100px;
+    }
+    .scroll-container {
+      width: auto;
+      height: auto;
+    }
+    .symbol-generator-content .version {
+      position: static;
+    }
+  }
+}

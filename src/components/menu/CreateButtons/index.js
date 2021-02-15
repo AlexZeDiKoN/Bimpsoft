@@ -19,6 +19,7 @@ export default class CreateButtons extends React.PureComponent {
   static propTypes = {
     isEditMode: PropTypes.bool,
     isShowLines: PropTypes.bool,
+    isCatalogLayer: PropTypes.bool,
     newShape: PropTypes.object,
     undoInfo: PropTypes.shape({
       canUndo: PropTypes.bool,
@@ -51,6 +52,7 @@ export default class CreateButtons extends React.PureComponent {
     const {
       isEditMode,
       isShowLines,
+      isCatalogLayer,
       newShape = {},
       onClickLineSign,
       undoInfo: { canUndo, canRedo },
@@ -88,6 +90,7 @@ export default class CreateButtons extends React.PureComponent {
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
             icon={IconNames.MAP_HEADER_ICON_MENU_CONVENTIONAL_SIGN}
+            disabled={isCatalogLayer}
             active={newShape.type === SelectionTypes.POINT}
             onClick={this.clickPointHandler}
           />
@@ -97,6 +100,7 @@ export default class CreateButtons extends React.PureComponent {
             <IButton
               icon={IconNames.MAP_HEADER_ICON_MENU_GROUPING_GRAPHIC_PRIMITIVES}
               type={ButtonTypes.WITH_BG}
+              disabled={isCatalogLayer}
               colorType={ColorTypes.MAP_HEADER_GREEN}
               active={lineTypes.indexOf(newShape.type) >= 0 || isShowLines}
               onClick={onClickLineSign}
@@ -115,6 +119,7 @@ export default class CreateButtons extends React.PureComponent {
             type={ButtonTypes.WITH_BG}
             colorType={ColorTypes.MAP_HEADER_GREEN}
             icon={IconNames.MAP_HEADER_ICON_MENU_TEXT}
+            disabled={isCatalogLayer}
             active={newShape.type === SelectionTypes.TEXT}
             onClick={this.clickTextHandler}
           />

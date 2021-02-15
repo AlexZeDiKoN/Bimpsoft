@@ -41,6 +41,10 @@ const forms = {
     maxWidth: 825,
     minHeight: 'calc(100vh - 150px)',
     maxHeight: 'calc(100vh - 150px)',
+    defaultSize: {
+      height: '100%',
+      width: 825,
+    },
   },
   [SelectionTypes.POLYLINE]: {
     title: i18n.MIL_SYMBOL,
@@ -354,6 +358,7 @@ export default class SelectionForm extends React.Component {
       minWidth,
       maxWidth,
       defaultPosition,
+      defaultSize,
       component: Component,
     } = forms[formType]
 
@@ -386,8 +391,9 @@ export default class SelectionForm extends React.Component {
             : defaultPosition}
           maxHeight={maxHeight}
           minHeight={minHeight}
+          defaultSize={defaultSize}
         >
-          <HotKeysContainer>
+          <HotKeysContainer className="hot-key-container-size">
             <Component
               data={data}
               canEdit={canEdit && !this.state.showWarningCancel}
