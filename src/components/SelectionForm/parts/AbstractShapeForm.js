@@ -75,11 +75,11 @@ export default class AbstractShapeForm extends React.Component {
     if (!data) {
       return
     }
-    const { code, isSvg, amp = {} } = JSON.parse(data)
+    const { code, amp = {} } = JSON.parse(data)
     if (!code) {
       return
     }
-    const type = isSvg ? amp.type : entityKind.POINT
+    const type = amp.type ?? entityKind.POINT
     if (type === entityKind.POINT) {
       // для точечного знака упрощенное перестроение
       this.setResult((result) => {

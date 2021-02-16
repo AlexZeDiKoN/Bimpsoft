@@ -57,7 +57,7 @@ class LineForm extends compose(
               type={result.getIn(PATH.TYPE) ?? SelectionTypes.POLYLINE}
               coordinatesSize={result.getIn(PATH.COORDINATES).size}
               attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
-              onChange={this.onChangeSymbol}
+              onChange={this.onChangeTacticalSymbol}
             />
             <div className="line-container__item--firstSection">
               <div className="line-container__itemWidth-right">

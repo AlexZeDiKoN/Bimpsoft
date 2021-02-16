@@ -80,10 +80,7 @@ const isMatchAttr = (attr1, attr2) => {
     }
     return true
   }
-  // if (Set.isSet(attr1)) {
-  //   console.log('Set', { attr1, attr2, '=': attr1.equals(attr2) })
-  //   return attr1.equals(attr2)
-  // }
+
   if (objectIsObject(attr1) && objectIsObject(attr2)) {
     for (const key of Object.keys(attr1)) {
       // eslint-disable-next-line no-prototype-builtins
@@ -146,7 +143,6 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
     return null
   }
   let id = null
-  console.log('poisk', searchTerms)
   const isTwoResults = symbols.some((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
@@ -176,16 +172,14 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           }
           break
         }
-        case entityKind.POLYLINE:
-        case entityKind.CURVE: {
-          console.log('line', children)
-          // для незамкнутых линий проверяем количество опорных точек = 2
+        case entityKind.POLYLINE: {
+          // для незамкнутых линий проверяем количество опорных точек, = 2
           if (!isMatchCodeNoPoint(code, children.code) || coordinatesSize !== 2) {
             return false
           }
-          console.log('POLYLINE')
         }
         // eslint-disable-next-line no-fallthrough
+        case entityKind.CURVE:
         case entityKind.RECTANGLE:
         case entityKind.POLYGON:
         case entityKind.AREA: {
