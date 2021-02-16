@@ -5024,7 +5024,7 @@ export const symbols = [
         isSvg: true,
         amp: {
           type: entityKind.POLYLINE,
-          color: '#3366ff',
+          color: '#ffa900',
           shownIntermediateAmplifiers: [ 0 ],
           intermediateAmplifier: { [amps.W]: 'AM' },
           left: ENDS_STROKE1,
