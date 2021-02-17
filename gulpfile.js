@@ -27,8 +27,6 @@ gulp.task('svg-sprite2', () => gulp
         plugins: [
           { removeViewBox: false },
           { cleanupIDs: false },
-          { removeUnknownsAndDefaults: false },
-          { removeXMLProcInst: false },
           // { removeAttrs: { attrs: ('fill') } },
           // { removeElementsByAttr: { id: ('bg') } },
         ],
