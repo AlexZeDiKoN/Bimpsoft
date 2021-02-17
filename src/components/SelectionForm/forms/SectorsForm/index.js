@@ -37,7 +37,7 @@ export default class SectorsForm extends compose(
             <div className="sectors-container__itemWidth-right">
               {this.renderSubordinationLevel()}
               {this.renderOrgStructureSelect()}
-              {this.renderAffiliation()}
+              {this.renderAffiliation(true)}
               <div className='azimut-container'>
                 {this.renderCoordinateAndAzimuth()}
               </div>

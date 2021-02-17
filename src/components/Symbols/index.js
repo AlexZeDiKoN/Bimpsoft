@@ -14,10 +14,13 @@ import {
   data,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
-import { List } from 'immutable'
+import {
+  List,
+  Record,
+  Set,
+} from 'immutable'
 import {
   symbols,
-  amps,
   directionAmps,
   CompatibilityTacticalSymbol,
 } from '../../constants/symbols'
@@ -33,6 +36,9 @@ import {
 } from '../../constants'
 import { objectIsObject } from '../../utils/whatIsIt'
 import { BlockHotKeyContainer } from '../common/HotKeys'
+import { evaluateColor } from '../../constants/colors'
+import { STATUSES } from '../SelectionForm/parts/WithStatus'
+import { LineAmplifier } from '../../store/reducers/webMap'
 import spriteUrl from './sprite.svg'
 
 const SymbolSvg = (props) => {
@@ -56,13 +62,8 @@ const ButtonComponent = (props) =>
     </Tooltip>
   </Collapse.Button>
 
-// определение id в списке тактических знаков по заданым условиям
-// Для области проверяем следующие атрибуты со возможными значениями по умолчанию
-const allAmpsDefault = {
-  [amps.T]: List([ null, '' ]),
-  [amps.N]: List([ null, '' ]),
-  [amps.W]: List([ null, '' ]),
-}
+// определение id в списке тактических знаков по заданым условиям ------------------------------------
+// Проверяем атрибуты с возможными значениями по умолчанию
 
 const isMatchAttr = (attr1, attr2) => {
   if (List.isList(attr1)) { // по умолчанию возможны варианты
@@ -93,7 +94,10 @@ const isMatchAttr = (attr1, attr2) => {
     }
     return true
   }
-  return attr1 === attr2
+  return attr1 === attr2 || (
+    (attr1 === null || attr1 === undefined || attr1 === '') &&
+    (attr2 === null || attr2 === undefined || attr2 === '')
+  )
 }
 //
 // Для точечного знака
@@ -125,6 +129,37 @@ const isMatchCode = (code1, code2, isPoint = false) => {
   }
   return true
 }
+
+const attributesInitValues = {
+  // name: null,
+  // template: '',
+  // color: evaluateColor(colors.BLACK),
+  fill: colors.TRANSPARENT,
+  lineType: 'solid',
+  // strokeWidth: LINE_WIDTH,
+  hatch: 'none',
+  intermediateAmplifierType: 'none',
+  intermediateAmplifier: LineAmplifier(),
+  directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
+  shownIntermediateAmplifiers: Set(),
+  shownNodalPointAmplifiers: Set(),
+  pointAmplifier: LineAmplifier(),
+  textAmplifiers: {},
+  // sectorsInfo: List(),
+  params: {},
+  left: 'none',
+  right: 'none',
+  nodalPointIcon: 'none',
+  // texts: List(),
+  // z: null,
+  // taskId: null,
+  // lineClassifier: UNDEFINED_CLASSIFIER,
+  status: STATUSES.EXISTING,
+  // uniqueDesignation1: '',
+  // catalogAttributes: {},
+  // direction: '',
+}
+const symbolAttributes = Record(attributesInitValues)
 
 // поиск соответствующего тактического знака в справочном перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
@@ -179,46 +214,18 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           // проверка на критическое изменение амплификаторов
           if (children.amp) {
             // установка по умолчанию проверяемых аттриутов для знака из перечня
-            const newAmps = 3
-            const buildAmps = {
-              // color: evaluateColor(colors.BLACK),
-              fill: List([ 'transparent', colors.TRANSPARENT ]),
-              lineType: 'solid',
-              // strokeWidth: settings.LINE_WIDTH,
-              hatch: 'none',
-              left: 'none',
-              right: 'none',
-              intermediateAmplifierType: 'none',
-              intermediateAmplifier: { ...allAmpsDefault },
-              directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
-              shownIntermediateAmplifiers: [],
-              shownNodalPointAmplifiers: [],
-              pointAmplifier: { ...allAmpsDefault },
-              textAmplifiers: {},
-              // sectorsInfo: List(),
-              params: {},
-              nodalPointIcon: 'none',
-              direction: '',
-            }
-            const initialAmp = { ...children.amp }
-            // заполнение предустановленных амплификаторов тактического знака данными из перечня
-            for (const key of Object.keys(initialAmp)) {
-              if (objectIsObject(initialAmp[key])) {
-                const amplifiers = initialAmp[key]
-                for (const key2 of Object.keys(amplifiers)) {
-                  buildAmps[key][key2] = amplifiers[key2]
-                }
-              } else {
-                buildAmps[key] = initialAmp[key]
-              }
-            }
+            const buildAmps = symbolAttributes(children.amp).toJS()
             // сравнение тактических знаков
             for (const key of Object.keys(buildAmps)) {
               // eslint-disable-next-line no-prototype-builtins
               if (!amp.hasOwnProperty(key)) {
                 return false // для сравнения не хватает атрибутов
               }
-              if (!isMatchAttr(buildAmps[key], amp[key])) {
+              if (key === 'color' || key === 'fill') {
+                if (!isMatchAttr(evaluateColor(buildAmps[key]), evaluateColor(amp[key]))) {
+                  return false
+                }
+              } else if (!isMatchAttr(buildAmps[key], amp[key])) {
                 return false // не соответствие аттрибутов тактических знаков
               }
             }

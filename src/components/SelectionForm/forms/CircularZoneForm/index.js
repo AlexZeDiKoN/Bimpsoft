@@ -43,7 +43,7 @@ export default class CircularZoneForm extends compose(
               <div className="circularzone-container__itemWidth-right">
                 {this.renderSubordinationLevel()}
                 {this.renderOrgStructureSelect()}
-                {this.renderAffiliation()}
+                {this.renderAffiliation(true)}
                 <div className='coordinate-container-border'>
                   {this.renderStartingCoordinate()}
                 </div>
