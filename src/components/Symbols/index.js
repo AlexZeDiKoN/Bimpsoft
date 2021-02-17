@@ -102,26 +102,16 @@ const isMatchAttr = (attr1, attr2) => {
 // 4 символ "Принадлежность"
 // 7 символ "Стан"
 // 8 символ кода биты [ 0, 1, 2 ] - "Макет/хибній", "Пункт управління", "Угруповання"
-const maskIgnore = [ 0, 0, 0, 7, 0, 0, 7, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-const isMatchCode = (code1, code2) => {
-  if (code1.length !== code2.length || code1.length !== 20) {
-    return false
-  }
-  for (let i = 0; i < code1.length; i++) {
-    if (maskIgnore[i]) {
-      const number1 = parseInt(code1[i], 10)
-      const number2 = parseInt(code2[i], 10)
-      if (isNaN(number1) || isNaN(number2) || ((number1 ^ number2) & ~maskIgnore[i])) {
-        return false
-      }
-    } else if (code1[i] !== code2[i]) {
+const maskIgnore = [ 0, 0, 0, 7, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+const isMatchCode = (code1, code2, isPoint = false) => {
+  let maxIndex = 20
+  if (isPoint) {
+    if (code1.length !== code2.length || code1.length !== 20) {
       return false
     }
+  } else {
+    maxIndex = Math.min(code1.length, code2.length, 20) || 0
   }
-  return true
-}
-const isMatchCodeNoPoint = (code1, code2) => {
-  const maxIndex = Math.min(code1.length, code2.length, 20) || 0
   for (let i = 0; i < maxIndex; i++) {
     if (maskIgnore[i]) {
       const number1 = parseInt(code1[i], 10)
@@ -158,7 +148,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       }
       switch (type) {
         case entityKind.POINT: {
-          if (!isMatchCode(children.code, code)) {
+          if (!isMatchCode(children.code, code, true)) {
             return false // Коды не совпали
           }
           if (children.amp) {
@@ -174,7 +164,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
         }
         case entityKind.POLYLINE: {
           // для незамкнутых линий проверяем количество опорных точек, = 2
-          if (!isMatchCodeNoPoint(code, children.code) || coordinatesSize !== 2) {
+          if (!isMatchCode(code, children.code) || coordinatesSize !== 2) {
             return false
           }
         }
@@ -186,14 +176,18 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
           if (children.code !== code) {
             return false // Коды не совпали
           }
+          // проверка на критическое изменение амплификаторов
           if (children.amp) {
             // установка по умолчанию проверяемых аттриутов для знака из перечня
+            const newAmps = 3
             const buildAmps = {
               // color: evaluateColor(colors.BLACK),
               fill: List([ 'transparent', colors.TRANSPARENT ]),
               lineType: 'solid',
               // strokeWidth: settings.LINE_WIDTH,
               hatch: 'none',
+              left: 'none',
+              right: 'none',
               intermediateAmplifierType: 'none',
               intermediateAmplifier: { ...allAmpsDefault },
               directionIntermediateAmplifier: directionAmps.ACROSS_LINE,
