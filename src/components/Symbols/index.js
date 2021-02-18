@@ -161,7 +161,7 @@ const attributesInitValues = {
 }
 const symbolAttributes = Record(attributesInitValues)
 
-// поиск соответствующего тактического знака в справочном перечне тактических знаков
+// поиск соответствующего тактического знака в перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
   const { code, attributes: amp, type, coordinatesSize } = searchTerms
   if (!code || !amp) {
@@ -254,23 +254,24 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
   return id
 }
 
-// сборка списка тактических знаков
+// сборка списка тактических знаков для поиска соответствия на карточках тактических знаков
 export const getPartsSymbols = (type, code, search) => {
   return symbols.map((part, indexParent) => {
     const sortedPart = (search !== '')
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
       : part.children
 
-    const parentToRender =
-      <div className={'list'} >
-        {<HighlightedText text={part.name} textFilter={data.TextFilter.create(search)}/>}
+    // заголовок группы
+    const parentToRender = (filter) =>
+      <div className={'list'} title={part.name}>
+        <HighlightedText text={part.name} textFilter={filter}/>
       </div>
-
     const parent = {
       id: `${indexParent}`,
       name: part.name,
       render: parentToRender,
     }
+
     const thisCode = extractLineCode(code)
     const indexCompatibility = type === entityKind.SOPHISTICATED
       ? CompatibilityTacticalSymbol.findIndex((sublist) => {
@@ -287,34 +288,31 @@ export const getPartsSymbols = (type, code, search) => {
       // фильтрация по совместимости знаков
       const symbolCode = extractLineCode(code)
       if (type === entityKind.SOPHISTICATED && thisCode !== symbolCode) {
-        if (indexCompatibility === 0) {
+        if (indexCompatibility === 0) { // несовместимый знак
           return null
         }
         if (indexCompatibility !== CompatibilityTacticalSymbol.findIndex((spisok) => spisok.indexOf(symbolCode) > -1)) {
-          return null
+          return null // знак из перечня не совместим с текущим
         }
       }
-      const elemToRender =
-        <div className={'compilation-list'} >
+      // элемент группы
+      const elemToRender = (filter) => {
+        return <div className={'compilation-list'}>
           {(!isSvg)
-            ? <>
-              <MilSymbol
-                code={code}
-                amplifiers={amp}
-                className={'symbol'}
+            ? <MilSymbol
+              code={code}
+              amplifiers={amp}
+              className={'symbol'}
+            />
+            : <div className='symbol'>
+              <SymbolSvg
+                name={`${code}`}
               />
-              <div>{<HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/>}</div>
-            </>
-            : <>
-              <div className='symbol'>
-                <SymbolSvg
-                  name={`${code}`}
-                />
-              </div>
-              <div><HighlightedText text={hint} textFilter={data.TextFilter.create(search)}/></div>
-            </>
+            </div>
           }
+          <div><HighlightedText text={hint} textFilter={filter}/></div>
         </div>
+      }
 
       return {
         id: `${indexParent}_${index}`,
@@ -329,6 +327,7 @@ export const getPartsSymbols = (type, code, search) => {
   }).flat(Infinity)
 }
 
+// -----------------------------------------------------------------------------------------------------
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 const SymbolsTab = (props) => {
   const { canEdit } = props

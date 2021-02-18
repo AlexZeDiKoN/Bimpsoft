@@ -1,6 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FilterInput, HighlightedText, Tree } from '@C4/CommonComponents'
+import {
+  FilterInput,
+  HighlightedText,
+  Tree,
+} from '@C4/CommonComponents'
 import {
   getIdSymbols,
   getPartsSymbols,
@@ -8,13 +12,19 @@ import {
 
 import './styleList.css'
 import i18n from '../../../../i18n'
+import { objectIsFunction } from '../../../../utils/whatIsIt'
 
 const renderItem = (itemProps) => {
-  return <Tree.ExpandItem {...itemProps}>
-    <Tree.HoverItem>
-      {itemProps.data.render}
-    </Tree.HoverItem>
-  </Tree.ExpandItem>
+  const render = objectIsFunction(itemProps.data.render)
+    ? itemProps.data.render(itemProps.filter?.textFilter)
+    : itemProps.data.render
+  return <div className={'selection-tactical-symbol'}>
+    <Tree.ExpandItem {...itemProps}>
+      <Tree.HoverItem>
+        {render}
+      </Tree.HoverItem>
+    </Tree.ExpandItem>
+  </div>
 }
 
 export default class SelectionTacticalSymbol extends React.Component {
@@ -37,7 +47,8 @@ export default class SelectionTacticalSymbol extends React.Component {
     }
     const index = treeSymbols.findIndex((symbol) => symbol.id === value)
     if (index < 0 || !treeSymbols[index].parentID) {
-      return
+      console.log('no change')
+      return null
     }
     const { onChange } = this.props
     onChange && onChange(treeSymbols[index].data)
@@ -62,7 +73,7 @@ export default class SelectionTacticalSymbol extends React.Component {
       : {
         id,
         name: nameSymbol,
-        render: <div className={'compilation-list compilation-list-first'} >
+        render: <div className={'compilation-list compilation-list-first'}>
           <HighlightedText text={nameSymbol}/>
         </div>,
       }
@@ -75,6 +86,7 @@ export default class SelectionTacticalSymbol extends React.Component {
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
+          // opened={true}
         >
           {renderItem}
         </FilterInput>
