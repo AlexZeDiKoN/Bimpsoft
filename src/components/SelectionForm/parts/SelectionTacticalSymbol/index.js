@@ -20,9 +20,15 @@ const renderItem = (itemProps) => {
     : itemProps.data.render
   return <div className={'selection-tactical-symbol'}>
     <Tree.ExpandItem {...itemProps}>
-      <Tree.HoverItem>
-        {render}
-      </Tree.HoverItem>
+      <div onClick={(e) => {
+        if (itemProps.level === 0) {
+          e.stopPropagation && e.stopPropagation()
+        }
+      }}>
+        <Tree.HoverItem>
+          {render}
+        </Tree.HoverItem>
+      </div>
     </Tree.ExpandItem>
   </div>
 }
@@ -47,7 +53,6 @@ export default class SelectionTacticalSymbol extends React.Component {
     }
     const index = treeSymbols.findIndex((symbol) => symbol.id === value)
     if (index < 0 || !treeSymbols[index].parentID) {
-      console.log('no change')
       return null
     }
     const { onChange } = this.props

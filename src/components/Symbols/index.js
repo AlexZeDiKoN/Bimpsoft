@@ -12,6 +12,7 @@ import {
   FormBlock,
   HighlightedText,
   data,
+  Tree,
 } from '@C4/CommonComponents'
 import { MilSymbol } from '@C4/MilSymbolEditor'
 import {
@@ -262,10 +263,13 @@ export const getPartsSymbols = (type, code, search) => {
       : part.children
 
     // заголовок группы
-    const parentToRender = (filter) =>
-      <div className={'list'} title={part.name}>
-        <HighlightedText text={part.name} textFilter={filter}/>
-      </div>
+    const parentToRender = (filter) => (
+      <Tree.HighlightItem
+        data={part}
+        filter={{ textFilter: filter }}
+        titleSelector={(data) => data.name}
+        showTooltip={true}
+      />)
     const parent = {
       id: `${indexParent}`,
       name: part.name,
