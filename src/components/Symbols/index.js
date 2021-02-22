@@ -170,7 +170,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
   }
   let id = null
   const ids = []
-  const isTwoResults = symbols.some((parent, indexParent) => {
+  symbols.forEach((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
       ? parent.children.filter((it) => {
@@ -178,7 +178,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       })
       : parent.children
     // перебор элементов раздела
-    return sortedPart.some((children, index) => {
+    sortedPart.forEach((children, index) => {
       const childrenType = children.amp.type ? children.amp.type : entityKind.POINT
       if (type !== childrenType) {
         return false
@@ -243,17 +243,10 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
         default:
           return false
       }
-      // if (id) {
-      //   return true // имеем более одного совпадения, прекращаем перебор перечня
-      // }
       id = `${indexParent}_${index}`
-      ids.push(id)
-      return false // продолжаем поиск
+      ids.push({ id, name: `${parent.name}/${children.hint}` })
     })
   })
-  if (!id) { // (isTwoResults) {
-    return id // не найдены совпадения undefined// множественное совпадение
-  }
   return ids
 }
 
@@ -303,7 +296,7 @@ export const getPartsSymbols = (type, code, search) => {
       }
       // элемент группы
       const elemToRender = (filter) => {
-        return <div className={'compilation-list'}>
+        return <div className={'compilation-list-after' }>
           {(!isSvg)
             ? <MilSymbol
               code={code}

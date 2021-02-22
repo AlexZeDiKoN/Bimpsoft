@@ -2,8 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {
   FilterInput,
-  HighlightedText,
   Tree,
+  data,
 } from '@C4/CommonComponents'
 import {
   getIdSymbols,
@@ -20,7 +20,7 @@ const renderItem = (itemProps) => {
     : itemProps.data.render
   return <div className={'selection-tactical-symbol'}>
     <Tree.ExpandItem {...itemProps}>
-      <div onClick={(e) => {
+      <div style={{ width: '100%' }} onClick={(e) => {
         if (!itemProps.data.selectable) {
           e.stopPropagation && e.stopPropagation()
         }
@@ -71,24 +71,32 @@ export default class SelectionTacticalSymbol extends React.Component {
       return null
     }
     const treeSymbols = getPartsSymbols(type, code, '')
-    let id
+    let id = null
+    let symbols = null
     const ids = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
     let nameSymbol
-    if (!ids) {
+    if (ids.length === 0) {
       nameSymbol = `${name} *${i18n.NO_APPROPRIATE}*`
-      id = null
-    } else if (id.length !== 1) {
+    } else if (ids.length !== 1) {
       nameSymbol = `${name} *${i18n.MANY_MATCH}*`
-      id = id || null
+      symbols = ids.map((symbol) => {
+        return <Tree.HighlightItem
+          key={symbol.id}
+          data={symbol}
+          filter={{ textFilter: data.TextFilter.create('') }}
+          titleSelector={(symbol) => symbol.name}
+          showTooltip={true}
+        />
+      })
+    } else {
+      id = ids[0].id
     }
     const thisSymbol = id ? {}
       : {
         id,
         name: nameSymbol,
-        render: <div className={'compilation-list compilation-list-first'}>
-          {nameSymbol}<br></br>
-          {'1' + nameSymbol}<br></br>
-          {'2' + nameSymbol}
+        render: <div className={'compilation-list-first'}>
+          {symbols}
         </div>,
       }
     return (
@@ -100,7 +108,7 @@ export default class SelectionTacticalSymbol extends React.Component {
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
-          // opened={true}
+          opened={true}
         >
           {renderItem}
         </FilterInput>
