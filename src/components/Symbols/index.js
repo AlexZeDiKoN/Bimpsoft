@@ -169,6 +169,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
     return null
   }
   let id = null
+  const ids = []
   const isTwoResults = symbols.some((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
@@ -242,17 +243,18 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
         default:
           return false
       }
-      if (id) {
-        return true // имеем более одного совпадения, прекращаем перебор перечня
-      }
+      // if (id) {
+      //   return true // имеем более одного совпадения, прекращаем перебор перечня
+      // }
       id = `${indexParent}_${index}`
+      ids.push(id)
       return false // продолжаем поиск
     })
   })
-  if (isTwoResults) {
-    return undefined // множественное совпадение
+  if (!id) { // (isTwoResults) {
+    return id // не найдены совпадения undefined// множественное совпадение
   }
-  return id
+  return ids
 }
 
 // сборка списка тактических знаков для поиска соответствия на карточках тактических знаков

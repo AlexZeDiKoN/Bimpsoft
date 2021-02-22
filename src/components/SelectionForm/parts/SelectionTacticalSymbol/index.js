@@ -71,15 +71,24 @@ export default class SelectionTacticalSymbol extends React.Component {
       return null
     }
     const treeSymbols = getPartsSymbols(type, code, '')
-    let id = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
-    const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`
-    id = id || null
+    let id
+    const ids = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
+    let nameSymbol
+    if (!ids) {
+      nameSymbol = `${name} *${i18n.NO_APPROPRIATE}*`
+      id = null
+    } else if (id.length !== 1) {
+      nameSymbol = `${name} *${i18n.MANY_MATCH}*`
+      id = id || null
+    }
     const thisSymbol = id ? {}
       : {
         id,
         name: nameSymbol,
         render: <div className={'compilation-list compilation-list-first'}>
-          <HighlightedText text={nameSymbol}/>
+          {nameSymbol}<br></br>
+          {'1' + nameSymbol}<br></br>
+          {'2' + nameSymbol}
         </div>,
       }
     return (
