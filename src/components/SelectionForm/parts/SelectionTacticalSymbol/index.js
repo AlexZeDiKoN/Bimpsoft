@@ -21,7 +21,7 @@ const renderItem = (itemProps) => {
   return <div className={'selection-tactical-symbol'}>
     <Tree.ExpandItem {...itemProps}>
       <div onClick={(e) => {
-        if (itemProps.level === 0) {
+        if (!itemProps.data.selectable) {
           e.stopPropagation && e.stopPropagation()
         }
       }}>

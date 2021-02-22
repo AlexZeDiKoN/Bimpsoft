@@ -322,6 +322,7 @@ export const getPartsSymbols = (type, code, search) => {
         id: `${indexParent}_${index}`,
         name: hint,
         parentID: `${indexParent}`,
+        selectable: true,
         data: JSON.stringify(symbol),
         render: elemToRender,
       }
