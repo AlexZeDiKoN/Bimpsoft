@@ -155,13 +155,13 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     orgStructures,
   } = state
   geometry = List(geometry)
-  const object = WebMapObject({ type, layer, level, geometry, point })
+  let object = WebMapObject({ type, layer, level, geometry, point })
   const affiliationTypeID = orgStructures?.formation?.affiliationTypeID
 
   const isCatalogLayer = isCatalogLayerFunc(state)(layer)
   const commonCatalogLayerProps = getCatalogMetaLayers(state)[layer]
   if (isCatalogLayer && commonCatalogLayerProps) {
-    object.updateIn(propertyPath.PROPERTY_PATH.ATTRIBUTES,
+    object = object.updateIn(propertyPath.PROPERTY_PATH.ATTRIBUTES,
       (attributes) => attributes.merge(commonCatalogLayerProps.attributes ?? {}),
     )
   }
