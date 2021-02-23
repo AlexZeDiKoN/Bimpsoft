@@ -164,7 +164,12 @@ const symbolAttributes = Record(attributesInitValues)
 
 // поиск соответствующего тактического знака в перечне тактических знаков
 export const getIdSymbols = (searchTerms, searchFilter) => {
-  const { code, attributes: amp, type, coordinatesSize } = searchTerms
+  const {
+    code,
+    type,
+    attributes: amp,
+    coordinatesSize,
+  } = searchTerms
   if (!code || !amp) {
     return null
   }
@@ -179,7 +184,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       : parent.children
     // перебор элементов раздела
     sortedPart.forEach((children, index) => {
-      const childrenType = children.amp.type ? children.amp.type : entityKind.POINT
+      const childrenType = children.isSvg ? children.amp.type : entityKind.POINT
       if (type !== childrenType) {
         return false
       }
@@ -279,7 +284,7 @@ export const getPartsSymbols = (type, code, search) => {
       : -2
     const symbolJSX = sortedPart.map((symbol, index) => {
       const { hint, code, isSvg, amp } = symbol
-      const symbolType = amp.type || entityKind.POINT
+      const symbolType = isSvg ? amp.type : entityKind.POINT
       // фильтрация по типу знака
       if (symbolType !== type) {
         return null
