@@ -17,7 +17,7 @@ import i18n from '../../i18n'
 import { MOUSE_ENTER_DELAY } from '../../constants/tooltip'
 import { BlockHotKeyContainer } from '../common/HotKeys'
 import { shortcuts } from '../../constants'
-import { isCatalogLayer, catalogMapId } from '../../constants/catalogs'
+import { objectHas } from '../../utils/helpers'
 import LayersControlsComponent from './LayersControlsComponent'
 import ItemTemplate from './ItemTemplate'
 
@@ -109,6 +109,7 @@ export default class LayersComponent extends React.Component {
       is3DMapMode,
       onCloseMapSections,
       isMapCOP,
+      catalogsMeta,
     } = this.props
 
     const { showLayers, showPeriod, showCloseForm, valueFilterLayers } = this.state
@@ -116,8 +117,8 @@ export default class LayersComponent extends React.Component {
     const filteredIds = this.getFilteredIds(textFilter, byIds)
     const expandedKeys = textFilter ? filteredIds : expandedIds
     const disabledControlButton = !roots?.length
-    const isCurrentLayerCatalog = isCatalogLayer(selectedLayerId)
-    const mapsIncludesCatalog = roots.includes(`m${catalogMapId}`)
+    const isCurrentLayerCatalog = objectHas(catalogsMeta.layers, selectedLayerId)
+    const mapsIncludesCatalog = roots.includes(`m${catalogsMeta.mapId}`)
 
     return (
       <div className="layers-component">
@@ -267,4 +268,5 @@ LayersComponent.propTypes = {
   isSelectedNewCatalogShapeType: PropTypes.bool,
   isEditMode: PropTypes.bool,
   is3DMapMode: PropTypes.bool.isRequired,
+  catalogsMeta: PropTypes.object,
 }

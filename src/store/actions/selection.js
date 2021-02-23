@@ -14,10 +14,12 @@ import {
   selectedLayerId,
   selectedNewShape,
   catalogCurrentLayerAttributesFields,
+  isCatalogLayerFunc,
+  getCatalogMetaLayers,
 } from '../selectors'
 import { GROUPS, entityKindCanMirror } from '../../components/WebMap/entityKind'
 import { createObjectRecord, WebMapAttributes, WebMapObject } from '../reducers/webMap'
-import { Align, catalogs as catalogsConstants, propertyPath } from '../../constants'
+import { Align, propertyPath } from '../../constants'
 import { amps } from '../../constants/symbols'
 import {
   layersCOP,
@@ -145,18 +147,19 @@ export const setNewShape = (newShape) => ({
 })
 
 export const finishDrawNewShape = ({ geometry, point }) => withNotification(async (dispatch, getState) => {
+  const state = getState()
   const {
     selection: { newShape: { type } },
     layers: { selectedId: layer },
     webMap: { subordinationLevel: level },
     orgStructures,
-  } = getState()
+  } = state
   geometry = List(geometry)
   const object = WebMapObject({ type, layer, level, geometry, point })
   const affiliationTypeID = orgStructures?.formation?.affiliationTypeID
 
-  const isCatalogLayer = catalogsConstants.isCatalogLayer(layer)
-  const commonCatalogLayerProps = catalogsConstants.catalogsCommonData[layer]
+  const isCatalogLayer = isCatalogLayerFunc(state)(layer)
+  const commonCatalogLayerProps = getCatalogMetaLayers(state)[layer]
   if (isCatalogLayer && commonCatalogLayerProps) {
     object.updateIn(propertyPath.PROPERTY_PATH.ATTRIBUTES,
       (attributes) => attributes.merge(commonCatalogLayerProps.attributes ?? {}),
@@ -553,11 +556,12 @@ const checkCatalogSuccess = () => (dispatch, getState) => {
 export const checkSaveSymbol = () =>
   withNotification((dispatch, getState) => {
     dispatch(disableSaveButton())
+    const state = getState()
     const {
       selection: { preview },
       webMap: { objects },
       layers: { selectedId },
-    } = getState()
+    } = state
     const { type, unit } = preview
     if (type === SelectionTypes.POINT && objects && unit !== null) {
       const { code, id } = preview
@@ -575,7 +579,7 @@ export const checkSaveSymbol = () =>
       }
       dispatch(changeLayerByCredibilityCOP())
     }
-    if (catalogsConstants.isCatalogLayer(selectedId) && !dispatch(checkCatalogSuccess())) {
+    if (isCatalogLayerFunc(state)(selectedId) && !dispatch(checkCatalogSuccess())) {
       return false
     }
     return dispatch(savePreview())
@@ -585,6 +589,6 @@ export const onToggleCatalogElementSelection = () => (dispatch, getState) => {
   const state = getState()
   const selectedLayer = selectedLayerId(state)
   const selectedShapeType = selectedNewShape(state)?.type
-  const commonLayerType = catalogsConstants.catalogsCommonData[selectedLayer]?.type
+  const commonLayerType = getCatalogMetaLayers(state)[selectedLayer]?.type
   dispatch(setNewShape(selectedShapeType !== commonLayerType ? { type: commonLayerType } : {}))
 }

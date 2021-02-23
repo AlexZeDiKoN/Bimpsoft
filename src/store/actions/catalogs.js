@@ -1,14 +1,14 @@
 import { action } from '../../utils/services'
 import { TOPOCODES } from '../../constants/TopoObj'
-import { catalogs as catalogsConstants } from '../../constants'
-import { getContactsInfo, getObjectsInfo } from '../selectors'
-import { asyncAction } from './index'
+import { getCatalogMeta, getCatalogMetaLayers, getContactsInfo, getObjectsInfo } from '../selectors'
+import { asyncAction, maps } from './index'
 
 export const CATALOG_SET_TOPOGRAPHIC_FIELDS = action('CATALOG_SET_TOPOGRAPHIC_FIELDS')
 export const CATALOG_SET_TOPOGRAPHIC_BY_IDS = action('CATALOG_SET_TOPOGRAPHIC_BY_IDS')
 export const CATALOG_SET_ATTRIBUTES = action('CATALOG_SET_ATTRIBUTES')
 export const CATALOG_SET_ERRORS = action('CATALOG_SET_ERRORS')
 export const CATALOG_SET_CONTACT_NAME = action('CATALOG_SET_CONTACT_NAME')
+export const CATALOG_SET_META = action('CATALOG_SET_META')
 
 export const setTopographicObjectFields = (payload) => ({
   type: CATALOG_SET_TOPOGRAPHIC_FIELDS,
@@ -24,6 +24,15 @@ const setContactName = (payload) => ({
   type: CATALOG_SET_CONTACT_NAME,
   payload,
 })
+
+export const loadCatalogsMetaIfNotExist = () =>
+  asyncAction.withNotification(async (dispatch, getState, { catalogApi }) => {
+    const catalogMeta = getCatalogMeta(getState())
+    if (!Object.values(catalogMeta.layers).length && !catalogMeta.mapId) { // if not loaded check
+      const payload = await catalogApi.getCatalogMeta()
+      dispatch({ type: CATALOG_SET_META, payload })
+    }
+  })
 
 export const getTopographicObjectFields = () =>
   asyncAction.withNotification(async (dispatch, _, { catalogApi }) =>
@@ -68,7 +77,12 @@ export const getCatalogAttributesFields = (layer) =>
     if (isAttributesExistInState) {
       return true
     }
-    const catalogId = catalogsConstants.catalogsCommonData[layer].catalog
+    const catalogId = getCatalogMetaLayers(state)[layer]?.catalog
     const catalogData = await catalogApi.getCatalogItemInfo(catalogId)
     dispatch(setCatalogAttributes({ name: layer, value: catalogData?.attributes ?? [] }))
   })
+
+export const loadCatalogsMap = () => asyncAction.withNotification(async (dispatch, getState) => {
+  const catalogMeta = getCatalogMeta(getState())
+  await dispatch(maps.openMapFolder(catalogMeta.mapId))
+})

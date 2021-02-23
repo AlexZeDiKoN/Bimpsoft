@@ -48,6 +48,7 @@ import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 import { settings } from '../../constants/drawLines'
 import { targetDesignationCode } from '../../constants/targetDesignation'
 import { linesParams } from '../../constants/params'
+import { objectHas } from '../../utils/helpers'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -420,6 +421,7 @@ export default class WebMap extends React.PureComponent {
     myContactId: PropTypes.number,
     setCatalogModalData: PropTypes.func,
     topographicObjectsList: PropTypes.array,
+    catalogMeta: PropTypes.func,
   }
 
   constructor (props) {
@@ -1544,7 +1546,7 @@ export default class WebMap extends React.PureComponent {
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
       const isHighlightedItem = Boolean(highlighted?.list?.includes(item.id))
       const hidden = !isSelectedItem && !isHighlightedItem && (
-        (itemLevel < levelEdge) ||
+        (!item.catalogId && itemLevel < levelEdge) || // если не каталог то смотрим на уровень подчинения значка
         (!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) ||
         (Boolean(item._groupParent) && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
@@ -1939,13 +1941,14 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       showAmplifiers,
       shownAmplifiers,
+      catalogMeta,
     } = this.props
 
     const {
       id,
       attributes,
       // TODO: тимчасово відключаємо показ характеристик підрозділу
-      // layer: layerInner,
+      layer: layerInner,
       // unit,
     } = object
 
@@ -1966,6 +1969,11 @@ export default class WebMap extends React.PureComponent {
       layer.pm.options.snappable = false // отключаем примагничивание маркеров к объектам при их перемещении
       layer.id = id
       layer.object = object
+
+      if (objectHas(catalogMeta.layers, layerInner)) {
+        layer.catalogId = catalogMeta.layers[layerInner].catalog
+        layer.options.generalizable = false
+      }
       // layer.on('click', this.clickOnLayer)
       layer.on('marker:dblclick', this.dblClickOnLayer)
       // TODO: тимчасово відключаємо показ характеристик підрозділу

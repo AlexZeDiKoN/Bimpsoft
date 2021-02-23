@@ -1,20 +1,27 @@
 import { connect } from 'react-redux'
 import { PointsFilterComponent } from '../components/Filter/Sidebar'
 import { onChangeMilSymbolVisible, openMilSymbolModal, setSearchFilter } from '../store/actions/filter'
-import { filterSearch, getCurrentFilters, getFilteredObjectsCount, mapCOP, selectedLayerId } from '../store/selectors'
+import {
+  filterSearch,
+  getCurrentFilters,
+  getFilteredObjectsCount,
+  mapCOP,
+  selectedLayerId,
+  isCatalogLayerFunc,
+} from '../store/selectors'
 import { setModalData } from '../store/actions/task'
 import { CREATE_NEW_LAYER_TYPE } from '../constants/modals'
-import { isCatalogLayer } from '../constants/catalogs'
 
 const openModalCreateLayer = setModalData.bind(null, { type: CREATE_NEW_LAYER_TYPE })
 
 const mapStateToProps = (state) => {
   const items = getCurrentFilters(state)
+  const selectedLayer = selectedLayerId(state)
   return {
     items,
     search: filterSearch(state),
     isCOP: mapCOP(state),
-    isCatalogLayer: isCatalogLayer(selectedLayerId(state)),
+    isCatalogLayer: isCatalogLayerFunc(state)(selectedLayer),
     filtersCount: getFilteredObjectsCount(state),
     isSaveActive: Boolean(items.length),
   }
