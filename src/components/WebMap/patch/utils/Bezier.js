@@ -1,3 +1,4 @@
+import Bezier from 'bezier-js'
 import { epsilon } from './helpers'
 
 // ------------------------ Функції роботи з кривими Безьє -------------------------------------------------------------
@@ -114,4 +115,30 @@ export function bezierPoint (p0, p1, p2, p3, t) {
 
 export function halfPoint (p0, p1, p2, p3) {
   return bezierPoint(p0, p1, p2, p3, 0.5)
+}
+
+export const prepareBezierPathToGeometry = (ring, steps = 20) => {
+  const points = ring.map(({ x, y }) => [ x, y ])
+  const prev = (idx) => idx > 0 ? idx - 1 : points.length - 1
+  const next = (idx) => idx < points.length - 1 ? idx + 1 : 0
+  const pt = ([ x, y ]) => ({ x, y })
+
+  let result, cp1, cp2, last, mem
+
+  [ cp1, cp2 ] = calcControlPoint(points[prev(0)], points[0], points[next(0)])
+  ring[0].cp1 = pt(cp1)
+  ring[0].cp2 = pt(cp2)
+  last = cp1
+  mem = cp2
+  result = [ ring[0] ]
+  for (let i = 1; i < points.length; i++) {
+    [ cp1, cp2 ] = calcControlPoint(points[prev(i)], points[i], points[next(i)])
+    ring[i].cp1 = pt(cp1)
+    ring[i].cp2 = pt(cp2)
+    const i1 = new Bezier([ ...points[prev(i)], ...mem, ...cp1, ...points[i] ]).getLUT(steps)
+    result = result.concat(i1)
+    mem = cp2
+  }
+  result = result.concat(new Bezier([ ...mem, ...last, ...points[0] ]).getLUT(steps))
+  return result
 }

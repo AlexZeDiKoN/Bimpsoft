@@ -1,7 +1,6 @@
 import { List } from 'immutable'
 import { utils } from '@C4/CommonComponents'
 import * as R from 'ramda'
-import Bezier from 'bezier-js'
 import L from 'leaflet'
 import cloneDeep from 'lodash/cloneDeep'
 import { action } from '../../utils/services'
@@ -29,6 +28,7 @@ import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogsTopographicByIds } from '../selectors/catalogs'
 import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
+import { prepareBezierPathToGeometry } from '../../components/WebMap/patch/utils/Bezier'
 import { setModalData, close } from './task'
 import { copyList } from './webMap'
 import { getCatalogAttributesFields, setTopographicObjectByIds } from './catalogs'
@@ -186,13 +186,8 @@ const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
         flexGrid._map = { latLngToLayerPoint }
         flexGrid._project()
       }
-      const layerPoints = flexGrid._borderLine()
-      const group2points = layerPoints
-        .map((item, index) => [ layerPoints[index - 1 < 0 ? layerPoints.length - 1 : index - 1], item ])
-      const calculatedBezierPath = group2points
-        .map(([ { cp2, ...rest1 }, item2 ]) => new Bezier(rest1, cp2, item2).getLUT(20))
-        .flat(1)
-      points = calculatedBezierPath.map(layerPointToLatLng)
+      const layerPoints = prepareBezierPathToGeometry(flexGrid._borderLine())
+      points = layerPoints.map(layerPointToLatLng)
     } else {
       const { _southWest: firstPoint, _northEast: secondPoint } = window.webMap?.getBoundsMap() || state.webMap.bounds
       points = [ firstPoint, secondPoint ]
