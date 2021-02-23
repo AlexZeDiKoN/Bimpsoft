@@ -4,9 +4,8 @@ import * as R from 'ramda'
 import L from 'leaflet'
 import cloneDeep from 'lodash/cloneDeep'
 import { action } from '../../utils/services'
-import { CATALOG_FILTER_TYPE, MIL_SYMBOL_FILTER_TYPE, TOPOGRAPHIC_OBJECT_FILTER_TYPE } from '../../constants/modals'
+import { MIL_SYMBOL_FILTER_TYPE, TOPOGRAPHIC_OBJECT_FILTER_TYPE } from '../../constants/modals'
 import {
-  CATALOG_FILTERS,
   LOADING,
   LOADING_TOPOGRAPHIC_OBJECT,
   MIL_SYMBOL_FILTER,
@@ -30,22 +29,21 @@ import { catalogsTopographicByIds } from '../selectors/catalogs'
 import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
 import { prepareBezierPathToGeometry } from '../../components/WebMap/patch/utils/Bezier'
 import { setModalData, close } from './task'
+import { TopoObj } from '../../constants'
 import { copyList } from './webMap'
-import { getCatalogAttributesFields, setTopographicObjectByIds } from './catalogs'
+import { getCatalogAttributesFields, onExpandTopographicItem, setTopographicObjectByIds } from './catalogs'
 import { asyncAction, layers } from './index'
 
 const { vld } = utils
 
 export const MERGE_FILTERS = action('MERGE_FILTERS')
 export const mergeFilter = (name, value, index) => ({ type: MERGE_FILTERS, payload: { name, value, index } })
-export const setFilterCatalog = mergeFilter.bind(null, CATALOG_FILTERS)
 export const mergeMilSymbolFilter = mergeFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setTopographicObjectFilters = mergeFilter.bind(null, TOPOGRAPHIC_OBJECT_FILTER)
 export const setLoadingTopographicObjects = mergeFilter.bind(null, LOADING_TOPOGRAPHIC_OBJECT)
 
 export const REMOVE_FILTER = action('REMOVE_FILTER')
 export const removeFilter = (name, value) => ({ type: REMOVE_FILTER, payload: { name, value } })
-export const removeFilterCatalog = removeFilter.bind(null, CATALOG_FILTERS)
 export const removeFilterTopographicObjects = removeFilter.bind(null, TOPOGRAPHIC_OBJECT_FILTER)
 
 export const SET_FILTERS = action('SET_FILTERS')
@@ -55,7 +53,6 @@ export const setSearchTopographicFilter = setFilter.bind(null, SEARCH_TOPOGRAPHI
 export const setMilSymbolFilter = setFilter.bind(null, MIL_SYMBOL_FILTER)
 export const setLoading = setFilter.bind(null, LOADING)
 
-export const openModalCatalogFilter = (id) => (dispatch) => dispatch(setModalData({ type: CATALOG_FILTER_TYPE, id }))
 export const openModalTopographicFilter = (id) => (dispatch) =>
   dispatch(setModalData({ type: TOPOGRAPHIC_OBJECT_FILTER_TYPE, id }))
 
@@ -155,6 +152,7 @@ export const onChangeVisibleTopographicObject = (shown, id) => asyncAction.withN
     dispatch(setTopographicObjectByIds(result))
     !shown && !filtersData?.filters && dispatch(setTopographicObjectFilters({ [id]: { ...filtersData, objects: [] } }))
     shown && !filtersData?.filters && await dispatch(loadTopographicObjectById(id))
+    !shown && dispatch(onExpandTopographicItem(id, false))
   })
 
 export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) => {
@@ -164,6 +162,17 @@ export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) =
   dispatch(loadTopographicObjectById(id))
   dispatch(close())
 }
+
+const setAttributesName = (topocodeData, objects) => objects.map(({ properties: prop, ...rest }) => {
+  const properties = Object.fromEntries(topocodeData.attributes.map(({ id, name, value }) => {
+    const isSelectValue = Array.isArray(value)
+    const textValue = isSelectValue ? value.find(({ id: valueId }) => valueId === prop[id])?.name ?? '' : prop[id]
+    return [ name, textValue ]
+  }))
+  properties[TopoObj.OBJECT_TYPE] = topocodeData.name
+  properties[TopoObj.TOPCODE] = topocodeData.id
+  return { ...rest, properties, id: prop.id }
+})
 
 const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
   async (dispatch, getState, { catalogApi }) => {
@@ -194,8 +203,10 @@ const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
     }
     delete filters[IS_OPERATION_ZONE]
     const objects = await catalogApi.getTopographicObjects({ topocode, points, zoom: state.webMap.zoom, filters })
+      .then((objects) => setAttributesName(catalogsTopographicByIds(state)[topocode], objects))
       .finally(() => { dispatch(setLoadingTopographicObjects({ [topocode]: false })) })
     dispatch(setTopographicObjectFilters({ [topocode]: { ...filtersData, objects } }))
+    dispatch(onExpandTopographicItem(topocode, true))
   })
 
 export const onRemoveTopographicObjectFilter = () => (dispatch, getState) => {

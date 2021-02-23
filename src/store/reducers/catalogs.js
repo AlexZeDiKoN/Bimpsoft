@@ -5,18 +5,20 @@ import { alwaysArray } from '../../utils/always'
 const { getNormilizeTree } = data
 
 const DEFAULT_OBJECT = Object.freeze({})
+const isBooleanAnd = (state, value) => typeof value === 'boolean' && value === state
 
 const initState = {
   attributes: {},
   contacts: {},
   errors: DEFAULT_OBJECT,
+  topographicPreview: [],
   catalogMeta: {
     mapId: '',
     layers: DEFAULT_OBJECT,
   },
   topographicObjectsData: {
     byIds: {},
-    roots: [],
+    expandedKeys: {},
   },
 }
 
@@ -25,7 +27,7 @@ export default function reducer (state = initState, action) {
   switch (type) {
     case catalogs.CATALOG_SET_TOPOGRAPHIC_FIELDS: {
       const treeData = getNormilizeTree(payload ?? [])
-      return { ...state, topographicObjectsData: { ...state.topographicObjectsData, ...treeData } }
+      return { ...state, topographicObjectsData: { ...state.topographicObjectsData, byIds: treeData.byIds } }
     }
     case catalogs.CATALOG_SET_TOPOGRAPHIC_BY_IDS: {
       return { ...state, topographicObjectsData: { ...state.topographicObjectsData, byIds: payload } }
@@ -36,6 +38,8 @@ export default function reducer (state = initState, action) {
     }
     case catalogs.CATALOG_SET_ERRORS:
       return { ...state, errors: payload ?? DEFAULT_OBJECT }
+    case catalogs.CATALOG_SET_TOPOGRAPHIC_PREVIEW:
+      return { ...state, topographicPreview: payload }
     case catalogs.CATALOG_SET_CONTACT_NAME:
       return { ...state, contacts: { ...state.contacts, ...payload } }
     case catalogs.CATALOG_SET_META:
@@ -47,6 +51,16 @@ export default function reducer (state = initState, action) {
           { layers: Object.fromEntries(alwaysArray(payload?.layers).map((item) => [ item.layer, item ])) },
         ),
       }
+    case catalogs.CATALOG_TOGGLE_EXPAND_TOPOGRAPHIC: {
+      const expandedKeys = { ...state.topographicObjectsData.expandedKeys }
+      const { id, status } = payload
+      if (id in expandedKeys || isBooleanAnd(false, status)) {
+        delete expandedKeys[id]
+      } else {
+        expandedKeys[id] = true
+      }
+      return { ...state, topographicObjectsData: { ...state.topographicObjectsData, expandedKeys } }
+    }
     default:
       return state
   }

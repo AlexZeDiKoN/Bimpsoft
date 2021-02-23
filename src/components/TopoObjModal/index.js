@@ -62,7 +62,7 @@ export default class TopoObjModal extends React.Component {
 
     const objectsCount = features ? features.length : undefined
     const getValue = (key) => features[ selectedItem ].properties[ key ]
-    const renderIfExist = (key) => getValue(key) && renderElement(key, getValue(key))
+    const renderIfExist = (key) => getValue(key) ? renderElement(key, getValue(key)) : ''
 
     return <div className="topographic-object--wrap">
       <Wrapper
