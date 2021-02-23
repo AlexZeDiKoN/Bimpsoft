@@ -15,6 +15,9 @@ import i18n from '../../../../i18n'
 import { objectIsFunction } from '../../../../utils/whatIsIt'
 
 const renderItem = (itemProps) => {
+  if (!itemProps.data.render) {
+    return null
+  }
   const render = objectIsFunction(itemProps.data.render)
     ? itemProps.data.render(itemProps.filter?.textFilter)
     : itemProps.data.render
@@ -73,42 +76,54 @@ export default class SelectionTacticalSymbol extends React.Component {
     const treeSymbols = getPartsSymbols(type, code, '')
     let id = null
     let symbols = null
+    let thisSymbol
     const ids = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
-    let nameSymbol
-    if (ids.length === 0) {
-      nameSymbol = `${name} *${i18n.NO_APPROPRIATE}*`
-    } else if (ids.length !== 1) {
-      nameSymbol = `${name} *${i18n.MANY_MATCH}*`
-      symbols = ids.map((symbol) => {
+
+    if (ids.length === 0) { // нет совпадений
+      thisSymbol = {
+        id,
+        name: `${name} *${i18n.NO_APPROPRIATE}*`,
+        render: null,
+      }
+    } else if (ids.length === 1) { // однозначное соответствие
+      id = ids[0].id
+    } else { // множественное соответствие
+      symbols = ids.map((symbol, index) => {
         return <Tree.HighlightItem
           key={symbol.id}
           data={symbol}
           filter={{ textFilter: data.TextFilter.create('') }}
-          titleSelector={(symbol) => symbol.name}
+          titleSelector={(symbol) => `${index + 1}. ${symbol.name}`}
           showTooltip={true}
         />
       })
-    } else {
-      id = ids[0].id
-    }
-    const thisSymbol = id ? {}
-      : {
+      thisSymbol = {
         id,
-        name: nameSymbol,
+        name: `${name} *${i18n.MANY_MATCH}*`,
         render: <div className={'compilation-list-first'}>
+          <Tree.HighlightItem
+            key={0}
+            data={null}
+            filter={{ textFilter: data.TextFilter.create('') }}
+            titleSelector={() => 'Знайдені збіги:'}
+            fullTitleSelector={() => 'Знайдені збіги умовного знака з переліком'}
+            showTooltip={true}
+          />
           {symbols}
         </div>,
       }
+    }
+
     return (
       <div className={'symbol-container'}>
         <FilterInput
-          values={id ? treeSymbols : [ thisSymbol, ...treeSymbols ]}
+          values={thisSymbol ? [ thisSymbol, ...treeSymbols ] : treeSymbols}
           value={id}
           name={'id'}
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
-          opened={true}
+          // opened={true}
         >
           {renderItem}
         </FilterInput>

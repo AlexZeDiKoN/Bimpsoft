@@ -8,7 +8,20 @@
          width: 1px;
        }
      }
+
      .dzvin-hover-item .content {
+
+       .compilation-list-first{
+         margin-right: 1px;
+         & > div {
+           white-space: nowrap;
+           overflow: hidden;
+           text-overflow: ellipsis;
+           margin-right: 1px;
+           font-size: 12px;
+         }
+       }
+
        .compilation-list-after {
          display: flex;
          align-items: center;
@@ -26,14 +39,6 @@
          }
 
        }
-
-       .compilation-list-first {
-           width: 100%;
-           text-overflow: ellipsis;
-           white-space: nowrap;
-           overflow: hidden;
-           display: inline;
-         }
 
        .symbol {
          width: 54px;
