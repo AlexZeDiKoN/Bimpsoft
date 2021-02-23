@@ -1,19 +1,17 @@
 import { batchActions } from 'redux-batched-actions'
 import { utils } from '@C4/CommonComponents'
 import moment from 'moment'
-import { MapSources, ZOOMS, paramsNames, access, TopoObj } from '../../constants'
+import { MapSources, ZOOMS, paramsNames, access } from '../../constants'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
 import { validateObject } from '../../utils/validation'
 import { useArraysIn } from '../../utils/immutable'
 import entityKind from '../../components/WebMap/entityKind'
-import { activeMapSelector, catalogsFields, objects as mapObjects } from '../selectors'
+import { activeMapSelector, objects as mapObjects } from '../selectors'
 import * as viewModesKeys from '../../constants/viewModesKeys'
 import { amps } from '../../constants/symbols'
-import { DATE_TIME_FORMAT } from '../../constants/formats'
 import { getFormationInfo, reloadUnits } from './orgStructures'
 import * as notifications from './notifications'
-import { withNotification } from './asyncAction'
 import { asyncAction, flexGrid, layers, selection, changeLog } from './'
 
 const { settings } = utils
@@ -859,36 +857,17 @@ export const highlightObject = (id) => ({
     : null,
 })
 
-const getTextSelectorByInputType = (type) => {
-  switch (type) {
-    case 'date': return (data) => moment(data).isValid() ? moment(data).format(DATE_TIME_FORMAT) : data
-    default: return (data) => data
-  }
-}
-
-export const setCatalogModalData = (data) => withNotification(async (dispatch, getState) => {
-  if (!data?.visible) {
-    return dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: false } })
-  }
-  const state = getState()
-  const { object = {}, location, layer } = data ?? {}
-  const attributes = catalogsFields(state)[object?.catalogId] ?? []
-
-  const fieldsLabels = Object.fromEntries(attributes
-    .filter(({ typeOfValue }) => typeOfValue === 'string' || typeOfValue === 'number')
-    .map(({ fieldName, label, typeOfInput }) => [ fieldName, { label, getText: getTextSelectorByInputType(typeOfInput) } ]),
-  )
-  const properties = Object.fromEntries(
-    Object.entries(object)
-      .filter(([ key, value ]) => Boolean(value) && Boolean(fieldsLabels[key]))
-      .map(([ key, value ]) => {
-        const { label, getText } = fieldsLabels[key]
-        return [ label, getText(value) ]
-      }),
-  )
-  properties[TopoObj.PROPER_NAME] = i18n.CATALOGS
-  dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: true, properties, location, layer } })
+export const setCatalogModal = (payload = { visible: false }) => ({
+  type: actionNames.SET_CATALOG_MODAL_DATA,
+  payload,
 })
+
+export const toggleCatalogModal = ({ feature: features, latlng: location }) => (dispatch, getState) => {
+  const isOpenedBefore = getState().webMap.catalogModal?.features?.[0].geometry === features.geometry
+  isOpenedBefore
+    ? dispatch(setCatalogModal())
+    : dispatch(setCatalogModal({ visible: true, features: [ features ], location }))
+}
 
 export const setObjectsCurrentDate = (idsList) => (dispatch, getState) => {
   const objectsList = mapObjects(getState())

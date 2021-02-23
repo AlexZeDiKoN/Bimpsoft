@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 import { MovablePanel } from '@C4/CommonComponents'
 import TopoObjModal from '../components/TopoObjModal'
-import { actionNames } from '../store/actions/webMap'
+import { setCatalogModal } from '../store/actions/webMap'
 import { CATALOG_OBJECT_CARD } from '../i18n/ua'
 
 const emptyFunc = () => null
+const toFixed = (item, round = 6) => item ? item.toFixed(round) : item
+const normalizeLocation = (item) => ({ lat: toFixed(item?.lat), lng: toFixed(item?.lng) })
 
 const CatalogItemModal = ({ wrapper }) => {
-  const data = useSelector((state) => state?.webMap?.catalogModalData)
+  const data = useSelector((state) => state?.webMap?.catalogModal)
   const dispatch = useDispatch()
-  const onClose = () => dispatch({ type: actionNames.SET_CATALOG_MODAL_DATA, payload: { visible: false } })
+  const onClose = () => dispatch(setCatalogModal())
   const props = {
     serviceStatus: true,
     selectTopographicItem: emptyFunc,
@@ -19,11 +21,9 @@ const CatalogItemModal = ({ wrapper }) => {
     wrapper,
     topographicObjects: {
       visible: data.visible,
-      location: data?.location,
+      location: normalizeLocation(data?.location),
       selectedItem: 0,
-      features: [ {
-        properties: data.properties,
-      } ],
+      features: data?.features,
     },
   }
   return <TopoObjModal {...props} title={CATALOG_OBJECT_CARD}/>

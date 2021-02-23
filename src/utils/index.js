@@ -6,6 +6,7 @@ import * as mapObjConvertor from './mapObjConvertor'
 import getLoopOrderStartingFromNextValue from './getLoopOrderStartingFromNextValue'
 import { LS } from './localStorage'
 import * as whatIsIt from './whatIsIt'
+import * as selectors from './selectors'
 import * as alwaysType from './always'
 
 export * from './redux'
@@ -20,5 +21,6 @@ export {
   LS,
   getLoopOrderStartingFromNextValue,
   whatIsIt,
+  selectors,
   alwaysType,
 }

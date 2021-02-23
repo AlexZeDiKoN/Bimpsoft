@@ -1,3 +1,11 @@
+.expand-icon(@rotate: 0) {
+    height: 21px;
+    font-size: 0.75em;
+    width: 21px;
+    transition: 0.3s;
+    transform: rotate(@rotate);
+}
+
 .sidebar__filter {
     &--list-item {
         display: flex;
@@ -7,6 +15,14 @@
         background: #EDEDED;
         border-top: 1px solid #C1C1C1;
         width: 100%;
+
+        .expand-icon-expanded{
+            .expand-icon(90deg);
+        }
+
+        .expand-icon-collapse {
+            .expand-icon(-90deg);
+        }
 
         .loaderContainer{
             padding: 20px 10px;

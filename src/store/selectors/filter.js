@@ -4,7 +4,6 @@ import { model } from '@C4/MilSymbolEditor'
 import { data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
 import {
-  CATALOG_FILTERS,
   MIL_SYMBOL_FILTER,
   SEARCH_FILTER,
   LOADING,
@@ -91,8 +90,6 @@ const filterPointType = (filter, current, isCatalogLayerFunc) => {
 }
 // ------------------------------------ selectors ---------------------------------------------------------------
 
-export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
-export const catalogsFields = (state) => state.catalogs.attributes
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
 export const filterTopographicSearch = (state) => state.filter[SEARCH_TOPOGRAPHIC_FILTER]

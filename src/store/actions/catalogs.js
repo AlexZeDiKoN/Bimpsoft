@@ -1,6 +1,6 @@
 import { action } from '../../utils/services'
 import { TOPOCODES } from '../../constants/TopoObj'
-import { getCatalogMeta, getCatalogMetaLayers, getContactsInfo, getObjectsInfo } from '../selectors'
+import { getCatalogMeta, getCatalogMetaLayers, catalogsTopographicPreview, getContactsInfo, getObjectsInfo } from '../selectors'
 import { asyncAction, maps } from './index'
 
 export const CATALOG_SET_TOPOGRAPHIC_FIELDS = action('CATALOG_SET_TOPOGRAPHIC_FIELDS')
@@ -9,6 +9,8 @@ export const CATALOG_SET_ATTRIBUTES = action('CATALOG_SET_ATTRIBUTES')
 export const CATALOG_SET_ERRORS = action('CATALOG_SET_ERRORS')
 export const CATALOG_SET_CONTACT_NAME = action('CATALOG_SET_CONTACT_NAME')
 export const CATALOG_SET_META = action('CATALOG_SET_META')
+export const CATALOG_TOGGLE_EXPAND_TOPOGRAPHIC = action('CATALOG_TOGGLE_EXPAND_TOPOGRAPHIC')
+export const CATALOG_SET_TOPOGRAPHIC_PREVIEW = action('CATALOG_SET_TOPOGRAPHIC_PREVIEW')
 
 export const setTopographicObjectFields = (payload) => ({
   type: CATALOG_SET_TOPOGRAPHIC_FIELDS,
@@ -24,6 +26,19 @@ const setContactName = (payload) => ({
   type: CATALOG_SET_CONTACT_NAME,
   payload,
 })
+
+export const onExpandTopographicItem = (id, status) => ({
+  type: CATALOG_TOGGLE_EXPAND_TOPOGRAPHIC,
+  payload: { id, status },
+})
+
+export const onPreviewTopographicItem = (add, remove) => (dispatch, getState) => {
+  const previewList = [ ...catalogsTopographicPreview(getState()) ]
+  const isArrayRemove = Array.isArray(remove)
+  const payload = (add ? previewList.concat(add) : previewList)
+    .filter((item) => isArrayRemove ? !remove.includes(item) : item !== remove)
+  dispatch({ type: CATALOG_SET_TOPOGRAPHIC_PREVIEW, payload })
+}
 
 export const loadCatalogsMetaIfNotExist = () =>
   asyncAction.withNotification(async (dispatch, getState, { catalogApi }) => {

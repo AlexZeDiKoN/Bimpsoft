@@ -5,14 +5,17 @@ import memo from 'memoize-one'
 import { SidebarWrap } from '../../common/Sidebar'
 import i18n from '../../../i18n'
 import VisibilityButton from '../../common/VisibilityButton'
-import { Item } from './TopographicItem'
+import { selectors } from '../../../utils'
+import { getChildrenName, Item } from './TopographicItem'
 import './style.css'
 
 const { TextFilter } = data
 const { common: { TreeComponent: { TreeComponentUncontrolled } } } = components
 
-const testName = (textFilter, name) => textFilter ? textFilter.test(name) : true
 const getTextFilter = memo((search) => TextFilter.create(search))
+const renderChildren = (items) => items.map(({ item }) => item)
+const getValue = (item) => getChildrenName(item) || item.name
+const getFilteredIds = TextFilter.getFilteredIdsFunc(getValue, selectors.getId, selectors.getParentId)
 
 export const TopographicObjectsFilterComponent = ({
   roots,
@@ -25,6 +28,10 @@ export const TopographicObjectsFilterComponent = ({
   onFilterClick,
   preloadFields,
   loadingObjects,
+  expandedKeys,
+  onExpand,
+  onPreview,
+  onOpenModal,
 }) => {
   React.useEffect(() => {
     async function load () { await preloadFields() }
@@ -44,12 +51,20 @@ export const TopographicObjectsFilterComponent = ({
     onFilterClick,
     onVisibleClick: onChangeVisible,
     loadingObjects,
-  }), [ activeFilters, filterCount, onChangeVisible, onFilterClick, textFilter, loadingObjects ])
+    onPreview,
+    onOpenModal,
+  }), [
+    activeFilters,
+    filterCount,
+    textFilter,
+    onFilterClick,
+    onChangeVisible,
+    loadingObjects,
+    onPreview,
+    onOpenModal,
+  ])
 
-  const filteredIds = React.useMemo(() => {
-    const filtered = items.map(({ id, name }) => [ id, testName(textFilter, name) ])
-    return Object.fromEntries(filtered)
-  }, [ items, textFilter ])
+  const filteredIds = React.useMemo(() => getFilteredIds(textFilter, byIds), [ byIds, textFilter ])
 
   return <SidebarWrap
     title={i18n.TOPOGRAPHIC_OBJECTS}
@@ -67,11 +82,13 @@ export const TopographicObjectsFilterComponent = ({
     <Scrollbar>
       <TreeComponentUncontrolled
         commonData={commonData}
+        expandedKeys={expandedKeys}
+        onExpand={onExpand}
         byIds={byIds}
         roots={roots}
         itemTemplate={Item}
         filteredIds={filteredIds}
-      />
+      >{renderChildren}</TreeComponentUncontrolled>
     </Scrollbar>
   </SidebarWrap>
 }
@@ -79,6 +96,7 @@ export const TopographicObjectsFilterComponent = ({
 TopographicObjectsFilterComponent.propTypes = {
   roots: PropTypes.array,
   byIds: PropTypes.object,
+  expandedKeys: PropTypes.object,
   loadingObjects: PropTypes.object,
   search: PropTypes.string,
   onSearch: PropTypes.func,
@@ -87,4 +105,7 @@ TopographicObjectsFilterComponent.propTypes = {
   activeFilters: PropTypes.object,
   onFilterClick: PropTypes.func,
   preloadFields: PropTypes.func,
+  onExpand: PropTypes.func,
+  onPreview: PropTypes.func,
+  onOpenModal: PropTypes.func,
 }
