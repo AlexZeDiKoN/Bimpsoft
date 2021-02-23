@@ -23,7 +23,6 @@ import { propTypes as MilSymbolPropTypes } from '../../SelectionForm/parts/WithM
 import './style.css'
 import { CollapsibleSign } from '../../SelectionForm/parts/WithCatalogsFields/CollapsibleSign'
 import { PROPERTY_PATH } from '../../../constants/propertyPath'
-import { isCatalogLayer } from '../../../constants/catalogs'
 import { getElementsByType } from '../../SelectionForm/parts/WithCatalogsFields'
 import { propertyPath } from '../../../constants'
 
@@ -38,6 +37,7 @@ const propTypes = {
   data: PropTypes.object,
   inCurrentLayer: PropTypes.bool,
   isNew: PropTypes.bool,
+  isCatalogLayerFunc: PropTypes.func,
 
   // redux selectors
   ...MilSymbolPropTypes,
@@ -172,7 +172,12 @@ export class MilSymbolFilterModal extends Decorator {
       </CollapsibleSign>
       <FormBlock paddingH paddingV marginH vertical>
         {components.map(({ Component, props: { label, typeOfInput, hasValue, name, ...propsByTypeInput } }, key) =>
-          <FormColumnFloat label={label} hasValue={hasValue || Boolean(this.getCatalogAttribute(name))} key={key} marginH>
+          <FormColumnFloat
+            label={label}
+            hasValue={hasValue || Boolean(this.getCatalogAttribute(name))}
+            key={key}
+            marginH
+          >
             <Component
               key={name}
               name={name}
@@ -188,9 +193,9 @@ export class MilSymbolFilterModal extends Decorator {
   }
 
   render () {
-    const { wrapper: Wrapper, onClose, isNew, onRemove, layerData } = this.props
+    const { wrapper: Wrapper, onClose, isNew, onRemove, layerData, isCatalogLayerFunc } = this.props
     const { inCurrentLayer, name, errors, data } = this.state
-    const isLayerCatalog = isCatalogLayer(data?.layer)
+    const isLayerCatalog = isCatalogLayerFunc(data?.layer)
     return <Wrapper
       title={i18n.STRAINER_MIL_SYMBOL}
       maxWidth={WIDTH_MODAL}

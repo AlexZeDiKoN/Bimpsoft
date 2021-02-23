@@ -15,8 +15,13 @@ import { propTypes as milSymbolPropTypes } from '../WithMilSymbol'
 import './style.css'
 import { PROPERTY_PATH } from '../../../../constants/propertyPath'
 import i18n from '../../../../i18n'
-import { isCatalogLayer, commonAttributeKeys } from '../../../../constants/catalogs'
-import { catalogCurrentLayerAttributesFields, catalogErrors, catalogsAdditionalInfo } from '../../../../store/selectors'
+import { commonAttributeKeys } from '../../../../constants/catalogs'
+import {
+  catalogCurrentLayerAttributesFields,
+  catalogErrors,
+  catalogsAdditionalInfo,
+  isCatalogLayerFunc,
+} from '../../../../store/selectors'
 import { CollapsibleSign } from './CollapsibleSign'
 
 const propTypes = milSymbolPropTypes
@@ -75,7 +80,7 @@ const WithCatalogsFields = (Component) => class WithCatalogsFields extends Compo
 
   // ------------------------------------------ Mil Symbol Handlers ----------------------------------------------------
   fixElementsConfig (config) {
-    return isCatalogLayer(this?.props?.data?.layer) ? fixElementsConfig(config) : config
+    return this?.props?.isCatalogLayerFunc(this?.props?.data?.layer) ? fixElementsConfig(config) : config
   }
 
   // ----------------------------------------- get and set handlers ----------------------------------------------------
@@ -150,7 +155,7 @@ const WithCatalogsFields = (Component) => class WithCatalogsFields extends Compo
   }
 
   renderContent () {
-    return isCatalogLayer(this?.props?.data?.layer)
+    return this?.props?.isCatalogLayerFunc(this?.props?.data?.layer)
       ? this.renderCatalogElements()
       : this.renderParentContent()
   }
@@ -161,6 +166,7 @@ const decoratorCatalogsFieldsHOC = compose(
     catalogAttributesFields: catalogCurrentLayerAttributesFields(state),
     catalogErrors: catalogErrors(state),
     catalogsAdditionalInfo: catalogsAdditionalInfo(state),
+    isCatalogLayerFunc: isCatalogLayerFunc(state),
   }), {}),
   WithCatalogsFields,
 )

@@ -17,8 +17,10 @@ import {
 } from '../../constants/filter'
 import {
   flexGridPresent,
+  getCatalogMetaLayers,
   getFilteredObjects,
   getModalData,
+  isCatalogLayerFunc,
   milSymbolFilters,
   selectedLayerId,
   topographicObjectsFilters,
@@ -27,7 +29,6 @@ import { WebMapAttributes, WebMapObject } from '../reducers/webMap'
 import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogsTopographicByIds } from '../selectors/catalogs'
 import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
-import { catalogsCommonData, isCatalogLayer } from '../../constants/catalogs'
 import { setModalData, close } from './task'
 import { copyList } from './webMap'
 import { getCatalogAttributesFields, setTopographicObjectByIds } from './catalogs'
@@ -61,11 +62,11 @@ export const openModalTopographicFilter = (id) => (dispatch) =>
 export const openMilSymbolModal = (index) => asyncAction.withNotification(async (dispatch, getState) => {
   const state = getState()
   const selectedLayer = selectedLayerId(state)
-  const isLayerCatalog = isCatalogLayer(selectedLayer)
+  const isLayerCatalog = isCatalogLayerFunc(state)(selectedLayer)
   let defaultProps = { type: SelectionTypes.POINT, code: '10000000000000000000', attributes: {} }
   if (isLayerCatalog) {
     await dispatch(getCatalogAttributesFields(selectedLayer))
-    defaultProps = { ...defaultProps, ...catalogsCommonData[selectedLayer] }
+    defaultProps = { ...defaultProps, ...getCatalogMetaLayers(state)[selectedLayer] }
   }
   typeof index === 'number'
     ? dispatch(setModalData({

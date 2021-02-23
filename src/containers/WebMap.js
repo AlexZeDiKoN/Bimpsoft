@@ -10,6 +10,7 @@ import {
   layersByIdFromStore,
   marchDots, undoInfo, mapCOP, flexGridSelected,
   getFilteredObjects, getTopographicObjectsList,
+  getCatalogMeta,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
@@ -74,6 +75,7 @@ const WebMapContainer = connect(
     flexGridSelected: flexGridSelected(state),
     topographicObjectsList: getTopographicObjectsList(state),
     generalization: state.webMap.generalization,
+    catalogMeta: getCatalogMeta(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,

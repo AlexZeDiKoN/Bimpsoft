@@ -1,7 +1,8 @@
 import { batchActions } from 'redux-batched-actions'
 import { action } from '../../utils/services'
 import i18n from '../../i18n'
-import { asyncAction, maps, layers, webMap, flexGrid, selection, orgStructures } from './index'
+import { isCatalogMapFunc } from '../selectors'
+import { asyncAction, maps, layers, webMap, flexGrid, selection, orgStructures, catalogs } from './index'
 
 const MAP_FORCED_UPDATE_INTERVAL = 30 // seconds
 
@@ -95,6 +96,8 @@ export const openMapByObject = (mapId, objectData) => async (dispatch, getState)
 
 export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => asyncAction.withNotification(
   async (dispatch, getState, { webmapApi: { getMap } }) => {
+    await dispatch(catalogs.loadCatalogsMetaIfNotExist())
+
     const content = await getMap(mapId)
     const {
       layers: entities,
@@ -167,7 +170,8 @@ export const openMapFolder = (mapId, layerId = null, showFlexGrid = false) => as
       return dateFor2 - dateFor1 // сортировка по "станом на"
     })
 
-    await dispatch(layers.updateLayers(layersData))
+    const isMapCatalog = isCatalogMapFunc(getState())(mapId)
+    await dispatch(layers.updateLayers(layersData, { isMapCatalog }))
     for (const { layerId } of layersData) {
       await dispatch(webMap.updateObjectsByLayerId(layerId))
       await dispatch(layers.updateColorByLayerId(layerId))

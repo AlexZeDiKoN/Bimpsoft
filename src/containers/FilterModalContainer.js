@@ -17,6 +17,7 @@ import {
   topographicObjectsFilters,
   catalogAttributesFieldsById,
   flexGridPresent,
+  isCatalogLayerFunc,
 } from '../store/selectors'
 import {
   CatalogFilterModal,
@@ -68,6 +69,7 @@ const MilSymbolModalForm = connect(
       ovtData: ovt?.ovtData,
       ovtKind: dictionaries.dictionaries?.ovtKind,
       ovtSubKind: dictionaries.dictionaries?.ovtSubkind,
+      isCatalogLayerFunc: isCatalogLayerFunc(store),
     }
   },
   {

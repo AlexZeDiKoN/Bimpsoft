@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { batchActions } from 'redux-batched-actions'
 import LeftMenu from '../components/menu/LeftMenu'
 import * as viewModesKeys from '../constants/viewModesKeys'
-import { viewModes, layers, webMap, task, selection, maps } from '../store/actions'
+import { viewModes, layers, webMap, task, selection, catalogs as catalogsActions } from '../store/actions'
 import {
   canEditSelector,
   isMapIncludesCatalogs,
@@ -13,7 +13,7 @@ import {
   taskModeSelector,
 } from '../store/selectors'
 import { catchErrors } from '../store/actions/asyncAction'
-import { MapModes, catalogs as catalogsConstants } from '../constants'
+import { MapModes } from '../constants'
 import { SET_SEARCH_OPTIONS } from '../store/actions/viewModes'
 
 const mapStateToProps = (store) => {
@@ -70,7 +70,7 @@ const mapDispatchToProps = {
   onChangeEditMode: layers.setEditMode,
   onClickSubordinationLevel: () => viewModes.viewModeToggle(viewModesKeys.subordinationLevel),
   onMeasureChange: webMap.toggleMeasure,
-  loadCatalogsMap: () => maps.openMapFolder(catalogsConstants.catalogMapId),
+  loadCatalogsMap: catalogsActions.loadCatalogsMap,
   onZoneProfileChange: webMap.toggleZoneProfile,
   onZoneVisionChange: webMap.toggleZoneVision,
   onMarkerChange: webMap.toggleMarkers,

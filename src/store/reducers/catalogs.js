@@ -1,5 +1,6 @@
 import { data } from '@C4/CommonComponents'
 import { catalogs } from '../actions'
+import { alwaysArray } from '../../utils/always'
 
 const { getNormilizeTree } = data
 
@@ -9,6 +10,10 @@ const initState = {
   attributes: {},
   contacts: {},
   errors: DEFAULT_OBJECT,
+  catalogMeta: {
+    mapId: '',
+    layers: DEFAULT_OBJECT,
+  },
   topographicObjectsData: {
     byIds: {},
     roots: [],
@@ -33,6 +38,15 @@ export default function reducer (state = initState, action) {
       return { ...state, errors: payload ?? DEFAULT_OBJECT }
     case catalogs.CATALOG_SET_CONTACT_NAME:
       return { ...state, contacts: { ...state.contacts, ...payload } }
+    case catalogs.CATALOG_SET_META:
+      return {
+        ...state,
+        catalogMeta: Object.assign(
+          {},
+          payload,
+          { layers: Object.fromEntries(alwaysArray(payload?.layers).map((item) => [ item.layer, item ])) },
+        ),
+      }
     default:
       return state
   }

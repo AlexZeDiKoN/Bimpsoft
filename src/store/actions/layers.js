@@ -1,10 +1,18 @@
 import * as R from 'ramda'
 import moment from 'moment'
 import { vld } from '@C4/CommonComponents'
-import { MapModes, catalogs as catalogsConstants } from '../../constants'
+import { MapModes } from '../../constants'
 import { action } from '../../utils/services'
 import { getNextLayerId } from '../../utils/layers'
-import { layerNameSelector, mapNameSelector, signedMap, layersById, selectedLayerId, selectedLayer } from '../selectors'
+import {
+  layerNameSelector,
+  mapNameSelector,
+  signedMap,
+  layersById,
+  selectedLayerId,
+  selectedLayer,
+  isCatalogLayerFunc,
+} from '../selectors'
 import i18n from '../../i18n'
 import { ApiError } from '../../constants/errors'
 import { expandMap } from './maps'
@@ -41,9 +49,10 @@ export const setEditMode = (editMode) =>
     }
   })
 
-export const updateLayers = (layersData) => ({
+export const updateLayers = (layersData, options) => ({
   type: UPDATE_LAYERS,
   layersData,
+  options,
 })
 
 export const updateLayer = (layerData) =>
@@ -67,7 +76,7 @@ export const updateLayer = (layerData) =>
       // при отсутствии активного слоя выбираем первый попавшийся слой
       dispatch(selectLayer(layerData.layerId))
     }
-    if (catalogsConstants.isCatalogLayer(layerData.layerId) && isLayerDataHasVisible && layerData.visible) {
+    if (isCatalogLayerFunc(store)(layerData.layerId) && isLayerDataHasVisible && layerData.visible) {
       await dispatch(catalogsActions.getCatalogAttributesFields(layerData.layerId))
     }
 
