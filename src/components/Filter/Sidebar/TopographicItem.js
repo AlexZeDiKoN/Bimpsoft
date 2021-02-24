@@ -21,7 +21,7 @@ export const getChildrenName = (data) =>
   data?.properties?.[TopoObj.OBJECT_TYPE]
 
 const centeringWebMapItem = (id) => {
-  const layer = window.webMap.findLayerById(id)
+  const layer = window.webMap.findLayerById(id, String)
   const bounds = layer?.getBounds && layer.getBounds()
   bounds && window.webMap.map.fitBounds(bounds, {
     padding: [ 80, 80 ],

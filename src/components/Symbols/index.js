@@ -13,7 +13,7 @@ import {
   HighlightedText,
   data,
 } from '@C4/CommonComponents'
-import { MilSymbol } from '@C4/MilSymbolEditor'
+import { MilSymbol, model } from '@C4/MilSymbolEditor'
 import { List } from 'immutable'
 import {
   symbols,
@@ -34,6 +34,8 @@ import {
 import { objectIsObject } from '../../utils/whatIsIt'
 import { BlockHotKeyContainer } from '../common/HotKeys'
 import spriteUrl from './sprite.svg'
+
+const { APP6Code: { setAffiliation } } = model
 
 const SymbolSvg = (props) => {
   const { name } = props
@@ -302,15 +304,18 @@ export const getPartsSymbols = (type, code, search) => {
   }).flat(Infinity)
 }
 
+const getUpdatedCode = (code, key) => key ? setAffiliation(code, key) : code
+
 // Для того, что бы работали иконки запустите команду npm run svg-sprite2
 const SymbolsTab = (props) => {
-  const { canEdit } = props
+  const { canEdit, orgStructureAffiliation } = props
   const [ search, onChange ] = useState('')
   const [ listMode, setListMode ] = useState(false)
   const sections = useToggleGroup()
 
   const dragStartHandler = (e, symbol, type) => {
-    e.dataTransfer.setData('text', JSON.stringify({ type, ...symbol }))
+    const code = getUpdatedCode(symbol.code, orgStructureAffiliation)
+    e.dataTransfer.setData('text', JSON.stringify({ type, ...symbol, code }))
   }
 
   const onChangeSearch = (value) => {
@@ -322,7 +327,8 @@ const SymbolsTab = (props) => {
       ? part.children.filter((it) => it.hint.toLowerCase().includes(search.toLowerCase()) || it.code.includes(search))
       : part.children
     const symbolJSX = sortedPart.map((symbol) => {
-      const { hint, code, isSvg, amp } = symbol
+      const { hint, code: initialCode, isSvg, amp } = symbol
+      const code = getUpdatedCode(initialCode, orgStructureAffiliation)
 
       const elemToRender = (!isSvg)
         ? <div
@@ -432,6 +438,7 @@ const SymbolsTab = (props) => {
 
 SymbolsTab.propTypes = {
   canEdit: PropTypes.bool,
+  orgStructureAffiliation: PropTypes.oneOfType([ PropTypes.number, PropTypes.string ]),
 }
 
 SymbolsTab.displayName = 'SymbolsTab'

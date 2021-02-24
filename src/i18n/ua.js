@@ -548,3 +548,4 @@ export const DIRECT_VISIBILITY = 'Пряма видимість'
 export const EVALUATION_RATING = 'Ступінь достовірності'
 
 export const REQUIRED = (text) => `${text} (обов’язково)`
+export const UNSPECIFIED = 'Невизначений'
