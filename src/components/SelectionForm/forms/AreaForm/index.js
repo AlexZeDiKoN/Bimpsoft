@@ -143,7 +143,7 @@ class AreaForm extends Extenders(AbstractShapeForm) {
             code={result.getIn(PATH.CODE)}
             type={type}
             attributes={result.getIn(PATH.ATTRIBUTES).toJS()}
-            onChange={this.onChangeSymbol}
+            onChange={this.onChangeTacticalSymbol}
           />
           <div className="area-container__item--firstSection">
             <div className="area-container__itemWidth-right">

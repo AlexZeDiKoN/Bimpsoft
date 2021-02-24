@@ -10,15 +10,17 @@ export const PATH = [ 'affiliation' ]
 export const PATH_COLOR = [ 'attributes', 'color' ]
 
 const WithAffiliation = (Component) => class AffiliationComponent extends Component {
-  affiliationHandler = (id) => {
+  affiliationHandler = (colorNotSet) => (id) => {
     this.setResult((result) => {
       const resultAffiliation = result.setIn(PATH, id)
       // установка цвета линии в соответствии принадлежностью
-      return AFFILIATION_COLOR[id] ? resultAffiliation.setIn(PATH_COLOR, AFFILIATION_COLOR[id]) : resultAffiliation
+      return (AFFILIATION_COLOR[id] && !colorNotSet)
+        ? resultAffiliation.setIn(PATH_COLOR, AFFILIATION_COLOR[id])
+        : resultAffiliation
     })
   }
 
-  renderAffiliation () {
+  renderAffiliation (colorNotSet) {
     const currentAffiliation = this.getResult().getIn(PATH)
     const canEdit = this.isCanEdit()
     return (
@@ -26,7 +28,7 @@ const WithAffiliation = (Component) => class AffiliationComponent extends Compon
         <Select
           value={currentAffiliation}
           className={!canEdit ? 'modals-input-disabled' : ''}
-          onChange={this.affiliationHandler}
+          onChange={this.affiliationHandler(colorNotSet)}
           disabled={!canEdit}>
           {IDENTITY_LIST.map(({ id, title }) => (
             <Select.Option key={id} value={id}>{title}</Select.Option>

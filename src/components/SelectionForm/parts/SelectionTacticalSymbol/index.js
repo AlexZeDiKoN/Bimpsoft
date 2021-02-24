@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { FilterInput, HighlightedText, Tree } from '@C4/CommonComponents'
+import {
+  FilterInput,
+  Tree,
+} from '@C4/CommonComponents'
 import {
   getIdSymbols,
   getPartsSymbols,
@@ -8,13 +11,28 @@ import {
 
 import './styleList.css'
 import i18n from '../../../../i18n'
+import { objectIsFunction } from '../../../../utils/whatIsIt'
 
 const renderItem = (itemProps) => {
-  return <Tree.ExpandItem {...itemProps}>
-    <Tree.HoverItem>
-      {itemProps.data.render}
-    </Tree.HoverItem>
-  </Tree.ExpandItem>
+  if (!itemProps.data.render) {
+    return null
+  }
+  const render = objectIsFunction(itemProps.data.render)
+    ? itemProps.data.render(itemProps.filter, itemProps.ids)
+    : itemProps.data.render
+  return <div className={'selection-tactical-symbol'}>
+    <Tree.ExpandItem {...itemProps}>
+      <div style={{ width: '100%' }} onClick={(e) => {
+        if (!itemProps.data.selectable) {
+          e.stopPropagation && e.stopPropagation()
+        }
+      }}>
+        <Tree.HoverItem>
+          {render}
+        </Tree.HoverItem>
+      </div>
+    </Tree.ExpandItem>
+  </div>
 }
 
 export default class SelectionTacticalSymbol extends React.Component {
@@ -23,6 +41,7 @@ export default class SelectionTacticalSymbol extends React.Component {
     type: PropTypes.number,
     name: PropTypes.string,
     attributes: PropTypes.object,
+    coordinatesSize: PropTypes.number,
     onChange: PropTypes.func,
     onExitWithChange: PropTypes.func,
     onBlur: PropTypes.func,
@@ -36,38 +55,50 @@ export default class SelectionTacticalSymbol extends React.Component {
     }
     const index = treeSymbols.findIndex((symbol) => symbol.id === value)
     if (index < 0 || !treeSymbols[index].parentID) {
-      return
+      return null
     }
     const { onChange } = this.props
     onChange && onChange(treeSymbols[index].data)
   }
 
   render () {
-    const { type, code, name = '', attributes } = this.props
+    const {
+      type,
+      code,
+      name = '',
+      attributes,
+      coordinatesSize,
+    } = this.props
     if (!code) { // соответствие возможно только для тактического знака
       return null
     }
     const treeSymbols = getPartsSymbols(type, code, '')
-    let id = getIdSymbols({ type, code, attributes }, '')
-    const nameSymbol = `${name} *${(id === undefined) ? i18n.MANY_MATCH : i18n.NO_APPROPRIATE}*`
-    id = id || null
-    const thisSymbol = id ? {}
-      : {
+    let id = null
+    let thisSymbol
+    const { ids, expandedKeys } = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
+
+    if (ids.length === 1) { // однозначное соответствие
+      id = ids[0].id
+    } else { // нет совпадений или множественное соответствие
+      thisSymbol = {
         id,
-        name: nameSymbol,
-        render: <div className={'compilation-list compilation-list-first'} >
-          <HighlightedText text={nameSymbol}/>
-        </div>,
+        name: `${name} *${ids.length === 0 ? i18n.NO_APPROPRIATE : i18n.MANY_MATCH}*`,
+        render: null,
       }
+    }
+
     return (
       <div className={'symbol-container'}>
         <FilterInput
-          values={id ? treeSymbols : [ thisSymbol, ...treeSymbols ]}
+          values={thisSymbol ? [ thisSymbol, ...treeSymbols ] : treeSymbols}
           value={id}
           name={'id'}
+          expandedKeys={expandedKeys}
+          commonData={{ ids }}
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
+          // opened={true}
         >
           {renderItem}
         </FilterInput>

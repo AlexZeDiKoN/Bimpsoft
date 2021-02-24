@@ -1,53 +1,84 @@
 
-.dzvin-scrollbar{
+.selection-tactical-symbol {
+   .dzvin-expand-item {
+     .dzvin-expand-icon:not(.dzvin-can-expand) {
+       width: 1px;
+       visibility: hidden;
+       ::after {
+         width: 1px;
+       }
+     }
 
-  .dzvin-expand-icon:not(.dzvin-can-expand)::after{
-    top: auto;
-  }
+     .dzvin-hover-item .content {
 
-  .dzvin-default-tree {
+       .compilation-list-first{
+         margin-right: 1px;
+         & > div {
+           white-space: nowrap;
+           overflow: hidden;
+           text-overflow: ellipsis;
+           margin-right: 1px;
+           font-size: 12px;
+         }
+       }
 
-    .dzvin-expand-icon {
-      height: 100%;
-    }
+       .compilation-list-after {
+         display: flex;
+         align-items: center;
+         // border: 1px solid #E7E7E7;
+         width: 100%;
+         overflow: visible;
+         margin-left: 0;
+         margin-right: 0;
 
-    .dzvin-hover-item .content{
+         & > div {
+           text-align: left;
+           font-size: 12px;
+           //font-weight: 500;
+           white-space: pre-wrap
+         }
+       }
 
-      .compilation-list {
-        display: flex;
-        align-items: center;
-        // border: 1px solid #E7E7E7;
-        width: 100%;
-        overflow: visible;
-        margin-left: -10px;
-        margin-right: 0;
+       .compilation-list-after-selected {
+         & > div {
+           font-weight: bold;
+           color: #1307c6;
+         }
+       }
+       .compilation-list-after-is {
+         & > div {
+           font-weight: bold;
+           color: #3fae01;
+         }
+       }
 
-        & > div {
-          text-align: left;
-          font-size: 12px;
-          font-weight: 500;
-          white-space: pre-wrap
-        }
-      }
+       .symbol {
+         width: 54px;
+         height: 54px;
+         background: #E7E7E7;
+         padding: 2px;
+         margin: 0;
+         border: 2px solid white;
+         display: flex;
+         align-items: center;
+         flex: 0 0 auto;
+         justify-content: center;
+         cursor: pointer;
 
-      .symbol {
-        width: 54px;
-        height: 54px;
-        background: #E7E7E7;
-        padding: 1px;
-        margin: 2px;
-        display: flex;
-        align-items: center;
-        flex: 0 0 auto;
-        justify-content: center;
-        cursor: pointer;
+         svg {
+           width: 50px;
+           height: 50px;
+         }
+       }
+     }
+   }
 
-        svg {
-          width: 50px;
-          height: 50px;
-        }
-      }
-    }
-  }
+   .dzvin-default-tree {
+
+     .dzvin-expand-icon {
+       height: 100%;
+     }
+   }
 }
+
 

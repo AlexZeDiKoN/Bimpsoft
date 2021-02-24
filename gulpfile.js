@@ -27,11 +27,11 @@ gulp.task('svg-sprite2', () => gulp
         plugins: [
           { removeViewBox: false },
           { cleanupIDs: false },
-          //{ removeAttrs: { attrs: ('fill') } },
+          // { removeAttrs: { attrs: ('fill') } },
           // { removeElementsByAttr: { id: ('bg') } },
         ],
       }),
-    ])
+    ]),
   )
   .pipe(svgstore({
     inlineSvg: true,

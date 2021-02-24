@@ -1905,7 +1905,6 @@ export const symbols = [
         hint: 'Пункт обміну на автомобільному маршруті фельд\'єгерсько-поштового зв\'язку',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ФПЗ',
           [amps.staffComments]: 'ФПЗ',
         },
@@ -4862,6 +4861,8 @@ export const symbols = [
           lineType: types.waved.value,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
+          left: 'none',
+          right: 'none',
         },
       },
       {
@@ -4875,6 +4876,8 @@ export const symbols = [
           lineType: types.waved.value,
           nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
           shownNodalPointAmplifiers: [ 0, 1 ],
+          left: 'none',
+          right: 'none',
         },
       },
       {
@@ -4940,7 +4943,6 @@ export const symbols = [
         hint: 'Пункт спеціальної обробки (ПуСО)',
         code: '10032500002818000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПуСО',
           [amps.staffComments]: 'ПуСО',
         },
@@ -4950,7 +4952,6 @@ export const symbols = [
         hint: 'Дегазаційний пункт (ДП)',
         code: '10032500002818000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ДП',
           [amps.staffComments]: 'ДП',
         },
@@ -5633,7 +5634,6 @@ export const symbols = [
         hint: 'Пункт технічного спостереження',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПТС',
           [amps.staffComments]: 'ПТС',
         },
@@ -5667,7 +5667,6 @@ export const symbols = [
         hint: 'Збірний пункт пошкоджених машин',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ЗППМ',
           [amps.staffComments]: 'ЗППМ',
         },
@@ -5676,7 +5675,6 @@ export const symbols = [
         hint: 'Запасний збірний пункт пошкоджених машин',
         code: '10032510001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.dtg]: 'З',
           [amps.uniqueDesignation1]: 'ЗППМ',
           [amps.staffComments]: 'ЗППМ',
@@ -5686,7 +5684,6 @@ export const symbols = [
         hint: 'Пункт технічної допомоги',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПТД',
           [amps.staffComments]: 'ПТД',
         },
@@ -5733,7 +5730,6 @@ export const symbols = [
         hint: 'Пункт зустрічі ракет та боєприпасів',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПЗ',
           [amps.staffComments]: 'ПЗ',
         },
@@ -6070,7 +6066,6 @@ export const symbols = [
         hint: 'Стабілізаційний пункт',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'СтП',
           [amps.staffComments]: 'СтП',
         },
@@ -6325,7 +6320,6 @@ export const symbols = [
         hint: 'Пункт прийому особового складу',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ППОС',
           [amps.staffComments]: 'ППОС',
         },
@@ -6334,7 +6328,6 @@ export const symbols = [
         hint: 'Пункт прийому техніки',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ППТ',
           [amps.staffComments]: 'ППТ',
         },
@@ -6343,7 +6336,6 @@ export const symbols = [
         hint: 'Пункт зустрічі поповнення',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПЗП',
           [amps.staffComments]: 'ПЗП',
         },
@@ -6352,7 +6344,6 @@ export const symbols = [
         hint: 'Пункт попереднього збору військовозобов\'язаних',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ППЗВ',
           [amps.staffComments]: 'ППЗВ',
         },
@@ -6361,7 +6352,6 @@ export const symbols = [
         hint: 'Пункт попереднього збору техніки',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ППЗТ',
           [amps.staffComments]: 'ППЗТ',
         },
@@ -6370,7 +6360,6 @@ export const symbols = [
         hint: 'Пункт збору селищної ради',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ПЗСР',
           [amps.staffComments]: 'ПЗСР',
         },
@@ -6379,7 +6368,6 @@ export const symbols = [
         hint: 'Штаб оповіщення',
         code: '10032500001301000000',
         amp: {
-          type: entityKind.POINT,
           [amps.uniqueDesignation1]: 'ШО',
           [amps.staffComments]: 'ШО',
         },

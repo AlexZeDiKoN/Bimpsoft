@@ -28,7 +28,7 @@ const WebMapPoint = Record({
   lng: null,
 })
 
-const LineAmplifier = Record({
+export const LineAmplifier = Record({
   top: null,
   middle: null,
   bottom: null,
