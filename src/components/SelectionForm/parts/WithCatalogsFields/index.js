@@ -21,6 +21,7 @@ import {
   catalogErrors,
   catalogsAdditionalInfo,
   isCatalogLayerFunc,
+  layersById,
 } from '../../../../store/selectors'
 import { CollapsibleSign } from './CollapsibleSign'
 
@@ -75,6 +76,8 @@ const fixElementsConfig = memoize((config) => ({
   COORDINATE_LOCATION: { hidden: true },
 }))
 
+const catalogName = (name) => name ? `${i18n.CATALOG_DATIVE} "${name}"` : null
+
 const WithCatalogsFields = (Component) => class WithCatalogsFields extends Component {
   static propTypes = propTypes
 
@@ -107,7 +110,7 @@ const WithCatalogsFields = (Component) => class WithCatalogsFields extends Compo
   }
 
   renderCatalogElements () {
-    const { catalogAttributesFields: fields, canEdit, catalogErrors: errors } = this.props
+    const { catalogAttributesFields: fields, canEdit, catalogErrors: errors, catalogData } = this.props
 
     const result = this.getResult()
     const attributes = result.getIn(PROPERTY_PATH.ATTRIBUTES)
@@ -124,6 +127,7 @@ const WithCatalogsFields = (Component) => class WithCatalogsFields extends Compo
           amplifiers={attributes}
           code={code}
           type={type}
+          title={catalogName(catalogData?.name)}
           coordinates={coordinates}
         >
           { this.renderParentContent() }
@@ -162,11 +166,12 @@ const WithCatalogsFields = (Component) => class WithCatalogsFields extends Compo
 }
 
 const decoratorCatalogsFieldsHOC = compose(
-  connect((state) => ({
+  connect((state, props) => ({
     catalogAttributesFields: catalogCurrentLayerAttributesFields(state),
     catalogErrors: catalogErrors(state),
     catalogsAdditionalInfo: catalogsAdditionalInfo(state),
     isCatalogLayerFunc: isCatalogLayerFunc(state),
+    catalogData: layersById(state)?.[props.data.layer],
   }), {}),
   WithCatalogsFields,
 )
