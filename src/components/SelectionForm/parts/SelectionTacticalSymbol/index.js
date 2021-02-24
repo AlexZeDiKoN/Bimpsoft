@@ -98,7 +98,7 @@ export default class SelectionTacticalSymbol extends React.Component {
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
-          opened={true}
+          // opened={true}
         >
           {renderItem}
         </FilterInput>
