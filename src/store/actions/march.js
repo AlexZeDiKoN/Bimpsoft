@@ -3,6 +3,7 @@ import { model } from '@C4/MilSymbolEditor'
 import api from '../../server/api.march'
 import { action } from '../../utils/services'
 import { MarchKeys } from '../../constants'
+import { AFFILIATION_COLOR } from '../../constants/colors'
 import utilsMarch from '../../../src/components/common/March/utilsMarch'
 import entityKind from '../../../src/components/WebMap/entityKind'
 import { MARCH_POINT_TYPES, MARCH_TYPES } from '../../constants/March'
@@ -712,10 +713,13 @@ const saveMarchUnit = (startRouteCoodr, endRouteCoodr) =>
 
 const saveMarchRoute = (geometry) =>
   asyncAction.withNotification(async (dispatch, getState, { webmapApi }) => {
-    const { march } = getState()
+    const { march, orgStructures } = getState()
+    const unit = orgStructures.byIds[march.unitId] || {}
 
     const marchObj = {
       attributes: {
+        lineType: 'dashed',
+        color: AFFILIATION_COLOR[unit.affiliationTypeID],
       },
       code: '',
       geometry,
