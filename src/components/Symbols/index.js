@@ -22,7 +22,6 @@ import {
 } from 'immutable'
 import {
   symbols,
-  amps,
   directionAmps,
   CompatibilityTacticalSymbol,
 } from '../../constants/symbols'
