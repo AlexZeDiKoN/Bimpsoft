@@ -7,12 +7,15 @@ import entityKind from '../../../WebMap/entityKind'
 
 const JS_PARSER = (item) => item?.toJS ? item.toJS() : item
 
+const titleSign = (name) => name ? `${i18n.SIGN} ${name}` : i18n.SIGN
+
 export const CollapsibleSign = ({
   code,
   amplifiers,
   type,
   coordinates,
   children,
+  title,
 }) => {
   const [ show, setShow ] = useState(false)
   const onClick = () => setShow((show) => !show)
@@ -23,7 +26,7 @@ export const CollapsibleSign = ({
         fitToParent
         onClick={onClick}
         icon={useConstant(() => <ExpandIcon.Vertical expanded={show} />) }
-      >{i18n.SIGN}</IButton>
+      >{titleSign(title)}</IButton>
       {show
         ? children
         : type === entityKind.POINT
@@ -40,4 +43,5 @@ CollapsibleSign.propTypes = {
   amplifiers: PropTypes.object,
   coordinates: PropTypes.object,
   children: PropTypes.any,
+  title: PropTypes.string,
 }
