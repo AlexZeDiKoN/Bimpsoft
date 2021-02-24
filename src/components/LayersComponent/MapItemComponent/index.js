@@ -77,12 +77,9 @@ export default class MapItemComponent extends React.Component {
     const { showCloseForm, showColor } = this.state
     const {
       textFilter,
-      isCatalogMap,
-      data: { visible, name, color, breadCrumbs, mapId },
+      data: { visible, name, color, breadCrumbs },
       tree: { expanded, canExpand, onExpand },
     } = this.props
-
-    const isDisabledViabilityButton = isCatalogMap(mapId)
 
     return (
       <div className={'map-item-component ' + (showColor ? 'map-item-component-hover' : '')}>
@@ -91,7 +88,6 @@ export default class MapItemComponent extends React.Component {
             title={i18n.MAP_VISIBILITY}
             className="map-item-component-control"
             visible={visible}
-            disabled={isDisabledViabilityButton}
             isDark={true}
             onChange={this.changeMapVisibilityHandler}
           />
@@ -160,5 +156,4 @@ MapItemComponent.propTypes = {
   onCloseMap: PropTypes.func,
   onPrintMap: PropTypes.func,
   onUpdateMap: PropTypes.func,
-  isCatalogMap: PropTypes.func,
 }
