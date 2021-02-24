@@ -47,9 +47,7 @@ export const TopographicObjectFilterModal = ({
 
   const onSaveHandler = () => {
     const filteredValues = Object.entries(value).filter(([ , value ]) => Boolean(value))
-    filteredValues.length
-      ? onSave(Object.fromEntries(filteredValues))
-      : onRemove()
+    onSave(Object.fromEntries(filteredValues))
   }
 
   const getElement = ({ id, name, datatype, value: values }) => {

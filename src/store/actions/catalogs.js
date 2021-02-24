@@ -98,6 +98,7 @@ export const getCatalogAttributesFields = (layer) =>
   })
 
 export const loadCatalogsMap = () => asyncAction.withNotification(async (dispatch, getState) => {
+  await dispatch(loadCatalogsMetaIfNotExist())
   const catalogMeta = getCatalogMeta(getState())
   await dispatch(maps.openMapFolder(catalogMeta.mapId))
 })
