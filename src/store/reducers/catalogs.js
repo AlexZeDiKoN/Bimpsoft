@@ -5,7 +5,6 @@ import { alwaysArray } from '../../utils/always'
 const { getNormilizeTree } = data
 
 const DEFAULT_OBJECT = Object.freeze({})
-const isBooleanAnd = (state, value) => typeof value === 'boolean' && value === state
 
 const initState = {
   attributes: {},
@@ -54,7 +53,7 @@ export default function reducer (state = initState, action) {
     case catalogs.CATALOG_TOGGLE_EXPAND_TOPOGRAPHIC: {
       const expandedKeys = { ...state.topographicObjectsData.expandedKeys }
       const { id, status } = payload
-      if (id in expandedKeys || isBooleanAnd(false, status)) {
+      if (typeof status === 'boolean' ? !status : id in expandedKeys) {
         delete expandedKeys[id]
       } else {
         expandedKeys[id] = true

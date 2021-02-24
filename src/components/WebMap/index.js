@@ -420,7 +420,7 @@ export default class WebMap extends React.PureComponent {
     onShadowDelete: PropTypes.func,
     myContactId: PropTypes.number,
     topographicObjectsList: PropTypes.array,
-    catalogMeta: PropTypes.func,
+    catalogMeta: PropTypes.string,
     toggleCatalogModal: PropTypes.func,
   }
 

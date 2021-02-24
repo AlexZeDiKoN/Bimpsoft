@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { TopographicObjectsFilterComponent } from '../components/Filter/Sidebar'
 import {
   setSearchTopographicFilter,
-  onChangeVisibleTopographicObject,
+  onClickVisibleTopographicObject,
   openModalTopographicFilter,
 } from '../store/actions/filter'
 import {
@@ -31,7 +31,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   onSearch: setSearchTopographicFilter,
-  onChangeVisible: onChangeVisibleTopographicObject,
+  onChangeVisible: onClickVisibleTopographicObject,
   onFilterClick: openModalTopographicFilter,
   preloadFields: getTopographicObjectFields,
   onExpand: onExpandTopographicItem,

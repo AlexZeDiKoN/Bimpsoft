@@ -139,27 +139,40 @@ export const onCreateLayerAndCopyUnits = (data) => asyncAction.withNotification(
   dispatch(setLoading(false))
 })
 
-export const onChangeVisibleTopographicObject = (shown, id) => asyncAction.withNotification(
+const onShowTopographicItem = (shown, id) => (dispatch, getState) => {
+  const state = getState()
+  const byIds = catalogsTopographicByIds(state)
+  const result = id
+    ? { ...byIds, [id]: { ...byIds[id], shown } }
+    : Object.fromEntries(Object.entries(byIds)
+      .map(([ id, data ]) => [ id, { ...data, shown } ]),
+    )
+  dispatch(setTopographicObjectByIds(result))
+}
+
+export const onClickVisibleTopographicObject = (shown, id) => asyncAction.withNotification(
   async (dispatch, getState) => {
     const state = getState()
-    const byIds = catalogsTopographicByIds(state)
     const filtersData = topographicObjectsFilters(state)[id]
-    const result = id
-      ? { ...byIds, [id]: { ...byIds[id], shown } }
-      : Object.fromEntries(Object.entries(byIds)
-        .map(([ id, data ]) => [ id, { ...data, shown } ]),
-      )
-    dispatch(setTopographicObjectByIds(result))
-    !shown && !filtersData?.filters && dispatch(setTopographicObjectFilters({ [id]: { ...filtersData, objects: [] } }))
-    shown && !filtersData?.filters && await dispatch(loadTopographicObjectById(id))
-    !shown && dispatch(onExpandTopographicItem(id, false))
+    if (shown && !filtersData?.filters) {
+      !filtersData?.filters && await dispatch(loadTopographicObjectById(id))
+      dispatch(onExpandTopographicItem(id, true))
+    } else if (!shown && !filtersData?.filters) {
+      dispatch(setTopographicObjectFilters({ [id]: { ...filtersData, objects: [] } }))
+      dispatch(onExpandTopographicItem(id, false))
+    }
+    dispatch(onShowTopographicItem(shown, id))
   })
 
 export const onSaveTopographicObjectFilter = (filters) => (dispatch, getState) => {
   const state = getState()
   const { id } = getModalData(state)
-  dispatch(setTopographicObjectFilters({ [id]: { filters } }))
+  Object.keys(filters).length
+    ? dispatch(setTopographicObjectFilters({ [id]: { filters } }))
+    : dispatch(removeFilterTopographicObjects(id))
   dispatch(loadTopographicObjectById(id))
+  dispatch(onShowTopographicItem(true, id))
+  dispatch(onExpandTopographicItem(id, true))
   dispatch(close())
 }
 
@@ -206,12 +219,12 @@ const loadTopographicObjectById = (topocode) => asyncAction.withNotification(
       .then((objects) => setAttributesName(catalogsTopographicByIds(state)[topocode], objects))
       .finally(() => { dispatch(setLoadingTopographicObjects({ [topocode]: false })) })
     dispatch(setTopographicObjectFilters({ [topocode]: { ...filtersData, objects } }))
-    dispatch(onExpandTopographicItem(topocode, true))
   })
 
 export const onRemoveTopographicObjectFilter = () => (dispatch, getState) => {
   const { id: topocode } = getModalData(getState())
-  dispatch(onChangeVisibleTopographicObject(false, topocode))
+  dispatch(onShowTopographicItem(false, topocode))
+  dispatch(onExpandTopographicItem(topocode, false))
   dispatch(removeFilterTopographicObjects(topocode))
   dispatch(close())
 }
