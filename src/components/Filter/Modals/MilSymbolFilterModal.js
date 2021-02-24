@@ -212,7 +212,7 @@ export class MilSymbolFilterModal extends Decorator {
               <FormColumnFloat label={i18n.NAME_STRAINER} hasValue={Boolean(name)}>
                 <Input name={'name'} errors={errors.name} value={name} onChange={this.onChange}/>
               </FormColumnFloat>
-              <FormRow label={`${i18n.LAYER}: ${layerData?.name}`} alignLabel="right">
+              <FormRow label={`${i18n.LAYER}: ${layerData?.name ?? i18n.UNSPECIFIED}`} alignLabel="right">
                 <Checkbox name={'inCurrentLayer'} value={inCurrentLayer} onChange={this.onChange}/>
               </FormRow>
             </div>

@@ -28,8 +28,8 @@ import SelectionTypes from '../../constants/SelectionTypes'
 import { catalogsTopographicByIds } from '../selectors/catalogs'
 import { IS_OPERATION_ZONE } from '../../components/Filter/Modals/TopographicObjectModal'
 import { prepareBezierPathToGeometry } from '../../components/WebMap/patch/utils/Bezier'
-import { setModalData, close } from './task'
 import { TopoObj } from '../../constants'
+import { setModalData, close } from './task'
 import { copyList } from './webMap'
 import { getCatalogAttributesFields, onExpandTopographicItem, setTopographicObjectByIds } from './catalogs'
 import { asyncAction, layers } from './index'
@@ -171,7 +171,7 @@ const setAttributesName = (topocodeData, objects) => objects.map(({ properties: 
   }))
   properties[TopoObj.OBJECT_TYPE] = topocodeData.name
   properties[TopoObj.TOPCODE] = topocodeData.id
-  return { ...rest, properties, id: prop.id }
+  return { ...rest, properties }
 })
 
 const loadTopographicObjectById = (topocode) => asyncAction.withNotification(

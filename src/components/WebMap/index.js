@@ -969,11 +969,11 @@ export default class WebMap extends React.PureComponent {
 
   highlightTopographicObjectLayer = (prevIds, currentIds) => {
     Array.isArray(prevIds) && prevIds.forEach((id) => {
-      const layer = id && this.findLayerById(id)
+      const layer = id && this.findLayerById(id, String)
       layer?.resetStyle && layer.resetStyle()
     })
     Array.isArray(currentIds) && currentIds.forEach((id) => {
-      const layer = id && this.findLayerById(id)
+      const layer = id && this.findLayerById(id, String)
       layer?.setColor && layer.setColor('#0a0')
       layer?.setFill && layer.setFill('#252')
     })
@@ -2271,10 +2271,10 @@ export default class WebMap extends React.PureComponent {
     return this.onSelectedListChange(result)
   }
 
-  findLayerById = (id) => {
+  findLayerById = (id, mutateFn = Number) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (Number(layer.id) === Number(id)) {
+      if (mutateFn(layer.id) === mutateFn(id)) {
         return layer
       }
     }

@@ -28,6 +28,7 @@ import {
   verificationReliableInformation,
   verificationReliableSource,
 } from '../../constants/cop'
+import { IDENTITIES } from '../../utils/affiliations'
 import { withNotification } from './asyncAction'
 import { webMap, catalogs as catalogActions } from './'
 
@@ -155,8 +156,9 @@ export const finishDrawNewShape = ({ geometry, point }) => withNotification(asyn
     orgStructures,
   } = state
   geometry = List(geometry)
-  let object = WebMapObject({ type, layer, level, geometry, point })
   const affiliationTypeID = orgStructures?.formation?.affiliationTypeID
+  const affiliation = affiliationTypeID ? String(affiliationTypeID) : IDENTITIES.FRIEND
+  let object = WebMapObject({ type, layer, level, geometry, point, affiliation })
 
   const isCatalogLayer = isCatalogLayerFunc(state)(layer)
   const commonCatalogLayerProps = getCatalogMetaLayers(state)[layer]
