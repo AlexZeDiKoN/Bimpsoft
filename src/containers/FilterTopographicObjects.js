@@ -7,18 +7,23 @@ import {
 } from '../store/actions/filter'
 import {
   filterTopographicSearch,
-  catalogsTopographicByIds,
-  catalogsTopographicRoots,
   topographicObjectsFilters,
   getTopographicObjectsCount,
   loadingTopographicObjects,
+  getTopographicCatalogTree,
+  catalogsTopographicExpandedKeys,
 } from '../store/selectors'
-import { getTopographicObjectFields } from '../store/actions/catalogs'
+import {
+  getTopographicObjectFields,
+  onExpandTopographicItem,
+  onPreviewTopographicItem,
+} from '../store/actions/catalogs'
+import { toggleCatalogModal } from '../store/actions/webMap'
 
 const mapStateToProps = (state) => ({
   search: filterTopographicSearch(state),
-  roots: catalogsTopographicRoots(state),
-  byIds: catalogsTopographicByIds(state),
+  ...getTopographicCatalogTree(state),
+  expandedKeys: catalogsTopographicExpandedKeys(state),
   filterCount: getTopographicObjectsCount(state),
   activeFilters: topographicObjectsFilters(state),
   loadingObjects: loadingTopographicObjects(state),
@@ -29,6 +34,9 @@ const mapDispatchToProps = {
   onChangeVisible: onChangeVisibleTopographicObject,
   onFilterClick: openModalTopographicFilter,
   preloadFields: getTopographicObjectFields,
+  onExpand: onExpandTopographicItem,
+  onPreview: onPreviewTopographicItem,
+  onOpenModal: toggleCatalogModal,
 }
 
 const FilterTopographicObjects = connect(mapStateToProps, mapDispatchToProps)(TopographicObjectsFilterComponent)

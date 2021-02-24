@@ -4,7 +4,6 @@ import { model } from '@C4/MilSymbolEditor'
 import { data } from '@C4/CommonComponents'
 import { DATE_TIME_FORMAT } from '../../constants/formats'
 import {
-  CATALOG_FILTERS,
   MIL_SYMBOL_FILTER,
   SEARCH_FILTER,
   LOADING,
@@ -12,10 +11,9 @@ import {
   TOPOGRAPHIC_OBJECT_FILTER, LOADING_TOPOGRAPHIC_OBJECT,
 } from '../../constants/filter'
 import SelectionTypes from '../../constants/SelectionTypes'
-import { isCatalogLayer } from '../../constants/catalogs'
 import { objects } from './targeting'
 import { selectedLayerId } from './layersSelector'
-import { catalogsTopographicByIds } from './catalogs'
+import { catalogsTopographicByIds, isCatalogLayerFunc } from './catalogs'
 
 const { TextFilter } = data
 
@@ -70,8 +68,14 @@ const compareByType = (aValue, bValue) => {
 const compareObjectValues = (object = {}, filterItem = {}, compareFn = compareByType) =>
   Object.entries(filterItem).every(([ key, value ]) => compareFn(value, object[key]))
 
-const filterPointType = (filter, current) => {
-  const { code: objectCode, level: objectLevel, point: objectPoint, attributes: objectAttributes, layer: objectLayer } = current
+const filterPointType = (filter, current, isCatalogLayerFunc) => {
+  const {
+    code: objectCode,
+    level: objectLevel,
+    point: objectPoint,
+    attributes: objectAttributes,
+    layer: objectLayer,
+  } = current
   const { code: filterCode, level: filterLevel, point: filterPoint, attributes: filterAttributes } = filter
   const [ jsObjectAttributes, jsFilterAttributes ] = [ JSParser(objectAttributes), JSParser(filterAttributes) ]
   const isCodeEqual = codeTypeCheck.every(({ func, length }) =>
@@ -79,15 +83,13 @@ const filterPointType = (filter, current) => {
   const isLevelEqual = compareByType(filterLevel, objectLevel)
   const isPointEqual = compareByType(filterPoint, objectPoint)
   const isAttributesEqual = compareObjectValues(jsObjectAttributes, jsFilterAttributes)
-  const isCatalogAttributesEqual = isCatalogLayer(objectLayer)
+  const isCatalogAttributesEqual = isCatalogLayerFunc(objectLayer)
     ? compareObjectValues(jsObjectAttributes.catalogAttributes, jsFilterAttributes.catalogAttributes)
     : true
   return isCodeEqual && isLevelEqual && isPointEqual && isAttributesEqual && isCatalogAttributesEqual
 }
 // ------------------------------------ selectors ---------------------------------------------------------------
 
-export const catalogFilters = (state) => state.filter[CATALOG_FILTERS]
-export const catalogsFields = (state) => state.catalogs.attributes
 export const milSymbolFilters = (state) => state.filter[MIL_SYMBOL_FILTER]
 export const filterSearch = (state) => state.filter[SEARCH_FILTER]
 export const filterTopographicSearch = (state) => state.filter[SEARCH_TOPOGRAPHIC_FILTER]
@@ -99,24 +101,28 @@ export const getCurrentFilters = createSelector(milSymbolFilters, selectedLayerI
   return filters.filter(({ inCurrentLayer, data }) => inCurrentLayer ? data?.layer === selectedLayer : true)
 })
 
-export const getFilteredObjects = createSelector(getCurrentFilters, objects, (filters, objects = {}) => {
-  const visibleFilters = filters.filter(({ visible }) => visible).map(({ data }) => (data))
-  return objects.filter((item) =>
-    item.type === SelectionTypes.POINT ? visibleFilters.every((filterItem) => filterPointType(filterItem, item)) : true,
-  )
-})
-
-export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters, (objectsMap = [], filters) => {
-  const count = {}
-  const points = objectsMap.filter((item) => item.type === SelectionTypes.POINT)
-  filters.forEach(({ data, visible }, index) => {
-    if (visible) {
-      const filtered = points.filter((item) => filterPointType(data, item))
-      count[index] = filtered?.size
-    }
+export const getFilteredObjects = createSelector(getCurrentFilters, objects, isCatalogLayerFunc,
+  (filters, objects = {}, isCatalogLayer) => {
+    const visibleFilters = filters.filter(({ visible }) => visible).map(({ data }) => (data))
+    return objects.filter((item) =>
+      item.type === SelectionTypes.POINT
+        ? visibleFilters.every((filterItem) => filterPointType(filterItem, item, isCatalogLayer))
+        : true,
+    )
   })
-  return count
-})
+
+export const getFilteredObjectsCount = createSelector(objects, getCurrentFilters, isCatalogLayerFunc,
+  (objectsMap = [], filters, isCatalogLayer) => {
+    const count = {}
+    const points = objectsMap.filter((item) => item.type === SelectionTypes.POINT)
+    filters.forEach(({ data, visible }, index) => {
+      if (visible) {
+        const filtered = points.filter((item) => filterPointType(data, item, isCatalogLayer))
+        count[index] = filtered?.size
+      }
+    })
+    return count
+  })
 
 export const getTopographicObjectsList = createSelector(catalogsTopographicByIds, topographicObjectsFilters,
   (byIds, filtersData) => {

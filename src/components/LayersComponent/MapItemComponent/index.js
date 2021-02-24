@@ -9,7 +9,6 @@ import ColorPicker from '../../common/ColorPicker'
 import i18n from '../../../i18n'
 import { MOUSE_ENTER_DELAY, DBL_CLICK_TIME } from '../../../constants/tooltip'
 import { DATE_TIME_FORMAT_FULL } from '../../../constants/formats'
-import { isCatalogMap } from '../../../constants/catalogs'
 import DeleteMapForm from './DeleteMapForm'
 
 const { TextFilter } = data
@@ -78,6 +77,7 @@ export default class MapItemComponent extends React.Component {
     const { showCloseForm, showColor } = this.state
     const {
       textFilter,
+      isCatalogMap,
       data: { visible, name, color, breadCrumbs, mapId },
       tree: { expanded, canExpand, onExpand },
     } = this.props
@@ -160,4 +160,5 @@ MapItemComponent.propTypes = {
   onCloseMap: PropTypes.func,
   onPrintMap: PropTypes.func,
   onUpdateMap: PropTypes.func,
+  isCatalogMap: PropTypes.func,
 }

@@ -1,6 +1,5 @@
 import { MERGE_FILTERS, REMOVE_FILTER, SET_FILTERS } from '../actions/filter'
 import {
-  CATALOG_FILTERS,
   MIL_SYMBOL_FILTER,
   SEARCH_FILTER,
   LOADING,
@@ -10,7 +9,6 @@ import {
 } from '../../constants/filter'
 
 const initState = {
-  [CATALOG_FILTERS]: { },
   [SEARCH_FILTER]: '',
   [SEARCH_TOPOGRAPHIC_FILTER]: '',
   [MIL_SYMBOL_FILTER]: [ ],

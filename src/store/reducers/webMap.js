@@ -124,7 +124,7 @@ const WebMapState = Record({
   defOrgStructure: null,
   scaleToSelection: false,
   marker: null,
-  catalogModalData: { visible: false },
+  catalogModal: { visible: false },
   topographicObjects: {},
   undoRecords: List(),
   undoPosition: 0,
@@ -249,7 +249,7 @@ const simpleSetFields = [ {
   field: 'subordinationAuto',
 }, {
   action: actionNames.SET_CATALOG_MODAL_DATA,
-  field: 'catalogModalData',
+  field: 'catalogModal',
 } ]
 
 const toggleSetFields = [ {

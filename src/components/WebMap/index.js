@@ -48,6 +48,7 @@ import { calcMoveWM } from '../../utils/mapObjConvertor' /*, calcMiddlePoint */
 import { settings } from '../../constants/drawLines'
 import { targetDesignationCode } from '../../constants/targetDesignation'
 import { linesParams } from '../../constants/params'
+import { objectHas } from '../../utils/helpers'
 import entityKind, {
   entityKindFillable,
   entityKindMultipointCurves,
@@ -368,8 +369,8 @@ export default class WebMap extends React.PureComponent {
       canRedo: PropTypes.bool,
     }),
     isMapCOP: PropTypes.bool,
-    catalogModalData: PropTypes.object,
     generalization: PropTypes.bool,
+    topographicPreview: PropTypes.any,
     // Redux actions
     setModalProps: PropTypes.func,
     editObject: PropTypes.func,
@@ -418,8 +419,9 @@ export default class WebMap extends React.PureComponent {
     checkObjectAccess: PropTypes.func,
     onShadowDelete: PropTypes.func,
     myContactId: PropTypes.number,
-    setCatalogModalData: PropTypes.func,
     topographicObjectsList: PropTypes.array,
+    catalogMeta: PropTypes.func,
+    toggleCatalogModal: PropTypes.func,
   }
 
   constructor (props) {
@@ -481,7 +483,7 @@ export default class WebMap extends React.PureComponent {
       selection: { newShape, preview, previewCoordinateIndex, list },
       topographicObjects: { selectedItem, features }, topographicObjectsList,
       targetingObjects, marchDots, marchMode, marchRefPoint, visibleZone, visibleZoneSector,
-      generalization,
+      generalization, topographicPreview,
     } = this.props
 
     if (objects !== prevProps.objects || preview !== prevProps.selection.preview) {
@@ -585,14 +587,15 @@ export default class WebMap extends React.PureComponent {
       this.updateTargetingZones(targetingObjects/*, list, objects */)
     }
     if (topographicObjectsList !== prevProps.topographicObjectsList) {
-      this.backLightingTimeouts.forEach(clearInterval)
-      this.backLightingTimeouts = []
       this.backLightingTopographicObjectsList(topographicObjectsList)
     }
     this.updateMarchDots(marchDots, prevProps.marchDots)
     this.updateMarchRefPoint(marchRefPoint)
     if (generalization !== prevProps.generalization) {
       this.updateGeneralization(generalization, edit)
+    }
+    if (topographicPreview !== prevProps.topographicPreview) {
+      this.highlightTopographicObjectLayer(prevProps.topographicPreview, topographicPreview)
     }
   }
 
@@ -964,6 +967,18 @@ export default class WebMap extends React.PureComponent {
     }
   }
 
+  highlightTopographicObjectLayer = (prevIds, currentIds) => {
+    Array.isArray(prevIds) && prevIds.forEach((id) => {
+      const layer = id && this.findLayerById(id, String)
+      layer?.resetStyle && layer.resetStyle()
+    })
+    Array.isArray(currentIds) && currentIds.forEach((id) => {
+      const layer = id && this.findLayerById(id, String)
+      layer?.setColor && layer.setColor('#0a0')
+      layer?.setFill && layer.setFill('#252')
+    })
+  }
+
   resetHighlight = (oldValue, newValue) => {
     if (oldValue) {
       oldValue.list.forEach((id) => this.highlightLayer(id, false))
@@ -1241,18 +1256,37 @@ export default class WebMap extends React.PureComponent {
   }
 
   backLightingTopographicObjectsList = (objectsList) => {
+    const { toggleCatalogModal } = this.props
+
+    this.backLightingTimeouts.forEach(clearInterval)
+    this.backLightingTimeouts = []
+
+    const objectsIds = objectsList.map(({ id }) => id)
+    const objectsIncludes = (id) => objectsIds.includes(id)
+
     if (Array.isArray(this.backLightsList)) {
-      this.backLightsList.forEach((item) => item.removeFrom(this.map))
+      this.backLightsList.forEach((item) => { !objectsIncludes(item.id) && item.removeFrom(this.map) })
+      this.backLightsList = this.backLightsList.filter((item) => objectsIncludes(item.id))
     } else {
       this.backLightsList = []
     }
+
+    const existedIds = this.backLightsList.map(({ id }) => id)
+
     objectsList.forEach((object) => {
+      if (existedIds.includes(object.id)) {
+        return
+      }
       const backLighting = L.geoJSON(object, {
         style: this.backLightingStyles,
         pointToLayer: (geoJsonPoint, latlng) => {
           return new L.CircleMarker(latlng, { interactive: false, radius: 1 })
         },
       })
+
+      backLighting.on('click', ({ layer: { feature }, latlng }) => toggleCatalogModal({ feature, latlng }))
+      backLighting.id = object.id
+
       const timoutId = setTimeout(() => { // таймаут чтобы при большой нагрузке не засорял стек и рисовал елементы по мере поступления
         backLighting.addTo(this.map)
         this.backLightsList.push(backLighting)
@@ -1544,7 +1578,7 @@ export default class WebMap extends React.PureComponent {
       const isSelectedItem = (item.id && list.includes(item.id)) || item === this.newLayer
       const isHighlightedItem = Boolean(highlighted?.list?.includes(item.id))
       const hidden = !isSelectedItem && !isHighlightedItem && (
-        (itemLevel < levelEdge) ||
+        (!item.catalogId && itemLevel < levelEdge) || // если не каталог то смотрим на уровень подчинения значка
         (!layer || !Object.prototype.hasOwnProperty.call(layersById, layer)) ||
         (Boolean(item._groupParent) && GROUPS.GENERALIZE.includes(item._groupParent.object.type))
       )
@@ -1688,16 +1722,12 @@ export default class WebMap extends React.PureComponent {
   }
 
   removeLayer = (layer) => {
-    const { catalogModalData, setCatalogModalData } = this.props
     const index = this.map.objects.indexOf(layer)
     if (index >= 0) {
       this.map.objects.splice(index, 1)
     }
     layer.pm && layer.pm.disable()
     layer.remove()
-    if (catalogModalData.visible && catalogModalData.layer === layer) {
-      setCatalogModalData({ visible: false })
-    }
   }
 
   updateObjects = (objects, preview) => {
@@ -1939,13 +1969,14 @@ export default class WebMap extends React.PureComponent {
       selection: { list },
       showAmplifiers,
       shownAmplifiers,
+      catalogMeta,
     } = this.props
 
     const {
       id,
       attributes,
       // TODO: тимчасово відключаємо показ характеристик підрозділу
-      // layer: layerInner,
+      layer: layerInner,
       // unit,
     } = object
 
@@ -1966,6 +1997,11 @@ export default class WebMap extends React.PureComponent {
       layer.pm.options.snappable = false // отключаем примагничивание маркеров к объектам при их перемещении
       layer.id = id
       layer.object = object
+
+      if (objectHas(catalogMeta.layers, layerInner)) {
+        layer.catalogId = catalogMeta.layers[layerInner].catalog
+        layer.options.generalizable = false
+      }
       // layer.on('click', this.clickOnLayer)
       layer.on('marker:dblclick', this.dblClickOnLayer)
       // TODO: тимчасово відключаємо показ характеристик підрозділу
@@ -2235,10 +2271,10 @@ export default class WebMap extends React.PureComponent {
     return this.onSelectedListChange(result)
   }
 
-  findLayerById = (id) => {
+  findLayerById = (id, mutateFn = Number) => {
     for (const lkey of Object.keys(this.map._layers)) {
       const layer = this.map._layers[lkey]
-      if (Number(layer.id) === Number(id)) {
+      if (mutateFn(layer.id) === mutateFn(id)) {
         return layer
       }
     }

@@ -1,7 +1,6 @@
 import { data } from '@C4/CommonComponents'
 import * as R from 'ramda'
 import { layers } from '../actions'
-import { isCatalogLayer } from '../../constants/catalogs'
 
 const { TextFilter } = data
 const defItem = { visible: true, locked: false, color: null, readOnly: true }
@@ -35,14 +34,13 @@ export default function reducer (state = initState, action) {
     }
     case layers.UPDATE_LAYERS: {
       let { byId } = state
-      const { layersData } = action
+      const { layersData, options } = action
       byId = { ...byId }
       layersData.forEach((layerData) => {
         const { layerId } = layerData
         const isByIdsHaveLayer = Object.prototype.hasOwnProperty.call(byId, layerId)
-        const isCatalogLayerData = isCatalogLayer(layerId)
         let item = isByIdsHaveLayer ? byId[layerId] : defItem
-        if (!isByIdsHaveLayer && isCatalogLayerData) {
+        if (!isByIdsHaveLayer && options?.isMapCatalog) {
           item = { ...item, visible: false }
         }
         byId[layerId] = { ...item, ...layerData }

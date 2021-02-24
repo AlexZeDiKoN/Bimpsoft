@@ -10,6 +10,8 @@ import {
   layersByIdFromStore,
   marchDots, undoInfo, mapCOP, flexGridSelected,
   getFilteredObjects, getTopographicObjectsList,
+  catalogsTopographicPreview,
+  getCatalogMeta,
 } from '../store/selectors'
 import {
   webMap, selection, layers, orgStructures, flexGrid, viewModes, targeting, task, march,
@@ -63,7 +65,6 @@ const WebMapContainer = connect(
     activeMapId: activeMapSelector(state),
     inICTMode: inICTMode(state),
     topographicObjects: state.webMap.topographicObjects,
-    catalogModalData: state.webMap.catalogModalData,
     unitsById: state.orgStructures.unitsById,
     targetingObjects: targetingObjects(state),
     marchMode: state.march.coordMode,
@@ -74,6 +75,8 @@ const WebMapContainer = connect(
     flexGridSelected: flexGridSelected(state),
     topographicObjectsList: getTopographicObjectsList(state),
     generalization: state.webMap.generalization,
+    topographicPreview: catalogsTopographicPreview(state),
+    catalogMeta: getCatalogMeta(state),
   }),
   catchErrors({
     onFinishDrawNewShape: selection.finishDrawNewShape,
@@ -173,7 +176,7 @@ const WebMapContainer = connect(
     checkObjectAccess: webMap.getObjectAccess,
     onShadowDelete: webMap.removeObjects,
     getHeight: webMap.getHeight,
-    setCatalogModalData: webMap.setCatalogModalData,
+    toggleCatalogModal: webMap.toggleCatalogModal,
   }),
 )(WebMapInner)
 WebMapContainer.displayName = 'WebMap'

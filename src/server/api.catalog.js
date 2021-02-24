@@ -12,5 +12,5 @@ export default {
   getTopographicObjectFields: (codes) => getDirect(`${catalogUrl}/topographicObjects/getFields`, { codes }),
   getTopographicObjects: ({ zoom, points, filters, topocode }) =>
     getDirect(`${catalogUrl}/topographicObjects/get`, { zoom, points, filters, topocode }),
-
+  getCatalogMeta: () => getDirect(`${catalogUrl}/catalogMeta`, false),
 }

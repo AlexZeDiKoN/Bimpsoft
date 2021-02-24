@@ -10,13 +10,14 @@ import {
   mapCOP,
   selectedNewShape,
   canEditSelector,
+  isCatalogLayerFunc,
+  getCatalogMeta,
 } from '../store/selectors'
 import * as paramNames from '../constants/params'
 import * as viewModesKeys from '../constants/viewModesKeys'
 import * as notifications from '../store/actions/notifications'
 import { catchErrors } from '../store/actions/asyncAction'
 import i18n from '../i18n'
-import { isCatalogLayer } from '../constants/catalogs'
 
 export const expandedIdsSelector = createSelector(
   (state) => state.maps.expandedIds,
@@ -46,8 +47,10 @@ const mapStateToProps = (store) => {
   const { byIds, roots, visible } = layersTree(store)
   const expandedIds = expandedIdsSelector(store)
   const isMapCOP = mapCOP(store)
-  const isSelectedNewCatalogShapeType = isCatalogLayer(selectedLayerId) && Boolean(selectedNewShape(store)?.type)
+  const isSelectedNewCatalogShapeType = isCatalogLayerFunc(store)(selectedLayerId) &&
+    Boolean(selectedNewShape(store)?.type)
   const isEditMode = canEditSelector(store)
+  const catalogsMeta = getCatalogMeta(store)
 
   return {
     textFilter,
@@ -64,6 +67,7 @@ const mapStateToProps = (store) => {
     isMapCOP,
     isSelectedNewCatalogShapeType,
     isEditMode,
+    catalogsMeta,
   }
 }
 

@@ -2,24 +2,21 @@ import React from 'react'
 import { connect, useSelector } from 'react-redux'
 import { close as onClose } from '../store/actions/task'
 import {
-  CATALOG_FILTER_TYPE,
   CREATE_NEW_LAYER_TYPE,
   MIL_SYMBOL_FILTER_TYPE,
   TOPOGRAPHIC_OBJECT_FILTER_TYPE,
 } from '../constants/modals'
 import {
-  catalogFilters,
   getModalData,
-  catalogsFields,
   layersById,
   loadingFiltersStatus,
   catalogsTopographicByIds,
   topographicObjectsFilters,
   catalogAttributesFieldsById,
   flexGridPresent,
+  isCatalogLayerFunc,
 } from '../store/selectors'
 import {
-  CatalogFilterModal,
   MilSymbolFilterModal,
   CreateNewLayerModal,
   TopographicObjectFilterModal,
@@ -27,31 +24,10 @@ import {
 import {
   onSaveMilSymbolFilters,
   onRemoveMilSymbolFilter,
-  removeFilterCatalog,
-  setFilterCatalog,
   onCreateLayerAndCopyUnits,
   onSaveTopographicObjectFilter,
   onRemoveTopographicObjectFilter,
 } from '../store/actions/filter'
-import i18n from '../i18n'
-
-// ------------------------------------------ Catalog Container -----------------------------------------------
-const CatalogModalForm = connect(
-  (store) => {
-    const modalData = getModalData(store)
-    return {
-      data: catalogFilters(store)?.[modalData?.id],
-      fields: catalogsFields(store)?.[modalData?.id],
-      title: i18n.CATALOGS,
-      catalogId: modalData?.id,
-    }
-  },
-  {
-    onClose,
-    onSave: setFilterCatalog,
-    onRemove: removeFilterCatalog,
-  },
-)(CatalogFilterModal)
 
 // ------------------------------------------ Mil Symbol Container -------------------------------------------
 const MilSymbolModalForm = connect(
@@ -68,6 +44,7 @@ const MilSymbolModalForm = connect(
       ovtData: ovt?.ovtData,
       ovtKind: dictionaries.dictionaries?.ovtKind,
       ovtSubKind: dictionaries.dictionaries?.ovtSubkind,
+      isCatalogLayerFunc: isCatalogLayerFunc(store),
     }
   },
   {
@@ -109,7 +86,6 @@ const TopographicObjectModalForm = connect((store) => {
 export default function FilterModalContainer (props) {
   const type = useSelector((state) => getModalData(state)?.type)
   switch (type) {
-    case (CATALOG_FILTER_TYPE): return <CatalogModalForm {...props}/>
     case (MIL_SYMBOL_FILTER_TYPE): return <MilSymbolModalForm {...props} isFilterMode />
     case (CREATE_NEW_LAYER_TYPE): return <CreateNewLayerModalForm {...props}/>
     case (TOPOGRAPHIC_OBJECT_FILTER_TYPE): return <TopographicObjectModalForm {...props}/>

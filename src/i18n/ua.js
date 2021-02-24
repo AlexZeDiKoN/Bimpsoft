@@ -304,6 +304,8 @@ export const LAYERS_HIGHLIGHT_COLOR = 'Колір підсвічування з�
 export const LAYERS_CLOSE_ALL_MAPS = 'Закрити всі карти'
 export const COLLAPSE_LAYERS = 'Згорнути шари'
 export const EXPAND_LAYERS = 'Розгорнути шари'
+export const COLLAPSE = 'Згорнути'
+export const EXPAND = 'Розгорнути'
 export const LAYERS_CLOSE_CURRENT_MAP = 'Закрити поточну карту'
 export const LAYERS_INACTIVE_OPACITY_FAIL = 'Неможливо змінити в цьому режимі'
 export const HEIGHT_OBSERVER = 'Висота спостерігача, м'
@@ -546,3 +548,4 @@ export const DIRECT_VISIBILITY = 'Пряма видимість'
 export const EVALUATION_RATING = 'Ступінь достовірності'
 
 export const REQUIRED = (text) => `${text} (обов’язково)`
+export const UNSPECIFIED = 'Невизначений'
