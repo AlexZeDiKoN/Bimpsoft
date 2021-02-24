@@ -10,7 +10,12 @@ import {
   ENDS_FORK,
   ENDS_STROKE1,
 } from '../components/SelectionForm/parts/WithLineEnds'
-import { HATCH_TYPE, MARK_TYPE } from './drawLines'
+import { STATUSES } from '../components/SelectionForm/parts/WithStatus'
+import {
+  HATCH_TYPE,
+  MARK_TYPE,
+} from './drawLines'
+import { colors } from './index'
 // вывод промежуточных амплификаторов
 export const directionAmps = {
   ACROSS_LINE: 'acrossLine', // перпендикулярно линии
@@ -416,6 +421,19 @@ export const symbols = [
           shownNodalPointAmplifiers: [ 0, 1 ],
           lineType: types.waved.value,
           color: '#3366ff',
+        },
+      },
+      {
+        hint: 'Рубіж оборони (позиція), не зайнятий військами',
+        code: '10032510001401000000',
+        isSvg: true,
+        amp: {
+          status: STATUSES.PLANNED,
+          type: entityKind.POLYLINE,
+          nodalPointIcon: NODAL_POINT_ICONS.CROSS_CIRCLE,
+          shownNodalPointAmplifiers: [ 0, 1 ],
+          lineType: types.waved.value,
+          color: colors.FRIENDLY,
         },
       },
       {
