@@ -175,6 +175,7 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
   }
   let id = null
   const ids = []
+  const expandedKeys = {}
   symbols.forEach((parent, indexParent) => {
     // фильтрация тактических знаков в разделе по заданому фильтру, если он есть
     const sortedPart = (searchFilter && searchFilter !== '')
@@ -250,9 +251,10 @@ export const getIdSymbols = (searchTerms, searchFilter) => {
       }
       id = `${indexParent}_${index}`
       ids.push({ id, name: `${parent.name}/${children.hint}` })
+      expandedKeys[`${indexParent}`] = true
     })
   })
-  return ids
+  return { ids, expandedKeys }
 }
 
 // сборка списка тактических знаков для поиска соответствия на карточках тактических знаков
@@ -266,7 +268,7 @@ export const getPartsSymbols = (type, code, search) => {
     const parentToRender = (filter) => (
       <Tree.HighlightItem
         data={part}
-        filter={{ textFilter: filter }}
+        filter={filter}
         titleSelector={(data) => data.name}
         showTooltip={true}
       />)
@@ -300,8 +302,14 @@ export const getPartsSymbols = (type, code, search) => {
         }
       }
       // элемент группы
-      const elemToRender = (filter) => {
-        return <div className={'compilation-list-after' }>
+      const id = `${indexParent}_${index}`
+      const elemToRender = (filter, ids) => {
+        const addClassName = filter.selectedId === id ? 'compilation-list-after-selected'
+          : (ids.some((idn) => idn.id === id) ? 'compilation-list-after-is' : '')
+        // if (addClassName !== '') {
+        //   console.log('class', { ids, addClassName })
+        // }
+        return <div className={`compilation-list-after ${addClassName}`}>
           {(!isSvg)
             ? <MilSymbol
               code={code}
@@ -314,7 +322,7 @@ export const getPartsSymbols = (type, code, search) => {
               />
             </div>
           }
-          <div><HighlightedText text={hint} textFilter={filter}/></div>
+          <div><HighlightedText text={hint} textFilter={filter.textFilter}/></div>
         </div>
       }
 

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   FilterInput,
   Tree,
-  data,
 } from '@C4/CommonComponents'
 import {
   getIdSymbols,
@@ -19,7 +18,7 @@ const renderItem = (itemProps) => {
     return null
   }
   const render = objectIsFunction(itemProps.data.render)
-    ? itemProps.data.render(itemProps.filter?.textFilter)
+    ? itemProps.data.render(itemProps.filter, itemProps.ids)
     : itemProps.data.render
   return <div className={'selection-tactical-symbol'}>
     <Tree.ExpandItem {...itemProps}>
@@ -75,42 +74,16 @@ export default class SelectionTacticalSymbol extends React.Component {
     }
     const treeSymbols = getPartsSymbols(type, code, '')
     let id = null
-    let symbols = null
     let thisSymbol
-    const ids = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
+    const { ids, expandedKeys } = getIdSymbols({ type, code, attributes, coordinatesSize }, '')
 
-    if (ids.length === 0) { // нет совпадений
-      thisSymbol = {
-        id,
-        name: `${name} *${i18n.NO_APPROPRIATE}*`,
-        render: null,
-      }
-    } else if (ids.length === 1) { // однозначное соответствие
+    if (ids.length === 1) { // однозначное соответствие
       id = ids[0].id
-    } else { // множественное соответствие
-      symbols = ids.map((symbol, index) => {
-        return <Tree.HighlightItem
-          key={symbol.id}
-          data={symbol}
-          filter={{ textFilter: data.TextFilter.create('') }}
-          titleSelector={(symbol) => `${index + 1}. ${symbol.name}`}
-          showTooltip={true}
-        />
-      })
+    } else { // нет совпадений или множественное соответствие
       thisSymbol = {
         id,
-        name: `${name} *${i18n.MANY_MATCH}*`,
-        render: <div className={'compilation-list-first'}>
-          <Tree.HighlightItem
-            key={0}
-            data={null}
-            filter={{ textFilter: data.TextFilter.create('') }}
-            titleSelector={() => 'Знайдені збіги:'}
-            fullTitleSelector={() => 'Знайдені збіги умовного знака з переліком'}
-            showTooltip={true}
-          />
-          {symbols}
-        </div>,
+        name: `${name} *${ids.length === 0 ? i18n.NO_APPROPRIATE : i18n.MANY_MATCH}*`,
+        render: null,
       }
     }
 
@@ -120,10 +93,12 @@ export default class SelectionTacticalSymbol extends React.Component {
           values={thisSymbol ? [ thisSymbol, ...treeSymbols ] : treeSymbols}
           value={id}
           name={'id'}
+          expandedKeys={expandedKeys}
+          commonData={{ ids }}
           onChange={({ target: { value } }) => this.onChangeSymbol(value, treeSymbols)}
           listHeight={600}
           dropDownFitToParent={true}
-          // opened={true}
+          opened={true}
         >
           {renderItem}
         </FilterInput>
